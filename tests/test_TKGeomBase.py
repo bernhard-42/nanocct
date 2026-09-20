@@ -73,5 +73,13 @@ def test_bndlib_geomconvert_intana():
     assert ia.IsDone() and ia.NbPoints() == 1 and ia.Point(1).Coord() == (0.0, 0.0, 0.0)
 
 
+def test_conversion_operators():
+    seg = GC.GC_MakeSegment(gp.gp_Pnt(), gp.gp_Pnt(1.0, 0.0, 0.0))
+    curve = Geom.Geom_TrimmedCurve(seg)                             # operator const handle<Geom_TrimmedCurve>&() -> constructor
+    assert curve is seg.Value()                                     # the same object, not a copy
+    assert gp.gp_Lin(gce.gce_MakeLin(gp.gp_Pnt(), gp.gp_Dir(0.0, 0.0, 1.0))).Direction().Z() == 1.0   # operator gp_Lin()
+    assert Geom.Geom_TrimmedCurve(seg).LastParameter() == 1.0
+
+
 def test_classes_with_undefined_copy_constructor_are_skipped():
     assert not hasattr(GCPnts, "GCPnts_DistFunction")                  # copy ctor declared, never defined in libTKGeomBase

@@ -5487,3 +5487,6 @@ Resolution from package gp.)nbdoc")
     nanoocp_implicit_copy_ctor<Geom_VectorWithMagnitude>(nb::borrow<nb::class_<Geom_VectorWithMagnitude>>(m.attr("Geom_VectorWithMagnitude")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec &>, Geom_VectorWithMagnitude>();
 }
+
+void nanoocp_conversions_Geom(nb::module_ &m) {
+}

@@ -1710,3 +1710,6 @@ Searches for a local extremum starting from initial parameters (U0, V0).
 @param theP2 Point on second curve)nbdoc");
     nanoocp_implicit_copy_ctor<Extrema_GenLocateExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, Extrema_GFuncExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>(nb::borrow<nb::class_<Extrema_GenLocateExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, Extrema_GFuncExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>>(m.attr("Extrema_LocECC2d")));
 }
+
+void nanoocp_conversions_Extrema(nb::module_ &m) {
+}

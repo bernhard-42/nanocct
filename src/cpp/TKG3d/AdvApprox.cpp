@@ -128,3 +128,6 @@ with life time longer than that of the approximator tool;)nbdoc")
         .def("AverageError", static_cast<double (AdvApprox_SimpleApprox::*)(const int) const>(&AdvApprox_SimpleApprox::AverageError), nb::arg("Index"));
     nanoocp_implicit_copy_ctor<AdvApprox_SimpleApprox>(nb::borrow<nb::class_<AdvApprox_SimpleApprox>>(m.attr("AdvApprox_SimpleApprox")));
 }
+
+void nanoocp_conversions_AdvApprox(nb::module_ &m) {
+}

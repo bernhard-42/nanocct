@@ -69,3 +69,6 @@ its index.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomTools_UndefinedTypeHandler::*)() const>(&GeomTools_UndefinedTypeHandler::DynamicType));
     nanoocp_implicit_copy_ctor<GeomTools_UndefinedTypeHandler>(nb::borrow<nb::class_<GeomTools_UndefinedTypeHandler>>(m.attr("GeomTools_UndefinedTypeHandler")));
 }
+
+void nanoocp_conversions_GeomTools(nb::module_ &m) {
+}

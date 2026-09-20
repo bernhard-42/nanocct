@@ -1206,3 +1206,38 @@ Exceptions StdFail_NotDone if no parabola is constructed.
     nanoocp_implicit_copy_ctor<GC_MakeParabola2d>(nb::borrow<nb::class_<GC_MakeParabola2d>>(m.attr("GC_MakeParabola2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Parab2d &>, GC_MakeParabola2d>();
 }
+
+void nanoocp_conversions_GC(nb::module_ &m) {
+    nanoocp_conversion_handle<GC_MakeArcOfCircle, Geom_TrimmedCurve>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeArcOfCircle2d, Geom2d_TrimmedCurve>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeArcOfEllipse, Geom_TrimmedCurve>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeArcOfEllipse2d, Geom2d_TrimmedCurve>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeArcOfHyperbola, Geom_TrimmedCurve>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeArcOfHyperbola2d, Geom2d_TrimmedCurve>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeArcOfParabola, Geom_TrimmedCurve>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeArcOfParabola2d, Geom2d_TrimmedCurve>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeCircle, Geom_Circle>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Circle"), true);
+    nanoocp_conversion_handle<GC_MakeCircle2d, Geom2d_Circle>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Circle"), true);
+    nanoocp_conversion_handle<GC_MakeConicalSurface, Geom_ConicalSurface>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_ConicalSurface"), true);
+    nanoocp_conversion_handle<GC_MakeCylindricalSurface, Geom_CylindricalSurface>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_CylindricalSurface"), true);
+    nanoocp_conversion_handle<GC_MakeEllipse, Geom_Ellipse>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Ellipse"), true);
+    nanoocp_conversion_handle<GC_MakeEllipse2d, Geom2d_Ellipse>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Ellipse"), true);
+    nanoocp_conversion_handle<GC_MakeHyperbola, Geom_Hyperbola>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Hyperbola"), true);
+    nanoocp_conversion_handle<GC_MakeHyperbola2d, Geom2d_Hyperbola>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Hyperbola"), true);
+    nanoocp_conversion_handle<GC_MakeLine, Geom_Line>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Line"), true);
+    nanoocp_conversion_handle<GC_MakeLine2d, Geom2d_Line>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Line"), true);
+    nanoocp_conversion_handle<GC_MakeMirror, Geom_Transformation>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakeMirror2d, Geom2d_Transformation>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakePlane, Geom_Plane>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Plane"), true);
+    nanoocp_conversion_handle<GC_MakeRotation, Geom_Transformation>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakeRotation2d, Geom2d_Transformation>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakeScale, Geom_Transformation>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakeScale2d, Geom2d_Transformation>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakeSegment, Geom_TrimmedCurve>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeSegment2d, Geom2d_TrimmedCurve>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_TrimmedCurve"), true);
+    nanoocp_conversion_handle<GC_MakeTranslation, Geom_Transformation>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakeTranslation2d, Geom2d_Transformation>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Transformation"), true);
+    nanoocp_conversion_handle<GC_MakeTrimmedCone, Geom_RectangularTrimmedSurface>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_RectangularTrimmedSurface"), true);
+    nanoocp_conversion_handle<GC_MakeTrimmedCylinder, Geom_RectangularTrimmedSurface>(nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_RectangularTrimmedSurface"), true);
+    nanoocp_conversion_handle<GC_MakeParabola2d, Geom2d_Parabola>(nb::module_::import_("nanoocp._TKG2d.Geom2d").attr("Geom2d_Parabola"), true);
+}

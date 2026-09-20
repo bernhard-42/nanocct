@@ -177,6 +177,161 @@ class Convert_CircleToBSplineCurve(Convert_ConicToBSplineCurve):
     @overload
     def __init__(self, theOther: Convert_CircleToBSplineCurve) -> None: ...
 
+class Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d:
+    """
+    Template base class for converting a sequence of adjacent
+    non-rational Bezier curves into a BSpline curve.
+    PointType is gp_Pnt or gp_Pnt2d; VecType is gp_Vec or gp_Vec2d.
+    """
+
+    @overload
+    def __init__(self, theAngularTolerance: float = 0.0001) -> None:
+        """
+        Constructs a framework for converting a sequence of
+        adjacent non-rational Bezier curves into a BSpline curve.
+        @param[in] theAngularTolerance angular tolerance in radians
+        for checking tangent parallelism at junction points
+        """
+
+    @overload
+    def __init__(self, theOther: Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d) -> None: ...
+
+    def AddCurve(self, thePoles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]) -> None:
+        """
+        Adds the Bezier curve defined by the table of poles to
+        the sequence of adjacent Bezier curves to be converted.
+        @param[in] thePoles poles of the Bezier curve to add
+        """
+
+    def Perform(self) -> None:
+        """
+        Computes all the data needed to build a BSpline curve
+        equivalent to the adjacent Bezier curve sequence.
+        """
+
+    def Degree(self) -> int:
+        """Returns the degree of the BSpline curve."""
+
+    def NbPoles(self) -> int:
+        """Returns the number of poles of the BSpline curve."""
+
+    def Poles(self, thePoles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]) -> None:
+        """
+        Loads the Poles table with the poles of the BSpline curve.
+        @param[out] thePoles array to fill with poles
+        """
+
+    def NbKnots(self) -> int:
+        """Returns the number of knots of the BSpline curve."""
+
+    def KnotsAndMults(self, theKnots: nanoocp.NCollection.NCollection_Array1[float], theMults: nanoocp.NCollection.NCollection_Array1[int]) -> None:
+        """
+        Loads the Knots and Mults tables with the knots
+        and corresponding multiplicities of the BSpline curve.
+        @param[out] theKnots array to fill with knots
+        @param[out] theMults array to fill with multiplicities
+        """
+
+class Convert_CompBezierCurves2dToBSplineCurve2d(Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d):
+    """
+    Converts a list of connecting Bezier Curves 2d to a
+    BSplineCurve 2d.
+    if possible, the continuity of the BSpline will be
+    increased to more than C0.
+    """
+
+    @overload
+    def __init__(self, theAngularTolerance: float = 0.0001) -> None:
+        """
+        Constructs a framework for converting a sequence of
+        adjacent non-rational Bezier curves into a BSpline curve.
+        @param[in] theAngularTolerance angular tolerance in radians
+        for checking tangent parallelism at junction points
+        """
+
+    @overload
+    def __init__(self, theOther: Convert_CompBezierCurves2dToBSplineCurve2d) -> None: ...
+
+class Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec:
+    """
+    Template base class for converting a sequence of adjacent
+    non-rational Bezier curves into a BSpline curve.
+    PointType is gp_Pnt or gp_Pnt2d; VecType is gp_Vec or gp_Vec2d.
+    """
+
+    @overload
+    def __init__(self, theAngularTolerance: float = 0.0001) -> None:
+        """
+        Constructs a framework for converting a sequence of
+        adjacent non-rational Bezier curves into a BSpline curve.
+        @param[in] theAngularTolerance angular tolerance in radians
+        for checking tangent parallelism at junction points
+        """
+
+    @overload
+    def __init__(self, theOther: Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec) -> None: ...
+
+    def AddCurve(self, thePoles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]) -> None:
+        """
+        Adds the Bezier curve defined by the table of poles to
+        the sequence of adjacent Bezier curves to be converted.
+        @param[in] thePoles poles of the Bezier curve to add
+        """
+
+    def Perform(self) -> None:
+        """
+        Computes all the data needed to build a BSpline curve
+        equivalent to the adjacent Bezier curve sequence.
+        """
+
+    def Degree(self) -> int:
+        """Returns the degree of the BSpline curve."""
+
+    def NbPoles(self) -> int:
+        """Returns the number of poles of the BSpline curve."""
+
+    def Poles(self, thePoles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]) -> None:
+        """
+        Loads the Poles table with the poles of the BSpline curve.
+        @param[out] thePoles array to fill with poles
+        """
+
+    def NbKnots(self) -> int:
+        """Returns the number of knots of the BSpline curve."""
+
+    def KnotsAndMults(self, theKnots: nanoocp.NCollection.NCollection_Array1[float], theMults: nanoocp.NCollection.NCollection_Array1[int]) -> None:
+        """
+        Loads the Knots and Mults tables with the knots
+        and corresponding multiplicities of the BSpline curve.
+        @param[out] theKnots array to fill with knots
+        @param[out] theMults array to fill with multiplicities
+        """
+
+class Convert_CompBezierCurvesToBSplineCurve(Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec):
+    """
+    An algorithm to convert a sequence of adjacent
+    non-rational Bezier curves into a BSpline curve.
+    A CompBezierCurvesToBSplineCurve object provides a framework for:
+    -   defining the sequence of adjacent non-rational Bezier
+    curves to be converted into a BSpline curve,
+    -   implementing the computation algorithm, and
+    -   consulting the results.
+    Warning
+    Do not attempt to convert rational Bezier curves using this type of algorithm.
+    """
+
+    @overload
+    def __init__(self, theAngularTolerance: float = 0.0001) -> None:
+        """
+        Constructs a framework for converting a sequence of
+        adjacent non-rational Bezier curves into a BSpline curve.
+        @param[in] theAngularTolerance angular tolerance in radians
+        for checking tangent parallelism at junction points
+        """
+
+    @overload
+    def __init__(self, theOther: Convert_CompBezierCurvesToBSplineCurve) -> None: ...
+
 class Convert_CompPolynomialToPoles:
     """
     Convert a serie of Polynomial N-Dimensional Curves

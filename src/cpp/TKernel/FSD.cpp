@@ -253,3 +253,6 @@ the Storage_Error enumeration which specifies the problem encountered.)nbdoc")
         .def_static("MagicNumber", static_cast<const char * (*)()>(&FSD_CmpFile::MagicNumber));
     nanoocp_implicit_copy_ctor<FSD_CmpFile>(nb::borrow<nb::class_<FSD_CmpFile>>(m.attr("FSD_CmpFile")));
 }
+
+void nanoocp_conversions_FSD(nb::module_ &m) {
+}

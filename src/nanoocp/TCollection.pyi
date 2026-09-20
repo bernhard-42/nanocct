@@ -2,6 +2,7 @@
 
 from typing import overload
 
+import nanoocp.Message
 import nanoocp.Standard
 
 
@@ -1639,6 +1640,9 @@ class TCollection_ExtendedString:
         @param[in] theLength the length to allocate
         @param[in] theFiller the character to fill with
         """
+
+    @overload
+    def __init__(self, theFrom: nanoocp.Message.Message_Msg) -> None: ...
 
     @overload
     def AssignCat(self, theOther: TCollection_ExtendedString) -> None:

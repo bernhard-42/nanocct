@@ -234,3 +234,6 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
     nanoocp_implicit_copy_ctor<Adaptor2d_OffsetCurve>(nb::borrow<nb::class_<Adaptor2d_OffsetCurve>>(m.attr("Adaptor2d_OffsetCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor2d_Curve2d> &>, Adaptor2d_OffsetCurve>();
 }
+
+void nanoocp_conversions_Adaptor2d(nb::module_ &m) {
+}

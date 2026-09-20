@@ -5,6 +5,8 @@ from typing import overload
 
 import nanoocp.NCollection
 import nanoocp.Standard
+import nanoocp.TopLoc
+import nanoocp.gce
 
 
 class gp_TrsfForm(enum.IntEnum):
@@ -1036,6 +1038,21 @@ class gp_Trsf:
     def __init__(self, theOther: gp_Trsf) -> None: ...
 
     @overload
+    def __init__(self, theFrom: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeMirror) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeRotation) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeScale) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeTranslation) -> None: ...
+
+    @overload
     def SetMirror(self, theP: gp_Pnt) -> None:
         """
         Makes the transformation into a symmetrical transformation.
@@ -1848,6 +1865,18 @@ class gp_Trsf2d:
     def __init__(self, theOther: gp_Trsf2d) -> None: ...
 
     @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeMirror2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeRotation2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeScale2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeTranslation2d) -> None: ...
+
+    @overload
     def SetMirror(self, theP: gp_Pnt2d) -> None:
         """
         Changes the transformation into a symmetrical transformation.
@@ -2492,6 +2521,9 @@ class gp_Dir2d:
 
     @overload
     def __init__(self, theOther: gp_Dir2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeDir2d) -> None: ...
 
     class D(enum.Enum):
         """Standard directions in 2D space for optimized constexpr construction"""
@@ -3288,6 +3320,9 @@ class gp_Dir:
         direction and the method raises the exception ConstructionError.
         @note Constexpr-compatible when input is already normalized.
         """
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeDir) -> None: ...
 
     class D(enum.Enum):
         """Standard directions in 3D space for optimized constexpr construction"""
@@ -4673,6 +4708,9 @@ class gp_Circ:
     @overload
     def __init__(self, theOther: gp_Circ) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeCirc) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
         Changes the main axis of the circle. It is the axis
@@ -4883,6 +4921,9 @@ class gp_Circ2d:
     @overload
     def __init__(self, theOther: gp_Circ2d) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeCirc2d) -> None: ...
+
     def SetLocation(self, theP: gp_Pnt2d) -> None:
         """Changes the location point (center) of the circle."""
 
@@ -5092,6 +5133,9 @@ class gp_Cone:
     @overload
     def __init__(self, theOther: gp_Cone) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeCone) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
         Changes the symmetry axis of the cone. Raises ConstructionError
@@ -5286,6 +5330,9 @@ class gp_Cylinder:
     @overload
     def __init__(self, theOther: gp_Cylinder) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeCylinder) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
         Changes the symmetry axis of the cylinder. Raises ConstructionError if the direction of theA1
@@ -5467,6 +5514,9 @@ class gp_Elips:
 
     @overload
     def __init__(self, theOther: gp_Elips) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeElips) -> None: ...
 
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
@@ -5731,6 +5781,9 @@ class gp_Elips2d:
 
     @overload
     def __init__(self, theOther: gp_Elips2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeElips2d) -> None: ...
 
     def SetLocation(self, theP: gp_Pnt2d) -> None:
         """
@@ -6432,6 +6485,9 @@ class gp_Hypr:
     @overload
     def __init__(self, theOther: gp_Hypr) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeHypr) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
         Modifies this hyperbola, by redefining its local coordinate
@@ -6758,6 +6814,9 @@ class gp_Hypr2d:
     @overload
     def __init__(self, theOther: gp_Hypr2d) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeHypr2d) -> None: ...
+
     def SetLocation(self, theP: gp_Pnt2d) -> None:
         """
         Modifies this hyperbola, by redefining its local
@@ -7056,6 +7115,9 @@ class gp_Lin:
     @overload
     def __init__(self, theOther: gp_Lin) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeLin) -> None: ...
+
     def Reverse(self) -> None: ...
 
     def Reversed(self) -> gp_Lin:
@@ -7249,6 +7311,9 @@ class gp_Lin2d:
 
     @overload
     def __init__(self, theOther: gp_Lin2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeLin2d) -> None: ...
 
     def Reverse(self) -> None: ...
 
@@ -7449,6 +7514,9 @@ class gp_Parab:
 
     @overload
     def __init__(self, theOther: gp_Parab) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeParab) -> None: ...
 
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
@@ -7678,6 +7746,9 @@ class gp_Parab2d:
     @overload
     def __init__(self, theOther: gp_Parab2d) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakeParab2d) -> None: ...
+
     def SetFocal(self, theFocal: float) -> None:
         """
         Changes the focal distance of the parabola
@@ -7897,6 +7968,9 @@ class gp_Pln:
 
     @overload
     def __init__(self, theOther: gp_Pln) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.gce.gce_MakePln) -> None: ...
 
     def Coefficients(self) -> tuple[float, float, float, float]:
         """

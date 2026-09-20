@@ -960,3 +960,29 @@ Exceptions StdFail_NotDone if no plane is constructed.
     nanoocp_implicit_copy_ctor<gce_MakeTranslation2d>(nb::borrow<nb::class_<gce_MakeTranslation2d>>(m.attr("gce_MakeTranslation2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec2d &>, gce_MakeTranslation2d>();
 }
+
+void nanoocp_conversions_gce(nb::module_ &m) {
+    nanoocp_conversion<gce_MakeCirc, gp_Circ>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Circ"), true);
+    nanoocp_conversion<gce_MakeCirc2d, gp_Circ2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Circ2d"), true);
+    nanoocp_conversion<gce_MakeCone, gp_Cone>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Cone"), true);
+    nanoocp_conversion<gce_MakeCylinder, gp_Cylinder>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Cylinder"), true);
+    nanoocp_conversion<gce_MakeDir, gp_Dir>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Dir"), true);
+    nanoocp_conversion<gce_MakeDir2d, gp_Dir2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Dir2d"), true);
+    nanoocp_conversion<gce_MakeElips, gp_Elips>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Elips"), true);
+    nanoocp_conversion<gce_MakeElips2d, gp_Elips2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Elips2d"), true);
+    nanoocp_conversion<gce_MakeHypr, gp_Hypr>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Hypr"), true);
+    nanoocp_conversion<gce_MakeHypr2d, gp_Hypr2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Hypr2d"), true);
+    nanoocp_conversion<gce_MakeLin, gp_Lin>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Lin"), true);
+    nanoocp_conversion<gce_MakeLin2d, gp_Lin2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Lin2d"), true);
+    nanoocp_conversion<gce_MakeMirror, gp_Trsf>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf"), true);
+    nanoocp_conversion<gce_MakeMirror2d, gp_Trsf2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf2d"), true);
+    nanoocp_conversion<gce_MakeParab, gp_Parab>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Parab"), true);
+    nanoocp_conversion<gce_MakeParab2d, gp_Parab2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Parab2d"), true);
+    nanoocp_conversion<gce_MakePln, gp_Pln>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Pln"), true);
+    nanoocp_conversion<gce_MakeRotation, gp_Trsf>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf"), true);
+    nanoocp_conversion<gce_MakeRotation2d, gp_Trsf2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf2d"), true);
+    nanoocp_conversion<gce_MakeScale, gp_Trsf>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf"), true);
+    nanoocp_conversion<gce_MakeScale2d, gp_Trsf2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf2d"), true);
+    nanoocp_conversion<gce_MakeTranslation, gp_Trsf>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf"), true);
+    nanoocp_conversion<gce_MakeTranslation2d, gp_Trsf2d>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf2d"), true);
+}

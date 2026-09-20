@@ -2,6 +2,7 @@
 
 from typing import overload
 
+import nanoocp.GC
 import nanoocp.GeomAbs
 import nanoocp.GeomEval.GeomEval_RepCurveDesc
 import nanoocp.GeomEval.GeomEval_RepSurfaceDesc
@@ -4536,6 +4537,9 @@ class Geom_Circle(Geom_Conic):
     @overload
     def __init__(self, theOther: Geom_Circle) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeCircle) -> None: ...
+
     def SetCirc(self, C: nanoocp.gp.gp_Circ) -> None:
         """Set <me> so that <me> has the same geometric properties as C."""
 
@@ -4811,6 +4815,9 @@ class Geom_ConicalSurface(Geom_ElementarySurface):
     @overload
     def __init__(self, theOther: Geom_ConicalSurface) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeConicalSurface) -> None: ...
+
     def SetCone(self, C: nanoocp.gp.gp_Cone) -> None:
         """Set <me> so that <me> has the same geometric properties as C."""
 
@@ -5078,6 +5085,9 @@ class Geom_CylindricalSurface(Geom_ElementarySurface):
 
     @overload
     def __init__(self, theOther: Geom_CylindricalSurface) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeCylindricalSurface) -> None: ...
 
     def SetCylinder(self, C: nanoocp.gp.gp_Cylinder) -> None:
         """Set <me> so that <me> has the same geometric properties as C."""
@@ -5528,6 +5538,9 @@ class Geom_Ellipse(Geom_Conic):
     @overload
     def __init__(self, theOther: Geom_Ellipse) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeEllipse) -> None: ...
+
     def SetElips(self, E: nanoocp.gp.gp_Elips) -> None:
         """Converts the gp_Elips ellipse E into this ellipse."""
 
@@ -5762,6 +5775,9 @@ class Geom_Hyperbola(Geom_Conic):
     @overload
     def __init__(self, theOther: Geom_Hyperbola) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeHyperbola) -> None: ...
+
     def SetHypr(self, H: nanoocp.gp.gp_Hypr) -> None:
         """Converts the gp_Hypr hyperbola H into this hyperbola."""
 
@@ -5994,6 +6010,9 @@ class Geom_Line(Geom_Curve):
 
     @overload
     def __init__(self, theOther: Geom_Line) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeLine) -> None: ...
 
     def SetLin(self, L: nanoocp.gp.gp_Lin) -> None:
         """Set <me> so that <me> has the same geometric properties as L."""
@@ -7112,6 +7131,9 @@ class Geom_Plane(Geom_ElementarySurface):
     @overload
     def __init__(self, theOther: Geom_Plane) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakePlane) -> None: ...
+
     def SetPln(self, Pl: nanoocp.gp.gp_Pln) -> None:
         """Set <me> so that <me> has the same geometric properties as Pl."""
 
@@ -7344,6 +7366,12 @@ class Geom_RectangularTrimmedSurface(Geom_BoundedSurface):
 
     @overload
     def __init__(self, theOther: Geom_RectangularTrimmedSurface) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeTrimmedCone) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeTrimmedCylinder) -> None: ...
 
     @overload
     def SetTrim(self, U1: float, U2: float, V1: float, V2: float, USense: bool = True, VSense: bool = True) -> None:
@@ -8737,6 +8765,18 @@ class Geom_Transformation(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: Geom_Transformation) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeMirror) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeRotation) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeScale) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeTranslation) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -8962,6 +9002,21 @@ class Geom_TrimmedCurve(Geom_BoundedCurve):
 
     @overload
     def __init__(self, theOther: Geom_TrimmedCurve) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfCircle) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfEllipse) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfHyperbola) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfParabola) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeSegment) -> None: ...
 
     def Reverse(self) -> None:
         """

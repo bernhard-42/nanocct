@@ -62,6 +62,7 @@ def _package_order(irs: list, known: dict[str, str]) -> list[str]:
     return out
 
 
+_paths: dict[str, str] = {}       # manifest "paths", set by main() for _element_spec
 _SCALARS = {"double": ("builtins", "float"), "int": ("builtins", "int"), "bool": ("builtins", "bool"),
             "std::string": ("builtins", "str")}    # other C++ scalars: mangled name only (float, size_t, char, ...)
 
@@ -79,7 +80,7 @@ def _element_spec(arg: str, known: dict[str, str], templates: dict[str, dict]) -
     if inst is not None and not inst.get("skipped", False):
         return (f"nanoocp.{inst['package']}", inst["name"])
     if arg in known and "<" not in arg:
-        return (f"nanoocp.{known[arg]}", py_path(arg, known[arg]))     # dotted for nested classes / namespaces
+        return (f"nanoocp.{known[arg]}", py_path(arg, known[arg], _paths))     # dotted for nested classes / namespaces
     return None
 
 
@@ -88,7 +89,7 @@ def _accessors(known: dict[str, str], templates: dict[str, dict]) -> dict[str, d
     out: dict[str, dict[tuple[tuple[str, str], ...], str]] = {}
     from .ncollection import BINDERS
     for key, inst in templates.items():
-        m = re.match(r"(\w+)<(.+)>$", key)
+        m = re.match(r"([\w:]+)<(.*)>$", key)
         if m is None or inst.get("skipped", False) or m.group(1) not in BINDERS:
             continue                                   # alias-instantiated templates (math_Vector) are plain classes
         tmpl, args = m.group(1), _split_args(m.group(2))
@@ -134,8 +135,11 @@ def main(argv: list[str]) -> int:
     if "classes" not in manifest:
         manifest = {"classes": manifest, "templates": {}}
     known: dict[str, str] = manifest["classes"]
+    global _paths
     templates: dict[str, dict] = manifest["templates"]
     generated_pkgs: dict[str, str] = manifest.setdefault("packages", {})     # package -> toolkit, every generated package
+    paths: dict[str, str] = manifest.setdefault("paths", {})    # C++ class -> Python path where py_path() cannot derive it
+    _paths = paths
     cpp_root.mkdir(parents=True, exist_ok=True)
     py_root.mkdir(parents=True, exist_ok=True)
     parsed: list[tuple[str, list]] = []
@@ -173,8 +177,13 @@ def main(argv: list[str]) -> int:
                 del known[name]
             for key in [k for k, v in templates.items() if v.get("by") == ir.name]:
                 del templates[key]
+            for name in [n for n in paths if n not in known]:      # this package's classes were just forgotten above
+                del paths[name]
             for c in ir.classes:
                 known[c.name] = ir.name
+                full = ".".join(c.scope + (c.py_name,))
+                if full != py_path(c.name, ir.name):
+                    paths[c.name] = full
                 for e in c.enums:                  # nested enums (gp_Dir::D): types too, e.g. as defaults
                     known[e.name] = ir.name
             for e in ir.enums:                     # enums are element types too (NCollection_IndexedMap<Message_MetricType>)
@@ -198,7 +207,8 @@ def main(argv: list[str]) -> int:
         irs = sorted(irs, key=lambda ir: order.index(ir.name))
         pkgs = [tree.packages[ir.name] for ir in irs]
         for ir, pkg in zip(irs, pkgs):
-            em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates)
+            em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
+                         _topo(tree, generated_toolkits), paths)
             (tk_dir / f"{pkg.name}.cpp").write_text(em.emit())
             n_methods = sum(1 for c in ir.classes for m in c.methods if m.skip_reason is None)
             print(f"{tk_name}/{pkg.name}: {len(ir.classes)} classes, {len(ir.enums)} enums, {n_methods} methods, "
@@ -228,7 +238,7 @@ def main(argv: list[str]) -> int:
         + "".join(f"import nanoocp._{tk}  # noqa: F401\n" for tk in ordered))
     manifest_path.write_text(json.dumps({"classes": dict(sorted(known.items())), "templates": dict(sorted(templates.items())),
                                          "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"],
-                                         "namespaces": dict(sorted(manifest["namespaces"].items()))}, indent=0) + "\n")
+                                         "namespaces": dict(sorted(manifest["namespaces"].items())), "paths": dict(sorted(paths.items()))}, indent=0) + "\n")
     docs, warnings = template_docs(tree.include_dir, clang_args(tree))
     (cpp_root / "common" / "ncollection_docs.h").write_text(docs)
     for w in warnings:

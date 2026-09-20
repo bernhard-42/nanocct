@@ -23,3 +23,6 @@ void nanoocp_define_Geom2dHash(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<Geom2dHash_CurveHasher>>(m.attr("Geom2dHash_CurveHasher")), "HashTolerance", &Geom2dHash_CurveHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<double>, Geom2dHash_CurveHasher>();
 }
+
+void nanoocp_conversions_Geom2dHash(nb::module_ &m) {
+}

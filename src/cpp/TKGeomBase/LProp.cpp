@@ -171,3 +171,6 @@ curvature is constant).)nbdoc")
         .def("GaussianCurvature", static_cast<double (GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::*)()>(&GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::GaussianCurvature), R"nbdoc(Returns the Gaussian curvature)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("LProp_SLProps3d")));
 }
+
+void nanoocp_conversions_LProp(nb::module_ &m) {
+}

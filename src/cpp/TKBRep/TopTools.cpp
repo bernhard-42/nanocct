@@ -129,3 +129,6 @@ shapes.)nbdoc")
         .def("NbShapes", static_cast<int (TopTools_ShapeSet::*)() const>(&TopTools_ShapeSet::NbShapes), R"nbdoc(Returns number of shapes read from file.)nbdoc");
     nanoocp_implicit_copy_ctor<TopTools_ShapeSet>(nb::borrow<nb::class_<TopTools_ShapeSet>>(m.attr("TopTools_ShapeSet")));
 }
+
+void nanoocp_conversions_TopTools(nb::module_ &m) {
+}

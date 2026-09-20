@@ -837,3 +837,6 @@ the previous one.)nbdoc")
         .def("ModifiedShape", static_cast<TopoDS_Shape (BRepTools_PurgeLocations::*)(const TopoDS_Shape &) const>(&BRepTools_PurgeLocations::ModifiedShape), nb::arg("theInitShape"), R"nbdoc(Returns modified shape obtained from initial shape.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepTools_PurgeLocations>(nb::borrow<nb::class_<BRepTools_PurgeLocations>>(m.attr("BRepTools_PurgeLocations")));
 }
+
+void nanoocp_conversions_BRepTools(nb::module_ &m) {
+}

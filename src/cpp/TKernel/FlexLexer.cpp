@@ -9,3 +9,6 @@ void nanoocp_templates_FlexLexer(nb::module_ &m) {
 
 void nanoocp_define_FlexLexer(nb::module_ &m) {
 }
+
+void nanoocp_conversions_FlexLexer(nb::module_ &m) {
+}

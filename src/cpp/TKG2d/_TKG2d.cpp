@@ -4,21 +4,27 @@
 void nanoocp_declare_Geom2d(nb::module_ &);
 void nanoocp_templates_Geom2d(nb::module_ &);
 void nanoocp_define_Geom2d(nb::module_ &);
+void nanoocp_conversions_Geom2d(nb::module_ &);
 void nanoocp_declare_Adaptor2d(nb::module_ &);
 void nanoocp_templates_Adaptor2d(nb::module_ &);
 void nanoocp_define_Adaptor2d(nb::module_ &);
+void nanoocp_conversions_Adaptor2d(nb::module_ &);
 void nanoocp_declare_Geom2dAdaptor(nb::module_ &);
 void nanoocp_templates_Geom2dAdaptor(nb::module_ &);
 void nanoocp_define_Geom2dAdaptor(nb::module_ &);
+void nanoocp_conversions_Geom2dAdaptor(nb::module_ &);
 void nanoocp_declare_Geom2dHash(nb::module_ &);
 void nanoocp_templates_Geom2dHash(nb::module_ &);
 void nanoocp_define_Geom2dHash(nb::module_ &);
+void nanoocp_conversions_Geom2dHash(nb::module_ &);
 void nanoocp_declare_Geom2dGridEval(nb::module_ &);
 void nanoocp_templates_Geom2dGridEval(nb::module_ &);
 void nanoocp_define_Geom2dGridEval(nb::module_ &);
+void nanoocp_conversions_Geom2dGridEval(nb::module_ &);
 void nanoocp_declare_Geom2dEval(nb::module_ &);
 void nanoocp_templates_Geom2dEval(nb::module_ &);
 void nanoocp_define_Geom2dEval(nb::module_ &);
+void nanoocp_conversions_Geom2dEval(nb::module_ &);
 
 NB_MODULE(_TKG2d, m) {
     m.doc() = "OCCT toolkit TKG2d";
@@ -68,4 +74,11 @@ NB_MODULE(_TKG2d, m) {
     nanoocp_define_Geom2dHash(m_Geom2dHash);
     nanoocp_define_Geom2dGridEval(m_Geom2dGridEval);
     nanoocp_define_Geom2dEval(m_Geom2dEval);
+    // phase 4: constructors from conversion operators (every class has its own constructors by now)
+    nanoocp_conversions_Geom2d(m_Geom2d);
+    nanoocp_conversions_Adaptor2d(m_Adaptor2d);
+    nanoocp_conversions_Geom2dAdaptor(m_Geom2dAdaptor);
+    nanoocp_conversions_Geom2dHash(m_Geom2dHash);
+    nanoocp_conversions_Geom2dGridEval(m_Geom2dGridEval);
+    nanoocp_conversions_Geom2dEval(m_Geom2dEval);
 }

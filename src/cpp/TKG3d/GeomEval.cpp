@@ -999,3 +999,6 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_TBezierSurface::*)() const>(&GeomEval_TBezierSurface::DynamicType));
     nanoocp_implicit_copy_ctor<GeomEval_TBezierSurface>(nb::borrow<nb::class_<GeomEval_TBezierSurface>>(m.attr("GeomEval_TBezierSurface")));
 }
+
+void nanoocp_conversions_GeomEval(nb::module_ &m) {
+}

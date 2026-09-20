@@ -156,7 +156,8 @@ that can be read back.)nbdoc");
         .def("ReadBool", static_cast<bool (BinTools_IStream::*)()>(&BinTools_IStream::ReadBool), R"nbdoc(Reads boolean value from the stream (stored as one byte).)nbdoc")
         .def("ReadShortReal", static_cast<float (BinTools_IStream::*)()>(&BinTools_IStream::ReadShortReal), R"nbdoc(Reads short real value from the stream.)nbdoc")
         .def("ReadBools", [](BinTools_IStream &self) { bool theBool1{}; bool theBool2{}; bool theBool3{}; self.ReadBools(theBool1, theBool2, theBool3); return std::make_tuple(theBool1, theBool2, theBool3); }, R"nbdoc(Reads 3 boolean values from one byte)nbdoc")
-        .def("ReadBools", [](BinTools_IStream &self) { bool theBool1{}; bool theBool2{}; bool theBool3{}; bool theBool4{}; bool theBool5{}; bool theBool6{}; bool theBool7{}; self.ReadBools(theBool1, theBool2, theBool3, theBool4, theBool5, theBool6, theBool7); return std::make_tuple(theBool1, theBool2, theBool3, theBool4, theBool5, theBool6, theBool7); }, R"nbdoc(Reads 7 boolean values from one byte)nbdoc");
+        .def("ReadBools", [](BinTools_IStream &self) { bool theBool1{}; bool theBool2{}; bool theBool3{}; bool theBool4{}; bool theBool5{}; bool theBool6{}; bool theBool7{}; self.ReadBools(theBool1, theBool2, theBool3, theBool4, theBool5, theBool6, theBool7); return std::make_tuple(theBool1, theBool2, theBool3, theBool4, theBool5, theBool6, theBool7); }, R"nbdoc(Reads 7 boolean values from one byte)nbdoc")
+        .def("__bool__", [](const BinTools_IStream &self) { return static_cast<bool>(self); }, R"nbdoc(Returns false if stream reading is failed.)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_IStream>(nb::borrow<nb::class_<BinTools_IStream>>(m.attr("BinTools_IStream")));
     nb::borrow<nb::class_<BinTools_LocationSet>>(m.attr("BinTools_LocationSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of locations.)nbdoc")
@@ -215,4 +216,7 @@ Parameter <theWithTriangles> is added for XML Persistence)nbdoc")
         .def("WriteLocation", static_cast<void (BinTools_ShapeWriter::*)(BinTools_OStream &, const TopLoc_Location &)>(&BinTools_ShapeWriter::WriteLocation), nb::arg("theStream"), nb::arg("theLocation"), R"nbdoc(Writes location to the stream (all the needed sub-information or reference if it is already
 used).)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_ShapeWriter>(nb::borrow<nb::class_<BinTools_ShapeWriter>>(m.attr("BinTools_ShapeWriter")));
+}
+
+void nanoocp_conversions_BinTools(nb::module_ &m) {
 }

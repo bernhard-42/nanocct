@@ -619,3 +619,6 @@ Uses the original adaptor for identity transformation to preserve existing trimm
         .def("OffsetValue", static_cast<double (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::OffsetValue));
     nanoocp_implicit_copy_ctor<GeomAdaptor_TransformedSurface>(nb::borrow<nb::class_<GeomAdaptor_TransformedSurface>>(m.attr("GeomAdaptor_TransformedSurface")));
 }
+
+void nanoocp_conversions_GeomAdaptor(nb::module_ &m) {
+}

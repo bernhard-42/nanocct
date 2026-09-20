@@ -519,3 +519,6 @@ Copy from another string.)nbdoc")
     nb::borrow<nb::module_>(m.attr("NCollection_Primes")).def("NextPrimeForMap", static_cast<size_t (*)(const size_t) noexcept>(&NCollection_Primes::NextPrimeForMap), nb::arg("theN"), R"nbdoc(Returns the next prime number greater than or equal to theN.
 If theN exceeds the largest available prime, returns theN + 1.)nbdoc");
 }
+
+void nanoocp_conversions_NCollection(nb::module_ &m) {
+}

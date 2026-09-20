@@ -53,17 +53,9 @@ class BVH_Vec2i:
     def SetValues(self, theX: int, theY: int) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> int: ...
-
-    @overload
     def x(self) -> int:
         """Alias to 1st component as X coordinate in XY."""
 
-    @overload
-    def y(self) -> int: ...
-
-    @overload
     def y(self) -> int:
         """Alias to 2nd component as Y coordinate in XY."""
 
@@ -87,11 +79,6 @@ class BVH_Vec2i:
         """
         Check this vector with another vector for non-equality (without tolerance!).
         """
-
-    def GetData(self) -> int:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> int: ...
 
     def __iadd__(self, theAdd: BVH_Vec2i) -> BVH_Vec2i:
         """Compute per-component summary."""
@@ -202,45 +189,21 @@ class BVH_Vec3i:
     def SetValues(self, theVec2: BVH_Vec2i, theZ: int) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> int: ...
-
-    @overload
     def x(self) -> int:
         """Alias to 1st component as X coordinate in XYZ."""
 
-    @overload
-    def r(self) -> int: ...
-
-    @overload
     def r(self) -> int:
         """Alias to 1st component as RED channel in RGB."""
 
-    @overload
-    def y(self) -> int: ...
-
-    @overload
     def y(self) -> int:
         """Alias to 2nd component as Y coordinate in XYZ."""
 
-    @overload
-    def g(self) -> int: ...
-
-    @overload
     def g(self) -> int:
         """Alias to 2nd component as GREEN channel in RGB."""
 
-    @overload
-    def z(self) -> int: ...
-
-    @overload
     def z(self) -> int:
         """Alias to 3rd component as Z coordinate in XYZ."""
 
-    @overload
-    def b(self) -> int: ...
-
-    @overload
     def b(self) -> int:
         """Alias to 3rd component as BLUE channel in RGB."""
 
@@ -294,11 +257,6 @@ class BVH_Vec3i:
         """
         Check this vector with another vector for non-equality (without tolerance!).
         """
-
-    def GetData(self) -> int:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> int: ...
 
     def __iadd__(self, theAdd: BVH_Vec3i) -> BVH_Vec3i:
         """Compute per-component summary."""
@@ -438,59 +396,27 @@ class BVH_Vec4i:
     def SetValues(self, theVec3: BVH_Vec3i, theW: int) -> None:
         """Assign new values as 3-component vector and a 4-th value."""
 
-    @overload
-    def x(self) -> int: ...
-
-    @overload
     def x(self) -> int:
         """Alias to 1st component as X coordinate in XYZW."""
 
-    @overload
-    def r(self) -> int: ...
-
-    @overload
     def r(self) -> int:
         """Alias to 1st component as RED channel in RGBA."""
 
-    @overload
-    def y(self) -> int: ...
-
-    @overload
     def y(self) -> int:
         """Alias to 2nd component as Y coordinate in XYZW."""
 
-    @overload
-    def g(self) -> int: ...
-
-    @overload
     def g(self) -> int:
         """Alias to 2nd component as GREEN channel in RGBA."""
 
-    @overload
-    def z(self) -> int: ...
-
-    @overload
     def z(self) -> int:
         """Alias to 3rd component as Z coordinate in XYZW."""
 
-    @overload
-    def b(self) -> int: ...
-
-    @overload
     def b(self) -> int:
         """Alias to 3rd component as BLUE channel in RGBA."""
 
-    @overload
-    def w(self) -> int: ...
-
-    @overload
     def w(self) -> int:
         """Alias to 4th component as W coordinate in XYZW."""
 
-    @overload
-    def a(self) -> int: ...
-
-    @overload
     def a(self) -> int:
         """Alias to 4th component as ALPHA channel in RGBA."""
 
@@ -707,11 +633,6 @@ class BVH_Vec4i:
         Check this vector with another vector for non-equality (without tolerance!).
         """
 
-    def GetData(self) -> int:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> int: ...
-
     def __iadd__(self, theAdd: BVH_Vec4i) -> BVH_Vec4i:
         """Compute per-component summary."""
 
@@ -813,13 +734,6 @@ class BVH_Array2i:
         @param[in] theSize   number of elements to construct
         @param[in] theValue  value to initialize each element with
         """
-
-    @overload
-    def Data(self) -> BVH_Vec2i: ...
-
-    @overload
-    def Data(self) -> BVH_Vec2i:
-        """@return raw data pointer."""
 
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
@@ -1019,13 +933,6 @@ class BVH_Array3i:
         @param[in] theValue  value to initialize each element with
         """
 
-    @overload
-    def Data(self) -> BVH_Vec3i: ...
-
-    @overload
-    def Data(self) -> BVH_Vec3i:
-        """@return raw data pointer."""
-
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
 
@@ -1224,13 +1131,6 @@ class BVH_Array4i:
         @param[in] theValue  value to initialize each element with
         """
 
-    @overload
-    def Data(self) -> BVH_Vec4i: ...
-
-    @overload
-    def Data(self) -> BVH_Vec4i:
-        """@return raw data pointer."""
-
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
 
@@ -1409,17 +1309,9 @@ class BVH_Vec2f:
     def SetValues(self, theX: float, theY: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
     def x(self) -> float:
         """Alias to 1st component as X coordinate in XY."""
 
-    @overload
-    def y(self) -> float: ...
-
-    @overload
     def y(self) -> float:
         """Alias to 2nd component as Y coordinate in XY."""
 
@@ -1443,11 +1335,6 @@ class BVH_Vec2f:
         """
         Check this vector with another vector for non-equality (without tolerance!).
         """
-
-    def GetData(self) -> float:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> float: ...
 
     def __iadd__(self, theAdd: BVH_Vec2f) -> BVH_Vec2f:
         """Compute per-component summary."""
@@ -1558,45 +1445,21 @@ class BVH_Vec3f:
     def SetValues(self, theVec2: BVH_Vec2f, theZ: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
     def x(self) -> float:
         """Alias to 1st component as X coordinate in XYZ."""
 
-    @overload
-    def r(self) -> float: ...
-
-    @overload
     def r(self) -> float:
         """Alias to 1st component as RED channel in RGB."""
 
-    @overload
-    def y(self) -> float: ...
-
-    @overload
     def y(self) -> float:
         """Alias to 2nd component as Y coordinate in XYZ."""
 
-    @overload
-    def g(self) -> float: ...
-
-    @overload
     def g(self) -> float:
         """Alias to 2nd component as GREEN channel in RGB."""
 
-    @overload
-    def z(self) -> float: ...
-
-    @overload
     def z(self) -> float:
         """Alias to 3rd component as Z coordinate in XYZ."""
 
-    @overload
-    def b(self) -> float: ...
-
-    @overload
     def b(self) -> float:
         """Alias to 3rd component as BLUE channel in RGB."""
 
@@ -1650,11 +1513,6 @@ class BVH_Vec3f:
         """
         Check this vector with another vector for non-equality (without tolerance!).
         """
-
-    def GetData(self) -> float:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> float: ...
 
     def __iadd__(self, theAdd: BVH_Vec3f) -> BVH_Vec3f:
         """Compute per-component summary."""
@@ -1794,59 +1652,27 @@ class BVH_Vec4f:
     def SetValues(self, theVec3: BVH_Vec3f, theW: float) -> None:
         """Assign new values as 3-component vector and a 4-th value."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
     def x(self) -> float:
         """Alias to 1st component as X coordinate in XYZW."""
 
-    @overload
-    def r(self) -> float: ...
-
-    @overload
     def r(self) -> float:
         """Alias to 1st component as RED channel in RGBA."""
 
-    @overload
-    def y(self) -> float: ...
-
-    @overload
     def y(self) -> float:
         """Alias to 2nd component as Y coordinate in XYZW."""
 
-    @overload
-    def g(self) -> float: ...
-
-    @overload
     def g(self) -> float:
         """Alias to 2nd component as GREEN channel in RGBA."""
 
-    @overload
-    def z(self) -> float: ...
-
-    @overload
     def z(self) -> float:
         """Alias to 3rd component as Z coordinate in XYZW."""
 
-    @overload
-    def b(self) -> float: ...
-
-    @overload
     def b(self) -> float:
         """Alias to 3rd component as BLUE channel in RGBA."""
 
-    @overload
-    def w(self) -> float: ...
-
-    @overload
     def w(self) -> float:
         """Alias to 4th component as W coordinate in XYZW."""
 
-    @overload
-    def a(self) -> float: ...
-
-    @overload
     def a(self) -> float:
         """Alias to 4th component as ALPHA channel in RGBA."""
 
@@ -2063,11 +1889,6 @@ class BVH_Vec4f:
         Check this vector with another vector for non-equality (without tolerance!).
         """
 
-    def GetData(self) -> float:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> float: ...
-
     def __iadd__(self, theAdd: BVH_Vec4f) -> BVH_Vec4f:
         """Compute per-component summary."""
 
@@ -2169,13 +1990,6 @@ class BVH_Array2f:
         @param[in] theSize   number of elements to construct
         @param[in] theValue  value to initialize each element with
         """
-
-    @overload
-    def Data(self) -> BVH_Vec2f: ...
-
-    @overload
-    def Data(self) -> BVH_Vec2f:
-        """@return raw data pointer."""
 
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
@@ -2375,13 +2189,6 @@ class BVH_Array3f:
         @param[in] theValue  value to initialize each element with
         """
 
-    @overload
-    def Data(self) -> BVH_Vec3f: ...
-
-    @overload
-    def Data(self) -> BVH_Vec3f:
-        """@return raw data pointer."""
-
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
 
@@ -2580,13 +2387,6 @@ class BVH_Array4f:
         @param[in] theValue  value to initialize each element with
         """
 
-    @overload
-    def Data(self) -> BVH_Vec4f: ...
-
-    @overload
-    def Data(self) -> BVH_Vec4f:
-        """@return raw data pointer."""
-
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
 
@@ -2765,17 +2565,9 @@ class BVH_Vec2d:
     def SetValues(self, theX: float, theY: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
     def x(self) -> float:
         """Alias to 1st component as X coordinate in XY."""
 
-    @overload
-    def y(self) -> float: ...
-
-    @overload
     def y(self) -> float:
         """Alias to 2nd component as Y coordinate in XY."""
 
@@ -2799,11 +2591,6 @@ class BVH_Vec2d:
         """
         Check this vector with another vector for non-equality (without tolerance!).
         """
-
-    def GetData(self) -> float:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> float: ...
 
     def __iadd__(self, theAdd: BVH_Vec2d) -> BVH_Vec2d:
         """Compute per-component summary."""
@@ -2914,45 +2701,21 @@ class BVH_Vec3d:
     def SetValues(self, theVec2: BVH_Vec2d, theZ: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
     def x(self) -> float:
         """Alias to 1st component as X coordinate in XYZ."""
 
-    @overload
-    def r(self) -> float: ...
-
-    @overload
     def r(self) -> float:
         """Alias to 1st component as RED channel in RGB."""
 
-    @overload
-    def y(self) -> float: ...
-
-    @overload
     def y(self) -> float:
         """Alias to 2nd component as Y coordinate in XYZ."""
 
-    @overload
-    def g(self) -> float: ...
-
-    @overload
     def g(self) -> float:
         """Alias to 2nd component as GREEN channel in RGB."""
 
-    @overload
-    def z(self) -> float: ...
-
-    @overload
     def z(self) -> float:
         """Alias to 3rd component as Z coordinate in XYZ."""
 
-    @overload
-    def b(self) -> float: ...
-
-    @overload
     def b(self) -> float:
         """Alias to 3rd component as BLUE channel in RGB."""
 
@@ -3006,11 +2769,6 @@ class BVH_Vec3d:
         """
         Check this vector with another vector for non-equality (without tolerance!).
         """
-
-    def GetData(self) -> float:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> float: ...
 
     def __iadd__(self, theAdd: BVH_Vec3d) -> BVH_Vec3d:
         """Compute per-component summary."""
@@ -3150,59 +2908,27 @@ class BVH_Vec4d:
     def SetValues(self, theVec3: BVH_Vec3d, theW: float) -> None:
         """Assign new values as 3-component vector and a 4-th value."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
     def x(self) -> float:
         """Alias to 1st component as X coordinate in XYZW."""
 
-    @overload
-    def r(self) -> float: ...
-
-    @overload
     def r(self) -> float:
         """Alias to 1st component as RED channel in RGBA."""
 
-    @overload
-    def y(self) -> float: ...
-
-    @overload
     def y(self) -> float:
         """Alias to 2nd component as Y coordinate in XYZW."""
 
-    @overload
-    def g(self) -> float: ...
-
-    @overload
     def g(self) -> float:
         """Alias to 2nd component as GREEN channel in RGBA."""
 
-    @overload
-    def z(self) -> float: ...
-
-    @overload
     def z(self) -> float:
         """Alias to 3rd component as Z coordinate in XYZW."""
 
-    @overload
-    def b(self) -> float: ...
-
-    @overload
     def b(self) -> float:
         """Alias to 3rd component as BLUE channel in RGBA."""
 
-    @overload
-    def w(self) -> float: ...
-
-    @overload
     def w(self) -> float:
         """Alias to 4th component as W coordinate in XYZW."""
 
-    @overload
-    def a(self) -> float: ...
-
-    @overload
     def a(self) -> float:
         """Alias to 4th component as ALPHA channel in RGBA."""
 
@@ -3419,11 +3145,6 @@ class BVH_Vec4d:
         Check this vector with another vector for non-equality (without tolerance!).
         """
 
-    def GetData(self) -> float:
-        """Raw access to the data (for OpenGL exchange)."""
-
-    def ChangeData(self) -> float: ...
-
     def __iadd__(self, theAdd: BVH_Vec4d) -> BVH_Vec4d:
         """Compute per-component summary."""
 
@@ -3525,13 +3246,6 @@ class BVH_Array2d:
         @param[in] theSize   number of elements to construct
         @param[in] theValue  value to initialize each element with
         """
-
-    @overload
-    def Data(self) -> BVH_Vec2d: ...
-
-    @overload
-    def Data(self) -> BVH_Vec2d:
-        """@return raw data pointer."""
 
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
@@ -3731,13 +3445,6 @@ class BVH_Array3d:
         @param[in] theValue  value to initialize each element with
         """
 
-    @overload
-    def Data(self) -> BVH_Vec3d: ...
-
-    @overload
-    def Data(self) -> BVH_Vec3d:
-        """@return raw data pointer."""
-
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
 
@@ -3935,13 +3642,6 @@ class BVH_Array4d:
         @param[in] theSize   number of elements to construct
         @param[in] theValue  value to initialize each element with
         """
-
-    @overload
-    def Data(self) -> BVH_Vec4d: ...
-
-    @overload
-    def Data(self) -> BVH_Vec4d:
-        """@return raw data pointer."""
 
     def HasData(self) -> bool:
         """@return true if the vector has allocated storage."""
@@ -4141,14 +3841,6 @@ class BVH_Mat4f:
         @return the value of the addressed element.
         """
 
-    def ChangeValue(self, theRow: int, theCol: int) -> float:
-        """
-        Access element at the specified row and column.
-        @param[in] theRow  the row to access.
-        @param[in] theCol  the column to access.
-        @return reference on the matrix element.
-        """
-
     def SetValue(self, theRow: int, theCol: int, theValue: float) -> None:
         """
         Set value for the element specified by row and columns.
@@ -4157,10 +3849,6 @@ class BVH_Mat4f:
         @param[in] theValue  the value to set.
         """
 
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
-    @overload
     def __call__(self, theRow: int, theCol: int) -> float:
         """Return value."""
 
@@ -4259,14 +3947,6 @@ class BVH_Mat4f:
         """
         Check this matrix for non-equality with another matrix (without tolerance!).
         """
-
-    def GetData(self) -> float:
-        """
-        Raw access to the data (for OpenGL exchange);
-        the data is returned in column-major order.
-        """
-
-    def ChangeData(self) -> float: ...
 
     @overload
     def __mul__(self, theVec: BVH_Vec4f) -> BVH_Vec4f:
@@ -4490,14 +4170,6 @@ class BVH_Mat4d:
         @return the value of the addressed element.
         """
 
-    def ChangeValue(self, theRow: int, theCol: int) -> float:
-        """
-        Access element at the specified row and column.
-        @param[in] theRow  the row to access.
-        @param[in] theCol  the column to access.
-        @return reference on the matrix element.
-        """
-
     def SetValue(self, theRow: int, theCol: int, theValue: float) -> None:
         """
         Set value for the element specified by row and columns.
@@ -4506,10 +4178,6 @@ class BVH_Mat4d:
         @param[in] theValue  the value to set.
         """
 
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
-    @overload
     def __call__(self, theRow: int, theCol: int) -> float:
         """Return value."""
 
@@ -4608,14 +4276,6 @@ class BVH_Mat4d:
         """
         Check this matrix for non-equality with another matrix (without tolerance!).
         """
-
-    def GetData(self) -> float:
-        """
-        Raw access to the data (for OpenGL exchange);
-        the data is returned in column-major order.
-        """
-
-    def ChangeData(self) -> float: ...
 
     @overload
     def __mul__(self, theVec: BVH_Vec4d) -> BVH_Vec4d:

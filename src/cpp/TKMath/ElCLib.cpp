@@ -274,3 +274,6 @@ system (i.e. 2D space) are lined up respectively with the
 "X Axis" and "Y Axis" of the 3D coordinate system, Pos.)nbdoc");
     nanoocp_implicit_copy_ctor<ElCLib>(nb::borrow<nb::class_<ElCLib>>(m.attr("ElCLib")));
 }
+
+void nanoocp_conversions_ElCLib(nb::module_ &m) {
+}

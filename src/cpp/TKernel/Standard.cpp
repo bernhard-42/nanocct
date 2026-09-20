@@ -711,3 +711,6 @@ Equivalent to std::max.)nbdoc");
     m.def("Min", static_cast<float (*)(const float, const float)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns the minimum value of two floats.
 Equivalent to std::min.)nbdoc");
 }
+
+void nanoocp_conversions_Standard(nb::module_ &m) {
+}

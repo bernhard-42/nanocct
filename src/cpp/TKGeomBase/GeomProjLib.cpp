@@ -78,3 +78,6 @@ It means: proj(C(u)) = PC(u) for each u.
 Otherwise, the parametrization may change.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomProjLib>(nb::borrow<nb::class_<GeomProjLib>>(m.attr("GeomProjLib")));
 }
+
+void nanoocp_conversions_GeomProjLib(nb::module_ &m) {
+}

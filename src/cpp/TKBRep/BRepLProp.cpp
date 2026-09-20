@@ -153,3 +153,6 @@ returns 2 : first and second derivative only are computable.)nbdoc")
         .def_static("Bounds", [](const BRepAdaptor_Surface & S) { double U1{}; double V1{}; double U2{}; double V2{}; BRepLProp_SurfaceTool::Bounds(S, U1, V1, U2, V2); return std::make_tuple(U1, V1, U2, V2); }, nb::arg("S"), R"nbdoc(returns the bounds of the Surface.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepLProp_SurfaceTool>(nb::borrow<nb::class_<BRepLProp_SurfaceTool>>(m.attr("BRepLProp_SurfaceTool")));
 }
+
+void nanoocp_conversions_BRepLProp(nb::module_ &m) {
+}

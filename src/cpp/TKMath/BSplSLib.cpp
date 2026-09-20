@@ -416,3 +416,6 @@ This bypasses periodic normalization and local parameter calculation.
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BSplSLib_Cache::*)() const>(&BSplSLib_Cache::DynamicType));
     nanoocp_implicit_copy_ctor<BSplSLib_Cache>(nb::borrow<nb::class_<BSplSLib_Cache>>(m.attr("BSplSLib_Cache")));
 }
+
+void nanoocp_conversions_BSplSLib(nb::module_ &m) {
+}

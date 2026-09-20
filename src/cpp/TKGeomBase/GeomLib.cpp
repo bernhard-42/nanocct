@@ -381,3 +381,6 @@ or at a distance less than the MaxDist value.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib_Tool>(nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool")));
     m.attr("Adaptor2d_Curve2d") = nb::module_::import_("nanoocp._TKG2d.Adaptor2d").attr("Adaptor2d_Curve2d");   // Adaptor2d_Curve2d = Adaptor2d_Curve2d
 }
+
+void nanoocp_conversions_GeomLib(nb::module_ &m) {
+}

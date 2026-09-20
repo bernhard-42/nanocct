@@ -9,3 +9,6 @@ void nanoocp_templates_TShort(nb::module_ &m) {
 
 void nanoocp_define_TShort(nb::module_ &m) {
 }
+
+void nanoocp_conversions_TShort(nb::module_ &m) {
+}

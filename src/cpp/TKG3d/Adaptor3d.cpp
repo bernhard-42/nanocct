@@ -532,3 +532,6 @@ by adaptive algorithm for BSpline surfaces - is used in SamplePnts
     nanoocp_implicit_copy_ctor<Adaptor3d_TopolTool>(nb::borrow<nb::class_<Adaptor3d_TopolTool>>(m.attr("Adaptor3d_TopolTool")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, Adaptor3d_TopolTool>();
 }
+
+void nanoocp_conversions_Adaptor3d(nb::module_ &m) {
+}

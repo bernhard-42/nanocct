@@ -444,3 +444,6 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Surface &>, GeomBndLib_Surface>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomBndLib_Surface>();
 }
+
+void nanoocp_conversions_GeomBndLib(nb::module_ &m) {
+}

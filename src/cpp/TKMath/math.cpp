@@ -695,9 +695,7 @@ In order to avoid time-consuming copying of vectors, it
 is preferable to use operator -= or the function
 Subtract whenever possible.)nbdoc")
         .def("Value", static_cast<const double & (math_VectorBase<double>::*)(const int) const>(&math_VectorBase<double>::Value), nb::arg("theNum"), R"nbdoc(accesses the value of index "theNum" of a vector.)nbdoc")
-        .def("Value", static_cast<double & (math_VectorBase<double>::*)(const int)>(&math_VectorBase<double>::Value), nb::arg("theNum"), R"nbdoc(accesses (in read or write mode) the value of index "theNum" of a vector.)nbdoc")
         .def("__call__", static_cast<const double & (math_VectorBase<double>::*)(const int) const>(&math_VectorBase<double>::operator()), nb::arg("theNum"), nb::is_operator())
-        .def("__call__", static_cast<double & (math_VectorBase<double>::*)(const int)>(&math_VectorBase<double>::operator()), nb::arg("theNum"), nb::is_operator())
         .def("Initialized", static_cast<math_VectorBase<double> & (math_VectorBase<double>::*)(const math_VectorBase<double> &)>(&math_VectorBase<double>::Initialized), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Initialises a vector by copying "theOther".
 An exception is raised if the Lengths are different.)nbdoc")
         .def("Multiplied", static_cast<double (math_VectorBase<double>::*)(const math_VectorBase<double> &) const>(&math_VectorBase<double>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the inner product of 2 vectors.
@@ -1259,9 +1257,7 @@ In order to avoid time-consuming copying of vectors, it
 is preferable to use operator -= or the function
 Subtract whenever possible.)nbdoc")
         .def("Value", static_cast<const int & (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::Value), nb::arg("theNum"), R"nbdoc(accesses the value of index "theNum" of a vector.)nbdoc")
-        .def("Value", static_cast<int & (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Value), nb::arg("theNum"), R"nbdoc(accesses (in read or write mode) the value of index "theNum" of a vector.)nbdoc")
         .def("__call__", static_cast<const int & (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::operator()), nb::arg("theNum"), nb::is_operator())
-        .def("__call__", static_cast<int & (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::operator()), nb::arg("theNum"), nb::is_operator())
         .def("Initialized", static_cast<math_VectorBase<int> & (math_VectorBase<int>::*)(const math_VectorBase<int> &)>(&math_VectorBase<int>::Initialized), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Initialises a vector by copying "theOther".
 An exception is raised if the Lengths are different.)nbdoc")
         .def("Multiplied", static_cast<int (math_VectorBase<int>::*)(const math_VectorBase<int> &) const>(&math_VectorBase<int>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the inner product of 2 vectors.
@@ -1846,4 +1842,7 @@ when approximating a curve.)nbdoc");
     m.def("DACTCL_Decompose", static_cast<int (*)(math_Vector &, const math_IntegerVector &, const double)>(&DACTCL_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.e-20));
     m.def("DACTCL_Solve", static_cast<int (*)(const math_Vector &, math_Vector &, const math_IntegerVector &, const double)>(&DACTCL_Solve), nb::arg("a"), nb::arg("b"), nb::arg("indx"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.e-20));
     m.def("Jacobi", [](math_Matrix & a, math_Vector & d, math_Matrix & v) { int nrot{}; auto result = Jacobi(a, d, v, nrot); return std::make_tuple(result, nrot); }, nb::arg("a"), nb::arg("d"), nb::arg("v"));
+}
+
+void nanoocp_conversions_math(nb::module_ &m) {
 }

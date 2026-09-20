@@ -39,9 +39,13 @@ void nanoocp_define_MathInteg(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathInteg::MultipleConfig>>(m.attr("MultipleConfig")), "MaxOrder", &MathInteg::MultipleConfig::MaxOrder, R"nbdoc(Maximum integration order per dimension)nbdoc");
     nanoocp_implicit_default_ctor<MathInteg::SetResult>(nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult")));
     nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult"))
-        .def("IsDone", static_cast<bool (MathInteg::SetResult::*)() const>(&MathInteg::SetResult::IsDone));
+        .def("IsDone", static_cast<bool (MathInteg::SetResult::*)() const>(&MathInteg::SetResult::IsDone))
+        .def("__bool__", [](const MathInteg::SetResult &self) { return static_cast<bool>(self); });
     nanoocp_implicit_copy_ctor<MathInteg::SetResult>(nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult")), "Status", &MathInteg::SetResult::Status);
     nanoocp_def_field(nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult")), "Values", &MathInteg::SetResult::Values, R"nbdoc(Integral of each component)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult")), "NbEquations", &MathInteg::SetResult::NbEquations);
+}
+
+void nanoocp_conversions_MathInteg(nb::module_ &m) {
 }

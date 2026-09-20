@@ -1265,3 +1265,7 @@ key returned by alert, and sends it in the messenger.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Report::*)() const>(&Message_Report::DynamicType));
     nanoocp_implicit_copy_ctor<Message_Report>(nb::borrow<nb::class_<Message_Report>>(m.attr("Message_Report")));
 }
+
+void nanoocp_conversions_Message(nb::module_ &m) {
+    nanoocp_conversion<Message_Msg, TCollection_ExtendedString>(nb::module_::import_("nanoocp._TKernel.TCollection").attr("TCollection_ExtendedString"), true);
+}

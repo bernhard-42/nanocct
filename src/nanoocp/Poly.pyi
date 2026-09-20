@@ -70,6 +70,205 @@ class Poly_Triangle:
 
     def __call__(self, Index: int) -> int: ...
 
+class NCollection_AliasedArray__:
+    """
+    Defines an array of values of configurable size.
+    For instance, this class allows defining an array of 32-bit or 64-bit integer values with
+    bitness determined in runtime. The element size in bytes (stride) should be specified at
+    construction time. Indexation starts from 0 index. As actual type of element varies at runtime,
+    element accessors are defined as templates. Memory for array is allocated with the given
+    alignment (template parameter).
+    """
+
+    @overload
+    def __init__(self, theStride: int) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_AliasedArray__) -> None:
+        """Copy constructor"""
+
+    @overload
+    def __init__(self, theStride: int, theLength: int) -> None:
+        """Constructor"""
+
+    def Stride(self) -> int:
+        """Returns an element size in bytes."""
+
+    def Size(self) -> int:
+        """Size query"""
+
+    def Length(self) -> int:
+        """Length query (the same as Size())"""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool:
+        """myDeletable flag"""
+
+    def IsAllocated(self) -> bool:
+        """IsAllocated flag - for naming compatibility"""
+
+    def SizeBytes(self) -> int:
+        """Return buffer size in bytes."""
+
+    def Assign(self, theOther: NCollection_AliasedArray__) -> NCollection_AliasedArray__:
+        """
+        Copies data of theOther array to this.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def Move(self, theOther: NCollection_AliasedArray__) -> NCollection_AliasedArray__:
+        """
+        Move assignment.
+        This array will borrow all the data from theOther.
+        The moved object will keep pointer to the memory buffer and
+        range, but it will not free the buffer on destruction.
+        """
+
+    def Resize(self, theLength: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLength new length of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+class Poly_ArrayOfNodes(NCollection_AliasedArray__):
+    """
+    Defines an array of 3D nodes of single/double precision configurable at construction time.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor of double-precision array."""
+
+    @overload
+    def __init__(self, theLength: int) -> None:
+        """Constructor of double-precision array."""
+
+    @overload
+    def __init__(self, theOther: Poly_ArrayOfNodes) -> None:
+        """Copy constructor"""
+
+    @overload
+    def __init__(self, theBegin: nanoocp.gp.gp_Pnt, theLength: int) -> None: ...
+
+    @overload
+    def __init__(self, theBegin: nanoocp.BVH.BVH_Vec3f, theLength: int) -> None:
+        """
+        Constructor wrapping pre-allocated C-array of values without copying them.
+        """
+
+    def IsDoublePrecision(self) -> bool:
+        """Returns TRUE if array defines nodes with double precision."""
+
+    def SetDoublePrecision(self, theIsDouble: bool) -> None:
+        """
+        Sets if array should define nodes with double or single precision.
+        Raises exception if array was already allocated.
+        """
+
+    def Assign(self, theOther: Poly_ArrayOfNodes) -> Poly_ArrayOfNodes:
+        """
+        Copies data of theOther array to this.
+        The arrays should have the same length,
+        but may have different precision / number of components (data conversion will be applied in
+        the latter case).
+        """
+
+    def Move(self, theOther: Poly_ArrayOfNodes) -> Poly_ArrayOfNodes:
+        """Move assignment."""
+
+    @overload
+    def Value(self, theIndex: int) -> nanoocp.gp.gp_Pnt:
+        """A generalized accessor to point."""
+
+    @overload
+    def Value(self, theIndex: int) -> nanoocp.gp.gp_Pnt: ...
+
+    @overload
+    def SetValue(self, theIndex: int, theValue: nanoocp.gp.gp_Pnt) -> None:
+        """A generalized setter for point."""
+
+    @overload
+    def SetValue(self, theIndex: int, theValue: nanoocp.gp.gp_Pnt) -> None: ...
+
+    def __getitem__(self, theIndex: int) -> nanoocp.gp.gp_Pnt:
+        """operator[] - alias to Value"""
+
+class Poly_ArrayOfUVNodes(NCollection_AliasedArray__):
+    """
+    Defines an array of 2D nodes of single/double precision configurable at construction time.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor of double-precision array."""
+
+    @overload
+    def __init__(self, theLength: int) -> None:
+        """Constructor of double-precision array."""
+
+    @overload
+    def __init__(self, theOther: Poly_ArrayOfUVNodes) -> None:
+        """Copy constructor"""
+
+    @overload
+    def __init__(self, theBegin: nanoocp.gp.gp_Pnt2d, theLength: int) -> None: ...
+
+    @overload
+    def __init__(self, theBegin: nanoocp.BVH.BVH_Vec2f, theLength: int) -> None:
+        """
+        Constructor wrapping pre-allocated C-array of values without copying them.
+        """
+
+    def IsDoublePrecision(self) -> bool:
+        """Returns TRUE if array defines nodes with double precision."""
+
+    def SetDoublePrecision(self, theIsDouble: bool) -> None:
+        """
+        Sets if array should define nodes with double or single precision.
+        Raises exception if array was already allocated.
+        """
+
+    def Assign(self, theOther: Poly_ArrayOfUVNodes) -> Poly_ArrayOfUVNodes:
+        """
+        Copies data of theOther array to this.
+        The arrays should have the same length,
+        but may have different precision / number of components (data conversion will be applied in
+        the latter case).
+        """
+
+    def Move(self, theOther: Poly_ArrayOfUVNodes) -> Poly_ArrayOfUVNodes:
+        """Move assignment."""
+
+    @overload
+    def Value(self, theIndex: int) -> nanoocp.gp.gp_Pnt2d:
+        """A generalized accessor to point."""
+
+    @overload
+    def Value(self, theIndex: int) -> nanoocp.gp.gp_Pnt2d: ...
+
+    @overload
+    def SetValue(self, theIndex: int, theValue: nanoocp.gp.gp_Pnt2d) -> None:
+        """A generalized setter for point."""
+
+    @overload
+    def SetValue(self, theIndex: int, theValue: nanoocp.gp.gp_Pnt2d) -> None: ...
+
+    def __getitem__(self, theIndex: int) -> nanoocp.gp.gp_Pnt2d:
+        """operator[] - alias to Value"""
+
 class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
     """
     Provides a triangulation for a surface, a set of surfaces, or more generally a shape.
@@ -384,13 +583,13 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         Triangle()/SetTriangle() should be used instead in portable code.
         """
 
-    def InternalNodes(self) -> "Poly_ArrayOfNodes":
+    def InternalNodes(self) -> Poly_ArrayOfNodes:
         """
         Returns an internal array of nodes.
         Node()/SetNode() should be used instead in portable code.
         """
 
-    def InternalUVNodes(self) -> "Poly_ArrayOfUVNodes":
+    def InternalUVNodes(self) -> Poly_ArrayOfUVNodes:
         """
         Returns an internal array of UV nodes.
         UBNode()/SetUVNode() should be used instead in portable code.
@@ -912,6 +1111,50 @@ class Poly_CoherentTriangulation(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: Poly_CoherentTriangulation) -> None: ...
 
+    class IteratorOfTriangle(NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle):
+        """
+        Subclass Iterator - allows to iterate all triangles skipping those that
+        have been removed.
+        """
+
+        @overload
+        def __init__(self, theTri: Poly_CoherentTriangulation) -> None:
+            """Constructor"""
+
+        @overload
+        def __init__(self, theOther: Poly_CoherentTriangulation.IteratorOfTriangle) -> None: ...
+
+        def Next(self) -> None:
+            """Make step"""
+
+    class IteratorOfNode(NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode):
+        """
+        Subclass Iterator - allows to iterate all nodes skipping the free ones.
+        """
+
+        @overload
+        def __init__(self, theTri: Poly_CoherentTriangulation) -> None:
+            """Constructor"""
+
+        @overload
+        def __init__(self, theOther: Poly_CoherentTriangulation.IteratorOfNode) -> None: ...
+
+        def Next(self) -> None:
+            """Make step"""
+
+    class IteratorOfLink(NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink):
+        """Subclass Iterator - allows to iterate all links skipping invalid ones."""
+
+        @overload
+        def __init__(self, theTri: Poly_CoherentTriangulation) -> None:
+            """Constructor"""
+
+        @overload
+        def __init__(self, theOther: Poly_CoherentTriangulation.IteratorOfLink) -> None: ...
+
+        def Next(self) -> None:
+            """Make step"""
+
     class TwoIntegers:
         """Couple of integer indices (used in RemoveDegenerated())."""
 
@@ -1052,6 +1295,168 @@ class Poly_CoherentTriangulation(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+class NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle:
+    """
+    Helper class that allows to use NCollection iterators as STL iterators.
+    NCollection iterator can be extended to STL iterator of any category by
+    adding necessary methods: STL forward iterator requires IsEqual method,
+    STL bidirectional iterator requires Previous method, and STL random access
+    iterator requires Offset and Differ methods. See NCollection_DynamicArray as
+    example of declaring custom STL iterators.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle) -> None: ...
+
+    @overload
+    def __init__(self, theList: "NCollection_DynamicArray<Poly_CoherentTriangle>") -> None: ...
+
+    @overload
+    def __init__(self, theList: "NCollection_DynamicArray<Poly_CoherentTriangle>", theOther: "NCollection_DynamicArray<Poly_CoherentTriangle>::DynamicIterator<false>") -> None: ...
+
+    @overload
+    def Init(self, theList: "NCollection_DynamicArray<Poly_CoherentTriangle>") -> None: ...
+
+    @overload
+    def Init(self, theList: "NCollection_DynamicArray<Poly_CoherentTriangle>") -> None: ...
+
+    def More(self) -> bool: ...
+
+    @overload
+    def Initialize(self, theList: "NCollection_DynamicArray<Poly_CoherentTriangle>") -> None: ...
+
+    @overload
+    def Initialize(self, theList: "NCollection_DynamicArray<Poly_CoherentTriangle>") -> None: ...
+
+    def ValueIter(self) -> "NCollection_DynamicArray<Poly_CoherentTriangle>::DynamicIterator<false>": ...
+
+    def ChangeValueIter(self) -> "NCollection_DynamicArray<Poly_CoherentTriangle>::DynamicIterator<false>": ...
+
+    def EndIter(self) -> "NCollection_DynamicArray<Poly_CoherentTriangle>::DynamicIterator<false>": ...
+
+    def ChangeEndIter(self) -> "NCollection_DynamicArray<Poly_CoherentTriangle>::DynamicIterator<false>": ...
+
+    def Next(self) -> None: ...
+
+    def Value(self) -> Poly_CoherentTriangle: ...
+
+    def ChangeValue(self) -> Poly_CoherentTriangle: ...
+
+    def __eq__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle) -> bool: ...
+
+    def __ne__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle) -> bool: ...
+
+class NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode:
+    """
+    Helper class that allows to use NCollection iterators as STL iterators.
+    NCollection iterator can be extended to STL iterator of any category by
+    adding necessary methods: STL forward iterator requires IsEqual method,
+    STL bidirectional iterator requires Previous method, and STL random access
+    iterator requires Offset and Differ methods. See NCollection_DynamicArray as
+    example of declaring custom STL iterators.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode) -> None: ...
+
+    @overload
+    def __init__(self, theList: "NCollection_DynamicArray<Poly_CoherentNode>") -> None: ...
+
+    @overload
+    def __init__(self, theList: "NCollection_DynamicArray<Poly_CoherentNode>", theOther: "NCollection_DynamicArray<Poly_CoherentNode>::DynamicIterator<false>") -> None: ...
+
+    @overload
+    def Init(self, theList: "NCollection_DynamicArray<Poly_CoherentNode>") -> None: ...
+
+    @overload
+    def Init(self, theList: "NCollection_DynamicArray<Poly_CoherentNode>") -> None: ...
+
+    def More(self) -> bool: ...
+
+    @overload
+    def Initialize(self, theList: "NCollection_DynamicArray<Poly_CoherentNode>") -> None: ...
+
+    @overload
+    def Initialize(self, theList: "NCollection_DynamicArray<Poly_CoherentNode>") -> None: ...
+
+    def ValueIter(self) -> "NCollection_DynamicArray<Poly_CoherentNode>::DynamicIterator<false>": ...
+
+    def ChangeValueIter(self) -> "NCollection_DynamicArray<Poly_CoherentNode>::DynamicIterator<false>": ...
+
+    def EndIter(self) -> "NCollection_DynamicArray<Poly_CoherentNode>::DynamicIterator<false>": ...
+
+    def ChangeEndIter(self) -> "NCollection_DynamicArray<Poly_CoherentNode>::DynamicIterator<false>": ...
+
+    def Next(self) -> None: ...
+
+    def Value(self) -> Poly_CoherentNode: ...
+
+    def ChangeValue(self) -> Poly_CoherentNode: ...
+
+    def __eq__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode) -> bool: ...
+
+    def __ne__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode) -> bool: ...
+
+class NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink:
+    """
+    Helper class that allows to use NCollection iterators as STL iterators.
+    NCollection iterator can be extended to STL iterator of any category by
+    adding necessary methods: STL forward iterator requires IsEqual method,
+    STL bidirectional iterator requires Previous method, and STL random access
+    iterator requires Offset and Differ methods. See NCollection_DynamicArray as
+    example of declaring custom STL iterators.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink) -> None: ...
+
+    @overload
+    def __init__(self, theList: "NCollection_DynamicArray<Poly_CoherentLink>") -> None: ...
+
+    @overload
+    def __init__(self, theList: "NCollection_DynamicArray<Poly_CoherentLink>", theOther: "NCollection_DynamicArray<Poly_CoherentLink>::DynamicIterator<false>") -> None: ...
+
+    @overload
+    def Init(self, theList: "NCollection_DynamicArray<Poly_CoherentLink>") -> None: ...
+
+    @overload
+    def Init(self, theList: "NCollection_DynamicArray<Poly_CoherentLink>") -> None: ...
+
+    def More(self) -> bool: ...
+
+    @overload
+    def Initialize(self, theList: "NCollection_DynamicArray<Poly_CoherentLink>") -> None: ...
+
+    @overload
+    def Initialize(self, theList: "NCollection_DynamicArray<Poly_CoherentLink>") -> None: ...
+
+    def ValueIter(self) -> "NCollection_DynamicArray<Poly_CoherentLink>::DynamicIterator<false>": ...
+
+    def ChangeValueIter(self) -> "NCollection_DynamicArray<Poly_CoherentLink>::DynamicIterator<false>": ...
+
+    def EndIter(self) -> "NCollection_DynamicArray<Poly_CoherentLink>::DynamicIterator<false>": ...
+
+    def ChangeEndIter(self) -> "NCollection_DynamicArray<Poly_CoherentLink>::DynamicIterator<false>": ...
+
+    def Next(self) -> None: ...
+
+    def Value(self) -> Poly_CoherentLink: ...
+
+    def ChangeValue(self) -> Poly_CoherentLink: ...
+
+    def __eq__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink) -> bool: ...
+
+    def __ne__(self, theOther: NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink) -> bool: ...
 
 class Poly_Connect:
     """

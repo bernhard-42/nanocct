@@ -33,6 +33,8 @@
 #include <gp_Pnt2d.hxx>
 #include <gp_Sphere.hxx>
 #include <gp_Torus.hxx>
+#include <gp_Vec.hxx>
+#include <gp_Vec2d.hxx>
 
 void nanoocp_declare_Convert(nb::module_ &m) {
     nb::enum_<Convert_ParameterisationType>(m, "Convert_ParameterisationType", R"nbdoc(Identifies a type of parameterization of a circle or ellipse represented as a BSpline curve.
@@ -127,6 +129,29 @@ The parametrization range for the B-spline curve is not [0, 2Pi].
 
 KeyWords :
 Convert, Circle, BSplineCurve, 2D .)nbdoc");
+    }
+    { nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>> cls(m, "Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d", R"nbdoc(Template base class for converting a sequence of adjacent
+non-rational Bezier curves into a BSpline curve.
+PointType is gp_Pnt or gp_Pnt2d; VecType is gp_Vec or gp_Vec2d.)nbdoc");
+    }
+    { nb::class_<Convert_CompBezierCurves2dToBSplineCurve2d, Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>> cls(m, "Convert_CompBezierCurves2dToBSplineCurve2d", R"nbdoc(Converts a list of connecting Bezier Curves 2d to a
+BSplineCurve 2d.
+if possible, the continuity of the BSpline will be
+increased to more than C0.)nbdoc");
+    }
+    { nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>> cls(m, "Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec", R"nbdoc(Template base class for converting a sequence of adjacent
+non-rational Bezier curves into a BSpline curve.
+PointType is gp_Pnt or gp_Pnt2d; VecType is gp_Vec or gp_Vec2d.)nbdoc");
+    }
+    { nb::class_<Convert_CompBezierCurvesToBSplineCurve, Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>> cls(m, "Convert_CompBezierCurvesToBSplineCurve", R"nbdoc(An algorithm to convert a sequence of adjacent
+non-rational Bezier curves into a BSpline curve.
+A CompBezierCurvesToBSplineCurve object provides a framework for:
+-   defining the sequence of adjacent non-rational Bezier
+curves to be converted into a BSpline curve,
+-   implementing the computation algorithm, and
+-   consulting the results.
+Warning
+Do not attempt to convert rational Bezier curves using this type of algorithm.)nbdoc");
     }
     { nb::class_<Convert_CompPolynomialToPoles> cls(m, "Convert_CompPolynomialToPoles", R"nbdoc(Convert a serie of Polynomial N-Dimensional Curves
 that are have continuity CM to an N-Dimensional Bspline Curve
@@ -277,6 +302,60 @@ the same orientation as the circle C.
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi)nbdoc");
     nanoocp_implicit_copy_ctor<Convert_CircleToBSplineCurve>(nb::borrow<nb::class_<Convert_CircleToBSplineCurve>>(m.attr("Convert_CircleToBSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ2d &>, Convert_CircleToBSplineCurve>();
+    nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d"))
+        .def(nb::init<const double>(), nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
+adjacent non-rational Bezier curves into a BSpline curve.
+@param[in] theAngularTolerance angular tolerance in radians
+for checking tangent parallelism at junction points)nbdoc")
+        .def("AddCurve", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)(const NCollection_Array1<gp_Pnt2d> &)>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::AddCurve), nb::arg("thePoles"), R"nbdoc(Adds the Bezier curve defined by the table of poles to
+the sequence of adjacent Bezier curves to be converted.
+@param[in] thePoles poles of the Bezier curve to add)nbdoc")
+        .def("Perform", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)()>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::Perform), R"nbdoc(Computes all the data needed to build a BSpline curve
+equivalent to the adjacent Bezier curve sequence.)nbdoc")
+        .def("Degree", static_cast<int (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)() const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::Degree), R"nbdoc(Returns the degree of the BSpline curve.)nbdoc")
+        .def("NbPoles", static_cast<int (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)() const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::NbPoles), R"nbdoc(Returns the number of poles of the BSpline curve.)nbdoc")
+        .def("Poles", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)(NCollection_Array1<gp_Pnt2d> &) const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::Poles), nb::arg("thePoles"), R"nbdoc(Loads the Poles table with the poles of the BSpline curve.
+@param[out] thePoles array to fill with poles)nbdoc")
+        .def("NbKnots", static_cast<int (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)() const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::NbKnots), R"nbdoc(Returns the number of knots of the BSpline curve.)nbdoc")
+        .def("KnotsAndMults", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)(NCollection_Array1<double> &, NCollection_Array1<int> &) const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::KnotsAndMults), nb::arg("theKnots"), nb::arg("theMults"), R"nbdoc(Loads the Knots and Mults tables with the knots
+and corresponding multiplicities of the BSpline curve.
+@param[out] theKnots array to fill with knots
+@param[out] theMults array to fill with multiplicities)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>>(nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d")));
+    nb::borrow<nb::class_<Convert_CompBezierCurves2dToBSplineCurve2d>>(m.attr("Convert_CompBezierCurves2dToBSplineCurve2d"))
+        .def(nb::init<const double>(), nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
+adjacent non-rational Bezier curves into a BSpline curve.
+@param[in] theAngularTolerance angular tolerance in radians
+for checking tangent parallelism at junction points)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_CompBezierCurves2dToBSplineCurve2d>(nb::borrow<nb::class_<Convert_CompBezierCurves2dToBSplineCurve2d>>(m.attr("Convert_CompBezierCurves2dToBSplineCurve2d")));
+    nb::implicitly_convertible<std::decay_t<const double>, Convert_CompBezierCurves2dToBSplineCurve2d>();
+    nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec"))
+        .def(nb::init<const double>(), nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
+adjacent non-rational Bezier curves into a BSpline curve.
+@param[in] theAngularTolerance angular tolerance in radians
+for checking tangent parallelism at junction points)nbdoc")
+        .def("AddCurve", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)(const NCollection_Array1<gp_Pnt> &)>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::AddCurve), nb::arg("thePoles"), R"nbdoc(Adds the Bezier curve defined by the table of poles to
+the sequence of adjacent Bezier curves to be converted.
+@param[in] thePoles poles of the Bezier curve to add)nbdoc")
+        .def("Perform", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)()>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::Perform), R"nbdoc(Computes all the data needed to build a BSpline curve
+equivalent to the adjacent Bezier curve sequence.)nbdoc")
+        .def("Degree", static_cast<int (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)() const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::Degree), R"nbdoc(Returns the degree of the BSpline curve.)nbdoc")
+        .def("NbPoles", static_cast<int (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)() const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::NbPoles), R"nbdoc(Returns the number of poles of the BSpline curve.)nbdoc")
+        .def("Poles", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)(NCollection_Array1<gp_Pnt> &) const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::Poles), nb::arg("thePoles"), R"nbdoc(Loads the Poles table with the poles of the BSpline curve.
+@param[out] thePoles array to fill with poles)nbdoc")
+        .def("NbKnots", static_cast<int (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)() const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::NbKnots), R"nbdoc(Returns the number of knots of the BSpline curve.)nbdoc")
+        .def("KnotsAndMults", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)(NCollection_Array1<double> &, NCollection_Array1<int> &) const>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::KnotsAndMults), nb::arg("theKnots"), nb::arg("theMults"), R"nbdoc(Loads the Knots and Mults tables with the knots
+and corresponding multiplicities of the BSpline curve.
+@param[out] theKnots array to fill with knots
+@param[out] theMults array to fill with multiplicities)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>>(nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec")));
+    nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurve>>(m.attr("Convert_CompBezierCurvesToBSplineCurve"))
+        .def(nb::init<const double>(), nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
+adjacent non-rational Bezier curves into a BSpline curve.
+@param[in] theAngularTolerance angular tolerance in radians
+for checking tangent parallelism at junction points)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_CompBezierCurvesToBSplineCurve>(nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurve>>(m.attr("Convert_CompBezierCurvesToBSplineCurve")));
+    nb::implicitly_convertible<std::decay_t<const double>, Convert_CompBezierCurvesToBSplineCurve>();
     nb::borrow<nb::class_<Convert_CompPolynomialToPoles>>(m.attr("Convert_CompPolynomialToPoles"))
         .def(nb::init<const int, const int, const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &>(), nb::arg("Dimension"), nb::arg("MaxDegree"), nb::arg("Degree"), nb::arg("Coefficients"), nb::arg("PolynomialIntervals"), nb::arg("TrueIntervals"), R"nbdoc(To Convert only one span.)nbdoc")
         .def(nb::init<const int, const int, const int, const int, const occ::handle<NCollection_HArray1<int>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray2<double>> &, const occ::handle<NCollection_HArray1<double>> &>(), nb::arg("NumCurves"), nb::arg("Continuity"), nb::arg("Dimension"), nb::arg("MaxDegree"), nb::arg("NumCoeffPerCurve"), nb::arg("Coefficients"), nb::arg("PolynomialIntervals"), nb::arg("TrueIntervals"), R"nbdoc(Warning!
@@ -443,4 +522,7 @@ Raised if V1 = V2 or V1 = V2 + 2.0 * Pi)nbdoc");
     nanoocp_implicit_copy_ctor<Convert_TorusToBSplineSurface>(nb::borrow<nb::class_<Convert_TorusToBSplineSurface>>(m.attr("Convert_TorusToBSplineSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Torus &>, Convert_TorusToBSplineSurface>();
     m.def("BuildPolynomialCosAndSin", static_cast<void (*)(const double, const double, const int, NCollection_Array1<double> &, NCollection_Array1<double> &, NCollection_Array1<double> &)>(&BuildPolynomialCosAndSin), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theNumPoles"), nb::arg("theCosNumerator"), nb::arg("theSinNumerator"), nb::arg("theDenominator"));
+}
+
+void nanoocp_conversions_Convert(nb::module_ &m) {
 }

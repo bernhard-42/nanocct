@@ -309,3 +309,6 @@ infinite number. Currently R < -1e100)nbdoc")
 infinite. Use -Infinite() for a negative big number.)nbdoc");
     nanoocp_implicit_copy_ctor<Precision>(nb::borrow<nb::class_<Precision>>(m.attr("Precision")));
 }
+
+void nanoocp_conversions_Precision(nb::module_ &m) {
+}

@@ -354,3 +354,6 @@ This algorithm builds precise bounding box)nbdoc")
         .def_static("AddOptimal", static_cast<void (*)(const Adaptor3d_Surface &, const double, const double, const double, const double, const double, Bnd_Box &)>(&BndLib_AddSurface::AddOptimal), nb::arg("S"), nb::arg("UMin"), nb::arg("UMax"), nb::arg("VMin"), nb::arg("VMax"), nb::arg("Tol"), nb::arg("B"));
     nanoocp_implicit_copy_ctor<BndLib_AddSurface>(nb::borrow<nb::class_<BndLib_AddSurface>>(m.attr("BndLib_AddSurface")));
 }
+
+void nanoocp_conversions_BndLib(nb::module_ &m) {
+}

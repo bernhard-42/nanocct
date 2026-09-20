@@ -36,7 +36,8 @@ void nanoocp_define_MathRoot(nb::module_ &m) {
     nb::borrow<nb::class_<MathRoot::MultipleResult>>(m.attr("MultipleResult"))
         .def("IsDone", static_cast<bool (MathRoot::MultipleResult::*)() const>(&MathRoot::MultipleResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
         .def("NbRoots", static_cast<int (MathRoot::MultipleResult::*)() const>(&MathRoot::MultipleResult::NbRoots), R"nbdoc(Returns the number of roots found.)nbdoc")
-        .def("__getitem__", static_cast<double (MathRoot::MultipleResult::*)(int) const>(&MathRoot::MultipleResult::operator[]), nb::arg("theIndex"), R"nbdoc(Access root by index (0-based).)nbdoc", nb::is_operator());
+        .def("__getitem__", static_cast<double (MathRoot::MultipleResult::*)(int) const>(&MathRoot::MultipleResult::operator[]), nb::arg("theIndex"), R"nbdoc(Access root by index (0-based).)nbdoc", nb::is_operator())
+        .def("__bool__", [](const MathRoot::MultipleResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathRoot::MultipleResult>(nb::borrow<nb::class_<MathRoot::MultipleResult>>(m.attr("MultipleResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathRoot::MultipleResult>>(m.attr("MultipleResult")), "Status", &MathRoot::MultipleResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathRoot::MultipleResult>>(m.attr("MultipleResult")), "NbIterations", &MathRoot::MultipleResult::NbIterations, R"nbdoc(Total iterations across all roots)nbdoc");
@@ -68,7 +69,8 @@ void nanoocp_define_MathRoot(nb::module_ &m) {
     nb::borrow<nb::class_<MathRoot::AllRootsResult>>(m.attr("AllRootsResult"))
         .def("IsDone", static_cast<bool (MathRoot::AllRootsResult::*)() const>(&MathRoot::AllRootsResult::IsDone))
         .def("NbRoots", static_cast<int (MathRoot::AllRootsResult::*)() const>(&MathRoot::AllRootsResult::NbRoots))
-        .def("NbIntervals", static_cast<int (MathRoot::AllRootsResult::*)() const>(&MathRoot::AllRootsResult::NbIntervals));
+        .def("NbIntervals", static_cast<int (MathRoot::AllRootsResult::*)() const>(&MathRoot::AllRootsResult::NbIntervals))
+        .def("__bool__", [](const MathRoot::AllRootsResult &self) { return static_cast<bool>(self); });
     nanoocp_implicit_copy_ctor<MathRoot::AllRootsResult>(nb::borrow<nb::class_<MathRoot::AllRootsResult>>(m.attr("AllRootsResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathRoot::AllRootsResult>>(m.attr("AllRootsResult")), "Status", &MathRoot::AllRootsResult::Status);
     nanoocp_def_field(nb::borrow<nb::class_<MathRoot::AllRootsResult>>(m.attr("AllRootsResult")), "Roots", &MathRoot::AllRootsResult::Roots, R"nbdoc(Isolated root locations)nbdoc");
@@ -76,7 +78,8 @@ void nanoocp_define_MathRoot(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathRoot::AllRootsResult>>(m.attr("AllRootsResult")), "NullIntervals", &MathRoot::AllRootsResult::NullIntervals, R"nbdoc(Intervals where function is null)nbdoc");
     nanoocp_implicit_default_ctor<MathRoot::TrigResult>(nb::borrow<nb::class_<MathRoot::TrigResult>>(m.attr("TrigResult")));
     nb::borrow<nb::class_<MathRoot::TrigResult>>(m.attr("TrigResult"))
-        .def("IsDone", static_cast<bool (MathRoot::TrigResult::*)() const>(&MathRoot::TrigResult::IsDone));
+        .def("IsDone", static_cast<bool (MathRoot::TrigResult::*)() const>(&MathRoot::TrigResult::IsDone))
+        .def("__bool__", [](const MathRoot::TrigResult &self) { return static_cast<bool>(self); });
     nanoocp_implicit_copy_ctor<MathRoot::TrigResult>(nb::borrow<nb::class_<MathRoot::TrigResult>>(m.attr("TrigResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathRoot::TrigResult>>(m.attr("TrigResult")), "Status", &MathRoot::TrigResult::Status);
     nanoocp_def_field(nb::borrow<nb::class_<MathRoot::TrigResult>>(m.attr("TrigResult")), "Roots", &MathRoot::TrigResult::Roots);
@@ -118,4 +121,7 @@ Roots are filtered to lie within [theInfBound, theSupBound].
 @param theInfBound lower bound for roots
 @param theSupBound upper bound for roots
 @return TrigResult containing roots)nbdoc");
+}
+
+void nanoocp_conversions_MathRoot(nb::module_ &m) {
 }

@@ -588,3 +588,6 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @return the casted shape as TopoDS_Compound
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
 }
+
+void nanoocp_conversions_TopoDS(nb::module_ &m) {
+}

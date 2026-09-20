@@ -859,3 +859,6 @@ With:
     nanoocp_implicit_copy_ctor<Quantity_Period>(nb::borrow<nb::class_<Quantity_Period>>(m.attr("Quantity_Period")));
     nb::implicitly_convertible<std::decay_t<const int>, Quantity_Period>();
 }
+
+void nanoocp_conversions_Quantity(nb::module_ &m) {
+}

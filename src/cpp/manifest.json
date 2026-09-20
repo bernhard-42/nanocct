@@ -227,8 +227,24 @@
 "BRepGraph_Deduplicate::Options": "BRepGraph",
 "BRepGraph_Deduplicate::Result": "BRepGraph",
 "BRepGraph_DeferredScope": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>, BRepGraphInc::SolidRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>, BRepGraphInc::SolidDef>": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>, BRepGraphInc::ChildRef, BRepGraph_NodeId, BRepGraphInc::BaseDef>": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>, BRepGraphInc::WireRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraphInc::WireDef>": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>, BRepGraphInc::OccurrenceRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>, BRepGraphInc::OccurrenceDef>": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>, BRepGraphInc::FaceRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>, BRepGraphInc::FaceDef>": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>, BRepGraphInc::ShellRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>, BRepGraphInc::ShellDef>": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef>": "BRepGraph",
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, BRepGraphInc::EdgeDef>": "BRepGraph",
 "BRepGraph_DefsIterator::ChildOfCompoundTraits": "BRepGraph",
 "BRepGraph_DefsIterator::CoEdgeOfWireTraits": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ChildOfCompoundTraits>": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::CoEdgeOfWireTraits>": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::EdgeOfWireTraits>": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::FaceOfShellTraits>": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::OccurrenceOfProductTraits>": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ShellOfSolidTraits>": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::SolidOfCompSolidTraits>": "BRepGraph",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::WireOfFaceTraits>": "BRepGraph",
 "BRepGraph_DefsIterator::DefsVertexOfEdge": "BRepGraph",
 "BRepGraph_DefsIterator::EdgeOfWireTraits": "BRepGraph",
 "BRepGraph_DefsIterator::FaceOfShellTraits": "BRepGraph",
@@ -242,16 +258,27 @@
 "BRepGraph_ItemUID": "BRepGraph",
 "BRepGraph_ItemUID::Domain": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::CoEdgeDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::CoEdgeDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::CompSolidDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::CompSolidDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::CompoundDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::CompoundDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::EdgeDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::EdgeDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::FaceDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::FaceDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::OccurrenceDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::OccurrenceDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::ProductDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::ProductDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::ShellDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::ShellDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::SolidDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::SolidDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::VertexDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::VertexDef>": "BRepGraph",
 "BRepGraph_Iterator<BRepGraphInc::WireDef, true>": "BRepGraph",
+"BRepGraph_Iterator<BRepGraphInc::WireDef>": "BRepGraph",
 "BRepGraph_IteratorDetail::NodeTraits<BRepGraphInc::CoEdgeDef>": "BRepGraph",
 "BRepGraph_IteratorDetail::NodeTraits<BRepGraphInc::CompSolidDef>": "BRepGraph",
 "BRepGraph_IteratorDetail::NodeTraits<BRepGraphInc::CompoundDef>": "BRepGraph",
@@ -285,6 +312,17 @@
 "BRepGraph_LayerTopoSupplement::Entry": "BRepGraph",
 "BRepGraph_NodeId": "BRepGraph",
 "BRepGraph_NodeId::Kind": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>": "BRepGraph",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>": "BRepGraph",
 "BRepGraph_ParallelPolicy": "BRepGraph",
 "BRepGraph_ParallelPolicy::Workload": "BRepGraph",
 "BRepGraph_ParentExplorer": "BRepGraph",
@@ -293,11 +331,46 @@
 "BRepGraph_ParentExplorer::TraversalMode": "BRepGraph",
 "BRepGraph_RefId": "BRepGraph",
 "BRepGraph_RefId::Kind": "BRepGraph",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>": "BRepGraph",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>": "BRepGraph",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>": "BRepGraph",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>": "BRepGraph",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>": "BRepGraph",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>": "BRepGraph",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>": "BRepGraph",
 "BRepGraph_RefUID": "BRepGraph",
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>, BRepGraphInc::SolidRef>": "BRepGraph",
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>, BRepGraphInc::ChildRef>": "BRepGraph",
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>, BRepGraphInc::WireRef>": "BRepGraph",
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>, BRepGraphInc::OccurrenceRef>": "BRepGraph",
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>, BRepGraphInc::FaceRef>": "BRepGraph",
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>, BRepGraphInc::ShellRef>": "BRepGraph",
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef>": "BRepGraph",
 "BRepGraph_RefsIterator::ChildOfCompoundTraits": "BRepGraph",
 "BRepGraph_RefsIterator::CoEdgeOfWireTraits": "BRepGraph",
 "BRepGraph_RefsIterator::FaceOfShellTraits": "BRepGraph",
 "BRepGraph_RefsIterator::OccurrenceOfProductTraits": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef, true>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef, true>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef, true>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef, true>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef, true>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef, true>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef, true>": "BRepGraph",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef>": "BRepGraph",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ChildOfCompoundTraits>": "BRepGraph",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::CoEdgeOfWireTraits>": "BRepGraph",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::FaceOfShellTraits>": "BRepGraph",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::OccurrenceOfProductTraits>": "BRepGraph",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ShellOfSolidTraits>": "BRepGraph",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::SolidOfCompSolidTraits>": "BRepGraph",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::WireOfFaceTraits>": "BRepGraph",
 "BRepGraph_RefsIterator::RefsVertexOfEdge": "BRepGraph",
 "BRepGraph_RefsIterator::ShellOfSolidTraits": "BRepGraph",
 "BRepGraph_RefsIterator::SolidOfCompSolidTraits": "BRepGraph",
@@ -307,6 +380,13 @@
 "BRepGraph_RelatedIterator::Stage": "BRepGraph",
 "BRepGraph_RepId": "BRepGraphInc",
 "BRepGraph_RepId::Kind": "BRepGraphInc",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>": "BRepGraphInc",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>": "BRepGraphInc",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>": "BRepGraphInc",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>": "BRepGraphInc",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>": "BRepGraphInc",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>": "BRepGraphInc",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>": "BRepGraphInc",
 "BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits": "BRepGraph",
 "BRepGraph_ReverseIterator::CompoundFromChildRefTraits": "BRepGraph",
 "BRepGraph_ReverseIterator::DefTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>": "BRepGraph",
@@ -321,9 +401,22 @@
 "BRepGraph_ReverseIterator::DefTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>": "BRepGraph",
 "BRepGraph_ReverseIterator::DefTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>": "BRepGraph",
 "BRepGraph_ReverseIterator::EdgeOfVertexRefTraits": "BRepGraph",
+"BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::FaceFromEdgeCoEdgeTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::WireFromEdgeCoEdgeTraits>": "BRepGraph",
 "BRepGraph_ReverseIterator::FaceFromEdgeCoEdgeTraits": "BRepGraph",
 "BRepGraph_ReverseIterator::FaceFromWireRefTraits": "BRepGraph",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::EdgeOfVertexRefTraits>": "BRepGraph",
+"BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>": "BRepGraph",
 "BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits": "BRepGraph",
+"BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>": "BRepGraph",
+"BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>": "BRepGraph",
 "BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits": "BRepGraph",
 "BRepGraph_ReverseIterator::ShellFromFaceRefTraits": "BRepGraph",
 "BRepGraph_ReverseIterator::SolidFromShellRefTraits": "BRepGraph",
@@ -459,6 +552,8 @@
 "Convert_CircleToBSplineCurve": "Convert",
 "Convert_CompBezierCurves2dToBSplineCurve2d": "Convert",
 "Convert_CompBezierCurvesToBSplineCurve": "Convert",
+"Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>": "Convert",
+"Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>": "Convert",
 "Convert_CompPolynomialToPoles": "Convert",
 "Convert_ConeToBSplineSurface": "Convert",
 "Convert_ConicToBSplineCurve": "Convert",
@@ -987,6 +1082,7 @@
 "Message_StatusType": "Message",
 "MyDirectPolynomialRoots": "IntAna2d",
 "NCollection_AccAllocator": "NCollection",
+"NCollection_AliasedArray<>": "Poly",
 "NCollection_AlignedAllocator": "NCollection",
 "NCollection_BaseAllocator": "NCollection",
 "NCollection_BaseList": "NCollection",
@@ -1017,6 +1113,9 @@
 "NCollection_IncAllocator": "NCollection",
 "NCollection_IncAllocator::IBlock": "NCollection",
 "NCollection_IncAllocator::IBlockSizeLevel": "NCollection",
+"NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>": "Poly",
+"NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>": "Poly",
+"NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>": "Poly",
 "NCollection_Lerp<gp_Trsf>": "gp",
 "NCollection_LinearVector<NCollection_Vec2<double>>": "BVH",
 "NCollection_LinearVector<NCollection_Vec2<float>>": "BVH",
@@ -1442,22 +1541,115 @@
 "math_Uzawa": "math",
 "math_ValueAndWeight": "math",
 "math_VectorBase<double>": "Extrema",
-"math_VectorBase<int>": "math",
-"std::hash<BRepGraph_ItemId>": "BRepGraph",
-"std::hash<BRepGraph_ItemUID>": "BRepGraph",
-"std::hash<BRepGraph_NodeId>": "BRepGraph",
-"std::hash<BRepGraph_RefId>": "BRepGraph",
-"std::hash<BRepGraph_RefUID>": "BRepGraph",
-"std::hash<BRepGraph_RepId>": "BRepGraphInc",
-"std::hash<BRepGraph_UID>": "BRepGraph",
-"std::hash<BRepGraph_UsagePath>": "BRepGraph",
-"std::hash<BRepGraph_VersionStamp>": "BRepGraph"
+"math_VectorBase<int>": "math"
 },
 "templates": {
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>, BRepGraphInc::SolidRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>, BRepGraphInc::SolidDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid__BRepGraphInc_SolidRef__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid__BRepGraphInc_SolidDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>, BRepGraphInc::ChildRef, BRepGraph_NodeId, BRepGraphInc::BaseDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child__BRepGraphInc_ChildRef__BRepGraph_NodeId__BRepGraphInc_BaseDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>, BRepGraphInc::WireRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraphInc::WireDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire__BRepGraphInc_WireRef__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire__BRepGraphInc_WireDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>, BRepGraphInc::OccurrenceRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>, BRepGraphInc::OccurrenceDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence__BRepGraphInc_OccurrenceRef__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence__BRepGraphInc_OccurrenceDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>, BRepGraphInc::FaceRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>, BRepGraphInc::FaceDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face__BRepGraphInc_FaceRef__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face__BRepGraphInc_FaceDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>, BRepGraphInc::ShellRef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>, BRepGraphInc::ShellDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell__BRepGraphInc_ShellRef__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell__BRepGraphInc_ShellDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge__BRepGraphInc_CoEdgeDef__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge__BRepGraphInc_CoEdgeDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, BRepGraphInc::EdgeDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge__BRepGraphInc_CoEdgeDef__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Edge__BRepGraphInc_EdgeDef",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ChildOfCompoundTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsChildOfCompound",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::CoEdgeOfWireTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsCoEdgeOfWire",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::EdgeOfWireTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsEdgeOfWire",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::FaceOfShellTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsFaceOfShell",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::OccurrenceOfProductTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsOccurrenceOfProduct",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ShellOfSolidTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsShellOfSolid",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::SolidOfCompSolidTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsSolidOfCompSolid",
+"by": "BRepGraph"
+},
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::WireOfFaceTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_DefsWireOfFace",
+"by": "BRepGraph"
+},
 "BRepGraph_Iterator<BRepGraphInc::CoEdgeDef, true>": {
 "toolkit": "TKBRep",
 "package": "BRepGraph",
 "name": "BRepGraph_FullCoEdgeIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_Iterator<BRepGraphInc::CoEdgeDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CoEdgeIterator",
 "by": "BRepGraph"
 },
 "BRepGraph_Iterator<BRepGraphInc::CompSolidDef, true>": {
@@ -1466,10 +1658,22 @@
 "name": "BRepGraph_FullCompSolidIterator",
 "by": "BRepGraph"
 },
+"BRepGraph_Iterator<BRepGraphInc::CompSolidDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CompSolidIterator",
+"by": "BRepGraph"
+},
 "BRepGraph_Iterator<BRepGraphInc::CompoundDef, true>": {
 "toolkit": "TKBRep",
 "package": "BRepGraph",
 "name": "BRepGraph_FullCompoundIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_Iterator<BRepGraphInc::CompoundDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CompoundIterator",
 "by": "BRepGraph"
 },
 "BRepGraph_Iterator<BRepGraphInc::EdgeDef, true>": {
@@ -1478,10 +1682,22 @@
 "name": "BRepGraph_FullEdgeIterator",
 "by": "BRepGraph"
 },
+"BRepGraph_Iterator<BRepGraphInc::EdgeDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_EdgeIterator",
+"by": "BRepGraph"
+},
 "BRepGraph_Iterator<BRepGraphInc::FaceDef, true>": {
 "toolkit": "TKBRep",
 "package": "BRepGraph",
 "name": "BRepGraph_FullFaceIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_Iterator<BRepGraphInc::FaceDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FaceIterator",
 "by": "BRepGraph"
 },
 "BRepGraph_Iterator<BRepGraphInc::OccurrenceDef, true>": {
@@ -1490,10 +1706,22 @@
 "name": "BRepGraph_FullOccurrenceIterator",
 "by": "BRepGraph"
 },
+"BRepGraph_Iterator<BRepGraphInc::OccurrenceDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_OccurrenceIterator",
+"by": "BRepGraph"
+},
 "BRepGraph_Iterator<BRepGraphInc::ProductDef, true>": {
 "toolkit": "TKBRep",
 "package": "BRepGraph",
 "name": "BRepGraph_FullProductIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_Iterator<BRepGraphInc::ProductDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ProductIterator",
 "by": "BRepGraph"
 },
 "BRepGraph_Iterator<BRepGraphInc::ShellDef, true>": {
@@ -1502,10 +1730,22 @@
 "name": "BRepGraph_FullShellIterator",
 "by": "BRepGraph"
 },
+"BRepGraph_Iterator<BRepGraphInc::ShellDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ShellIterator",
+"by": "BRepGraph"
+},
 "BRepGraph_Iterator<BRepGraphInc::SolidDef, true>": {
 "toolkit": "TKBRep",
 "package": "BRepGraph",
 "name": "BRepGraph_FullSolidIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_Iterator<BRepGraphInc::SolidDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_SolidIterator",
 "by": "BRepGraph"
 },
 "BRepGraph_Iterator<BRepGraphInc::VertexDef, true>": {
@@ -1514,10 +1754,418 @@
 "name": "BRepGraph_FullVertexIterator",
 "by": "BRepGraph"
 },
+"BRepGraph_Iterator<BRepGraphInc::VertexDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_VertexIterator",
+"by": "BRepGraph"
+},
 "BRepGraph_Iterator<BRepGraphInc::WireDef, true>": {
 "toolkit": "TKBRep",
 "package": "BRepGraph",
 "name": "BRepGraph_FullWireIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_Iterator<BRepGraphInc::WireDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_WireIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CoEdgeId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CompSolidId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CompoundId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_EdgeId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FaceId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_OccurrenceId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ProductId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ShellId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_SolidId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_VertexId",
+"by": "BRepGraph"
+},
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_WireId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ChildRefId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FaceRefId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_OccurrenceRefId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ShellRefId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_SolidRefId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_VertexRefId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_WireRefId",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>, BRepGraphInc::SolidRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid__BRepGraphInc_SolidRef",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>, BRepGraphInc::ChildRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child__BRepGraphInc_ChildRef",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>, BRepGraphInc::WireRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire__BRepGraphInc_WireRef",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>, BRepGraphInc::OccurrenceRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence__BRepGraphInc_OccurrenceRef",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>, BRepGraphInc::FaceRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face__BRepGraphInc_FaceRef",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>, BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>, BRepGraphInc::ShellRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell__BRepGraphInc_ShellRef",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::BaseTraits<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>, BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, BRepGraphInc::CoEdgeDef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsIterator_BaseTraits__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge__BRepGraphInc_CoEdgeDef",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef, true>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FullChildRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ChildRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef, true>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FullFaceRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FaceRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef, true>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FullOccurrenceRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_OccurrenceRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef, true>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FullShellRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ShellRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef, true>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FullSolidRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_SolidRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef, true>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FullVertexRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_VertexRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef, true>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FullWireRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_WireRefIterator",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ChildOfCompoundTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsChildOfCompound",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::CoEdgeOfWireTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CoEdgesOfWire",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::FaceOfShellTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsFaceOfShell",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::OccurrenceOfProductTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsOccurrenceOfProduct",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ShellOfSolidTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsShellOfSolid",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::SolidOfCompSolidTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsSolidOfCompSolid",
+"by": "BRepGraph"
+},
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::WireOfFaceTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsWireOfFace",
+"by": "BRepGraph"
+},
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>": {
+"toolkit": "TKBRep",
+"package": "BRepGraphInc",
+"name": "BRepGraph_CoEdgeCurve2DRepId",
+"by": "BRepGraphInc"
+},
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>": {
+"toolkit": "TKBRep",
+"package": "BRepGraphInc",
+"name": "BRepGraph_CoEdgePolygon2DRepId",
+"by": "BRepGraphInc"
+},
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>": {
+"toolkit": "TKBRep",
+"package": "BRepGraphInc",
+"name": "BRepGraph_CoEdgePolygonOnTriRepId",
+"by": "BRepGraphInc"
+},
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>": {
+"toolkit": "TKBRep",
+"package": "BRepGraphInc",
+"name": "BRepGraph_EdgeCurve3DRepId",
+"by": "BRepGraphInc"
+},
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>": {
+"toolkit": "TKBRep",
+"package": "BRepGraphInc",
+"name": "BRepGraph_EdgePolygon3DRepId",
+"by": "BRepGraphInc"
+},
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>": {
+"toolkit": "TKBRep",
+"package": "BRepGraphInc",
+"name": "BRepGraph_FaceSurfaceRepId",
+"by": "BRepGraphInc"
+},
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>": {
+"toolkit": "TKBRep",
+"package": "BRepGraphInc",
+"name": "BRepGraph_FaceTriangulationRepId",
+"by": "BRepGraphInc"
+},
+"BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::FaceFromEdgeCoEdgeTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFromEdgeCoEdgeTraits",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::WireFromEdgeCoEdgeTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFromEdgeCoEdgeTraits",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CompSolidsOfSolid",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CompoundsOfVertex",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_FacesOfWire",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_OccurrencesOfProduct",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ProductsOfOccurrence",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_ShellsOfFace",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_SolidsOfShell",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::EdgeOfVertexRefTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsEdgesOfVertex",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_RefsWiresOfCoEdge",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_CoEdgesOfEdge",
+"by": "BRepGraph"
+},
+"BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>": {
+"toolkit": "TKBRep",
+"package": "BRepGraph",
+"name": "BRepGraph_EdgesOfVertex",
 "by": "BRepGraph"
 },
 "BVH_Builder<double, 3>": {
@@ -1549,6 +2197,18 @@
 "package": "Bnd",
 "name": "Bnd_B3f",
 "by": "Bnd"
+},
+"Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>": {
+"toolkit": "TKMath",
+"package": "Convert",
+"name": "Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec",
+"by": "Convert"
+},
+"Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>": {
+"toolkit": "TKMath",
+"package": "Convert",
+"name": "Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d",
+"by": "Convert"
 },
 "Extrema_GFuncExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>": {
 "toolkit": "TKGeomBase",
@@ -1687,6 +2347,12 @@
 "package": "GeomLProp",
 "name": "GeomLProp_SLProps",
 "by": "GeomLProp"
+},
+"NCollection_AliasedArray<>": {
+"toolkit": "TKMath",
+"package": "Poly",
+"name": "NCollection_AliasedArray__",
+"by": "Poly"
 },
 "NCollection_Array1<AppDef_MultiPointConstraint>": {
 "toolkit": "TKGeomBase",
@@ -2275,6 +2941,24 @@
 "package": "NCollection",
 "name": "NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher",
 "by": "TopExp"
+},
+"NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>": {
+"toolkit": "TKMath",
+"package": "Poly",
+"name": "NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink",
+"by": "Poly"
+},
+"NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>": {
+"toolkit": "TKMath",
+"package": "Poly",
+"name": "NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode",
+"by": "Poly"
+},
+"NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>": {
+"toolkit": "TKMath",
+"package": "Poly",
+"name": "NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle",
+"by": "Poly"
 },
 "NCollection_LinearVector<NCollection_Vec2<double>>": {
 "toolkit": "TKMath",
@@ -2967,5 +3651,209 @@
 "gce": [],
 "gp": [],
 "math": []
+},
+"paths": {
+"BRepGraph::EditorView": "BRepGraph.EditorView",
+"BRepGraph::EditorView::BoundaryIssue": "BRepGraph.EditorView.BoundaryIssue",
+"BRepGraph::EditorView::CoEdgeOps": "BRepGraph.EditorView.CoEdgeOps",
+"BRepGraph::EditorView::CompSolidOps": "BRepGraph.EditorView.CompSolidOps",
+"BRepGraph::EditorView::CompoundOps": "BRepGraph.EditorView.CompoundOps",
+"BRepGraph::EditorView::EdgeOps": "BRepGraph.EditorView.EdgeOps",
+"BRepGraph::EditorView::FaceOps": "BRepGraph.EditorView.FaceOps",
+"BRepGraph::EditorView::GenOps": "BRepGraph.EditorView.GenOps",
+"BRepGraph::EditorView::OccurrenceOps": "BRepGraph.EditorView.OccurrenceOps",
+"BRepGraph::EditorView::ProductOps": "BRepGraph.EditorView.ProductOps",
+"BRepGraph::EditorView::ShellOps": "BRepGraph.EditorView.ShellOps",
+"BRepGraph::EditorView::SolidOps": "BRepGraph.EditorView.SolidOps",
+"BRepGraph::EditorView::VertexOps": "BRepGraph.EditorView.VertexOps",
+"BRepGraph::EditorView::WireOps": "BRepGraph.EditorView.WireOps",
+"BRepGraph::MeshView": "BRepGraph.MeshView",
+"BRepGraph::MeshView::CacheView": "BRepGraph.MeshView.CacheView",
+"BRepGraph::MeshView::CacheView::CoEdgeOps": "BRepGraph.MeshView.CacheView.CoEdgeOps",
+"BRepGraph::MeshView::CacheView::EdgeOps": "BRepGraph.MeshView.CacheView.EdgeOps",
+"BRepGraph::MeshView::CacheView::FaceOps": "BRepGraph.MeshView.CacheView.FaceOps",
+"BRepGraph::MeshView::EditorView": "BRepGraph.MeshView.EditorView",
+"BRepGraph::MeshView::EditorView::CoEdgeOps": "BRepGraph.MeshView.EditorView.CoEdgeOps",
+"BRepGraph::MeshView::EditorView::EdgeOps": "BRepGraph.MeshView.EditorView.EdgeOps",
+"BRepGraph::MeshView::EditorView::FaceOps": "BRepGraph.MeshView.EditorView.FaceOps",
+"BRepGraph::MeshView::EffectiveView": "BRepGraph.MeshView.EffectiveView",
+"BRepGraph::MeshView::EffectiveView::CoEdgeOps": "BRepGraph.MeshView.EffectiveView.CoEdgeOps",
+"BRepGraph::MeshView::EffectiveView::EdgeOps": "BRepGraph.MeshView.EffectiveView.EdgeOps",
+"BRepGraph::MeshView::EffectiveView::FaceOps": "BRepGraph.MeshView.EffectiveView.FaceOps",
+"BRepGraph::MeshView::PersistentView": "BRepGraph.MeshView.PersistentView",
+"BRepGraph::MeshView::PersistentView::CoEdgeOps": "BRepGraph.MeshView.PersistentView.CoEdgeOps",
+"BRepGraph::MeshView::PersistentView::EdgeOps": "BRepGraph.MeshView.PersistentView.EdgeOps",
+"BRepGraph::MeshView::PersistentView::FaceOps": "BRepGraph.MeshView.PersistentView.FaceOps",
+"BRepGraph::MeshView::PolyOps": "BRepGraph.MeshView.PolyOps",
+"BRepGraph::RefsView": "BRepGraph.RefsView",
+"BRepGraph::RefsView::ChildOps": "BRepGraph.RefsView.ChildOps",
+"BRepGraph::RefsView::FaceOps": "BRepGraph.RefsView.FaceOps",
+"BRepGraph::RefsView::GenOps": "BRepGraph.RefsView.GenOps",
+"BRepGraph::RefsView::OccurrenceOps": "BRepGraph.RefsView.OccurrenceOps",
+"BRepGraph::RefsView::ShellOps": "BRepGraph.RefsView.ShellOps",
+"BRepGraph::RefsView::SolidOps": "BRepGraph.RefsView.SolidOps",
+"BRepGraph::RefsView::VertexOps": "BRepGraph.RefsView.VertexOps",
+"BRepGraph::RefsView::WireOps": "BRepGraph.RefsView.WireOps",
+"BRepGraph::ShapesView": "BRepGraph.ShapesView",
+"BRepGraph::ShapesView::Options": "BRepGraph.ShapesView.Options",
+"BRepGraph::ShapesView::Result": "BRepGraph.ShapesView.Result",
+"BRepGraph::TopoView": "BRepGraph.TopoView",
+"BRepGraph::TopoView::CoEdgeOps": "BRepGraph.TopoView.CoEdgeOps",
+"BRepGraph::TopoView::CompSolidOps": "BRepGraph.TopoView.CompSolidOps",
+"BRepGraph::TopoView::CompoundOps": "BRepGraph.TopoView.CompoundOps",
+"BRepGraph::TopoView::EdgeOps": "BRepGraph.TopoView.EdgeOps",
+"BRepGraph::TopoView::FaceOps": "BRepGraph.TopoView.FaceOps",
+"BRepGraph::TopoView::GenOps": "BRepGraph.TopoView.GenOps",
+"BRepGraph::TopoView::GeometryOps": "BRepGraph.TopoView.GeometryOps",
+"BRepGraph::TopoView::OccurrenceOps": "BRepGraph.TopoView.OccurrenceOps",
+"BRepGraph::TopoView::ProductOps": "BRepGraph.TopoView.ProductOps",
+"BRepGraph::TopoView::ShellOps": "BRepGraph.TopoView.ShellOps",
+"BRepGraph::TopoView::SolidOps": "BRepGraph.TopoView.SolidOps",
+"BRepGraph::TopoView::VertexOps": "BRepGraph.TopoView.VertexOps",
+"BRepGraph::TopoView::WireOps": "BRepGraph.TopoView.WireOps",
+"BRepGraph::UIDsView": "BRepGraph.UIDsView",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ChildOfCompoundTraits>": "BRepGraph_DefsChildOfCompound",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::CoEdgeOfWireTraits>": "BRepGraph_DefsCoEdgeOfWire",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::EdgeOfWireTraits>": "BRepGraph_DefsEdgeOfWire",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::FaceOfShellTraits>": "BRepGraph_DefsFaceOfShell",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::OccurrenceOfProductTraits>": "BRepGraph_DefsOccurrenceOfProduct",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ShellOfSolidTraits>": "BRepGraph_DefsShellOfSolid",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::SolidOfCompSolidTraits>": "BRepGraph_DefsSolidOfCompSolid",
+"BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::WireOfFaceTraits>": "BRepGraph_DefsWireOfFace",
+"BRepGraph_Iterator<BRepGraphInc::CoEdgeDef, true>": "BRepGraph_FullCoEdgeIterator",
+"BRepGraph_Iterator<BRepGraphInc::CoEdgeDef>": "BRepGraph_CoEdgeIterator",
+"BRepGraph_Iterator<BRepGraphInc::CompSolidDef, true>": "BRepGraph_FullCompSolidIterator",
+"BRepGraph_Iterator<BRepGraphInc::CompSolidDef>": "BRepGraph_CompSolidIterator",
+"BRepGraph_Iterator<BRepGraphInc::CompoundDef, true>": "BRepGraph_FullCompoundIterator",
+"BRepGraph_Iterator<BRepGraphInc::CompoundDef>": "BRepGraph_CompoundIterator",
+"BRepGraph_Iterator<BRepGraphInc::EdgeDef, true>": "BRepGraph_FullEdgeIterator",
+"BRepGraph_Iterator<BRepGraphInc::EdgeDef>": "BRepGraph_EdgeIterator",
+"BRepGraph_Iterator<BRepGraphInc::FaceDef, true>": "BRepGraph_FullFaceIterator",
+"BRepGraph_Iterator<BRepGraphInc::FaceDef>": "BRepGraph_FaceIterator",
+"BRepGraph_Iterator<BRepGraphInc::OccurrenceDef, true>": "BRepGraph_FullOccurrenceIterator",
+"BRepGraph_Iterator<BRepGraphInc::OccurrenceDef>": "BRepGraph_OccurrenceIterator",
+"BRepGraph_Iterator<BRepGraphInc::ProductDef, true>": "BRepGraph_FullProductIterator",
+"BRepGraph_Iterator<BRepGraphInc::ProductDef>": "BRepGraph_ProductIterator",
+"BRepGraph_Iterator<BRepGraphInc::ShellDef, true>": "BRepGraph_FullShellIterator",
+"BRepGraph_Iterator<BRepGraphInc::ShellDef>": "BRepGraph_ShellIterator",
+"BRepGraph_Iterator<BRepGraphInc::SolidDef, true>": "BRepGraph_FullSolidIterator",
+"BRepGraph_Iterator<BRepGraphInc::SolidDef>": "BRepGraph_SolidIterator",
+"BRepGraph_Iterator<BRepGraphInc::VertexDef, true>": "BRepGraph_FullVertexIterator",
+"BRepGraph_Iterator<BRepGraphInc::VertexDef>": "BRepGraph_VertexIterator",
+"BRepGraph_Iterator<BRepGraphInc::WireDef, true>": "BRepGraph_FullWireIterator",
+"BRepGraph_Iterator<BRepGraphInc::WireDef>": "BRepGraph_WireIterator",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>": "BRepGraph_CoEdgeId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>": "BRepGraph_CompSolidId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>": "BRepGraph_CompoundId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>": "BRepGraph_EdgeId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>": "BRepGraph_FaceId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>": "BRepGraph_OccurrenceId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>": "BRepGraph_ProductId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>": "BRepGraph_ShellId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>": "BRepGraph_SolidId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>": "BRepGraph_VertexId",
+"BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>": "BRepGraph_WireId",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>": "BRepGraph_ChildRefId",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>": "BRepGraph_FaceRefId",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>": "BRepGraph_OccurrenceRefId",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>": "BRepGraph_ShellRefId",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>": "BRepGraph_SolidRefId",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>": "BRepGraph_VertexRefId",
+"BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>": "BRepGraph_WireRefId",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef, true>": "BRepGraph_FullChildRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef>": "BRepGraph_ChildRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef, true>": "BRepGraph_FullFaceRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef>": "BRepGraph_FaceRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef, true>": "BRepGraph_FullOccurrenceRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef>": "BRepGraph_OccurrenceRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef, true>": "BRepGraph_FullShellRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef>": "BRepGraph_ShellRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef, true>": "BRepGraph_FullSolidRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef>": "BRepGraph_SolidRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef, true>": "BRepGraph_FullVertexRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef>": "BRepGraph_VertexRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef, true>": "BRepGraph_FullWireRefIterator",
+"BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef>": "BRepGraph_WireRefIterator",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ChildOfCompoundTraits>": "BRepGraph_RefsChildOfCompound",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::CoEdgeOfWireTraits>": "BRepGraph_CoEdgesOfWire",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::FaceOfShellTraits>": "BRepGraph_RefsFaceOfShell",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::OccurrenceOfProductTraits>": "BRepGraph_RefsOccurrenceOfProduct",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ShellOfSolidTraits>": "BRepGraph_RefsShellOfSolid",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::SolidOfCompSolidTraits>": "BRepGraph_RefsSolidOfCompSolid",
+"BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::WireOfFaceTraits>": "BRepGraph_RefsWireOfFace",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>": "BRepGraph_CoEdgeCurve2DRepId",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>": "BRepGraph_CoEdgePolygon2DRepId",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>": "BRepGraph_CoEdgePolygonOnTriRepId",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>": "BRepGraph_EdgeCurve3DRepId",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>": "BRepGraph_EdgePolygon3DRepId",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>": "BRepGraph_FaceSurfaceRepId",
+"BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>": "BRepGraph_FaceTriangulationRepId",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>": "BRepGraph_RefsCompSolidsOfSolid",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>": "BRepGraph_RefsCompoundsOfChild",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>": "BRepGraph_RefsFacesOfWire",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>": "BRepGraph_OccurrencesOfChild",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>": "BRepGraph_RefsProductsOfOccurrence",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>": "BRepGraph_RefsShellsOfFace",
+"BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>": "BRepGraph_RefsSolidsOfShell",
+"BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::EdgeOfVertexRefTraits>": "BRepGraph_RefsEdgesOfVertex",
+"BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>": "BRepGraph_RefsWiresOfCoEdge",
+"BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>": "BRepGraph_CoEdgesOfEdge",
+"BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>": "BRepGraph_EdgesOfVertex",
+"BVH_Builder<double, 3>": "BVH_Builder3d",
+"BVH_PrimitiveSet<double, 3>": "BVH_PrimitiveSet3d",
+"Bnd_B2<double>": "Bnd_B2d",
+"Bnd_B2<float>": "Bnd_B2f",
+"Bnd_B3<double>": "Bnd_B3d",
+"Bnd_B3<float>": "Bnd_B3f",
+"Extrema_GFuncExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>": "Extrema_CCLocFOfLocECC2d",
+"Extrema_GFuncExtCC<Adaptor3d_Curve, Extrema_CurveTool, Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>": "Extrema_CCLocFOfLocECC",
+"Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>": "Extrema_PCLocFOfLocEPCOfLocateExtPC2d",
+"Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>": "Extrema_PCLocFOfLocEPCOfLocateExtPC",
+"Extrema_GGExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_ExtPElC2d, gp_Pnt2d, gp_Vec2d, Extrema_POnCurv2d, NCollection_Sequence<Extrema_POnCurv2d>, Extrema_GGenExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>": "Extrema_ELPCOfLocateExtPC2d",
+"Extrema_GGExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_ExtPElC, gp_Pnt, gp_Vec, Extrema_POnCurv, NCollection_Sequence<Extrema_POnCurv>, Extrema_GGenExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>>": "Extrema_ELPCOfLocateExtPC",
+"Extrema_GGenExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GGExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_ExtPElC2d, gp_Pnt2d, gp_Vec2d, Extrema_POnCurv2d, NCollection_Sequence<Extrema_POnCurv2d>, Extrema_GGenExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>>": "Extrema_ECC2d",
+"Extrema_GGenExtCC<Adaptor3d_Curve, Extrema_CurveTool, Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GGExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_ExtPElC, gp_Pnt, gp_Vec, Extrema_POnCurv, NCollection_Sequence<Extrema_POnCurv>, Extrema_GGenExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>>>": "Extrema_ECC",
+"Extrema_GGenExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>": "Extrema_EPCOfELPCOfLocateExtPC2d",
+"Extrema_GGenExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>": "Extrema_EPCOfELPCOfLocateExtPC",
+"Extrema_GLocateExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, gp_Pnt2d, gp_Vec2d, Extrema_POnCurv2d, Extrema_GGExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_ExtPElC2d, gp_Pnt2d, gp_Vec2d, Extrema_POnCurv2d, NCollection_Sequence<Extrema_POnCurv2d>, Extrema_GGenExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>, Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>": "Extrema_LocateExtPC2d",
+"Extrema_GLocateExtPC<Adaptor3d_Curve, Extrema_CurveTool, gp_Pnt, gp_Vec, Extrema_POnCurv, Extrema_GGExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_ExtPElC, gp_Pnt, gp_Vec, Extrema_POnCurv, NCollection_Sequence<Extrema_POnCurv>, Extrema_GGenExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>>, Extrema_GenLocateExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>>": "Extrema_LocateExtPC",
+"Extrema_GenLocateExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, Extrema_GFuncExtCC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>": "Extrema_LocECC2d",
+"Extrema_GenLocateExtCC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, Extrema_GFuncExtCC<Adaptor3d_Curve, Extrema_CurveTool, Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>": "Extrema_LocECC",
+"Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>": "Extrema_LocEPCOfLocateExtPC2d",
+"Extrema_GenLocateExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>": "Extrema_LocEPCOfLocateExtPC",
+"GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, BRepAdaptor_Curve, LProp_CurveUtils::DirectAccess>": "BRepLProp_CLProps",
+"GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>": "LProp_CLProps3d",
+"GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>": "GeomLProp_CLProps",
+"GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>": "GeomLProp_CLProps2d",
+"GeomLProp_SLPropsBase<BRepAdaptor_Surface, LProp_SurfaceUtils::DirectAccess>": "BRepLProp_SLProps",
+"GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>": "LProp_SLProps3d",
+"GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>": "GeomLProp_SLProps",
+"NCollection_LinearVector<NCollection_Vec2<double>>": "BVH_Array2d",
+"NCollection_LinearVector<NCollection_Vec2<float>>": "BVH_Array2f",
+"NCollection_LinearVector<NCollection_Vec2<int>>": "BVH_Array2i",
+"NCollection_LinearVector<NCollection_Vec3<double>>": "BVH_Array3d",
+"NCollection_LinearVector<NCollection_Vec3<float>>": "BVH_Array3f",
+"NCollection_LinearVector<NCollection_Vec3<int>>": "BVH_Array3i",
+"NCollection_LinearVector<NCollection_Vec4<double>>": "BVH_Array4d",
+"NCollection_LinearVector<NCollection_Vec4<float>>": "BVH_Array4f",
+"NCollection_LinearVector<NCollection_Vec4<int>>": "BVH_Array4i",
+"NCollection_Mat4<double>": "BVH_Mat4d",
+"NCollection_Mat4<float>": "BVH_Mat4f",
+"NCollection_PackedMap<int>": "TColStd_PackedMapOfInteger",
+"NCollection_UtfString<char>": "NCollection_String",
+"NCollection_Vec2<double>": "BVH_Vec2d",
+"NCollection_Vec2<float>": "BVH_Vec2f",
+"NCollection_Vec2<int>": "BVH_Vec2i",
+"NCollection_Vec3<double>": "BVH_Vec3d",
+"NCollection_Vec3<float>": "BVH_Vec3f",
+"NCollection_Vec3<int>": "BVH_Vec3i",
+"NCollection_Vec4<double>": "BVH_Vec4d",
+"NCollection_Vec4<float>": "BVH_Vec4f",
+"NCollection_Vec4<int>": "BVH_Vec4i",
+"OSD_StreamBuffer<std::iostream>": "OSD_IOStreamBuffer",
+"OSD_StreamBuffer<std::istream>": "OSD_IStreamBuffer",
+"OSD_StreamBuffer<std::ostream>": "OSD_OStreamBuffer",
+"math_VectorBase<double>": "math_Vector",
+"math_VectorBase<int>": "math_IntegerVector"
 }
 }

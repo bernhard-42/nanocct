@@ -482,3 +482,6 @@ of this evaluator when using fallback evaluation.
     nb::implicitly_convertible<std::decay_t<const Adaptor2d_Curve2d &>, Geom2dGridEval_Curve>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Curve> &>, Geom2dGridEval_Curve>();
 }
+
+void nanoocp_conversions_Geom2dGridEval(nb::module_ &m) {
+}

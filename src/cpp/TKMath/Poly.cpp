@@ -20,10 +20,14 @@
 #include <Poly_TriangulationParameters.hxx>
 #include <Poly_Triangulation.hxx>
 #include <Bnd_Box.hxx>
+#include <NCollection_AliasedArray.hxx>
 #include <NCollection_Array1.hxx>
 #include <NCollection_BaseAllocator.hxx>
+#include <NCollection_DynamicArray.hxx>
 #include <NCollection_HArray1.hxx>
+#include <NCollection_Iterator.hxx>
 #include <NCollection_List.hxx>
+#include <NCollection_Vec2.hxx>
 #include <NCollection_Vec3.hxx>
 #include <OSD_FileSystem.hxx>
 #include <Standard_Transient.hxx>
@@ -49,6 +53,17 @@ void nanoocp_declare_Poly(nb::module_ &m) {
 A Triangle is defined by a triplet of nodes within [1, Poly_Triangulation::NbNodes()] range.
 Each node is an index in the table of nodes specific to an existing
 triangulation of a shape, and represents a point on the surface.)nbdoc");
+    }
+    { nb::class_<NCollection_AliasedArray<>> cls(m, "NCollection_AliasedArray__", R"nbdoc(Defines an array of values of configurable size.
+For instance, this class allows defining an array of 32-bit or 64-bit integer values with
+bitness determined in runtime. The element size in bytes (stride) should be specified at
+construction time. Indexation starts from 0 index. As actual type of element varies at runtime,
+element accessors are defined as templates. Memory for array is allocated with the given
+alignment (template parameter).)nbdoc");
+    }
+    { nb::class_<Poly_ArrayOfNodes, NCollection_AliasedArray<>> cls(m, "Poly_ArrayOfNodes", R"nbdoc(Defines an array of 3D nodes of single/double precision configurable at construction time.)nbdoc");
+    }
+    { nb::class_<Poly_ArrayOfUVNodes, NCollection_AliasedArray<>> cls(m, "Poly_ArrayOfUVNodes", R"nbdoc(Defines an array of 2D nodes of single/double precision configurable at construction time.)nbdoc");
     }
     { nb::class_<Poly_Triangulation, Standard_Transient> cls(m, "Poly_Triangulation", R"nbdoc(Provides a triangulation for a surface, a set of surfaces, or more generally a shape.
 
@@ -176,6 +191,34 @@ allocator that is provided in the constructor of Poly_CoherentTriangulation. By 
 standard OCCT allocator (aka NCollection_BaseAllocator) is used. But if you need to increase the
 performance you can use NCollection_IncAllocator instead.
 </ul>)nbdoc");
+    }
+    { nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>> cls(m, "NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle", R"nbdoc(Helper class that allows to use NCollection iterators as STL iterators.
+NCollection iterator can be extended to STL iterator of any category by
+adding necessary methods: STL forward iterator requires IsEqual method,
+STL bidirectional iterator requires Previous method, and STL random access
+iterator requires Offset and Differ methods. See NCollection_DynamicArray as
+example of declaring custom STL iterators.)nbdoc");
+    }
+    { nb::class_<Poly_CoherentTriangulation::IteratorOfTriangle, NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>> cls(m.attr("Poly_CoherentTriangulation"), "IteratorOfTriangle", R"nbdoc(Subclass Iterator - allows to iterate all triangles skipping those that
+have been removed.)nbdoc");
+    }
+    { nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>> cls(m, "NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode", R"nbdoc(Helper class that allows to use NCollection iterators as STL iterators.
+NCollection iterator can be extended to STL iterator of any category by
+adding necessary methods: STL forward iterator requires IsEqual method,
+STL bidirectional iterator requires Previous method, and STL random access
+iterator requires Offset and Differ methods. See NCollection_DynamicArray as
+example of declaring custom STL iterators.)nbdoc");
+    }
+    { nb::class_<Poly_CoherentTriangulation::IteratorOfNode, NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>> cls(m.attr("Poly_CoherentTriangulation"), "IteratorOfNode", R"nbdoc(Subclass Iterator - allows to iterate all nodes skipping the free ones.)nbdoc");
+    }
+    { nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>> cls(m, "NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink", R"nbdoc(Helper class that allows to use NCollection iterators as STL iterators.
+NCollection iterator can be extended to STL iterator of any category by
+adding necessary methods: STL forward iterator requires IsEqual method,
+STL bidirectional iterator requires Previous method, and STL random access
+iterator requires Offset and Differ methods. See NCollection_DynamicArray as
+example of declaring custom STL iterators.)nbdoc");
+    }
+    { nb::class_<Poly_CoherentTriangulation::IteratorOfLink, NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>> cls(m.attr("Poly_CoherentTriangulation"), "IteratorOfLink", R"nbdoc(Subclass Iterator - allows to iterate all links skipping invalid ones.)nbdoc");
     }
     { nb::class_<Poly_CoherentTriangulation::TwoIntegers> cls(m.attr("Poly_CoherentTriangulation"), "TwoIntegers", R"nbdoc(Couple of integer indices (used in RemoveDegenerated()).)nbdoc");
     }
@@ -305,6 +348,72 @@ Raises Standard_OutOfRange if index is not in 1,2,3)nbdoc")
 Raises OutOfRange from Standard if Index is not in 1,2,3)nbdoc")
         .def("__call__", static_cast<int (Poly_Triangle::*)(const int) const>(&Poly_Triangle::operator()), nb::arg("Index"), nb::is_operator());
     nanoocp_implicit_copy_ctor<Poly_Triangle>(nb::borrow<nb::class_<Poly_Triangle>>(m.attr("Poly_Triangle")));
+    nb::borrow<nb::class_<NCollection_AliasedArray<>>>(m.attr("NCollection_AliasedArray__"))
+        .def(nb::init<int>(), nb::arg("theStride"), R"nbdoc(Empty constructor.)nbdoc")
+        .def(nb::init<const NCollection_AliasedArray<16> &>(), nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
+        .def(nb::init<int, int>(), nb::arg("theStride"), nb::arg("theLength"), R"nbdoc(Constructor)nbdoc")
+        .def("Stride", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Stride), R"nbdoc(Returns an element size in bytes.)nbdoc")
+        .def("Size", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Size), R"nbdoc(Size query)nbdoc")
+        .def("Length", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Length), R"nbdoc(Length query (the same as Size()))nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::IsEmpty), R"nbdoc(Return TRUE if array has zero length.)nbdoc")
+        .def("Lower", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Lower), R"nbdoc(Lower bound)nbdoc")
+        .def("Upper", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Upper), R"nbdoc(Upper bound)nbdoc")
+        .def("IsDeletable", static_cast<bool (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::IsDeletable), R"nbdoc(myDeletable flag)nbdoc")
+        .def("IsAllocated", static_cast<bool (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::IsAllocated), R"nbdoc(IsAllocated flag - for naming compatibility)nbdoc")
+        .def("SizeBytes", static_cast<size_t (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::SizeBytes), R"nbdoc(Return buffer size in bytes.)nbdoc")
+        .def("Assign", static_cast<NCollection_AliasedArray<16> & (NCollection_AliasedArray<>::*)(const NCollection_AliasedArray<16> &)>(&NCollection_AliasedArray<>::Assign), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Copies data of theOther array to this.
+This array should be pre-allocated and have the same length as theOther;
+otherwise exception Standard_DimensionMismatch is thrown.)nbdoc")
+        .def("Move", static_cast<NCollection_AliasedArray<16> & (NCollection_AliasedArray<>::*)(NCollection_AliasedArray<16> &)>(&NCollection_AliasedArray<>::Move), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Move assignment.
+This array will borrow all the data from theOther.
+The moved object will keep pointer to the memory buffer and
+range, but it will not free the buffer on destruction.)nbdoc")
+        .def("Resize", static_cast<void (NCollection_AliasedArray<>::*)(int, bool)>(&NCollection_AliasedArray<>::Resize), nb::arg("theLength"), nb::arg("theToCopyData"), R"nbdoc(Resizes the array to specified bounds.
+No re-allocation will be done if length of array does not change,
+but existing values will not be discarded if theToCopyData set to FALSE.
+@param theLength new length of array
+@param theToCopyData flag to copy existing data into new array)nbdoc");
+    nb::implicitly_convertible<std::decay_t<int>, NCollection_AliasedArray<>>();
+    nb::borrow<nb::class_<Poly_ArrayOfNodes>>(m.attr("Poly_ArrayOfNodes"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor of double-precision array.)nbdoc")
+        .def(nb::init<int>(), nb::arg("theLength"), R"nbdoc(Constructor of double-precision array.)nbdoc")
+        .def(nb::init<const Poly_ArrayOfNodes &>(), nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
+        .def(nb::init<const gp_Pnt &, int>(), nb::arg("theBegin"), nb::arg("theLength"), R"nbdoc(Constructor wrapping pre-allocated C-array of values without copying them.)nbdoc")
+        .def(nb::init<const NCollection_Vec3<float> &, int>(), nb::arg("theBegin"), nb::arg("theLength"), R"nbdoc(Constructor wrapping pre-allocated C-array of values without copying them.)nbdoc")
+        .def("IsDoublePrecision", static_cast<bool (Poly_ArrayOfNodes::*)() const>(&Poly_ArrayOfNodes::IsDoublePrecision), R"nbdoc(Returns TRUE if array defines nodes with double precision.)nbdoc")
+        .def("SetDoublePrecision", static_cast<void (Poly_ArrayOfNodes::*)(bool)>(&Poly_ArrayOfNodes::SetDoublePrecision), nb::arg("theIsDouble"), R"nbdoc(Sets if array should define nodes with double or single precision.
+Raises exception if array was already allocated.)nbdoc")
+        .def("Assign", static_cast<Poly_ArrayOfNodes & (Poly_ArrayOfNodes::*)(const Poly_ArrayOfNodes &)>(&Poly_ArrayOfNodes::Assign), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Copies data of theOther array to this.
+The arrays should have the same length,
+but may have different precision / number of components (data conversion will be applied in
+the latter case).)nbdoc")
+        .def("Move", static_cast<Poly_ArrayOfNodes & (Poly_ArrayOfNodes::*)(Poly_ArrayOfNodes &)>(&Poly_ArrayOfNodes::Move), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Move assignment.)nbdoc")
+        .def("Value", static_cast<gp_Pnt (Poly_ArrayOfNodes::*)(int) const>(&Poly_ArrayOfNodes::Value), nb::arg("theIndex"), R"nbdoc(A generalized accessor to point.)nbdoc")
+        .def("Value", static_cast<gp_Pnt (Poly_ArrayOfNodes::*)(const size_t) const>(&Poly_ArrayOfNodes::Value), nb::arg("theIndex"))
+        .def("SetValue", static_cast<void (Poly_ArrayOfNodes::*)(int, const gp_Pnt &)>(&Poly_ArrayOfNodes::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(A generalized setter for point.)nbdoc")
+        .def("SetValue", static_cast<void (Poly_ArrayOfNodes::*)(const size_t, const gp_Pnt &)>(&Poly_ArrayOfNodes::SetValue), nb::arg("theIndex"), nb::arg("theValue"))
+        .def("__getitem__", static_cast<gp_Pnt (Poly_ArrayOfNodes::*)(int) const>(&Poly_ArrayOfNodes::operator[]), nb::arg("theIndex"), R"nbdoc(operator[] - alias to Value)nbdoc", nb::is_operator());
+    nb::implicitly_convertible<std::decay_t<int>, Poly_ArrayOfNodes>();
+    nb::borrow<nb::class_<Poly_ArrayOfUVNodes>>(m.attr("Poly_ArrayOfUVNodes"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor of double-precision array.)nbdoc")
+        .def(nb::init<int>(), nb::arg("theLength"), R"nbdoc(Constructor of double-precision array.)nbdoc")
+        .def(nb::init<const Poly_ArrayOfUVNodes &>(), nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
+        .def(nb::init<const gp_Pnt2d &, int>(), nb::arg("theBegin"), nb::arg("theLength"), R"nbdoc(Constructor wrapping pre-allocated C-array of values without copying them.)nbdoc")
+        .def(nb::init<const NCollection_Vec2<float> &, int>(), nb::arg("theBegin"), nb::arg("theLength"), R"nbdoc(Constructor wrapping pre-allocated C-array of values without copying them.)nbdoc")
+        .def("IsDoublePrecision", static_cast<bool (Poly_ArrayOfUVNodes::*)() const>(&Poly_ArrayOfUVNodes::IsDoublePrecision), R"nbdoc(Returns TRUE if array defines nodes with double precision.)nbdoc")
+        .def("SetDoublePrecision", static_cast<void (Poly_ArrayOfUVNodes::*)(bool)>(&Poly_ArrayOfUVNodes::SetDoublePrecision), nb::arg("theIsDouble"), R"nbdoc(Sets if array should define nodes with double or single precision.
+Raises exception if array was already allocated.)nbdoc")
+        .def("Assign", static_cast<Poly_ArrayOfUVNodes & (Poly_ArrayOfUVNodes::*)(const Poly_ArrayOfUVNodes &)>(&Poly_ArrayOfUVNodes::Assign), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Copies data of theOther array to this.
+The arrays should have the same length,
+but may have different precision / number of components (data conversion will be applied in
+the latter case).)nbdoc")
+        .def("Move", static_cast<Poly_ArrayOfUVNodes & (Poly_ArrayOfUVNodes::*)(Poly_ArrayOfUVNodes &)>(&Poly_ArrayOfUVNodes::Move), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Move assignment.)nbdoc")
+        .def("Value", static_cast<gp_Pnt2d (Poly_ArrayOfUVNodes::*)(int) const>(&Poly_ArrayOfUVNodes::Value), nb::arg("theIndex"), R"nbdoc(A generalized accessor to point.)nbdoc")
+        .def("Value", static_cast<gp_Pnt2d (Poly_ArrayOfUVNodes::*)(const size_t) const>(&Poly_ArrayOfUVNodes::Value), nb::arg("theIndex"))
+        .def("SetValue", static_cast<void (Poly_ArrayOfUVNodes::*)(int, const gp_Pnt2d &)>(&Poly_ArrayOfUVNodes::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(A generalized setter for point.)nbdoc")
+        .def("SetValue", static_cast<void (Poly_ArrayOfUVNodes::*)(const size_t, const gp_Pnt2d &)>(&Poly_ArrayOfUVNodes::SetValue), nb::arg("theIndex"), nb::arg("theValue"))
+        .def("__getitem__", static_cast<gp_Pnt2d (Poly_ArrayOfUVNodes::*)(int) const>(&Poly_ArrayOfUVNodes::operator[]), nb::arg("theIndex"), R"nbdoc(operator[] - alias to Value)nbdoc", nb::is_operator());
+    nb::implicitly_convertible<std::decay_t<int>, Poly_ArrayOfUVNodes>();
     nb::borrow<nb::class_<Poly_Triangulation>>(m.attr("Poly_Triangulation"))
         .def(nb::new_([]() { return opencascade::handle<Poly_Triangulation>(new Poly_Triangulation()); }), R"nbdoc(Constructs an empty triangulation.)nbdoc")
         .def(nb::new_([](const occ::handle<Poly_Triangulation> & theTriangulation) { return opencascade::handle<Poly_Triangulation>(new Poly_Triangulation(theTriangulation)); }), nb::arg("theTriangulation"), R"nbdoc(Copy constructor for triangulation.)nbdoc")
@@ -666,6 +775,81 @@ objects)nbdoc")
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation>(nb::borrow<nb::class_<Poly_CoherentTriangulation>>(m.attr("Poly_CoherentTriangulation")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, Poly_CoherentTriangulation>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_CoherentTriangulation>();
+    nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle"))
+        .def(nb::init<>())
+        .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> &>(), nb::arg("theOther"))
+        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentTriangle> &>(), nb::arg("theList"))
+        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentTriangle> &, const typename NCollection_DynamicArray<Poly_CoherentTriangle>::iterator &>(), nb::arg("theList"), nb::arg("theOther"))
+        .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(NCollection_DynamicArray<Poly_CoherentTriangle> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Init), nb::arg("theList"))
+        .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(const NCollection_DynamicArray<Poly_CoherentTriangle> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Init), nb::arg("theList"))
+        .def("More", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::More))
+        .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(NCollection_DynamicArray<Poly_CoherentTriangle> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Initialize), nb::arg("theList"))
+        .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(const NCollection_DynamicArray<Poly_CoherentTriangle> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Initialize), nb::arg("theList"))
+        .def("ValueIter", static_cast<const typename NCollection_DynamicArray<Poly_CoherentTriangle>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::ValueIter))
+        .def("ChangeValueIter", static_cast<typename NCollection_DynamicArray<Poly_CoherentTriangle>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::ChangeValueIter), nb::rv_policy::reference_internal)
+        .def("EndIter", static_cast<const typename NCollection_DynamicArray<Poly_CoherentTriangle>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::EndIter))
+        .def("ChangeEndIter", static_cast<typename NCollection_DynamicArray<Poly_CoherentTriangle>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::ChangeEndIter), nb::rv_policy::reference_internal)
+        .def("Next", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Next))
+        .def("Value", static_cast<const typename NCollection_DynamicArray<Poly_CoherentTriangle>::const_reference (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() const>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Value))
+        .def("ChangeValue", static_cast<const typename NCollection_DynamicArray<Poly_CoherentTriangle>::reference (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)()>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::ChangeValue))
+        .def("__eq__", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> &) noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::operator==), nb::arg("theOther"), nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> &) noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::operator!=), nb::arg("theOther"), nb::is_operator());
+    nb::implicitly_convertible<std::decay_t<const NCollection_DynamicArray<Poly_CoherentTriangle> &>, NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>();
+    nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfTriangle>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfTriangle"))
+        .def(nb::init<const occ::handle<Poly_CoherentTriangulation> &>(), nb::arg("theTri"), R"nbdoc(Constructor)nbdoc")
+        .def("Next", static_cast<void (Poly_CoherentTriangulation::IteratorOfTriangle::*)() noexcept>(&Poly_CoherentTriangulation::IteratorOfTriangle::Next), R"nbdoc(Make step)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::IteratorOfTriangle>(nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfTriangle>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfTriangle")));
+    nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_CoherentTriangulation> &>, Poly_CoherentTriangulation::IteratorOfTriangle>();
+    nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode"))
+        .def(nb::init<>())
+        .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> &>(), nb::arg("theOther"))
+        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentNode> &>(), nb::arg("theList"))
+        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentNode> &, const typename NCollection_DynamicArray<Poly_CoherentNode>::iterator &>(), nb::arg("theList"), nb::arg("theOther"))
+        .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(NCollection_DynamicArray<Poly_CoherentNode> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Init), nb::arg("theList"))
+        .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(const NCollection_DynamicArray<Poly_CoherentNode> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Init), nb::arg("theList"))
+        .def("More", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::More))
+        .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(NCollection_DynamicArray<Poly_CoherentNode> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Initialize), nb::arg("theList"))
+        .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(const NCollection_DynamicArray<Poly_CoherentNode> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Initialize), nb::arg("theList"))
+        .def("ValueIter", static_cast<const typename NCollection_DynamicArray<Poly_CoherentNode>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::ValueIter))
+        .def("ChangeValueIter", static_cast<typename NCollection_DynamicArray<Poly_CoherentNode>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::ChangeValueIter), nb::rv_policy::reference_internal)
+        .def("EndIter", static_cast<const typename NCollection_DynamicArray<Poly_CoherentNode>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::EndIter))
+        .def("ChangeEndIter", static_cast<typename NCollection_DynamicArray<Poly_CoherentNode>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::ChangeEndIter), nb::rv_policy::reference_internal)
+        .def("Next", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Next))
+        .def("Value", static_cast<const typename NCollection_DynamicArray<Poly_CoherentNode>::const_reference (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() const>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Value))
+        .def("ChangeValue", static_cast<const typename NCollection_DynamicArray<Poly_CoherentNode>::reference (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)()>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::ChangeValue))
+        .def("__eq__", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> &) noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::operator==), nb::arg("theOther"), nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> &) noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::operator!=), nb::arg("theOther"), nb::is_operator());
+    nb::implicitly_convertible<std::decay_t<const NCollection_DynamicArray<Poly_CoherentNode> &>, NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>();
+    nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfNode>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfNode"))
+        .def(nb::init<const occ::handle<Poly_CoherentTriangulation> &>(), nb::arg("theTri"), R"nbdoc(Constructor)nbdoc")
+        .def("Next", static_cast<void (Poly_CoherentTriangulation::IteratorOfNode::*)() noexcept>(&Poly_CoherentTriangulation::IteratorOfNode::Next), R"nbdoc(Make step)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::IteratorOfNode>(nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfNode>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfNode")));
+    nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_CoherentTriangulation> &>, Poly_CoherentTriangulation::IteratorOfNode>();
+    nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink"))
+        .def(nb::init<>())
+        .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> &>(), nb::arg("theOther"))
+        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentLink> &>(), nb::arg("theList"))
+        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentLink> &, const typename NCollection_DynamicArray<Poly_CoherentLink>::iterator &>(), nb::arg("theList"), nb::arg("theOther"))
+        .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(NCollection_DynamicArray<Poly_CoherentLink> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Init), nb::arg("theList"))
+        .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(const NCollection_DynamicArray<Poly_CoherentLink> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Init), nb::arg("theList"))
+        .def("More", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::More))
+        .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(NCollection_DynamicArray<Poly_CoherentLink> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Initialize), nb::arg("theList"))
+        .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(const NCollection_DynamicArray<Poly_CoherentLink> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Initialize), nb::arg("theList"))
+        .def("ValueIter", static_cast<const typename NCollection_DynamicArray<Poly_CoherentLink>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::ValueIter))
+        .def("ChangeValueIter", static_cast<typename NCollection_DynamicArray<Poly_CoherentLink>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::ChangeValueIter), nb::rv_policy::reference_internal)
+        .def("EndIter", static_cast<const typename NCollection_DynamicArray<Poly_CoherentLink>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::EndIter))
+        .def("ChangeEndIter", static_cast<typename NCollection_DynamicArray<Poly_CoherentLink>::iterator & (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::ChangeEndIter), nb::rv_policy::reference_internal)
+        .def("Next", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Next))
+        .def("Value", static_cast<const typename NCollection_DynamicArray<Poly_CoherentLink>::const_reference (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() const>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Value))
+        .def("ChangeValue", static_cast<const typename NCollection_DynamicArray<Poly_CoherentLink>::reference (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)()>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::ChangeValue))
+        .def("__eq__", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> &) noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::operator==), nb::arg("theOther"), nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> &) noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::operator!=), nb::arg("theOther"), nb::is_operator());
+    nb::implicitly_convertible<std::decay_t<const NCollection_DynamicArray<Poly_CoherentLink> &>, NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>();
+    nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfLink>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfLink"))
+        .def(nb::init<const occ::handle<Poly_CoherentTriangulation> &>(), nb::arg("theTri"), R"nbdoc(Constructor)nbdoc")
+        .def("Next", static_cast<void (Poly_CoherentTriangulation::IteratorOfLink::*)() noexcept>(&Poly_CoherentTriangulation::IteratorOfLink::Next), R"nbdoc(Make step)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::IteratorOfLink>(nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfLink>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfLink")));
+    nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_CoherentTriangulation> &>, Poly_CoherentTriangulation::IteratorOfLink>();
     nb::borrow<nb::class_<Poly_CoherentTriangulation::TwoIntegers>>(m.attr("Poly_CoherentTriangulation").attr("TwoIntegers"))
         .def(nb::init<>())
         .def(nb::init<int, int>(), nb::arg("i0"), nb::arg("i1"));
@@ -963,4 +1147,7 @@ Initializes object with the given parameters.
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_TriangulationParameters::*)() const>(&Poly_TriangulationParameters::DynamicType));
     nanoocp_implicit_copy_ctor<Poly_TriangulationParameters>(nb::borrow<nb::class_<Poly_TriangulationParameters>>(m.attr("Poly_TriangulationParameters")));
     nb::implicitly_convertible<std::decay_t<const double>, Poly_TriangulationParameters>();
+}
+
+void nanoocp_conversions_Poly(nb::module_ &m) {
 }

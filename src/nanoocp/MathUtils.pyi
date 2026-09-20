@@ -96,6 +96,12 @@ class ScalarResult:
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
 
+    def __bool__(self) -> bool:
+        """
+        Conversion to bool for convenient checking.
+        Example: if (aResult) { use *aResult.Root; }
+        """
+
     @property
     def Status(self) -> Status:
         """Computation status"""
@@ -153,6 +159,9 @@ class PolyResult:
         @return root value
         """
 
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
+
     @property
     def Status(self) -> Status:
         """Computation status"""
@@ -188,6 +197,9 @@ class VectorResult:
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
+
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
 
     @property
     def Status(self) -> Status:
@@ -246,6 +258,9 @@ class LinearResult:
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
 
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
+
     @property
     def Status(self) -> Status:
         """Computation status"""
@@ -282,6 +297,9 @@ class LinearMultipleResult:
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
 
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
+
     @property
     def Status(self) -> Status:
         """Computation status"""
@@ -317,6 +335,9 @@ class EigenResult:
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
+
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
 
     @property
     def Status(self) -> Status:
@@ -360,6 +381,9 @@ class DecompResult:
 
     def IsDone(self) -> bool:
         """Returns true if decomposition succeeded."""
+
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
 
     @property
     def Status(self) -> Status:
@@ -410,6 +434,9 @@ class IntegResult:
 
     def IsDone(self) -> bool:
         """Returns true if integration succeeded."""
+
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
 
     @property
     def Status(self) -> Status:
@@ -467,6 +494,9 @@ class InverseResult:
 
     def IsDone(self) -> bool:
         """Returns true if inversion succeeded."""
+
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
 
     @property
     def Status(self) -> Status:

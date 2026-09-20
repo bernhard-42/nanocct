@@ -370,3 +370,6 @@ Warning: Used only if <me> IsRational)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Approx_SweepFunction::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Approx_SweepFunction::*)() const>(&Approx_SweepFunction::DynamicType));
 }
+
+void nanoocp_conversions_Approx(nb::module_ &m) {
+}

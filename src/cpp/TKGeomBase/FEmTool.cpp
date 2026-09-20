@@ -184,3 +184,6 @@ An exception is raised if the dimensions are different)nbdoc")
     nanoocp_implicit_copy_ctor<FEmTool_ProfileMatrix>(nb::borrow<nb::class_<FEmTool_ProfileMatrix>>(m.attr("FEmTool_ProfileMatrix")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<int> &>, FEmTool_ProfileMatrix>();
 }
+
+void nanoocp_conversions_FEmTool(nb::module_ &m) {
+}

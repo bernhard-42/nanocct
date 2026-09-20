@@ -40,3 +40,6 @@ stay with a constant sign and in the
 tolerances.)nbdoc");
     nanoocp_implicit_copy_ctor<Hermit>(nb::borrow<nb::class_<Hermit>>(m.attr("Hermit")));
 }
+
+void nanoocp_conversions_Hermit(nb::module_ &m) {
+}

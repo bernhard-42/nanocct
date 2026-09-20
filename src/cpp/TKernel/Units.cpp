@@ -569,3 +569,6 @@ the physical dimensions of the measurement.)nbdoc")
     m.def("pow", static_cast<occ::handle<Units_Token> (*)(const occ::handle<Units_Token> &, const occ::handle<Units_Token> &)>(&pow), nb::arg("arg0"), nb::arg("arg1"));
     m.def("pow", static_cast<occ::handle<Units_Token> (*)(const occ::handle<Units_Token> &, const double)>(&pow), nb::arg("arg0"), nb::arg("arg1"));
 }
+
+void nanoocp_conversions_Units(nb::module_ &m) {
+}

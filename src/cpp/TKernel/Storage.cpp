@@ -616,3 +616,6 @@ UseDefaultCallBack() is set.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_TypeData::*)() const>(&Storage_TypeData::DynamicType));
     nanoocp_implicit_copy_ctor<Storage_TypeData>(nb::borrow<nb::class_<Storage_TypeData>>(m.attr("Storage_TypeData")));
 }
+
+void nanoocp_conversions_Storage(nb::module_ &m) {
+}

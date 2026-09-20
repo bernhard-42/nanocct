@@ -678,3 +678,6 @@ current tolerance.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_TEdge::*)() const>(&BRep_TEdge::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_TEdge>(nb::borrow<nb::class_<BRep_TEdge>>(m.attr("BRep_TEdge")));
 }
+
+void nanoocp_conversions_BRep(nb::module_ &m) {
+}

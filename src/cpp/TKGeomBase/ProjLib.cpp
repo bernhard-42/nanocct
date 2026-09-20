@@ -646,3 +646,6 @@ restrictions of the sphere.)nbdoc");
     m.attr("ProjLib_HCompProjectedCurve") = m.attr("ProjLib_CompProjectedCurve");   // ProjLib_HCompProjectedCurve = ProjLib_CompProjectedCurve
     m.attr("ProjLib_HProjectedCurve") = m.attr("ProjLib_ProjectedCurve");   // ProjLib_HProjectedCurve = ProjLib_ProjectedCurve
 }
+
+void nanoocp_conversions_ProjLib(nb::module_ &m) {
+}

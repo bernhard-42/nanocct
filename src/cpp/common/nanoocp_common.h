@@ -129,6 +129,27 @@ template <typename T> void nanoocp_implicit_copy_ctor(nb::class_<T> cls) {
     }
 }
 
+// operator To() const of From: To gets a constructor from From (To(aFrom) in Python) and, unless the operator is
+// explicit, the implicit conversion C++ has (a From passes where a To is expected). From is taken by non-const
+// reference: some operators are not const (Message_Msg).
+template <typename From, typename To> void nanoocp_conversion(nb::handle to_type, bool implicit) {
+    auto cls = nb::borrow<nb::class_<To>>(to_type);
+    if constexpr (std::is_base_of_v<Standard_Transient, To>)
+        cls.def(nb::new_([](From &from) { return opencascade::handle<To>(new To(static_cast<To>(from))); }), nb::arg("theFrom"));
+    else
+        cls.def("__init__", [](To *self, From &from) { new (self) To(static_cast<To>(from)); }, nb::arg("theFrom"));
+    if (implicit)
+        nb::implicitly_convertible<From, To>();
+}
+
+// operator opencascade::handle<To>() const of From: the handle's object becomes the result of To(aFrom)
+template <typename From, typename To> void nanoocp_conversion_handle(nb::handle to_type, bool implicit) {
+    auto cls = nb::borrow<nb::class_<To>>(to_type);
+    cls.def(nb::new_([](From &from) { return static_cast<opencascade::handle<To>>(from); }), nb::arg("theFrom"));
+    if (implicit)
+        nb::implicitly_convertible<From, To>();
+}
+
 // Public data member: read/write when its type can be assigned to (a member with a deleted copy assignment, e.g. of
 // type BRepGraphInc_Storage, or a const member is read-only). Decided at compile time, the header does not say.
 template <typename T, typename D, typename... Extra>

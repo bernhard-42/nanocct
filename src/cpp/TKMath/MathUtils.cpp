@@ -269,7 +269,9 @@ void nanoocp_templates_MathUtils(nb::module_ &m) {
 void nanoocp_define_MathUtils(nb::module_ &m) {
     nanoocp_implicit_default_ctor<MathUtils::ScalarResult>(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")));
     nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult"))
-        .def("IsDone", static_cast<bool (MathUtils::ScalarResult::*)() const>(&MathUtils::ScalarResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::ScalarResult::*)() const>(&MathUtils::ScalarResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::ScalarResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.
+Example: if (aResult) { use *aResult.Root; })nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::ScalarResult>(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")), "Status", &MathUtils::ScalarResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")), "NbIterations", &MathUtils::ScalarResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc");
@@ -281,14 +283,16 @@ void nanoocp_define_MathUtils(nb::module_ &m) {
         .def("IsDone", static_cast<bool (MathUtils::PolyResult::*)() const>(&MathUtils::PolyResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
         .def("__getitem__", static_cast<double (MathUtils::PolyResult::*)(int) const>(&MathUtils::PolyResult::operator[]), nb::arg("theIndex"), R"nbdoc(Access root by index (0-based).
 @param theIndex root index (0 to NbRoots-1)
-@return root value)nbdoc", nb::is_operator());
+@return root value)nbdoc", nb::is_operator())
+        .def("__bool__", [](const MathUtils::PolyResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::PolyResult>(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")), "Status", &MathUtils::PolyResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")), "NbRoots", &MathUtils::PolyResult::NbRoots, R"nbdoc(Number of real roots found)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")), "Roots", &MathUtils::PolyResult::Roots, R"nbdoc(Array of real roots (sorted))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::VectorResult>(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")));
     nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult"))
-        .def("IsDone", static_cast<bool (MathUtils::VectorResult::*)() const>(&MathUtils::VectorResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::VectorResult::*)() const>(&MathUtils::VectorResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::VectorResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::VectorResult>(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "Status", &MathUtils::VectorResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "NbIterations", &MathUtils::VectorResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc");
@@ -298,21 +302,24 @@ void nanoocp_define_MathUtils(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "Jacobian", &MathUtils::VectorResult::Jacobian, R"nbdoc(Jacobian at solution (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::LinearResult>(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")));
     nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult"))
-        .def("IsDone", static_cast<bool (MathUtils::LinearResult::*)() const>(&MathUtils::LinearResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::LinearResult::*)() const>(&MathUtils::LinearResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::LinearResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::LinearResult>(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")), "Status", &MathUtils::LinearResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")), "Solution", &MathUtils::LinearResult::Solution, R"nbdoc(Solution vector X in AX = B (set by solver))nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")), "Determinant", &MathUtils::LinearResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::LinearMultipleResult>(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")));
     nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult"))
-        .def("IsDone", static_cast<bool (MathUtils::LinearMultipleResult::*)() const>(&MathUtils::LinearMultipleResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::LinearMultipleResult::*)() const>(&MathUtils::LinearMultipleResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::LinearMultipleResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::LinearMultipleResult>(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")), "Status", &MathUtils::LinearMultipleResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")), "Solutions", &MathUtils::LinearMultipleResult::Solutions, R"nbdoc(Solution matrix X in AX = B (set by solver))nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")), "Determinant", &MathUtils::LinearMultipleResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::EigenResult>(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")));
     nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult"))
-        .def("IsDone", static_cast<bool (MathUtils::EigenResult::*)() const>(&MathUtils::EigenResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::EigenResult::*)() const>(&MathUtils::EigenResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::EigenResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::EigenResult>(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")), "Status", &MathUtils::EigenResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")), "NbIterations", &MathUtils::EigenResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc");
@@ -320,7 +327,8 @@ void nanoocp_define_MathUtils(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")), "EigenVectors", &MathUtils::EigenResult::EigenVectors, R"nbdoc(Computed eigenvectors (set by solver))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::DecompResult>(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")));
     nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult"))
-        .def("IsDone", static_cast<bool (MathUtils::DecompResult::*)() const>(&MathUtils::DecompResult::IsDone), R"nbdoc(Returns true if decomposition succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::DecompResult::*)() const>(&MathUtils::DecompResult::IsDone), R"nbdoc(Returns true if decomposition succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::DecompResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::DecompResult>(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "Status", &MathUtils::DecompResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "L", &MathUtils::DecompResult::L, R"nbdoc(Lower triangular (LU) or left singular vectors (SVD))nbdoc");
@@ -329,7 +337,8 @@ void nanoocp_define_MathUtils(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "Determinant", &MathUtils::DecompResult::Determinant, R"nbdoc(Matrix determinant (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::IntegResult>(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")));
     nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult"))
-        .def("IsDone", static_cast<bool (MathUtils::IntegResult::*)() const>(&MathUtils::IntegResult::IsDone), R"nbdoc(Returns true if integration succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::IntegResult::*)() const>(&MathUtils::IntegResult::IsDone), R"nbdoc(Returns true if integration succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::IntegResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::IntegResult>(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "Status", &MathUtils::IntegResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "NbIterations", &MathUtils::IntegResult::NbIterations, R"nbdoc(Number of adaptive iterations)nbdoc");
@@ -339,7 +348,8 @@ void nanoocp_define_MathUtils(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "RelativeError", &MathUtils::IntegResult::RelativeError, R"nbdoc(Estimated relative error (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::InverseResult>(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")));
     nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult"))
-        .def("IsDone", static_cast<bool (MathUtils::InverseResult::*)() const>(&MathUtils::InverseResult::IsDone), R"nbdoc(Returns true if inversion succeeded.)nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::InverseResult::*)() const>(&MathUtils::InverseResult::IsDone), R"nbdoc(Returns true if inversion succeeded.)nbdoc")
+        .def("__bool__", [](const MathUtils::InverseResult &self) { return static_cast<bool>(self); }, R"nbdoc(Conversion to bool for convenient checking.)nbdoc");
     nanoocp_implicit_copy_ctor<MathUtils::InverseResult>(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")), "Status", &MathUtils::InverseResult::Status, R"nbdoc(Computation status)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")), "Inverse", &MathUtils::InverseResult::Inverse, R"nbdoc(Computed inverse matrix)nbdoc");
@@ -926,4 +936,7 @@ Given phi(0), phi'(0), and phi(alpha1), finds minimum of quadratic fit.
 @param thePoints output vector for points
 @param theWeights output vector for weights
 @return true if successful)nbdoc");
+}
+
+void nanoocp_conversions_MathUtils(nb::module_ &m) {
 }

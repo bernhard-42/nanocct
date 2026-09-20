@@ -41,6 +41,16 @@ class Constructor:
 
 
 @dataclass
+class Conversion:
+    """operator T() const: kind is bool | int | float (Python dunder) or class | handle (a constructor of T from this class)."""
+    kind: str
+    target: str                 # C++ spelling of T (the pointee for handle)
+    target_class: str           # canonical class/enum name of T, "" for scalars
+    is_explicit: bool
+    doc: str
+
+
+@dataclass
 class Field:
     name: str
     type: str
@@ -71,6 +81,7 @@ class Class:
     is_exception: bool          # derives (transitively) from Standard_Failure -> bound as Python exception
     is_abstract: bool
     scope: tuple[str, ...] = ()       # Python attribute path of the enclosing namespace(s)/class(es), relative to the package module
+                                      # (scope + py_name = the full path; recorded in the manifest when parse.py_path cannot derive it)
     outer: str = ""                   # C++ name of the enclosing class for a nested class (declared after it)
     has_declared_ctor: bool = False   # any constructor at any access level (suppresses the implicit default ctor)
     template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
@@ -79,6 +90,7 @@ class Class:
     ctors: list[Constructor] = field(default_factory=list)
     methods: list[Method] = field(default_factory=list)
     fields: list[Field] = field(default_factory=list)
+    conversions: list[Conversion] = field(default_factory=list)
     enums: list[Enum] = field(default_factory=list)
     nested: list[Class] = field(default_factory=list)  # public nested classes (flattened into PackageIR.classes by the parser)
     skipped: list[str] = field(default_factory=list)   # human readable report lines
@@ -137,5 +149,6 @@ class PackageIR:
     constants: list[Constant] = field(default_factory=list)    # namespace-level constexpr values
     namespaces: list[tuple[str, ...]] = field(default_factory=list)   # C++ namespaces bound as submodules (Python paths, outer first)
     hashable: set[str] = field(default_factory=set)   # classes with a std::hash<T> specialisation in this package's headers -> __hash__
+    hashable_templates: set[str] = field(default_factory=set)   # class templates with a partial std::hash<Tmpl<...>> specialisation
     instances: dict[str, TemplateInstance] = field(default_factory=dict)  # NCollection instances used in bound signatures
     report: list[str] = field(default_factory=list)

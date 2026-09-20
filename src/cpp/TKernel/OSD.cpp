@@ -1193,3 +1193,6 @@ the Timer.)nbdoc")
 @param theMode opening mode
 @return file descriptor on success or -1 on error)nbdoc");
 }
+
+void nanoocp_conversions_OSD(nb::module_ &m) {
+}

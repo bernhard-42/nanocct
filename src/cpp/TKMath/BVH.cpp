@@ -323,13 +323,9 @@ void nanoocp_define_BVH(nb::module_ &m) {
         .def("y", static_cast<int (NCollection_Vec2<int>::*)() const noexcept>(&NCollection_Vec2<int>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
         .def("xy", static_cast<NCollection_Vec2<int> (NCollection_Vec2<int>::*)() const noexcept>(&NCollection_Vec2<int>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
         .def("yx", static_cast<NCollection_Vec2<int> (NCollection_Vec2<int>::*)() const noexcept>(&NCollection_Vec2<int>::yx), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("x", static_cast<int & (NCollection_Vec2<int>::*)() noexcept>(&NCollection_Vec2<int>::x), R"nbdoc(Alias to 1st component as X coordinate in XY.)nbdoc")
-        .def("y", static_cast<int & (NCollection_Vec2<int>::*)() noexcept>(&NCollection_Vec2<int>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec2<int>::*)(const NCollection_Vec2<int> &) const noexcept>(&NCollection_Vec2<int>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec2<int>::*)(const NCollection_Vec2<int> &) const noexcept>(&NCollection_Vec2<int>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec2<int>::*)(const NCollection_Vec2<int> &) const noexcept>(&NCollection_Vec2<int>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const int * (NCollection_Vec2<int>::*)() const noexcept>(&NCollection_Vec2<int>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<int * (NCollection_Vec2<int>::*)() noexcept>(&NCollection_Vec2<int>::ChangeData))
         .def("__iadd__", [](NCollection_Vec2<int> &self, const NCollection_Vec2<int> & theAdd) -> NCollection_Vec2<int> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec2<int> &self, const NCollection_Vec2<int> & theDec) -> NCollection_Vec2<int> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec2<int> (NCollection_Vec2<int>::*)() const noexcept>(&NCollection_Vec2<int>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
@@ -379,17 +375,9 @@ This method may be used for performance tricks.)nbdoc")
         .def("yzx", static_cast<NCollection_Vec3<int> (NCollection_Vec3<int>::*)() const noexcept>(&NCollection_Vec3<int>::yzx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
         .def("zyx", static_cast<NCollection_Vec3<int> (NCollection_Vec3<int>::*)() const noexcept>(&NCollection_Vec3<int>::zyx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
         .def("zxy", static_cast<NCollection_Vec3<int> (NCollection_Vec3<int>::*)() const noexcept>(&NCollection_Vec3<int>::zxy), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("x", static_cast<int & (NCollection_Vec3<int>::*)() noexcept>(&NCollection_Vec3<int>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZ.)nbdoc")
-        .def("r", static_cast<int & (NCollection_Vec3<int>::*)() noexcept>(&NCollection_Vec3<int>::r), R"nbdoc(Alias to 1st component as RED channel in RGB.)nbdoc")
-        .def("y", static_cast<int & (NCollection_Vec3<int>::*)() noexcept>(&NCollection_Vec3<int>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZ.)nbdoc")
-        .def("g", static_cast<int & (NCollection_Vec3<int>::*)() noexcept>(&NCollection_Vec3<int>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGB.)nbdoc")
-        .def("z", static_cast<int & (NCollection_Vec3<int>::*)() noexcept>(&NCollection_Vec3<int>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZ.)nbdoc")
-        .def("b", static_cast<int & (NCollection_Vec3<int>::*)() noexcept>(&NCollection_Vec3<int>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGB.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec3<int>::*)(const NCollection_Vec3<int> &) const noexcept>(&NCollection_Vec3<int>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec3<int>::*)(const NCollection_Vec3<int> &) const noexcept>(&NCollection_Vec3<int>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec3<int>::*)(const NCollection_Vec3<int> &) const noexcept>(&NCollection_Vec3<int>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const int * (NCollection_Vec3<int>::*)() const noexcept>(&NCollection_Vec3<int>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<int * (NCollection_Vec3<int>::*)() noexcept>(&NCollection_Vec3<int>::ChangeData))
         .def("__iadd__", [](NCollection_Vec3<int> &self, const NCollection_Vec3<int> & theAdd) -> NCollection_Vec3<int> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec3<int> (NCollection_Vec3<int>::*)() const noexcept>(&NCollection_Vec3<int>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec3<int> &self, const NCollection_Vec3<int> & theDec) -> NCollection_Vec3<int> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
@@ -479,19 +467,9 @@ This method may be used for performance tricks.)nbdoc")
         .def("gbr", static_cast<NCollection_Vec3<int> (NCollection_Vec4<int>::*)() const noexcept>(&NCollection_Vec4<int>::gbr), R"nbdoc(@return RGB components as vector)nbdoc")
         .def("bgr", static_cast<NCollection_Vec3<int> (NCollection_Vec4<int>::*)() const noexcept>(&NCollection_Vec4<int>::bgr), R"nbdoc(@return RGB components as vector)nbdoc")
         .def("brg", static_cast<NCollection_Vec3<int> (NCollection_Vec4<int>::*)() const noexcept>(&NCollection_Vec4<int>::brg), R"nbdoc(@return RGB components as vector)nbdoc")
-        .def("x", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZW.)nbdoc")
-        .def("r", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::r), R"nbdoc(Alias to 1st component as RED channel in RGBA.)nbdoc")
-        .def("y", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZW.)nbdoc")
-        .def("g", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGBA.)nbdoc")
-        .def("z", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZW.)nbdoc")
-        .def("b", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGBA.)nbdoc")
-        .def("w", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::w), R"nbdoc(Alias to 4th component as W coordinate in XYZW.)nbdoc")
-        .def("a", static_cast<int & (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::a), R"nbdoc(Alias to 4th component as ALPHA channel in RGBA.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec4<int>::*)(const NCollection_Vec4<int> &) const noexcept>(&NCollection_Vec4<int>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec4<int>::*)(const NCollection_Vec4<int> &) const noexcept>(&NCollection_Vec4<int>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec4<int>::*)(const NCollection_Vec4<int> &) const noexcept>(&NCollection_Vec4<int>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const int * (NCollection_Vec4<int>::*)() const noexcept>(&NCollection_Vec4<int>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<int * (NCollection_Vec4<int>::*)() noexcept>(&NCollection_Vec4<int>::ChangeData))
         .def("__iadd__", [](NCollection_Vec4<int> &self, const NCollection_Vec4<int> & theAdd) -> NCollection_Vec4<int> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec4<int> (NCollection_Vec4<int>::*)() const noexcept>(&NCollection_Vec4<int>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec4<int> &self, const NCollection_Vec4<int> & theDec) -> NCollection_Vec4<int> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
@@ -521,8 +499,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec2<int> * (NCollection_LinearVector<NCollection_Vec2<int>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec2<int>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec2<int> * (NCollection_LinearVector<NCollection_Vec2<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<int>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec2<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<int>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec2<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<int>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec2<int>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -542,22 +518,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<int>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<int>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<int>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<int>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<int>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<int>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<int>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<int>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<int>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)() const>(&NCollection_LinearVector<NCollection_Vec2<int>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<int>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<int>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)() const>(&NCollection_LinearVector<NCollection_Vec2<int>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<int>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const NCollection_Vec2<int> &)>(&NCollection_LinearVector<NCollection_Vec2<int>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<int>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const NCollection_Vec2<int> &)>(&NCollection_LinearVector<NCollection_Vec2<int>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<int>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<int>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t, const NCollection_Vec2<int> &)>(&NCollection_LinearVector<NCollection_Vec2<int>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec2<int> & (NCollection_LinearVector<NCollection_Vec2<int>>::*)(const size_t, const NCollection_Vec2<int> &)>(&NCollection_LinearVector<NCollection_Vec2<int>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -589,8 +565,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec3<int> * (NCollection_LinearVector<NCollection_Vec3<int>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec3<int>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec3<int> * (NCollection_LinearVector<NCollection_Vec3<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<int>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec3<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<int>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec3<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<int>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec3<int>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -610,22 +584,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<int>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<int>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<int>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<int>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<int>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<int>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<int>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<int>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<int>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)() const>(&NCollection_LinearVector<NCollection_Vec3<int>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<int>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<int>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)() const>(&NCollection_LinearVector<NCollection_Vec3<int>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<int>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const NCollection_Vec3<int> &)>(&NCollection_LinearVector<NCollection_Vec3<int>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<int>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const NCollection_Vec3<int> &)>(&NCollection_LinearVector<NCollection_Vec3<int>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<int>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<int>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t, const NCollection_Vec3<int> &)>(&NCollection_LinearVector<NCollection_Vec3<int>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec3<int> & (NCollection_LinearVector<NCollection_Vec3<int>>::*)(const size_t, const NCollection_Vec3<int> &)>(&NCollection_LinearVector<NCollection_Vec3<int>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -657,8 +631,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec4<int> * (NCollection_LinearVector<NCollection_Vec4<int>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec4<int>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec4<int> * (NCollection_LinearVector<NCollection_Vec4<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<int>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec4<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<int>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec4<int>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<int>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec4<int>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -678,22 +650,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<int>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<int>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<int>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<int>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<int>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<int>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<int>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<int>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<int>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)() const>(&NCollection_LinearVector<NCollection_Vec4<int>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<int>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<int>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)() const>(&NCollection_LinearVector<NCollection_Vec4<int>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<int>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const NCollection_Vec4<int> &)>(&NCollection_LinearVector<NCollection_Vec4<int>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<int>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const NCollection_Vec4<int> &)>(&NCollection_LinearVector<NCollection_Vec4<int>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<int>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<int>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t, const NCollection_Vec4<int> &)>(&NCollection_LinearVector<NCollection_Vec4<int>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec4<int> & (NCollection_LinearVector<NCollection_Vec4<int>>::*)(const size_t, const NCollection_Vec4<int> &)>(&NCollection_LinearVector<NCollection_Vec4<int>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -724,13 +696,9 @@ Modifying the vector or the array may invalidate the shared buffer.
         .def("y", static_cast<float (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
         .def("xy", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
         .def("yx", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::yx), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("x", static_cast<float & (NCollection_Vec2<float>::*)() noexcept>(&NCollection_Vec2<float>::x), R"nbdoc(Alias to 1st component as X coordinate in XY.)nbdoc")
-        .def("y", static_cast<float & (NCollection_Vec2<float>::*)() noexcept>(&NCollection_Vec2<float>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const float * (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<float * (NCollection_Vec2<float>::*)() noexcept>(&NCollection_Vec2<float>::ChangeData))
         .def("__iadd__", [](NCollection_Vec2<float> &self, const NCollection_Vec2<float> & theAdd) -> NCollection_Vec2<float> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec2<float> &self, const NCollection_Vec2<float> & theDec) -> NCollection_Vec2<float> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
@@ -780,17 +748,9 @@ This method may be used for performance tricks.)nbdoc")
         .def("yzx", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::yzx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
         .def("zyx", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::zyx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
         .def("zxy", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::zxy), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("x", static_cast<float & (NCollection_Vec3<float>::*)() noexcept>(&NCollection_Vec3<float>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZ.)nbdoc")
-        .def("r", static_cast<float & (NCollection_Vec3<float>::*)() noexcept>(&NCollection_Vec3<float>::r), R"nbdoc(Alias to 1st component as RED channel in RGB.)nbdoc")
-        .def("y", static_cast<float & (NCollection_Vec3<float>::*)() noexcept>(&NCollection_Vec3<float>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZ.)nbdoc")
-        .def("g", static_cast<float & (NCollection_Vec3<float>::*)() noexcept>(&NCollection_Vec3<float>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGB.)nbdoc")
-        .def("z", static_cast<float & (NCollection_Vec3<float>::*)() noexcept>(&NCollection_Vec3<float>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZ.)nbdoc")
-        .def("b", static_cast<float & (NCollection_Vec3<float>::*)() noexcept>(&NCollection_Vec3<float>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGB.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const float * (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<float * (NCollection_Vec3<float>::*)() noexcept>(&NCollection_Vec3<float>::ChangeData))
         .def("__iadd__", [](NCollection_Vec3<float> &self, const NCollection_Vec3<float> & theAdd) -> NCollection_Vec3<float> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec3<float> &self, const NCollection_Vec3<float> & theDec) -> NCollection_Vec3<float> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
@@ -880,19 +840,9 @@ This method may be used for performance tricks.)nbdoc")
         .def("gbr", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::gbr), R"nbdoc(@return RGB components as vector)nbdoc")
         .def("bgr", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::bgr), R"nbdoc(@return RGB components as vector)nbdoc")
         .def("brg", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::brg), R"nbdoc(@return RGB components as vector)nbdoc")
-        .def("x", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZW.)nbdoc")
-        .def("r", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::r), R"nbdoc(Alias to 1st component as RED channel in RGBA.)nbdoc")
-        .def("y", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZW.)nbdoc")
-        .def("g", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGBA.)nbdoc")
-        .def("z", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZW.)nbdoc")
-        .def("b", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGBA.)nbdoc")
-        .def("w", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::w), R"nbdoc(Alias to 4th component as W coordinate in XYZW.)nbdoc")
-        .def("a", static_cast<float & (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::a), R"nbdoc(Alias to 4th component as ALPHA channel in RGBA.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const float * (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<float * (NCollection_Vec4<float>::*)() noexcept>(&NCollection_Vec4<float>::ChangeData))
         .def("__iadd__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theAdd) -> NCollection_Vec4<float> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theDec) -> NCollection_Vec4<float> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
@@ -922,8 +872,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec2<float> * (NCollection_LinearVector<NCollection_Vec2<float>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec2<float>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec2<float> * (NCollection_LinearVector<NCollection_Vec2<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<float>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec2<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<float>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec2<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<float>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec2<float>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -943,22 +891,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<float>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<float>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<float>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<float>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<float>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<float>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<float>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<float>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<float>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)() const>(&NCollection_LinearVector<NCollection_Vec2<float>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<float>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<float>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)() const>(&NCollection_LinearVector<NCollection_Vec2<float>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<float>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const NCollection_Vec2<float> &)>(&NCollection_LinearVector<NCollection_Vec2<float>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<float>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const NCollection_Vec2<float> &)>(&NCollection_LinearVector<NCollection_Vec2<float>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<float>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<float>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t, const NCollection_Vec2<float> &)>(&NCollection_LinearVector<NCollection_Vec2<float>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec2<float> & (NCollection_LinearVector<NCollection_Vec2<float>>::*)(const size_t, const NCollection_Vec2<float> &)>(&NCollection_LinearVector<NCollection_Vec2<float>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -990,8 +938,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec3<float> * (NCollection_LinearVector<NCollection_Vec3<float>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec3<float>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec3<float> * (NCollection_LinearVector<NCollection_Vec3<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<float>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec3<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<float>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec3<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<float>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec3<float>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -1011,22 +957,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<float>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<float>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<float>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<float>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<float>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<float>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<float>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<float>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<float>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)() const>(&NCollection_LinearVector<NCollection_Vec3<float>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<float>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<float>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)() const>(&NCollection_LinearVector<NCollection_Vec3<float>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<float>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const NCollection_Vec3<float> &)>(&NCollection_LinearVector<NCollection_Vec3<float>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<float>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const NCollection_Vec3<float> &)>(&NCollection_LinearVector<NCollection_Vec3<float>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<float>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<float>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t, const NCollection_Vec3<float> &)>(&NCollection_LinearVector<NCollection_Vec3<float>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec3<float> & (NCollection_LinearVector<NCollection_Vec3<float>>::*)(const size_t, const NCollection_Vec3<float> &)>(&NCollection_LinearVector<NCollection_Vec3<float>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -1058,8 +1004,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec4<float> * (NCollection_LinearVector<NCollection_Vec4<float>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec4<float>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec4<float> * (NCollection_LinearVector<NCollection_Vec4<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<float>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec4<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<float>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec4<float>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<float>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec4<float>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -1079,22 +1023,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<float>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<float>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<float>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<float>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<float>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<float>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<float>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<float>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<float>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)() const>(&NCollection_LinearVector<NCollection_Vec4<float>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<float>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<float>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)() const>(&NCollection_LinearVector<NCollection_Vec4<float>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<float>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const NCollection_Vec4<float> &)>(&NCollection_LinearVector<NCollection_Vec4<float>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<float>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const NCollection_Vec4<float> &)>(&NCollection_LinearVector<NCollection_Vec4<float>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<float>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<float>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t, const NCollection_Vec4<float> &)>(&NCollection_LinearVector<NCollection_Vec4<float>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec4<float> & (NCollection_LinearVector<NCollection_Vec4<float>>::*)(const size_t, const NCollection_Vec4<float> &)>(&NCollection_LinearVector<NCollection_Vec4<float>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -1125,13 +1069,9 @@ Modifying the vector or the array may invalidate the shared buffer.
         .def("y", static_cast<double (NCollection_Vec2<double>::*)() const noexcept>(&NCollection_Vec2<double>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
         .def("xy", static_cast<NCollection_Vec2<double> (NCollection_Vec2<double>::*)() const noexcept>(&NCollection_Vec2<double>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
         .def("yx", static_cast<NCollection_Vec2<double> (NCollection_Vec2<double>::*)() const noexcept>(&NCollection_Vec2<double>::yx), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("x", static_cast<double & (NCollection_Vec2<double>::*)() noexcept>(&NCollection_Vec2<double>::x), R"nbdoc(Alias to 1st component as X coordinate in XY.)nbdoc")
-        .def("y", static_cast<double & (NCollection_Vec2<double>::*)() noexcept>(&NCollection_Vec2<double>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec2<double>::*)(const NCollection_Vec2<double> &) const noexcept>(&NCollection_Vec2<double>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec2<double>::*)(const NCollection_Vec2<double> &) const noexcept>(&NCollection_Vec2<double>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec2<double>::*)(const NCollection_Vec2<double> &) const noexcept>(&NCollection_Vec2<double>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const double * (NCollection_Vec2<double>::*)() const noexcept>(&NCollection_Vec2<double>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<double * (NCollection_Vec2<double>::*)() noexcept>(&NCollection_Vec2<double>::ChangeData))
         .def("__iadd__", [](NCollection_Vec2<double> &self, const NCollection_Vec2<double> & theAdd) -> NCollection_Vec2<double> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec2<double> &self, const NCollection_Vec2<double> & theDec) -> NCollection_Vec2<double> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec2<double> (NCollection_Vec2<double>::*)() const noexcept>(&NCollection_Vec2<double>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
@@ -1181,17 +1121,9 @@ This method may be used for performance tricks.)nbdoc")
         .def("yzx", static_cast<NCollection_Vec3<double> (NCollection_Vec3<double>::*)() const noexcept>(&NCollection_Vec3<double>::yzx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
         .def("zyx", static_cast<NCollection_Vec3<double> (NCollection_Vec3<double>::*)() const noexcept>(&NCollection_Vec3<double>::zyx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
         .def("zxy", static_cast<NCollection_Vec3<double> (NCollection_Vec3<double>::*)() const noexcept>(&NCollection_Vec3<double>::zxy), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("x", static_cast<double & (NCollection_Vec3<double>::*)() noexcept>(&NCollection_Vec3<double>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZ.)nbdoc")
-        .def("r", static_cast<double & (NCollection_Vec3<double>::*)() noexcept>(&NCollection_Vec3<double>::r), R"nbdoc(Alias to 1st component as RED channel in RGB.)nbdoc")
-        .def("y", static_cast<double & (NCollection_Vec3<double>::*)() noexcept>(&NCollection_Vec3<double>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZ.)nbdoc")
-        .def("g", static_cast<double & (NCollection_Vec3<double>::*)() noexcept>(&NCollection_Vec3<double>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGB.)nbdoc")
-        .def("z", static_cast<double & (NCollection_Vec3<double>::*)() noexcept>(&NCollection_Vec3<double>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZ.)nbdoc")
-        .def("b", static_cast<double & (NCollection_Vec3<double>::*)() noexcept>(&NCollection_Vec3<double>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGB.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec3<double>::*)(const NCollection_Vec3<double> &) const noexcept>(&NCollection_Vec3<double>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec3<double>::*)(const NCollection_Vec3<double> &) const noexcept>(&NCollection_Vec3<double>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec3<double>::*)(const NCollection_Vec3<double> &) const noexcept>(&NCollection_Vec3<double>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const double * (NCollection_Vec3<double>::*)() const noexcept>(&NCollection_Vec3<double>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<double * (NCollection_Vec3<double>::*)() noexcept>(&NCollection_Vec3<double>::ChangeData))
         .def("__iadd__", [](NCollection_Vec3<double> &self, const NCollection_Vec3<double> & theAdd) -> NCollection_Vec3<double> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec3<double> (NCollection_Vec3<double>::*)() const noexcept>(&NCollection_Vec3<double>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec3<double> &self, const NCollection_Vec3<double> & theDec) -> NCollection_Vec3<double> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
@@ -1281,19 +1213,9 @@ This method may be used for performance tricks.)nbdoc")
         .def("gbr", static_cast<NCollection_Vec3<double> (NCollection_Vec4<double>::*)() const noexcept>(&NCollection_Vec4<double>::gbr), R"nbdoc(@return RGB components as vector)nbdoc")
         .def("bgr", static_cast<NCollection_Vec3<double> (NCollection_Vec4<double>::*)() const noexcept>(&NCollection_Vec4<double>::bgr), R"nbdoc(@return RGB components as vector)nbdoc")
         .def("brg", static_cast<NCollection_Vec3<double> (NCollection_Vec4<double>::*)() const noexcept>(&NCollection_Vec4<double>::brg), R"nbdoc(@return RGB components as vector)nbdoc")
-        .def("x", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZW.)nbdoc")
-        .def("r", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::r), R"nbdoc(Alias to 1st component as RED channel in RGBA.)nbdoc")
-        .def("y", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZW.)nbdoc")
-        .def("g", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGBA.)nbdoc")
-        .def("z", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZW.)nbdoc")
-        .def("b", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGBA.)nbdoc")
-        .def("w", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::w), R"nbdoc(Alias to 4th component as W coordinate in XYZW.)nbdoc")
-        .def("a", static_cast<double & (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::a), R"nbdoc(Alias to 4th component as ALPHA channel in RGBA.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Vec4<double>::*)(const NCollection_Vec4<double> &) const noexcept>(&NCollection_Vec4<double>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Vec4<double>::*)(const NCollection_Vec4<double> &) const noexcept>(&NCollection_Vec4<double>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Vec4<double>::*)(const NCollection_Vec4<double> &) const noexcept>(&NCollection_Vec4<double>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const double * (NCollection_Vec4<double>::*)() const noexcept>(&NCollection_Vec4<double>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange).)nbdoc")
-        .def("ChangeData", static_cast<double * (NCollection_Vec4<double>::*)() noexcept>(&NCollection_Vec4<double>::ChangeData))
         .def("__iadd__", [](NCollection_Vec4<double> &self, const NCollection_Vec4<double> & theAdd) -> NCollection_Vec4<double> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
         .def("__neg__", static_cast<NCollection_Vec4<double> (NCollection_Vec4<double>::*)() const noexcept>(&NCollection_Vec4<double>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
         .def("__isub__", [](NCollection_Vec4<double> &self, const NCollection_Vec4<double> & theDec) -> NCollection_Vec4<double> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
@@ -1323,8 +1245,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec2<double> * (NCollection_LinearVector<NCollection_Vec2<double>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec2<double>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec2<double> * (NCollection_LinearVector<NCollection_Vec2<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<double>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec2<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<double>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec2<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec2<double>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec2<double>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -1344,22 +1264,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<double>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<double>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<double>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<double>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<double>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<double>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec2<double>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<double>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec2<double>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)() const>(&NCollection_LinearVector<NCollection_Vec2<double>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<double>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<double>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)() const>(&NCollection_LinearVector<NCollection_Vec2<double>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<double>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const NCollection_Vec2<double> &)>(&NCollection_LinearVector<NCollection_Vec2<double>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<double>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const NCollection_Vec2<double> &)>(&NCollection_LinearVector<NCollection_Vec2<double>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<double>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec2<double>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t, const NCollection_Vec2<double> &)>(&NCollection_LinearVector<NCollection_Vec2<double>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec2<double> & (NCollection_LinearVector<NCollection_Vec2<double>>::*)(const size_t, const NCollection_Vec2<double> &)>(&NCollection_LinearVector<NCollection_Vec2<double>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -1391,8 +1311,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec3<double> * (NCollection_LinearVector<NCollection_Vec3<double>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec3<double>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec3<double> * (NCollection_LinearVector<NCollection_Vec3<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<double>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec3<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<double>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec3<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec3<double>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec3<double>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -1412,22 +1330,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<double>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<double>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<double>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<double>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<double>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<double>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec3<double>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<double>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec3<double>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)() const>(&NCollection_LinearVector<NCollection_Vec3<double>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<double>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<double>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)() const>(&NCollection_LinearVector<NCollection_Vec3<double>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<double>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const NCollection_Vec3<double> &)>(&NCollection_LinearVector<NCollection_Vec3<double>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<double>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const NCollection_Vec3<double> &)>(&NCollection_LinearVector<NCollection_Vec3<double>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<double>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec3<double>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t, const NCollection_Vec3<double> &)>(&NCollection_LinearVector<NCollection_Vec3<double>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec3<double> & (NCollection_LinearVector<NCollection_Vec3<double>>::*)(const size_t, const NCollection_Vec3<double> &)>(&NCollection_LinearVector<NCollection_Vec3<double>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -1459,8 +1377,6 @@ Use Resize() or NCollection_LinearVector(theSize, theValue) to construct items.
 Equivalent to std::vector(n, val).
 @param[in] theSize   number of elements to construct
 @param[in] theValue  value to initialize each element with)nbdoc")
-        .def("Data", static_cast<NCollection_Vec4<double> * (NCollection_LinearVector<NCollection_Vec4<double>>::*)() noexcept>(&NCollection_LinearVector<NCollection_Vec4<double>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
-        .def("Data", static_cast<const NCollection_Vec4<double> * (NCollection_LinearVector<NCollection_Vec4<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<double>>::Data), R"nbdoc(@return raw data pointer.)nbdoc")
         .def("HasData", static_cast<bool (NCollection_LinearVector<NCollection_Vec4<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<double>>::HasData), R"nbdoc(@return true if the vector has allocated storage.)nbdoc")
         .def("Empty", static_cast<bool (NCollection_LinearVector<NCollection_Vec4<double>>::*)() const noexcept>(&NCollection_LinearVector<NCollection_Vec4<double>>::Empty), R"nbdoc(@return true if the vector contains no elements.)nbdoc")
         .def_static("MaxSize", static_cast<size_t (*)() noexcept>(&NCollection_LinearVector<NCollection_Vec4<double>>::MaxSize), R"nbdoc(@return current max supported size.)nbdoc")
@@ -1480,22 +1396,22 @@ If theSize < Size(), excess elements are destroyed.
 @param[in] theValue value to fill new elements with)nbdoc")
         .def("Value", static_cast<const NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<double>>::Value), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
-        .def("ChangeValue", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<double>>::ChangeValue), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
+        .def("ChangeValue", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<double>>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.
 @param[in] theIndex element index (0-based))nbdoc")
         .def("__call__", static_cast<const NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<double>>::operator()), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__call__", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<double>>::operator()), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__call__", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<double>>::operator()), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("__getitem__", static_cast<const NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t) const>(&NCollection_LinearVector<NCollection_Vec4<double>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return const reference to element at theIndex.)nbdoc", nb::is_operator())
-        .def("__getitem__", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<double>>::operator[]), nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
+        .def("__getitem__", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t)>(&NCollection_LinearVector<NCollection_Vec4<double>>::operator[]), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(@return mutable reference to element at theIndex.)nbdoc", nb::is_operator())
         .def("First", static_cast<const NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)() const>(&NCollection_LinearVector<NCollection_Vec4<double>>::First), R"nbdoc(@return const reference to the first element.)nbdoc")
-        .def("ChangeFirst", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<double>>::ChangeFirst), R"nbdoc(@return mutable reference to the first element.)nbdoc")
+        .def("ChangeFirst", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<double>>::ChangeFirst), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the first element.)nbdoc")
         .def("Last", static_cast<const NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)() const>(&NCollection_LinearVector<NCollection_Vec4<double>>::Last), R"nbdoc(@return const reference to the last element.)nbdoc")
-        .def("ChangeLast", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<double>>::ChangeLast), R"nbdoc(@return mutable reference to the last element.)nbdoc")
-        .def("Append", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const NCollection_Vec4<double> &)>(&NCollection_LinearVector<NCollection_Vec4<double>>::Append), nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
+        .def("ChangeLast", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<double>>::ChangeLast), nb::rv_policy::reference_internal, R"nbdoc(@return mutable reference to the last element.)nbdoc")
+        .def("Append", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const NCollection_Vec4<double> &)>(&NCollection_LinearVector<NCollection_Vec4<double>>::Append), nb::rv_policy::reference_internal, nb::arg("theValue"), R"nbdoc(Append a copy of theValue to the end.
 @param[in] theValue element to append
 @return reference to the appended element)nbdoc")
-        .def("Appended", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<double>>::Appended), R"nbdoc(Append a default-constructed element.
+        .def("Appended", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)()>(&NCollection_LinearVector<NCollection_Vec4<double>>::Appended), nb::rv_policy::reference_internal, R"nbdoc(Append a default-constructed element.
 @return reference to the appended element)nbdoc")
-        .def("SetValue", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t, const NCollection_Vec4<double> &)>(&NCollection_LinearVector<NCollection_Vec4<double>>::SetValue), nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        .def("SetValue", static_cast<NCollection_Vec4<double> & (NCollection_LinearVector<NCollection_Vec4<double>>::*)(const size_t, const NCollection_Vec4<double> &)>(&NCollection_LinearVector<NCollection_Vec4<double>>::SetValue), nb::rv_policy::reference_internal, nb::arg("theIndex"), nb::arg("theValue"), R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
 @param[in] theIndex element index (0-based)
 @param[in] theValue value to set
 @return reference to the element)nbdoc")
@@ -1529,15 +1445,10 @@ Construct the identity matrix.)nbdoc")
 @param[in] theRow  the row to address.
 @param[in] theCol  the column to address.
 @return the value of the addressed element.)nbdoc")
-        .def("ChangeValue", static_cast<float & (NCollection_Mat4<float>::*)(const size_t, const size_t) noexcept>(&NCollection_Mat4<float>::ChangeValue), nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Access element at the specified row and column.
-@param[in] theRow  the row to access.
-@param[in] theCol  the column to access.
-@return reference on the matrix element.)nbdoc")
         .def("SetValue", static_cast<void (NCollection_Mat4<float>::*)(const size_t, const size_t, const float) noexcept>(&NCollection_Mat4<float>::SetValue), nb::arg("theRow"), nb::arg("theCol"), nb::arg("theValue"), R"nbdoc(Set value for the element specified by row and columns.
 @param[in] theRow    the row to change.
 @param[in] theCol    the column to change.
 @param[in] theValue  the value to set.)nbdoc")
-        .def("__call__", static_cast<float & (NCollection_Mat4<float>::*)(const size_t, const size_t) noexcept>(&NCollection_Mat4<float>::operator()), nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Return value.)nbdoc", nb::is_operator())
         .def("__call__", static_cast<float (NCollection_Mat4<float>::*)(const size_t, const size_t) const noexcept>(&NCollection_Mat4<float>::operator()), nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Return value.)nbdoc", nb::is_operator())
         .def("GetRow", static_cast<NCollection_Vec4<float> (NCollection_Mat4<float>::*)(const size_t) const noexcept>(&NCollection_Mat4<float>::GetRow), nb::arg("theRow"), R"nbdoc(Get vector of elements for the specified row.
 @param[in] theRow  the row to access.
@@ -1571,9 +1482,6 @@ Construct the identity matrix.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Mat4<float>::*)(const NCollection_Mat4<float> &) const noexcept>(&NCollection_Mat4<float>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this matrix for equality with another matrix (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Mat4<float>::*)(const NCollection_Mat4<float> &) const noexcept>(&NCollection_Mat4<float>::operator==), nb::arg("theOther"), R"nbdoc(Check this matrix for equality with another matrix (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Mat4<float>::*)(const NCollection_Mat4<float> &) const noexcept>(&NCollection_Mat4<float>::operator!=), nb::arg("theOther"), R"nbdoc(Check this matrix for non-equality with another matrix (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const float * (NCollection_Mat4<float>::*)() const noexcept>(&NCollection_Mat4<float>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange);
-the data is returned in column-major order.)nbdoc")
-        .def("ChangeData", static_cast<float * (NCollection_Mat4<float>::*)() noexcept>(&NCollection_Mat4<float>::ChangeData))
         .def("__mul__", static_cast<NCollection_Vec4<float> (NCollection_Mat4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Mat4<float>::operator*), nb::arg("theVec"), R"nbdoc(Multiply by the vector (M * V).
 @param[in] theVec  the vector to multiply.)nbdoc", nb::is_operator())
         .def_static("Multiply_s", static_cast<NCollection_Mat4<float> (*)(const NCollection_Mat4<float> &, const NCollection_Mat4<float> &) noexcept>(&NCollection_Mat4<float>::Multiply), nb::arg("theMatA"), nb::arg("theMatB"), R"nbdoc(Compute matrix multiplication product: A * B.
@@ -1646,15 +1554,10 @@ Construct the identity matrix.)nbdoc")
 @param[in] theRow  the row to address.
 @param[in] theCol  the column to address.
 @return the value of the addressed element.)nbdoc")
-        .def("ChangeValue", static_cast<double & (NCollection_Mat4<double>::*)(const size_t, const size_t) noexcept>(&NCollection_Mat4<double>::ChangeValue), nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Access element at the specified row and column.
-@param[in] theRow  the row to access.
-@param[in] theCol  the column to access.
-@return reference on the matrix element.)nbdoc")
         .def("SetValue", static_cast<void (NCollection_Mat4<double>::*)(const size_t, const size_t, const double) noexcept>(&NCollection_Mat4<double>::SetValue), nb::arg("theRow"), nb::arg("theCol"), nb::arg("theValue"), R"nbdoc(Set value for the element specified by row and columns.
 @param[in] theRow    the row to change.
 @param[in] theCol    the column to change.
 @param[in] theValue  the value to set.)nbdoc")
-        .def("__call__", static_cast<double & (NCollection_Mat4<double>::*)(const size_t, const size_t) noexcept>(&NCollection_Mat4<double>::operator()), nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Return value.)nbdoc", nb::is_operator())
         .def("__call__", static_cast<double (NCollection_Mat4<double>::*)(const size_t, const size_t) const noexcept>(&NCollection_Mat4<double>::operator()), nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Return value.)nbdoc", nb::is_operator())
         .def("GetRow", static_cast<NCollection_Vec4<double> (NCollection_Mat4<double>::*)(const size_t) const noexcept>(&NCollection_Mat4<double>::GetRow), nb::arg("theRow"), R"nbdoc(Get vector of elements for the specified row.
 @param[in] theRow  the row to access.
@@ -1688,9 +1591,6 @@ Construct the identity matrix.)nbdoc")
         .def("IsEqual", static_cast<bool (NCollection_Mat4<double>::*)(const NCollection_Mat4<double> &) const noexcept>(&NCollection_Mat4<double>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this matrix for equality with another matrix (without tolerance!).)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_Mat4<double>::*)(const NCollection_Mat4<double> &) const noexcept>(&NCollection_Mat4<double>::operator==), nb::arg("theOther"), R"nbdoc(Check this matrix for equality with another matrix (without tolerance!).)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_Mat4<double>::*)(const NCollection_Mat4<double> &) const noexcept>(&NCollection_Mat4<double>::operator!=), nb::arg("theOther"), R"nbdoc(Check this matrix for non-equality with another matrix (without tolerance!).)nbdoc", nb::is_operator())
-        .def("GetData", static_cast<const double * (NCollection_Mat4<double>::*)() const noexcept>(&NCollection_Mat4<double>::GetData), R"nbdoc(Raw access to the data (for OpenGL exchange);
-the data is returned in column-major order.)nbdoc")
-        .def("ChangeData", static_cast<double * (NCollection_Mat4<double>::*)() noexcept>(&NCollection_Mat4<double>::ChangeData))
         .def("__mul__", static_cast<NCollection_Vec4<double> (NCollection_Mat4<double>::*)(const NCollection_Vec4<double> &) const noexcept>(&NCollection_Mat4<double>::operator*), nb::arg("theVec"), R"nbdoc(Multiply by the vector (M * V).
 @param[in] theVec  the vector to multiply.)nbdoc", nb::is_operator())
         .def_static("Multiply_s", static_cast<NCollection_Mat4<double> (*)(const NCollection_Mat4<double> &, const NCollection_Mat4<double> &) noexcept>(&NCollection_Mat4<double>::Multiply), nb::arg("theMatA"), nb::arg("theMatB"), R"nbdoc(Compute matrix multiplication product: A * B.
@@ -1826,4 +1726,7 @@ finding an empty queue to determine if they should exit or wait.)nbdoc");
 @param theVoxelY Y coordinate (0-1023)
 @param theVoxelZ Z coordinate (0-1023)
 @return 30-bit Morton code with interleaved bits)nbdoc");
+}
+
+void nanoocp_conversions_BVH(nb::module_ &m) {
 }

@@ -19,6 +19,7 @@ SRC = ROOT / "src" / "nanoocp"
 GENERIC = ROOT / "generator" / "stubs"
 
 _SCALARS = {"double": "float", "int": "int", "bool": "bool", "std::string": "str"}
+_PATHS: dict[str, str] = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text()).get("paths", {})
 
 
 def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> str | None:
@@ -33,7 +34,7 @@ def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> 
     if inst is not None and not inst.get("skipped", False):
         return f"nanoocp.{inst['package']}.{inst['name']}"
     if arg in classes and "<" not in arg:
-        return f"nanoocp.{classes[arg]}.{py_path(arg, classes[arg])}"
+        return f"nanoocp.{classes[arg]}.{py_path(arg, classes[arg], _PATHS)}"
     return None
 
 
@@ -42,7 +43,7 @@ def _generic_spelling(concrete: str, templates: dict[str, dict]) -> str:
     name = concrete.rsplit(".", 1)[-1]
     for key, inst in templates.items():
         if inst.get("name") == name:
-            kind, args = re.match(r"(\w+)<(.+)>$", key).groups()
+            kind, args = re.match(r"([\w:]+)<(.*)>$", key).groups()
             return f"{kind}[{', '.join(_stub_arg(a, templates) for a in _split_args(args))}]"
     return concrete
 
@@ -53,7 +54,7 @@ def _generic_or_none(name: str, templates: dict[str, dict]) -> str | None:
     manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
     for key, inst in templates.items():
         if inst.get("name") == name:
-            kind, args = re.match(r"(\w+)<(.+)>$", key).groups()
+            kind, args = re.match(r"([\w:]+)<(.*)>$", key).groups()
             spelled = [_type_arg(a, manifest["classes"], templates) for a in _split_args(args)]
             if any(sp is None for sp in spelled):
                 return None
@@ -187,8 +188,8 @@ def main() -> int:
     text = nc.read_text()
     generic_parts = []
     from .ncollection import BINDERS
-    kinds = sorted({re.match(r"(\w+)<", key).group(1) for key, inst in templates.items()
-                    if not inst.get("skipped", False) and re.match(r"(\w+)<", key).group(1) in BINDERS})
+    kinds = sorted({re.match(r"([\w:]+)<", key).group(1) for key, inst in templates.items()
+                    if not inst.get("skipped", False) and re.match(r"([\w:]+)<", key).group(1) in BINDERS})
     for kind in kinds:
         g = GENERIC / f"{kind}.pyi"
         if kind == "NCollection_Shared":
@@ -214,7 +215,7 @@ def main() -> int:
     for key, inst in sorted(templates.items()):
         if inst.get("skipped", False):
             continue
-        kind, args = re.match(r"(\w+)<(.+)>$", key).groups()
+        kind, args = re.match(r"([\w:]+)<(.*)>$", key).groups()
         if kind not in BINDERS:
             continue                                   # alias-instantiated class: stubgen's concrete class stays
         spelled = [_type_arg(a, classes, templates) for a in _split_args(args)]
@@ -236,7 +237,7 @@ def main() -> int:
     # concrete names (they are its class definitions).
     generic_of: dict[str, str] = {}
     for key, inst in templates.items():
-        if inst.get("skipped", False) or re.match(r"(\w+)<", key).group(1) not in BINDERS:
+        if inst.get("skipped", False) or re.match(r"([\w:]+)<", key).group(1) not in BINDERS:
             continue
         generic = _generic_or_none(inst["name"], templates)
         if generic is not None:

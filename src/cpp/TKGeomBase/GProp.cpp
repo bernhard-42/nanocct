@@ -480,3 +480,6 @@ Rxx, Ryy and Rzz are equal.)nbdoc");
         .def("Perform", static_cast<void (GProp_VelGProps::*)(const gp_Torus &, const double, const double, const double, const double)>(&GProp_VelGProps::Perform), nb::arg("S"), nb::arg("Teta1"), nb::arg("Teta2"), nb::arg("Alpha1"), nb::arg("Alpha2"));
     nanoocp_implicit_copy_ctor<GProp_VelGProps>(nb::borrow<nb::class_<GProp_VelGProps>>(m.attr("GProp_VelGProps")));
 }
+
+void nanoocp_conversions_GProp(nb::module_ &m) {
+}

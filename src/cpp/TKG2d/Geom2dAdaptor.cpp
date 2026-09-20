@@ -139,3 +139,6 @@ Raised if N < 1.)nbdoc")
     nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData")), "Cache", &Geom2dAdaptor_Curve::BSplineData::Cache, R"nbdoc(Cached data for evaluation)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData")), "EvalRep", &Geom2dAdaptor_Curve::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
 }
+
+void nanoocp_conversions_Geom2dAdaptor(nb::module_ &m) {
+}

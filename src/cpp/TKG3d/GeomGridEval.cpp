@@ -1076,3 +1076,6 @@ of this evaluator when using fallback evaluation.
     m.attr("SurfD2") = nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Surface").attr("ResD2");   // SurfD2 = Geom_Surface::ResD2
     m.attr("SurfD3") = nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Surface").attr("ResD3");   // SurfD3 = Geom_Surface::ResD3
 }
+
+void nanoocp_conversions_GeomGridEval(nb::module_ &m) {
+}

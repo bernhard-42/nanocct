@@ -400,3 +400,6 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_TBezierCurve::*)() const>(&Geom2dEval_TBezierCurve::DynamicType));
     nanoocp_implicit_copy_ctor<Geom2dEval_TBezierCurve>(nb::borrow<nb::class_<Geom2dEval_TBezierCurve>>(m.attr("Geom2dEval_TBezierCurve")));
 }
+
+void nanoocp_conversions_Geom2dEval(nb::module_ &m) {
+}

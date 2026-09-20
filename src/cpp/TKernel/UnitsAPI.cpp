@@ -119,3 +119,6 @@ and the unit <aUnits> in the current system and
 returns FALSE when it's WRONG.)nbdoc");
     nanoocp_implicit_copy_ctor<UnitsAPI>(nb::borrow<nb::class_<UnitsAPI>>(m.attr("UnitsAPI")));
 }
+
+void nanoocp_conversions_UnitsAPI(nb::module_ &m) {
+}

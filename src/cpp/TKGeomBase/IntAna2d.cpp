@@ -127,3 +127,6 @@ in the local coordinates system defined by Axis)nbdoc");
     m.def("Traitement_Points_Confondus", [](IntAna2d_IntPoint * pts) { int nb_pts{}; Traitement_Points_Confondus(nb_pts, pts); return nb_pts; }, nb::arg("pts"));
     m.def("Coord_Ancien_Repere", [](const gp_Ax2d & Axe_Nouveau_Repere) { double Ancien_X{}; double Ancien_Y{}; Coord_Ancien_Repere(Ancien_X, Ancien_Y, Axe_Nouveau_Repere); return std::make_tuple(Ancien_X, Ancien_Y); }, nb::arg("Axe_Nouveau_Repere"));
 }
+
+void nanoocp_conversions_IntAna2d(nb::module_ &m) {
+}

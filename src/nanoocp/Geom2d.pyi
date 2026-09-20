@@ -2,6 +2,7 @@
 
 from typing import overload
 
+import nanoocp.GC
 import nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc
 import nanoocp.GeomAbs
 import nanoocp.NCollection
@@ -2004,6 +2005,9 @@ class Geom2d_Circle(Geom2d_Conic):
     @overload
     def __init__(self, theOther: Geom2d_Circle) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeCircle2d) -> None: ...
+
     def SetCirc2d(self, C: nanoocp.gp.gp_Circ2d) -> None:
         """Converts the gp_Circ2d circle C into this circle."""
 
@@ -2302,6 +2306,9 @@ class Geom2d_Ellipse(Geom2d_Conic):
     @overload
     def __init__(self, theOther: Geom2d_Ellipse) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeEllipse2d) -> None: ...
+
     def SetElips2d(self, E: nanoocp.gp.gp_Elips2d) -> None:
         """Converts the gp_Elips2d ellipse E into this ellipse."""
 
@@ -2541,6 +2548,9 @@ class Geom2d_Hyperbola(Geom2d_Conic):
 
     @overload
     def __init__(self, theOther: Geom2d_Hyperbola) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeHyperbola2d) -> None: ...
 
     def SetHypr2d(self, H: nanoocp.gp.gp_Hypr2d) -> None:
         """Converts the gp_Hypr2d hyperbola H into this hyperbola."""
@@ -2801,6 +2811,9 @@ class Geom2d_Line(Geom2d_Curve):
 
     @overload
     def __init__(self, theOther: Geom2d_Line) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeLine2d) -> None: ...
 
     def SetLin2d(self, L: nanoocp.gp.gp_Lin2d) -> None:
         """Set <me> so that <me> has the same geometric properties as L."""
@@ -3302,6 +3315,9 @@ class Geom2d_Parabola(Geom2d_Conic):
     @overload
     def __init__(self, theOther: Geom2d_Parabola) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeParabola2d) -> None: ...
+
     def SetFocal(self, Focal: float) -> None:
         """
         Assigns the value Focal to the focal length of this parabola.
@@ -3482,6 +3498,18 @@ class Geom2d_Transformation(nanoocp.Standard.Standard_Transient):
 
     @overload
     def __init__(self, theOther: Geom2d_Transformation) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeMirror2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeRotation2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeScale2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeTranslation2d) -> None: ...
 
     @overload
     def SetMirror(self, P: nanoocp.gp.gp_Pnt2d) -> None:
@@ -3698,6 +3726,21 @@ class Geom2d_TrimmedCurve(Geom2d_BoundedCurve):
 
     @overload
     def __init__(self, theOther: Geom2d_TrimmedCurve) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfCircle2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfEllipse2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfHyperbola2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeArcOfParabola2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GC.GC_MakeSegment2d) -> None: ...
 
     def Reverse(self) -> None:
         """

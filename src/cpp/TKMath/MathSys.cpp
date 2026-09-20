@@ -38,3 +38,6 @@ void nanoocp_define_MathSys(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")), "LambdaMax", &MathSys::LMConfig::LambdaMax, R"nbdoc(Maximum lambda value before failing)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")), "LambdaMin", &MathSys::LMConfig::LambdaMin, R"nbdoc(Minimum lambda value)nbdoc");
 }
+
+void nanoocp_conversions_MathSys(nb::module_ &m) {
+}

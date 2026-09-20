@@ -71,8 +71,10 @@ def _py_name(m: Method) -> str | None:
 
 class Emitter:
     def __init__(self, ir: PackageIR, include_dir: Path, known_classes: dict[str, str], toolkit_of: dict[str, str],
-                 known_templates: dict[str, dict]):
+                 known_templates: dict[str, dict], toolkit_order: list[str] | None = None, paths: dict[str, str] | None = None):
         self.ir = ir
+        self.paths = paths if paths is not None else {}    # manifest "paths": C++ class -> Python path exceptions
+        self.toolkit_order = toolkit_order if toolkit_order is not None else []   # generated toolkits, dependencies first
         self.include_dir = include_dir
         self.known = known_classes            # C++ class name -> package, for everything bound (previous runs + this run)
         self.toolkit_of = toolkit_of          # package -> toolkit
@@ -335,7 +337,7 @@ class Emitter:
             # sibling packages are looked up through the extension submodule (registered in sys.modules
             # before any package is declared), never through the nanoocp.<pkg> shim: importing the shim
             # while the toolkit module is still initialising would freeze a half-filled namespace
-            attrs = "".join(f'.attr("{a}")' for a in py_path(b, pkg).split("."))
+            attrs = "".join(f'.attr("{a}")' for a in py_path(b, pkg, self.paths).split("."))
             base = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}.ptr()'
                     if pkg != self.ir.name else f'm{attrs}.ptr()')
         d = _cpp_doc(c.doc)
@@ -445,7 +447,13 @@ class Emitter:
                 if s is not None:
                     body.append(s)
             body += free_ops.get(c.name, [])
-            if c.name in ir.hashable:          # std::hash<T> specialised by OCCT -> Python hashability consistent with __eq__
+            for conv in c.conversions:          # operator bool/int/double() -> Python dunder; class targets: see conversions below
+                dunder = {"bool": "__bool__", "int": "__int__", "float": "__float__"}.get(conv.kind)
+                if dunder is not None:
+                    self._note_types(conv.target)
+                    body.append(f'.def("{dunder}", [](const {c.name} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
+            if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
+                # std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__
                 body.append(f'.def("__hash__", [](const {c.name} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
             cls_expr = f'nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}"))'
             if implicit_default:
@@ -474,6 +482,34 @@ class Emitter:
                             seen.add(src)
                             define.append(f"    nb::implicitly_convertible<std::decay_t<{src}>, {c.name}>();")
 
+        # operator T() const with a bound class T: T gets a constructor from this class, plus the implicit conversion when
+        # the operator is not explicit (TopoDS_Shape s = aMakeShape; BRepGraph_NodeId(anEdgeId)). Emitted in a phase of its
+        # own (after every definition of the toolkit: nanobind wants a class's zero-argument __new__ before other overloads)
+        conversions: list[str] = []
+        for c in classes:
+            for conv in c.conversions:
+                if conv.kind not in ("class", "handle"):
+                    continue
+                inst = self.templates.get(conv.target_class)
+                if inst is not None and not inst.get("skipped", False):
+                    pkg, path = inst["package"], inst["name"]         # an instantiation bound under an alias (BVH_Vec3f)
+                else:
+                    pkg = self.known.get(conv.target_class)
+                    path = py_path(conv.target_class, pkg, self.paths) if pkg is not None else ""
+                if pkg is None or pkg == "":
+                    self.report.append(f"{c.name}::operator {conv.target}(): target type is not bound -> conversion skipped")
+                    continue
+                order = self.toolkit_order
+                if self.toolkit_of[pkg] in order and self.toolkit_of[self.ir.name] in order \
+                        and order.index(self.toolkit_of[pkg]) > order.index(self.toolkit_of[self.ir.name]):
+                    self.report.append(f"{c.name}::operator {conv.target}(): target lives in a later toolkit ({self.toolkit_of[pkg]}) -> conversion skipped")
+                    continue
+                attrs = "".join(f'.attr("{a}")' for a in path.split("."))
+                target = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+                helper = "nanoocp_conversion_handle" if conv.kind == "handle" else "nanoocp_conversion"
+                conversions.append(f'    {helper}<{c.name}, {conv.target}>({target}, {"false" if conv.is_explicit else "true"});')
+                self._note_types(conv.target)
+
         # typedefs of bound classes (using CurveD1 = Geom_Curve::ResD1 in namespace GeomGridEval) -> Python aliases;
         # scalar typedefs (Standard_Real) and the rest are not exposed
         seen_aliases: set[tuple[tuple[str, ...], str]] = set()
@@ -487,7 +523,7 @@ class Emitter:
                 if td.scope != ():
                     self.report.append(f"{'::'.join(td.scope)}::{td.py_name} = {td.written}: type alias of an unbound type (not bound)")
                 continue
-            attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg).split("."))
+            attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
             src = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
             define.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
 
@@ -518,12 +554,17 @@ class Emitter:
             *module_fns,
             "}",
             "",
+            f"void nanoocp_conversions_{ir.name}(nb::module_ &m) {{",
+            *conversions,
+            "}",
+            "",
         ]
         return "\n".join(out)
 
 
 def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str], namespaces: dict[str, list[tuple[str, ...]]]) -> str:
-    decls = "\n".join(f"void nanoocp_declare_{p}(nb::module_ &);\nvoid nanoocp_templates_{p}(nb::module_ &);\nvoid nanoocp_define_{p}(nb::module_ &);" for p in packages)
+    decls = "\n".join(f"void nanoocp_declare_{p}(nb::module_ &);\nvoid nanoocp_templates_{p}(nb::module_ &);\nvoid nanoocp_define_{p}(nb::module_ &);\n"
+                      f"void nanoocp_conversions_{p}(nb::module_ &);" for p in packages)
     imports = "\n".join(f'    nb::module_::import_("nanoocp._{d}");' for d in depends)
     subs = "\n".join(
         f'    nb::module_ m_{p} = m.def_submodule("{p}", "OCCT package {p} (toolkit {toolkit})");\n'
@@ -540,6 +581,7 @@ def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str], n
         for ns in namespaces.get(p, [])) for p in packages)
     templates = "\n".join(f"    nanoocp_templates_{p}(m_{p});" for p in packages)
     defines = "\n".join(f"    nanoocp_define_{p}(m_{p});" for p in packages)
+    conversions = "\n".join(f"    nanoocp_conversions_{p}(m_{p});" for p in packages)
     if toolkit == "TKernel":
         translator = '    nanoocp_install_exception_translator(m_Standard.attr("Standard_Failure").ptr());'
     else:
@@ -562,6 +604,8 @@ NB_MODULE(_{toolkit}, m) {{
 {templates}
     // phase 3: members
 {defines}
+    // phase 4: constructors from conversion operators (every class has its own constructors by now)
+{conversions}
 }}
 """
 

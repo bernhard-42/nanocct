@@ -28,6 +28,9 @@ class MultipleResult:
     def __getitem__(self, theIndex: int) -> float:
         """Access root by index (0-based)."""
 
+    def __bool__(self) -> bool:
+        """Conversion to bool for convenient checking."""
+
     @property
     def Status(self) -> nanoocp.MathUtils.Status:
         """Computation status"""
@@ -177,6 +180,8 @@ class AllRootsResult:
 
     def NbIntervals(self) -> int: ...
 
+    def __bool__(self) -> bool: ...
+
     @property
     def Status(self) -> nanoocp.MathUtils.Status: ...
 
@@ -214,6 +219,8 @@ class TrigResult:
     def __init__(self, theOther: TrigResult) -> None: ...
 
     def IsDone(self) -> bool: ...
+
+    def __bool__(self) -> bool: ...
 
     @property
     def Status(self) -> nanoocp.MathUtils.Status: ...

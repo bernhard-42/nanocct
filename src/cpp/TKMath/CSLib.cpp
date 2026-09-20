@@ -257,3 +257,6 @@ as common subexpressions are computed only once.
 @return true if calculation was successful, false otherwise)nbdoc");
     nanoocp_implicit_copy_ctor<CSLib_NormalPolyDef>(nb::borrow<nb::class_<CSLib_NormalPolyDef>>(m.attr("CSLib_NormalPolyDef")));
 }
+
+void nanoocp_conversions_CSLib(nb::module_ &m) {
+}

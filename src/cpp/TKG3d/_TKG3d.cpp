@@ -4,27 +4,35 @@
 void nanoocp_declare_Geom(nb::module_ &);
 void nanoocp_templates_Geom(nb::module_ &);
 void nanoocp_define_Geom(nb::module_ &);
+void nanoocp_conversions_Geom(nb::module_ &);
 void nanoocp_declare_Adaptor3d(nb::module_ &);
 void nanoocp_templates_Adaptor3d(nb::module_ &);
 void nanoocp_define_Adaptor3d(nb::module_ &);
+void nanoocp_conversions_Adaptor3d(nb::module_ &);
 void nanoocp_declare_GeomAdaptor(nb::module_ &);
 void nanoocp_templates_GeomAdaptor(nb::module_ &);
 void nanoocp_define_GeomAdaptor(nb::module_ &);
+void nanoocp_conversions_GeomAdaptor(nb::module_ &);
 void nanoocp_declare_AdvApprox(nb::module_ &);
 void nanoocp_templates_AdvApprox(nb::module_ &);
 void nanoocp_define_AdvApprox(nb::module_ &);
+void nanoocp_conversions_AdvApprox(nb::module_ &);
 void nanoocp_declare_TopAbs(nb::module_ &);
 void nanoocp_templates_TopAbs(nb::module_ &);
 void nanoocp_define_TopAbs(nb::module_ &);
+void nanoocp_conversions_TopAbs(nb::module_ &);
 void nanoocp_declare_GeomGridEval(nb::module_ &);
 void nanoocp_templates_GeomGridEval(nb::module_ &);
 void nanoocp_define_GeomGridEval(nb::module_ &);
+void nanoocp_conversions_GeomGridEval(nb::module_ &);
 void nanoocp_declare_GeomHash(nb::module_ &);
 void nanoocp_templates_GeomHash(nb::module_ &);
 void nanoocp_define_GeomHash(nb::module_ &);
+void nanoocp_conversions_GeomHash(nb::module_ &);
 void nanoocp_declare_GeomEval(nb::module_ &);
 void nanoocp_templates_GeomEval(nb::module_ &);
 void nanoocp_define_GeomEval(nb::module_ &);
+void nanoocp_conversions_GeomEval(nb::module_ &);
 
 NB_MODULE(_TKG3d, m) {
     m.doc() = "OCCT toolkit TKG3d";
@@ -89,4 +97,13 @@ NB_MODULE(_TKG3d, m) {
     nanoocp_define_GeomGridEval(m_GeomGridEval);
     nanoocp_define_GeomHash(m_GeomHash);
     nanoocp_define_GeomEval(m_GeomEval);
+    // phase 4: constructors from conversion operators (every class has its own constructors by now)
+    nanoocp_conversions_Geom(m_Geom);
+    nanoocp_conversions_Adaptor3d(m_Adaptor3d);
+    nanoocp_conversions_GeomAdaptor(m_GeomAdaptor);
+    nanoocp_conversions_AdvApprox(m_AdvApprox);
+    nanoocp_conversions_TopAbs(m_TopAbs);
+    nanoocp_conversions_GeomGridEval(m_GeomGridEval);
+    nanoocp_conversions_GeomHash(m_GeomHash);
+    nanoocp_conversions_GeomEval(m_GeomEval);
 }

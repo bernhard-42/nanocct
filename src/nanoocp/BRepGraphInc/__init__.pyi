@@ -134,6 +134,27 @@ class BRepGraph_RepId:
     @overload
     def __init__(self, theOther: BRepGraph_RepId) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: BRepGraph_EdgeCurve3DRepId) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: BRepGraph_EdgePolygon3DRepId) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: BRepGraph_CoEdgeCurve2DRepId) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: BRepGraph_CoEdgePolygon2DRepId) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: BRepGraph_CoEdgePolygonOnTriRepId) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: BRepGraph_FaceSurfaceRepId) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: BRepGraph_FaceTriangulationRepId) -> None: ...
+
     class Kind(enum.Enum):
         """Enumeration of use-record kinds."""
 
@@ -174,6 +195,8 @@ class BRepGraph_RepId:
         Return true if this use entry has been soft-removed in the given graph.
         """
 
+    def __hash__(self) -> int: ...
+
     @property
     def RepKind(self) -> BRepGraph_RepId.Kind: ...
 
@@ -186,14 +209,390 @@ class BRepGraph_RepId:
     @Index.setter
     def Index(self, arg: int, /) -> None: ...
 
-class std_hash__BRepGraph_RepId:
-    @overload
-    def __init__(self) -> None: ...
+class BRepGraph_EdgeCurve3DRepId:
+    """Compile-time typed wrapper around BRepGraph_RepId."""
 
     @overload
-    def __init__(self, theOther: std_hash__BRepGraph_RepId) -> None: ...
+    def __init__(self) -> None:
+        """Default: invalid."""
 
-    def __call__(self, theId: BRepGraph_RepId) -> int: ...
+    @overload
+    def __init__(self, theIdx: int) -> None:
+        """Construct from index."""
+
+    @overload
+    def __init__(self, theOther: BRepGraph_EdgeCurve3DRepId) -> None: ...
+
+    @staticmethod
+    def Start() -> BRepGraph_EdgeCurve3DRepId:
+        """First valid id in a dense sequence."""
+
+    @staticmethod
+    def Invalid() -> BRepGraph_EdgeCurve3DRepId:
+        """Invalid sentinel id."""
+
+    @overload
+    def IsValid(self) -> bool:
+        """True if this id points to an allocated slot."""
+
+    @overload
+    def IsValid(self, theMaxCount: int) -> bool:
+        """True if this id is within [0, theMaxCount)."""
+
+    def IsRemoved(self, theGraph: nanoocp.BRepGraph.BRepGraph) -> bool:
+        """
+        Return true if this use entry has been soft-removed in the given graph.
+        """
+
+    def __eq__(self, theOther: BRepGraph_EdgeCurve3DRepId) -> bool: ...
+
+    def __ne__(self, theOther: BRepGraph_EdgeCurve3DRepId) -> bool: ...
+
+    def __lt__(self, theOther: BRepGraph_EdgeCurve3DRepId) -> bool: ...
+
+    def __le__(self, theOther: BRepGraph_EdgeCurve3DRepId) -> bool: ...
+
+    def __gt__(self, theOther: BRepGraph_EdgeCurve3DRepId) -> bool: ...
+
+    def __ge__(self, theOther: BRepGraph_EdgeCurve3DRepId) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def Index(self) -> int: ...
+
+    @Index.setter
+    def Index(self, arg: int, /) -> None: ...
+
+class BRepGraph_EdgePolygon3DRepId:
+    """Compile-time typed wrapper around BRepGraph_RepId."""
+
+    @overload
+    def __init__(self) -> None:
+        """Default: invalid."""
+
+    @overload
+    def __init__(self, theIdx: int) -> None:
+        """Construct from index."""
+
+    @overload
+    def __init__(self, theOther: BRepGraph_EdgePolygon3DRepId) -> None: ...
+
+    @staticmethod
+    def Start() -> BRepGraph_EdgePolygon3DRepId:
+        """First valid id in a dense sequence."""
+
+    @staticmethod
+    def Invalid() -> BRepGraph_EdgePolygon3DRepId:
+        """Invalid sentinel id."""
+
+    @overload
+    def IsValid(self) -> bool:
+        """True if this id points to an allocated slot."""
+
+    @overload
+    def IsValid(self, theMaxCount: int) -> bool:
+        """True if this id is within [0, theMaxCount)."""
+
+    def IsRemoved(self, theGraph: nanoocp.BRepGraph.BRepGraph) -> bool:
+        """
+        Return true if this use entry has been soft-removed in the given graph.
+        """
+
+    def __eq__(self, theOther: BRepGraph_EdgePolygon3DRepId) -> bool: ...
+
+    def __ne__(self, theOther: BRepGraph_EdgePolygon3DRepId) -> bool: ...
+
+    def __lt__(self, theOther: BRepGraph_EdgePolygon3DRepId) -> bool: ...
+
+    def __le__(self, theOther: BRepGraph_EdgePolygon3DRepId) -> bool: ...
+
+    def __gt__(self, theOther: BRepGraph_EdgePolygon3DRepId) -> bool: ...
+
+    def __ge__(self, theOther: BRepGraph_EdgePolygon3DRepId) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def Index(self) -> int: ...
+
+    @Index.setter
+    def Index(self, arg: int, /) -> None: ...
+
+class BRepGraph_CoEdgeCurve2DRepId:
+    """Compile-time typed wrapper around BRepGraph_RepId."""
+
+    @overload
+    def __init__(self) -> None:
+        """Default: invalid."""
+
+    @overload
+    def __init__(self, theIdx: int) -> None:
+        """Construct from index."""
+
+    @overload
+    def __init__(self, theOther: BRepGraph_CoEdgeCurve2DRepId) -> None: ...
+
+    @staticmethod
+    def Start() -> BRepGraph_CoEdgeCurve2DRepId:
+        """First valid id in a dense sequence."""
+
+    @staticmethod
+    def Invalid() -> BRepGraph_CoEdgeCurve2DRepId:
+        """Invalid sentinel id."""
+
+    @overload
+    def IsValid(self) -> bool:
+        """True if this id points to an allocated slot."""
+
+    @overload
+    def IsValid(self, theMaxCount: int) -> bool:
+        """True if this id is within [0, theMaxCount)."""
+
+    def IsRemoved(self, theGraph: nanoocp.BRepGraph.BRepGraph) -> bool:
+        """
+        Return true if this use entry has been soft-removed in the given graph.
+        """
+
+    def __eq__(self, theOther: BRepGraph_CoEdgeCurve2DRepId) -> bool: ...
+
+    def __ne__(self, theOther: BRepGraph_CoEdgeCurve2DRepId) -> bool: ...
+
+    def __lt__(self, theOther: BRepGraph_CoEdgeCurve2DRepId) -> bool: ...
+
+    def __le__(self, theOther: BRepGraph_CoEdgeCurve2DRepId) -> bool: ...
+
+    def __gt__(self, theOther: BRepGraph_CoEdgeCurve2DRepId) -> bool: ...
+
+    def __ge__(self, theOther: BRepGraph_CoEdgeCurve2DRepId) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def Index(self) -> int: ...
+
+    @Index.setter
+    def Index(self, arg: int, /) -> None: ...
+
+class BRepGraph_CoEdgePolygon2DRepId:
+    """Compile-time typed wrapper around BRepGraph_RepId."""
+
+    @overload
+    def __init__(self) -> None:
+        """Default: invalid."""
+
+    @overload
+    def __init__(self, theIdx: int) -> None:
+        """Construct from index."""
+
+    @overload
+    def __init__(self, theOther: BRepGraph_CoEdgePolygon2DRepId) -> None: ...
+
+    @staticmethod
+    def Start() -> BRepGraph_CoEdgePolygon2DRepId:
+        """First valid id in a dense sequence."""
+
+    @staticmethod
+    def Invalid() -> BRepGraph_CoEdgePolygon2DRepId:
+        """Invalid sentinel id."""
+
+    @overload
+    def IsValid(self) -> bool:
+        """True if this id points to an allocated slot."""
+
+    @overload
+    def IsValid(self, theMaxCount: int) -> bool:
+        """True if this id is within [0, theMaxCount)."""
+
+    def IsRemoved(self, theGraph: nanoocp.BRepGraph.BRepGraph) -> bool:
+        """
+        Return true if this use entry has been soft-removed in the given graph.
+        """
+
+    def __eq__(self, theOther: BRepGraph_CoEdgePolygon2DRepId) -> bool: ...
+
+    def __ne__(self, theOther: BRepGraph_CoEdgePolygon2DRepId) -> bool: ...
+
+    def __lt__(self, theOther: BRepGraph_CoEdgePolygon2DRepId) -> bool: ...
+
+    def __le__(self, theOther: BRepGraph_CoEdgePolygon2DRepId) -> bool: ...
+
+    def __gt__(self, theOther: BRepGraph_CoEdgePolygon2DRepId) -> bool: ...
+
+    def __ge__(self, theOther: BRepGraph_CoEdgePolygon2DRepId) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def Index(self) -> int: ...
+
+    @Index.setter
+    def Index(self, arg: int, /) -> None: ...
+
+class BRepGraph_CoEdgePolygonOnTriRepId:
+    """Compile-time typed wrapper around BRepGraph_RepId."""
+
+    @overload
+    def __init__(self) -> None:
+        """Default: invalid."""
+
+    @overload
+    def __init__(self, theIdx: int) -> None:
+        """Construct from index."""
+
+    @overload
+    def __init__(self, theOther: BRepGraph_CoEdgePolygonOnTriRepId) -> None: ...
+
+    @staticmethod
+    def Start() -> BRepGraph_CoEdgePolygonOnTriRepId:
+        """First valid id in a dense sequence."""
+
+    @staticmethod
+    def Invalid() -> BRepGraph_CoEdgePolygonOnTriRepId:
+        """Invalid sentinel id."""
+
+    @overload
+    def IsValid(self) -> bool:
+        """True if this id points to an allocated slot."""
+
+    @overload
+    def IsValid(self, theMaxCount: int) -> bool:
+        """True if this id is within [0, theMaxCount)."""
+
+    def IsRemoved(self, theGraph: nanoocp.BRepGraph.BRepGraph) -> bool:
+        """
+        Return true if this use entry has been soft-removed in the given graph.
+        """
+
+    def __eq__(self, theOther: BRepGraph_CoEdgePolygonOnTriRepId) -> bool: ...
+
+    def __ne__(self, theOther: BRepGraph_CoEdgePolygonOnTriRepId) -> bool: ...
+
+    def __lt__(self, theOther: BRepGraph_CoEdgePolygonOnTriRepId) -> bool: ...
+
+    def __le__(self, theOther: BRepGraph_CoEdgePolygonOnTriRepId) -> bool: ...
+
+    def __gt__(self, theOther: BRepGraph_CoEdgePolygonOnTriRepId) -> bool: ...
+
+    def __ge__(self, theOther: BRepGraph_CoEdgePolygonOnTriRepId) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def Index(self) -> int: ...
+
+    @Index.setter
+    def Index(self, arg: int, /) -> None: ...
+
+class BRepGraph_FaceSurfaceRepId:
+    """Compile-time typed wrapper around BRepGraph_RepId."""
+
+    @overload
+    def __init__(self) -> None:
+        """Default: invalid."""
+
+    @overload
+    def __init__(self, theIdx: int) -> None:
+        """Construct from index."""
+
+    @overload
+    def __init__(self, theOther: BRepGraph_FaceSurfaceRepId) -> None: ...
+
+    @staticmethod
+    def Start() -> BRepGraph_FaceSurfaceRepId:
+        """First valid id in a dense sequence."""
+
+    @staticmethod
+    def Invalid() -> BRepGraph_FaceSurfaceRepId:
+        """Invalid sentinel id."""
+
+    @overload
+    def IsValid(self) -> bool:
+        """True if this id points to an allocated slot."""
+
+    @overload
+    def IsValid(self, theMaxCount: int) -> bool:
+        """True if this id is within [0, theMaxCount)."""
+
+    def IsRemoved(self, theGraph: nanoocp.BRepGraph.BRepGraph) -> bool:
+        """
+        Return true if this use entry has been soft-removed in the given graph.
+        """
+
+    def __eq__(self, theOther: BRepGraph_FaceSurfaceRepId) -> bool: ...
+
+    def __ne__(self, theOther: BRepGraph_FaceSurfaceRepId) -> bool: ...
+
+    def __lt__(self, theOther: BRepGraph_FaceSurfaceRepId) -> bool: ...
+
+    def __le__(self, theOther: BRepGraph_FaceSurfaceRepId) -> bool: ...
+
+    def __gt__(self, theOther: BRepGraph_FaceSurfaceRepId) -> bool: ...
+
+    def __ge__(self, theOther: BRepGraph_FaceSurfaceRepId) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def Index(self) -> int: ...
+
+    @Index.setter
+    def Index(self, arg: int, /) -> None: ...
+
+class BRepGraph_FaceTriangulationRepId:
+    """Compile-time typed wrapper around BRepGraph_RepId."""
+
+    @overload
+    def __init__(self) -> None:
+        """Default: invalid."""
+
+    @overload
+    def __init__(self, theIdx: int) -> None:
+        """Construct from index."""
+
+    @overload
+    def __init__(self, theOther: BRepGraph_FaceTriangulationRepId) -> None: ...
+
+    @staticmethod
+    def Start() -> BRepGraph_FaceTriangulationRepId:
+        """First valid id in a dense sequence."""
+
+    @staticmethod
+    def Invalid() -> BRepGraph_FaceTriangulationRepId:
+        """Invalid sentinel id."""
+
+    @overload
+    def IsValid(self) -> bool:
+        """True if this id points to an allocated slot."""
+
+    @overload
+    def IsValid(self, theMaxCount: int) -> bool:
+        """True if this id is within [0, theMaxCount)."""
+
+    def IsRemoved(self, theGraph: nanoocp.BRepGraph.BRepGraph) -> bool:
+        """
+        Return true if this use entry has been soft-removed in the given graph.
+        """
+
+    def __eq__(self, theOther: BRepGraph_FaceTriangulationRepId) -> bool: ...
+
+    def __ne__(self, theOther: BRepGraph_FaceTriangulationRepId) -> bool: ...
+
+    def __lt__(self, theOther: BRepGraph_FaceTriangulationRepId) -> bool: ...
+
+    def __le__(self, theOther: BRepGraph_FaceTriangulationRepId) -> bool: ...
+
+    def __gt__(self, theOther: BRepGraph_FaceTriangulationRepId) -> bool: ...
+
+    def __ge__(self, theOther: BRepGraph_FaceTriangulationRepId) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def Index(self) -> int: ...
+
+    @Index.setter
+    def Index(self, arg: int, /) -> None: ...
 
 class BaseDef:
     """Fields shared by every entity."""
@@ -290,11 +689,11 @@ class EdgeDef(BaseDef):
     def __init__(self, theOther: EdgeDef) -> None: ...
 
     @property
-    def Curve3DRepId(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)0>":
+    def Curve3DRepId(self) -> BRepGraph_EdgeCurve3DRepId:
         """Owned 3D curve use id (invalid for degenerate edges)"""
 
     @Curve3DRepId.setter
-    def Curve3DRepId(self, arg: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)0>", /) -> None: ...
+    def Curve3DRepId(self, arg: BRepGraph_EdgeCurve3DRepId, /) -> None: ...
 
     @property
     def Tolerance(self) -> float:
@@ -304,25 +703,25 @@ class EdgeDef(BaseDef):
     def Tolerance(self, arg: float, /) -> None: ...
 
     @property
-    def StartVertexRefId(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>":
+    def StartVertexRefId(self) -> nanoocp.BRepGraph.BRepGraph_VertexRefId:
         """Start vertex reference"""
 
     @StartVertexRefId.setter
-    def StartVertexRefId(self, arg: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>", /) -> None: ...
+    def StartVertexRefId(self, arg: nanoocp.BRepGraph.BRepGraph_VertexRefId, /) -> None: ...
 
     @property
-    def EndVertexRefId(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>":
+    def EndVertexRefId(self) -> nanoocp.BRepGraph.BRepGraph_VertexRefId:
         """End vertex reference"""
 
     @EndVertexRefId.setter
-    def EndVertexRefId(self, arg: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>", /) -> None: ...
+    def EndVertexRefId(self, arg: nanoocp.BRepGraph.BRepGraph_VertexRefId, /) -> None: ...
 
     @property
-    def Polygon3DRepId(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)1>":
+    def Polygon3DRepId(self) -> BRepGraph_EdgePolygon3DRepId:
         """Owned 3D polygon use id"""
 
     @Polygon3DRepId.setter
-    def Polygon3DRepId(self, arg: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)1>", /) -> None: ...
+    def Polygon3DRepId(self, arg: BRepGraph_EdgePolygon3DRepId, /) -> None: ...
 
 class CoEdgeDef(BaseDef):
     """
@@ -341,25 +740,25 @@ class CoEdgeDef(BaseDef):
     def __init__(self, theOther: CoEdgeDef) -> None: ...
 
     @property
-    def ParentWireId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+    def ParentWireId(self) -> nanoocp.BRepGraph.BRepGraph_WireId:
         """Ordered owner wire"""
 
     @ParentWireId.setter
-    def ParentWireId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", /) -> None: ...
+    def ParentWireId(self, arg: nanoocp.BRepGraph.BRepGraph_WireId, /) -> None: ...
 
     @property
-    def ChildEdgeId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>":
+    def ChildEdgeId(self) -> nanoocp.BRepGraph.BRepGraph_EdgeId:
         """Connected reusable edge definition"""
 
     @ChildEdgeId.setter
-    def ChildEdgeId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", /) -> None: ...
+    def ChildEdgeId(self, arg: nanoocp.BRepGraph.BRepGraph_EdgeId, /) -> None: ...
 
     @property
-    def FaceId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+    def FaceId(self) -> nanoocp.BRepGraph.BRepGraph_FaceId:
         """Face this coedge belongs to (invalid for free wires)"""
 
     @FaceId.setter
-    def FaceId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", /) -> None: ...
+    def FaceId(self, arg: nanoocp.BRepGraph.BRepGraph_FaceId, /) -> None: ...
 
     @property
     def Orientation(self) -> ParityOrientation:
@@ -369,25 +768,25 @@ class CoEdgeDef(BaseDef):
     def Orientation(self, arg: ParityOrientation, /) -> None: ...
 
     @property
-    def Curve2DRepId(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)2>":
+    def Curve2DRepId(self) -> BRepGraph_CoEdgeCurve2DRepId:
         """Owned 2D curve use id"""
 
     @Curve2DRepId.setter
-    def Curve2DRepId(self, arg: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)2>", /) -> None: ...
+    def Curve2DRepId(self, arg: BRepGraph_CoEdgeCurve2DRepId, /) -> None: ...
 
     @property
-    def Polygon2DRepId(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)3>":
+    def Polygon2DRepId(self) -> BRepGraph_CoEdgePolygon2DRepId:
         """Owned 2D polygon use id"""
 
     @Polygon2DRepId.setter
-    def Polygon2DRepId(self, arg: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)3>", /) -> None: ...
+    def Polygon2DRepId(self, arg: BRepGraph_CoEdgePolygon2DRepId, /) -> None: ...
 
     @property
-    def PolygonOnTriRepId(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)4>":
+    def PolygonOnTriRepId(self) -> BRepGraph_CoEdgePolygonOnTriRepId:
         """Owned polygon-on-triangulation use id"""
 
     @PolygonOnTriRepId.setter
-    def PolygonOnTriRepId(self, arg: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)4>", /) -> None: ...
+    def PolygonOnTriRepId(self, arg: BRepGraph_CoEdgePolygonOnTriRepId, /) -> None: ...
 
 class WireDef(BaseDef):
     """
@@ -411,18 +810,18 @@ class FaceDef(BaseDef):
     def __init__(self, theOther: FaceDef) -> None: ...
 
     @property
-    def SurfaceRepId(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)5>":
+    def SurfaceRepId(self) -> BRepGraph_FaceSurfaceRepId:
         """Owned surface use id"""
 
     @SurfaceRepId.setter
-    def SurfaceRepId(self, arg: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)5>", /) -> None: ...
+    def SurfaceRepId(self, arg: BRepGraph_FaceSurfaceRepId, /) -> None: ...
 
     @property
-    def TriangulationRepId(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)6>":
+    def TriangulationRepId(self) -> BRepGraph_FaceTriangulationRepId:
         """Owned triangulation use id (persistent/imported)"""
 
     @TriangulationRepId.setter
-    def TriangulationRepId(self, arg: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)6>", /) -> None: ...
+    def TriangulationRepId(self, arg: BRepGraph_FaceTriangulationRepId, /) -> None: ...
 
     @property
     def Tolerance(self) -> float:
@@ -537,18 +936,18 @@ class ShellRef(BaseRef):
     def __init__(self, theOther: ShellRef) -> None: ...
 
     @property
-    def ParentSolidId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+    def ParentSolidId(self) -> nanoocp.BRepGraph.BRepGraph_SolidId:
         """Parent solid identifier"""
 
     @ParentSolidId.setter
-    def ParentSolidId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>", /) -> None: ...
+    def ParentSolidId(self, arg: nanoocp.BRepGraph.BRepGraph_SolidId, /) -> None: ...
 
     @property
-    def ChildShellId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+    def ChildShellId(self) -> nanoocp.BRepGraph.BRepGraph_ShellId:
         """Child shell identifier"""
 
     @ChildShellId.setter
-    def ChildShellId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>", /) -> None: ...
+    def ChildShellId(self, arg: nanoocp.BRepGraph.BRepGraph_ShellId, /) -> None: ...
 
     @property
     def Orientation(self) -> ParityOrientation:
@@ -567,18 +966,18 @@ class FaceRef(BaseRef):
     def __init__(self, theOther: FaceRef) -> None: ...
 
     @property
-    def ParentShellId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+    def ParentShellId(self) -> nanoocp.BRepGraph.BRepGraph_ShellId:
         """Parent shell identifier"""
 
     @ParentShellId.setter
-    def ParentShellId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>", /) -> None: ...
+    def ParentShellId(self, arg: nanoocp.BRepGraph.BRepGraph_ShellId, /) -> None: ...
 
     @property
-    def ChildFaceId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+    def ChildFaceId(self) -> nanoocp.BRepGraph.BRepGraph_FaceId:
         """Child face identifier"""
 
     @ChildFaceId.setter
-    def ChildFaceId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", /) -> None: ...
+    def ChildFaceId(self, arg: nanoocp.BRepGraph.BRepGraph_FaceId, /) -> None: ...
 
     @property
     def Orientation(self) -> ParityOrientation:
@@ -597,18 +996,18 @@ class WireRef(BaseRef):
     def __init__(self, theOther: WireRef) -> None: ...
 
     @property
-    def ParentFaceId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+    def ParentFaceId(self) -> nanoocp.BRepGraph.BRepGraph_FaceId:
         """Parent face identifier"""
 
     @ParentFaceId.setter
-    def ParentFaceId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", /) -> None: ...
+    def ParentFaceId(self, arg: nanoocp.BRepGraph.BRepGraph_FaceId, /) -> None: ...
 
     @property
-    def ChildWireId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+    def ChildWireId(self) -> nanoocp.BRepGraph.BRepGraph_WireId:
         """Child wire identifier"""
 
     @ChildWireId.setter
-    def ChildWireId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", /) -> None: ...
+    def ChildWireId(self, arg: nanoocp.BRepGraph.BRepGraph_WireId, /) -> None: ...
 
     @property
     def Orientation(self) -> ParityOrientation:
@@ -627,18 +1026,18 @@ class VertexRef(BaseRef):
     def __init__(self, theOther: VertexRef) -> None: ...
 
     @property
-    def ChildVertexId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>":
+    def ChildVertexId(self) -> nanoocp.BRepGraph.BRepGraph_VertexId:
         """Child vertex identifier"""
 
     @ChildVertexId.setter
-    def ChildVertexId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>", /) -> None: ...
+    def ChildVertexId(self, arg: nanoocp.BRepGraph.BRepGraph_VertexId, /) -> None: ...
 
     @property
-    def ParentEdgeId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>":
+    def ParentEdgeId(self) -> nanoocp.BRepGraph.BRepGraph_EdgeId:
         """Edge that owns this vertex reference"""
 
     @ParentEdgeId.setter
-    def ParentEdgeId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", /) -> None: ...
+    def ParentEdgeId(self, arg: nanoocp.BRepGraph.BRepGraph_EdgeId, /) -> None: ...
 
     @property
     def Orientation(self) -> ParityOrientation:
@@ -657,18 +1056,18 @@ class SolidRef(BaseRef):
     def __init__(self, theOther: SolidRef) -> None: ...
 
     @property
-    def ParentCompSolidId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>":
+    def ParentCompSolidId(self) -> nanoocp.BRepGraph.BRepGraph_CompSolidId:
         """Parent compsolid identifier"""
 
     @ParentCompSolidId.setter
-    def ParentCompSolidId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>", /) -> None: ...
+    def ParentCompSolidId(self, arg: nanoocp.BRepGraph.BRepGraph_CompSolidId, /) -> None: ...
 
     @property
-    def ChildSolidId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+    def ChildSolidId(self) -> nanoocp.BRepGraph.BRepGraph_SolidId:
         """Child solid identifier"""
 
     @ChildSolidId.setter
-    def ChildSolidId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>", /) -> None: ...
+    def ChildSolidId(self, arg: nanoocp.BRepGraph.BRepGraph_SolidId, /) -> None: ...
 
     @property
     def Orientation(self) -> ParityOrientation:
@@ -687,11 +1086,11 @@ class ChildRef(BaseRef):
     def __init__(self, theOther: ChildRef) -> None: ...
 
     @property
-    def ParentCompoundId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>":
+    def ParentCompoundId(self) -> nanoocp.BRepGraph.BRepGraph_CompoundId:
         """Parent compound identifier"""
 
     @ParentCompoundId.setter
-    def ParentCompoundId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>", /) -> None: ...
+    def ParentCompoundId(self, arg: nanoocp.BRepGraph.BRepGraph_CompoundId, /) -> None: ...
 
     @property
     def ChildNodeId(self) -> nanoocp.BRepGraph.BRepGraph_NodeId:
@@ -728,16 +1127,16 @@ class OccurrenceRef(BaseRef):
     def __init__(self, theOther: OccurrenceRef) -> None: ...
 
     @property
-    def ParentProductId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>": ...
+    def ParentProductId(self) -> nanoocp.BRepGraph.BRepGraph_ProductId: ...
 
     @ParentProductId.setter
-    def ParentProductId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>", /) -> None: ...
+    def ParentProductId(self, arg: nanoocp.BRepGraph.BRepGraph_ProductId, /) -> None: ...
 
     @property
-    def ChildOccurrenceId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>": ...
+    def ChildOccurrenceId(self) -> nanoocp.BRepGraph.BRepGraph_OccurrenceId: ...
 
     @ChildOccurrenceId.setter
-    def ChildOccurrenceId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>", /) -> None: ...
+    def ChildOccurrenceId(self, arg: nanoocp.BRepGraph.BRepGraph_OccurrenceId, /) -> None: ...
 
     @property
     def LocalLocation(self) -> nanoocp.TopLoc.TopLoc_Location:
@@ -944,11 +1343,11 @@ class EdgeCurve3DRep:
     def __init__(self, theOther: EdgeCurve3DRep) -> None: ...
 
     @property
-    def ParentEdgeId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>":
+    def ParentEdgeId(self) -> nanoocp.BRepGraph.BRepGraph_EdgeId:
         """Owning edge identifier"""
 
     @ParentEdgeId.setter
-    def ParentEdgeId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", /) -> None: ...
+    def ParentEdgeId(self, arg: nanoocp.BRepGraph.BRepGraph_EdgeId, /) -> None: ...
 
     @property
     def Curve(self) -> nanoocp.Geom.Geom_Curve:
@@ -981,11 +1380,11 @@ class EdgePolygon3DRep:
     def __init__(self, theOther: EdgePolygon3DRep) -> None: ...
 
     @property
-    def ParentEdgeId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>":
+    def ParentEdgeId(self) -> nanoocp.BRepGraph.BRepGraph_EdgeId:
         """Owning edge identifier"""
 
     @ParentEdgeId.setter
-    def ParentEdgeId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", /) -> None: ...
+    def ParentEdgeId(self, arg: nanoocp.BRepGraph.BRepGraph_EdgeId, /) -> None: ...
 
     @property
     def Polygon(self) -> nanoocp.Poly.Poly_Polygon3D:
@@ -1006,11 +1405,11 @@ class CoEdgeCurve2DRep:
     def __init__(self, theOther: CoEdgeCurve2DRep) -> None: ...
 
     @property
-    def ParentCoEdgeId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+    def ParentCoEdgeId(self) -> nanoocp.BRepGraph.BRepGraph_CoEdgeId:
         """Owning coedge identifier"""
 
     @ParentCoEdgeId.setter
-    def ParentCoEdgeId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>", /) -> None: ...
+    def ParentCoEdgeId(self, arg: nanoocp.BRepGraph.BRepGraph_CoEdgeId, /) -> None: ...
 
     @property
     def Curve(self) -> nanoocp.Geom2d.Geom2d_Curve:
@@ -1043,11 +1442,11 @@ class CoEdgePolygon2DRep:
     def __init__(self, theOther: CoEdgePolygon2DRep) -> None: ...
 
     @property
-    def ParentCoEdgeId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+    def ParentCoEdgeId(self) -> nanoocp.BRepGraph.BRepGraph_CoEdgeId:
         """Owning coedge identifier"""
 
     @ParentCoEdgeId.setter
-    def ParentCoEdgeId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>", /) -> None: ...
+    def ParentCoEdgeId(self, arg: nanoocp.BRepGraph.BRepGraph_CoEdgeId, /) -> None: ...
 
     @property
     def Polygon(self) -> nanoocp.Poly.Poly_Polygon2D:
@@ -1066,11 +1465,11 @@ class CoEdgePolygonOnTriRep:
     def __init__(self, theOther: CoEdgePolygonOnTriRep) -> None: ...
 
     @property
-    def ParentCoEdgeId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+    def ParentCoEdgeId(self) -> nanoocp.BRepGraph.BRepGraph_CoEdgeId:
         """Owning coedge identifier"""
 
     @ParentCoEdgeId.setter
-    def ParentCoEdgeId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>", /) -> None: ...
+    def ParentCoEdgeId(self, arg: nanoocp.BRepGraph.BRepGraph_CoEdgeId, /) -> None: ...
 
     @property
     def Polygon(self) -> nanoocp.Poly.Poly_PolygonOnTriangulation:
@@ -1089,11 +1488,11 @@ class FaceSurfaceRep:
     def __init__(self, theOther: FaceSurfaceRep) -> None: ...
 
     @property
-    def ParentFaceId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+    def ParentFaceId(self) -> nanoocp.BRepGraph.BRepGraph_FaceId:
         """Owning face identifier"""
 
     @ParentFaceId.setter
-    def ParentFaceId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", /) -> None: ...
+    def ParentFaceId(self, arg: nanoocp.BRepGraph.BRepGraph_FaceId, /) -> None: ...
 
     @property
     def Surface(self) -> nanoocp.Geom.Geom_Surface:
@@ -1112,11 +1511,11 @@ class FaceTriangulationRep:
     def __init__(self, theOther: FaceTriangulationRep) -> None: ...
 
     @property
-    def ParentFaceId(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+    def ParentFaceId(self) -> nanoocp.BRepGraph.BRepGraph_FaceId:
         """Owning face identifier"""
 
     @ParentFaceId.setter
-    def ParentFaceId(self, arg: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", /) -> None: ...
+    def ParentFaceId(self, arg: nanoocp.BRepGraph.BRepGraph_FaceId, /) -> None: ...
 
     @property
     def Triangulation(self) -> nanoocp.Poly.Poly_Triangulation:
@@ -1283,7 +1682,7 @@ class BRepGraphInc_Reconstruct:
         """
 
     @staticmethod
-    def FaceWithCache(theGraph: nanoocp.BRepGraph.BRepGraph, theFaceId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", theCache: BRepGraphInc_Reconstruct.Cache) -> nanoocp.TopoDS.TopoDS_Shape:
+    def FaceWithCache(theGraph: nanoocp.BRepGraph.BRepGraph, theFaceId: nanoocp.BRepGraph.BRepGraph_FaceId, theCache: BRepGraphInc_Reconstruct.Cache) -> nanoocp.TopoDS.TopoDS_Shape:
         """
         Reconstruct a face with shared edge/vertex cache for multi-face contexts.
         @param[in]     theGraph   graph owning the storage and caches
@@ -1649,79 +2048,79 @@ class BRepGraphInc_Storage:
         Returns the number of active (parent-valid) coedge polygon-on-triangulation use records.
         """
 
-    def EdgeCurve3DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)0>") -> EdgeCurve3DRep:
+    def EdgeCurve3DRep(self, theId: BRepGraph_EdgeCurve3DRepId) -> EdgeCurve3DRep:
         """Returns the edge 3D curve use at the given id."""
 
-    def ChangeEdgeCurve3DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)0>") -> EdgeCurve3DRep:
+    def ChangeEdgeCurve3DRep(self, theId: BRepGraph_EdgeCurve3DRepId) -> EdgeCurve3DRep:
         """Returns a mutable reference to the edge 3D curve use at the given id."""
 
-    def EdgePolygon3DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)1>") -> EdgePolygon3DRep:
+    def EdgePolygon3DRep(self, theId: BRepGraph_EdgePolygon3DRepId) -> EdgePolygon3DRep:
         """Returns the edge 3D polygon use at the given id."""
 
-    def ChangeEdgePolygon3DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)1>") -> EdgePolygon3DRep:
+    def ChangeEdgePolygon3DRep(self, theId: BRepGraph_EdgePolygon3DRepId) -> EdgePolygon3DRep:
         """
         Returns a mutable reference to the edge 3D polygon use at the given id.
         """
 
-    def CoEdgeCurve2DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)2>") -> CoEdgeCurve2DRep:
+    def CoEdgeCurve2DRep(self, theId: BRepGraph_CoEdgeCurve2DRepId) -> CoEdgeCurve2DRep:
         """Returns the coedge 2D curve use at the given id."""
 
-    def ChangeCoEdgeCurve2DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)2>") -> CoEdgeCurve2DRep:
+    def ChangeCoEdgeCurve2DRep(self, theId: BRepGraph_CoEdgeCurve2DRepId) -> CoEdgeCurve2DRep:
         """
         Returns a mutable reference to the coedge 2D curve use at the given id.
         """
 
-    def CoEdgePolygon2DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)3>") -> CoEdgePolygon2DRep:
+    def CoEdgePolygon2DRep(self, theId: BRepGraph_CoEdgePolygon2DRepId) -> CoEdgePolygon2DRep:
         """Returns the coedge 2D polygon use at the given id."""
 
-    def ChangeCoEdgePolygon2DRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)3>") -> CoEdgePolygon2DRep:
+    def ChangeCoEdgePolygon2DRep(self, theId: BRepGraph_CoEdgePolygon2DRepId) -> CoEdgePolygon2DRep:
         """
         Returns a mutable reference to the coedge 2D polygon use at the given id.
         """
 
-    def CoEdgePolygonOnTriRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)4>") -> CoEdgePolygonOnTriRep:
+    def CoEdgePolygonOnTriRep(self, theId: BRepGraph_CoEdgePolygonOnTriRepId) -> CoEdgePolygonOnTriRep:
         """Returns the coedge polygon-on-triangulation use at the given id."""
 
-    def ChangeCoEdgePolygonOnTriRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)4>") -> CoEdgePolygonOnTriRep:
+    def ChangeCoEdgePolygonOnTriRep(self, theId: BRepGraph_CoEdgePolygonOnTriRepId) -> CoEdgePolygonOnTriRep:
         """
         Returns a mutable reference to the coedge polygon-on-triangulation use at the given id.
         """
 
-    def FaceSurfaceRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)5>") -> FaceSurfaceRep:
+    def FaceSurfaceRep(self, theId: BRepGraph_FaceSurfaceRepId) -> FaceSurfaceRep:
         """Returns the face surface use at the given id."""
 
-    def ChangeFaceSurfaceRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)5>") -> FaceSurfaceRep:
+    def ChangeFaceSurfaceRep(self, theId: BRepGraph_FaceSurfaceRepId) -> FaceSurfaceRep:
         """Returns a mutable reference to the face surface use at the given id."""
 
-    def FaceTriangulationRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)6>") -> FaceTriangulationRep:
+    def FaceTriangulationRep(self, theId: BRepGraph_FaceTriangulationRepId) -> FaceTriangulationRep:
         """Returns the face triangulation use at the given id."""
 
-    def ChangeFaceTriangulationRep(self, theId: "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)6>") -> FaceTriangulationRep:
+    def ChangeFaceTriangulationRep(self, theId: BRepGraph_FaceTriangulationRepId) -> FaceTriangulationRep:
         """
         Returns a mutable reference to the face triangulation use at the given id.
         """
 
-    def AppendEdgeCurve3DRep(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)0>":
+    def AppendEdgeCurve3DRep(self) -> BRepGraph_EdgeCurve3DRepId:
         """Appends a new edge 3D curve use record and returns its id."""
 
-    def AppendEdgePolygon3DRep(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)1>":
+    def AppendEdgePolygon3DRep(self) -> BRepGraph_EdgePolygon3DRepId:
         """Appends a new edge 3D polygon use record and returns its id."""
 
-    def AppendCoEdgeCurve2DRep(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)2>":
+    def AppendCoEdgeCurve2DRep(self) -> BRepGraph_CoEdgeCurve2DRepId:
         """Appends a new coedge 2D curve use record and returns its id."""
 
-    def AppendCoEdgePolygon2DRep(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)3>":
+    def AppendCoEdgePolygon2DRep(self) -> BRepGraph_CoEdgePolygon2DRepId:
         """Appends a new coedge 2D polygon use record and returns its id."""
 
-    def AppendCoEdgePolygonOnTriRep(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)4>":
+    def AppendCoEdgePolygonOnTriRep(self) -> BRepGraph_CoEdgePolygonOnTriRepId:
         """
         Appends a new coedge polygon-on-triangulation use record and returns its id.
         """
 
-    def AppendFaceSurfaceRep(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)5>":
+    def AppendFaceSurfaceRep(self) -> BRepGraph_FaceSurfaceRepId:
         """Appends a new face surface use record and returns its id."""
 
-    def AppendFaceTriangulationRep(self) -> "BRepGraph_RepId::Typed<(BRepGraph_RepId::Kind)6>":
+    def AppendFaceTriangulationRep(self) -> BRepGraph_FaceTriangulationRepId:
         """Appends a new face triangulation use record and returns its id."""
 
     def SetRemoved(self, theRepId: BRepGraph_RepId, theVal: bool) -> None:
@@ -1731,258 +2130,258 @@ class BRepGraphInc_Storage:
         @param[in] theVal true to mark removed, false to mark active
         """
 
-    def Vertex(self, theVertex: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>") -> VertexDef:
+    def Vertex(self, theVertex: nanoocp.BRepGraph.BRepGraph_VertexId) -> VertexDef:
         """
         Returns the vertex entity at the given typed id.
         @param[in] theVertex typed vertex id
         """
 
-    def Edge(self, theEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>") -> EdgeDef:
+    def Edge(self, theEdge: nanoocp.BRepGraph.BRepGraph_EdgeId) -> EdgeDef:
         """
         Returns the edge entity at the given typed id.
         @param[in] theEdge typed edge id
         """
 
-    def CoEdge(self, theCoEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>") -> CoEdgeDef:
+    def CoEdge(self, theCoEdge: nanoocp.BRepGraph.BRepGraph_CoEdgeId) -> CoEdgeDef:
         """
         Returns the coedge entity at the given typed id.
         @param[in] theCoEdge typed coedge id
         """
 
-    def Wire(self, theWire: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> WireDef:
+    def Wire(self, theWire: nanoocp.BRepGraph.BRepGraph_WireId) -> WireDef:
         """
         Returns the wire entity at the given typed id.
         @param[in] theWire typed wire id
         """
 
-    def Face(self, theFace: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>") -> FaceDef:
+    def Face(self, theFace: nanoocp.BRepGraph.BRepGraph_FaceId) -> FaceDef:
         """
         Returns the face entity at the given typed id.
         @param[in] theFace typed face id
         """
 
-    def Shell(self, theShell: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>") -> ShellDef:
+    def Shell(self, theShell: nanoocp.BRepGraph.BRepGraph_ShellId) -> ShellDef:
         """
         Returns the shell entity at the given typed id.
         @param[in] theShell typed shell id
         """
 
-    def Solid(self, theSolid: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>") -> SolidDef:
+    def Solid(self, theSolid: nanoocp.BRepGraph.BRepGraph_SolidId) -> SolidDef:
         """
         Returns the solid entity at the given typed id.
         @param[in] theSolid typed solid id
         """
 
-    def Compound(self, theCompound: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>") -> CompoundDef:
+    def Compound(self, theCompound: nanoocp.BRepGraph.BRepGraph_CompoundId) -> CompoundDef:
         """
         Returns the compound entity at the given typed id.
         @param[in] theCompound typed compound id
         """
 
-    def CompSolid(self, theCompSolid: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>") -> CompSolidDef:
+    def CompSolid(self, theCompSolid: nanoocp.BRepGraph.BRepGraph_CompSolidId) -> CompSolidDef:
         """
         Returns the compsolid entity at the given typed id.
         @param[in] theCompSolid typed comp-solid id
         """
 
-    def Product(self, theProduct: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>") -> ProductDef:
+    def Product(self, theProduct: nanoocp.BRepGraph.BRepGraph_ProductId) -> ProductDef:
         """
         Returns the product entity at the given typed id.
         @param[in] theProduct typed product id
         """
 
-    def Occurrence(self, theOccurrence: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>") -> OccurrenceDef:
+    def Occurrence(self, theOccurrence: nanoocp.BRepGraph.BRepGraph_OccurrenceId) -> OccurrenceDef:
         """
         Returns the occurrence entity at the given typed id.
         @param[in] theOccurrence typed occurrence id
         """
 
-    def ShellRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>") -> ShellRef:
+    def ShellRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_ShellRefId) -> ShellRef:
         """Returns the shell reference entry at the given typed id."""
 
-    def FaceRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>") -> FaceRef:
+    def FaceRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_FaceRefId) -> FaceRef:
         """Returns the face reference entry at the given typed id."""
 
-    def WireRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>") -> WireRef:
+    def WireRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_WireRefId) -> WireRef:
         """Returns the wire reference entry at the given typed id."""
 
-    def VertexRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>") -> VertexRef:
+    def VertexRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_VertexRefId) -> VertexRef:
         """Returns the vertex reference entry at the given typed id."""
 
-    def SolidRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>") -> SolidRef:
+    def SolidRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_SolidRefId) -> SolidRef:
         """Returns the solid reference entry at the given typed id."""
 
-    def ChildRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>") -> ChildRef:
+    def ChildRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_ChildRefId) -> ChildRef:
         """Returns the child reference entry at the given typed id."""
 
-    def OccurrenceRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>") -> OccurrenceRef:
+    def OccurrenceRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_OccurrenceRefId) -> OccurrenceRef:
         """Returns the occurrence reference entry at the given typed id."""
 
-    def ChangeVertex(self, theVertex: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>") -> VertexDef:
+    def ChangeVertex(self, theVertex: nanoocp.BRepGraph.BRepGraph_VertexId) -> VertexDef:
         """
         Returns a mutable reference to the vertex entity at the given typed id.
         @param[in] theVertex typed vertex id
         """
 
-    def ChangeEdge(self, theEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>") -> EdgeDef:
+    def ChangeEdge(self, theEdge: nanoocp.BRepGraph.BRepGraph_EdgeId) -> EdgeDef:
         """
         Returns a mutable reference to the edge entity at the given typed id.
         @param[in] theEdge typed edge id
         """
 
-    def ChangeCoEdge(self, theCoEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>") -> CoEdgeDef:
+    def ChangeCoEdge(self, theCoEdge: nanoocp.BRepGraph.BRepGraph_CoEdgeId) -> CoEdgeDef:
         """
         Returns a mutable reference to the coedge entity at the given typed id.
         @param[in] theCoEdge typed coedge id
         """
 
-    def ChangeWire(self, theWire: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> WireDef:
+    def ChangeWire(self, theWire: nanoocp.BRepGraph.BRepGraph_WireId) -> WireDef:
         """
         Returns a mutable reference to the wire entity at the given typed id.
         @param[in] theWire typed wire id
         """
 
-    def ChangeFace(self, theFace: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>") -> FaceDef:
+    def ChangeFace(self, theFace: nanoocp.BRepGraph.BRepGraph_FaceId) -> FaceDef:
         """
         Returns a mutable reference to the face entity at the given typed id.
         @param[in] theFace typed face id
         """
 
-    def ChangeShell(self, theShell: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>") -> ShellDef:
+    def ChangeShell(self, theShell: nanoocp.BRepGraph.BRepGraph_ShellId) -> ShellDef:
         """
         Returns a mutable reference to the shell entity at the given typed id.
         @param[in] theShell typed shell id
         """
 
-    def ChangeSolid(self, theSolid: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>") -> SolidDef:
+    def ChangeSolid(self, theSolid: nanoocp.BRepGraph.BRepGraph_SolidId) -> SolidDef:
         """
         Returns a mutable reference to the solid entity at the given typed id.
         @param[in] theSolid typed solid id
         """
 
-    def ChangeCompound(self, theCompound: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>") -> CompoundDef:
+    def ChangeCompound(self, theCompound: nanoocp.BRepGraph.BRepGraph_CompoundId) -> CompoundDef:
         """
         Returns a mutable reference to the compound entity at the given typed id.
         @param[in] theCompound typed compound id
         """
 
-    def ChangeCompSolid(self, theCompSolid: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>") -> CompSolidDef:
+    def ChangeCompSolid(self, theCompSolid: nanoocp.BRepGraph.BRepGraph_CompSolidId) -> CompSolidDef:
         """
         Returns a mutable reference to the compsolid entity at the given typed id.
         @param[in] theCompSolid typed comp-solid id
         """
 
-    def ChangeProduct(self, theProduct: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>") -> ProductDef:
+    def ChangeProduct(self, theProduct: nanoocp.BRepGraph.BRepGraph_ProductId) -> ProductDef:
         """
         Returns a mutable reference to the product entity at the given typed id.
         @param[in] theProduct typed product id
         """
 
-    def ChangeOccurrence(self, theOccurrence: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>") -> OccurrenceDef:
+    def ChangeOccurrence(self, theOccurrence: nanoocp.BRepGraph.BRepGraph_OccurrenceId) -> OccurrenceDef:
         """
         Returns a mutable reference to the occurrence entity at the given typed id.
         @param[in] theOccurrence typed occurrence id
         """
 
-    def ChangeShellRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>") -> ShellRef:
+    def ChangeShellRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_ShellRefId) -> ShellRef:
         """
         Returns a mutable reference to the shell reference entry at the given typed id.
         """
 
-    def ChangeFaceRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>") -> FaceRef:
+    def ChangeFaceRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_FaceRefId) -> FaceRef:
         """
         Returns a mutable reference to the face reference entry at the given typed id.
         """
 
-    def ChangeWireRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>") -> WireRef:
+    def ChangeWireRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_WireRefId) -> WireRef:
         """
         Returns a mutable reference to the wire reference entry at the given typed id.
         """
 
-    def ChangeVertexRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>") -> VertexRef:
+    def ChangeVertexRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_VertexRefId) -> VertexRef:
         """
         Returns a mutable reference to the vertex reference entry at the given typed id.
         """
 
-    def ChangeSolidRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>") -> SolidRef:
+    def ChangeSolidRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_SolidRefId) -> SolidRef:
         """
         Returns a mutable reference to the solid reference entry at the given typed id.
         """
 
-    def ChangeChildRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>") -> ChildRef:
+    def ChangeChildRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_ChildRefId) -> ChildRef:
         """
         Returns a mutable reference to the child reference entry at the given typed id.
         """
 
-    def ChangeOccurrenceRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>") -> OccurrenceRef:
+    def ChangeOccurrenceRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_OccurrenceRefId) -> OccurrenceRef:
         """
         Returns a mutable reference to the occurrence reference entry at the given typed id.
         """
 
-    def FaceRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>") -> FaceRelations:
+    def FaceRelations(self, theId: nanoocp.BRepGraph.BRepGraph_FaceId) -> FaceRelations:
         """
         Return the face relations for a given face identifier.
         @param[in] theId face identifier
         @return const reference to the face relation representation
         """
 
-    def WireRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> WireRelations:
+    def WireRelations(self, theId: nanoocp.BRepGraph.BRepGraph_WireId) -> WireRelations:
         """
         Return the wire relations for a given wire identifier.
         @param[in] theId wire identifier
         @return const reference to the wire relation representation
         """
 
-    def EdgeRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>") -> EdgeRelations:
+    def EdgeRelations(self, theId: nanoocp.BRepGraph.BRepGraph_EdgeId) -> EdgeRelations:
         """
         Return the edge relations for a given edge identifier.
         @param[in] theId edge identifier
         @return const reference to the edge relation representation
         """
 
-    def ShellRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>") -> ShellRelations:
+    def ShellRelations(self, theId: nanoocp.BRepGraph.BRepGraph_ShellId) -> ShellRelations:
         """
         Return the shell relations for a given shell identifier.
         @param[in] theId shell identifier
         @return const reference to the shell relation representation
         """
 
-    def SolidRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>") -> SolidRelations:
+    def SolidRelations(self, theId: nanoocp.BRepGraph.BRepGraph_SolidId) -> SolidRelations:
         """
         Return the solid relations for a given solid identifier.
         @param[in] theId solid identifier
         @return const reference to the solid relation representation
         """
 
-    def CompoundRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>") -> CompoundRelations:
+    def CompoundRelations(self, theId: nanoocp.BRepGraph.BRepGraph_CompoundId) -> CompoundRelations:
         """
         Return the compound relations for a given compound identifier.
         @param[in] theId compound identifier
         @return const reference to the compound relation representation
         """
 
-    def CompSolidRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>") -> CompSolidRelations:
+    def CompSolidRelations(self, theId: nanoocp.BRepGraph.BRepGraph_CompSolidId) -> CompSolidRelations:
         """
         Return the compsolid relations for a given compsolid identifier.
         @param[in] theId compsolid identifier
         @return const reference to the compsolid relation representation
         """
 
-    def VertexRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>") -> VertexRelations:
+    def VertexRelations(self, theId: nanoocp.BRepGraph.BRepGraph_VertexId) -> VertexRelations:
         """
         Return the vertex relations for a given vertex identifier.
         @param[in] theId vertex identifier
         @return const reference to the vertex relation representation
         """
 
-    def ProductRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>") -> ProductRelations:
+    def ProductRelations(self, theId: nanoocp.BRepGraph.BRepGraph_ProductId) -> ProductRelations:
         """
         Return the product relations for a given product identifier.
         @param[in] theId product identifier
         @return const reference to the product relation representation
         """
 
-    def OccurrenceRelations(self, theId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>") -> OccurrenceRelations:
+    def OccurrenceRelations(self, theId: nanoocp.BRepGraph.BRepGraph_OccurrenceId) -> OccurrenceRelations:
         """
         Return the occurrence relations for a given occurrence identifier.
         @param[in] theId occurrence identifier
@@ -2003,61 +2402,61 @@ class BRepGraphInc_Storage:
         @return const reference to the list of occurrence reference identifiers
         """
 
-    def AppendVertex(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>":
+    def AppendVertex(self) -> nanoocp.BRepGraph.BRepGraph_VertexId:
         """Appends a new vertex entity and returns its typed id."""
 
-    def AppendEdge(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>":
+    def AppendEdge(self) -> nanoocp.BRepGraph.BRepGraph_EdgeId:
         """Appends a new edge entity and returns its typed id."""
 
-    def AppendCoEdge(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+    def AppendCoEdge(self) -> nanoocp.BRepGraph.BRepGraph_CoEdgeId:
         """Appends a new coedge entity and returns its typed id."""
 
-    def AppendWire(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+    def AppendWire(self) -> nanoocp.BRepGraph.BRepGraph_WireId:
         """Appends a new wire entity and returns its typed id."""
 
-    def AppendFace(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+    def AppendFace(self) -> nanoocp.BRepGraph.BRepGraph_FaceId:
         """Appends a new face entity and returns its typed id."""
 
-    def AppendShell(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+    def AppendShell(self) -> nanoocp.BRepGraph.BRepGraph_ShellId:
         """Appends a new shell entity and returns its typed id."""
 
-    def AppendSolid(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+    def AppendSolid(self) -> nanoocp.BRepGraph.BRepGraph_SolidId:
         """Appends a new solid entity and returns its typed id."""
 
-    def AppendCompound(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>":
+    def AppendCompound(self) -> nanoocp.BRepGraph.BRepGraph_CompoundId:
         """Appends a new compound entity and returns its typed id."""
 
-    def AppendCompSolid(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>":
+    def AppendCompSolid(self) -> nanoocp.BRepGraph.BRepGraph_CompSolidId:
         """Appends a new compsolid entity and returns its typed id."""
 
-    def AppendProduct(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+    def AppendProduct(self) -> nanoocp.BRepGraph.BRepGraph_ProductId:
         """Appends a new product entity and returns its typed id."""
 
-    def AppendOccurrence(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>":
+    def AppendOccurrence(self) -> nanoocp.BRepGraph.BRepGraph_OccurrenceId:
         """Appends a new occurrence entity and returns its typed id."""
 
-    def AppendShellRef(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+    def AppendShellRef(self) -> nanoocp.BRepGraph.BRepGraph_ShellRefId:
         """Appends a new shell reference entry and returns its typed id."""
 
-    def AppendFaceRef(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+    def AppendFaceRef(self) -> nanoocp.BRepGraph.BRepGraph_FaceRefId:
         """Appends a new face reference entry and returns its typed id."""
 
-    def AppendWireRef(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+    def AppendWireRef(self) -> nanoocp.BRepGraph.BRepGraph_WireRefId:
         """Appends a new wire reference entry and returns its typed id."""
 
-    def AppendVertexRef(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>":
+    def AppendVertexRef(self) -> nanoocp.BRepGraph.BRepGraph_VertexRefId:
         """Appends a new vertex reference entry and returns its typed id."""
 
-    def AppendSolidRef(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+    def AppendSolidRef(self) -> nanoocp.BRepGraph.BRepGraph_SolidRefId:
         """Appends a new solid reference entry and returns its typed id."""
 
-    def AppendChildRef(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+    def AppendChildRef(self) -> nanoocp.BRepGraph.BRepGraph_ChildRefId:
         """Appends a new child reference entry and returns its typed id."""
 
-    def AppendOccurrenceRef(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+    def AppendOccurrenceRef(self) -> nanoocp.BRepGraph.BRepGraph_OccurrenceRefId:
         """Appends a new occurrence reference entry and returns its typed id."""
 
-    def CreateCoEdgeUse(self, theParentWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", theChildEdgeId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", theFaceId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", theOrientation: ParityOrientation) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+    def CreateCoEdgeUse(self, theParentWireId: nanoocp.BRepGraph.BRepGraph_WireId, theChildEdgeId: nanoocp.BRepGraph.BRepGraph_EdgeId, theFaceId: nanoocp.BRepGraph.BRepGraph_FaceId, theOrientation: ParityOrientation) -> nanoocp.BRepGraph.BRepGraph_CoEdgeId:
         """
         Create a coedge use record binding an edge to a wire within a face context.
         @param[in] theParentWireId owning wire identifier
@@ -2067,14 +2466,14 @@ class BRepGraphInc_Storage:
         @return the newly created coedge identifier
         """
 
-    def AttachEdgeToVertex(self, theEdgeId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", theVertexId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>") -> None:
+    def AttachEdgeToVertex(self, theEdgeId: nanoocp.BRepGraph.BRepGraph_EdgeId, theVertexId: nanoocp.BRepGraph.BRepGraph_VertexId) -> None:
         """
         Attach an edge to a vertex by creating a vertex reference.
         @param[in] theEdgeId   edge identifier
         @param[in] theVertexId vertex identifier
         """
 
-    def AttachWireToFace(self, theParentFaceId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", theChildWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", theOrientation: ParityOrientation = ...) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+    def AttachWireToFace(self, theParentFaceId: nanoocp.BRepGraph.BRepGraph_FaceId, theChildWireId: nanoocp.BRepGraph.BRepGraph_WireId, theOrientation: ParityOrientation = ...) -> nanoocp.BRepGraph.BRepGraph_WireRefId:
         """
         Attach a wire to a face by creating a wire reference.
         @param[in] theParentFaceId parent face identifier
@@ -2083,7 +2482,7 @@ class BRepGraphInc_Storage:
         @return the newly created wire reference identifier
         """
 
-    def AttachFaceToShell(self, theParentShellId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>", theChildFaceId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", theOrientation: ParityOrientation = ...) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+    def AttachFaceToShell(self, theParentShellId: nanoocp.BRepGraph.BRepGraph_ShellId, theChildFaceId: nanoocp.BRepGraph.BRepGraph_FaceId, theOrientation: ParityOrientation = ...) -> nanoocp.BRepGraph.BRepGraph_FaceRefId:
         """
         Attach a face to a shell by creating a face reference.
         @param[in] theParentShellId parent shell identifier
@@ -2092,7 +2491,7 @@ class BRepGraphInc_Storage:
         @return the newly created face reference identifier
         """
 
-    def AttachShellToSolid(self, theParentSolidId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>", theChildShellId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>", theOrientation: ParityOrientation = ...) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+    def AttachShellToSolid(self, theParentSolidId: nanoocp.BRepGraph.BRepGraph_SolidId, theChildShellId: nanoocp.BRepGraph.BRepGraph_ShellId, theOrientation: ParityOrientation = ...) -> nanoocp.BRepGraph.BRepGraph_ShellRefId:
         """
         Attach a shell to a solid by creating a shell reference.
         @param[in] theParentSolidId parent solid identifier
@@ -2101,7 +2500,7 @@ class BRepGraphInc_Storage:
         @return the newly created shell reference identifier
         """
 
-    def AttachSolidToCompSolid(self, theParentCompSolidId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>", theChildSolidId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>", theOrientation: ParityOrientation = ...) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+    def AttachSolidToCompSolid(self, theParentCompSolidId: nanoocp.BRepGraph.BRepGraph_CompSolidId, theChildSolidId: nanoocp.BRepGraph.BRepGraph_SolidId, theOrientation: ParityOrientation = ...) -> nanoocp.BRepGraph.BRepGraph_SolidRefId:
         """
         Attach a solid to a compsolid by creating a solid reference.
         @param[in] theParentCompSolidId parent compsolid identifier
@@ -2110,7 +2509,7 @@ class BRepGraphInc_Storage:
         @return the newly created solid reference identifier
         """
 
-    def AttachChildToCompound(self, theParentCompoundId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>", theChildNodeId: nanoocp.BRepGraph.BRepGraph_NodeId, theLocation: nanoocp.TopLoc.TopLoc_Location = ..., theOrientation: ParityOrientation = ...) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+    def AttachChildToCompound(self, theParentCompoundId: nanoocp.BRepGraph.BRepGraph_CompoundId, theChildNodeId: nanoocp.BRepGraph.BRepGraph_NodeId, theLocation: nanoocp.TopLoc.TopLoc_Location = ..., theOrientation: ParityOrientation = ...) -> nanoocp.BRepGraph.BRepGraph_ChildRefId:
         """
         Attach a child node to a compound by creating a child reference.
         @param[in] theParentCompoundId parent compound identifier
@@ -2120,7 +2519,7 @@ class BRepGraphInc_Storage:
         @return the newly created child reference identifier
         """
 
-    def AttachOccurrenceToProduct(self, theParentProductId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>", theChildOccurrenceId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>", theLocation: nanoocp.TopLoc.TopLoc_Location = ...) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+    def AttachOccurrenceToProduct(self, theParentProductId: nanoocp.BRepGraph.BRepGraph_ProductId, theChildOccurrenceId: nanoocp.BRepGraph.BRepGraph_OccurrenceId, theLocation: nanoocp.TopLoc.TopLoc_Location = ...) -> nanoocp.BRepGraph.BRepGraph_OccurrenceRefId:
         """
         Attach an occurrence to a product by creating an occurrence reference.
         @param[in] theParentProductId     parent product identifier
@@ -2129,7 +2528,7 @@ class BRepGraphInc_Storage:
         @return the newly created occurrence reference identifier
         """
 
-    def DetachCoEdgeUse(self, theParentWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", theCoEdgeId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>") -> bool:
+    def DetachCoEdgeUse(self, theParentWireId: nanoocp.BRepGraph.BRepGraph_WireId, theCoEdgeId: nanoocp.BRepGraph.BRepGraph_CoEdgeId) -> bool:
         """
         Detach a coedge use from its parent wire.
         @param[in] theParentWireId owning wire identifier
@@ -2137,7 +2536,7 @@ class BRepGraphInc_Storage:
         @return true if the coedge was found and removed
         """
 
-    def ReplaceCoEdgeUseWithPair(self, theParentWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", theOldCoEdgeId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>", theNewFirstCoEdgeId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>", theNewSecondCoEdgeId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>") -> bool:
+    def ReplaceCoEdgeUseWithPair(self, theParentWireId: nanoocp.BRepGraph.BRepGraph_WireId, theOldCoEdgeId: nanoocp.BRepGraph.BRepGraph_CoEdgeId, theNewFirstCoEdgeId: nanoocp.BRepGraph.BRepGraph_CoEdgeId, theNewSecondCoEdgeId: nanoocp.BRepGraph.BRepGraph_CoEdgeId) -> bool:
         """
         Replace a single coedge with a pair of new coedges in a wire.
         @param[in] theParentWireId    owning wire identifier
@@ -2147,7 +2546,7 @@ class BRepGraphInc_Storage:
         @return true if the replacement succeeded
         """
 
-    def DetachWireFromFace(self, theParentFaceId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>") -> bool:
+    def DetachWireFromFace(self, theParentFaceId: nanoocp.BRepGraph.BRepGraph_FaceId, theRefId: nanoocp.BRepGraph.BRepGraph_WireRefId) -> bool:
         """
         Detach a wire reference from its parent face.
         @param[in] theParentFaceId parent face identifier
@@ -2155,7 +2554,7 @@ class BRepGraphInc_Storage:
         @return true if the reference was found and removed
         """
 
-    def DetachFaceFromShell(self, theParentShellId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>", theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>") -> bool:
+    def DetachFaceFromShell(self, theParentShellId: nanoocp.BRepGraph.BRepGraph_ShellId, theRefId: nanoocp.BRepGraph.BRepGraph_FaceRefId) -> bool:
         """
         Detach a face reference from its parent shell.
         @param[in] theParentShellId parent shell identifier
@@ -2163,7 +2562,7 @@ class BRepGraphInc_Storage:
         @return true if the reference was found and removed
         """
 
-    def DetachShellFromSolid(self, theParentSolidId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>", theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>") -> bool:
+    def DetachShellFromSolid(self, theParentSolidId: nanoocp.BRepGraph.BRepGraph_SolidId, theRefId: nanoocp.BRepGraph.BRepGraph_ShellRefId) -> bool:
         """
         Detach a shell reference from its parent solid.
         @param[in] theParentSolidId parent solid identifier
@@ -2171,7 +2570,7 @@ class BRepGraphInc_Storage:
         @return true if the reference was found and removed
         """
 
-    def DetachSolidFromCompSolid(self, theParentCompSolidId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>", theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>") -> bool:
+    def DetachSolidFromCompSolid(self, theParentCompSolidId: nanoocp.BRepGraph.BRepGraph_CompSolidId, theRefId: nanoocp.BRepGraph.BRepGraph_SolidRefId) -> bool:
         """
         Detach a solid reference from its parent compsolid.
         @param[in] theParentCompSolidId parent compsolid identifier
@@ -2179,7 +2578,7 @@ class BRepGraphInc_Storage:
         @return true if the reference was found and removed
         """
 
-    def DetachChildFromCompound(self, theParentCompoundId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>", theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>") -> bool:
+    def DetachChildFromCompound(self, theParentCompoundId: nanoocp.BRepGraph.BRepGraph_CompoundId, theRefId: nanoocp.BRepGraph.BRepGraph_ChildRefId) -> bool:
         """
         Detach a child reference from its parent compound.
         @param[in] theParentCompoundId parent compound identifier
@@ -2187,7 +2586,7 @@ class BRepGraphInc_Storage:
         @return true if the reference was found and removed
         """
 
-    def DetachOccurrenceFromProduct(self, theParentProductId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>", theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>") -> bool:
+    def DetachOccurrenceFromProduct(self, theParentProductId: nanoocp.BRepGraph.BRepGraph_ProductId, theRefId: nanoocp.BRepGraph.BRepGraph_OccurrenceRefId) -> bool:
         """
         Detach an occurrence reference from its parent product.
         @param[in] theParentProductId parent product identifier
@@ -2195,7 +2594,7 @@ class BRepGraphInc_Storage:
         @return true if the reference was found and removed
         """
 
-    def RebindOccurrenceChild(self, theOccurrence: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>", theOldChild: nanoocp.BRepGraph.BRepGraph_NodeId, theNewChild: nanoocp.BRepGraph.BRepGraph_NodeId) -> None:
+    def RebindOccurrenceChild(self, theOccurrence: nanoocp.BRepGraph.BRepGraph_OccurrenceId, theOldChild: nanoocp.BRepGraph.BRepGraph_NodeId, theNewChild: nanoocp.BRepGraph.BRepGraph_NodeId) -> None:
         """
         Rebind the child node of an occurrence to a new node.
         @param[in] theOccurrence occurrence identifier
@@ -2203,7 +2602,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewChild   new child node identifier
         """
 
-    def RebindVertexEdge(self, theOldVertex: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>", theNewVertex: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>", theEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", theExcludingRef: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>") -> None:
+    def RebindVertexEdge(self, theOldVertex: nanoocp.BRepGraph.BRepGraph_VertexId, theNewVertex: nanoocp.BRepGraph.BRepGraph_VertexId, theEdge: nanoocp.BRepGraph.BRepGraph_EdgeId, theExcludingRef: nanoocp.BRepGraph.BRepGraph_VertexRefId) -> None:
         """
         Rebind vertex edge references from one vertex to another, excluding a specific ref.
         @param[in] theOldVertex   old vertex identifier
@@ -2212,7 +2611,7 @@ class BRepGraphInc_Storage:
         @param[in] theExcludingRef reference identifier to exclude from rebinding
         """
 
-    def RebindVertexRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>", theOldVertex: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>", theNewVertex: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>") -> None:
+    def RebindVertexRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_VertexRefId, theOldVertex: nanoocp.BRepGraph.BRepGraph_VertexId, theNewVertex: nanoocp.BRepGraph.BRepGraph_VertexId) -> None:
         """
         Rebind a vertex reference to point to a new vertex.
         @param[in] theRefId     vertex reference identifier
@@ -2220,7 +2619,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewVertex new vertex identifier
         """
 
-    def RebindCoEdgeEdge(self, theCoEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>", theOldEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>", theNewEdge: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>") -> None:
+    def RebindCoEdgeEdge(self, theCoEdge: nanoocp.BRepGraph.BRepGraph_CoEdgeId, theOldEdge: nanoocp.BRepGraph.BRepGraph_EdgeId, theNewEdge: nanoocp.BRepGraph.BRepGraph_EdgeId) -> None:
         """
         Rebind a coedge to reference a different edge.
         @param[in] theCoEdge  coedge identifier
@@ -2228,7 +2627,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewEdge new edge identifier
         """
 
-    def RebindWireRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>", theOldWire: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", theNewWire: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> None:
+    def RebindWireRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_WireRefId, theOldWire: nanoocp.BRepGraph.BRepGraph_WireId, theNewWire: nanoocp.BRepGraph.BRepGraph_WireId) -> None:
         """
         Rebind a wire reference to point to a new wire.
         @param[in] theRefId   wire reference identifier
@@ -2236,7 +2635,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewWire new wire identifier
         """
 
-    def RebindFaceRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>", theOldFace: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", theNewFace: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>") -> None:
+    def RebindFaceRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_FaceRefId, theOldFace: nanoocp.BRepGraph.BRepGraph_FaceId, theNewFace: nanoocp.BRepGraph.BRepGraph_FaceId) -> None:
         """
         Rebind a face reference to point to a new face.
         @param[in] theRefId   face reference identifier
@@ -2244,7 +2643,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewFace new face identifier
         """
 
-    def RebindShellRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>", theOldShell: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>", theNewShell: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>") -> None:
+    def RebindShellRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_ShellRefId, theOldShell: nanoocp.BRepGraph.BRepGraph_ShellId, theNewShell: nanoocp.BRepGraph.BRepGraph_ShellId) -> None:
         """
         Rebind a shell reference to point to a new shell.
         @param[in] theRefId    shell reference identifier
@@ -2252,7 +2651,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewShell new shell identifier
         """
 
-    def RebindSolidRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>", theOldSolid: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>", theNewSolid: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>") -> None:
+    def RebindSolidRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_SolidRefId, theOldSolid: nanoocp.BRepGraph.BRepGraph_SolidId, theNewSolid: nanoocp.BRepGraph.BRepGraph_SolidId) -> None:
         """
         Rebind a solid reference to point to a new solid.
         @param[in] theRefId    solid reference identifier
@@ -2260,7 +2659,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewSolid new solid identifier
         """
 
-    def RebindChildRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>", theOldChild: nanoocp.BRepGraph.BRepGraph_NodeId, theNewChild: nanoocp.BRepGraph.BRepGraph_NodeId) -> None:
+    def RebindChildRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_ChildRefId, theOldChild: nanoocp.BRepGraph.BRepGraph_NodeId, theNewChild: nanoocp.BRepGraph.BRepGraph_NodeId) -> None:
         """
         Rebind a child reference to point to a new child node.
         @param[in] theRefId   child reference identifier
@@ -2268,7 +2667,7 @@ class BRepGraphInc_Storage:
         @param[in] theNewChild new child node identifier
         """
 
-    def RebindOccurrenceRef(self, theRefId: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>", theOldOccurrence: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>", theNewOccurrence: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)11>") -> None:
+    def RebindOccurrenceRef(self, theRefId: nanoocp.BRepGraph.BRepGraph_OccurrenceRefId, theOldOccurrence: nanoocp.BRepGraph.BRepGraph_OccurrenceId, theNewOccurrence: nanoocp.BRepGraph.BRepGraph_OccurrenceId) -> None:
         """
         Rebind an occurrence reference to point to a new occurrence.
         @param[in] theRefId         occurrence reference identifier
@@ -2276,55 +2675,55 @@ class BRepGraphInc_Storage:
         @param[in] theNewOccurrence new occurrence identifier
         """
 
-    def ReverseWireCoEdges(self, theWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> None:
+    def ReverseWireCoEdges(self, theWireId: nanoocp.BRepGraph.BRepGraph_WireId) -> None:
         """
         Reverse the order of coedges in a wire.
         @param[in] theWireId wire identifier
         """
 
-    def SetWireCoEdges(self, theWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>", theCoEdgeIds: nanoocp.NCollection.NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> None:
+    def SetWireCoEdges(self, theWireId: nanoocp.BRepGraph.BRepGraph_WireId, theCoEdgeIds: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_CoEdgeId]) -> None:
         """
         Replace the coedge list of a wire with a new set.
         @param[in] theWireId    wire identifier
         @param[in] theCoEdgeIds new coedge identifiers
         """
 
-    def SetFaceWireRefs(self, theFaceId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>", theWireRefIds: nanoocp.NCollection.NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire) -> None:
+    def SetFaceWireRefs(self, theFaceId: nanoocp.BRepGraph.BRepGraph_FaceId, theWireRefIds: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_WireRefId]) -> None:
         """
         Replace the wire reference list of a face with a new set.
         @param[in] theFaceId    face identifier
         @param[in] theWireRefIds new wire reference identifiers
         """
 
-    def SetShellFaceRefs(self, theShellId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>", theFaceRefIds: nanoocp.NCollection.NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face) -> None:
+    def SetShellFaceRefs(self, theShellId: nanoocp.BRepGraph.BRepGraph_ShellId, theFaceRefIds: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_FaceRefId]) -> None:
         """
         Replace the face reference list of a shell with a new set.
         @param[in] theShellId   shell identifier
         @param[in] theFaceRefIds new face reference identifiers
         """
 
-    def SetSolidShellRefs(self, theSolidId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>", theShellRefIds: nanoocp.NCollection.NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell) -> None:
+    def SetSolidShellRefs(self, theSolidId: nanoocp.BRepGraph.BRepGraph_SolidId, theShellRefIds: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_ShellRefId]) -> None:
         """
         Replace the shell reference list of a solid with a new set.
         @param[in] theSolidId    solid identifier
         @param[in] theShellRefIds new shell reference identifiers
         """
 
-    def SetCompSolidSolidRefs(self, theCompSolidId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)7>", theSolidRefIds: nanoocp.NCollection.NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid) -> None:
+    def SetCompSolidSolidRefs(self, theCompSolidId: nanoocp.BRepGraph.BRepGraph_CompSolidId, theSolidRefIds: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_SolidRefId]) -> None:
         """
         Replace the solid reference list of a compsolid with a new set.
         @param[in] theCompSolidId compsolid identifier
         @param[in] theSolidRefIds new solid reference identifiers
         """
 
-    def SetCompoundChildRefs(self, theCompoundId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)6>", theChildRefIds: nanoocp.NCollection.NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child) -> None:
+    def SetCompoundChildRefs(self, theCompoundId: nanoocp.BRepGraph.BRepGraph_CompoundId, theChildRefIds: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_ChildRefId]) -> None:
         """
         Replace the child reference list of a compound with a new set.
         @param[in] theCompoundId compound identifier
         @param[in] theChildRefIds new child reference identifiers
         """
 
-    def SetProductOccurrenceRefs(self, theProductId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>", theOccurrenceRefIds: nanoocp.NCollection.NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence) -> None:
+    def SetProductOccurrenceRefs(self, theProductId: nanoocp.BRepGraph.BRepGraph_ProductId, theOccurrenceRefIds: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]) -> None:
         """
         Replace the occurrence reference list of a product with a new set.
         @param[in] theProductId       product identifier
@@ -2473,7 +2872,7 @@ class BRepGraphInc_Storage:
         @return true if all relations are consistent
         """
 
-    def ValidateWireCoEdgeOrder(self, theWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> bool:
+    def ValidateWireCoEdgeOrder(self, theWireId: nanoocp.BRepGraph.BRepGraph_WireId) -> bool:
         """
         Verify coedge ordering consistency for a specific wire.
         @param[in] theWireId wire identifier
@@ -2486,14 +2885,14 @@ class BRepGraphInc_Storage:
         @return true if all wire coedge orders are valid
         """
 
-    def CanonicalizeWireCoEdgeOrderStatus(self, theWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> BRepGraphInc_Storage.WireCoEdgeOrderStatus:
+    def CanonicalizeWireCoEdgeOrderStatus(self, theWireId: nanoocp.BRepGraph.BRepGraph_WireId) -> BRepGraphInc_Storage.WireCoEdgeOrderStatus:
         """
         Canonicalize the coedge ordering of a wire and report the achieved order quality.
         @param[in] theWireId wire identifier
         @return canonicalization status
         """
 
-    def CanonicalizeWireCoEdgeOrder(self, theWireId: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> bool:
+    def CanonicalizeWireCoEdgeOrder(self, theWireId: nanoocp.BRepGraph.BRepGraph_WireId) -> bool:
         """
         Canonicalize the coedge ordering of a wire to a consistent form.
         @param[in] theWireId wire identifier

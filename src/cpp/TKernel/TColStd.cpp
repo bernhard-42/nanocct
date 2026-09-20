@@ -65,3 +65,6 @@ void nanoocp_define_TColStd(nb::module_ &m) {
     nb::implicitly_convertible<std::decay_t<const int>, TColStd_HPackedMapOfInteger>();
     nb::implicitly_convertible<std::decay_t<const TColStd_PackedMapOfInteger &>, TColStd_HPackedMapOfInteger>();
 }
+
+void nanoocp_conversions_TColStd(nb::module_ &m) {
+}

@@ -17,7 +17,8 @@ void nanoocp_templates_MathPoly(nb::module_ &m) {
 void nanoocp_define_MathPoly(nb::module_ &m) {
     nanoocp_implicit_default_ctor<MathPoly::GeneralPolyResult>(nb::borrow<nb::class_<MathPoly::GeneralPolyResult>>(m.attr("GeneralPolyResult")));
     nb::borrow<nb::class_<MathPoly::GeneralPolyResult>>(m.attr("GeneralPolyResult"))
-        .def("IsDone", static_cast<bool (MathPoly::GeneralPolyResult::*)() const>(&MathPoly::GeneralPolyResult::IsDone));
+        .def("IsDone", static_cast<bool (MathPoly::GeneralPolyResult::*)() const>(&MathPoly::GeneralPolyResult::IsDone))
+        .def("__bool__", [](const MathPoly::GeneralPolyResult &self) { return static_cast<bool>(self); });
     nanoocp_implicit_copy_ctor<MathPoly::GeneralPolyResult>(nb::borrow<nb::class_<MathPoly::GeneralPolyResult>>(m.attr("GeneralPolyResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathPoly::GeneralPolyResult>>(m.attr("GeneralPolyResult")), "Status", &MathPoly::GeneralPolyResult::Status);
     nanoocp_def_field(nb::borrow<nb::class_<MathPoly::GeneralPolyResult>>(m.attr("GeneralPolyResult")), "Roots", &MathPoly::GeneralPolyResult::Roots);
@@ -89,4 +90,7 @@ Algorithm:
 @param theE coefficient of x
 @param theF constant term
 @return PolyResult containing real roots only)nbdoc");
+}
+
+void nanoocp_conversions_MathPoly(nb::module_ &m) {
 }

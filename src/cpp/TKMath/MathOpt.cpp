@@ -121,7 +121,8 @@ void nanoocp_define_MathOpt(nb::module_ &m) {
     nb::implicitly_convertible<std::decay_t<MathOpt::GlobalStrategy>, MathOpt::GlobalConfig>();
     nanoocp_implicit_default_ctor<MathOpt::UzawaResult>(nb::borrow<nb::class_<MathOpt::UzawaResult>>(m.attr("UzawaResult")));
     nb::borrow<nb::class_<MathOpt::UzawaResult>>(m.attr("UzawaResult"))
-        .def("IsDone", static_cast<bool (MathOpt::UzawaResult::*)() const>(&MathOpt::UzawaResult::IsDone));
+        .def("IsDone", static_cast<bool (MathOpt::UzawaResult::*)() const>(&MathOpt::UzawaResult::IsDone))
+        .def("__bool__", [](const MathOpt::UzawaResult &self) { return static_cast<bool>(self); });
     nanoocp_implicit_copy_ctor<MathOpt::UzawaResult>(nb::borrow<nb::class_<MathOpt::UzawaResult>>(m.attr("UzawaResult")));
     nanoocp_def_field(nb::borrow<nb::class_<MathOpt::UzawaResult>>(m.attr("UzawaResult")), "Status", &MathOpt::UzawaResult::Status);
     nanoocp_def_field(nb::borrow<nb::class_<MathOpt::UzawaResult>>(m.attr("UzawaResult")), "Solution", &MathOpt::UzawaResult::Solution, R"nbdoc(Solution vector X)nbdoc");
@@ -162,4 +163,7 @@ Convenience function for C*X = S with min ||X - X0||.
 @param theStartingPoint initial point X0
 @param theConfig algorithm configuration
 @return UzawaResult with solution)nbdoc");
+}
+
+void nanoocp_conversions_MathOpt(nb::module_ &m) {
 }

@@ -89,3 +89,6 @@ void nanoocp_templates_GeomAbs(nb::module_ &m) {
 
 void nanoocp_define_GeomAbs(nb::module_ &m) {
 }
+
+void nanoocp_conversions_GeomAbs(nb::module_ &m) {
+}

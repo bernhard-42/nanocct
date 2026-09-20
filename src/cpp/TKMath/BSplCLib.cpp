@@ -1315,3 +1315,6 @@ parameter.
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BSplCLib_Cache::*)() const>(&BSplCLib_Cache::DynamicType));
     nanoocp_implicit_copy_ctor<BSplCLib_Cache>(nb::borrow<nb::class_<BSplCLib_Cache>>(m.attr("BSplCLib_Cache")));
 }
+
+void nanoocp_conversions_BSplCLib(nb::module_ &m) {
+}

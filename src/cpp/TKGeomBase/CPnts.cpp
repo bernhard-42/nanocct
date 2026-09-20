@@ -177,3 +177,6 @@ Returns True if the calculus was successful.)nbdoc")
         .def("Point", static_cast<gp_Pnt (CPnts_UniformDeflection::*)() const>(&CPnts_UniformDeflection::Point), R"nbdoc(return the computed parameter)nbdoc");
     nanoocp_implicit_copy_ctor<CPnts_UniformDeflection>(nb::borrow<nb::class_<CPnts_UniformDeflection>>(m.attr("CPnts_UniformDeflection")));
 }
+
+void nanoocp_conversions_CPnts(nb::module_ &m) {
+}

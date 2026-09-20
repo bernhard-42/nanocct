@@ -271,6 +271,9 @@ class BinTools_IStream:
     def ReadBools(self) -> tuple[bool, bool, bool, bool, bool, bool, bool]:
         """Reads 7 boolean values from one byte"""
 
+    def __bool__(self) -> bool:
+        """Returns false if stream reading is failed."""
+
 class BinTools_LocationSet:
     """
     The class LocationSet stores a set of location in

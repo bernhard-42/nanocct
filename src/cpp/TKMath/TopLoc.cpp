@@ -156,3 +156,7 @@ This method is an alias for operator !=.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopLoc_SListNodeOfItemLocation::*)() const>(&TopLoc_SListNodeOfItemLocation::DynamicType));
     nanoocp_implicit_copy_ctor<TopLoc_SListNodeOfItemLocation>(nb::borrow<nb::class_<TopLoc_SListNodeOfItemLocation>>(m.attr("TopLoc_SListNodeOfItemLocation")));
 }
+
+void nanoocp_conversions_TopLoc(nb::module_ &m) {
+    nanoocp_conversion<TopLoc_Location, gp_Trsf>(nb::module_::import_("nanoocp._TKMath.gp").attr("gp_Trsf"), true);
+}

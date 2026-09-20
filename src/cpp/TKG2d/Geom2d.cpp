@@ -2342,3 +2342,6 @@ Resolution from package gp.)nbdoc")
     nanoocp_implicit_copy_ctor<Geom2d_VectorWithMagnitude>(nb::borrow<nb::class_<Geom2d_VectorWithMagnitude>>(m.attr("Geom2d_VectorWithMagnitude")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec2d &>, Geom2d_VectorWithMagnitude>();
 }
+
+void nanoocp_conversions_Geom2d(nb::module_ &m) {
+}

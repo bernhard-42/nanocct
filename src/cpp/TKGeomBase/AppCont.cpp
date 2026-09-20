@@ -46,3 +46,6 @@ myNbPnt2d.)nbdoc");
         .def("IsDone", static_cast<bool (AppCont_LeastSquare::*)() const>(&AppCont_LeastSquare::IsDone));
     nanoocp_implicit_copy_ctor<AppCont_LeastSquare>(nb::borrow<nb::class_<AppCont_LeastSquare>>(m.attr("AppCont_LeastSquare")));
 }
+
+void nanoocp_conversions_AppCont(nb::module_ &m) {
+}

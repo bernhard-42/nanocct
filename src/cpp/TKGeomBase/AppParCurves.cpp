@@ -265,3 +265,6 @@ An exception is raised if the curve dimension is 2d.)nbdoc");
     nanoocp_implicit_copy_ctor<AppParCurves_MultiBSpCurve>(nb::borrow<nb::class_<AppParCurves_MultiBSpCurve>>(m.attr("AppParCurves_MultiBSpCurve")));
     nb::implicitly_convertible<std::decay_t<const int>, AppParCurves_MultiBSpCurve>();
 }
+
+void nanoocp_conversions_AppParCurves(nb::module_ &m) {
+}

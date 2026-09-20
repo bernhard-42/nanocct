@@ -147,3 +147,6 @@ characters.
 @param[out] theToStr   destination string)nbdoc");
     nanoocp_implicit_copy_ctor<Resource_Unicode>(nb::borrow<nb::class_<Resource_Unicode>>(m.attr("Resource_Unicode")));
 }
+
+void nanoocp_conversions_Resource(nb::module_ &m) {
+}

@@ -364,3 +364,6 @@ in the local coordinates system defined by Axis)nbdoc")
     nb::implicitly_convertible<std::decay_t<const gp_Cylinder &>, IntAna_Quadric>();
     nb::implicitly_convertible<std::decay_t<const gp_Cone &>, IntAna_Quadric>();
 }
+
+void nanoocp_conversions_IntAna(nb::module_ &m) {
+}

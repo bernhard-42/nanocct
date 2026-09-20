@@ -268,3 +268,6 @@ first and second fundamental form coefficients.
 @return true if curvatures are successfully computed)nbdoc");
     nb::borrow<nb::module_>(m.attr("LProp_SurfaceUtils")).def("IsNormalDefined", [](const gp_Vec & theD1u, const gp_Vec & theD1v, double theLinTol, gp_Dir & theNormal) { LProp_Status theNormStatus{}; auto result = LProp_SurfaceUtils::IsNormalDefined(theD1u, theD1v, theLinTol, theNormal, theNormStatus); return std::make_tuple(result, theNormStatus); }, nb::arg("theD1u"), nb::arg("theD1v"), nb::arg("theLinTol"), nb::arg("theNormal"), R"nbdoc(IsNormalDefined: checks normal status, then computes via CSLib.)nbdoc");
 }
+
+void nanoocp_conversions_GeomLProp(nb::module_ &m) {
+}

@@ -1599,3 +1599,6 @@ aString.Value(2) returns 'e')nbdoc")
     nb::implicitly_convertible<std::decay_t<const occ::handle<TCollection_HAsciiString> &>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<TCollection_HExtendedString> &>, TCollection_HExtendedString>();
 }
+
+void nanoocp_conversions_TCollection(nb::module_ &m) {
+}

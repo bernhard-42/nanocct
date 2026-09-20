@@ -85,3 +85,6 @@ Only meaningful when Status == Status::InfiniteSolutions.)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")), "IncludeEndpoints", &ExtremaPC::Config::IncludeEndpoints, R"nbdoc(Include endpoints as potential extrema)nbdoc");
     m.attr("Domain1D") = nb::module_::import_("nanoocp._TKMath.MathUtils").attr("Domain1D");   // Domain1D = MathUtils::Domain1D
 }
+
+void nanoocp_conversions_ExtremaPC(nb::module_ &m) {
+}

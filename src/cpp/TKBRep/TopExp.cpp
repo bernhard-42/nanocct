@@ -175,3 +175,6 @@ the shape to explore itself.)nbdoc")
         .def("end", static_cast<NCollection_ForwardRangeSentinel (TopExp_Explorer::*)() const>(&TopExp_Explorer::end), R"nbdoc(Returns a sentinel marking the end of iteration.)nbdoc");
     nanoocp_implicit_copy_ctor<TopExp_Explorer>(nb::borrow<nb::class_<TopExp_Explorer>>(m.attr("TopExp_Explorer")));
 }
+
+void nanoocp_conversions_TopExp(nb::module_ &m) {
+}

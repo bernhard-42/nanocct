@@ -90,3 +90,6 @@ void nanoocp_define_GeomHash(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<GeomHash_PolygonOnTriHasher>>(m.attr("GeomHash_PolygonOnTriHasher")), "HashTolerance", &GeomHash_PolygonOnTriHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<const double>, GeomHash_PolygonOnTriHasher>();
 }
+
+void nanoocp_conversions_GeomHash(nb::module_ &m) {
+}

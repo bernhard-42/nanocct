@@ -755,20 +755,9 @@ class math_Vector:
         An exception is raised if the vectors have not the same length.
         """
 
-    @overload
     def Value(self, theNum: int) -> float:
         """accesses the value of index "theNum" of a vector."""
 
-    @overload
-    def Value(self, theNum: int) -> float:
-        """
-        accesses (in read or write mode) the value of index "theNum" of a vector.
-        """
-
-    @overload
-    def __call__(self, theNum: int) -> float: ...
-
-    @overload
     def __call__(self, theNum: int) -> float: ...
 
     def Initialized(self, theOther: math_Vector) -> math_Vector:
@@ -2129,20 +2118,9 @@ class math_IntegerVector:
         An exception is raised if the vectors have not the same length.
         """
 
-    @overload
     def Value(self, theNum: int) -> int:
         """accesses the value of index "theNum" of a vector."""
 
-    @overload
-    def Value(self, theNum: int) -> int:
-        """
-        accesses (in read or write mode) the value of index "theNum" of a vector.
-        """
-
-    @overload
-    def __call__(self, theNum: int) -> int: ...
-
-    @overload
     def __call__(self, theNum: int) -> int: ...
 
     def Initialized(self, theOther: math_IntegerVector) -> math_IntegerVector:

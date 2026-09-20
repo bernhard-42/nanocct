@@ -4306,3 +4306,6 @@ with 0 pointing to first value and 1 to the second value.
 @param[out] theResult  interpolated value)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Lerp<gp_Trsf>>(nb::borrow<nb::class_<NCollection_Lerp<gp_Trsf>>>(m.attr("NCollection_Lerp__gp_Trsf")));
 }
+
+void nanoocp_conversions_gp(nb::module_ &m) {
+}

@@ -676,3 +676,6 @@ StdFail_NotDone if this algorithm has not been
 initialized, or if the computation was not successful.)nbdoc");
     nanoocp_implicit_copy_ctor<GCPnts_UniformDeflection>(nb::borrow<nb::class_<GCPnts_UniformDeflection>>(m.attr("GCPnts_UniformDeflection")));
 }
+
+void nanoocp_conversions_GCPnts(nb::module_ &m) {
+}

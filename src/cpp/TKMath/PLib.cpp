@@ -396,3 +396,6 @@ the basis functions in u)nbdoc")
         .def("NivConstr", static_cast<int (PLib_HermitJacobi::*)() const noexcept>(&PLib_HermitJacobi::NivConstr), R"nbdoc(returns NivConstr)nbdoc");
     nanoocp_implicit_copy_ctor<PLib_HermitJacobi>(nb::borrow<nb::class_<PLib_HermitJacobi>>(m.attr("PLib_HermitJacobi")));
 }
+
+void nanoocp_conversions_PLib(nb::module_ &m) {
+}

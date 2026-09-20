@@ -1106,3 +1106,6 @@ In case of failure, returns a Null Handle)nbdoc")
         .def("Value", [](GeomConvert_FuncConeLSDist &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Value.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomConvert_FuncConeLSDist>(nb::borrow<nb::class_<GeomConvert_FuncConeLSDist>>(m.attr("GeomConvert_FuncConeLSDist")));
 }
+
+void nanoocp_conversions_GeomConvert(nb::module_ &m) {
+}

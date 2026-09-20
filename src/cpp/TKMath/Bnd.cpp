@@ -797,3 +797,6 @@ Converts the given Bnd_Box2d to BVH_Box)nbdoc")
         .def_static("Bnd2BVH", static_cast<BVH_Box<double, 3> (*)(const Bnd_Box &)>(&Bnd_Tools::Bnd2BVH), nb::arg("theBox"), R"nbdoc(Converts the given Bnd_Box to BVH_Box)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_Tools>(nb::borrow<nb::class_<Bnd_Tools>>(m.attr("Bnd_Tools")));
 }
+
+void nanoocp_conversions_Bnd(nb::module_ &m) {
+}

@@ -165,3 +165,6 @@ comparison).
 @return TRUE if string identifier is known)nbdoc");
     nanoocp_implicit_copy_ctor<TopAbs>(nb::borrow<nb::class_<TopAbs>>(m.attr("TopAbs")));
 }
+
+void nanoocp_conversions_TopAbs(nb::module_ &m) {
+}

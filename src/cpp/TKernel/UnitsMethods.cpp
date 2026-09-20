@@ -42,3 +42,6 @@ as described in IGES standard))nbdoc")
         .def_static("LengthUnitFromString", static_cast<UnitsMethods_LengthUnit (*)(const char *, const bool)>(&UnitsMethods::LengthUnitFromString), nb::arg("theStr"), nb::arg("theCaseSensitive"), R"nbdoc(Make conversion of given string to value of LengthUnit)nbdoc");
     nanoocp_implicit_copy_ctor<UnitsMethods>(nb::borrow<nb::class_<UnitsMethods>>(m.attr("UnitsMethods")));
 }
+
+void nanoocp_conversions_UnitsMethods(nb::module_ &m) {
+}

@@ -192,3 +192,6 @@ restriction.)nbdoc")
     nanoocp_implicit_copy_ctor<BRepAdaptor_Surface>(nb::borrow<nb::class_<BRepAdaptor_Surface>>(m.attr("BRepAdaptor_Surface")));
     nb::implicitly_convertible<std::decay_t<const TopoDS_Face &>, BRepAdaptor_Surface>();
 }
+
+void nanoocp_conversions_BRepAdaptor(nb::module_ &m) {
+}

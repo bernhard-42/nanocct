@@ -408,3 +408,6 @@ After is useful if BasisCurve is a closed curve .)nbdoc")
     nb::implicitly_convertible<std::decay_t<const Convert_ParameterisationType>, Geom2dConvert_CompCurveToBSplineCurve>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BoundedCurve> &>, Geom2dConvert_CompCurveToBSplineCurve>();
 }
+
+void nanoocp_conversions_Geom2dConvert(nb::module_ &m) {
+}

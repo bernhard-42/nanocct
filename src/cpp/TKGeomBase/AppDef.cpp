@@ -1206,3 +1206,6 @@ if Order < 1 or Order > 3)nbdoc")
 if Iter < 1)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_Variational>(nb::borrow<nb::class_<AppDef_Variational>>(m.attr("AppDef_Variational")));
 }
+
+void nanoocp_conversions_AppDef(nb::module_ &m) {
+}

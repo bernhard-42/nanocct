@@ -39,3 +39,6 @@ void nanoocp_define_GCE2d(nb::module_ &m) {
     m.attr("GCE2d_MakeTranslation") = nb::module_::import_("nanoocp._TKGeomBase.GC").attr("GC_MakeTranslation2d");   // GCE2d_MakeTranslation = GC_MakeTranslation2d
     m.attr("GCE2d_Root") = nb::module_::import_("nanoocp._TKGeomBase.GC").attr("GC_Root");   // GCE2d_Root = GC_Root
 }
+
+void nanoocp_conversions_GCE2d(nb::module_ &m) {
+}

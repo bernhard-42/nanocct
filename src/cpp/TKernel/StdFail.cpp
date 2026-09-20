@@ -21,3 +21,6 @@ void nanoocp_templates_StdFail(nb::module_ &m) {
 
 void nanoocp_define_StdFail(nb::module_ &m) {
 }
+
+void nanoocp_conversions_StdFail(nb::module_ &m) {
+}

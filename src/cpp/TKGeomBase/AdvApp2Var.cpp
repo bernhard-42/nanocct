@@ -309,3 +309,6 @@ Dimension must be equal to 3.)nbdoc")
         .def_static("mswrdbg_", static_cast<int (*)(const char *, long)>(&AdvApp2Var_SysBase::mswrdbg_), nb::arg("ctexte"), nb::arg("ctexte_len"));
     nanoocp_implicit_copy_ctor<AdvApp2Var_SysBase>(nb::borrow<nb::class_<AdvApp2Var_SysBase>>(m.attr("AdvApp2Var_SysBase")));
 }
+
+void nanoocp_conversions_AdvApp2Var(nb::module_ &m) {
+}

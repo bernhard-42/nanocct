@@ -4,33 +4,43 @@
 void nanoocp_declare_TopoDS(nb::module_ &);
 void nanoocp_templates_TopoDS(nb::module_ &);
 void nanoocp_define_TopoDS(nb::module_ &);
+void nanoocp_conversions_TopoDS(nb::module_ &);
 void nanoocp_declare_TopExp(nb::module_ &);
 void nanoocp_templates_TopExp(nb::module_ &);
 void nanoocp_define_TopExp(nb::module_ &);
+void nanoocp_conversions_TopExp(nb::module_ &);
 void nanoocp_declare_TopTools(nb::module_ &);
 void nanoocp_templates_TopTools(nb::module_ &);
 void nanoocp_define_TopTools(nb::module_ &);
+void nanoocp_conversions_TopTools(nb::module_ &);
 void nanoocp_declare_BRep(nb::module_ &);
 void nanoocp_templates_BRep(nb::module_ &);
 void nanoocp_define_BRep(nb::module_ &);
+void nanoocp_conversions_BRep(nb::module_ &);
 void nanoocp_declare_BRepLProp(nb::module_ &);
 void nanoocp_templates_BRepLProp(nb::module_ &);
 void nanoocp_define_BRepLProp(nb::module_ &);
+void nanoocp_conversions_BRepLProp(nb::module_ &);
 void nanoocp_declare_BRepAdaptor(nb::module_ &);
 void nanoocp_templates_BRepAdaptor(nb::module_ &);
 void nanoocp_define_BRepAdaptor(nb::module_ &);
+void nanoocp_conversions_BRepAdaptor(nb::module_ &);
 void nanoocp_declare_BRepTools(nb::module_ &);
 void nanoocp_templates_BRepTools(nb::module_ &);
 void nanoocp_define_BRepTools(nb::module_ &);
+void nanoocp_conversions_BRepTools(nb::module_ &);
 void nanoocp_declare_BinTools(nb::module_ &);
 void nanoocp_templates_BinTools(nb::module_ &);
 void nanoocp_define_BinTools(nb::module_ &);
+void nanoocp_conversions_BinTools(nb::module_ &);
 void nanoocp_declare_BRepGraph(nb::module_ &);
 void nanoocp_templates_BRepGraph(nb::module_ &);
 void nanoocp_define_BRepGraph(nb::module_ &);
+void nanoocp_conversions_BRepGraph(nb::module_ &);
 void nanoocp_declare_BRepGraphInc(nb::module_ &);
 void nanoocp_templates_BRepGraphInc(nb::module_ &);
 void nanoocp_define_BRepGraphInc(nb::module_ &);
+void nanoocp_conversions_BRepGraphInc(nb::module_ &);
 
 NB_MODULE(_TKBRep, m) {
     m.doc() = "OCCT toolkit TKBRep";
@@ -113,4 +123,15 @@ NB_MODULE(_TKBRep, m) {
     nanoocp_define_BinTools(m_BinTools);
     nanoocp_define_BRepGraph(m_BRepGraph);
     nanoocp_define_BRepGraphInc(m_BRepGraphInc);
+    // phase 4: constructors from conversion operators (every class has its own constructors by now)
+    nanoocp_conversions_TopoDS(m_TopoDS);
+    nanoocp_conversions_TopExp(m_TopExp);
+    nanoocp_conversions_TopTools(m_TopTools);
+    nanoocp_conversions_BRep(m_BRep);
+    nanoocp_conversions_BRepLProp(m_BRepLProp);
+    nanoocp_conversions_BRepAdaptor(m_BRepAdaptor);
+    nanoocp_conversions_BRepTools(m_BRepTools);
+    nanoocp_conversions_BinTools(m_BinTools);
+    nanoocp_conversions_BRepGraph(m_BRepGraph);
+    nanoocp_conversions_BRepGraphInc(m_BRepGraphInc);
 }
