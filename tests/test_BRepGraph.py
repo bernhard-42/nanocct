@@ -42,6 +42,8 @@ def test_typed_ids_and_iterators():
     assert hash(node) == hash(BRepGraph.BRepGraph_NodeId(eid))    # std::hash<BRepGraph_NodeId>
     assert hash(eid) == hash(ids[0]) and {eid: 1}[BRepGraph.BRepGraph_EdgeId.FromNodeId(node)] == 1   # partial std::hash<Typed<K>>
     assert g.Shapes().Shape(eid).IsSame(e)                         # implicit EdgeId -> NodeId conversion at the call
+    guard = g.Editor().Edges().Mut(eid)                            # BRepGraph_MutGuard<BRepGraphInc::EdgeDef>: instantiated from the signature (6c)
+    assert type(guard).__name__ == "BRepGraph_MutGuard__BRepGraphInc_EdgeDef" and guard.Id() == eid
 
 
 def test_tool_and_ref_iterators():

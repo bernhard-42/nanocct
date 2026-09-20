@@ -15,6 +15,7 @@
 #include <NCollection_DataMap.hxx>
 #include <NCollection_DoubleMap.hxx>
 #include <NCollection_DynamicArray.hxx>
+#include <NCollection_LinearVector.hxx>
 #include <NCollection_HArray2.hxx>
 #include <NCollection_Shared.hxx>
 #include <NCollection_DefaultHasher.hxx>
@@ -585,6 +586,53 @@ template <typename T> void bind_NCollection_DynamicArray(nb::module_ &m, const c
 }
 
 // ---------------------------------------------------------------------------------------------------
+// NCollection_LinearVector<T> (OCCT 8: contiguous 0-based vector, size_t indices; BRepGraph's container of choice).
+// Data()/begin()/end() (raw element pointers) are not bound.
+template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const char *name) {
+    using V = NCollection_LinearVector<T>;
+    namespace D = nanoocp_doc::NCollection_LinearVector;
+    nb::class_<V> c(m, name, D::class_doc);
+    c.def(nb::init<>(), D::ctor)
+     .def(nb::init<const size_t>(), nb::arg("theCapacity"), D::ctor)
+     .def(nb::init<const size_t, const T &>(), nb::arg("theSize"), nb::arg("theValue"), D::ctor)
+     .def(nb::init<const V &>(), nb::arg("theOther"), D::ctor)
+     .def("HasData", [](const V &self) { return self.HasData(); }, D::HasData)
+     .def("Empty", [](const V &self) { return self.Empty(); }, D::Empty)
+     .def_static("MaxSize", []() { return V::MaxSize(); }, D::MaxSize)
+     .def("Size", [](const V &self) { return self.Size(); }, D::Size)
+     .def("IsEmpty", [](const V &self) { return self.IsEmpty(); }, D::IsEmpty)
+     .def("Capacity", [](const V &self) { return self.Capacity(); }, D::Capacity)
+     .def("Reserve", [](V &self, const size_t n) { self.Reserve(n); }, nb::arg("theCapacity"), D::Reserve)
+     .def("Resize", [](V &self, const size_t n) { self.Resize(n); }, nb::arg("theSize"), D::Resize)
+     .def("Resize", [](V &self, const size_t n, const T &v) { self.Resize(n, v); }, nb::arg("theSize"), nb::arg("theValue"), D::Resize)
+     .def("Value", [](const V &self, const size_t i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::Value)
+     .def("__call__", [](const V &self, const size_t i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::op_call)
+     .def("__getitem__", [](const V &self, const size_t i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::op_index)
+     .def("First", [](const V &self) -> const T & { return self.First(); }, D::First)
+     .def("Last", [](const V &self) -> const T & { return self.Last(); }, D::Last)
+     .def("InsertBefore", [](V &self, const size_t i, const T &v) { self.InsertBefore(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertBefore)
+     .def("InsertAfter", [](V &self, const size_t i, const T &v) { self.InsertAfter(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertAfter)
+     .def("EraseLast", [](V &self) { self.EraseLast(); }, D::EraseLast)
+     .def("Erase", [](V &self, const size_t i) { self.Erase(i); }, nb::arg("theIndex"), D::Erase)
+     .def("Erase", [](V &self, const size_t from, const size_t to) { self.Erase(from, to); }, nb::arg("theFrom"), nb::arg("theTo"), D::Erase)
+     .def("Clear", [](V &self, const bool release) { self.Clear(release); }, nb::arg("theReleaseMemory") = false, D::Clear)
+     .def("ToArray1", [](const V &self) { return self.ToArray1(); }, D::ToArray1)
+     // Python additions
+     .def("__setitem__", [](V &self, const size_t i, const T &v) { self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (0-based).")
+     .def("__len__", [](const V &self) { return self.Size(); }, "Python addition: alias to Size.")
+     .def("__iter__", [](const V &self) { return nb::make_iterator(nb::type<V>(), "value_iterator", self.cbegin(), self.cend()); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
+    def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { return self.Append(v); }, nb::arg("theValue"), D::Append);
+    def_elem<T>(c, "Appended", [](V &self) -> T & { return self.Appended(); }, D::Appended);
+    def_elem<T>(c, "SetValue", [](V &self, const size_t i, const T &v) -> T & { return self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::SetValue);
+    if constexpr (std::is_class_v<T>) {
+        c.def("ChangeFirst", [](V &self) -> T & { return self.ChangeFirst(); }, nb::rv_policy::reference_internal, D::ChangeFirst)
+         .def("ChangeLast", [](V &self) -> T & { return self.ChangeLast(); }, nb::rv_policy::reference_internal, D::ChangeLast)
+         .def("ChangeValue", [](V &self, const size_t i) -> T & { return self.ChangeValue(i); }, nb::rv_policy::reference_internal, nb::arg("theIndex"), D::ChangeValue);
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------
 // NCollection_DoubleMap<K1, K2, Hasher1, Hasher2>
 template <typename K1, typename K2, typename H1 = NCollection_DefaultHasher<K1>, typename H2 = NCollection_DefaultHasher<K2>>
 void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
@@ -641,8 +689,10 @@ template <typename T> void bind_NCollection_Shared(nb::module_ &m, const char *n
     using S = NCollection_Shared<T>;
     namespace D = nanoocp_doc::NCollection_Shared;
     nb::class_<S, T> c(m, name, D::class_doc);
-    c.def(nb::new_([]() { return opencascade::handle<S>(new S()); }), D::ctor)
-     .def(nb::new_([](const T &t) { return opencascade::handle<S>(new S(t)); }), nb::arg("theOther"), D::ctor);
+    if constexpr (std::is_default_constructible_v<T>)
+        c.def(nb::new_([]() { return opencascade::handle<S>(new S()); }), D::ctor);
+    if constexpr (std::is_copy_constructible_v<T>)          // NCollection_Shared<Standard_Mutex>: a mutex cannot be copied
+        c.def(nb::new_([](const T &t) { return opencascade::handle<S>(new S(t)); }), nb::arg("theOther"), D::ctor);
     def_transient_members<S, T>(c);
 }
 

@@ -238,6 +238,13 @@ relation to other shapes).)nbdoc");
     }
     { nb::class_<TopoDS_AlertWithShape, Message_Alert> cls(m, "TopoDS_AlertWithShape", R"nbdoc(Alert object storing TopoDS shape in its field)nbdoc");
     }
+    { nb::class_<NCollection_ForwardRangeIterator<TopoDS_Iterator>> cls(m, "NCollection_ForwardRangeIterator__TopoDS_Iterator", R"nbdoc(@brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+Holds a non-owning pointer to the host iterator/explorer.
+The host must outlive this iterator (guaranteed by range-for semantics).
+
+@tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.)nbdoc");
+    }
 }
 
 void nanoocp_templates_TopoDS(nb::module_ &m) {
@@ -486,8 +493,6 @@ Standard_NoMoreObject if there are no more sub-shapes in the shape.)nbdoc")
 this iterator is scanning.
 Exceptions
 Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
-        .def("begin", static_cast<NCollection_ForwardRangeIterator<TopoDS_Iterator> (TopoDS_Iterator::*)()>(&TopoDS_Iterator::begin), R"nbdoc(Returns an STL-compatible iterator for range-based for loops.
-@warning Do not call Next() or Initialize() externally during range-for iteration.)nbdoc")
         .def("end", static_cast<NCollection_ForwardRangeSentinel (TopoDS_Iterator::*)() const>(&TopoDS_Iterator::end), R"nbdoc(Returns a sentinel marking the end of iteration.)nbdoc");
     nanoocp_implicit_copy_ctor<TopoDS_Iterator>(nb::borrow<nb::class_<TopoDS_Iterator>>(m.attr("TopoDS_Iterator")));
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, TopoDS_Iterator>();
@@ -523,6 +528,9 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopoDS_AlertWithShape::*)() const>(&TopoDS_AlertWithShape::DynamicType));
     nanoocp_implicit_copy_ctor<TopoDS_AlertWithShape>(nb::borrow<nb::class_<TopoDS_AlertWithShape>>(m.attr("TopoDS_AlertWithShape")));
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, TopoDS_AlertWithShape>();
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopoDS_Iterator>>>(m.attr("NCollection_ForwardRangeIterator__TopoDS_Iterator"))
+        .def(nb::init<TopoDS_Iterator *>(), nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<TopoDS_Iterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopoDS_Iterator>>>(m.attr("NCollection_ForwardRangeIterator__TopoDS_Iterator")));
     m.def("Vertex", static_cast<const TopoDS_Vertex & (*)(const TopoDS_Shape &)>(&TopoDS::Vertex), nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Vertex.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Vertex

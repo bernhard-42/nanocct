@@ -5,6 +5,7 @@ from typing import overload
 
 import nanoocp.MathUtils
 import nanoocp.NCollection
+import nanoocp.MathRoot
 
 
 class MultipleResult:
@@ -46,18 +47,18 @@ class MultipleResult:
     def NbIterations(self, arg: int, /) -> None: ...
 
     @property
-    def Roots(self) -> "NCollection_DynamicArray<double>":
+    def Roots(self) -> nanoocp.NCollection.NCollection_DynamicArray[float]:
         """Found roots (sorted)"""
 
     @Roots.setter
-    def Roots(self, arg: "NCollection_DynamicArray<double>", /) -> None: ...
+    def Roots(self, arg: nanoocp.NCollection.NCollection_DynamicArray[float], /) -> None: ...
 
     @property
-    def Values(self) -> "NCollection_DynamicArray<double>":
+    def Values(self) -> nanoocp.NCollection.NCollection_DynamicArray[float]:
         """Function values at roots"""
 
     @Values.setter
-    def Values(self, arg: "NCollection_DynamicArray<double>", /) -> None: ...
+    def Values(self, arg: nanoocp.NCollection.NCollection_DynamicArray[float], /) -> None: ...
 
     @property
     def IsAllNull(self) -> bool:
@@ -189,11 +190,11 @@ class AllRootsResult:
     def Status(self, arg: nanoocp.MathUtils.Status, /) -> None: ...
 
     @property
-    def Roots(self) -> "NCollection_DynamicArray<double>":
+    def Roots(self) -> nanoocp.NCollection.NCollection_DynamicArray[float]:
         """Isolated root locations"""
 
     @Roots.setter
-    def Roots(self, arg: "NCollection_DynamicArray<double>", /) -> None: ...
+    def Roots(self, arg: nanoocp.NCollection.NCollection_DynamicArray[float], /) -> None: ...
 
     @property
     def RootStates(self) -> nanoocp.NCollection.NCollection_DynamicArray[int]:
@@ -203,11 +204,11 @@ class AllRootsResult:
     def RootStates(self, arg: nanoocp.NCollection.NCollection_DynamicArray[int], /) -> None: ...
 
     @property
-    def NullIntervals(self) -> "NCollection_DynamicArray<MathRoot::NullInterval>":
+    def NullIntervals(self) -> nanoocp.NCollection.NCollection_DynamicArray[nanoocp.MathRoot.NullInterval]:
         """Intervals where function is null"""
 
     @NullIntervals.setter
-    def NullIntervals(self, arg: "NCollection_DynamicArray<MathRoot::NullInterval>", /) -> None: ...
+    def NullIntervals(self, arg: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.MathRoot.NullInterval], /) -> None: ...
 
 class TrigResult:
     """Result for trigonometric equation solver."""

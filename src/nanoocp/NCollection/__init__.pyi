@@ -408,6 +408,52 @@ class NCollection_IndexedMap(Generic[_K]):
     def __getitem__(self, theIndex: int) -> _K: ...
     def __len__(self) -> int: ...
     def __iter__(self) -> Iterator[_K]: ...
+class NCollection_LinearVector(Generic[_T]):
+    """NCollection_LinearVector<T>: contiguous 0-based vector with size_t indices (OCCT 8).
+    Instantiations are the concrete classes NCollection_LinearVector__<T>; NCollection_LinearVector[T] returns them."""
+    @overload
+    def __init__(self) -> None: ...
+    @overload
+    def __init__(self, theCapacity: int) -> None: ...
+    @overload
+    def __init__(self, theSize: int, theValue: _T) -> None: ...
+    @overload
+    def __init__(self, theOther: NCollection_LinearVector[_T]) -> None: ...
+    def HasData(self) -> bool: ...
+    def Empty(self) -> bool: ...
+    @staticmethod
+    def MaxSize() -> int: ...
+    def Size(self) -> int: ...
+    def IsEmpty(self) -> bool: ...
+    def Capacity(self) -> int: ...
+    def Reserve(self, theCapacity: int) -> None: ...
+    @overload
+    def Resize(self, theSize: int) -> None: ...
+    @overload
+    def Resize(self, theSize: int, theValue: _T) -> None: ...
+    def Value(self, theIndex: int) -> _T: ...
+    def ChangeValue(self, theIndex: int) -> _T: ...
+    def First(self) -> _T: ...
+    def ChangeFirst(self) -> _T: ...
+    def Last(self) -> _T: ...
+    def ChangeLast(self) -> _T: ...
+    def Append(self, theValue: _T) -> _T: ...
+    def Appended(self) -> _T: ...
+    def SetValue(self, theIndex: int, theValue: _T) -> _T: ...
+    def InsertBefore(self, theIndex: int, theValue: _T) -> None: ...
+    def InsertAfter(self, theIndex: int, theValue: _T) -> None: ...
+    def EraseLast(self) -> None: ...
+    @overload
+    def Erase(self, theIndex: int) -> None: ...
+    @overload
+    def Erase(self, theFrom: int, theTo: int) -> None: ...
+    def Clear(self, theReleaseMemory: bool = False) -> None: ...
+    def ToArray1(self) -> NCollection_Array1[_T]: ...
+    def __call__(self, theIndex: int) -> _T: ...
+    def __getitem__(self, theIndex: int) -> _T: ...
+    def __setitem__(self, theIndex: int, theItem: _T) -> None: ...
+    def __len__(self) -> int: ...
+    def __iter__(self) -> Iterator[_T]: ...
 class NCollection_List(Generic[_T]):
     """NCollection_List<T>: singly linked list (OCCT). NCollection_List[T] returns the bound instantiation."""
     class Iterator(Generic[_T]):
@@ -587,6 +633,8 @@ class _NCollection_Shared_template:
     @overload
     def __getitem__(self, item: type[NCollection_Map[int]]) -> type[NCollection_Shared__NCollection_Map__int]: ...
     @overload
+    def __getitem__(self, item: type[nanoocp.Standard.Standard_Mutex]) -> type[NCollection_Shared__Standard_Mutex]: ...
+    @overload
     def __getitem__(self, item: type) -> type: ...
 
 NCollection_Shared: _NCollection_Shared_template
@@ -607,14 +655,17 @@ import nanoocp.BRepGraphInc
 import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Extrema
+import nanoocp.ExtremaPC
 import nanoocp.Geom
 import nanoocp.Geom2d
 import nanoocp.Geom2dGridEval
+import nanoocp.MathRoot
 import nanoocp.Message
 from nanoocp.NCollection import (
     NCollection_Primes as NCollection_Primes
 )
 import nanoocp.Poly
+import nanoocp.Quantity
 import nanoocp.Standard
 import nanoocp.Storage
 import nanoocp.TCollection
@@ -801,10 +852,10 @@ class NCollection_DefaultHasher__char16_t:
     def __init__(self, theOther: NCollection_DefaultHasher__char16_t) -> None: ...
 
     @overload
-    def __call__(self, theKey: "char16_t") -> int: ...
+    def __call__(self, theKey: str) -> int: ...
 
     @overload
-    def __call__(self, theK1: "char16_t", theK2: "char16_t") -> bool: ...
+    def __call__(self, theK1: str, theK2: str) -> bool: ...
 
 class NCollection_DefaultHasher__char32_t:
     """Explicit specialization for char32_t."""
@@ -1314,7 +1365,15 @@ class NCollection_String:
         till either NULL or theLength-th symbol (which comes first).
         """
 
-    def Iterator(self) -> "NCollection_UtfIterator<char>": ...
+    @overload
+    def __init__(self, theCopyUtf16: str, theLength: int = -1) -> None:
+        """
+        Copy constructor from UTF-16 string.
+        @param theCopyUtf16 UTF-16 string to copy
+        @param theLength    the length limit in Unicode symbols (NOT bytes!)
+        The string is copied till NULL symbol or, if theLength >0,
+        till either NULL or theLength-th symbol (which comes first).
+        """
 
     def Size(self) -> int:
         """
@@ -1440,6 +1499,7 @@ class NCollection_WinHeapAllocator(NCollection_BaseAllocator):
 class NCollection_IndexedDataMap__TCollection_AsciiString__Standard_DumpValue(NCollection_IndexedDataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.Standard.Standard_DumpValue]): ...
 class NCollection_IndexedDataMap__TCollection_AsciiString__TCollection_AsciiString(NCollection_IndexedDataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.TCollection.TCollection_AsciiString]): ...
 class NCollection_List__int(NCollection_List[int]): ...
+class NCollection_Shared__Standard_Mutex(nanoocp.Standard.Standard_Mutex, _NCollection_Shared_members): ...
 class NCollection_Array1__Handle_Standard_Persistent(NCollection_Array1[nanoocp.Standard.Standard_Persistent]): ...
 class NCollection_HArray1__Handle_Standard_Persistent(NCollection_HArray1[nanoocp.Standard.Standard_Persistent]): ...
 class NCollection_Sequence__TCollection_AsciiString(NCollection_Sequence[nanoocp.TCollection.TCollection_AsciiString]): ...
@@ -1466,6 +1526,9 @@ class NCollection_DoubleMap__int__TCollection_AsciiString(NCollection_DoubleMap[
 class NCollection_DynamicArray__int(NCollection_DynamicArray[int]): ...
 class NCollection_HArray2__double(NCollection_HArray2[float]): ...
 class NCollection_IndexedMap__TCollection_AsciiString(NCollection_IndexedMap[nanoocp.TCollection.TCollection_AsciiString]): ...
+class NCollection_LinearVector__double(NCollection_LinearVector[float]): ...
+class NCollection_Array1__int(NCollection_Array1[int]): ...
+class NCollection_LinearVector__int(NCollection_LinearVector[int]): ...
 class NCollection_Map__int(NCollection_Map[int]): ...
 class NCollection_Sequence__Handle_Standard_Transient(NCollection_Sequence[nanoocp.Standard.Standard_Transient]): ...
 class NCollection_Shared__NCollection_Map__int(nanoocp.NCollection.NCollection_Map__int, _NCollection_Shared_members): ...
@@ -1474,14 +1537,18 @@ class NCollection_HSequence__Handle_TCollection_HExtendedString(NCollection_HSeq
 class NCollection_IndexedMap__Message_MetricType(NCollection_IndexedMap[nanoocp.Message.Message_MetricType]): ...
 class NCollection_List__Handle_Message_Alert(NCollection_List[nanoocp.Message.Message_Alert]): ...
 class NCollection_Sequence__Handle_Message_Printer(NCollection_Sequence[nanoocp.Message.Message_Printer]): ...
+class NCollection_DynamicArray__MathRoot_NullInterval(NCollection_DynamicArray[nanoocp.MathRoot.NullInterval]): ...
+class NCollection_DynamicArray__double(NCollection_DynamicArray[float]): ...
 class NCollection_Array1__gp_Pnt2d(NCollection_Array1[nanoocp.gp.gp_Pnt2d]): ...
 class NCollection_Array1__gp_Pnt(NCollection_Array1[nanoocp.gp.gp_Pnt]): ...
-class NCollection_Array1__int(NCollection_Array1[int]): ...
 class NCollection_HArray1__double(NCollection_HArray1[float]): ...
 class NCollection_HArray1__int(NCollection_HArray1[int]): ...
 class NCollection_Array2__gp_Pnt(NCollection_Array2[nanoocp.gp.gp_Pnt]): ...
-class NCollection_Array1__NCollection_Vec3__float(NCollection_Array1[nanoocp.BVH.BVH_Vec3f]): ...
+class NCollection_Array1__NCollection_Vec3__float(NCollection_Array1[nanoocp.Quantity.NCollection_Vec3__float]): ...
 class NCollection_Array1__Poly_Triangle(NCollection_Array1[nanoocp.Poly.Poly_Triangle]): ...
+class NCollection_DynamicArray__Poly_CoherentLink(NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentLink]): ...
+class NCollection_DynamicArray__Poly_CoherentNode(NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentNode]): ...
+class NCollection_DynamicArray__Poly_CoherentTriangle(NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentTriangle]): ...
 class NCollection_HArray1__Poly_Triangle(NCollection_HArray1[nanoocp.Poly.Poly_Triangle]): ...
 class NCollection_Array1__float:
     """
@@ -1689,6 +1756,23 @@ class NCollection_HArray2__int(NCollection_HArray2[int]): ...
 class NCollection_Array1__Bnd_Box(NCollection_Array1[nanoocp.Bnd.Bnd_Box]): ...
 class NCollection_HArray1__Bnd_Box(NCollection_HArray1[nanoocp.Bnd.Bnd_Box]): ...
 class NCollection_List__Bnd_Range(NCollection_List[nanoocp.Bnd.Bnd_Range]): ...
+class NCollection_Array1__NCollection_Vec2__double(NCollection_Array1[nanoocp.BVH.BVH_Vec2d]): ...
+class NCollection_LinearVector__NCollection_Vec2__double(NCollection_LinearVector[nanoocp.BVH.BVH_Vec2d]): ...
+class NCollection_Array1__NCollection_Vec2__float(NCollection_Array1[nanoocp.BVH.BVH_Vec2f]): ...
+class NCollection_LinearVector__NCollection_Vec2__float(NCollection_LinearVector[nanoocp.BVH.BVH_Vec2f]): ...
+class NCollection_Array1__NCollection_Vec2__int(NCollection_Array1[nanoocp.BVH.BVH_Vec2i]): ...
+class NCollection_LinearVector__NCollection_Vec2__int(NCollection_LinearVector[nanoocp.BVH.BVH_Vec2i]): ...
+class NCollection_Array1__NCollection_Vec3__double(NCollection_Array1[nanoocp.BVH.BVH_Vec3d]): ...
+class NCollection_LinearVector__NCollection_Vec3__double(NCollection_LinearVector[nanoocp.BVH.BVH_Vec3d]): ...
+class NCollection_LinearVector__NCollection_Vec3__float(NCollection_LinearVector[nanoocp.Quantity.NCollection_Vec3__float]): ...
+class NCollection_Array1__NCollection_Vec3__int(NCollection_Array1[nanoocp.BVH.BVH_Vec3i]): ...
+class NCollection_LinearVector__NCollection_Vec3__int(NCollection_LinearVector[nanoocp.BVH.BVH_Vec3i]): ...
+class NCollection_Array1__NCollection_Vec4__double(NCollection_Array1[nanoocp.BVH.BVH_Vec4d]): ...
+class NCollection_LinearVector__NCollection_Vec4__double(NCollection_LinearVector[nanoocp.BVH.BVH_Vec4d]): ...
+class NCollection_Array1__NCollection_Vec4__float(NCollection_Array1[nanoocp.Quantity.NCollection_Vec4__float]): ...
+class NCollection_LinearVector__NCollection_Vec4__float(NCollection_LinearVector[nanoocp.Quantity.NCollection_Vec4__float]): ...
+class NCollection_Array1__NCollection_Vec4__int(NCollection_Array1[nanoocp.BVH.BVH_Vec4i]): ...
+class NCollection_LinearVector__NCollection_Vec4__int(NCollection_LinearVector[nanoocp.BVH.BVH_Vec4i]): ...
 class NCollection_Array1__Geom2dGridEval_CurveD1(NCollection_Array1[nanoocp.Geom2dGridEval.CurveD1]): ...
 class NCollection_Array1__Geom2dGridEval_CurveD2(NCollection_Array1[nanoocp.Geom2dGridEval.CurveD2]): ...
 class NCollection_Array1__Geom2dGridEval_CurveD3(NCollection_Array1[nanoocp.Geom2dGridEval.CurveD3]): ...
@@ -1714,9 +1798,11 @@ class NCollection_Array1__AppParCurves_MultiPoint(NCollection_Array1[nanoocp.App
 class NCollection_Array1__opencascade_handle__NCollection_HArray1__int(NCollection_Array1[nanoocp.NCollection.NCollection_HArray1__int]): ...
 class NCollection_Array2__opencascade_handle__NCollection_HArray1__int(NCollection_Array2[nanoocp.NCollection.NCollection_HArray1__int]): ...
 class NCollection_HArray2__opencascade_handle__NCollection_HArray1__int(NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1__int]): ...
+class NCollection_Sequence__Extrema_POnCurv2d(NCollection_Sequence[nanoocp.Extrema.Extrema_POnCurv2d]): ...
 class NCollection_Sequence__Extrema_POnCurv(NCollection_Sequence[nanoocp.Extrema.Extrema_POnCurv]): ...
 class NCollection_Sequence__Extrema_POnSurf(NCollection_Sequence[nanoocp.Extrema.Extrema_POnSurf]): ...
 class NCollection_Sequence__double(NCollection_Sequence[float]): ...
+class NCollection_DynamicArray__ExtremaPC_ExtremumResult(NCollection_DynamicArray[nanoocp.ExtremaPC.ExtremumResult]): ...
 class NCollection_List__double(NCollection_List[float]): ...
 class NCollection_List__gp_Pnt(NCollection_List[nanoocp.gp.gp_Pnt]): ...
 class NCollection_Array1__Handle_Geom_BSplineCurve(NCollection_Array1[nanoocp.Geom.Geom_BSplineCurve]): ...
@@ -1760,5 +1846,337 @@ class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid(NCol
 class NCollection_Array1__BRepGraph_RefId(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_RefId]): ...
 class NCollection_Array1__BRepGraph_UID(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_UID]): ...
 class NCollection_Array1__TopLoc_Location(NCollection_Array1[nanoocp.TopLoc.TopLoc_Location]): ...
+class NCollection_LinearVector__BRepGraph_ItemUID(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ItemUID]): ...
+class NCollection_DataMap__BRepGraph_ItemUID__NCollection_LinearVector__BRepGraph_ItemUID(NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_ItemUID, nanoocp.NCollection.NCollection_LinearVector__BRepGraph_ItemUID]): ...
+class NCollection_LinearVector__BRepGraph_NodeId(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]): ...
+class NCollection_DataMap__BRepGraph_NodeId__NCollection_LinearVector__BRepGraph_NodeId(NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.NCollection.NCollection_LinearVector__BRepGraph_NodeId]): ...
+class NCollection_LinearVector__BRepGraph_UID(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]): ...
+class NCollection_DataMap__BRepGraph_UID__NCollection_LinearVector__BRepGraph_UID(NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_UID, nanoocp.NCollection.NCollection_LinearVector__BRepGraph_UID]): ...
 class NCollection_DataMap__TopoDS_Shape__BRepGraph_NodeId__TopTools_ShapeMapHasher(NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher]): ...
+class NCollection_Array1__BRepGraph_EditorView_BoundaryIssue(NCollection_Array1[nanoocp.BRepGraph.BRepGraph.EditorView.BoundaryIssue]): ...
+class NCollection_LinearVector__BRepGraph_EditorView_BoundaryIssue(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph.EditorView.BoundaryIssue]): ...
+class NCollection_LinearVector__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId]): ...
+class NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Edge(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_EdgeId]): ...
+class NCollection_LinearVector__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Edge(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId]): ...
+class NCollection_LinearVector__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceId]): ...
+class NCollection_LinearVector__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ProductId]): ...
+class NCollection_LinearVector__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId]): ...
+class NCollection_LinearVector__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId]): ...
+class NCollection_LinearVector__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]): ...
+class NCollection_LinearVector__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId]): ...
+class NCollection_LinearVector__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId]): ...
 class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_WireRefId]): ...
+class NCollection_LinearVector__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId]): ...
+class NCollection_Array1__BRepGraph_Validate_Issue(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_Validate.Issue]): ...
+class NCollection_LinearVector__BRepGraph_Validate_Issue(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_Validate.Issue]): ...
+class NCollection_Array1__Handle_Poly_PolygonOnTriangulation(NCollection_Array1[nanoocp.Poly.Poly_PolygonOnTriangulation]): ...
+class NCollection_LinearVector__Handle_Poly_PolygonOnTriangulation(NCollection_LinearVector[nanoocp.Poly.Poly_PolygonOnTriangulation]): ...
+class NCollection_Array1__unsigned_long_long:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__unsigned_long_long) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: int) -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__unsigned_long_long) -> NCollection_Array1__unsigned_long_long:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__unsigned_long_long) -> NCollection_Array1__unsigned_long_long:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> int:
+        """@return first element"""
+
+    def Last(self) -> int:
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> int:
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> int:
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: int) -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> int:
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> int:
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: int) -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator[int]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+class NCollection_LinearVector__unsigned_long_long:
+    """
+    Contiguous dynamic array using a flat memory buffer.
+
+    Unlike NCollection_DynamicArray which uses segmented block storage,
+    this container stores all elements in a single contiguous allocation,
+    providing O(1) element access with a single pointer dereference.
+
+    For trivially copyable types, growth uses Standard::Reallocate which
+    can extend the buffer in-place without copying elements. For non-trivial
+    types, growth allocates a new buffer and move-constructs elements.
+
+    Indices are always 0-based.
+
+    @warning Any operation that may grow the buffer - Append, Appended,
+    EmplaceAppend, SetValue past end, Resize, Reserve, InsertBefore,
+    InsertAfter, copy/move assignment - invalidates all iterators,
+    references, and raw pointers into the vector whenever it
+    actually reallocates. Erase/EraseLast also invalidate references
+    at or beyond the removed position.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theCapacity: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int, theValue: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_LinearVector__unsigned_long_long) -> None:
+        """Empty constructor."""
+
+    def HasData(self) -> bool:
+        """@return true if the vector has allocated storage."""
+
+    def Empty(self) -> bool:
+        """@return true if the vector contains no elements."""
+
+    @staticmethod
+    def MaxSize() -> int:
+        """@return current max supported size."""
+
+    def Size(self) -> int:
+        """@return number of elements."""
+
+    def IsEmpty(self) -> bool:
+        """@return true if the vector contains no elements."""
+
+    def Capacity(self) -> int:
+        """@return current allocated capacity."""
+
+    def Reserve(self, theCapacity: int) -> None:
+        """
+        Pre-allocate memory for at least theCapacity elements without changing size.
+        @param[in] theCapacity minimum capacity to ensure
+        """
+
+    @overload
+    def Resize(self, theSize: int) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theValue: int) -> None:
+        """
+        Change the number of elements.
+        If theSize > Size(), new elements are default-constructed.
+        If theSize < Size(), excess elements are destroyed.
+        @param[in] theSize new number of elements
+        """
+
+    def Value(self, theIndex: int) -> int:
+        """
+        @return const reference to element at theIndex.
+        @param[in] theIndex element index (0-based)
+        """
+
+    def __call__(self, theIndex: int) -> int:
+        """@return const reference to element at theIndex."""
+
+    def __getitem__(self, theIndex: int) -> int:
+        """@return const reference to element at theIndex."""
+
+    def First(self) -> int:
+        """@return const reference to the first element."""
+
+    def Last(self) -> int:
+        """@return const reference to the last element."""
+
+    def InsertBefore(self, theIndex: int, theValue: int) -> None:
+        """
+        Insert theValue before theIndex, shifting elements right.
+        @param[in] theIndex insertion position (0-based)
+        @param[in] theValue element to insert
+        """
+
+    def InsertAfter(self, theIndex: int, theValue: int) -> None:
+        """
+        Insert theValue after theIndex, shifting elements right.
+        @param[in] theIndex position after which to insert (0-based)
+        @param[in] theValue element to insert
+        """
+
+    def EraseLast(self) -> None:
+        """Remove the last element."""
+
+    @overload
+    def Erase(self, theIndex: int) -> None: ...
+
+    @overload
+    def Erase(self, theFrom: int, theTo: int) -> None:
+        """
+        Remove element at theIndex, shifting subsequent elements left.
+        @param[in] theIndex element index (0-based)
+        """
+
+    def Clear(self, theReleaseMemory: bool = False) -> None:
+        """
+        Remove all elements.
+        @param[in] theReleaseMemory if true, deallocate the buffer
+        """
+
+    def ToArray1(self) -> NCollection_Array1__unsigned_long_long:
+        """
+        Returns a span as Array1 with shared memory.
+        Modifying the vector or the array may invalidate the shared buffer.
+        @return array view of the vector data
+        """
+
+    def __setitem__(self, theIndex: int, theItem: int) -> None:
+        """Python addition: alias to SetValue (0-based)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Size."""
+
+    def __iter__(self) -> Iterator[int]:
+        """Python addition: iterates over the values."""
+
+    def Append(self, theValue: int) -> int:
+        """
+        Append a copy of theValue to the end.
+        @param[in] theValue element to append
+        @return reference to the appended element
+        """
+
+    def Appended(self) -> int:
+        """
+        Append a default-constructed element.
+        @return reference to the appended element
+        """
+
+    def SetValue(self, theIndex: int, theValue: int) -> int:
+        """
+        Set value at theIndex. If theIndex >= Size(), the vector is extended.
+        @param[in] theIndex element index (0-based)
+        @param[in] theValue value to set
+        @return reference to the element
+        """
+
+class NCollection_LinearVector__BRepGraph_RefId(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_RefId]): ...

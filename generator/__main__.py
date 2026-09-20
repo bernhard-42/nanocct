@@ -149,7 +149,10 @@ def main(argv: list[str]) -> int:
         if len(pkgs) == 0:
             print(f"{tk_name}: no packages selected", file=sys.stderr)
             return 1
-        irs = [parse_package(tree, pkg) for pkg in pkgs]
+        irs = []
+        for pkg in pkgs:
+            bound_elsewhere = {n for n, pk in known.items() if pk != pkg.name} | {c.name for ir in irs for c in ir.classes}
+            irs.append(parse_package(tree, pkg, known_elsewhere=bound_elsewhere))
         symbols = defined_methods(args.occt, tk_name)
         if symbols is None:
             print(f"{tk_name}: library symbols not checked (nm unavailable)", file=sys.stderr)

@@ -1588,6 +1588,13 @@ class TCollection_ExtendedString:
         """
 
     @overload
+    def __init__(self, theString: str) -> None:
+        """
+        Creation by converting an ExtString (char16_t*) to an extended string.
+        @param[in] theString the char16_t string to copy
+        """
+
+    @overload
     def __init__(self, theChar: str) -> None:
         """
         Initializes an ExtendedString with a single ASCII character.
@@ -1595,7 +1602,7 @@ class TCollection_ExtendedString:
         """
 
     @overload
-    def __init__(self, theChar: "char16_t") -> None:
+    def __init__(self, theChar: str) -> None:
         """
         Initializes an ExtendedString with a single extended character.
         @param[in] theChar the extended character to initialize from
@@ -1633,12 +1640,20 @@ class TCollection_ExtendedString:
         """
 
     @overload
-    def __init__(self, theLength: int, theFiller: "char16_t") -> None:
+    def __init__(self, theLength: int, theFiller: str) -> None:
         """
         Initializes an ExtendedString with specified length space allocated
         and filled with filler character. This is useful for buffers.
         @param[in] theLength the length to allocate
         @param[in] theFiller the character to fill with
+        """
+
+    @overload
+    def __init__(self, theString: str, theLength: int) -> None:
+        """
+        Initializes an ExtendedString with a char16_t string and explicit length.
+        @param[in] theString the char16_t string to initialize from
+        @param[in] theLength the length of the string
         """
 
     @overload
@@ -1682,10 +1697,26 @@ class TCollection_ExtendedString:
         """
 
     @overload
-    def AssignCat(self, theChar: "char16_t") -> None:
+    def AssignCat(self, theChar: str) -> None:
         """
         Appends the utf16 char to this extended string.
         @param[in] theChar the character to append
+        """
+
+    @overload
+    def AssignCat(self, theString: str, theLength: int) -> None:
+        """
+        Core implementation: Appends char16_t string (pointer and length) to this extended string.
+        This is the primary implementation that all other AssignCat overloads redirect to.
+        @param[in] theString pointer to the string to append
+        @param[in] theLength length of the string to append
+        """
+
+    @overload
+    def AssignCat(self, theString: str) -> None:
+        """
+        Appends the char16_t string to this extended string.
+        @param[in] theString the string to append
         """
 
     @overload
@@ -1699,6 +1730,30 @@ class TCollection_ExtendedString:
 
     @overload
     def __iadd__(self, theOther: float) -> TCollection_ExtendedString: ...
+
+    @overload
+    def __iadd__(self, theString: str) -> TCollection_ExtendedString:
+        """
+        Appends the char16_t string to this extended string (alias of AssignCat()).
+        """
+
+    @overload
+    def Cat(self, theOther: str, theLength: int) -> TCollection_ExtendedString:
+        """
+        Core implementation: Concatenates char16_t string (pointer and length)
+        and returns a new string.
+        @param[in] theOther pointer to the string to append
+        @param[in] theLength length of the string to append
+        @return new string with theOther appended
+        """
+
+    @overload
+    def Cat(self, theOther: str) -> TCollection_ExtendedString:
+        """
+        Concatenates char16_t string and returns a new string.
+        @param[in] theOther the null-terminated string to append
+        @return new string with theOther appended
+        """
 
     @overload
     def Cat(self, theOther: int) -> TCollection_ExtendedString:
@@ -1724,7 +1779,7 @@ class TCollection_ExtendedString:
         """
 
     @overload
-    def Cat(self, theChar: "char16_t") -> TCollection_ExtendedString:
+    def Cat(self, theChar: str) -> TCollection_ExtendedString:
         """
         Appends a single extended (char16_t) character to this string and returns a new string.
         @param[in] theChar the extended character to append
@@ -1747,6 +1802,9 @@ class TCollection_ExtendedString:
         """
 
     @overload
+    def __add__(self, theOther: str) -> TCollection_ExtendedString: ...
+
+    @overload
     def __add__(self, theOther: int) -> TCollection_ExtendedString: ...
 
     @overload
@@ -1756,12 +1814,12 @@ class TCollection_ExtendedString:
     def __add__(self, theChar: str) -> TCollection_ExtendedString: ...
 
     @overload
-    def __add__(self, theChar: "char16_t") -> TCollection_ExtendedString: ...
+    def __add__(self, theChar: str) -> TCollection_ExtendedString: ...
 
     @overload
     def __add__(self, theOther: TCollection_ExtendedString) -> TCollection_ExtendedString: ...
 
-    def ChangeAll(self, theChar: "char16_t", theNewChar: "char16_t") -> None:
+    def ChangeAll(self, theChar: str, theNewChar: str) -> None:
         """
         Substitutes all the characters equal to theChar by theNewChar
         in this ExtendedString.
@@ -1784,6 +1842,22 @@ class TCollection_ExtendedString:
         This produces an empty ExtendedString.
         """
 
+    @overload
+    def Copy(self, theString: str, theLength: int) -> None:
+        """
+        Core implementation: Copy from a char16_t pointer with explicit length.
+        @param[in] theString pointer to the string to copy
+        @param[in] theLength length of the string to copy
+        """
+
+    @overload
+    def Copy(self, theString: str) -> None:
+        """
+        Copy from a char16_t pointer.
+        @param[in] theString the null-terminated string to copy
+        """
+
+    @overload
     def Copy(self, theFromWhere: TCollection_ExtendedString) -> None:
         """
         Copy theFromWhere to this string.
@@ -1806,7 +1880,7 @@ class TCollection_ExtendedString:
         """
 
     @overload
-    def Insert(self, theWhere: int, theWhat: "char16_t") -> None:
+    def Insert(self, theWhere: int, theWhat: str) -> None:
         """
         Insert a Character at position theWhere.
 
@@ -1821,6 +1895,23 @@ class TCollection_ExtendedString:
         """
 
     @overload
+    def Insert(self, theWhere: int, theWhat: str, theLength: int) -> None:
+        """
+        Core implementation: Insert a char16_t string (pointer and length) at position theWhere.
+        @param[in] theWhere the position to insert at (1-based)
+        @param[in] theWhat pointer to the string to insert
+        @param[in] theLength length of the string to insert
+        """
+
+    @overload
+    def Insert(self, theWhere: int, theWhat: str) -> None:
+        """
+        Insert a char16_t string at position theWhere.
+        @param[in] theWhere the position to insert at (1-based)
+        @param[in] theWhat the null-terminated string to insert
+        """
+
+    @overload
     def Insert(self, theWhere: int, theWhat: TCollection_ExtendedString) -> None:
         """
         Insert an ExtendedString at position theWhere.
@@ -1831,6 +1922,25 @@ class TCollection_ExtendedString:
     def IsEmpty(self) -> bool:
         """Returns True if this string contains no characters."""
 
+    @overload
+    def IsEqual(self, theOther: str, theLength: int) -> bool:
+        """
+        Core implementation: Returns true if this string equals theOther (pointer and length).
+        @param[in] theOther pointer to the string to compare with
+        @param[in] theLength length of the string to compare with
+        @return true if strings are equal, false otherwise
+        """
+
+    @overload
+    def IsEqual(self, theOther: str) -> bool:
+        """
+        Returns true if this string equals theOther null-terminated string.
+        Note that this method is an alias of operator ==.
+        @param[in] theOther the char16_t string to compare with
+        @return true if strings are equal, false otherwise
+        """
+
+    @overload
     def IsEqual(self, theOther: TCollection_ExtendedString) -> bool:
         """
         Returns true if the characters in this extended
@@ -1840,8 +1950,31 @@ class TCollection_ExtendedString:
         @return true if strings are equal, false otherwise
         """
 
+    @overload
+    def __eq__(self, theOther: str) -> bool: ...
+
+    @overload
     def __eq__(self, theOther: TCollection_ExtendedString) -> bool: ...
 
+    @overload
+    def IsDifferent(self, theOther: str, theLength: int) -> bool:
+        """
+        Core implementation: Returns true if this string differs from theOther (pointer and length).
+        @param[in] theOther pointer to the string to compare with
+        @param[in] theLength length of the string to compare with
+        @return true if strings are different, false otherwise
+        """
+
+    @overload
+    def IsDifferent(self, theOther: str) -> bool:
+        """
+        Returns true if this string differs from theOther null-terminated string.
+        Note that this method is an alias of operator !=.
+        @param[in] theOther the char16_t string to compare with
+        @return true if strings are different, false otherwise
+        """
+
+    @overload
     def IsDifferent(self, theOther: TCollection_ExtendedString) -> bool:
         """
         Returns true if there are differences between the
@@ -1851,8 +1984,30 @@ class TCollection_ExtendedString:
         @return true if strings are different, false otherwise
         """
 
+    @overload
+    def __ne__(self, theOther: str) -> bool: ...
+
+    @overload
     def __ne__(self, theOther: TCollection_ExtendedString) -> bool: ...
 
+    @overload
+    def IsLess(self, theOther: str, theLength: int) -> bool:
+        """
+        Core implementation: Returns TRUE if this string is lexicographically less than theOther.
+        @param[in] theOther pointer to the string to compare with
+        @param[in] theLength length of the string to compare with
+        @return true if this string is less than theOther
+        """
+
+    @overload
+    def IsLess(self, theOther: str) -> bool:
+        """
+        Returns TRUE if this string is lexicographically less than theOther.
+        @param[in] theOther the char16_t string to compare with
+        @return true if this string is less than theOther
+        """
+
+    @overload
     def IsLess(self, theOther: TCollection_ExtendedString) -> bool:
         """
         Returns TRUE if this string is lexicographically less than theOther.
@@ -1860,8 +2015,30 @@ class TCollection_ExtendedString:
         @return true if this string is less than theOther
         """
 
+    @overload
+    def __lt__(self, theOther: str) -> bool: ...
+
+    @overload
     def __lt__(self, theOther: TCollection_ExtendedString) -> bool: ...
 
+    @overload
+    def IsGreater(self, theOther: str, theLength: int) -> bool:
+        """
+        Core implementation: Returns TRUE if this string is lexicographically greater than theOther.
+        @param[in] theOther pointer to the string to compare with
+        @param[in] theLength length of the string to compare with
+        @return true if this string is greater than theOther
+        """
+
+    @overload
+    def IsGreater(self, theOther: str) -> bool:
+        """
+        Returns TRUE if this string is lexicographically greater than theOther.
+        @param[in] theOther the char16_t string to compare with
+        @return true if this string is greater than theOther
+        """
+
+    @overload
     def IsGreater(self, theOther: TCollection_ExtendedString) -> bool:
         """
         Returns TRUE if this string is lexicographically greater than theOther.
@@ -1869,8 +2046,30 @@ class TCollection_ExtendedString:
         @return true if this string is greater than theOther
         """
 
+    @overload
+    def __gt__(self, theOther: str) -> bool: ...
+
+    @overload
     def __gt__(self, theOther: TCollection_ExtendedString) -> bool: ...
 
+    @overload
+    def StartsWith(self, theStartString: str, theLength: int) -> bool:
+        """
+        Core implementation: Determines whether this string starts with theStartString.
+        @param[in] theStartString pointer to the string to check for
+        @param[in] theLength length of the string to check for
+        @return true if this string starts with theStartString
+        """
+
+    @overload
+    def StartsWith(self, theStartString: str) -> bool:
+        """
+        Determines whether this string starts with theStartString.
+        @param[in] theStartString the null-terminated string to check for
+        @return true if this string starts with theStartString
+        """
+
+    @overload
     def StartsWith(self, theStartString: TCollection_ExtendedString) -> bool:
         """
         Determines whether the beginning of this string instance matches the specified string.
@@ -1878,6 +2077,24 @@ class TCollection_ExtendedString:
         @return true if this string starts with theStartString
         """
 
+    @overload
+    def EndsWith(self, theEndString: str, theLength: int) -> bool:
+        """
+        Core implementation: Determines whether this string ends with theEndString.
+        @param[in] theEndString pointer to the string to check for
+        @param[in] theLength length of the string to check for
+        @return true if this string ends with theEndString
+        """
+
+    @overload
+    def EndsWith(self, theEndString: str) -> bool:
+        """
+        Determines whether this string ends with theEndString.
+        @param[in] theEndString the null-terminated string to check for
+        @return true if this string ends with theEndString
+        """
+
+    @overload
     def EndsWith(self, theEndString: TCollection_ExtendedString) -> bool:
         """
         Determines whether the end of this string instance matches the specified string.
@@ -1898,7 +2115,7 @@ class TCollection_ExtendedString:
         @return the number of 16-bit code units
         """
 
-    def RemoveAll(self, theWhat: "char16_t") -> None:
+    def RemoveAll(self, theWhat: str) -> None:
         """
         Removes every theWhat characters from this string.
         @param[in] theWhat the character to remove
@@ -1918,6 +2135,24 @@ class TCollection_ExtendedString:
         @param[in] theHowMany the number of characters to erase
         """
 
+    @overload
+    def Search(self, theWhat: str, theLength: int) -> int:
+        """
+        Core implementation: Searches for theWhat (pointer and length) from the beginning.
+        @param[in] theWhat pointer to the string to search for
+        @param[in] theLength length of the string to search for
+        @return the position of first match (1-based), or -1 if not found
+        """
+
+    @overload
+    def Search(self, theWhat: str) -> int:
+        """
+        Searches for theWhat null-terminated string from the beginning.
+        @param[in] theWhat the null-terminated string to search for
+        @return the position of first match (1-based), or -1 if not found
+        """
+
+    @overload
     def Search(self, theWhat: TCollection_ExtendedString) -> int:
         """
         Searches an ExtendedString in this string from the beginning
@@ -1927,6 +2162,24 @@ class TCollection_ExtendedString:
         @return the position of first match (1-based), or -1 if not found
         """
 
+    @overload
+    def SearchFromEnd(self, theWhat: str, theLength: int) -> int:
+        """
+        Core implementation: Searches for theWhat (pointer and length) from the end.
+        @param[in] theWhat pointer to the string to search for
+        @param[in] theLength length of the string to search for
+        @return the position of first match from end (1-based), or -1 if not found
+        """
+
+    @overload
+    def SearchFromEnd(self, theWhat: str) -> int:
+        """
+        Searches for theWhat null-terminated string from the end.
+        @param[in] theWhat the null-terminated string to search for
+        @return the position of first match from end (1-based), or -1 if not found
+        """
+
+    @overload
     def SearchFromEnd(self, theWhat: TCollection_ExtendedString) -> int:
         """
         Searches an ExtendedString in this string from the end
@@ -1937,7 +2190,7 @@ class TCollection_ExtendedString:
         """
 
     @overload
-    def SetValue(self, theWhere: int, theWhat: "char16_t") -> None:
+    def SetValue(self, theWhere: int, theWhat: str) -> None:
         """
         Replaces one character in the ExtendedString at position theWhere.
         If theWhere is less than zero or greater than the length of this string
@@ -1951,6 +2204,23 @@ class TCollection_ExtendedString:
         ```
         @param[in] theWhere the position to replace at (1-based)
         @param[in] theWhat the character to replace with
+        """
+
+    @overload
+    def SetValue(self, theWhere: int, theWhat: str, theLength: int) -> None:
+        """
+        Core implementation: Replaces a part of this string by char16_t string (pointer and length).
+        @param[in] theWhere the position to start replacement (1-based)
+        @param[in] theWhat pointer to the string to replace with
+        @param[in] theLength length of the string to replace with
+        """
+
+    @overload
+    def SetValue(self, theWhere: int, theWhat: str) -> None:
+        """
+        Replaces a part of this string by a null-terminated char16_t string.
+        @param[in] theWhere the position to start replacement (1-based)
+        @param[in] theWhat the null-terminated string to replace with
         """
 
     @overload
@@ -1996,6 +2266,44 @@ class TCollection_ExtendedString:
         @return the second part of the split string
         """
 
+    def Token(self, theSeparators: str, theWhichOne: int = 1) -> TCollection_ExtendedString:
+        """
+        Extracts theWhichOne token from this string.
+        By default, the theSeparators is set to space and tabulation.
+        By default, the token extracted is the first one (theWhichOne = 1).
+        theSeparators contains all separators you need.
+        If no token indexed by theWhichOne is found, it returns an empty ExtendedString.
+
+        Example:
+        ```cpp
+        TCollection_ExtendedString aString(u"This is a     message");
+        TCollection_ExtendedString aToken1 = aString.Token();
+        // Result: aToken1 == u"This"
+
+        TCollection_ExtendedString aToken2 = aString.Token(u" ", 4);
+        // Result: aToken2 == u"message"
+
+        TCollection_ExtendedString aToken3 = aString.Token(u" ", 2);
+        // Result: aToken3 == u"is"
+
+        TCollection_ExtendedString aToken4 = aString.Token(u" ", 9);
+        // Result: aToken4 == u""
+
+        TCollection_ExtendedString bString(u"1234; test:message   , value");
+        TCollection_ExtendedString bToken1 = bString.Token(u"; :,", 4);
+        // Result: bToken1 == u"value"
+        ```
+        @param[in] theSeparators the separator characters
+        @param[in] theWhichOne the token number to extract (1-based)
+        @return the extracted token
+        """
+
+    def ToExtString(self) -> str:
+        """
+        Returns pointer to ExtString (char16_t*).
+        @return the char16_t string representation
+        """
+
     def Trunc(self, theHowMany: int) -> None:
         """
         Truncates this string to theHowMany characters.
@@ -2009,7 +2317,7 @@ class TCollection_ExtendedString:
         @param[in] theHowMany the number of characters to keep
         """
 
-    def Value(self, theWhere: int) -> "char16_t":
+    def Value(self, theWhere: int) -> str:
         """
         Returns character at position theWhere in this string.
         If theWhere is less than zero or greater than the length of
@@ -2075,7 +2383,7 @@ class TCollection_ExtendedString:
     def RightAdjust(self) -> None:
         """Removes all space characters at the end of the string."""
 
-    def LeftJustify(self, theWidth: int, theFiller: "char16_t") -> None:
+    def LeftJustify(self, theWidth: int, theFiller: str) -> None:
         """
         Left justify.
         Length becomes equal to theWidth and the new characters are
@@ -2085,7 +2393,7 @@ class TCollection_ExtendedString:
         @param[in] theFiller the character to fill with
         """
 
-    def RightJustify(self, theWidth: int, theFiller: "char16_t") -> None:
+    def RightJustify(self, theWidth: int, theFiller: str) -> None:
         """
         Right justify.
         Length becomes equal to theWidth and the new characters are
@@ -2095,7 +2403,7 @@ class TCollection_ExtendedString:
         @param[in] theFiller the character to fill with
         """
 
-    def Center(self, theWidth: int, theFiller: "char16_t") -> None:
+    def Center(self, theWidth: int, theFiller: str) -> None:
         """
         Modifies this string so that its length becomes equal to theWidth
         and the new characters are equal to theFiller.
@@ -2112,6 +2420,22 @@ class TCollection_ExtendedString:
         @note Only ASCII characters (a-z, A-Z) are affected by case conversion.
         """
 
+    @overload
+    def Prepend(self, theOther: str, theLength: int) -> None:
+        """
+        Core implementation: Inserts char16_t string (pointer and length) at the beginning.
+        @param[in] theOther pointer to the string to prepend
+        @param[in] theLength length of the string to prepend
+        """
+
+    @overload
+    def Prepend(self, theOther: str) -> None:
+        """
+        Inserts a null-terminated char16_t string at the beginning.
+        @param[in] theOther the null-terminated string to prepend
+        """
+
+    @overload
     def Prepend(self, theOther: TCollection_ExtendedString) -> None:
         """
         Inserts the other extended string at the beginning of this string.
@@ -2744,7 +3068,11 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         """Initializes a HExtendedString with a CString."""
 
     @overload
-    def __init__(self, aChar: "char16_t") -> None:
+    def __init__(self, message: str) -> None:
+        """Initializes a HExtendedString with an ExtString."""
+
+    @overload
+    def __init__(self, aChar: str) -> None:
         """Initializes a HExtendedString with a single character."""
 
     @overload
@@ -2760,7 +3088,7 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         """Initializes a HExtendedString with a HExtendedString."""
 
     @overload
-    def __init__(self, length: int, filler: "char16_t") -> None:
+    def __init__(self, length: int, filler: str) -> None:
         """
         Initializes a HExtendedString with <length> space allocated.
         and filled with <filler>. This is useful for buffers.
@@ -2775,7 +3103,7 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
     def Cat(self, other: TCollection_HExtendedString) -> TCollection_HExtendedString:
         """Returns a string appending <other> to me."""
 
-    def ChangeAll(self, aChar: "char16_t", NewChar: "char16_t") -> None:
+    def ChangeAll(self, aChar: str, NewChar: str) -> None:
         """
         Substitutes all the characters equal to aChar by NewChar
         in the string <me>.
@@ -2791,7 +3119,7 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         """Returns True if the string <me> contains zero character"""
 
     @overload
-    def Insert(self, where: int, what: "char16_t") -> None:
+    def Insert(self, where: int, what: str) -> None:
         """
         Insert a ExtCharacter at position <where>.
         Example:
@@ -2832,11 +3160,11 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         This gives "Hlo".
         """
 
-    def RemoveAll(self, what: "char16_t") -> None:
+    def RemoveAll(self, what: str) -> None:
         """Removes every <what> characters from <me>."""
 
     @overload
-    def SetValue(self, where: int, what: "char16_t") -> None:
+    def SetValue(self, where: int, what: str) -> None:
         """
         Replaces one character in the string at position <where>.
         If <where> is less than zero or greater than the length of <me>
@@ -2872,13 +3200,35 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         It returns -1 if not found.
         """
 
+    def ToExtString(self) -> str:
+        """Returns pointer to ExtString"""
+
+    def Token(self, separators: str, whichone: int = 1) -> TCollection_HExtendedString:
+        """
+        Extracts <whichone> token from <me>.
+        By default, the <separators> is set to space and tabulation.
+        By default, the token extracted is the first one (whichone = 1).
+        <separators> contains all separators you need.
+        If no token indexed by <whichone> is found, it returns an empty String.
+        Example:
+        aString contains "This is a     message"
+        aString.Token()  returns "This"
+        aString.Token(" ",4) returns "message"
+        aString.Token(" ",2) returns "is"
+        aString.Token(" ",9) returns ""
+        Other separators than space character and tabulation are allowed
+        aString contains "1234; test:message   , value"
+        aString.Token("; :,",4) returns "value"
+        aString.Token("; :,",2) returns "test\"
+        """
+
     def Trunc(self, ahowmany: int) -> None:
         """
         Truncates <me> to <ahowmany> characters.
         Example: me = "Hello Dolly" -> Trunc(3) -> me = "Hel\"
         """
 
-    def Value(self, where: int) -> "char16_t":
+    def Value(self, where: int) -> str:
         """
         Returns ExtCharacter at position <where> in <me>.
         If <where> is less than zero or greater than the length of

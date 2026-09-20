@@ -1,7 +1,7 @@
 """OCCT package BRepGraphInc (toolkit TKBRep)"""
 
 import enum
-from typing import overload
+from typing import TypeAlias, overload
 
 import nanoocp.BRepGraph
 from nanoocp.BRepGraphInc import (
@@ -1155,18 +1155,18 @@ class FaceRelations:
     def __init__(self, theOther: FaceRelations) -> None: ...
 
     @property
-    def WireRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>>":
+    def WireRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId]:
         """Wire references owned by this face"""
 
     @WireRefIds.setter
-    def WireRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>>", /) -> None: ...
+    def WireRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId], /) -> None: ...
 
     @property
-    def ParentFaceRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>>":
+    def ParentFaceRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId]:
         """Upstream face references (compound hierarchy)"""
 
     @ParentFaceRefIds.setter
-    def ParentFaceRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>>", /) -> None: ...
+    def ParentFaceRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId], /) -> None: ...
 
 class WireRelations:
     """@brief Topology relations for wire definitions."""
@@ -1178,18 +1178,18 @@ class WireRelations:
     def __init__(self, theOther: WireRelations) -> None: ...
 
     @property
-    def CoEdgeIds(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>":
+    def CoEdgeIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId]:
         """Coedge identifiers in this wire"""
 
     @CoEdgeIds.setter
-    def CoEdgeIds(self, arg: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>", /) -> None: ...
+    def CoEdgeIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId], /) -> None: ...
 
     @property
-    def ParentWireRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>>":
+    def ParentWireRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId]:
         """Upstream wire references"""
 
     @ParentWireRefIds.setter
-    def ParentWireRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>>", /) -> None: ...
+    def ParentWireRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId], /) -> None: ...
 
 class EdgeRelations:
     """@brief Topology relations for edge definitions."""
@@ -1201,11 +1201,11 @@ class EdgeRelations:
     def __init__(self, theOther: EdgeRelations) -> None: ...
 
     @property
-    def CoEdgeIds(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>":
+    def CoEdgeIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId]:
         """Coedge identifiers using this edge"""
 
     @CoEdgeIds.setter
-    def CoEdgeIds(self, arg: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>", /) -> None: ...
+    def CoEdgeIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId], /) -> None: ...
 
 class ShellRelations:
     """@brief Topology relations for shell definitions."""
@@ -1217,18 +1217,18 @@ class ShellRelations:
     def __init__(self, theOther: ShellRelations) -> None: ...
 
     @property
-    def FaceRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>>":
+    def FaceRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId]:
         """Face references in this shell"""
 
     @FaceRefIds.setter
-    def FaceRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>>", /) -> None: ...
+    def FaceRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId], /) -> None: ...
 
     @property
-    def ParentShellRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>>":
+    def ParentShellRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId]:
         """Upstream shell references"""
 
     @ParentShellRefIds.setter
-    def ParentShellRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>>", /) -> None: ...
+    def ParentShellRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId], /) -> None: ...
 
 class SolidRelations:
     """@brief Topology relations for solid definitions."""
@@ -1240,18 +1240,18 @@ class SolidRelations:
     def __init__(self, theOther: SolidRelations) -> None: ...
 
     @property
-    def ShellRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>>":
+    def ShellRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId]:
         """Shell references in this solid"""
 
     @ShellRefIds.setter
-    def ShellRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>>", /) -> None: ...
+    def ShellRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId], /) -> None: ...
 
     @property
-    def ParentSolidRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>>":
+    def ParentSolidRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId]:
         """Upstream solid references"""
 
     @ParentSolidRefIds.setter
-    def ParentSolidRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>>", /) -> None: ...
+    def ParentSolidRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId], /) -> None: ...
 
 class CompoundRelations:
     """@brief Topology relations for compound definitions."""
@@ -1263,11 +1263,11 @@ class CompoundRelations:
     def __init__(self, theOther: CompoundRelations) -> None: ...
 
     @property
-    def ChildRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>":
+    def ChildRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId]:
         """Child references in this compound"""
 
     @ChildRefIds.setter
-    def ChildRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>", /) -> None: ...
+    def ChildRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId], /) -> None: ...
 
 class CompSolidRelations:
     """@brief Topology relations for compsolid definitions."""
@@ -1279,11 +1279,11 @@ class CompSolidRelations:
     def __init__(self, theOther: CompSolidRelations) -> None: ...
 
     @property
-    def SolidRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>>":
+    def SolidRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId]:
         """Solid references in this compsolid"""
 
     @SolidRefIds.setter
-    def SolidRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>>", /) -> None: ...
+    def SolidRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId], /) -> None: ...
 
 class VertexRelations:
     """@brief Topology relations for vertex definitions."""
@@ -1295,11 +1295,11 @@ class VertexRelations:
     def __init__(self, theOther: VertexRelations) -> None: ...
 
     @property
-    def EdgeIds(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>":
+    def EdgeIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId]:
         """Edge identifiers sharing this vertex"""
 
     @EdgeIds.setter
-    def EdgeIds(self, arg: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>", /) -> None: ...
+    def EdgeIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId], /) -> None: ...
 
 class ProductRelations:
     """@brief Topology relations for product definitions."""
@@ -1311,11 +1311,11 @@ class ProductRelations:
     def __init__(self, theOther: ProductRelations) -> None: ...
 
     @property
-    def OccurrenceRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>":
+    def OccurrenceRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]:
         """Occurrence references under this product"""
 
     @OccurrenceRefIds.setter
-    def OccurrenceRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>", /) -> None: ...
+    def OccurrenceRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId], /) -> None: ...
 
 class OccurrenceRelations:
     """@brief Topology relations for occurrence definitions."""
@@ -1327,11 +1327,11 @@ class OccurrenceRelations:
     def __init__(self, theOther: OccurrenceRelations) -> None: ...
 
     @property
-    def ParentOccurrenceRefIds(self) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>":
+    def ParentOccurrenceRefIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]:
         """Upstream occurrence references"""
 
     @ParentOccurrenceRefIds.setter
-    def ParentOccurrenceRefIds(self, arg: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>", /) -> None: ...
+    def ParentOccurrenceRefIds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId], /) -> None: ...
 
 class EdgeCurve3DRep:
     """3D curve use for edges. Owned by a single edge."""
@@ -1569,7 +1569,7 @@ class BRepGraphInc_Populate:
         """
 
     @staticmethod
-    def AppendFlattened(theGraph: nanoocp.BRepGraph.BRepGraph, theShape: nanoocp.TopoDS.TopoDS_Shape, theParallel: bool, theAppendedRoots: "NCollection_LinearVector<BRepGraph_NodeId>", theOptions: BRepGraphInc_Populate.Options = ...) -> BRepGraphInc_Populate.BuildStatus:
+    def AppendFlattened(theGraph: nanoocp.BRepGraph.BRepGraph, theShape: nanoocp.TopoDS.TopoDS_Shape, theParallel: bool, theAppendedRoots: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId], theOptions: BRepGraphInc_Populate.Options = ...) -> BRepGraphInc_Populate.BuildStatus:
         """
         Extend existing backend storage with additional shapes (no clear).
         Flattens hierarchy containers away; Solid/Shell/Compound/CompSolid inputs
@@ -1747,22 +1747,22 @@ class BRepGraphInc_Storage:
     def Allocator(self) -> nanoocp.NCollection.NCollection_BaseAllocator:
         """Return the allocator used for backend storage."""
 
-    def RootProductIds(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>>":
+    def RootProductIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ProductId]:
         """Return products not referenced by any active occurrence."""
 
-    def ChangeRootProductIds(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>>":
+    def ChangeRootProductIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ProductId]:
         """Return products not referenced by any active occurrence."""
 
-    def DeferredModified(self) -> "NCollection_LinearVector<BRepGraph_NodeId>":
+    def DeferredModified(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]:
         """Return nodes accumulated during deferred invalidation."""
 
-    def ChangeDeferredModified(self) -> "NCollection_LinearVector<BRepGraph_NodeId>":
+    def ChangeDeferredModified(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]:
         """Return nodes accumulated during deferred invalidation."""
 
-    def DeferredRefModified(self) -> "NCollection_LinearVector<BRepGraph_RefId>":
+    def DeferredRefModified(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_RefId]:
         """Return refs accumulated during deferred invalidation."""
 
-    def ChangeDeferredRefModified(self) -> "NCollection_LinearVector<BRepGraph_RefId>":
+    def ChangeDeferredRefModified(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_RefId]:
         """Return refs accumulated during deferred invalidation."""
 
     def IsEmpty(self) -> bool:
@@ -2388,14 +2388,14 @@ class BRepGraphInc_Storage:
         @return const reference to the occurrence relation representation
         """
 
-    def CompoundRefsOfNode(self, theNode: nanoocp.BRepGraph.BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>":
+    def CompoundRefsOfNode(self, theNode: nanoocp.BRepGraph.BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId]:
         """
         Return the compound child reference identifiers that point to a given node.
         @param[in] theNode node identifier
         @return const reference to the list of child reference identifiers
         """
 
-    def OccurrenceRefsOfNode(self, theNode: nanoocp.BRepGraph.BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>":
+    def OccurrenceRefsOfNode(self, theNode: nanoocp.BRepGraph.BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]:
         """
         Return the occurrence reference identifiers that point to a given node.
         @param[in] theNode node identifier
@@ -2958,3 +2958,443 @@ class BRepGraphInc_Storage:
         Return true if any entity in any store has an active MutGuard.
         Used to assert no guards are active before Clear().
         """
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_VertexId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_VertexId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_CoEdgeId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_CoEdgeId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_WireId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_WireId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_FaceId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_FaceId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_ShellId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_ShellId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_SolidId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_SolidId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_OccurrenceId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_OccurrenceId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_CompoundId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_CompoundId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_CompSolidId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_CompSolidId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_ProductId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_ProductId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    def __hash__(self) -> int: ...
+
+    @property
+    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_NodeId: ...
+
+    @DefId.setter
+    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_NodeId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+VertexInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex
+
+CoEdgeInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge
+
+WireInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire
+
+FaceInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face
+
+ShellInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell
+
+SolidInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid
+
+OccurrenceInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence
+
+CompoundInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound
+
+CompSolidInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid
+
+ProductInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product
+
+NodeInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId

@@ -1,7 +1,7 @@
 """OCCT package Extrema (toolkit TKGeomBase)"""
 
 import enum
-from typing import overload
+from typing import TypeAlias, overload
 
 import nanoocp.Adaptor2d
 import nanoocp.Adaptor3d
@@ -3460,8 +3460,25 @@ class Extrema_LocECC2d:
         @param theP2 Point on second curve
         """
 
+Extrema_PCFOfEPCOfELPCOfLocateExtPC: TypeAlias = Extrema_PCFOfEPCOfExtPC
+
+Extrema_EPCOfELPCOfLocateExtPC: TypeAlias = Extrema_EPCOfExtPC
+
+Extrema_ELPCOfLocateExtPC: TypeAlias = Extrema_ExtPC
+
+Extrema_PCFOfEPCOfELPCOfLocateExtPC2d: TypeAlias = Extrema_PCFOfEPCOfExtPC2d
+
+Extrema_EPCOfELPCOfLocateExtPC2d: TypeAlias = Extrema_EPCOfExtPC2d
+
+Extrema_ELPCOfLocateExtPC2d: TypeAlias = Extrema_ExtPC2d
+
+Extrema_PCLocFOfLocEPCOfLocateExtPC: TypeAlias = Extrema_PCFOfEPCOfExtPC
+
+Extrema_PCLocFOfLocEPCOfLocateExtPC2d: TypeAlias = Extrema_PCFOfEPCOfExtPC2d
+
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection
 import nanoocp.Extrema
 Extrema_SequenceOfPOnCurv = nanoocp.NCollection.NCollection_Sequence[nanoocp.Extrema.Extrema_POnCurv]
+Extrema_SequenceOfPOnCurv2d = nanoocp.NCollection.NCollection_Sequence[nanoocp.Extrema.Extrema_POnCurv2d]
 Extrema_SequenceOfPOnSurf = nanoocp.NCollection.NCollection_Sequence[nanoocp.Extrema.Extrema_POnSurf]

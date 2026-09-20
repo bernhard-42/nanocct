@@ -59,4 +59,6 @@ extra = [
     "NCollection_DoubleMap<int, TCollection_AsciiString>",
     "NCollection_Shared<NCollection_Map<int>>",
     "NCollection_Sequence<opencascade::handle<Standard_Transient>>",
+    "NCollection_LinearVector<double>",
+    "NCollection_LinearVector<int>",
 ]

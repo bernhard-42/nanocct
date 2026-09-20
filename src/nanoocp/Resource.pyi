@@ -165,6 +165,12 @@ class Resource_Manager(nanoocp.Standard.Standard_Transient):
         and its type.
         """
 
+    def ExtValue(self, aResourceName: str) -> str:
+        """
+        Gets the value of an ExtString resource according to its instance
+        and its type.
+        """
+
     @overload
     def SetResource(self, aResourceName: str, aValue: int) -> None:
         """
@@ -183,6 +189,13 @@ class Resource_Manager(nanoocp.Standard.Standard_Transient):
     def SetResource(self, aResourceName: str, aValue: str) -> None:
         """
         Sets the new value of an CString resource.
+        If the resource does not exist, it is created.
+        """
+
+    @overload
+    def SetResource(self, aResourceName: str, aValue: str) -> None:
+        """
+        Sets the new value of an ExtString resource.
         If the resource does not exist, it is created.
         """
 

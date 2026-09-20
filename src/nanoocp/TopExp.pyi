@@ -238,11 +238,22 @@ class TopExp_Explorer:
     def Clear(self) -> None:
         """Clears the content of the explorer."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<TopExp_Explorer>":
-        """
-        Returns an STL-compatible iterator for range-based for loops.
-        @warning Do not call Next() or Init() externally during range-for iteration.
-        """
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
+
+class NCollection_ForwardRangeIterator__TopExp_Explorer:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: TopExp_Explorer) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__TopExp_Explorer) -> None: ...

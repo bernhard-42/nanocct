@@ -294,6 +294,7 @@ void nanoocp_templates_Standard(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue>(home, "NCollection_IndexedDataMap__TCollection_AsciiString__Standard_DumpValue"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_IndexedDataMap<TCollection_AsciiString, TCollection_AsciiString>(home, "NCollection_IndexedDataMap__TCollection_AsciiString__TCollection_AsciiString"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_List<int>(home, "NCollection_List__int"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<Standard_Mutex>(home, "NCollection_Shared__Standard_Mutex"); }
 }
 
 void nanoocp_define_Standard(nb::module_ &m) {
@@ -445,6 +446,10 @@ still has this callback registered.)nbdoc");
 following format:
 Length : 36 char
 "00000000-0000-0000-0000-000000000000")nbdoc")
+        .def(nb::init<const char16_t *const>(), nb::arg("aGuid"), R"nbdoc(build a GUID from an unicode string with the
+following format:
+
+"00000000-0000-0000-0000-000000000000")nbdoc")
         .def(nb::init<const Standard_UUID &>(), nb::arg("theUUID"), R"nbdoc(Creates a GUID from a Standard_UUID.)nbdoc")
         .def(nb::init<const Standard_GUID &>(), nb::arg("theGuid"), R"nbdoc(Copy constructor.)nbdoc")
         .def(nb::init<const int, const char16_t, const char16_t, const char16_t, const uint8_t, const uint8_t, const uint8_t, const uint8_t, const uint8_t, const uint8_t>(), nb::arg("a32b"), nb::arg("a16b1"), nb::arg("a16b2"), nb::arg("a16b3"), nb::arg("a8b1"), nb::arg("a8b2"), nb::arg("a8b3"), nb::arg("a8b4"), nb::arg("a8b5"), nb::arg("a8b6"), R"nbdoc(Creates a GUID from the given components.)nbdoc")
@@ -459,6 +464,7 @@ Length : 36 char
 It checks the size, the position of the '-' and the correct size of fields.)nbdoc")
         .def("__hash__", [](const Standard_GUID &self) { return static_cast<Py_ssize_t>(std::hash<Standard_GUID>{}(self)); });
     nb::implicitly_convertible<std::decay_t<const char *const>, Standard_GUID>();
+    nb::implicitly_convertible<std::decay_t<const char16_t *const>, Standard_GUID>();
     nb::implicitly_convertible<std::decay_t<const Standard_UUID &>, Standard_GUID>();
     nb::borrow<nb::class_<Standard_MMgrRoot>>(m.attr("Standard_MMgrRoot"))
         .def("Purge", static_cast<int (Standard_MMgrRoot::*)(bool)>(&Standard_MMgrRoot::Purge), nb::arg("isDestroyed") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Purge internally cached unused memory blocks (if any)
@@ -543,6 +549,7 @@ Will become "1/2/3 4/5/6" when flag is TRUE, and "1/2/35/5/6" otherwise.)nbdoc")
     nanoocp_implicit_copy_ctor<Standard_ReadLineBuffer>(nb::borrow<nb::class_<Standard_ReadLineBuffer>>(m.attr("Standard_ReadLineBuffer")));
     nb::implicitly_convertible<std::decay_t<size_t>, Standard_ReadLineBuffer>();
     m.attr("Standard_ErrorHandlerCallback") = m.attr("Standard_ErrorHandler").attr("Callback");   // Standard_ErrorHandlerCallback = Standard_ErrorHandler::Callback
+    m.attr("Standard_HMutex") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_Shared__Standard_Mutex");   // Standard_HMutex = NCollection_Shared<Standard_Mutex, void>
     m.def("Abs", static_cast<int (*)(const int)>(&Abs), nb::arg("theValue"), R"nbdoc(Returns the absolute value of a int @p Value.
 Equivalent to std::abs.)nbdoc");
     m.def("IsEven", static_cast<bool (*)(const int)>(&IsEven), nb::arg("theValue"), R"nbdoc(Returns true if @p theValue is even.)nbdoc");

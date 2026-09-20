@@ -103,11 +103,15 @@ instance and its type.)nbdoc")
 and its type.)nbdoc")
         .def("Value", static_cast<const char * (Resource_Manager::*)(const char *const) const>(&Resource_Manager::Value), nb::arg("aResourceName"), R"nbdoc(Gets the value of a CString resource according to its instance
 and its type.)nbdoc")
+        .def("ExtValue", static_cast<const char16_t * (Resource_Manager::*)(const char *const)>(&Resource_Manager::ExtValue), nb::arg("aResourceName"), R"nbdoc(Gets the value of an ExtString resource according to its instance
+and its type.)nbdoc")
         .def("SetResource", static_cast<void (Resource_Manager::*)(const char *const, const int)>(&Resource_Manager::SetResource), nb::arg("aResourceName"), nb::arg("aValue"), R"nbdoc(Sets the new value of an integer resource.
 If the resource does not exist, it is created.)nbdoc")
         .def("SetResource", static_cast<void (Resource_Manager::*)(const char *const, const double)>(&Resource_Manager::SetResource), nb::arg("aResourceName"), nb::arg("aValue"), R"nbdoc(Sets the new value of a real resource.
 If the resource does not exist, it is created.)nbdoc")
         .def("SetResource", static_cast<void (Resource_Manager::*)(const char *const, const char *const)>(&Resource_Manager::SetResource), nb::arg("aResourceName"), nb::arg("aValue"), R"nbdoc(Sets the new value of an CString resource.
+If the resource does not exist, it is created.)nbdoc")
+        .def("SetResource", static_cast<void (Resource_Manager::*)(const char *const, const char16_t *const)>(&Resource_Manager::SetResource), nb::arg("aResourceName"), nb::arg("aValue"), R"nbdoc(Sets the new value of an ExtString resource.
 If the resource does not exist, it is created.)nbdoc")
         .def_static("GetResourcePath", static_cast<void (*)(TCollection_AsciiString &, const char *const, const bool)>(&Resource_Manager::GetResourcePath), nb::arg("aPath"), nb::arg("aName"), nb::arg("isUserDefaults"), R"nbdoc(Gets the resource file full path by its name.
 If corresponding environment variable is not set

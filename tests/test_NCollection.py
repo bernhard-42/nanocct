@@ -333,3 +333,24 @@ def test_shared_is_the_wrapped_type_plus_transient():
     seq = NCollection.NCollection_Sequence[Standard.Standard_Transient]()
     seq.Append(sm)                                                # T is not the offset-0 base here: registry paths
     assert seq.Value(1) is sm and sm.GetRefCount() == 2
+
+
+def test_linear_vector():
+    from nanoocp import BVH, MathRoot, NCollection
+    v = NCollection.NCollection_LinearVector[float]()                          # OCCT 8 contiguous vector, 0-based, size_t indices
+    v.Append(1.5)
+    v.Append(2.5)
+    v[0] = 0.5
+    assert (len(v), v[1], list(v), v.First(), v.Last()) == (2, 2.5, [0.5, 2.5], 0.5, 2.5)
+    assert v.ToArray1().Length() == 2 and v.Capacity() >= 2
+    v.Erase(0)
+    v.Resize(3, 9.0)
+    assert list(v) == [2.5, 9.0, 9.0]
+    v.Clear()
+    assert v.IsEmpty()
+    assert BVH.BVH_Array3d is NCollection.NCollection_LinearVector[BVH.BVH_Vec3d]   # typedef alias of a binder instantiation
+    a = BVH.BVH_Array3d()
+    a.Append(BVH.BVH_Vec3d(1.0, 2.0, 3.0))
+    a.ChangeValue(0).SetValues(4.0, 5.0, 6.0)                                 # reference_internal for class elements
+    assert a.Value(0).x() == 4.0
+    assert type(MathRoot.MultipleResult().Roots) is NCollection.NCollection_DynamicArray[float]   # container-typed field

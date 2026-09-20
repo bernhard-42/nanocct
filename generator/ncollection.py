@@ -134,6 +134,16 @@ BINDERS: dict[str, dict] = {
         "requires": [],
         "nargs": 1,
     },
+    "NCollection_LinearVector": {
+        "binder": "nanoocp::bind_NCollection_LinearVector",
+        "members": {"Data", "HasData", "Empty", "MaxSize", "Size", "IsEmpty", "Capacity", "Reserve", "Resize", "Value", "ChangeValue",
+                    "operator()", "operator[]", "First", "ChangeFirst", "Last", "ChangeLast", "Append", "Appended", "SetValue",
+                    "InsertBefore", "InsertAfter", "EraseLast", "Erase", "Clear", "ToArray1"},
+        "skipped": {"operator=", "EmplaceAppend", "begin", "end", "cbegin", "cend", "operator new", "operator delete",
+                    "operator new[]", "operator delete[]"},
+        "requires": ["NCollection_Array1"],    # ToArray1() returns NCollection_Array1<T>
+        "nargs": 1,
+    },
     "NCollection_DoubleMap": {
         "binder": "nanoocp::bind_NCollection_DoubleMap",
         "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Bind", "TryBind",

@@ -518,6 +518,11 @@ class Emitter:
             if key in seen_aliases or any(c.py_name == td.py_name and c.scope == td.scope for c in classes):
                 continue                           # a 6c alias instantiation is a class of its own
             seen_aliases.add(key)
+            inst = self.templates.get(td.target)
+            if inst is not None and not inst.get("skipped", False) and inst["package"] != "":
+                # alias of a bound NCollection instantiation (BVH_Array3d = NCollection_LinearVector<NCollection_Vec3<double>>)
+                define.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = nb::module_::import_("nanoocp._{self.toolkit_of[inst["package"]]}.{inst["package"]}").attr("{inst["name"]}");   // {td.py_name} = {td.written}')
+                continue
             pkg = self.known.get(td.target)
             if pkg is None or "<" in td.target:
                 if td.scope != ():

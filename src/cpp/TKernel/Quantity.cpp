@@ -8,6 +8,7 @@
 #include <Quantity_Period.hxx>
 #include <Quantity_PeriodDefinitionError.hxx>
 #include <Quantity_TypeOfColor.hxx>
+#include <NCollection_Vec2.hxx>
 #include <NCollection_Vec3.hxx>
 #include <NCollection_Vec4.hxx>
 #include <Standard_DomainError.hxx>
@@ -570,6 +571,16 @@ gives the interval between two dates.
 A period is expressed in seconds and microseconds.)nbdoc");
     }
     nanoocp_register_exception<Quantity_PeriodDefinitionError>(nanoocp_new_exception(m, "Quantity_PeriodDefinitionError", nullptr, nb::module_::import_("nanoocp._TKernel.Standard").attr("Standard_DomainError").ptr()));
+    { nb::class_<NCollection_Vec3<float>> cls(m, "NCollection_Vec3__float", R"nbdoc(Generic 3-components vector.
+To be used as RGB color pixel or XYZ 3D-point.
+The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).)nbdoc");
+    }
+    { nb::class_<NCollection_Vec4<float>> cls(m, "NCollection_Vec4__float", R"nbdoc(Generic 4-components vector.
+To be used as RGBA color vector or XYZW 3D-point with special W-component
+for operations with projection / model view matrices.
+Use this class for 3D-points carefully because declared W-component may
+results in incorrect results if used without matrices.)nbdoc");
+    }
 }
 
 void nanoocp_templates_Quantity(nb::module_ &m) {
@@ -858,7 +869,148 @@ With:
 0 <= mics)nbdoc");
     nanoocp_implicit_copy_ctor<Quantity_Period>(nb::borrow<nb::class_<Quantity_Period>>(m.attr("Quantity_Period")));
     nb::implicitly_convertible<std::decay_t<const int>, Quantity_Period>();
+    nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def(nb::init<float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def(nb::init<const NCollection_Vec2<float> &, float>(), nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<float>>(float ( 0 )), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
+        .def(nb::init<const float, const float, const float>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc")
+        .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec3<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
+        .def("SetValues", static_cast<void (NCollection_Vec3<float>::*)(const float, const float, const float) noexcept>(&NCollection_Vec3<float>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
+        .def("SetValues", static_cast<void (NCollection_Vec3<float>::*)(const NCollection_Vec2<float> &, float) noexcept>(&NCollection_Vec3<float>::SetValues), nb::arg("theVec2"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
+        .def("x", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZ.)nbdoc")
+        .def("r", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::r), R"nbdoc(Alias to 1st component as RED channel in RGB.)nbdoc")
+        .def("y", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZ.)nbdoc")
+        .def("g", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGB.)nbdoc")
+        .def("z", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZ.)nbdoc")
+        .def("b", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGB.)nbdoc")
+        .def("xy", static_cast<NCollection_Vec2<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("yx", static_cast<NCollection_Vec2<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::yx), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("xz", static_cast<NCollection_Vec2<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::xz), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("zx", static_cast<NCollection_Vec2<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::zx), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("yz", static_cast<NCollection_Vec2<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::yz), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("zy", static_cast<NCollection_Vec2<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::zy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("xyz", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::xyz), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("xzy", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::xzy), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("yxz", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::yxz), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("yzx", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::yzx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("zyx", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::zyx), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("zxy", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::zxy), R"nbdoc(@return 3 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("IsEqual", static_cast<bool (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
+        .def("__eq__", static_cast<bool (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__iadd__", [](NCollection_Vec3<float> &self, const NCollection_Vec3<float> & theAdd) -> NCollection_Vec3<float> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
+        .def("__neg__", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
+        .def("__isub__", [](NCollection_Vec3<float> &self, const NCollection_Vec3<float> & theDec) -> NCollection_Vec3<float> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
+        .def("Multiply", static_cast<void (NCollection_Vec3<float>::*)(const float) noexcept>(&NCollection_Vec3<float>::Multiply), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc")
+        .def("__imul__", [](NCollection_Vec3<float> &self, const NCollection_Vec3<float> & theRight) -> NCollection_Vec3<float> & { self.operator*=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("__imul__", [](NCollection_Vec3<float> &self, const float theFactor) -> NCollection_Vec3<float> & { self.operator*=(theFactor); return self; }, nb::rv_policy::reference, nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc", nb::is_operator())
+        .def("__mul__", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)(const float) const noexcept>(&NCollection_Vec3<float>::operator*), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc", nb::is_operator())
+        .def("Multiplied", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)(const float) const noexcept>(&NCollection_Vec3<float>::Multiplied), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc")
+        .def("cwiseMin", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::cwiseMin), nb::arg("theVec"), R"nbdoc(Compute component-wise minimum of two vectors.)nbdoc")
+        .def("cwiseMax", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::cwiseMax), nb::arg("theVec"), R"nbdoc(Compute component-wise maximum of two vectors.)nbdoc")
+        .def("cwiseAbs", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::cwiseAbs), R"nbdoc(Compute component-wise modulus of the vector.)nbdoc")
+        .def("maxComp", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::maxComp), R"nbdoc(Compute maximum component of the vector.)nbdoc")
+        .def("minComp", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::minComp), R"nbdoc(Compute minimum component of the vector.)nbdoc")
+        .def("__itruediv__", [](NCollection_Vec3<float> &self, const float theInvFactor) -> NCollection_Vec3<float> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("__itruediv__", [](NCollection_Vec3<float> &self, const NCollection_Vec3<float> & theRight) -> NCollection_Vec3<float> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
+        .def("__truediv__", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)(const float) const>(&NCollection_Vec3<float>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("Dot", static_cast<float (NCollection_Vec3<float>::*)(const NCollection_Vec3<float> &) const noexcept>(&NCollection_Vec3<float>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
+        .def("Modulus", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::Modulus), R"nbdoc(Computes the vector modulus (magnitude, length).)nbdoc")
+        .def("SquareModulus", static_cast<float (NCollection_Vec3<float>::*)() const noexcept>(&NCollection_Vec3<float>::SquareModulus), R"nbdoc(Computes the square of vector modulus (magnitude, length).
+This method may be used for performance tricks.)nbdoc")
+        .def("Normalize", static_cast<void (NCollection_Vec3<float>::*)()>(&NCollection_Vec3<float>::Normalize), R"nbdoc(Normalize the vector.)nbdoc")
+        .def("Normalized", static_cast<NCollection_Vec3<float> (NCollection_Vec3<float>::*)() const>(&NCollection_Vec3<float>::Normalized), R"nbdoc(Normalize the vector.)nbdoc")
+        .def_static("Cross", static_cast<NCollection_Vec3<float> (*)(const NCollection_Vec3<float> &, const NCollection_Vec3<float> &) noexcept>(&NCollection_Vec3<float>::Cross), nb::arg("theVec1"), nb::arg("theVec2"), R"nbdoc(Computes the cross product.)nbdoc")
+        .def_static("GetLERP", static_cast<NCollection_Vec3<float> (*)(const NCollection_Vec3<float> &, const NCollection_Vec3<float> &, const float) noexcept>(&NCollection_Vec3<float>::GetLERP), nb::arg("theFrom"), nb::arg("theTo"), nb::arg("theT"), R"nbdoc(Compute linear interpolation between to vectors.
+@param theT - interpolation coefficient 0..1;
+@return interpolation result.)nbdoc")
+        .def_static("DX", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
+        .def_static("DY", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
+        .def_static("DZ", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Vec3<float>>(nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float")));
+    nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def(nb::init<const float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def(nb::init<const NCollection_Vec2<float> &>(), nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
+        .def(nb::init<const NCollection_Vec3<float> &, const float>(), nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const float>>(float ( 0 )), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
+        .def(nb::init<const float, const float, const float, const float>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc")
+        .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec4<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
+        .def("SetValues", static_cast<void (NCollection_Vec4<float>::*)(const float, const float, const float, const float) noexcept>(&NCollection_Vec4<float>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Assign new values to the vector.)nbdoc")
+        .def("SetValues", static_cast<void (NCollection_Vec4<float>::*)(const NCollection_Vec3<float> &, const float) noexcept>(&NCollection_Vec4<float>::SetValues), nb::arg("theVec3"), nb::arg("theW"), R"nbdoc(Assign new values as 3-component vector and a 4-th value.)nbdoc")
+        .def("x", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::x), R"nbdoc(Alias to 1st component as X coordinate in XYZW.)nbdoc")
+        .def("r", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::r), R"nbdoc(Alias to 1st component as RED channel in RGBA.)nbdoc")
+        .def("y", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::y), R"nbdoc(Alias to 2nd component as Y coordinate in XYZW.)nbdoc")
+        .def("g", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::g), R"nbdoc(Alias to 2nd component as GREEN channel in RGBA.)nbdoc")
+        .def("z", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::z), R"nbdoc(Alias to 3rd component as Z coordinate in XYZW.)nbdoc")
+        .def("b", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::b), R"nbdoc(Alias to 3rd component as BLUE channel in RGBA.)nbdoc")
+        .def("w", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::w), R"nbdoc(Alias to 4th component as W coordinate in XYZW.)nbdoc")
+        .def("a", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::a), R"nbdoc(Alias to 4th component as ALPHA channel in RGBA.)nbdoc")
+        .def("xy", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xy), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yx", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::yx), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xz", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xz), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zx", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zx), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xw", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xw), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wx", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wx), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yz", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::yz), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zy", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zy), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yw", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::yw), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wy", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wy), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zw", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zw), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wz", static_cast<NCollection_Vec2<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wz), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xyz", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xyz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xzy", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xzy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yxz", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::yxz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yzx", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::yzx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zyx", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zyx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zxy", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zxy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xyw", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xyw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xwy", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xwy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yxw", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::yxw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("ywx", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::ywx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wyx", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wyx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wxy", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wxy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xzw", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xzw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xwz", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::xwz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zxw", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zxw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zwx", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zwx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wzx", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wzx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wxz", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wxz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yzw", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::yzw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("ywz", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::ywz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zyw", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zyw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zwy", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::zwy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wzy", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wzy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wyz", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::wyz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("rgb", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::rgb), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("rbg", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::rbg), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("grb", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::grb), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("gbr", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::gbr), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("bgr", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::bgr), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("brg", static_cast<NCollection_Vec3<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::brg), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("IsEqual", static_cast<bool (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
+        .def("__eq__", static_cast<bool (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__iadd__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theAdd) -> NCollection_Vec4<float> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
+        .def("__neg__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
+        .def("__isub__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theDec) -> NCollection_Vec4<float> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
+        .def("__imul__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theRight) -> NCollection_Vec4<float> & { self.operator*=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("Multiply", static_cast<void (NCollection_Vec4<float>::*)(const float) noexcept>(&NCollection_Vec4<float>::Multiply), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc")
+        .def("__imul__", [](NCollection_Vec4<float> &self, const float theFactor) -> NCollection_Vec4<float> & { self.operator*=(theFactor); return self; }, nb::rv_policy::reference, nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("__mul__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const float) const noexcept>(&NCollection_Vec4<float>::operator*), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("Multiplied", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const float) const noexcept>(&NCollection_Vec4<float>::Multiplied), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc")
+        .def("cwiseMin", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::cwiseMin), nb::arg("theVec"), R"nbdoc(Compute component-wise minimum of two vectors.)nbdoc")
+        .def("cwiseMax", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::cwiseMax), nb::arg("theVec"), R"nbdoc(Compute component-wise maximum of two vectors.)nbdoc")
+        .def("cwiseAbs", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::cwiseAbs), R"nbdoc(Compute component-wise modulus of the vector.)nbdoc")
+        .def("maxComp", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::maxComp), R"nbdoc(Compute maximum component of the vector.)nbdoc")
+        .def("minComp", static_cast<float (NCollection_Vec4<float>::*)() const noexcept>(&NCollection_Vec4<float>::minComp), R"nbdoc(Compute minimum component of the vector.)nbdoc")
+        .def("Dot", static_cast<float (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
+        .def("__itruediv__", [](NCollection_Vec4<float> &self, const float theInvFactor) -> NCollection_Vec4<float> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("__itruediv__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theRight) -> NCollection_Vec4<float> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
+        .def("__truediv__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const float) const>(&NCollection_Vec4<float>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<NCollection_Vec4<float>>(nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float")));
 }
 
 void nanoocp_conversions_Quantity(nb::module_ &m) {
+    nanoocp_conversion<Quantity_Color, NCollection_Vec3<float>>(m.attr("NCollection_Vec3__float"), true);
+    nanoocp_conversion<Quantity_ColorRGBA, NCollection_Vec4<float>>(m.attr("NCollection_Vec4__float"), true);
 }

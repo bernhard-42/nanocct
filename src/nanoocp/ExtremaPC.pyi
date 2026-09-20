@@ -5,7 +5,9 @@ from typing import overload
 
 import nanoocp.MathUtils
 from nanoocp.MathUtils import Domain1D as Domain1D
+import nanoocp.NCollection
 import nanoocp.gp
+import nanoocp.ExtremaPC
 
 
 THE_DEFAULT_TOLERANCE: float = 1e-07
@@ -169,11 +171,11 @@ class Result:
     def Status(self, arg: Status, /) -> None: ...
 
     @property
-    def Extrema(self) -> "NCollection_DynamicArray<ExtremaPC::ExtremumResult>":
+    def Extrema(self) -> nanoocp.NCollection.NCollection_DynamicArray[nanoocp.ExtremaPC.ExtremumResult]:
         """Collection of found extrema"""
 
     @Extrema.setter
-    def Extrema(self, arg: "NCollection_DynamicArray<ExtremaPC::ExtremumResult>", /) -> None: ...
+    def Extrema(self, arg: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.ExtremaPC.ExtremumResult], /) -> None: ...
 
     @property
     def InfiniteSquareDistance(self) -> float:

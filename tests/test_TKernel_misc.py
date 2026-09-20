@@ -58,3 +58,14 @@ def test_singletons_are_transient_handles():
 
 def test_static_suffix_rule_in_tcollection():
     assert TCollection.TCollection_AsciiString.IsEqual_s(TCollection.TCollection_AsciiString("a"), TCollection.TCollection_AsciiString("a")) is True
+
+
+def test_extended_string_round_trip():
+    from nanoocp import TCollection
+    e = TCollection.TCollection_ExtendedString("héllo €", True)               # from UTF-8
+    assert e.Length() == 7
+    assert e.ToExtString() == "héllo €"                                       # const char16_t* -> str (UTF-16 caster)
+    assert e.Value(2) == "é"                                                  # char16_t -> 1-character str
+    e2 = TCollection.TCollection_ExtendedString()
+    e2.AssignCat("x€")                                                        # str -> const char16_t*
+    assert e2.ToExtString() == "x€" and e2.Search("€") == 2

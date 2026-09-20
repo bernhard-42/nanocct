@@ -23,6 +23,7 @@ _PRIMITIVE_KINDS = {
     TK.ULONGLONG, TK.CHAR_S, TK.SCHAR, TK.WCHAR, TK.SHORT, TK.INT, TK.LONG, TK.LONGLONG,
     TK.FLOAT, TK.DOUBLE, TK.LONGDOUBLE, TK.ENUM,
 }
+_STL_ITERATORS = {"NCollection_ForwardRangeIterator", "NCollection_IndexedIterator", "NCollection_StlIterator", "NCollection_UtfIterator"}
 _PRIMITIVE_SPELLINGS = {"double", "float", "int", "bool", "char", "long", "short", "size_t", "unsigned", "unsigned int", "unsigned long",
                         "long long", "unsigned long long", "int8_t", "uint8_t", "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t",
                         "char16_t", "char32_t", "wchar_t", "Standard_Real", "Standard_Integer", "Standard_Boolean", "Standard_ShortReal",
@@ -191,7 +192,7 @@ def _is_out_param(t: cindex.Type) -> bool:
 
 _subst: dict[str, str] = {}          # template parameter -> argument while walking a class template (alias instantiation)
 _subst_self: tuple[str, str, str] | None = None   # (template leaf name, full instantiation, qualified template name) for the injected class name
-_subst_members: set[str] = set()     # member types of the template (using IdType = ...): written unqualified inside it
+_subst_members: dict[str, str] = {}  # member types of the template (using IdType = ...) written unqualified inside it -> spelling
 _subst_scope: dict[str, str] = {}    # types/templates of the enclosing namespaces and classes -> qualified name (DefTraits<...>)
 
 
@@ -203,8 +204,8 @@ def _apply_subst(spelling: str) -> str:
         out = re.sub(rf"(?<![:\w]){re.escape(param)}\b", arg, out)
     if _subst_self is not None:
         leaf, full, qualified = _subst_self
-        for name in _subst_members:                # IdType -> Typed::IdType (the leaf becomes the full instantiation below)
-            out = re.sub(rf"(?<![:\w]){re.escape(name)}\b", f"{leaf}::{name}", out)
+        for name, spelling in _subst_members.items():   # IdType -> Typed::IdType (the leaf becomes the full instantiation below)
+            out = re.sub(rf"(?<![:\w]){re.escape(name)}\b", spelling, out)
         for name, qual in _subst_scope.items():    # DefTraits -> BRepGraph_ReverseIterator::DefTraits
             out = re.sub(rf"(?<![:\w]){re.escape(name)}\b", qual, out)
         # injected class name: math_VectorBase -> math_VectorBase<double>; written with its own arguments
@@ -241,7 +242,10 @@ def _type_spelling_raw(t: cindex.Type) -> str:
         if _subst_self is not None and parent is not None and parent.kind == K.CLASS_TEMPLATE and parent.spelling == _subst_self[0] \
                 and decl.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL):
             # member type of the class template being instantiated (using TypedId = typename NodeTraits<DefT>::TypedId;
-            # CurrentId() returns TypedId): qualify with the injected class name, which becomes the full instantiation
+            # CurrentId() returns TypedId): qualify with the injected class name, which becomes the full instantiation;
+            # a non-public typedef (BRepGraph_MutGuard::TypeId) cannot be named from outside: spell its underlying type
+            if decl.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL) and decl.access_specifier != Access.PUBLIC:
+                return ("const " if base.is_const_qualified() else "") + _type_spelling_raw(decl.underlying_typedef_type) + suffix
             return ("const " if base.is_const_qualified() else "") + f"{_subst_self[0]}::{decl.spelling}" + suffix
         if parent is not None and parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
             return t.get_canonical().spelling
@@ -340,12 +344,21 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
             return "function pointer"
         if pk == TK.VOID:
             return "void pointer"
-        if pk in (TK.CHAR_S, TK.CHAR_U) and pointee.is_const_qualified():
-            return None            # const char* is fine
+        if pk in (TK.CHAR_S, TK.CHAR_U, TK.CHAR16) and pointee.is_const_qualified():
+            return None            # const char* / const char16_t* (Standard_ExtString) -> str, casters in nanoocp_common.h
         if pk in _PRIMITIVE_KINDS or pk == TK.POINTER:
             return "raw pointer to primitive"
     if canon.kind == TK.MEMBERPOINTER:
         return "member pointer"
+    it_base = canon
+    while it_base.kind in (TK.LVALUEREFERENCE, TK.POINTER):
+        it_base = it_base.get_pointee().get_canonical()
+    if it_base.kind == TK.RECORD:
+        it_decl = it_base.get_declaration()
+        if it_decl.kind != K.NO_DECL_FOUND and (it_decl.spelling in _STL_ITERATORS or (
+                it_decl.spelling == "DynamicIterator" and it_decl.semantic_parent is not None
+                and it_decl.semantic_parent.spelling == "NCollection_DynamicArray")):
+            return "STL-style iterator"        # begin()/end() adapters; Python iterates through __iter__ / More-Next-Value
     base = canon
     while base.kind in (TK.LVALUEREFERENCE, TK.POINTER):
         base = base.get_pointee().get_canonical()
@@ -431,6 +444,7 @@ def _is_noexcept(cursor: cindex.Cursor) -> bool:
 
 _derives_cache: dict[tuple[str, str], bool] = {}
 _template_bases: list[tuple[str, cindex.Type, str]] = []   # (derived class, base type, header): bases that are template instantiations
+_template_uses: list[cindex.Type] = []                      # template instantiations seen in bound signatures (on-demand 6c)
 
 
 def _is_plain_template_instance(t: cindex.Type) -> bool:
@@ -496,6 +510,9 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_operator=name.startswith("operator"), skip_reason=reason)
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False)
+        if m.skip_reason is None and re.match(r"(const )?(\w+)<", m.result) is not None \
+                and re.match(r"(const )?(\w+)<", m.result).group(2) in _STL_ITERATORS:
+            m.skip_reason = "return: STL-style iterator"     # dependent spelling inside an instantiated template (begin()/end())
         if m.skip_reason is None and "type-parameter-" in m.result:
             m.skip_reason = "dependent type (unresolved template parameter)"
         rcanon = cursor.result_type.get_canonical()
@@ -663,6 +680,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             if reason is not None:
                 c.skipped.append(f"{c.name}::{ch.spelling}: field {reason}")
                 continue
+            _note_instance(ch.type)                # a container-typed field needs its instantiation like a parameter does
             c.fields.append(Field(name=ch.spelling, type=_type_spelling(ch.type), is_const=ch.type.is_const_qualified(), doc=_doc(ch)))
         elif ch.kind == K.CONVERSION_FUNCTION:
             conv = _conversion(ch)
@@ -700,7 +718,8 @@ def _canonical_args(t: cindex.Type) -> str:
 
 def _note_instance(t: cindex.Type) -> None:
     """If t (or its pointee) is an instantiation of an NCollection template we have a binder for, record it,
-    including nested instantiations in its arguments."""
+    including nested instantiations in its arguments. Any other OCCT class template instantiation in a signature
+    (BRepGraph_MutGuard<...>, BVH_Box<double, 3>) is recorded for on-demand instantiation (6c)."""
     from .ncollection import BINDERS
     canon = t.get_canonical()
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
@@ -712,6 +731,12 @@ def _note_instance(t: cindex.Type) -> None:
         _note_instance(canon.get_template_argument_type(0))
         return
     if decl.spelling not in BINDERS:
+        if len(_subst) == 0 and _is_plain_template_instance(t) and "type-parameter-" not in canon.spelling:
+            _template_uses.append(t)
+        for i in range(canon.get_num_template_arguments()):   # NCollection_Iterator<NCollection_DynamicArray<T>>: the argument
+            arg = canon.get_template_argument_type(i)
+            if arg.kind != TK.INVALID:
+                _note_instance(arg)
         return
     from .ncollection import instance_args
     all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
@@ -822,6 +847,7 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
         at = canon.get_template_argument_type(i)
         if at.kind != TK.INVALID:
             args.append(_type_spelling_raw(at)); spelled_args.append(args[-1]); keys.append(_canonical_args(at))
+            _note_instance(at)                    # NCollection_Iterator<NCollection_DynamicArray<T>>: the container must be bound
         elif i < len(written):
             args.append(written[i]); spelled_args.append(written[i]); keys.append(written[i])   # non-type argument, as written
         else:
@@ -838,7 +864,19 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
             _subst.setdefault(name, a)
     _subst_self = (tmpl_name, full, qualified)
     type_kinds = (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL, K.CLASS_TEMPLATE)
-    _subst_members = {ch.spelling for ch in tmpl.get_children() if ch.kind in type_kinds and ch.spelling != "" and ch.spelling not in _subst}
+    _subst_members = {}
+    for ch in tmpl.get_children():
+        if ch.kind not in type_kinds or ch.spelling == "" or ch.spelling in _subst:
+            continue
+        if ch.access_specifier == Access.PUBLIC or ch.kind not in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
+            _subst_members[ch.spelling] = f"{tmpl_name}::{ch.spelling}"
+        else:
+            # a private member typedef used in a public signature (BRepGraph_MutGuard::TypeId) cannot be named from
+            # outside: spell its underlying type, with the template parameters substituted
+            underlying = _type_spelling_raw(ch.underlying_typedef_type)
+            for param, a in _subst.items():
+                underlying = re.sub(rf"(?<![:\w]){re.escape(param)}\b", a, underlying)
+            _subst_members[ch.spelling] = underlying
     _subst_scope = {}
     ancestor = tmpl.semantic_parent
     while ancestor is not None and ancestor.kind in (K.NAMESPACE, K.CLASS_DECL, K.STRUCT_DECL) and ancestor.spelling != "":
@@ -854,7 +892,7 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
     finally:
         _subst = {}
         _subst_self = None
-        _subst_members = set()
+        _subst_members = {}
         _subst_scope = {}
     c.name = full
     c.py_name = py_name if py_name is not None else _py_identifier(full)
@@ -878,9 +916,13 @@ def _prefixes(scope: tuple[str, ...]) -> list[tuple[str, ...]]:
     return [scope[:i] for i in range(1, len(scope) + 1)]
 
 
-def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -> PackageIR:
+def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, known_elsewhere: set[str] | None = None) -> PackageIR:
+    """known_elsewhere: C++ names of classes bound by earlier packages/runs (instantiations used in signatures are
+    only instantiated when nobody has bound them yet)."""
     if args is None:
         args = clang_args(tree)
+    if known_elsewhere is None:
+        known_elsewhere = set()
     ir = PackageIR(name=pkg.name, toolkit=pkg.toolkit, headers=[h for h in pkg.headers if h not in _SKIP_HEADERS])
     for h in pkg.headers:
         if h in _SKIP_HEADERS:
@@ -888,6 +930,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
     headers = set(ir.headers)
     _instances_seen.clear()
     _template_bases.clear()
+    _template_uses.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
@@ -994,6 +1037,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
             elif cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
                 ir.typedefs.append(TypeAlias(py_name=cur.spelling, target=_canonical_args(cur.underlying_typedef_type),
                                              written=_type_spelling(cur.underlying_typedef_type), scope=scope))
+                _note_instance(cur.underlying_typedef_type)      # BVH_Array3d = NCollection_LinearVector<...>: bind the instantiation
                 if ns != "":
                     continue                       # alias instantiation (6c) only at package level
                 if not any(c.py_name == cur.spelling for c in ir.classes):     # the same alias appears in several headers
@@ -1004,14 +1048,23 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
                 ir.report.append(f"{cur.spelling}: template (not bound)")
         # bases that are un-aliased template instantiations (BRepGraph_WiresOfEdge : EdgeParentsOf<...>): instantiated
         # on demand under the mangled name, so that the derived class can be bound (Design.md 6c)
-        while len(_template_bases) > 0:
-            derived, base_type, base_header = _template_bases.pop(0)
+        seen_uses: set[str] = set()
+        while len(_template_bases) > 0 or len(_template_uses) > 0:
+            if len(_template_bases) > 0:
+                derived, base_type, base_header = _template_bases.pop(0)
+                what = f"{derived}: base class"
+            else:
+                base_type, base_header, derived = _template_uses.pop(0), ir.headers[0], ""
+                what = "used in a signature:"
             base_name = _type_spelling(base_type)
-            if any(c.name == base_name for c in ir.classes):
+            if base_name in seen_uses or any(c.name == base_name for c in ir.classes):
                 continue
-            inst = _instantiate_template(tu, base_type, base_header, pkg.name, ir.report, f"{derived}: base class {base_name}", None)
+            seen_uses.add(base_name)
+            if derived == "" and (base_name in known_elsewhere or base_name in _SKIP_CLASSES):
+                continue                              # bound by an earlier package/run (manifest) or skipped on purpose
+            inst = _instantiate_template(tu, base_type, base_header, pkg.name, ir.report, f"{what} {base_name}", None)
             if inst is not None and inst.name != base_name:
-                ir.report.append(f"{derived}: base class {base_name} instantiated as {inst.name} (spelling mismatch) -> not bound")
+                ir.report.append(f"{what} {base_name} instantiated as {inst.name} (spelling mismatch) -> not bound")
                 inst = None
             if inst is not None:
                 add_class(inst)

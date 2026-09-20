@@ -1,7 +1,7 @@
 """OCCT package BRepGraph (toolkit TKBRep)"""
 
 import enum
-from typing import overload
+from typing import TypeAlias, overload
 
 import nanoocp.Adaptor3d
 from nanoocp.BRepGraph import (
@@ -2207,10 +2207,10 @@ class BRepGraph:
                 @return typed vertex definition identifier
                 """
 
-            def Mut(self, theVertex: BRepGraph_VertexId) -> "BRepGraph_MutGuard<BRepGraphInc::VertexDef>":
+            def Mut(self, theVertex: BRepGraph_VertexId) -> BRepGraph_MutGuard__BRepGraphInc_VertexDef:
                 """Return scoped mutable vertex definition guard."""
 
-            def MutRef(self, theVertexRef: BRepGraph_VertexRefId) -> "BRepGraph_MutGuard<BRepGraphInc::VertexRef>":
+            def MutRef(self, theVertexRef: BRepGraph_VertexRefId) -> BRepGraph_MutGuard__BRepGraphInc_VertexRef:
                 """Return scoped mutable vertex reference guard."""
 
             @overload
@@ -2222,7 +2222,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetPoint(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::VertexDef>", thePoint: nanoocp.gp.gp_Pnt) -> None:
+            def SetPoint(self, theMut: BRepGraph_MutGuard__BRepGraphInc_VertexDef, thePoint: nanoocp.gp.gp_Pnt) -> None:
                 """
                 Set the 3D point of a vertex definition inside a batched mutation scope.
                 Marks the guard dirty so the destructor fires a single notification.
@@ -2235,7 +2235,7 @@ class BRepGraph:
                 """Set the tolerance of a vertex definition."""
 
             @overload
-            def SetTolerance(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::VertexDef>", theTolerance: float) -> None:
+            def SetTolerance(self, theMut: BRepGraph_MutGuard__BRepGraphInc_VertexDef, theTolerance: float) -> None:
                 """Set the tolerance inside a batched mutation scope."""
 
             @overload
@@ -2243,7 +2243,7 @@ class BRepGraph:
                 """Set the orientation of a vertex reference."""
 
             @overload
-            def SetRefOrientation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::VertexRef>", theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
+            def SetRefOrientation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_VertexRef, theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
                 """Set the orientation inside a batched mutation scope."""
 
             @overload
@@ -2254,7 +2254,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefChildVertexId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::VertexRef>", theVertex: BRepGraph_VertexId) -> None: ...
+            def SetRefChildVertexId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_VertexRef, theVertex: BRepGraph_VertexId) -> None: ...
 
         class EdgeOps:
             """@brief Edge creation and editing operations."""
@@ -2310,7 +2310,7 @@ class BRepGraph:
                 any input was inactive or the old ref did not belong to this edge
                 """
 
-            def Mut(self, theEdge: BRepGraph_EdgeId) -> "BRepGraph_MutGuard<BRepGraphInc::EdgeDef>":
+            def Mut(self, theEdge: BRepGraph_EdgeId) -> BRepGraph_MutGuard__BRepGraphInc_EdgeDef:
                 """Return scoped mutable edge definition guard."""
 
             def Reverse(self, theEdge: BRepGraph_EdgeId) -> None:
@@ -2331,7 +2331,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetTolerance(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::EdgeDef>", theTolerance: float) -> None:
+            def SetTolerance(self, theMut: BRepGraph_MutGuard__BRepGraphInc_EdgeDef, theTolerance: float) -> None:
                 """
                 Set the tolerance of an edge definition inside a batched mutation scope.
                 @param[in] theMut       active mutable edge guard
@@ -2343,7 +2343,7 @@ class BRepGraph:
                 """Set the parametric range of an edge definition."""
 
             @overload
-            def SetParamRange(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::EdgeDef>", theFirst: float, theLast: float) -> None: ...
+            def SetParamRange(self, theMut: BRepGraph_MutGuard__BRepGraphInc_EdgeDef, theFirst: float, theLast: float) -> None: ...
 
             def SetCurve(self, theEdge: BRepGraph_EdgeId, theCurve: nanoocp.Geom.Geom_Curve, theFirst: float, theLast: float) -> None:
                 """
@@ -2379,14 +2379,14 @@ class BRepGraph:
                 """Set the start vertex-ref id and rebind the vertex-to-edge relation."""
 
             @overload
-            def SetStartVertexRefId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::EdgeDef>", theVertexRef: BRepGraph_VertexRefId) -> None: ...
+            def SetStartVertexRefId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_EdgeDef, theVertexRef: BRepGraph_VertexRefId) -> None: ...
 
             @overload
             def SetEndVertexRefId(self, theEdge: BRepGraph_EdgeId, theVertexRef: BRepGraph_VertexRefId) -> None:
                 """Set the end vertex-ref id and rebind the vertex-to-edge relation."""
 
             @overload
-            def SetEndVertexRefId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::EdgeDef>", theVertexRef: BRepGraph_VertexRefId) -> None: ...
+            def SetEndVertexRefId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_EdgeDef, theVertexRef: BRepGraph_VertexRefId) -> None: ...
 
         class CoEdgeOps:
             """@brief CoEdge and PCurve operations."""
@@ -2443,7 +2443,7 @@ class BRepGraph:
                 @return typed coedge identifier, or invalid if inputs are not active
                 """
 
-            def Mut(self, theCoEdge: BRepGraph_CoEdgeId) -> "BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>":
+            def Mut(self, theCoEdge: BRepGraph_CoEdgeId) -> BRepGraph_MutGuard__BRepGraphInc_CoEdgeDef:
                 """Return scoped mutable coedge definition guard."""
 
             @overload
@@ -2456,7 +2456,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetParamRange(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>", theFirst: float, theLast: float) -> None:
+            def SetParamRange(self, theMut: BRepGraph_MutGuard__BRepGraphInc_CoEdgeDef, theFirst: float, theLast: float) -> None:
                 """
                 Set the parametric range of a coedge definition inside a batched mutation scope.
                 @param[in] theMut   active mutable coedge guard
@@ -2469,7 +2469,7 @@ class BRepGraph:
                 """Set the orientation of a coedge definition."""
 
             @overload
-            def SetOrientation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>", theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None: ...
+            def SetOrientation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_CoEdgeDef, theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None: ...
 
             def ClearPCurve(self, theCoEdge: BRepGraph_CoEdgeId) -> None:
                 """
@@ -2500,7 +2500,7 @@ class BRepGraph:
                 """
 
             @overload
-            def ResetPCurveBinding(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>") -> None: ...
+            def ResetPCurveBinding(self, theMut: BRepGraph_MutGuard__BRepGraphInc_CoEdgeDef) -> None: ...
 
             @overload
             def SetChildEdgeId(self, theCoEdge: BRepGraph_CoEdgeId, theEdge: BRepGraph_EdgeId) -> None:
@@ -2509,7 +2509,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetChildEdgeId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>", theEdge: BRepGraph_EdgeId) -> None: ...
+            def SetChildEdgeId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_CoEdgeDef, theEdge: BRepGraph_EdgeId) -> None: ...
 
             @overload
             def SetFaceId(self, theCoEdge: BRepGraph_CoEdgeId, theFace: BRepGraph_FaceId) -> None:
@@ -2518,7 +2518,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetFaceId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>", theFace: BRepGraph_FaceId) -> None: ...
+            def SetFaceId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_CoEdgeDef, theFace: BRepGraph_FaceId) -> None: ...
 
         class WireOps:
             """@brief Wire creation and editing operations."""
@@ -2653,10 +2653,10 @@ class BRepGraph:
                 @return true if the order was accepted and applied
                 """
 
-            def Mut(self, theWire: BRepGraph_WireId) -> "BRepGraph_MutGuard<BRepGraphInc::WireDef>":
+            def Mut(self, theWire: BRepGraph_WireId) -> BRepGraph_MutGuard__BRepGraphInc_WireDef:
                 """Return scoped mutable wire definition guard."""
 
-            def MutRef(self, theWireRef: BRepGraph_WireRefId) -> "BRepGraph_MutGuard<BRepGraphInc::WireRef>":
+            def MutRef(self, theWireRef: BRepGraph_WireRefId) -> BRepGraph_MutGuard__BRepGraphInc_WireRef:
                 """Return scoped mutable wire reference guard."""
 
             @overload
@@ -2664,7 +2664,7 @@ class BRepGraph:
                 """Set the orientation of a wire reference."""
 
             @overload
-            def SetRefOrientation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::WireRef>", theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None: ...
+            def SetRefOrientation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_WireRef, theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None: ...
 
             @overload
             def SetRefChildWireId(self, theWireRef: BRepGraph_WireRefId, theWire: BRepGraph_WireId) -> None:
@@ -2673,7 +2673,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefChildWireId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::WireRef>", theWire: BRepGraph_WireId) -> None: ...
+            def SetRefChildWireId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_WireRef, theWire: BRepGraph_WireId) -> None: ...
 
         class FaceOps:
             """@brief Face creation and editing operations."""
@@ -2713,10 +2713,10 @@ class BRepGraph:
                 @return true if the active face-owned usage was removed
                 """
 
-            def Mut(self, theFace: BRepGraph_FaceId) -> "BRepGraph_MutGuard<BRepGraphInc::FaceDef>":
+            def Mut(self, theFace: BRepGraph_FaceId) -> BRepGraph_MutGuard__BRepGraphInc_FaceDef:
                 """Return scoped mutable face definition guard."""
 
-            def MutRef(self, theFaceRef: BRepGraph_FaceRefId) -> "BRepGraph_MutGuard<BRepGraphInc::FaceRef>":
+            def MutRef(self, theFaceRef: BRepGraph_FaceRefId) -> BRepGraph_MutGuard__BRepGraphInc_FaceRef:
                 """Return scoped mutable face reference guard."""
 
             @overload
@@ -2728,7 +2728,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetTolerance(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::FaceDef>", theTolerance: float) -> None:
+            def SetTolerance(self, theMut: BRepGraph_MutGuard__BRepGraphInc_FaceDef, theTolerance: float) -> None:
                 """
                 Set the tolerance of a face definition inside a batched mutation scope.
                 @param[in] theMut       active mutable face guard
@@ -2772,7 +2772,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefOrientation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::FaceRef>", theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
+            def SetRefOrientation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_FaceRef, theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
                 """
                 Set the orientation of a face reference inside a batched mutation scope.
                 @param[in] theMut         active mutable face reference guard
@@ -2786,7 +2786,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefFaceId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::FaceRef>", theFace: BRepGraph_FaceId) -> None: ...
+            def SetRefFaceId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_FaceRef, theFace: BRepGraph_FaceId) -> None: ...
 
         class ShellOps:
             """@brief Shell creation and editing operations."""
@@ -2842,10 +2842,10 @@ class BRepGraph:
                 @return true if all refs were successfully removed
                 """
 
-            def Mut(self, theShell: BRepGraph_ShellId) -> "BRepGraph_MutGuard<BRepGraphInc::ShellDef>":
+            def Mut(self, theShell: BRepGraph_ShellId) -> BRepGraph_MutGuard__BRepGraphInc_ShellDef:
                 """Return scoped mutable shell definition guard."""
 
-            def MutRef(self, theShellRef: BRepGraph_ShellRefId) -> "BRepGraph_MutGuard<BRepGraphInc::ShellRef>":
+            def MutRef(self, theShellRef: BRepGraph_ShellRefId) -> BRepGraph_MutGuard__BRepGraphInc_ShellRef:
                 """Return scoped mutable shell reference guard."""
 
             @overload
@@ -2853,7 +2853,7 @@ class BRepGraph:
                 """Set the orientation of a shell reference."""
 
             @overload
-            def SetRefOrientation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::ShellRef>", theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
+            def SetRefOrientation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_ShellRef, theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
                 """Set the orientation inside a batched mutation scope."""
 
             @overload
@@ -2863,7 +2863,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefChildShellId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::ShellRef>", theShell: BRepGraph_ShellId) -> None: ...
+            def SetRefChildShellId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_ShellRef, theShell: BRepGraph_ShellId) -> None: ...
 
         class SolidOps:
             """@brief Solid creation and editing operations."""
@@ -2919,10 +2919,10 @@ class BRepGraph:
                 @return true if all refs were successfully removed
                 """
 
-            def Mut(self, theSolid: BRepGraph_SolidId) -> "BRepGraph_MutGuard<BRepGraphInc::SolidDef>":
+            def Mut(self, theSolid: BRepGraph_SolidId) -> BRepGraph_MutGuard__BRepGraphInc_SolidDef:
                 """Return scoped mutable solid definition guard."""
 
-            def MutRef(self, theSolidRef: BRepGraph_SolidRefId) -> "BRepGraph_MutGuard<BRepGraphInc::SolidRef>":
+            def MutRef(self, theSolidRef: BRepGraph_SolidRefId) -> BRepGraph_MutGuard__BRepGraphInc_SolidRef:
                 """Return scoped mutable solid reference guard."""
 
             @overload
@@ -2930,7 +2930,7 @@ class BRepGraph:
                 """Set the orientation of a solid reference."""
 
             @overload
-            def SetRefOrientation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::SolidRef>", theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
+            def SetRefOrientation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_SolidRef, theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
                 """Set the orientation inside a batched mutation scope."""
 
             @overload
@@ -2941,7 +2941,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefChildSolidId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::SolidRef>", theSolid: BRepGraph_SolidId) -> None: ...
+            def SetRefChildSolidId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_SolidRef, theSolid: BRepGraph_SolidId) -> None: ...
 
         class CompoundOps:
             """@brief Compound creation and editing operations."""
@@ -2997,7 +2997,7 @@ class BRepGraph:
                 @return true if all refs were successfully removed
                 """
 
-            def Mut(self, theCompound: BRepGraph_CompoundId) -> "BRepGraph_MutGuard<BRepGraphInc::CompoundDef>":
+            def Mut(self, theCompound: BRepGraph_CompoundId) -> BRepGraph_MutGuard__BRepGraphInc_CompoundDef:
                 """Return scoped mutable compound definition guard."""
 
             def ReplaceChild(self, theChildRef: BRepGraph_ChildRefId, theNewChild: BRepGraph_NodeId) -> None:
@@ -3062,7 +3062,7 @@ class BRepGraph:
                 @return true if all refs were successfully removed
                 """
 
-            def Mut(self, theCompSolid: BRepGraph_CompSolidId) -> "BRepGraph_MutGuard<BRepGraphInc::CompSolidDef>":
+            def Mut(self, theCompSolid: BRepGraph_CompSolidId) -> BRepGraph_MutGuard__BRepGraphInc_CompSolidDef:
                 """Return scoped mutable comp-solid definition guard."""
 
             def ReplaceSolid(self, theSolidRef: BRepGraph_SolidRefId, theNewSolid: BRepGraph_SolidId) -> None:
@@ -3160,7 +3160,7 @@ class BRepGraph:
                 @return true if an active shape root was detached
                 """
 
-            def Mut(self, theProduct: BRepGraph_ProductId) -> "BRepGraph_MutGuard<BRepGraphInc::ProductDef>":
+            def Mut(self, theProduct: BRepGraph_ProductId) -> BRepGraph_MutGuard__BRepGraphInc_ProductDef:
                 """Return scoped mutable product definition guard."""
 
         class OccurrenceOps:
@@ -3168,10 +3168,10 @@ class BRepGraph:
 
             def __init__(self, theOther: BRepGraph.EditorView.OccurrenceOps) -> None: ...
 
-            def Mut(self, theOccurrence: BRepGraph_OccurrenceId) -> "BRepGraph_MutGuard<BRepGraphInc::OccurrenceDef>":
+            def Mut(self, theOccurrence: BRepGraph_OccurrenceId) -> BRepGraph_MutGuard__BRepGraphInc_OccurrenceDef:
                 """Return scoped mutable occurrence definition guard."""
 
-            def MutRef(self, theOccurrenceRef: BRepGraph_OccurrenceRefId) -> "BRepGraph_MutGuard<BRepGraphInc::OccurrenceRef>":
+            def MutRef(self, theOccurrenceRef: BRepGraph_OccurrenceRefId) -> BRepGraph_MutGuard__BRepGraphInc_OccurrenceRef:
                 """Return scoped mutable occurrence reference guard."""
 
             @overload
@@ -3183,7 +3183,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefLocalLocation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::OccurrenceRef>", theLoc: nanoocp.TopLoc.TopLoc_Location) -> None:
+            def SetRefLocalLocation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_OccurrenceRef, theLoc: nanoocp.TopLoc.TopLoc_Location) -> None:
                 """
                 Set the local location of an occurrence reference inside a batched mutation scope.
                 @param[in] theMut active mutable occurrence reference guard
@@ -3200,7 +3200,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetChildNodeId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::OccurrenceDef>", theChildNodeId: BRepGraph_NodeId) -> None:
+            def SetChildNodeId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_OccurrenceDef, theChildNodeId: BRepGraph_NodeId) -> None:
                 """
                 Set the child node id inside a batched mutation scope. Invalid, removed,
                 and Occurrence child ids are ignored.
@@ -3213,7 +3213,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetRefChildOccurrenceId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::OccurrenceRef>", theOccurrence: BRepGraph_OccurrenceId) -> None: ...
+            def SetRefChildOccurrenceId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_OccurrenceRef, theOccurrence: BRepGraph_OccurrenceId) -> None: ...
 
         class GenOps:
             """@brief Generic node, reference, and representation removal operations."""
@@ -3274,7 +3274,7 @@ class BRepGraph:
                 @return true if the reference transitioned from active to removed
                 """
 
-            def MutChildRef(self, theChildRef: BRepGraph_ChildRefId) -> "BRepGraph_MutGuard<BRepGraphInc::ChildRef>":
+            def MutChildRef(self, theChildRef: BRepGraph_ChildRefId) -> BRepGraph_MutGuard__BRepGraphInc_ChildRef:
                 """
                 Return scoped mutable child reference guard. ChildRef is generic (the
                 child node can be of any kind), so its Mut accessor lives on the
@@ -3290,7 +3290,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetChildRefLocalLocation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::ChildRef>", theLoc: nanoocp.TopLoc.TopLoc_Location) -> None:
+            def SetChildRefLocalLocation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_ChildRef, theLoc: nanoocp.TopLoc.TopLoc_Location) -> None:
                 """
                 Set the local location of a child reference inside a batched mutation scope.
                 @param[in] theMut active mutable child reference guard
@@ -3302,7 +3302,7 @@ class BRepGraph:
                 """Set the orientation of a child reference."""
 
             @overload
-            def SetChildRefOrientation(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::ChildRef>", theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
+            def SetChildRefOrientation(self, theMut: BRepGraph_MutGuard__BRepGraphInc_ChildRef, theOrientation: nanoocp.BRepGraphInc.ParityOrientation) -> None:
                 """Set the orientation inside a batched mutation scope."""
 
             @overload
@@ -3312,7 +3312,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetChildRefChildNodeId(self, theMut: "BRepGraph_MutGuard<BRepGraphInc::ChildRef>", theChild: BRepGraph_NodeId) -> None: ...
+            def SetChildRefChildNodeId(self, theMut: BRepGraph_MutGuard__BRepGraphInc_ChildRef, theChild: BRepGraph_NodeId) -> None: ...
 
             def CleanupRemovedReferences(self) -> None:
                 """
@@ -3426,7 +3426,7 @@ class BRepGraph:
             BRepGraph_DeferredScope to call it automatically at scope exit.
             """
 
-        def ValidateMutationBoundary(self, theIssues: "NCollection_LinearVector<BRepGraph::EditorView::BoundaryIssue>" = None) -> bool:
+        def ValidateMutationBoundary(self, theIssues: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph.EditorView.BoundaryIssue] = None) -> bool:
             """
             Validate lightweight mutation-boundary invariants.
             @param[out] theIssues optional destination for detailed issues
@@ -3502,7 +3502,7 @@ class BRepGraph:
 
             def Entry(self, theRefId: BRepGraph_ShellRefId) -> nanoocp.BRepGraphInc.ShellRef: ...
 
-            def IdsOf(self, theSolid: BRepGraph_SolidId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>>": ...
+            def IdsOf(self, theSolid: BRepGraph_SolidId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId]: ...
 
         class FaceOps:
             """@brief Face reference queries."""
@@ -3519,7 +3519,7 @@ class BRepGraph:
 
             def Entry(self, theRefId: BRepGraph_FaceRefId) -> nanoocp.BRepGraphInc.FaceRef: ...
 
-            def IdsOf(self, theShell: BRepGraph_ShellId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>>": ...
+            def IdsOf(self, theShell: BRepGraph_ShellId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId]: ...
 
         class WireOps:
             """@brief Wire reference queries."""
@@ -3536,7 +3536,7 @@ class BRepGraph:
 
             def Entry(self, theRefId: BRepGraph_WireRefId) -> nanoocp.BRepGraphInc.WireRef: ...
 
-            def IdsOf(self, theFace: BRepGraph_FaceId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>>": ...
+            def IdsOf(self, theFace: BRepGraph_FaceId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId]: ...
 
         class VertexOps:
             """@brief Vertex reference queries."""
@@ -3568,7 +3568,7 @@ class BRepGraph:
 
             def Entry(self, theRefId: BRepGraph_SolidRefId) -> nanoocp.BRepGraphInc.SolidRef: ...
 
-            def IdsOf(self, theCompSolid: BRepGraph_CompSolidId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>>": ...
+            def IdsOf(self, theCompSolid: BRepGraph_CompSolidId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId]: ...
 
         class ChildOps:
             """@brief Generic child reference queries."""
@@ -3585,9 +3585,9 @@ class BRepGraph:
 
             def Entry(self, theRefId: BRepGraph_ChildRefId) -> nanoocp.BRepGraphInc.ChildRef: ...
 
-            def IdsOf(self, theCompound: BRepGraph_CompoundId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>": ...
+            def IdsOf(self, theCompound: BRepGraph_CompoundId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId]: ...
 
-            def IdsReferencing(self, theChild: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>": ...
+            def IdsReferencing(self, theChild: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId]: ...
 
         class OccurrenceOps:
             """@brief Occurrence reference queries."""
@@ -3604,9 +3604,9 @@ class BRepGraph:
 
             def Entry(self, theRefId: BRepGraph_OccurrenceRefId) -> nanoocp.BRepGraphInc.OccurrenceRef: ...
 
-            def IdsOf(self, theProduct: BRepGraph_ProductId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>": ...
+            def IdsOf(self, theProduct: BRepGraph_ProductId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]: ...
 
-            def IdsReferencing(self, theChild: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>": ...
+            def IdsReferencing(self, theChild: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]: ...
 
         class GenOps:
             """@brief Generic reference id queries."""
@@ -3818,7 +3818,7 @@ class BRepGraph:
                 @return iterator positioned at the first active face at or after theStartIndex
                 """
 
-            def CoEdges(self, theEdge: BRepGraph_EdgeId) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>":
+            def CoEdges(self, theEdge: BRepGraph_EdgeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId]:
                 """
                 Return the coedges that reference the given edge.
                 @param[in] theEdge typed edge identifier
@@ -3864,7 +3864,7 @@ class BRepGraph:
                 @param[in] theVertex typed vertex identifier
                 """
 
-            def Edges(self, theVertex: BRepGraph_VertexId) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>":
+            def Edges(self, theVertex: BRepGraph_VertexId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId]:
                 """
                 Return the edges incident to the given vertex.
                 @param[in] theVertex typed vertex identifier
@@ -4213,13 +4213,13 @@ class BRepGraph:
                 @param[in] theId node identifier (any kind)
                 """
 
-            def CompoundRefIds(self, theChild: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>":
+            def CompoundRefIds(self, theChild: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId]:
                 """
                 Return the compound (child) reference identifiers that point to the given node.
                 @param[in] theChild node identifier
                 """
 
-            def OccurrenceRefIds(self, theChild: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>":
+            def OccurrenceRefIds(self, theChild: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]:
                 """
                 Return the occurrence reference identifiers that point to the given node.
                 @param[in] theChild node identifier
@@ -5221,7 +5221,7 @@ class BRepGraph:
         @return true when every stored relation matches its endpoints.
         """
 
-    def RootProductIds(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>>":
+    def RootProductIds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ProductId]:
         """
         Return root product identifiers (products not referenced by any active occurrence).
         Maintained incrementally by Editor/EditorView mutations.
@@ -5721,9 +5721,6 @@ class BRepGraph_CacheIterator:
     def NbCaches(self) -> int:
         """Number of cache families in the registry."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>":
-        """STL range-for support."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Sentinel marking end of iteration."""
 
@@ -5996,7 +5993,7 @@ class BRepGraph_LayerTopoSupplement(BRepGraph_Layer):
         @return pointer to the entry, or `nullptr` when not found
         """
 
-    def AttachedTo(self, theOwner: BRepGraph_NodeId) -> "NCollection_LinearVector<unsigned long long>":
+    def AttachedTo(self, theOwner: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector__unsigned_long_long:
         """
         @brief Return all attachment uids currently owned by one core node.
         @param[in] theOwner core topology owner node
@@ -6369,9 +6366,6 @@ class BRepGraph_DefsShellOfSolid:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ShellOfSolidTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -6396,9 +6390,6 @@ class BRepGraph_DefsFaceOfShell:
         """
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::FaceOfShellTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -6425,9 +6416,6 @@ class BRepGraph_DefsEdgeOfWire:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::EdgeOfWireTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -6452,9 +6440,6 @@ class BRepGraph_DefsWireOfFace:
         """
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::WireOfFaceTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -6481,9 +6466,6 @@ class BRepGraph_DefsCoEdgeOfWire:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::CoEdgeOfWireTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -6508,9 +6490,6 @@ class BRepGraph_DefsSolidOfCompSolid:
         """
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::SolidOfCompSolidTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -6537,9 +6516,6 @@ class BRepGraph_DefsChildOfCompound:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ChildOfCompoundTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -6564,9 +6540,6 @@ class BRepGraph_DefsOccurrenceOfProduct:
         """
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::OccurrenceOfProductTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -6948,7 +6921,7 @@ class BRepGraph_ChildExplorer:
     def Next(self) -> None:
         """Advance to the next matching descendant."""
 
-    def Current(self) -> "BRepGraphInc::Instance<BRepGraph_NodeId>":
+    def Current(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
         """
         Current matching descendant node with accumulated location and orientation.
         """
@@ -7009,9 +6982,6 @@ class BRepGraph_ChildExplorer:
         sentinel below the root). O(1); avoids the O(depth^2) NodeAt(i) walk used
         to compute container priority in selection-mode building.
         """
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7185,9 +7155,6 @@ class BRepGraph_SolidIterator:
     def CurrentId(self) -> BRepGraph_SolidId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::SolidDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7216,9 +7183,6 @@ class BRepGraph_ShellIterator:
 
     def CurrentId(self) -> BRepGraph_ShellId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::ShellDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7249,9 +7213,6 @@ class BRepGraph_FaceIterator:
     def CurrentId(self) -> BRepGraph_FaceId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::FaceDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7280,9 +7241,6 @@ class BRepGraph_WireIterator:
 
     def CurrentId(self) -> BRepGraph_WireId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::WireDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7313,9 +7271,6 @@ class BRepGraph_EdgeIterator:
     def CurrentId(self) -> BRepGraph_EdgeId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::EdgeDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7344,9 +7299,6 @@ class BRepGraph_VertexIterator:
 
     def CurrentId(self) -> BRepGraph_VertexId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::VertexDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7377,9 +7329,6 @@ class BRepGraph_CoEdgeIterator:
     def CurrentId(self) -> BRepGraph_CoEdgeId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::CoEdgeDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7408,9 +7357,6 @@ class BRepGraph_CompoundIterator:
 
     def CurrentId(self) -> BRepGraph_CompoundId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::CompoundDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7441,9 +7387,6 @@ class BRepGraph_CompSolidIterator:
     def CurrentId(self) -> BRepGraph_CompSolidId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::CompSolidDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7472,9 +7415,6 @@ class BRepGraph_ProductIterator:
 
     def CurrentId(self) -> BRepGraph_ProductId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::ProductDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7505,9 +7445,6 @@ class BRepGraph_OccurrenceIterator:
     def CurrentId(self) -> BRepGraph_OccurrenceId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::OccurrenceDef, false>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7536,9 +7473,6 @@ class BRepGraph_FullSolidIterator:
 
     def CurrentId(self) -> BRepGraph_SolidId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::SolidDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7569,9 +7503,6 @@ class BRepGraph_FullShellIterator:
     def CurrentId(self) -> BRepGraph_ShellId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::ShellDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7600,9 +7531,6 @@ class BRepGraph_FullFaceIterator:
 
     def CurrentId(self) -> BRepGraph_FaceId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::FaceDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7633,9 +7561,6 @@ class BRepGraph_FullWireIterator:
     def CurrentId(self) -> BRepGraph_WireId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::WireDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7664,9 +7589,6 @@ class BRepGraph_FullEdgeIterator:
 
     def CurrentId(self) -> BRepGraph_EdgeId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::EdgeDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7697,9 +7619,6 @@ class BRepGraph_FullVertexIterator:
     def CurrentId(self) -> BRepGraph_VertexId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::VertexDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7728,9 +7647,6 @@ class BRepGraph_FullCoEdgeIterator:
 
     def CurrentId(self) -> BRepGraph_CoEdgeId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::CoEdgeDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7761,9 +7677,6 @@ class BRepGraph_FullCompoundIterator:
     def CurrentId(self) -> BRepGraph_CompoundId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::CompoundDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7792,9 +7705,6 @@ class BRepGraph_FullCompSolidIterator:
 
     def CurrentId(self) -> BRepGraph_CompSolidId:
         """Current definition index as a typed NodeId."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::CompSolidDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -7825,9 +7735,6 @@ class BRepGraph_FullProductIterator:
     def CurrentId(self) -> BRepGraph_ProductId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::ProductDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7857,9 +7764,6 @@ class BRepGraph_FullOccurrenceIterator:
     def CurrentId(self) -> BRepGraph_OccurrenceId:
         """Current definition index as a typed NodeId."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_Iterator<BRepGraphInc::OccurrenceDef, true>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -7882,8 +7786,6 @@ class BRepGraph_RootProductIterator:
     def Next(self) -> None: ...
 
     def Current(self) -> BRepGraph_ProductId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -8056,7 +7958,7 @@ class BRepGraph_ParentExplorer:
     def Next(self) -> None:
         """Advance to the next matching parent."""
 
-    def Current(self) -> "BRepGraphInc::Instance<BRepGraph_NodeId>":
+    def Current(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
         """
         Current matching ancestor node with accumulated location and orientation.
         """
@@ -8089,9 +7991,6 @@ class BRepGraph_ParentExplorer:
 
     def IsCurrentBranchRoot(self) -> bool:
         """True if Current() is the explicit root node of the current branch."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -8328,28 +8227,28 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         def RecordKind(self, arg: BRepGraph_LayerHistory.Kind, /) -> None: ...
 
         @property
-        def Mapping(self) -> "NCollection_DataMap<BRepGraph_NodeId, NCollection_LinearVector<BRepGraph_NodeId>, NCollection_DefaultHasher<BRepGraph_NodeId>>":
+        def Mapping(self) -> nanoocp.NCollection.NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]]:
             """
             Key: original node id before the operation.
             Value: sequence of replacement node ids after the operation.
             """
 
         @Mapping.setter
-        def Mapping(self, arg: "NCollection_DataMap<BRepGraph_NodeId, NCollection_LinearVector<BRepGraph_NodeId>, NCollection_DefaultHasher<BRepGraph_NodeId>>", /) -> None: ...
+        def Mapping(self, arg: nanoocp.NCollection.NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]], /) -> None: ...
 
         @property
-        def UidMapping(self) -> "NCollection_DataMap<BRepGraph_UID, NCollection_LinearVector<BRepGraph_UID>, NCollection_DefaultHasher<BRepGraph_UID>>":
+        def UidMapping(self) -> nanoocp.NCollection.NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_UID, nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]]:
             """UID-keyed mapping for cross-graph history records."""
 
         @UidMapping.setter
-        def UidMapping(self, arg: "NCollection_DataMap<BRepGraph_UID, NCollection_LinearVector<BRepGraph_UID>, NCollection_DefaultHasher<BRepGraph_UID>>", /) -> None: ...
+        def UidMapping(self, arg: nanoocp.NCollection.NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_UID, nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]], /) -> None: ...
 
         @property
-        def ItemUidMapping(self) -> "NCollection_DataMap<BRepGraph_ItemUID, NCollection_LinearVector<BRepGraph_ItemUID>, NCollection_DefaultHasher<BRepGraph_ItemUID>>":
+        def ItemUidMapping(self) -> nanoocp.NCollection.NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_ItemUID, nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ItemUID]]:
             """ItemUID-keyed mapping for durable all-domain history records."""
 
         @ItemUidMapping.setter
-        def ItemUidMapping(self, arg: "NCollection_DataMap<BRepGraph_ItemUID, NCollection_LinearVector<BRepGraph_ItemUID>, NCollection_DefaultHasher<BRepGraph_ItemUID>>", /) -> None: ...
+        def ItemUidMapping(self, arg: nanoocp.NCollection.NCollection_DataMap[nanoocp.BRepGraph.BRepGraph_ItemUID, nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ItemUID]], /) -> None: ...
 
         @property
         def ExtraInfo(self) -> nanoocp.TCollection.TCollection_AsciiString:
@@ -8493,7 +8392,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         @return the root original node id, or theModified itself if not found
         """
 
-    def FindDerived(self, theOriginal: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_NodeId>":
+    def FindDerived(self, theOriginal: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]:
         """
         Walk forwards from an original node to all derived nodes, including
         both Modified and Generated descendants.  Follows the forward maps
@@ -8504,7 +8403,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """
 
     @overload
-    def FindModified(self, theOriginal: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_NodeId>":
+    def FindModified(self, theOriginal: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]:
         """
         Direct lookup of the Modified images of @p theOriginal, non-recursive.
         @param[in] theOriginal node id to query
@@ -8513,15 +8412,15 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """
 
     @overload
-    def FindModified(self, theUID: BRepGraph_UID) -> "NCollection_LinearVector<BRepGraph_UID>":
+    def FindModified(self, theUID: BRepGraph_UID) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]:
         """UID-keyed Modified images stored directly in this history."""
 
     @overload
-    def FindModified(self, theUID: BRepGraph_ItemUID) -> "NCollection_LinearVector<BRepGraph_ItemUID>":
+    def FindModified(self, theUID: BRepGraph_ItemUID) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ItemUID]:
         """ItemUID-keyed Modified images stored directly in this history."""
 
     @overload
-    def FindModified(self, theGraph: BRepGraph, theUID: BRepGraph_UID) -> "NCollection_LinearVector<BRepGraph_UID>":
+    def FindModified(self, theGraph: BRepGraph, theUID: BRepGraph_UID) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]:
         """
         UID-keyed convenience: Modified images of the input identified by
         @p theUID, resolved against @p theGraph.  Returns an empty vector if
@@ -8532,7 +8431,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """
 
     @overload
-    def FindGenerated(self, theOriginal: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_NodeId>":
+    def FindGenerated(self, theOriginal: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]:
         """
         Direct lookup of the Generated images of @p theOriginal, non-recursive.
         @param[in] theOriginal node id to query
@@ -8541,15 +8440,15 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """
 
     @overload
-    def FindGenerated(self, theUID: BRepGraph_UID) -> "NCollection_LinearVector<BRepGraph_UID>":
+    def FindGenerated(self, theUID: BRepGraph_UID) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]:
         """UID-keyed Generated images stored directly in this history."""
 
     @overload
-    def FindGenerated(self, theUID: BRepGraph_ItemUID) -> "NCollection_LinearVector<BRepGraph_ItemUID>":
+    def FindGenerated(self, theUID: BRepGraph_ItemUID) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ItemUID]:
         """ItemUID-keyed Generated images stored directly in this history."""
 
     @overload
-    def FindGenerated(self, theGraph: BRepGraph, theUID: BRepGraph_UID) -> "NCollection_LinearVector<BRepGraph_UID>":
+    def FindGenerated(self, theGraph: BRepGraph, theUID: BRepGraph_UID) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]:
         """
         UID-keyed convenience: Generated images.  See #FindModified for the
         resolution contract.
@@ -8589,7 +8488,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         @return reference to the deleted-node set
         """
 
-    def FindOriginals(self, theDerived: BRepGraph_NodeId) -> "NCollection_LinearVector<BRepGraph_NodeId>":
+    def FindOriginals(self, theDerived: BRepGraph_NodeId) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_NodeId]:
         """
         Direct lookup of all immediate node origins of @p theDerived.
         A derived entity can have more than one parent in reconstructive algorithms.
@@ -8600,7 +8499,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """UID-keyed deleted set stored directly in this history."""
 
     @overload
-    def DeletedUids(self, theGraph: BRepGraph) -> "NCollection_LinearVector<BRepGraph_UID>":
+    def DeletedUids(self, theGraph: BRepGraph) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_UID]:
         """
         UID-keyed convenience: dump the full deleted set as UIDs.
         @param[in] theGraph graph used to translate NodeId -> UID
@@ -9023,9 +8922,6 @@ class BRepGraph_LayerIterator:
     def NbLayers(self) -> int:
         """Number of layers in the registry."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>":
-        """STL range-for support."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Sentinel marking end of iteration."""
 
@@ -9352,9 +9248,6 @@ class BRepGraph_RefsShellOfSolid:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ShellOfSolidTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -9372,9 +9265,6 @@ class BRepGraph_RefsFaceOfShell:
     def CurrentId(self) -> BRepGraph_FaceRefId: ...
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::FaceOfShellTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -9394,9 +9284,6 @@ class BRepGraph_RefsWireOfFace:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::WireOfFaceTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -9414,9 +9301,6 @@ class BRepGraph_CoEdgesOfWire:
     def CurrentId(self) -> BRepGraph_CoEdgeId: ...
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::CoEdgeOfWireTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -9436,9 +9320,6 @@ class BRepGraph_RefsSolidOfCompSolid:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::SolidOfCompSolidTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -9457,9 +9338,6 @@ class BRepGraph_RefsChildOfCompound:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ChildOfCompoundTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -9477,9 +9355,6 @@ class BRepGraph_RefsOccurrenceOfProduct:
     def CurrentId(self) -> BRepGraph_OccurrenceRefId: ...
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::OccurrenceOfProductTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -9502,8 +9377,6 @@ class BRepGraph_ShellRefIterator:
 
     def CurrentId(self) -> BRepGraph_ShellRefId: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef, false>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_FaceRefIterator:
@@ -9523,8 +9396,6 @@ class BRepGraph_FaceRefIterator:
     def Current(self) -> nanoocp.BRepGraphInc.FaceRef: ...
 
     def CurrentId(self) -> BRepGraph_FaceRefId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef, false>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -9546,8 +9417,6 @@ class BRepGraph_WireRefIterator:
 
     def CurrentId(self) -> BRepGraph_WireRefId: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef, false>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_VertexRefIterator:
@@ -9567,8 +9436,6 @@ class BRepGraph_VertexRefIterator:
     def Current(self) -> nanoocp.BRepGraphInc.VertexRef: ...
 
     def CurrentId(self) -> BRepGraph_VertexRefId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef, false>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -9590,8 +9457,6 @@ class BRepGraph_SolidRefIterator:
 
     def CurrentId(self) -> BRepGraph_SolidRefId: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef, false>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_ChildRefIterator:
@@ -9611,8 +9476,6 @@ class BRepGraph_ChildRefIterator:
     def Current(self) -> nanoocp.BRepGraphInc.ChildRef: ...
 
     def CurrentId(self) -> BRepGraph_ChildRefId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef, false>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -9634,8 +9497,6 @@ class BRepGraph_OccurrenceRefIterator:
 
     def CurrentId(self) -> BRepGraph_OccurrenceRefId: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef, false>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_FullShellRefIterator:
@@ -9655,8 +9516,6 @@ class BRepGraph_FullShellRefIterator:
     def Current(self) -> nanoocp.BRepGraphInc.ShellRef: ...
 
     def CurrentId(self) -> BRepGraph_ShellRefId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef, true>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -9678,8 +9537,6 @@ class BRepGraph_FullFaceRefIterator:
 
     def CurrentId(self) -> BRepGraph_FaceRefId: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef, true>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_FullWireRefIterator:
@@ -9699,8 +9556,6 @@ class BRepGraph_FullWireRefIterator:
     def Current(self) -> nanoocp.BRepGraphInc.WireRef: ...
 
     def CurrentId(self) -> BRepGraph_WireRefId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef, true>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -9722,8 +9577,6 @@ class BRepGraph_FullVertexRefIterator:
 
     def CurrentId(self) -> BRepGraph_VertexRefId: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef, true>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_FullSolidRefIterator:
@@ -9743,8 +9596,6 @@ class BRepGraph_FullSolidRefIterator:
     def Current(self) -> nanoocp.BRepGraphInc.SolidRef: ...
 
     def CurrentId(self) -> BRepGraph_SolidRefId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef, true>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -9766,8 +9617,6 @@ class BRepGraph_FullChildRefIterator:
 
     def CurrentId(self) -> BRepGraph_ChildRefId: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef, true>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_FullOccurrenceRefIterator:
@@ -9787,8 +9636,6 @@ class BRepGraph_FullOccurrenceRefIterator:
     def Current(self) -> nanoocp.BRepGraphInc.OccurrenceRef: ...
 
     def CurrentId(self) -> BRepGraph_OccurrenceRefId: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef, true>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -9912,10 +9759,10 @@ class BRepGraph_EdgesOfVertex:
     """
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theParents: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theParents: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theParents: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>", theStartIndex: int) -> None:
+    def __init__(self, theGraph: BRepGraph, theParents: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId], theStartIndex: int) -> None:
         """
         Construct starting at a given vector index (for resumable iteration).
         Skips to the first non-removed entry at or after theStartIndex.
@@ -9947,18 +9794,15 @@ class BRepGraph_EdgesOfVertex:
         Returns the parent ID at the given bucket index (does NOT check removal status).
         """
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>, NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
 class BRepGraph_CompoundsOfVertex:
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>>", theStartIndex: int) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ChildRefId], theStartIndex: int) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_CompoundsOfVertex) -> None: ...
@@ -9978,8 +9822,6 @@ class BRepGraph_CompoundsOfVertex:
     def Definition(self) -> nanoocp.BRepGraphInc.CompoundDef: ...
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -10008,8 +9850,6 @@ class BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFro
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::WireFromEdgeCoEdgeTraits>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_WiresOfEdge(BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFromEdgeCoEdgeTraits):
@@ -10025,10 +9865,10 @@ class BRepGraph_CoEdgesOfEdge:
     """
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theParents: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theParents: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theParents: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>", theStartIndex: int) -> None:
+    def __init__(self, theGraph: BRepGraph, theParents: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_CoEdgeId], theStartIndex: int) -> None:
         """
         Construct starting at a given vector index (for resumable iteration).
         Skips to the first non-removed entry at or after theStartIndex.
@@ -10060,9 +9900,6 @@ class BRepGraph_CoEdgesOfEdge:
         Returns the parent ID at the given bucket index (does NOT check removal status).
         """
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>, NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -10091,8 +9928,6 @@ class BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFro
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::FaceFromEdgeCoEdgeTraits>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_FacesOfEdge(BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFromEdgeCoEdgeTraits):
@@ -10100,10 +9935,10 @@ class BRepGraph_FacesOfEdge(BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_R
 
 class BRepGraph_FacesOfWire:
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>>", theStartIndex: int) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_WireRefId], theStartIndex: int) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_FacesOfWire) -> None: ...
@@ -10124,16 +9959,14 @@ class BRepGraph_FacesOfWire:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_ShellsOfFace:
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>>", theStartIndex: int) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceRefId], theStartIndex: int) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_ShellsOfFace) -> None: ...
@@ -10154,16 +9987,14 @@ class BRepGraph_ShellsOfFace:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_SolidsOfShell:
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>>", theStartIndex: int) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_ShellRefId], theStartIndex: int) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_SolidsOfShell) -> None: ...
@@ -10184,16 +10015,14 @@ class BRepGraph_SolidsOfShell:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_CompSolidsOfSolid:
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>>", theStartIndex: int) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_SolidRefId], theStartIndex: int) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_CompSolidsOfSolid) -> None: ...
@@ -10214,16 +10043,14 @@ class BRepGraph_CompSolidsOfSolid:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_OccurrencesOfProduct:
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>", theStartIndex: int) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId], theStartIndex: int) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_OccurrencesOfProduct) -> None: ...
@@ -10244,16 +10071,14 @@ class BRepGraph_OccurrencesOfProduct:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>>": ...
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_ProductsOfOccurrence:
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>") -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId]) -> None: ...
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theRefs: "NCollection_LinearVector<BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>>", theStartIndex: int) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theRefs: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_OccurrenceRefId], theStartIndex: int) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_ProductsOfOccurrence) -> None: ...
@@ -10273,8 +10098,6 @@ class BRepGraph_ProductsOfOccurrence:
     def Definition(self) -> nanoocp.BRepGraphInc.ProductDef: ...
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>>": ...
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
@@ -10305,9 +10128,6 @@ class BRepGraph_RefsWiresOfCoEdge:
 
     def Index(self) -> int: ...
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -10321,7 +10141,7 @@ class BRepGraph_RefsEdgesOfVertex:
     """
 
     @overload
-    def __init__(self, theGraph: BRepGraph, theParents: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>", theChild: BRepGraph_VertexId) -> None: ...
+    def __init__(self, theGraph: BRepGraph, theParents: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId], theChild: BRepGraph_VertexId) -> None: ...
 
     @overload
     def __init__(self, theOther: BRepGraph_RefsEdgesOfVertex) -> None: ...
@@ -10337,9 +10157,6 @@ class BRepGraph_RefsEdgesOfVertex:
     def CurrentRefId(self) -> BRepGraph_VertexRefId: ...
 
     def Index(self) -> int: ...
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::EdgeOfVertexRefTraits>>":
-        """Returns an STL-compatible iterator for range-based for loops."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
@@ -10379,7 +10196,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Vertex) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theVertexRef: BRepGraph_VertexRefId) -> "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>>":
+        def Usage(theGraph: BRepGraph, theVertexRef: BRepGraph_VertexRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex:
             """
             Resolves a vertex reference id to a lightweight usage value.
             @param[in] theGraph     source graph
@@ -10389,7 +10206,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def Pnt(theGraph: BRepGraph, theRef: "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)5>>") -> nanoocp.gp.gp_Pnt:
+        def Pnt(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex) -> nanoocp.gp.gp_Pnt:
             """
             Returns the vertex 3D point with VertexUsage Location applied.
             @param[in] theGraph  source graph
@@ -10536,7 +10353,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def Curve(theGraph: BRepGraph, theRef: "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>") -> nanoocp.Geom.Geom_Curve:
+        def Curve(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.Geom.Geom_Curve:
             """
             Returns the transformed 3D curve handle via CoEdgeUsage (applies Location, may copy).
             @param[in] theGraph source graph
@@ -10556,7 +10373,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def CurveAdaptor(theGraph: BRepGraph, theRef: "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>") -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedCurve:
+        def CurveAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedCurve:
             """
             Returns the 3D curve adaptor via CoEdgeUsage (applies edge-in-wire Location in Trsf).
             Falls back to CurveOnSurface when no 3D curve exists.
@@ -10662,7 +10479,7 @@ class BRepGraph_Tool:
             """
 
         @staticmethod
-        def CurveOnSurface(theGraph: BRepGraph, theRef: "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>", theFace: BRepGraph_FaceId) -> nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface:
+        def CurveOnSurface(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge, theFace: BRepGraph_FaceId) -> nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface:
             """
             Returns a CurveOnSurface adaptor built from a CoEdgeUsage and face.
             @param[in] theGraph source graph
@@ -10784,7 +10601,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def PCurveAdaptor(theGraph: BRepGraph, theRef: "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>") -> nanoocp.Geom2dAdaptor.Geom2dAdaptor_Curve:
+        def PCurveAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.Geom2dAdaptor.Geom2dAdaptor_Curve:
             """
             Returns a PCurve adaptor from a CoEdgeUsage.
             @param[in] theGraph source graph
@@ -10825,7 +10642,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Face) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theFaceRef: BRepGraph_FaceRefId) -> "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>>":
+        def Usage(theGraph: BRepGraph, theFaceRef: BRepGraph_FaceRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
             """
             Resolves a face reference id to a lightweight usage value.
             @param[in] theGraph   source graph
@@ -10905,7 +10722,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def SurfaceAdaptor(theGraph: BRepGraph, theRef: "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>>") -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
+        def SurfaceAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
             """Returns a surface adaptor with FaceUsage Location applied."""
 
         @overload
@@ -10931,7 +10748,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def SurfaceAdaptor(theGraph: BRepGraph, theRef: "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>>", theUFirst: float, theULast: float, theVFirst: float, theVLast: float) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
+        def SurfaceAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face, theUFirst: float, theULast: float, theVFirst: float, theVLast: float) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
             """
             Returns a surface adaptor with explicit UV bounds and FaceUsage Location applied.
             """
@@ -10994,7 +10811,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Wire) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theWireRef: BRepGraph_WireRefId) -> "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>>":
+        def Usage(theGraph: BRepGraph, theWireRef: BRepGraph_WireRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
             """
             Resolves a wire reference id to a lightweight usage value.
             @param[in] theGraph   source graph
@@ -11097,7 +10914,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Shell) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theShellRef: BRepGraph_ShellRefId) -> "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>>":
+        def Usage(theGraph: BRepGraph, theShellRef: BRepGraph_ShellRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
             """
             Resolves a shell reference id to a lightweight usage value.
             @param[in] theGraph    source graph
@@ -11208,9 +11025,6 @@ class BRepGraph_RelatedIterator:
     def CurrentRelation(self) -> BRepGraph_RelatedIterator.RelationKind:
         """Return the relation kind explaining why the current node is related."""
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>":
-        """Returns an STL-compatible iterator for range-based for loops."""
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -11247,9 +11061,6 @@ class BRepGraph_SupplementIterator:
 
     def Value(self) -> BRepGraph_LayerTopoSupplement.Entry:
         """@brief Return the current attachment entry."""
-
-    def begin(self) -> "NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>":
-        """@brief STL range-for support."""
 
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """@brief Sentinel marking end of iteration."""
@@ -11409,18 +11220,18 @@ class BRepGraph_Deduplicate:
         def NbPartialOrderedWires(self, arg: int, /) -> None: ...
 
         @property
-        def AffectedFaces(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>>":
+        def AffectedFaces(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceId]:
             """Faces whose SurfNodeId changed."""
 
         @AffectedFaces.setter
-        def AffectedFaces(self, arg: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>>", /) -> None: ...
+        def AffectedFaces(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_FaceId], /) -> None: ...
 
         @property
-        def AffectedEdges(self) -> "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>":
+        def AffectedEdges(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId]:
             """Edges whose CurveNodeId changed."""
 
         @AffectedEdges.setter
-        def AffectedEdges(self, arg: "NCollection_LinearVector<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>>", /) -> None: ...
+        def AffectedEdges(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_EdgeId], /) -> None: ...
 
     @overload
     @staticmethod
@@ -11906,10 +11717,10 @@ class BRepGraph_Validate:
             """Count issues of a given severity."""
 
         @property
-        def Issues(self) -> "NCollection_LinearVector<BRepGraph_Validate::Issue>": ...
+        def Issues(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_Validate.Issue]: ...
 
         @Issues.setter
-        def Issues(self, arg: "NCollection_LinearVector<BRepGraph_Validate::Issue>", /) -> None: ...
+        def Issues(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_Validate.Issue], /) -> None: ...
 
     class Options:
         """Validation options."""
@@ -11964,6 +11775,1503 @@ class BRepGraph_Validate:
         @param[in] theOptions validation profile/options
         @return validation result with all detected issues
         """
+
+class NCollection_DefaultHasher__BRepGraph_ItemId:
+    """
+    Purpose:     The  DefaultHasher  is a  Hasher  that is used by
+    default in NCollection maps.
+    To compute the  hash code of the key  is used the
+    global function HashCode.
+    To compare two keys is used  the  global function
+    IsEqual.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__BRepGraph_ItemId) -> None: ...
+
+    @overload
+    def __call__(self, theKey: BRepGraph_ItemId) -> int: ...
+
+    @overload
+    def __call__(self, theK1: BRepGraph_ItemId, theK2: BRepGraph_ItemId) -> bool: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_CacheIterator:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_CacheIterator) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_CacheIterator) -> None: ...
+
+class BRepGraph_MutGuard__BRepGraphInc_VertexDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.VertexDef, theId: BRepGraph_VertexId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_VertexId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.VertexDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_VertexRef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.VertexRef, theId: BRepGraph_VertexRefId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_VertexRefId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.VertexRef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_EdgeDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.EdgeDef, theId: BRepGraph_EdgeId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_EdgeId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.EdgeDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_CoEdgeDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.CoEdgeDef, theId: BRepGraph_CoEdgeId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_CoEdgeId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.CoEdgeDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_WireDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.WireDef, theId: BRepGraph_WireId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_WireId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.WireDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_WireRef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.WireRef, theId: BRepGraph_WireRefId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_WireRefId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.WireRef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_FaceDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.FaceDef, theId: BRepGraph_FaceId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_FaceId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.FaceDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_FaceRef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.FaceRef, theId: BRepGraph_FaceRefId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_FaceRefId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.FaceRef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_ShellDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.ShellDef, theId: BRepGraph_ShellId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_ShellId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.ShellDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_ShellRef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.ShellRef, theId: BRepGraph_ShellRefId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_ShellRefId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.ShellRef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_SolidDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.SolidDef, theId: BRepGraph_SolidId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_SolidId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.SolidDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_SolidRef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.SolidRef, theId: BRepGraph_SolidRefId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_SolidRefId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.SolidRef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_CompoundDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.CompoundDef, theId: BRepGraph_CompoundId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_CompoundId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.CompoundDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_CompSolidDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.CompSolidDef, theId: BRepGraph_CompSolidId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_CompSolidId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.CompSolidDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_ProductDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.ProductDef, theId: BRepGraph_ProductId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_ProductId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.ProductDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_OccurrenceDef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.OccurrenceDef, theId: BRepGraph_OccurrenceId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_OccurrenceId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.OccurrenceDef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_OccurrenceRef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.OccurrenceRef, theId: BRepGraph_OccurrenceRefId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_OccurrenceRefId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.OccurrenceRef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class BRepGraph_MutGuard__BRepGraphInc_ChildRef:
+    """
+    @brief RAII scope token batching mutation notifications for a single entity.
+
+    Obtained via BRepGraph::Editor().<Ops>().Mut() / MutRef() / MutSurface() etc.
+    Reads via `operator->()` / `operator*()`; writes via Editor's typed setters
+    (or `Internal()` for in-tree structural remaps). Any call to `Internal()`
+    flags the guard dirty and the destructor fires `markModified` /
+    `markRefModified` once on scope exit.
+
+    The guard registers itself as active on the guarded item at construction
+    and deregisters on destruction. This prevents double-mutation: attempting
+    to acquire a second guard on the same item while the first is still alive
+    will throw. Move-only; after a move, the source guard becomes inert and
+    does not deregister.
+
+    Compile-time dispatch selects the ID type and notification method:
+    - For types derived from BRepGraphInc::BaseDef: BRepGraph_NodeId + markModified()
+    - For types derived from BRepGraphInc::BaseRef: BRepGraph_RefId + markRefModified()
+
+    @code
+    {
+    BRepGraph_MutGuard<BRepGraphInc::EdgeDef> anEdge =
+    theGraph.Editor().Edges().Mut(BRepGraph_EdgeId(42));
+    theGraph.Editor().Edges().SetTolerance(anEdge, 0.5);
+    } // markModified called once here, guard deregistered
+    @endcode
+    """
+
+    def __init__(self, theGraph: BRepGraph, theStorage: nanoocp.BRepGraphInc.BRepGraphInc_Storage, theEntity: nanoocp.BRepGraphInc.ChildRef, theId: BRepGraph_ChildRefId) -> None:
+        """
+        Construct a guard over a mutable entity.
+        Registers the item via the storage bit-plane. The Mut() factory pre-validates
+        that no guard is active, so this assertion should never fire in normal use.
+        @param[in] theGraph   owning graph (used for notification)
+        @param[in] theStorage storage instance (for bit-plane guard tracking)
+        @param[in] theEntity  pointer to the mutable entity
+        @param[in] theId      identity for notification and guard registration
+        """
+
+    def Id(self) -> BRepGraph_ChildRefId:
+        """Identity for notification."""
+
+    def Graph(self) -> BRepGraph:
+        """Owning graph handle."""
+
+    def MarkDirty(self) -> None:
+        """
+        Flag the guarded entity as modified without writing through `Internal()`.
+        Use when an external mutation (e.g. in-place geometry transform on a shared
+        Geom handle) is not visible to the guard.
+        """
+
+    def IsDirty(self) -> bool:
+        """True if `Internal()` or `MarkDirty()` flagged the entity modified."""
+
+    def Internal(self) -> nanoocp.BRepGraphInc.ChildRef:
+        """
+        INTERNAL USE ONLY. Mutable accessor; auto-flags dirty. External code MUST go
+        through Editor's typed setters. Use `operator->()` / `operator*()` for reads.
+        """
+
+    def __bool__(self) -> bool:
+        """
+        True when the guard still owns an entity; false after a move or when
+        constructed in an inert state.
+        """
+
+class NCollection_ForwardRangeIterator__BRepGraph_DefsIterator_DefsVertexOfEdge:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_DefsIterator.DefsVertexOfEdge) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_DefsIterator_DefsVertexOfEdge) -> None: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_ChildExplorer) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer) -> None: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_RootProductIterator:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_RootProductIterator) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_RootProductIterator) -> None: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_ParentExplorer:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_ParentExplorer) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_ParentExplorer) -> None: ...
+
+class NCollection_DefaultHasher__BRepGraph_NodeId:
+    """
+    Purpose:     The  DefaultHasher  is a  Hasher  that is used by
+    default in NCollection maps.
+    To compute the  hash code of the key  is used the
+    global function HashCode.
+    To compare two keys is used  the  global function
+    IsEqual.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__BRepGraph_NodeId) -> None: ...
+
+    @overload
+    def __call__(self, theKey: BRepGraph_NodeId) -> int: ...
+
+    @overload
+    def __call__(self, theK1: BRepGraph_NodeId, theK2: BRepGraph_NodeId) -> bool: ...
+
+class NCollection_DefaultHasher__BRepGraph_UID:
+    """
+    Purpose:     The  DefaultHasher  is a  Hasher  that is used by
+    default in NCollection maps.
+    To compute the  hash code of the key  is used the
+    global function HashCode.
+    To compare two keys is used  the  global function
+    IsEqual.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__BRepGraph_UID) -> None: ...
+
+    @overload
+    def __call__(self, theKey: BRepGraph_UID) -> int: ...
+
+    @overload
+    def __call__(self, theK1: BRepGraph_UID, theK2: BRepGraph_UID) -> bool: ...
+
+class NCollection_DefaultHasher__BRepGraph_ItemUID:
+    """
+    Purpose:     The  DefaultHasher  is a  Hasher  that is used by
+    default in NCollection maps.
+    To compute the  hash code of the key  is used the
+    global function HashCode.
+    To compare two keys is used  the  global function
+    IsEqual.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__BRepGraph_ItemUID) -> None: ...
+
+    @overload
+    def __call__(self, theKey: BRepGraph_ItemUID) -> int: ...
+
+    @overload
+    def __call__(self, theK1: BRepGraph_ItemUID, theK2: BRepGraph_ItemUID) -> bool: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_LayerIterator:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_LayerIterator) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_LayerIterator) -> None: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_RefsIterator_RefsVertexOfEdge:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_RefsIterator.RefsVertexOfEdge) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_RefsIterator_RefsVertexOfEdge) -> None: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_RelatedIterator) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator) -> None: ...
+
+class NCollection_ForwardRangeIterator__BRepGraph_SupplementIterator:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: BRepGraph_SupplementIterator) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__BRepGraph_SupplementIterator) -> None: ...
+
+BRepGraph_CompoundsOfEdge: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfCoEdge: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfWire: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfFace: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfShell: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfSolid: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfCompSolid: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfCompound: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_CompoundsOfChild: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_OccurrencesOfChild: TypeAlias = BRepGraph_OccurrencesOfProduct
+
+BRepGraph_RefsFacesOfWire: TypeAlias = BRepGraph_FacesOfWire
+
+BRepGraph_RefsShellsOfFace: TypeAlias = BRepGraph_ShellsOfFace
+
+BRepGraph_RefsSolidsOfShell: TypeAlias = BRepGraph_SolidsOfShell
+
+BRepGraph_RefsCompSolidsOfSolid: TypeAlias = BRepGraph_CompSolidsOfSolid
+
+BRepGraph_RefsCompoundsOfChild: TypeAlias = BRepGraph_CompoundsOfVertex
+
+BRepGraph_RefsProductsOfOccurrence: TypeAlias = BRepGraph_ProductsOfOccurrence
 
 # C++ typedef aliases
 BRepGraph_DefsVertexOfEdge = nanoocp.BRepGraph.BRepGraph_DefsIterator.DefsVertexOfEdge

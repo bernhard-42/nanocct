@@ -558,6 +558,15 @@ class Standard_GUID:
         """
 
     @overload
+    def __init__(self, aGuid: str) -> None:
+        """
+        build a GUID from an unicode string with the
+        following format:
+
+        "00000000-0000-0000-0000-000000000000\"
+        """
+
+    @overload
     def __init__(self, theUUID: Standard_UUID) -> None:
         """Creates a GUID from a Standard_UUID."""
 
@@ -566,7 +575,7 @@ class Standard_GUID:
         """Copy constructor."""
 
     @overload
-    def __init__(self, a32b: int, a16b1: "char16_t", a16b2: "char16_t", a16b3: "char16_t", a8b1: int, a8b2: int, a8b3: int, a8b4: int, a8b5: int, a8b6: int) -> None:
+    def __init__(self, a32b: int, a16b1: str, a16b2: str, a16b3: str, a8b1: int, a8b2: int, a8b3: int, a8b4: int, a8b5: int, a8b6: int) -> None:
         """Creates a GUID from the given components."""
 
     def ToUUID(self) -> Standard_UUID:
@@ -1017,7 +1026,7 @@ def IsEqual(theValue1: float, theValue2: float) -> bool:
 def IsEqual(One: str, Two: str) -> bool: ...
 
 @overload
-def IsEqual(One: "char16_t", Two: "char16_t") -> bool: ...
+def IsEqual(One: str, Two: str) -> bool: ...
 
 @overload
 def IsEqual(theOne: str, theTwo: str) -> bool:
@@ -1179,11 +1188,11 @@ def LowerCase(me: str) -> str: ...
 
 def UpperCase(me: str) -> str: ...
 
-def ToExtCharacter(achar: str) -> "char16_t": ...
+def ToExtCharacter(achar: str) -> str: ...
 
-def ToCharacter(achar: "char16_t") -> str: ...
+def ToCharacter(achar: str) -> str: ...
 
-def IsAnAscii(achar: "char16_t") -> bool: ...
+def IsAnAscii(achar: str) -> bool: ...
 
 def Standard_ASSERT_DO_NOTHING() -> None:
     """
@@ -1267,3 +1276,6 @@ def ShortRealRadix() -> int:
 
 def ShortRealSize() -> int:
     """Returns the size in bits of a float."""
+
+# C++ typedef aliases
+Standard_HMutex = nanoocp.NCollection.NCollection_Shared[nanoocp.Standard.Standard_Mutex]

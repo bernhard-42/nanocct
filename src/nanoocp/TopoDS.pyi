@@ -870,12 +870,6 @@ class TopoDS_Iterator:
         Standard_NoSuchObject if there is no current sub-shape.
         """
 
-    def begin(self) -> "NCollection_ForwardRangeIterator<TopoDS_Iterator>":
-        """
-        Returns an STL-compatible iterator for range-based for loops.
-        @warning Do not call Next() or Initialize() externally during range-for iteration.
-        """
-
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel:
         """Returns a sentinel marking the end of iteration."""
 
@@ -992,6 +986,23 @@ class TopoDS_AlertWithShape(nanoocp.Message.Message_Alert):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+class NCollection_ForwardRangeIterator__TopoDS_Iterator:
+    """
+    @brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+    Holds a non-owning pointer to the host iterator/explorer.
+    The host must outlive this iterator (guaranteed by range-for semantics).
+
+    @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.
+    """
+
+    @overload
+    def __init__(self, theHost: TopoDS_Iterator) -> None:
+        """Construct from a pointer to the host iterator."""
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeIterator__TopoDS_Iterator) -> None: ...
 
 @overload
 def Vertex(theShape: TopoDS_Shape) -> TopoDS_Vertex: ...

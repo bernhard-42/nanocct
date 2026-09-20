@@ -8,6 +8,7 @@ from nanoocp._TKGeomBase.Extrema import *  # noqa: F401,F403
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
     "Extrema_SequenceOfPOnCurv": ("nanoocp.NCollection", "NCollection_Sequence__Extrema_POnCurv"),
+    "Extrema_SequenceOfPOnCurv2d": ("nanoocp.NCollection", "NCollection_Sequence__Extrema_POnCurv2d"),
     "Extrema_SequenceOfPOnSurf": ("nanoocp.NCollection", "NCollection_Sequence__Extrema_POnSurf"),
 }
 

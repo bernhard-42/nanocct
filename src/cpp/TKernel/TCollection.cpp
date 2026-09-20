@@ -914,6 +914,8 @@ If it is not a UTF-8 then theIsMultiByte is ignored and each character is
 copied to ExtCharacter.
 @param[in] theString the C string to convert
 @param[in] theIsMultiByte flag indicating UTF-8 coding)nbdoc")
+        .def(nb::init<const char16_t *const>(), nb::arg("theString"), R"nbdoc(Creation by converting an ExtString (char16_t*) to an extended string.
+@param[in] theString the char16_t string to copy)nbdoc")
         .def(nb::init<const char>(), nb::arg("theChar"), R"nbdoc(Initializes an ExtendedString with a single ASCII character.
 @param[in] theChar the ASCII character to initialize from)nbdoc")
         .def(nb::init<const char16_t>(), nb::arg("theChar"), R"nbdoc(Initializes an ExtendedString with a single extended character.
@@ -933,6 +935,9 @@ If it is not a UTF-8 or multi byte then each character is copied to ExtCharacter
 and filled with filler character. This is useful for buffers.
 @param[in] theLength the length to allocate
 @param[in] theFiller the character to fill with)nbdoc")
+        .def(nb::init<const char16_t *const, const int>(), nb::arg("theString"), nb::arg("theLength"), R"nbdoc(Initializes an ExtendedString with a char16_t string and explicit length.
+@param[in] theString the char16_t string to initialize from
+@param[in] theLength the length of the string)nbdoc")
         .def("AssignCat", static_cast<void (TCollection_ExtendedString::*)(const TCollection_ExtendedString &)>(&TCollection_ExtendedString::AssignCat), nb::arg("theOther"), R"nbdoc(Appends the other extended string to this extended string.
 Note that this method is an alias of operator +=.
 
@@ -956,6 +961,22 @@ aString += anotherString;
         .def("__iadd__", [](TCollection_ExtendedString &self, const double theOther) -> TCollection_ExtendedString & { self.operator+=(theOther); return self; }, nb::rv_policy::reference, nb::arg("theOther"), nb::is_operator())
         .def("AssignCat", static_cast<void (TCollection_ExtendedString::*)(const char16_t)>(&TCollection_ExtendedString::AssignCat), nb::arg("theChar"), R"nbdoc(Appends the utf16 char to this extended string.
 @param[in] theChar the character to append)nbdoc")
+        .def("AssignCat", static_cast<void (TCollection_ExtendedString::*)(const char16_t *const, const int)>(&TCollection_ExtendedString::AssignCat), nb::arg("theString"), nb::arg("theLength"), R"nbdoc(Core implementation: Appends char16_t string (pointer and length) to this extended string.
+This is the primary implementation that all other AssignCat overloads redirect to.
+@param[in] theString pointer to the string to append
+@param[in] theLength length of the string to append)nbdoc")
+        .def("AssignCat", static_cast<void (TCollection_ExtendedString::*)(const char16_t *const)>(&TCollection_ExtendedString::AssignCat), nb::arg("theString"), R"nbdoc(Appends the char16_t string to this extended string.
+@param[in] theString the string to append)nbdoc")
+        .def("__iadd__", [](TCollection_ExtendedString &self, const char16_t *const theString) -> TCollection_ExtendedString & { self.operator+=(theString); return self; }, nb::rv_policy::reference, nb::arg("theString"), R"nbdoc(Appends the char16_t string to this extended string (alias of AssignCat()).)nbdoc", nb::is_operator())
+        .def("Cat", static_cast<TCollection_ExtendedString (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::Cat), nb::arg("theOther"), nb::arg("theLength"), R"nbdoc(Core implementation: Concatenates char16_t string (pointer and length)
+and returns a new string.
+@param[in] theOther pointer to the string to append
+@param[in] theLength length of the string to append
+@return new string with theOther appended)nbdoc")
+        .def("Cat", static_cast<TCollection_ExtendedString (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::Cat), nb::arg("theOther"), R"nbdoc(Concatenates char16_t string and returns a new string.
+@param[in] theOther the null-terminated string to append
+@return new string with theOther appended)nbdoc")
+        .def("__add__", static_cast<TCollection_ExtendedString (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::operator+), nb::arg("theOther"), nb::is_operator())
         .def("Cat", static_cast<TCollection_ExtendedString (TCollection_ExtendedString::*)(const int) const>(&TCollection_ExtendedString::Cat), nb::arg("theOther"), R"nbdoc(Appends the integer value to this string and returns a new string.
 @param[in] theOther the integer to append
 @return new string with integer appended)nbdoc")
@@ -997,6 +1018,11 @@ aString.ChangeAll(u'H', u'M');
 @param[in] theNewChar the replacement character)nbdoc")
         .def("Clear", static_cast<void (TCollection_ExtendedString::*)()>(&TCollection_ExtendedString::Clear), R"nbdoc(Removes all characters contained in this string.
 This produces an empty ExtendedString.)nbdoc")
+        .def("Copy", static_cast<void (TCollection_ExtendedString::*)(const char16_t *const, const int)>(&TCollection_ExtendedString::Copy), nb::arg("theString"), nb::arg("theLength"), R"nbdoc(Core implementation: Copy from a char16_t pointer with explicit length.
+@param[in] theString pointer to the string to copy
+@param[in] theLength length of the string to copy)nbdoc")
+        .def("Copy", static_cast<void (TCollection_ExtendedString::*)(const char16_t *const)>(&TCollection_ExtendedString::Copy), nb::arg("theString"), R"nbdoc(Copy from a char16_t pointer.
+@param[in] theString the null-terminated string to copy)nbdoc")
         .def("Copy", static_cast<void (TCollection_ExtendedString::*)(const TCollection_ExtendedString &)>(&TCollection_ExtendedString::Copy), nb::arg("theFromWhere"), R"nbdoc(Copy theFromWhere to this string.
 Used as operator =
 
@@ -1020,33 +1046,88 @@ aString.Insert(1, u'W');
 ```
 @param[in] theWhere the position to insert at (1-based)
 @param[in] theWhat the character to insert)nbdoc")
+        .def("Insert", static_cast<void (TCollection_ExtendedString::*)(const int, const char16_t *const, const int)>(&TCollection_ExtendedString::Insert), nb::arg("theWhere"), nb::arg("theWhat"), nb::arg("theLength"), R"nbdoc(Core implementation: Insert a char16_t string (pointer and length) at position theWhere.
+@param[in] theWhere the position to insert at (1-based)
+@param[in] theWhat pointer to the string to insert
+@param[in] theLength length of the string to insert)nbdoc")
+        .def("Insert", static_cast<void (TCollection_ExtendedString::*)(const int, const char16_t *const)>(&TCollection_ExtendedString::Insert), nb::arg("theWhere"), nb::arg("theWhat"), R"nbdoc(Insert a char16_t string at position theWhere.
+@param[in] theWhere the position to insert at (1-based)
+@param[in] theWhat the null-terminated string to insert)nbdoc")
         .def("Insert", static_cast<void (TCollection_ExtendedString::*)(const int, const TCollection_ExtendedString &)>(&TCollection_ExtendedString::Insert), nb::arg("theWhere"), nb::arg("theWhat"), R"nbdoc(Insert an ExtendedString at position theWhere.
 @param[in] theWhere the position to insert at (1-based)
 @param[in] theWhat the string to insert)nbdoc")
         .def("IsEmpty", static_cast<bool (TCollection_ExtendedString::*)() const>(&TCollection_ExtendedString::IsEmpty), R"nbdoc(Returns True if this string contains no characters.)nbdoc")
+        .def("IsEqual", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::IsEqual), nb::arg("theOther"), nb::arg("theLength"), R"nbdoc(Core implementation: Returns true if this string equals theOther (pointer and length).
+@param[in] theOther pointer to the string to compare with
+@param[in] theLength length of the string to compare with
+@return true if strings are equal, false otherwise)nbdoc")
+        .def("IsEqual", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::IsEqual), nb::arg("theOther"), R"nbdoc(Returns true if this string equals theOther null-terminated string.
+Note that this method is an alias of operator ==.
+@param[in] theOther the char16_t string to compare with
+@return true if strings are equal, false otherwise)nbdoc")
+        .def("__eq__", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::operator==), nb::arg("theOther"), nb::is_operator())
         .def("IsEqual", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::IsEqual), nb::arg("theOther"), R"nbdoc(Returns true if the characters in this extended
 string are identical to the characters in theOther extended string.
 Note that this method is an alias of operator ==.
 @param[in] theOther the extended string to compare with
 @return true if strings are equal, false otherwise)nbdoc")
         .def("__eq__", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::operator==), nb::arg("theOther"), nb::is_operator())
+        .def("IsDifferent", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::IsDifferent), nb::arg("theOther"), nb::arg("theLength"), R"nbdoc(Core implementation: Returns true if this string differs from theOther (pointer and length).
+@param[in] theOther pointer to the string to compare with
+@param[in] theLength length of the string to compare with
+@return true if strings are different, false otherwise)nbdoc")
+        .def("IsDifferent", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::IsDifferent), nb::arg("theOther"), R"nbdoc(Returns true if this string differs from theOther null-terminated string.
+Note that this method is an alias of operator !=.
+@param[in] theOther the char16_t string to compare with
+@return true if strings are different, false otherwise)nbdoc")
+        .def("__ne__", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::operator!=), nb::arg("theOther"), nb::is_operator())
         .def("IsDifferent", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::IsDifferent), nb::arg("theOther"), R"nbdoc(Returns true if there are differences between the
 characters in this extended string and theOther extended string.
 Note that this method is an alias of operator !=.
 @param[in] theOther the extended string to compare with
 @return true if strings are different, false otherwise)nbdoc")
         .def("__ne__", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::operator!=), nb::arg("theOther"), nb::is_operator())
+        .def("IsLess", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::IsLess), nb::arg("theOther"), nb::arg("theLength"), R"nbdoc(Core implementation: Returns TRUE if this string is lexicographically less than theOther.
+@param[in] theOther pointer to the string to compare with
+@param[in] theLength length of the string to compare with
+@return true if this string is less than theOther)nbdoc")
+        .def("IsLess", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::IsLess), nb::arg("theOther"), R"nbdoc(Returns TRUE if this string is lexicographically less than theOther.
+@param[in] theOther the char16_t string to compare with
+@return true if this string is less than theOther)nbdoc")
+        .def("__lt__", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::operator<), nb::arg("theOther"), nb::is_operator())
         .def("IsLess", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::IsLess), nb::arg("theOther"), R"nbdoc(Returns TRUE if this string is lexicographically less than theOther.
 @param[in] theOther the extended string to compare with
 @return true if this string is less than theOther)nbdoc")
         .def("__lt__", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::operator<), nb::arg("theOther"), nb::is_operator())
+        .def("IsGreater", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::IsGreater), nb::arg("theOther"), nb::arg("theLength"), R"nbdoc(Core implementation: Returns TRUE if this string is lexicographically greater than theOther.
+@param[in] theOther pointer to the string to compare with
+@param[in] theLength length of the string to compare with
+@return true if this string is greater than theOther)nbdoc")
+        .def("IsGreater", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::IsGreater), nb::arg("theOther"), R"nbdoc(Returns TRUE if this string is lexicographically greater than theOther.
+@param[in] theOther the char16_t string to compare with
+@return true if this string is greater than theOther)nbdoc")
+        .def("__gt__", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::operator>), nb::arg("theOther"), nb::is_operator())
         .def("IsGreater", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::IsGreater), nb::arg("theOther"), R"nbdoc(Returns TRUE if this string is lexicographically greater than theOther.
 @param[in] theOther the extended string to compare with
 @return true if this string is greater than theOther)nbdoc")
         .def("__gt__", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::operator>), nb::arg("theOther"), nb::is_operator())
+        .def("StartsWith", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::StartsWith), nb::arg("theStartString"), nb::arg("theLength"), R"nbdoc(Core implementation: Determines whether this string starts with theStartString.
+@param[in] theStartString pointer to the string to check for
+@param[in] theLength length of the string to check for
+@return true if this string starts with theStartString)nbdoc")
+        .def("StartsWith", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::StartsWith), nb::arg("theStartString"), R"nbdoc(Determines whether this string starts with theStartString.
+@param[in] theStartString the null-terminated string to check for
+@return true if this string starts with theStartString)nbdoc")
         .def("StartsWith", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::StartsWith), nb::arg("theStartString"), R"nbdoc(Determines whether the beginning of this string instance matches the specified string.
 @param[in] theStartString the string to check for at the beginning
 @return true if this string starts with theStartString)nbdoc")
+        .def("EndsWith", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::EndsWith), nb::arg("theEndString"), nb::arg("theLength"), R"nbdoc(Core implementation: Determines whether this string ends with theEndString.
+@param[in] theEndString pointer to the string to check for
+@param[in] theLength length of the string to check for
+@return true if this string ends with theEndString)nbdoc")
+        .def("EndsWith", static_cast<bool (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::EndsWith), nb::arg("theEndString"), R"nbdoc(Determines whether this string ends with theEndString.
+@param[in] theEndString the null-terminated string to check for
+@return true if this string ends with theEndString)nbdoc")
         .def("EndsWith", static_cast<bool (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::EndsWith), nb::arg("theEndString"), R"nbdoc(Determines whether the end of this string instance matches the specified string.
 @param[in] theEndString the string to check for at the end
 @return true if this string ends with theEndString)nbdoc")
@@ -1067,11 +1148,25 @@ aString.Remove(2, 2); // erases 2 characters from position 2
 ```
 @param[in] theWhere the position to start erasing from (1-based)
 @param[in] theHowMany the number of characters to erase)nbdoc")
+        .def("Search", static_cast<int (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::Search), nb::arg("theWhat"), nb::arg("theLength"), R"nbdoc(Core implementation: Searches for theWhat (pointer and length) from the beginning.
+@param[in] theWhat pointer to the string to search for
+@param[in] theLength length of the string to search for
+@return the position of first match (1-based), or -1 if not found)nbdoc")
+        .def("Search", static_cast<int (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::Search), nb::arg("theWhat"), R"nbdoc(Searches for theWhat null-terminated string from the beginning.
+@param[in] theWhat the null-terminated string to search for
+@return the position of first match (1-based), or -1 if not found)nbdoc")
         .def("Search", static_cast<int (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::Search), nb::arg("theWhat"), R"nbdoc(Searches an ExtendedString in this string from the beginning
 and returns position of first item theWhat matching.
 It returns -1 if not found.
 @param[in] theWhat the string to search for
 @return the position of first match (1-based), or -1 if not found)nbdoc")
+        .def("SearchFromEnd", static_cast<int (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::SearchFromEnd), nb::arg("theWhat"), nb::arg("theLength"), R"nbdoc(Core implementation: Searches for theWhat (pointer and length) from the end.
+@param[in] theWhat pointer to the string to search for
+@param[in] theLength length of the string to search for
+@return the position of first match from end (1-based), or -1 if not found)nbdoc")
+        .def("SearchFromEnd", static_cast<int (TCollection_ExtendedString::*)(const char16_t *const) const>(&TCollection_ExtendedString::SearchFromEnd), nb::arg("theWhat"), R"nbdoc(Searches for theWhat null-terminated string from the end.
+@param[in] theWhat the null-terminated string to search for
+@return the position of first match from end (1-based), or -1 if not found)nbdoc")
         .def("SearchFromEnd", static_cast<int (TCollection_ExtendedString::*)(const TCollection_ExtendedString &) const>(&TCollection_ExtendedString::SearchFromEnd), nb::arg("theWhat"), R"nbdoc(Searches an ExtendedString in this string from the end
 and returns position of first item theWhat matching.
 It returns -1 if not found.
@@ -1089,6 +1184,13 @@ aString.SetValue(6, u'g');
 ```
 @param[in] theWhere the position to replace at (1-based)
 @param[in] theWhat the character to replace with)nbdoc")
+        .def("SetValue", static_cast<void (TCollection_ExtendedString::*)(const int, const char16_t *const, const int)>(&TCollection_ExtendedString::SetValue), nb::arg("theWhere"), nb::arg("theWhat"), nb::arg("theLength"), R"nbdoc(Core implementation: Replaces a part of this string by char16_t string (pointer and length).
+@param[in] theWhere the position to start replacement (1-based)
+@param[in] theWhat pointer to the string to replace with
+@param[in] theLength length of the string to replace with)nbdoc")
+        .def("SetValue", static_cast<void (TCollection_ExtendedString::*)(const int, const char16_t *const)>(&TCollection_ExtendedString::SetValue), nb::arg("theWhere"), nb::arg("theWhat"), R"nbdoc(Replaces a part of this string by a null-terminated char16_t string.
+@param[in] theWhere the position to start replacement (1-based)
+@param[in] theWhat the null-terminated string to replace with)nbdoc")
         .def("SetValue", static_cast<void (TCollection_ExtendedString::*)(const int, const TCollection_ExtendedString &)>(&TCollection_ExtendedString::SetValue), nb::arg("theWhere"), nb::arg("theWhat"), R"nbdoc(Replaces a part of this string by another ExtendedString.
 @param[in] theWhere the position to start replacement (1-based)
 @param[in] theWhat the string to replace with)nbdoc")
@@ -1119,6 +1221,36 @@ TCollection_ExtendedString aSecondPart = aString.Split(3);
 ```
 @param[in] theWhere the position to split at (0-based)
 @return the second part of the split string)nbdoc")
+        .def("Token", static_cast<TCollection_ExtendedString (TCollection_ExtendedString::*)(const char16_t *const, const int) const>(&TCollection_ExtendedString::Token), nb::arg("theSeparators"), nb::arg("theWhichOne") = static_cast<std::decay_t<const int>>(1), R"nbdoc(Extracts theWhichOne token from this string.
+By default, the theSeparators is set to space and tabulation.
+By default, the token extracted is the first one (theWhichOne = 1).
+theSeparators contains all separators you need.
+If no token indexed by theWhichOne is found, it returns an empty ExtendedString.
+
+Example:
+```cpp
+TCollection_ExtendedString aString(u"This is a     message");
+TCollection_ExtendedString aToken1 = aString.Token();
+// Result: aToken1 == u"This"
+
+TCollection_ExtendedString aToken2 = aString.Token(u" ", 4);
+// Result: aToken2 == u"message"
+
+TCollection_ExtendedString aToken3 = aString.Token(u" ", 2);
+// Result: aToken3 == u"is"
+
+TCollection_ExtendedString aToken4 = aString.Token(u" ", 9);
+// Result: aToken4 == u""
+
+TCollection_ExtendedString bString(u"1234; test:message   , value");
+TCollection_ExtendedString bToken1 = bString.Token(u"; :,", 4);
+// Result: bToken1 == u"value"
+```
+@param[in] theSeparators the separator characters
+@param[in] theWhichOne the token number to extract (1-based)
+@return the extracted token)nbdoc")
+        .def("ToExtString", static_cast<const char16_t * (TCollection_ExtendedString::*)() const>(&TCollection_ExtendedString::ToExtString), R"nbdoc(Returns pointer to ExtString (char16_t*).
+@return the char16_t string representation)nbdoc")
         .def("Trunc", static_cast<void (TCollection_ExtendedString::*)(const int)>(&TCollection_ExtendedString::Trunc), nb::arg("theHowMany"), R"nbdoc(Truncates this string to theHowMany characters.
 
 Example:
@@ -1189,6 +1321,11 @@ If theWidth is less than the length of this string, nothing happens.
         .def("Capitalize", static_cast<void (TCollection_ExtendedString::*)()>(&TCollection_ExtendedString::Capitalize), R"nbdoc(Converts the first character into its corresponding
 upper-case character and the other characters into lowercase.
 @note Only ASCII characters (a-z, A-Z) are affected by case conversion.)nbdoc")
+        .def("Prepend", static_cast<void (TCollection_ExtendedString::*)(const char16_t *const, const int)>(&TCollection_ExtendedString::Prepend), nb::arg("theOther"), nb::arg("theLength"), R"nbdoc(Core implementation: Inserts char16_t string (pointer and length) at the beginning.
+@param[in] theOther pointer to the string to prepend
+@param[in] theLength length of the string to prepend)nbdoc")
+        .def("Prepend", static_cast<void (TCollection_ExtendedString::*)(const char16_t *const)>(&TCollection_ExtendedString::Prepend), nb::arg("theOther"), R"nbdoc(Inserts a null-terminated char16_t string at the beginning.
+@param[in] theOther the null-terminated string to prepend)nbdoc")
         .def("Prepend", static_cast<void (TCollection_ExtendedString::*)(const TCollection_ExtendedString &)>(&TCollection_ExtendedString::Prepend), nb::arg("theOther"), R"nbdoc(Inserts the other extended string at the beginning of this string.
 @param[in] theOther the string to prepend)nbdoc")
         .def("FirstLocationInSet", static_cast<int (TCollection_ExtendedString::*)(const TCollection_ExtendedString &, const int, const int) const>(&TCollection_ExtendedString::FirstLocationInSet), nb::arg("theSet"), nb::arg("theFromIndex"), nb::arg("theToIndex"), R"nbdoc(Returns the index of the first character of this string that is
@@ -1225,6 +1362,7 @@ otherwise checks if string starts with a real value
 @return true if strings contain same characters)nbdoc")
         .def("__hash__", [](const TCollection_ExtendedString &self) { return static_cast<Py_ssize_t>(std::hash<TCollection_ExtendedString>{}(self)); });
     nb::implicitly_convertible<std::decay_t<const char *const>, TCollection_ExtendedString>();
+    nb::implicitly_convertible<std::decay_t<const char16_t *const>, TCollection_ExtendedString>();
     nb::implicitly_convertible<std::decay_t<const char>, TCollection_ExtendedString>();
     nb::implicitly_convertible<std::decay_t<const char16_t>, TCollection_ExtendedString>();
     nb::implicitly_convertible<std::decay_t<const int>, TCollection_ExtendedString>();
@@ -1528,6 +1666,7 @@ aString.Value(2) returns 'e')nbdoc")
     nb::borrow<nb::class_<TCollection_HExtendedString>>(m.attr("TCollection_HExtendedString"))
         .def(nb::new_([]() { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString()); }), R"nbdoc(Initializes a HExtendedString to an empty ExtendedString.)nbdoc")
         .def(nb::new_([](const char *const message) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(message)); }), nb::arg("message"), R"nbdoc(Initializes a HExtendedString with a CString.)nbdoc")
+        .def(nb::new_([](const char16_t *const message) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(message)); }), nb::arg("message"), R"nbdoc(Initializes a HExtendedString with an ExtString.)nbdoc")
         .def(nb::new_([](const char16_t aChar) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aChar)); }), nb::arg("aChar"), R"nbdoc(Initializes a HExtendedString with a single character.)nbdoc")
         .def(nb::new_([](const TCollection_ExtendedString & aString) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aString)); }), nb::arg("aString"), R"nbdoc(Initializes a HExtendedString with a ExtendedString.)nbdoc")
         .def(nb::new_([](const occ::handle<TCollection_HAsciiString> & aString) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aString)); }), nb::arg("aString"), R"nbdoc(Initializes a HExtendedString with an HAsciiString.)nbdoc")
@@ -1579,6 +1718,22 @@ It returns -1 if not found.)nbdoc")
         .def("SearchFromEnd", static_cast<int (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::SearchFromEnd), nb::arg("what"), R"nbdoc(Searches a ExtendedString in another ExtendedString from the end
 and returns position of first item <what> matching.
 It returns -1 if not found.)nbdoc")
+        .def("ToExtString", static_cast<const char16_t * (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::ToExtString), R"nbdoc(Returns pointer to ExtString)nbdoc")
+        .def("Token", static_cast<occ::handle<TCollection_HExtendedString> (TCollection_HExtendedString::*)(const char16_t *const, const int) const>(&TCollection_HExtendedString::Token), nb::arg("separators"), nb::arg("whichone") = static_cast<std::decay_t<const int>>(1), R"nbdoc(Extracts <whichone> token from <me>.
+By default, the <separators> is set to space and tabulation.
+By default, the token extracted is the first one (whichone = 1).
+<separators> contains all separators you need.
+If no token indexed by <whichone> is found, it returns an empty String.
+Example:
+aString contains "This is a     message"
+aString.Token()  returns "This"
+aString.Token(" ",4) returns "message"
+aString.Token(" ",2) returns "is"
+aString.Token(" ",9) returns ""
+Other separators than space character and tabulation are allowed
+aString contains "1234; test:message   , value"
+aString.Token("; :,",4) returns "value"
+aString.Token("; :,",2) returns "test")nbdoc")
         .def("Trunc", static_cast<void (TCollection_HExtendedString::*)(const int)>(&TCollection_HExtendedString::Trunc), nb::arg("ahowmany"), R"nbdoc(Truncates <me> to <ahowmany> characters.
 Example: me = "Hello Dolly" -> Trunc(3) -> me = "Hel")nbdoc")
         .def("Value", static_cast<char16_t (TCollection_HExtendedString::*)(const int) const>(&TCollection_HExtendedString::Value), nb::arg("where"), R"nbdoc(Returns ExtCharacter at position <where> in <me>.
@@ -1594,6 +1749,7 @@ aString.Value(2) returns 'e')nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::DynamicType));
     nanoocp_implicit_copy_ctor<TCollection_HExtendedString>(nb::borrow<nb::class_<TCollection_HExtendedString>>(m.attr("TCollection_HExtendedString")));
     nb::implicitly_convertible<std::decay_t<const char *const>, TCollection_HExtendedString>();
+    nb::implicitly_convertible<std::decay_t<const char16_t *const>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const char16_t>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const TCollection_ExtendedString &>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<TCollection_HAsciiString> &>, TCollection_HExtendedString>();

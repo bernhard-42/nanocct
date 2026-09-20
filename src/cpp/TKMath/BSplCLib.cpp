@@ -133,7 +133,6 @@ The data should be recalculated in going from span to span.)nbdoc");
 void nanoocp_templates_BSplCLib(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<gp_Pnt2d>(home, "NCollection_Array1__gp_Pnt2d"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<gp_Pnt>(home, "NCollection_Array1__gp_Pnt"); }
-    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<int>(home, "NCollection_Array1__int"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<double>(home, "NCollection_HArray1__double"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<int>(home, "NCollection_HArray1__int"); }
 }

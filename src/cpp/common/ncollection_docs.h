@@ -832,6 +832,81 @@ constexpr const char *op_call = R"nbdoc(Operator() - query the const value)nbdoc
 constexpr const char *op_assign = R"nbdoc(Assignment operator)nbdoc";
 constexpr const char *op_index = R"nbdoc(Operator[] - query the const value)nbdoc";
 } // namespace NCollection_DynamicArray
+namespace NCollection_LinearVector {
+constexpr const char *class_doc = R"nbdoc(Contiguous dynamic array using a flat memory buffer.
+
+Unlike NCollection_DynamicArray which uses segmented block storage,
+this container stores all elements in a single contiguous allocation,
+providing O(1) element access with a single pointer dereference.
+
+For trivially copyable types, growth uses Standard::Reallocate which
+can extend the buffer in-place without copying elements. For non-trivial
+types, growth allocates a new buffer and move-constructs elements.
+
+Indices are always 0-based.
+
+@warning Any operation that may grow the buffer - Append, Appended,
+EmplaceAppend, SetValue past end, Resize, Reserve, InsertBefore,
+InsertAfter, copy/move assignment - invalidates all iterators,
+references, and raw pointers into the vector whenever it
+actually reallocates. Erase/EraseLast also invalidate references
+at or beyond the removed position.)nbdoc";
+constexpr const char *Append = R"nbdoc(Append a copy of theValue to the end.
+@param[in] theValue element to append
+@return reference to the appended element)nbdoc";
+constexpr const char *Appended = R"nbdoc(Append a default-constructed element.
+@return reference to the appended element)nbdoc";
+constexpr const char *Capacity = R"nbdoc(@return current allocated capacity.)nbdoc";
+constexpr const char *ChangeFirst = R"nbdoc(@return mutable reference to the first element.)nbdoc";
+constexpr const char *ChangeLast = R"nbdoc(@return mutable reference to the last element.)nbdoc";
+constexpr const char *ChangeValue = R"nbdoc(@return mutable reference to element at theIndex.
+@param[in] theIndex element index (0-based))nbdoc";
+constexpr const char *Clear = R"nbdoc(Remove all elements.
+@param[in] theReleaseMemory if true, deallocate the buffer)nbdoc";
+constexpr const char *Data = R"nbdoc(@return raw data pointer.)nbdoc";
+constexpr const char *EmplaceAppend = R"nbdoc(Append an element constructed in-place with the given arguments.
+@param[in] theArgs constructor arguments
+@return reference to the appended element)nbdoc";
+constexpr const char *Empty = R"nbdoc(@return true if the vector contains no elements.)nbdoc";
+constexpr const char *Erase = R"nbdoc(Remove element at theIndex, shifting subsequent elements left.
+@param[in] theIndex element index (0-based))nbdoc";
+constexpr const char *EraseLast = R"nbdoc(Remove the last element.)nbdoc";
+constexpr const char *First = R"nbdoc(@return const reference to the first element.)nbdoc";
+constexpr const char *HasData = R"nbdoc(@return true if the vector has allocated storage.)nbdoc";
+constexpr const char *InsertAfter = R"nbdoc(Insert theValue after theIndex, shifting elements right.
+@param[in] theIndex position after which to insert (0-based)
+@param[in] theValue element to insert)nbdoc";
+constexpr const char *InsertBefore = R"nbdoc(Insert theValue before theIndex, shifting elements right.
+@param[in] theIndex insertion position (0-based)
+@param[in] theValue element to insert)nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(@return true if the vector contains no elements.)nbdoc";
+constexpr const char *Last = R"nbdoc(@return const reference to the last element.)nbdoc";
+constexpr const char *MaxSize = R"nbdoc(@return current max supported size.)nbdoc";
+constexpr const char *Reserve = R"nbdoc(Pre-allocate memory for at least theCapacity elements without changing size.
+@param[in] theCapacity minimum capacity to ensure)nbdoc";
+constexpr const char *Resize = R"nbdoc(Change the number of elements.
+If theSize > Size(), new elements are default-constructed.
+If theSize < Size(), excess elements are destroyed.
+@param[in] theSize new number of elements)nbdoc";
+constexpr const char *SetValue = R"nbdoc(Set value at theIndex. If theIndex >= Size(), the vector is extended.
+@param[in] theIndex element index (0-based)
+@param[in] theValue value to set
+@return reference to the element)nbdoc";
+constexpr const char *Size = R"nbdoc(@return number of elements.)nbdoc";
+constexpr const char *ToArray1 = R"nbdoc(Returns a span as Array1 with shared memory.
+Modifying the vector or the array may invalidate the shared buffer.
+@return array view of the vector data)nbdoc";
+constexpr const char *Value = R"nbdoc(@return const reference to element at theIndex.
+@param[in] theIndex element index (0-based))nbdoc";
+constexpr const char *begin = R"nbdoc(@return iterator to the first element.)nbdoc";
+constexpr const char *cbegin = R"nbdoc(@return const iterator to the first element.)nbdoc";
+constexpr const char *cend = R"nbdoc(@return const iterator past the last element.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor.)nbdoc";
+constexpr const char *end = R"nbdoc(@return iterator past the last element.)nbdoc";
+constexpr const char *op_call = R"nbdoc(@return const reference to element at theIndex.)nbdoc";
+constexpr const char *op_assign = R"nbdoc(Copy assignment.)nbdoc";
+constexpr const char *op_index = R"nbdoc(@return const reference to element at theIndex.)nbdoc";
+} // namespace NCollection_LinearVector
 namespace NCollection_DoubleMap {
 constexpr const char *class_doc = R"nbdoc(Purpose:     The DoubleMap  is used to  bind  pairs (Key1,Key2)
 and retrieve them in linear time.

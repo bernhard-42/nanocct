@@ -183,6 +183,78 @@ inline void nanoocp_install_exception_translator(PyObject *fallback) {
         fallback);
 }
 
+// Type caster for char16_t and const char16_t* (Standard_ExtString: OCCT's UTF-16 strings, TCollection_ExtendedString),
+// modeled on nanobind's char caster: a Python str converts to a NUL-terminated UTF-16 buffer owned by the caster for the
+// duration of the call, a const char16_t* result decodes to str, a single char16_t is a 1-character str.
+NAMESPACE_BEGIN(NB_NAMESPACE)
+NAMESPACE_BEGIN(detail)
+
+template <> struct type_caster<char16_t> {
+    using Value = const char16_t *;
+    Value value = nullptr;
+    std::u16string storage;
+    static constexpr auto Name = const_name("str");
+    template <typename T_>
+    using Cast = std::conditional_t<is_pointer_v<T_>, const char16_t *, char16_t>;
+
+    bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
+        if (!str_check(src.ptr()))
+            return false;
+        PyObject *bytes = PyUnicode_AsUTF16String(src.ptr());     // BOM + native byte order
+        if (bytes == nullptr) {
+            PyErr_Clear();
+            return false;
+        }
+        char *buf = nullptr;
+        Py_ssize_t n = 0;
+        if (PyBytes_AsStringAndSize(bytes, &buf, &n) != 0) {
+            PyErr_Clear();
+            Py_DECREF(bytes);
+            return false;
+        }
+        const char16_t *units = reinterpret_cast<const char16_t *>(buf);
+        size_t count = static_cast<size_t>(n) / sizeof(char16_t);
+        if (count > 0 && units[0] == u'\uFEFF') {
+            ++units;
+            --count;
+        }
+        storage.assign(units, count);
+        Py_DECREF(bytes);
+        value = storage.c_str();
+        return true;
+    }
+
+    static handle from_cpp(const char16_t *v, rv_policy, cleanup_list *) noexcept {
+        if (v == nullptr)
+            return none_ref();
+        int byteorder = 0;                                          // native
+        return PyUnicode_DecodeUTF16(reinterpret_cast<const char *>(v),
+                                     static_cast<Py_ssize_t>(std::char_traits<char16_t>::length(v) * sizeof(char16_t)),
+                                     nullptr, &byteorder);
+    }
+
+    static handle from_cpp(char16_t v, rv_policy, cleanup_list *) noexcept {
+        int byteorder = 0;
+        return PyUnicode_DecodeUTF16(reinterpret_cast<const char *>(&v), sizeof(char16_t), nullptr, &byteorder);
+    }
+
+    template <typename T_>
+    NB_INLINE bool can_cast() const noexcept {
+        return std::is_pointer_v<T_> || storage.size() == 1;
+    }
+
+    explicit operator const char16_t *() { return value; }
+
+    explicit operator char16_t() {
+        if (storage.size() == 1)
+            return storage[0];
+        throw next_overload();
+    }
+};
+
+NAMESPACE_END(detail)
+NAMESPACE_END(NB_NAMESPACE)
+
 // Type caster for opencascade::handle<T> (also occ::handle<T>), modeled on nanobind's shared_ptr
 // caster. The Python instance never owns the C++ object directly; a heap-allocated handle is attached
 // via keep_alive, so OCCT's intrusive reference count governs the lifetime on both sides.

@@ -244,6 +244,9 @@ void nanoocp_templates_NCollection(nb::module_ &m) {
     { nb::module_ home = m; nanoocp::bind_NCollection_DynamicArray<int>(home, "NCollection_DynamicArray__int"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_HArray2<double>(home, "NCollection_HArray2__double"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_IndexedMap<TCollection_AsciiString>(home, "NCollection_IndexedMap__TCollection_AsciiString"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_LinearVector<double>(home, "NCollection_LinearVector__double"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_Array1<int>(home, "NCollection_Array1__int"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_LinearVector<int>(home, "NCollection_LinearVector__int"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_Map<int>(home, "NCollection_Map__int"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_Sequence<opencascade::handle<Standard_Transient>>(home, "NCollection_Sequence__Handle_Standard_Transient"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_Shared<NCollection_Map<int>>(home, "NCollection_Shared__NCollection_Map__int"); }
@@ -469,7 +472,11 @@ for future allocations.)nbdoc")
 @param theLength   optional length limit in Unicode symbols (NOT bytes!)
 The string is copied till NULL symbol or, if theLength >0,
 till either NULL or theLength-th symbol (which comes first).)nbdoc")
-        .def("Iterator", static_cast<NCollection_UtfIterator<char> (NCollection_UtfString<char>::*)() const>(&NCollection_UtfString<char>::Iterator))
+        .def(nb::init<const char16_t *, const int>(), nb::arg("theCopyUtf16"), nb::arg("theLength") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Copy constructor from UTF-16 string.
+@param theCopyUtf16 UTF-16 string to copy
+@param theLength    the length limit in Unicode symbols (NOT bytes!)
+The string is copied till NULL symbol or, if theLength >0,
+till either NULL or theLength-th symbol (which comes first).)nbdoc")
         .def("Size", static_cast<int (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::Size), R"nbdoc(@return the size of the buffer in bytes, excluding NULL-termination symbol)nbdoc")
         .def("Length", static_cast<int (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::Length), R"nbdoc(@return the length of the string in Unicode symbols)nbdoc")
         .def("GetChar", static_cast<char32_t (NCollection_UtfString<char>::*)(const int) const>(&NCollection_UtfString<char>::GetChar), nb::arg("theCharIndex"), R"nbdoc(Retrieve Unicode symbol at specified position.
@@ -509,6 +516,7 @@ Copy from another string.)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::operator==), nb::arg("theCompare"), R"nbdoc(@name compare operators)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::operator!=), nb::arg("theCompare"), nb::is_operator());
     nb::implicitly_convertible<std::decay_t<const char *>, NCollection_UtfString<char>>();
+    nb::implicitly_convertible<std::decay_t<const char16_t *>, NCollection_UtfString<char>>();
     nb::borrow<nb::class_<NCollection_WinHeapAllocator>>(m.attr("NCollection_WinHeapAllocator"))
         .def(nb::new_([](const size_t theInitSizeBytes) { return opencascade::handle<NCollection_WinHeapAllocator>(new NCollection_WinHeapAllocator(theInitSizeBytes)); }), nb::arg("theInitSizeBytes") = static_cast<std::decay_t<const size_t>>(0x80000), R"nbdoc(Main constructor)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&NCollection_WinHeapAllocator::get_type_name))

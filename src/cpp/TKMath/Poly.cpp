@@ -324,6 +324,9 @@ curve.represents a 3d Polygon)nbdoc");
 void nanoocp_templates_Poly(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<NCollection_Vec3<float>>(home, "NCollection_Array1__NCollection_Vec3__float"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<Poly_Triangle>(home, "NCollection_Array1__Poly_Triangle"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<Poly_CoherentLink>(home, "NCollection_DynamicArray__Poly_CoherentLink"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<Poly_CoherentNode>(home, "NCollection_DynamicArray__Poly_CoherentNode"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<Poly_CoherentTriangle>(home, "NCollection_DynamicArray__Poly_CoherentTriangle"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<Poly_Triangle>(home, "NCollection_HArray1__Poly_Triangle"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<float>(home, "NCollection_Array1__float"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<float>(home, "NCollection_HArray1__float"); }

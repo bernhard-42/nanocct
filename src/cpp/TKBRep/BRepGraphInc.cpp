@@ -242,10 +242,76 @@ during graph population.)nbdoc");
     }
     { nb::class_<BRepGraphInc_Storage::CachedShape> cls(m.attr("BRepGraphInc_Storage"), "CachedShape", R"nbdoc(Gen-validated shape cache entry.)nbdoc");
     }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
 }
 
 void nanoocp_templates_BRepGraphInc(nb::module_ &m) {
-    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>>(home, "NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_LinearVector<BRepGraph_RefId>(home, "NCollection_LinearVector__BRepGraph_RefId"); }
 }
 
 void nanoocp_define_BRepGraphInc(nb::module_ &m) {
@@ -1108,6 +1174,105 @@ Used to assert no guards are active before Clear().)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraphInc_Storage::CachedShape>(nb::borrow<nb::class_<BRepGraphInc_Storage::CachedShape>>(m.attr("BRepGraphInc_Storage").attr("CachedShape")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc_Storage::CachedShape>>(m.attr("BRepGraphInc_Storage").attr("CachedShape")), "Shape", &BRepGraphInc_Storage::CachedShape::Shape, R"nbdoc(Reconstructed shape cached for a node id.)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc_Storage::CachedShape>>(m.attr("BRepGraphInc_Storage").attr("CachedShape")), "StoredSubtreeGen", &BRepGraphInc_Storage::CachedShape::StoredSubtreeGen, R"nbdoc(Subtree generation captured when the cached shape was built.)nbdoc");
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc")
+        .def("__hash__", [](const BRepGraphInc::Instance<BRepGraph_NodeId> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraphInc::Instance<BRepGraph_NodeId>>{}(self)); });
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId>::Orientation);
+    m.attr("VertexInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex");   // VertexInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>
+    m.attr("CoEdgeInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge");   // CoEdgeInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>
+    m.attr("WireInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire");   // WireInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>
+    m.attr("FaceInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face");   // FaceInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>
+    m.attr("ShellInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell");   // ShellInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>
+    m.attr("SolidInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid");   // SolidInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>>
+    m.attr("OccurrenceInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Occurrence");   // OccurrenceInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>>
+    m.attr("CompoundInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Compound");   // CompoundInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>>
+    m.attr("CompSolidInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CompSolid");   // CompSolidInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>>
+    m.attr("ProductInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product");   // ProductInstance = BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>>
+    m.attr("NodeInstance") = nb::module_::import_("nanoocp._TKBRep.BRepGraphInc").attr("BRepGraphInc_Instance__BRepGraph_NodeId");   // NodeInstance = BRepGraphInc::Instance<BRepGraph_NodeId>
 }
 
 void nanoocp_conversions_BRepGraphInc(nb::module_ &m) {

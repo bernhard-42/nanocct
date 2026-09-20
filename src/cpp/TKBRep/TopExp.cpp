@@ -84,6 +84,13 @@ complex than the type to find it has no effect.
 For example searching edges not in a vertex does
 not make a difference.)nbdoc");
     }
+    { nb::class_<NCollection_ForwardRangeIterator<TopExp_Explorer>> cls(m, "NCollection_ForwardRangeIterator__TopExp_Explorer", R"nbdoc(@brief STL input iterator that wraps an OCCT More()/Next() iterator.
+
+Holds a non-owning pointer to the host iterator/explorer.
+The host must outlive this iterator (guaranteed by range-for semantics).
+
+@tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.)nbdoc");
+    }
 }
 
 void nanoocp_templates_TopExp(nb::module_ &m) {
@@ -170,10 +177,11 @@ ToFind it has no effect on the search.)nbdoc")
         .def("Depth", static_cast<int (TopExp_Explorer::*)() const noexcept>(&TopExp_Explorer::Depth), R"nbdoc(Returns the current depth of the exploration. 0 is
 the shape to explore itself.)nbdoc")
         .def("Clear", static_cast<void (TopExp_Explorer::*)()>(&TopExp_Explorer::Clear), R"nbdoc(Clears the content of the explorer.)nbdoc")
-        .def("begin", static_cast<NCollection_ForwardRangeIterator<TopExp_Explorer> (TopExp_Explorer::*)()>(&TopExp_Explorer::begin), R"nbdoc(Returns an STL-compatible iterator for range-based for loops.
-@warning Do not call Next() or Init() externally during range-for iteration.)nbdoc")
         .def("end", static_cast<NCollection_ForwardRangeSentinel (TopExp_Explorer::*)() const>(&TopExp_Explorer::end), R"nbdoc(Returns a sentinel marking the end of iteration.)nbdoc");
     nanoocp_implicit_copy_ctor<TopExp_Explorer>(nb::borrow<nb::class_<TopExp_Explorer>>(m.attr("TopExp_Explorer")));
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopExp_Explorer>>>(m.attr("NCollection_ForwardRangeIterator__TopExp_Explorer"))
+        .def(nb::init<TopExp_Explorer *>(), nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<TopExp_Explorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopExp_Explorer>>>(m.attr("NCollection_ForwardRangeIterator__TopExp_Explorer")));
 }
 
 void nanoocp_conversions_TopExp(nb::module_ &m) {
