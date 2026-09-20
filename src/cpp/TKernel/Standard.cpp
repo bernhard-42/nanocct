@@ -343,6 +343,7 @@ This is more efficient than using acq_rel for every decrement.)nbdoc")
 Note that multiple inheritance is not supported.)nbdoc")
         .def("SubType", static_cast<bool (Standard_Type::*)(const char *const) const>(&Standard_Type::SubType), nb::arg("theOther"), R"nbdoc(Returns True if this type is the same as theOther, or inherits from theOther.
 Note that multiple inheritance is not supported.)nbdoc")
+        .def("Print", [](const Standard_Type &self) { std::ostringstream theStream_stream; self.Print(theStream_stream); return nanoocp_stream_text(theStream_stream); }, R"nbdoc(Prints type (address of descriptor + name) to a stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Standard_Type::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Standard_Type::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Standard_Type::*)() const>(&Standard_Type::DynamicType));
@@ -379,6 +380,19 @@ and returns true if it was in signaling state.
     nanoocp_def_field(nb::borrow<nb::class_<Standard_DumpValue>>(m.attr("Standard_DumpValue")), "myStartPosition", &Standard_DumpValue::myStartPosition, R"nbdoc(position of the value first char in the whole stream)nbdoc");
     nanoocp_implicit_default_ctor<Standard_Dump>(nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump")));
     nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump"))
+        .def_static("Text", [](const nanoocp::TextInput &theStream) { std::stringstream theStream_stream(theStream.text); auto result = Standard_Dump::Text(theStream_stream); return result; }, nb::arg("theStream"), R"nbdoc(Converts stream value to string value. The result is original stream value.
+@param theStream source value
+@return text presentation)nbdoc")
+        .def_static("FormatJson", [](const nanoocp::TextInput &theStream, const int theIndent) { std::stringstream theStream_stream(theStream.text); auto result = Standard_Dump::FormatJson(theStream_stream, theIndent); return result; }, nb::arg("theStream"), nb::arg("theIndent") = static_cast<std::decay_t<const int>>(3), R"nbdoc(Converts stream value to string value. Improves the text presentation with the following
+cases:
+- for '{' append after '\n' and indent to the next value, increment current indent value
+- for '}' append '\n' and current indent before it, decrement indent value
+- for ',' append after '\n' and indent to the next value. If the current symbol is in massive
+container [], do nothing Covers result with opened and closed brackets on the top level, if it
+has no symbols there.
+@param theStream source value
+@param theIndent count of ' ' symbols to apply hierarchical indent of the text values
+@return text presentation)nbdoc")
         .def_static("SplitJson", static_cast<bool (*)(const TCollection_AsciiString &, NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue, NCollection_DefaultHasher<TCollection_AsciiString>> &)>(&Standard_Dump::SplitJson), nb::arg("theStreamStr"), nb::arg("theKeyToValues"), R"nbdoc(Converts stream into map of values.
 
 The one level stream example: 'key_1: value_1, key_2: value_2'
@@ -396,6 +410,7 @@ of the value in the stream text)nbdoc")
         .def_static("HasChildKey", static_cast<bool (*)(const TCollection_AsciiString &)>(&Standard_Dump::HasChildKey), nb::arg("theSourceValue"), R"nbdoc(Returns true if the value has bracket key)nbdoc")
         .def_static("JsonKeyToString", static_cast<const char * (*)(const Standard_JsonKey)>(&Standard_Dump::JsonKeyToString), nb::arg("theKey"), R"nbdoc(Returns key value for enum type)nbdoc")
         .def_static("JsonKeyLength", static_cast<int (*)(const Standard_JsonKey)>(&Standard_Dump::JsonKeyLength), nb::arg("theKey"), R"nbdoc(Returns length value for enum type)nbdoc")
+        .def_static("AddValuesSeparator", []() { std::ostringstream theOStream_stream; Standard_Dump::AddValuesSeparator(theOStream_stream); return nanoocp_stream_text(theOStream_stream); }, R"nbdoc(@param theOStream source value)nbdoc")
         .def_static("GetPointerPrefix", static_cast<TCollection_AsciiString (*)()>(&Standard_Dump::GetPointerPrefix), R"nbdoc(Returns default prefix added for each pointer info string if short presentation of pointer
 used)nbdoc")
         .def_static("GetPointerInfo", static_cast<TCollection_AsciiString (*)(const occ::handle<Standard_Transient> &, const bool)>(&Standard_Dump::GetPointerInfo), nb::arg("thePointer"), nb::arg("isShortInfo") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Convert handle pointer to address of the pointer. If the handle is NULL, the result is an
@@ -403,6 +418,10 @@ empty string.
 @param thePointer a pointer
 @param isShortInfo if true, all '0' symbols in the beginning of the pointer are skipped
 @return the string value)nbdoc")
+        .def_static("DumpKeyToClass", [](const TCollection_AsciiString & theKey, const TCollection_AsciiString & theField) { std::ostringstream theOStream_stream; Standard_Dump::DumpKeyToClass(theOStream_stream, theKey, theField); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theKey"), nb::arg("theField"), R"nbdoc(Append into output value: "Name": { Field }
+@param[out] theOStream  stream to be fill with values
+@param theKey a source value
+@param theField stream value)nbdoc")
         .def_static("ProcessStreamName", [](const TCollection_AsciiString & theStreamStr, const TCollection_AsciiString & theName) { int theStreamPos{}; auto result = Standard_Dump::ProcessStreamName(theStreamStr, theName, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theStreamStr"), nb::arg("theName"), R"nbdoc(Check whether the parameter name is equal to the name in the stream at position
 @param[in]  theStreamStr stream with values
 @param[in]  theName      stream key value
@@ -460,6 +479,9 @@ following format:
         .def("__ne__", static_cast<bool (Standard_GUID::*)(const Standard_GUID &) const noexcept>(&Standard_GUID::operator!=), nb::arg("uid"), nb::is_operator())
         .def("Assign", static_cast<void (Standard_GUID::*)(const Standard_GUID &) noexcept>(&Standard_GUID::Assign), nb::arg("uid"), R"nbdoc(Assigns uid to this GUID.)nbdoc")
         .def("Assign", static_cast<void (Standard_GUID::*)(const Standard_UUID &) noexcept>(&Standard_GUID::Assign), nb::arg("uid"), R"nbdoc(Assigns uid to this GUID.)nbdoc")
+        .def("ShallowDump", [](const Standard_GUID &self) { std::ostringstream aStream_stream; self.ShallowDump(aStream_stream); return nanoocp_stream_text(aStream_stream); }, R"nbdoc(Display the GUID with the following format:
+
+"00000000-0000-0000-0000-000000000000")nbdoc")
         .def_static("CheckGUIDFormat", static_cast<bool (*)(const char *const)>(&Standard_GUID::CheckGUIDFormat), nb::arg("aGuid"), R"nbdoc(Check the format of a GUID string.
 It checks the size, the position of the '-' and the correct size of fields.)nbdoc")
         .def("__hash__", [](const Standard_GUID &self) { return static_cast<Py_ssize_t>(std::hash<Standard_GUID>{}(self)); });

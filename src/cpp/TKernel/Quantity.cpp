@@ -12,6 +12,8 @@
 #include <NCollection_Vec3.hxx>
 #include <NCollection_Vec4.hxx>
 #include <Standard_DomainError.hxx>
+#include <Standard_OStream.hxx>
+#include <Standard_SStream.hxx>
 #include <TCollection_AsciiString.hxx>
 
 void nanoocp_declare_Quantity(nb::module_ &m) {
@@ -681,6 +683,8 @@ known as gamma correction.)nbdoc")
         .def_static("RgbHls", [](const double theR, const double theG, const double theB) { double theH{}; double theL{}; double theS{}; Quantity_Color::RgbHls(theR, theG, theB, theH, theL, theS); return std::make_tuple(theH, theL, theS); }, nb::arg("theR"), nb::arg("theG"), nb::arg("theB"), R"nbdoc(Converts sRGB components into HLS ones.)nbdoc")
         .def_static("Epsilon", static_cast<double (*)() noexcept>(&Quantity_Color::Epsilon), R"nbdoc(Returns the value used to compare two colors for equality; 0.0001 by default.)nbdoc")
         .def_static("SetEpsilon", static_cast<void (*)(const double) noexcept>(&Quantity_Color::SetEpsilon), nb::arg("theEpsilon"), R"nbdoc(Set the value used to compare two colors for equality.)nbdoc")
+        .def("DumpJson", [](const Quantity_Color &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](Quantity_Color &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
         .def("__hash__", [](const Quantity_Color &self) { return static_cast<Py_ssize_t>(std::hash<Quantity_Color>{}(self)); });
     nanoocp_implicit_copy_ctor<Quantity_Color>(nb::borrow<nb::class_<Quantity_Color>>(m.attr("Quantity_Color")));
     nb::implicitly_convertible<std::decay_t<const Quantity_NameOfColor>, Quantity_Color>();
@@ -717,6 +721,8 @@ in the input string (false) or not (true)
         .def_static("ColorToHex", static_cast<TCollection_AsciiString (*)(const Quantity_ColorRGBA &, const bool) noexcept>(&Quantity_ColorRGBA::ColorToHex), nb::arg("theColor"), nb::arg("theToPrefixHash") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns hex sRGBA string in format "#RRGGBBAA".)nbdoc")
         .def_static("Convert_LinearRGB_To_sRGB", static_cast<NCollection_Vec4<float> (*)(const NCollection_Vec4<float> &) noexcept>(&Quantity_ColorRGBA::Convert_LinearRGB_To_sRGB), nb::arg("theRGB"), R"nbdoc(Convert linear RGB components into sRGB using OpenGL specs formula.)nbdoc")
         .def_static("Convert_sRGB_To_LinearRGB", static_cast<NCollection_Vec4<float> (*)(const NCollection_Vec4<float> &) noexcept>(&Quantity_ColorRGBA::Convert_sRGB_To_LinearRGB), nb::arg("theRGB"), R"nbdoc(Convert sRGB components into linear RGB using OpenGL specs formula.)nbdoc")
+        .def("DumpJson", [](const Quantity_ColorRGBA &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](Quantity_ColorRGBA &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
         .def("__hash__", [](const Quantity_ColorRGBA &self) { return static_cast<Py_ssize_t>(std::hash<Quantity_ColorRGBA>{}(self)); });
     nanoocp_implicit_copy_ctor<Quantity_ColorRGBA>(nb::borrow<nb::class_<Quantity_ColorRGBA>>(m.attr("Quantity_ColorRGBA")));
     nb::borrow<nb::class_<Quantity_Date>>(m.attr("Quantity_Date"))
@@ -938,7 +944,8 @@ This method may be used for performance tricks.)nbdoc")
 @return interpolation result.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
-        .def_static("DZ", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc");
+        .def_static("DZ", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
+        .def("DumpJson", [](const NCollection_Vec3<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec3<float>>(nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float")));
     nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -1034,7 +1041,8 @@ This method may be used for performance tricks.)nbdoc")
         .def("Dot", static_cast<float (NCollection_Vec4<float>::*)(const NCollection_Vec4<float> &) const noexcept>(&NCollection_Vec4<float>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<float> &self, const float theInvFactor) -> NCollection_Vec4<float> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theRight) -> NCollection_Vec4<float> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
-        .def("__truediv__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const float) const>(&NCollection_Vec4<float>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator());
+        .def("__truediv__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const float) const>(&NCollection_Vec4<float>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("DumpJson", [](const NCollection_Vec4<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec4<float>>(nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float")));
 }
 

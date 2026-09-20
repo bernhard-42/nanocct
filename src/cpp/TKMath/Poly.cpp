@@ -30,6 +30,8 @@
 #include <NCollection_Vec2.hxx>
 #include <NCollection_Vec3.hxx>
 #include <OSD_FileSystem.hxx>
+#include <Standard_IStream.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Ax1.hxx>
@@ -512,6 +514,7 @@ triangulation
 even for non-identity transformation.
 @return FALSE if there is no any data to extend the passed box (no both triangulation and
 cached min - max range).)nbdoc")
+        .def("DumpJson", [](const Poly_Triangulation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("IsDoublePrecision", static_cast<bool (Poly_Triangulation::*)() const>(&Poly_Triangulation::IsDoublePrecision), R"nbdoc(Returns TRUE if node positions are defined with double precision; TRUE by default.)nbdoc")
         .def("SetDoublePrecision", static_cast<void (Poly_Triangulation::*)(bool)>(&Poly_Triangulation::SetDoublePrecision), nb::arg("theIsDouble"), R"nbdoc(Set if node positions should be defined with double or single precision for 3D and UV nodes.
 Raises exception if data was already allocated.)nbdoc")
@@ -572,6 +575,30 @@ Join several triangulations to one new triangulation object.
 The new triangulation is just a mechanical sum of input
 triangulations, without node sharing. UV coordinates are
 dropped in the result.)nbdoc")
+        .def_static("Write", [](const occ::handle<Poly_Triangulation> & T, const bool Compact) { std::ostringstream OS_stream; Poly::Write(T, OS_stream, Compact); return nanoocp_stream_text(OS_stream); }, nb::arg("T"), nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Writes the content of the triangulation <T> on the
+stream <OS>. If <Compact> is true this is a "save"
+format intended to be read back with the Read
+method. If compact is False it is a "Dump" format
+intended to be informative.)nbdoc")
+        .def_static("Write", [](const occ::handle<Poly_Polygon3D> & P, const bool Compact) { std::ostringstream OS_stream; Poly::Write(P, OS_stream, Compact); return nanoocp_stream_text(OS_stream); }, nb::arg("P"), nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Writes the content of the 3D polygon <P> on the
+stream <OS>. If <Compact> is true this is a "save"
+format intended to be read back with the Read
+method. If compact is False it is a "Dump" format
+intended to be informative.)nbdoc")
+        .def_static("Write", [](const occ::handle<Poly_Polygon2D> & P, const bool Compact) { std::ostringstream OS_stream; Poly::Write(P, OS_stream, Compact); return nanoocp_stream_text(OS_stream); }, nb::arg("P"), nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Writes the content of the 2D polygon <P> on the
+stream <OS>. If <Compact> is true this is a "save"
+format intended to be read back with the Read
+method. If compact is False it is a "Dump" format
+intended to be informative.)nbdoc")
+        .def_static("Dump", [](const occ::handle<Poly_Triangulation> & T) { std::ostringstream OS_stream; Poly::Dump(T, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("T"), R"nbdoc(Dumps the triangulation. This is a call to the
+previous method with Comapct set to False.)nbdoc")
+        .def_static("Dump", [](const occ::handle<Poly_Polygon3D> & P) { std::ostringstream OS_stream; Poly::Dump(P, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("P"), R"nbdoc(Dumps the 3D polygon. This is a call to the
+previous method with Comapct set to False.)nbdoc")
+        .def_static("Dump", [](const occ::handle<Poly_Polygon2D> & P) { std::ostringstream OS_stream; Poly::Dump(P, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("P"), R"nbdoc(Dumps the 2D polygon. This is a call to the
+previous method with Comapct set to False.)nbdoc")
+        .def_static("ReadTriangulation", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = Poly::ReadTriangulation(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads a triangulation from the stream <IS>.)nbdoc")
+        .def_static("ReadPolygon3D", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = Poly::ReadPolygon3D(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads a 3d polygon from the stream <IS>.)nbdoc")
+        .def_static("ReadPolygon2D", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = Poly::ReadPolygon2D(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads a 2D polygon from the stream <IS>.)nbdoc")
         .def_static("ComputeNormals", static_cast<void (*)(const occ::handle<Poly_Triangulation> &)>(&Poly::ComputeNormals), nb::arg("Tri"), R"nbdoc(Compute node normals for face triangulation
 as mean normal of surrounding triangles)nbdoc")
         .def_static("PointOnTriangle", static_cast<double (*)(const gp_XY &, const gp_XY &, const gp_XY &, const gp_XY &, gp_XY &)>(&Poly::PointOnTriangle), nb::arg("P1"), nb::arg("P2"), nb::arg("P3"), nb::arg("P"), nb::arg("UV"), R"nbdoc(Computes parameters of the point P on triangle
@@ -675,7 +702,8 @@ incident triangle.)nbdoc")
         .def("Clear", static_cast<void (Poly_CoherentNode::*)(const occ::handle<NCollection_BaseAllocator> &)>(&Poly_CoherentNode::Clear), nb::arg("arg0"), R"nbdoc(Reset the Node to void.)nbdoc")
         .def("AddTriangle", static_cast<void (Poly_CoherentNode::*)(const Poly_CoherentTriangle &, const occ::handle<NCollection_BaseAllocator> &)>(&Poly_CoherentNode::AddTriangle), nb::arg("theTri"), nb::arg("theA"), R"nbdoc(Connect a triangle to this Node.)nbdoc")
         .def("RemoveTriangle", static_cast<bool (Poly_CoherentNode::*)(const Poly_CoherentTriangle &, const occ::handle<NCollection_BaseAllocator> &)>(&Poly_CoherentNode::RemoveTriangle), nb::arg("theTri"), nb::arg("theA"), R"nbdoc(Disconnect a triangle from this Node.)nbdoc")
-        .def("TriangleIterator", static_cast<Poly_CoherentTriPtr::Iterator (Poly_CoherentNode::*)() const>(&Poly_CoherentNode::TriangleIterator), R"nbdoc(Create an iterator of incident triangles.)nbdoc");
+        .def("TriangleIterator", static_cast<Poly_CoherentTriPtr::Iterator (Poly_CoherentNode::*)() const>(&Poly_CoherentNode::TriangleIterator), R"nbdoc(Create an iterator of incident triangles.)nbdoc")
+        .def("Dump", [](const Poly_CoherentNode &self) { std::ostringstream theStream_stream; self.Dump(theStream_stream); return nanoocp_stream_text(theStream_stream); });
     nanoocp_implicit_copy_ctor<Poly_CoherentNode>(nb::borrow<nb::class_<Poly_CoherentNode>>(m.attr("Poly_CoherentNode")));
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, Poly_CoherentNode>();
     nb::borrow<nb::class_<Poly_CoherentTriangle>>(m.attr("Poly_CoherentTriangle"))
@@ -778,6 +806,7 @@ Index of the side (i.e., 0, 1 0r 2) defining the added link.)nbdoc")
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (Poly_CoherentTriangulation::*)() const>(&Poly_CoherentTriangulation::Allocator), R"nbdoc(Query the allocator of elements, this allocator can be used for other
 objects)nbdoc")
         .def("Clone", static_cast<occ::handle<Poly_CoherentTriangulation> (Poly_CoherentTriangulation::*)(const occ::handle<NCollection_BaseAllocator> &) const>(&Poly_CoherentTriangulation::Clone), nb::arg("theAlloc"), R"nbdoc(Create a copy of this Triangulation, using the given allocator.)nbdoc")
+        .def("Dump", [](const Poly_CoherentTriangulation &self) { std::ostringstream arg0_stream; self.Dump(arg0_stream); return nanoocp_stream_text(arg0_stream); }, R"nbdoc(Debugging output.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Poly_CoherentTriangulation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Poly_CoherentTriangulation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_CoherentTriangulation::*)() const>(&Poly_CoherentTriangulation::DynamicType));
@@ -1057,6 +1086,7 @@ repeated at the end of its table of nodes. Thus, on a closed
 triangle, the function NbNodes returns 4.)nbdoc")
         .def("Nodes", static_cast<const NCollection_Array1<gp_Pnt2d> & (Poly_Polygon2D::*)() const>(&Poly_Polygon2D::Nodes), R"nbdoc(Returns the table of nodes for this polygon.)nbdoc")
         .def("ChangeNodes", static_cast<NCollection_Array1<gp_Pnt2d> & (Poly_Polygon2D::*)()>(&Poly_Polygon2D::ChangeNodes), nb::rv_policy::reference_internal, R"nbdoc(Returns the table of nodes for this polygon.)nbdoc")
+        .def("DumpJson", [](const Poly_Polygon2D &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Poly_Polygon2D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Poly_Polygon2D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_Polygon2D::*)() const>(&Poly_Polygon2D::DynamicType));
@@ -1090,6 +1120,7 @@ in this polygon.)nbdoc")
 ChangeParameters function returns the array as shared.
 Therefore if the table is selected by reference you can, by simply modifying it,
 directly modify the data structure of this polygon.)nbdoc")
+        .def("DumpJson", [](const Poly_Polygon3D &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Poly_Polygon3D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Poly_Polygon3D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_Polygon3D::*)() const>(&Poly_Polygon3D::DynamicType));
@@ -1130,6 +1161,7 @@ triangle, the function NbNodes returns 4.)nbdoc")
         .def("ChangeParameterArray", static_cast<NCollection_Array1<double> & (Poly_PolygonOnTriangulation::*)()>(&Poly_PolygonOnTriangulation::ChangeParameterArray), nb::rv_policy::reference_internal, R"nbdoc(Returns mutable parameter array.)nbdoc")
         .def("SetParameters", static_cast<void (Poly_PolygonOnTriangulation::*)(const occ::handle<NCollection_HArray1<double>> &)>(&Poly_PolygonOnTriangulation::SetParameters), nb::arg("theParameters"), R"nbdoc(Sets the table of the parameters associated with each node in this polygon.
 Raises exception if array size doesn't much number of polygon nodes.)nbdoc")
+        .def("DumpJson", [](const Poly_PolygonOnTriangulation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("Nodes", static_cast<const NCollection_Array1<int> & (Poly_PolygonOnTriangulation::*)() const>(&Poly_PolygonOnTriangulation::Nodes), R"nbdoc(Returns the table of nodes for this polygon.
 A node value is an index in the table of nodes specific to an existing triangulation of a
 shape.)nbdoc")

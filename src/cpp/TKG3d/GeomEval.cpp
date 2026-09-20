@@ -22,6 +22,7 @@
 #include <Geom_Surface.hxx>
 #include <NCollection_Array1.hxx>
 #include <NCollection_Array2.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Ax2.hxx>
@@ -338,6 +339,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def("Transform", static_cast<void (GeomEval_AHTBezierCurve::*)(const gp_Trsf &)>(&GeomEval_AHTBezierCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_AHTBezierCurve::*)() const>(&GeomEval_AHTBezierCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const GeomEval_AHTBezierCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_AHTBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_AHTBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_AHTBezierCurve::*)() const>(&GeomEval_AHTBezierCurve::DynamicType));
@@ -410,6 +412,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def("Transform", static_cast<void (GeomEval_AHTBezierSurface::*)(const gp_Trsf &)>(&GeomEval_AHTBezierSurface::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_AHTBezierSurface::*)() const>(&GeomEval_AHTBezierSurface::Copy), R"nbdoc(Creates a new object which is a copy of this surface.)nbdoc")
+        .def("DumpJson", [](const GeomEval_AHTBezierSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_AHTBezierSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_AHTBezierSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_AHTBezierSurface::*)() const>(&GeomEval_AHTBezierSurface::DynamicType));
@@ -449,6 +452,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def("Transform", static_cast<void (GeomEval_CircularHelicoidSurface::*)(const gp_Trsf &)>(&GeomEval_CircularHelicoidSurface::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_CircularHelicoidSurface::*)() const>(&GeomEval_CircularHelicoidSurface::Copy), R"nbdoc(Creates a new object which is a copy of this surface.)nbdoc")
+        .def("DumpJson", [](const GeomEval_CircularHelicoidSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_CircularHelicoidSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_CircularHelicoidSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_CircularHelicoidSurface::*)() const>(&GeomEval_CircularHelicoidSurface::DynamicType));
@@ -484,6 +488,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def("Transform", static_cast<void (GeomEval_CircularHelixCurve::*)(const gp_Trsf &)>(&GeomEval_CircularHelixCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_CircularHelixCurve::*)() const>(&GeomEval_CircularHelixCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const GeomEval_CircularHelixCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_CircularHelixCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_CircularHelixCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_CircularHelixCurve::*)() const>(&GeomEval_CircularHelixCurve::DynamicType));
@@ -551,6 +556,7 @@ and Nv in the direction v.
         .def("Transform", static_cast<void (GeomEval_EllipsoidSurface::*)(const gp_Trsf &)>(&GeomEval_EllipsoidSurface::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_EllipsoidSurface::*)() const>(&GeomEval_EllipsoidSurface::Copy), R"nbdoc(Creates a new object which is a copy of this ellipsoid.)nbdoc")
+        .def("DumpJson", [](const GeomEval_EllipsoidSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def("Coefficients", [](const GeomEval_EllipsoidSurface &self) { double A1{}; double A2{}; double A3{}; double B1{}; double B2{}; double B3{}; double C1{}; double C2{}; double C3{}; double D{}; self.Coefficients(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); return std::make_tuple(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); }, R"nbdoc(Returns the coefficients of the implicit equation of the
 quadric in the absolute Cartesian coordinate system:
 @code
@@ -618,6 +624,7 @@ and Nv in the direction v.
         .def("Transform", static_cast<void (GeomEval_HypParaboloidSurface::*)(const gp_Trsf &)>(&GeomEval_HypParaboloidSurface::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_HypParaboloidSurface::*)() const>(&GeomEval_HypParaboloidSurface::Copy), R"nbdoc(Creates a new object which is a copy of this hyperbolic paraboloid.)nbdoc")
+        .def("DumpJson", [](const GeomEval_HypParaboloidSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def("Coefficients", [](const GeomEval_HypParaboloidSurface &self) { double A1{}; double A2{}; double A3{}; double B1{}; double B2{}; double B3{}; double C1{}; double C2{}; double C3{}; double D{}; self.Coefficients(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); return std::make_tuple(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); }, R"nbdoc(Returns the coefficients of the implicit equation of the
 quadric in the absolute Cartesian coordinate system:
 @code
@@ -686,6 +693,7 @@ and Nv in the direction v.
         .def("Transform", static_cast<void (GeomEval_HyperboloidSurface::*)(const gp_Trsf &)>(&GeomEval_HyperboloidSurface::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_HyperboloidSurface::*)() const>(&GeomEval_HyperboloidSurface::Copy), R"nbdoc(Creates a new object which is a copy of this hyperboloid.)nbdoc")
+        .def("DumpJson", [](const GeomEval_HyperboloidSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def("Coefficients", [](const GeomEval_HyperboloidSurface &self) { double A1{}; double A2{}; double A3{}; double B1{}; double B2{}; double B3{}; double C1{}; double C2{}; double C3{}; double D{}; self.Coefficients(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); return std::make_tuple(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); }, R"nbdoc(Returns the coefficients of the implicit equation of the
 quadric in the absolute Cartesian coordinate system:
 @code
@@ -751,6 +759,7 @@ and Nv in the direction v.
         .def("Transform", static_cast<void (GeomEval_ParaboloidSurface::*)(const gp_Trsf &)>(&GeomEval_ParaboloidSurface::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_ParaboloidSurface::*)() const>(&GeomEval_ParaboloidSurface::Copy), R"nbdoc(Creates a new object which is a copy of this paraboloid.)nbdoc")
+        .def("DumpJson", [](const GeomEval_ParaboloidSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def("Coefficients", [](const GeomEval_ParaboloidSurface &self) { double A1{}; double A2{}; double A3{}; double B1{}; double B2{}; double B3{}; double C1{}; double C2{}; double C3{}; double D{}; self.Coefficients(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); return std::make_tuple(A1, A2, A3, B1, B2, B3, C1, C2, C3, D); }, R"nbdoc(Returns the coefficients of the implicit equation of the
 quadric in the absolute Cartesian coordinate system:
 @code
@@ -887,6 +896,7 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def("Transform", static_cast<void (GeomEval_SineWaveCurve::*)(const gp_Trsf &)>(&GeomEval_SineWaveCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_SineWaveCurve::*)() const>(&GeomEval_SineWaveCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const GeomEval_SineWaveCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_SineWaveCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_SineWaveCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_SineWaveCurve::*)() const>(&GeomEval_SineWaveCurve::DynamicType));
@@ -931,6 +941,7 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def("Transform", static_cast<void (GeomEval_TBezierCurve::*)(const gp_Trsf &)>(&GeomEval_TBezierCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_TBezierCurve::*)() const>(&GeomEval_TBezierCurve::Copy), R"nbdoc(Creates a new object which is a copy of this T-Bezier curve.)nbdoc")
+        .def("DumpJson", [](const GeomEval_TBezierCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_TBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_TBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_TBezierCurve::*)() const>(&GeomEval_TBezierCurve::DynamicType));
@@ -994,6 +1005,7 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def("Transform", static_cast<void (GeomEval_TBezierSurface::*)(const gp_Trsf &)>(&GeomEval_TBezierSurface::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (GeomEval_TBezierSurface::*)() const>(&GeomEval_TBezierSurface::Copy), R"nbdoc(Creates a new object which is a copy of this T-Bezier surface.)nbdoc")
+        .def("DumpJson", [](const GeomEval_TBezierSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_TBezierSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_TBezierSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_TBezierSurface::*)() const>(&GeomEval_TBezierSurface::DynamicType));

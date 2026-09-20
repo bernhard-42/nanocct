@@ -1,7 +1,7 @@
 """OCCT package Poly (toolkit TKMath)"""
 
 import enum
-from typing import overload
+from typing import TextIO, overload
 
 import nanoocp.BVH
 import nanoocp.Bnd
@@ -532,6 +532,9 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         cached min - max range).
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     def IsDoublePrecision(self) -> bool:
         """
         Returns TRUE if node positions are defined with double precision; TRUE by default.
@@ -688,6 +691,75 @@ class Poly:
         triangulations, without node sharing. UV coordinates are
         dropped in the result.
         """
+
+    @overload
+    @staticmethod
+    def Write(T: Poly_Triangulation, Compact: bool = True) -> object:
+        """
+        Writes the content of the triangulation <T> on the
+        stream <OS>. If <Compact> is true this is a "save"
+        format intended to be read back with the Read
+        method. If compact is False it is a "Dump" format
+        intended to be informative.
+        """
+
+    @overload
+    @staticmethod
+    def Write(P: Poly_Polygon3D, Compact: bool = True) -> object:
+        """
+        Writes the content of the 3D polygon <P> on the
+        stream <OS>. If <Compact> is true this is a "save"
+        format intended to be read back with the Read
+        method. If compact is False it is a "Dump" format
+        intended to be informative.
+        """
+
+    @overload
+    @staticmethod
+    def Write(P: Poly_Polygon2D, Compact: bool = True) -> object:
+        """
+        Writes the content of the 2D polygon <P> on the
+        stream <OS>. If <Compact> is true this is a "save"
+        format intended to be read back with the Read
+        method. If compact is False it is a "Dump" format
+        intended to be informative.
+        """
+
+    @overload
+    @staticmethod
+    def Dump(T: Poly_Triangulation) -> object:
+        """
+        Dumps the triangulation. This is a call to the
+        previous method with Comapct set to False.
+        """
+
+    @overload
+    @staticmethod
+    def Dump(P: Poly_Polygon3D) -> object:
+        """
+        Dumps the 3D polygon. This is a call to the
+        previous method with Comapct set to False.
+        """
+
+    @overload
+    @staticmethod
+    def Dump(P: Poly_Polygon2D) -> object:
+        """
+        Dumps the 2D polygon. This is a call to the
+        previous method with Comapct set to False.
+        """
+
+    @staticmethod
+    def ReadTriangulation(IS: TextIO) -> Poly_Triangulation:
+        """Reads a triangulation from the stream <IS>."""
+
+    @staticmethod
+    def ReadPolygon3D(IS: TextIO) -> Poly_Polygon3D:
+        """Reads a 3d polygon from the stream <IS>."""
+
+    @staticmethod
+    def ReadPolygon2D(IS: TextIO) -> Poly_Polygon2D:
+        """Reads a 2D polygon from the stream <IS>."""
 
     @staticmethod
     def ComputeNormals(Tri: Poly_Triangulation) -> None:
@@ -953,6 +1025,8 @@ class Poly_CoherentNode(nanoocp.gp.gp_XYZ):
 
     def TriangleIterator(self) -> Poly_CoherentTriPtr.Iterator:
         """Create an iterator of incident triangles."""
+
+    def Dump(self) -> object: ...
 
 class Poly_CoherentTriangle:
     """
@@ -1310,6 +1384,9 @@ class Poly_CoherentTriangulation(nanoocp.Standard.Standard_Transient):
 
     def Clone(self, theAlloc: nanoocp.NCollection.NCollection_BaseAllocator) -> Poly_CoherentTriangulation:
         """Create a copy of this Triangulation, using the given allocator."""
+
+    def Dump(self) -> object:
+        """Debugging output."""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -2011,6 +2088,9 @@ class Poly_Polygon2D(nanoocp.Standard.Standard_Transient):
     def ChangeNodes(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the table of nodes for this polygon."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -2098,6 +2178,9 @@ class Poly_Polygon3D(nanoocp.Standard.Standard_Transient):
         Therefore if the table is selected by reference you can, by simply modifying it,
         directly modify the data structure of this polygon.
         """
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -2213,6 +2296,9 @@ class Poly_PolygonOnTriangulation(nanoocp.Standard.Standard_Transient):
         Sets the table of the parameters associated with each node in this polygon.
         Raises exception if array size doesn't much number of polygon nodes.
         """
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     def Nodes(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """

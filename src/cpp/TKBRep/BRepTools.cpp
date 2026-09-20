@@ -27,6 +27,8 @@
 #include <Poly_Polygon3D.hxx>
 #include <Poly_PolygonOnTriangulation.hxx>
 #include <Poly_Triangulation.hxx>
+#include <Standard_IStream.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <TopAbs_Orientation.hxx>
@@ -336,6 +338,26 @@ of <S>.)nbdoc")
         .def_static("IsReallyClosed", static_cast<bool (*)(const TopoDS_Edge &, const TopoDS_Face &)>(&BRepTools::IsReallyClosed), nb::arg("E"), nb::arg("F"), R"nbdoc(Verifies that the edge <E> is found two times on
 the face <F> before calling BRep_Tool::IsClosed.)nbdoc")
         .def_static("DetectClosedness", [](const TopoDS_Face & theFace) { bool theUclosed{}; bool theVclosed{}; BRepTools::DetectClosedness(theFace, theUclosed, theVclosed); return std::make_tuple(theUclosed, theVclosed); }, nb::arg("theFace"), R"nbdoc(Detect closedness of face in U and V directions)nbdoc")
+        .def_static("Dump", [](const TopoDS_Shape & Sh) { std::ostringstream S_stream; BRepTools::Dump(Sh, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("Sh"), R"nbdoc(Dumps the topological structure and the geometry
+of <Sh> on the stream <S>.)nbdoc")
+        .def_static("Write", [](const TopoDS_Shape & theShape, const Message_ProgressRange & theProgress) { std::ostringstream theStream_stream; BRepTools::Write(theShape, theStream_stream, theProgress); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the shape to the stream in an ASCII format TopTools_FormatVersion_VERSION_1.
+This alias writes shape with triangulation data.
+@param[in] theShape        the shape to write
+@param[in][out] theStream  the stream to output shape into
+@param theRange            the range of progress indicator to fill in)nbdoc")
+        .def_static("Write", [](const TopoDS_Shape & theShape, const bool theWithTriangles, const bool theWithNormals, const TopTools_FormatVersion theVersion, const Message_ProgressRange & theProgress) { std::ostringstream theStream_stream; BRepTools::Write(theShape, theStream_stream, theWithTriangles, theWithNormals, theVersion, theProgress); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theWithTriangles"), nb::arg("theWithNormals"), nb::arg("theVersion"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the shape to the stream in an ASCII format of specified version.
+@param[in] theShape          the shape to write
+@param[in][out] theStream    the stream to output shape into
+@param[in] theWithTriangles  flag which specifies whether to save shape with (TRUE) or without
+(FALSE) triangles;
+has no effect on triangulation-only geometry
+@param[in] theWithNormals    flag which specifies whether to save triangulation with (TRUE) or
+without (FALSE) normals;
+has no effect on triangulation-only geometry
+@param[in] theVersion        the TopTools format version
+@param theProgress the range of progress indicator to fill in)nbdoc")
+        .def_static("Read", [](TopoDS_Shape & Sh, const nanoocp::TextInput &S, const BRep_Builder & B, const Message_ProgressRange & theProgress) { std::stringstream S_stream(S.text); BRepTools::Read(Sh, S_stream, B, theProgress); }, nb::arg("Sh"), nb::arg("S"), nb::arg("B"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads a Shape from <S> in returns it in <Sh>.
+<B> is used to build the shape.)nbdoc")
         .def_static("Write", static_cast<bool (*)(const TopoDS_Shape &, const char *const, const Message_ProgressRange &)>(&BRepTools::Write), nb::arg("theShape"), nb::arg("theFile"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the shape to the file in an ASCII format TopTools_FormatVersion_VERSION_1.
 This alias writes shape with triangulation data.
 @param[in] theShape  the shape to write
@@ -563,6 +585,8 @@ Returns all shapes generated from the shape.)nbdoc")
         .def("Merge", static_cast<void (BRepTools_History::*)(const occ::handle<BRepTools_History> &)>(&BRepTools_History::Merge), nb::arg("theHistory23"), R"nbdoc(A method to merge a next history to this history.
 Merges the next history to this history.)nbdoc")
         .def("Merge", static_cast<void (BRepTools_History::*)(const BRepTools_History &)>(&BRepTools_History::Merge), nb::arg("theHistory23"), R"nbdoc(Merges the next history to this history.)nbdoc")
+        .def("Dump", [](BRepTools_History &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return nanoocp_stream_text(theS_stream); }, R"nbdoc(A method to dump a history
+Prints the brief description of the history into a stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepTools_History::get_type_name), R"nbdoc(Define the OCCT RTTI for the type.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRepTools_History::get_type_descriptor), R"nbdoc(Define the OCCT RTTI for the type.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRepTools_History::*)() const>(&BRepTools_History::DynamicType), R"nbdoc(Define the OCCT RTTI for the type.)nbdoc");
@@ -726,10 +750,40 @@ Ignored (always written) if face defines only triangulation (no surface).)nbdoc"
 Ignored (always written) if face defines only triangulation (no surface).)nbdoc")
         .def("Clear", static_cast<void (BRepTools_ShapeSet::*)()>(&BRepTools_ShapeSet::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
         .def("AddGeometry", static_cast<void (BRepTools_ShapeSet::*)(const TopoDS_Shape &)>(&BRepTools_ShapeSet::AddGeometry), nb::arg("S"), R"nbdoc(Stores the geometry of <S>.)nbdoc")
+        .def("DumpGeometry", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpGeometry(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the geometry of me on the stream <OS>.)nbdoc")
+        .def("WriteGeometry", [](BRepTools_ShapeSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteGeometry(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the geometry of me on the stream <OS> in a
+format that can be read back by Read.)nbdoc")
+        .def("ReadGeometry", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadGeometry(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the geometry of me from the stream <IS>.)nbdoc")
+        .def("DumpGeometry", [](const BRepTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.DumpGeometry(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Dumps the geometry of <S> on the stream <OS>.)nbdoc")
+        .def("WriteGeometry", [](const BRepTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.WriteGeometry(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Writes the geometry of <S> on the stream <OS> in a
+format that can be read back by Read.)nbdoc")
+        .def("ReadGeometry", [](BRepTools_ShapeSet &self, const TopAbs_ShapeEnum T, const nanoocp::TextInput &IS, TopoDS_Shape & S) { std::stringstream IS_stream(IS.text); self.ReadGeometry(T, IS_stream, S); }, nb::arg("T"), nb::arg("IS"), nb::arg("S"), R"nbdoc(Reads the geometry of a shape of type <T> from the
+stream <IS> and returns it in <S>.)nbdoc")
         .def("AddShapes", static_cast<void (BRepTools_ShapeSet::*)(TopoDS_Shape &, const TopoDS_Shape &)>(&BRepTools_ShapeSet::AddShapes), nb::arg("S1"), nb::arg("S2"), R"nbdoc(Inserts the shape <S2> in the shape <S1>. This
 method must be redefined to use the correct
 builder.)nbdoc")
-        .def("Check", static_cast<void (BRepTools_ShapeSet::*)(const TopAbs_ShapeEnum, TopoDS_Shape &)>(&BRepTools_ShapeSet::Check), nb::arg("T"), nb::arg("S"));
+        .def("Check", static_cast<void (BRepTools_ShapeSet::*)(const TopAbs_ShapeEnum, TopoDS_Shape &)>(&BRepTools_ShapeSet::Check), nb::arg("T"), nb::arg("S"))
+        .def("ReadPolygon3D", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadPolygon3D(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the 3d polygons of me
+from the stream <IS>.)nbdoc")
+        .def("WritePolygon3D", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WritePolygon3D(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the 3d polygons
+on the stream <OS> in a format that can
+be read back by Read.)nbdoc")
+        .def("DumpPolygon3D", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpPolygon3D(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the 3d polygons
+on the stream <OS>.)nbdoc")
+        .def("ReadTriangulation", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadTriangulation(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the triangulation of me
+from the stream <IS>.)nbdoc")
+        .def("WriteTriangulation", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteTriangulation(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the triangulation
+on the stream <OS> in a format that can
+be read back by Read.)nbdoc")
+        .def("DumpTriangulation", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpTriangulation(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the triangulation
+on the stream <OS>.)nbdoc")
+        .def("ReadPolygonOnTriangulation", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadPolygonOnTriangulation(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the polygons on triangulation of me
+from the stream <IS>.)nbdoc")
+        .def("WritePolygonOnTriangulation", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WritePolygonOnTriangulation(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the polygons on triangulation
+on the stream <OS> in a format that can
+be read back by Read.)nbdoc")
+        .def("DumpPolygonOnTriangulation", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpPolygonOnTriangulation(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the polygons on triangulation
+on the stream <OS>.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepTools_ShapeSet>(nb::borrow<nb::class_<BRepTools_ShapeSet>>(m.attr("BRepTools_ShapeSet")));
     nb::implicitly_convertible<std::decay_t<const bool>, BRepTools_ShapeSet>();
     nb::implicitly_convertible<std::decay_t<const BRep_Builder &>, BRepTools_ShapeSet>();

@@ -31,6 +31,7 @@
 #include <NCollection_HSequence.hxx>
 #include <NCollection_Sequence.hxx>
 #include <Standard_Failure.hxx>
+#include <Standard_IStream.hxx>
 #include <Standard_Persistent.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
@@ -356,6 +357,7 @@ Storage_Schema algorithm used to store or retrieve them.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_BaseDriver::*)() const>(&Storage_BaseDriver::DynamicType))
         .def("Name", static_cast<TCollection_AsciiString (Storage_BaseDriver::*)() const>(&Storage_BaseDriver::Name))
         .def("OpenMode", static_cast<Storage_OpenMode (Storage_BaseDriver::*)() const>(&Storage_BaseDriver::OpenMode))
+        .def_static("ReadMagicNumber", [](const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto result = Storage_BaseDriver::ReadMagicNumber(theIStream_stream); return result; }, nb::arg("theIStream"))
         .def("Open", static_cast<Storage_Error (Storage_BaseDriver::*)(const TCollection_AsciiString &, const Storage_OpenMode)>(&Storage_BaseDriver::Open), nb::arg("aName"), nb::arg("aMode"), R"nbdoc(@name Virtual methods, to be provided by descendants)nbdoc")
         .def("IsEnd", static_cast<bool (Storage_BaseDriver::*)()>(&Storage_BaseDriver::IsEnd), R"nbdoc(returns True if we are at end of the stream)nbdoc")
         .def("Tell", static_cast<Storage_Position (Storage_BaseDriver::*)()>(&Storage_BaseDriver::Tell), R"nbdoc(return position in the file. Return -1 upon error.)nbdoc")
@@ -364,6 +366,7 @@ Storage_Schema algorithm used to store or retrieve them.)nbdoc")
         .def("EndWriteInfoSection", static_cast<Storage_Error (Storage_BaseDriver::*)()>(&Storage_BaseDriver::EndWriteInfoSection))
         .def("BeginReadInfoSection", static_cast<Storage_Error (Storage_BaseDriver::*)()>(&Storage_BaseDriver::BeginReadInfoSection))
         .def("ReadInfo", [](Storage_BaseDriver &self, TCollection_AsciiString & dbVersion, TCollection_AsciiString & date, TCollection_AsciiString & schemaName, TCollection_AsciiString & schemaVersion, TCollection_ExtendedString & appName, TCollection_AsciiString & appVersion, TCollection_ExtendedString & objectType, NCollection_Sequence<TCollection_AsciiString> & userInfo) { int nbObj{}; self.ReadInfo(nbObj, dbVersion, date, schemaName, schemaVersion, appName, appVersion, objectType, userInfo); return nbObj; }, nb::arg("dbVersion"), nb::arg("date"), nb::arg("schemaName"), nb::arg("schemaVersion"), nb::arg("appName"), nb::arg("appVersion"), nb::arg("objectType"), nb::arg("userInfo"))
+        .def("ReadCompleteInfo", [](Storage_BaseDriver &self, const nanoocp::TextInput &theIStream, occ::handle<Storage_Data> & theData) { std::stringstream theIStream_stream(theIStream.text); self.ReadCompleteInfo(theIStream_stream, theData); }, nb::arg("theIStream"), nb::arg("theData"))
         .def("EndReadInfoSection", static_cast<Storage_Error (Storage_BaseDriver::*)()>(&Storage_BaseDriver::EndReadInfoSection))
         .def("BeginWriteCommentSection", static_cast<Storage_Error (Storage_BaseDriver::*)()>(&Storage_BaseDriver::BeginWriteCommentSection))
         .def("WriteComment", static_cast<void (Storage_BaseDriver::*)(const NCollection_Sequence<TCollection_ExtendedString> &)>(&Storage_BaseDriver::WriteComment), nb::arg("userComments"))

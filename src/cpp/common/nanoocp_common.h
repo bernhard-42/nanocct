@@ -20,6 +20,7 @@
 #include <tuple>
 #include <type_traits>
 
+#include <sstream>
 #include <string>
 #include <typeinfo>
 #include <unordered_map>
@@ -182,6 +183,50 @@ inline void nanoocp_install_exception_translator(PyObject *fallback) {
         },
         fallback);
 }
+
+// The text an OCCT method wrote to a std::ostream& parameter, as a str. OCCT streams are text (Dump, DumpJson, Print,
+// BRepTools::Write); the few binary ones (BinTools::Write) decode with surrogateescape, so the str is lossless and
+// text.encode("utf-8", "surrogateescape") gives the bytes back.
+inline nb::object nanoocp_stream_text(const std::ostringstream &stream) {
+    const std::string text = stream.str();
+    return nb::steal(PyUnicode_DecodeUTF8(text.data(), static_cast<Py_ssize_t>(text.size()), "surrogateescape"));
+}
+
+// A std::istream& / std::stringstream parameter (BRepTools::Read, InitFromJson): the text of a Python file-like object
+// (anything with read(): io.StringIO, an open text file). A str is deliberately not accepted -- it would collide with
+// the file-path overloads -- so a non-file-like argument falls through to the next overload. Typed typing.TextIO.
+namespace nanoocp {
+struct TextInput {
+    std::string text;
+};
+}
+
+NAMESPACE_BEGIN(NB_NAMESPACE)
+NAMESPACE_BEGIN(detail)
+
+template <> struct type_caster<nanoocp::TextInput> {
+    NB_TYPE_CASTER(nanoocp::TextInput, const_name("typing.TextIO"))
+
+    bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
+        if (!hasattr(src, "read"))
+            return false;
+        try {
+            object text = src.attr("read")();
+            if (!str_check(text.ptr()))
+                return false;
+            bytes data = borrow<bytes>(text.attr("encode")("utf-8", "surrogateescape"));   // the inverse of nanoocp_stream_text
+            value.text.assign(data.c_str(), data.size());
+        } catch (...) {
+            return false;
+        }
+        return true;
+    }
+
+    static handle from_cpp(const nanoocp::TextInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
+};
+
+NAMESPACE_END(detail)
+NAMESPACE_END(NB_NAMESPACE)
 
 // Type caster for char16_t and const char16_t* (Standard_ExtString: OCCT's UTF-16 strings, TCollection_ExtendedString),
 // modeled on nanobind's char caster: a Python str converts to a NUL-terminated UTF-16 buffer owned by the caster for the

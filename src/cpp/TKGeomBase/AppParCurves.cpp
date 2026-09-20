@@ -8,6 +8,7 @@
 #include <AppParCurves_MultiCurve.hxx>
 #include <AppParCurves_MultiPoint.hxx>
 #include <NCollection_Array1.hxx>
+#include <Standard_OStream.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Pnt2d.hxx>
 #include <gp_Vec.hxx>
@@ -149,7 +150,10 @@ newz = z + dz*oldz)nbdoc")
         .def("Transform2d", static_cast<void (AppParCurves_MultiPoint::*)(const int, const double, const double, const double, const double)>(&AppParCurves_MultiPoint::Transform2d), nb::arg("CuIndex"), nb::arg("x"), nb::arg("dx"), nb::arg("y"), nb::arg("dy"), R"nbdoc(Applies a transformation to the Curve of range
 <CuIndex>.
 newx = x + dx*oldx
-newy = y + dy*oldy    for all points of the curve.)nbdoc");
+newy = y + dy*oldy    for all points of the curve.)nbdoc")
+        .def("Dump", [](const AppParCurves_MultiPoint &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream o information on the current
+state of the object.
+Is used to redefine the operator <<.)nbdoc");
     nanoocp_implicit_copy_ctor<AppParCurves_MultiPoint>(nb::borrow<nb::class_<AppParCurves_MultiPoint>>(m.attr("AppParCurves_MultiPoint")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt> &>, AppParCurves_MultiPoint>();
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt2d> &>, AppParCurves_MultiPoint>();
@@ -216,7 +220,10 @@ An exception is raised if the curve dimension is 3d.)nbdoc")
         .def("D2", static_cast<void (AppParCurves_MultiCurve::*)(const int, const double, gp_Pnt2d &, gp_Vec2d &, gp_Vec2d &) const>(&AppParCurves_MultiCurve::D2), nb::arg("CuIndex"), nb::arg("U"), nb::arg("Pt"), nb::arg("V1"), nb::arg("V2"), R"nbdoc(returns the value of the point with a parameter U
 on the Bezier curve number CuIndex.
 An exception is raised if CuIndex <0 or > NbCurves.
-An exception is raised if the curve dimension is 2d.)nbdoc");
+An exception is raised if the curve dimension is 2d.)nbdoc")
+        .def("Dump", [](const AppParCurves_MultiCurve &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream o information on the current
+state of the object.
+Is used to redefine the operator <<.)nbdoc");
     nanoocp_implicit_copy_ctor<AppParCurves_MultiCurve>(nb::borrow<nb::class_<AppParCurves_MultiCurve>>(m.attr("AppParCurves_MultiCurve")));
     nb::implicitly_convertible<std::decay_t<const int>, AppParCurves_MultiCurve>();
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<AppParCurves_MultiPoint> &>, AppParCurves_MultiCurve>();
@@ -261,7 +268,10 @@ An exception is raised if the curve dimension is 3d.)nbdoc")
         .def("D2", static_cast<void (AppParCurves_MultiBSpCurve::*)(const int, const double, gp_Pnt2d &, gp_Vec2d &, gp_Vec2d &) const>(&AppParCurves_MultiBSpCurve::D2), nb::arg("CuIndex"), nb::arg("U"), nb::arg("Pt"), nb::arg("V1"), nb::arg("V2"), R"nbdoc(returns the value of the point with a parameter U
 on the BSpline curve number CuIndex.
 An exception is raised if CuIndex <0 or > NbCurves.
-An exception is raised if the curve dimension is 2d.)nbdoc");
+An exception is raised if the curve dimension is 2d.)nbdoc")
+        .def("Dump", [](const AppParCurves_MultiBSpCurve &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream o information on the current
+state of the object.
+Is used to redefine the operator <<.)nbdoc");
     nanoocp_implicit_copy_ctor<AppParCurves_MultiBSpCurve>(nb::borrow<nb::class_<AppParCurves_MultiBSpCurve>>(m.attr("AppParCurves_MultiBSpCurve")));
     nb::implicitly_convertible<std::decay_t<const int>, AppParCurves_MultiBSpCurve>();
 }

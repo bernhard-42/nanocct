@@ -179,3 +179,23 @@ TFunction_HArray1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_HArray1
 import nanoocp.NCollection
 TFunction_Array1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_Array1[int]
 TFunction_HArray1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_HArray1[int]
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+TFunction_Array1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_Array1[int]
+TFunction_HArray1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_HArray1[int]
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+TFunction_Array1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_Array1[int]
+TFunction_HArray1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_HArray1[int]
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+TFunction_Array1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_Array1[int]
+TFunction_HArray1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_HArray1[int]
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+TFunction_Array1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_Array1[int]
+TFunction_HArray1OfDataMapOfGUIDDriver = nanoocp.NCollection.NCollection_HArray1[int]

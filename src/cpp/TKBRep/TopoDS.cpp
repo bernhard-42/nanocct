@@ -31,6 +31,7 @@
 #include <Message_AttributeStream.hxx>
 #include <Message_Messenger.hxx>
 #include <Standard_DomainError.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <TCollection_AsciiString.hxx>
@@ -274,6 +275,7 @@ The type is embedded in the lower 4 bits of the state.)nbdoc")
         .def("EmptyCopy", static_cast<occ::handle<TopoDS_TShape> (TopoDS_TShape::*)() const>(&TopoDS_TShape::EmptyCopy), R"nbdoc(Returns a copy of the TShape with no sub-shapes.)nbdoc")
         .def("NbChildren", static_cast<int (TopoDS_TShape::*)() const>(&TopoDS_TShape::NbChildren), R"nbdoc(Returns the number of direct sub-shapes (children).
 @sa TopoDS_Iterator for accessing sub-shapes)nbdoc")
+        .def("DumpJson", [](const TopoDS_TShape &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TopoDS_TShape::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopoDS_TShape::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopoDS_TShape::*)() const>(&TopoDS_TShape::DynamicType));
@@ -362,6 +364,7 @@ same geometry and no sub-shapes.)nbdoc")
 Location and a new TShape with the same geometry
 and no sub-shapes.)nbdoc")
         .def("TShape", static_cast<void (TopoDS_Shape::*)(const occ::handle<TopoDS_TShape> &)>(&TopoDS_Shape::TShape), nb::arg("theTShape"))
+        .def("DumpJson", [](const TopoDS_Shape &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("__hash__", [](const TopoDS_Shape &self) { return static_cast<Py_ssize_t>(std::hash<TopoDS_Shape>{}(self)); });
     nanoocp_implicit_copy_ctor<TopoDS_Shape>(nb::borrow<nb::class_<TopoDS_Shape>>(m.attr("TopoDS_Shape")));
     nb::borrow<nb::class_<TopoDS_AlertAttribute>>(m.attr("TopoDS_AlertAttribute"))
@@ -370,7 +373,8 @@ and no sub-shapes.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopoDS_AlertAttribute::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopoDS_AlertAttribute::*)() const>(&TopoDS_AlertAttribute::DynamicType))
         .def("GetShape", static_cast<const TopoDS_Shape & (TopoDS_AlertAttribute::*)() const>(&TopoDS_AlertAttribute::GetShape), R"nbdoc(Returns contained shape)nbdoc")
-        .def_static("Send", static_cast<void (*)(const occ::handle<Message_Messenger> &, const TopoDS_Shape &)>(&TopoDS_AlertAttribute::Send), nb::arg("theMessenger"), nb::arg("theShape"), R"nbdoc(Push shape information into messenger)nbdoc");
+        .def_static("Send", static_cast<void (*)(const occ::handle<Message_Messenger> &, const TopoDS_Shape &)>(&TopoDS_AlertAttribute::Send), nb::arg("theMessenger"), nb::arg("theShape"), R"nbdoc(Push shape information into messenger)nbdoc")
+        .def("DumpJson", [](const TopoDS_AlertAttribute &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<TopoDS_AlertAttribute>(nb::borrow<nb::class_<TopoDS_AlertAttribute>>(m.attr("TopoDS_AlertAttribute")));
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, TopoDS_AlertAttribute>();
     nanoocp_implicit_default_ctor<TopoDS_Builder>(nb::borrow<nb::class_<TopoDS_Builder>>(m.attr("TopoDS_Builder")));

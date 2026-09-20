@@ -182,6 +182,24 @@ class TopAbs:
         Inside becomes outside.
         """
 
+    @overload
+    @staticmethod
+    def Print(theShapeType: TopAbs_ShapeEnum) -> object:
+        """Prints the name of Shape type as a String on the Stream."""
+
+    @overload
+    @staticmethod
+    def Print(theOrientation: TopAbs_Orientation) -> object:
+        """Prints the name of the Orientation as a String on the Stream."""
+
+    @overload
+    @staticmethod
+    def Print(St: TopAbs_State) -> object:
+        """
+        Prints the name of the State <St> as a String on
+        the Stream <S> and returns <S>.
+        """
+
     @staticmethod
     def ShapeTypeToString(theType: TopAbs_ShapeEnum) -> str:
         """

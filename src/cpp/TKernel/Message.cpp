@@ -36,6 +36,8 @@
 #include <NCollection_List.hxx>
 #include <NCollection_Sequence.hxx>
 #include <OSD_MemInfo.hxx>
+#include <Standard_OStream.hxx>
+#include <Standard_SStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <TColStd_HPackedMapOfInteger.hxx>
@@ -699,6 +701,9 @@ Default implementation redirects to send().)nbdoc")
         .def("Send", static_cast<void (Message_Printer::*)(const TCollection_AsciiString &, const Message_Gravity) const>(&Message_Printer::Send), nb::arg("theString"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
 The last Boolean argument is deprecated and unused.
 Default implementation redirects to send().)nbdoc")
+        .def("SendStringStream", [](const Message_Printer &self, const nanoocp::TextInput &theStream, const Message_Gravity theGravity) { std::stringstream theStream_stream(theStream.text); self.SendStringStream(theStream_stream, theGravity); }, nb::arg("theStream"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
+Stream is converted to string value.
+Default implementation calls first method Send().)nbdoc")
         .def("SendObject", static_cast<void (Message_Printer::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_Printer::SendObject), nb::arg("theObject"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
 The object is converted to string in format: <object kind> : <object pointer>.
 Default implementation calls first method Send().)nbdoc");
@@ -726,6 +731,7 @@ The sequence can be modified.)nbdoc")
         .def("Send", static_cast<void (Message_Messenger::*)(const char *const, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theString"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(Dispatch a message to all the printers in the list.
 Three versions of string representations are accepted for
 convenience, by default all are converted to ExtendedString.)nbdoc")
+        .def("Send", [](const Message_Messenger &self, const nanoocp::TextInput &theStream, const Message_Gravity theGravity) { std::stringstream theStream_stream(theStream.text); self.Send(theStream_stream, theGravity); }, nb::arg("theStream"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(See above)nbdoc")
         .def("Send", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theString"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(See above)nbdoc")
         .def("Send", static_cast<void (Message_Messenger::*)(const TCollection_ExtendedString &, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theString"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(See above)nbdoc")
         .def("Send", static_cast<Message_Messenger::StreamBuffer (Message_Messenger::*)(Message_Gravity)>(&Message_Messenger::Send), nb::arg("theGravity"), R"nbdoc(Create string buffer for message of specified type)nbdoc")
@@ -739,7 +745,8 @@ convenience, by default all are converted to ExtendedString.)nbdoc")
         .def("SendAlarm", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendAlarm), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Alarm))nbdoc")
         .def("SendWarning", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendWarning), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Warning))nbdoc")
         .def("SendInfo", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendInfo), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Info))nbdoc")
-        .def("SendTrace", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendTrace), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Trace))nbdoc");
+        .def("SendTrace", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendTrace), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Trace))nbdoc")
+        .def("DumpJson", [](const Message_Messenger &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Message_Messenger>(nb::borrow<nb::class_<Message_Messenger>>(m.attr("Message_Messenger")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Message_Printer> &>, Message_Messenger>();
     nb::borrow<nb::class_<Message_Messenger::StreamBuffer>>(m.attr("Message_Messenger").attr("StreamBuffer"))
@@ -820,6 +827,7 @@ Basis implementation returns true.)nbdoc")
         .def("Merge", static_cast<bool (Message_Alert::*)(const occ::handle<Message_Alert> &)>(&Message_Alert::Merge), nb::arg("theTarget"), R"nbdoc(If possible, merge data contained in this alert to theTarget.
 @return True if merged.
 Base implementation always returns true.)nbdoc")
+        .def("DumpJson", [](const Message_Alert &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Alert::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Alert::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Alert::*)() const>(&Message_Alert::DynamicType));
@@ -848,6 +856,7 @@ Basis implementation returns true.)nbdoc")
         .def("Merge", static_cast<bool (Message_AlertExtended::*)(const occ::handle<Message_Alert> &)>(&Message_AlertExtended::Merge), nb::arg("theTarget"), R"nbdoc(If possible, merge data contained in this alert to theTarget.
 Base implementation always returns false.
 @return True if merged)nbdoc")
+        .def("DumpJson", [](const Message_AlertExtended &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AlertExtended::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AlertExtended::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AlertExtended::*)() const>(&Message_AlertExtended::DynamicType));
@@ -985,7 +994,8 @@ Base implementation returns dynamic type name of the instance.)nbdoc")
         .def("GetName", static_cast<const TCollection_AsciiString & (Message_Attribute::*)() const>(&Message_Attribute::GetName), R"nbdoc(Returns custom name of alert if it is set
 @return alert name)nbdoc")
         .def("SetName", static_cast<void (Message_Attribute::*)(const TCollection_AsciiString &)>(&Message_Attribute::SetName), nb::arg("theName"), R"nbdoc(Sets the custom name of alert
-@param theName a name for the alert)nbdoc");
+@param theName a name for the alert)nbdoc")
+        .def("DumpJson", [](const Message_Attribute &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Message_Attribute>(nb::borrow<nb::class_<Message_Attribute>>(m.attr("Message_Attribute")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_Attribute>();
     nb::borrow<nb::class_<Message_AttributeMeter>>(m.attr("Message_AttributeMeter"))
@@ -1016,6 +1026,7 @@ Base implementation returns dynamic type name of the instance.)nbdoc")
 Processed only alert with Message_AttributeMeter attribute
 @param theAlert an alert
 @param theStartValue flag, if true, the start value is collected otherwise stop)nbdoc")
+        .def("DumpJson", [](const Message_AttributeMeter &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AttributeMeter::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AttributeMeter::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeMeter::*)() const>(&Message_AttributeMeter::DynamicType));
@@ -1029,13 +1040,16 @@ Processed only alert with Message_AttributeMeter attribute
         .def("Object", static_cast<const occ::handle<Standard_Transient> & (Message_AttributeObject::*)() const>(&Message_AttributeObject::Object), R"nbdoc(Returns object
 @return the object instance)nbdoc")
         .def("SetObject", static_cast<void (Message_AttributeObject::*)(const occ::handle<Standard_Transient> &)>(&Message_AttributeObject::SetObject), nb::arg("theObject"), R"nbdoc(Sets the object
-@param theObject an instance)nbdoc");
+@param theObject an instance)nbdoc")
+        .def("DumpJson", [](const Message_AttributeObject &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Message_AttributeObject>(nb::borrow<nb::class_<Message_AttributeObject>>(m.attr("Message_AttributeObject")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Standard_Transient> &>, Message_AttributeObject>();
     nb::borrow<nb::class_<Message_AttributeStream>>(m.attr("Message_AttributeStream"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AttributeStream::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AttributeStream::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeStream::*)() const>(&Message_AttributeStream::DynamicType));
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeStream::*)() const>(&Message_AttributeStream::DynamicType))
+        .def("SetStream", [](Message_AttributeStream &self, const nanoocp::TextInput &theStream) { std::stringstream theStream_stream(theStream.text); self.SetStream(theStream_stream); }, nb::arg("theStream"), R"nbdoc(Sets stream value)nbdoc")
+        .def("DumpJson", [](const Message_AttributeStream &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Message_AttributeStream>(nb::borrow<nb::class_<Message_AttributeStream>>(m.attr("Message_AttributeStream")));
     nb::borrow<nb::class_<Message_CompositeAlerts>>(m.attr("Message_CompositeAlerts"))
         .def(nb::new_([]() { return opencascade::handle<Message_CompositeAlerts>(new Message_CompositeAlerts()); }), R"nbdoc(Empty constructor)nbdoc")
@@ -1062,7 +1076,8 @@ Processed only alert with Message_AttributeMeter attribute
         .def("Clear", static_cast<void (Message_CompositeAlerts::*)(Message_Gravity)>(&Message_CompositeAlerts::Clear), nb::arg("theGravity"), R"nbdoc(Clears collected alerts with specified gravity
 @param theGravity an alert gravity)nbdoc")
         .def("Clear", static_cast<void (Message_CompositeAlerts::*)(const occ::handle<Standard_Type> &)>(&Message_CompositeAlerts::Clear), nb::arg("theType"), R"nbdoc(Clears collected alerts with specified type
-@param theType an alert type)nbdoc");
+@param theType an alert type)nbdoc")
+        .def("DumpJson", [](const Message_CompositeAlerts &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Message_CompositeAlerts>(nb::borrow<nb::class_<Message_CompositeAlerts>>(m.attr("Message_CompositeAlerts")));
     nb::borrow<nb::class_<Message_ProgressScope>>(m.attr("Message_ProgressScope"))
         .def(nb::init<>(), R"nbdoc(@name Preparation methods
@@ -1214,6 +1229,9 @@ TRUE by default.)nbdoc")
         .def("Report", static_cast<const occ::handle<Message_Report> & (Message_PrinterToReport::*)() const>(&Message_PrinterToReport::Report), R"nbdoc(Returns the current or default report)nbdoc")
         .def("SetReport", static_cast<void (Message_PrinterToReport::*)(const occ::handle<Message_Report> &)>(&Message_PrinterToReport::SetReport), nb::arg("theReport"), R"nbdoc(Sets the printer report
 @param theReport report for messages processing, if NULL, the default report is used)nbdoc")
+        .def("SendStringStream", [](const Message_PrinterToReport &self, const nanoocp::TextInput &theStream, const Message_Gravity theGravity) { std::stringstream theStream_stream(theStream.text); self.SendStringStream(theStream_stream, theGravity); }, nb::arg("theStream"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
+Stream is converted to string value.
+Default implementation calls first method Send().)nbdoc")
         .def("SendObject", static_cast<void (Message_PrinterToReport::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_PrinterToReport::SendObject), nb::arg("theObject"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
 The object is converted to string in format: <object kind> : <object pointer>.
 The parameter theToPutEol specified whether end-of-line should be added to the end of the
@@ -1254,12 +1272,15 @@ first alert is removed, the new alert is added in the container.
 @return the limit value)nbdoc")
         .def("SetLimit", static_cast<void (Message_Report::*)(const int)>(&Message_Report::SetLimit), nb::arg("theLimit"), R"nbdoc(Sets maximum number of collecting alerts.
 @param theLimit limit value)nbdoc")
+        .def("Dump", [](Message_Report &self) { std::ostringstream theOS_stream; self.Dump(theOS_stream); return nanoocp_stream_text(theOS_stream); }, R"nbdoc(Dumps all collected alerts to stream)nbdoc")
+        .def("Dump", [](Message_Report &self, Message_Gravity theGravity) { std::ostringstream theOS_stream; self.Dump(theOS_stream, theGravity); return nanoocp_stream_text(theOS_stream); }, nb::arg("theGravity"), R"nbdoc(Dumps collected alerts with specified gravity to stream)nbdoc")
         .def("SendMessages", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &)>(&Message_Report::SendMessages), nb::arg("theMessenger"), R"nbdoc(Sends all collected alerts to messenger.)nbdoc")
         .def("SendMessages", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &, Message_Gravity)>(&Message_Report::SendMessages), nb::arg("theMessenger"), nb::arg("theGravity"), R"nbdoc(Dumps collected alerts with specified gravity to messenger.
 Default implementation creates Message_Msg object with a message
 key returned by alert, and sends it in the messenger.)nbdoc")
         .def("Merge", static_cast<void (Message_Report::*)(const occ::handle<Message_Report> &)>(&Message_Report::Merge), nb::arg("theOther"), R"nbdoc(Merges data from theOther report into this)nbdoc")
         .def("Merge", static_cast<void (Message_Report::*)(const occ::handle<Message_Report> &, Message_Gravity)>(&Message_Report::Merge), nb::arg("theOther"), nb::arg("theGravity"), R"nbdoc(Merges alerts with specified gravity from theOther report into this)nbdoc")
+        .def("DumpJson", [](const Message_Report &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Report::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Report::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Report::*)() const>(&Message_Report::DynamicType));

@@ -31,6 +31,7 @@
 #include <NCollection_Array1.hxx>
 #include <NCollection_Array2.hxx>
 #include <NCollection_Sequence.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Pnt.hxx>
@@ -116,7 +117,8 @@ been done within required tolerance)nbdoc")
 with a result that is not NECESSARILY within the required
 tolerance)nbdoc")
         .def("MaxError", static_cast<double (Approx_Curve3d::*)() const>(&Approx_Curve3d::MaxError), R"nbdoc(returns the Maximum Error (>0 when an approximation
-has been done, 0 if no approximation))nbdoc");
+has been done, 0 if no approximation))nbdoc")
+        .def("Dump", [](const Approx_Curve3d &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Print on the stream 'o' information about the object)nbdoc");
     nanoocp_implicit_copy_ctor<Approx_Curve3d>(nb::borrow<nb::class_<Approx_Curve3d>>(m.attr("Approx_Curve3d")));
     nb::borrow<nb::class_<Approx_CurveOnSurface>>(m.attr("Approx_CurveOnSurface"))
         .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const double, const double>(), nb::arg("theC2D"), nb::arg("theSurf"), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTol"), R"nbdoc(This constructor does not call perform method.
@@ -154,7 +156,8 @@ first surface (case of a curve on one or two surfaces))nbdoc")
         .def("MaxError2d1", static_cast<double (Approx_CurvilinearParameter::*)() const>(&Approx_CurvilinearParameter::MaxError2d1), R"nbdoc(returns the maximum error on the first reparametrized 2D curve)nbdoc")
         .def("Curve2d2", static_cast<occ::handle<Geom2d_BSplineCurve> (Approx_CurvilinearParameter::*)() const>(&Approx_CurvilinearParameter::Curve2d2), R"nbdoc(returns the BsplineCurve representing the reparametrized 2D curve on the
 second surface (case of a curve on two surfaces))nbdoc")
-        .def("MaxError2d2", static_cast<double (Approx_CurvilinearParameter::*)() const>(&Approx_CurvilinearParameter::MaxError2d2), R"nbdoc(returns the maximum error on the second reparametrized 2D curve)nbdoc");
+        .def("MaxError2d2", static_cast<double (Approx_CurvilinearParameter::*)() const>(&Approx_CurvilinearParameter::MaxError2d2), R"nbdoc(returns the maximum error on the second reparametrized 2D curve)nbdoc")
+        .def("Dump", [](const Approx_CurvilinearParameter &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(print the maximum errors(s))nbdoc");
     nanoocp_implicit_copy_ctor<Approx_CurvilinearParameter>(nb::borrow<nb::class_<Approx_CurvilinearParameter>>(m.attr("Approx_CurvilinearParameter")));
     nb::borrow<nb::class_<Approx_CurvlinFunc>>(m.attr("Approx_CurvlinFunc"))
         .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C, const double Tol) { return opencascade::handle<Approx_CurvlinFunc>(new Approx_CurvlinFunc(C, Tol)); }), nb::arg("C"), nb::arg("Tol"))
@@ -319,7 +322,8 @@ Warning : The continuity ci can be obtained only if Ft is Ci)nbdoc")
         .def("Average2dError", static_cast<double (Approx_SweepApproximation::*)(const int) const>(&Approx_SweepApproximation::Average2dError), nb::arg("Index"), R"nbdoc(returns the average error of the <Index>
 2d curve approximation.)nbdoc")
         .def("TolCurveOnSurf", static_cast<double (Approx_SweepApproximation::*)(const int) const>(&Approx_SweepApproximation::TolCurveOnSurf), nb::arg("Index"), R"nbdoc(returns the maximum 3d error of the <Index>
-2d curve approximation on the Surface.)nbdoc");
+2d curve approximation on the Surface.)nbdoc")
+        .def("Dump", [](const Approx_SweepApproximation &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(display information on approximation.)nbdoc");
     nanoocp_implicit_copy_ctor<Approx_SweepApproximation>(nb::borrow<nb::class_<Approx_SweepApproximation>>(m.attr("Approx_SweepApproximation")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Approx_SweepFunction> &>, Approx_SweepApproximation>();
     nb::borrow<nb::class_<Approx_SweepFunction>>(m.attr("Approx_SweepFunction"))

@@ -36,6 +36,7 @@
 #include <NCollection_Array2.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_HArray2.hxx>
+#include <Standard_OStream.hxx>
 #include <gp_Circ.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Lin.hxx>
@@ -495,7 +496,8 @@ with a result that is not NECESSARELY within the required tolerance)nbdoc")
         .def("MaxError", static_cast<double (GeomConvert_ApproxCurve::*)() const>(&GeomConvert_ApproxCurve::MaxError), R"nbdoc(Returns the greatest distance between a point on the
 source conic and the BSpline curve resulting from the
 approximation. (>0 when an approximation
-has been done, 0 if no approximation))nbdoc");
+has been done, 0 if no approximation))nbdoc")
+        .def("Dump", [](const GeomConvert_ApproxCurve &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Print on the stream o information about the object)nbdoc");
     nanoocp_implicit_copy_ctor<GeomConvert_ApproxCurve>(nb::borrow<nb::class_<GeomConvert_ApproxCurve>>(m.attr("GeomConvert_ApproxCurve")));
     nb::borrow<nb::class_<GeomConvert_ApproxSurface>>(m.attr("GeomConvert_ApproxSurface"))
         .def(nb::init<const occ::handle<Geom_Surface> &, const double, const GeomAbs_Shape, const GeomAbs_Shape, const int, const int, const int, const int>(), nb::arg("Surf"), nb::arg("Tol3d"), nb::arg("UContinuity"), nb::arg("VContinuity"), nb::arg("MaxDegU"), nb::arg("MaxDegV"), nb::arg("MaxSegments"), nb::arg("PrecisCode"), R"nbdoc(Constructs a surface approximation framework defined by
@@ -528,7 +530,8 @@ that is not recognized with the wished continuities.)nbdoc")
         .def("MaxError", static_cast<double (GeomConvert_ApproxSurface::*)() const>(&GeomConvert_ApproxSurface::MaxError), R"nbdoc(Returns the greatest distance between a point on the
 source conic surface and the BSpline surface
 resulting from the approximation (>0 when an approximation
-has been done, 0 if no  approximation ))nbdoc");
+has been done, 0 if no  approximation ))nbdoc")
+        .def("Dump", [](const GeomConvert_ApproxSurface &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream o information on the current state of the object.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomConvert_ApproxSurface>(nb::borrow<nb::class_<GeomConvert_ApproxSurface>>(m.attr("GeomConvert_ApproxSurface")));
     nb::borrow<nb::class_<GeomConvert_BSplineCurveKnotSplitting>>(m.attr("GeomConvert_BSplineCurveKnotSplitting"))
         .def(nb::init<const occ::handle<Geom_BSplineCurve> &, const int>(), nb::arg("BasisCurve"), nb::arg("ContinuityRange"), R"nbdoc(Determines points at which the BSpline curve

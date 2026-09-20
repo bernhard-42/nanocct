@@ -1,7 +1,7 @@
 """OCCT package Standard (toolkit TKernel)"""
 
 import enum
-from typing import TypeAlias, overload
+from typing import TextIO, TypeAlias, overload
 
 import nanoocp.NCollection
 import nanoocp.TCollection
@@ -200,6 +200,9 @@ class Standard_Type(Standard_Transient):
         Note that multiple inheritance is not supported.
         """
 
+    def Print(self) -> object:
+        """Prints type (address of descriptor + name) to a stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -355,6 +358,29 @@ class Standard_Dump:
     def __init__(self, theOther: Standard_Dump) -> None: ...
 
     @staticmethod
+    def Text(theStream: TextIO) -> nanoocp.TCollection.TCollection_AsciiString:
+        """
+        Converts stream value to string value. The result is original stream value.
+        @param theStream source value
+        @return text presentation
+        """
+
+    @staticmethod
+    def FormatJson(theStream: TextIO, theIndent: int = 3) -> nanoocp.TCollection.TCollection_AsciiString:
+        """
+        Converts stream value to string value. Improves the text presentation with the following
+        cases:
+        - for '{' append after '\\n' and indent to the next value, increment current indent value
+        - for '}' append '\\n' and current indent before it, decrement indent value
+        - for ',' append after '\\n' and indent to the next value. If the current symbol is in massive
+        container [], do nothing Covers result with opened and closed brackets on the top level, if it
+        has no symbols there.
+        @param theStream source value
+        @param theIndent count of ' ' symbols to apply hierarchical indent of the text values
+        @return text presentation
+        """
+
+    @staticmethod
     def SplitJson(theStreamStr: nanoocp.TCollection.TCollection_AsciiString, theKeyToValues: nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.Standard.Standard_DumpValue]) -> bool:
         """
         Converts stream into map of values.
@@ -389,6 +415,10 @@ class Standard_Dump:
         """Returns length value for enum type"""
 
     @staticmethod
+    def AddValuesSeparator() -> object:
+        """@param theOStream source value"""
+
+    @staticmethod
     def GetPointerPrefix() -> nanoocp.TCollection.TCollection_AsciiString:
         """
         Returns default prefix added for each pointer info string if short presentation of pointer
@@ -403,6 +433,15 @@ class Standard_Dump:
         @param thePointer a pointer
         @param isShortInfo if true, all '0' symbols in the beginning of the pointer are skipped
         @return the string value
+        """
+
+    @staticmethod
+    def DumpKeyToClass(theKey: nanoocp.TCollection.TCollection_AsciiString, theField: nanoocp.TCollection.TCollection_AsciiString) -> object:
+        """
+        Append into output value: "Name": { Field }
+        @param[out] theOStream  stream to be fill with values
+        @param theKey a source value
+        @param theField stream value
         """
 
     @staticmethod
@@ -597,6 +636,13 @@ class Standard_GUID:
     @overload
     def Assign(self, uid: Standard_UUID) -> None:
         """Assigns uid to this GUID."""
+
+    def ShallowDump(self) -> object:
+        """
+        Display the GUID with the following format:
+
+        "00000000-0000-0000-0000-000000000000\"
+        """
 
     @staticmethod
     def CheckGUIDFormat(aGuid: str) -> bool:

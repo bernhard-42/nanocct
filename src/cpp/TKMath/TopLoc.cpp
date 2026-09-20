@@ -5,6 +5,7 @@
 #include <TopLoc_Location.hxx>
 #include <TopLoc_SListNodeOfItemLocation.hxx>
 #include <TopLoc_SListOfItemLocation.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Trsf.hxx>
@@ -61,6 +62,8 @@ raised if the Trsf is not a rigid transformation.)nbdoc")
         .def("Transformation", static_cast<const gp_Trsf & (TopLoc_Datum3D::*)() const>(&TopLoc_Datum3D::Transformation), R"nbdoc(Returns a gp_Trsf which, when applied to this datum, produces the default datum.)nbdoc")
         .def("Trsf", static_cast<const gp_Trsf & (TopLoc_Datum3D::*)() const>(&TopLoc_Datum3D::Trsf), R"nbdoc(Returns a gp_Trsf which, when applied to this datum, produces the default datum.)nbdoc")
         .def("Form", static_cast<gp_TrsfForm (TopLoc_Datum3D::*)() const>(&TopLoc_Datum3D::Form), R"nbdoc(Return transformation form.)nbdoc")
+        .def("DumpJson", [](const TopLoc_Datum3D &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("ShallowDump", [](const TopLoc_Datum3D &self) { std::ostringstream S_stream; self.ShallowDump(S_stream); return nanoocp_stream_text(S_stream); }, R"nbdoc(Writes the contents of this Datum3D to the stream S.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TopLoc_Datum3D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopLoc_Datum3D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopLoc_Datum3D::*)() const>(&TopLoc_Datum3D::DynamicType));
@@ -68,7 +71,8 @@ raised if the Trsf is not a rigid transformation.)nbdoc")
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, TopLoc_Datum3D>();
     nb::borrow<nb::class_<TopLoc_ItemLocation>>(m.attr("TopLoc_ItemLocation"))
         .def(nb::init<const occ::handle<TopLoc_Datum3D> &, const int>(), nb::arg("D"), nb::arg("P"), R"nbdoc(Sets the elementary Datum to <D>
-Sets the exponent to <P>)nbdoc");
+Sets the exponent to <P>)nbdoc")
+        .def("DumpJson", [](const TopLoc_ItemLocation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<TopLoc_ItemLocation>(nb::borrow<nb::class_<TopLoc_ItemLocation>>(m.attr("TopLoc_ItemLocation")));
     nb::borrow<nb::class_<TopLoc_SListOfItemLocation>>(m.attr("TopLoc_SListOfItemLocation"))
         .def(nb::init<>(), R"nbdoc(Creates an empty List.)nbdoc")
@@ -143,6 +147,8 @@ not have the same elementary data, i.e. do not
 contain the same series of TopLoc_Datum3D and respective powers.
 This method is an alias for operator !=.)nbdoc")
         .def("__ne__", static_cast<bool (TopLoc_Location::*)(const TopLoc_Location &) const noexcept>(&TopLoc_Location::operator!=), nb::arg("theOther"), nb::is_operator())
+        .def("DumpJson", [](const TopLoc_Location &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("ShallowDump", [](const TopLoc_Location &self) { std::ostringstream S_stream; self.ShallowDump(S_stream); return nanoocp_stream_text(S_stream); }, R"nbdoc(Prints the contents of <me> on the stream <s>.)nbdoc")
         .def("Clear", static_cast<void (TopLoc_Location::*)() noexcept>(&TopLoc_Location::Clear), R"nbdoc(Clear myItems)nbdoc")
         .def_static("ScalePrec", static_cast<double (*)() noexcept>(&TopLoc_Location::ScalePrec));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, TopLoc_Location>();
@@ -155,6 +161,7 @@ This method is an alias for operator !=.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopLoc_SListNodeOfItemLocation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopLoc_SListNodeOfItemLocation::*)() const>(&TopLoc_SListNodeOfItemLocation::DynamicType));
     nanoocp_implicit_copy_ctor<TopLoc_SListNodeOfItemLocation>(nb::borrow<nb::class_<TopLoc_SListNodeOfItemLocation>>(m.attr("TopLoc_SListNodeOfItemLocation")));
+    m.def("ShallowDump", [](const occ::handle<TopLoc_Datum3D> & me) { std::ostringstream S_stream; ShallowDump(me, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("me"));
 }
 
 void nanoocp_conversions_TopLoc(nb::module_ &m) {

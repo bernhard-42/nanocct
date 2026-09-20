@@ -12,6 +12,7 @@ class Param:
     is_out: bool         # non-const lvalue ref to a primitive -> returned in a tuple
     is_inout: bool = False  # ... and also taken as input (overrides.toml [inout])
     class_name: str = ""    # canonical name of the class/enum type behind the parameter ("" for scalars, strings, std types)
+    stream: str = ""        # "out": std::ostream& -> the text comes back as a str; "in": std::istream&/std::stringstream <- a str
 
 
 @dataclass

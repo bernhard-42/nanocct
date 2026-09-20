@@ -67,6 +67,7 @@
 #include <NCollection_Vec4.hxx>
 #include <NCollection_Vector.hxx>
 #include <NCollection_WinHeapAllocator.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <TCollection_AsciiString.hxx>
@@ -412,6 +413,7 @@ create more BaseAllocators, but it is injurious.)nbdoc")
         .def("Allocate", static_cast<bool (NCollection_Buffer::*)(const size_t)>(&NCollection_Buffer::Allocate), nb::arg("theSize"), R"nbdoc(Allocate the buffer.
 @param theSize buffer length in bytes)nbdoc")
         .def("Free", static_cast<void (NCollection_Buffer::*)()>(&NCollection_Buffer::Free), R"nbdoc(De-allocate buffer.)nbdoc")
+        .def("DumpJson", [](const NCollection_Buffer &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&NCollection_Buffer::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&NCollection_Buffer::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (NCollection_Buffer::*)() const>(&NCollection_Buffer::DynamicType));

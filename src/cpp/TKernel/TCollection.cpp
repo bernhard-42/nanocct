@@ -5,6 +5,8 @@
 #include <TCollection_ExtendedString.hxx>
 #include <TCollection_HAsciiString.hxx>
 #include <TCollection_HExtendedString.hxx>
+#include <Standard_IStream.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 
@@ -630,6 +632,10 @@ anAlphabet.Prepend(aBegin);
 // Result: anAlphabet == "abcde"
 ```
 @param[in] theOther the string to prepend)nbdoc")
+        .def("Print", [](const TCollection_AsciiString &self) { std::ostringstream theStream_stream; self.Print(theStream_stream); return nanoocp_stream_text(theStream_stream); }, R"nbdoc(Displays this string on a stream.
+@param[in] theStream the output stream)nbdoc")
+        .def("Read", [](TCollection_AsciiString &self, const nanoocp::TextInput &theStream) { std::stringstream theStream_stream(theStream.text); self.Read(theStream_stream); }, nb::arg("theStream"), R"nbdoc(Read this string from a stream.
+@param[in] theStream the input stream)nbdoc")
         .def("RealValue", static_cast<double (TCollection_AsciiString::*)() const>(&TCollection_AsciiString::RealValue), R"nbdoc(Converts an AsciiString containing a numeric expression to a Real.
 
 Example:
@@ -1136,6 +1142,8 @@ Note that this method is an alias of operator !=.
         .def("Length", static_cast<int (TCollection_ExtendedString::*)() const>(&TCollection_ExtendedString::Length), R"nbdoc(Returns the number of 16-bit code units
 (might be greater than number of Unicode symbols if string contains surrogate pairs).
 @return the number of 16-bit code units)nbdoc")
+        .def("Print", [](const TCollection_ExtendedString &self) { std::ostringstream theStream_stream; self.Print(theStream_stream); return nanoocp_stream_text(theStream_stream); }, R"nbdoc(Displays this string on a stream.
+@param[in] theStream the output stream)nbdoc")
         .def("RemoveAll", static_cast<void (TCollection_ExtendedString::*)(const char16_t)>(&TCollection_ExtendedString::RemoveAll), nb::arg("theWhat"), R"nbdoc(Removes every theWhat characters from this string.
 @param[in] theWhat the character to remove)nbdoc")
         .def("Remove", static_cast<void (TCollection_ExtendedString::*)(const int, const int)>(&TCollection_ExtendedString::Remove), nb::arg("theWhere"), nb::arg("theHowMany") = static_cast<std::decay_t<const int>>(1), R"nbdoc(Erases theHowMany characters from position theWhere, theWhere included.
@@ -1547,6 +1555,7 @@ before
 me = "cde" , S = "ab"
 after
 me = "abcde" , S = "ab")nbdoc")
+        .def("Print", [](const TCollection_HAsciiString &self) { std::ostringstream astream_stream; self.Print(astream_stream); return nanoocp_stream_text(astream_stream); }, R"nbdoc(Prints this string on the stream <astream>.)nbdoc")
         .def("RealValue", static_cast<double (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::RealValue), R"nbdoc(Converts a string containing a numeric expression to a Real.
 Example:
 "215" returns 215.0.
@@ -1743,6 +1752,7 @@ Example:
 aString contains "Hello"
 aString.Value(2) returns 'e')nbdoc")
         .def("String", static_cast<const TCollection_ExtendedString & (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::String), R"nbdoc(Returns the field myString)nbdoc")
+        .def("Print", [](const TCollection_HExtendedString &self) { std::ostringstream astream_stream; self.Print(astream_stream); return nanoocp_stream_text(astream_stream); }, R"nbdoc(Displays <me>.)nbdoc")
         .def("IsSameState", static_cast<bool (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::IsSameState), nb::arg("other"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&TCollection_HExtendedString::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TCollection_HExtendedString::get_type_descriptor))

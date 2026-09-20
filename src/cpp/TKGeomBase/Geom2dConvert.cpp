@@ -18,6 +18,7 @@
 #include <NCollection_Array1.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_Sequence.hxx>
+#include <Standard_OStream.hxx>
 #include <gp_XY.hxx>
 
 void nanoocp_declare_Geom2dConvert(nb::module_ &m) {
@@ -283,7 +284,8 @@ with a result that is not NECESSARELY within the required tolerance)nbdoc")
         .def("MaxError", static_cast<double (Geom2dConvert_ApproxCurve::*)() const>(&Geom2dConvert_ApproxCurve::MaxError), R"nbdoc(Returns the greatest distance between a point on the
 source conic and the BSpline curve resulting from the
 approximation. (>0 when an approximation
-has been done, 0 if no approximation))nbdoc");
+has been done, 0 if no approximation))nbdoc")
+        .def("Dump", [](const Geom2dConvert_ApproxCurve &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Print on the stream o information about the object)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dConvert_ApproxCurve>(nb::borrow<nb::class_<Geom2dConvert_ApproxCurve>>(m.attr("Geom2dConvert_ApproxCurve")));
     nb::borrow<nb::class_<Geom2dConvert_BSplineCurveKnotSplitting>>(m.attr("Geom2dConvert_BSplineCurveKnotSplitting"))
         .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const int>(), nb::arg("BasisCurve"), nb::arg("ContinuityRange"), R"nbdoc(Determines points at which the BSpline curve

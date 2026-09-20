@@ -426,13 +426,36 @@ def _result_kind(t: cindex.Type) -> tuple[str, str]:
     return "value", name
 
 
-def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members: set[str] | None = None) -> tuple[list[Param], str | None]:
+def _stream_kind(t: cindex.Type) -> str:
+    """'out' for a mutable std::ostream& (Dump, DumpJson, Print, Write: the text is returned as a str), 'in' for a
+    std::istream& or a std::stringstream (const or not: InitFromJson, Read: the text is passed as a str), else ''."""
+    canon = t.get_canonical()
+    if canon.kind != TK.LVALUEREFERENCE:
+        return ""
+    pointee = canon.get_pointee()
+    decl = pointee.get_canonical().get_declaration()
+    if decl.kind == K.NO_DECL_FOUND:
+        return ""
+    parent = decl.semantic_parent
+    if parent is None or parent.kind != K.NAMESPACE or not (parent.spelling == "std" or parent.spelling.startswith("__")):
+        return ""
+    if decl.spelling == "basic_ostream" and not pointee.is_const_qualified():
+        return "out"
+    if decl.spelling in ("basic_istream", "basic_stringstream", "basic_istringstream"):
+        return "in"
+    return ""
+
+
+def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members: set[str] | None = None,
+            allow_streams: bool = True) -> tuple[list[Param], str | None]:
+    """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
     params: list[Param] = []
-    inout = qualified in _INOUT
+    inout = qualified in _INOUT or "*::" + qualified.rsplit("::", 1)[-1] in _INOUT   # "*::InitFromJson": every class
     if members is None:
         members = set()
     for i, p in enumerate(cursor.get_arguments()):
-        reason = _unsupported(p.type, allow_out=True)
+        stream = _stream_kind(p.type) if allow_streams else ""
+        reason = _unsupported(p.type, allow_out=True) if stream == "" else None
         if reason is None and "type-parameter-" in _type_spelling(p.type):
             reason = "dependent type (unresolved template parameter)"
         if reason is not None:
@@ -443,7 +466,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
         params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=is_out, is_inout=is_out and inout,
-                            class_name=_class_behind(p.type)))
+                            class_name=_class_behind(p.type), stream=stream))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None
@@ -521,8 +544,11 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc(cursor),
                is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
                result_scalar=_is_scalar(cursor.result_type))
+    returns_stream = _stream_kind(cursor.result_type) == "out" and any(p.stream == "out" for p in params)
+    if m.skip_reason is None and returns_stream:
+        m.result, m.result_kind, m.result_class = "void", "value", ""    # Standard_OStream& Print(x, Standard_OStream&): the stream itself, for chaining
     if m.skip_reason is None:
-        m.skip_reason = _unsupported(cursor.result_type, allow_out=False)
+        m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
         rc0 = cursor.result_type.get_canonical()
         if m.skip_reason == "reference to primitive" and rc0.kind == TK.LVALUEREFERENCE and not cursor.is_const_method():
             # double& Value(i, j) (math_Matrix), double& ChangeCoord(i) (gp_XYZ): Python cannot hold the reference,
@@ -675,7 +701,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
         if ch.kind == K.CONSTRUCTOR:
             if ch.is_move_constructor() or ch.is_deleted_method():
                 continue
-            params, reason = _params(ch, "", c.name, members)
+            params, reason = _params(ch, "", c.name, members, allow_streams=False)
             required = [q for q in params if q.default is None]
             implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
                         and not ch.is_copy_constructor() and not ch.is_move_constructor())

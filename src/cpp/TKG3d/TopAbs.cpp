@@ -4,6 +4,7 @@
 #include <TopAbs_Orientation.hxx>
 #include <TopAbs_ShapeEnum.hxx>
 #include <TopAbs_State.hxx>
+#include <Standard_OStream.hxx>
 
 void nanoocp_declare_TopAbs(nb::module_ &m) {
     nb::enum_<TopAbs_Orientation>(m, "TopAbs_Orientation", R"nbdoc(Identifies the orientation of a topological shape.
@@ -139,6 +140,10 @@ EXTERNAL         INTERNAL
 
 Complement complements the material side.
 Inside becomes outside.)nbdoc")
+        .def_static("Print", [](const TopAbs_ShapeEnum theShapeType) { std::ostringstream theStream_stream; TopAbs::Print(theShapeType, theStream_stream); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShapeType"), R"nbdoc(Prints the name of Shape type as a String on the Stream.)nbdoc")
+        .def_static("Print", [](const TopAbs_Orientation theOrientation) { std::ostringstream theStream_stream; TopAbs::Print(theOrientation, theStream_stream); return nanoocp_stream_text(theStream_stream); }, nb::arg("theOrientation"), R"nbdoc(Prints the name of the Orientation as a String on the Stream.)nbdoc")
+        .def_static("Print", [](const TopAbs_State St) { std::ostringstream S_stream; TopAbs::Print(St, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("St"), R"nbdoc(Prints the name of the State <St> as a String on
+the Stream <S> and returns <S>.)nbdoc")
         .def_static("ShapeTypeToString", static_cast<const char * (*)(TopAbs_ShapeEnum)>(&TopAbs::ShapeTypeToString), nb::arg("theType"), R"nbdoc(Returns the string name for a given shape type.
 @param theType shape type
 @return string identifier from the list COMPOUND, COMPSOLID, SOLID, SHELL, FACE, WIRE, EDGE,

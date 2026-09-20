@@ -1,6 +1,6 @@
 """OCCT package TCollection (toolkit TKernel)"""
 
-from typing import overload
+from typing import TextIO, overload
 
 import nanoocp.Message
 import nanoocp.Standard
@@ -1088,6 +1088,18 @@ class TCollection_AsciiString:
         @param[in] theOther the string to prepend
         """
 
+    def Print(self) -> object:
+        """
+        Displays this string on a stream.
+        @param[in] theStream the output stream
+        """
+
+    def Read(self, theStream: TextIO) -> None:
+        """
+        Read this string from a stream.
+        @param[in] theStream the input stream
+        """
+
     def RealValue(self) -> float:
         """
         Converts an AsciiString containing a numeric expression to a Real.
@@ -2115,6 +2127,12 @@ class TCollection_ExtendedString:
         @return the number of 16-bit code units
         """
 
+    def Print(self) -> object:
+        """
+        Displays this string on a stream.
+        @param[in] theStream the output stream
+        """
+
     def RemoveAll(self, theWhat: str) -> None:
         """
         Removes every theWhat characters from this string.
@@ -2842,6 +2860,9 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         me = "abcde" , S = "ab\"
         """
 
+    def Print(self) -> object:
+        """Prints this string on the stream <astream>."""
+
     def RealValue(self) -> float:
         """
         Converts a string containing a numeric expression to a Real.
@@ -3240,6 +3261,9 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
 
     def String(self) -> TCollection_ExtendedString:
         """Returns the field myString"""
+
+    def Print(self) -> object:
+        """Displays <me>."""
 
     def IsSameState(self, other: TCollection_HExtendedString) -> bool: ...
 

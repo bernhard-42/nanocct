@@ -1166,6 +1166,9 @@ class NCollection_Buffer(nanoocp.Standard.Standard_Transient):
     def Free(self) -> None:
         """De-allocate buffer."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 

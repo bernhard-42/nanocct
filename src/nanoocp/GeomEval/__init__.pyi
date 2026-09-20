@@ -134,6 +134,9 @@ class GeomEval_AHTBezierCurve(nanoocp.Geom.Geom_BoundedCurve):
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this curve."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -320,6 +323,9 @@ class GeomEval_AHTBezierSurface(nanoocp.Geom.Geom_BoundedSurface):
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this surface."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -447,6 +453,9 @@ class GeomEval_CircularHelicoidSurface(nanoocp.Geom.Geom_ElementarySurface):
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this surface."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -555,6 +564,9 @@ class GeomEval_CircularHelixCurve(nanoocp.Geom.Geom_Curve):
 
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this curve."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -737,6 +749,9 @@ class GeomEval_EllipsoidSurface(nanoocp.Geom.Geom_ElementarySurface):
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this ellipsoid."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
+
     def Coefficients(self) -> tuple[float, float, float, float, float, float, float, float, float, float]:
         """
         Returns the coefficients of the implicit equation of the
@@ -916,6 +931,9 @@ class GeomEval_HypParaboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
 
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this hyperbolic paraboloid."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
 
     def Coefficients(self) -> tuple[float, float, float, float, float, float, float, float, float, float]:
         """
@@ -1111,6 +1129,9 @@ class GeomEval_HyperboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this hyperboloid."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
+
     def Coefficients(self) -> tuple[float, float, float, float, float, float, float, float, float, float]:
         """
         Returns the coefficients of the implicit equation of the
@@ -1280,6 +1301,9 @@ class GeomEval_ParaboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this paraboloid."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
+
     def Coefficients(self) -> tuple[float, float, float, float, float, float, float, float, float, float]:
         """
         Returns the coefficients of the implicit equation of the
@@ -1400,6 +1424,9 @@ class GeomEval_SineWaveCurve(nanoocp.Geom.Geom_Curve):
 
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this curve."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1539,6 +1566,9 @@ class GeomEval_TBezierCurve(nanoocp.Geom.Geom_BoundedCurve):
 
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this T-Bezier curve."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1722,6 +1752,9 @@ class GeomEval_TBezierSurface(nanoocp.Geom.Geom_BoundedSurface):
 
     def Copy(self) -> nanoocp.Geom.Geom_Geometry:
         """Creates a new object which is a copy of this T-Bezier surface."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream."""
 
     @staticmethod
     def get_type_name() -> str: ...

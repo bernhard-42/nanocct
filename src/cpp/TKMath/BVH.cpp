@@ -40,6 +40,7 @@
 #include <NCollection_Vec2.hxx>
 #include <NCollection_Vec3.hxx>
 #include <NCollection_Vec4.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 
@@ -187,7 +188,8 @@ void nanoocp_define_BVH(nb::module_ &m) {
         .def("SquareModulus", static_cast<int (NCollection_Vec2<int>::*)() const noexcept>(&NCollection_Vec2<int>::SquareModulus), R"nbdoc(Computes the square of vector modulus (magnitude, length).
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
-        .def_static("DY", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc");
+        .def_static("DY", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
+        .def("DumpJson", [](const NCollection_Vec2<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec2<int>>(nb::borrow<nb::class_<NCollection_Vec2<int>>>(m.attr("BVH_Vec2i")));
     nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -258,7 +260,8 @@ This method may be used for performance tricks.)nbdoc")
 @return interpolation result.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
-        .def_static("DZ", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc");
+        .def_static("DZ", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
+        .def("DumpJson", [](const NCollection_Vec3<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec3<int>>(nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i")));
     nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -354,7 +357,8 @@ This method may be used for performance tricks.)nbdoc")
         .def("Dot", static_cast<int (NCollection_Vec4<int>::*)(const NCollection_Vec4<int> &) const noexcept>(&NCollection_Vec4<int>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<int> &self, const int theInvFactor) -> NCollection_Vec4<int> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<int> &self, const NCollection_Vec4<int> & theRight) -> NCollection_Vec4<int> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
-        .def("__truediv__", static_cast<NCollection_Vec4<int> (NCollection_Vec4<int>::*)(const int) const>(&NCollection_Vec4<int>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator());
+        .def("__truediv__", static_cast<NCollection_Vec4<int> (NCollection_Vec4<int>::*)(const int) const>(&NCollection_Vec4<int>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("DumpJson", [](const NCollection_Vec4<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec4<int>>(nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i")));
     nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -394,7 +398,8 @@ This method may be used for performance tricks.)nbdoc")
         .def("SquareModulus", static_cast<float (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::SquareModulus), R"nbdoc(Computes the square of vector modulus (magnitude, length).
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
-        .def_static("DY", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc");
+        .def_static("DY", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
+        .def("DumpJson", [](const NCollection_Vec2<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")));
     nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -434,7 +439,8 @@ This method may be used for performance tricks.)nbdoc")
         .def("SquareModulus", static_cast<double (NCollection_Vec2<double>::*)() const noexcept>(&NCollection_Vec2<double>::SquareModulus), R"nbdoc(Computes the square of vector modulus (magnitude, length).
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
-        .def_static("DY", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc");
+        .def_static("DY", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
+        .def("DumpJson", [](const NCollection_Vec2<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec2<double>>(nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d")));
     nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -505,7 +511,8 @@ This method may be used for performance tricks.)nbdoc")
 @return interpolation result.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
-        .def_static("DZ", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc");
+        .def_static("DZ", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
+        .def("DumpJson", [](const NCollection_Vec3<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec3<double>>(nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d")));
     nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -601,7 +608,8 @@ This method may be used for performance tricks.)nbdoc")
         .def("Dot", static_cast<double (NCollection_Vec4<double>::*)(const NCollection_Vec4<double> &) const noexcept>(&NCollection_Vec4<double>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<double> &self, const double theInvFactor) -> NCollection_Vec4<double> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<double> &self, const NCollection_Vec4<double> & theRight) -> NCollection_Vec4<double> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
-        .def("__truediv__", static_cast<NCollection_Vec4<double> (NCollection_Vec4<double>::*)(const double) const>(&NCollection_Vec4<double>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator());
+        .def("__truediv__", static_cast<NCollection_Vec4<double> (NCollection_Vec4<double>::*)(const double) const>(&NCollection_Vec4<double>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("DumpJson", [](const NCollection_Vec4<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec4<double>>(nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d")));
     nb::borrow<nb::class_<NCollection_Mat4<float>>>(m.attr("BVH_Mat4f"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.
@@ -717,7 +725,8 @@ Construct the identity matrix.)nbdoc")
         .def("DeterminantMat3", static_cast<float (NCollection_Mat4<float>::*)() const noexcept>(&NCollection_Mat4<float>::DeterminantMat3), R"nbdoc(Return determinant of the 3x3 sub-matrix.)nbdoc")
         .def("Adjoint", static_cast<NCollection_Mat4<float> (NCollection_Mat4<float>::*)() const noexcept>(&NCollection_Mat4<float>::Adjoint), R"nbdoc(Return adjoint (adjugate matrix, e.g. conjugate transpose).)nbdoc")
         .def_static("Map", static_cast<NCollection_Mat4<float> & (*)(float *) noexcept>(&NCollection_Mat4<float>::Map), nb::rv_policy::reference_internal, nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc")
-        .def_static("Map", static_cast<const NCollection_Mat4<float> & (*)(const float *) noexcept>(&NCollection_Mat4<float>::Map), nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc");
+        .def_static("Map", static_cast<const NCollection_Mat4<float> & (*)(const float *) noexcept>(&NCollection_Mat4<float>::Map), nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc")
+        .def("DumpJson", [](const NCollection_Mat4<float> &self, int arg1) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, arg1); return nanoocp_stream_text(theOStream_stream); }, nb::arg("arg1"), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Mat4<float>>(nb::borrow<nb::class_<NCollection_Mat4<float>>>(m.attr("BVH_Mat4f")));
     nb::borrow<nb::class_<NCollection_Mat4<double>>>(m.attr("BVH_Mat4d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.
@@ -833,7 +842,8 @@ Construct the identity matrix.)nbdoc")
         .def("DeterminantMat3", static_cast<double (NCollection_Mat4<double>::*)() const noexcept>(&NCollection_Mat4<double>::DeterminantMat3), R"nbdoc(Return determinant of the 3x3 sub-matrix.)nbdoc")
         .def("Adjoint", static_cast<NCollection_Mat4<double> (NCollection_Mat4<double>::*)() const noexcept>(&NCollection_Mat4<double>::Adjoint), R"nbdoc(Return adjoint (adjugate matrix, e.g. conjugate transpose).)nbdoc")
         .def_static("Map", static_cast<NCollection_Mat4<double> & (*)(double *) noexcept>(&NCollection_Mat4<double>::Map), nb::rv_policy::reference_internal, nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc")
-        .def_static("Map", static_cast<const NCollection_Mat4<double> & (*)(const double *) noexcept>(&NCollection_Mat4<double>::Map), nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc");
+        .def_static("Map", static_cast<const NCollection_Mat4<double> & (*)(const double *) noexcept>(&NCollection_Mat4<double>::Map), nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc")
+        .def("DumpJson", [](const NCollection_Mat4<double> &self, int arg1) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, arg1); return nanoocp_stream_text(theOStream_stream); }, nb::arg("arg1"), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Mat4<double>>(nb::borrow<nb::class_<NCollection_Mat4<double>>>(m.attr("BVH_Mat4d")));
     nb::borrow<nb::class_<BVH_TreeBaseTransient>>(m.attr("BVH_TreeBaseTransient"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&BVH_TreeBaseTransient::get_type_name))

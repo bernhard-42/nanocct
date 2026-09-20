@@ -14,6 +14,8 @@
 #include <NCollection_Array1.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_List.hxx>
+#include <Standard_OStream.hxx>
+#include <Standard_SStream.hxx>
 #include <gp_Ax1.hxx>
 #include <gp_Ax2d.hxx>
 #include <gp_Ax3.hxx>
@@ -491,7 +493,9 @@ direction <D> intersects the box.)nbdoc")
 box). This can be a Void box in case if its sides has been defined as infinite (Open) without
 adding any finite points. WARNING! This method relies on Open flags, the infinite points added
 using Add() method will be returned as is.)nbdoc")
-        .def("HasFinitePart", static_cast<bool (Bnd_Box::*)() const noexcept>(&Bnd_Box::HasFinitePart), R"nbdoc(Returns TRUE if this box has finite part.)nbdoc");
+        .def("HasFinitePart", static_cast<bool (Bnd_Box::*)() const noexcept>(&Bnd_Box::HasFinitePart), R"nbdoc(Returns TRUE if this box has finite part.)nbdoc")
+        .def("DumpJson", [](const Bnd_Box &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](Bnd_Box &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_Box>(nb::borrow<nb::class_<Bnd_Box>>(m.attr("Bnd_Box")));
     nanoocp_implicit_default_ctor<Bnd_Box::Limits>(nb::borrow<nb::class_<Bnd_Box::Limits>>(m.attr("Bnd_Box").attr("Limits")));
     nanoocp_implicit_copy_ctor<Bnd_Box::Limits>(nb::borrow<nb::class_<Bnd_Box::Limits>>(m.attr("Bnd_Box").attr("Limits")));
@@ -681,7 +685,8 @@ auto [aHX, aHY, aHZ] = anOBB.GetHalfSizes();
         .def("Add", static_cast<void (Bnd_OBB::*)(const Bnd_OBB &)>(&Bnd_OBB::Add), nb::arg("theOther"), R"nbdoc(Rebuilds this in order to include all previous objects
 (which it was created from) and theOther.)nbdoc")
         .def("Add", static_cast<void (Bnd_OBB::*)(const gp_Pnt &)>(&Bnd_OBB::Add), nb::arg("theP"), R"nbdoc(Rebuilds this in order to include all previous objects
-(which it was created from) and theP.)nbdoc");
+(which it was created from) and theP.)nbdoc")
+        .def("DumpJson", [](const Bnd_OBB &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_OBB>(nb::borrow<nb::class_<Bnd_OBB>>(m.attr("Bnd_OBB")));
     nb::implicitly_convertible<std::decay_t<const Bnd_Box &>, Bnd_OBB>();
     nanoocp_implicit_default_ctor<Bnd_OBB::HalfSizes>(nb::borrow<nb::class_<Bnd_OBB::HalfSizes>>(m.attr("Bnd_OBB").attr("HalfSizes")));
@@ -759,7 +764,8 @@ Marks range as Void if the given Upper value is smaller than range Max.)nbdoc")
 Returns std::nullopt if IsVoid().)nbdoc")
         .def("Max", static_cast<std::optional<double> (Bnd_Range::*)() const noexcept>(&Bnd_Range::Max), R"nbdoc(Returns the MAX boundary of <this>.
 Returns std::nullopt if IsVoid().)nbdoc")
-        .def("__eq__", static_cast<bool (Bnd_Range::*)(const Bnd_Range &) const noexcept>(&Bnd_Range::operator==), nb::arg("theOther"), R"nbdoc(Returns TRUE if theOther is equal to <*this>)nbdoc", nb::is_operator());
+        .def("__eq__", static_cast<bool (Bnd_Range::*)(const Bnd_Range &) const noexcept>(&Bnd_Range::operator==), nb::arg("theOther"), R"nbdoc(Returns TRUE if theOther is equal to <*this>)nbdoc", nb::is_operator())
+        .def("DumpJson", [](const Bnd_Range &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_Range>(nb::borrow<nb::class_<Bnd_Range>>(m.attr("Bnd_Range")));
     nanoocp_implicit_default_ctor<Bnd_Range::Bounds>(nb::borrow<nb::class_<Bnd_Range::Bounds>>(m.attr("Bnd_Range").attr("Bounds")));
     nanoocp_implicit_copy_ctor<Bnd_Range::Bounds>(nb::borrow<nb::class_<Bnd_Range::Bounds>>(m.attr("Bnd_Range").attr("Bounds")));

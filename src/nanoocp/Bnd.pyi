@@ -2,7 +2,7 @@
 
 from collections.abc import Sequence
 import enum
-from typing import overload
+from typing import TextIO, overload
 
 import nanoocp.NCollection
 import nanoocp.gp
@@ -1053,6 +1053,12 @@ class Bnd_Box:
     def HasFinitePart(self) -> bool:
         """Returns TRUE if this box has finite part."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+    def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
+        """Inits the content of me from the stream"""
+
 class Bnd_BoundSortBox:
     """
     A tool to compare a bounding box or a plane with a set of
@@ -1606,6 +1612,9 @@ class Bnd_OBB:
         (which it was created from) and theP.
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
 class Bnd_Range:
     """
     This class describes a range in 1D space restricted
@@ -1818,6 +1827,9 @@ class Bnd_Range:
 
     def __eq__(self, theOther: Bnd_Range) -> bool:
         """Returns TRUE if theOther is equal to <*this>"""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class Bnd_Sphere:
     """

@@ -9,9 +9,13 @@
 #include <FSD_FStream.hxx>
 #include <NCollection_Buffer.hxx>
 #include <NCollection_Sequence.hxx>
+#include <Standard_IStream.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Type.hxx>
 #include <Storage_BaseDriver.hxx>
+#include <Storage_Data.hxx>
 #include <Storage_Error.hxx>
+#include <Storage_HeaderData.hxx>
 #include <Storage_OpenMode.hxx>
 #include <Storage_Position.hxx>
 #include <TCollection_AsciiString.hxx>
@@ -67,16 +71,23 @@ void nanoocp_define_FSD(nb::module_ &m) {
         .def("Tell", static_cast<Storage_Position (FSD_BinaryFile::*)()>(&FSD_BinaryFile::Tell), R"nbdoc(return position in the file. Return -1 upon error.)nbdoc")
         .def_static("IsGoodFileType", static_cast<Storage_Error (*)(const TCollection_AsciiString &)>(&FSD_BinaryFile::IsGoodFileType), nb::arg("aName"))
         .def("BeginWriteInfoSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginWriteInfoSection))
+        .def_static("WriteInfo_s", [](const int nbObj, const TCollection_AsciiString & dbVersion, const TCollection_AsciiString & date, const TCollection_AsciiString & schemaName, const TCollection_AsciiString & schemaVersion, const TCollection_ExtendedString & appName, const TCollection_AsciiString & appVersion, const TCollection_ExtendedString & objectType, const NCollection_Sequence<TCollection_AsciiString> & userInfo, const bool theOnlyCount) { std::ostringstream theOStream_stream; auto result = FSD_BinaryFile::WriteInfo(theOStream_stream, nbObj, dbVersion, date, schemaName, schemaVersion, appName, appVersion, objectType, userInfo, theOnlyCount); return std::make_tuple(result, nanoocp_stream_text(theOStream_stream)); }, nb::arg("nbObj"), nb::arg("dbVersion"), nb::arg("date"), nb::arg("schemaName"), nb::arg("schemaVersion"), nb::arg("appName"), nb::arg("appVersion"), nb::arg("objectType"), nb::arg("userInfo"), nb::arg("theOnlyCount") = static_cast<std::decay_t<const bool>>(false))
         .def("WriteInfo", static_cast<void (FSD_BinaryFile::*)(const int, const TCollection_AsciiString &, const TCollection_AsciiString &, const TCollection_AsciiString &, const TCollection_AsciiString &, const TCollection_ExtendedString &, const TCollection_AsciiString &, const TCollection_ExtendedString &, const NCollection_Sequence<TCollection_AsciiString> &)>(&FSD_BinaryFile::WriteInfo), nb::arg("nbObj"), nb::arg("dbVersion"), nb::arg("date"), nb::arg("schemaName"), nb::arg("schemaVersion"), nb::arg("appName"), nb::arg("appVersion"), nb::arg("objectType"), nb::arg("userInfo"))
         .def("EndWriteInfoSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndWriteInfoSection))
+        .def("EndWriteInfoSection", [](FSD_BinaryFile &self) { std::ostringstream theOStream_stream; auto result = self.EndWriteInfoSection(theOStream_stream); return std::make_tuple(result, nanoocp_stream_text(theOStream_stream)); })
         .def("BeginReadInfoSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginReadInfoSection))
         .def("ReadInfo", [](FSD_BinaryFile &self, TCollection_AsciiString & dbVersion, TCollection_AsciiString & date, TCollection_AsciiString & schemaName, TCollection_AsciiString & schemaVersion, TCollection_ExtendedString & appName, TCollection_AsciiString & appVersion, TCollection_ExtendedString & objectType, NCollection_Sequence<TCollection_AsciiString> & userInfo) { int nbObj{}; self.ReadInfo(nbObj, dbVersion, date, schemaName, schemaVersion, appName, appVersion, objectType, userInfo); return nbObj; }, nb::arg("dbVersion"), nb::arg("date"), nb::arg("schemaName"), nb::arg("schemaVersion"), nb::arg("appName"), nb::arg("appVersion"), nb::arg("objectType"), nb::arg("userInfo"))
+        .def("ReadCompleteInfo", [](FSD_BinaryFile &self, const nanoocp::TextInput &theIStream, occ::handle<Storage_Data> & theData) { std::stringstream theIStream_stream(theIStream.text); self.ReadCompleteInfo(theIStream_stream, theData); }, nb::arg("theIStream"), nb::arg("theData"))
         .def("EndReadInfoSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndReadInfoSection))
         .def("BeginWriteCommentSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginWriteCommentSection))
+        .def("BeginWriteCommentSection", [](FSD_BinaryFile &self) { std::ostringstream theOStream_stream; auto result = self.BeginWriteCommentSection(theOStream_stream); return std::make_tuple(result, nanoocp_stream_text(theOStream_stream)); })
         .def("WriteComment", static_cast<void (FSD_BinaryFile::*)(const NCollection_Sequence<TCollection_ExtendedString> &)>(&FSD_BinaryFile::WriteComment), nb::arg("userComments"))
+        .def_static("WriteComment_s", [](const NCollection_Sequence<TCollection_ExtendedString> & theComments, const bool theOnlyCount) { std::ostringstream theOStream_stream; auto result = FSD_BinaryFile::WriteComment(theOStream_stream, theComments, theOnlyCount); return std::make_tuple(result, nanoocp_stream_text(theOStream_stream)); }, nb::arg("theComments"), nb::arg("theOnlyCount") = static_cast<std::decay_t<const bool>>(false))
         .def("EndWriteCommentSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndWriteCommentSection))
+        .def("EndWriteCommentSection", [](FSD_BinaryFile &self) { std::ostringstream theOStream_stream; auto result = self.EndWriteCommentSection(theOStream_stream); return std::make_tuple(result, nanoocp_stream_text(theOStream_stream)); })
         .def("BeginReadCommentSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginReadCommentSection))
         .def("ReadComment", static_cast<void (FSD_BinaryFile::*)(NCollection_Sequence<TCollection_ExtendedString> &)>(&FSD_BinaryFile::ReadComment), nb::arg("userComments"))
+        .def_static("ReadComment_s", [](const nanoocp::TextInput &theIStream, NCollection_Sequence<TCollection_ExtendedString> & userComments) { std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadComment(theIStream_stream, userComments); }, nb::arg("theIStream"), nb::arg("userComments"))
         .def("EndReadCommentSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndReadCommentSection))
         .def("BeginWriteTypeSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginWriteTypeSection))
         .def("SetTypeSectionSize", static_cast<void (FSD_BinaryFile::*)(const int)>(&FSD_BinaryFile::SetTypeSectionSize), nb::arg("aSize"))
@@ -84,7 +95,9 @@ void nanoocp_define_FSD(nb::module_ &m) {
         .def("EndWriteTypeSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndWriteTypeSection))
         .def("BeginReadTypeSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginReadTypeSection))
         .def("TypeSectionSize", static_cast<int (FSD_BinaryFile::*)()>(&FSD_BinaryFile::TypeSectionSize))
+        .def_static("TypeSectionSize_s", [](const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto result = FSD_BinaryFile::TypeSectionSize(theIStream_stream); return result; }, nb::arg("theIStream"))
         .def("ReadTypeInformations", [](FSD_BinaryFile &self, TCollection_AsciiString & typeName) { int typeNum{}; self.ReadTypeInformations(typeNum, typeName); return typeNum; }, nb::arg("typeName"))
+        .def_static("ReadTypeInformations_s", [](const nanoocp::TextInput &theIStream, TCollection_AsciiString & typeName) { int typeNum{}; std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadTypeInformations(theIStream_stream, typeNum, typeName); return typeNum; }, nb::arg("theIStream"), nb::arg("typeName"))
         .def("EndReadTypeSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndReadTypeSection))
         .def("BeginWriteRootSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginWriteRootSection))
         .def("SetRootSectionSize", static_cast<void (FSD_BinaryFile::*)(const int)>(&FSD_BinaryFile::SetRootSectionSize), nb::arg("aSize"))
@@ -92,7 +105,9 @@ void nanoocp_define_FSD(nb::module_ &m) {
         .def("EndWriteRootSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndWriteRootSection))
         .def("BeginReadRootSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginReadRootSection))
         .def("RootSectionSize", static_cast<int (FSD_BinaryFile::*)()>(&FSD_BinaryFile::RootSectionSize))
+        .def_static("RootSectionSize_s", [](const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto result = FSD_BinaryFile::RootSectionSize(theIStream_stream); return result; }, nb::arg("theIStream"))
         .def("ReadRoot", [](FSD_BinaryFile &self, TCollection_AsciiString & rootName, TCollection_AsciiString & aType) { int aRef{}; self.ReadRoot(rootName, aRef, aType); return aRef; }, nb::arg("rootName"), nb::arg("aType"))
+        .def_static("ReadRoot_s", [](const nanoocp::TextInput &theIStream, TCollection_AsciiString & rootName, TCollection_AsciiString & aType) { int aRef{}; std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadRoot(theIStream_stream, rootName, aRef, aType); return aRef; }, nb::arg("theIStream"), nb::arg("rootName"), nb::arg("aType"))
         .def("EndReadRootSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndReadRootSection))
         .def("BeginWriteRefSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginWriteRefSection))
         .def("SetRefSectionSize", static_cast<void (FSD_BinaryFile::*)(const int)>(&FSD_BinaryFile::SetRefSectionSize), nb::arg("aSize"))
@@ -100,7 +115,9 @@ void nanoocp_define_FSD(nb::module_ &m) {
         .def("EndWriteRefSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndWriteRefSection))
         .def("BeginReadRefSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginReadRefSection))
         .def("RefSectionSize", static_cast<int (FSD_BinaryFile::*)()>(&FSD_BinaryFile::RefSectionSize))
+        .def_static("RefSectionSize_s", [](const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto result = FSD_BinaryFile::RefSectionSize(theIStream_stream); return result; }, nb::arg("theIStream"))
         .def("ReadReferenceType", [](FSD_BinaryFile &self) { int reference{}; int typeNum{}; self.ReadReferenceType(reference, typeNum); return std::make_tuple(reference, typeNum); })
+        .def_static("ReadReferenceType_s", [](const nanoocp::TextInput &theIStream) { int reference{}; int typeNum{}; std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadReferenceType(theIStream_stream, reference, typeNum); return std::make_tuple(reference, typeNum); }, nb::arg("theIStream"))
         .def("EndReadRefSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::EndReadRefSection))
         .def("BeginWriteDataSection", static_cast<Storage_Error (FSD_BinaryFile::*)()>(&FSD_BinaryFile::BeginWriteDataSection))
         .def("WritePersistentObjectHeader", static_cast<void (FSD_BinaryFile::*)(const int, const int)>(&FSD_BinaryFile::WritePersistentObjectHeader), nb::arg("aRef"), nb::arg("aType"))
@@ -120,14 +137,17 @@ void nanoocp_define_FSD(nb::module_ &m) {
         .def("PutReference", [](FSD_BinaryFile &self, const int aValue) { opencascade::handle<Storage_BaseDriver> result(&(self.PutReference(aValue))); return result; }, nb::arg("aValue"))
         .def("PutCharacter", [](FSD_BinaryFile &self, const char aValue) { opencascade::handle<Storage_BaseDriver> result(&(self.PutCharacter(aValue))); return result; }, nb::arg("aValue"))
         .def("PutExtCharacter", [](FSD_BinaryFile &self, const char16_t aValue) { opencascade::handle<Storage_BaseDriver> result(&(self.PutExtCharacter(aValue))); return result; }, nb::arg("aValue"))
+        .def_static("PutInteger_s", [](const int aValue, const bool theOnlyCount) { std::ostringstream theOStream_stream; auto result = FSD_BinaryFile::PutInteger(theOStream_stream, aValue, theOnlyCount); return std::make_tuple(result, nanoocp_stream_text(theOStream_stream)); }, nb::arg("aValue"), nb::arg("theOnlyCount") = static_cast<std::decay_t<const bool>>(false))
         .def("PutInteger", [](FSD_BinaryFile &self, const int aValue) { opencascade::handle<Storage_BaseDriver> result(&(self.PutInteger(aValue))); return result; }, nb::arg("aValue"))
         .def("PutBoolean", [](FSD_BinaryFile &self, const bool aValue) { opencascade::handle<Storage_BaseDriver> result(&(self.PutBoolean(aValue))); return result; }, nb::arg("aValue"))
         .def("PutReal", [](FSD_BinaryFile &self, const double aValue) { opencascade::handle<Storage_BaseDriver> result(&(self.PutReal(aValue))); return result; }, nb::arg("aValue"))
         .def("PutShortReal", [](FSD_BinaryFile &self, const float aValue) { opencascade::handle<Storage_BaseDriver> result(&(self.PutShortReal(aValue))); return result; }, nb::arg("aValue"))
         .def("GetReference", [](FSD_BinaryFile &self) { int aValue{}; opencascade::handle<Storage_BaseDriver> result(&(self.GetReference(aValue))); return std::make_tuple(result, aValue); })
         .def("GetCharacter", [](FSD_BinaryFile &self) { char aValue{}; opencascade::handle<Storage_BaseDriver> result(&(self.GetCharacter(aValue))); return std::make_tuple(result, aValue); })
+        .def_static("GetReference_s", [](const nanoocp::TextInput &theIStream) { int aValue{}; std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::GetReference(theIStream_stream, aValue); return aValue; }, nb::arg("theIStream"))
         .def("GetExtCharacter", [](FSD_BinaryFile &self) { char16_t aValue{}; opencascade::handle<Storage_BaseDriver> result(&(self.GetExtCharacter(aValue))); return std::make_tuple(result, aValue); })
         .def("GetInteger", [](FSD_BinaryFile &self) { int aValue{}; opencascade::handle<Storage_BaseDriver> result(&(self.GetInteger(aValue))); return std::make_tuple(result, aValue); })
+        .def_static("GetInteger_s", [](const nanoocp::TextInput &theIStream) { int aValue{}; std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::GetInteger(theIStream_stream, aValue); return aValue; }, nb::arg("theIStream"))
         .def("GetBoolean", [](FSD_BinaryFile &self) { bool aValue{}; opencascade::handle<Storage_BaseDriver> result(&(self.GetBoolean(aValue))); return std::make_tuple(result, aValue); })
         .def("GetReal", [](FSD_BinaryFile &self) { double aValue{}; opencascade::handle<Storage_BaseDriver> result(&(self.GetReal(aValue))); return std::make_tuple(result, aValue); })
         .def("GetShortReal", [](FSD_BinaryFile &self) { float aValue{}; opencascade::handle<Storage_BaseDriver> result(&(self.GetShortReal(aValue))); return std::make_tuple(result, aValue); })
@@ -139,6 +159,11 @@ void nanoocp_define_FSD(nb::module_ &m) {
         .def_static("InverseShortReal", static_cast<float (*)(const float)>(&FSD_BinaryFile::InverseShortReal), nb::arg("theValue"), R"nbdoc(Inverse bytes in short real value)nbdoc")
         .def_static("InverseSize", static_cast<size_t (*)(const size_t)>(&FSD_BinaryFile::InverseSize), nb::arg("theValue"), R"nbdoc(Inverse bytes in size value)nbdoc")
         .def_static("InverseUint64", static_cast<uint64_t (*)(const uint64_t)>(&FSD_BinaryFile::InverseUint64), nb::arg("theValue"), R"nbdoc(Inverse bytes in 64bit unsigned int value)nbdoc")
+        .def_static("ReadHeader", [](const nanoocp::TextInput &theIStream, FSD_FileHeader & theFileHeader) { std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadHeader(theIStream_stream, theFileHeader); }, nb::arg("theIStream"), nb::arg("theFileHeader"))
+        .def_static("ReadHeaderData", [](const nanoocp::TextInput &theIStream, const occ::handle<Storage_HeaderData> & theHeaderData) { std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadHeaderData(theIStream_stream, theHeaderData); }, nb::arg("theIStream"), nb::arg("theHeaderData"))
+        .def_static("ReadString", [](const nanoocp::TextInput &theIStream, TCollection_AsciiString & buffer) { std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadString(theIStream_stream, buffer); }, nb::arg("theIStream"), nb::arg("buffer"))
+        .def_static("ReadExtendedString", [](const nanoocp::TextInput &theIStream, TCollection_ExtendedString & buffer) { std::stringstream theIStream_stream(theIStream.text); FSD_BinaryFile::ReadExtendedString(theIStream_stream, buffer); }, nb::arg("theIStream"), nb::arg("buffer"))
+        .def_static("WriteHeader", [](const FSD_FileHeader & theHeader, const bool theOnlyCount) { std::ostringstream theOStream_stream; auto result = FSD_BinaryFile::WriteHeader(theOStream_stream, theHeader, theOnlyCount); return std::make_tuple(result, nanoocp_stream_text(theOStream_stream)); }, nb::arg("theHeader"), nb::arg("theOnlyCount") = static_cast<std::decay_t<const bool>>(false))
         .def_static("MagicNumber", static_cast<const char * (*)()>(&FSD_BinaryFile::MagicNumber));
     nanoocp_implicit_copy_ctor<FSD_BinaryFile>(nb::borrow<nb::class_<FSD_BinaryFile>>(m.attr("FSD_BinaryFile")));
     nb::borrow<nb::class_<FSD_File>>(m.attr("FSD_File"))
@@ -162,6 +187,7 @@ Storage_Error enumeration which specifies the problem encountered.)nbdoc")
         .def("EndWriteInfoSection", static_cast<Storage_Error (FSD_File::*)()>(&FSD_File::EndWriteInfoSection))
         .def("BeginReadInfoSection", static_cast<Storage_Error (FSD_File::*)()>(&FSD_File::BeginReadInfoSection))
         .def("ReadInfo", [](FSD_File &self, TCollection_AsciiString & dbVersion, TCollection_AsciiString & date, TCollection_AsciiString & schemaName, TCollection_AsciiString & schemaVersion, TCollection_ExtendedString & appName, TCollection_AsciiString & appVersion, TCollection_ExtendedString & objectType, NCollection_Sequence<TCollection_AsciiString> & userInfo) { int nbObj{}; self.ReadInfo(nbObj, dbVersion, date, schemaName, schemaVersion, appName, appVersion, objectType, userInfo); return nbObj; }, nb::arg("dbVersion"), nb::arg("date"), nb::arg("schemaName"), nb::arg("schemaVersion"), nb::arg("appName"), nb::arg("appVersion"), nb::arg("objectType"), nb::arg("userInfo"))
+        .def("ReadCompleteInfo", [](FSD_File &self, const nanoocp::TextInput &theIStream, occ::handle<Storage_Data> & theData) { std::stringstream theIStream_stream(theIStream.text); self.ReadCompleteInfo(theIStream_stream, theData); }, nb::arg("theIStream"), nb::arg("theData"))
         .def("EndReadInfoSection", static_cast<Storage_Error (FSD_File::*)()>(&FSD_File::EndReadInfoSection))
         .def("BeginWriteCommentSection", static_cast<Storage_Error (FSD_File::*)()>(&FSD_File::BeginWriteCommentSection))
         .def("WriteComment", static_cast<void (FSD_File::*)(const NCollection_Sequence<TCollection_ExtendedString> &)>(&FSD_File::WriteComment), nb::arg("userComments"))

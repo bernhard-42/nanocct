@@ -42,6 +42,12 @@ class TopLoc_Datum3D(nanoocp.Standard.Standard_Transient):
     def Form(self) -> nanoocp.gp.gp_TrsfForm:
         """Return transformation form."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+    def ShallowDump(self) -> object:
+        """Writes the contents of this Datum3D to the stream S."""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -70,6 +76,9 @@ class TopLoc_ItemLocation:
 
     @overload
     def __init__(self, theOther: TopLoc_ItemLocation) -> None: ...
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class TopLoc_SListOfItemLocation:
     """
@@ -278,6 +287,12 @@ class TopLoc_Location:
 
     def __ne__(self, theOther: TopLoc_Location) -> bool: ...
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+    def ShallowDump(self) -> object:
+        """Prints the contents of <me> on the stream <s>."""
+
     def Clear(self) -> None:
         """Clear myItems"""
 
@@ -302,3 +317,5 @@ class TopLoc_SListNodeOfItemLocation(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+def ShallowDump(me: TopLoc_Datum3D) -> object: ...

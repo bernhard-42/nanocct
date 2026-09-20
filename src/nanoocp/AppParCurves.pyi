@@ -186,6 +186,13 @@ class AppParCurves_MultiPoint:
         newy = y + dy*oldy    for all points of the curve.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current
+        state of the object.
+        Is used to redefine the operator <<.
+        """
+
 class AppParCurves_MultiCurve:
     """
     This class describes a MultiCurve approximating a Multiline.
@@ -373,6 +380,13 @@ class AppParCurves_MultiCurve:
         An exception is raised if the curve dimension is 2d.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current
+        state of the object.
+        Is used to redefine the operator <<.
+        """
+
 class AppParCurves_MultiBSpCurve(AppParCurves_MultiCurve):
     """
     This class describes a MultiBSpCurve approximating a Multiline.
@@ -506,6 +520,13 @@ class AppParCurves_MultiBSpCurve(AppParCurves_MultiCurve):
         on the BSpline curve number CuIndex.
         An exception is raised if CuIndex <0 or > NbCurves.
         An exception is raised if the curve dimension is 2d.
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current
+        state of the object.
+        Is used to redefine the operator <<.
         """
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)

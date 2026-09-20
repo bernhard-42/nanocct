@@ -313,6 +313,13 @@ class AppDef_MultiPointConstraint(nanoocp.AppParCurves.AppParCurves_MultiPoint):
     def IsCurvaturePoint(self) -> bool:
         """returns True if the MultiPoint has a curvature value."""
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current
+        state of the object.
+        Is used to redefine the operator <<.
+        """
+
 class AppDef_MultiLine:
     """
     This class describes the organized set of points used in the
@@ -398,6 +405,13 @@ class AppDef_MultiLine:
         """
         returns the MultiPointConstraint of range Index
         An exception is raised if Index<0 or Index>MPoint.
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current
+        state of the object.
+        Is used to redefine the operator <<.
         """
 
 class AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute:
@@ -2358,6 +2372,14 @@ class AppDef_Variational:
 
     def NbIterations(self) -> int:
         """returns the number of iterations used in the approximation."""
+
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        MaxError,MaxErrorIndex,AverageError,QuadraticError,Criterium
+        Distances,Degre,Nombre de poles, parametres, noeuds
+        """
 
     def SetConstraints(self, aConstrainst: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple]) -> bool:
         """

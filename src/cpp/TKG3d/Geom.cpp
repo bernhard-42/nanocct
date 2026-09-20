@@ -47,6 +47,7 @@
 #include <NCollection_Array2.hxx>
 #include <Precision.hxx>
 #include <Standard_DomainError.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Ax1.hxx>
@@ -1236,6 +1237,7 @@ the previous elementaries transformations.
         .def("Translated", static_cast<occ::handle<Geom_Geometry> (Geom_Geometry::*)(const gp_Vec &) const>(&Geom_Geometry::Translated), nb::arg("V"))
         .def("Translated", static_cast<occ::handle<Geom_Geometry> (Geom_Geometry::*)(const gp_Pnt &, const gp_Pnt &) const>(&Geom_Geometry::Translated), nb::arg("P1"), nb::arg("P2"))
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_Geometry::*)() const>(&Geom_Geometry::Copy), R"nbdoc(Creates a new object which is a copy of this geometric object.)nbdoc")
+        .def("DumpJson", [](const Geom_Geometry &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Geometry::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Geometry::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Geometry::*)() const>(&Geom_Geometry::DynamicType));
@@ -1428,6 +1430,7 @@ Raises an exception if the curve continuity is not CN, or N < 1.)nbdoc")
         .def("D3", static_cast<void (Geom_Curve::*)(const double, gp_Pnt &, gp_Vec &, gp_Vec &, gp_Vec &) const>(&Geom_Curve::D3), nb::arg("U"), nb::arg("P"), nb::arg("V1"), nb::arg("V2"), nb::arg("V3"), R"nbdoc(Returns the point P of parameter U, the first, the second and the third derivative.)nbdoc")
         .def("DN", static_cast<gp_Vec (Geom_Curve::*)(const double, const int) const>(&Geom_Curve::DN), nb::arg("U"), nb::arg("N"), R"nbdoc(The returned vector gives the value of the derivative for the order of derivation N.)nbdoc")
         .def("Value", static_cast<gp_Pnt (Geom_Curve::*)(const double) const>(&Geom_Curve::Value), nb::arg("U"), R"nbdoc(Computes the point of parameter U on <me>.)nbdoc")
+        .def("DumpJson", [](const Geom_Curve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Curve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Curve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Curve::*)() const>(&Geom_Curve::DynamicType));
@@ -1449,6 +1452,7 @@ Raises an exception if the curve continuity is not CN, or N < 1.)nbdoc")
     nb::borrow<nb::class_<Geom_BoundedCurve>>(m.attr("Geom_BoundedCurve"))
         .def("EndPoint", static_cast<gp_Pnt (Geom_BoundedCurve::*)() const>(&Geom_BoundedCurve::EndPoint), R"nbdoc(Returns the end point of the curve.)nbdoc")
         .def("StartPoint", static_cast<gp_Pnt (Geom_BoundedCurve::*)() const>(&Geom_BoundedCurve::StartPoint), R"nbdoc(Returns the start point of the curve.)nbdoc")
+        .def("DumpJson", [](const Geom_BoundedCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_BoundedCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_BoundedCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_BoundedCurve::*)() const>(&Geom_BoundedCurve::DynamicType));
@@ -1600,6 +1604,7 @@ If f(t) is the equation of this Bezier curve,
 UTolerance ensures that:
 |t1-t0| < UTolerance ===> |f(t1)-f(t0)| < Tolerance3D)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::Copy), R"nbdoc(Creates a new object which is a copy of this Bezier curve.)nbdoc")
+        .def("DumpJson", [](const Geom_BezierCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::Knots), R"nbdoc(Returns Bezier knots {0.0, 1.0} as a static array.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::Multiplicities), R"nbdoc(Returns Bezier multiplicities for the current degree.)nbdoc")
         .def("KnotSequence", static_cast<const NCollection_Array1<double> & (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::KnotSequence), R"nbdoc(Returns Bezier flat knots for the current degree.)nbdoc")
@@ -1739,6 +1744,7 @@ Raises an exception on failure.)nbdoc")
         .def("D3", static_cast<void (Geom_Surface::*)(const double, const double, gp_Pnt &, gp_Vec &, gp_Vec &, gp_Vec &, gp_Vec &, gp_Vec &, gp_Vec &, gp_Vec &, gp_Vec &, gp_Vec &) const>(&Geom_Surface::D3), nb::arg("U"), nb::arg("V"), nb::arg("P"), nb::arg("D1U"), nb::arg("D1V"), nb::arg("D2U"), nb::arg("D2V"), nb::arg("D2UV"), nb::arg("D3U"), nb::arg("D3V"), nb::arg("D3UUV"), nb::arg("D3UVV"), R"nbdoc(Computes the point and partial derivatives up to 3rd order.)nbdoc")
         .def("DN", static_cast<gp_Vec (Geom_Surface::*)(const double, const double, const int, const int) const>(&Geom_Surface::DN), nb::arg("U"), nb::arg("V"), nb::arg("Nu"), nb::arg("Nv"), R"nbdoc(Computes the derivative of order Nu in U and Nv in V.)nbdoc")
         .def("Value", static_cast<gp_Pnt (Geom_Surface::*)(const double, const double) const>(&Geom_Surface::Value), nb::arg("U"), nb::arg("V"), R"nbdoc(Computes the point of parameter (U, V) on the surface.)nbdoc")
+        .def("DumpJson", [](const Geom_Surface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Surface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Surface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Surface::*)() const>(&Geom_Surface::DynamicType));
@@ -2096,6 +2102,7 @@ UTolerance and VTolerance guarantee that:
 | v1 - v0 | < VTolerance
 ====> |f (u1,v1) - f (u0,v0)| < Tolerance3D)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::Copy), R"nbdoc(Creates a new object which is a copy of this Bezier surface.)nbdoc")
+        .def("DumpJson", [](const Geom_BezierSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("UKnots", static_cast<const NCollection_Array1<double> & (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::UKnots), R"nbdoc(Returns Bezier knots {0.0, 1.0} as a static array.)nbdoc")
         .def("VKnots", static_cast<const NCollection_Array1<double> & (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::VKnots), R"nbdoc(Returns Bezier knots {0.0, 1.0} as a static array.)nbdoc")
         .def("UMultiplicities", static_cast<const NCollection_Array1<int> & (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::UMultiplicities), R"nbdoc(Returns Bezier multiplicities for the U degree.)nbdoc")
@@ -2525,6 +2532,7 @@ UTolerance ensures that:
 |f(t1) - f(t0)| < Tolerance3D)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::Copy), R"nbdoc(Creates a new object which is a copy of this BSpline curve.)nbdoc")
         .def("IsEqual", static_cast<bool (Geom_BSplineCurve::*)(const occ::handle<Geom_BSplineCurve> &, const double) const>(&Geom_BSplineCurve::IsEqual), nb::arg("theOther"), nb::arg("thePreci"), R"nbdoc(Compare two Bspline curve on identity;)nbdoc")
+        .def("DumpJson", [](const Geom_BSplineCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_BSplineCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_BSplineCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::DynamicType));
@@ -3245,6 +3253,7 @@ UTolerance and VTolerance guarantee that :
 | v1 - v0 | < VTolerance
 ====> |f (u1,v1) - f (u0,v0)| < Tolerance3D)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::Copy), R"nbdoc(Creates a new object which is a copy of this BSpline surface.)nbdoc")
+        .def("DumpJson", [](const Geom_BSplineSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_BSplineSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_BSplineSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::DynamicType));
@@ -3319,6 +3328,7 @@ the point of parameter U on <me>.)nbdoc")
         .def("Continuity", static_cast<GeomAbs_Shape (Geom_Conic::*)() const>(&Geom_Conic::Continuity), R"nbdoc(The continuity of the conic is Cn.)nbdoc")
         .def("IsCN", static_cast<bool (Geom_Conic::*)(const int) const>(&Geom_Conic::IsCN), nb::arg("N"), R"nbdoc(Returns True.
 Raised if N < 0.)nbdoc")
+        .def("DumpJson", [](const Geom_Conic &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Conic::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Conic::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Conic::*)() const>(&Geom_Conic::DynamicType));
@@ -3365,6 +3375,7 @@ order of derivation N.
 Raised if N < 1.)nbdoc")
         .def("Transform", static_cast<void (Geom_Circle::*)(const gp_Trsf &)>(&Geom_Circle::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this circle.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_Circle::*)() const>(&Geom_Circle::Copy), R"nbdoc(Creates a new object which is a copy of this circle.)nbdoc")
+        .def("DumpJson", [](const Geom_Circle &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Circle::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Circle::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Circle::*)() const>(&Geom_Circle::DynamicType));
@@ -3399,6 +3410,7 @@ me->Value(U,V))nbdoc")
         .def("Continuity", static_cast<GeomAbs_Shape (Geom_ElementarySurface::*)() const>(&Geom_ElementarySurface::Continuity), R"nbdoc(Returns GeomAbs_CN, the global continuity of any elementary surface.)nbdoc")
         .def("IsCNu", static_cast<bool (Geom_ElementarySurface::*)(const int) const>(&Geom_ElementarySurface::IsCNu), nb::arg("N"), R"nbdoc(Returns True.)nbdoc")
         .def("IsCNv", static_cast<bool (Geom_ElementarySurface::*)(const int) const>(&Geom_ElementarySurface::IsCNv), nb::arg("N"), R"nbdoc(Returns True.)nbdoc")
+        .def("DumpJson", [](const Geom_ElementarySurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_ElementarySurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_ElementarySurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_ElementarySurface::*)() const>(&Geom_ElementarySurface::DynamicType));
@@ -3531,6 +3543,7 @@ Standard_RangeError if:
 - Nu or Nv is negative.)nbdoc")
         .def("Transform", static_cast<void (Geom_ConicalSurface::*)(const gp_Trsf &)>(&Geom_ConicalSurface::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this cone.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_ConicalSurface::*)() const>(&Geom_ConicalSurface::Copy), R"nbdoc(Creates a new object which is a copy of this cone.)nbdoc")
+        .def("DumpJson", [](const Geom_ConicalSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_ConicalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_ConicalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_ConicalSurface::*)() const>(&Geom_ConicalSurface::DynamicType));
@@ -3622,6 +3635,7 @@ in the direction v.
 Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def("Transform", static_cast<void (Geom_CylindricalSurface::*)(const gp_Trsf &)>(&Geom_CylindricalSurface::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this cylinder.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_CylindricalSurface::*)() const>(&Geom_CylindricalSurface::Copy), R"nbdoc(Creates a new object which is a copy of this cylinder.)nbdoc")
+        .def("DumpJson", [](const Geom_CylindricalSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_CylindricalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_CylindricalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_CylindricalSurface::*)() const>(&Geom_CylindricalSurface::DynamicType));
@@ -3813,6 +3827,7 @@ the vector corresponding to the Nth derivative.
 Exceptions Standard_RangeError if N is less than 1.)nbdoc")
         .def("Transform", static_cast<void (Geom_Ellipse::*)(const gp_Trsf &)>(&Geom_Ellipse::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this ellipse.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_Ellipse::*)() const>(&Geom_Ellipse::Copy), R"nbdoc(Creates a new object which is a copy of this ellipse.)nbdoc")
+        .def("DumpJson", [](const Geom_Ellipse &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Ellipse::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Ellipse::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Ellipse::*)() const>(&Geom_Ellipse::DynamicType));
@@ -3920,6 +3935,7 @@ order of derivation N.
 Raised if N < 1.)nbdoc")
         .def("Transform", static_cast<void (Geom_Hyperbola::*)(const gp_Trsf &)>(&Geom_Hyperbola::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this hyperbola.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_Hyperbola::*)() const>(&Geom_Hyperbola::Copy), R"nbdoc(Creates a new object which is a copy of this hyperbola.)nbdoc")
+        .def("DumpJson", [](const Geom_Hyperbola &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Hyperbola::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Hyperbola::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Hyperbola::*)() const>(&Geom_Hyperbola::DynamicType));
@@ -3988,6 +4004,7 @@ Value(U).Transformed(T)
 
 This methods returns T.ScaleFactor())nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_Line::*)() const>(&Geom_Line::Copy), R"nbdoc(Creates a new object which is a copy of this line.)nbdoc")
+        .def("DumpJson", [](const Geom_Line &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Line::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Line::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Line::*)() const>(&Geom_Line::DynamicType));
@@ -4138,6 +4155,7 @@ Value(U).Transformed(T)
 This methods calls the basis curve method.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_OffsetCurve::*)() const>(&Geom_OffsetCurve::Copy), R"nbdoc(Creates a new object which is a copy of this offset curve.)nbdoc")
         .def("GetBasisCurveContinuity", static_cast<GeomAbs_Shape (Geom_OffsetCurve::*)() const>(&Geom_OffsetCurve::GetBasisCurveContinuity), R"nbdoc(Returns continuity of the basis curve.)nbdoc")
+        .def("DumpJson", [](const Geom_OffsetCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_OffsetCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_OffsetCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_OffsetCurve::*)() const>(&Geom_OffsetCurve::DynamicType));
@@ -4349,6 +4367,7 @@ It means that DL/DV is collinear to DS/DV.
 If IsOpposite == true
 these vectors have opposite direction.)nbdoc")
         .def("GetBasisSurfContinuity", static_cast<GeomAbs_Shape (Geom_OffsetSurface::*)() const>(&Geom_OffsetSurface::GetBasisSurfContinuity), R"nbdoc(Returns continuity of the basis surface.)nbdoc")
+        .def("DumpJson", [](const Geom_OffsetSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_OffsetSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_OffsetSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_OffsetSurface::*)() const>(&Geom_OffsetSurface::DynamicType));
@@ -4443,6 +4462,7 @@ Value(U).Transformed(T)
 
 This methods returns T.ScaleFactor())nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_Parabola::*)() const>(&Geom_Parabola::Copy), R"nbdoc(Creates a new object which is a copy of this parabola.)nbdoc")
+        .def("DumpJson", [](const Geom_Parabola &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Parabola::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Parabola::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Parabola::*)() const>(&Geom_Parabola::DynamicType));
@@ -4538,6 +4558,7 @@ and Nv in the direction v.
 Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def("Transform", static_cast<void (Geom_Plane::*)(const gp_Trsf &)>(&Geom_Plane::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this plane.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_Plane::*)() const>(&Geom_Plane::Copy), R"nbdoc(Creates a new object which is a copy of this plane.)nbdoc")
+        .def("DumpJson", [](const Geom_Plane &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Plane::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Plane::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Plane::*)() const>(&Geom_Plane::DynamicType));
@@ -4723,6 +4744,7 @@ me->ParametricTransformation(T)
 @endcode
 This method calls the basis surface method.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_RectangularTrimmedSurface::*)() const>(&Geom_RectangularTrimmedSurface::Copy), R"nbdoc(Creates a new object which is a copy of this patch.)nbdoc")
+        .def("DumpJson", [](const Geom_RectangularTrimmedSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_RectangularTrimmedSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_RectangularTrimmedSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_RectangularTrimmedSurface::*)() const>(&Geom_RectangularTrimmedSurface::DynamicType));
@@ -4809,6 +4831,7 @@ and Nv in the direction v.
 Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def("Transform", static_cast<void (Geom_SphericalSurface::*)(const gp_Trsf &)>(&Geom_SphericalSurface::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this sphere.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_SphericalSurface::*)() const>(&Geom_SphericalSurface::Copy), R"nbdoc(Creates a new object which is a copy of this sphere.)nbdoc")
+        .def("DumpJson", [](const Geom_SphericalSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_SphericalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SphericalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SphericalSurface::*)() const>(&Geom_SphericalSurface::DynamicType));
@@ -4830,6 +4853,7 @@ the direction of extrusion.)nbdoc")
         .def("BasisCurve", static_cast<occ::handle<Geom_Curve> (Geom_SweptSurface::*)() const>(&Geom_SweptSurface::BasisCurve), R"nbdoc(Returns the referenced curve of the surface.
 For a surface of revolution it is the revolution curve,
 for a surface of linear extrusion it is the extruded curve.)nbdoc")
+        .def("DumpJson", [](const Geom_SweptSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_SweptSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SweptSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SweptSurface::*)() const>(&Geom_SweptSurface::DynamicType));
@@ -4955,6 +4979,7 @@ This method returns a scale
 U by BasisCurve()->ParametricTransformation(T)
 V by T.ScaleFactor())nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_SurfaceOfLinearExtrusion::*)() const>(&Geom_SurfaceOfLinearExtrusion::Copy), R"nbdoc(Creates a new object which is a copy of this surface of linear extrusion.)nbdoc")
+        .def("DumpJson", [](const Geom_SurfaceOfLinearExtrusion &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_SurfaceOfLinearExtrusion::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SurfaceOfLinearExtrusion::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SurfaceOfLinearExtrusion::*)() const>(&Geom_SurfaceOfLinearExtrusion::DynamicType));
@@ -5108,6 +5133,7 @@ direction and CNv in the v direction.
 Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def("Transform", static_cast<void (Geom_SurfaceOfRevolution::*)(const gp_Trsf &)>(&Geom_SurfaceOfRevolution::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this surface of revolution.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_SurfaceOfRevolution::*)() const>(&Geom_SurfaceOfRevolution::Copy), R"nbdoc(Creates a new object which is a copy of this surface of revolution.)nbdoc")
+        .def("DumpJson", [](const Geom_SurfaceOfRevolution &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_SurfaceOfRevolution::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SurfaceOfRevolution::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SurfaceOfRevolution::*)() const>(&Geom_SurfaceOfRevolution::DynamicType));
@@ -5205,6 +5231,7 @@ Nv in the direction v.
 Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def("Transform", static_cast<void (Geom_ToroidalSurface::*)(const gp_Trsf &)>(&Geom_ToroidalSurface::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this torus.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_ToroidalSurface::*)() const>(&Geom_ToroidalSurface::Copy), R"nbdoc(Creates a new object which is a copy of this torus.)nbdoc")
+        .def("DumpJson", [](const Geom_ToroidalSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_ToroidalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_ToroidalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_ToroidalSurface::*)() const>(&Geom_ToroidalSurface::DynamicType));
@@ -5287,7 +5314,8 @@ Raised if N < 0 and if the transformation is not inversible)nbdoc")
         .def("PreMultiply", static_cast<void (Geom_Transformation::*)(const occ::handle<Geom_Transformation> &)>(&Geom_Transformation::PreMultiply), nb::arg("Other"), R"nbdoc(Computes the matrix of the transformation composed with
 <me> and Other. <me> = Other * <me>)nbdoc")
         .def("Transforms", [](const Geom_Transformation &self) { double theX{}; double theY{}; double theZ{}; self.Transforms(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, R"nbdoc(Applies the transformation <me> to the triplet {X, Y, Z}.)nbdoc")
-        .def("Copy", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)() const>(&Geom_Transformation::Copy), R"nbdoc(Creates a new object which is a copy of this transformation.)nbdoc");
+        .def("Copy", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)() const>(&Geom_Transformation::Copy), R"nbdoc(Creates a new object which is a copy of this transformation.)nbdoc")
+        .def("DumpJson", [](const Geom_Transformation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Geom_Transformation>(nb::borrow<nb::class_<Geom_Transformation>>(m.attr("Geom_Transformation")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, Geom_Transformation>();
     nb::borrow<nb::class_<Geom_TrimmedCurve>>(m.attr("Geom_TrimmedCurve"))
@@ -5439,6 +5467,7 @@ Value(U).Transformed(T)
 
 This methods calls the basis curve method.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_TrimmedCurve::*)() const>(&Geom_TrimmedCurve::Copy), R"nbdoc(Creates a new object which is a copy of this trimmed curve.)nbdoc")
+        .def("DumpJson", [](const Geom_TrimmedCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_TrimmedCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_TrimmedCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_TrimmedCurve::*)() const>(&Geom_TrimmedCurve::DynamicType));

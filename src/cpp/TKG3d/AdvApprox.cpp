@@ -13,6 +13,7 @@
 #include <NCollection_HArray1.hxx>
 #include <NCollection_HArray2.hxx>
 #include <PLib_JacobiPolynomial.hxx>
+#include <Standard_OStream.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Pnt2d.hxx>
 
@@ -87,7 +88,8 @@ Poles.)nbdoc")
         .def("MaxError", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApprox_ApproxAFunction::*)(const int) const>(&AdvApprox_ApproxAFunction::MaxError), nb::arg("Dimension"), R"nbdoc(returns the error as is in the algorithms)nbdoc")
         .def("AverageError", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApprox_ApproxAFunction::*)(const int) const>(&AdvApprox_ApproxAFunction::AverageError), nb::arg("Dimension"), R"nbdoc(returns the error as is in the algorithms)nbdoc")
         .def("MaxError", static_cast<double (AdvApprox_ApproxAFunction::*)(const int, const int) const>(&AdvApprox_ApproxAFunction::MaxError), nb::arg("Dimension"), nb::arg("Index"))
-        .def("AverageError", static_cast<double (AdvApprox_ApproxAFunction::*)(const int, const int) const>(&AdvApprox_ApproxAFunction::AverageError), nb::arg("Dimension"), nb::arg("Index"));
+        .def("AverageError", static_cast<double (AdvApprox_ApproxAFunction::*)(const int, const int) const>(&AdvApprox_ApproxAFunction::AverageError), nb::arg("Dimension"), nb::arg("Index"))
+        .def("Dump", [](const AdvApprox_ApproxAFunction &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(display information on approximation.)nbdoc");
     nanoocp_implicit_copy_ctor<AdvApprox_ApproxAFunction>(nb::borrow<nb::class_<AdvApprox_ApproxAFunction>>(m.attr("AdvApprox_ApproxAFunction")));
     nb::borrow<nb::class_<AdvApprox_Cutting>>(m.attr("AdvApprox_Cutting"))
         .def("Value", [](const AdvApprox_Cutting &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
@@ -125,7 +127,8 @@ with life time longer than that of the approximator tool;)nbdoc")
         .def("SomTab", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApprox_SimpleApprox::*)() const>(&AdvApprox_SimpleApprox::SomTab))
         .def("DifTab", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApprox_SimpleApprox::*)() const>(&AdvApprox_SimpleApprox::DifTab))
         .def("MaxError", static_cast<double (AdvApprox_SimpleApprox::*)(const int) const>(&AdvApprox_SimpleApprox::MaxError), nb::arg("Index"))
-        .def("AverageError", static_cast<double (AdvApprox_SimpleApprox::*)(const int) const>(&AdvApprox_SimpleApprox::AverageError), nb::arg("Index"));
+        .def("AverageError", static_cast<double (AdvApprox_SimpleApprox::*)(const int) const>(&AdvApprox_SimpleApprox::AverageError), nb::arg("Index"))
+        .def("Dump", [](const AdvApprox_SimpleApprox &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(display information on approximation)nbdoc");
     nanoocp_implicit_copy_ctor<AdvApprox_SimpleApprox>(nb::borrow<nb::class_<AdvApprox_SimpleApprox>>(m.attr("AdvApprox_SimpleApprox")));
 }
 

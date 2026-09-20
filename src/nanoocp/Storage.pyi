@@ -1,7 +1,7 @@
 """OCCT package Storage (toolkit TKernel)"""
 
 import enum
-from typing import overload
+from typing import TextIO, overload
 
 import nanoocp.NCollection
 import nanoocp.Standard
@@ -435,6 +435,9 @@ class Storage_BaseDriver(nanoocp.Standard.Standard_Transient):
 
     def OpenMode(self) -> Storage_OpenMode: ...
 
+    @staticmethod
+    def ReadMagicNumber(theIStream: TextIO) -> nanoocp.TCollection.TCollection_AsciiString: ...
+
     def Open(self, aName: nanoocp.TCollection.TCollection_AsciiString, aMode: Storage_OpenMode) -> Storage_Error:
         """@name Virtual methods, to be provided by descendants"""
 
@@ -453,6 +456,8 @@ class Storage_BaseDriver(nanoocp.Standard.Standard_Transient):
     def BeginReadInfoSection(self) -> Storage_Error: ...
 
     def ReadInfo(self, dbVersion: nanoocp.TCollection.TCollection_AsciiString, date: nanoocp.TCollection.TCollection_AsciiString, schemaName: nanoocp.TCollection.TCollection_AsciiString, schemaVersion: nanoocp.TCollection.TCollection_AsciiString, appName: nanoocp.TCollection.TCollection_ExtendedString, appVersion: nanoocp.TCollection.TCollection_AsciiString, objectType: nanoocp.TCollection.TCollection_ExtendedString, userInfo: nanoocp.NCollection.NCollection_Sequence[nanoocp.TCollection.TCollection_AsciiString]) -> int: ...
+
+    def ReadCompleteInfo(self, theIStream: TextIO, theData: Storage_Data) -> None: ...
 
     def EndReadInfoSection(self) -> Storage_Error: ...
 

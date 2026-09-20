@@ -22,6 +22,7 @@
 #include <NCollection_HArray1.hxx>
 #include <NCollection_HArray2.hxx>
 #include <NCollection_Sequence.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Pnt.hxx>
@@ -288,7 +289,9 @@ Dimension must be equal to 3.)nbdoc")
         .def("AverageError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::AverageError), nb::arg("Dimension"), nb::arg("Index"), R"nbdoc(returns the average error of the BSplineSurface of range Index)nbdoc")
         .def("UFrontError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::UFrontError), nb::arg("Dimension"), nb::arg("Index"), R"nbdoc(returns the error max of the BSplineSurface of range Index on a UFrontier)nbdoc")
         .def("VFrontError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::VFrontError), nb::arg("Dimension"), nb::arg("Index"), R"nbdoc(returns the error max of the BSplineSurface of range Index on a VFrontier)nbdoc")
-        .def("CritError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::CritError), nb::arg("Dimension"), nb::arg("Index"));
+        .def("CritError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::CritError), nb::arg("Dimension"), nb::arg("Index"))
+        .def("Dump", [](const AdvApp2Var_ApproxAFunc2Var &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream 'o' information on the current state
+of the object.)nbdoc");
     nanoocp_implicit_copy_ctor<AdvApp2Var_ApproxAFunc2Var>(nb::borrow<nb::class_<AdvApp2Var_ApproxAFunc2Var>>(m.attr("AdvApp2Var_ApproxAFunc2Var")));
     nanoocp_implicit_default_ctor<AdvApp2Var_ApproxF2var>(nb::borrow<nb::class_<AdvApp2Var_ApproxF2var>>(m.attr("AdvApp2Var_ApproxF2var")));
     nanoocp_implicit_copy_ctor<AdvApp2Var_ApproxF2var>(nb::borrow<nb::class_<AdvApp2Var_ApproxF2var>>(m.attr("AdvApp2Var_ApproxF2var")));

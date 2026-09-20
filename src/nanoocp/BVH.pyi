@@ -166,6 +166,9 @@ class BVH_Vec2i:
     def DY() -> BVH_Vec2i:
         """Construct DY unit vector."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
 class BVH_Vec3i:
     """
     Generic 3-components vector.
@@ -407,6 +410,9 @@ class BVH_Vec3i:
     @staticmethod
     def DZ() -> BVH_Vec3i:
         """Construct DZ unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class BVH_Vec4i:
     """
@@ -799,6 +805,9 @@ class BVH_Vec4i:
     def __truediv__(self, theInvFactor: int) -> BVH_Vec4i:
         """Compute per-component division by scale factor."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
 class BVH_Vec2f:
     """
     Defines the 2D-vector template.
@@ -939,6 +948,9 @@ class BVH_Vec2f:
     @staticmethod
     def DY() -> BVH_Vec2f:
         """Construct DY unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class BVH_Vec3f:
     """
@@ -1181,6 +1193,9 @@ class BVH_Vec3f:
     @staticmethod
     def DZ() -> BVH_Vec3f:
         """Construct DZ unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class BVH_Vec4f:
     """
@@ -1573,6 +1588,9 @@ class BVH_Vec4f:
     def __truediv__(self, theInvFactor: float) -> BVH_Vec4f:
         """Compute per-component division by scale factor."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
 class BVH_Vec2d:
     """
     Defines the 2D-vector template.
@@ -1713,6 +1731,9 @@ class BVH_Vec2d:
     @staticmethod
     def DY() -> BVH_Vec2d:
         """Construct DY unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class BVH_Vec3d:
     """
@@ -1955,6 +1976,9 @@ class BVH_Vec3d:
     @staticmethod
     def DZ() -> BVH_Vec3d:
         """Construct DZ unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class BVH_Vec4d:
     """
@@ -2347,6 +2371,9 @@ class BVH_Vec4d:
     def __truediv__(self, theInvFactor: float) -> BVH_Vec4d:
         """Compute per-component division by scale factor."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
 class BVH_Mat4f:
     """
     Generic matrix of 4 x 4 elements.
@@ -2696,6 +2723,9 @@ class BVH_Mat4f:
     def Map(theData: float) -> BVH_Mat4f:
         """Maps plain C array to matrix type."""
 
+    def DumpJson(self, arg1: int) -> object:
+        """Dumps the content of me into the stream"""
+
 class BVH_Mat4d:
     """
     Generic matrix of 4 x 4 elements.
@@ -3044,6 +3074,9 @@ class BVH_Mat4d:
     @staticmethod
     def Map(theData: float) -> BVH_Mat4d:
         """Maps plain C array to matrix type."""
+
+    def DumpJson(self, arg1: int) -> object:
+        """Dumps the content of me into the stream"""
 
 class BVH_TreeBaseTransient(nanoocp.Standard.Standard_Transient):
     """

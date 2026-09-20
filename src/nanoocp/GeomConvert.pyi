@@ -397,6 +397,9 @@ class GeomConvert_ApproxCurve:
         has been done, 0 if no approximation)
         """
 
+    def Dump(self) -> object:
+        """Print on the stream o information about the object"""
+
 class GeomConvert_ApproxSurface:
     """
     A framework to convert a surface to a BSpline
@@ -461,6 +464,9 @@ class GeomConvert_ApproxSurface:
         resulting from the approximation (>0 when an approximation
         has been done, 0 if no  approximation )
         """
+
+    def Dump(self) -> object:
+        """Prints on the stream o information on the current state of the object."""
 
 class GeomConvert_BSplineCurveKnotSplitting:
     """

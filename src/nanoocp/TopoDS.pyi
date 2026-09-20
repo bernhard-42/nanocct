@@ -151,6 +151,9 @@ class TopoDS_TShape(nanoocp.Standard.Standard_Transient):
         @sa TopoDS_Iterator for accessing sub-shapes
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -410,6 +413,9 @@ class TopoDS_Shape:
         and no sub-shapes.
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     def __hash__(self) -> int: ...
 
 class TopoDS_AlertAttribute(nanoocp.Message.Message_AttributeStream):
@@ -432,6 +438,9 @@ class TopoDS_AlertAttribute(nanoocp.Message.Message_AttributeStream):
     @staticmethod
     def Send(theMessenger: nanoocp.Message.Message_Messenger, theShape: TopoDS_Shape) -> None:
         """Push shape information into messenger"""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class TopoDS_Builder:
     """

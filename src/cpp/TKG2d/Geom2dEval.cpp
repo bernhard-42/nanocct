@@ -12,6 +12,7 @@
 #include <Geom2d_Geometry.hxx>
 #include <GeomAbs_Shape.hxx>
 #include <NCollection_Array1.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Ax2d.hxx>
@@ -178,6 +179,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def("Transform", static_cast<void (Geom2dEval_AHTBezierCurve::*)(const gp_Trsf2d &)>(&Geom2dEval_AHTBezierCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2dEval_AHTBezierCurve::*)() const>(&Geom2dEval_AHTBezierCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const Geom2dEval_AHTBezierCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_AHTBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_AHTBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_AHTBezierCurve::*)() const>(&Geom2dEval_AHTBezierCurve::DynamicType));
@@ -210,6 +212,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def("Transform", static_cast<void (Geom2dEval_ArchimedeanSpiralCurve::*)(const gp_Trsf2d &)>(&Geom2dEval_ArchimedeanSpiralCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2dEval_ArchimedeanSpiralCurve::*)() const>(&Geom2dEval_ArchimedeanSpiralCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const Geom2dEval_ArchimedeanSpiralCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_ArchimedeanSpiralCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_ArchimedeanSpiralCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_ArchimedeanSpiralCurve::*)() const>(&Geom2dEval_ArchimedeanSpiralCurve::DynamicType));
@@ -240,6 +243,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def("Transform", static_cast<void (Geom2dEval_CircleInvoluteCurve::*)(const gp_Trsf2d &)>(&Geom2dEval_CircleInvoluteCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2dEval_CircleInvoluteCurve::*)() const>(&Geom2dEval_CircleInvoluteCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const Geom2dEval_CircleInvoluteCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_CircleInvoluteCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_CircleInvoluteCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_CircleInvoluteCurve::*)() const>(&Geom2dEval_CircleInvoluteCurve::DynamicType));
@@ -272,6 +276,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def("Transform", static_cast<void (Geom2dEval_LogarithmicSpiralCurve::*)(const gp_Trsf2d &)>(&Geom2dEval_LogarithmicSpiralCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2dEval_LogarithmicSpiralCurve::*)() const>(&Geom2dEval_LogarithmicSpiralCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const Geom2dEval_LogarithmicSpiralCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_LogarithmicSpiralCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_LogarithmicSpiralCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_LogarithmicSpiralCurve::*)() const>(&Geom2dEval_LogarithmicSpiralCurve::DynamicType));
@@ -351,6 +356,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def("Transform", static_cast<void (Geom2dEval_SineWaveCurve::*)(const gp_Trsf2d &)>(&Geom2dEval_SineWaveCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2dEval_SineWaveCurve::*)() const>(&Geom2dEval_SineWaveCurve::Copy), R"nbdoc(Creates a new object which is a copy of this curve.)nbdoc")
+        .def("DumpJson", [](const Geom2dEval_SineWaveCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_SineWaveCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_SineWaveCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_SineWaveCurve::*)() const>(&Geom2dEval_SineWaveCurve::DynamicType));
@@ -395,6 +401,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def("Transform", static_cast<void (Geom2dEval_TBezierCurve::*)(const gp_Trsf2d &)>(&Geom2dEval_TBezierCurve::Transform), nb::arg("T"), R"nbdoc(Transformation is not supported for this eval geometry.
 @throw Standard_NotImplemented)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2dEval_TBezierCurve::*)() const>(&Geom2dEval_TBezierCurve::Copy), R"nbdoc(Creates a new object which is a copy of this T-Bezier curve.)nbdoc")
+        .def("DumpJson", [](const Geom2dEval_TBezierCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_TBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_TBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_TBezierCurve::*)() const>(&Geom2dEval_TBezierCurve::DynamicType));

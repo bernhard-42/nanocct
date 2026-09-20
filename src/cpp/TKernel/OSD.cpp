@@ -65,6 +65,7 @@
 #include <OSD_SignalMode.hxx>
 #include <Quantity_Date.hxx>
 #include <Standard_Failure.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_ThreadId.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
@@ -550,6 +551,9 @@ The chronometer can be running (laps Time) or stopped.)nbdoc")
 The chronometer can be running (laps Time) or stopped.)nbdoc")
         .def("Show", static_cast<void (OSD_Chronometer::*)() const>(&OSD_Chronometer::Show), R"nbdoc(Shows the current CPU user and system time on the
 standard output stream <cout>.
+The chronometer can be running (laps Time) or stopped.)nbdoc")
+        .def("Show", [](const OSD_Chronometer &self) { std::ostringstream theOStream_stream; self.Show(theOStream_stream); return nanoocp_stream_text(theOStream_stream); }, R"nbdoc(Shows the current CPU user and system time on the output
+stream <os>.
 The chronometer can be running (laps Time) or stopped.)nbdoc")
         .def("UserTimeCPU", static_cast<double (OSD_Chronometer::*)() const>(&OSD_Chronometer::UserTimeCPU), R"nbdoc(Returns the current CPU user time in seconds.
 The chronometer can be running (laps Time) or stopped.)nbdoc")
@@ -1175,6 +1179,8 @@ and CPU time.)nbdoc")
         .def("Show", static_cast<void (OSD_Timer::*)() const>(&OSD_Timer::Show), R"nbdoc(Shows both the elapsed time and CPU time on the standard output
 stream <cout>.The chronometer can be running (Lap Time) or
 stopped.)nbdoc")
+        .def("Show", [](const OSD_Timer &self) { std::ostringstream os_stream; self.Show(os_stream); return nanoocp_stream_text(os_stream); }, R"nbdoc(Shows both the elapsed time and CPU time on the
+output stream <OS>.)nbdoc")
         .def("Stop", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Stop), R"nbdoc(Stops the Timer.)nbdoc")
         .def("Start", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Start), R"nbdoc(Starts (after Create or Reset) or restarts (after Stop)
 the Timer.)nbdoc")

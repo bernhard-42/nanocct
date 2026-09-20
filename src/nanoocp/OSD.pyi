@@ -515,6 +515,14 @@ class OSD_Chronometer:
         The chronometer can be running (laps Time) or stopped.
         """
 
+    @overload
+    def Show(self) -> object:
+        """
+        Shows the current CPU user and system time on the output
+        stream <os>.
+        The chronometer can be running (laps Time) or stopped.
+        """
+
     def UserTimeCPU(self) -> float:
         """
         Returns the current CPU user time in seconds.
@@ -2244,6 +2252,13 @@ class OSD_Timer(OSD_Chronometer):
         Shows both the elapsed time and CPU time on the standard output
         stream <cout>.The chronometer can be running (Lap Time) or
         stopped.
+        """
+
+    @overload
+    def Show(self) -> object:
+        """
+        Shows both the elapsed time and CPU time on the
+        output stream <OS>.
         """
 
     def Stop(self) -> None:

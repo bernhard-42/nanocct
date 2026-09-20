@@ -1,8 +1,9 @@
 """OCCT package TopTools (toolkit TKBRep)"""
 
 import enum
-from typing import overload
+from typing import TextIO, overload
 
+import nanoocp.Message
 import nanoocp.TCollection
 import nanoocp.TopAbs
 import nanoocp.TopLoc
@@ -75,6 +76,14 @@ class TopTools:
     def __init__(self, theOther: TopTools) -> None: ...
 
     @staticmethod
+    def Dump(Sh: nanoocp.TopoDS.TopoDS_Shape) -> object:
+        """
+        A set of Shapes. Can be dump, wrote or read.
+        Dumps the topological structure of <Sh> on the
+        stream <S>.
+        """
+
+    @staticmethod
     def Dummy(I: int) -> None:
         """
         This is to bypass an extraction bug. It will force
@@ -116,6 +125,21 @@ class TopTools_LocationSet:
 
     def Index(self, L: nanoocp.TopLoc.TopLoc_Location) -> int:
         """Returns the index of <L>."""
+
+    def Dump(self) -> object:
+        """Dumps the content of me on the stream <OS>."""
+
+    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+        """
+        Writes the content of me on the stream <OS> in a
+        format that can be read back by Read.
+        """
+
+    def Read(self, IS: TextIO, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> None:
+        """
+        Reads the content of me from the stream <IS>. me
+        is first cleared.
+        """
 
 class TopTools_ShapeMapHasher:
     """Hash tool, used for generating maps of shapes in topology."""
@@ -176,14 +200,124 @@ class TopTools_ShapeSet:
 
     def ChangeLocations(self) -> TopTools_LocationSet: ...
 
+    @overload
+    def DumpExtent(self) -> object:
+        """
+        Dumps the number of objects in me on the stream <OS>.
+        (Number of shapes of each type)
+        """
+
+    @overload
     def DumpExtent(self, S: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """
         Dumps the number of objects in me in the string S
         (Number of shapes of each type)
         """
 
+    @overload
+    def Dump(self) -> object:
+        """
+        Dumps the content of me on the stream <OS>.
+
+        Dumps the shapes from first to last.
+        For each Shape
+        Dump the type, the flags, the subshapes
+        calls DumpGeometry(S)
+
+        Dumps the geometry calling DumpGeometry.
+
+        Dumps the locations.
+        """
+
+    @overload
+    def Dump(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+        """
+        Dumps on <OS> the shape <S>. Dumps the
+        orientation, the index of the TShape and the index
+        of the Location.
+        """
+
+    @overload
+    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+        """
+        Writes the content of me on the stream <OS> in a
+        format that can be read back by Read.
+
+        Writes the locations.
+
+        Writes the geometry calling WriteGeometry.
+
+        Dumps the shapes from last to first.
+        For each shape:
+        Write the type.
+        calls WriteGeometry(S).
+        Write the flags, the subshapes.
+        """
+
+    @overload
+    def Write(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+        """
+        Writes on <OS> the shape <S>. Writes the
+        orientation, the index of the TShape and the index
+        of the Location.
+        """
+
+    @overload
+    def Read(self, IS: TextIO, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> None:
+        """
+        Reads the content of me from the stream <IS>. me
+        is first cleared.
+
+        Reads the locations.
+
+        Reads the geometry calling ReadGeometry.
+
+        Reads the shapes.
+        For each shape
+        Reads the type.
+        calls ReadGeometry(T,S).
+        Reads the flag, the subshapes.
+        """
+
+    @overload
+    def Read(self, S: nanoocp.TopoDS.TopoDS_Shape, IS: TextIO) -> None:
+        """Reads from <IS> a shape and returns it in S."""
+
     def AddGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """Stores the geometry of <S>."""
+
+    @overload
+    def DumpGeometry(self) -> object:
+        """Dumps the geometry of me on the stream <OS>."""
+
+    @overload
+    def DumpGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+        """Dumps the geometry of <S> on the stream <OS>."""
+
+    @overload
+    def WriteGeometry(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+        """
+        Writes the geometry of me on the stream <OS> in a
+        format that can be read back by Read.
+        """
+
+    @overload
+    def WriteGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+        """
+        Writes the geometry of <S> on the stream <OS> in a
+        format that can be read back by Read.
+        """
+
+    @overload
+    def ReadGeometry(self, IS: TextIO, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> None:
+        """Reads the geometry of me from the stream <IS>."""
+
+    @overload
+    def ReadGeometry(self, T: nanoocp.TopAbs.TopAbs_ShapeEnum, IS: TextIO, S: nanoocp.TopoDS.TopoDS_Shape) -> None:
+        """
+        Reads the geometry of a shape of type <T> from the
+        stream <IS> and returns it in <S>.
+        """
 
     def AddShapes(self, S1: nanoocp.TopoDS.TopoDS_Shape, S2: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """

@@ -1,7 +1,7 @@
 """OCCT package Message (toolkit TKernel)"""
 
 import enum
-from typing import overload
+from typing import TextIO, overload
 
 import nanoocp.NCollection
 import nanoocp.OSD
@@ -400,6 +400,13 @@ class Message_Printer(nanoocp.Standard.Standard_Transient):
         Default implementation redirects to send().
         """
 
+    def SendStringStream(self, theStream: TextIO, theGravity: Message_Gravity) -> None:
+        """
+        Send a string message with specified trace level.
+        Stream is converted to string value.
+        Default implementation calls first method Send().
+        """
+
     def SendObject(self, theObject: nanoocp.Standard.Standard_Transient, theGravity: Message_Gravity) -> None:
         """
         Send a string message with specified trace level.
@@ -523,6 +530,9 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
+    def Send(self, theStream: TextIO, theGravity: Message_Gravity = Message_Gravity.Message_Warning) -> None: ...
+
+    @overload
     def Send(self, theString: nanoocp.TCollection.TCollection_AsciiString, theGravity: Message_Gravity = Message_Gravity.Message_Warning) -> None: ...
 
     @overload
@@ -575,6 +585,9 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
     @overload
     def SendTrace(self, theMessage: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """Short-cut to Send (theMessage, Message_Trace)"""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class Message:
     """
@@ -761,6 +774,9 @@ class Message_Alert(nanoocp.Standard.Standard_Transient):
         Base implementation always returns true.
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -832,6 +848,9 @@ class Message_AlertExtended(Message_Alert):
         Base implementation always returns false.
         @return True if merged
         """
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1278,6 +1297,9 @@ class Message_Attribute(nanoocp.Standard.Standard_Transient):
         @param theName a name for the alert
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
 class Message_AttributeMeter(Message_Attribute):
     """
     Alert object storing alert metrics values.
@@ -1361,6 +1383,9 @@ class Message_AttributeMeter(Message_Attribute):
         @param theStartValue flag, if true, the start value is collected otherwise stop
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -1399,6 +1424,9 @@ class Message_AttributeObject(Message_Attribute):
         @param theObject an instance
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
 class Message_AttributeStream(Message_Attribute):
     """Alert object storing stream value"""
 
@@ -1409,6 +1437,12 @@ class Message_AttributeStream(Message_Attribute):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+    def SetStream(self, theStream: TextIO) -> None:
+        """Sets stream value"""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
     """Class providing container of alerts"""
@@ -1481,6 +1515,9 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
         Clears collected alerts with specified type
         @param theType an alert type
         """
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class Message_ProgressScope:
     """
@@ -2127,6 +2164,13 @@ class Message_PrinterToReport(Message_Printer):
         @param theReport report for messages processing, if NULL, the default report is used
         """
 
+    def SendStringStream(self, theStream: TextIO, theGravity: Message_Gravity) -> None:
+        """
+        Send a string message with specified trace level.
+        Stream is converted to string value.
+        Default implementation calls first method Send().
+        """
+
     def SendObject(self, theObject: nanoocp.Standard.Standard_Transient, theGravity: Message_Gravity) -> None:
         """
         Send a string message with specified trace level.
@@ -2267,6 +2311,14 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
+    def Dump(self) -> object:
+        """Dumps all collected alerts to stream"""
+
+    @overload
+    def Dump(self, theGravity: Message_Gravity) -> object:
+        """Dumps collected alerts with specified gravity to stream"""
+
+    @overload
     def SendMessages(self, theMessenger: Message_Messenger) -> None:
         """Sends all collected alerts to messenger."""
 
@@ -2285,6 +2337,9 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
     @overload
     def Merge(self, theOther: Message_Report, theGravity: Message_Gravity) -> None:
         """Merges alerts with specified gravity from theOther report into this"""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...

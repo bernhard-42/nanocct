@@ -43,6 +43,7 @@
 #include <NCollection_Array1.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_HArray2.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Pnt.hxx>
@@ -295,7 +296,10 @@ dimensions.)nbdoc")
 An exception is raised if Index < 0 or if Index > number
 of 3d points.)nbdoc")
         .def("IsTangencyPoint", static_cast<bool (AppDef_MultiPointConstraint::*)() const>(&AppDef_MultiPointConstraint::IsTangencyPoint), R"nbdoc(returns True if the MultiPoint has a tangency value.)nbdoc")
-        .def("IsCurvaturePoint", static_cast<bool (AppDef_MultiPointConstraint::*)() const>(&AppDef_MultiPointConstraint::IsCurvaturePoint), R"nbdoc(returns True if the MultiPoint has a curvature value.)nbdoc");
+        .def("IsCurvaturePoint", static_cast<bool (AppDef_MultiPointConstraint::*)() const>(&AppDef_MultiPointConstraint::IsCurvaturePoint), R"nbdoc(returns True if the MultiPoint has a curvature value.)nbdoc")
+        .def("Dump", [](const AppDef_MultiPointConstraint &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream o information on the current
+state of the object.
+Is used to redefine the operator <<.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_MultiPointConstraint>(nb::borrow<nb::class_<AppDef_MultiPointConstraint>>(m.attr("AppDef_MultiPointConstraint")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt> &>, AppDef_MultiPointConstraint>();
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt2d> &>, AppDef_MultiPointConstraint>();
@@ -321,7 +325,10 @@ An exception is raised if Index < 0 or Index> MPoint.
 An exception is raised if the dimensions of the
 MultiPoints are different.)nbdoc")
         .def("Value", static_cast<AppDef_MultiPointConstraint (AppDef_MultiLine::*)(const int) const>(&AppDef_MultiLine::Value), nb::arg("Index"), R"nbdoc(returns the MultiPointConstraint of range Index
-An exception is raised if Index<0 or Index>MPoint.)nbdoc");
+An exception is raised if Index<0 or Index>MPoint.)nbdoc")
+        .def("Dump", [](const AppDef_MultiLine &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream o information on the current
+state of the object.
+Is used to redefine the operator <<.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_MultiLine>(nb::borrow<nb::class_<AppDef_MultiLine>>(m.attr("AppDef_MultiLine")));
     nb::implicitly_convertible<std::decay_t<const int>, AppDef_MultiLine>();
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<AppDef_MultiPointConstraint> &>, AppDef_MultiLine>();
@@ -1175,6 +1182,10 @@ maximum Error or not.)nbdoc")
         .def("WithCutting", static_cast<bool (AppDef_Variational::*)() const>(&AppDef_Variational::WithCutting), R"nbdoc(returns if the approximation can insert new Knots or not.)nbdoc")
         .def("Tolerance", static_cast<double (AppDef_Variational::*)() const>(&AppDef_Variational::Tolerance), R"nbdoc(returns the tolerance used in the approximation.)nbdoc")
         .def("NbIterations", static_cast<int (AppDef_Variational::*)() const>(&AppDef_Variational::NbIterations), R"nbdoc(returns the number of iterations used in the approximation.)nbdoc")
+        .def("Dump", [](const AppDef_Variational &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints on the stream o information on the current state
+of the object.
+MaxError,MaxErrorIndex,AverageError,QuadraticError,Criterium
+Distances,Degre,Nombre de poles, parametres, noeuds)nbdoc")
         .def("SetConstraints", static_cast<bool (AppDef_Variational::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &)>(&AppDef_Variational::SetConstraints), nb::arg("aConstrainst"), R"nbdoc(Define the constraints to approximate
 If this value is incompatible with the others fields
 this method modify nothing and returns false)nbdoc")

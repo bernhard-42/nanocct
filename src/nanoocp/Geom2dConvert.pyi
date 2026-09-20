@@ -333,6 +333,9 @@ class Geom2dConvert_ApproxCurve:
         has been done, 0 if no approximation)
         """
 
+    def Dump(self) -> object:
+        """Print on the stream o information about the object"""
+
 class Geom2dConvert_BSplineCurveKnotSplitting:
     """
     An algorithm to determine points at which a BSpline

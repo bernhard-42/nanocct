@@ -543,6 +543,12 @@ class math_Matrix:
 
     def __neg__(self) -> math_Matrix: ...
 
+    def Dump(self) -> object:
+        """
+        Prints information on the current state of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_NotSquare(nanoocp.Standard.Standard_DimensionError):
     pass
 
@@ -855,6 +861,12 @@ class math_Vector:
 
     def __sub__(self, theRight: math_Vector) -> math_Vector: ...
 
+    def Dump(self) -> object:
+        """
+        Prints information on the current state of the object.
+        Is used to redefine the operator <<.
+        """
+
     def Array1(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         Returns the underlying array for interoperability with legacy APIs.
@@ -1028,6 +1040,13 @@ class math_BFGS:
         The exception NotDone is raised if the minimum was not found.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_BissecNewton:
     """
     This class implements a combination of Newton-Raphson and bissection
@@ -1085,6 +1104,13 @@ class math_BissecNewton:
         Exception NotDone is raised if the minimum was not found.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_BracketedRoot:
     """
     This class implements the Brent method to find the root of a function
@@ -1128,6 +1154,12 @@ class math_BracketedRoot:
         returns the number of iterations really done during the
         computation of the Root.
         Exception NotDone is raised if the minimum was not found.
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
         """
 
 class math_BracketMinimum:
@@ -1221,6 +1253,13 @@ class math_BracketMinimum:
         StdFail_NotDone if the algorithm fails (and IsDone returns false).
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_BrentMinimum:
     """
     This class implements the Brent's method to find the minimum of
@@ -1284,6 +1323,13 @@ class math_BrentMinimum:
         returns the number of iterations really done during the
         computation of the minimum.
         Exception NotDone is raised if the minimum was not found.
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
         """
 
 class math_BullardGenerator:
@@ -1392,6 +1438,12 @@ class math_Crout:
         decomposed matrix A. Zero is returned if the matrix A is considered as singular.
         Exceptions
         StdFail_NotDone if the algorithm fails (and IsDone returns false).
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
         """
 
 class math_DirectPolynomialRoots:
@@ -1515,6 +1567,15 @@ class math_DirectPolynomialRoots:
 
         @param theIndex root index (1-based)
         @return root value
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints diagnostic information about the current state of the solver.
+        Outputs computation status, number of roots, and individual root values.
+        This method is used to redefine the operator << for debugging purposes.
+
+        @param theStream output stream for diagnostic information
         """
 
 class math_EigenValuesSearcher:
@@ -1650,6 +1711,13 @@ class math_FRPR:
         Exception NotDone is raised if the minimum was not found.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_Function:
     """
     This abstract class describes the virtual functions
@@ -1751,6 +1819,12 @@ class math_FunctionAllRoots:
         An exception is raised if Index<=0 or Index >Nbintervals.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        """
+
 class math_FunctionRoot:
     """
     This class implements the computation of a root of a function of
@@ -1815,6 +1889,13 @@ class math_FunctionRoot:
         Exception NotDone is raised if the root was not found.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_FunctionRoots:
     """
     This class implements an algorithm which finds all the real roots of
@@ -1867,6 +1948,12 @@ class math_FunctionRoots:
         returns the StateNumber of the Nieme root.
         Exception RangeError is raised if Nieme is < 1
         or Nieme > NbSolutions.
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
         """
 
 class math_FunctionSample:
@@ -2242,6 +2329,12 @@ class math_IntegerVector:
 
     def __sub__(self, theRight: math_IntegerVector) -> math_IntegerVector: ...
 
+    def Dump(self) -> object:
+        """
+        Prints information on the current state of the object.
+        Is used to redefine the operator <<.
+        """
+
     def Array1(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """
         Returns the underlying array for interoperability with legacy APIs.
@@ -2392,6 +2485,13 @@ class math_FunctionSetRoot:
         is not equal to the range of the StartingPoint.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
     def IsDivergent(self) -> bool: ...
 
 class math_FunctionSetWithDerivatives(math_FunctionSet):
@@ -2528,6 +2628,13 @@ class math_Gauss:
         equal to the ranges of A.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_GaussLeastSquare:
     """
     This class implements the least square solution of a set of
@@ -2569,6 +2676,13 @@ class math_GaussLeastSquare:
         not equal to the colrange of A.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_GaussMultipleIntegration:
     """
     This class implements the integration of a function of multiple
@@ -2592,6 +2706,9 @@ class math_GaussMultipleIntegration:
 
     def Value(self) -> float:
         """returns the value of the integral."""
+
+    def Dump(self) -> object:
+        """Prints information on the current state of the object."""
 
 class math_GaussSetIntegration:
     """
@@ -2617,6 +2734,9 @@ class math_GaussSetIntegration:
 
     def Value(self) -> math_Vector:
         """returns the value of the integral."""
+
+    def Dump(self) -> object:
+        """Prints information on the current state of the object."""
 
 class math_GaussSingleIntegration:
     """
@@ -2651,6 +2771,9 @@ class math_GaussSingleIntegration:
 
     def Value(self) -> float:
         """returns the value of the integral."""
+
+    def Dump(self) -> object:
+        """Prints information on the current state of the object."""
 
 class math_MultipleVarFunction:
     """
@@ -2859,6 +2982,9 @@ class math_Householder:
         done.
         """
 
+    def Dump(self) -> object:
+        """Prints information on the current state of the object."""
+
 class math_Jacobi:
     """
     This class implements the Jacobi method to find the eigenvalues and
@@ -2907,6 +3033,12 @@ class math_Jacobi:
         Returns the eigenvector V of number Num.
         Eigenvectors are in the range (1..n).
         Exception NotDone is raised if calculation is not done successfully.
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints information on the current state of the object.
+        Is used to redefine the operator <<.
         """
 
 class math_KronrodSingleIntegration:
@@ -3134,6 +3266,9 @@ class math_NewtonFunctionRoot:
         Exception NotDone is raised if the root was not found.
         """
 
+    def Dump(self) -> object:
+        """Prints information on the current state of the object."""
+
 class math_NewtonFunctionSetRoot:
     """
     This class computes the root of a set of N functions of N variables,
@@ -3256,6 +3391,12 @@ class math_NewtonFunctionSetRoot:
         Exception NotDone is raised if the root was not found.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints information on the current state of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_NewtonMinimum:
     @overload
     def __init__(self, theFunction: math_MultipleVarFunctionWithHessian, theTolerance: float = 1e-07, theNbIterations: int = 40, theConvexity: float = 1e-06, theWithSingularity: bool = True) -> None:
@@ -3338,6 +3479,13 @@ class math_NewtonMinimum:
         The exception NotDone is raised if an error has occurred.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream o information on the current state
+        of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_Powell:
     """
     This class implements the Powell method to find the minimum of
@@ -3399,6 +3547,12 @@ class math_Powell:
         Returns the number of iterations really done during the
         computation of the minimum.
         Exception NotDone is raised if the minimum was not found.
+        """
+
+    def Dump(self) -> object:
+        """
+        Prints information on the current state of the object.
+        Is used to redefine the operator <<.
         """
 
 class math_PSO:
@@ -3552,6 +3706,12 @@ class math_SVD:
         compatible with the ranges of A.
         """
 
+    def Dump(self) -> object:
+        """
+        Prints information on the current state of the object.
+        Is used to redefine the operator <<.
+        """
+
 class math_TrigonometricFunctionRoots:
     """
     This class implements the solutions of the equation
@@ -3613,6 +3773,9 @@ class math_TrigonometricFunctionRoots:
         An exception is raised if NotDone.
         An exception is raised if there is an infinity of solutions.
         """
+
+    def Dump(self) -> object:
+        """Prints information on the current state of the object."""
 
 class math_TrigonometricEquationFunction(math_FunctionWithDerivative):
     """
@@ -3723,6 +3886,9 @@ class math_Uzawa:
         This result is needed for the computation of the gradient
         when approximating a curve.
         """
+
+    def Dump(self) -> object:
+        """Prints information on the current state of the object."""
 
 class math_ValueAndWeight:
     """Simple container storing two reals: value and weight"""

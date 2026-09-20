@@ -493,6 +493,12 @@ class AdvApp2Var_ApproxAFunc2Var:
 
     def CritError(self, Dimension: int, Index: int) -> float: ...
 
+    def Dump(self) -> object:
+        """
+        Prints on the stream 'o' information on the current state
+        of the object.
+        """
+
 class AdvApp2Var_ApproxF2var:
     @overload
     def __init__(self) -> None: ...

@@ -10,6 +10,7 @@ inout = [
     "gp_Trsf2d::Transforms",
     "gp_GTrsf::Transforms",
     "gp_GTrsf2d::Transforms",
+    "*::InitFromJson",      # int& theStreamPos: the position to start reading at (1), advanced by the call (every class with DumpJson)
 ]
 
 # Classes never bound (internal helpers that happen to be public in a header).

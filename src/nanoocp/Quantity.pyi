@@ -1,7 +1,7 @@
 """OCCT package Quantity (toolkit TKernel)"""
 
 import enum
-from typing import overload
+from typing import TextIO, overload
 
 import nanoocp.BVH
 import nanoocp.Standard
@@ -1395,6 +1395,12 @@ class Quantity_Color:
     def SetEpsilon(theEpsilon: float) -> None:
         """Set the value used to compare two colors for equality."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+    def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
+        """Inits the content of me from the stream"""
+
     def __hash__(self) -> int: ...
 
 class Quantity_ColorRGBA:
@@ -1494,6 +1500,12 @@ class Quantity_ColorRGBA:
     @staticmethod
     def Convert_sRGB_To_LinearRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
         """Convert sRGB components into linear RGB using OpenGL specs formula."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+    def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
+        """Inits the content of me from the stream"""
 
     def __hash__(self) -> int: ...
 

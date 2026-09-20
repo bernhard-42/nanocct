@@ -8,6 +8,9 @@
 #include <Geom2d_Curve.hxx>
 #include <Geom_Curve.hxx>
 #include <Geom_Surface.hxx>
+#include <Message_ProgressRange.hxx>
+#include <Standard_IStream.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 
@@ -35,8 +38,20 @@ void nanoocp_templates_GeomTools(nb::module_ &m) {
 void nanoocp_define_GeomTools(nb::module_ &m) {
     nanoocp_implicit_default_ctor<GeomTools>(nb::borrow<nb::class_<GeomTools>>(m.attr("GeomTools")));
     nb::borrow<nb::class_<GeomTools>>(m.attr("GeomTools"))
+        .def_static("Dump", [](const occ::handle<Geom_Surface> & S) { std::ostringstream OS_stream; GeomTools::Dump(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(A set of Curves from Geom2d.
+Dumps the surface on the stream.)nbdoc")
+        .def_static("Write", [](const occ::handle<Geom_Surface> & S) { std::ostringstream OS_stream; GeomTools::Write(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Writes the surface on the stream.)nbdoc")
+        .def_static("Read", [](occ::handle<Geom_Surface> & S, const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); GeomTools::Read(S, IS_stream); }, nb::arg("S"), nb::arg("IS"), R"nbdoc(Reads the surface from the stream.)nbdoc")
+        .def_static("Dump", [](const occ::handle<Geom_Curve> & C) { std::ostringstream OS_stream; GeomTools::Dump(C, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), R"nbdoc(Dumps the Curve on the stream.)nbdoc")
+        .def_static("Write", [](const occ::handle<Geom_Curve> & C) { std::ostringstream OS_stream; GeomTools::Write(C, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), R"nbdoc(Writes the Curve on the stream.)nbdoc")
+        .def_static("Read", [](occ::handle<Geom_Curve> & C, const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); GeomTools::Read(C, IS_stream); }, nb::arg("C"), nb::arg("IS"), R"nbdoc(Reads the Curve from the stream.)nbdoc")
+        .def_static("Dump", [](const occ::handle<Geom2d_Curve> & C) { std::ostringstream OS_stream; GeomTools::Dump(C, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), R"nbdoc(Dumps the Curve on the stream.)nbdoc")
+        .def_static("Write", [](const occ::handle<Geom2d_Curve> & C) { std::ostringstream OS_stream; GeomTools::Write(C, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), R"nbdoc(Writes the Curve on the stream.)nbdoc")
+        .def_static("Read", [](occ::handle<Geom2d_Curve> & C, const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); GeomTools::Read(C, IS_stream); }, nb::arg("C"), nb::arg("IS"), R"nbdoc(Reads the Curve from the stream.)nbdoc")
         .def_static("SetUndefinedTypeHandler", static_cast<void (*)(const occ::handle<GeomTools_UndefinedTypeHandler> &)>(&GeomTools::SetUndefinedTypeHandler), nb::arg("aHandler"))
-        .def_static("GetUndefinedTypeHandler", static_cast<occ::handle<GeomTools_UndefinedTypeHandler> (*)()>(&GeomTools::GetUndefinedTypeHandler));
+        .def_static("GetUndefinedTypeHandler", static_cast<occ::handle<GeomTools_UndefinedTypeHandler> (*)()>(&GeomTools::GetUndefinedTypeHandler))
+        .def_static("GetReal", [](const nanoocp::TextInput &IS) { double theValue{}; std::stringstream IS_stream(IS.text); GeomTools::GetReal(IS_stream, theValue); return theValue; }, nb::arg("IS"), R"nbdoc(Reads the double value from the stream. Zero is read
+in case of error)nbdoc");
     nanoocp_implicit_copy_ctor<GeomTools>(nb::borrow<nb::class_<GeomTools>>(m.attr("GeomTools")));
     nb::borrow<nb::class_<GeomTools_Curve2dSet>>(m.attr("GeomTools_Curve2dSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of Curves.)nbdoc")
@@ -44,7 +59,17 @@ void nanoocp_define_GeomTools(nb::module_ &m) {
         .def("Add", static_cast<int (GeomTools_Curve2dSet::*)(const occ::handle<Geom2d_Curve> &)>(&GeomTools_Curve2dSet::Add), nb::arg("C"), R"nbdoc(Incorporate a new Curve in the set and returns
 its index.)nbdoc")
         .def("Curve2d", static_cast<occ::handle<Geom2d_Curve> (GeomTools_Curve2dSet::*)(const int) const>(&GeomTools_Curve2dSet::Curve2d), nb::arg("I"), R"nbdoc(Returns the Curve of index <I>.)nbdoc")
-        .def("Index", static_cast<int (GeomTools_Curve2dSet::*)(const occ::handle<Geom2d_Curve> &) const>(&GeomTools_Curve2dSet::Index), nb::arg("C"), R"nbdoc(Returns the index of <L>.)nbdoc");
+        .def("Index", static_cast<int (GeomTools_Curve2dSet::*)(const occ::handle<Geom2d_Curve> &) const>(&GeomTools_Curve2dSet::Index), nb::arg("C"), R"nbdoc(Returns the index of <L>.)nbdoc")
+        .def("Dump", [](const GeomTools_Curve2dSet &self) { std::ostringstream OS_stream; self.Dump(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the content of me on the stream <OS>.)nbdoc")
+        .def("Write", [](const GeomTools_Curve2dSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.Write(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the content of me on the stream <OS> in a
+format that can be read back by Read.)nbdoc")
+        .def("Read", [](GeomTools_Curve2dSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the content of me from the stream <IS>.
+me is first cleared.)nbdoc")
+        .def_static("PrintCurve2d", [](const occ::handle<Geom2d_Curve> & C, const bool compact) { std::ostringstream OS_stream; GeomTools_Curve2dSet::PrintCurve2d(C, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Dumps the curve on the stream, if compact is True
+use the compact format that can be read back.)nbdoc")
+        .def_static("ReadCurve2d", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = GeomTools_Curve2dSet::ReadCurve2d(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads the curve from the stream. The curve is
+assumed to have been written with the Print
+method (compact = True).)nbdoc");
     nanoocp_implicit_copy_ctor<GeomTools_Curve2dSet>(nb::borrow<nb::class_<GeomTools_Curve2dSet>>(m.attr("GeomTools_Curve2dSet")));
     nb::borrow<nb::class_<GeomTools_CurveSet>>(m.attr("GeomTools_CurveSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of Curves.)nbdoc")
@@ -52,7 +77,17 @@ its index.)nbdoc")
         .def("Add", static_cast<int (GeomTools_CurveSet::*)(const occ::handle<Geom_Curve> &)>(&GeomTools_CurveSet::Add), nb::arg("C"), R"nbdoc(Incorporate a new Curve in the set and returns
 its index.)nbdoc")
         .def("Curve", static_cast<occ::handle<Geom_Curve> (GeomTools_CurveSet::*)(const int) const>(&GeomTools_CurveSet::Curve), nb::arg("I"), R"nbdoc(Returns the Curve of index <I>.)nbdoc")
-        .def("Index", static_cast<int (GeomTools_CurveSet::*)(const occ::handle<Geom_Curve> &) const>(&GeomTools_CurveSet::Index), nb::arg("C"), R"nbdoc(Returns the index of <L>.)nbdoc");
+        .def("Index", static_cast<int (GeomTools_CurveSet::*)(const occ::handle<Geom_Curve> &) const>(&GeomTools_CurveSet::Index), nb::arg("C"), R"nbdoc(Returns the index of <L>.)nbdoc")
+        .def("Dump", [](const GeomTools_CurveSet &self) { std::ostringstream OS_stream; self.Dump(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the content of me on the stream <OS>.)nbdoc")
+        .def("Write", [](const GeomTools_CurveSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.Write(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the content of me on the stream <OS> in a
+format that can be read back by Read.)nbdoc")
+        .def("Read", [](GeomTools_CurveSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the content of me from the stream <IS>
+me is first cleared.)nbdoc")
+        .def_static("PrintCurve", [](const occ::handle<Geom_Curve> & C, const bool compact) { std::ostringstream OS_stream; GeomTools_CurveSet::PrintCurve(C, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Dumps the curve on the stream, if compact is True
+use the compact format that can be read back.)nbdoc")
+        .def_static("ReadCurve", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = GeomTools_CurveSet::ReadCurve(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads the curve from the stream. The curve is
+assumed to have been written with the Print
+method (compact = True).)nbdoc");
     nanoocp_implicit_copy_ctor<GeomTools_CurveSet>(nb::borrow<nb::class_<GeomTools_CurveSet>>(m.attr("GeomTools_CurveSet")));
     nb::borrow<nb::class_<GeomTools_SurfaceSet>>(m.attr("GeomTools_SurfaceSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of Surfaces.)nbdoc")
@@ -60,10 +95,23 @@ its index.)nbdoc")
         .def("Add", static_cast<int (GeomTools_SurfaceSet::*)(const occ::handle<Geom_Surface> &)>(&GeomTools_SurfaceSet::Add), nb::arg("S"), R"nbdoc(Incorporate a new Surface in the set and returns
 its index.)nbdoc")
         .def("Surface", static_cast<occ::handle<Geom_Surface> (GeomTools_SurfaceSet::*)(const int) const>(&GeomTools_SurfaceSet::Surface), nb::arg("I"), R"nbdoc(Returns the Surface of index <I>.)nbdoc")
-        .def("Index", static_cast<int (GeomTools_SurfaceSet::*)(const occ::handle<Geom_Surface> &) const>(&GeomTools_SurfaceSet::Index), nb::arg("S"), R"nbdoc(Returns the index of <L>.)nbdoc");
+        .def("Index", static_cast<int (GeomTools_SurfaceSet::*)(const occ::handle<Geom_Surface> &) const>(&GeomTools_SurfaceSet::Index), nb::arg("S"), R"nbdoc(Returns the index of <L>.)nbdoc")
+        .def("Dump", [](const GeomTools_SurfaceSet &self) { std::ostringstream OS_stream; self.Dump(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the content of me on the stream <OS>.)nbdoc")
+        .def("Write", [](const GeomTools_SurfaceSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.Write(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the content of me on the stream <OS> in a
+format that can be read back by Read.)nbdoc")
+        .def("Read", [](GeomTools_SurfaceSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the content of me from the stream <IS>.
+me is first cleared.)nbdoc")
+        .def_static("PrintSurface", [](const occ::handle<Geom_Surface> & S, const bool compact) { std::ostringstream OS_stream; GeomTools_SurfaceSet::PrintSurface(S, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Dumps the surface on the stream, if compact is True
+use the compact format that can be read back.)nbdoc")
+        .def_static("ReadSurface", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = GeomTools_SurfaceSet::ReadSurface(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads the surface from the stream. The surface is
+assumed to have been written with the Print
+method (compact = True).)nbdoc");
     nanoocp_implicit_copy_ctor<GeomTools_SurfaceSet>(nb::borrow<nb::class_<GeomTools_SurfaceSet>>(m.attr("GeomTools_SurfaceSet")));
     nb::borrow<nb::class_<GeomTools_UndefinedTypeHandler>>(m.attr("GeomTools_UndefinedTypeHandler"))
         .def(nb::new_([]() { return opencascade::handle<GeomTools_UndefinedTypeHandler>(new GeomTools_UndefinedTypeHandler()); }))
+        .def("PrintCurve", [](const GeomTools_UndefinedTypeHandler &self, const occ::handle<Geom_Curve> & C, const bool compact) { std::ostringstream OS_stream; self.PrintCurve(C, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false))
+        .def("PrintCurve2d", [](const GeomTools_UndefinedTypeHandler &self, const occ::handle<Geom2d_Curve> & C, const bool compact) { std::ostringstream OS_stream; self.PrintCurve2d(C, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("C"), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false))
+        .def("PrintSurface", [](const GeomTools_UndefinedTypeHandler &self, const occ::handle<Geom_Surface> & S, const bool compact) { std::ostringstream OS_stream; self.PrintSurface(S, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomTools_UndefinedTypeHandler::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomTools_UndefinedTypeHandler::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomTools_UndefinedTypeHandler::*)() const>(&GeomTools_UndefinedTypeHandler::DynamicType));

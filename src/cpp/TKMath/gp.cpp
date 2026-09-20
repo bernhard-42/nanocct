@@ -44,6 +44,8 @@
 #include <gp_XYZ.hxx>
 #include <NCollection_Array1.hxx>
 #include <Standard_DomainError.hxx>
+#include <Standard_OStream.hxx>
+#include <Standard_SStream.hxx>
 
 void nanoocp_declare_gp(nb::module_ &m) {
     nb::enum_<gp_TrsfForm>(m, "gp_TrsfForm", R"nbdoc(Identifies the type of a geometric transformation.)nbdoc", nb::is_arithmetic())
@@ -946,6 +948,7 @@ inversible)nbdoc")
         .def("__sub__", static_cast<gp_Mat (gp_Mat::*)(const gp_Mat &) const noexcept>(&gp_Mat::operator-), nb::arg("theOther"), nb::is_operator())
         .def("Transpose", static_cast<void (gp_Mat::*)()>(&gp_Mat::Transpose))
         .def("Transposed", static_cast<gp_Mat (gp_Mat::*)() const>(&gp_Mat::Transposed), R"nbdoc(Transposes the matrix. A(j, i) -> A (i, j))nbdoc")
+        .def("DumpJson", [](const gp_Mat &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("__rmul__", [](const gp_Mat & theMat3D, const double theScalar) { return theScalar * theMat3D; }, nb::is_operator()) /* free operator* */
         .def("__mul__", [](const gp_Mat & theMatrix, const gp_XYZ & theCoord1) { return theMatrix * theCoord1; }, nb::is_operator()) /* free operator* */;
     nanoocp_implicit_copy_ctor<gp_Mat>(nb::borrow<nb::class_<gp_Mat>>(m.attr("gp_Mat")));
@@ -1103,6 +1106,8 @@ theA1 * theXYZ1 + theXYZ2
 @code
 theXYZ1 + theXYZ2
 @endcode)nbdoc")
+        .def("DumpJson", [](const gp_XYZ &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](gp_XYZ &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
         .def("__rmul__", [](const gp_XYZ & theCoord1, const double theScalar) { return theScalar * theCoord1; }, nb::is_operator()) /* free operator* */;
     nanoocp_implicit_copy_ctor<gp_XYZ>(nb::borrow<nb::class_<gp_XYZ>>(m.attr("gp_XYZ")));
     nb::borrow<nb::class_<gp_Pnt>>(m.attr("gp_Pnt"))
@@ -1164,6 +1169,8 @@ The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translated", static_cast<gp_Pnt (gp_Pnt::*)(const gp_Vec &) const noexcept>(&gp_Pnt::Translated), nb::arg("theV"))
         .def("Translate", static_cast<void (gp_Pnt::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Pnt::Translate), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a point from the point theP1 to the point theP2.)nbdoc")
         .def("Translated", static_cast<gp_Pnt (gp_Pnt::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Pnt::Translated), nb::arg("theP1"), nb::arg("theP2"))
+        .def("DumpJson", [](const gp_Pnt &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](gp_Pnt &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
         .def("__hash__", [](const gp_Pnt &self) { return static_cast<Py_ssize_t>(std::hash<gp_Pnt>{}(self)); });
     nanoocp_implicit_copy_ctor<gp_Pnt>(nb::borrow<nb::class_<gp_Pnt>>(m.attr("gp_Pnt")));
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, gp_Pnt>();
@@ -1333,7 +1340,9 @@ if theN < 0 <me> = <me>.Inverse() *...........* <me>.Inverse().
 Raises if theN < 0 and if the matrix of the transformation not
 inversible.)nbdoc")
         .def("Transforms", [](const gp_Trsf &self, double theX, double theY, double theZ) { self.Transforms(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"))
-        .def("Transforms", static_cast<void (gp_Trsf::*)(gp_XYZ &) const noexcept>(&gp_Trsf::Transforms), nb::arg("theCoord"), R"nbdoc(Transformation of a triplet XYZ with a Trsf)nbdoc");
+        .def("Transforms", static_cast<void (gp_Trsf::*)(gp_XYZ &) const noexcept>(&gp_Trsf::Transforms), nb::arg("theCoord"), R"nbdoc(Transformation of a triplet XYZ with a Trsf)nbdoc")
+        .def("DumpJson", [](const gp_Trsf &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](gp_Trsf &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Trsf>(nb::borrow<nb::class_<gp_Trsf>>(m.attr("gp_Trsf")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf2d &>, gp_Trsf>();
     nb::borrow<nb::class_<gp_Mat2d>>(m.attr("gp_Mat2d"))
@@ -1675,7 +1684,8 @@ Ang is the angular value of the rotation in radians.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translated", static_cast<gp_Pnt2d (gp_Pnt2d::*)(const gp_Vec2d &) const noexcept>(&gp_Pnt2d::Translated), nb::arg("theV"))
         .def("Translate", static_cast<void (gp_Pnt2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Pnt2d::Translate), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a point from the point theP1 to the point theP2.)nbdoc")
-        .def("Translated", static_cast<gp_Pnt2d (gp_Pnt2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Pnt2d::Translated), nb::arg("theP1"), nb::arg("theP2"));
+        .def("Translated", static_cast<gp_Pnt2d (gp_Pnt2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Pnt2d::Translated), nb::arg("theP1"), nb::arg("theP2"))
+        .def("DumpJson", [](const gp_Pnt2d &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Pnt2d>(nb::borrow<nb::class_<gp_Pnt2d>>(m.attr("gp_Pnt2d")));
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, gp_Pnt2d>();
     nb::borrow<nb::class_<gp_Vec2d>>(m.attr("gp_Vec2d"))
@@ -1921,7 +1931,8 @@ the rotation in radians.)nbdoc")
         .def("Transformed", static_cast<gp_Dir2d (gp_Dir2d::*)(const gp_Trsf2d &) const>(&gp_Dir2d::Transformed), nb::arg("theT"), R"nbdoc(Transforms a direction with the "Trsf" theT.
 Warnings :
 If the scale factor of the "Trsf" theT is negative then the
-direction <me> is reversed.)nbdoc");
+direction <me> is reversed.)nbdoc")
+        .def("DumpJson", [](const gp_Dir2d &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Dir2d>(nb::borrow<nb::class_<gp_Dir2d>>(m.attr("gp_Dir2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec2d &>, gp_Dir2d>();
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, gp_Dir2d>();
@@ -1979,7 +1990,8 @@ The "Direction" is reversed if the scale is negative.)nbdoc")
         .def("Translated", static_cast<gp_Ax2d (gp_Ax2d::*)(const gp_Vec2d &) const noexcept>(&gp_Ax2d::Translated), nb::arg("theV"), R"nbdoc(Translates an axis placement in the direction of the vector theV.
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Ax2d::Translate), nb::arg("theP1"), nb::arg("theP2"))
-        .def("Translated", static_cast<gp_Ax2d (gp_Ax2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Ax2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point theP1 to the point theP2.)nbdoc");
+        .def("Translated", static_cast<gp_Ax2d (gp_Ax2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Ax2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point theP1 to the point theP2.)nbdoc")
+        .def("DumpJson", [](const gp_Ax2d &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Ax2d>(nb::borrow<nb::class_<gp_Ax2d>>(m.attr("gp_Ax2d")));
     nb::borrow<nb::class_<gp_Vec>>(m.attr("gp_Vec"))
         .def(nb::init<>(), R"nbdoc(Creates a zero vector.)nbdoc")
@@ -2117,6 +2129,7 @@ theAng is the angular value of the rotation in radians.)nbdoc")
         .def("Scaled", static_cast<gp_Vec (gp_Vec::*)(const double) const noexcept>(&gp_Vec::Scaled), nb::arg("theS"), R"nbdoc(Scales a vector. theS is the scaling value.)nbdoc")
         .def("Transform", static_cast<void (gp_Vec::*)(const gp_Trsf &)>(&gp_Vec::Transform), nb::arg("theT"), R"nbdoc(Transforms a vector with the transformation theT.)nbdoc")
         .def("Transformed", static_cast<gp_Vec (gp_Vec::*)(const gp_Trsf &) const>(&gp_Vec::Transformed), nb::arg("theT"), R"nbdoc(Transforms a vector with the transformation theT.)nbdoc")
+        .def("DumpJson", [](const gp_Vec &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("__rmul__", [](const gp_Vec & theV, const double theScalar) { return theScalar * theV; }, nb::is_operator()) /* free operator* */;
     nanoocp_implicit_copy_ctor<gp_Vec>(nb::borrow<nb::class_<gp_Vec>>(m.attr("gp_Vec")));
     nb::implicitly_convertible<std::decay_t<const gp_Dir &>, gp_Vec>();
@@ -2253,7 +2266,9 @@ theAng is the angular value of the rotation in radians.)nbdoc")
         .def("Transformed", static_cast<gp_Dir (gp_Dir::*)(const gp_Trsf &) const>(&gp_Dir::Transformed), nb::arg("theT"), R"nbdoc(Transforms a direction with a "Trsf" from gp.
 Warnings :
 If the scale factor of the "Trsf" theT is negative then the
-direction <me> is reversed.)nbdoc");
+direction <me> is reversed.)nbdoc")
+        .def("DumpJson", [](const gp_Dir &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](gp_Dir &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
     nb::implicitly_convertible<std::decay_t<const gp_Vec &>, gp_Dir>();
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, gp_Dir>();
     nb::borrow<nb::class_<gp_Ax1>>(m.attr("gp_Ax1"))
@@ -2330,7 +2345,9 @@ the vector (theP1, theP2) defined from point theP1 to point theP2.
 and assigns the result to this axis.)nbdoc")
         .def("Translated", static_cast<gp_Ax1 (gp_Ax1::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Ax1::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates this axis by:
 the vector (theP1, theP2) defined from point theP1 to point theP2.
-and creates a new one.)nbdoc");
+and creates a new one.)nbdoc")
+        .def("DumpJson", [](const gp_Ax1 &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](gp_Ax1 &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Ax1>(nb::borrow<nb::class_<gp_Ax1>>(m.attr("gp_Ax1")));
     nb::borrow<nb::class_<gp_Ax2>>(m.attr("gp_Ax2"))
         .def(nb::init<>(), R"nbdoc(Creates an object corresponding to the reference
@@ -2506,7 +2523,9 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
         .def("Translated", static_cast<gp_Ax2 (gp_Ax2::*)(const gp_Vec &) const noexcept>(&gp_Ax2::Translated), nb::arg("theV"), R"nbdoc(Translates an axis plaxement in the direction of the vector <theV>.
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax2::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Ax2::Translate), nb::arg("theP1"), nb::arg("theP2"))
-        .def("Translated", static_cast<gp_Ax2 (gp_Ax2::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Ax2::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point <theP1> to the point <theP2>.)nbdoc");
+        .def("Translated", static_cast<gp_Ax2 (gp_Ax2::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Ax2::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point <theP1> to the point <theP2>.)nbdoc")
+        .def("DumpJson", [](const gp_Ax2 &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](gp_Ax2 &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Ax2>(nb::borrow<nb::class_<gp_Ax2>>(m.attr("gp_Ax2")));
     nb::borrow<nb::class_<gp_Ax3>>(m.attr("gp_Ax3"))
         .def(nb::init<>(), R"nbdoc(Creates an object corresponding to the reference
@@ -2638,7 +2657,9 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
 <theV>. The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax3::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Ax3::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Ax3 (gp_Ax3::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Ax3::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point <theP1> to the
-point <theP2>.)nbdoc");
+point <theP2>.)nbdoc")
+        .def("DumpJson", [](const gp_Ax3 &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](gp_Ax3 &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Ax3>(nb::borrow<nb::class_<gp_Ax3>>(m.attr("gp_Ax3")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2 &>, gp_Ax3>();
     nb::borrow<nb::class_<gp_Ax22d>>(m.attr("gp_Ax22d"))
@@ -2726,7 +2747,8 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
 <theV>. The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax22d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Ax22d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Ax22d (gp_Ax22d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Ax22d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point <theP1> to the
-point <theP2>.)nbdoc");
+point <theP2>.)nbdoc")
+        .def("DumpJson", [](const gp_Ax22d &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Ax22d>(nb::borrow<nb::class_<gp_Ax22d>>(m.attr("gp_Ax22d")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2d &>, gp_Ax22d>();
     nb::borrow<nb::class_<gp_Circ>>(m.attr("gp_Circ"))
@@ -3293,7 +3315,8 @@ Raises an exception if N < 0 and if the matrix of the
 transformation not inversible.)nbdoc")
         .def("Transforms", static_cast<void (gp_GTrsf::*)(gp_XYZ &) const noexcept>(&gp_GTrsf::Transforms), nb::arg("theCoord"))
         .def("Transforms", [](const gp_GTrsf &self, double theX, double theY, double theZ) { self.Transforms(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Transforms a triplet XYZ with a GTrsf.)nbdoc")
-        .def("Trsf", static_cast<gp_Trsf (gp_GTrsf::*)() const>(&gp_GTrsf::Trsf));
+        .def("Trsf", static_cast<gp_Trsf (gp_GTrsf::*)() const>(&gp_GTrsf::Trsf))
+        .def("DumpJson", [](const gp_GTrsf &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_GTrsf>(nb::borrow<nb::class_<gp_GTrsf>>(m.attr("gp_GTrsf")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, gp_GTrsf>();
     nb::borrow<nb::class_<gp_GTrsf2d>>(m.attr("gp_GTrsf2d"))
@@ -4050,7 +4073,8 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
         .def("Translated", static_cast<gp_Pln (gp_Pln::*)(const gp_Vec &) const noexcept>(&gp_Pln::Translated), nb::arg("theV"), R"nbdoc(Translates a plane in the direction of the vector theV.
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Pln::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Pln::Translate), nb::arg("theP1"), nb::arg("theP2"))
-        .def("Translated", static_cast<gp_Pln (gp_Pln::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Pln::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a plane from the point theP1 to the point theP2.)nbdoc");
+        .def("Translated", static_cast<gp_Pln (gp_Pln::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Pln::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a plane from the point theP1 to the point theP2.)nbdoc")
+        .def("DumpJson", [](const gp_Pln &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<gp_Pln>(nb::borrow<nb::class_<gp_Pln>>(m.attr("gp_Pln")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax3 &>, gp_Pln>();
     nb::borrow<nb::class_<gp_Quaternion>>(m.attr("gp_Quaternion"))

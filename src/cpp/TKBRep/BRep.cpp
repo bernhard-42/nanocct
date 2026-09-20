@@ -32,6 +32,7 @@
 #include <Poly_Polygon3D.hxx>
 #include <Poly_PolygonOnTriangulation.hxx>
 #include <Poly_Triangulation.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <TopAbs_ShapeEnum.hxx>
@@ -274,6 +275,7 @@ triangulation is contained in internal triangulations list it will be made activ
 else the active triangulation will be replaced to input one.)nbdoc")
         .def("EmptyCopy", static_cast<occ::handle<TopoDS_TShape> (BRep_TFace::*)() const>(&BRep_TFace::EmptyCopy), R"nbdoc(Returns a copy of the TShape with no sub-shapes.
 The new Face has no triangulation.)nbdoc")
+        .def("DumpJson", [](const BRep_TFace &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("Triangulations", static_cast<const NCollection_List<opencascade::handle<Poly_Triangulation>> & (BRep_TFace::*)() const>(&BRep_TFace::Triangulations), R"nbdoc(Returns the list of available face triangulations.)nbdoc")
         .def("Triangulations", static_cast<void (BRep_TFace::*)(const NCollection_List<opencascade::handle<Poly_Triangulation>> &, const occ::handle<Poly_Triangulation> &)>(&BRep_TFace::Triangulations), nb::arg("theTriangulations"), nb::arg("theActiveTriangulation"), R"nbdoc(Sets input list of triangulations and currently active triangulation for this face.
 If list is empty internal list of triangulations will be cleared and active triangulation will
@@ -306,6 +308,7 @@ if this list doesn't contain input active triangulation.)nbdoc")
         .def("PCurve", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_PointRepresentation::PCurve), nb::arg("C"))
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::Surface))
         .def("Surface", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom_Surface> &)>(&BRep_PointRepresentation::Surface), nb::arg("S"))
+        .def("DumpJson", [](const BRep_PointRepresentation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointRepresentation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointRepresentation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::DynamicType));
@@ -321,6 +324,7 @@ current tolerance.)nbdoc")
         .def("Points", static_cast<const NCollection_List<opencascade::handle<BRep_PointRepresentation>> & (BRep_TVertex::*)() const>(&BRep_TVertex::Points))
         .def("ChangePoints", static_cast<NCollection_List<opencascade::handle<BRep_PointRepresentation>> & (BRep_TVertex::*)()>(&BRep_TVertex::ChangePoints), nb::rv_policy::reference_internal)
         .def("EmptyCopy", static_cast<occ::handle<TopoDS_TShape> (BRep_TVertex::*)() const>(&BRep_TVertex::EmptyCopy), R"nbdoc(Returns a copy of the TShape with no sub-shapes.)nbdoc")
+        .def("DumpJson", [](const BRep_TVertex &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_TVertex::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_TVertex::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_TVertex::*)() const>(&BRep_TVertex::DynamicType));
@@ -485,6 +489,7 @@ space of a surface.)nbdoc")
         .def("Continuity", static_cast<const GeomAbs_Shape & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Continuity))
         .def("Continuity", static_cast<void (BRep_CurveRepresentation::*)(const GeomAbs_Shape)>(&BRep_CurveRepresentation::Continuity), nb::arg("C"))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_CurveRepresentation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_CurveRepresentation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_CurveRepresentation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::DynamicType));
@@ -498,6 +503,7 @@ space of a surface.)nbdoc")
         .def("D0", static_cast<void (BRep_GCurve::*)(const double, gp_Pnt &) const>(&BRep_GCurve::D0), nb::arg("U"), nb::arg("P"), R"nbdoc(Computes the point at parameter U.)nbdoc")
         .def("Update", static_cast<void (BRep_GCurve::*)()>(&BRep_GCurve::Update), R"nbdoc(Recomputes any derived data after a modification.
 This is called when the range is modified.)nbdoc")
+        .def("DumpJson", [](const BRep_GCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_GCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_GCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_GCurve::*)() const>(&BRep_GCurve::DynamicType));
@@ -508,6 +514,7 @@ This is called when the range is modified.)nbdoc")
         .def("Curve3D", static_cast<const occ::handle<Geom_Curve> & (BRep_Curve3D::*)() const>(&BRep_Curve3D::Curve3D))
         .def("Curve3D", static_cast<void (BRep_Curve3D::*)(const occ::handle<Geom_Curve> &)>(&BRep_Curve3D::Curve3D), nb::arg("C"))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_Curve3D::*)() const>(&BRep_Curve3D::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_Curve3D &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_Curve3D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_Curve3D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_Curve3D::*)() const>(&BRep_Curve3D::DynamicType));
@@ -523,6 +530,7 @@ This is called when the range is modified.)nbdoc")
         .def("Continuity", static_cast<const GeomAbs_Shape & (BRep_CurveOn2Surfaces::*)() const>(&BRep_CurveOn2Surfaces::Continuity))
         .def("Continuity", static_cast<void (BRep_CurveOn2Surfaces::*)(const GeomAbs_Shape)>(&BRep_CurveOn2Surfaces::Continuity), nb::arg("C"))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_CurveOn2Surfaces::*)() const>(&BRep_CurveOn2Surfaces::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_CurveOn2Surfaces &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_CurveOn2Surfaces::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_CurveOn2Surfaces::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_CurveOn2Surfaces::*)() const>(&BRep_CurveOn2Surfaces::DynamicType));
@@ -540,6 +548,7 @@ This is called when the range is modified.)nbdoc")
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_CurveOnSurface::*)() const>(&BRep_CurveOnSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("Update", static_cast<void (BRep_CurveOnSurface::*)()>(&BRep_CurveOnSurface::Update), R"nbdoc(Recomputes any derived data after a modification.
 This is called when the range is modified.)nbdoc")
+        .def("DumpJson", [](const BRep_CurveOnSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_CurveOnSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_CurveOnSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_CurveOnSurface::*)() const>(&BRep_CurveOnSurface::DynamicType));
@@ -560,6 +569,7 @@ This is called when the range is modified.)nbdoc")
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("Update", static_cast<void (BRep_CurveOnClosedSurface::*)()>(&BRep_CurveOnClosedSurface::Update), R"nbdoc(Recomputes any derived data after a modification.
 This is called when the range is modified.)nbdoc")
+        .def("DumpJson", [](const BRep_CurveOnClosedSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_CurveOnClosedSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_CurveOnClosedSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::DynamicType));
@@ -570,6 +580,7 @@ This is called when the range is modified.)nbdoc")
         .def("IsPointOnCurve", static_cast<bool (BRep_PointOnCurve::*)(const occ::handle<Geom_Curve> &, const TopLoc_Location &) const>(&BRep_PointOnCurve::IsPointOnCurve), nb::arg("C"), nb::arg("L"))
         .def("Curve", static_cast<const occ::handle<Geom_Curve> & (BRep_PointOnCurve::*)() const>(&BRep_PointOnCurve::Curve))
         .def("Curve", static_cast<void (BRep_PointOnCurve::*)(const occ::handle<Geom_Curve> &)>(&BRep_PointOnCurve::Curve), nb::arg("C"))
+        .def("DumpJson", [](const BRep_PointOnCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointOnCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointOnCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PointOnCurve::*)() const>(&BRep_PointOnCurve::DynamicType));
@@ -577,6 +588,7 @@ This is called when the range is modified.)nbdoc")
     nb::borrow<nb::class_<BRep_PointsOnSurface>>(m.attr("BRep_PointsOnSurface"))
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_PointsOnSurface::*)() const>(&BRep_PointsOnSurface::Surface))
         .def("Surface", static_cast<void (BRep_PointsOnSurface::*)(const occ::handle<Geom_Surface> &)>(&BRep_PointsOnSurface::Surface), nb::arg("S"))
+        .def("DumpJson", [](const BRep_PointsOnSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointsOnSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointsOnSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PointsOnSurface::*)() const>(&BRep_PointsOnSurface::DynamicType));
@@ -587,6 +599,7 @@ This is called when the range is modified.)nbdoc")
         .def("IsPointOnCurveOnSurface", static_cast<bool (BRep_PointOnCurveOnSurface::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointOnCurveOnSurface::IsPointOnCurveOnSurface), nb::arg("PC"), nb::arg("S"), nb::arg("L"))
         .def("PCurve", static_cast<const occ::handle<Geom2d_Curve> & (BRep_PointOnCurveOnSurface::*)() const>(&BRep_PointOnCurveOnSurface::PCurve))
         .def("PCurve", static_cast<void (BRep_PointOnCurveOnSurface::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_PointOnCurveOnSurface::PCurve), nb::arg("C"))
+        .def("DumpJson", [](const BRep_PointOnCurveOnSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointOnCurveOnSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointOnCurveOnSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PointOnCurveOnSurface::*)() const>(&BRep_PointOnCurveOnSurface::DynamicType));
@@ -607,6 +620,7 @@ This is called when the range is modified.)nbdoc")
         .def("Polygon3D", static_cast<const occ::handle<Poly_Polygon3D> & (BRep_Polygon3D::*)() const>(&BRep_Polygon3D::Polygon3D))
         .def("Polygon3D", static_cast<void (BRep_Polygon3D::*)(const occ::handle<Poly_Polygon3D> &)>(&BRep_Polygon3D::Polygon3D), nb::arg("P"))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_Polygon3D::*)() const>(&BRep_Polygon3D::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_Polygon3D &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_Polygon3D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_Polygon3D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_Polygon3D::*)() const>(&BRep_Polygon3D::DynamicType));
@@ -621,6 +635,7 @@ space of a surface.)nbdoc")
         .def("Polygon", static_cast<const occ::handle<Poly_Polygon2D> & (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::Polygon))
         .def("Polygon", static_cast<void (BRep_PolygonOnSurface::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_PolygonOnSurface::Polygon), nb::arg("P"))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_PolygonOnSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PolygonOnSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PolygonOnSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::DynamicType));
@@ -631,6 +646,7 @@ space of a surface.)nbdoc")
         .def("Polygon2", static_cast<const occ::handle<Poly_Polygon2D> & (BRep_PolygonOnClosedSurface::*)() const>(&BRep_PolygonOnClosedSurface::Polygon2))
         .def("Polygon2", static_cast<void (BRep_PolygonOnClosedSurface::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_PolygonOnClosedSurface::Polygon2), nb::arg("P"))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnClosedSurface::*)() const>(&BRep_PolygonOnClosedSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_PolygonOnClosedSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PolygonOnClosedSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PolygonOnClosedSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PolygonOnClosedSurface::*)() const>(&BRep_PolygonOnClosedSurface::DynamicType));
@@ -644,6 +660,7 @@ location <L>.)nbdoc")
         .def("Triangulation", static_cast<const occ::handle<Poly_Triangulation> & (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::Triangulation))
         .def("PolygonOnTriangulation", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::PolygonOnTriangulation))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_PolygonOnTriangulation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PolygonOnTriangulation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PolygonOnTriangulation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::DynamicType));
@@ -654,6 +671,7 @@ location <L>.)nbdoc")
         .def("PolygonOnTriangulation2", static_cast<void (BRep_PolygonOnClosedTriangulation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_PolygonOnClosedTriangulation::PolygonOnTriangulation2), nb::arg("P2"))
         .def("PolygonOnTriangulation2", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (BRep_PolygonOnClosedTriangulation::*)() const>(&BRep_PolygonOnClosedTriangulation::PolygonOnTriangulation2))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnClosedTriangulation::*)() const>(&BRep_PolygonOnClosedTriangulation::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
+        .def("DumpJson", [](const BRep_PolygonOnClosedTriangulation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PolygonOnClosedTriangulation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PolygonOnClosedTriangulation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PolygonOnClosedTriangulation::*)() const>(&BRep_PolygonOnClosedTriangulation::DynamicType));
@@ -673,6 +691,7 @@ current tolerance.)nbdoc")
         .def("Curves", static_cast<const NCollection_List<opencascade::handle<BRep_CurveRepresentation>> & (BRep_TEdge::*)() const>(&BRep_TEdge::Curves))
         .def("ChangeCurves", static_cast<NCollection_List<opencascade::handle<BRep_CurveRepresentation>> & (BRep_TEdge::*)()>(&BRep_TEdge::ChangeCurves), nb::rv_policy::reference_internal)
         .def("EmptyCopy", static_cast<occ::handle<TopoDS_TShape> (BRep_TEdge::*)() const>(&BRep_TEdge::EmptyCopy), R"nbdoc(Returns a copy of the TShape with no sub-shapes.)nbdoc")
+        .def("DumpJson", [](const BRep_TEdge &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_TEdge::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_TEdge::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_TEdge::*)() const>(&BRep_TEdge::DynamicType));

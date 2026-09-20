@@ -116,7 +116,7 @@ class Emitter:
     def _args(self, params: list[Param], skip_out: bool) -> str:
         parts: list[str] = []
         for p in params:
-            if skip_out and p.is_out and not p.is_inout:
+            if skip_out and (p.is_out and not p.is_inout or p.stream == "out"):
                 continue
             if p.default is None:
                 parts.append(f'nb::arg("{p.name}")')
@@ -143,14 +143,19 @@ class Emitter:
     def _lambda_call(self, cls: str | None, m: Method, self_type: str | None = None) -> str:
         """Lambda that maps out-params to a returned tuple (also handles static methods). self_type: the bound
         type when it differs from cls (non-copyable wrapper)."""
-        ins = [p for p in m.params if not p.is_out or p.is_inout]
+        ins = [p for p in m.params if (not p.is_out or p.is_inout) and p.stream != "out"]
         outs = [p for p in m.params if p.is_out]
         lam_params: list[str] = []
         if cls is not None and not m.is_static:
             lam_params.append(f"{'const ' if m.is_const else ''}{self_type if self_type is not None else cls} &self")
-        lam_params += [f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
+        lam_params += [f"const nanoocp::TextInput &{p.name}" if p.stream == "in" else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
         body: list[str] = [f"{_strip_ref(p.type)} {p.name}{{}};" for p in outs if not p.is_inout]
-        call_args = ", ".join(p.name for p in m.params)
+        # streams: an ostream& parameter becomes a returned str; an istream&/stringstream parameter takes a text file-like
+        # object (nanoocp::TextInput caster in nanoocp_common.h: typing.TextIO, never a str -- that would collide with the
+        # file-path overloads such as BRepTools::Read(shape, path, builder))
+        body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == "out"]
+        body += [f"std::stringstream {p.name}_stream({p.name}.text);" for p in m.params if p.stream == "in"]
+        call_args = ", ".join(f"{p.name}_stream" if p.stream != "" else p.name for p in m.params)
         if cls is None:
             callee = f"{m.name}({call_args})"
         elif m.is_static:
@@ -170,9 +175,10 @@ class Emitter:
         else:
             body.append(f"{callee};")
         results += [p.name for p in outs]
+        results += [f"nanoocp_stream_text({p.name}_stream)" for p in m.params if p.stream == "out"]
         if len(results) == 1:
             body.append(f"return {results[0]};")
-        else:
+        elif len(results) > 1:
             body.append(f"return std::make_tuple({', '.join(results)});")
         return f"[]({', '.join(lam_params)}) {{ {' '.join(body)} }}"
 
@@ -194,7 +200,7 @@ class Emitter:
         B = cls.bound_type                 # ... lambdas take the bound type (a wrapper for non-copyable classes)
         if m.result_kind == "ref_primitive":
             return self._ref_primitive(cls, m, py)
-        has_out = any(p.is_out for p in m.params)
+        has_out = any(p.is_out or p.stream != "" for p in m.params)
         wrap = m.result_kind in ("ptr_transient", "ref_transient")   # never let nanobind own a Transient
         policy = {"ptr_class": ", nb::rv_policy::reference", "ref_mutable": ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
         if m.name in _INPLACE_OPS:
@@ -402,7 +408,7 @@ class Emitter:
                     continue
                 policy = {"ptr_class": ", nb::rv_policy::reference", "ref_mutable": ", nb::rv_policy::reference"}.get(fn.result_kind, "")
                 qualified = fn.qualified if fn.qualified != "" else fn.name
-                if any(p.is_out for p in fn.params):        # out-params -> returned tuple, as for methods
+                if any(p.is_out or p.stream != "" for p in fn.params):   # out-params/streams -> returned tuple, as for methods
                     as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
                                        result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=fn.doc)
                     module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", {self._lambda_call(None, as_method)}{self._extras(fn.doc, fn.params, True, False)});')
@@ -478,7 +484,7 @@ class Emitter:
                 n_out = sum(1 for p in m.params if p.is_out and not p.is_inout)
                 return (0, n_out) if m.result_scalar and n_out == 0 else (1, -n_out)
             def py_sig(m: Method) -> tuple:
-                return (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if not p.is_out or p.is_inout))
+                return (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if (not p.is_out or p.is_inout) and p.stream != "out"))
             groups: dict[tuple, list[Method]] = {}
             for m in bound:
                 groups.setdefault(py_sig(m), []).append(m)

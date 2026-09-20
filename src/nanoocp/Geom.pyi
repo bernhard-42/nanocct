@@ -107,6 +107,9 @@ class Geom_Geometry(nanoocp.Standard.Standard_Transient):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this geometric object."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -671,6 +674,9 @@ class Geom_Curve(Geom_Geometry):
     def Value(self, U: float) -> nanoocp.gp.gp_Pnt:
         """Computes the point of parameter U on <me>."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -703,6 +709,9 @@ class Geom_BoundedCurve(Geom_Curve):
 
     def StartPoint(self) -> nanoocp.gp.gp_Pnt:
         """Returns the start point of the curve."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1068,6 +1077,9 @@ class Geom_BezierCurve(Geom_BoundedCurve):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this Bezier curve."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns Bezier knots {0.0, 1.0} as a static array."""
@@ -1495,6 +1507,9 @@ class Geom_Surface(Geom_Geometry):
 
     def Value(self, U: float, V: float) -> nanoocp.gp.gp_Pnt:
         """Computes the point of parameter (U, V) on the surface."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -2181,6 +2196,9 @@ class Geom_BezierSurface(Geom_BoundedSurface):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this Bezier surface."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     def UKnots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns Bezier knots {0.0, 1.0} as a static array."""
@@ -2987,6 +3005,9 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
 
     def IsEqual(self, theOther: Geom_BSplineCurve, thePreci: float) -> bool:
         """Compare two Bspline curve on identity;"""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -4253,6 +4274,9 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this BSpline surface."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -4476,6 +4500,9 @@ class Geom_Conic(Geom_Curve):
         Raised if N < 0.
         """
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -4625,6 +4652,9 @@ class Geom_Circle(Geom_Conic):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this circle."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -4737,6 +4767,9 @@ class Geom_ElementarySurface(Geom_Surface):
 
     def IsCNv(self, N: int) -> bool:
         """Returns True."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -5022,6 +5055,9 @@ class Geom_ConicalSurface(Geom_ElementarySurface):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this cone."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -5239,6 +5275,9 @@ class Geom_CylindricalSurface(Geom_ElementarySurface):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this cylinder."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -5686,6 +5725,9 @@ class Geom_Ellipse(Geom_Conic):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this ellipse."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -5967,6 +6009,9 @@ class Geom_Hyperbola(Geom_Conic):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this hyperbola."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -6141,6 +6186,9 @@ class Geom_Line(Geom_Curve):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this line."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -6448,6 +6496,9 @@ class Geom_OffsetCurve(Geom_Curve):
 
     def GetBasisCurveContinuity(self) -> nanoocp.GeomAbs.GeomAbs_Shape:
         """Returns continuity of the basis curve."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -6834,6 +6885,9 @@ class Geom_OffsetSurface(Geom_Surface):
     def GetBasisSurfContinuity(self) -> nanoocp.GeomAbs.GeomAbs_Shape:
         """Returns continuity of the basis surface."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -7058,6 +7112,9 @@ class Geom_Parabola(Geom_Conic):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this parabola."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -7285,6 +7342,9 @@ class Geom_Plane(Geom_ElementarySurface):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this plane."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -7618,6 +7678,9 @@ class Geom_RectangularTrimmedSurface(Geom_BoundedSurface):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this patch."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -7837,6 +7900,9 @@ class Geom_SphericalSurface(Geom_ElementarySurface):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this sphere."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -7880,6 +7946,9 @@ class Geom_SweptSurface(Geom_Surface):
         For a surface of revolution it is the revolution curve,
         for a surface of linear extrusion it is the extruded curve.
         """
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -8149,6 +8218,9 @@ class Geom_SurfaceOfLinearExtrusion(Geom_SweptSurface):
         """
         Creates a new object which is a copy of this surface of linear extrusion.
         """
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -8469,6 +8541,9 @@ class Geom_SurfaceOfRevolution(Geom_SweptSurface):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this surface of revolution."""
 
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -8707,6 +8782,9 @@ class Geom_ToroidalSurface(Geom_ElementarySurface):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this torus."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -8947,6 +9025,9 @@ class Geom_Transformation(nanoocp.Standard.Standard_Transient):
 
     def Copy(self) -> Geom_Transformation:
         """Creates a new object which is a copy of this transformation."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
 class Geom_TrimmedCurve(Geom_BoundedCurve):
     """
@@ -9210,6 +9291,9 @@ class Geom_TrimmedCurve(Geom_BoundedCurve):
 
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this trimmed curve."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
 
     @staticmethod
     def get_type_name() -> str: ...

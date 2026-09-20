@@ -28,6 +28,7 @@
 #include <NCollection_Array1.hxx>
 #include <Precision.hxx>
 #include <Standard_DomainError.hxx>
+#include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Ax22d.hxx>
@@ -579,6 +580,7 @@ itself. A copy of the object is returned.)nbdoc")
         .def("Translated", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Geometry::*)(const gp_Vec2d &) const>(&Geom2d_Geometry::Translated), nb::arg("V"))
         .def("Translated", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Geometry::*)(const gp_Pnt2d &, const gp_Pnt2d &) const>(&Geom2d_Geometry::Translated), nb::arg("P1"), nb::arg("P2"))
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Geometry::*)() const>(&Geom2d_Geometry::Copy))
+        .def("DumpJson", [](const Geom2d_Geometry &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Geometry::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Geometry::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Geometry::*)() const>(&Geom2d_Geometry::DynamicType));
@@ -701,6 +703,7 @@ Raises an exception if the curve continuity is not CN, or N < 1.)nbdoc")
         .def("D3", static_cast<void (Geom2d_Curve::*)(const double, gp_Pnt2d &, gp_Vec2d &, gp_Vec2d &, gp_Vec2d &) const>(&Geom2d_Curve::D3), nb::arg("U"), nb::arg("P"), nb::arg("V1"), nb::arg("V2"), nb::arg("V3"), R"nbdoc(Returns the point P of parameter U, the first, the second and the third derivative.)nbdoc")
         .def("DN", static_cast<gp_Vec2d (Geom2d_Curve::*)(const double, const int) const>(&Geom2d_Curve::DN), nb::arg("U"), nb::arg("N"), R"nbdoc(Computes the Nth derivative vector.)nbdoc")
         .def("Value", static_cast<gp_Pnt2d (Geom2d_Curve::*)(const double) const>(&Geom2d_Curve::Value), nb::arg("U"), R"nbdoc(Computes the point of parameter U on <me>. Implemented with D0.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Curve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Curve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Curve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Curve::*)() const>(&Geom2d_Curve::DynamicType));
@@ -726,6 +729,7 @@ The end point is the value of the curve for the
         .def("StartPoint", static_cast<gp_Pnt2d (Geom2d_BoundedCurve::*)() const>(&Geom2d_BoundedCurve::StartPoint), R"nbdoc(Returns the start point of the curve.
 The start point is the value of the curve for the
 "FirstParameter" of the curve.)nbdoc")
+        .def("DumpJson", [](const Geom2d_BoundedCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_BoundedCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_BoundedCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_BoundedCurve::*)() const>(&Geom2d_BoundedCurve::DynamicType));
@@ -858,6 +862,7 @@ UTolerance ensures that
 | t1 - t0| < Utolerance ===>
 |f(t1) - f(t0)| < ToleranceUV)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::Copy), R"nbdoc(Creates a new object which is a copy of this Bezier curve.)nbdoc")
+        .def("DumpJson", [](const Geom2d_BezierCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::Knots), R"nbdoc(Returns Bezier knots {0.0, 1.0} as a static array.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::Multiplicities), R"nbdoc(Returns Bezier multiplicities for the current degree.)nbdoc")
         .def("KnotSequence", static_cast<const NCollection_Array1<double> & (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::KnotSequence), R"nbdoc(Returns Bezier flat knots for the current degree.)nbdoc")
@@ -1357,6 +1362,7 @@ UTolerance ensures that:
 | t1 - t0| < Utolerance ===>
 |f(t1) - f(t0)| < ToleranceUV)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::Copy), R"nbdoc(Creates a new object which is a copy of this BSpline curve.)nbdoc")
+        .def("DumpJson", [](const Geom2d_BSplineCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_BSplineCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_BSplineCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::DynamicType));
@@ -1367,6 +1373,7 @@ UTolerance ensures that:
         .def("Y", static_cast<double (Geom2d_Point::*)() const>(&Geom2d_Point::Y), R"nbdoc(returns the Y coordinate of <me>.)nbdoc")
         .def("Distance", static_cast<double (Geom2d_Point::*)(const occ::handle<Geom2d_Point> &) const>(&Geom2d_Point::Distance), nb::arg("Other"), R"nbdoc(computes the distance between <me> and <Other>.)nbdoc")
         .def("SquareDistance", static_cast<double (Geom2d_Point::*)(const occ::handle<Geom2d_Point> &) const>(&Geom2d_Point::SquareDistance), nb::arg("Other"), R"nbdoc(computes the square distance between <me> and <Other>.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Point &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Point::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Point::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Point::*)() const>(&Geom2d_Point::DynamicType));
@@ -1385,6 +1392,7 @@ the same coordinates as <me>.
         .def("Y", static_cast<double (Geom2d_CartesianPoint::*)() const>(&Geom2d_CartesianPoint::Y), R"nbdoc(Returns the Y coordinate of <me>.)nbdoc")
         .def("Transform", static_cast<void (Geom2d_CartesianPoint::*)(const gp_Trsf2d &)>(&Geom2d_CartesianPoint::Transform), nb::arg("T"))
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_CartesianPoint::*)() const>(&Geom2d_CartesianPoint::Copy))
+        .def("DumpJson", [](const Geom2d_CartesianPoint &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_CartesianPoint::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_CartesianPoint::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_CartesianPoint::*)() const>(&Geom2d_CartesianPoint::DynamicType));
@@ -1429,6 +1437,7 @@ The local coordinate system of the conic is modified.)nbdoc")
 the point of parameter U on <me>.)nbdoc")
         .def("Continuity", static_cast<GeomAbs_Shape (Geom2d_Conic::*)() const>(&Geom2d_Conic::Continuity), R"nbdoc(Returns GeomAbs_CN which is the global continuity of any conic.)nbdoc")
         .def("IsCN", static_cast<bool (Geom2d_Conic::*)(const int) const>(&Geom2d_Conic::IsCN), nb::arg("N"), R"nbdoc(Returns True, the order of continuity of a conic is infinite.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Conic &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Conic::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Conic::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Conic::*)() const>(&Geom2d_Conic::DynamicType));
@@ -1473,6 +1482,7 @@ the vector corresponding to the Nth derivative.
 Exceptions: Standard_RangeError if N is less than 1.)nbdoc")
         .def("Transform", static_cast<void (Geom2d_Circle::*)(const gp_Trsf2d &)>(&Geom2d_Circle::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this circle.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Circle::*)() const>(&Geom2d_Circle::Copy), R"nbdoc(Creates a new object which is a copy of this circle.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Circle &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Circle::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Circle::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Circle::*)() const>(&Geom2d_Circle::DynamicType));
@@ -1635,6 +1645,7 @@ computes the vector corresponding to the Nth derivative.
 Exceptions Standard_RangeError if N is less than 1.)nbdoc")
         .def("Transform", static_cast<void (Geom2d_Ellipse::*)(const gp_Trsf2d &)>(&Geom2d_Ellipse::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this ellipse.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Ellipse::*)() const>(&Geom2d_Ellipse::Copy), R"nbdoc(Creates a new object which is a copy of this ellipse.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Ellipse &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Ellipse::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Ellipse::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Ellipse::*)() const>(&Geom2d_Ellipse::DynamicType));
@@ -1760,6 +1771,7 @@ computes the vector corresponding to the Nth derivative.
 Exceptions Standard_RangeError if N is less than 1.)nbdoc")
         .def("Transform", static_cast<void (Geom2d_Hyperbola::*)(const gp_Trsf2d &)>(&Geom2d_Hyperbola::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this hyperbola.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Hyperbola::*)() const>(&Geom2d_Hyperbola::Copy), R"nbdoc(Creates a new object which is a copy of this hyperbola.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Hyperbola &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Hyperbola::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Hyperbola::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Hyperbola::*)() const>(&Geom2d_Hyperbola::DynamicType));
@@ -1819,6 +1831,7 @@ and the parameter of the transformed point on the
 new line transformed by T.
 For a line, the returned value is the scale factor of the transformation T.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Line::*)() const>(&Geom2d_Line::Copy), R"nbdoc(Creates a new object, which is a copy of this line.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Line &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Line::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Line::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Line::*)() const>(&Geom2d_Line::DynamicType));
@@ -1980,6 +1993,7 @@ Value(U).Transformed(T)
 This methods calls the basis curve method.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_OffsetCurve::*)() const>(&Geom2d_OffsetCurve::Copy), R"nbdoc(Creates a new object, which is a copy of this offset curve.)nbdoc")
         .def("GetBasisCurveContinuity", static_cast<GeomAbs_Shape (Geom2d_OffsetCurve::*)() const>(&Geom2d_OffsetCurve::GetBasisCurveContinuity), R"nbdoc(Returns continuity of the basis curve.)nbdoc")
+        .def("DumpJson", [](const Geom2d_OffsetCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_OffsetCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_OffsetCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_OffsetCurve::*)() const>(&Geom2d_OffsetCurve::DynamicType));
@@ -2061,6 +2075,7 @@ Value(U).Transformed(T)
 
 This methods returns T.ScaleFactor())nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Parabola::*)() const>(&Geom2d_Parabola::Copy), R"nbdoc(Creates a new object, which is a copy of this parabola.)nbdoc")
+        .def("DumpJson", [](const Geom2d_Parabola &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Parabola::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Parabola::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_Parabola::*)() const>(&Geom2d_Parabola::DynamicType));
@@ -2289,6 +2304,7 @@ Value(U).Transformed(T)
 
 This methods calls the basis curve method.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_TrimmedCurve::*)() const>(&Geom2d_TrimmedCurve::Copy), R"nbdoc(Creates a new object, which is a copy of this trimmed curve.)nbdoc")
+        .def("DumpJson", [](const Geom2d_TrimmedCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_TrimmedCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_TrimmedCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2d_TrimmedCurve::*)() const>(&Geom2d_TrimmedCurve::DynamicType));
