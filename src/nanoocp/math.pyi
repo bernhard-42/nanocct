@@ -64,11 +64,34 @@ class math_DoubleTab:
     def NbColumns(self) -> int:
         """Get number of columns"""
 
+    @overload
     def Value(self, theRowIndex: int, theColIndex: int) -> float:
         """Access element at (theRowIndex, theColIndex)"""
 
+    @overload
+    def Value(self, theRowIndex: int, theColIndex: int) -> float:
+        """Change element at (theRowIndex, theColIndex)"""
+
+    def SetValue(self, theRowIndex: int, theColIndex: int, theValue: float) -> None:
+        """
+        Python addition: sets the value Value(theRowIndex, theColIndex) returns by reference in C++.
+        """
+
+    @overload
     def __call__(self, theRowIndex: int, theColIndex: int) -> float:
         """Operator() - alias to Value"""
+
+    @overload
+    def __call__(self, theRowIndex: int, theColIndex: int) -> float:
+        """Operator() - alias to ChangeValue"""
+
+    def __getitem__(self, arg: tuple[int, int], /) -> float:
+        """Python addition: alias to operator()."""
+
+    def __setitem__(self, arg0: tuple[int, int], arg1: float, /) -> None:
+        """
+        Python addition: sets the value operator()(theRowIndex, theColIndex) returns by reference in C++.
+        """
 
 class math_Matrix:
     """
@@ -469,6 +492,7 @@ class math_Matrix:
         An exception is raised if the dimensions are different.
         """
 
+    @overload
     def Value(self, Row: int, Col: int) -> float:
         """
         Accesses the value of index <Row>
@@ -477,7 +501,33 @@ class math_Matrix:
         in the correct range.
         """
 
+    @overload
+    def Value(self, Row: int, Col: int) -> float:
+        """
+        Accesses (in read or write mode) the value of index <Row>
+        and <Col> of a matrix.
+        An exception is raised if <Row> and <Col> are not
+        in the correct range.
+        """
+
+    def SetValue(self, Row: int, Col: int, theValue: float) -> None:
+        """
+        Python addition: sets the value Value(Row, Col) returns by reference in C++.
+        """
+
+    @overload
     def __call__(self, Row: int, Col: int) -> float: ...
+
+    @overload
+    def __call__(self, Row: int, Col: int) -> float: ...
+
+    def __getitem__(self, arg: tuple[int, int], /) -> float:
+        """Python addition: alias to operator()."""
+
+    def __setitem__(self, arg0: tuple[int, int], arg1: float, /) -> None:
+        """
+        Python addition: sets the value operator()(Row, Col) returns by reference in C++.
+        """
 
     def Initialized(self, Other: math_Matrix) -> math_Matrix:
         """
@@ -755,10 +805,34 @@ class math_Vector:
         An exception is raised if the vectors have not the same length.
         """
 
+    @overload
     def Value(self, theNum: int) -> float:
         """accesses the value of index "theNum" of a vector."""
 
+    @overload
+    def Value(self, theNum: int) -> float:
+        """
+        accesses (in read or write mode) the value of index "theNum" of a vector.
+        """
+
+    def SetValue(self, theNum: int, theValue: float) -> None:
+        """
+        Python addition: sets the value Value(theNum) returns by reference in C++.
+        """
+
+    @overload
     def __call__(self, theNum: int) -> float: ...
+
+    @overload
+    def __call__(self, theNum: int) -> float: ...
+
+    def __getitem__(self, arg: int, /) -> float:
+        """Python addition: alias to operator()."""
+
+    def __setitem__(self, arg0: int, arg1: float, /) -> None:
+        """
+        Python addition: sets the value operator()(theNum) returns by reference in C++.
+        """
 
     def Initialized(self, theOther: math_Vector) -> math_Vector:
         """
@@ -2118,10 +2192,34 @@ class math_IntegerVector:
         An exception is raised if the vectors have not the same length.
         """
 
+    @overload
     def Value(self, theNum: int) -> int:
         """accesses the value of index "theNum" of a vector."""
 
+    @overload
+    def Value(self, theNum: int) -> int:
+        """
+        accesses (in read or write mode) the value of index "theNum" of a vector.
+        """
+
+    def SetValue(self, theNum: int, theValue: int) -> None:
+        """
+        Python addition: sets the value Value(theNum) returns by reference in C++.
+        """
+
+    @overload
     def __call__(self, theNum: int) -> int: ...
+
+    @overload
+    def __call__(self, theNum: int) -> int: ...
+
+    def __getitem__(self, arg: int, /) -> int:
+        """Python addition: alias to operator()."""
+
+    def __setitem__(self, arg0: int, arg1: int, /) -> None:
+        """
+        Python addition: sets the value operator()(theNum) returns by reference in C++.
+        """
 
     def Initialized(self, theOther: math_IntegerVector) -> math_IntegerVector:
         """

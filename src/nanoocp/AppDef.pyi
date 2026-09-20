@@ -770,6 +770,13 @@ class AppDef_SmoothCriterion(nanoocp.Standard.Standard_Transient):
 
     def SetEstimation(self, E1: float, E2: float, E3: float) -> None: ...
 
+    def EstLength(self) -> float: ...
+
+    def SetEstLength(self, theValue: float) -> None:
+        """
+        Python addition: sets the value EstLength() returns by reference in C++.
+        """
+
     def GetEstimation(self) -> tuple[float, float, float]: ...
 
     def AssemblyTable(self) -> nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]]: ...
@@ -822,6 +829,13 @@ class AppDef_LinearCriteria(AppDef_SmoothCriterion):
     def GetCurve(self, C: nanoocp.FEmTool.FEmTool_Curve) -> None: ...
 
     def SetEstimation(self, E1: float, E2: float, E3: float) -> None: ...
+
+    def EstLength(self) -> float: ...
+
+    def SetEstLength(self, theValue: float) -> None:
+        """
+        Python addition: sets the value EstLength() returns by reference in C++.
+        """
 
     def GetEstimation(self) -> tuple[float, float, float]: ...
 

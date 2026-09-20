@@ -119,3 +119,25 @@ def test_glob_opt_min_through_noncopyable_wrapper():
     opt.Points(1, sol)
     assert (sol.Value(1), sol.Value(2)) == pytest.approx((math.pi / 2, 0.0), abs=1e-6)
     assert type(opt).__name__ == "math_GlobOptMin"
+
+
+def test_primitive_reference_accessors_get_setters():
+    from nanoocp import Poly
+    a = occ_math.math_Matrix(1, 2, 1, 2, 0.0)
+    a.SetValue(1, 2, 5.0)                                              # Python addition for double& Value(Row, Col)
+    a[(2, 1)] = 7.0                                                    # ... and __setitem__ for double& operator()(Row, Col)
+    assert (a.Value(1, 2), a[(2, 1)], a(2, 1), a.Value(1, 1)) == (5.0, 7.0, 7.0, 0.0)
+    v = occ_math.math_Vector(1, 3, 0.0)
+    v.SetValue(2, 4.0)
+    v[3] = 9.0
+    assert list(v.Array1()) == [0.0, 4.0, 9.0]
+    m = gp.gp_Mat()
+    m[(2, 2)] = 3.0
+    assert m.Value(2, 2) == 3.0 and m.ChangeValue(2, 2) == 3.0        # ChangeValue returns the value; SetValue is OCCT's own
+    x = gp.gp_XYZ(1.0, 2.0, 3.0)
+    x.SetCoord(2, 9.0)                                                 # OCCT's setter; no invented SetChangeCoord
+    assert x.ChangeCoord(2) == 9.0 and not hasattr(x, "SetChangeCoord")
+    t = Poly.Poly_Triangle(1, 2, 3)
+    t.SetValue(2, 7)
+    t[3] = 8
+    assert t.Get() == (1, 7, 8)

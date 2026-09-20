@@ -523,6 +523,12 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                result_scalar=_is_scalar(cursor.result_type))
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False)
+        rc0 = cursor.result_type.get_canonical()
+        if m.skip_reason == "reference to primitive" and rc0.kind == TK.LVALUEREFERENCE and not cursor.is_const_method():
+            # double& Value(i, j) (math_Matrix), double& ChangeCoord(i) (gp_XYZ): Python cannot hold the reference,
+            # so the emitter binds a getter plus a Set<Name>/__setitem__ counterpart (Design.md 6, Python addition)
+            m.skip_reason = None
+            m.result_kind, m.result = "ref_primitive", _type_spelling(rc0.get_pointee()).replace("const ", "")
         if m.skip_reason is None and re.match(r"(const )?(\w+)<", m.result) is not None \
                 and re.match(r"(const )?(\w+)<", m.result).group(2) in _STL_ITERATORS:
             m.skip_reason = "return: STL-style iterator"     # dependent spelling inside an instantiated template (begin()/end())
@@ -536,7 +542,10 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
             # an element -> skipped
             if rcanon.kind == TK.LVALUEREFERENCE and not rcanon.get_pointee().is_const_qualified() and m.result.endswith("&") \
                     and not m.result.startswith("const ") and m.result[:-1].strip() not in _PRIMITIVE_SPELLINGS:
-                m.result_kind, m.result_class = "ref_mutable", m.result[:-1].strip()   # math_Vector::Value -> double&: stays a copy
+                m.result_kind, m.result_class = "ref_mutable", m.result[:-1].strip()
+            elif rcanon.kind == TK.LVALUEREFERENCE and not rcanon.get_pointee().is_const_qualified() and m.result.endswith("&") \
+                    and not m.result.startswith("const ") and not cursor.is_const_method():
+                m.result_kind, m.result = "ref_primitive", m.result[:-1].strip()   # math_VectorBase<double>::Value(i) -> double&
             elif rcanon.kind == TK.POINTER and re.fullmatch(r"const (char|Standard_Utf8Char|Standard_Character) \*", m.result) is not None:
                 pass                               # NCollection_UtfString<char>::ToCString(): const char* -> str
             elif rcanon.kind == TK.POINTER or rcanon.kind == TK.LVALUEREFERENCE and not rcanon.get_pointee().is_const_qualified():

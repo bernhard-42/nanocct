@@ -349,7 +349,25 @@ class gp_Mat:
         Raises OutOfRange if theRow < 1 or theRow > 3 or theCol < 1 or theCol > 3
         """
 
+    @overload
     def __call__(self, theRow: int, theCol: int) -> float: ...
+
+    @overload
+    def __call__(self, theRow: int, theCol: int) -> float: ...
+
+    def ChangeValue(self, theRow: int, theCol: int) -> float:
+        """
+        Returns the coefficient of range (theRow, theCol)
+        Raises OutOfRange if theRow < 1 or theRow > 3 or theCol < 1 or theCol > 3
+        """
+
+    def __getitem__(self, arg: tuple[int, int], /) -> float:
+        """Python addition: alias to operator()."""
+
+    def __setitem__(self, arg0: tuple[int, int], arg1: float, /) -> None:
+        """
+        Python addition: sets the value operator()(theRow, theCol) returns by reference in C++.
+        """
 
     def IsSingular(self) -> bool:
         """
@@ -518,6 +536,8 @@ class gp_XYZ:
 
     @overload
     def Coord(self) -> tuple[float, float, float]: ...
+
+    def ChangeCoord(self, theIndex: int) -> float: ...
 
     def X(self) -> float:
         """Returns the X coordinate"""
@@ -1428,7 +1448,26 @@ class gp_Mat2d:
         if theRow < 1 or theRow > 2 or theCol < 1 or theCol > 2
         """
 
+    @overload
     def __call__(self, theRow: int, theCol: int) -> float: ...
+
+    @overload
+    def __call__(self, theRow: int, theCol: int) -> float: ...
+
+    def ChangeValue(self, theRow: int, theCol: int) -> float:
+        """
+        Returns the coefficient of range (theRow, theCol)
+        Raises OutOfRange
+        if theRow < 1 or theRow > 2 or theCol < 1 or theCol > 2
+        """
+
+    def __getitem__(self, arg: tuple[int, int], /) -> float:
+        """Python addition: alias to operator()."""
+
+    def __setitem__(self, arg0: tuple[int, int], arg1: float, /) -> None:
+        """
+        Python addition: sets the value operator()(theRow, theCol) returns by reference in C++.
+        """
 
     def IsSingular(self) -> bool:
         """
@@ -1591,6 +1630,8 @@ class gp_XY:
     @overload
     def Coord(self) -> tuple[float, float]:
         """For this number pair, returns its coordinates X and Y."""
+
+    def ChangeCoord(self, theIndex: int) -> float: ...
 
     def X(self) -> float:
         """Returns the X coordinate of this number pair."""

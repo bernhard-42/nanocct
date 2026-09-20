@@ -192,6 +192,8 @@ class Emitter:
         self._note_types(m.result, *(p.type for p in m.params))
         T = cls.name                       # member pointers name the class itself ...
         B = cls.bound_type                 # ... lambdas take the bound type (a wrapper for non-copyable classes)
+        if m.result_kind == "ref_primitive":
+            return self._ref_primitive(cls, m, py)
         has_out = any(p.is_out for p in m.params)
         wrap = m.result_kind in ("ptr_transient", "ref_transient")   # never let nanobind own a Transient
         policy = {"ptr_class": ", nb::rv_policy::reference", "ref_mutable": ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
@@ -209,6 +211,33 @@ class Emitter:
         const = " const" if m.is_const else ""
         fn = f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})"
         return f'.def("{py}", {fn}{policy}{self._extras(m.doc, m.params, False, m.is_operator)})'
+
+    def _ref_primitive(self, cls: Class, m: Method, py: str) -> str:
+        """double& Value(i, j): a getter under the C++ name (returns the value) and, as a Python addition, a setter:
+        Set<Name> with the Change prefix dropped (ChangeValue -> SetValue, Value -> SetValue, IsCopyMesh -> SetIsCopyMesh)
+        unless the class already has a method of that name, and __setitem__ (plus __getitem__) for operator()/operator[]."""
+        B = cls.bound_type
+        params = ", ".join(f"{p.type} {p.name}" for p in m.params)
+        sep = ", " if len(m.params) > 0 else ""
+        args = ", ".join(p.name for p in m.params)
+        getter = f'.def("{py}", []({B} &self{sep}{params}) -> {m.result} {{ return self.{m.name}({args}); }}{self._extras(m.doc, m.params, False, m.is_operator)})'
+        note = f"Python addition: sets the value {m.name}({args}) returns by reference in C++."
+        if m.is_operator:
+            if len(m.params) == 1:
+                index, unpack = f"{m.params[0].type} {m.params[0].name}", args
+            else:
+                index, unpack = f"std::tuple<{', '.join(_strip_ref(p.type) for p in m.params)}> theIndex", ", ".join(f"std::get<{i}>(theIndex)" for i in range(len(m.params)))
+            lines = [getter,
+                     f'.def("__getitem__", []({B} &self, {index}) -> {m.result} {{ return self.{m.name}({unpack}); }}, "Python addition: alias to {m.name}.")',
+                     f'.def("__setitem__", []({B} &self, {index}, {m.result} theValue) {{ self.{m.name}({unpack}) = theValue; }}, "{note}")']
+        else:
+            setter = "Set" + (m.name[len("Change"):] if m.name.startswith("Change") else m.name)
+            if any(o.name == setter and o.skip_reason is None for o in cls.methods):
+                lines = [getter]                # gp_XYZ::ChangeCoord(i): SetCoord(i, v) exists in OCCT
+            else:
+                lines = [getter, f'.def("{setter}", []({B} &self{sep}{params}, {m.result} theValue) {{ self.{m.name}({args}) = theValue; }}{self._args(m.params, False)}, nb::arg("theValue"), "{note}")']
+        self._note_types(m.result)
+        return "\n        ".join(lines)
 
     def _ctor(self, cls: Class, params: list[Param], doc: str) -> str:
         self._note_types(*(p.type for p in params))

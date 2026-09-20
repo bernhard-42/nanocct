@@ -7,7 +7,6 @@ import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.NCollection
 import nanoocp.OSD
-import nanoocp.Quantity
 import nanoocp.Standard
 import nanoocp.gp
 
@@ -69,7 +68,30 @@ class Poly_Triangle:
         Raises OutOfRange from Standard if Index is not in 1,2,3
         """
 
+    @overload
     def __call__(self, Index: int) -> int: ...
+
+    @overload
+    def __call__(self, Index: int) -> int: ...
+
+    def ChangeValue(self, theIndex: int) -> int:
+        """
+        Get the node of given Index.
+        Raises OutOfRange if Index is not in 1,2,3
+        """
+
+    def SetValue(self, theIndex: int, theValue: int) -> None:
+        """
+        Python addition: sets the value ChangeValue(theIndex) returns by reference in C++.
+        """
+
+    def __getitem__(self, arg: int, /) -> int:
+        """Python addition: alias to operator()."""
+
+    def __setitem__(self, arg0: int, arg1: int, /) -> None:
+        """
+        Python addition: sets the value operator()(Index) returns by reference in C++.
+        """
 
 class NCollection_AliasedArray__:
     """
@@ -165,7 +187,7 @@ class Poly_ArrayOfNodes(NCollection_AliasedArray__):
     def __init__(self, theBegin: nanoocp.gp.gp_Pnt, theLength: int) -> None: ...
 
     @overload
-    def __init__(self, theBegin: nanoocp.Quantity.NCollection_Vec3__float, theLength: int) -> None:
+    def __init__(self, theBegin: nanoocp.BVH.BVH_Vec3f, theLength: int) -> None:
         """
         Constructor wrapping pre-allocated C-array of values without copying them.
         """
@@ -441,7 +463,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Normal(self, theIndex: int, theVec3: nanoocp.Quantity.NCollection_Vec3__float) -> None:
+    def Normal(self, theIndex: int, theVec3: nanoocp.BVH.BVH_Vec3f) -> None:
         """
         Returns normal at the given index.
         @param[in]  theIndex node index within [1, NbNodes()] range
@@ -449,7 +471,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def SetNormal(self, theIndex: int, theNormal: nanoocp.Quantity.NCollection_Vec3__float) -> None:
+    def SetNormal(self, theIndex: int, theNormal: nanoocp.BVH.BVH_Vec3f) -> None:
         """
         Changes normal at the given index.
         @param[in] theIndex node index within [1, NbNodes()] range
@@ -596,7 +618,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         UBNode()/SetUVNode() should be used instead in portable code.
         """
 
-    def InternalNormals(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.Quantity.NCollection_Vec3__float]:
+    def InternalNormals(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.BVH.BVH_Vec3f]:
         """
         Return an internal array of normals.
         Normal()/SetNormal() should be used instead in portable code.
@@ -1863,7 +1885,7 @@ class Poly_MergeNodesTool(nanoocp.Standard.Standard_Transient):
     def SetMergeElems(self, theToMerge: bool) -> None:
         """Set if equal elements should be filtered."""
 
-    def computeTriNormal(self) -> nanoocp.Quantity.NCollection_Vec3__float:
+    def computeTriNormal(self) -> nanoocp.BVH.BVH_Vec3f:
         """Compute normal for the mesh element."""
 
     def AddTriangulation(self, theTris: Poly_Triangulation, theTrsf: nanoocp.gp.gp_Trsf = ..., theToReverse: bool = False) -> None:

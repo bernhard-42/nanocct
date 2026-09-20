@@ -1163,6 +1163,17 @@ class BRepTools_ReShape(nanoocp.Standard.Standard_Transient):
         If incompatible shape type is encountered, it is ignored and flag FAIL1 is set in Status.
         """
 
+    def ModeConsiderLocation(self) -> bool:
+        """
+        Returns (modifiable) the flag which defines whether Location of shape take into account
+        during replacing shapes.
+        """
+
+    def SetModeConsiderLocation(self, theValue: bool) -> None:
+        """
+        Python addition: sets the value ModeConsiderLocation() returns by reference in C++.
+        """
+
     @overload
     def CopyVertex(self, theV: nanoocp.TopoDS.TopoDS_Vertex, theTol: float = -1.0) -> nanoocp.TopoDS.TopoDS_Vertex: ...
 
@@ -1302,6 +1313,14 @@ class BRepTools_TrsfModification(BRepTools_Modification):
         """
         Provides access to the gp_Trsf associated with this
         modification. The transformation can be changed.
+        """
+
+    def IsCopyMesh(self) -> bool:
+        """Sets a flag to indicate the need to copy mesh."""
+
+    def SetIsCopyMesh(self, theValue: bool) -> None:
+        """
+        Python addition: sets the value IsCopyMesh() returns by reference in C++.
         """
 
     def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float, bool, bool]:

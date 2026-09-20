@@ -895,6 +895,11 @@ Raises OutOfRange if theRow < 1 or theRow > 3)nbdoc")
         .def("Value", static_cast<const double & (gp_Mat::*)(const int, const int) const>(&gp_Mat::Value), nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Returns the coefficient of range (theRow, theCol)
 Raises OutOfRange if theRow < 1 or theRow > 3 or theCol < 1 or theCol > 3)nbdoc")
         .def("__call__", static_cast<const double & (gp_Mat::*)(const int, const int) const>(&gp_Mat::operator()), nb::arg("theRow"), nb::arg("theCol"), nb::is_operator())
+        .def("ChangeValue", [](gp_Mat &self, const int theRow, const int theCol) -> double { return self.ChangeValue(theRow, theCol); }, nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Returns the coefficient of range (theRow, theCol)
+Raises OutOfRange if theRow < 1 or theRow > 3 or theCol < 1 or theCol > 3)nbdoc")
+        .def("__call__", [](gp_Mat &self, const int theRow, const int theCol) -> double { return self.operator()(theRow, theCol); }, nb::arg("theRow"), nb::arg("theCol"), nb::is_operator())
+        .def("__getitem__", [](gp_Mat &self, std::tuple<int, int> theIndex) -> double { return self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)); }, "Python addition: alias to operator().")
+        .def("__setitem__", [](gp_Mat &self, std::tuple<int, int> theIndex, double theValue) { self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)) = theValue; }, "Python addition: sets the value operator()(theRow, theCol) returns by reference in C++.")
         .def("IsSingular", static_cast<bool (gp_Mat::*)() const noexcept>(&gp_Mat::IsSingular), R"nbdoc(The Gauss LU decomposition is used to invert the matrix
 (see Math package) so the matrix is considered as singular if
 the largest pivot found is lower or equal to Resolution from gp.)nbdoc")
@@ -963,6 +968,7 @@ theIndex = 2 => Y is returned
 theIndex = 3 => Z is returned
 
 Raises OutOfRange if theIndex != {1, 2, 3}.)nbdoc")
+        .def("ChangeCoord", [](gp_XYZ &self, const int theIndex) -> double { return self.ChangeCoord(theIndex); }, nb::arg("theIndex"))
         .def("Coord", [](const gp_XYZ &self) { double theX{}; double theY{}; double theZ{}; self.Coord(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); })
         .def("X", static_cast<double (gp_XYZ::*)() const noexcept>(&gp_XYZ::X), R"nbdoc(Returns the X coordinate)nbdoc")
         .def("Y", static_cast<double (gp_XYZ::*)() const noexcept>(&gp_XYZ::Y), R"nbdoc(Returns the Y coordinate)nbdoc")
@@ -1367,6 +1373,12 @@ Raised if theRow < 1 or theRow > 2)nbdoc")
 Raises OutOfRange
 if theRow < 1 or theRow > 2 or theCol < 1 or theCol > 2)nbdoc")
         .def("__call__", static_cast<const double & (gp_Mat2d::*)(const int, const int) const>(&gp_Mat2d::operator()), nb::arg("theRow"), nb::arg("theCol"), nb::is_operator())
+        .def("ChangeValue", [](gp_Mat2d &self, const int theRow, const int theCol) -> double { return self.ChangeValue(theRow, theCol); }, nb::arg("theRow"), nb::arg("theCol"), R"nbdoc(Returns the coefficient of range (theRow, theCol)
+Raises OutOfRange
+if theRow < 1 or theRow > 2 or theCol < 1 or theCol > 2)nbdoc")
+        .def("__call__", [](gp_Mat2d &self, const int theRow, const int theCol) -> double { return self.operator()(theRow, theCol); }, nb::arg("theRow"), nb::arg("theCol"), nb::is_operator())
+        .def("__getitem__", [](gp_Mat2d &self, std::tuple<int, int> theIndex) -> double { return self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)); }, "Python addition: alias to operator().")
+        .def("__setitem__", [](gp_Mat2d &self, std::tuple<int, int> theIndex, double theValue) { self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)) = theValue; }, "Python addition: sets the value operator()(theRow, theCol) returns by reference in C++.")
         .def("IsSingular", static_cast<bool (gp_Mat2d::*)() const noexcept>(&gp_Mat2d::IsSingular), R"nbdoc(Returns true if this matrix is singular (and therefore, cannot be inverted).
 The Gauss LU decomposition is used to invert the matrix
 so the matrix is considered as singular if the largest
@@ -1431,6 +1443,7 @@ the values theX and theY to its coordinates)nbdoc")
 theIndex = 1 => X is returned
 theIndex = 2 => Y is returned
 Raises OutOfRange if theIndex != {1, 2}.)nbdoc")
+        .def("ChangeCoord", [](gp_XY &self, const int theIndex) -> double { return self.ChangeCoord(theIndex); }, nb::arg("theIndex"))
         .def("Coord", [](const gp_XY &self) { double theX{}; double theY{}; self.Coord(theX, theY); return std::make_tuple(theX, theY); }, R"nbdoc(For this number pair, returns its coordinates X and Y.)nbdoc")
         .def("X", static_cast<double (gp_XY::*)() const noexcept>(&gp_XY::X), R"nbdoc(Returns the X coordinate of this number pair.)nbdoc")
         .def("Y", static_cast<double (gp_XY::*)() const noexcept>(&gp_XY::Y), R"nbdoc(Returns the Y coordinate of this number pair.)nbdoc")

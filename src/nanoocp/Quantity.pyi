@@ -1090,7 +1090,7 @@ class Quantity_Color:
         """Creates the color from enumeration value."""
 
     @overload
-    def __init__(self, theRgb: NCollection_Vec3__float) -> None:
+    def __init__(self, theRgb: nanoocp.BVH.BVH_Vec3f) -> None:
         """Define color from linear RGB values."""
 
     @overload
@@ -1119,7 +1119,7 @@ class Quantity_Color:
         Throws exception if values are out of range.
         """
 
-    def Rgb(self) -> NCollection_Vec3__float:
+    def Rgb(self) -> nanoocp.BVH.BVH_Vec3f:
         """Return the color as vector of 3 float elements."""
 
     def Values(self, theType: Quantity_TypeOfColor) -> tuple[float, float, float]:
@@ -1264,38 +1264,38 @@ class Quantity_Color:
         """Returns hex sRGB string in format "#FFAAFF"."""
 
     @staticmethod
-    def Convert_sRGB_To_HLS(theRgb: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_sRGB_To_HLS(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts sRGB components into HLS ones."""
 
     @staticmethod
-    def Convert_HLS_To_sRGB(theHls: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_HLS_To_sRGB(theHls: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts HLS components into RGB ones."""
 
     @staticmethod
-    def Convert_LinearRGB_To_HLS(theRgb: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_LinearRGB_To_HLS(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts Linear RGB components into HLS ones."""
 
     @staticmethod
-    def Convert_HLS_To_LinearRGB(theHls: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_HLS_To_LinearRGB(theHls: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts HLS components into linear RGB ones."""
 
     @staticmethod
-    def Convert_LinearRGB_To_Lab(theRgb: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_LinearRGB_To_Lab(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts linear RGB components into CIE Lab ones."""
 
     @staticmethod
-    def Convert_Lab_To_Lch(theLab: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_Lab_To_Lch(theLab: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts CIE Lab components into CIE Lch ones."""
 
     @staticmethod
-    def Convert_Lab_To_LinearRGB(theLab: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_Lab_To_LinearRGB(theLab: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """
         Converts CIE Lab components into linear RGB ones.
         Note that the resulting values may be out of the valid range for RGB.
         """
 
     @staticmethod
-    def Convert_Lch_To_Lab(theLch: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_Lch_To_Lab(theLch: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts CIE Lch components into CIE Lab ones."""
 
     @staticmethod
@@ -1358,7 +1358,7 @@ class Quantity_Color:
 
     @overload
     @staticmethod
-    def Convert_LinearRGB_To_sRGB_approx22(theRGB: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_LinearRGB_To_sRGB_approx22(theRGB: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """
         Convert linear RGB components into sRGB using approximated uniform gamma coefficient 2.2
         """
@@ -1372,7 +1372,7 @@ class Quantity_Color:
 
     @overload
     @staticmethod
-    def Convert_sRGB_To_LinearRGB_approx22(theRGB: NCollection_Vec3__float) -> NCollection_Vec3__float:
+    def Convert_sRGB_To_LinearRGB_approx22(theRGB: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """
         Convert sRGB components into linear RGB using approximated uniform gamma coefficient 2.2
         """
@@ -1411,7 +1411,7 @@ class Quantity_ColorRGBA:
         """Creates the color with specified RGB value."""
 
     @overload
-    def __init__(self, theRgba: NCollection_Vec4__float) -> None:
+    def __init__(self, theRgba: nanoocp.BVH.BVH_Vec4f) -> None:
         """Creates the color from RGBA vector."""
 
     @overload
@@ -1488,11 +1488,11 @@ class Quantity_ColorRGBA:
         """Returns hex sRGBA string in format "#RRGGBBAA"."""
 
     @staticmethod
-    def Convert_LinearRGB_To_sRGB(theRGB: NCollection_Vec4__float) -> NCollection_Vec4__float:
+    def Convert_LinearRGB_To_sRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
         """Convert linear RGB components into sRGB using OpenGL specs formula."""
 
     @staticmethod
-    def Convert_sRGB_To_LinearRGB(theRGB: NCollection_Vec4__float) -> NCollection_Vec4__float:
+    def Convert_sRGB_To_LinearRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
         """Convert sRGB components into linear RGB using OpenGL specs formula."""
 
     def __hash__(self) -> int: ...
@@ -1797,544 +1797,3 @@ class Quantity_Period:
 
 class Quantity_PeriodDefinitionError(nanoocp.Standard.Standard_DomainError):
     pass
-
-class NCollection_Vec3__float:
-    """
-    Generic 3-components vector.
-    To be used as RGB color pixel or XYZ 3D-point.
-    The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).
-    """
-
-    @overload
-    def __init__(self) -> None:
-        """Empty constructor. Construct the zero vector."""
-
-    @overload
-    def __init__(self, theValue: float) -> None:
-        """Initialize ALL components of vector within specified value."""
-
-    @overload
-    def __init__(self, theVec2: nanoocp.BVH.BVH_Vec2f, theZ: float = 0.0) -> None:
-        """Constructor from 2-components vector + optional 3rd value."""
-
-    @overload
-    def __init__(self, theX: float, theY: float, theZ: float) -> None:
-        """Per-component constructor."""
-
-    @overload
-    def __init__(self, theOther: NCollection_Vec3__float) -> None: ...
-
-    @overload
-    def __init__(self, theFrom: Quantity_Color) -> None: ...
-
-    @staticmethod
-    def Length() -> int:
-        """Returns the number of components."""
-
-    @overload
-    def SetValues(self, theX: float, theY: float, theZ: float) -> None: ...
-
-    @overload
-    def SetValues(self, theVec2: nanoocp.BVH.BVH_Vec2f, theZ: float) -> None:
-        """Assign new values to the vector."""
-
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XYZ."""
-
-    def r(self) -> float:
-        """Alias to 1st component as RED channel in RGB."""
-
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XYZ."""
-
-    def g(self) -> float:
-        """Alias to 2nd component as GREEN channel in RGB."""
-
-    def z(self) -> float:
-        """Alias to 3rd component as Z coordinate in XYZ."""
-
-    def b(self) -> float:
-        """Alias to 3rd component as BLUE channel in RGB."""
-
-    def xy(self) -> nanoocp.BVH.BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def yx(self) -> nanoocp.BVH.BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def xz(self) -> nanoocp.BVH.BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def zx(self) -> nanoocp.BVH.BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def yz(self) -> nanoocp.BVH.BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def zy(self) -> nanoocp.BVH.BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def xyz(self) -> NCollection_Vec3__float:
-        """@return 3 components by their names in specified order (in GLSL-style)"""
-
-    def xzy(self) -> NCollection_Vec3__float:
-        """@return 3 components by their names in specified order (in GLSL-style)"""
-
-    def yxz(self) -> NCollection_Vec3__float:
-        """@return 3 components by their names in specified order (in GLSL-style)"""
-
-    def yzx(self) -> NCollection_Vec3__float:
-        """@return 3 components by their names in specified order (in GLSL-style)"""
-
-    def zyx(self) -> NCollection_Vec3__float:
-        """@return 3 components by their names in specified order (in GLSL-style)"""
-
-    def zxy(self) -> NCollection_Vec3__float:
-        """@return 3 components by their names in specified order (in GLSL-style)"""
-
-    def IsEqual(self, theOther: NCollection_Vec3__float) -> bool:
-        """
-        Check this vector with another vector for equality (without tolerance!).
-        """
-
-    def __eq__(self, theOther: NCollection_Vec3__float) -> bool:
-        """
-        Check this vector with another vector for equality (without tolerance!).
-        """
-
-    def __ne__(self, theOther: NCollection_Vec3__float) -> bool:
-        """
-        Check this vector with another vector for non-equality (without tolerance!).
-        """
-
-    def __iadd__(self, theAdd: NCollection_Vec3__float) -> NCollection_Vec3__float:
-        """Compute per-component summary."""
-
-    def __neg__(self) -> NCollection_Vec3__float:
-        """Unary -."""
-
-    def __isub__(self, theDec: NCollection_Vec3__float) -> NCollection_Vec3__float:
-        """Compute per-component subtraction."""
-
-    def Multiply(self, theFactor: float) -> None:
-        """Compute per-component multiplication by scale factor."""
-
-    @overload
-    def __imul__(self, theRight: NCollection_Vec3__float) -> NCollection_Vec3__float:
-        """Compute per-component multiplication."""
-
-    @overload
-    def __imul__(self, theFactor: float) -> NCollection_Vec3__float:
-        """Compute per-component multiplication by scale factor."""
-
-    def __mul__(self, theFactor: float) -> NCollection_Vec3__float:
-        """Compute per-component multiplication by scale factor."""
-
-    def Multiplied(self, theFactor: float) -> NCollection_Vec3__float:
-        """Compute per-component multiplication by scale factor."""
-
-    def cwiseMin(self, theVec: NCollection_Vec3__float) -> NCollection_Vec3__float:
-        """Compute component-wise minimum of two vectors."""
-
-    def cwiseMax(self, theVec: NCollection_Vec3__float) -> NCollection_Vec3__float:
-        """Compute component-wise maximum of two vectors."""
-
-    def cwiseAbs(self) -> NCollection_Vec3__float:
-        """Compute component-wise modulus of the vector."""
-
-    def maxComp(self) -> float:
-        """Compute maximum component of the vector."""
-
-    def minComp(self) -> float:
-        """Compute minimum component of the vector."""
-
-    @overload
-    def __itruediv__(self, theInvFactor: float) -> NCollection_Vec3__float:
-        """Compute per-component division by scale factor."""
-
-    @overload
-    def __itruediv__(self, theRight: NCollection_Vec3__float) -> NCollection_Vec3__float:
-        """Compute per-component division."""
-
-    def __truediv__(self, theInvFactor: float) -> NCollection_Vec3__float:
-        """Compute per-component division by scale factor."""
-
-    def Dot(self, theOther: NCollection_Vec3__float) -> float:
-        """Computes the dot product."""
-
-    def Modulus(self) -> float:
-        """Computes the vector modulus (magnitude, length)."""
-
-    def SquareModulus(self) -> float:
-        """
-        Computes the square of vector modulus (magnitude, length).
-        This method may be used for performance tricks.
-        """
-
-    def Normalize(self) -> None:
-        """Normalize the vector."""
-
-    def Normalized(self) -> NCollection_Vec3__float:
-        """Normalize the vector."""
-
-    @staticmethod
-    def Cross(theVec1: NCollection_Vec3__float, theVec2: NCollection_Vec3__float) -> NCollection_Vec3__float:
-        """Computes the cross product."""
-
-    @staticmethod
-    def GetLERP(theFrom: NCollection_Vec3__float, theTo: NCollection_Vec3__float, theT: float) -> NCollection_Vec3__float:
-        """
-        Compute linear interpolation between to vectors.
-        @param theT - interpolation coefficient 0..1;
-        @return interpolation result.
-        """
-
-    @staticmethod
-    def DX() -> NCollection_Vec3__float:
-        """Construct DX unit vector."""
-
-    @staticmethod
-    def DY() -> NCollection_Vec3__float:
-        """Construct DY unit vector."""
-
-    @staticmethod
-    def DZ() -> NCollection_Vec3__float:
-        """Construct DZ unit vector."""
-
-class NCollection_Vec4__float:
-    """
-    Generic 4-components vector.
-    To be used as RGBA color vector or XYZW 3D-point with special W-component
-    for operations with projection / model view matrices.
-    Use this class for 3D-points carefully because declared W-component may
-    results in incorrect results if used without matrices.
-    """
-
-    @overload
-    def __init__(self) -> None:
-        """Empty constructor. Construct the zero vector."""
-
-    @overload
-    def __init__(self, theValue: float) -> None:
-        """Initialize ALL components of vector within specified value."""
-
-    @overload
-    def __init__(self, theVec2: nanoocp.BVH.BVH_Vec2f) -> None:
-        """Constructor from 2-components vector."""
-
-    @overload
-    def __init__(self, theVec3: NCollection_Vec3__float, theW: float = 0.0) -> None:
-        """Constructor from 3-components vector + optional 4th value."""
-
-    @overload
-    def __init__(self, theX: float, theY: float, theZ: float, theW: float) -> None:
-        """Per-component constructor."""
-
-    @overload
-    def __init__(self, theOther: NCollection_Vec4__float) -> None: ...
-
-    @overload
-    def __init__(self, theFrom: Quantity_ColorRGBA) -> None: ...
-
-    @staticmethod
-    def Length() -> int:
-        """Returns the number of components."""
-
-    @overload
-    def SetValues(self, theX: float, theY: float, theZ: float, theW: float) -> None:
-        """Assign new values to the vector."""
-
-    @overload
-    def SetValues(self, theVec3: NCollection_Vec3__float, theW: float) -> None:
-        """Assign new values as 3-component vector and a 4-th value."""
-
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XYZW."""
-
-    def r(self) -> float:
-        """Alias to 1st component as RED channel in RGBA."""
-
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XYZW."""
-
-    def g(self) -> float:
-        """Alias to 2nd component as GREEN channel in RGBA."""
-
-    def z(self) -> float:
-        """Alias to 3rd component as Z coordinate in XYZW."""
-
-    def b(self) -> float:
-        """Alias to 3rd component as BLUE channel in RGBA."""
-
-    def w(self) -> float:
-        """Alias to 4th component as W coordinate in XYZW."""
-
-    def a(self) -> float:
-        """Alias to 4th component as ALPHA channel in RGBA."""
-
-    def xy(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def yx(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xz(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zx(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xw(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wx(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def yz(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zy(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def yw(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wy(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zw(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wz(self) -> nanoocp.BVH.BVH_Vec2f:
-        """
-        @return 2 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xyz(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xzy(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def yxz(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def yzx(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zyx(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zxy(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xyw(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xwy(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def yxw(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def ywx(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wyx(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wxy(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xzw(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def xwz(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zxw(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zwx(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wzx(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wxz(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def yzw(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def ywz(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zyw(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def zwy(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wzy(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def wyz(self) -> NCollection_Vec3__float:
-        """
-        @return 3 of XYZW components in specified order as vector in GLSL-style
-        """
-
-    def rgb(self) -> NCollection_Vec3__float:
-        """@return RGB components as vector"""
-
-    def rbg(self) -> NCollection_Vec3__float:
-        """@return RGB components as vector"""
-
-    def grb(self) -> NCollection_Vec3__float:
-        """@return RGB components as vector"""
-
-    def gbr(self) -> NCollection_Vec3__float:
-        """@return RGB components as vector"""
-
-    def bgr(self) -> NCollection_Vec3__float:
-        """@return RGB components as vector"""
-
-    def brg(self) -> NCollection_Vec3__float:
-        """@return RGB components as vector"""
-
-    def IsEqual(self, theOther: NCollection_Vec4__float) -> bool:
-        """
-        Check this vector with another vector for equality (without tolerance!).
-        """
-
-    def __eq__(self, theOther: NCollection_Vec4__float) -> bool:
-        """
-        Check this vector with another vector for equality (without tolerance!).
-        """
-
-    def __ne__(self, theOther: NCollection_Vec4__float) -> bool:
-        """
-        Check this vector with another vector for non-equality (without tolerance!).
-        """
-
-    def __iadd__(self, theAdd: NCollection_Vec4__float) -> NCollection_Vec4__float:
-        """Compute per-component summary."""
-
-    def __neg__(self) -> NCollection_Vec4__float:
-        """Unary -."""
-
-    def __isub__(self, theDec: NCollection_Vec4__float) -> NCollection_Vec4__float:
-        """Compute per-component subtraction."""
-
-    @overload
-    def __imul__(self, theRight: NCollection_Vec4__float) -> NCollection_Vec4__float: ...
-
-    @overload
-    def __imul__(self, theFactor: float) -> NCollection_Vec4__float:
-        """Compute per-component multiplication."""
-
-    def Multiply(self, theFactor: float) -> None:
-        """Compute per-component multiplication."""
-
-    def __mul__(self, theFactor: float) -> NCollection_Vec4__float:
-        """Compute per-component multiplication."""
-
-    def Multiplied(self, theFactor: float) -> NCollection_Vec4__float:
-        """Compute per-component multiplication."""
-
-    def cwiseMin(self, theVec: NCollection_Vec4__float) -> NCollection_Vec4__float:
-        """Compute component-wise minimum of two vectors."""
-
-    def cwiseMax(self, theVec: NCollection_Vec4__float) -> NCollection_Vec4__float:
-        """Compute component-wise maximum of two vectors."""
-
-    def cwiseAbs(self) -> NCollection_Vec4__float:
-        """Compute component-wise modulus of the vector."""
-
-    def maxComp(self) -> float:
-        """Compute maximum component of the vector."""
-
-    def minComp(self) -> float:
-        """Compute minimum component of the vector."""
-
-    def Dot(self, theOther: NCollection_Vec4__float) -> float:
-        """Computes the dot product."""
-
-    @overload
-    def __itruediv__(self, theInvFactor: float) -> NCollection_Vec4__float:
-        """Compute per-component division by scale factor."""
-
-    @overload
-    def __itruediv__(self, theRight: NCollection_Vec4__float) -> NCollection_Vec4__float:
-        """Compute per-component division."""
-
-    def __truediv__(self, theInvFactor: float) -> NCollection_Vec4__float:
-        """Compute per-component division by scale factor."""

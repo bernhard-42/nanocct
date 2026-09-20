@@ -512,7 +512,9 @@ mutex and locks the mutex if its pointer is not NULL)nbdoc");
         .def(nb::new_([]() { return opencascade::handle<Standard_Persistent>(new Standard_Persistent()); }))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Standard_Persistent::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Standard_Persistent::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Standard_Persistent::*)() const>(&Standard_Persistent::DynamicType));
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Standard_Persistent::*)() const>(&Standard_Persistent::DynamicType))
+        .def("TypeNum", [](Standard_Persistent &self) -> int { return self.TypeNum(); })
+        .def("SetTypeNum", [](Standard_Persistent &self, int theValue) { self.TypeNum() = theValue; }, nb::arg("theValue"), "Python addition: sets the value TypeNum() returns by reference in C++.");
     nanoocp_implicit_copy_ctor<Standard_Persistent>(nb::borrow<nb::class_<Standard_Persistent>>(m.attr("Standard_Persistent")));
     nb::borrow<nb::class_<Standard_ReadBuffer>>(m.attr("Standard_ReadBuffer"))
         .def(nb::init<int64_t, size_t, bool>(), nb::arg("theDataLen"), nb::arg("theChunkLen"), nb::arg("theIsPartialPayload") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Constructor with initialization.)nbdoc")

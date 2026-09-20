@@ -796,6 +796,11 @@ class Standard_Persistent(Standard_Transient):
 
     def DynamicType(self) -> Standard_Type: ...
 
+    def TypeNum(self) -> int: ...
+
+    def SetTypeNum(self, theValue: int) -> None:
+        """Python addition: sets the value TypeNum() returns by reference in C++."""
+
 class Standard_ReadBuffer:
     """
     Auxiliary tool for buffered reading from input stream within chunks of constant size.

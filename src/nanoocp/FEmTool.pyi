@@ -259,6 +259,13 @@ class FEmTool_SparseMatrix(nanoocp.Standard.Standard_Transient):
 
     def Init(self, Value: float) -> None: ...
 
+    def ChangeValue(self, I: int, J: int) -> float: ...
+
+    def SetValue(self, I: int, J: int, theValue: float) -> None:
+        """
+        Python addition: sets the value ChangeValue(I, J) returns by reference in C++.
+        """
+
     def Decompose(self) -> bool:
         """To make a Factorization of <me>"""
 
@@ -306,6 +313,13 @@ class FEmTool_ProfileMatrix(FEmTool_SparseMatrix):
     def __init__(self, theOther: FEmTool_ProfileMatrix) -> None: ...
 
     def Init(self, Value: float) -> None: ...
+
+    def ChangeValue(self, I: int, J: int) -> float: ...
+
+    def SetValue(self, I: int, J: int, theValue: float) -> None:
+        """
+        Python addition: sets the value ChangeValue(I, J) returns by reference in C++.
+        """
 
     def Decompose(self) -> bool:
         """To make a Factorization of <me>"""

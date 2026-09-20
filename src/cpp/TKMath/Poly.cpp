@@ -349,7 +349,13 @@ Raises Standard_OutOfRange if index is not in 1,2,3)nbdoc")
         .def("Get", [](const Poly_Triangle &self) { int theN1{}; int theN2{}; int theN3{}; self.Get(theN1, theN2, theN3); return std::make_tuple(theN1, theN2, theN3); }, R"nbdoc(Returns the node indices of this triangle.)nbdoc")
         .def("Value", static_cast<int (Poly_Triangle::*)(const int) const>(&Poly_Triangle::Value), nb::arg("theIndex"), R"nbdoc(Get the node of given Index.
 Raises OutOfRange from Standard if Index is not in 1,2,3)nbdoc")
-        .def("__call__", static_cast<int (Poly_Triangle::*)(const int) const>(&Poly_Triangle::operator()), nb::arg("Index"), nb::is_operator());
+        .def("__call__", static_cast<int (Poly_Triangle::*)(const int) const>(&Poly_Triangle::operator()), nb::arg("Index"), nb::is_operator())
+        .def("ChangeValue", [](Poly_Triangle &self, const int theIndex) -> int { return self.ChangeValue(theIndex); }, nb::arg("theIndex"), R"nbdoc(Get the node of given Index.
+Raises OutOfRange if Index is not in 1,2,3)nbdoc")
+        .def("SetValue", [](Poly_Triangle &self, const int theIndex, int theValue) { self.ChangeValue(theIndex) = theValue; }, nb::arg("theIndex"), nb::arg("theValue"), "Python addition: sets the value ChangeValue(theIndex) returns by reference in C++.")
+        .def("__call__", [](Poly_Triangle &self, const int Index) -> int { return self.operator()(Index); }, nb::arg("Index"), nb::is_operator())
+        .def("__getitem__", [](Poly_Triangle &self, const int Index) -> int { return self.operator()(Index); }, "Python addition: alias to operator().")
+        .def("__setitem__", [](Poly_Triangle &self, const int Index, int theValue) { self.operator()(Index) = theValue; }, "Python addition: sets the value operator()(Index) returns by reference in C++.");
     nanoocp_implicit_copy_ctor<Poly_Triangle>(nb::borrow<nb::class_<Poly_Triangle>>(m.attr("Poly_Triangle")));
     nb::borrow<nb::class_<NCollection_AliasedArray<>>>(m.attr("NCollection_AliasedArray__"))
         .def(nb::init<int>(), nb::arg("theStride"), R"nbdoc(Empty constructor.)nbdoc")

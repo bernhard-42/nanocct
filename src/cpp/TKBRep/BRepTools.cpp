@@ -702,6 +702,9 @@ or by shape containing only shapes of that type
 (for example, TopoDS_Edge can be replaced by TopoDS_Edge,
 TopoDS_Wire or TopoDS_Compound containing TopoDS_Edges).
 If incompatible shape type is encountered, it is ignored and flag FAIL1 is set in Status.)nbdoc")
+        .def("ModeConsiderLocation", [](BRepTools_ReShape &self) -> bool { return self.ModeConsiderLocation(); }, R"nbdoc(Returns (modifiable) the flag which defines whether Location of shape take into account
+during replacing shapes.)nbdoc")
+        .def("SetModeConsiderLocation", [](BRepTools_ReShape &self, bool theValue) { self.ModeConsiderLocation() = theValue; }, nb::arg("theValue"), "Python addition: sets the value ModeConsiderLocation() returns by reference in C++.")
         .def("CopyVertex", static_cast<TopoDS_Vertex (BRepTools_ReShape::*)(const TopoDS_Vertex &, const double)>(&BRepTools_ReShape::CopyVertex), nb::arg("theV"), nb::arg("theTol") = static_cast<std::decay_t<const double>>(- 1.0))
         .def("CopyVertex", static_cast<TopoDS_Vertex (BRepTools_ReShape::*)(const TopoDS_Vertex &, const gp_Pnt &, const double)>(&BRepTools_ReShape::CopyVertex), nb::arg("theV"), nb::arg("theNewPos"), nb::arg("aTol"))
         .def("IsNewShape", static_cast<bool (BRepTools_ReShape::*)(const TopoDS_Shape &) const>(&BRepTools_ReShape::IsNewShape), nb::arg("theShape"))
@@ -752,6 +755,8 @@ the resul of <Build>)nbdoc")
         .def(nb::new_([](const gp_Trsf & T) { return opencascade::handle<BRepTools_TrsfModification>(new BRepTools_TrsfModification(T)); }), nb::arg("T"))
         .def("Trsf", static_cast<gp_Trsf & (BRepTools_TrsfModification::*)()>(&BRepTools_TrsfModification::Trsf), nb::rv_policy::reference_internal, R"nbdoc(Provides access to the gp_Trsf associated with this
 modification. The transformation can be changed.)nbdoc")
+        .def("IsCopyMesh", [](BRepTools_TrsfModification &self) -> bool { return self.IsCopyMesh(); }, R"nbdoc(Sets a flag to indicate the need to copy mesh.)nbdoc")
+        .def("SetIsCopyMesh", [](BRepTools_TrsfModification &self, bool theValue) { self.IsCopyMesh() = theValue; }, nb::arg("theValue"), "Python addition: sets the value IsCopyMesh() returns by reference in C++.")
         .def("NewSurface", [](BRepTools_TrsfModification &self, const TopoDS_Face & F, occ::handle<Geom_Surface> & S, TopLoc_Location & L) { double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns true if the face F has been modified.
 If the face has been modified:
 - S is the new geometry of the face,
