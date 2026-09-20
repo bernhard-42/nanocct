@@ -3,6 +3,7 @@
 import enum
 from typing import overload
 
+import nanoocp.NCollection
 import nanoocp.OSD
 import nanoocp.Standard
 import nanoocp.TColStd
@@ -471,10 +472,10 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         Returns number of removed printers.
         """
 
-    def Printers(self) -> "NCollection_Sequence<opencascade::handle<Message_Printer>>":
+    def Printers(self) -> nanoocp.NCollection.NCollection_Sequence__Handle_Message_Printer:
         """Returns current sequence of printers"""
 
-    def ChangePrinters(self) -> "NCollection_Sequence<opencascade::handle<Message_Printer>>":
+    def ChangePrinters(self) -> nanoocp.NCollection.NCollection_Sequence__Handle_Message_Printer:
         """
         Returns sequence of printers
         The sequence can be modified.
@@ -1155,7 +1156,7 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
         Null handle if no such status or no numbers associated with it
         """
 
-    def GetMessageStrings(self, theStatus: Message_Status) -> "NCollection_HSequence<opencascade::handle<TCollection_HExtendedString>>":
+    def GetMessageStrings(self, theStatus: Message_Status) -> nanoocp.NCollection.NCollection_HSequence__Handle_TCollection_HExtendedString:
         """
         Return the strings associated with the indicated status;
         Null handle if no such status or no strings associated with it
@@ -1171,7 +1172,7 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
 
     @overload
     @staticmethod
-    def PrepareReport(theReportSeq: "NCollection_Sequence<opencascade::handle<TCollection_HExtendedString>>", theMaxCount: int) -> nanoocp.TCollection.TCollection_ExtendedString:
+    def PrepareReport(theReportSeq: nanoocp.NCollection.NCollection_Sequence__Handle_TCollection_HExtendedString, theMaxCount: int) -> nanoocp.TCollection.TCollection_ExtendedString:
         """
         Prepares a string containing a list of names contained
         in theReportSeq sequence, but not more than theMaxCount
@@ -1359,7 +1360,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
-    def Alerts(self, theGravity: Message_Gravity) -> "NCollection_List<opencascade::handle<Message_Alert>>":
+    def Alerts(self, theGravity: Message_Gravity) -> nanoocp.NCollection.NCollection_List__Handle_Message_Alert:
         """Returns list of collected alerts with specified gravity"""
 
     def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert) -> bool:
@@ -2098,7 +2099,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         This method is thread-safe, i.e. alerts can be added from parallel threads safely.
         """
 
-    def GetAlerts(self, theGravity: Message_Gravity) -> "NCollection_List<opencascade::handle<Message_Alert>>":
+    def GetAlerts(self, theGravity: Message_Gravity) -> nanoocp.NCollection.NCollection_List__Handle_Message_Alert:
         """Returns list of collected alerts with specified gravity"""
 
     @overload
@@ -2205,3 +2206,8 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+Message_ListOfAlert = nanoocp.NCollection.NCollection_List__Handle_Message_Alert
+Message_SequenceOfPrinters = nanoocp.NCollection.NCollection_Sequence__Handle_Message_Printer

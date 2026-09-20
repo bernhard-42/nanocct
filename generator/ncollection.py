@@ -24,6 +24,37 @@ BINDERS: dict[str, dict] = {
         "requires": [],
         "nargs": 1,                # template parameters without default (the ones spelled in the docs)
     },
+    "NCollection_List": {
+        "binder": "nanoocp::bind_NCollection_List",
+        "members": {"Extent", "Length", "Size", "IsEmpty", "Allocator", "Assign", "Clear", "First", "Last", "Append", "Prepend",
+                    "RemoveFirst", "Remove", "InsertBefore", "InsertAfter", "Reverse", "Exchange", "Contains"},
+        "skipped": {"operator=", "EmplaceAppend", "EmplacePrepend", "EmplaceBefore", "EmplaceAfter", "begin", "end", "cbegin",
+                    "cend", "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Value", "ChangeValue", "Initialize"}},
+        "nested_from": {"Iterator": "NCollection_TListIterator"},
+        "bases": ["NCollection_BaseList"],       # non-template bases whose public members are inherited
+        "requires": [],
+        "nargs": 1,
+    },
+    "NCollection_Sequence": {
+        "binder": "nanoocp::bind_NCollection_Sequence",
+        "members": {"Length", "Size", "IsEmpty", "Lower", "Upper", "Allocator", "Reverse", "Exchange", "Clear", "Assign",
+                    "Remove", "Append", "Prepend", "InsertBefore", "InsertAfter", "Split", "First", "ChangeFirst", "Last",
+                    "ChangeLast", "Value", "operator()", "ChangeValue", "SetValue", "At", "ChangeAt"},
+        "skipped": {"operator=", "delNode", "EmplaceAppend", "EmplacePrepend", "EmplaceAfter", "EmplaceBefore", "begin", "end",
+                    "cbegin", "cend", "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Value", "ChangeValue"}},
+        "bases": ["NCollection_BaseSequence"],
+        "requires": [],
+        "nargs": 1,
+    },
+    "NCollection_HSequence": {
+        "binder": "nanoocp::bind_NCollection_HSequence",
+        "members": {"Sequence", "ChangeSequence", "Append", "get_type_name", "get_type_descriptor", "DynamicType"},
+        "skipped": {"operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "requires": ["NCollection_Sequence"],
+        "nargs": 1,
+    },
     "NCollection_HArray1": {
         "binder": "nanoocp::bind_NCollection_HArray1",
         "members": {"Array1", "ChangeArray1", "get_type_name", "get_type_descriptor", "DynamicType"},
@@ -53,6 +84,7 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
         tu = index.parse(str(include_dir / f"{tmpl}.hxx"), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
         docs: dict[str, str] = {}
         class_doc = ""
+        nested: dict[str, dict[str, str]] = {}          # nested class (Iterator) -> member docs
         for cur in tu.cursor.get_children():
             if cur.kind != K.CLASS_TEMPLATE or cur.spelling != tmpl:
                 continue
@@ -67,6 +99,31 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
                         docs[name] = d
                     if ch.kind != K.CONSTRUCTOR and ch.spelling not in info["members"] and ch.spelling not in info["skipped"]:
                         warnings.append(f"{tmpl}::{ch.spelling}: public member neither bound nor listed as skipped")
+                elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition() and ch.spelling in info.get("nested", {}):
+                    nd = nested.setdefault(ch.spelling, {"class_doc": _doc(ch)})
+                    for m in ch.get_children():
+                        if m.access_specifier == Access.PUBLIC and m.kind in (K.CXX_METHOD, K.CONSTRUCTOR):
+                            nm = "ctor" if m.kind == K.CONSTRUCTOR else m.spelling
+                            nd.setdefault(nm, _doc(m))
+        # public members inherited from non-template base classes (NCollection_BaseList::Extent, ...)
+        for base in info.get("bases", []):
+            btu = index.parse(str(include_dir / f"{base}.hxx"), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
+            for cur in btu.cursor.get_children():
+                if cur.kind == K.CLASS_DECL and cur.spelling == base and cur.is_definition():
+                    for m in cur.get_children():
+                        if m.access_specifier == Access.PUBLIC and m.kind == K.CXX_METHOD:
+                            docs.setdefault(m.spelling, _doc(m))
+                            if m.spelling not in info["members"] and m.spelling not in info["skipped"]:
+                                warnings.append(f"{tmpl}::{m.spelling} (from {base}): public member neither bound nor listed as skipped")
+        # some nested iterators are typedefs of a separate template (List::Iterator = NCollection_TListIterator)
+        for nested_name, source in info.get("nested_from", {}).items():
+            stu = index.parse(str(include_dir / f"{source}.hxx"), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
+            for cur in stu.cursor.get_children():
+                if cur.kind == K.CLASS_TEMPLATE and cur.spelling == source:
+                    nd = nested.setdefault(nested_name, {"class_doc": _doc(cur)})
+                    for m in cur.get_children():
+                        if m.access_specifier == Access.PUBLIC and m.kind in (K.CXX_METHOD, K.CONSTRUCTOR):
+                            nd.setdefault("ctor" if m.kind == K.CONSTRUCTOR else m.spelling, _doc(m))
         for name in info["members"]:
             if name not in docs and name not in ("get_type_name", "get_type_descriptor", "DynamicType"):
                 warnings.append(f"{tmpl}::{name}: bound by the binder but not found in the header")
@@ -75,6 +132,11 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
         docs.setdefault("ctor", "")
         for name in sorted(set(docs) | info["members"]):
             out.append(f'constexpr const char *{_ident(name)} = R"nbdoc({docs.get(name, "")})nbdoc";')
+        for nested_name, members in sorted(nested.items()):
+            out.append(f"namespace {nested_name} {{")
+            for name in sorted(set(members) | set(info["nested"][nested_name])):
+                out.append(f'constexpr const char *{_ident(name)} = R"nbdoc({members.get(name, "")})nbdoc";')
+            out.append(f"}} // namespace {nested_name}")
         out.append(f"}} // namespace {tmpl}")
     out += ["} // namespace nanoocp_doc", ""]
     return "\n".join(out), warnings

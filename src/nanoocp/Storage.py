@@ -8,7 +8,9 @@ from nanoocp._TKernel.Storage import *  # noqa: F401,F403
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
     "Storage_HPArray": ("nanoocp.NCollection", "NCollection_HArray1__Handle_Standard_Persistent"),
+    "Storage_HSeqOfRoot": ("nanoocp.NCollection", "NCollection_HSequence__Handle_Storage_Root"),
     "Storage_PArray": ("nanoocp.NCollection", "NCollection_Array1__Handle_Standard_Persistent"),
+    "Storage_SeqOfRoot": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Storage_Root"),
 }
 
 

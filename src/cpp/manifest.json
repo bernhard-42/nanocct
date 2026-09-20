@@ -273,6 +273,126 @@
 "package": "NCollection",
 "name": "NCollection_HArray1__Handle_Standard_Persistent",
 "by": "Storage"
+},
+"NCollection_HSequence<TCollection_AsciiString>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__TCollection_AsciiString",
+"by": "Storage"
+},
+"NCollection_HSequence<int>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__int",
+"by": "Units"
+},
+"NCollection_HSequence<opencascade::handle<Storage_Root>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_Storage_Root",
+"by": "Storage"
+},
+"NCollection_HSequence<opencascade::handle<TCollection_HAsciiString>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_TCollection_HAsciiString",
+"by": "Units"
+},
+"NCollection_HSequence<opencascade::handle<TCollection_HExtendedString>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_TCollection_HExtendedString",
+"by": "Message"
+},
+"NCollection_HSequence<opencascade::handle<Units_Quantity>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_Units_Quantity",
+"by": "Units"
+},
+"NCollection_HSequence<opencascade::handle<Units_Token>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_Units_Token",
+"by": "Units"
+},
+"NCollection_HSequence<opencascade::handle<Units_Unit>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_Units_Unit",
+"by": "Units"
+},
+"NCollection_List<int>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_List__int",
+"by": "Standard"
+},
+"NCollection_List<opencascade::handle<Message_Alert>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_List__Handle_Message_Alert",
+"by": "Message"
+},
+"NCollection_Sequence<TCollection_AsciiString>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__TCollection_AsciiString",
+"by": "Storage"
+},
+"NCollection_Sequence<TCollection_ExtendedString>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__TCollection_ExtendedString",
+"by": "Storage"
+},
+"NCollection_Sequence<int>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__int",
+"by": "Units"
+},
+"NCollection_Sequence<opencascade::handle<Message_Printer>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Message_Printer",
+"by": "Message"
+},
+"NCollection_Sequence<opencascade::handle<Storage_Root>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Storage_Root",
+"by": "Storage"
+},
+"NCollection_Sequence<opencascade::handle<TCollection_HAsciiString>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_TCollection_HAsciiString",
+"by": "Units"
+},
+"NCollection_Sequence<opencascade::handle<TCollection_HExtendedString>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_TCollection_HExtendedString",
+"by": "Message"
+},
+"NCollection_Sequence<opencascade::handle<Units_Quantity>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Units_Quantity",
+"by": "Units"
+},
+"NCollection_Sequence<opencascade::handle<Units_Token>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Units_Token",
+"by": "Units"
+},
+"NCollection_Sequence<opencascade::handle<Units_Unit>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Units_Unit",
+"by": "Units"
 }
 }
 }

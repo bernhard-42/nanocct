@@ -2,6 +2,7 @@
 
 from typing import overload
 
+import nanoocp.NCollection
 import nanoocp.Standard
 import nanoocp.TCollection
 
@@ -283,7 +284,7 @@ class Units_Unit(nanoocp.Standard.Standard_Transient):
     def Quantity(self, aquantity: Units_Quantity) -> None:
         """Sets the physical Quantity <aquantity> to <me>."""
 
-    def SymbolsSequence(self) -> "NCollection_HSequence<opencascade::handle<TCollection_HAsciiString>>":
+    def SymbolsSequence(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_TCollection_HAsciiString:
         """Returns the sequence of symbols <thesymbolssequence>"""
 
     def Token(self) -> Units_Token:
@@ -315,7 +316,7 @@ class Units_Quantity(nanoocp.Standard.Standard_Transient):
     S.I. unit system.
     """
 
-    def __init__(self, aname: str, adimensions: Units_Dimensions, aunitssequence: "NCollection_HSequence<opencascade::handle<Units_Unit>>") -> None:
+    def __init__(self, aname: str, adimensions: Units_Dimensions, aunitssequence: nanoocp.NCollection.NCollection_HSequence__Handle_Units_Unit) -> None:
         """
         Creates a new Quantity object with <aname> which is
         the name of the physical quantity, <adimensions> which
@@ -329,7 +330,7 @@ class Units_Quantity(nanoocp.Standard.Standard_Transient):
     def Dimensions(self) -> Units_Dimensions:
         """Returns the physical dimensions of the quantity."""
 
-    def Sequence(self) -> "NCollection_HSequence<opencascade::handle<Units_Unit>>":
+    def Sequence(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_Units_Unit:
         """
         Returns <theunitssequence>, which is the sequence of
         all the units stored for this physical quantity.
@@ -697,7 +698,7 @@ class Units_Lexicon(nanoocp.Standard.Standard_Transient):
         stored in <thesequenceoftokens>.
         """
 
-    def Sequence(self) -> "NCollection_HSequence<opencascade::handle<Units_Token>>":
+    def Sequence(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_Units_Token:
         """Returns the first item of the sequence of tokens."""
 
     def AddToken(self, aword: str, amean: str, avalue: float) -> None:
@@ -735,11 +736,11 @@ class Units_Sentence:
         """For each constant encountered, sets the value."""
 
     @overload
-    def Sequence(self) -> "NCollection_HSequence<opencascade::handle<Units_Token>>":
+    def Sequence(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_Units_Token:
         """Returns <thesequenceoftokens>."""
 
     @overload
-    def Sequence(self, asequenceoftokens: "NCollection_HSequence<opencascade::handle<Units_Token>>") -> None:
+    def Sequence(self, asequenceoftokens: nanoocp.NCollection.NCollection_HSequence__Handle_Units_Token) -> None:
         """Sets the field <thesequenceoftokens> to <asequenceoftokens>."""
 
     def Evaluate(self) -> Units_Token:
@@ -1030,7 +1031,7 @@ class Units_UnitsDictionary(nanoocp.Standard.Standard_Transient):
         physical quantity by physical quantity.
         """
 
-    def Sequence(self) -> "NCollection_HSequence<opencascade::handle<Units_Quantity>>":
+    def Sequence(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_Units_Quantity:
         """
         Returns the head of the sequence of physical
         quantities.
@@ -1079,7 +1080,7 @@ class Units_UnitSentence(Units_Sentence):
         """
 
     @overload
-    def __init__(self, astring: str, aquantitiessequence: "NCollection_HSequence<opencascade::handle<Units_Quantity>>") -> None:
+    def __init__(self, astring: str, aquantitiessequence: nanoocp.NCollection.NCollection_HSequence__Handle_Units_Quantity) -> None:
         """
         Creates and returns a UnitSentence. The string
         <astring> describes in natural language the unit to be
@@ -1095,7 +1096,7 @@ class Units_UnitSentence(Units_Sentence):
         token.
         """
 
-    def SetUnits(self, aquantitiessequence: "NCollection_HSequence<opencascade::handle<Units_Quantity>>") -> None:
+    def SetUnits(self, aquantitiessequence: nanoocp.NCollection.NCollection_HSequence__Handle_Units_Quantity) -> None:
         """
         For each token which represents a unit, finds in the
         sequence of physical quantities all the
@@ -1158,10 +1159,10 @@ class Units_UnitsSystem(nanoocp.Standard.Standard_Transient):
         See : Resource_Manager for the description of this file.
         """
 
-    def QuantitiesSequence(self) -> "NCollection_HSequence<opencascade::handle<Units_Quantity>>":
+    def QuantitiesSequence(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_Units_Quantity:
         """Returns the sequence of refined quantities."""
 
-    def ActiveUnitsSequence(self) -> "NCollection_HSequence<int>":
+    def ActiveUnitsSequence(self) -> nanoocp.NCollection.NCollection_HSequence__int:
         """
         Returns a sequence of integer in correspondence with
         the sequence of quantities, which indicates, for each
@@ -1226,3 +1227,12 @@ def pow(arg0: Units_Token, arg1: Units_Token) -> Units_Token: ...
 
 @overload
 def pow(arg0: Units_Token, arg1: float) -> Units_Token: ...
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+Units_QtsSequence = nanoocp.NCollection.NCollection_Sequence__Handle_Units_Quantity
+Units_QuantitiesSequence = nanoocp.NCollection.NCollection_HSequence__Handle_Units_Quantity
+Units_TksSequence = nanoocp.NCollection.NCollection_Sequence__Handle_Units_Token
+Units_TokensSequence = nanoocp.NCollection.NCollection_HSequence__Handle_Units_Token
+Units_UnitsSequence = nanoocp.NCollection.NCollection_HSequence__Handle_Units_Unit
+Units_UtsSequence = nanoocp.NCollection.NCollection_Sequence__Handle_Units_Unit

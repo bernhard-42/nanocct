@@ -1,6 +1,6 @@
 """Static typing check for the NCollection_Xxx[T] spelling (run by mypy and ty, see tests/test_typing.py).
 Lines with a trailing `# error:` comment must be reported; everything else must pass."""
-from nanoocp import NCollection, Standard, TColStd
+from nanoocp import NCollection, Standard, TCollection, TColStd
 
 a = NCollection.NCollection_Array1[float](1, 4)
 a.SetValue(1, 0.5)
@@ -35,3 +35,20 @@ bad: str = a.Value(1)         # error: float is not str
 h.SetValue(1, 3.0)            # error: float is not Standard_Persistent
 total(h)                      # error: HArray1[Standard_Persistent] is not Array1[float]
 NCollection.NCollection_Array1[float](1, 2, 3, 4, 5)   # error: no such overload
+
+# ---- List / Sequence / HSequence
+l = NCollection.NCollection_List[int]()
+l.Append(1)
+first: int = l.First()
+it = NCollection.NCollection_List__int.Iterator(l)      # ty rejects NCollection_List[int].Iterator (mypy accepts it)
+while it.More():
+    v: int = it.Value()
+    it.Next()
+s = NCollection.NCollection_Sequence[TCollection.TCollection_AsciiString]()
+s.Append(TCollection.TCollection_AsciiString("a"))
+sv: TCollection.TCollection_AsciiString = s.Value(1)
+hs = NCollection.NCollection_HSequence[TCollection.TCollection_AsciiString]()
+hs_t: Standard.Standard_Transient = hs
+hs_len: int = len(hs)
+l.Append("x")                 # error: str is not int
+sbad: int = s[1]              # error: TCollection_AsciiString is not int

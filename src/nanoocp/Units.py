@@ -7,6 +7,12 @@ from nanoocp._TKernel.Units import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "Units_QtsSequence": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Units_Quantity"),
+    "Units_QuantitiesSequence": ("nanoocp.NCollection", "NCollection_HSequence__Handle_Units_Quantity"),
+    "Units_TksSequence": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Units_Token"),
+    "Units_TokensSequence": ("nanoocp.NCollection", "NCollection_HSequence__Handle_Units_Token"),
+    "Units_UnitsSequence": ("nanoocp.NCollection", "NCollection_HSequence__Handle_Units_Unit"),
+    "Units_UtsSequence": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Units_Unit"),
 }
 
 

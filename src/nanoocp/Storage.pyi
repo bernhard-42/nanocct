@@ -290,13 +290,13 @@ class Storage_Data(nanoocp.Standard.Standard_Transient):
     def AddToUserInfo(self, anInfo: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """add <theUserInfo> to the user information"""
 
-    def UserInfo(self) -> "NCollection_Sequence<TCollection_AsciiString>":
+    def UserInfo(self) -> nanoocp.NCollection.NCollection_Sequence__TCollection_AsciiString:
         """return the user information"""
 
     def AddToComments(self, aComment: nanoocp.TCollection.TCollection_ExtendedString) -> None:
         """add <theUserInfo> to the user information"""
 
-    def Comments(self) -> "NCollection_Sequence<TCollection_ExtendedString>":
+    def Comments(self) -> nanoocp.NCollection.NCollection_Sequence__TCollection_ExtendedString:
         """return the user information"""
 
     def NumberOfObjects(self) -> int:
@@ -344,7 +344,7 @@ class Storage_Data(nanoocp.Standard.Standard_Transient):
         name is aName in this set of data.
         """
 
-    def Roots(self) -> "NCollection_HSequence<opencascade::handle<Storage_Root>>":
+    def Roots(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_Storage_Root:
         """
         Returns the roots of this set of data in a sequence.
         -   When preparing a storage operation, the
@@ -380,7 +380,7 @@ class Storage_Data(nanoocp.Standard.Standard_Transient):
         Storage_Schema algorithm used to store or retrieve them.
         """
 
-    def Types(self) -> "NCollection_HSequence<TCollection_AsciiString>":
+    def Types(self) -> nanoocp.NCollection.NCollection_HSequence__TCollection_AsciiString:
         """
         Gives the list of types of objects used in this set of data in a sequence.
         """
@@ -435,25 +435,25 @@ class Storage_BaseDriver(nanoocp.Standard.Standard_Transient):
 
     def BeginWriteInfoSection(self) -> Storage_Error: ...
 
-    def WriteInfo(self, nbObj: int, dbVersion: nanoocp.TCollection.TCollection_AsciiString, date: nanoocp.TCollection.TCollection_AsciiString, schemaName: nanoocp.TCollection.TCollection_AsciiString, schemaVersion: nanoocp.TCollection.TCollection_AsciiString, appName: nanoocp.TCollection.TCollection_ExtendedString, appVersion: nanoocp.TCollection.TCollection_AsciiString, objectType: nanoocp.TCollection.TCollection_ExtendedString, userInfo: "NCollection_Sequence<TCollection_AsciiString>") -> None: ...
+    def WriteInfo(self, nbObj: int, dbVersion: nanoocp.TCollection.TCollection_AsciiString, date: nanoocp.TCollection.TCollection_AsciiString, schemaName: nanoocp.TCollection.TCollection_AsciiString, schemaVersion: nanoocp.TCollection.TCollection_AsciiString, appName: nanoocp.TCollection.TCollection_ExtendedString, appVersion: nanoocp.TCollection.TCollection_AsciiString, objectType: nanoocp.TCollection.TCollection_ExtendedString, userInfo: nanoocp.NCollection.NCollection_Sequence__TCollection_AsciiString) -> None: ...
 
     def EndWriteInfoSection(self) -> Storage_Error: ...
 
     def BeginReadInfoSection(self) -> Storage_Error: ...
 
-    def ReadInfo(self, dbVersion: nanoocp.TCollection.TCollection_AsciiString, date: nanoocp.TCollection.TCollection_AsciiString, schemaName: nanoocp.TCollection.TCollection_AsciiString, schemaVersion: nanoocp.TCollection.TCollection_AsciiString, appName: nanoocp.TCollection.TCollection_ExtendedString, appVersion: nanoocp.TCollection.TCollection_AsciiString, objectType: nanoocp.TCollection.TCollection_ExtendedString, userInfo: "NCollection_Sequence<TCollection_AsciiString>") -> int: ...
+    def ReadInfo(self, dbVersion: nanoocp.TCollection.TCollection_AsciiString, date: nanoocp.TCollection.TCollection_AsciiString, schemaName: nanoocp.TCollection.TCollection_AsciiString, schemaVersion: nanoocp.TCollection.TCollection_AsciiString, appName: nanoocp.TCollection.TCollection_ExtendedString, appVersion: nanoocp.TCollection.TCollection_AsciiString, objectType: nanoocp.TCollection.TCollection_ExtendedString, userInfo: nanoocp.NCollection.NCollection_Sequence__TCollection_AsciiString) -> int: ...
 
     def EndReadInfoSection(self) -> Storage_Error: ...
 
     def BeginWriteCommentSection(self) -> Storage_Error: ...
 
-    def WriteComment(self, userComments: "NCollection_Sequence<TCollection_ExtendedString>") -> None: ...
+    def WriteComment(self, userComments: nanoocp.NCollection.NCollection_Sequence__TCollection_ExtendedString) -> None: ...
 
     def EndWriteCommentSection(self) -> Storage_Error: ...
 
     def BeginReadCommentSection(self) -> Storage_Error: ...
 
-    def ReadComment(self, userComments: "NCollection_Sequence<TCollection_ExtendedString>") -> None: ...
+    def ReadComment(self, userComments: nanoocp.NCollection.NCollection_Sequence__TCollection_ExtendedString) -> None: ...
 
     def EndReadCommentSection(self) -> Storage_Error: ...
 
@@ -674,13 +674,13 @@ class Storage_HeaderData(nanoocp.Standard.Standard_Transient):
     def AddToUserInfo(self, theUserInfo: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """add <theUserInfo> to the user information"""
 
-    def UserInfo(self) -> "NCollection_Sequence<TCollection_AsciiString>":
+    def UserInfo(self) -> nanoocp.NCollection.NCollection_Sequence__TCollection_AsciiString:
         """return the user information"""
 
     def AddToComments(self, aComment: nanoocp.TCollection.TCollection_ExtendedString) -> None:
         """add <theUserInfo> to the user information"""
 
-    def Comments(self) -> "NCollection_Sequence<TCollection_ExtendedString>":
+    def Comments(self) -> nanoocp.NCollection.NCollection_Sequence__TCollection_ExtendedString:
         """return the user information"""
 
     def NumberOfObjects(self) -> int:
@@ -774,7 +774,7 @@ class Storage_RootData(nanoocp.Standard.Standard_Transient):
         will be replaced by <aRoot>.
         """
 
-    def Roots(self) -> "NCollection_HSequence<opencascade::handle<Storage_Root>>": ...
+    def Roots(self) -> nanoocp.NCollection.NCollection_HSequence__Handle_Storage_Root: ...
 
     def Find(self, aName: nanoocp.TCollection.TCollection_AsciiString) -> Storage_Root:
         """find a root with name <aName>."""
@@ -892,7 +892,7 @@ class Storage_Schema(nanoocp.Standard.Standard_Transient):
     def RemoveReadUnknownTypeCallBack(self, aTypeName: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """remove a callback for a type"""
 
-    def InstalledCallBackList(self) -> "NCollection_HSequence<TCollection_AsciiString>":
+    def InstalledCallBackList(self) -> nanoocp.NCollection.NCollection_HSequence__TCollection_AsciiString:
         """
         returns a list of type name with installed
         callback.
@@ -989,7 +989,7 @@ class Storage_TypeData(nanoocp.Standard.Standard_Transient):
 
     def IsType(self, aName: nanoocp.TCollection.TCollection_AsciiString) -> bool: ...
 
-    def Types(self) -> "NCollection_HSequence<TCollection_AsciiString>": ...
+    def Types(self) -> nanoocp.NCollection.NCollection_HSequence__TCollection_AsciiString: ...
 
     def ErrorStatus(self) -> Storage_Error: ...
 
@@ -1010,4 +1010,6 @@ class Storage_TypeData(nanoocp.Standard.Standard_Transient):
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection
 Storage_HPArray = nanoocp.NCollection.NCollection_HArray1__Handle_Standard_Persistent
+Storage_HSeqOfRoot = nanoocp.NCollection.NCollection_HSequence__Handle_Storage_Root
 Storage_PArray = nanoocp.NCollection.NCollection_Array1__Handle_Standard_Persistent
+Storage_SeqOfRoot = nanoocp.NCollection.NCollection_Sequence__Handle_Storage_Root

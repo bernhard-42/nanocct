@@ -98,6 +98,155 @@ constexpr const char *op_call = R"nbdoc(operator() - alias to Value)nbdoc";
 constexpr const char *op_assign = R"nbdoc(Assignment operator; @sa Assign())nbdoc";
 constexpr const char *op_index = R"nbdoc(operator[] - alias to Value)nbdoc";
 } // namespace NCollection_Array1
+namespace NCollection_List {
+constexpr const char *class_doc = R"nbdoc(Purpose:      Simple list to link  items together keeping the first
+and the last one.
+Inherits BaseList, adding the data item to each node.)nbdoc";
+constexpr const char *Allocator = R"nbdoc(Returns attached allocator)nbdoc";
+constexpr const char *Append = R"nbdoc(Append one item at the end)nbdoc";
+constexpr const char *Assign = R"nbdoc(Replace this list by the items of another list (theOther parameter).
+This method does not change the internal allocator.)nbdoc";
+constexpr const char *Clear = R"nbdoc(Clear this list)nbdoc";
+constexpr const char *Contains = R"nbdoc(Return true if object is stored in the list.)nbdoc";
+constexpr const char *EmplaceAfter = R"nbdoc(Emplace one item after the iterator position, constructing it in-place
+@param theIter iterator pointing to the position after which to insert
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EmplaceAppend = R"nbdoc(Emplace one item at the end, constructing it in-place
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EmplaceBefore = R"nbdoc(Emplace one item before the iterator position, constructing it in-place
+@param theIter iterator pointing to the position before which to insert
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EmplacePrepend = R"nbdoc(Emplace one item at the beginning, constructing it in-place
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *Exchange = R"nbdoc(Exchange the content of two lists without re-allocations.
+Swaps all internal state including allocators, ensuring correct
+deallocation. Existing iterators remain valid but will point to
+the other list's elements.)nbdoc";
+constexpr const char *Extent = R"nbdoc()nbdoc";
+constexpr const char *First = R"nbdoc(First item)nbdoc";
+constexpr const char *InsertAfter = R"nbdoc(InsertAfter)nbdoc";
+constexpr const char *InsertBefore = R"nbdoc(InsertBefore)nbdoc";
+constexpr const char *IsEmpty = R"nbdoc()nbdoc";
+constexpr const char *Last = R"nbdoc(Last item)nbdoc";
+constexpr const char *Length = R"nbdoc(Length - number of nodes (legacy int-returning API, synonym of Extent()).)nbdoc";
+constexpr const char *Prepend = R"nbdoc(Prepend one item at the beginning)nbdoc";
+constexpr const char *Remove = R"nbdoc(Remove item pointed by iterator theIter;
+theIter is then set to the next item)nbdoc";
+constexpr const char *RemoveFirst = R"nbdoc(RemoveFirst item)nbdoc";
+constexpr const char *Reverse = R"nbdoc(Reverse the list)nbdoc";
+constexpr const char *Size = R"nbdoc(Size - number of nodes.)nbdoc";
+constexpr const char *begin = R"nbdoc(Returns an iterator pointing to the first element in the list.)nbdoc";
+constexpr const char *cbegin = R"nbdoc(Returns a const iterator pointing to the first element in the list.)nbdoc";
+constexpr const char *cend = R"nbdoc(Returns a const iterator referring to the past-the-end element in the list.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor.)nbdoc";
+constexpr const char *end = R"nbdoc(Returns an iterator referring to the past-the-end element in the list.)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_assign = R"nbdoc(Replacement operator)nbdoc";
+namespace Iterator {
+constexpr const char *ChangeValue = R"nbdoc(Non-const Value access)nbdoc";
+constexpr const char *Initialize = R"nbdoc()nbdoc";
+constexpr const char *More = R"nbdoc(Check end)nbdoc";
+constexpr const char *Next = R"nbdoc(Make step)nbdoc";
+constexpr const char *Value = R"nbdoc(Constant Value access)nbdoc";
+constexpr const char *class_doc = R"nbdoc(Purpose:     This Iterator class iterates on BaseList of TListNode and is
+instantiated in List/Set/Queue/Stack
+Remark:      TListIterator is internal class)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor - for later Init)nbdoc";
+} // namespace Iterator
+} // namespace NCollection_List
+namespace NCollection_Sequence {
+constexpr const char *class_doc = R"nbdoc(Purpose:     Definition of a sequence of elements indexed by
+an Integer in range of 1..n)nbdoc";
+constexpr const char *Allocator = R"nbdoc(Returns attached allocator)nbdoc";
+constexpr const char *Append = R"nbdoc(Append one item)nbdoc";
+constexpr const char *Assign = R"nbdoc(Replace this sequence by the items of theOther.
+This method does not change the internal allocator.)nbdoc";
+constexpr const char *At = R"nbdoc(0-based checked access independent of Lower()/Upper().
+@param[in] theIndex 0-based index in [0, Size()-1])nbdoc";
+constexpr const char *ChangeAt = R"nbdoc(0-based checked mutable access independent of Lower()/Upper().
+@param[in] theIndex 0-based index in [0, Size()-1])nbdoc";
+constexpr const char *ChangeFirst = R"nbdoc(First item access)nbdoc";
+constexpr const char *ChangeLast = R"nbdoc(Last item access)nbdoc";
+constexpr const char *ChangeValue = R"nbdoc(Variable item access by theIndex)nbdoc";
+constexpr const char *Clear = R"nbdoc(Clear the items out, take a new allocator if non null)nbdoc";
+constexpr const char *EmplaceAfter = R"nbdoc(Emplace one item after the position of iterator, constructing it in-place
+@param thePosition iterator pointing to the position after which to insert
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EmplaceAppend = R"nbdoc(Emplace one item at the end, constructing it in-place
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EmplaceBefore = R"nbdoc(Emplace one item before the specified index, constructing it in-place
+@param theIndex index before which to insert
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EmplacePrepend = R"nbdoc(Emplace one item at the beginning, constructing it in-place
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *Exchange = R"nbdoc(Exchange two members)nbdoc";
+constexpr const char *First = R"nbdoc(First item access)nbdoc";
+constexpr const char *InsertAfter = R"nbdoc(InsertAfter the position of iterator)nbdoc";
+constexpr const char *InsertBefore = R"nbdoc(InsertBefore theIndex theItem)nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(Empty query)nbdoc";
+constexpr const char *Last = R"nbdoc(Last item access)nbdoc";
+constexpr const char *Length = R"nbdoc(Number of items (legacy int-returning API).)nbdoc";
+constexpr const char *Lower = R"nbdoc(Method for consistency with other collections.
+@return Lower bound (inclusive) for iteration.)nbdoc";
+constexpr const char *Prepend = R"nbdoc(Prepend one item)nbdoc";
+constexpr const char *Remove = R"nbdoc(Remove one item)nbdoc";
+constexpr const char *Reverse = R"nbdoc(Reverse sequence)nbdoc";
+constexpr const char *SetValue = R"nbdoc(Set item value by theIndex)nbdoc";
+constexpr const char *Size = R"nbdoc(Size - number of items.)nbdoc";
+constexpr const char *Split = R"nbdoc(Split in two sequences)nbdoc";
+constexpr const char *Upper = R"nbdoc(Method for consistency with other collections.
+@return Upper bound (inclusive) for iteration.)nbdoc";
+constexpr const char *Value = R"nbdoc(Constant item access by theIndex)nbdoc";
+constexpr const char *begin = R"nbdoc(Returns an iterator pointing to the first element in the sequence.)nbdoc";
+constexpr const char *cbegin = R"nbdoc(Returns a const iterator pointing to the first element in the sequence.)nbdoc";
+constexpr const char *cend = R"nbdoc(Returns a const iterator referring to the past-the-end element in the sequence.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor.)nbdoc";
+constexpr const char *delNode = R"nbdoc(Static deleter to be passed to BaseSequence)nbdoc";
+constexpr const char *end = R"nbdoc(Returns an iterator referring to the past-the-end element in the sequence.)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_call = R"nbdoc(Constant operator())nbdoc";
+constexpr const char *op_assign = R"nbdoc(Replacement operator)nbdoc";
+namespace Iterator {
+constexpr const char *ChangeValue = R"nbdoc(Variable value access)nbdoc";
+constexpr const char *IsEqual = R"nbdoc(Performs comparison of two iterators.)nbdoc";
+constexpr const char *More = R"nbdoc(Check end)nbdoc";
+constexpr const char *Next = R"nbdoc(Make step)nbdoc";
+constexpr const char *Value = R"nbdoc(Constant value access)nbdoc";
+constexpr const char *class_doc = R"nbdoc(Implementation of the Iterator interface.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor - for later Init)nbdoc";
+} // namespace Iterator
+} // namespace NCollection_Sequence
+namespace NCollection_HSequence {
+constexpr const char *class_doc = R"nbdoc(Template class for Handle-managed sequences.
+Inherits from both NCollection_Sequence<TheItemType> and Standard_Transient,
+providing reference-counted sequence functionality.)nbdoc";
+constexpr const char *Append = R"nbdoc(Append single item.
+@param theItem the item to append)nbdoc";
+constexpr const char *ChangeSequence = R"nbdoc(Returns mutable reference to the underlying sequence.)nbdoc";
+constexpr const char *DynamicType = R"nbdoc()nbdoc";
+constexpr const char *Sequence = R"nbdoc(Returns const reference to the underlying sequence.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Default constructor.)nbdoc";
+constexpr const char *get_type_descriptor = R"nbdoc()nbdoc";
+constexpr const char *get_type_name = R"nbdoc()nbdoc";
+constexpr const char *op_delete = R"nbdoc()nbdoc";
+constexpr const char *op_delete_array = R"nbdoc()nbdoc";
+constexpr const char *op_new = R"nbdoc()nbdoc";
+constexpr const char *op_new_array = R"nbdoc()nbdoc";
+} // namespace NCollection_HSequence
 namespace NCollection_HArray1 {
 constexpr const char *class_doc = R"nbdoc(Template class for Handle-managed 1D arrays.
 Inherits from both NCollection_Array1<TheItemType> and Standard_Transient,

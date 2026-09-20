@@ -3,6 +3,7 @@
 import enum
 from typing import overload
 
+import nanoocp.NCollection
 import nanoocp.TCollection
 
 
@@ -354,7 +355,7 @@ class Standard_Dump:
         """
 
     @staticmethod
-    def HierarchicalValueIndices(theValues: "NCollection_IndexedDataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>>") -> "NCollection_List<int>":
+    def HierarchicalValueIndices(theValues: "NCollection_IndexedDataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>>") -> nanoocp.NCollection.NCollection_List__int:
         """Returns container of indices in values, that has hierarchical value"""
 
     @staticmethod

@@ -96,3 +96,94 @@ def test_template_accessor_spelling():
     with pytest.raises(TypeError, match="template"):
         NCollection.NCollection_Array1(1, 2)
     assert "NCollection_Array1__double" in NCollection.NCollection_Array1.bound()
+
+
+# ---------------------------------------------------------------------------------------------- List
+L = NCollection.NCollection_List[int]
+
+
+def test_list_occt_api_and_python_additions():
+    l = L()
+    l.Append(1)
+    l.Append(2)
+    l.Prepend(0)
+    assert (l.Extent(), l.Length(), l.Size(), len(l)) == (3, 3, 3, 3)
+    assert (l.First(), l.Last()) == (0, 2)
+    assert list(l) == [0, 1, 2]
+    assert l.Contains(2) is True and (5 in l) is False           # Contains bound because int has operator==
+    assert l.Remove(1) is True and list(l) == [0, 2]
+    l.Reverse()
+    assert list(l) == [2, 0]
+    l.RemoveFirst()
+    assert list(l) == [0]
+
+
+def test_list_iterator_is_nested_class():
+    l = L()
+    for v in (0, 1, 2):
+        l.Append(v)
+    it = L.Iterator(l)                                           # NCollection_List<T>::Iterator
+    seen = []
+    while it.More():
+        seen.append(it.Value())
+        it.Next()
+    assert seen == [0, 1, 2]
+    it = L.Iterator(l)
+    it.Next()
+    l.InsertBefore(99, it)
+    assert list(l) == [0, 99, 1, 2]
+    assert L.Iterator.__qualname__ == "NCollection_List__int.Iterator"
+
+
+# ------------------------------------------------------------------------------------------ Sequence
+from nanoocp import TCollection  # noqa: E402
+
+S = NCollection.NCollection_Sequence[TCollection.TCollection_AsciiString]
+HS = NCollection.NCollection_HSequence[TCollection.TCollection_AsciiString]
+
+
+def _strs(seq):
+    return [x.ToCString() for x in seq]
+
+
+def test_sequence_occt_api():
+    s = S()
+    s.Append(TCollection.TCollection_AsciiString("a"))
+    s.Append("b")                                                # implicit str -> TCollection_AsciiString
+    s.Prepend("z")
+    assert (s.Lower(), s.Upper(), s.Length(), len(s)) == (1, 3, 3, 3)
+    assert s.Value(2).ToCString() == "a" and s(2).ToCString() == "a"
+    assert s[3].ToCString() == "b"                               # Python addition (1-based, like Value)
+    s.ChangeValue(1).AssignCat("!")                              # mutable view for class element types
+    assert s.Value(1).ToCString() == "z!"
+    s[2] = "B"
+    s.Remove(3)
+    assert _strs(s) == ["z!", "B"]
+    with pytest.raises(Standard.Standard_OutOfRange):
+        s.Value(9)
+
+
+def test_hsequence_is_transient_and_converts():
+    s = S()
+    s.Append("a")
+    h = HS()
+    h.Append("x")
+    h.Append(s)                                                  # Append(SequenceType&)
+    assert isinstance(h, Standard.Standard_Transient)
+    assert _strs(h) == ["x", "a"]
+    assert type(h.Sequence()) is S and h.ChangeSequence() is h
+    assert S(h).Length() == 2                                    # HSequence -> Sequence
+
+
+def test_sequence_and_list_aliases():
+    from nanoocp import TColStd
+    assert TColStd.TColStd_SequenceOfAsciiString is S
+    assert TColStd.TColStd_ListOfInteger is L
+    assert TColStd.TColStd_HSequenceOfAsciiString is HS
+
+
+def test_occt_method_returning_a_container():
+    from nanoocp import Message
+    printers = Message.Message.DefaultMessenger().Printers()
+    assert type(printers).__name__ == "NCollection_Sequence__Handle_Message_Printer"
+    assert len(printers) >= 1

@@ -214,6 +214,11 @@ between containers.)nbdoc");
 void nanoocp_templates_Storage(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<opencascade::handle<Standard_Persistent>>(home, "NCollection_Array1__Handle_Standard_Persistent"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<opencascade::handle<Standard_Persistent>>(home, "NCollection_HArray1__Handle_Standard_Persistent"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<TCollection_AsciiString>(home, "NCollection_Sequence__TCollection_AsciiString"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HSequence<TCollection_AsciiString>(home, "NCollection_HSequence__TCollection_AsciiString"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<opencascade::handle<Storage_Root>>(home, "NCollection_Sequence__Handle_Storage_Root"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HSequence<opencascade::handle<Storage_Root>>(home, "NCollection_HSequence__Handle_Storage_Root"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<TCollection_ExtendedString>(home, "NCollection_Sequence__TCollection_ExtendedString"); }
 }
 
 void nanoocp_define_Storage(nb::module_ &m) {

@@ -15,6 +15,32 @@ NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
 NCollection_HArray1 = _Template("NCollection_HArray1", "nanoocp.NCollection", {
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_HArray1__Handle_Standard_Persistent",
 })
+NCollection_HSequence = _Template("NCollection_HSequence", "nanoocp.NCollection", {
+    (('nanoocp.Storage', 'Storage_Root'),): "NCollection_HSequence__Handle_Storage_Root",
+    (('nanoocp.TCollection', 'TCollection_HAsciiString'),): "NCollection_HSequence__Handle_TCollection_HAsciiString",
+    (('nanoocp.TCollection', 'TCollection_HExtendedString'),): "NCollection_HSequence__Handle_TCollection_HExtendedString",
+    (('nanoocp.Units', 'Units_Quantity'),): "NCollection_HSequence__Handle_Units_Quantity",
+    (('nanoocp.Units', 'Units_Token'),): "NCollection_HSequence__Handle_Units_Token",
+    (('nanoocp.Units', 'Units_Unit'),): "NCollection_HSequence__Handle_Units_Unit",
+    (('nanoocp.TCollection', 'TCollection_AsciiString'),): "NCollection_HSequence__TCollection_AsciiString",
+    (('builtins', 'int'),): "NCollection_HSequence__int",
+})
+NCollection_List = _Template("NCollection_List", "nanoocp.NCollection", {
+    (('nanoocp.Message', 'Message_Alert'),): "NCollection_List__Handle_Message_Alert",
+    (('builtins', 'int'),): "NCollection_List__int",
+})
+NCollection_Sequence = _Template("NCollection_Sequence", "nanoocp.NCollection", {
+    (('nanoocp.Message', 'Message_Printer'),): "NCollection_Sequence__Handle_Message_Printer",
+    (('nanoocp.Storage', 'Storage_Root'),): "NCollection_Sequence__Handle_Storage_Root",
+    (('nanoocp.TCollection', 'TCollection_HAsciiString'),): "NCollection_Sequence__Handle_TCollection_HAsciiString",
+    (('nanoocp.TCollection', 'TCollection_HExtendedString'),): "NCollection_Sequence__Handle_TCollection_HExtendedString",
+    (('nanoocp.Units', 'Units_Quantity'),): "NCollection_Sequence__Handle_Units_Quantity",
+    (('nanoocp.Units', 'Units_Token'),): "NCollection_Sequence__Handle_Units_Token",
+    (('nanoocp.Units', 'Units_Unit'),): "NCollection_Sequence__Handle_Units_Unit",
+    (('nanoocp.TCollection', 'TCollection_AsciiString'),): "NCollection_Sequence__TCollection_AsciiString",
+    (('nanoocp.TCollection', 'TCollection_ExtendedString'),): "NCollection_Sequence__TCollection_ExtendedString",
+    (('builtins', 'int'),): "NCollection_Sequence__int",
+})
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {

@@ -158,6 +158,10 @@ def main(argv: list[str]) -> int:
         tk = tree.toolkits[tk_name]
         tk_dir = cpp_root / tk_name
         tk_dir.mkdir(parents=True, exist_ok=True)
+        # emit in runtime (declaration) order: template instances are bound in that order and an
+        # HSequence<T> must find its Sequence<T> already registered
+        order = _package_order(irs, known)
+        irs = sorted(irs, key=lambda ir: order.index(ir.name))
         pkgs = [tree.packages[ir.name] for ir in irs]
         for ir, pkg in zip(irs, pkgs):
             em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates)
@@ -168,7 +172,7 @@ def main(argv: list[str]) -> int:
             for line in ir.report + em.report:
                 print(f"    - {line}", file=sys.stderr)
         depends = [d for d in tk.depends if d in generated_toolkits]
-        (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, _package_order(irs, known), depends))
+        (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends))
     ordered = _topo(tree, generated_toolkits)
     # Python shims: one per generated package (+ deprecated typedef aliases), one per alias-only prefix
     aliases, unbound = deprecated_aliases(args.occt_src / "src" / "Deprecated" / "NCollectionAliases", clang_args(tree), templates)
