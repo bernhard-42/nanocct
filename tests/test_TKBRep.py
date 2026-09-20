@@ -6,7 +6,7 @@ import tempfile
 
 import pytest
 
-from nanoocp import BRep, BRepAdaptor, BRepLProp, BRepTools, BinTools, Geom, GeomAbs, NCollection, TopAbs, TopExp, TopTools, TopoDS, gp
+from nanoocp import BRep, BRepAdaptor, BRepLProp, BRepTools, BinTools, Geom, GeomAbs, NCollection, Standard, TopAbs, TopExp, TopTools, TopoDS, gp
 
 PACKAGES = ["TopoDS", "TopExp", "TopTools", "BRep", "BRepLProp", "BRepAdaptor", "BRepTools", "BinTools", "BRepGraph", "BRepGraphInc"]
 
@@ -76,6 +76,20 @@ def test_brep_tool_and_adaptors():
     curve, first, last = BRep.BRep_Tool.Curve(e)                    # handle + two double& out-params
     assert type(curve) is Geom.Geom_Line and first == -2e100 and last == 2e100
     assert BRep.BRep_Tool.Degenerated(e) is False
+    # Parameter(V, E) -> double (throws) and Parameter(V, E, double&) -> bool collide after out-param removal: the
+    # scalar-returning overload without out-params wins
+    b = BRep.BRep_Builder()
+    free_edge = TopoDS.TopoDS_Edge()                                 # e above is frozen (it belongs to the compound)
+    b.MakeEdge(free_edge, Geom.Geom_Line(gp.gp_Pnt(), gp.gp_Dir(1.0, 0.0, 0.0)), 1e-7)
+    on_edge = TopoDS.TopoDS_Vertex()
+    b.MakeVertex(on_edge, gp.gp_Pnt(2.0, 0.0, 0.0), 1e-7)
+    on_edge.Orientation(TopAbs.TopAbs_Orientation.TopAbs_FORWARD)
+    b.Add(free_edge, on_edge)
+    b.Range(free_edge, 0.0, 2.0)
+    b.UpdateVertex(on_edge, 2.0, free_edge, 1e-7)                   # the vertex's parameter on the edge
+    assert BRep.BRep_Tool.Parameter(on_edge, free_edge) == 2.0
+    with pytest.raises(Standard.Standard_NoSuchObject):
+        BRep.BRep_Tool.Parameter(v, free_edge)                      # v is not a vertex of that edge
     ad = BRepAdaptor.BRepAdaptor_Curve(e)
     assert ad.GetType() == GeomAbs.GeomAbs_CurveType.GeomAbs_Line
     assert ad.Line().Direction().Coord() == (1.0, 0.0, 0.0)

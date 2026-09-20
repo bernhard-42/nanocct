@@ -50,14 +50,14 @@ If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.)nbdoc")
-        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double)>(&GeomProjLib::Curve2d), nb::arg("C"), nb::arg("S"), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const occ::handle<Geom_Surface> & S, const double UDeb, const double UFin, const double VDeb, const double VFin) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, S, UDeb, UFin, VDeb, VFin, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C"), nb::arg("S"), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.
 can expand a little the bounds of surface)nbdoc")
-        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const occ::handle<Geom_Surface> & S, const double UDeb, const double UFin, const double VDeb, const double VFin) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, S, UDeb, UFin, VDeb, VFin, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C"), nb::arg("S"), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double)>(&GeomProjLib::Curve2d), nb::arg("C"), nb::arg("S"), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 If the projection needs an approximation,
 Precision::PApproximation() is used.

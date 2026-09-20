@@ -62,6 +62,14 @@
 #include <gp_XY.hxx>
 #include <gp_XYZ.hxx>
 
+// math_GlobOptMin: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):
+// bound through a wrapper with deleted copy and move, under the original name
+struct nanoocp_wrap_math_GlobOptMin : math_GlobOptMin {
+    using math_GlobOptMin::math_GlobOptMin;
+    nanoocp_wrap_math_GlobOptMin(const nanoocp_wrap_math_GlobOptMin &) = delete;
+    nanoocp_wrap_math_GlobOptMin(nanoocp_wrap_math_GlobOptMin &&) = delete;
+};
+
 void nanoocp_declare_math(nb::module_ &m) {
     nb::enum_<math_Status>(m, "math_Status", nb::is_arithmetic())
         .value("math_OK", math_OK)
@@ -314,6 +322,33 @@ between the parameter bounds Lower and Upper.
 Warning: Order must be inferior or equal to 61.)nbdoc");
     }
     { nb::class_<math_MultipleVarFunction> cls(m, "math_MultipleVarFunction", R"nbdoc(Describes the virtual functions associated with a multiple variable function.)nbdoc");
+    }
+    { nb::class_<nanoocp_wrap_math_GlobOptMin> cls(m, "math_GlobOptMin", R"nbdoc(This class represents Evtushenko's algorithm of global optimization based on non-uniform mesh.
+Article: Yu. Evtushenko. Numerical methods for finding global extreme (case of a non-uniform
+mesh). U.S.S.R. Comput. Maths. Math. Phys., Vol. 11, N 6, pp. 38-54.
+
+This method performs search on non-uniform mesh. The search space is a box in R^n space.
+The default behavior is to find all minimums in that box. Computation of maximums is not
+supported.
+
+The search box can be split into smaller boxes by discontinuity criteria.
+This functionality is covered by SetGlobalParams and SetLocalParams API.
+
+It is possible to set continuity of the local boxes.
+Such option can forcibly change local extrema search.
+In other words if theFunc can be casted to the function with Hessian but, continuity is set to 1
+Gradient based local optimization method will be used, not Hessian based method.
+This functionality is covered by SetContinuity and GetContinuity API.
+
+It is possible to freeze Lipschitz const to avoid internal modifications on it.
+This functionality is covered by SetLipConstState and GetLipConstState API.
+
+It is possible to perform single solution search.
+This functionality is covered by first parameter in Perform method.
+
+It is possible to set / get minimal value of the functional.
+It works well together with single solution search.
+This functionality is covered by SetFunctionalMinimalValue and GetFunctionalMinimalValue API.)nbdoc");
     }
     { nb::class_<math_Householder> cls(m, "math_Householder", R"nbdoc(This class implements the least square solution of a set of
 linear equations of m unknowns (n >= m) using the Householder
@@ -1462,6 +1497,42 @@ algorithm: no state has been saved). It is the
 responsibility of the programmer to decide if he needs
 to save the current state of the function and to return
 an Integer that allows retrieval of the state.)nbdoc");
+    nb::borrow<nb::class_<nanoocp_wrap_math_GlobOptMin>>(m.attr("math_GlobOptMin"))
+        .def(nb::init<math_MultipleVarFunction *, const math_Vector &, const math_Vector &, const double, const double, const double>(), nb::arg("theFunc"), nb::arg("theLowerBorder"), nb::arg("theUpperBorder"), nb::arg("theC") = static_cast<std::decay_t<const double>>(9), nb::arg("theDiscretizationTol") = static_cast<std::decay_t<const double>>(1.0e-2), nb::arg("theSameTol") = static_cast<std::decay_t<const double>>(1.0e-7), R"nbdoc(Constructor. Perform method is not called from it.
+@param theFunc - objective functional.
+@param theLowerBorder - lower corner of the search box.
+@param theUpperBorder - upper corner of the search box.
+@param theC - Lipschitz constant.
+@param theDiscretizationTol - parameter space discretization tolerance.
+@param theSameTol - functional value space indifference tolerance.)nbdoc")
+        .def("SetGlobalParams", static_cast<void (math_GlobOptMin::*)(math_MultipleVarFunction *, const math_Vector &, const math_Vector &, const double, const double, const double)>(&math_GlobOptMin::SetGlobalParams), nb::arg("theFunc"), nb::arg("theLowerBorder"), nb::arg("theUpperBorder"), nb::arg("theC") = static_cast<std::decay_t<const double>>(9), nb::arg("theDiscretizationTol") = static_cast<std::decay_t<const double>>(1.0e-2), nb::arg("theSameTol") = static_cast<std::decay_t<const double>>(1.0e-7), R"nbdoc(@param theFunc - objective functional.
+@param theLowerBorder - lower corner of the search box.
+@param theUpperBorder - upper corner of the search box.
+@param theC - Lipschitz constant.
+@param theDiscretizationTol - parameter space discretization tolerance.
+@param theSameTol - functional value space indifference tolerance.)nbdoc")
+        .def("SetLocalParams", static_cast<void (math_GlobOptMin::*)(const math_Vector &, const math_Vector &)>(&math_GlobOptMin::SetLocalParams), nb::arg("theLocalA"), nb::arg("theLocalB"), R"nbdoc(Method to reduce bounding box. Perform will use this box.
+@param theLocalA - lower corner of the local box.
+@param theLocalB - upper corner of the local box.)nbdoc")
+        .def("SetTol", static_cast<void (math_GlobOptMin::*)(const double, const double)>(&math_GlobOptMin::SetTol), nb::arg("theDiscretizationTol"), nb::arg("theSameTol"), R"nbdoc(Method to set tolerances.
+@param theDiscretizationTol - parameter space discretization tolerance.
+@param theSameTol - functional value space indifference tolerance.)nbdoc")
+        .def("GetTol", [](nanoocp_wrap_math_GlobOptMin &self) { double theDiscretizationTol{}; double theSameTol{}; self.GetTol(theDiscretizationTol, theSameTol); return std::make_tuple(theDiscretizationTol, theSameTol); }, R"nbdoc(Method to get tolerances.
+@param theDiscretizationTol - parameter space discretization tolerance.
+@param theSameTol - functional value space indifference tolerance.)nbdoc")
+        .def("Perform", static_cast<void (math_GlobOptMin::*)(const bool)>(&math_GlobOptMin::Perform), nb::arg("isFindSingleSolution") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(@param isFindSingleSolution - defines whether to find single solution or all solutions.)nbdoc")
+        .def("Points", static_cast<void (math_GlobOptMin::*)(const int, math_Vector &)>(&math_GlobOptMin::Points), nb::arg("theIndex"), nb::arg("theSol"), R"nbdoc(Return solution theIndex, 1 <= theIndex <= NbExtrema.)nbdoc")
+        .def("SetContinuity", static_cast<void (math_GlobOptMin::*)(const int)>(&math_GlobOptMin::SetContinuity), nb::arg("theCont"), R"nbdoc(Set / Get continuity of local borders splits (0 ~ C0, 1 ~ C1, 2 ~ C2).)nbdoc")
+        .def("GetContinuity", static_cast<int (math_GlobOptMin::*)() const>(&math_GlobOptMin::GetContinuity))
+        .def("SetFunctionalMinimalValue", static_cast<void (math_GlobOptMin::*)(const double)>(&math_GlobOptMin::SetFunctionalMinimalValue), nb::arg("theMinimalValue"), R"nbdoc(Set / Get functional minimal value.)nbdoc")
+        .def("GetFunctionalMinimalValue", static_cast<double (math_GlobOptMin::*)() const>(&math_GlobOptMin::GetFunctionalMinimalValue))
+        .def("SetLipConstState", static_cast<void (math_GlobOptMin::*)(const bool)>(&math_GlobOptMin::SetLipConstState), nb::arg("theFlag"), R"nbdoc(Set / Get Lipchitz constant modification state.
+True means that the constant is locked and unlocked otherwise.)nbdoc")
+        .def("GetLipConstState", static_cast<bool (math_GlobOptMin::*)() const>(&math_GlobOptMin::GetLipConstState))
+        .def("isDone", static_cast<bool (math_GlobOptMin::*)() const>(&math_GlobOptMin::isDone), R"nbdoc(Return computation state of the algorithm.)nbdoc")
+        .def("GetF", static_cast<double (math_GlobOptMin::*)() const>(&math_GlobOptMin::GetF), R"nbdoc(Get best functional value.)nbdoc")
+        .def("NbExtrema", static_cast<int (math_GlobOptMin::*)() const>(&math_GlobOptMin::NbExtrema), R"nbdoc(Return count of global extremas.)nbdoc");
+    nanoocp_implicit_copy_ctor<nanoocp_wrap_math_GlobOptMin>(nb::borrow<nb::class_<nanoocp_wrap_math_GlobOptMin>>(m.attr("math_GlobOptMin")));
     nb::borrow<nb::class_<math_Householder>>(m.attr("math_Householder"))
         .def(nb::init<const math_Matrix &, const math_Matrix &, const double>(), nb::arg("A"), nb::arg("B"), nb::arg("EPS") = static_cast<std::decay_t<const double>>(1.0e-20), R"nbdoc(Given an input matrix A with n>= m, given an input matrix B
 this constructor performs the least square resolution of

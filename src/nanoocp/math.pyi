@@ -2588,6 +2588,113 @@ class math_MultipleVarFunction:
         an Integer that allows retrieval of the state.
         """
 
+class math_GlobOptMin:
+    """
+    This class represents Evtushenko's algorithm of global optimization based on non-uniform mesh.
+    Article: Yu. Evtushenko. Numerical methods for finding global extreme (case of a non-uniform
+    mesh). U.S.S.R. Comput. Maths. Math. Phys., Vol. 11, N 6, pp. 38-54.
+
+    This method performs search on non-uniform mesh. The search space is a box in R^n space.
+    The default behavior is to find all minimums in that box. Computation of maximums is not
+    supported.
+
+    The search box can be split into smaller boxes by discontinuity criteria.
+    This functionality is covered by SetGlobalParams and SetLocalParams API.
+
+    It is possible to set continuity of the local boxes.
+    Such option can forcibly change local extrema search.
+    In other words if theFunc can be casted to the function with Hessian but, continuity is set to 1
+    Gradient based local optimization method will be used, not Hessian based method.
+    This functionality is covered by SetContinuity and GetContinuity API.
+
+    It is possible to freeze Lipschitz const to avoid internal modifications on it.
+    This functionality is covered by SetLipConstState and GetLipConstState API.
+
+    It is possible to perform single solution search.
+    This functionality is covered by first parameter in Perform method.
+
+    It is possible to set / get minimal value of the functional.
+    It works well together with single solution search.
+    This functionality is covered by SetFunctionalMinimalValue and GetFunctionalMinimalValue API.
+    """
+
+    def __init__(self, theFunc: math_MultipleVarFunction, theLowerBorder: math_Vector, theUpperBorder: math_Vector, theC: float = 9.0, theDiscretizationTol: float = 0.01, theSameTol: float = 1e-07) -> None:
+        """
+        Constructor. Perform method is not called from it.
+        @param theFunc - objective functional.
+        @param theLowerBorder - lower corner of the search box.
+        @param theUpperBorder - upper corner of the search box.
+        @param theC - Lipschitz constant.
+        @param theDiscretizationTol - parameter space discretization tolerance.
+        @param theSameTol - functional value space indifference tolerance.
+        """
+
+    def SetGlobalParams(self, theFunc: math_MultipleVarFunction, theLowerBorder: math_Vector, theUpperBorder: math_Vector, theC: float = 9.0, theDiscretizationTol: float = 0.01, theSameTol: float = 1e-07) -> None:
+        """
+        @param theFunc - objective functional.
+        @param theLowerBorder - lower corner of the search box.
+        @param theUpperBorder - upper corner of the search box.
+        @param theC - Lipschitz constant.
+        @param theDiscretizationTol - parameter space discretization tolerance.
+        @param theSameTol - functional value space indifference tolerance.
+        """
+
+    def SetLocalParams(self, theLocalA: math_Vector, theLocalB: math_Vector) -> None:
+        """
+        Method to reduce bounding box. Perform will use this box.
+        @param theLocalA - lower corner of the local box.
+        @param theLocalB - upper corner of the local box.
+        """
+
+    def SetTol(self, theDiscretizationTol: float, theSameTol: float) -> None:
+        """
+        Method to set tolerances.
+        @param theDiscretizationTol - parameter space discretization tolerance.
+        @param theSameTol - functional value space indifference tolerance.
+        """
+
+    def GetTol(self) -> tuple[float, float]:
+        """
+        Method to get tolerances.
+        @param theDiscretizationTol - parameter space discretization tolerance.
+        @param theSameTol - functional value space indifference tolerance.
+        """
+
+    def Perform(self, isFindSingleSolution: bool = False) -> None:
+        """
+        @param isFindSingleSolution - defines whether to find single solution or all solutions.
+        """
+
+    def Points(self, theIndex: int, theSol: math_Vector) -> None:
+        """Return solution theIndex, 1 <= theIndex <= NbExtrema."""
+
+    def SetContinuity(self, theCont: int) -> None:
+        """Set / Get continuity of local borders splits (0 ~ C0, 1 ~ C1, 2 ~ C2)."""
+
+    def GetContinuity(self) -> int: ...
+
+    def SetFunctionalMinimalValue(self, theMinimalValue: float) -> None:
+        """Set / Get functional minimal value."""
+
+    def GetFunctionalMinimalValue(self) -> float: ...
+
+    def SetLipConstState(self, theFlag: bool) -> None:
+        """
+        Set / Get Lipchitz constant modification state.
+        True means that the constant is locked and unlocked otherwise.
+        """
+
+    def GetLipConstState(self) -> bool: ...
+
+    def isDone(self) -> bool:
+        """Return computation state of the algorithm."""
+
+    def GetF(self) -> float:
+        """Get best functional value."""
+
+    def NbExtrema(self) -> int:
+        """Return count of global extremas."""
+
 class math_Householder:
     """
     This class implements the least square solution of a set of

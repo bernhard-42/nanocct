@@ -674,21 +674,21 @@ class Message:
 
     @overload
     @staticmethod
+    def MetricFromString(theString: str) -> Message_MetricType:
+        """
+        Returns the metric type from the given string identifier.
+        @param theString string identifier
+        @return metric type or Message_MetricType_None if string identifier is invalid
+        """
+
+    @overload
+    @staticmethod
     def MetricFromString(theString: str) -> tuple[bool, Message_MetricType]:
         """
         Determines the metric from the given string identifier.
         @param theString string identifier
         @param theType detected type of metric
         @return TRUE if string identifier is known
-        """
-
-    @overload
-    @staticmethod
-    def MetricFromString(theString: str) -> Message_MetricType:
-        """
-        Returns the metric type from the given string identifier.
-        @param theString string identifier
-        @return metric type or Message_MetricType_None if string identifier is invalid
         """
 
     @staticmethod

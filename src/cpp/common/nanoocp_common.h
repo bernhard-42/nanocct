@@ -152,8 +152,8 @@ template <typename From, typename To> void nanoocp_conversion_handle(nb::handle 
 
 // Public data member: read/write when its type can be assigned to (a member with a deleted copy assignment, e.g. of
 // type BRepGraphInc_Storage, or a const member is read-only). Decided at compile time, the header does not say.
-template <typename T, typename D, typename... Extra>
-void nanoocp_def_field(nb::class_<T> cls, const char *name, D T::*p, const Extra &...extra) {
+template <typename C, typename T, typename D, typename... Extra>
+void nanoocp_def_field(nb::class_<C> cls, const char *name, D T::*p, const Extra &...extra) {
     if constexpr (std::is_copy_assignable_v<D> && !std::is_const_v<D>)
         cls.def_rw(name, p, extra...);
     else

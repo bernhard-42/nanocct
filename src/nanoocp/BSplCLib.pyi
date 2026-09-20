@@ -393,6 +393,23 @@ class BSplCLib:
 
     @overload
     @staticmethod
+    def Eval(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float, float, float]:
+        """
+        Perform the De Boor algorithm to evaluate a point at
+        parameter <U>, with <Degree> and <Dimension>.
+        Evaluates by multiplying the Poles by the Weights and
+        gives the homogeneous result in PolesResult that is
+        the results of the evaluation of the numerator once it
+        has been multiplied by the weights and in
+        WeightsResult one has the result of the evaluation of
+        the denominator
+
+        Warning: <PolesResult> and <WeightsResult> must be
+        dimensioned properly.
+        """
+
+    @overload
+    @staticmethod
     def Eval(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float]:
         """
         Perform the De Boor algorithm to evaluate a point at
@@ -409,23 +426,6 @@ class BSplCLib:
         Degree used to extrapolate before the first knot [1]
         = Degre used to extrapolate after the last knot has
         to be between 1 and Degree
-        """
-
-    @overload
-    @staticmethod
-    def Eval(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float, float, float]:
-        """
-        Perform the De Boor algorithm to evaluate a point at
-        parameter <U>, with <Degree> and <Dimension>.
-        Evaluates by multiplying the Poles by the Weights and
-        gives the homogeneous result in PolesResult that is
-        the results of the evaluation of the numerator once it
-        has been multiplied by the weights and in
-        WeightsResult one has the result of the evaluation of
-        the denominator
-
-        Warning: <PolesResult> and <WeightsResult> must be
-        dimensioned properly.
         """
 
     @overload
@@ -1545,6 +1545,10 @@ class BSplCLib:
 
     @overload
     @staticmethod
+    def Interpolate(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, float, int]: ...
+
+    @overload
+    @staticmethod
     def Interpolate(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, int]:
         """
         Performs the interpolation of the data given in
@@ -1570,10 +1574,6 @@ class BSplCLib:
         problem else it will give the index of the faulty
         pivot
         """
-
-    @overload
-    @staticmethod
-    def Interpolate(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, float, int]: ...
 
     @overload
     @staticmethod

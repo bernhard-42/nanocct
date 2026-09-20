@@ -798,6 +798,17 @@ theStatus will return 0 if OK else it will return the pivot index
 of the matrix that was inverted to compute the multiplied
 BSpline: the method used is interpolation at Schoenenberg
 points of a(t)*F(t))nbdoc")
+        .def_static("Eval", [](const double U, const bool PeriodicFlag, const int DerivativeRequest, const int Degree, const NCollection_Array1<double> & FlatKnots, const int ArrayDimension) { int ExtrapMode{}; double Poles{}; double Weights{}; double PolesResult{}; double WeightsResult{}; BSplCLib::Eval(U, PeriodicFlag, DerivativeRequest, ExtrapMode, Degree, FlatKnots, ArrayDimension, Poles, Weights, PolesResult, WeightsResult); return std::make_tuple(ExtrapMode, Poles, Weights, PolesResult, WeightsResult); }, nb::arg("U"), nb::arg("PeriodicFlag"), nb::arg("DerivativeRequest"), nb::arg("Degree"), nb::arg("FlatKnots"), nb::arg("ArrayDimension"), R"nbdoc(Perform the De Boor algorithm to evaluate a point at
+parameter <U>, with <Degree> and <Dimension>.
+Evaluates by multiplying the Poles by the Weights and
+gives the homogeneous result in PolesResult that is
+the results of the evaluation of the numerator once it
+has been multiplied by the weights and in
+WeightsResult one has the result of the evaluation of
+the denominator
+
+Warning: <PolesResult> and <WeightsResult> must be
+dimensioned properly.)nbdoc")
         .def_static("Eval", [](const double U, const bool PeriodicFlag, const int DerivativeRequest, const int Degree, const NCollection_Array1<double> & FlatKnots, const int ArrayDimension) { int ExtrapMode{}; double Poles{}; double Result{}; BSplCLib::Eval(U, PeriodicFlag, DerivativeRequest, ExtrapMode, Degree, FlatKnots, ArrayDimension, Poles, Result); return std::make_tuple(ExtrapMode, Poles, Result); }, nb::arg("U"), nb::arg("PeriodicFlag"), nb::arg("DerivativeRequest"), nb::arg("Degree"), nb::arg("FlatKnots"), nb::arg("ArrayDimension"), R"nbdoc(Perform the De Boor algorithm to evaluate a point at
 parameter <U>, with <Degree> and <Dimension>.
 
@@ -812,17 +823,6 @@ of the BsplineCurve. ExtrapMode has two slots [0] =
 Degree used to extrapolate before the first knot [1]
 = Degre used to extrapolate after the last knot has
 to be between 1 and Degree)nbdoc")
-        .def_static("Eval", [](const double U, const bool PeriodicFlag, const int DerivativeRequest, const int Degree, const NCollection_Array1<double> & FlatKnots, const int ArrayDimension) { int ExtrapMode{}; double Poles{}; double Weights{}; double PolesResult{}; double WeightsResult{}; BSplCLib::Eval(U, PeriodicFlag, DerivativeRequest, ExtrapMode, Degree, FlatKnots, ArrayDimension, Poles, Weights, PolesResult, WeightsResult); return std::make_tuple(ExtrapMode, Poles, Weights, PolesResult, WeightsResult); }, nb::arg("U"), nb::arg("PeriodicFlag"), nb::arg("DerivativeRequest"), nb::arg("Degree"), nb::arg("FlatKnots"), nb::arg("ArrayDimension"), R"nbdoc(Perform the De Boor algorithm to evaluate a point at
-parameter <U>, with <Degree> and <Dimension>.
-Evaluates by multiplying the Poles by the Weights and
-gives the homogeneous result in PolesResult that is
-the results of the evaluation of the numerator once it
-has been multiplied by the weights and in
-WeightsResult one has the result of the evaluation of
-the denominator
-
-Warning: <PolesResult> and <WeightsResult> must be
-dimensioned properly.)nbdoc")
         .def_static("Eval", [](const double U, const bool PeriodicFlag, const bool HomogeneousFlag, const int Degree, const NCollection_Array1<double> & FlatKnots, const NCollection_Array1<gp_Pnt> & Poles, const NCollection_Array1<double> & Weights, gp_Pnt & Point) { int ExtrapMode{}; double Weight{}; BSplCLib::Eval(U, PeriodicFlag, HomogeneousFlag, ExtrapMode, Degree, FlatKnots, Poles, Weights, Point, Weight); return std::make_tuple(ExtrapMode, Weight); }, nb::arg("U"), nb::arg("PeriodicFlag"), nb::arg("HomogeneousFlag"), nb::arg("Degree"), nb::arg("FlatKnots"), nb::arg("Poles"), nb::arg("Weights"), nb::arg("Point"), R"nbdoc(Perform the evaluation of the Bspline Basis
 and then multiplies by the weights
 this just evaluates the current point)nbdoc")
@@ -1054,6 +1054,7 @@ Cubic interpolation at knots or interpolation at
 Scheonberg points the method will work.
 The InversionProblem will report 0 if there was
 no problem else it will give the i)nbdoc")
+        .def_static("Interpolate", [](const int Degree, const NCollection_Array1<double> & FlatKnots, const NCollection_Array1<double> & Parameters, const NCollection_Array1<int> & ContactOrderArray, const int ArrayDimension) { double Poles{}; double Weights{}; int InversionProblem{}; BSplCLib::Interpolate(Degree, FlatKnots, Parameters, ContactOrderArray, ArrayDimension, Poles, Weights, InversionProblem); return std::make_tuple(Poles, Weights, InversionProblem); }, nb::arg("Degree"), nb::arg("FlatKnots"), nb::arg("Parameters"), nb::arg("ContactOrderArray"), nb::arg("ArrayDimension"))
         .def_static("Interpolate", [](const int Degree, const NCollection_Array1<double> & FlatKnots, const NCollection_Array1<double> & Parameters, const NCollection_Array1<int> & ContactOrderArray, const int ArrayDimension) { double Poles{}; int InversionProblem{}; BSplCLib::Interpolate(Degree, FlatKnots, Parameters, ContactOrderArray, ArrayDimension, Poles, InversionProblem); return std::make_tuple(Poles, InversionProblem); }, nb::arg("Degree"), nb::arg("FlatKnots"), nb::arg("Parameters"), nb::arg("ContactOrderArray"), nb::arg("ArrayDimension"), R"nbdoc(Performs the interpolation of the data given in
 the Poles array according to the requests in
 ContactOrderArray that is: if
@@ -1076,7 +1077,6 @@ points the method will work
 The InversionProblem will report 0 if there was no
 problem else it will give the index of the faulty
 pivot)nbdoc")
-        .def_static("Interpolate", [](const int Degree, const NCollection_Array1<double> & FlatKnots, const NCollection_Array1<double> & Parameters, const NCollection_Array1<int> & ContactOrderArray, const int ArrayDimension) { double Poles{}; double Weights{}; int InversionProblem{}; BSplCLib::Interpolate(Degree, FlatKnots, Parameters, ContactOrderArray, ArrayDimension, Poles, Weights, InversionProblem); return std::make_tuple(Poles, Weights, InversionProblem); }, nb::arg("Degree"), nb::arg("FlatKnots"), nb::arg("Parameters"), nb::arg("ContactOrderArray"), nb::arg("ArrayDimension"))
         .def_static("MovePoint", [](const double U, const gp_Vec2d & Displ, const int Index1, const int Index2, const int Degree, const NCollection_Array1<gp_Pnt2d> & Poles, const NCollection_Array1<double> * Weights, const NCollection_Array1<double> & FlatKnots, NCollection_Array1<gp_Pnt2d> & NewPoles) { int FirstIndex{}; int LastIndex{}; BSplCLib::MovePoint(U, Displ, Index1, Index2, Degree, Poles, Weights, FlatKnots, FirstIndex, LastIndex, NewPoles); return std::make_tuple(FirstIndex, LastIndex); }, nb::arg("U"), nb::arg("Displ"), nb::arg("Index1"), nb::arg("Index2"), nb::arg("Degree"), nb::arg("Poles"), nb::arg("Weights"), nb::arg("FlatKnots"), nb::arg("NewPoles"), R"nbdoc(Find the new poles which allows an old point (with a
 given <u> as parameter) to reach a new position
 Index1 and Index2 indicate the range of poles we can move

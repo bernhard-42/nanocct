@@ -1120,11 +1120,11 @@ theIndex = 3 => Z is returned
 Raises OutOfRange if theIndex != {1, 2, 3}.
 Raised if theIndex != {1, 2, 3}.)nbdoc")
         .def("Coord", [](const gp_Pnt &self) { double theXp{}; double theYp{}; double theZp{}; self.Coord(theXp, theYp, theZp); return std::make_tuple(theXp, theYp, theZp); }, R"nbdoc(For this point gives its three coordinates theXp, theYp and theZp.)nbdoc")
+        .def("Coord", static_cast<const gp_XYZ & (gp_Pnt::*)() const noexcept>(&gp_Pnt::Coord), R"nbdoc(For this point, returns its three coordinates as a XYZ object.)nbdoc")
         .def("X", static_cast<double (gp_Pnt::*)() const noexcept>(&gp_Pnt::X), R"nbdoc(For this point, returns its X coordinate.)nbdoc")
         .def("Y", static_cast<double (gp_Pnt::*)() const noexcept>(&gp_Pnt::Y), R"nbdoc(For this point, returns its Y coordinate.)nbdoc")
         .def("Z", static_cast<double (gp_Pnt::*)() const noexcept>(&gp_Pnt::Z), R"nbdoc(For this point, returns its Z coordinate.)nbdoc")
         .def("XYZ", static_cast<const gp_XYZ & (gp_Pnt::*)() const noexcept>(&gp_Pnt::XYZ), R"nbdoc(For this point, returns its three coordinates as a XYZ object.)nbdoc")
-        .def("Coord", static_cast<const gp_XYZ & (gp_Pnt::*)() const noexcept>(&gp_Pnt::Coord), R"nbdoc(For this point, returns its three coordinates as a XYZ object.)nbdoc")
         .def("ChangeCoord", static_cast<gp_XYZ & (gp_Pnt::*)() noexcept>(&gp_Pnt::ChangeCoord), nb::rv_policy::reference_internal, R"nbdoc(Returns the coordinates of this point.
 Note: This syntax allows direct modification of the returned value.)nbdoc")
         .def("BaryCenter", static_cast<void (gp_Pnt::*)(const double, const gp_Pnt &, const double)>(&gp_Pnt::BaryCenter), nb::arg("theAlpha"), nb::arg("theP"), nb::arg("theBeta"), R"nbdoc(Assigns the result of the following expression to this point
@@ -1633,10 +1633,10 @@ theIndex = 1 => X is returned
 theIndex = 2 => Y is returned
 Raises OutOfRange if theIndex != {1, 2}.)nbdoc")
         .def("Coord", [](const gp_Pnt2d &self) { double theXp{}; double theYp{}; self.Coord(theXp, theYp); return std::make_tuple(theXp, theYp); }, R"nbdoc(For this point returns its two coordinates as a number pair.)nbdoc")
+        .def("Coord", static_cast<const gp_XY & (gp_Pnt2d::*)() const noexcept>(&gp_Pnt2d::Coord), R"nbdoc(For this point, returns its two coordinates as a number pair.)nbdoc")
         .def("X", static_cast<double (gp_Pnt2d::*)() const noexcept>(&gp_Pnt2d::X), R"nbdoc(For this point, returns its X coordinate.)nbdoc")
         .def("Y", static_cast<double (gp_Pnt2d::*)() const noexcept>(&gp_Pnt2d::Y), R"nbdoc(For this point, returns its Y coordinate.)nbdoc")
         .def("XY", static_cast<const gp_XY & (gp_Pnt2d::*)() const noexcept>(&gp_Pnt2d::XY), R"nbdoc(For this point, returns its two coordinates as a number pair.)nbdoc")
-        .def("Coord", static_cast<const gp_XY & (gp_Pnt2d::*)() const noexcept>(&gp_Pnt2d::Coord), R"nbdoc(For this point, returns its two coordinates as a number pair.)nbdoc")
         .def("ChangeCoord", static_cast<gp_XY & (gp_Pnt2d::*)() noexcept>(&gp_Pnt2d::ChangeCoord), nb::rv_policy::reference_internal, R"nbdoc(Returns the coordinates of this point.
 Note: This syntax allows direct modification of the returned value.)nbdoc")
         .def("IsEqual", static_cast<bool (gp_Pnt2d::*)(const gp_Pnt2d &, const double) const>(&gp_Pnt2d::IsEqual), nb::arg("theOther"), nb::arg("theLinearTolerance"), R"nbdoc(Comparison

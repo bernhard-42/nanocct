@@ -99,6 +99,22 @@ class CSLib:
 
     @overload
     @staticmethod
+    def Normal(theD1U: nanoocp.gp.gp_Vec, theD1V: nanoocp.gp.gp_Vec, theMagTol: float, theNormal: nanoocp.gp.gp_Dir) -> CSLib_NormalStatus:
+        """
+        Computes the normal direction using magnitude tolerance.
+
+        A simpler version that checks if the cross product magnitude
+        and derivative magnitudes exceed the given tolerance.
+
+        @param[in]  theD1U    First derivative in U direction
+        @param[in]  theD1V    First derivative in V direction
+        @param[in]  theMagTol Magnitude tolerance for singularity detection
+        @param[out] theStatus Result status (CSLib_Defined or CSLib_Singular)
+        @param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Defined)
+        """
+
+    @overload
+    @staticmethod
     def Normal(theD1U: nanoocp.gp.gp_Vec, theD1V: nanoocp.gp.gp_Vec, theD2U: nanoocp.gp.gp_Vec, theD2V: nanoocp.gp.gp_Vec, theD2UV: nanoocp.gp.gp_Vec, theSinTol: float, theNormal: nanoocp.gp.gp_Dir) -> tuple[bool, CSLib_NormalStatus]:
         """
         Computes an approximate normal direction at a singular point using second derivatives.
@@ -118,22 +134,6 @@ class CSLib:
         @param[out] theDone   True if normal was successfully computed
         @param[out] theStatus Result status with detailed information
         @param[out] theNormal Computed normal direction (valid only if theDone is true)
-        """
-
-    @overload
-    @staticmethod
-    def Normal(theD1U: nanoocp.gp.gp_Vec, theD1V: nanoocp.gp.gp_Vec, theMagTol: float, theNormal: nanoocp.gp.gp_Dir) -> CSLib_NormalStatus:
-        """
-        Computes the normal direction using magnitude tolerance.
-
-        A simpler version that checks if the cross product magnitude
-        and derivative magnitudes exceed the given tolerance.
-
-        @param[in]  theD1U    First derivative in U direction
-        @param[in]  theD1V    First derivative in V direction
-        @param[in]  theMagTol Magnitude tolerance for singularity detection
-        @param[out] theStatus Result status (CSLib_Defined or CSLib_Singular)
-        @param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Defined)
         """
 
     @overload

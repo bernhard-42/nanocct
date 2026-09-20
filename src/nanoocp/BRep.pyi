@@ -868,6 +868,14 @@ class BRep_Tool:
 
     @overload
     @staticmethod
+    def Parameter(V: nanoocp.TopoDS.TopoDS_Vertex, E: nanoocp.TopoDS.TopoDS_Edge) -> float:
+        """
+        Returns the parameter of <V> on <E>.
+        Throws Standard_NoSuchObject if no parameter on edge
+        """
+
+    @overload
+    @staticmethod
     def Parameter(theV: nanoocp.TopoDS.TopoDS_Vertex, theE: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, float]:
         """
         Finds the parameter of <theV> on <theE>.
@@ -875,14 +883,6 @@ class BRep_Tool:
         @param[in] theE  input edge
         @param[out] theParam   calculated parameter on the curve
         @return TRUE if done
-        """
-
-    @overload
-    @staticmethod
-    def Parameter(V: nanoocp.TopoDS.TopoDS_Vertex, E: nanoocp.TopoDS.TopoDS_Edge) -> float:
-        """
-        Returns the parameter of <V> on <E>.
-        Throws Standard_NoSuchObject if no parameter on edge
         """
 
     @overload

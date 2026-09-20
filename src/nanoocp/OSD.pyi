@@ -494,10 +494,9 @@ class OSD_Chronometer:
         """
 
     @overload
-    def Show(self) -> None:
+    def Show(self) -> tuple[float, float]:
         """
-        Shows the current CPU user and system time on the
-        standard output stream <cout>.
+        Returns the current CPU user and system time in variables.
         The chronometer can be running (laps Time) or stopped.
         """
 
@@ -509,9 +508,10 @@ class OSD_Chronometer:
         """
 
     @overload
-    def Show(self) -> tuple[float, float]:
+    def Show(self) -> None:
         """
-        Returns the current CPU user and system time in variables.
+        Shows the current CPU user and system time on the
+        standard output stream <cout>.
         The chronometer can be running (laps Time) or stopped.
         """
 
@@ -1295,8 +1295,7 @@ class OSD_File(OSD_FileNode):
         <Buffer>, or until an EOF (End-of-File) condition is
         encountered.
         Upon successful completion, Read returns the number of
-        bytes actually read into <NByteRead> and placed into the
-        Buffer <Buffer>.
+        bytes actually read and placed into the Buffer <Buffer>.
         """
 
     @overload
@@ -1309,7 +1308,8 @@ class OSD_File(OSD_FileNode):
         <Buffer>, or until an EOF (End-of-File) condition is
         encountered.
         Upon successful completion, Read returns the number of
-        bytes actually read and placed into the Buffer <Buffer>.
+        bytes actually read into <NByteRead> and placed into the
+        Buffer <Buffer>.
         """
 
     def Write(self, theBuffer: nanoocp.TCollection.TCollection_AsciiString, theNbBytes: int) -> None:
@@ -2232,18 +2232,18 @@ class OSD_Timer(OSD_Chronometer):
         """Restarts the Timer."""
 
     @overload
+    def Show(self) -> tuple[float, int, int, float]:
+        """
+        returns both the elapsed time(seconds,minutes,hours)
+        and CPU time.
+        """
+
+    @overload
     def Show(self) -> None:
         """
         Shows both the elapsed time and CPU time on the standard output
         stream <cout>.The chronometer can be running (Lap Time) or
         stopped.
-        """
-
-    @overload
-    def Show(self) -> tuple[float, int, int, float]:
-        """
-        returns both the elapsed time(seconds,minutes,hours)
-        and CPU time.
         """
 
     def Stop(self) -> None:

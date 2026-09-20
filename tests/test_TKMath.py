@@ -97,3 +97,25 @@ def test_namespace_functions():
     assert not hasattr(MathLin, "Internal") and not hasattr(importlib.import_module("nanoocp.MathSys"), "detail")   # overrides [skip] namespaces
     from nanoocp import BVH
     assert isinstance(BVH.BVH_Constants_MaxTreeDepth, int)              # anonymous enum -> integer constant
+
+
+def test_glob_opt_min_through_noncopyable_wrapper():
+    import math
+    from nanoocp import Extrema, Geom, GeomAdaptor
+    circle = GeomAdaptor.GeomAdaptor_Curve(Geom.Geom_Circle(gp.gp_Ax2(), 1.0))
+    line = GeomAdaptor.GeomAdaptor_Curve(Geom.Geom_Line(gp.gp_Pnt(0.0, 3.0, 0.0), gp.gp_Dir(1.0, 0.0, 0.0)), -5.0, 5.0)
+    func = Extrema.Extrema_GlobOptFuncCCC0(circle, line)               # a math_MultipleVarFunction (squared distance)
+
+    def vec(a: float, b: float) -> occ_math.math_Vector:
+        v = occ_math.math_Vector(1, 2, 0.0)
+        v.Set(1, 1, occ_math.math_Vector(1, 1, a))
+        v.Set(2, 2, occ_math.math_Vector(1, 1, b))
+        return v
+
+    opt = occ_math.math_GlobOptMin(func, vec(0.0, -5.0), vec(2 * math.pi, 5.0))   # overrides.toml [skip] noncopyable
+    opt.Perform()
+    assert opt.isDone() and opt.NbExtrema() == 1 and opt.GetF() == pytest.approx(2.0)   # distance 2 at (pi/2, 0)
+    sol = occ_math.math_Vector(1, 2)
+    opt.Points(1, sol)
+    assert (sol.Value(1), sol.Value(2)) == pytest.approx((math.pi / 2, 0.0), abs=1e-6)
+    assert type(opt).__name__ == "math_GlobOptMin"

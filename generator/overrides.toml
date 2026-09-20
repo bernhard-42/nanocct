@@ -16,9 +16,12 @@ inout = [
 [skip]
 classes = [
     "Standard_Static_Assert<true>",
-    # implicitly copy/move constructible on paper, but a member (NCollection_CellFilter<...>::Cell inside an
-    # NCollection_Map) has a deleted copy constructor; nanobind instantiates the move wrapper unconditionally
-    # (std::is_move_constructible, no hook) -> hard compile error
+]
+# Classes that are copy/move constructible on paper but whose copy or move does not compile (math_GlobOptMin: a
+# member NCollection_Map<NCollection_CellFilter<...>::Cell> has a deleted copy constructor). nanobind instantiates
+# its copy/move wrappers from the type traits (std::is_move_constructible has no hook), so the class is bound through
+# a generated wrapper struct with deleted copy and move constructors, under the original name.
+noncopyable = [
     "math_GlobOptMin",
 ]
 # C++ namespaces never bound: std (OCCT only adds std::hash specialisations there) and the implementation-detail

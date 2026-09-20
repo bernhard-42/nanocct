@@ -32,6 +32,7 @@ _OVERRIDES = tomllib.loads((Path(__file__).parent / "overrides.toml").read_text(
 _INOUT = set(_OVERRIDES.get("inout", []))
 _SKIP_CLASSES = set(_OVERRIDES.get("skip", {}).get("classes", []))
 _SKIP_HEADERS = set(_OVERRIDES.get("skip", {}).get("headers", []))
+_NONCOPYABLE = set(_OVERRIDES.get("skip", {}).get("noncopyable", []))
 _SKIP_NAMESPACES = set(_OVERRIDES.get("skip", {}).get("namespaces", []))
 _SKIP_METHODS = set(_OVERRIDES.get("skip", {}).get("methods", []))
 _EXTRA_INSTANCES = list(_OVERRIDES.get("instantiate", {}).get("extra", []))
@@ -179,6 +180,17 @@ def _class_behind(t: cindex.Type) -> str:
     if parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")):
         return ""
     return _canonical_args(canon).replace("const ", "")
+
+
+def _is_scalar(t: cindex.Type) -> bool:
+    """Arithmetic, bool, enum, or a C string: what a method returns when it has no out-parameters."""
+    canon = t.get_canonical()
+    if canon.kind in _PRIMITIVE_KINDS:
+        return True
+    if canon.kind == TK.POINTER:
+        pk = canon.get_pointee().get_canonical().kind
+        return pk in (TK.CHAR_S, TK.CHAR_U, TK.CHAR16) and canon.get_pointee().is_const_qualified()
+    return False
 
 
 def _is_out_param(t: cindex.Type) -> bool:
@@ -507,7 +519,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     m = Method(name=name, params=params, result=_type_spelling(cursor.result_type), result_kind=rk, result_class=rc,
                is_static=cursor.is_static_method(),
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc(cursor),
-               is_operator=name.startswith("operator"), skip_reason=reason)
+               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
+               result_scalar=_is_scalar(cursor.result_type))
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False)
         if m.skip_reason is None and re.match(r"(const )?(\w+)<", m.result) is not None \
@@ -614,7 +627,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
     c = Class(name=cpp_name, py_name=path[-1], bases=[], header=header, doc=_doc(cursor),
               is_transient=_derives_from(cursor, "Standard_Transient"),
               is_exception=_derives_from(cursor, "Standard_Failure"), is_abstract=cursor.is_abstract_record(),
-              scope=tuple(path[:-1]), outer=outer)
+              scope=tuple(path[:-1]), outer=outer, noncopyable=cpp_name in _NONCOPYABLE)
     members: set[str] = set()      # names usable unqualified inside the class (for default arguments)
     for ch in cursor.get_children():
         if ch.kind in (K.VAR_DECL, K.FIELD_DECL, K.ENUM_DECL, K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL):

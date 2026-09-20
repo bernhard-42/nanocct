@@ -1556,6 +1556,7 @@
 "math_GaussMultipleIntegration": "math",
 "math_GaussSetIntegration": "math",
 "math_GaussSingleIntegration": "math",
+"math_GlobOptMin": "math",
 "math_Householder": "math",
 "math_Jacobi": "math",
 "math_KronrodSingleIntegration": "math",

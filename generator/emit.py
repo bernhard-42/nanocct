@@ -140,13 +140,14 @@ class Emitter:
         return ", ".join(p.type for p in params)
 
     # ---- members -------------------------------------------------------------------------------
-    def _lambda_call(self, cls: str | None, m: Method) -> str:
-        """Lambda that maps out-params to a returned tuple (also handles static methods)."""
+    def _lambda_call(self, cls: str | None, m: Method, self_type: str | None = None) -> str:
+        """Lambda that maps out-params to a returned tuple (also handles static methods). self_type: the bound
+        type when it differs from cls (non-copyable wrapper)."""
         ins = [p for p in m.params if not p.is_out or p.is_inout]
         outs = [p for p in m.params if p.is_out]
         lam_params: list[str] = []
         if cls is not None and not m.is_static:
-            lam_params.append(f"{'const ' if m.is_const else ''}{cls} &self")
+            lam_params.append(f"{'const ' if m.is_const else ''}{self_type if self_type is not None else cls} &self")
         lam_params += [f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
         body: list[str] = [f"{_strip_ref(p.type)} {p.name}{{}};" for p in outs if not p.is_inout]
         call_args = ", ".join(p.name for p in m.params)
@@ -189,17 +190,18 @@ class Emitter:
         if m.is_static and m.name in mixed:
             py += "_s"          # Python cannot overload a static with an instance method of the same name
         self._note_types(m.result, *(p.type for p in m.params))
-        T = cls.name
+        T = cls.name                       # member pointers name the class itself ...
+        B = cls.bound_type                 # ... lambdas take the bound type (a wrapper for non-copyable classes)
         has_out = any(p.is_out for p in m.params)
         wrap = m.result_kind in ("ptr_transient", "ref_transient")   # never let nanobind own a Transient
         policy = {"ptr_class": ", nb::rv_policy::reference", "ref_mutable": ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
-            lam = f"[]({T} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {T} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
+            lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
             return f'.def("{py}", {lam}, nb::rv_policy::reference{self._extras(m.doc, m.params, False, True)})'
         if has_out or wrap:
             defn = "def_static" if m.is_static else "def"
-            return f'.{defn}("{py}", {self._lambda_call(T, m)}{self._extras(m.doc, m.params, True, m.is_operator)})'
+            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{self._extras(m.doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:
             fn = f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})"
@@ -213,7 +215,7 @@ class Emitter:
         if cls.is_transient:
             lam_params = ", ".join(f"{p.type} {p.name}" for p in params)
             call = ", ".join(p.name for p in params)
-            fn = f"nb::new_([]({lam_params}) {{ return opencascade::handle<{cls.name}>(new {cls.name}({call})); }})"
+            fn = f"nb::new_([]({lam_params}) {{ return opencascade::handle<{cls.bound_type}>(new {cls.bound_type}({call})); }})"
         else:
             fn = f"nb::init<{self._sig(params)}>()"
         return f".def({fn}{self._extras(doc, params, False, False)})"
@@ -380,6 +382,7 @@ class Emitter:
 
         declare: list[str] = []
         define: list[str] = []
+        wrappers: list[str] = []      # file-scope wrapper structs for non-copyable classes
         for ns in ir.namespaces:      # C++ namespaces other than the package's own -> submodules
             declare.append(f'    {self._module(ns[:-1])}.def_submodule("{ns[-1]}", "C++ namespace {"::".join(ns)} (OCCT package {ir.name})");')
         for k in ir.constants:
@@ -407,7 +410,12 @@ class Emitter:
             bases = "".join(f", {b}" for b in c.bases[:1])
             d = _cpp_doc(c.doc)
             doc_arg = f", {d}" if d is not None else ""
-            declare.append(f'    {{ nb::class_<{c.name}{bases}> cls({self._attr(c.scope)}, "{c.py_name}"{doc_arg});')
+            if c.noncopyable:
+                wrappers.append(f"// {c.name}: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):\n"
+                                f"// bound through a wrapper with deleted copy and move, under the original name\n"
+                                f"struct {c.bound_type} : {c.name} {{\n    using {c.name}::{c.name};\n"
+                                f"    {c.bound_type}(const {c.bound_type} &) = delete;\n    {c.bound_type}({c.bound_type} &&) = delete;\n}};")
+            declare.append(f'    {{ nb::class_<{c.bound_type}{bases}> cls({self._attr(c.scope)}, "{c.py_name}"{doc_arg});')
             for e in c.enums:
                 declare += ["      " + l for l in self._enum(e, "cls")]
             declare.append("    }")
@@ -431,18 +439,39 @@ class Emitter:
                     body.append(self._ctor(c, k.params, k.doc))
             bound = [m for m in c.methods if m.skip_reason is None]
             mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
-            # overloads that become indistinguishable once out-params are dropped (TopAbs::ShapeTypeFromString(const char*)
-            # and (const char*, TopAbs_ShapeEnum&)): nanobind takes the first declared; the other is unreachable
-            seen_sigs: dict[tuple, Method] = {}
+            # overloads that become indistinguishable once out-params are dropped: nanobind takes the first registered.
+            # An overload returning a scalar (double, bool, enum, str) without out-params is the direct C++ API and wins
+            # (BRep_Tool::Parameter(V, E) -> double over Parameter(V, E, double&) -> bool; TopAbs::ShapeTypeFromString
+            # -> enum); otherwise (void or a class result) the overload with the most out-params wins, as its values come
+            # back as a tuple (gp_Pnt::Coord(x&, y&, z&) over Coord() -> gp_XYZ, Bnd_Box::Get(6 x double&) over Get() ->
+            # Limits, OSD_Chronometer::Show(double&) over the printing Show()). The other overload is unreachable, reported.
+            def preference(m: Method) -> tuple[int, int]:
+                n_out = sum(1 for p in m.params if p.is_out and not p.is_inout)
+                return (0, n_out) if m.result_scalar and n_out == 0 else (1, -n_out)
+            def py_sig(m: Method) -> tuple:
+                return (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if not p.is_out or p.is_inout))
+            groups: dict[tuple, list[Method]] = {}
             for m in bound:
-                sig = (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if not p.is_out or p.is_inout))
-                if sig in seen_sigs and any(p.is_out for p in m.params + seen_sigs[sig].params):
-                    self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}): same Python signature as "
-                                       f"{m.name}({self._sig(seen_sigs[sig].params)}) after out-param removal -> unreachable")
-                seen_sigs.setdefault(sig, m)
+                groups.setdefault(py_sig(m), []).append(m)
+            ordered: list[Method] = []           # header order, except that a colliding group is emitted at its first member, winner first
+            emitted: set[int] = set()
+            for m in c.methods:
+                if id(m) in emitted:
+                    continue
+                members = groups.get(py_sig(m), [m]) if m.skip_reason is None else [m]
+                if len(members) > 1 and any(p.is_out for mm in members for p in mm.params):
+                    members = sorted(members, key=preference)
+                    for loser in members[1:]:
+                        self.report.append(f"{c.name}::{loser.name}({self._sig(loser.params)}): same Python signature as "
+                                           f"{loser.name}({self._sig(members[0].params)}) after out-param removal -> unreachable")
+                else:
+                    members = [m]
+                for mm in members:
+                    emitted.add(id(mm))
+                    ordered.append(mm)
             for name in sorted(mixed):
                 self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s (instance method of same name exists)")
-            for m in c.methods:
+            for m in ordered:
                 s = self._method(c, m, mixed)
                 if s is not None:
                     body.append(s)
@@ -451,13 +480,13 @@ class Emitter:
                 dunder = {"bool": "__bool__", "int": "__int__", "float": "__float__"}.get(conv.kind)
                 if dunder is not None:
                     self._note_types(conv.target)
-                    body.append(f'.def("{dunder}", [](const {c.name} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
+                    body.append(f'.def("{dunder}", [](const {c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
             if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
                 # std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__
-                body.append(f'.def("__hash__", [](const {c.name} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
-            cls_expr = f'nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}"))'
+                body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
+            cls_expr = f'nb::borrow<nb::class_<{c.bound_type}>>({self._attr(c.scope)}.attr("{c.py_name}"))'
             if implicit_default:
-                define.append(f'    nanoocp_implicit_default_ctor<{c.name}>({cls_expr});')
+                define.append(f'    nanoocp_implicit_default_ctor<{c.bound_type}>({cls_expr});')
             if len(body) > 0:
                 define.append(f'    {cls_expr}')
                 define += ["        " + b for b in body]
@@ -465,7 +494,7 @@ class Emitter:
             # the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
             # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
             if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
-                define.append(f'    nanoocp_implicit_copy_ctor<{c.name}>({cls_expr});')
+                define.append(f'    nanoocp_implicit_copy_ctor<{c.bound_type}>({cls_expr});')
             for f in c.fields:                 # read/write when the field type is copy-assignable (decided at compile time), else read-only
                 self._note_types(f.type)
                 dd = _cpp_doc(f.doc)
@@ -480,7 +509,7 @@ class Emitter:
                         src = k.params[0].type
                         if src not in seen:
                             seen.add(src)
-                            define.append(f"    nb::implicitly_convertible<std::decay_t<{src}>, {c.name}>();")
+                            define.append(f"    nb::implicitly_convertible<std::decay_t<{src}>, {c.bound_type}>();")
 
         # operator T() const with a bound class T: T gets a constructor from this class, plus the implicit conversion when
         # the operator is not explicit (TopoDS_Shape s = aMakeShape; BRepGraph_NodeId(anEdgeId)). Emitted in a phase of its
@@ -545,6 +574,7 @@ class Emitter:
             '#include "nanoocp_common.h"',
             *includes,
             "",
+            *(wrappers + [""] if len(wrappers) > 0 else []),
 
             f"void nanoocp_declare_{ir.name}(nb::module_ &m) {{",
             *declare,

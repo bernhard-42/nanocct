@@ -28,6 +28,8 @@ class Method:
     is_operator: bool = False
     skip_reason: str | None = None
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
+    result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
+    result_scalar: bool = False       # result is arithmetic, bool, enum or a C string (the "direct" API when overloads collide)
 
 
 @dataclass
@@ -87,6 +89,12 @@ class Class:
     template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
     constructible: bool = True        # False when operator new is not public (placement new impossible)
     unbindable: bool = False          # nb::class_ cannot be instantiated (member of incomplete type); reported, not bound
+    noncopyable: bool = False         # bound through a wrapper struct with deleted copy/move (overrides.toml [skip] noncopyable)
+
+    @property
+    def bound_type(self) -> str:
+        """The C++ type nb::class_ is instantiated with: the class itself, or its non-copyable wrapper."""
+        return f"nanoocp_wrap_{self.py_name}" if self.noncopyable else self.name
     ctors: list[Constructor] = field(default_factory=list)
     methods: list[Method] = field(default_factory=list)
     fields: list[Field] = field(default_factory=list)

@@ -107,6 +107,16 @@ is computed and compared with theSinTol.
 @param[in]  theSinTol Sine tolerance for parallelism check
 @param[out] theStatus Result status indicating success or failure reason
 @param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Done))nbdoc")
+        .def_static("Normal", [](const gp_Vec & theD1U, const gp_Vec & theD1V, double theMagTol, gp_Dir & theNormal) { CSLib_NormalStatus theStatus{}; CSLib::Normal(theD1U, theD1V, theMagTol, theStatus, theNormal); return theStatus; }, nb::arg("theD1U"), nb::arg("theD1V"), nb::arg("theMagTol"), nb::arg("theNormal"), R"nbdoc(Computes the normal direction using magnitude tolerance.
+
+A simpler version that checks if the cross product magnitude
+and derivative magnitudes exceed the given tolerance.
+
+@param[in]  theD1U    First derivative in U direction
+@param[in]  theD1V    First derivative in V direction
+@param[in]  theMagTol Magnitude tolerance for singularity detection
+@param[out] theStatus Result status (CSLib_Defined or CSLib_Singular)
+@param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Defined))nbdoc")
         .def_static("Normal", [](const gp_Vec & theD1U, const gp_Vec & theD1V, const gp_Vec & theD2U, const gp_Vec & theD2V, const gp_Vec & theD2UV, double theSinTol, gp_Dir & theNormal) { bool theDone{}; CSLib_NormalStatus theStatus{}; CSLib::Normal(theD1U, theD1V, theD2U, theD2V, theD2UV, theSinTol, theDone, theStatus, theNormal); return std::make_tuple(theDone, theStatus); }, nb::arg("theD1U"), nb::arg("theD1V"), nb::arg("theD2U"), nb::arg("theD2V"), nb::arg("theD2UV"), nb::arg("theSinTol"), nb::arg("theNormal"), R"nbdoc(Computes an approximate normal direction at a singular point using second derivatives.
 
 When the standard method cannot compute the normal (D1U ^ D1V is null or too small),
@@ -124,16 +134,6 @@ The normal is approximated from dN/du and dN/dv where N = D1U ^ D1V.
 @param[out] theDone   True if normal was successfully computed
 @param[out] theStatus Result status with detailed information
 @param[out] theNormal Computed normal direction (valid only if theDone is true))nbdoc")
-        .def_static("Normal", [](const gp_Vec & theD1U, const gp_Vec & theD1V, double theMagTol, gp_Dir & theNormal) { CSLib_NormalStatus theStatus{}; CSLib::Normal(theD1U, theD1V, theMagTol, theStatus, theNormal); return theStatus; }, nb::arg("theD1U"), nb::arg("theD1V"), nb::arg("theMagTol"), nb::arg("theNormal"), R"nbdoc(Computes the normal direction using magnitude tolerance.
-
-A simpler version that checks if the cross product magnitude
-and derivative magnitudes exceed the given tolerance.
-
-@param[in]  theD1U    First derivative in U direction
-@param[in]  theD1V    First derivative in V direction
-@param[in]  theMagTol Magnitude tolerance for singularity detection
-@param[out] theStatus Result status (CSLib_Defined or CSLib_Singular)
-@param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Defined))nbdoc")
         .def_static("Normal", [](int theMaxOrder, const NCollection_Array2<gp_Vec> & theDerNUV, double theMagTol, double theU, double theV, double theUmin, double theUmax, double theVmin, double theVmax, gp_Dir & theNormal) { CSLib_NormalStatus theStatus{}; int theOrderU{}; int theOrderV{}; CSLib::Normal(theMaxOrder, theDerNUV, theMagTol, theU, theV, theUmin, theUmax, theVmin, theVmax, theStatus, theNormal, theOrderU, theOrderV); return std::make_tuple(theStatus, theOrderU, theOrderV); }, nb::arg("theMaxOrder"), nb::arg("theDerNUV"), nb::arg("theMagTol"), nb::arg("theU"), nb::arg("theV"), nb::arg("theUmin"), nb::arg("theUmax"), nb::arg("theVmin"), nb::arg("theVmax"), nb::arg("theNormal"), R"nbdoc(Computes the normal at a singular point using higher-order derivatives.
 
 Finds the first order k0 where the derivatives of N = D1U ^ D1V become non-null
