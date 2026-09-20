@@ -185,6 +185,28 @@ Rule: a package-level `typedef`/`using` whose canonical type is an instantiation
 7. Repository initialisation (`git init`) — pending the user's go.
 8. Python-side subclassing of OCCT classes (nanobind trampolines) — not planned for now.
 
+## 9. Working state and how to continue (kept current for context resets)
+
+**State on 2026-09-20 (commit `3fe826e`, branch `main`, no remote):** FoundationClasses complete — `TKernel` (18 packages) and `TKMath` (21 packages) generated, built, stubbed; all 14 NCollection container kinds bound (6a); class-template aliases instantiated (6c); 99 tests pass (`tests/`), mypy and ty included. Nothing of ModelingData/ModelingAlgorithms/ApplicationFramework/DataExchange is generated yet.
+
+**Development loop** (venv is `.venv`, managed by `uv`; `deps/occt-8.0.1` and `deps/freetype` are built, `deps/occt-build` is the ninja tree for incremental OCCT rebuilds):
+
+```bash
+uv run python -m generator --toolkit TKernel          # regenerate a toolkit (all packages); --package X for one package
+uv run python -m generator --toolkit TKMath
+uv sync --reinstall-package nanoocp                    # build + install (scikit-build-core, build dir build/{wheel_tag})
+uv run python -m generator.stubs                       # .pyi stubs (after the build; imports the extension)
+uv run pytest tests -q
+```
+
+Generation order matters the first time after deleting `src/cpp/manifest.json`: dependencies first (`TKernel`, then `TKMath`, …), because the manifest carries bound classes/instantiations across runs. Regenerating everything: `rm src/cpp/manifest.json` then all toolkits in dependency order. A faster compile-only check without installing: `cmake --build build/dev` (configured with `-DPython_EXECUTABLE=$PWD/.venv/bin/python -DCMAKE_INSTALL_PREFIX=$PWD/build/stage`).
+
+**Debugging a nanobind "Critical nanobind error" at import** (Release builds hide the message): build the Debug tree `build/debug` (`cmake -S . -B build/debug -G Ninja -DCMAKE_BUILD_TYPE=Debug -DPython_EXECUTABLE=$PWD/.venv/bin/python -DCMAKE_INSTALL_PREFIX=$PWD/build/stage-debug`, `cmake --build build/debug`, `cmake --install build/debug`, copy `src/nanoocp/*.py` into `build/stage-debug/nanoocp/`), then `PYTHONPATH=build/stage-debug .venv/bin/python -S -c "import nanoocp._TKMath"` — `-S` is required because the editable-install `.pth` hook would otherwise load the Release module. For a C++ exception at init: `lldb --batch -o "break set -E c++" -o run -o "bt 12" -- .venv/bin/python -S -c "import nanoocp._TKernel"`.
+
+**Recurring pitfalls:** safe-chain hides packages younger than 48 h from `uv`; the user overrides it themselves (nanobind is in the exclusions now). A `str.replace(old, new)` with an empty `old` inserts `new` between every character — it happened once to `parse.py` and was recovered exactly; use asserts on anchors. Partial regeneration of a single package is safe (toolkit module stays complete, manifest entries of the package are refreshed). Every new package tends to reveal one or two OCCT-specific idioms: the report printed by the generator (`- …: reason`) is the place to look, and the compiler/linker tells the rest.
+
+**Next steps, in order:** (1) ModelingData: `TKG2d`, `TKG3d`, `TKGeomBase`, `TKBRep` — expect Transient-heavy APIs, many new container instantiations, `Extrema_*`/`GeomLProp_*` aliases (6c), and the first real Python-subclassing questions (e.g. `Adaptor3d_Curve` — not planned). (2) ModelingAlgorithms. (3) Phase 2 (`ApplicationFramework` subset, `DataExchange`), plus the font slice of Visualization (`Font`, `StdPrs_BRepFont`, `StdPrs_BRepTextBuilder` — TKService/TKV3d must be added as toolkits). (4) Linux/Windows runs of the generator and the wheel pipeline (bundle OCCT dylibs; the static FreeType is inside `libTKService`).
+
 ## Decision log
 
 - **2026-09-20** — nanobind stable ABI (linked mode, 3.12+) chosen over split mode; PoC verified against OCCT (`poc/`).
