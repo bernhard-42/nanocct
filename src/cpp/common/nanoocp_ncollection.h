@@ -11,7 +11,12 @@
 #include <nanobind/make_iterator.h>
 
 #include <NCollection_Array1.hxx>
+#include <NCollection_Array2.hxx>
 #include <NCollection_DataMap.hxx>
+#include <NCollection_DoubleMap.hxx>
+#include <NCollection_DynamicArray.hxx>
+#include <NCollection_HArray2.hxx>
+#include <NCollection_Shared.hxx>
 #include <NCollection_DefaultHasher.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_HSequence.hxx>
@@ -80,6 +85,18 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
     }
 }
 
+// Standard_Transient members of a multiple-inheritance type S bound with base B (offset 0): the lambdas
+// take B& and static_cast to S& (adjusting downcast), see mi_traits in nanoocp_common.h
+template <typename S, typename B, typename... Extra> void def_transient_members(nb::class_<S, B, Extra...> &c) {
+    c.def("GetRefCount", [](const B &b) { return static_cast<const S &>(b).GetRefCount(); }, "Get the reference counter of this object (Standard_Transient).")
+     .def("DynamicType", [](const B &b) { return static_cast<const S &>(b).DynamicType(); }, "Returns a type descriptor about this object (Standard_Transient).")
+     .def("IsInstance", [](const B &b, const char *n) { return static_cast<const S &>(b).IsInstance(n); }, nb::arg("theTypeName"), "Standard_Transient::IsInstance")
+     .def("IsKind", [](const B &b, const char *n) { return static_cast<const S &>(b).IsKind(n); }, nb::arg("theTypeName"), "Standard_Transient::IsKind")
+     .def_static("get_type_name", []() { return S::get_type_name(); })
+     .def_static("get_type_descriptor", []() { return S::get_type_descriptor(); });
+    nanoocp_register_mi<S>(c);
+}
+
 template <typename T> void bind_NCollection_Array1(nb::module_ &m, const char *name) {
     using A = NCollection_Array1<T>;
     namespace D = nanoocp_doc::NCollection_Array1;
@@ -87,9 +104,7 @@ template <typename T> void bind_NCollection_Array1(nb::module_ &m, const char *n
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), D::ctor)
      .def(nb::init<const size_t>(), nb::arg("theSize"), D::ctor)
-     .def(nb::init<const A &>(), nb::arg("theOther"), D::ctor)
-     // Python addition: C++ converts HArray1 -> Array1 through inheritance; nanobind needs the overload
-     .def(nb::init<const NCollection_HArray1<T> &>(), nb::arg("theHArray"), "Python addition: copy from an HArray1 (C++ derived-to-base conversion).");
+     .def(nb::init<const A &>(), nb::arg("theOther"), D::ctor);
     def_array1_members<T, A>(c);
 }
 
@@ -97,20 +112,16 @@ template <typename T> void bind_NCollection_HArray1(nb::module_ &m, const char *
     using A = NCollection_Array1<T>;
     using H = NCollection_HArray1<T>;
     namespace D = nanoocp_doc::NCollection_HArray1;
-    // nanobind supports one base: Standard_Transient (handle semantics, IsKind, ...). The Array1 API is
-    // bound on the class itself and an implicit conversion to NCollection_Array1<T> (a copy) lets an
-    // HArray1 be passed where C++ takes const NCollection_Array1<T>&.
-    nb::class_<H, Standard_Transient> c(m, name, D::class_doc);
+    // base = Array1<T> (offset 0): the whole Array1 API is inherited with an exact pointer; the
+    // Standard_Transient part (non-zero offset) goes through def_transient_members / the MI registry
+    nb::class_<H, A> c(m, name, D::class_doc);
     c.def(nb::new_([]() { return opencascade::handle<H>(new H()); }), D::ctor)
      .def(nb::new_([](const int l, const int u) { return opencascade::handle<H>(new H(l, u)); }), nb::arg("theLower"), nb::arg("theUpper"), D::ctor)
      .def(nb::new_([](const int l, const int u, const T &v) { return opencascade::handle<H>(new H(l, u, v)); }), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theValue"), D::ctor)
      .def(nb::new_([](const A &a) { return opencascade::handle<H>(new H(a)); }), nb::arg("theOther"), D::ctor)
-     // Array1 is polymorphic (virtual dtor), so returning const A& would make nanobind copy the dynamic type
-     // (an HArray1); slice explicitly so that the result is a plain NCollection_Array1<T>
-     .def("Array1", [](const H &self) { return A(self.Array1()); }, D::Array1)
-     .def("ChangeArray1", [](H &self) -> A & { return self.ChangeArray1(); }, nb::rv_policy::reference_internal, D::ChangeArray1);
-    def_array1_members<T, H>(c);
-    nb::implicitly_convertible<H, A>();
+     .def("Array1", [](const A &b) { return A(static_cast<const H &>(b).Array1()); }, D::Array1)      // sliced copy (Array1 is polymorphic)
+     .def("ChangeArray1", [](A &b) -> A & { return static_cast<H &>(b).ChangeArray1(); }, nb::rv_policy::reference_internal, D::ChangeArray1);
+    def_transient_members<H, A>(c);
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -231,8 +242,7 @@ template <typename T> void bind_NCollection_Sequence(nb::module_ &m, const char 
     def_elem<T>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), "ChangeValue", [](It &self) -> T & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const opencascade::handle<NCollection_BaseAllocator> &>(), nb::arg("theAllocator").none(), D::ctor)
-     .def(nb::init<const S &>(), nb::arg("theOther"), D::ctor)
-     .def(nb::init<const NCollection_HSequence<T> &>(), nb::arg("theHSequence"), "Python addition: copy from an HSequence (C++ derived-to-base conversion).");
+     .def(nb::init<const S &>(), nb::arg("theOther"), D::ctor);
     def_sequence_members<T, S>(c);
 }
 
@@ -240,13 +250,12 @@ template <typename T> void bind_NCollection_HSequence(nb::module_ &m, const char
     using S = NCollection_Sequence<T>;
     using H = NCollection_HSequence<T>;
     namespace D = nanoocp_doc::NCollection_HSequence;
-    nb::class_<H, Standard_Transient> c(m, name, D::class_doc);
+    nb::class_<H, S> c(m, name, D::class_doc);       // base = Sequence<T> (offset 0), see HArray1
     c.def(nb::new_([]() { return opencascade::handle<H>(new H()); }), D::ctor)
      .def(nb::new_([](const S &s) { return opencascade::handle<H>(new H(s)); }), nb::arg("theOther"), D::ctor)
-     .def("Sequence", [](const H &self) { return S(self.Sequence()); }, D::Sequence)      // sliced copy, see HArray1
-     .def("ChangeSequence", [](H &self) -> S & { return self.ChangeSequence(); }, nb::rv_policy::reference_internal, D::ChangeSequence);
-    def_sequence_members<T, H>(c);
-    nb::implicitly_convertible<H, S>();
+     .def("Sequence", [](const S &b) { return S(static_cast<const H &>(b).Sequence()); }, D::Sequence)
+     .def("ChangeSequence", [](S &b) -> S & { return static_cast<H &>(b).ChangeSequence(); }, nb::rv_policy::reference_internal, D::ChangeSequence);
+    def_transient_members<H, S>(c);
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -463,6 +472,178 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
         c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::Seek)
          .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::ChangeSeek);
     }
+}
+
+// ---------------------------------------------------------------------------------------------------
+// NCollection_Array2<T> (derives from NCollection_Array1<T>, whose binding it inherits) / HArray2
+template <typename T, typename Cls, typename... Extra> void def_array2_members(nb::class_<Cls, Extra...> &c) {
+    using A2 = NCollection_Array2<T>;
+    namespace D = nanoocp_doc::NCollection_Array2;
+    c.def_static("BeginPosition", [](int r1, int r2, int c1, int c2) { return A2::BeginPosition(r1, r2, c1, c2); },
+                 nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), D::BeginPosition)
+     .def_static("LastPosition", [](int r1, int r2, int c1, int c2) { return A2::LastPosition(r1, r2, c1, c2); },
+                 nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), D::LastPosition)
+     .def("Size", [](const Cls &self) { return self.Size(); }, D::Size)
+     .def("Length", [](const Cls &self) { return self.Length(); }, D::Length)
+     .def("NbRows", [](const Cls &self) { return self.NbRows(); }, D::NbRows)
+     .def("NbColumns", [](const Cls &self) { return self.NbColumns(); }, D::NbColumns)
+     .def("RowLength", [](const Cls &self) { return self.RowLength(); }, D::RowLength)
+     .def("ColLength", [](const Cls &self) { return self.ColLength(); }, D::ColLength)
+     .def("LowerRow", [](const Cls &self) { return self.LowerRow(); }, D::LowerRow)
+     .def("UpperRow", [](const Cls &self) { return self.UpperRow(); }, D::UpperRow)
+     .def("LowerCol", [](const Cls &self) { return self.LowerCol(); }, D::LowerCol)
+     .def("UpperCol", [](const Cls &self) { return self.UpperCol(); }, D::UpperCol)
+     .def("UpdateLowerRow", [](Cls &self, const int v) { self.UpdateLowerRow(v); }, nb::arg("theLowerRow"), D::UpdateLowerRow)
+     .def("UpdateLowerCol", [](Cls &self, const int v) { self.UpdateLowerCol(v); }, nb::arg("theLowerCol"), D::UpdateLowerCol)
+     .def("UpdateUpperRow", [](Cls &self, const int v) { self.UpdateUpperRow(v); }, nb::arg("theUpperRow"), D::UpdateUpperRow)
+     .def("UpdateUpperCol", [](Cls &self, const int v) { self.UpdateUpperCol(v); }, nb::arg("theUpperCol"), D::UpdateUpperCol)
+     .def("Assign", [](Cls &self, const A2 &o) -> Cls & { self.Assign(o); return self; }, nb::rv_policy::reference, nb::arg("theOther"), D::Assign)
+     .def("CopyValues", [](Cls &self, const A2 &o) -> Cls & { self.CopyValues(o); return self; }, nb::rv_policy::reference, nb::arg("theOther"), D::CopyValues)
+     .def("Value", [](const Cls &self, const int r, const int c) -> const T & { return self.Value(r, c); }, nb::arg("theRow"), nb::arg("theCol"), D::Value)
+     .def("__call__", [](const Cls &self, const int r, const int c) -> const T & { return self.Value(r, c); }, nb::arg("theRow"), nb::arg("theCol"), D::op_call)
+     .def("SetValue", [](Cls &self, const int r, const int c, const T &v) { self.SetValue(r, c, v); }, nb::arg("theRow"), nb::arg("theCol"), nb::arg("theItem"), D::SetValue)
+     .def("At", [](const Cls &self, const size_t r, const size_t c) -> const T & { return self.At(r, c); }, nb::arg("theRow"), nb::arg("theCol"), D::At)
+     .def("Resize", [](Cls &self, int r1, int r2, int c1, int c2, bool copy) { self.Resize(r1, r2, c1, c2, copy); },
+          nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), nb::arg("theToCopyData"), D::Resize)
+     .def("Resize", [](Cls &self, size_t rows, size_t cols, bool copy) { self.Resize(rows, cols, copy); }, nb::arg("theNbRows"), nb::arg("theNbCols"), nb::arg("theToCopyData"), D::Resize)
+     .def("ResizeWithTrim", [](Cls &self, int r1, int r2, int c1, int c2, bool copy) { self.ResizeWithTrim(r1, r2, c1, c2, copy); },
+          nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), nb::arg("theToCopyData"), D::ResizeWithTrim)
+     .def("ResizeWithTrim", [](Cls &self, size_t rows, size_t cols, bool copy) { self.ResizeWithTrim(rows, cols, copy); }, nb::arg("theNbRows"), nb::arg("theNbCols"), nb::arg("theToCopyData"), D::ResizeWithTrim)
+     // Python additions: a[(row, col)]
+     .def("__getitem__", [](const Cls &self, std::pair<int, int> rc) -> const T & { return self.Value(rc.first, rc.second); }, nb::arg("theRowCol"), "Python addition: a[(row, col)] -> Value(row, col).")
+     .def("__setitem__", [](Cls &self, std::pair<int, int> rc, const T &v) { self.SetValue(rc.first, rc.second, v); }, nb::arg("theRowCol"), nb::arg("theItem"), "Python addition: a[(row, col)] = item -> SetValue.");
+    if constexpr (std::is_class_v<T>) {
+        c.def("ChangeValue", [](Cls &self, const int r, const int cc) -> T & { return self.ChangeValue(r, cc); }, nb::rv_policy::reference_internal, nb::arg("theRow"), nb::arg("theCol"), D::ChangeValue)
+         .def("ChangeAt", [](Cls &self, const size_t r, const size_t cc) -> T & { return self.ChangeAt(r, cc); }, nb::rv_policy::reference_internal, nb::arg("theRow"), nb::arg("theCol"), D::ChangeAt);
+    }
+}
+
+template <typename T> void bind_NCollection_Array2(nb::module_ &m, const char *name) {
+    using A2 = NCollection_Array2<T>;
+    namespace D = nanoocp_doc::NCollection_Array2;
+    nb::class_<A2, NCollection_Array1<T>> c(m, name, D::class_doc);
+    c.def(nb::init<>(), D::ctor)
+     .def(nb::init<const int, const int, const int, const int>(), nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), D::ctor)
+     .def(nb::init<const size_t, const size_t>(), nb::arg("theNbRows"), nb::arg("theNbCols"), D::ctor)
+     .def(nb::init<const A2 &>(), nb::arg("theOther"), D::ctor);
+    def_array2_members<T, A2>(c);
+}
+
+template <typename T> void bind_NCollection_HArray2(nb::module_ &m, const char *name) {
+    using A2 = NCollection_Array2<T>;
+    using H = NCollection_HArray2<T>;
+    namespace D = nanoocp_doc::NCollection_HArray2;
+    nb::class_<H, A2> c(m, name, D::class_doc);      // base = Array2<T> (offset 0), see HArray1
+    c.def(nb::new_([](int r1, int r2, int c1, int c2) { return opencascade::handle<H>(new H(r1, r2, c1, c2)); }),
+          nb::arg("theRowLow"), nb::arg("theRowUpp"), nb::arg("theColLow"), nb::arg("theColUpp"), D::ctor)
+     .def(nb::new_([](int r1, int r2, int c1, int c2, const T &v) { return opencascade::handle<H>(new H(r1, r2, c1, c2, v)); }),
+          nb::arg("theRowLow"), nb::arg("theRowUpp"), nb::arg("theColLow"), nb::arg("theColUpp"), nb::arg("theValue"), D::ctor)
+     .def(nb::new_([](const A2 &a) { return opencascade::handle<H>(new H(a)); }), nb::arg("theOther"), D::ctor)
+     .def("Array2", [](const A2 &b) { return A2(static_cast<const H &>(b).Array2()); }, D::Array2)
+     .def("ChangeArray2", [](A2 &b) -> A2 & { return static_cast<H &>(b).ChangeArray2(); }, nb::rv_policy::reference_internal, D::ChangeArray2);
+    def_transient_members<H, A2>(c);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// NCollection_DynamicArray<T> (0-based)
+template <typename T> void bind_NCollection_DynamicArray(nb::module_ &m, const char *name) {
+    using V = NCollection_DynamicArray<T>;
+    namespace D = nanoocp_doc::NCollection_DynamicArray;
+    nb::class_<V> c(m, name, D::class_doc);
+    c.def(nb::init<const int>(), nb::arg("theIncrement") = 256, D::ctor)
+     .def(nb::init<const int, const opencascade::handle<NCollection_BaseAllocator> &>(), nb::arg("theIncrement"), nb::arg("theAlloc").none(), D::ctor)
+     .def(nb::init<const V &>(), nb::arg("theOther"), D::ctor)
+     .def("Size", [](const V &self) { return self.Size(); }, D::Size)
+     .def("Length", [](const V &self) { return self.Length(); }, D::Length)
+     .def("Lower", [](const V &self) { return self.Lower(); }, D::Lower)
+     .def("Upper", [](const V &self) { return self.Upper(); }, D::Upper)
+     .def("IsEmpty", [](const V &self) { return self.IsEmpty(); }, D::IsEmpty)
+     .def("Assign", [](V &self, const V &o, const bool own) -> V & { return self.Assign(o, own); }, nb::rv_policy::reference, nb::arg("theOther"), nb::arg("theOwnAllocator") = true, D::Assign)
+     .def("EraseLast", [](V &self) { self.EraseLast(); }, D::EraseLast)
+     .def("Value", [](const V &self, const int i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::Value)
+     .def("__call__", [](const V &self, const int i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::op_call)
+     .def("__getitem__", [](const V &self, const int i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::op_index)
+     .def("First", [](const V &self) -> const T & { return self.First(); }, D::First)
+     .def("Last", [](const V &self) -> const T & { return self.Last(); }, D::Last)
+     .def("Clear", [](V &self, const bool release) { self.Clear(release); }, nb::arg("theReleaseMemory") = false, D::Clear)
+     .def("SetIncrement", [](V &self, const int inc) { self.SetIncrement(inc); }, nb::arg("theIncrement"), D::SetIncrement)
+     // Python additions
+     .def("__setitem__", [](V &self, const int i, const T &v) { self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (0-based).")
+     .def("__len__", [](const V &self) { return self.Length(); }, "Python addition: alias to Length.")
+     .def("__iter__", [](const V &self) { return nb::make_iterator(nb::type<V>(), "value_iterator", self.cbegin(), self.cend()); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
+    def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { return self.Append(v); }, nb::arg("theValue"), D::Append);
+    def_elem<T>(c, "InsertAfter", [](V &self, const int i, const T &v) -> T & { return self.InsertAfter(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertAfter);
+    def_elem<T>(c, "InsertBefore", [](V &self, const int i, const T &v) -> T & { return self.InsertBefore(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertBefore);
+    def_elem<T>(c, "Appended", [](V &self) -> T & { return self.Appended(); }, D::Appended);
+    def_elem<T>(c, "SetValue", [](V &self, const int i, const T &v) -> T & { return self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::SetValue);
+    if constexpr (std::is_class_v<T>) {
+        c.def("ChangeFirst", [](V &self) -> T & { return self.ChangeFirst(); }, nb::rv_policy::reference_internal, D::ChangeFirst)
+         .def("ChangeLast", [](V &self) -> T & { return self.ChangeLast(); }, nb::rv_policy::reference_internal, D::ChangeLast)
+         .def("ChangeValue", [](V &self, const int i) -> T & { return self.ChangeValue(i); }, nb::rv_policy::reference_internal, nb::arg("theIndex"), D::ChangeValue);
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------
+// NCollection_DoubleMap<K1, K2, Hasher1, Hasher2>
+template <typename K1, typename K2, typename H1 = NCollection_DefaultHasher<K1>, typename H2 = NCollection_DefaultHasher<K2>>
+void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
+    using M = NCollection_DoubleMap<K1, K2, H1, H2>;
+    using It = typename M::Iterator;
+    namespace D = nanoocp_doc::NCollection_DoubleMap;
+    nb::class_<M> c(m, name, D::class_doc);
+    nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
+        .def(nb::init<>(), D::Iterator::ctor)
+        .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::ctor)
+        .def("Initialize", [](It &self, const M &map) { self.Initialize(map); }, nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::Initialize)
+        .def("Reset", [](It &self) { self.Reset(); }, D::Iterator::Reset)
+        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
+        .def("Key1", [](const It &self) -> const K1 & { return self.Key1(); }, D::Iterator::Key1)
+        .def("Key2", [](const It &self) -> const K2 & { return self.Key2(); }, D::Iterator::Key2)
+        .def("Value", [](const It &self) -> const K2 & { return self.Value(); }, D::Iterator::Value);
+    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    c.def("Bind", [](M &self, const K1 &a, const K2 &b) { self.Bind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::Bind)
+     .def("TryBind", [](M &self, const K1 &a, const K2 &b) { return self.TryBind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::TryBind)
+     .def("AreBound", [](const M &self, const K1 &a, const K2 &b) { return self.AreBound(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::AreBound)
+     .def("IsBound1", [](const M &self, const K1 &a) { return self.IsBound1(a); }, nb::arg("theKey1"), D::IsBound1)
+     .def("IsBound2", [](const M &self, const K2 &b) { return self.IsBound2(b); }, nb::arg("theKey2"), D::IsBound2)
+     .def("UnBind1", [](M &self, const K1 &a) { return self.UnBind1(a); }, nb::arg("theKey1"), D::UnBind1)
+     .def("UnBind2", [](M &self, const K2 &b) { return self.UnBind2(b); }, nb::arg("theKey2"), D::UnBind2)
+     .def("Find1", [](const M &self, const K1 &a) -> const K2 & { return self.Find1(a); }, nb::arg("theKey1"), D::Find1)
+     .def("Find2", [](const M &self, const K2 &b) -> const K1 & { return self.Find2(b); }, nb::arg("theKey2"), D::Find2)
+     // Python additions
+     .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) { return nb::make_tuple(it.Key1(), it.Key2()); }); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over (key1, key2) pairs.")
+     .def("items", [](const M &self) {
+              nb::list out;
+              for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(it.Key1(), it.Key2()));
+              return out; }, "Python addition: list of (key1, key2) tuples.");
+    if constexpr (std::is_class_v<K2>) {
+        c.def("Seek1", [](const M &self, const K1 &a) -> const K2 * { return self.Seek1(a); }, nb::rv_policy::reference_internal, nb::arg("theKey1"), D::Seek1)
+         .def("Find1", [](const M &self, const K1 &a, K2 &b) { return self.Find1(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::Find1);
+    } else {
+        c.def("Seek1", [](const M &self, const K1 &a) -> std::optional<K2> { const K2 *p = self.Seek1(a); return p ? std::optional<K2>(*p) : std::nullopt; }, nb::arg("theKey1"), D::Seek1);
+    }
+    if constexpr (std::is_class_v<K1>) {
+        c.def("Seek2", [](const M &self, const K2 &b) -> const K1 * { return self.Seek2(b); }, nb::rv_policy::reference_internal, nb::arg("theKey2"), D::Seek2)
+         .def("Find2", [](const M &self, const K2 &b, K1 &a) { return self.Find2(b, a); }, nb::arg("theKey2"), nb::arg("theKey1"), D::Find2);
+    } else {
+        c.def("Seek2", [](const M &self, const K2 &b) -> std::optional<K1> { const K1 *p = self.Seek2(b); return p ? std::optional<K1>(*p) : std::nullopt; }, nb::arg("theKey2"), D::Seek2);
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------
+// NCollection_Shared<T> (: Standard_Transient, T): T made a Standard_Transient. nanobind base = T, which
+// is NOT at offset 0 -> the stored pointer is the T subobject (mi_traits); T's API is inherited,
+// the Transient part is bound through adjusting downcasts.
+template <typename T> void bind_NCollection_Shared(nb::module_ &m, const char *name) {
+    using S = NCollection_Shared<T>;
+    namespace D = nanoocp_doc::NCollection_Shared;
+    nb::class_<S, T> c(m, name, D::class_doc);
+    c.def(nb::new_([]() { return opencascade::handle<S>(new S()); }), D::ctor)
+     .def(nb::new_([](const T &t) { return opencascade::handle<S>(new S(t)); }), nb::arg("theOther"), D::ctor);
+    def_transient_members<S, T>(c);
 }
 
 } // namespace nanoocp

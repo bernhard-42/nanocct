@@ -35,6 +35,21 @@ def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> 
     return None
 
 
+def _generic_spelling(concrete: str, templates: dict[str, dict]) -> str:
+    """nanoocp.NCollection.NCollection_Map__int -> NCollection_Map[int] (what NCollection_Map[int] denotes statically)."""
+    name = concrete.rsplit(".", 1)[-1]
+    for key, inst in templates.items():
+        if inst.get("name") == name:
+            kind, args = re.match(r"(\w+)<(.+)>$", key).groups()
+            return f"{kind}[{', '.join(_stub_arg(a, templates) for a in _split_args(args))}]"
+    return concrete
+
+
+def _stub_arg(arg: str, templates: dict[str, dict]) -> str:
+    manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
+    return _type_arg(arg, manifest["classes"], templates) or arg
+
+
 def _split_args(text: str) -> list[str]:
     out, depth, cur = [], 0, ""
     for ch in text:
@@ -97,21 +112,44 @@ def main() -> int:
     nc = SRC / "NCollection.pyi"
     text = nc.read_text()
     generic_parts = []
-    kinds = sorted({re.match(r"(\w+)<", key).group(1) for key in templates})
+    kinds = sorted({re.match(r"(\w+)<", key).group(1) for key, inst in templates.items() if not inst.get("skipped", False)})
     for kind in kinds:
         g = GENERIC / f"{kind}.pyi"
-        if g.exists():
+        if kind == "NCollection_Shared":
+            # NCollection_Shared<T> derives from T, which Generic[_T] cannot express: type the accessor with
+            # one overload per bound instantiation, returning the concrete class (which derives from T's class)
+            lines = ["class _NCollection_Shared_template:",
+                     '    """NCollection_Shared[T] -> the bound NCollection_Shared<T> class (derives from T)."""']
+            for key, inst in sorted(templates.items()):
+                if inst.get("skipped", False) or not key.startswith("NCollection_Shared<"):
+                    continue
+                wrapped = _type_arg(_split_args(key[len("NCollection_Shared<"):-1])[0], classes, templates)
+                if wrapped is None:
+                    continue
+                generic_wrapped = _generic_spelling(wrapped, templates)
+                lines += ["    @overload", f"    def __getitem__(self, item: type[{generic_wrapped}]) -> type[{inst['name']}]: ..."]
+            lines += ["    @overload", "    def __getitem__(self, item: type) -> type: ...", "",
+                      "NCollection_Shared: _NCollection_Shared_template", ""]
+            generic_parts.append("\n".join(lines) + "\n")
+        elif g.exists():
             generic_parts.append(g.read_text().rstrip() + "\n")
         else:
             print(f"warning: no generic stub for {kind} (generator/stubs/{kind}.pyi)", file=sys.stderr)
     for key, inst in sorted(templates.items()):
+        if inst.get("skipped", False):
+            continue
         kind, args = re.match(r"(\w+)<(.+)>$", key).groups()
         spelled = [_type_arg(a, classes, templates) for a in _split_args(args)]
         if any(sp is None for sp in spelled) or not (GENERIC / f"{kind}.pyi").exists():
             continue
-        text = _replace_class_block(text, inst["name"], f"class {inst['name']}({kind}[{', '.join(spelled)}]): ...")
+        bases = f"{kind}[{', '.join(spelled)}]"
+        if kind == "NCollection_Shared":                 # NCollection_Shared<T> derives from T (+ Transient members)
+            bases = f"{spelled[0]}, _NCollection_Shared_members"
+        text = _replace_class_block(text, inst["name"], f"class {inst['name']}({bases}): ...")
     header = ("from typing import Generic, Self, TypeVar, overload\nfrom collections.abc import Iterator\n"
               "import nanoocp.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n\n")
+    header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
+        "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
     nc.write_text(header + "".join(generic_parts) + "\n" + text)
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)

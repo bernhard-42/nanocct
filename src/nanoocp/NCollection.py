@@ -12,13 +12,25 @@ NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_Array1__Handle_Standard_Persistent",
     (('builtins', 'float'),): "NCollection_Array1__double",
 })
+NCollection_Array2 = _Template("NCollection_Array2", "nanoocp.NCollection", {
+    (('builtins', 'float'),): "NCollection_Array2__double",
+})
 NCollection_DataMap = _Template("NCollection_DataMap", "nanoocp.NCollection", {
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.TCollection', 'TCollection_AsciiString')): "NCollection_DataMap__TCollection_AsciiString__TCollection_AsciiString",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('builtins', 'int')): "NCollection_DataMap__TCollection_AsciiString__int",
     (('builtins', 'int'), ('builtins', 'float')): "NCollection_DataMap__int__double",
 })
+NCollection_DoubleMap = _Template("NCollection_DoubleMap", "nanoocp.NCollection", {
+    (('builtins', 'int'), ('nanoocp.TCollection', 'TCollection_AsciiString')): "NCollection_DoubleMap__int__TCollection_AsciiString",
+})
+NCollection_DynamicArray = _Template("NCollection_DynamicArray", "nanoocp.NCollection", {
+    (('builtins', 'int'),): "NCollection_DynamicArray__int",
+})
 NCollection_HArray1 = _Template("NCollection_HArray1", "nanoocp.NCollection", {
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_HArray1__Handle_Standard_Persistent",
+})
+NCollection_HArray2 = _Template("NCollection_HArray2", "nanoocp.NCollection", {
+    (('builtins', 'float'),): "NCollection_HArray2__double",
 })
 NCollection_HSequence = _Template("NCollection_HSequence", "nanoocp.NCollection", {
     (('nanoocp.Storage', 'Storage_Root'),): "NCollection_HSequence__Handle_Storage_Root",
@@ -47,6 +59,7 @@ NCollection_Map = _Template("NCollection_Map", "nanoocp.NCollection", {
 })
 NCollection_Sequence = _Template("NCollection_Sequence", "nanoocp.NCollection", {
     (('nanoocp.Message', 'Message_Printer'),): "NCollection_Sequence__Handle_Message_Printer",
+    (('nanoocp.Standard', 'Standard_Transient'),): "NCollection_Sequence__Handle_Standard_Transient",
     (('nanoocp.Storage', 'Storage_Root'),): "NCollection_Sequence__Handle_Storage_Root",
     (('nanoocp.TCollection', 'TCollection_HAsciiString'),): "NCollection_Sequence__Handle_TCollection_HAsciiString",
     (('nanoocp.TCollection', 'TCollection_HExtendedString'),): "NCollection_Sequence__Handle_TCollection_HExtendedString",
@@ -56,6 +69,9 @@ NCollection_Sequence = _Template("NCollection_Sequence", "nanoocp.NCollection", 
     (('nanoocp.TCollection', 'TCollection_AsciiString'),): "NCollection_Sequence__TCollection_AsciiString",
     (('nanoocp.TCollection', 'TCollection_ExtendedString'),): "NCollection_Sequence__TCollection_ExtendedString",
     (('builtins', 'int'),): "NCollection_Sequence__int",
+})
+NCollection_Shared = _Template("NCollection_Shared", "nanoocp.NCollection", {
+    (('nanoocp.NCollection', 'NCollection_Map__int'),): "NCollection_Shared__NCollection_Map__int",
 })
 
 # deprecated NCollection typedef names -> (home module, bound name)

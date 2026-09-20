@@ -214,10 +214,17 @@ allocated with him.)nbdoc");
 }
 
 void nanoocp_templates_NCollection(nb::module_ &m) {
+    { nb::module_ home = m; nanoocp::bind_NCollection_Array1<double>(home, "NCollection_Array1__double"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_Array2<double>(home, "NCollection_Array2__double"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_DataMap<TCollection_AsciiString, int>(home, "NCollection_DataMap__TCollection_AsciiString__int"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_DataMap<int, double>(home, "NCollection_DataMap__int__double"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_DoubleMap<int, TCollection_AsciiString>(home, "NCollection_DoubleMap__int__TCollection_AsciiString"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_DynamicArray<int>(home, "NCollection_DynamicArray__int"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_HArray2<double>(home, "NCollection_HArray2__double"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_IndexedMap<TCollection_AsciiString>(home, "NCollection_IndexedMap__TCollection_AsciiString"); }
     { nb::module_ home = m; nanoocp::bind_NCollection_Map<int>(home, "NCollection_Map__int"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_Sequence<opencascade::handle<Standard_Transient>>(home, "NCollection_Sequence__Handle_Standard_Transient"); }
+    { nb::module_ home = m; nanoocp::bind_NCollection_Shared<NCollection_Map<int>>(home, "NCollection_Shared__NCollection_Map__int"); }
 }
 
 void nanoocp_define_NCollection(nb::module_ &m) {

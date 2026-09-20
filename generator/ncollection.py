@@ -107,6 +107,53 @@ BINDERS: dict[str, dict] = {
         "nargs": 3,
         "defaults": {2: "NCollection_DefaultHasher<{0}>"},
     },
+    "NCollection_Array2": {
+        "binder": "nanoocp::bind_NCollection_Array2",
+        "members": {"BeginPosition", "LastPosition", "Size", "Length", "NbRows", "NbColumns", "RowLength", "ColLength", "LowerRow",
+                    "UpperRow", "LowerCol", "UpperCol", "UpdateLowerRow", "UpdateLowerCol", "UpdateUpperRow", "UpdateUpperCol",
+                    "Assign", "CopyValues", "Value", "operator()", "ChangeValue", "SetValue", "At", "ChangeAt", "Resize", "ResizeWithTrim"},
+        "skipped": {"Move", "operator=", "EmplaceValue", "begin", "end", "cbegin", "cend", "operator new", "operator delete",
+                    "operator new[]", "operator delete[]"},
+        "requires": ["NCollection_Array1"],    # Array2<T> derives from Array1<T>
+        "nargs": 1,
+    },
+    "NCollection_HArray2": {
+        "binder": "nanoocp::bind_NCollection_HArray2",
+        "members": {"Array2", "ChangeArray2", "get_type_name", "get_type_descriptor", "DynamicType"},
+        "skipped": {"operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "requires": ["NCollection_Array2"],
+        "nargs": 1,
+    },
+    "NCollection_DynamicArray": {
+        "binder": "nanoocp::bind_NCollection_DynamicArray",
+        "members": {"Size", "Length", "Lower", "Upper", "IsEmpty", "Assign", "Append", "InsertAfter", "InsertBefore", "EraseLast",
+                    "Appended", "operator()", "operator[]", "Value", "First", "ChangeFirst", "Last", "ChangeLast", "ChangeValue",
+                    "SetValue", "Clear", "SetIncrement"},
+        "skipped": {"operator=", "EmplaceAppend", "EmplaceValue", "begin", "end", "cbegin", "cend", "operator new", "operator delete",
+                    "operator new[]", "operator delete[]"},
+        "requires": [],
+        "nargs": 1,
+    },
+    "NCollection_DoubleMap": {
+        "binder": "nanoocp::bind_NCollection_DoubleMap",
+        "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Bind", "TryBind",
+                    "AreBound", "IsBound1", "IsBound2", "UnBind1", "UnBind2", "Find1", "Seek1", "Find2", "Seek2", "Clear"},
+        "skipped": {"operator=", "TryEmplace", "begin", "end", "cbegin", "cend", "operator new", "operator delete", "operator new[]",
+                    "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Key1", "Key2", "Value", "Initialize", "Reset"}},
+        "bases": ["NCollection_BaseMap"],
+        "requires": [],
+        "nargs": 4,
+        "defaults": {2: "NCollection_DefaultHasher<{0}>", 3: "NCollection_DefaultHasher<{1}>"},
+    },
+    "NCollection_Shared": {
+        "binder": "nanoocp::bind_NCollection_Shared",
+        "members": set(),
+        "skipped": {"operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "requires": [],
+        "nargs": 1,                # the second parameter is an enable_if guard
+        "wraps": True,             # NCollection_Shared<T> derives from T: T must be bound (class or instantiation)
+    },
     "NCollection_HArray1": {
         "binder": "nanoocp::bind_NCollection_HArray1",
         "members": {"Array1", "ChangeArray1", "get_type_name", "get_type_descriptor", "DynamicType"},
@@ -156,11 +203,12 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
                 if ch.access_specifier != Access.PUBLIC:
                     continue
                 if ch.kind in (K.CXX_METHOD, K.CONSTRUCTOR, K.FUNCTION_TEMPLATE):
-                    name = "ctor" if ch.kind == K.CONSTRUCTOR else ch.spelling
+                    is_ctor = ch.kind == K.CONSTRUCTOR or ch.spelling.startswith(tmpl + "<")   # constructor templates
+                    name = "ctor" if is_ctor else ch.spelling
                     d = _doc(ch)
                     if name not in docs or (docs[name] == "" and d != ""):
                         docs[name] = d
-                    if ch.kind != K.CONSTRUCTOR and ch.spelling not in info["members"] and ch.spelling not in info["skipped"]:
+                    if not is_ctor and ch.spelling not in info["members"] and ch.spelling not in info["skipped"]:
                         warnings.append(f"{tmpl}::{ch.spelling}: public member neither bound nor listed as skipped")
                 elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition() and ch.spelling in info.get("nested", {}):
                     nd = nested.setdefault(ch.spelling, {"class_doc": _doc(ch)})
@@ -231,7 +279,7 @@ def deprecated_aliases(alias_dir: Path, args: list[str], templates: dict[str, di
         all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
         key = f"{tmpl}<{', '.join(instance_args(tmpl, all_args))}>"
         found = templates.get(key)
-        if found is None:
+        if found is None or found.get("skipped", False):
             unbound += 1
             continue
         prefix = cur.spelling.split("_", 1)[0]

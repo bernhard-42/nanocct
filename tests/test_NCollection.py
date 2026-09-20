@@ -52,23 +52,30 @@ def test_array1_of_handles_null_is_none():
     assert p.GetRefCount() == 2                                # array + Python holder
 
 
-def test_harray1_is_transient_with_full_array_api():
-    h = H(1, 2)
-    assert isinstance(h, Standard.Standard_Transient)
+def test_harray1_is_an_array1_with_transient_members():
+    h = H(5, 9)                                                # Lower() = 5: catches an unadjusted Transient pointer
     assert h.GetRefCount() == 1
     assert h.DynamicType().Name() == "NCollection_HArray1"
-    assert h.Length() == 2 and len(h) == 2 and h.Value(1) is None
-    assert not isinstance(h, AH)                               # single-inheritance limitation, documented
+    assert h.IsKind("Standard_Transient") is True
+    assert h.Length() == 5 and len(h) == 5 and h.Value(5) is None
+    assert isinstance(h, AH)                                   # nanobind base = the offset-0 base NCollection_Array1
+    assert not isinstance(h, Standard.Standard_Transient)      # the Transient base is at a non-zero offset (Design.md 4.2)
     assert type(h.Array1()) is AH                              # sliced copy of the array part
     assert h.ChangeArray1() is h                               # mutable view = the object itself
 
 
-def test_harray1_converts_implicitly_to_array1():
+def test_harray1_passes_as_array1_and_as_transient_handle():
     h = H(1, 2)
-    assert type(AH(h)) is AH
     b = AH()
-    b.Assign(h)                                                # C++: const NCollection_Array1<T>& parameter
+    b.Assign(h)                                                # C++: const NCollection_Array1<T>& (inherited base)
     assert b.Length() == 2
+    seq = NCollection.NCollection_Sequence[Standard.Standard_Transient]()
+    seq.Append(h)                                              # handle<Standard_Transient> parameter: MI registry up-cast
+    assert h.GetRefCount() == 2
+    back = seq.Value(1)                                        # handle<Standard_Transient> holding an HArray1: down-cast
+    assert back is h and back.Lower() == 1
+    with pytest.raises(TypeError):
+        AH(1, 1).SetValue(1, h)                                # not a Standard_Persistent: rejected, no corruption
 
 
 def test_deprecated_typedef_alias():
@@ -163,16 +170,16 @@ def test_sequence_occt_api():
         s.Value(9)
 
 
-def test_hsequence_is_transient_and_converts():
+def test_hsequence_is_a_sequence_with_transient_members():
     s = S()
     s.Append("a")
     h = HS()
     h.Append("x")
     h.Append(s)                                                  # Append(SequenceType&)
-    assert isinstance(h, Standard.Standard_Transient)
+    assert isinstance(h, S) and h.GetRefCount() == 1
     assert _strs(h) == ["x", "a"]
     assert type(h.Sequence()) is S and h.ChangeSequence() is h
-    assert S(h).Length() == 2                                    # HSequence -> Sequence
+    assert S(h).Length() == 2                                    # HSequence -> Sequence (copy constructor)
 
 
 def test_sequence_and_list_aliases():
@@ -272,3 +279,57 @@ def test_map_accessors_and_extra_instantiations():
     assert NCollection.NCollection_Map[int].__name__ == "NCollection_Map__int"
     assert NCollection.NCollection_DataMap[int, float].__name__ == "NCollection_DataMap__int__double"
     assert "NCollection_IndexedMap__TCollection_AsciiString" in NCollection.NCollection_IndexedMap.bound()
+
+
+# ---------------------------------------------------------------------------- Array2, DynamicArray, DoubleMap, Shared
+def test_array2():
+    A2 = NCollection.NCollection_Array2[float]
+    a = A2(1, 2, 1, 3)
+    a.Init(0.0)
+    a.SetValue(2, 3, 5.0)
+    a[(1, 1)] = 1.0
+    assert (a.NbRows(), a.NbColumns(), a.Length(), len(a)) == (2, 3, 6, 6)
+    assert a.Value(2, 3) == 5.0 and a(2, 3) == 5.0 and a[(2, 3)] == 5.0
+    assert list(a) == [1.0, 0.0, 0.0, 0.0, 0.0, 5.0]             # row-major, inherited from Array1
+    assert isinstance(a, NCollection.NCollection_Array1[float])
+    assert (a.LowerRow(), a.UpperRow(), a.LowerCol(), a.UpperCol()) == (1, 2, 1, 3)
+    h = NCollection.NCollection_HArray2[float](3, 4, 1, 2, 7.0)
+    assert h.GetRefCount() == 1 and h.NbRows() == 2 and list(h) == [7.0] * 4
+    assert isinstance(h, A2) and type(h.Array2()) is A2 and A2(h).Length() == 4
+
+
+def test_dynamic_array():
+    V = NCollection.NCollection_DynamicArray[int]
+    v = V()
+    v.Append(10)
+    v.Append(20)
+    v.Append(30)
+    assert list(v) == [10, 20, 30] and (v.Lower(), v.Upper(), len(v)) == (0, 2, 3)
+    assert v[1] == 20 and v(1) == 20 and v.Value(1) == 20
+    assert v.SetValue(0, 5) == 5
+    v.EraseLast()
+    assert list(v) == [5, 20]
+
+
+def test_double_map():
+    DM = NCollection.NCollection_DoubleMap[int, TCollection.TCollection_AsciiString]
+    dm = DM()
+    dm.Bind(1, "one")
+    dm.Bind(2, "two")
+    assert dm.Find1(1).ToCString() == "one" and dm.Find2("two") == 2
+    assert dm.IsBound1(3) is False and dm.IsBound2("two") is True
+    assert dm.Seek1(9) is None and dm.Seek2("one") == 1
+    assert [(k, s.ToCString()) for k, s in dm.items()] == [(1, "one"), (2, "two")]
+    assert [(k, s.ToCString()) for k, s in dm] == [(1, "one"), (2, "two")]
+
+
+def test_shared_is_the_wrapped_type_plus_transient():
+    SM = NCollection.NCollection_Shared[NCollection.NCollection_Map[int]]
+    sm = SM()
+    sm.Add(3)
+    sm.Add(4)
+    assert isinstance(sm, NCollection.NCollection_Map[int]) and sorted(sm) == [3, 4] and len(sm) == 2
+    assert sm.GetRefCount() == 1 and sm.IsKind("Standard_Transient") is True
+    seq = NCollection.NCollection_Sequence[Standard.Standard_Transient]()
+    seq.Append(sm)                                                # T is not the offset-0 base here: registry paths
+    assert seq.Value(1) is sm and sm.GetRefCount() == 2

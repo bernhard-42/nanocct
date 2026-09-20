@@ -87,7 +87,7 @@ def _accessors(known: dict[str, str], templates: dict[str, dict]) -> dict[str, d
     out: dict[str, dict[tuple[tuple[str, str], ...], str]] = {}
     for key, inst in templates.items():
         m = re.match(r"(\w+)<(.+)>$", key)
-        if m is None:
+        if m is None or inst.get("skipped", False):
             continue
         tmpl, args = m.group(1), _split_args(m.group(2))
         specs = [_element_spec(a, known, templates) for a in args]

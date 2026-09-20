@@ -37,4 +37,10 @@ extra = [
     "NCollection_DataMap<int, double>",
     "NCollection_DataMap<TCollection_AsciiString, int>",
     "NCollection_IndexedMap<TCollection_AsciiString>",
+    "NCollection_Array2<double>",
+    "NCollection_HArray2<double>",
+    "NCollection_DynamicArray<int>",
+    "NCollection_DoubleMap<int, TCollection_AsciiString>",
+    "NCollection_Shared<NCollection_Map<int>>",
+    "NCollection_Sequence<opencascade::handle<Standard_Transient>>",
 ]

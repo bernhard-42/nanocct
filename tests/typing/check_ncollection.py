@@ -17,7 +17,7 @@ alias = TColStd.TColStd_Array1OfReal(1, 3)
 alias_value: float = alias.Value(1)
 
 h = NCollection.NCollection_HArray1[Standard.Standard_Persistent](1, 2)
-t: Standard.Standard_Transient = h                                  # HArray1 is a Transient
+arr_base: NCollection.NCollection_Array1[Standard.Standard_Persistent] = h   # HArray1 is (statically and at runtime) an Array1
 p: Standard.Standard_Persistent = h.Value(1)
 part: NCollection.NCollection_Array1[Standard.Standard_Persistent] = h.Array1()
 rc: int = h.GetRefCount()
@@ -48,7 +48,7 @@ s = NCollection.NCollection_Sequence[TCollection.TCollection_AsciiString]()
 s.Append(TCollection.TCollection_AsciiString("a"))
 sv: TCollection.TCollection_AsciiString = s.Value(1)
 hs = NCollection.NCollection_HSequence[TCollection.TCollection_AsciiString]()
-hs_t: Standard.Standard_Transient = hs
+hs_base: NCollection.NCollection_Sequence[TCollection.TCollection_AsciiString] = hs
 hs_len: int = len(hs)
 l.Append("x")                 # error: str is not int
 sbad: int = s[1]              # error: TCollection_AsciiString is not int
@@ -66,3 +66,22 @@ m = NCollection.NCollection_Map[int]()
 ok: bool = m.Add(3)
 d.Bind("x", 1.0)              # error: str is not int
 bad_key: str = im.FindKey(1)  # error: TCollection_AsciiString is not str
+
+# ---- Array2 / DynamicArray / DoubleMap / Shared, and HArray1 as an Array1
+a2 = NCollection.NCollection_Array2[float](1, 2, 1, 3)
+a2_v: float = a2.Value(1, 2)
+a2_t: float = a2[(1, 2)]
+h1: NCollection.NCollection_Array1[Standard.Standard_Persistent] = h      # HArray1 is an Array1
+h2 = NCollection.NCollection_HArray2[float](1, 2, 1, 2, 0.0)
+h2_rc: int = h2.GetRefCount()
+dyn = NCollection.NCollection_DynamicArray[int]()
+dyn_v: int = dyn.Append(1)
+dmap = NCollection.NCollection_DoubleMap[int, TCollection.TCollection_AsciiString]()
+dmap.Bind(1, TCollection.TCollection_AsciiString("one"))
+k2: TCollection.TCollection_AsciiString = dmap.Find1(1)
+k1: int = dmap.Find2(TCollection.TCollection_AsciiString("one"))
+shared = NCollection.NCollection_Shared[NCollection.NCollection_Map[int]]()
+shared_ok: bool = shared.Add(1)                                            # Map API through the concrete class
+shared_rc: int = shared.GetRefCount()
+a2.SetValue(1, 2, "x")        # error: str is not float
+dmap.Bind("a", "b")           # error: str is not int

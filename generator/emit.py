@@ -237,6 +237,12 @@ class Emitter:
                     bind(m.group(1), [x.strip() for x in m.group(2).split(",")])
             for req in BINDERS[template]["requires"]:      # e.g. Array1<T> before HArray1<T>
                 bind(req, args)
+            if BINDERS[template].get("wraps", False):
+                wrapped = args[0]
+                if wrapped not in self.known and wrapped not in self.templates:
+                    self.report.append(f"{key}: wrapped type {wrapped} is not bound -> instantiation skipped")
+                    self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
+                    return
             home = "NCollection"                            # every instantiation lives in nanoocp.NCollection
             if home not in generated:
                 home = self.ir.name

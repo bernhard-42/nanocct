@@ -655,6 +655,265 @@ constexpr const char *class_doc = R"nbdoc(Implementation of the Iterator interfa
 constexpr const char *ctor = R"nbdoc(Empty constructor)nbdoc";
 } // namespace Iterator
 } // namespace NCollection_IndexedDataMap
+namespace NCollection_Array2 {
+constexpr const char *class_doc = R"nbdoc(Purpose:   The class Array2 represents bi-dimensional arrays
+of fixed size known at run time.
+The ranges of indices are user defined.
+
+Class allocates one 1D array storing full data (all Rows and Columns)
+and extra 1D array storing pointers to each Row.
+
+Warning:   Programs clients of such class must be independent
+of the range of the first element. Then, a C++ for
+loop must be written like this
+
+for (i = A.LowerRow(); i <= A.UpperRow(); i++)
+for (j = A.LowerCol(); j <= A.UpperCol(); j++)
+
+Zero-based (size_t) construction mode:
+NCollection_Array2(size_t theNbRows, size_t theNbCols) creates a zero-based array
+(LowerRow()==0, LowerCol()==0). In this mode At()/ChangeAt() and STL iterators are
+the preferred access path -- they address elements directly without any offset subtraction.
+Buffer-reuse variant NCollection_Array2(pointer, size_t, size_t) wraps an existing
+flat row-major buffer and does NOT own the memory.)nbdoc";
+constexpr const char *Assign = R"nbdoc(Replaces this array by a copy of theOther array.
+Row and column bounds are copied from theOther.)nbdoc";
+constexpr const char *At = R"nbdoc(0-based checked access independent of LowerRow()/LowerCol().
+@param[in] theRow 0-based row index in [0, NbRows()-1]
+@param[in] theCol 0-based column index in [0, NbColumns()-1])nbdoc";
+constexpr const char *BeginPosition = R"nbdoc()nbdoc";
+constexpr const char *ChangeAt = R"nbdoc(0-based checked mutable access independent of LowerRow()/LowerCol().
+@param[in] theRow 0-based row index in [0, NbRows()-1]
+@param[in] theCol 0-based column index in [0, NbColumns()-1])nbdoc";
+constexpr const char *ChangeValue = R"nbdoc(Variable value access)nbdoc";
+constexpr const char *ColLength = R"nbdoc(Returns length of the column, i.e. number of rows)nbdoc";
+constexpr const char *CopyValues = R"nbdoc(Copies values from theOther array without changing this array bounds.
+This array should be pre-allocated and have the same dimensions as theOther;
+otherwise exception Standard_DimensionMismatch is thrown.)nbdoc";
+constexpr const char *EmplaceValue = R"nbdoc(Emplace value at the specified row and column, constructing it in-place
+@param theRow row index at which to emplace the value
+@param theCol column index at which to emplace the value
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *LastPosition = R"nbdoc()nbdoc";
+constexpr const char *Length = R"nbdoc(Length (legacy int-returning API).)nbdoc";
+constexpr const char *LowerCol = R"nbdoc(LowerCol)nbdoc";
+constexpr const char *LowerRow = R"nbdoc(LowerRow)nbdoc";
+constexpr const char *Move = R"nbdoc(Move assignment.
+This array will borrow all the data from theOther.
+The moved object will be left uninitialized and should not be used anymore.)nbdoc";
+constexpr const char *NbColumns = R"nbdoc(Returns number of columns)nbdoc";
+constexpr const char *NbRows = R"nbdoc(Returns number of rows)nbdoc";
+constexpr const char *Resize = R"nbdoc(Resizes the array to specified bounds.
+When theToCopyData is false, the array is re-allocated without preserving data.
+When theToCopyData is true, copies elements in linear (row-major) order.
+No re-allocation is done if dimensions are unchanged.
+@param theRowLower new lower Row of array
+@param theRowUpper new upper Row of array
+@param theColLower new lower Column of array
+@param theColUpper new upper Column of array
+@param theToCopyData flag to copy existing data into new array)nbdoc";
+constexpr const char *ResizeWithTrim = R"nbdoc(Resizes the array preserving 2D element layout.
+When theToCopyData is false, the array is re-allocated without preserving data.
+When theToCopyData is true, copies min(oldNbRows,newNbRows) x min(oldNbCols,newNbCols)
+elements from the top-left corner of the old array to the top-left corner of the new,
+preserving relative (row, col) offsets from lower bounds. Trimming or growing as needed.
+No re-allocation is done if dimensions are unchanged.
+@param theRowLower new lower Row of array
+@param theRowUpper new upper Row of array
+@param theColLower new lower Column of array
+@param theColUpper new upper Column of array
+@param theToCopyData flag to copy existing data into new array)nbdoc";
+constexpr const char *RowLength = R"nbdoc(Returns length of the row, i.e. number of columns)nbdoc";
+constexpr const char *SetValue = R"nbdoc(SetValue)nbdoc";
+constexpr const char *Size = R"nbdoc(Size (number of items).)nbdoc";
+constexpr const char *UpdateLowerCol = R"nbdoc(Updates lower column)nbdoc";
+constexpr const char *UpdateLowerRow = R"nbdoc(Updates lower row)nbdoc";
+constexpr const char *UpdateUpperCol = R"nbdoc(Updates upper column)nbdoc";
+constexpr const char *UpdateUpperRow = R"nbdoc(Updates upper row)nbdoc";
+constexpr const char *UpperCol = R"nbdoc(UpperCol)nbdoc";
+constexpr const char *UpperRow = R"nbdoc(UpperRow)nbdoc";
+constexpr const char *Value = R"nbdoc(Constant value access)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor; should be used with caution.
+@sa methods Resize() and Move().)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_call = R"nbdoc(operator() - alias to ChangeValue)nbdoc";
+constexpr const char *op_assign = R"nbdoc(Assignment operator)nbdoc";
+} // namespace NCollection_Array2
+namespace NCollection_HArray2 {
+constexpr const char *class_doc = R"nbdoc(Template class for Handle-managed 2D arrays.
+Inherits from both NCollection_Array2<TheItemType> and Standard_Transient,
+providing reference-counted 2D array functionality.)nbdoc";
+constexpr const char *Array2 = R"nbdoc(Returns const reference to the underlying array.)nbdoc";
+constexpr const char *ChangeArray2 = R"nbdoc(Returns mutable reference to the underlying array.)nbdoc";
+constexpr const char *DynamicType = R"nbdoc()nbdoc";
+constexpr const char *ctor = R"nbdoc(Constructor with bounds.
+@param theRowLow lower row bound
+@param theRowUpp upper row bound
+@param theColLow lower column bound
+@param theColUpp upper column bound)nbdoc";
+constexpr const char *get_type_descriptor = R"nbdoc()nbdoc";
+constexpr const char *get_type_name = R"nbdoc()nbdoc";
+constexpr const char *op_delete = R"nbdoc()nbdoc";
+constexpr const char *op_delete_array = R"nbdoc()nbdoc";
+constexpr const char *op_new = R"nbdoc()nbdoc";
+constexpr const char *op_new_array = R"nbdoc()nbdoc";
+} // namespace NCollection_HArray2
+namespace NCollection_DynamicArray {
+constexpr const char *class_doc = R"nbdoc(Class NCollection_DynamicArray (dynamic array of objects)
+
+The array's indices always start at 0.
+
+The Vector is always created with 0 length. It can be enlarged by two means:
+1. Calling the method Append (val) - then "val" is added to the end of the
+vector (the vector length is incremented)
+2. Calling the method SetValue (i, val) - if "i" is greater than or equal
+to the current length of the vector, the vector is enlarged to accomo-
+date this index
+
+The methods Append and SetValue return a non-const reference to the copied
+object inside the vector. This reference is guaranteed to be valid until
+the vector is destroyed. It can be used to access the vector member directly
+or to pass its address to other data structures.
+
+The vector iterator remembers the length of the vector at the moment of the
+creation or initialisation of the iterator. Therefore the iteration begins
+at index 0 and stops at the index equal to (remembered_length-1). It is OK
+to enlarge the vector during the iteration.)nbdoc";
+constexpr const char *Append = R"nbdoc(Append)nbdoc";
+constexpr const char *Appended = R"nbdoc(Appends an empty value and returns the reference to it)nbdoc";
+constexpr const char *Assign = R"nbdoc(Assignment to the collection of the same type)nbdoc";
+constexpr const char *ChangeFirst = R"nbdoc(@return first element)nbdoc";
+constexpr const char *ChangeLast = R"nbdoc(@return last element)nbdoc";
+constexpr const char *ChangeValue = R"nbdoc()nbdoc";
+constexpr const char *Clear = R"nbdoc()nbdoc";
+constexpr const char *EmplaceAppend = R"nbdoc(Emplace one item at the end, constructing it in-place
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EmplaceValue = R"nbdoc(Emplace value at the specified index, constructing it in-place
+If the index is beyond current size, default-constructs intermediate elements
+@param theIndex index at which to emplace the value
+@param theArgs arguments forwarded to TheItemType constructor
+@return reference to the newly constructed item)nbdoc";
+constexpr const char *EraseLast = R"nbdoc()nbdoc";
+constexpr const char *First = R"nbdoc(@return first element)nbdoc";
+constexpr const char *InsertAfter = R"nbdoc(Insert a value after the element at theIndex, shifting subsequent elements right.
+@param theIndex index after which to insert (must be in [0, Size()-1])
+@param theValue value to insert
+@return reference to the inserted element)nbdoc";
+constexpr const char *InsertBefore = R"nbdoc(Insert a value before the element at theIndex, shifting it and subsequent elements right.
+@param theIndex index before which to insert (must be in [0, Size()-1])
+@param theValue value to insert
+@return reference to the inserted element)nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(Empty query)nbdoc";
+constexpr const char *Last = R"nbdoc(@return last element)nbdoc";
+constexpr const char *Length = R"nbdoc(Total number of items (legacy int-returning API).)nbdoc";
+constexpr const char *Lower = R"nbdoc(Method for consistency with other collections.
+@return Lower bound (inclusive) for iteration.)nbdoc";
+constexpr const char *SetIncrement = R"nbdoc()nbdoc";
+constexpr const char *SetValue = R"nbdoc(SetValue () - set or append a value)nbdoc";
+constexpr const char *Size = R"nbdoc(Total number of items in the vector.)nbdoc";
+constexpr const char *Upper = R"nbdoc(Method for consistency with other collections.
+@return Upper bound (inclusive) for iteration.)nbdoc";
+constexpr const char *Value = R"nbdoc()nbdoc";
+constexpr const char *begin = R"nbdoc()nbdoc";
+constexpr const char *cbegin = R"nbdoc()nbdoc";
+constexpr const char *cend = R"nbdoc()nbdoc";
+constexpr const char *ctor = R"nbdoc(@name public methods)nbdoc";
+constexpr const char *end = R"nbdoc()nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_call = R"nbdoc(Operator() - query the const value)nbdoc";
+constexpr const char *op_assign = R"nbdoc(Assignment operator)nbdoc";
+constexpr const char *op_index = R"nbdoc(Operator[] - query the const value)nbdoc";
+} // namespace NCollection_DynamicArray
+namespace NCollection_DoubleMap {
+constexpr const char *class_doc = R"nbdoc(Purpose:     The DoubleMap  is used to  bind  pairs (Key1,Key2)
+and retrieve them in linear time.
+
+See Map from NCollection for a discussion about the number
+of buckets)nbdoc";
+constexpr const char *Allocator = R"nbdoc(Returns attached allocator)nbdoc";
+constexpr const char *AreBound = R"nbdoc(* AreBound)nbdoc";
+constexpr const char *Assign = R"nbdoc(Assignment.
+This method does not change the internal allocator.)nbdoc";
+constexpr const char *Bind = R"nbdoc(Bind binds the pair (Key1, Key2).
+@throw Standard_MultiplyDefined if Key1 or Key2 is already bound)nbdoc";
+constexpr const char *Clear = R"nbdoc(Clear data. If doReleaseMemory is false then the table of
+buckets is not released and will be reused.)nbdoc";
+constexpr const char *Exchange = R"nbdoc(Exchange the content of two maps without re-allocations.
+Notice that allocators will be swapped as well!)nbdoc";
+constexpr const char *Extent = R"nbdoc(Extent (number of elements, legacy int-returning API).)nbdoc";
+constexpr const char *Find1 = R"nbdoc(Find the Key1 and return Key2 value.
+Raises an exception if Key1 was not bound.)nbdoc";
+constexpr const char *Find2 = R"nbdoc(Find the Key2 and return Key1 value.
+Raises an exception if Key2 was not bound.)nbdoc";
+constexpr const char *IsBound1 = R"nbdoc(IsBound1)nbdoc";
+constexpr const char *IsBound2 = R"nbdoc(IsBound2)nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(IsEmpty)nbdoc";
+constexpr const char *Length = R"nbdoc(Length - number of elements (legacy int-returning API, synonym of Extent()).)nbdoc";
+constexpr const char *NbBuckets = R"nbdoc(NbBuckets)nbdoc";
+constexpr const char *ReSize = R"nbdoc(ReSize)nbdoc";
+constexpr const char *Seek1 = R"nbdoc(Find the Key1 and return pointer to Key2 or NULL if Key1 is not bound.
+@param[in]   theKey1 Key1 to find
+@return pointer to Key2 or NULL if Key1 is not found)nbdoc";
+constexpr const char *Seek2 = R"nbdoc(Find the Key2 and return pointer to Key1 or NULL if not bound.
+@param[in]  theKey2 Key2 to find
+@return pointer to Key1 if Key2 has been found)nbdoc";
+constexpr const char *Size = R"nbdoc(Size - number of elements.)nbdoc";
+constexpr const char *TryBind = R"nbdoc(TryBind binds the pair (Key1, Key2) only if neither key is already bound.
+@param theKey1 first key to bind
+@param theKey2 second key to bind
+@return true if pair was successfully bound, false if either key already exists)nbdoc";
+constexpr const char *TryEmplace = R"nbdoc(TryEmplace constructs keys in-place only if neither key is already bound.
+@param theKey1 first key to bind
+@param theKey2 second key to bind
+@return true if pair was successfully bound, false if either key already exists)nbdoc";
+constexpr const char *UnBind1 = R"nbdoc(UnBind1)nbdoc";
+constexpr const char *UnBind2 = R"nbdoc(UnBind2)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor.)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_assign = R"nbdoc(Assignment operator)nbdoc";
+namespace Iterator {
+constexpr const char *Initialize = R"nbdoc()nbdoc";
+constexpr const char *Key1 = R"nbdoc(Key1 inquiry)nbdoc";
+constexpr const char *Key2 = R"nbdoc(Key2 inquiry)nbdoc";
+constexpr const char *More = R"nbdoc(Query if the end of collection is reached by iterator)nbdoc";
+constexpr const char *Next = R"nbdoc(Make a step along the collection)nbdoc";
+constexpr const char *Reset = R"nbdoc()nbdoc";
+constexpr const char *Value = R"nbdoc(Value access)nbdoc";
+constexpr const char *class_doc = R"nbdoc()nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor)nbdoc";
+} // namespace Iterator
+} // namespace NCollection_DoubleMap
+namespace NCollection_Shared {
+constexpr const char *class_doc = R"nbdoc(Template defining a class derived from the specified base class and
+Standard_Transient, and supporting OCCT RTTI.
+
+This provides possibility to use Handes for types not initially intended
+to be dynamically allocated.
+
+Current limitation is that only copy and constructors with 1-3 arguments are defined,
+calling those of the argument class (default constructor must be available).
+It can be improved when perfect forwarding of template arguments is supported
+by all compilers used for OCCT.
+
+The intent is similar to std::make_shared<> in STL, except that this
+implementation defines a separate type.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Default constructor)nbdoc";
+constexpr const char *op_delete = R"nbdoc()nbdoc";
+constexpr const char *op_delete_array = R"nbdoc()nbdoc";
+constexpr const char *op_new = R"nbdoc()nbdoc";
+constexpr const char *op_new_array = R"nbdoc()nbdoc";
+} // namespace NCollection_Shared
 namespace NCollection_HArray1 {
 constexpr const char *class_doc = R"nbdoc(Template class for Handle-managed 1D arrays.
 Inherits from both NCollection_Array1<TheItemType> and Standard_Transient,

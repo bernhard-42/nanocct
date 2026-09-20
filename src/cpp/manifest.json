@@ -284,16 +284,22 @@
 },
 "templates": {
 "NCollection_Array1<double>": {
-"toolkit": "TKMath",
+"toolkit": "TKernel",
 "package": "NCollection",
 "name": "NCollection_Array1__double",
-"by": "gp"
+"by": "NCollection"
 },
 "NCollection_Array1<opencascade::handle<Standard_Persistent>>": {
 "toolkit": "TKernel",
 "package": "NCollection",
 "name": "NCollection_Array1__Handle_Standard_Persistent",
 "by": "Storage"
+},
+"NCollection_Array2<double>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Array2__double",
+"by": "NCollection"
 },
 "NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString>": {
 "toolkit": "TKernel",
@@ -313,11 +319,29 @@
 "name": "NCollection_DataMap__int__double",
 "by": "NCollection"
 },
+"NCollection_DoubleMap<int, TCollection_AsciiString>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_DoubleMap__int__TCollection_AsciiString",
+"by": "NCollection"
+},
+"NCollection_DynamicArray<int>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__int",
+"by": "NCollection"
+},
 "NCollection_HArray1<opencascade::handle<Standard_Persistent>>": {
 "toolkit": "TKernel",
 "package": "NCollection",
 "name": "NCollection_HArray1__Handle_Standard_Persistent",
 "by": "Storage"
+},
+"NCollection_HArray2<double>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_HArray2__double",
+"by": "NCollection"
 },
 "NCollection_HSequence<TCollection_AsciiString>": {
 "toolkit": "TKernel",
@@ -433,6 +457,12 @@
 "name": "NCollection_Sequence__Handle_Message_Printer",
 "by": "Message"
 },
+"NCollection_Sequence<opencascade::handle<Standard_Transient>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Standard_Transient",
+"by": "NCollection"
+},
 "NCollection_Sequence<opencascade::handle<Storage_Root>>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -468,6 +498,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__Handle_Units_Unit",
 "by": "Units"
+},
+"NCollection_Shared<NCollection_Map<int>>": {
+"toolkit": "TKernel",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Map__int",
+"by": "NCollection"
 }
 }
 }

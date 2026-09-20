@@ -8,6 +8,8 @@ from nanoocp._TKernel.TColStd import *  # noqa: F401,F403
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
     "TColStd_Array1OfReal": ("nanoocp.NCollection", "NCollection_Array1__double"),
+    "TColStd_Array2OfReal": ("nanoocp.NCollection", "NCollection_Array2__double"),
+    "TColStd_HArray2OfReal": ("nanoocp.NCollection", "NCollection_HArray2__double"),
     "TColStd_HSequenceOfAsciiString": ("nanoocp.NCollection", "NCollection_HSequence__TCollection_AsciiString"),
     "TColStd_HSequenceOfHAsciiString": ("nanoocp.NCollection", "NCollection_HSequence__Handle_TCollection_HAsciiString"),
     "TColStd_HSequenceOfHExtendedString": ("nanoocp.NCollection", "NCollection_HSequence__Handle_TCollection_HExtendedString"),
@@ -18,6 +20,7 @@ _ALIASES = {
     "TColStd_SequenceOfHAsciiString": ("nanoocp.NCollection", "NCollection_Sequence__Handle_TCollection_HAsciiString"),
     "TColStd_SequenceOfHExtendedString": ("nanoocp.NCollection", "NCollection_Sequence__Handle_TCollection_HExtendedString"),
     "TColStd_SequenceOfInteger": ("nanoocp.NCollection", "NCollection_Sequence__int"),
+    "TColStd_SequenceOfTransient": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Standard_Transient"),
 }
 
 
