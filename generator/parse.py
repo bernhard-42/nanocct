@@ -14,7 +14,7 @@ from clang.cindex import AccessSpecifier as Access
 from clang.cindex import CursorKind as K
 from clang.cindex import TypeKind as TK
 
-from .model import Class, Constant, Constructor, Enum, Field, Function, Method, PackageIR, Param, TemplateInstance
+from .model import Class, Constant, Constructor, Enum, Field, Function, Method, PackageIR, Param, TemplateInstance, TypeAlias
 from .occt import OcctTree, Package
 
 _PRIMITIVE_KINDS = {
@@ -634,13 +634,26 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
-        umbrella.write_text("#include <cstddef>\n#include <cstdint>\n#include <cstring>\n#include <string>\n"
-                            + "".join(f"#include <{h}>\n" for h in ir.headers))
+        prelude = ["<cstddef>", "<cstdint>", "<cstring>", "<string>"]
         index = cindex.Index.create()
-        # bodies are parsed (no PARSE_SKIP_FUNCTION_BODIES): only then does get_definition() find the
-        # out-of-class inline definitions that decide whether a method needs a library symbol
-        tu = index.parse(str(umbrella), args=args)
-        errors = [d for d in tu.diagnostics if d.severity >= cindex.Diagnostic.Error]
+        for _ in range(6):
+            umbrella.write_text("".join(f"#include {h}\n" for h in prelude) + "".join(f"#include <{h}>\n" for h in ir.headers))
+            # bodies are parsed (no PARSE_SKIP_FUNCTION_BODIES): only then does get_definition() find the
+            # out-of-class inline definitions that decide whether a method needs a library symbol
+            tu = index.parse(str(umbrella), args=args)
+            errors = [d for d in tu.diagnostics if d.severity >= cindex.Diagnostic.Error]
+            if len(errors) == 0:
+                break
+            # a header that uses a forward-declared class in inline code (GeomGridEval_Line.hxx calls Geom_Line::Lin()
+            # with gp_Lin only forward-declared; OCCT's .cxx includes gp_Lin.hxx first): include that class's header
+            # before the package headers and parse again
+            missing = {m.group(1) for d in errors for m in [re.search(r"incomplete (?:return )?type '(?:const )?(\w+)'", d.spelling)] if m is not None}
+            extra = sorted(f"<{name}.hxx>" for name in missing if (tree.include_dir / f"{name}.hxx").exists() and f"<{name}.hxx>" not in prelude)
+            if len(extra) == 0:
+                break
+            prelude += extra
+            ir.prelude += [h.strip("<>") for h in extra]
+            ir.report.append(f"{pkg.name}: headers not self-contained, parsed with {', '.join(extra)} included first")
         if len(errors) > 0:
             raise RuntimeError(f"{pkg.name}: {len(errors)} parse errors, first: {errors[0]}")
         def top_level(cursor: cindex.Cursor, ns: str):
@@ -683,9 +696,6 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
             if ns != "" and cur.kind in (K.FUNCTION_TEMPLATE, K.CLASS_TEMPLATE):
                 ir.report.append(f"{ns}{cur.spelling}: template in namespace (not bound)")
                 continue
-            if ns != "" and cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
-                ir.report.append(f"{ns}{cur.spelling}: type alias in namespace (not bound)")
-                continue
             if cur.kind in (K.CLASS_DECL, K.STRUCT_DECL) and cur.is_definition():
                 c = _class(cur, header, pkg.name)
                 if c.name in _SKIP_CLASSES:
@@ -710,7 +720,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
                     ir.report.append(f"{fn.name}(...): {fn.skip_reason}")
                 ir.functions.append(fn)
             elif cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
-                ir.typedefs.append((cur.spelling, _type_spelling(cur.underlying_typedef_type)))
+                ir.typedefs.append(TypeAlias(py_name=cur.spelling, target=_canonical_args(cur.underlying_typedef_type),
+                                             written=_type_spelling(cur.underlying_typedef_type), scope=scope))
+                if ns != "":
+                    continue                       # alias instantiation (6c) only at package level
                 if not any(c.py_name == cur.spelling for c in ir.classes):     # the same alias appears in several headers
                     inst = _alias_instance(tu, cur, header, pkg.name, ir.report)
                     if inst is not None:

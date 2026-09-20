@@ -527,6 +527,7 @@ Will become "1/2/3 4/5/6" when flag is TRUE, and "1/2/35/5/6" otherwise.)nbdoc")
 @param[in] theMultilineMode  multiline mode flag
 @param[in] theToPutGap       put gap space while connecting lines (no gap otherwise))nbdoc");
     nb::implicitly_convertible<std::decay_t<size_t>, Standard_ReadLineBuffer>();
+    m.attr("Standard_ErrorHandlerCallback") = m.attr("Standard_ErrorHandler").attr("Callback");   // Standard_ErrorHandlerCallback = Standard_ErrorHandler::Callback
     m.def("Abs", static_cast<int (*)(const int)>(&Abs), nb::arg("theValue"), R"nbdoc(Returns the absolute value of a int @p Value.
 Equivalent to std::abs.)nbdoc");
     m.def("IsEven", static_cast<bool (*)(const int)>(&IsEven), nb::arg("theValue"), R"nbdoc(Returns true if @p theValue is even.)nbdoc");

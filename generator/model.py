@@ -105,6 +105,14 @@ class Constant:
 
 
 @dataclass
+class TypeAlias:
+    py_name: str
+    target: str                 # canonical C++ spelling of the aliased type (a bound class -> Python alias)
+    written: str                # as written in the header, for the report
+    scope: tuple[str, ...] = ()
+
+
+@dataclass
 class TemplateInstance:
     template: str         # NCollection_Array1
     args: list[str]       # canonical template arguments, e.g. ["gp_Pnt"]
@@ -117,10 +125,11 @@ class PackageIR:
     name: str
     toolkit: str
     headers: list[str]
+    prelude: list[str] = field(default_factory=list)     # headers included before the package's own (non-self-contained headers)
     classes: list[Class] = field(default_factory=list)
     enums: list[Enum] = field(default_factory=list)
     functions: list[Function] = field(default_factory=list)
-    typedefs: list[tuple[str, str]] = field(default_factory=list)   # (alias, target)
+    typedefs: list[TypeAlias] = field(default_factory=list)
     constants: list[Constant] = field(default_factory=list)    # namespace-level constexpr values
     namespaces: list[tuple[str, ...]] = field(default_factory=list)   # C++ namespaces bound as submodules (Python paths, outer first)
     instances: dict[str, TemplateInstance] = field(default_factory=dict)  # NCollection instances used in bound signatures

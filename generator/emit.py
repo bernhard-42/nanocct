@@ -405,6 +405,15 @@ class Emitter:
                     body.append(self._ctor(c, k.params, k.doc))
             bound = [m for m in c.methods if m.skip_reason is None]
             mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
+            # overloads that become indistinguishable once out-params are dropped (TopAbs::ShapeTypeFromString(const char*)
+            # and (const char*, TopAbs_ShapeEnum&)): nanobind takes the first declared; the other is unreachable
+            seen_sigs: dict[tuple, Method] = {}
+            for m in bound:
+                sig = (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if not p.is_out or p.is_inout))
+                if sig in seen_sigs and any(p.is_out for p in m.params + seen_sigs[sig].params):
+                    self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}): same Python signature as "
+                                       f"{m.name}({self._sig(seen_sigs[sig].params)}) after out-param removal -> unreachable")
+                seen_sigs.setdefault(sig, m)
             for name in sorted(mixed):
                 self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s (instance method of same name exists)")
             for m in c.methods:
@@ -434,8 +443,25 @@ class Emitter:
                             seen.add(src)
                             define.append(f"    nb::implicitly_convertible<std::decay_t<{src}>, {c.name}>();")
 
+        # typedefs of bound classes (using CurveD1 = Geom_Curve::ResD1 in namespace GeomGridEval) -> Python aliases;
+        # scalar typedefs (Standard_Real) and the rest are not exposed
+        seen_aliases: set[tuple[tuple[str, ...], str]] = set()
+        for td in ir.typedefs:
+            key = (td.scope, td.py_name)
+            if key in seen_aliases or any(c.py_name == td.py_name and c.scope == td.scope for c in classes):
+                continue                           # a 6c alias instantiation is a class of its own
+            seen_aliases.add(key)
+            pkg = self.known.get(td.target)
+            if pkg is None or "<" in td.target:
+                if td.scope != ():
+                    self.report.append(f"{'::'.join(td.scope)}::{td.py_name} = {td.written}: type alias of an unbound type (not bound)")
+                continue
+            attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg).split("."))
+            src = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+            define.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
+
         instances = self._instances()
-        includes = [f"#include <{h}>" for h in ir.headers]
+        includes = [f"#include <{h}>" for h in ir.prelude + ir.headers]
         if len(instances) > 0:
             includes.insert(0, '#include "nanoocp_ncollection.h"')
         for ident in sorted(self._idents):

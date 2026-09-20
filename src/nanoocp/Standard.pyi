@@ -1,7 +1,7 @@
 """OCCT package Standard (toolkit TKernel)"""
 
 import enum
-from typing import overload
+from typing import TypeAlias, overload
 
 import nanoocp.NCollection
 import nanoocp.TCollection
@@ -820,6 +820,8 @@ class Standard_ReadLineBuffer:
         @param[in] theMultilineMode  multiline mode flag
         @param[in] theToPutGap       put gap space while connecting lines (no gap otherwise)
         """
+
+Standard_ErrorHandlerCallback: TypeAlias = Standard_ErrorHandler.Callback
 
 @overload
 def Abs(theValue: int) -> int:

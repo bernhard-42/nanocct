@@ -110,15 +110,28 @@ def _stub_of(shim: Path) -> Path:
     return shim.with_suffix(".pyi")
 
 
-_STUBGEN = """
-import sys, importlib
+_STUBGEN = r"""
+import re, sys, importlib
 from pathlib import Path
 from nanobind.stubgen import StubGen
 mod = importlib.import_module(sys.argv[1])
 out = Path(sys.argv[2])
 sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out)   # recursive: C++ namespaces are submodules
 sg.put(mod)
-out.write_text(sg.get())
+text = sg.get()
+# stubgen binds an imported class by __name__ ("from nanoocp.Geom import ResD1 as CurveD1"), which is wrong for a
+# nested class (using CurveD1 = Geom_Curve::ResD1): re-bind such aliases by module + __qualname__
+fixes = []
+for name, value in vars(mod).items():
+    if isinstance(value, type) and value.__module__ != mod.__name__ and "." in value.__qualname__:
+        text, n = re.subn(rf"^    {re.escape(value.__name__)} as {re.escape(name)},?\n", "", text, flags=re.M)
+        if n > 0:
+            fixes.append(f"{name} = {value.__module__}.{value.__qualname__}\n")
+            have = re.search(rf"^import {re.escape(value.__module__)}$", text, flags=re.M) is not None
+            text = re.sub(rf"^from {re.escape(value.__module__)} import \(\n\)\n", "" if have else f"import {value.__module__}\n", text, flags=re.M)
+if len(fixes) > 0:
+    text = text.rstrip("\n") + "\n\n# aliases of nested classes (C++ typedefs)\n" + "".join(fixes)
+out.write_text(text)
 """
 
 
