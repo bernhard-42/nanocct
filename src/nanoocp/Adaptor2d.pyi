@@ -24,7 +24,11 @@ class Adaptor2d_Curve2d(nanoocp.Standard.Standard_Transient):
     thread-safe and parallel evaluations need to be prevented.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Adaptor2d_Curve2d) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -188,6 +192,9 @@ class Adaptor2d_Line2d(Adaptor2d_Curve2d):
     @overload
     def __init__(self, P: nanoocp.gp.gp_Pnt2d, D: nanoocp.gp.gp_Dir2d, UFirst: float, ULast: float) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Adaptor2d_Line2d) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -303,6 +310,9 @@ class Adaptor2d_OffsetCurve(Adaptor2d_Curve2d):
         Create an Offset curve.
         WFirst,WLast define the bounds of the Offset curve.
         """
+
+    @overload
+    def __init__(self, theOther: Adaptor2d_OffsetCurve) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...

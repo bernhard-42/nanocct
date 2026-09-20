@@ -94,6 +94,9 @@ class GCPnts_AbscissaPoint:
         """
 
     @overload
+    def __init__(self, theOther: GCPnts_AbscissaPoint) -> None: ...
+
+    @overload
     @staticmethod
     def Length(theC: nanoocp.Adaptor3d.Adaptor3d_Curve) -> float: ...
 
@@ -222,6 +225,9 @@ class GCPnts_QuasiUniformAbscissa:
         @param[in] theU1  first parameter on curve
         @param[in] theU2  last  parameter on curve
         """
+
+    @overload
+    def __init__(self, theOther: GCPnts_QuasiUniformAbscissa) -> None: ...
 
     @overload
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theNbPoints: int) -> None:
@@ -378,6 +384,9 @@ class GCPnts_QuasiUniformDeflection:
         or a 3D curve from the package Geom (in the case of an Adaptor3d_Curve curve),
         -   and those required on the curve by the computation algorithm.
         """
+
+    @overload
+    def __init__(self, theOther: GCPnts_QuasiUniformDeflection) -> None: ...
 
     @overload
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theDeflection: float, theContinuity: nanoocp.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C1) -> None:
@@ -594,6 +603,9 @@ class GCPnts_TangentialDeflection:
         """
 
     @overload
+    def __init__(self, theOther: GCPnts_TangentialDeflection) -> None: ...
+
+    @overload
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theAngularDeflection: float, theCurvatureDeflection: float, theMinimumOfPoints: int = 2, theUTol: float = 1e-09, theMinLen: float = 1e-07) -> None:
         """
         Initialize algorithm for 3D curve.
@@ -668,7 +680,11 @@ class GCPnts_DistFunctionMV(nanoocp.math.math_MultipleVarFunction):
     requires multi variable function
     """
 
+    @overload
     def __init__(self, theCurvLinDist: "GCPnts_DistFunction") -> None: ...
+
+    @overload
+    def __init__(self, theOther: GCPnts_DistFunctionMV) -> None: ...
 
     def Value(self, X: nanoocp.math.math_Vector) -> tuple[bool, float]: ...
 
@@ -681,7 +697,11 @@ class GCPnts_DistFunction2dMV(nanoocp.math.math_MultipleVarFunction):
     requires multi variable function
     """
 
+    @overload
     def __init__(self, theCurvLinDist: "GCPnts_DistFunction2d") -> None: ...
+
+    @overload
+    def __init__(self, theOther: GCPnts_DistFunction2dMV) -> None: ...
 
     def Value(self, X: nanoocp.math.math_Vector) -> tuple[bool, float]: ...
 
@@ -690,12 +710,20 @@ class GCPnts_DistFunction2dMV(nanoocp.math.math_MultipleVarFunction):
 class GCPnts_TCurveTypes__Adaptor3d_Curve:
     """Auxiliary tool to resolve 3D curve classes."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GCPnts_TCurveTypes__Adaptor3d_Curve) -> None: ...
 
 class GCPnts_TCurveTypes__Adaptor2d_Curve2d:
     """Auxiliary tool to resolve 2D curve classes."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GCPnts_TCurveTypes__Adaptor2d_Curve2d) -> None: ...
 
 class GCPnts_UniformAbscissa:
     """
@@ -794,6 +822,9 @@ class GCPnts_UniformAbscissa:
         @param[in] theToler  used for more precise calculation of curve length
         (Precision::Confusion() by default)
         """
+
+    @overload
+    def __init__(self, theOther: GCPnts_UniformAbscissa) -> None: ...
 
     @overload
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theAbscissa: float, theToler: float = -1.0) -> None:
@@ -953,6 +984,9 @@ class GCPnts_UniformDeflection:
         @param[in] theU2  last  parameter on curve
         @param[in] theWithControl  when TRUE, the algorithm controls the estimate deflection
         """
+
+    @overload
+    def __init__(self, theOther: GCPnts_UniformDeflection) -> None: ...
 
     @overload
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theDeflection: float, theWithControl: bool = True) -> None:

@@ -352,6 +352,7 @@ void nanoocp_define_BVH(nb::module_ &m) {
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Vec2<int>>(nb::borrow<nb::class_<NCollection_Vec2<int>>>(m.attr("BVH_Vec2i")));
     nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<int>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
@@ -418,6 +419,7 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Vec3<int>>(nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i")));
     nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<const int>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
@@ -507,6 +509,7 @@ This method may be used for performance tricks.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<int> &self, const int theInvFactor) -> NCollection_Vec4<int> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<int> &self, const NCollection_Vec4<int> & theRight) -> NCollection_Vec4<int> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
         .def("__truediv__", static_cast<NCollection_Vec4<int> (NCollection_Vec4<int>::*)(const int) const>(&NCollection_Vec4<int>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<NCollection_Vec4<int>>(nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i")));
     nb::borrow<nb::class_<NCollection_LinearVector<NCollection_Vec2<int>>>>(m.attr("BVH_Array2i"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const size_t>(), nb::arg("theCapacity"), R"nbdoc(Constructor with pre-allocated capacity.
@@ -750,6 +753,7 @@ Modifying the vector or the array may invalidate the shared buffer.
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")));
     nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("BVH_Vec3f"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
@@ -816,6 +820,7 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Vec3<float>>(nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("BVH_Vec3f")));
     nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("BVH_Vec4f"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<const float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
@@ -905,6 +910,7 @@ This method may be used for performance tricks.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<float> &self, const float theInvFactor) -> NCollection_Vec4<float> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theRight) -> NCollection_Vec4<float> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
         .def("__truediv__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const float) const>(&NCollection_Vec4<float>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<NCollection_Vec4<float>>(nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("BVH_Vec4f")));
     nb::borrow<nb::class_<NCollection_LinearVector<NCollection_Vec2<float>>>>(m.attr("BVH_Array2f"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const size_t>(), nb::arg("theCapacity"), R"nbdoc(Constructor with pre-allocated capacity.
@@ -1148,6 +1154,7 @@ Modifying the vector or the array may invalidate the shared buffer.
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Vec2<double>>(nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d")));
     nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<double>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
@@ -1214,6 +1221,7 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Vec3<double>>(nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d")));
     nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<const double>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
@@ -1303,6 +1311,7 @@ This method may be used for performance tricks.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<double> &self, const double theInvFactor) -> NCollection_Vec4<double> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<double> &self, const NCollection_Vec4<double> & theRight) -> NCollection_Vec4<double> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
         .def("__truediv__", static_cast<NCollection_Vec4<double> (NCollection_Vec4<double>::*)(const double) const>(&NCollection_Vec4<double>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<NCollection_Vec4<double>>(nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d")));
     nb::borrow<nb::class_<NCollection_LinearVector<NCollection_Vec2<double>>>>(m.attr("BVH_Array2d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const size_t>(), nb::arg("theCapacity"), R"nbdoc(Constructor with pre-allocated capacity.
@@ -1623,6 +1632,7 @@ the data is returned in column-major order.)nbdoc")
         .def("Adjoint", static_cast<NCollection_Mat4<float> (NCollection_Mat4<float>::*)() const noexcept>(&NCollection_Mat4<float>::Adjoint), R"nbdoc(Return adjoint (adjugate matrix, e.g. conjugate transpose).)nbdoc")
         .def_static("Map", static_cast<NCollection_Mat4<float> & (*)(float *) noexcept>(&NCollection_Mat4<float>::Map), nb::rv_policy::reference_internal, nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc")
         .def_static("Map", static_cast<const NCollection_Mat4<float> & (*)(const float *) noexcept>(&NCollection_Mat4<float>::Map), nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Mat4<float>>(nb::borrow<nb::class_<NCollection_Mat4<float>>>(m.attr("BVH_Mat4f")));
     nb::borrow<nb::class_<NCollection_Mat4<double>>>(m.attr("BVH_Mat4d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.
 Construct the identity matrix.)nbdoc")
@@ -1739,12 +1749,16 @@ the data is returned in column-major order.)nbdoc")
         .def("Adjoint", static_cast<NCollection_Mat4<double> (NCollection_Mat4<double>::*)() const noexcept>(&NCollection_Mat4<double>::Adjoint), R"nbdoc(Return adjoint (adjugate matrix, e.g. conjugate transpose).)nbdoc")
         .def_static("Map", static_cast<NCollection_Mat4<double> & (*)(double *) noexcept>(&NCollection_Mat4<double>::Map), nb::rv_policy::reference_internal, nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc")
         .def_static("Map", static_cast<const NCollection_Mat4<double> & (*)(const double *) noexcept>(&NCollection_Mat4<double>::Map), nb::arg("theData"), R"nbdoc(Maps plain C array to matrix type.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Mat4<double>>(nb::borrow<nb::class_<NCollection_Mat4<double>>>(m.attr("BVH_Mat4d")));
     nb::borrow<nb::class_<BVH_TreeBaseTransient>>(m.attr("BVH_TreeBaseTransient"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&BVH_TreeBaseTransient::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BVH_TreeBaseTransient::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BVH_TreeBaseTransient::*)() const>(&BVH_TreeBaseTransient::DynamicType));
+    nanoocp_implicit_copy_ctor<BVH_TreeBaseTransient>(nb::borrow<nb::class_<BVH_TreeBaseTransient>>(m.attr("BVH_TreeBaseTransient")));
     nanoocp_implicit_default_ctor<BVH_QuadTree>(nb::borrow<nb::class_<BVH_QuadTree>>(m.attr("BVH_QuadTree")));
+    nanoocp_implicit_copy_ctor<BVH_QuadTree>(nb::borrow<nb::class_<BVH_QuadTree>>(m.attr("BVH_QuadTree")));
     nanoocp_implicit_default_ctor<BVH_BinaryTree>(nb::borrow<nb::class_<BVH_BinaryTree>>(m.attr("BVH_BinaryTree")));
+    nanoocp_implicit_copy_ctor<BVH_BinaryTree>(nb::borrow<nb::class_<BVH_BinaryTree>>(m.attr("BVH_BinaryTree")));
     nb::borrow<nb::class_<BVH_BuilderTransient>>(m.attr("BVH_BuilderTransient"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&BVH_BuilderTransient::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BVH_BuilderTransient::get_type_descriptor))
@@ -1753,6 +1767,7 @@ the data is returned in column-major order.)nbdoc")
         .def("LeafNodeSize", static_cast<int (BVH_BuilderTransient::*)() const>(&BVH_BuilderTransient::LeafNodeSize), R"nbdoc(Returns the maximum number of sub-elements in the leaf.)nbdoc")
         .def("IsParallel", static_cast<bool (BVH_BuilderTransient::*)() const>(&BVH_BuilderTransient::IsParallel), R"nbdoc(Returns parallel flag.)nbdoc")
         .def("SetParallel", static_cast<void (BVH_BuilderTransient::*)(const bool)>(&BVH_BuilderTransient::SetParallel), nb::arg("isParallel"), R"nbdoc(Set parallel flag controlling possibility of parallel execution.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_BuilderTransient>(nb::borrow<nb::class_<BVH_BuilderTransient>>(m.attr("BVH_BuilderTransient")));
     nb::borrow<nb::class_<BVH_BuildQueue>>(m.attr("BVH_BuildQueue"))
         .def(nb::init<>(), R"nbdoc(Creates new BVH build queue.)nbdoc")
         .def("Size", static_cast<int (BVH_BuildQueue::*)() const>(&BVH_BuildQueue::Size), R"nbdoc(Returns current size of BVH build queue.
@@ -1763,6 +1778,7 @@ Uses acquire semantics to synchronize with enqueue/dequeue operations.)nbdoc")
 Uses acquire semantics to ensure visibility of thread counter updates.
 This is critical for termination detection: threads check this after
 finding an empty queue to determine if they should exit or wait.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_BuildQueue>(nb::borrow<nb::class_<BVH_BuildQueue>>(m.attr("BVH_BuildQueue")));
     nb::borrow<nb::class_<BVH_BuildTool>>(m.attr("BVH_BuildTool"))
         .def("Perform", static_cast<void (BVH_BuildTool::*)(const int)>(&BVH_BuildTool::Perform), nb::arg("theNode"), R"nbdoc(Performs splitting of the given BVH node.)nbdoc");
     nb::borrow<nb::class_<BVH_BuildThread>>(m.attr("BVH_BuildThread"))
@@ -1772,6 +1788,7 @@ finding an empty queue to determine if they should exit or wait.)nbdoc");
         .def_static("get_type_name", static_cast<const char * (*)()>(&BVH_BuildThread::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BVH_BuildThread::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BVH_BuildThread::*)() const>(&BVH_BuildThread::DynamicType));
+    nanoocp_implicit_copy_ctor<BVH_BuildThread>(nb::borrow<nb::class_<BVH_BuildThread>>(m.attr("BVH_BuildThread")));
     nb::borrow<nb::class_<BVH_Properties>>(m.attr("BVH_Properties"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&BVH_Properties::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BVH_Properties::get_type_descriptor))
@@ -1784,21 +1801,26 @@ finding an empty queue to determine if they should exit or wait.)nbdoc");
         .def("SetProperties", static_cast<void (BVH_ObjectTransient::*)(const occ::handle<BVH_Properties> &)>(&BVH_ObjectTransient::SetProperties), nb::arg("theProperties"), R"nbdoc(Sets properties of the geometric object.)nbdoc")
         .def("IsDirty", static_cast<bool (BVH_ObjectTransient::*)() const>(&BVH_ObjectTransient::IsDirty), R"nbdoc(Returns TRUE if object state should be updated.)nbdoc")
         .def("MarkDirty", static_cast<void (BVH_ObjectTransient::*)()>(&BVH_ObjectTransient::MarkDirty), R"nbdoc(Marks object state as outdated (needs BVH rebuilding).)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_ObjectTransient>(nb::borrow<nb::class_<BVH_ObjectTransient>>(m.attr("BVH_ObjectTransient")));
     nb::borrow<nb::class_<BVH_Builder<double, 3>>>(m.attr("BVH_Builder3d"))
         .def("Build", static_cast<void (BVH_Builder<double, 3>::*)(BVH_Set<double, 3> *, BVH_Tree<double, 3> *, const BVH_Box<double, 3> &) const>(&BVH_Builder<double, 3>::Build), nb::arg("theSet"), nb::arg("theBVH"), nb::arg("theBox"), R"nbdoc(Builds BVH using specific algorithm.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Builder<double, 3>>(nb::borrow<nb::class_<BVH_Builder<double, 3>>>(m.attr("BVH_Builder3d")));
     nb::borrow<nb::class_<BVH::BitPredicate>>(m.attr("BitPredicate"))
         .def(nb::init<const int>(), nb::arg("theDigit"), R"nbdoc(Creates new radix sort predicate.)nbdoc")
-        .def("__call__", static_cast<bool (BVH::BitPredicate::*)(const BVH_EncodedLink) const>(&BVH::BitPredicate::operator()), nb::arg("theLink"), R"nbdoc(Returns predicate value.)nbdoc", nb::is_operator())
-        .def_rw("myBit", &BVH::BitPredicate::myBit);
+        .def("__call__", static_cast<bool (BVH::BitPredicate::*)(const BVH_EncodedLink) const>(&BVH::BitPredicate::operator()), nb::arg("theLink"), R"nbdoc(Returns predicate value.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<BVH::BitPredicate>(nb::borrow<nb::class_<BVH::BitPredicate>>(m.attr("BitPredicate")));
+    nanoocp_def_field(nb::borrow<nb::class_<BVH::BitPredicate>>(m.attr("BitPredicate")), "myBit", &BVH::BitPredicate::myBit);
     nb::implicitly_convertible<std::decay_t<const int>, BVH::BitPredicate>();
     nb::borrow<nb::class_<BVH::BitComparator>>(m.attr("BitComparator"))
         .def(nb::init<const int>(), nb::arg("theDigit"), R"nbdoc(Creates new STL comparator.)nbdoc")
-        .def("__call__", static_cast<bool (BVH::BitComparator::*)(BVH_EncodedLink, BVH_EncodedLink)>(&BVH::BitComparator::operator()), nb::arg("theLink1"), nb::arg("arg1"), R"nbdoc(Checks left value for the given bit.)nbdoc", nb::is_operator())
-        .def_rw("myBit", &BVH::BitComparator::myBit);
+        .def("__call__", static_cast<bool (BVH::BitComparator::*)(BVH_EncodedLink, BVH_EncodedLink)>(&BVH::BitComparator::operator()), nb::arg("theLink1"), nb::arg("arg1"), R"nbdoc(Checks left value for the given bit.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<BVH::BitComparator>(nb::borrow<nb::class_<BVH::BitComparator>>(m.attr("BitComparator")));
+    nanoocp_def_field(nb::borrow<nb::class_<BVH::BitComparator>>(m.attr("BitComparator")), "myBit", &BVH::BitComparator::myBit);
     nb::implicitly_convertible<std::decay_t<const int>, BVH::BitComparator>();
     nanoocp_implicit_default_ctor<BVH::RadixSorter>(nb::borrow<nb::class_<BVH::RadixSorter>>(m.attr("RadixSorter")));
     nb::borrow<nb::class_<BVH::RadixSorter>>(m.attr("RadixSorter"))
         .def_static("Sort", static_cast<void (*)(NCollection_IndexedIterator<std::random_access_iterator_tag, NCollection_Array1<std::pair<unsigned int, int>>, std::pair<unsigned int, int>, false>, NCollection_IndexedIterator<std::random_access_iterator_tag, NCollection_Array1<std::pair<unsigned int, int>>, std::pair<unsigned int, int>, false>, int, const bool)>(&BVH::RadixSorter::Sort), nb::arg("theStart"), nb::arg("theFinal"), nb::arg("theDigit"), nb::arg("isParallel"));
+    nanoocp_implicit_copy_ctor<BVH::RadixSorter>(nb::borrow<nb::class_<BVH::RadixSorter>>(m.attr("RadixSorter")));
     m.def("EncodeMortonCode", static_cast<unsigned int (*)(unsigned int, unsigned int, unsigned int)>(&BVH::EncodeMortonCode), nb::arg("theVoxelX"), nb::arg("theVoxelY"), nb::arg("theVoxelZ"), R"nbdoc(Encodes 10-bit voxel coordinates into 30-bit Morton code using LUT.
 @param theVoxelX X coordinate (0-1023)
 @param theVoxelY Y coordinate (0-1023)

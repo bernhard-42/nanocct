@@ -64,10 +64,12 @@ raised if the Trsf is not a rigid transformation.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TopLoc_Datum3D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopLoc_Datum3D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopLoc_Datum3D::*)() const>(&TopLoc_Datum3D::DynamicType));
+    nanoocp_implicit_copy_ctor<TopLoc_Datum3D>(nb::borrow<nb::class_<TopLoc_Datum3D>>(m.attr("TopLoc_Datum3D")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, TopLoc_Datum3D>();
     nb::borrow<nb::class_<TopLoc_ItemLocation>>(m.attr("TopLoc_ItemLocation"))
         .def(nb::init<const occ::handle<TopLoc_Datum3D> &, const int>(), nb::arg("D"), nb::arg("P"), R"nbdoc(Sets the elementary Datum to <D>
 Sets the exponent to <P>)nbdoc");
+    nanoocp_implicit_copy_ctor<TopLoc_ItemLocation>(nb::borrow<nb::class_<TopLoc_ItemLocation>>(m.attr("TopLoc_ItemLocation")));
     nb::borrow<nb::class_<TopLoc_SListOfItemLocation>>(m.attr("TopLoc_SListOfItemLocation"))
         .def(nb::init<>(), R"nbdoc(Creates an empty List.)nbdoc")
         .def(nb::init<const TopLoc_SListOfItemLocation &>(), nb::arg("Other"), R"nbdoc(Creates a list from an other one. The lists are shared.)nbdoc")
@@ -152,4 +154,5 @@ This method is an alias for operator !=.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TopLoc_SListNodeOfItemLocation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopLoc_SListNodeOfItemLocation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopLoc_SListNodeOfItemLocation::*)() const>(&TopLoc_SListNodeOfItemLocation::DynamicType));
+    nanoocp_implicit_copy_ctor<TopLoc_SListNodeOfItemLocation>(nb::borrow<nb::class_<TopLoc_SListNodeOfItemLocation>>(m.attr("TopLoc_SListNodeOfItemLocation")));
 }

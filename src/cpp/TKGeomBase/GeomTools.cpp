@@ -37,6 +37,7 @@ void nanoocp_define_GeomTools(nb::module_ &m) {
     nb::borrow<nb::class_<GeomTools>>(m.attr("GeomTools"))
         .def_static("SetUndefinedTypeHandler", static_cast<void (*)(const occ::handle<GeomTools_UndefinedTypeHandler> &)>(&GeomTools::SetUndefinedTypeHandler), nb::arg("aHandler"))
         .def_static("GetUndefinedTypeHandler", static_cast<occ::handle<GeomTools_UndefinedTypeHandler> (*)()>(&GeomTools::GetUndefinedTypeHandler));
+    nanoocp_implicit_copy_ctor<GeomTools>(nb::borrow<nb::class_<GeomTools>>(m.attr("GeomTools")));
     nb::borrow<nb::class_<GeomTools_Curve2dSet>>(m.attr("GeomTools_Curve2dSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of Curves.)nbdoc")
         .def("Clear", static_cast<void (GeomTools_Curve2dSet::*)()>(&GeomTools_Curve2dSet::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
@@ -44,6 +45,7 @@ void nanoocp_define_GeomTools(nb::module_ &m) {
 its index.)nbdoc")
         .def("Curve2d", static_cast<occ::handle<Geom2d_Curve> (GeomTools_Curve2dSet::*)(const int) const>(&GeomTools_Curve2dSet::Curve2d), nb::arg("I"), R"nbdoc(Returns the Curve of index <I>.)nbdoc")
         .def("Index", static_cast<int (GeomTools_Curve2dSet::*)(const occ::handle<Geom2d_Curve> &) const>(&GeomTools_Curve2dSet::Index), nb::arg("C"), R"nbdoc(Returns the index of <L>.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomTools_Curve2dSet>(nb::borrow<nb::class_<GeomTools_Curve2dSet>>(m.attr("GeomTools_Curve2dSet")));
     nb::borrow<nb::class_<GeomTools_CurveSet>>(m.attr("GeomTools_CurveSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of Curves.)nbdoc")
         .def("Clear", static_cast<void (GeomTools_CurveSet::*)()>(&GeomTools_CurveSet::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
@@ -51,6 +53,7 @@ its index.)nbdoc")
 its index.)nbdoc")
         .def("Curve", static_cast<occ::handle<Geom_Curve> (GeomTools_CurveSet::*)(const int) const>(&GeomTools_CurveSet::Curve), nb::arg("I"), R"nbdoc(Returns the Curve of index <I>.)nbdoc")
         .def("Index", static_cast<int (GeomTools_CurveSet::*)(const occ::handle<Geom_Curve> &) const>(&GeomTools_CurveSet::Index), nb::arg("C"), R"nbdoc(Returns the index of <L>.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomTools_CurveSet>(nb::borrow<nb::class_<GeomTools_CurveSet>>(m.attr("GeomTools_CurveSet")));
     nb::borrow<nb::class_<GeomTools_SurfaceSet>>(m.attr("GeomTools_SurfaceSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of Surfaces.)nbdoc")
         .def("Clear", static_cast<void (GeomTools_SurfaceSet::*)()>(&GeomTools_SurfaceSet::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
@@ -58,9 +61,11 @@ its index.)nbdoc")
 its index.)nbdoc")
         .def("Surface", static_cast<occ::handle<Geom_Surface> (GeomTools_SurfaceSet::*)(const int) const>(&GeomTools_SurfaceSet::Surface), nb::arg("I"), R"nbdoc(Returns the Surface of index <I>.)nbdoc")
         .def("Index", static_cast<int (GeomTools_SurfaceSet::*)(const occ::handle<Geom_Surface> &) const>(&GeomTools_SurfaceSet::Index), nb::arg("S"), R"nbdoc(Returns the index of <L>.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomTools_SurfaceSet>(nb::borrow<nb::class_<GeomTools_SurfaceSet>>(m.attr("GeomTools_SurfaceSet")));
     nb::borrow<nb::class_<GeomTools_UndefinedTypeHandler>>(m.attr("GeomTools_UndefinedTypeHandler"))
         .def(nb::new_([]() { return opencascade::handle<GeomTools_UndefinedTypeHandler>(new GeomTools_UndefinedTypeHandler()); }))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomTools_UndefinedTypeHandler::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomTools_UndefinedTypeHandler::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomTools_UndefinedTypeHandler::*)() const>(&GeomTools_UndefinedTypeHandler::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomTools_UndefinedTypeHandler>(nb::borrow<nb::class_<GeomTools_UndefinedTypeHandler>>(m.attr("GeomTools_UndefinedTypeHandler")));
 }

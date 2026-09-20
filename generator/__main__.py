@@ -175,6 +175,8 @@ def main(argv: list[str]) -> int:
                 del templates[key]
             for c in ir.classes:
                 known[c.name] = ir.name
+                for e in c.enums:                  # nested enums (gp_Dir::D): types too, e.g. as defaults
+                    known[e.name] = ir.name
             for e in ir.enums:                     # enums are element types too (NCollection_IndexedMap<Message_MetricType>)
                 known[e.name] = ir.name
         parsed.append((tk_name, irs))

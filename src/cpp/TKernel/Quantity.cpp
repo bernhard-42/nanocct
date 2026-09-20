@@ -669,7 +669,9 @@ known as gamma correction.)nbdoc")
         .def_static("HlsRgb", [](const double theH, const double theL, const double theS) { double theR{}; double theG{}; double theB{}; Quantity_Color::HlsRgb(theH, theL, theS, theR, theG, theB); return std::make_tuple(theR, theG, theB); }, nb::arg("theH"), nb::arg("theL"), nb::arg("theS"), R"nbdoc(Converts HLS components into sRGB ones.)nbdoc")
         .def_static("RgbHls", [](const double theR, const double theG, const double theB) { double theH{}; double theL{}; double theS{}; Quantity_Color::RgbHls(theR, theG, theB, theH, theL, theS); return std::make_tuple(theH, theL, theS); }, nb::arg("theR"), nb::arg("theG"), nb::arg("theB"), R"nbdoc(Converts sRGB components into HLS ones.)nbdoc")
         .def_static("Epsilon", static_cast<double (*)() noexcept>(&Quantity_Color::Epsilon), R"nbdoc(Returns the value used to compare two colors for equality; 0.0001 by default.)nbdoc")
-        .def_static("SetEpsilon", static_cast<void (*)(const double) noexcept>(&Quantity_Color::SetEpsilon), nb::arg("theEpsilon"), R"nbdoc(Set the value used to compare two colors for equality.)nbdoc");
+        .def_static("SetEpsilon", static_cast<void (*)(const double) noexcept>(&Quantity_Color::SetEpsilon), nb::arg("theEpsilon"), R"nbdoc(Set the value used to compare two colors for equality.)nbdoc")
+        .def("__hash__", [](const Quantity_Color &self) { return static_cast<Py_ssize_t>(std::hash<Quantity_Color>{}(self)); });
+    nanoocp_implicit_copy_ctor<Quantity_Color>(nb::borrow<nb::class_<Quantity_Color>>(m.attr("Quantity_Color")));
     nb::implicitly_convertible<std::decay_t<const Quantity_NameOfColor>, Quantity_Color>();
     nb::borrow<nb::class_<Quantity_ColorRGBA>>(m.attr("Quantity_ColorRGBA"))
         .def(nb::init<>(), R"nbdoc(Creates a color with the default value.)nbdoc")
@@ -703,7 +705,9 @@ in the input string (false) or not (true)
 @return true if parsing was successful, or false otherwise)nbdoc")
         .def_static("ColorToHex", static_cast<TCollection_AsciiString (*)(const Quantity_ColorRGBA &, const bool) noexcept>(&Quantity_ColorRGBA::ColorToHex), nb::arg("theColor"), nb::arg("theToPrefixHash") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns hex sRGBA string in format "#RRGGBBAA".)nbdoc")
         .def_static("Convert_LinearRGB_To_sRGB", static_cast<NCollection_Vec4<float> (*)(const NCollection_Vec4<float> &) noexcept>(&Quantity_ColorRGBA::Convert_LinearRGB_To_sRGB), nb::arg("theRGB"), R"nbdoc(Convert linear RGB components into sRGB using OpenGL specs formula.)nbdoc")
-        .def_static("Convert_sRGB_To_LinearRGB", static_cast<NCollection_Vec4<float> (*)(const NCollection_Vec4<float> &) noexcept>(&Quantity_ColorRGBA::Convert_sRGB_To_LinearRGB), nb::arg("theRGB"), R"nbdoc(Convert sRGB components into linear RGB using OpenGL specs formula.)nbdoc");
+        .def_static("Convert_sRGB_To_LinearRGB", static_cast<NCollection_Vec4<float> (*)(const NCollection_Vec4<float> &) noexcept>(&Quantity_ColorRGBA::Convert_sRGB_To_LinearRGB), nb::arg("theRGB"), R"nbdoc(Convert sRGB components into linear RGB using OpenGL specs formula.)nbdoc")
+        .def("__hash__", [](const Quantity_ColorRGBA &self) { return static_cast<Py_ssize_t>(std::hash<Quantity_ColorRGBA>{}(self)); });
+    nanoocp_implicit_copy_ctor<Quantity_ColorRGBA>(nb::borrow<nb::class_<Quantity_ColorRGBA>>(m.attr("Quantity_ColorRGBA")));
     nb::borrow<nb::class_<Quantity_Date>>(m.attr("Quantity_Date"))
         .def(nb::init<>(), R"nbdoc(Constructs a default date
 (00:00 GMT, January 1, 1979 (zero hour)); use the function
@@ -785,6 +789,7 @@ mm and whether yyyy is a leap year or not),
         .def_static("IsLeap", static_cast<bool (*)(const int) noexcept>(&Quantity_Date::IsLeap), nb::arg("yy"), R"nbdoc(Returns true if a year is a leap year.
 The leap years are divisible by 4 and not by 100 except
 the years divisible by 400.)nbdoc");
+    nanoocp_implicit_copy_ctor<Quantity_Date>(nb::borrow<nb::class_<Quantity_Date>>(m.attr("Quantity_Date")));
     nb::borrow<nb::class_<Quantity_Period>>(m.attr("Quantity_Period"))
         .def(nb::init<const int, const int>(), nb::arg("ss"), nb::arg("mics") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Creates a Period with a number of seconds and microseconds.
 Exceptions
@@ -851,5 +856,6 @@ With:
 With:
 0 <= ss
 0 <= mics)nbdoc");
+    nanoocp_implicit_copy_ctor<Quantity_Period>(nb::borrow<nb::class_<Quantity_Period>>(m.attr("Quantity_Period")));
     nb::implicitly_convertible<std::decay_t<const int>, Quantity_Period>();
 }

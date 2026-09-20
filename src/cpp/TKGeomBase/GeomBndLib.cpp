@@ -194,6 +194,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_BezierCurve::*)(double) const>(&GeomBndLib_BezierCurve::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("Box", static_cast<Bnd_Box (GeomBndLib_BezierCurve::*)(double, double, double) const>(&GeomBndLib_BezierCurve::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_BezierCurve::*)(double, double, double) const>(&GeomBndLib_BezierCurve::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using numerical optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_BezierCurve>(nb::borrow<nb::class_<GeomBndLib_BezierCurve>>(m.attr("GeomBndLib_BezierCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BezierCurve> &>, GeomBndLib_BezierCurve>();
     nb::borrow<nb::class_<GeomBndLib_BezierCurve2d>>(m.attr("GeomBndLib_BezierCurve2d"))
         .def(nb::init<const occ::handle<Geom2d_BezierCurve> &>(), nb::arg("theCurve"))
@@ -201,6 +202,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_BezierCurve2d::*)(double) const>(&GeomBndLib_BezierCurve2d::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_BezierCurve2d::*)(double, double, double) const>(&GeomBndLib_BezierCurve2d::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_BezierCurve2d::*)(double, double, double) const>(&GeomBndLib_BezierCurve2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using numerical optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_BezierCurve2d>(nb::borrow<nb::class_<GeomBndLib_BezierCurve2d>>(m.attr("GeomBndLib_BezierCurve2d")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BezierCurve> &>, GeomBndLib_BezierCurve2d>();
     nb::borrow<nb::class_<GeomBndLib_BezierSurface>>(m.attr("GeomBndLib_BezierSurface"))
         .def(nb::init<const occ::handle<Geom_BezierSurface> &>(), nb::arg("theSurf"))
@@ -209,6 +211,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_BezierSurface::*)(double, double, double, double, double) const>(&GeomBndLib_BezierSurface::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_BezierSurface::*)(double) const>(&GeomBndLib_BezierSurface::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full surface.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_BezierSurface::*)(double, double, double, double, double) const>(&GeomBndLib_BezierSurface::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using numerical optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_BezierSurface>(nb::borrow<nb::class_<GeomBndLib_BezierSurface>>(m.attr("GeomBndLib_BezierSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BezierSurface> &>, GeomBndLib_BezierSurface>();
     nb::borrow<nb::class_<GeomBndLib_BSplineCurve>>(m.attr("GeomBndLib_BSplineCurve"))
         .def(nb::init<const occ::handle<Geom_BSplineCurve> &>(), nb::arg("theCurve"))
@@ -216,6 +219,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_BSplineCurve::*)(double) const>(&GeomBndLib_BSplineCurve::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("Box", static_cast<Bnd_Box (GeomBndLib_BSplineCurve::*)(double, double, double) const>(&GeomBndLib_BSplineCurve::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_BSplineCurve::*)(double, double, double) const>(&GeomBndLib_BSplineCurve::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using numerical optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_BSplineCurve>(nb::borrow<nb::class_<GeomBndLib_BSplineCurve>>(m.attr("GeomBndLib_BSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BSplineCurve> &>, GeomBndLib_BSplineCurve>();
     nb::borrow<nb::class_<GeomBndLib_BSplineCurve2d>>(m.attr("GeomBndLib_BSplineCurve2d"))
         .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &>(), nb::arg("theCurve"))
@@ -223,6 +227,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_BSplineCurve2d::*)(double) const>(&GeomBndLib_BSplineCurve2d::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_BSplineCurve2d::*)(double, double, double) const>(&GeomBndLib_BSplineCurve2d::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_BSplineCurve2d::*)(double, double, double) const>(&GeomBndLib_BSplineCurve2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using numerical optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_BSplineCurve2d>(nb::borrow<nb::class_<GeomBndLib_BSplineCurve2d>>(m.attr("GeomBndLib_BSplineCurve2d")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BSplineCurve> &>, GeomBndLib_BSplineCurve2d>();
     nb::borrow<nb::class_<GeomBndLib_BSplineSurface>>(m.attr("GeomBndLib_BSplineSurface"))
         .def(nb::init<const occ::handle<Geom_BSplineSurface> &>(), nb::arg("theSurf"))
@@ -231,6 +236,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_BSplineSurface::*)(double, double, double, double, double) const>(&GeomBndLib_BSplineSurface::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_BSplineSurface::*)(double) const>(&GeomBndLib_BSplineSurface::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full surface.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_BSplineSurface::*)(double, double, double, double, double) const>(&GeomBndLib_BSplineSurface::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using numerical optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_BSplineSurface>(nb::borrow<nb::class_<GeomBndLib_BSplineSurface>>(m.attr("GeomBndLib_BSplineSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BSplineSurface> &>, GeomBndLib_BSplineSurface>();
     nb::borrow<nb::class_<GeomBndLib_Circle>>(m.attr("GeomBndLib_Circle"))
         .def(nb::init<const occ::handle<Geom_Circle> &>(), nb::arg("theCircle"))
@@ -240,6 +246,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Circle::*)(double, double, double) const>(&GeomBndLib_Circle::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box (*)(const gp_Circ &, double)>(&GeomBndLib_Circle::Box), nb::arg("theCirc"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a full circle defined by gp_Circ.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box (*)(const gp_Circ &, double, double, double)>(&GeomBndLib_Circle::Box), nb::arg("theCirc"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a circle arc [theU1, theU2] defined by gp_Circ.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Circle>(nb::borrow<nb::class_<GeomBndLib_Circle>>(m.attr("GeomBndLib_Circle")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Circle> &>, GeomBndLib_Circle>();
     nb::borrow<nb::class_<GeomBndLib_Circle2d>>(m.attr("GeomBndLib_Circle2d"))
         .def(nb::init<const occ::handle<Geom2d_Circle> &>(), nb::arg("theCircle"))
@@ -249,6 +256,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_Circle2d::*)(double, double, double) const>(&GeomBndLib_Circle2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box2d (*)(const gp_Circ2d &, double)>(&GeomBndLib_Circle2d::Box), nb::arg("theCirc"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a full circle defined by gp_Circ2d.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box2d (*)(const gp_Circ2d &, double, double, double)>(&GeomBndLib_Circle2d::Box), nb::arg("theCirc"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a circle arc [theU1, theU2] defined by gp_Circ2d.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Circle2d>(nb::borrow<nb::class_<GeomBndLib_Circle2d>>(m.attr("GeomBndLib_Circle2d")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Circle> &>, GeomBndLib_Circle2d>();
     nb::borrow<nb::class_<GeomBndLib_Cone>>(m.attr("GeomBndLib_Cone"))
         .def(nb::init<const occ::handle<Geom_ConicalSurface> &>(), nb::arg("theSurf"))
@@ -257,6 +265,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_Cone::*)(double, double, double, double, double) const>(&GeomBndLib_Cone::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for cone patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Cone::*)(double, double, double, double, double) const>(&GeomBndLib_Cone::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(For analytical surfaces, BoxOptimal is same as Box.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Cone::*)(double) const>(&GeomBndLib_Cone::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute optimal bounding box for full surface.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Cone>(nb::borrow<nb::class_<GeomBndLib_Cone>>(m.attr("GeomBndLib_Cone")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_ConicalSurface> &>, GeomBndLib_Cone>();
     nb::borrow<nb::class_<GeomBndLib_Cylinder>>(m.attr("GeomBndLib_Cylinder"))
         .def(nb::init<const occ::handle<Geom_CylindricalSurface> &>(), nb::arg("theSurf"))
@@ -265,6 +274,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_Cylinder::*)(double, double, double, double, double) const>(&GeomBndLib_Cylinder::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for cylinder patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Cylinder::*)(double, double, double, double, double) const>(&GeomBndLib_Cylinder::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(For analytical surfaces, BoxOptimal is same as Box.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Cylinder::*)(double) const>(&GeomBndLib_Cylinder::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute optimal bounding box for full surface.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Cylinder>(nb::borrow<nb::class_<GeomBndLib_Cylinder>>(m.attr("GeomBndLib_Cylinder")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_CylindricalSurface> &>, GeomBndLib_Cylinder>();
     nb::borrow<nb::class_<GeomBndLib_Ellipse>>(m.attr("GeomBndLib_Ellipse"))
         .def(nb::init<const occ::handle<Geom_Ellipse> &>(), nb::arg("theEllipse"))
@@ -274,6 +284,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Ellipse::*)(double, double, double) const>(&GeomBndLib_Ellipse::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box (*)(const gp_Elips &, double)>(&GeomBndLib_Ellipse::Box), nb::arg("theElips"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a full ellipse defined by gp_Elips.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box (*)(const gp_Elips &, double, double, double)>(&GeomBndLib_Ellipse::Box), nb::arg("theElips"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for an ellipse arc [theU1, theU2] defined by gp_Elips.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Ellipse>(nb::borrow<nb::class_<GeomBndLib_Ellipse>>(m.attr("GeomBndLib_Ellipse")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Ellipse> &>, GeomBndLib_Ellipse>();
     nb::borrow<nb::class_<GeomBndLib_Ellipse2d>>(m.attr("GeomBndLib_Ellipse2d"))
         .def(nb::init<const occ::handle<Geom2d_Ellipse> &>(), nb::arg("theEllipse"))
@@ -283,6 +294,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_Ellipse2d::*)(double, double, double) const>(&GeomBndLib_Ellipse2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box2d (*)(const gp_Elips2d &, double)>(&GeomBndLib_Ellipse2d::Box), nb::arg("theElips"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a full ellipse defined by gp_Elips2d.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box2d (*)(const gp_Elips2d &, double, double, double)>(&GeomBndLib_Ellipse2d::Box), nb::arg("theElips"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for an ellipse arc [theU1, theU2] defined by gp_Elips2d.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Ellipse2d>(nb::borrow<nb::class_<GeomBndLib_Ellipse2d>>(m.attr("GeomBndLib_Ellipse2d")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Ellipse> &>, GeomBndLib_Ellipse2d>();
     nb::borrow<nb::class_<GeomBndLib_Hyperbola>>(m.attr("GeomBndLib_Hyperbola"))
         .def(nb::init<const occ::handle<Geom_Hyperbola> &>(), nb::arg("theHyperbola"))
@@ -291,6 +303,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_Hyperbola::*)(double) const>(&GeomBndLib_Hyperbola::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Hyperbola::*)(double, double, double) const>(&GeomBndLib_Hyperbola::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box (*)(const gp_Hypr &, double, double, double)>(&GeomBndLib_Hyperbola::Box), nb::arg("theHypr"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a hyperbola arc [theU1, theU2] defined by gp_Hypr.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Hyperbola>(nb::borrow<nb::class_<GeomBndLib_Hyperbola>>(m.attr("GeomBndLib_Hyperbola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Hyperbola> &>, GeomBndLib_Hyperbola>();
     nb::borrow<nb::class_<GeomBndLib_Hyperbola2d>>(m.attr("GeomBndLib_Hyperbola2d"))
         .def(nb::init<const occ::handle<Geom2d_Hyperbola> &>(), nb::arg("theHyperbola"))
@@ -299,6 +312,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_Hyperbola2d::*)(double) const>(&GeomBndLib_Hyperbola2d::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_Hyperbola2d::*)(double, double, double) const>(&GeomBndLib_Hyperbola2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box2d (*)(const gp_Hypr2d &, double, double, double)>(&GeomBndLib_Hyperbola2d::Box), nb::arg("theHypr"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a 2D hyperbola arc [theU1, theU2] defined by gp_Hypr2d.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Hyperbola2d>(nb::borrow<nb::class_<GeomBndLib_Hyperbola2d>>(m.attr("GeomBndLib_Hyperbola2d")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Hyperbola> &>, GeomBndLib_Hyperbola2d>();
     nb::borrow<nb::class_<GeomBndLib_OffsetCurve>>(m.attr("GeomBndLib_OffsetCurve"))
         .def(nb::init<const occ::handle<Geom_OffsetCurve> &>(), nb::arg("theCurve"))
@@ -307,6 +321,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_OffsetCurve::*)(double, double, double) const>(&GeomBndLib_OffsetCurve::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OffsetCurve::*)(double) const>(&GeomBndLib_OffsetCurve::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OffsetCurve::*)(double, double, double) const>(&GeomBndLib_OffsetCurve::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for arc [theU1, theU2] by sampling the offset curve.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_OffsetCurve>(nb::borrow<nb::class_<GeomBndLib_OffsetCurve>>(m.attr("GeomBndLib_OffsetCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_OffsetCurve> &>, GeomBndLib_OffsetCurve>();
     nb::borrow<nb::class_<GeomBndLib_OffsetCurve2d>>(m.attr("GeomBndLib_OffsetCurve2d"))
         .def(nb::init<const occ::handle<Geom2d_OffsetCurve> &>(), nb::arg("theCurve"))
@@ -315,6 +330,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_OffsetCurve2d::*)(double, double, double) const>(&GeomBndLib_OffsetCurve2d::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_OffsetCurve2d::*)(double) const>(&GeomBndLib_OffsetCurve2d::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_OffsetCurve2d::*)(double, double, double) const>(&GeomBndLib_OffsetCurve2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for arc [theU1, theU2] by sampling the offset curve.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_OffsetCurve2d>(nb::borrow<nb::class_<GeomBndLib_OffsetCurve2d>>(m.attr("GeomBndLib_OffsetCurve2d")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_OffsetCurve> &>, GeomBndLib_OffsetCurve2d>();
     nb::borrow<nb::class_<GeomBndLib_OffsetSurface>>(m.attr("GeomBndLib_OffsetSurface"))
         .def(nb::init<const occ::handle<Geom_OffsetSurface> &>(), nb::arg("theSurf"))
@@ -323,6 +339,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_OffsetSurface::*)(double, double, double, double, double) const>(&GeomBndLib_OffsetSurface::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OffsetSurface::*)(double) const>(&GeomBndLib_OffsetSurface::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full surface.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OffsetSurface::*)(double, double, double, double, double) const>(&GeomBndLib_OffsetSurface::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for surface patch using PSO numerical optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_OffsetSurface>(nb::borrow<nb::class_<GeomBndLib_OffsetSurface>>(m.attr("GeomBndLib_OffsetSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_OffsetSurface> &>, GeomBndLib_OffsetSurface>();
     nb::borrow<nb::class_<GeomBndLib_OtherCurve>>(m.attr("GeomBndLib_OtherCurve"))
         .def(nb::init<const Adaptor3d_Curve &>(), nb::arg("theCurve"))
@@ -330,6 +347,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_OtherCurve::*)(double, double, double) const>(&GeomBndLib_OtherCurve::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OtherCurve::*)(double) const>(&GeomBndLib_OtherCurve::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OtherCurve::*)(double, double, double) const>(&GeomBndLib_OtherCurve::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using PSO + Brent optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_OtherCurve>(nb::borrow<nb::class_<GeomBndLib_OtherCurve>>(m.attr("GeomBndLib_OtherCurve")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Curve &>, GeomBndLib_OtherCurve>();
     nb::borrow<nb::class_<GeomBndLib_OtherCurve2d>>(m.attr("GeomBndLib_OtherCurve2d"))
         .def(nb::init<const Adaptor2d_Curve2d &>(), nb::arg("theCurve"))
@@ -337,6 +355,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_OtherCurve2d::*)(double, double, double) const>(&GeomBndLib_OtherCurve2d::Box), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for arc [theU1, theU2].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_OtherCurve2d::*)(double) const>(&GeomBndLib_OtherCurve2d::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_OtherCurve2d::*)(double, double, double) const>(&GeomBndLib_OtherCurve2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using PSO + Brent optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_OtherCurve2d>(nb::borrow<nb::class_<GeomBndLib_OtherCurve2d>>(m.attr("GeomBndLib_OtherCurve2d")));
     nb::implicitly_convertible<std::decay_t<const Adaptor2d_Curve2d &>, GeomBndLib_OtherCurve2d>();
     nb::borrow<nb::class_<GeomBndLib_OtherSurface>>(m.attr("GeomBndLib_OtherSurface"))
         .def(nb::init<const Adaptor3d_Surface &>(), nb::arg("theSurf"))
@@ -344,6 +363,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_OtherSurface::*)(double, double, double, double, double) const>(&GeomBndLib_OtherSurface::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OtherSurface::*)(double) const>(&GeomBndLib_OtherSurface::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full surface.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_OtherSurface::*)(double, double, double, double, double) const>(&GeomBndLib_OtherSurface::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using PSO + Powell optimization.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_OtherSurface>(nb::borrow<nb::class_<GeomBndLib_OtherSurface>>(m.attr("GeomBndLib_OtherSurface")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Surface &>, GeomBndLib_OtherSurface>();
     nb::borrow<nb::class_<GeomBndLib_Parabola>>(m.attr("GeomBndLib_Parabola"))
         .def(nb::init<const occ::handle<Geom_Parabola> &>(), nb::arg("theParabola"))
@@ -352,6 +372,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_Parabola::*)(double) const>(&GeomBndLib_Parabola::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Parabola::*)(double, double, double) const>(&GeomBndLib_Parabola::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box (*)(const gp_Parab &, double, double, double)>(&GeomBndLib_Parabola::Box), nb::arg("theParab"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a parabola arc [theU1, theU2] defined by gp_Parab.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Parabola>(nb::borrow<nb::class_<GeomBndLib_Parabola>>(m.attr("GeomBndLib_Parabola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Parabola> &>, GeomBndLib_Parabola>();
     nb::borrow<nb::class_<GeomBndLib_Parabola2d>>(m.attr("GeomBndLib_Parabola2d"))
         .def(nb::init<const occ::handle<Geom2d_Parabola> &>(), nb::arg("theParabola"))
@@ -360,6 +381,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box2d (GeomBndLib_Parabola2d::*)(double) const>(&GeomBndLib_Parabola2d::Box), nb::arg("theTol"), R"nbdoc(Compute bounding box for full curve.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box2d (GeomBndLib_Parabola2d::*)(double, double, double) const>(&GeomBndLib_Parabola2d::BoxOptimal), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(For analytical curves, BoxOptimal is same as Box.)nbdoc")
         .def_static("Box_s", static_cast<Bnd_Box2d (*)(const gp_Parab2d &, double, double, double)>(&GeomBndLib_Parabola2d::Box), nb::arg("theParab"), nb::arg("theU1"), nb::arg("theU2"), nb::arg("theTol"), R"nbdoc(Compute bounding box for a 2D parabola arc [theU1, theU2] defined by gp_Parab2d.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Parabola2d>(nb::borrow<nb::class_<GeomBndLib_Parabola2d>>(m.attr("GeomBndLib_Parabola2d")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Parabola> &>, GeomBndLib_Parabola2d>();
     nb::borrow<nb::class_<GeomBndLib_Plane>>(m.attr("GeomBndLib_Plane"))
         .def(nb::init<const occ::handle<Geom_Plane> &>(), nb::arg("thePlane"))
@@ -368,6 +390,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_Plane::*)(double, double, double, double, double) const>(&GeomBndLib_Plane::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for plane patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Plane::*)(double, double, double, double, double) const>(&GeomBndLib_Plane::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(For analytical surfaces, BoxOptimal is same as Box.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Plane::*)(double) const>(&GeomBndLib_Plane::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute optimal bounding box for full surface.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Plane>(nb::borrow<nb::class_<GeomBndLib_Plane>>(m.attr("GeomBndLib_Plane")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Plane> &>, GeomBndLib_Plane>();
     nb::borrow<nb::class_<GeomBndLib_Sphere>>(m.attr("GeomBndLib_Sphere"))
         .def(nb::init<const occ::handle<Geom_SphericalSurface> &>(), nb::arg("theSurf"))
@@ -376,6 +399,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_Sphere::*)(double, double, double, double, double) const>(&GeomBndLib_Sphere::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for sphere patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Sphere::*)(double, double, double, double, double) const>(&GeomBndLib_Sphere::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(For analytical surfaces, BoxOptimal is same as Box.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Sphere::*)(double) const>(&GeomBndLib_Sphere::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute optimal bounding box for full surface.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Sphere>(nb::borrow<nb::class_<GeomBndLib_Sphere>>(m.attr("GeomBndLib_Sphere")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SphericalSurface> &>, GeomBndLib_Sphere>();
     nb::borrow<nb::class_<GeomBndLib_SurfaceOfExtrusion>>(m.attr("GeomBndLib_SurfaceOfExtrusion"))
         .def(nb::init<const occ::handle<Geom_SurfaceOfLinearExtrusion> &>(), nb::arg("theSurf"))
@@ -384,6 +408,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_SurfaceOfExtrusion::*)(double, double, double, double, double) const>(&GeomBndLib_SurfaceOfExtrusion::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_SurfaceOfExtrusion::*)(double, double, double, double, double) const>(&GeomBndLib_SurfaceOfExtrusion::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using tight basis curve bounds.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_SurfaceOfExtrusion::*)(double) const>(&GeomBndLib_SurfaceOfExtrusion::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full surface.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_SurfaceOfExtrusion>(nb::borrow<nb::class_<GeomBndLib_SurfaceOfExtrusion>>(m.attr("GeomBndLib_SurfaceOfExtrusion")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SurfaceOfLinearExtrusion> &>, GeomBndLib_SurfaceOfExtrusion>();
     nb::borrow<nb::class_<GeomBndLib_SurfaceOfRevolution>>(m.attr("GeomBndLib_SurfaceOfRevolution"))
         .def(nb::init<const occ::handle<Geom_SurfaceOfRevolution> &>(), nb::arg("theSurf"))
@@ -392,6 +417,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_SurfaceOfRevolution::*)(double, double, double, double, double) const>(&GeomBndLib_SurfaceOfRevolution::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_SurfaceOfRevolution::*)(double, double, double, double, double) const>(&GeomBndLib_SurfaceOfRevolution::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box using tight basis curve bounds.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_SurfaceOfRevolution::*)(double) const>(&GeomBndLib_SurfaceOfRevolution::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full surface.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_SurfaceOfRevolution>(nb::borrow<nb::class_<GeomBndLib_SurfaceOfRevolution>>(m.attr("GeomBndLib_SurfaceOfRevolution")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SurfaceOfRevolution> &>, GeomBndLib_SurfaceOfRevolution>();
     nb::borrow<nb::class_<GeomBndLib_Torus>>(m.attr("GeomBndLib_Torus"))
         .def(nb::init<const occ::handle<Geom_ToroidalSurface> &>(), nb::arg("theSurf"))
@@ -400,6 +426,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Box", static_cast<Bnd_Box (GeomBndLib_Torus::*)(double, double, double, double, double) const>(&GeomBndLib_Torus::Box), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute bounding box for torus patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Torus::*)(double, double, double, double, double) const>(&GeomBndLib_Torus::BoxOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for torus patch using PSO + Powell optimization.)nbdoc")
         .def("BoxOptimal", static_cast<Bnd_Box (GeomBndLib_Torus::*)(double) const>(&GeomBndLib_Torus::BoxOptimal), nb::arg("theTol"), R"nbdoc(Compute precise bounding box for full torus.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Torus>(nb::borrow<nb::class_<GeomBndLib_Torus>>(m.attr("GeomBndLib_Torus")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_ToroidalSurface> &>, GeomBndLib_Torus>();
     nb::borrow<nb::class_<GeomBndLib_Surface>>(m.attr("GeomBndLib_Surface"))
         .def(nb::init<const Adaptor3d_Surface &>(), nb::arg("theSurf"), R"nbdoc(Construct from an adaptor surface.)nbdoc")
@@ -413,6 +440,7 @@ void nanoocp_define_GeomBndLib(nb::module_ &m) {
         .def("Add", static_cast<void (GeomBndLib_Surface::*)(double, double, double, double, double, Bnd_Box &) const>(&GeomBndLib_Surface::Add), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), nb::arg("theBox"), R"nbdoc(Add bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc")
         .def("AddOptimal", static_cast<void (GeomBndLib_Surface::*)(double, Bnd_Box &) const>(&GeomBndLib_Surface::AddOptimal), nb::arg("theTol"), nb::arg("theBox"), R"nbdoc(Add precise bounding box for full surface.)nbdoc")
         .def("AddOptimal", static_cast<void (GeomBndLib_Surface::*)(double, double, double, double, double, Bnd_Box &) const>(&GeomBndLib_Surface::AddOptimal), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), nb::arg("theTol"), nb::arg("theBox"), R"nbdoc(Add precise bounding box for surface patch [theUMin, theUMax] x [theVMin, theVMax].)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomBndLib_Surface>(nb::borrow<nb::class_<GeomBndLib_Surface>>(m.attr("GeomBndLib_Surface")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Surface &>, GeomBndLib_Surface>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomBndLib_Surface>();
 }

@@ -20,4 +20,5 @@ void nanoocp_define_Plugin(nb::module_ &m) {
     nanoocp_implicit_default_ctor<Plugin>(nb::borrow<nb::class_<Plugin>>(m.attr("Plugin")));
     nb::borrow<nb::class_<Plugin>>(m.attr("Plugin"))
         .def_static("Load", static_cast<occ::handle<Standard_Transient> (*)(const Standard_GUID &, const bool)>(&Plugin::Load), nb::arg("aGUID"), nb::arg("theVerbose") = static_cast<std::decay_t<const bool>>(true));
+    nanoocp_implicit_copy_ctor<Plugin>(nb::borrow<nb::class_<Plugin>>(m.attr("Plugin")));
 }

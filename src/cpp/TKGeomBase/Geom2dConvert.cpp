@@ -242,6 +242,7 @@ Tolerance is a geometrical tolerance)nbdoc")
 multiplicities of the knots of the BSpline BS.(keeping the geometry).
 It returns an array of BSpline C1.
 tolerance is a geometrical tolerance)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dConvert>(nb::borrow<nb::class_<Geom2dConvert>>(m.attr("Geom2dConvert")));
     nb::borrow<nb::class_<Geom2dConvert_PPoint>>(m.attr("Geom2dConvert_PPoint"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const double, const Adaptor2d_Curve2d &>(), nb::arg("theParameter"), nb::arg("theAdaptor"), R"nbdoc(Constructor.)nbdoc")
@@ -253,9 +254,11 @@ tolerance is a geometrical tolerance)nbdoc");
         .def("SetD1", static_cast<void (Geom2dConvert_PPoint::*)(const gp_XY &)>(&Geom2dConvert_PPoint::SetD1), nb::arg("theD1"), R"nbdoc(Change the value of the derivative at the point.)nbdoc")
         .def("__eq__", static_cast<bool (Geom2dConvert_PPoint::*)(const Geom2dConvert_PPoint &) const>(&Geom2dConvert_PPoint::operator==), nb::arg("arg0"), R"nbdoc(Compare two values of this type.)nbdoc", nb::is_operator())
         .def("__ne__", static_cast<bool (Geom2dConvert_PPoint::*)(const Geom2dConvert_PPoint &) const>(&Geom2dConvert_PPoint::operator!=), nb::arg("arg0"), R"nbdoc(Compare two values of this type.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<Geom2dConvert_PPoint>(nb::borrow<nb::class_<Geom2dConvert_PPoint>>(m.attr("Geom2dConvert_PPoint")));
     nb::borrow<nb::class_<Geom2dConvert_ApproxArcsSegments>>(m.attr("Geom2dConvert_ApproxArcsSegments"))
         .def(nb::init<const Adaptor2d_Curve2d &, const double, const double>(), nb::arg("theCurve"), nb::arg("theTolerance"), nb::arg("theAngleTol"), R"nbdoc(Constructor.)nbdoc")
         .def("GetResult", static_cast<const NCollection_Sequence<opencascade::handle<Geom2d_Curve>> & (Geom2dConvert_ApproxArcsSegments::*)() const>(&Geom2dConvert_ApproxArcsSegments::GetResult), R"nbdoc(Get the result curve after approximation.)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dConvert_ApproxArcsSegments>(nb::borrow<nb::class_<Geom2dConvert_ApproxArcsSegments>>(m.attr("Geom2dConvert_ApproxArcsSegments")));
     nb::borrow<nb::class_<Geom2dConvert_ApproxCurve>>(m.attr("Geom2dConvert_ApproxCurve"))
         .def(nb::init<const occ::handle<Geom2d_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve"), nb::arg("Tol2d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Constructs an approximation framework defined by
 -   the 2D conic Curve
@@ -281,6 +284,7 @@ with a result that is not NECESSARELY within the required tolerance)nbdoc")
 source conic and the BSpline curve resulting from the
 approximation. (>0 when an approximation
 has been done, 0 if no approximation))nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dConvert_ApproxCurve>(nb::borrow<nb::class_<Geom2dConvert_ApproxCurve>>(m.attr("Geom2dConvert_ApproxCurve")));
     nb::borrow<nb::class_<Geom2dConvert_BSplineCurveKnotSplitting>>(m.attr("Geom2dConvert_BSplineCurveKnotSplitting"))
         .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const int>(), nb::arg("BasisCurve"), nb::arg("ContinuityRange"), R"nbdoc(Determines points at which the BSpline curve
 BasisCurve should be split in order to obtain arcs
@@ -328,6 +332,7 @@ point is the last point of the curve.
 Exceptions
 Standard_RangeError if Index is less than 1 or
 greater than the number of split knots computed in this framework.)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dConvert_BSplineCurveKnotSplitting>(nb::borrow<nb::class_<Geom2dConvert_BSplineCurveKnotSplitting>>(m.attr("Geom2dConvert_BSplineCurveKnotSplitting")));
     nb::borrow<nb::class_<Geom2dConvert_BSplineCurveToBezierCurve>>(m.attr("Geom2dConvert_BSplineCurveToBezierCurve"))
         .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &>(), nb::arg("BasisCurve"), R"nbdoc(Computes all the data needed to convert
 -   the BSpline curve BasisCurve, into a series of adjacent Bezier arcs.
@@ -385,6 +390,7 @@ the interval [UFirst, ULast].
 If you have decomposed the whole basis B-spline curve the number
 of BezierCurve arcs NbArcs is equal to the number of knots less
 one.)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dConvert_BSplineCurveToBezierCurve>(nb::borrow<nb::class_<Geom2dConvert_BSplineCurveToBezierCurve>>(m.attr("Geom2dConvert_BSplineCurveToBezierCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BSplineCurve> &>, Geom2dConvert_BSplineCurveToBezierCurve>();
     nb::borrow<nb::class_<Geom2dConvert_CompCurveToBSplineCurve>>(m.attr("Geom2dConvert_CompCurveToBSplineCurve"))
         .def(nb::init<const Convert_ParameterisationType>(), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(Initialize the algorithm
@@ -398,6 +404,7 @@ Multiplicity at the common Knot
 After is useful if BasisCurve is a closed curve .)nbdoc")
         .def("BSplineCurve", static_cast<occ::handle<Geom2d_BSplineCurve> (Geom2dConvert_CompCurveToBSplineCurve::*)() const>(&Geom2dConvert_CompCurveToBSplineCurve::BSplineCurve))
         .def("Clear", static_cast<void (Geom2dConvert_CompCurveToBSplineCurve::*)()>(&Geom2dConvert_CompCurveToBSplineCurve::Clear), R"nbdoc(Clear result curve)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dConvert_CompCurveToBSplineCurve>(nb::borrow<nb::class_<Geom2dConvert_CompCurveToBSplineCurve>>(m.attr("Geom2dConvert_CompCurveToBSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const Convert_ParameterisationType>, Geom2dConvert_CompCurveToBSplineCurve>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BoundedCurve> &>, Geom2dConvert_CompCurveToBSplineCurve>();
 }

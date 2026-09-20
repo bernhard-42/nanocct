@@ -12,6 +12,11 @@ NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.AppDef', 'AppDef_MultiPointConstraint'),): "NCollection_Array1__AppDef_MultiPointConstraint",
     (('nanoocp.AppParCurves', 'AppParCurves_ConstraintCouple'),): "NCollection_Array1__AppParCurves_ConstraintCouple",
     (('nanoocp.AppParCurves', 'AppParCurves_MultiPoint'),): "NCollection_Array1__AppParCurves_MultiPoint",
+    (('nanoocp.BRepGraphInc', 'ParityOrientation'),): "NCollection_Array1__BRepGraphInc_ParityOrientation",
+    (('nanoocp.BRepGraph', 'BRepGraph_ItemUID'),): "NCollection_Array1__BRepGraph_ItemUID",
+    (('nanoocp.BRepGraph', 'BRepGraph_NodeId'),): "NCollection_Array1__BRepGraph_NodeId",
+    (('nanoocp.BRepGraph', 'BRepGraph_RefId'),): "NCollection_Array1__BRepGraph_RefId",
+    (('nanoocp.BRepGraph', 'BRepGraph_UID'),): "NCollection_Array1__BRepGraph_UID",
     (('nanoocp.Bnd', 'Bnd_Box'),): "NCollection_Array1__Bnd_Box",
     (('nanoocp.Geom2dGridEval', 'CurveD1'),): "NCollection_Array1__Geom2dGridEval_CurveD1",
     (('nanoocp.Geom2dGridEval', 'CurveD2'),): "NCollection_Array1__Geom2dGridEval_CurveD2",
@@ -30,6 +35,7 @@ NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_Array1__Handle_Standard_Persistent",
     (('nanoocp.BVH', 'BVH_Vec3f'),): "NCollection_Array1__NCollection_Vec3__float",
     (('nanoocp.Poly', 'Poly_Triangle'),): "NCollection_Array1__Poly_Triangle",
+    (('nanoocp.TopLoc', 'TopLoc_Location'),): "NCollection_Array1__TopLoc_Location",
     (('builtins', 'float'),): "NCollection_Array1__double",
     (('nanoocp.gp', 'gp_Pnt'),): "NCollection_Array1__gp_Pnt",
     (('nanoocp.gp', 'gp_Pnt2d'),): "NCollection_Array1__gp_Pnt2d",
@@ -54,6 +60,7 @@ NCollection_Array2 = _Template("NCollection_Array2", "nanoocp.NCollection", {
 NCollection_DataMap = _Template("NCollection_DataMap", "nanoocp.NCollection", {
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.TCollection', 'TCollection_AsciiString')): "NCollection_DataMap__TCollection_AsciiString__TCollection_AsciiString",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('builtins', 'int')): "NCollection_DataMap__TCollection_AsciiString__int",
+    (('nanoocp.TopoDS', 'TopoDS_Shape'), ('nanoocp.BRepGraph', 'BRepGraph_NodeId'), ('nanoocp.TopTools', 'TopTools_ShapeMapHasher')): "NCollection_DataMap__TopoDS_Shape__BRepGraph_NodeId__TopTools_ShapeMapHasher",
     (('builtins', 'int'), ('builtins', 'float')): "NCollection_DataMap__int__double",
 })
 NCollection_DoubleMap = _Template("NCollection_DoubleMap", "nanoocp.NCollection", {
@@ -98,22 +105,28 @@ NCollection_HSequence = _Template("NCollection_HSequence", "nanoocp.NCollection"
 NCollection_IndexedDataMap = _Template("NCollection_IndexedDataMap", "nanoocp.NCollection", {
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.Standard', 'Standard_DumpValue')): "NCollection_IndexedDataMap__TCollection_AsciiString__Standard_DumpValue",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.TCollection', 'TCollection_AsciiString')): "NCollection_IndexedDataMap__TCollection_AsciiString__TCollection_AsciiString",
+    (('nanoocp.TopoDS', 'TopoDS_Shape'), ('nanoocp.NCollection', 'NCollection_List__TopoDS_Shape'), ('nanoocp.TopTools', 'TopTools_ShapeMapHasher')): "NCollection_IndexedDataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher",
 })
 NCollection_IndexedMap = _Template("NCollection_IndexedMap", "nanoocp.NCollection", {
     (('nanoocp.Message', 'Message_MetricType'),): "NCollection_IndexedMap__Message_MetricType",
     (('nanoocp.TCollection', 'TCollection_AsciiString'),): "NCollection_IndexedMap__TCollection_AsciiString",
+    (('nanoocp.TopoDS', 'TopoDS_Shape'), ('nanoocp.TopTools', 'TopTools_ShapeMapHasher')): "NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher",
 })
 NCollection_List = _Template("NCollection_List", "nanoocp.NCollection", {
     (('nanoocp.Bnd', 'Bnd_Range'),): "NCollection_List__Bnd_Range",
+    (('nanoocp.BRep', 'BRep_CurveRepresentation'),): "NCollection_List__Handle_BRep_CurveRepresentation",
+    (('nanoocp.BRep', 'BRep_PointRepresentation'),): "NCollection_List__Handle_BRep_PointRepresentation",
     (('nanoocp.Message', 'Message_Alert'),): "NCollection_List__Handle_Message_Alert",
     (('nanoocp.Poly', 'Poly_Triangulation'),): "NCollection_List__Handle_Poly_Triangulation",
     (('nanoocp.Poly', 'Poly_CoherentTriangulation.TwoIntegers'),): "NCollection_List__Poly_CoherentTriangulation_TwoIntegers",
     (('nanoocp.Poly', 'Poly_MakeLoops.Link'),): "NCollection_List__Poly_MakeLoops_Link",
+    (('nanoocp.TopoDS', 'TopoDS_Shape'),): "NCollection_List__TopoDS_Shape",
     (('builtins', 'float'),): "NCollection_List__double",
     (('nanoocp.gp', 'gp_Pnt'),): "NCollection_List__gp_Pnt",
     (('builtins', 'int'),): "NCollection_List__int",
 })
 NCollection_Map = _Template("NCollection_Map", "nanoocp.NCollection", {
+    (('nanoocp.TopoDS', 'TopoDS_Shape'), ('nanoocp.TopTools', 'TopTools_ShapeMapHasher')): "NCollection_Map__TopoDS_Shape__TopTools_ShapeMapHasher",
     (('builtins', 'int'),): "NCollection_Map__int",
 })
 NCollection_Sequence = _Template("NCollection_Sequence", "nanoocp.NCollection", {

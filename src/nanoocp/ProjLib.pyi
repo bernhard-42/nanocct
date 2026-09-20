@@ -40,7 +40,11 @@ class ProjLib:
     * A generic class to handle a Adaptor3d_Curve on a Adaptor3d_Surface.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: ProjLib) -> None: ...
 
     @overload
     @staticmethod
@@ -121,8 +125,12 @@ class ProjLib:
 class ProjLib_Projector:
     """Root class for projection algorithms, stores the result."""
 
+    @overload
     def __init__(self) -> None:
         """Sets the type to OtherCurve"""
+
+    @overload
+    def __init__(self, theOther: ProjLib_Projector) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -210,6 +218,9 @@ class ProjLib_CompProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         equal then MaxDist.
         if MaxDist < 0 then algorithm works as above.
         """
+
+    @overload
+    def __init__(self, theOther: ProjLib_CompProjectedCurve) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -467,6 +478,9 @@ class ProjLib_ComputeApprox:
         Other parameters for approximation have default values.
         """
 
+    @overload
+    def __init__(self, theOther: ProjLib_ComputeApprox) -> None: ...
+
     def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
         """
         Performs projecting.
@@ -546,6 +560,9 @@ class ProjLib_ComputeApproxOnPolarSurface:
         InitCurve2dBis that are any rough approximations of result curves. This constructor is used to
         get two pcurves for seem edge. Parameter Tol is 3d tolerance of approximation.
         """
+
+    @overload
+    def __init__(self, theOther: ProjLib_ComputeApproxOnPolarSurface) -> None: ...
 
     def SetDegree(self, theDegMin: int, theDegMax: int) -> None:
         """
@@ -639,6 +656,9 @@ class ProjLib_Cone(ProjLib_Projector):
     def __init__(self, Co: nanoocp.gp.gp_Cone, C: nanoocp.gp.gp_Circ) -> None:
         """Projection of the circle <C> on the cone <Co>."""
 
+    @overload
+    def __init__(self, theOther: ProjLib_Cone) -> None: ...
+
     def Init(self, Co: nanoocp.gp.gp_Cone) -> None: ...
 
     @overload
@@ -678,6 +698,9 @@ class ProjLib_Cylinder(ProjLib_Projector):
     @overload
     def __init__(self, Cyl: nanoocp.gp.gp_Cylinder, E: nanoocp.gp.gp_Elips) -> None:
         """Projection of the ellipse <E> on the cylinder <Cyl>."""
+
+    @overload
+    def __init__(self, theOther: ProjLib_Cylinder) -> None: ...
 
     def Init(self, Cyl: nanoocp.gp.gp_Cylinder) -> None: ...
 
@@ -731,6 +754,9 @@ class ProjLib_ProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         Constructor, which performs projecting.
         If projecting uses approximation, 3d tolerance is Tol, default parameters are used,
         """
+
+    @overload
+    def __init__(self, theOther: ProjLib_ProjectedCurve) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -952,6 +978,9 @@ class ProjLib_Plane(ProjLib_Projector):
     def __init__(self, Pl: nanoocp.gp.gp_Pln, H: nanoocp.gp.gp_Hypr) -> None:
         """Projection of the hyperbola <H> on the plane <Pl>."""
 
+    @overload
+    def __init__(self, theOther: ProjLib_Plane) -> None: ...
+
     def Init(self, Pl: nanoocp.gp.gp_Pln) -> None: ...
 
     @overload
@@ -970,7 +999,11 @@ class ProjLib_Plane(ProjLib_Projector):
     def Project(self, H: nanoocp.gp.gp_Hypr) -> None: ...
 
 class ProjLib_PrjFunc(nanoocp.math.math_FunctionSetWithDerivatives):
+    @overload
     def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, FixVal: float, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Fix: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: ProjLib_PrjFunc) -> None: ...
 
     def NbVariables(self) -> int:
         """returns the number of variables of the function."""
@@ -1006,7 +1039,11 @@ class ProjLib_PrjFunc(nanoocp.math.math_FunctionSetWithDerivatives):
         """returns point on surface"""
 
 class ProjLib_PrjResolve:
+    @overload
     def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Fix: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: ProjLib_PrjResolve) -> None: ...
 
     def Perform(self, t: float, U: float, V: float, Tol: nanoocp.gp.gp_Pnt2d, Inf: nanoocp.gp.gp_Pnt2d, Sup: nanoocp.gp.gp_Pnt2d, FTol: float = -1.0, StrictInside: bool = False) -> None:
         """
@@ -1053,6 +1090,9 @@ class ProjLib_ProjectOnPlane(nanoocp.Adaptor3d.Adaptor3d_Curve):
         raises if the direction <D> is parallel to the
         plane <Pl>.
         """
+
+    @overload
+    def __init__(self, theOther: ProjLib_ProjectOnPlane) -> None: ...
 
     def ShallowCopy(self) -> nanoocp.Adaptor3d.Adaptor3d_Curve:
         """Shallow copy of adaptor"""
@@ -1202,6 +1242,9 @@ class ProjLib_ProjectOnSurface:
         """Create a projector normally to the surface <S>."""
 
     @overload
+    def __init__(self, theOther: ProjLib_ProjectOnSurface) -> None: ...
+
+    @overload
     def Load(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
         """
         Set the Surface to <S>.
@@ -1230,6 +1273,9 @@ class ProjLib_Sphere(ProjLib_Projector):
     @overload
     def __init__(self, Sp: nanoocp.gp.gp_Sphere, C: nanoocp.gp.gp_Circ) -> None:
         """Projection of the circle <C> on the sphere <Sp>."""
+
+    @overload
+    def __init__(self, theOther: ProjLib_Sphere) -> None: ...
 
     def Init(self, Sp: nanoocp.gp.gp_Sphere) -> None: ...
 
@@ -1268,6 +1314,9 @@ class ProjLib_Torus(ProjLib_Projector):
     @overload
     def __init__(self, To: nanoocp.gp.gp_Torus, C: nanoocp.gp.gp_Circ) -> None:
         """Projection of the circle <C> on the torus <To>."""
+
+    @overload
+    def __init__(self, theOther: ProjLib_Torus) -> None: ...
 
     def Init(self, To: nanoocp.gp.gp_Torus) -> None: ...
 

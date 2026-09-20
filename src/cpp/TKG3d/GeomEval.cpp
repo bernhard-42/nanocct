@@ -341,6 +341,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_AHTBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_AHTBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_AHTBezierCurve::*)() const>(&GeomEval_AHTBezierCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_AHTBezierCurve>(nb::borrow<nb::class_<GeomEval_AHTBezierCurve>>(m.attr("GeomEval_AHTBezierCurve")));
     nb::borrow<nb::class_<GeomEval_AHTBezierSurface>>(m.attr("GeomEval_AHTBezierSurface"))
         .def(nb::new_([](const NCollection_Array2<gp_Pnt> & thePoles, int theAlgDegreeU, int theAlgDegreeV, double theAlphaU, double theAlphaV, double theBetaU, double theBetaV) { return opencascade::handle<GeomEval_AHTBezierSurface>(new GeomEval_AHTBezierSurface(thePoles, theAlgDegreeU, theAlgDegreeV, theAlphaU, theAlphaV, theBetaU, theBetaV)); }), nb::arg("thePoles"), nb::arg("theAlgDegreeU"), nb::arg("theAlgDegreeV"), nb::arg("theAlphaU"), nb::arg("theAlphaV"), nb::arg("theBetaU"), nb::arg("theBetaV"), R"nbdoc(Non-rational constructor.
 @param[in] thePoles 2D array of control points
@@ -412,6 +413,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_AHTBezierSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_AHTBezierSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_AHTBezierSurface::*)() const>(&GeomEval_AHTBezierSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_AHTBezierSurface>(nb::borrow<nb::class_<GeomEval_AHTBezierSurface>>(m.attr("GeomEval_AHTBezierSurface")));
     nb::borrow<nb::class_<GeomEval_CircularHelicoidSurface>>(m.attr("GeomEval_CircularHelicoidSurface"))
         .def(nb::new_([](const gp_Ax3 & thePosition, double thePitch) { return opencascade::handle<GeomEval_CircularHelicoidSurface>(new GeomEval_CircularHelicoidSurface(thePosition, thePitch)); }), nb::arg("thePosition"), nb::arg("thePitch"), R"nbdoc(Creates a circular helicoid surface.
 @param[in] thePosition the local coordinate system
@@ -450,6 +452,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_CircularHelicoidSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_CircularHelicoidSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_CircularHelicoidSurface::*)() const>(&GeomEval_CircularHelicoidSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_CircularHelicoidSurface>(nb::borrow<nb::class_<GeomEval_CircularHelicoidSurface>>(m.attr("GeomEval_CircularHelicoidSurface")));
     nb::borrow<nb::class_<GeomEval_CircularHelixCurve>>(m.attr("GeomEval_CircularHelixCurve"))
         .def(nb::new_([](const gp_Ax2 & thePosition, double theRadius, double thePitch) { return opencascade::handle<GeomEval_CircularHelixCurve>(new GeomEval_CircularHelixCurve(thePosition, theRadius, thePitch)); }), nb::arg("thePosition"), nb::arg("theRadius"), nb::arg("thePitch"), R"nbdoc(Creates a circular helix with the given coordinate system, radius, and pitch.
 @param[in] thePosition the local coordinate system
@@ -484,6 +487,7 @@ void nanoocp_define_GeomEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_CircularHelixCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_CircularHelixCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_CircularHelixCurve::*)() const>(&GeomEval_CircularHelixCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_CircularHelixCurve>(nb::borrow<nb::class_<GeomEval_CircularHelixCurve>>(m.attr("GeomEval_CircularHelixCurve")));
     nb::borrow<nb::class_<GeomEval_EllipsoidSurface>>(m.attr("GeomEval_EllipsoidSurface"))
         .def(nb::new_([](const gp_Ax3 & thePosition, double theA, double theB, double theC) { return opencascade::handle<GeomEval_EllipsoidSurface>(new GeomEval_EllipsoidSurface(thePosition, theA, theB, theC)); }), nb::arg("thePosition"), nb::arg("theA"), nb::arg("theB"), nb::arg("theC"), R"nbdoc(Creates a triaxial ellipsoid surface with the given local coordinate system
 and three semi-axes.
@@ -557,6 +561,7 @@ In local coordinates the equation is: X^2/A^2 + Y^2/B^2 + Z^2/C^2 - 1 = 0.)nbdoc
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_EllipsoidSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_EllipsoidSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_EllipsoidSurface::*)() const>(&GeomEval_EllipsoidSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_EllipsoidSurface>(nb::borrow<nb::class_<GeomEval_EllipsoidSurface>>(m.attr("GeomEval_EllipsoidSurface")));
     nb::borrow<nb::class_<GeomEval_HypParaboloidSurface>>(m.attr("GeomEval_HypParaboloidSurface"))
         .def(nb::new_([](const gp_Ax3 & thePosition, double theA, double theB) { return opencascade::handle<GeomEval_HypParaboloidSurface>(new GeomEval_HypParaboloidSurface(thePosition, theA, theB)); }), nb::arg("thePosition"), nb::arg("theA"), nb::arg("theB"), R"nbdoc(Creates a hyperbolic paraboloid surface with the given local coordinate system
 and semi-axis lengths.
@@ -623,6 +628,7 @@ In local coordinates the equation is: X^2/A^2 - Y^2/B^2 - Z = 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_HypParaboloidSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_HypParaboloidSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_HypParaboloidSurface::*)() const>(&GeomEval_HypParaboloidSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_HypParaboloidSurface>(nb::borrow<nb::class_<GeomEval_HypParaboloidSurface>>(m.attr("GeomEval_HypParaboloidSurface")));
     nb::borrow<nb::class_<GeomEval_HyperboloidSurface>>(m.attr("GeomEval_HyperboloidSurface"))
         .def(nb::new_([](const gp_Ax3 & thePosition, double theR1, double theR2, GeomEval_HyperboloidSurface::SheetMode theMode) { return opencascade::handle<GeomEval_HyperboloidSurface>(new GeomEval_HyperboloidSurface(thePosition, theR1, theR2, theMode)); }), nb::arg("thePosition"), nb::arg("theR1"), nb::arg("theR2"), nb::arg("theMode") = static_cast<std::decay_t<GeomEval_HyperboloidSurface::SheetMode>>(GeomEval_HyperboloidSurface::SheetMode :: OneSheet), R"nbdoc(Creates a hyperboloid surface with the given local coordinate system,
 semi-axis radii, and sheet mode.
@@ -691,6 +697,7 @@ For two-sheet (local): X^2/R2^2 + Y^2/R2^2 - Z^2/R1^2 + 1 = 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_HyperboloidSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_HyperboloidSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_HyperboloidSurface::*)() const>(&GeomEval_HyperboloidSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_HyperboloidSurface>(nb::borrow<nb::class_<GeomEval_HyperboloidSurface>>(m.attr("GeomEval_HyperboloidSurface")));
     nb::borrow<nb::class_<GeomEval_ParaboloidSurface>>(m.attr("GeomEval_ParaboloidSurface"))
         .def(nb::new_([](const gp_Ax3 & thePosition, double theFocal) { return opencascade::handle<GeomEval_ParaboloidSurface>(new GeomEval_ParaboloidSurface(thePosition, theFocal)); }), nb::arg("thePosition"), nb::arg("theFocal"), R"nbdoc(Creates a paraboloid surface with the given local coordinate system
 and focal distance.
@@ -754,91 +761,102 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_ParaboloidSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_ParaboloidSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_ParaboloidSurface::*)() const>(&GeomEval_ParaboloidSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_ParaboloidSurface>(nb::borrow<nb::class_<GeomEval_ParaboloidSurface>>(m.attr("GeomEval_ParaboloidSurface")));
     nanoocp_implicit_default_ctor<GeomEval_RepCurveDesc::Map1d>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Map1d>>(m.attr("GeomEval_RepCurveDesc").attr("Map1d")));
     nb::borrow<nb::class_<GeomEval_RepCurveDesc::Map1d>>(m.attr("GeomEval_RepCurveDesc").attr("Map1d"))
         .def("IsIdentity", static_cast<bool (GeomEval_RepCurveDesc::Map1d::*)() const>(&GeomEval_RepCurveDesc::Map1d::IsIdentity))
         .def("IsValid", static_cast<bool (GeomEval_RepCurveDesc::Map1d::*)() const>(&GeomEval_RepCurveDesc::Map1d::IsValid))
-        .def("Map", static_cast<double (GeomEval_RepCurveDesc::Map1d::*)(const double) const>(&GeomEval_RepCurveDesc::Map1d::Map), nb::arg("theU"))
-        .def_rw("Scale", &GeomEval_RepCurveDesc::Map1d::Scale)
-        .def_rw("Offset", &GeomEval_RepCurveDesc::Map1d::Offset);
+        .def("Map", static_cast<double (GeomEval_RepCurveDesc::Map1d::*)(const double) const>(&GeomEval_RepCurveDesc::Map1d::Map), nb::arg("theU"));
+    nanoocp_implicit_copy_ctor<GeomEval_RepCurveDesc::Map1d>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Map1d>>(m.attr("GeomEval_RepCurveDesc").attr("Map1d")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Map1d>>(m.attr("GeomEval_RepCurveDesc").attr("Map1d")), "Scale", &GeomEval_RepCurveDesc::Map1d::Scale);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Map1d>>(m.attr("GeomEval_RepCurveDesc").attr("Map1d")), "Offset", &GeomEval_RepCurveDesc::Map1d::Offset);
     nanoocp_implicit_default_ctor<GeomEval_RepCurveDesc::Domain1d>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Domain1d>>(m.attr("GeomEval_RepCurveDesc").attr("Domain1d")));
     nb::borrow<nb::class_<GeomEval_RepCurveDesc::Domain1d>>(m.attr("GeomEval_RepCurveDesc").attr("Domain1d"))
-        .def("Contains", static_cast<bool (GeomEval_RepCurveDesc::Domain1d::*)(const double) const>(&GeomEval_RepCurveDesc::Domain1d::Contains), nb::arg("theU"))
-        .def_rw("First", &GeomEval_RepCurveDesc::Domain1d::First)
-        .def_rw("Last", &GeomEval_RepCurveDesc::Domain1d::Last);
+        .def("Contains", static_cast<bool (GeomEval_RepCurveDesc::Domain1d::*)(const double) const>(&GeomEval_RepCurveDesc::Domain1d::Contains), nb::arg("theU"));
+    nanoocp_implicit_copy_ctor<GeomEval_RepCurveDesc::Domain1d>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Domain1d>>(m.attr("GeomEval_RepCurveDesc").attr("Domain1d")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Domain1d>>(m.attr("GeomEval_RepCurveDesc").attr("Domain1d")), "First", &GeomEval_RepCurveDesc::Domain1d::First);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Domain1d>>(m.attr("GeomEval_RepCurveDesc").attr("Domain1d")), "Last", &GeomEval_RepCurveDesc::Domain1d::Last);
     nb::borrow<nb::class_<GeomEval_RepCurveDesc::Base>>(m.attr("GeomEval_RepCurveDesc").attr("Base"))
         .def("GetKind", static_cast<GeomEval_RepCurveDesc::Base::Kind (GeomEval_RepCurveDesc::Base::*)() const>(&GeomEval_RepCurveDesc::Base::GetKind), R"nbdoc(Returns the descriptor kind.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepCurveDesc::Base::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepCurveDesc::Base::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepCurveDesc::Base::*)() const>(&GeomEval_RepCurveDesc::Base::DynamicType))
-        .def_rw("Representation", &GeomEval_RepCurveDesc::Base::Representation, R"nbdoc(geometry used for evaluation)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepCurveDesc::Base::*)() const>(&GeomEval_RepCurveDesc::Base::DynamicType));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Base>>(m.attr("GeomEval_RepCurveDesc").attr("Base")), "Representation", &GeomEval_RepCurveDesc::Base::Representation, R"nbdoc(geometry used for evaluation)nbdoc");
     nanoocp_implicit_default_ctor<GeomEval_RepCurveDesc::Full>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Full>>(m.attr("GeomEval_RepCurveDesc").attr("Full")));
     nb::borrow<nb::class_<GeomEval_RepCurveDesc::Full>>(m.attr("GeomEval_RepCurveDesc").attr("Full"))
         .def("GetKind", static_cast<GeomEval_RepCurveDesc::Base::Kind (GeomEval_RepCurveDesc::Full::*)() const>(&GeomEval_RepCurveDesc::Full::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepCurveDesc::Full::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepCurveDesc::Full::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepCurveDesc::Full::*)() const>(&GeomEval_RepCurveDesc::Full::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_RepCurveDesc::Full>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Full>>(m.attr("GeomEval_RepCurveDesc").attr("Full")));
     nanoocp_implicit_default_ctor<GeomEval_RepCurveDesc::DerivBounded>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::DerivBounded>>(m.attr("GeomEval_RepCurveDesc").attr("DerivBounded")));
     nb::borrow<nb::class_<GeomEval_RepCurveDesc::DerivBounded>>(m.attr("GeomEval_RepCurveDesc").attr("DerivBounded"))
         .def("GetKind", static_cast<GeomEval_RepCurveDesc::Base::Kind (GeomEval_RepCurveDesc::DerivBounded::*)() const>(&GeomEval_RepCurveDesc::DerivBounded::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepCurveDesc::DerivBounded::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepCurveDesc::DerivBounded::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepCurveDesc::DerivBounded::*)() const>(&GeomEval_RepCurveDesc::DerivBounded::DynamicType))
-        .def_rw("MaxDerivOrder", &GeomEval_RepCurveDesc::DerivBounded::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepCurveDesc::DerivBounded::*)() const>(&GeomEval_RepCurveDesc::DerivBounded::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_RepCurveDesc::DerivBounded>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::DerivBounded>>(m.attr("GeomEval_RepCurveDesc").attr("DerivBounded")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::DerivBounded>>(m.attr("GeomEval_RepCurveDesc").attr("DerivBounded")), "MaxDerivOrder", &GeomEval_RepCurveDesc::DerivBounded::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
     nanoocp_implicit_default_ctor<GeomEval_RepCurveDesc::Mapped>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Mapped>>(m.attr("GeomEval_RepCurveDesc").attr("Mapped")));
     nb::borrow<nb::class_<GeomEval_RepCurveDesc::Mapped>>(m.attr("GeomEval_RepCurveDesc").attr("Mapped"))
         .def("GetKind", static_cast<GeomEval_RepCurveDesc::Base::Kind (GeomEval_RepCurveDesc::Mapped::*)() const>(&GeomEval_RepCurveDesc::Mapped::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepCurveDesc::Mapped::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepCurveDesc::Mapped::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepCurveDesc::Mapped::*)() const>(&GeomEval_RepCurveDesc::Mapped::DynamicType))
-        .def_rw("MaxDerivOrder", &GeomEval_RepCurveDesc::Mapped::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc")
-        .def_rw("Domain", &GeomEval_RepCurveDesc::Mapped::Domain, R"nbdoc(nullopt = full domain)nbdoc")
-        .def_rw("ParamMap", &GeomEval_RepCurveDesc::Mapped::ParamMap, R"nbdoc(affine parameter transform)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepCurveDesc::Mapped::*)() const>(&GeomEval_RepCurveDesc::Mapped::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_RepCurveDesc::Mapped>(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Mapped>>(m.attr("GeomEval_RepCurveDesc").attr("Mapped")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Mapped>>(m.attr("GeomEval_RepCurveDesc").attr("Mapped")), "MaxDerivOrder", &GeomEval_RepCurveDesc::Mapped::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Mapped>>(m.attr("GeomEval_RepCurveDesc").attr("Mapped")), "Domain", &GeomEval_RepCurveDesc::Mapped::Domain, R"nbdoc(nullopt = full domain)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepCurveDesc::Mapped>>(m.attr("GeomEval_RepCurveDesc").attr("Mapped")), "ParamMap", &GeomEval_RepCurveDesc::Mapped::ParamMap, R"nbdoc(affine parameter transform)nbdoc");
     nanoocp_implicit_default_ctor<GeomEval_RepSurfaceDesc::Map2d>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d")));
     nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d"))
         .def("IsIdentity", static_cast<bool (GeomEval_RepSurfaceDesc::Map2d::*)() const>(&GeomEval_RepSurfaceDesc::Map2d::IsIdentity))
         .def("IsValid", static_cast<bool (GeomEval_RepSurfaceDesc::Map2d::*)() const>(&GeomEval_RepSurfaceDesc::Map2d::IsValid))
-        .def("Map", [](const GeomEval_RepSurfaceDesc::Map2d &self, const double theU, const double theV) { double theURep{}; double theVRep{}; self.Map(theU, theV, theURep, theVRep); return std::make_tuple(theURep, theVRep); }, nb::arg("theU"), nb::arg("theV"))
-        .def_rw("ScaleU", &GeomEval_RepSurfaceDesc::Map2d::ScaleU)
-        .def_rw("OffsetU", &GeomEval_RepSurfaceDesc::Map2d::OffsetU)
-        .def_rw("ScaleV", &GeomEval_RepSurfaceDesc::Map2d::ScaleV)
-        .def_rw("OffsetV", &GeomEval_RepSurfaceDesc::Map2d::OffsetV)
-        .def_rw("SwapUV", &GeomEval_RepSurfaceDesc::Map2d::SwapUV);
+        .def("Map", [](const GeomEval_RepSurfaceDesc::Map2d &self, const double theU, const double theV) { double theURep{}; double theVRep{}; self.Map(theU, theV, theURep, theVRep); return std::make_tuple(theURep, theVRep); }, nb::arg("theU"), nb::arg("theV"));
+    nanoocp_implicit_copy_ctor<GeomEval_RepSurfaceDesc::Map2d>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d")), "ScaleU", &GeomEval_RepSurfaceDesc::Map2d::ScaleU);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d")), "OffsetU", &GeomEval_RepSurfaceDesc::Map2d::OffsetU);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d")), "ScaleV", &GeomEval_RepSurfaceDesc::Map2d::ScaleV);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d")), "OffsetV", &GeomEval_RepSurfaceDesc::Map2d::OffsetV);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Map2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Map2d")), "SwapUV", &GeomEval_RepSurfaceDesc::Map2d::SwapUV);
     nanoocp_implicit_default_ctor<GeomEval_RepSurfaceDesc::Domain2d>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Domain2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Domain2d")));
     nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Domain2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Domain2d"))
-        .def("Contains", static_cast<bool (GeomEval_RepSurfaceDesc::Domain2d::*)(const double, const double) const>(&GeomEval_RepSurfaceDesc::Domain2d::Contains), nb::arg("theU"), nb::arg("theV"))
-        .def_rw("UFirst", &GeomEval_RepSurfaceDesc::Domain2d::UFirst)
-        .def_rw("ULast", &GeomEval_RepSurfaceDesc::Domain2d::ULast)
-        .def_rw("VFirst", &GeomEval_RepSurfaceDesc::Domain2d::VFirst)
-        .def_rw("VLast", &GeomEval_RepSurfaceDesc::Domain2d::VLast);
+        .def("Contains", static_cast<bool (GeomEval_RepSurfaceDesc::Domain2d::*)(const double, const double) const>(&GeomEval_RepSurfaceDesc::Domain2d::Contains), nb::arg("theU"), nb::arg("theV"));
+    nanoocp_implicit_copy_ctor<GeomEval_RepSurfaceDesc::Domain2d>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Domain2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Domain2d")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Domain2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Domain2d")), "UFirst", &GeomEval_RepSurfaceDesc::Domain2d::UFirst);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Domain2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Domain2d")), "ULast", &GeomEval_RepSurfaceDesc::Domain2d::ULast);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Domain2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Domain2d")), "VFirst", &GeomEval_RepSurfaceDesc::Domain2d::VFirst);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Domain2d>>(m.attr("GeomEval_RepSurfaceDesc").attr("Domain2d")), "VLast", &GeomEval_RepSurfaceDesc::Domain2d::VLast);
     nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Base>>(m.attr("GeomEval_RepSurfaceDesc").attr("Base"))
         .def("GetKind", static_cast<GeomEval_RepSurfaceDesc::Base::Kind (GeomEval_RepSurfaceDesc::Base::*)() const>(&GeomEval_RepSurfaceDesc::Base::GetKind), R"nbdoc(Returns the descriptor kind.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepSurfaceDesc::Base::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepSurfaceDesc::Base::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepSurfaceDesc::Base::*)() const>(&GeomEval_RepSurfaceDesc::Base::DynamicType))
-        .def_rw("Representation", &GeomEval_RepSurfaceDesc::Base::Representation, R"nbdoc(geometry used for evaluation)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepSurfaceDesc::Base::*)() const>(&GeomEval_RepSurfaceDesc::Base::DynamicType));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Base>>(m.attr("GeomEval_RepSurfaceDesc").attr("Base")), "Representation", &GeomEval_RepSurfaceDesc::Base::Representation, R"nbdoc(geometry used for evaluation)nbdoc");
     nanoocp_implicit_default_ctor<GeomEval_RepSurfaceDesc::Full>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Full>>(m.attr("GeomEval_RepSurfaceDesc").attr("Full")));
     nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Full>>(m.attr("GeomEval_RepSurfaceDesc").attr("Full"))
         .def("GetKind", static_cast<GeomEval_RepSurfaceDesc::Base::Kind (GeomEval_RepSurfaceDesc::Full::*)() const>(&GeomEval_RepSurfaceDesc::Full::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepSurfaceDesc::Full::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepSurfaceDesc::Full::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepSurfaceDesc::Full::*)() const>(&GeomEval_RepSurfaceDesc::Full::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_RepSurfaceDesc::Full>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Full>>(m.attr("GeomEval_RepSurfaceDesc").attr("Full")));
     nanoocp_implicit_default_ctor<GeomEval_RepSurfaceDesc::DerivBounded>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::DerivBounded>>(m.attr("GeomEval_RepSurfaceDesc").attr("DerivBounded")));
     nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::DerivBounded>>(m.attr("GeomEval_RepSurfaceDesc").attr("DerivBounded"))
         .def("GetKind", static_cast<GeomEval_RepSurfaceDesc::Base::Kind (GeomEval_RepSurfaceDesc::DerivBounded::*)() const>(&GeomEval_RepSurfaceDesc::DerivBounded::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepSurfaceDesc::DerivBounded::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepSurfaceDesc::DerivBounded::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepSurfaceDesc::DerivBounded::*)() const>(&GeomEval_RepSurfaceDesc::DerivBounded::DynamicType))
-        .def_rw("MaxDerivOrder", &GeomEval_RepSurfaceDesc::DerivBounded::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepSurfaceDesc::DerivBounded::*)() const>(&GeomEval_RepSurfaceDesc::DerivBounded::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_RepSurfaceDesc::DerivBounded>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::DerivBounded>>(m.attr("GeomEval_RepSurfaceDesc").attr("DerivBounded")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::DerivBounded>>(m.attr("GeomEval_RepSurfaceDesc").attr("DerivBounded")), "MaxDerivOrder", &GeomEval_RepSurfaceDesc::DerivBounded::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
     nanoocp_implicit_default_ctor<GeomEval_RepSurfaceDesc::Mapped>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Mapped>>(m.attr("GeomEval_RepSurfaceDesc").attr("Mapped")));
     nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Mapped>>(m.attr("GeomEval_RepSurfaceDesc").attr("Mapped"))
         .def("GetKind", static_cast<GeomEval_RepSurfaceDesc::Base::Kind (GeomEval_RepSurfaceDesc::Mapped::*)() const>(&GeomEval_RepSurfaceDesc::Mapped::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_RepSurfaceDesc::Mapped::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_RepSurfaceDesc::Mapped::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepSurfaceDesc::Mapped::*)() const>(&GeomEval_RepSurfaceDesc::Mapped::DynamicType))
-        .def_rw("MaxDerivOrder", &GeomEval_RepSurfaceDesc::Mapped::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc")
-        .def_rw("Domain", &GeomEval_RepSurfaceDesc::Mapped::Domain, R"nbdoc(nullopt = full domain)nbdoc")
-        .def_rw("ParamMap", &GeomEval_RepSurfaceDesc::Mapped::ParamMap, R"nbdoc(affine parameter transform)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_RepSurfaceDesc::Mapped::*)() const>(&GeomEval_RepSurfaceDesc::Mapped::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_RepSurfaceDesc::Mapped>(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Mapped>>(m.attr("GeomEval_RepSurfaceDesc").attr("Mapped")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Mapped>>(m.attr("GeomEval_RepSurfaceDesc").attr("Mapped")), "MaxDerivOrder", &GeomEval_RepSurfaceDesc::Mapped::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Mapped>>(m.attr("GeomEval_RepSurfaceDesc").attr("Mapped")), "Domain", &GeomEval_RepSurfaceDesc::Mapped::Domain, R"nbdoc(nullopt = full domain)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomEval_RepSurfaceDesc::Mapped>>(m.attr("GeomEval_RepSurfaceDesc").attr("Mapped")), "ParamMap", &GeomEval_RepSurfaceDesc::Mapped::ParamMap, R"nbdoc(affine parameter transform)nbdoc");
     nb::borrow<nb::class_<GeomEval_SineWaveCurve>>(m.attr("GeomEval_SineWaveCurve"))
         .def(nb::new_([](const gp_Ax2 & thePosition, double theAmplitude, double theOmega, double thePhase) { return opencascade::handle<GeomEval_SineWaveCurve>(new GeomEval_SineWaveCurve(thePosition, theAmplitude, theOmega, thePhase)); }), nb::arg("thePosition"), nb::arg("theAmplitude"), nb::arg("theOmega"), nb::arg("thePhase") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Creates a 3D sine wave curve.
 @param[in] thePosition the local coordinate system
@@ -872,6 +890,7 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_SineWaveCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_SineWaveCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_SineWaveCurve::*)() const>(&GeomEval_SineWaveCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_SineWaveCurve>(nb::borrow<nb::class_<GeomEval_SineWaveCurve>>(m.attr("GeomEval_SineWaveCurve")));
     nb::borrow<nb::class_<GeomEval_TBezierCurve>>(m.attr("GeomEval_TBezierCurve"))
         .def(nb::new_([](const NCollection_Array1<gp_Pnt> & thePoles, double theAlpha) { return opencascade::handle<GeomEval_TBezierCurve>(new GeomEval_TBezierCurve(thePoles, theAlpha)); }), nb::arg("thePoles"), nb::arg("theAlpha"), R"nbdoc(Constructs a non-rational T-Bezier curve from poles and alpha.
 @param[in] thePoles control points (1-based, size must be odd >= 3)
@@ -915,6 +934,7 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_TBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_TBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_TBezierCurve::*)() const>(&GeomEval_TBezierCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_TBezierCurve>(nb::borrow<nb::class_<GeomEval_TBezierCurve>>(m.attr("GeomEval_TBezierCurve")));
     nb::borrow<nb::class_<GeomEval_TBezierSurface>>(m.attr("GeomEval_TBezierSurface"))
         .def(nb::new_([](const NCollection_Array2<gp_Pnt> & thePoles, double theAlphaU, double theAlphaV) { return opencascade::handle<GeomEval_TBezierSurface>(new GeomEval_TBezierSurface(thePoles, theAlphaU, theAlphaV)); }), nb::arg("thePoles"), nb::arg("theAlphaU"), nb::arg("theAlphaV"), R"nbdoc(Constructs a non-rational T-Bezier surface from poles and alpha parameters.
 @param[in] thePoles control points grid (row count and col count must be odd >= 3)
@@ -977,4 +997,5 @@ In local coordinates the equation is: X^2 + Y^2 - 4*F*Z = 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomEval_TBezierSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomEval_TBezierSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_TBezierSurface::*)() const>(&GeomEval_TBezierSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<GeomEval_TBezierSurface>(nb::borrow<nb::class_<GeomEval_TBezierSurface>>(m.attr("GeomEval_TBezierSurface")));
 }

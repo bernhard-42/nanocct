@@ -33,7 +33,11 @@ class Standard:
     services used by other OCCT components.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Standard) -> None: ...
 
     class AllocatorType(enum.Enum):
         """Enumiration of possible allocator types"""
@@ -172,6 +176,8 @@ class Standard_Type(Standard_Transient):
     Only single chain of inheritance is supported, with a root base class Standard_Transient.
     """
 
+    def __init__(self, theOther: Standard_Type) -> None: ...
+
     def SystemName(self) -> str:
         """Returns the system type name of the class (typeinfo.name)"""
 
@@ -275,7 +281,11 @@ class Standard_ConstructionError(Standard_DomainError):
     pass
 
 class Standard_CStringHasher:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Standard_CStringHasher) -> None: ...
 
     @overload
     def __call__(self, theString: str) -> int: ...
@@ -316,6 +326,9 @@ class Standard_DumpValue:
     @overload
     def __init__(self, theValue: nanoocp.TCollection.TCollection_AsciiString, theStartPos: int) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Standard_DumpValue) -> None: ...
+
     @property
     def myValue(self) -> nanoocp.TCollection.TCollection_AsciiString:
         """current string value"""
@@ -335,7 +348,11 @@ class Standard_Dump:
     This interface has some tool methods for stream (in JSON format) processing.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Standard_Dump) -> None: ...
 
     @staticmethod
     def SplitJson(theStreamStr: nanoocp.TCollection.TCollection_AsciiString, theKeyToValues: nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.Standard.Standard_DumpValue]) -> bool:
@@ -440,11 +457,15 @@ class Standard_ErrorHandler:
     to find appropriate handler when signal is raised.
     """
 
+    @overload
     def __init__(self) -> None:
         """
         Create a ErrorHandler (to be used with try{}catch(){}).
         It uses the "setjmp" and "longjmp" routines.
         """
+
+    @overload
+    def __init__(self, theOther: Standard_ErrorHandler) -> None: ...
 
     class Callback:
         """
@@ -498,7 +519,11 @@ class Standard_ErrorHandler:
         """Test if the code is currently running in a try block"""
 
 class Standard_UUID:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Standard_UUID) -> None: ...
 
     @property
     def Data1(self) -> int: ...
@@ -570,6 +595,8 @@ class Standard_GUID:
         Check the format of a GUID string.
         It checks the size, the position of the '-' and the correct size of fields.
         """
+
+    def __hash__(self) -> int: ...
 
 class Standard_ImmutableObject(Standard_DomainError):
     pass
@@ -746,7 +773,11 @@ class Standard_Persistent(Standard_Transient):
     object oriented databases, now outdated.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Standard_Persistent) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -761,8 +792,12 @@ class Standard_ReadBuffer:
     Auxiliary tool for buffered reading from input stream within chunks of constant size.
     """
 
+    @overload
     def __init__(self, theDataLen: int, theChunkLen: int, theIsPartialPayload: bool = False) -> None:
         """Constructor with initialization."""
+
+    @overload
+    def __init__(self, theOther: Standard_ReadBuffer) -> None: ...
 
     def Init(self, theDataLen: int, theChunkLen: int, theIsPartialPayload: bool = False) -> None:
         """
@@ -784,11 +819,15 @@ class Standard_ReadBuffer:
 class Standard_ReadLineBuffer:
     """Auxiliary tool for buffered reading of lines from input stream."""
 
+    @overload
     def __init__(self, theMaxBufferSizeBytes: int) -> None:
         """
         Constructor with initialization.
         @param theMaxBufferSizeBytes the length of buffer to read (in bytes)
         """
+
+    @overload
+    def __init__(self, theOther: Standard_ReadLineBuffer) -> None: ...
 
     def Clear(self) -> None:
         """Clear buffer and cached values."""

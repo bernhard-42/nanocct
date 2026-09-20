@@ -18,7 +18,11 @@ class PLib:
     That means no weights passed.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: PLib) -> None: ...
 
     @staticmethod
     def NoWeights() -> nanoocp.NCollection.NCollection_Array1[float]:
@@ -411,6 +415,7 @@ class PLib_JacobiPolynomial:
     Q(t) = c2*iordre+2  J0(t) + ...+ cDegree JDegree-2*iordre-2
     """
 
+    @overload
     def __init__(self, theWorkDegree: int, theConstraintOrder: nanoocp.GeomAbs.GeomAbs_Shape) -> None:
         """
         Initialize the polynomial class
@@ -419,6 +424,9 @@ class PLib_JacobiPolynomial:
         GeomAbs_C1
         GeomAbs_C2
         """
+
+    @overload
+    def __init__(self, theOther: PLib_JacobiPolynomial) -> None: ...
 
     def Points(self, theNbGaussPoints: int, theTabPoints: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
@@ -537,6 +545,7 @@ class PLib_HermitJacobi:
     @endcode
     """
 
+    @overload
     def __init__(self, WorkDegree: int, ConstraintOrder: nanoocp.GeomAbs.GeomAbs_Shape) -> None:
         """
         Initialize the polynomial class
@@ -545,6 +554,9 @@ class PLib_HermitJacobi:
         GeomAbs_C1
         GeomAbs_C2
         """
+
+    @overload
+    def __init__(self, theOther: PLib_HermitJacobi) -> None: ...
 
     def MaxError(self, Dimension: int, NewDegree: int) -> tuple[float, float]:
         """

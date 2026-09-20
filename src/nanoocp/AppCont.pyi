@@ -1,5 +1,7 @@
 """OCCT package AppCont (toolkit TKGeomBase)"""
 
+from typing import overload
+
 import nanoocp.AppParCurves
 import nanoocp.NCollection
 import nanoocp.gp
@@ -40,7 +42,11 @@ class AppCont_Function:
         """
 
 class PeriodicityInfo:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: PeriodicityInfo) -> None: ...
 
     @property
     def isPeriodic(self) -> bool: ...
@@ -55,7 +61,11 @@ class PeriodicityInfo:
     def myPeriod(self, arg: float, /) -> None: ...
 
 class AppCont_LeastSquare:
+    @overload
     def __init__(self, SSP: AppCont_Function, U0: float, U1: float, FirstCons: nanoocp.AppParCurves.AppParCurves_Constraint, LastCons: nanoocp.AppParCurves.AppParCurves_Constraint, Deg: int, NbPoints: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppCont_LeastSquare) -> None: ...
 
     def Value(self) -> nanoocp.AppParCurves.AppParCurves_MultiCurve: ...
 

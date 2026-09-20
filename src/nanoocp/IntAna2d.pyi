@@ -31,6 +31,9 @@ class IntAna2d_IntPoint:
         """
 
     @overload
+    def __init__(self, theOther: IntAna2d_IntPoint) -> None: ...
+
+    @overload
     def SetValue(self, X: float, Y: float, U1: float, U2: float) -> None:
         """Set the values for a "non-implicit" point."""
 
@@ -101,6 +104,9 @@ class IntAna2d_AnaIntersection:
     @overload
     def __init__(self, H: nanoocp.gp.gp_Hypr2d, C: IntAna2d_Conic) -> None:
         """Intersection between an hyperbola and another conic."""
+
+    @overload
+    def __init__(self, theOther: IntAna2d_AnaIntersection) -> None: ...
 
     @overload
     def Perform(self, L1: nanoocp.gp.gp_Lin2d, L2: nanoocp.gp.gp_Lin2d) -> None:
@@ -192,6 +198,9 @@ class IntAna2d_Conic:
     @overload
     def __init__(self, C: nanoocp.gp.gp_Elips2d) -> None: ...
 
+    @overload
+    def __init__(self, theOther: IntAna2d_Conic) -> None: ...
+
     def Value(self, X: float, Y: float) -> float:
         """value of the function F at the point X,Y."""
 
@@ -225,6 +234,9 @@ class MyDirectPolynomialRoots:
 
     @overload
     def __init__(self, A4: float, A3: float, A2: float, A1: float, A0: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: MyDirectPolynomialRoots) -> None: ...
 
     def NbSolutions(self) -> int: ...
 

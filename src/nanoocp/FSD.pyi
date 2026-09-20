@@ -1,5 +1,7 @@
 """OCCT package FSD (toolkit TKernel)"""
 
+from typing import overload
+
 import nanoocp.NCollection
 import nanoocp.Standard
 import nanoocp.Storage
@@ -9,7 +11,11 @@ import nanoocp.TCollection
 class FSD_Base64:
     """Tool for encoding/decoding base64 stream."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FSD_Base64) -> None: ...
 
     @staticmethod
     def Decode(theStr: str, theLen: int) -> nanoocp.NCollection.NCollection_Buffer:
@@ -21,7 +27,11 @@ class FSD_Base64:
         """
 
 class FSD_FileHeader:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FSD_FileHeader) -> None: ...
 
     @property
     def testindian(self) -> int: ...
@@ -102,7 +112,11 @@ class FSD_FileHeader:
     def edata(self, arg: int, /) -> None: ...
 
 class FSD_BinaryFile(nanoocp.Storage.Storage_BaseDriver):
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FSD_BinaryFile) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...

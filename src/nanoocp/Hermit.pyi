@@ -27,7 +27,11 @@ class Hermit:
     balayage de surfaces" PFE n S85 Ensam Lille
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Hermit) -> None: ...
 
     @overload
     @staticmethod

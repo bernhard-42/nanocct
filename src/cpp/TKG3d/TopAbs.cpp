@@ -163,4 +163,5 @@ comparison).
 @param theOrientationString string identifier
 @param theOrientation detected shape orientation
 @return TRUE if string identifier is known)nbdoc");
+    nanoocp_implicit_copy_ctor<TopAbs>(nb::borrow<nb::class_<TopAbs>>(m.attr("TopAbs")));
 }

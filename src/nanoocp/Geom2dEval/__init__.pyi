@@ -41,6 +41,9 @@ class Geom2dEval_AHTBezierCurve(nanoocp.Geom2d.Geom2d_BoundedCurve):
         @param[in] theBeta trigonometric frequency (>= 0, 0 = no trig terms)
         """
 
+    @overload
+    def __init__(self, theOther: Geom2dEval_AHTBezierCurve) -> None: ...
+
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the array of poles."""
 
@@ -156,6 +159,7 @@ class Geom2dEval_ArchimedeanSpiralCurve(nanoocp.Geom2d.Geom2d_Curve):
     The parameter range is [0, +inf). The curve is neither periodic nor closed.
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax2d, theInitialRadius: float, theGrowthRate: float) -> None:
         """
         Creates an Archimedean spiral.
@@ -164,6 +168,9 @@ class Geom2dEval_ArchimedeanSpiralCurve(nanoocp.Geom2d.Geom2d_Curve):
         @param[in] theGrowthRate the growth rate per radian (must be > 0)
         @throw Standard_ConstructionError if theInitialRadius < 0 or theGrowthRate <= 0
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dEval_ArchimedeanSpiralCurve) -> None: ...
 
     def Position(self) -> nanoocp.gp.gp_Ax2d:
         """Returns the local coordinate system."""
@@ -258,6 +265,7 @@ class Geom2dEval_CircleInvoluteCurve(nanoocp.Geom2d.Geom2d_Curve):
     |D1(t)| = R*t (speed linear in parameter).
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax2d, theRadius: float) -> None:
         """
         Creates an involute of a circle.
@@ -265,6 +273,9 @@ class Geom2dEval_CircleInvoluteCurve(nanoocp.Geom2d.Geom2d_Curve):
         @param[in] theRadius the base circle radius (must be > 0)
         @throw Standard_ConstructionError if theRadius <= 0
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dEval_CircleInvoluteCurve) -> None: ...
 
     def Position(self) -> nanoocp.gp.gp_Ax2d:
         """Returns the local coordinate system."""
@@ -356,6 +367,7 @@ class Geom2dEval_LogarithmicSpiralCurve(nanoocp.Geom2d.Geom2d_Curve):
     The angle between tangent and radial direction is constant = atan(1/b).
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax2d, theScale: float, theGrowthExponent: float) -> None:
         """
         Creates a logarithmic spiral.
@@ -364,6 +376,9 @@ class Geom2dEval_LogarithmicSpiralCurve(nanoocp.Geom2d.Geom2d_Curve):
         @param[in] theGrowthExponent the growth exponent (must be > 0)
         @throw Standard_ConstructionError if theScale <= 0 or theGrowthExponent <= 0
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dEval_LogarithmicSpiralCurve) -> None: ...
 
     def Position(self) -> nanoocp.gp.gp_Ax2d:
         """Returns the local coordinate system."""
@@ -457,6 +472,7 @@ class Geom2dEval_SineWaveCurve(nanoocp.Geom2d.Geom2d_Curve):
     The parameter range is (-inf, +inf). The curve is not periodic.
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax2d, theAmplitude: float, theOmega: float, thePhase: float = 0.0) -> None:
         """
         Creates a 2D sine wave curve.
@@ -466,6 +482,9 @@ class Geom2dEval_SineWaveCurve(nanoocp.Geom2d.Geom2d_Curve):
         @param[in] thePhase the phase shift (default 0)
         @throw Standard_ConstructionError if theAmplitude <= 0 or theOmega <= 0
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dEval_SineWaveCurve) -> None: ...
 
     def Position(self) -> nanoocp.gp.gp_Ax2d:
         """Returns the local coordinate system."""
@@ -587,6 +606,9 @@ class Geom2dEval_TBezierCurve(nanoocp.Geom2d.Geom2d_BoundedCurve):
         @param[in] theAlpha frequency parameter (must be > 0)
         @throw Standard_ConstructionError if validation fails
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dEval_TBezierCurve) -> None: ...
 
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the poles array."""

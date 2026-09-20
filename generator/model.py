@@ -11,6 +11,7 @@ class Param:
     default: str | None  # C++ expression or None
     is_out: bool         # non-const lvalue ref to a primitive -> returned in a tuple
     is_inout: bool = False  # ... and also taken as input (overrides.toml [inout])
+    class_name: str = ""    # canonical name of the class/enum type behind the parameter ("" for scalars, strings, std types)
 
 
 @dataclass
@@ -74,6 +75,7 @@ class Class:
     has_declared_ctor: bool = False   # any constructor at any access level (suppresses the implicit default ctor)
     template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
     constructible: bool = True        # False when operator new is not public (placement new impossible)
+    unbindable: bool = False          # nb::class_ cannot be instantiated (member of incomplete type); reported, not bound
     ctors: list[Constructor] = field(default_factory=list)
     methods: list[Method] = field(default_factory=list)
     fields: list[Field] = field(default_factory=list)
@@ -134,5 +136,6 @@ class PackageIR:
     typedefs: list[TypeAlias] = field(default_factory=list)
     constants: list[Constant] = field(default_factory=list)    # namespace-level constexpr values
     namespaces: list[tuple[str, ...]] = field(default_factory=list)   # C++ namespaces bound as submodules (Python paths, outer first)
+    hashable: set[str] = field(default_factory=set)   # classes with a std::hash<T> specialisation in this package's headers -> __hash__
     instances: dict[str, TemplateInstance] = field(default_factory=dict)  # NCollection instances used in bound signatures
     report: list[str] = field(default_factory=list)

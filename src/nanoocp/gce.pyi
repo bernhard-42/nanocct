@@ -56,7 +56,11 @@ class gce_ErrorType(enum.IntEnum):
 class gce_Root:
     """Provides common status services for all `gce` construction classes."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: gce_Root) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -163,6 +167,9 @@ class gce_MakeCirc(gce_Root):
         @param[in] Radius radius value
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeCirc) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Circ:
         """
         Returns the constructed circle.
@@ -255,6 +262,9 @@ class gce_MakeCirc2d(gce_Root):
         @param[in] P2 second point
         @param[in] P3 third point
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeCirc2d) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Circ2d:
         """
@@ -374,6 +384,9 @@ class gce_MakeCone(gce_Root):
         @param[in] R2 second radius value
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeCone) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Cone:
         """
         Returns the constructed cone.
@@ -452,6 +465,9 @@ class gce_MakeCylinder(gce_Root):
         @param[in] P3 third point
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeCylinder) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Cylinder:
         """
         Returns the constructed cylinder.
@@ -511,6 +527,9 @@ class gce_MakeDir(gce_Root):
         @param[in] Zv Z coordinate value
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeDir) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Dir:
         """
         Returns the constructed unit vector.
@@ -569,6 +588,9 @@ class gce_MakeDir2d(gce_Root):
         @param[in] P2 second point
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeDir2d) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Dir2d:
         """
         Returns the constructed unit vector.
@@ -621,6 +643,9 @@ class gce_MakeElips(gce_Root):
         @param[in] S2 second point
         @param[in] Center center point
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeElips) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Elips:
         """
@@ -693,6 +718,9 @@ class gce_MakeElips2d(gce_Root):
         @param[in] S2 second point
         @param[in] Center center point
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeElips2d) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Elips2d:
         """
@@ -772,6 +800,9 @@ class gce_MakeHypr(gce_Root):
         @param[in] S2 second point
         @param[in] Center center point
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeHypr) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Hypr:
         """
@@ -863,6 +894,9 @@ class gce_MakeHypr2d(gce_Root):
         @param[in] Sense orientation flag
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeHypr2d) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Hypr2d:
         """
         Returns the constructed hyperbola.
@@ -919,6 +953,9 @@ class gce_MakeLin(gce_Root):
         @param[in] P1 first point
         @param[in] P2 second point
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeLin) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Lin:
         """
@@ -1000,6 +1037,9 @@ class gce_MakeLin2d(gce_Root):
         @param[in] C equation coefficient C
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeLin2d) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Lin2d:
         """
         Returns the constructed line.
@@ -1063,6 +1103,9 @@ class gce_MakeMirror:
         @param[in] Direc axis direction
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeMirror) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Trsf:
         """
         Returns the constructed transformation.
@@ -1113,6 +1156,9 @@ class gce_MakeMirror2d:
         @param[in] Point point on the axis
         @param[in] Direc axis direction
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeMirror2d) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Trsf2d:
         """
@@ -1165,6 +1211,9 @@ class gce_MakeParab(gce_Root):
         @param[in] D directrix of the parabola
         @param[in] F focus point of the parabola
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeParab) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Parab:
         """
@@ -1236,6 +1285,9 @@ class gce_MakeParab2d(gce_Root):
         @note The class does not prevent zero focal distance.
         @note `TheError` is set to `gce_NullAxis` if `S1` and `Center` are coincident.
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeParab2d) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Parab2d:
         """
@@ -1345,6 +1397,9 @@ class gce_MakePln(gce_Root):
         @param[in] D equation constant term
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakePln) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Pln:
         """
         Returns the constructed plane.
@@ -1393,6 +1448,9 @@ class gce_MakeRotation:
         @param[in] Angle rotation angle in radians
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeRotation) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Trsf:
         """
         Returns the constructed transformation.
@@ -1415,12 +1473,16 @@ class gce_MakeRotation2d:
     -   consulting the result.
     """
 
+    @overload
     def __init__(self, Point: nanoocp.gp.gp_Pnt2d, Angle: float) -> None:
         """
         Constructs a rotation around a point in 2D.
         @param[in] Point rotation center
         @param[in] Angle rotation angle in radians
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeRotation2d) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Trsf2d:
         """
@@ -1444,12 +1506,16 @@ class gce_MakeScale:
     -   consulting the result.
     """
 
+    @overload
     def __init__(self, Point: nanoocp.gp.gp_Pnt, Scale: float) -> None:
         """
         Constructs a scaling transformation.
         @param[in] Point center of scaling
         @param[in] Scale scale factor
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeScale) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Trsf:
         """
@@ -1473,12 +1539,16 @@ class gce_MakeScale2d:
     -   consulting the result.
     """
 
+    @overload
     def __init__(self, Point: nanoocp.gp.gp_Pnt2d, Scale: float) -> None:
         """
         Constructs a scaling transformation.
         @param[in] Point center of scaling
         @param[in] Scale scale factor
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeScale2d) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Trsf2d:
         """
@@ -1517,6 +1587,9 @@ class gce_MakeTranslation:
         @param[in] Point2 end point
         """
 
+    @overload
+    def __init__(self, theOther: gce_MakeTranslation) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Trsf:
         """
         Returns the constructed transformation.
@@ -1553,6 +1626,9 @@ class gce_MakeTranslation2d:
         @param[in] Point1 start point
         @param[in] Point2 end point
         """
+
+    @overload
+    def __init__(self, theOther: gce_MakeTranslation2d) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Trsf2d:
         """

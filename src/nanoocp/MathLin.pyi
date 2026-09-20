@@ -1,6 +1,7 @@
 """OCCT package MathLin (toolkit TKMath)"""
 
 import enum
+from typing import overload
 
 import nanoocp.MathUtils
 import nanoocp.math
@@ -18,7 +19,11 @@ class LeastSquaresMethod(enum.Enum):
 class LUResult:
     """Result for LU decomposition."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: LUResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -61,7 +66,11 @@ class CroutResult:
     Specialized for symmetric matrices.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: CroutResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -102,7 +111,11 @@ class CroutResult:
 class SVDResult:
     """Result for SVD decomposition."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: SVDResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -143,7 +156,11 @@ class SVDResult:
 class QRResult:
     """Result for QR decomposition using Householder reflections."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: QRResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -177,7 +194,11 @@ class QRResult:
 class LeastSquaresResult:
     """Result for least squares problems."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: LeastSquaresResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -218,7 +239,11 @@ class LeastSquaresResult:
 class EigenResult:
     """Result for eigenvalue decomposition of tridiagonal matrix."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: EigenResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 

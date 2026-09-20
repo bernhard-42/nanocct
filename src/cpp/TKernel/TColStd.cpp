@@ -61,6 +61,7 @@ void nanoocp_define_TColStd(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&TColStd_HPackedMapOfInteger::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TColStd_HPackedMapOfInteger::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TColStd_HPackedMapOfInteger::*)() const>(&TColStd_HPackedMapOfInteger::DynamicType));
+    nanoocp_implicit_copy_ctor<TColStd_HPackedMapOfInteger>(nb::borrow<nb::class_<TColStd_HPackedMapOfInteger>>(m.attr("TColStd_HPackedMapOfInteger")));
     nb::implicitly_convertible<std::decay_t<const int>, TColStd_HPackedMapOfInteger>();
     nb::implicitly_convertible<std::decay_t<const TColStd_PackedMapOfInteger &>, TColStd_HPackedMapOfInteger>();
 }

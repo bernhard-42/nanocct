@@ -88,11 +88,13 @@ Poles.)nbdoc")
         .def("AverageError", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApprox_ApproxAFunction::*)(const int) const>(&AdvApprox_ApproxAFunction::AverageError), nb::arg("Dimension"), R"nbdoc(returns the error as is in the algorithms)nbdoc")
         .def("MaxError", static_cast<double (AdvApprox_ApproxAFunction::*)(const int, const int) const>(&AdvApprox_ApproxAFunction::MaxError), nb::arg("Dimension"), nb::arg("Index"))
         .def("AverageError", static_cast<double (AdvApprox_ApproxAFunction::*)(const int, const int) const>(&AdvApprox_ApproxAFunction::AverageError), nb::arg("Dimension"), nb::arg("Index"));
+    nanoocp_implicit_copy_ctor<AdvApprox_ApproxAFunction>(nb::borrow<nb::class_<AdvApprox_ApproxAFunction>>(m.attr("AdvApprox_ApproxAFunction")));
     nb::borrow<nb::class_<AdvApprox_Cutting>>(m.attr("AdvApprox_Cutting"))
         .def("Value", [](const AdvApprox_Cutting &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
     nb::borrow<nb::class_<AdvApprox_DichoCutting>>(m.attr("AdvApprox_DichoCutting"))
         .def(nb::init<>())
         .def("Value", [](const AdvApprox_DichoCutting &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
+    nanoocp_implicit_copy_ctor<AdvApprox_DichoCutting>(nb::borrow<nb::class_<AdvApprox_DichoCutting>>(m.attr("AdvApprox_DichoCutting")));
     nb::borrow<nb::class_<AdvApprox_PrefAndRec>>(m.attr("AdvApprox_PrefAndRec"))
         .def(nb::init<const NCollection_Array1<double> &, const NCollection_Array1<double> &, const double>(), nb::arg("RecomendedCut"), nb::arg("PrefferedCut"), nb::arg("Weight") = static_cast<std::decay_t<const double>>(5))
         .def("Value", [](const AdvApprox_PrefAndRec &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"), R"nbdoc(cuting value is
@@ -101,9 +103,11 @@ if pi is in ]a,b[ or else
 -  the preferential point nearest of (a+b) / 2
 if pi is in ](r*a+b)/(r+1) , (a+r*b)/(r+1)[ where r = Weight
 -  or (a+b)/2 else.)nbdoc");
+    nanoocp_implicit_copy_ctor<AdvApprox_PrefAndRec>(nb::borrow<nb::class_<AdvApprox_PrefAndRec>>(m.attr("AdvApprox_PrefAndRec")));
     nb::borrow<nb::class_<AdvApprox_PrefCutting>>(m.attr("AdvApprox_PrefCutting"))
         .def(nb::init<const NCollection_Array1<double> &>(), nb::arg("CutPnts"))
         .def("Value", [](const AdvApprox_PrefCutting &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
+    nanoocp_implicit_copy_ctor<AdvApprox_PrefCutting>(nb::borrow<nb::class_<AdvApprox_PrefCutting>>(m.attr("AdvApprox_PrefCutting")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<double> &>, AdvApprox_PrefCutting>();
     nb::borrow<nb::class_<AdvApprox_SimpleApprox>>(m.attr("AdvApprox_SimpleApprox"))
         .def(nb::init<const int, const int, const GeomAbs_Shape, const int, const int, const PLib_JacobiPolynomial &, const AdvApprox_EvaluatorFunction &>(), nb::arg("TotalDimension"), nb::arg("TotalNumSS"), nb::arg("Continuity"), nb::arg("WorkDegree"), nb::arg("NbGaussPoints"), nb::arg("JacobiBase"), nb::arg("Func"))
@@ -122,4 +126,5 @@ with life time longer than that of the approximator tool;)nbdoc")
         .def("DifTab", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApprox_SimpleApprox::*)() const>(&AdvApprox_SimpleApprox::DifTab))
         .def("MaxError", static_cast<double (AdvApprox_SimpleApprox::*)(const int) const>(&AdvApprox_SimpleApprox::MaxError), nb::arg("Index"))
         .def("AverageError", static_cast<double (AdvApprox_SimpleApprox::*)(const int) const>(&AdvApprox_SimpleApprox::AverageError), nb::arg("Index"));
+    nanoocp_implicit_copy_ctor<AdvApprox_SimpleApprox>(nb::borrow<nb::class_<AdvApprox_SimpleApprox>>(m.attr("AdvApprox_SimpleApprox")));
 }

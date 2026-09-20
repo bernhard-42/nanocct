@@ -40,4 +40,5 @@ as described in IGES standard))nbdoc")
         .def_static("DumpLengthUnit", static_cast<const char * (*)(const double, const UnitsMethods_LengthUnit)>(&UnitsMethods::DumpLengthUnit), nb::arg("theScaleFactor"), nb::arg("theBaseUnit") = static_cast<std::decay_t<const UnitsMethods_LengthUnit>>(UnitsMethods_LengthUnit_Millimeter), R"nbdoc(Returns string name for the given scale factor)nbdoc")
         .def_static("DumpLengthUnit", static_cast<const char * (*)(const UnitsMethods_LengthUnit)>(&UnitsMethods::DumpLengthUnit), nb::arg("theUnit"), R"nbdoc(Returns string for the given value of LengthUnit)nbdoc")
         .def_static("LengthUnitFromString", static_cast<UnitsMethods_LengthUnit (*)(const char *, const bool)>(&UnitsMethods::LengthUnitFromString), nb::arg("theStr"), nb::arg("theCaseSensitive"), R"nbdoc(Make conversion of given string to value of LengthUnit)nbdoc");
+    nanoocp_implicit_copy_ctor<UnitsMethods>(nb::borrow<nb::class_<UnitsMethods>>(m.attr("UnitsMethods")));
 }

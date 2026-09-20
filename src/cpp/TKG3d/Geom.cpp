@@ -1282,6 +1282,7 @@ of the axis placement.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Axis1Placement::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Axis1Placement::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Axis1Placement::*)() const>(&Geom_Axis1Placement::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Axis1Placement>(nb::borrow<nb::class_<Geom_Axis1Placement>>(m.attr("Geom_Axis1Placement")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, Geom_Axis1Placement>();
     nb::borrow<nb::class_<Geom_Axis2Placement>>(m.attr("Geom_Axis2Placement"))
         .def(nb::new_([](const gp_Ax2 & A2) { return opencascade::handle<Geom_Axis2Placement>(new Geom_Axis2Placement(A2)); }), nb::arg("A2"), R"nbdoc(Returns a transient copy of A2.)nbdoc")
@@ -1325,6 +1326,7 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Axis2Placement::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Axis2Placement::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Axis2Placement::*)() const>(&Geom_Axis2Placement::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Axis2Placement>(nb::borrow<nb::class_<Geom_Axis2Placement>>(m.attr("Geom_Axis2Placement")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2 &>, Geom_Axis2Placement>();
     nb::borrow<nb::class_<Geom_Curve>>(m.attr("Geom_Curve"))
         .def("Reverse", static_cast<void (Geom_Curve::*)()>(&Geom_Curve::Reverse), R"nbdoc(Changes the direction of parametrization of <me>.
@@ -1430,20 +1432,20 @@ Raises an exception if the curve continuity is not CN, or N < 1.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Curve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Curve::*)() const>(&Geom_Curve::DynamicType));
     nanoocp_implicit_default_ctor<Geom_Curve::ResD1>(nb::borrow<nb::class_<Geom_Curve::ResD1>>(m.attr("Geom_Curve").attr("ResD1")));
-    nb::borrow<nb::class_<Geom_Curve::ResD1>>(m.attr("Geom_Curve").attr("ResD1"))
-        .def_rw("Point", &Geom_Curve::ResD1::Point)
-        .def_rw("D1", &Geom_Curve::ResD1::D1);
+    nanoocp_implicit_copy_ctor<Geom_Curve::ResD1>(nb::borrow<nb::class_<Geom_Curve::ResD1>>(m.attr("Geom_Curve").attr("ResD1")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD1>>(m.attr("Geom_Curve").attr("ResD1")), "Point", &Geom_Curve::ResD1::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD1>>(m.attr("Geom_Curve").attr("ResD1")), "D1", &Geom_Curve::ResD1::D1);
     nanoocp_implicit_default_ctor<Geom_Curve::ResD2>(nb::borrow<nb::class_<Geom_Curve::ResD2>>(m.attr("Geom_Curve").attr("ResD2")));
-    nb::borrow<nb::class_<Geom_Curve::ResD2>>(m.attr("Geom_Curve").attr("ResD2"))
-        .def_rw("Point", &Geom_Curve::ResD2::Point)
-        .def_rw("D1", &Geom_Curve::ResD2::D1)
-        .def_rw("D2", &Geom_Curve::ResD2::D2);
+    nanoocp_implicit_copy_ctor<Geom_Curve::ResD2>(nb::borrow<nb::class_<Geom_Curve::ResD2>>(m.attr("Geom_Curve").attr("ResD2")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD2>>(m.attr("Geom_Curve").attr("ResD2")), "Point", &Geom_Curve::ResD2::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD2>>(m.attr("Geom_Curve").attr("ResD2")), "D1", &Geom_Curve::ResD2::D1);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD2>>(m.attr("Geom_Curve").attr("ResD2")), "D2", &Geom_Curve::ResD2::D2);
     nanoocp_implicit_default_ctor<Geom_Curve::ResD3>(nb::borrow<nb::class_<Geom_Curve::ResD3>>(m.attr("Geom_Curve").attr("ResD3")));
-    nb::borrow<nb::class_<Geom_Curve::ResD3>>(m.attr("Geom_Curve").attr("ResD3"))
-        .def_rw("Point", &Geom_Curve::ResD3::Point)
-        .def_rw("D1", &Geom_Curve::ResD3::D1)
-        .def_rw("D2", &Geom_Curve::ResD3::D2)
-        .def_rw("D3", &Geom_Curve::ResD3::D3);
+    nanoocp_implicit_copy_ctor<Geom_Curve::ResD3>(nb::borrow<nb::class_<Geom_Curve::ResD3>>(m.attr("Geom_Curve").attr("ResD3")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD3>>(m.attr("Geom_Curve").attr("ResD3")), "Point", &Geom_Curve::ResD3::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD3>>(m.attr("Geom_Curve").attr("ResD3")), "D1", &Geom_Curve::ResD3::D1);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD3>>(m.attr("Geom_Curve").attr("ResD3")), "D2", &Geom_Curve::ResD3::D2);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Curve::ResD3>>(m.attr("Geom_Curve").attr("ResD3")), "D3", &Geom_Curve::ResD3::D3);
     nb::borrow<nb::class_<Geom_BoundedCurve>>(m.attr("Geom_BoundedCurve"))
         .def("EndPoint", static_cast<gp_Pnt (Geom_BoundedCurve::*)() const>(&Geom_BoundedCurve::EndPoint), R"nbdoc(Returns the end point of the curve.)nbdoc")
         .def("StartPoint", static_cast<gp_Pnt (Geom_BoundedCurve::*)() const>(&Geom_BoundedCurve::StartPoint), R"nbdoc(Returns the start point of the curve.)nbdoc")
@@ -1741,30 +1743,30 @@ Raises an exception on failure.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Surface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Surface::*)() const>(&Geom_Surface::DynamicType));
     nanoocp_implicit_default_ctor<Geom_Surface::ResD1>(nb::borrow<nb::class_<Geom_Surface::ResD1>>(m.attr("Geom_Surface").attr("ResD1")));
-    nb::borrow<nb::class_<Geom_Surface::ResD1>>(m.attr("Geom_Surface").attr("ResD1"))
-        .def_rw("Point", &Geom_Surface::ResD1::Point)
-        .def_rw("D1U", &Geom_Surface::ResD1::D1U)
-        .def_rw("D1V", &Geom_Surface::ResD1::D1V);
+    nanoocp_implicit_copy_ctor<Geom_Surface::ResD1>(nb::borrow<nb::class_<Geom_Surface::ResD1>>(m.attr("Geom_Surface").attr("ResD1")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD1>>(m.attr("Geom_Surface").attr("ResD1")), "Point", &Geom_Surface::ResD1::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD1>>(m.attr("Geom_Surface").attr("ResD1")), "D1U", &Geom_Surface::ResD1::D1U);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD1>>(m.attr("Geom_Surface").attr("ResD1")), "D1V", &Geom_Surface::ResD1::D1V);
     nanoocp_implicit_default_ctor<Geom_Surface::ResD2>(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")));
-    nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2"))
-        .def_rw("Point", &Geom_Surface::ResD2::Point)
-        .def_rw("D1U", &Geom_Surface::ResD2::D1U)
-        .def_rw("D1V", &Geom_Surface::ResD2::D1V)
-        .def_rw("D2U", &Geom_Surface::ResD2::D2U)
-        .def_rw("D2V", &Geom_Surface::ResD2::D2V)
-        .def_rw("D2UV", &Geom_Surface::ResD2::D2UV);
+    nanoocp_implicit_copy_ctor<Geom_Surface::ResD2>(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")), "Point", &Geom_Surface::ResD2::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")), "D1U", &Geom_Surface::ResD2::D1U);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")), "D1V", &Geom_Surface::ResD2::D1V);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")), "D2U", &Geom_Surface::ResD2::D2U);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")), "D2V", &Geom_Surface::ResD2::D2V);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD2>>(m.attr("Geom_Surface").attr("ResD2")), "D2UV", &Geom_Surface::ResD2::D2UV);
     nanoocp_implicit_default_ctor<Geom_Surface::ResD3>(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")));
-    nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3"))
-        .def_rw("Point", &Geom_Surface::ResD3::Point)
-        .def_rw("D1U", &Geom_Surface::ResD3::D1U)
-        .def_rw("D1V", &Geom_Surface::ResD3::D1V)
-        .def_rw("D2U", &Geom_Surface::ResD3::D2U)
-        .def_rw("D2V", &Geom_Surface::ResD3::D2V)
-        .def_rw("D2UV", &Geom_Surface::ResD3::D2UV)
-        .def_rw("D3U", &Geom_Surface::ResD3::D3U)
-        .def_rw("D3V", &Geom_Surface::ResD3::D3V)
-        .def_rw("D3UUV", &Geom_Surface::ResD3::D3UUV)
-        .def_rw("D3UVV", &Geom_Surface::ResD3::D3UVV);
+    nanoocp_implicit_copy_ctor<Geom_Surface::ResD3>(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "Point", &Geom_Surface::ResD3::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D1U", &Geom_Surface::ResD3::D1U);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D1V", &Geom_Surface::ResD3::D1V);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D2U", &Geom_Surface::ResD3::D2U);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D2V", &Geom_Surface::ResD3::D2V);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D2UV", &Geom_Surface::ResD3::D2UV);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D3U", &Geom_Surface::ResD3::D3U);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D3V", &Geom_Surface::ResD3::D3V);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D3UUV", &Geom_Surface::ResD3::D3UUV);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom_Surface::ResD3>>(m.attr("Geom_Surface").attr("ResD3")), "D3UVV", &Geom_Surface::ResD3::D3UVV);
     nb::borrow<nb::class_<Geom_BoundedSurface>>(m.attr("Geom_BoundedSurface"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_BoundedSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_BoundedSurface::get_type_descriptor))
@@ -3276,6 +3278,7 @@ the same coordinates as <me>.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_CartesianPoint::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_CartesianPoint::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_CartesianPoint::*)() const>(&Geom_CartesianPoint::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_CartesianPoint>(nb::borrow<nb::class_<Geom_CartesianPoint>>(m.attr("Geom_CartesianPoint")));
     nb::implicitly_convertible<std::decay_t<const gp_Pnt &>, Geom_CartesianPoint>();
     nb::borrow<nb::class_<Geom_Conic>>(m.attr("Geom_Conic"))
         .def("SetAxis", static_cast<void (Geom_Conic::*)(const gp_Ax1 &)>(&Geom_Conic::SetAxis), nb::arg("theA1"), R"nbdoc(Changes the orientation of the conic's plane. The normal
@@ -3365,6 +3368,7 @@ Raised if N < 1.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Circle::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Circle::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Circle::*)() const>(&Geom_Circle::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Circle>(nb::borrow<nb::class_<Geom_Circle>>(m.attr("Geom_Circle")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ &>, Geom_Circle>();
     nb::borrow<nb::class_<Geom_ElementarySurface>>(m.attr("Geom_ElementarySurface"))
         .def("SetAxis", static_cast<void (Geom_ElementarySurface::*)(const gp_Ax1 &)>(&Geom_ElementarySurface::SetAxis), nb::arg("theA1"), R"nbdoc(Changes the main axis (ZAxis) of the elementary surface.
@@ -3530,6 +3534,7 @@ Standard_RangeError if:
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_ConicalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_ConicalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_ConicalSurface::*)() const>(&Geom_ConicalSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_ConicalSurface>(nb::borrow<nb::class_<Geom_ConicalSurface>>(m.attr("Geom_ConicalSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Cone &>, Geom_ConicalSurface>();
     nb::borrow<nb::class_<Geom_CylindricalSurface>>(m.attr("Geom_CylindricalSurface"))
         .def(nb::new_([](const gp_Cylinder & C) { return opencascade::handle<Geom_CylindricalSurface>(new Geom_CylindricalSurface(C)); }), nb::arg("C"), R"nbdoc(Creates a CylindricalSurface from a non transient gp_Cylinder.)nbdoc")
@@ -3620,6 +3625,7 @@ Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_CylindricalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_CylindricalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_CylindricalSurface::*)() const>(&Geom_CylindricalSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_CylindricalSurface>(nb::borrow<nb::class_<Geom_CylindricalSurface>>(m.attr("Geom_CylindricalSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Cylinder &>, Geom_CylindricalSurface>();
     nb::borrow<nb::class_<Geom_Vector>>(m.attr("Geom_Vector"))
         .def("Reverse", static_cast<void (Geom_Vector::*)()>(&Geom_Vector::Reverse), R"nbdoc(Reverses the vector <me>.)nbdoc")
@@ -3721,6 +3727,7 @@ parallel)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Direction::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Direction::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Direction::*)() const>(&Geom_Direction::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Direction>(nb::borrow<nb::class_<Geom_Direction>>(m.attr("Geom_Direction")));
     nb::implicitly_convertible<std::decay_t<const gp_Dir &>, Geom_Direction>();
     nb::borrow<nb::class_<Geom_Ellipse>>(m.attr("Geom_Ellipse"))
         .def(nb::new_([](const gp_Elips & E) { return opencascade::handle<Geom_Ellipse>(new Geom_Ellipse(E)); }), nb::arg("E"), R"nbdoc(Constructs an ellipse by conversion of the gp_Elips ellipse E.)nbdoc")
@@ -3809,6 +3816,7 @@ Exceptions Standard_RangeError if N is less than 1.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Ellipse::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Ellipse::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Ellipse::*)() const>(&Geom_Ellipse::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Ellipse>(nb::borrow<nb::class_<Geom_Ellipse>>(m.attr("Geom_Ellipse")));
     nb::implicitly_convertible<std::decay_t<const gp_Elips &>, Geom_Ellipse>();
     nb::borrow<nb::class_<Geom_Hyperbola>>(m.attr("Geom_Hyperbola"))
         .def(nb::new_([](const gp_Hypr & H) { return opencascade::handle<Geom_Hyperbola>(new Geom_Hyperbola(H)); }), nb::arg("H"), R"nbdoc(Constructs a hyperbola by conversion of the gp_Hypr hyperbola H.)nbdoc")
@@ -3915,6 +3923,7 @@ Raised if N < 1.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Hyperbola::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Hyperbola::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Hyperbola::*)() const>(&Geom_Hyperbola::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Hyperbola>(nb::borrow<nb::class_<Geom_Hyperbola>>(m.attr("Geom_Hyperbola")));
     nb::implicitly_convertible<std::decay_t<const gp_Hypr &>, Geom_Hyperbola>();
     nb::borrow<nb::class_<Geom_Line>>(m.attr("Geom_Line"))
         .def(nb::new_([](const gp_Ax1 & A1) { return opencascade::handle<Geom_Line>(new Geom_Line(A1)); }), nb::arg("A1"), R"nbdoc(Creates a line located in 3D space with the axis placement A1.
@@ -3982,6 +3991,7 @@ This methods returns T.ScaleFactor())nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Line::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Line::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Line::*)() const>(&Geom_Line::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Line>(nb::borrow<nb::class_<Geom_Line>>(m.attr("Geom_Line")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, Geom_Line>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin &>, Geom_Line>();
     nb::borrow<nb::class_<Geom_OffsetCurve>>(m.attr("Geom_OffsetCurve"))
@@ -4436,6 +4446,7 @@ This methods returns T.ScaleFactor())nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Parabola::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Parabola::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Parabola::*)() const>(&Geom_Parabola::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Parabola>(nb::borrow<nb::class_<Geom_Parabola>>(m.attr("Geom_Parabola")));
     nb::implicitly_convertible<std::decay_t<const gp_Parab &>, Geom_Parabola>();
     nb::borrow<nb::class_<Geom_Plane>>(m.attr("Geom_Plane"))
         .def(nb::new_([](const gp_Ax3 & A3) { return opencascade::handle<Geom_Plane>(new Geom_Plane(A3)); }), nb::arg("A3"), R"nbdoc(Creates a plane located in 3D space with an axis placement three axis.
@@ -4530,6 +4541,7 @@ Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Plane::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Plane::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Plane::*)() const>(&Geom_Plane::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_Plane>(nb::borrow<nb::class_<Geom_Plane>>(m.attr("Geom_Plane")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax3 &>, Geom_Plane>();
     nb::implicitly_convertible<std::decay_t<const gp_Pln &>, Geom_Plane>();
     nb::borrow<nb::class_<Geom_RectangularTrimmedSurface>>(m.attr("Geom_RectangularTrimmedSurface"))
@@ -4714,6 +4726,7 @@ This method calls the basis surface method.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_RectangularTrimmedSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_RectangularTrimmedSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_RectangularTrimmedSurface::*)() const>(&Geom_RectangularTrimmedSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_RectangularTrimmedSurface>(nb::borrow<nb::class_<Geom_RectangularTrimmedSurface>>(m.attr("Geom_RectangularTrimmedSurface")));
     nb::borrow<nb::class_<Geom_SphericalSurface>>(m.attr("Geom_SphericalSurface"))
         .def(nb::new_([](const gp_Sphere & S) { return opencascade::handle<Geom_SphericalSurface>(new Geom_SphericalSurface(S)); }), nb::arg("S"), R"nbdoc(Creates a SphericalSurface from a non persistent Sphere from
 package gp.)nbdoc")
@@ -4799,6 +4812,7 @@ Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_SphericalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SphericalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SphericalSurface::*)() const>(&Geom_SphericalSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_SphericalSurface>(nb::borrow<nb::class_<Geom_SphericalSurface>>(m.attr("Geom_SphericalSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Sphere &>, Geom_SphericalSurface>();
     nb::borrow<nb::class_<Geom_SweptSurface>>(m.attr("Geom_SweptSurface"))
         .def("Continuity", static_cast<GeomAbs_Shape (Geom_SweptSurface::*)() const>(&Geom_SweptSurface::Continuity), R"nbdoc(returns the continuity of the surface :
@@ -4944,6 +4958,7 @@ V by T.ScaleFactor())nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_SurfaceOfLinearExtrusion::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SurfaceOfLinearExtrusion::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SurfaceOfLinearExtrusion::*)() const>(&Geom_SurfaceOfLinearExtrusion::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_SurfaceOfLinearExtrusion>(nb::borrow<nb::class_<Geom_SurfaceOfLinearExtrusion>>(m.attr("Geom_SurfaceOfLinearExtrusion")));
     nb::borrow<nb::class_<Geom_SurfaceOfRevolution>>(m.attr("Geom_SurfaceOfRevolution"))
         .def(nb::new_([](const occ::handle<Geom_Curve> & C, const gp_Ax1 & A1) { return opencascade::handle<Geom_SurfaceOfRevolution>(new Geom_SurfaceOfRevolution(C, A1)); }), nb::arg("C"), nb::arg("A1"), R"nbdoc(C : is the meridian or the referenced curve.
 A1 is the axis of revolution.
@@ -5096,6 +5111,7 @@ Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_SurfaceOfRevolution::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SurfaceOfRevolution::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SurfaceOfRevolution::*)() const>(&Geom_SurfaceOfRevolution::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_SurfaceOfRevolution>(nb::borrow<nb::class_<Geom_SurfaceOfRevolution>>(m.attr("Geom_SurfaceOfRevolution")));
     nb::borrow<nb::class_<Geom_ToroidalSurface>>(m.attr("Geom_ToroidalSurface"))
         .def(nb::new_([](const gp_Torus & T) { return opencascade::handle<Geom_ToroidalSurface>(new Geom_ToroidalSurface(T)); }), nb::arg("T"), R"nbdoc(Creates a ToroidalSurface from a non transient Torus from
 package gp.)nbdoc")
@@ -5192,6 +5208,7 @@ Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_ToroidalSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_ToroidalSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_ToroidalSurface::*)() const>(&Geom_ToroidalSurface::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_ToroidalSurface>(nb::borrow<nb::class_<Geom_ToroidalSurface>>(m.attr("Geom_ToroidalSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Torus &>, Geom_ToroidalSurface>();
     nb::borrow<nb::class_<Geom_Transformation>>(m.attr("Geom_Transformation"))
         .def(nb::new_([]() { return opencascade::handle<Geom_Transformation>(new Geom_Transformation()); }), R"nbdoc(Creates an identity transformation.)nbdoc")
@@ -5271,6 +5288,7 @@ Raised if N < 0 and if the transformation is not inversible)nbdoc")
 <me> and Other. <me> = Other * <me>)nbdoc")
         .def("Transforms", [](const Geom_Transformation &self) { double theX{}; double theY{}; double theZ{}; self.Transforms(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, R"nbdoc(Applies the transformation <me> to the triplet {X, Y, Z}.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)() const>(&Geom_Transformation::Copy), R"nbdoc(Creates a new object which is a copy of this transformation.)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom_Transformation>(nb::borrow<nb::class_<Geom_Transformation>>(m.attr("Geom_Transformation")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, Geom_Transformation>();
     nb::borrow<nb::class_<Geom_TrimmedCurve>>(m.attr("Geom_TrimmedCurve"))
         .def(nb::new_([](const occ::handle<Geom_Curve> & C, const double U1, const double U2, const bool Sense, const bool theAdjustPeriodic) { return opencascade::handle<Geom_TrimmedCurve>(new Geom_TrimmedCurve(C, U1, U2, Sense, theAdjustPeriodic)); }), nb::arg("C"), nb::arg("U1"), nb::arg("U2"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), nb::arg("theAdjustPeriodic") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs a trimmed curve from the basis curve C
@@ -5424,6 +5442,7 @@ This methods calls the basis curve method.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_TrimmedCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_TrimmedCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_TrimmedCurve::*)() const>(&Geom_TrimmedCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_TrimmedCurve>(nb::borrow<nb::class_<Geom_TrimmedCurve>>(m.attr("Geom_TrimmedCurve")));
     nb::borrow<nb::class_<Geom_VectorWithMagnitude>>(m.attr("Geom_VectorWithMagnitude"))
         .def(nb::new_([](const gp_Vec & V) { return opencascade::handle<Geom_VectorWithMagnitude>(new Geom_VectorWithMagnitude(V)); }), nb::arg("V"), R"nbdoc(Creates a transient copy of V.)nbdoc")
         .def(nb::new_([](const gp_Pnt & P1, const gp_Pnt & P2) { return opencascade::handle<Geom_VectorWithMagnitude>(new Geom_VectorWithMagnitude(P1, P2)); }), nb::arg("P1"), nb::arg("P2"), R"nbdoc(Creates a vector from the point P1 to the point P2.
@@ -5465,5 +5484,6 @@ Resolution from package gp.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_VectorWithMagnitude::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_VectorWithMagnitude::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_VectorWithMagnitude::*)() const>(&Geom_VectorWithMagnitude::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom_VectorWithMagnitude>(nb::borrow<nb::class_<Geom_VectorWithMagnitude>>(m.attr("Geom_VectorWithMagnitude")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec &>, Geom_VectorWithMagnitude>();
 }

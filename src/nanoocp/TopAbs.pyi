@@ -120,7 +120,11 @@ class TopAbs:
     * Methods to manage the enumerations.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: TopAbs) -> None: ...
 
     @staticmethod
     def Compose(Or1: TopAbs_Orientation, Or2: TopAbs_Orientation) -> TopAbs_Orientation:

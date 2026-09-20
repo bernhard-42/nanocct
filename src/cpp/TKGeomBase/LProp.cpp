@@ -61,6 +61,7 @@ void nanoocp_templates_LProp(nb::module_ &m) {
 
 void nanoocp_define_LProp(nb::module_ &m) {
     nanoocp_implicit_default_ctor<LProp_CurveUtils::DirectAccess>(nb::borrow<nb::class_<LProp_CurveUtils::DirectAccess>>(m.attr("LProp_CurveUtils").attr("DirectAccess")));
+    nanoocp_implicit_copy_ctor<LProp_CurveUtils::DirectAccess>(nb::borrow<nb::class_<LProp_CurveUtils::DirectAccess>>(m.attr("LProp_CurveUtils").attr("DirectAccess")));
     nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("LProp_CLProps3d"))
         .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U> and the curve is set
@@ -98,6 +99,7 @@ three first derivatives are all null.)nbdoc")
         .def("Curvature", static_cast<double (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)()>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::Curvature), R"nbdoc(Returns the curvature.)nbdoc")
         .def("Normal", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Dir &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::Normal), nb::arg("N"), R"nbdoc(Returns the normal direction <N>.)nbdoc")
         .def("CentreOfCurvature", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Pnt &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::CentreOfCurvature), nb::arg("P"), R"nbdoc(Returns the centre of curvature <P>.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("LProp_CLProps3d")));
     nb::borrow<nb::class_<LProp_CurAndInf>>(m.attr("LProp_CurAndInf"))
         .def(nb::init<>())
         .def("AddInflection", static_cast<void (LProp_CurAndInf::*)(const double)>(&LProp_CurAndInf::AddInflection), nb::arg("Param"))
@@ -116,6 +118,7 @@ a maximum of the radius of curvature.
 - Inflection if the parameter corresponds to
 a point of inflection.
 raises if N not in the range [1,NbPoints()])nbdoc");
+    nanoocp_implicit_copy_ctor<LProp_CurAndInf>(nb::borrow<nb::class_<LProp_CurAndInf>>(m.attr("LProp_CurAndInf")));
     nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("LProp_SLProps3d"))
         .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
 of parameters <U> and <V> and the surface.
@@ -166,4 +169,5 @@ curvature is constant).)nbdoc")
 <MaxD> and <MinD>)nbdoc")
         .def("MeanCurvature", static_cast<double (GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::*)()>(&GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::MeanCurvature), R"nbdoc(Returns the mean curvature.)nbdoc")
         .def("GaussianCurvature", static_cast<double (GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::*)()>(&GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::GaussianCurvature), R"nbdoc(Returns the Gaussian curvature)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("LProp_SLProps3d")));
 }

@@ -203,6 +203,7 @@ Inertia/Q = Inertia/G + HOperator (Q, G, Mass)
 where Inertia/G is the matrix of inertia of the
 system relative to its center of mass as returned by
 the function MatrixOfInertia on any GProp_GProps object.)nbdoc");
+    nanoocp_implicit_copy_ctor<GProp>(nb::borrow<nb::class_<GProp>>(m.attr("GProp")));
     nb::borrow<nb::class_<GProp_GProps>>(m.attr("GProp_GProps"))
         .def(nb::init<>(), R"nbdoc(The origin (0, 0, 0) of the absolute Cartesian coordinate system
 is used to compute the global properties.)nbdoc")
@@ -321,6 +322,7 @@ the value sought.)nbdoc")
         .def("RadiusOfGyration", static_cast<double (GProp_GProps::*)(const gp_Ax1 &) const>(&GProp_GProps::RadiusOfGyration), nb::arg("A"), R"nbdoc(Returns the radius of gyration of the current system about the
 axis A.
 @param[in] A axis about which the radius of gyration is computed)nbdoc");
+    nanoocp_implicit_copy_ctor<GProp_GProps>(nb::borrow<nb::class_<GProp_GProps>>(m.attr("GProp_GProps")));
     nb::implicitly_convertible<std::decay_t<const gp_Pnt &>, GProp_GProps>();
     nb::borrow<nb::class_<GProp_CelGProps>>(m.attr("GProp_CelGProps"))
         .def(nb::init<>())
@@ -330,6 +332,7 @@ axis A.
         .def("SetLocation", static_cast<void (GProp_CelGProps::*)(const gp_Pnt &)>(&GProp_CelGProps::SetLocation), nb::arg("CLocation"))
         .def("Perform", static_cast<void (GProp_CelGProps::*)(const gp_Circ &, const double, const double)>(&GProp_CelGProps::Perform), nb::arg("C"), nb::arg("U1"), nb::arg("U2"))
         .def("Perform", static_cast<void (GProp_CelGProps::*)(const gp_Lin &, const double, const double)>(&GProp_CelGProps::Perform), nb::arg("C"), nb::arg("U1"), nb::arg("U2"));
+    nanoocp_implicit_copy_ctor<GProp_CelGProps>(nb::borrow<nb::class_<GProp_CelGProps>>(m.attr("GProp_CelGProps")));
     nb::borrow<nb::class_<GProp_PEquation>>(m.attr("GProp_PEquation"))
         .def(nb::init<const NCollection_Array1<gp_Pnt> &, double>(), nb::arg("thePnts"), nb::arg("theTol"), R"nbdoc(Constructs the analysis from a set of points and a tolerance.
 @param[in] thePnts array of points to analyze
@@ -356,6 +359,7 @@ axis A.
 ordered by eigenvalue.)nbdoc")
         .def("Extent", static_cast<double (GProp_PEquation::*)(int) const>(&GProp_PEquation::Extent), nb::arg("theIndex"), R"nbdoc(Returns the extent (max - min projection) along principal axis
 @p theIndex (1, 2 or 3).)nbdoc");
+    nanoocp_implicit_copy_ctor<GProp_PEquation>(nb::borrow<nb::class_<GProp_PEquation>>(m.attr("GProp_PEquation")));
     nb::borrow<nb::class_<GProp_PGProps>>(m.attr("GProp_PGProps"))
         .def(nb::init<>(), R"nbdoc(Creates an empty point set, located at the origin, with zero mass.)nbdoc")
         .def(nb::init<const NCollection_Array1<gp_Pnt> &>(), nb::arg("thePnts"), R"nbdoc(Creates a point set from an array of points (unit mass each).)nbdoc")
@@ -382,6 +386,7 @@ arrays have different lengths.)nbdoc")
 @throws Standard_DimensionError on length mismatch.)nbdoc")
         .def_static("Barycentre", [](const NCollection_Array2<gp_Pnt> & thePnts, const NCollection_Array2<double> & theDensity, gp_Pnt & theG) { double theMass{}; GProp_PGProps::Barycentre(thePnts, theDensity, theMass, theG); return theMass; }, nb::arg("thePnts"), nb::arg("theDensity"), nb::arg("theG"), R"nbdoc(Computes the weighted barycentre and total mass for a 2D point array.
 @throws Standard_DimensionError on dimension mismatch.)nbdoc");
+    nanoocp_implicit_copy_ctor<GProp_PGProps>(nb::borrow<nb::class_<GProp_PGProps>>(m.attr("GProp_PGProps")));
     nb::borrow<nb::class_<GProp_PrincipalProps>>(m.attr("GProp_PrincipalProps"))
         .def(nb::init<>(), R"nbdoc(creates an undefined PrincipalProps.)nbdoc")
         .def("HasSymmetryAxis", static_cast<bool (GProp_PrincipalProps::*)() const>(&GProp_PrincipalProps::HasSymmetryAxis), R"nbdoc(returns true if the geometric system has an axis of symmetry.
@@ -449,6 +454,7 @@ Note that:
 two of the three values Rxx, Ryy and Rzz are equal.
 - If the current system has a center of symmetry,
 Rxx, Ryy and Rzz are equal.)nbdoc");
+    nanoocp_implicit_copy_ctor<GProp_PrincipalProps>(nb::borrow<nb::class_<GProp_PrincipalProps>>(m.attr("GProp_PrincipalProps")));
     nb::borrow<nb::class_<GProp_SelGProps>>(m.attr("GProp_SelGProps"))
         .def(nb::init<>())
         .def(nb::init<const gp_Cylinder &, const double, const double, const double, const double, const gp_Pnt &>(), nb::arg("S"), nb::arg("Alpha1"), nb::arg("Alpha2"), nb::arg("Z1"), nb::arg("Z2"), nb::arg("SLocation"))
@@ -460,6 +466,7 @@ Rxx, Ryy and Rzz are equal.)nbdoc");
         .def("Perform", static_cast<void (GProp_SelGProps::*)(const gp_Cone &, const double, const double, const double, const double)>(&GProp_SelGProps::Perform), nb::arg("S"), nb::arg("Alpha1"), nb::arg("Alpha2"), nb::arg("Z1"), nb::arg("Z2"))
         .def("Perform", static_cast<void (GProp_SelGProps::*)(const gp_Sphere &, const double, const double, const double, const double)>(&GProp_SelGProps::Perform), nb::arg("S"), nb::arg("Teta1"), nb::arg("Teta2"), nb::arg("Alpha1"), nb::arg("Alpha2"))
         .def("Perform", static_cast<void (GProp_SelGProps::*)(const gp_Torus &, const double, const double, const double, const double)>(&GProp_SelGProps::Perform), nb::arg("S"), nb::arg("Teta1"), nb::arg("Teta2"), nb::arg("Alpha1"), nb::arg("Alpha2"));
+    nanoocp_implicit_copy_ctor<GProp_SelGProps>(nb::borrow<nb::class_<GProp_SelGProps>>(m.attr("GProp_SelGProps")));
     nb::borrow<nb::class_<GProp_VelGProps>>(m.attr("GProp_VelGProps"))
         .def(nb::init<>())
         .def(nb::init<const gp_Cylinder &, const double, const double, const double, const double, const gp_Pnt &>(), nb::arg("S"), nb::arg("Alpha1"), nb::arg("Alpha2"), nb::arg("Z1"), nb::arg("Z2"), nb::arg("VLocation"))
@@ -471,4 +478,5 @@ Rxx, Ryy and Rzz are equal.)nbdoc");
         .def("Perform", static_cast<void (GProp_VelGProps::*)(const gp_Cone &, const double, const double, const double, const double)>(&GProp_VelGProps::Perform), nb::arg("S"), nb::arg("Alpha1"), nb::arg("Alpha2"), nb::arg("Z1"), nb::arg("Z2"))
         .def("Perform", static_cast<void (GProp_VelGProps::*)(const gp_Sphere &, const double, const double, const double, const double)>(&GProp_VelGProps::Perform), nb::arg("S"), nb::arg("Teta1"), nb::arg("Teta2"), nb::arg("Alpha1"), nb::arg("Alpha2"))
         .def("Perform", static_cast<void (GProp_VelGProps::*)(const gp_Torus &, const double, const double, const double, const double)>(&GProp_VelGProps::Perform), nb::arg("S"), nb::arg("Teta1"), nb::arg("Teta2"), nb::arg("Alpha1"), nb::arg("Alpha2"));
+    nanoocp_implicit_copy_ctor<GProp_VelGProps>(nb::borrow<nb::class_<GProp_VelGProps>>(m.attr("GProp_VelGProps")));
 }

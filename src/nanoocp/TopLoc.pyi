@@ -26,6 +26,9 @@ class TopLoc_Datum3D(nanoocp.Standard.Standard_Transient):
         raised if the Trsf is not a rigid transformation.
         """
 
+    @overload
+    def __init__(self, theOther: TopLoc_Datum3D) -> None: ...
+
     def Transformation(self) -> nanoocp.gp.gp_Trsf:
         """
         Returns a gp_Trsf which, when applied to this datum, produces the default datum.
@@ -58,11 +61,15 @@ class TopLoc_ItemLocation:
     * The transformation associated to the composition.
     """
 
+    @overload
     def __init__(self, D: TopLoc_Datum3D, P: int) -> None:
         """
         Sets the elementary Datum to <D>
         Sets the exponent to <P>
         """
+
+    @overload
+    def __init__(self, theOther: TopLoc_ItemLocation) -> None: ...
 
 class TopLoc_SListOfItemLocation:
     """
@@ -278,7 +285,11 @@ class TopLoc_Location:
     def ScalePrec() -> float: ...
 
 class TopLoc_SListNodeOfItemLocation(nanoocp.Standard.Standard_Transient):
+    @overload
     def __init__(self, I: TopLoc_ItemLocation, aTail: TopLoc_SListOfItemLocation) -> None: ...
+
+    @overload
+    def __init__(self, theOther: TopLoc_SListNodeOfItemLocation) -> None: ...
 
     def Tail(self) -> TopLoc_SListOfItemLocation: ...
 

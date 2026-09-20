@@ -269,111 +269,125 @@ void nanoocp_templates_MathUtils(nb::module_ &m) {
 void nanoocp_define_MathUtils(nb::module_ &m) {
     nanoocp_implicit_default_ctor<MathUtils::ScalarResult>(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")));
     nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult"))
-        .def("IsDone", static_cast<bool (MathUtils::ScalarResult::*)() const>(&MathUtils::ScalarResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::ScalarResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("NbIterations", &MathUtils::ScalarResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc")
-        .def_rw("Root", &MathUtils::ScalarResult::Root, R"nbdoc(Found root or minimum location)nbdoc")
-        .def_rw("Value", &MathUtils::ScalarResult::Value, R"nbdoc(Function value at root/minimum)nbdoc")
-        .def_rw("Derivative", &MathUtils::ScalarResult::Derivative, R"nbdoc(Derivative at root (if computed))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::ScalarResult::*)() const>(&MathUtils::ScalarResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::ScalarResult>(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")), "Status", &MathUtils::ScalarResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")), "NbIterations", &MathUtils::ScalarResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")), "Root", &MathUtils::ScalarResult::Root, R"nbdoc(Found root or minimum location)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")), "Value", &MathUtils::ScalarResult::Value, R"nbdoc(Function value at root/minimum)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")), "Derivative", &MathUtils::ScalarResult::Derivative, R"nbdoc(Derivative at root (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::PolyResult>(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")));
     nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult"))
         .def("IsDone", static_cast<bool (MathUtils::PolyResult::*)() const>(&MathUtils::PolyResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
         .def("__getitem__", static_cast<double (MathUtils::PolyResult::*)(int) const>(&MathUtils::PolyResult::operator[]), nb::arg("theIndex"), R"nbdoc(Access root by index (0-based).
 @param theIndex root index (0 to NbRoots-1)
-@return root value)nbdoc", nb::is_operator())
-        .def_rw("Status", &MathUtils::PolyResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("NbRoots", &MathUtils::PolyResult::NbRoots, R"nbdoc(Number of real roots found)nbdoc")
-        .def_rw("Roots", &MathUtils::PolyResult::Roots, R"nbdoc(Array of real roots (sorted))nbdoc");
+@return root value)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<MathUtils::PolyResult>(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")), "Status", &MathUtils::PolyResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")), "NbRoots", &MathUtils::PolyResult::NbRoots, R"nbdoc(Number of real roots found)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")), "Roots", &MathUtils::PolyResult::Roots, R"nbdoc(Array of real roots (sorted))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::VectorResult>(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")));
     nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult"))
-        .def("IsDone", static_cast<bool (MathUtils::VectorResult::*)() const>(&MathUtils::VectorResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::VectorResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("NbIterations", &MathUtils::VectorResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc")
-        .def_rw("Solution", &MathUtils::VectorResult::Solution, R"nbdoc(Solution vector (set by solver on success))nbdoc")
-        .def_rw("Value", &MathUtils::VectorResult::Value, R"nbdoc(Function value at solution (if computed))nbdoc")
-        .def_rw("Gradient", &MathUtils::VectorResult::Gradient, R"nbdoc(Gradient at solution (if computed))nbdoc")
-        .def_rw("Jacobian", &MathUtils::VectorResult::Jacobian, R"nbdoc(Jacobian at solution (if computed))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::VectorResult::*)() const>(&MathUtils::VectorResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::VectorResult>(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "Status", &MathUtils::VectorResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "NbIterations", &MathUtils::VectorResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "Solution", &MathUtils::VectorResult::Solution, R"nbdoc(Solution vector (set by solver on success))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "Value", &MathUtils::VectorResult::Value, R"nbdoc(Function value at solution (if computed))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "Gradient", &MathUtils::VectorResult::Gradient, R"nbdoc(Gradient at solution (if computed))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")), "Jacobian", &MathUtils::VectorResult::Jacobian, R"nbdoc(Jacobian at solution (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::LinearResult>(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")));
     nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult"))
-        .def("IsDone", static_cast<bool (MathUtils::LinearResult::*)() const>(&MathUtils::LinearResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::LinearResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("Solution", &MathUtils::LinearResult::Solution, R"nbdoc(Solution vector X in AX = B (set by solver))nbdoc")
-        .def_rw("Determinant", &MathUtils::LinearResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::LinearResult::*)() const>(&MathUtils::LinearResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::LinearResult>(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")), "Status", &MathUtils::LinearResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")), "Solution", &MathUtils::LinearResult::Solution, R"nbdoc(Solution vector X in AX = B (set by solver))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")), "Determinant", &MathUtils::LinearResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::LinearMultipleResult>(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")));
     nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult"))
-        .def("IsDone", static_cast<bool (MathUtils::LinearMultipleResult::*)() const>(&MathUtils::LinearMultipleResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::LinearMultipleResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("Solutions", &MathUtils::LinearMultipleResult::Solutions, R"nbdoc(Solution matrix X in AX = B (set by solver))nbdoc")
-        .def_rw("Determinant", &MathUtils::LinearMultipleResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::LinearMultipleResult::*)() const>(&MathUtils::LinearMultipleResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::LinearMultipleResult>(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")), "Status", &MathUtils::LinearMultipleResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")), "Solutions", &MathUtils::LinearMultipleResult::Solutions, R"nbdoc(Solution matrix X in AX = B (set by solver))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")), "Determinant", &MathUtils::LinearMultipleResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::EigenResult>(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")));
     nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult"))
-        .def("IsDone", static_cast<bool (MathUtils::EigenResult::*)() const>(&MathUtils::EigenResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::EigenResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("NbIterations", &MathUtils::EigenResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc")
-        .def_rw("EigenValues", &MathUtils::EigenResult::EigenValues, R"nbdoc(Computed eigenvalues (set by solver))nbdoc")
-        .def_rw("EigenVectors", &MathUtils::EigenResult::EigenVectors, R"nbdoc(Computed eigenvectors (set by solver))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::EigenResult::*)() const>(&MathUtils::EigenResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::EigenResult>(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")), "Status", &MathUtils::EigenResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")), "NbIterations", &MathUtils::EigenResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")), "EigenValues", &MathUtils::EigenResult::EigenValues, R"nbdoc(Computed eigenvalues (set by solver))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")), "EigenVectors", &MathUtils::EigenResult::EigenVectors, R"nbdoc(Computed eigenvectors (set by solver))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::DecompResult>(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")));
     nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult"))
-        .def("IsDone", static_cast<bool (MathUtils::DecompResult::*)() const>(&MathUtils::DecompResult::IsDone), R"nbdoc(Returns true if decomposition succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::DecompResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("L", &MathUtils::DecompResult::L, R"nbdoc(Lower triangular (LU) or left singular vectors (SVD))nbdoc")
-        .def_rw("U", &MathUtils::DecompResult::U, R"nbdoc(Upper triangular (LU) or right singular vectors (SVD))nbdoc")
-        .def_rw("D", &MathUtils::DecompResult::D, R"nbdoc(Diagonal elements or singular values)nbdoc")
-        .def_rw("Determinant", &MathUtils::DecompResult::Determinant, R"nbdoc(Matrix determinant (if computed))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::DecompResult::*)() const>(&MathUtils::DecompResult::IsDone), R"nbdoc(Returns true if decomposition succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::DecompResult>(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "Status", &MathUtils::DecompResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "L", &MathUtils::DecompResult::L, R"nbdoc(Lower triangular (LU) or left singular vectors (SVD))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "U", &MathUtils::DecompResult::U, R"nbdoc(Upper triangular (LU) or right singular vectors (SVD))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "D", &MathUtils::DecompResult::D, R"nbdoc(Diagonal elements or singular values)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")), "Determinant", &MathUtils::DecompResult::Determinant, R"nbdoc(Matrix determinant (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::IntegResult>(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")));
     nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult"))
-        .def("IsDone", static_cast<bool (MathUtils::IntegResult::*)() const>(&MathUtils::IntegResult::IsDone), R"nbdoc(Returns true if integration succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::IntegResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("NbIterations", &MathUtils::IntegResult::NbIterations, R"nbdoc(Number of adaptive iterations)nbdoc")
-        .def_rw("NbPoints", &MathUtils::IntegResult::NbPoints, R"nbdoc(Total number of quadrature points used)nbdoc")
-        .def_rw("Value", &MathUtils::IntegResult::Value, R"nbdoc(Computed integral value)nbdoc")
-        .def_rw("AbsoluteError", &MathUtils::IntegResult::AbsoluteError, R"nbdoc(Estimated absolute error (if computed))nbdoc")
-        .def_rw("RelativeError", &MathUtils::IntegResult::RelativeError, R"nbdoc(Estimated relative error (if computed))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::IntegResult::*)() const>(&MathUtils::IntegResult::IsDone), R"nbdoc(Returns true if integration succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::IntegResult>(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "Status", &MathUtils::IntegResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "NbIterations", &MathUtils::IntegResult::NbIterations, R"nbdoc(Number of adaptive iterations)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "NbPoints", &MathUtils::IntegResult::NbPoints, R"nbdoc(Total number of quadrature points used)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "Value", &MathUtils::IntegResult::Value, R"nbdoc(Computed integral value)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "AbsoluteError", &MathUtils::IntegResult::AbsoluteError, R"nbdoc(Estimated absolute error (if computed))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")), "RelativeError", &MathUtils::IntegResult::RelativeError, R"nbdoc(Estimated relative error (if computed))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::InverseResult>(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")));
     nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult"))
-        .def("IsDone", static_cast<bool (MathUtils::InverseResult::*)() const>(&MathUtils::InverseResult::IsDone), R"nbdoc(Returns true if inversion succeeded.)nbdoc")
-        .def_rw("Status", &MathUtils::InverseResult::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("Inverse", &MathUtils::InverseResult::Inverse, R"nbdoc(Computed inverse matrix)nbdoc")
-        .def_rw("Determinant", &MathUtils::InverseResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
+        .def("IsDone", static_cast<bool (MathUtils::InverseResult::*)() const>(&MathUtils::InverseResult::IsDone), R"nbdoc(Returns true if inversion succeeded.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::InverseResult>(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")), "Status", &MathUtils::InverseResult::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")), "Inverse", &MathUtils::InverseResult::Inverse, R"nbdoc(Computed inverse matrix)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")), "Determinant", &MathUtils::InverseResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
     nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config"))
         .def(nb::init<>(), R"nbdoc(Default constructor with standard tolerances.)nbdoc")
         .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with custom tolerance (sets all tolerances to same value).
 @param theTolerance convergence tolerance
-@param theMaxIter maximum iterations)nbdoc")
-        .def_rw("MaxIterations", &MathUtils::Config::MaxIterations, R"nbdoc(Maximum number of iterations allowed)nbdoc")
-        .def_rw("Tolerance", &MathUtils::Config::Tolerance, R"nbdoc(General convergence tolerance)nbdoc")
-        .def_rw("XTolerance", &MathUtils::Config::XTolerance, R"nbdoc(Tolerance for solution change |x_{n+1} - x_n|)nbdoc")
-        .def_rw("FTolerance", &MathUtils::Config::FTolerance, R"nbdoc(Tolerance for function value |f(x)|)nbdoc")
-        .def_rw("StepMin", &MathUtils::Config::StepMin, R"nbdoc(Minimum step size before declaring convergence or failure.)nbdoc");
+@param theMaxIter maximum iterations)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Config>(nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config")), "MaxIterations", &MathUtils::Config::MaxIterations, R"nbdoc(Maximum number of iterations allowed)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config")), "Tolerance", &MathUtils::Config::Tolerance, R"nbdoc(General convergence tolerance)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config")), "XTolerance", &MathUtils::Config::XTolerance, R"nbdoc(Tolerance for solution change |x_{n+1} - x_n|)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config")), "FTolerance", &MathUtils::Config::FTolerance, R"nbdoc(Tolerance for function value |f(x)|)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config")), "StepMin", &MathUtils::Config::StepMin, R"nbdoc(Minimum step size before declaring convergence or failure.)nbdoc");
     nb::borrow<nb::class_<MathUtils::BoundedConfig>>(m.attr("BoundedConfig"))
         .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
         .def(nb::init<double, double, double, int>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-10), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with bounds.
 @param theLower lower bound
 @param theUpper upper bound
 @param theTolerance convergence tolerance
-@param theMaxIter maximum iterations)nbdoc")
-        .def_rw("LowerBound", &MathUtils::BoundedConfig::LowerBound, R"nbdoc(Lower bound of search interval)nbdoc")
-        .def_rw("UpperBound", &MathUtils::BoundedConfig::UpperBound, R"nbdoc(Upper bound of search interval)nbdoc");
+@param theMaxIter maximum iterations)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::BoundedConfig>(nb::borrow<nb::class_<MathUtils::BoundedConfig>>(m.attr("BoundedConfig")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::BoundedConfig>>(m.attr("BoundedConfig")), "LowerBound", &MathUtils::BoundedConfig::LowerBound, R"nbdoc(Lower bound of search interval)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::BoundedConfig>>(m.attr("BoundedConfig")), "UpperBound", &MathUtils::BoundedConfig::UpperBound, R"nbdoc(Upper bound of search interval)nbdoc");
     nb::borrow<nb::class_<MathUtils::NDimConfig>>(m.attr("NDimConfig"))
         .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
         .def(nb::init<double, int, bool>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), nb::arg("theUseBounds") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Constructor with tolerance.
 @param theTolerance convergence tolerance
 @param theMaxIter maximum iterations
-@param theUseBounds whether to use bounds)nbdoc")
-        .def_rw("UseBounds", &MathUtils::NDimConfig::UseBounds, R"nbdoc(Whether to enforce bounds during optimization)nbdoc");
+@param theUseBounds whether to use bounds)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::NDimConfig>(nb::borrow<nb::class_<MathUtils::NDimConfig>>(m.attr("NDimConfig")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::NDimConfig>>(m.attr("NDimConfig")), "UseBounds", &MathUtils::NDimConfig::UseBounds, R"nbdoc(Whether to enforce bounds during optimization)nbdoc");
     nb::borrow<nb::class_<MathUtils::IntegConfig>>(m.attr("IntegConfig"))
         .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
         .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with custom tolerance.
 @param theTolerance relative tolerance
-@param theMaxIter maximum adaptive iterations)nbdoc")
-        .def_rw("InitialOrder", &MathUtils::IntegConfig::InitialOrder, R"nbdoc(Initial number of quadrature points)nbdoc")
-        .def_rw("MaxOrder", &MathUtils::IntegConfig::MaxOrder, R"nbdoc(Maximum quadrature order (Gauss-Legendre limit))nbdoc")
-        .def_rw("MaxIterations", &MathUtils::IntegConfig::MaxIterations, R"nbdoc(Maximum adaptive subdivision iterations)nbdoc")
-        .def_rw("Tolerance", &MathUtils::IntegConfig::Tolerance, R"nbdoc(Relative tolerance for error estimation)nbdoc");
+@param theMaxIter maximum adaptive iterations)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::IntegConfig>(nb::borrow<nb::class_<MathUtils::IntegConfig>>(m.attr("IntegConfig")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegConfig>>(m.attr("IntegConfig")), "InitialOrder", &MathUtils::IntegConfig::InitialOrder, R"nbdoc(Initial number of quadrature points)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegConfig>>(m.attr("IntegConfig")), "MaxOrder", &MathUtils::IntegConfig::MaxOrder, R"nbdoc(Maximum quadrature order (Gauss-Legendre limit))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegConfig>>(m.attr("IntegConfig")), "MaxIterations", &MathUtils::IntegConfig::MaxIterations, R"nbdoc(Maximum adaptive subdivision iterations)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::IntegConfig>>(m.attr("IntegConfig")), "Tolerance", &MathUtils::IntegConfig::Tolerance, R"nbdoc(Relative tolerance for error estimation)nbdoc");
     nb::borrow<nb::class_<MathUtils::LinConfig>>(m.attr("LinConfig"))
-        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
-        .def_rw("SingularityTolerance", &MathUtils::LinConfig::SingularityTolerance, R"nbdoc(Tolerance for detecting singular matrices)nbdoc")
-        .def_rw("UsePivoting", &MathUtils::LinConfig::UsePivoting, R"nbdoc(Whether to use pivoting for stability)nbdoc");
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::LinConfig>(nb::borrow<nb::class_<MathUtils::LinConfig>>(m.attr("LinConfig")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinConfig>>(m.attr("LinConfig")), "SingularityTolerance", &MathUtils::LinConfig::SingularityTolerance, R"nbdoc(Tolerance for detecting singular matrices)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LinConfig>>(m.attr("LinConfig")), "UsePivoting", &MathUtils::LinConfig::UsePivoting, R"nbdoc(Whether to use pivoting for stability)nbdoc");
     nb::borrow<nb::class_<MathUtils::Domain1D>>(m.attr("Domain1D"))
         .def(nb::init<>(), R"nbdoc(Default constructor - creates empty domain [0, 0].)nbdoc")
         .def(nb::init<double, double>(), nb::arg("theMin"), nb::arg("theMax"), R"nbdoc(Construct from bounds.
@@ -408,9 +422,10 @@ Large domains allow skipping bounds checking for performance.
         .def("IsEqual", static_cast<bool (MathUtils::Domain1D::*)(const MathUtils::Domain1D &, double) const>(&MathUtils::Domain1D::IsEqual), nb::arg("theOther"), nb::arg("theTol") = static_cast<std::decay_t<double>>(1.0e-10), R"nbdoc(Check if this domain equals another within tolerance.
 @param theOther domain to compare with
 @param theTol tolerance for comparison
-@return true if domains are equal within tolerance)nbdoc")
-        .def_rw("Min", &MathUtils::Domain1D::Min, R"nbdoc(Lower bound of the domain)nbdoc")
-        .def_rw("Max", &MathUtils::Domain1D::Max, R"nbdoc(Upper bound of the domain)nbdoc");
+@return true if domains are equal within tolerance)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Domain1D>(nb::borrow<nb::class_<MathUtils::Domain1D>>(m.attr("Domain1D")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Domain1D>>(m.attr("Domain1D")), "Min", &MathUtils::Domain1D::Min, R"nbdoc(Lower bound of the domain)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Domain1D>>(m.attr("Domain1D")), "Max", &MathUtils::Domain1D::Max, R"nbdoc(Upper bound of the domain)nbdoc");
     nb::borrow<nb::class_<MathUtils::Domain2D>>(m.attr("Domain2D"))
         .def(nb::init<>(), R"nbdoc(Default constructor - creates empty domain.)nbdoc")
         .def(nb::init<const MathUtils::Domain1D &, const MathUtils::Domain1D &>(), nb::arg("theUDomain"), nb::arg("theVDomain"), R"nbdoc(Construct from two 1D domains.
@@ -445,11 +460,12 @@ Large domains allow skipping bounds checking for performance.
 @param thePeriod period of V parameter
 @param theTol tolerance)nbdoc")
         .def("IsFinite", static_cast<bool (MathUtils::Domain2D::*)(double) const>(&MathUtils::Domain2D::IsFinite), nb::arg("theInfLimit") = static_cast<std::decay_t<double>>(1.0e100), R"nbdoc(Check if domain has finite bounds (not effectively infinite).
-@param theInfLimit threshold for "infinity" (default 1e100))nbdoc")
-        .def_rw("UMin", &MathUtils::Domain2D::UMin, R"nbdoc(Lower U bound)nbdoc")
-        .def_rw("UMax", &MathUtils::Domain2D::UMax, R"nbdoc(Upper U bound)nbdoc")
-        .def_rw("VMin", &MathUtils::Domain2D::VMin, R"nbdoc(Lower V bound)nbdoc")
-        .def_rw("VMax", &MathUtils::Domain2D::VMax, R"nbdoc(Upper V bound)nbdoc");
+@param theInfLimit threshold for "infinity" (default 1e100))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Domain2D>(nb::borrow<nb::class_<MathUtils::Domain2D>>(m.attr("Domain2D")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Domain2D>>(m.attr("Domain2D")), "UMin", &MathUtils::Domain2D::UMin, R"nbdoc(Lower U bound)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Domain2D>>(m.attr("Domain2D")), "UMax", &MathUtils::Domain2D::UMax, R"nbdoc(Upper U bound)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Domain2D>>(m.attr("Domain2D")), "VMin", &MathUtils::Domain2D::VMin, R"nbdoc(Lower V bound)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::Domain2D>>(m.attr("Domain2D")), "VMax", &MathUtils::Domain2D::VMax, R"nbdoc(Upper V bound)nbdoc");
     nb::borrow<nb::class_<MathUtils::RandomGenerator>>(m.attr("RandomGenerator"))
         .def(nb::init<const uint64_t>(), nb::arg("theSeed") = static_cast<std::decay_t<const uint64_t>>(1), R"nbdoc(Initialize with a seed value.
 Uses SplitMix64 to expand a single seed into the full 256-bit state,
@@ -462,38 +478,39 @@ ensuring good initialization even from poor seeds.
         .def("NextReal", static_cast<double (MathUtils::RandomGenerator::*)()>(&MathUtils::RandomGenerator::NextReal), R"nbdoc(Generate next double in [0, 1).
 Uses 53 bits of randomness for full double precision.
 @return pseudo-random value in [0, 1))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::RandomGenerator>(nb::borrow<nb::class_<MathUtils::RandomGenerator>>(m.attr("RandomGenerator")));
     nanoocp_implicit_default_ctor<MathUtils::BracketResult>(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")));
-    nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult"))
-        .def_rw("IsValid", &MathUtils::BracketResult::IsValid, R"nbdoc(True if valid bracket found)nbdoc")
-        .def_rw("A", &MathUtils::BracketResult::A, R"nbdoc(Lower bound)nbdoc")
-        .def_rw("B", &MathUtils::BracketResult::B, R"nbdoc(Upper bound)nbdoc")
-        .def_rw("Fa", &MathUtils::BracketResult::Fa, R"nbdoc(Function value at A)nbdoc")
-        .def_rw("Fb", &MathUtils::BracketResult::Fb, R"nbdoc(Function value at B)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::BracketResult>(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")), "IsValid", &MathUtils::BracketResult::IsValid, R"nbdoc(True if valid bracket found)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")), "A", &MathUtils::BracketResult::A, R"nbdoc(Lower bound)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")), "B", &MathUtils::BracketResult::B, R"nbdoc(Upper bound)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")), "Fa", &MathUtils::BracketResult::Fa, R"nbdoc(Function value at A)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")), "Fb", &MathUtils::BracketResult::Fb, R"nbdoc(Function value at B)nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::MinBracketResult>(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")));
-    nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult"))
-        .def_rw("IsValid", &MathUtils::MinBracketResult::IsValid, R"nbdoc(True if valid bracket found (Fb < Fa and Fb < Fc))nbdoc")
-        .def_rw("A", &MathUtils::MinBracketResult::A, R"nbdoc(Left bound)nbdoc")
-        .def_rw("B", &MathUtils::MinBracketResult::B, R"nbdoc(Middle point (minimum location estimate))nbdoc")
-        .def_rw("C", &MathUtils::MinBracketResult::C, R"nbdoc(Right bound)nbdoc")
-        .def_rw("Fa", &MathUtils::MinBracketResult::Fa, R"nbdoc(Function value at A)nbdoc")
-        .def_rw("Fb", &MathUtils::MinBracketResult::Fb, R"nbdoc(Function value at B)nbdoc")
-        .def_rw("Fc", &MathUtils::MinBracketResult::Fc, R"nbdoc(Function value at C)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::MinBracketResult>(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")), "IsValid", &MathUtils::MinBracketResult::IsValid, R"nbdoc(True if valid bracket found (Fb < Fa and Fb < Fc))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")), "A", &MathUtils::MinBracketResult::A, R"nbdoc(Left bound)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")), "B", &MathUtils::MinBracketResult::B, R"nbdoc(Middle point (minimum location estimate))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")), "C", &MathUtils::MinBracketResult::C, R"nbdoc(Right bound)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")), "Fa", &MathUtils::MinBracketResult::Fa, R"nbdoc(Function value at A)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")), "Fb", &MathUtils::MinBracketResult::Fb, R"nbdoc(Function value at B)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")), "Fc", &MathUtils::MinBracketResult::Fc, R"nbdoc(Function value at C)nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::MinBracketOptions>(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")));
-    nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions"))
-        .def_rw("MaxIterations", &MathUtils::MinBracketOptions::MaxIterations, R"nbdoc(Maximum iterations)nbdoc")
-        .def_rw("UseLimits", &MathUtils::MinBracketOptions::UseLimits, R"nbdoc(Enable hard limits for parameter)nbdoc")
-        .def_rw("LeftLimit", &MathUtils::MinBracketOptions::LeftLimit, R"nbdoc(Left hard limit (inclusive))nbdoc")
-        .def_rw("RightLimit", &MathUtils::MinBracketOptions::RightLimit, R"nbdoc(Right hard limit (inclusive))nbdoc")
-        .def_rw("HasFA", &MathUtils::MinBracketOptions::HasFA, R"nbdoc(True if FA is precomputed)nbdoc")
-        .def_rw("HasFB", &MathUtils::MinBracketOptions::HasFB, R"nbdoc(True if FB is precomputed)nbdoc")
-        .def_rw("FA", &MathUtils::MinBracketOptions::FA, R"nbdoc(Precomputed f(A))nbdoc")
-        .def_rw("FB", &MathUtils::MinBracketOptions::FB, R"nbdoc(Precomputed f(B))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::MinBracketOptions>(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "MaxIterations", &MathUtils::MinBracketOptions::MaxIterations, R"nbdoc(Maximum iterations)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "UseLimits", &MathUtils::MinBracketOptions::UseLimits, R"nbdoc(Enable hard limits for parameter)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "LeftLimit", &MathUtils::MinBracketOptions::LeftLimit, R"nbdoc(Left hard limit (inclusive))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "RightLimit", &MathUtils::MinBracketOptions::RightLimit, R"nbdoc(Right hard limit (inclusive))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "HasFA", &MathUtils::MinBracketOptions::HasFA, R"nbdoc(True if FA is precomputed)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "HasFB", &MathUtils::MinBracketOptions::HasFB, R"nbdoc(True if FB is precomputed)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "FA", &MathUtils::MinBracketOptions::FA, R"nbdoc(Precomputed f(A))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")), "FB", &MathUtils::MinBracketOptions::FB, R"nbdoc(Precomputed f(B))nbdoc");
     nanoocp_implicit_default_ctor<MathUtils::LineSearchResult>(nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult")));
-    nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult"))
-        .def_rw("IsValid", &MathUtils::LineSearchResult::IsValid, R"nbdoc(True if line search succeeded)nbdoc")
-        .def_rw("Alpha", &MathUtils::LineSearchResult::Alpha, R"nbdoc(Step size found)nbdoc")
-        .def_rw("FNew", &MathUtils::LineSearchResult::FNew, R"nbdoc(Function value at new point)nbdoc")
-        .def_rw("NbEvals", &MathUtils::LineSearchResult::NbEvals, R"nbdoc(Number of function evaluations)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::LineSearchResult>(nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult")), "IsValid", &MathUtils::LineSearchResult::IsValid, R"nbdoc(True if line search succeeded)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult")), "Alpha", &MathUtils::LineSearchResult::Alpha, R"nbdoc(Step size found)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult")), "FNew", &MathUtils::LineSearchResult::FNew, R"nbdoc(Function value at new point)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult")), "NbEvals", &MathUtils::LineSearchResult::NbEvals, R"nbdoc(Number of function evaluations)nbdoc");
     nb::borrow<nb::class_<MathUtils::Polynomial>>(m.attr("Polynomial"))
         .def(nb::init<const math_Vector &>(), nb::arg("theCoeffs"), R"nbdoc(Constructor from math_Vector.
 @param theCoeffs coefficients in ascending power order)nbdoc")
@@ -511,6 +528,7 @@ Uses 53 bits of randomness for full double precision.
         .def("Coefficient", static_cast<double (MathUtils::Polynomial::*)(int) const>(&MathUtils::Polynomial::Coefficient), nb::arg("theIndex"), R"nbdoc(Returns coefficient by index.
 @param theIndex coefficient index (0 = constant term)
 @return coefficient value)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Polynomial>(nb::borrow<nb::class_<MathUtils::Polynomial>>(m.attr("Polynomial")));
     nb::borrow<nb::class_<MathUtils::Rational>>(m.attr("Rational"))
         .def(nb::init<const math_Vector &, const math_Vector &>(), nb::arg("theNum"), nb::arg("theDenom"), R"nbdoc(Constructor from math_Vector.
 @param theNum numerator coefficients (ascending power order)
@@ -519,6 +537,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input value
 @param[out] theY function value P(theX)/Q(theX)
 @return false if denominator is zero)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Rational>(nb::borrow<nb::class_<MathUtils::Rational>>(m.attr("Rational")));
     nb::borrow<nb::class_<MathUtils::Constant>>(m.attr("Constant"))
         .def(nb::init<double>(), nb::arg("theValue"), R"nbdoc(Constructor from constant value.
 @param theValue constant value)nbdoc")
@@ -531,6 +550,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY constant value
 @param[out] theDY derivative (always 0)
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Constant>(nb::borrow<nb::class_<MathUtils::Constant>>(m.attr("Constant")));
     nb::borrow<nb::class_<MathUtils::Linear>>(m.attr("Linear"))
         .def(nb::init<double, double>(), nb::arg("theSlope"), nb::arg("theIntercept"), R"nbdoc(Constructor from slope and intercept.
 @param theSlope coefficient a (slope)
@@ -544,6 +564,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theDY derivative (= slope)
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Linear>(nb::borrow<nb::class_<MathUtils::Linear>>(m.attr("Linear")));
     nb::borrow<nb::class_<MathUtils::Sine>>(m.attr("Sine"))
         .def(nb::init<double, double, double, double>(), nb::arg("theAmplitude") = static_cast<std::decay_t<double>>(1.0), nb::arg("theFrequency") = static_cast<std::decay_t<double>>(1.0), nb::arg("thePhase") = static_cast<std::decay_t<double>>(0.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
 @param theAmplitude amplitude a
@@ -559,6 +580,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theDY derivative value
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Sine>(nb::borrow<nb::class_<MathUtils::Sine>>(m.attr("Sine")));
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Sine>();
     nb::borrow<nb::class_<MathUtils::Cosine>>(m.attr("Cosine"))
         .def(nb::init<double, double, double, double>(), nb::arg("theAmplitude") = static_cast<std::decay_t<double>>(1.0), nb::arg("theFrequency") = static_cast<std::decay_t<double>>(1.0), nb::arg("thePhase") = static_cast<std::decay_t<double>>(0.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
@@ -575,6 +597,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theDY derivative value
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Cosine>(nb::borrow<nb::class_<MathUtils::Cosine>>(m.attr("Cosine")));
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Cosine>();
     nb::borrow<nb::class_<MathUtils::Exponential>>(m.attr("Exponential"))
         .def(nb::init<double, double, double>(), nb::arg("theScale") = static_cast<std::decay_t<double>>(1.0), nb::arg("theRate") = static_cast<std::decay_t<double>>(1.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
@@ -590,6 +613,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theDY derivative value
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Exponential>(nb::borrow<nb::class_<MathUtils::Exponential>>(m.attr("Exponential")));
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Exponential>();
     nb::borrow<nb::class_<MathUtils::Power>>(m.attr("Power"))
         .def(nb::init<double, double, double>(), nb::arg("theExponent"), nb::arg("theScale") = static_cast<std::decay_t<double>>(1.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
@@ -605,6 +629,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theDY derivative value
 @return false if x < 0 and exponent is non-integer)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Power>(nb::borrow<nb::class_<MathUtils::Power>>(m.attr("Power")));
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Power>();
     nb::borrow<nb::class_<MathUtils::Gaussian>>(m.attr("Gaussian"))
         .def(nb::init<double, double, double>(), nb::arg("theAmplitude") = static_cast<std::decay_t<double>>(1.0), nb::arg("theMean") = static_cast<std::decay_t<double>>(0.0), nb::arg("theSigma") = static_cast<std::decay_t<double>>(1.0), R"nbdoc(Constructor with full parameters.
@@ -620,6 +645,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theDY derivative value
 @return false if sigma is zero)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Gaussian>(nb::borrow<nb::class_<MathUtils::Gaussian>>(m.attr("Gaussian")));
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Gaussian>();
     nb::borrow<nb::class_<MathUtils::QuadraticForm>>(m.attr("QuadraticForm"))
         .def(nb::init<const math_Matrix &, const math_Vector &, double>(), nb::arg("theA"), nb::arg("theB"), nb::arg("theC"), R"nbdoc(Constructor from matrix, vector, and constant.
@@ -639,6 +665,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theG gradient vector
 @return true if evaluation succeeded)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::QuadraticForm>(nb::borrow<nb::class_<MathUtils::QuadraticForm>>(m.attr("QuadraticForm")));
     nb::borrow<nb::class_<MathUtils::Rosenbrock>>(m.attr("Rosenbrock"))
         .def(nb::init<double, double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(1.0), nb::arg("theB") = static_cast<std::decay_t<double>>(100.0), R"nbdoc(Constructor with parameters.
 @param theA parameter a (default 1.0)
@@ -656,6 +683,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theG gradient vector
 @return true if evaluation succeeded)nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Rosenbrock>(nb::borrow<nb::class_<MathUtils::Rosenbrock>>(m.attr("Rosenbrock")));
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Rosenbrock>();
     nanoocp_implicit_default_ctor<MathUtils::Sphere>(nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere")));
     nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere"))
@@ -672,6 +700,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Sphere>(nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere")));
     nanoocp_implicit_default_ctor<MathUtils::Booth>(nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth")));
     nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth"))
         .def("Value", [](const MathUtils::Booth &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Booth function.
@@ -687,6 +716,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Booth>(nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth")));
     nanoocp_implicit_default_ctor<MathUtils::Beale>(nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale")));
     nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale"))
         .def("Value", [](const MathUtils::Beale &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Beale function.
@@ -702,6 +732,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Beale>(nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale")));
     nanoocp_implicit_default_ctor<MathUtils::Himmelblau>(nb::borrow<nb::class_<MathUtils::Himmelblau>>(m.attr("Himmelblau")));
     nb::borrow<nb::class_<MathUtils::Himmelblau>>(m.attr("Himmelblau"))
         .def("Value", [](const MathUtils::Himmelblau &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Himmelblau function.
@@ -717,6 +748,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Himmelblau>(nb::borrow<nb::class_<MathUtils::Himmelblau>>(m.attr("Himmelblau")));
     nb::borrow<nb::class_<MathUtils::Rastrigin>>(m.attr("Rastrigin"))
         .def(nb::init<double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(10.0), R"nbdoc(Constructor with parameter.
 @param theA parameter A (default 10.0))nbdoc")
@@ -733,6 +765,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY function value
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Rastrigin>(nb::borrow<nb::class_<MathUtils::Rastrigin>>(m.attr("Rastrigin")));
     nb::borrow<nb::class_<MathUtils::Ackley>>(m.attr("Ackley"))
         .def(nb::init<double, double, double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(20.0), nb::arg("theB") = static_cast<std::decay_t<double>>(0.2), nb::arg("theC") = static_cast<std::decay_t<double>>(2.0 * 3.14159265358979323846), R"nbdoc(Constructor with parameters.
 @param theA parameter a (default 20.0)
@@ -742,6 +775,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theY function value
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::Ackley>(nb::borrow<nb::class_<MathUtils::Ackley>>(m.attr("Ackley")));
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Ackley>();
     nb::borrow<nb::class_<MathUtils::LinearResidual>>(m.attr("LinearResidual"))
         .def(nb::init<const math_Matrix &, const math_Vector &>(), nb::arg("theA"), nb::arg("theB"), R"nbdoc(Constructor from matrix and right-hand side.
@@ -760,6 +794,7 @@ Uses 53 bits of randomness for full double precision.
 @param[out] theY squared residual norm
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc");
+    nanoocp_implicit_copy_ctor<MathUtils::LinearResidual>(nb::borrow<nb::class_<MathUtils::LinearResidual>>(m.attr("LinearResidual")));
     m.def("Clamp", static_cast<double (*)(double, double, double)>(&MathUtils::Clamp), nb::arg("theValue"), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Clamp value to range [theLower, theUpper].
 @param theValue value to clamp
 @param theLower lower bound

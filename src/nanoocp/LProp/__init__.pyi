@@ -84,6 +84,9 @@ class LProp_CLProps3d:
         All the computations done will be related to <C> and <U>.
         """
 
+    @overload
+    def __init__(self, theOther: LProp_CLProps3d) -> None: ...
+
     def SetParameter(self, U: float) -> None:
         """
         Initializes the local properties of the curve
@@ -142,7 +145,11 @@ class LProp_CurAndInf:
     to the curvature's extremas and the Inflection's Points.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: LProp_CurAndInf) -> None: ...
 
     def AddInflection(self, Param: float) -> None: ...
 
@@ -215,6 +222,9 @@ class LProp_SLProps3d:
         <Resolution> is the linear tolerance (it is used to test
         if a vector is null).
         """
+
+    @overload
+    def __init__(self, theOther: LProp_SLProps3d) -> None: ...
 
     def SetSurface(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
         """

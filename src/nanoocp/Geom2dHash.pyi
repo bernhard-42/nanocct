@@ -11,7 +11,11 @@ class Geom2dHash_CurveHasher:
     Used for geometry deduplication.
     """
 
+    @overload
     def __init__(self, theCompTolerance: float = 1e-12, theHashTolerance: float = 1e-07) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Geom2dHash_CurveHasher) -> None: ...
 
     @overload
     def __call__(self, theCurve: nanoocp.Geom2d.Geom2d_Curve) -> int: ...

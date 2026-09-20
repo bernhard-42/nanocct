@@ -11,7 +11,11 @@ class TCollection:
     transient basic data structures.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: TCollection) -> None: ...
 
     @staticmethod
     def NextPrimeForMap(I: int) -> int:
@@ -2170,6 +2174,8 @@ class TCollection_ExtendedString:
         @return true if strings contain same characters
         """
 
+    def __hash__(self) -> int: ...
+
 class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
     """
     A variable-length sequence of ASCII characters
@@ -2225,6 +2231,9 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         in place of any non-ascii character found in the source string.
         Otherwise, creates UTF-8 unicode string.
         """
+
+    @overload
+    def __init__(self, theOther: TCollection_HAsciiString) -> None: ...
 
     @overload
     def AssignCat(self, other: str) -> None:
@@ -2752,6 +2761,9 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         Initializes a HExtendedString with <length> space allocated.
         and filled with <filler>. This is useful for buffers.
         """
+
+    @overload
+    def __init__(self, theOther: TCollection_HExtendedString) -> None: ...
 
     def AssignCat(self, other: TCollection_HExtendedString) -> None:
         """Appends <other> to me."""

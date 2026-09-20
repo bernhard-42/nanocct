@@ -228,6 +228,9 @@ class Geom_Axis1Placement(Geom_AxisPlacement):
         of the axis placement.
         """
 
+    @overload
+    def __init__(self, theOther: Geom_Axis1Placement) -> None: ...
+
     def Ax1(self) -> nanoocp.gp.gp_Ax1:
         """Returns a non transient copy of <me>."""
 
@@ -297,6 +300,9 @@ class Geom_Axis2Placement(Geom_AxisPlacement):
         XDirection = N ^ (Vx ^ N).
         Raised if N and Vx are parallel.
         """
+
+    @overload
+    def __init__(self, theOther: Geom_Axis2Placement) -> None: ...
 
     def SetAx2(self, A2: nanoocp.gp.gp_Ax2) -> None:
         """
@@ -403,7 +409,11 @@ class Geom_Curve(Geom_Geometry):
     class ResD1:
         """Result of D1 evaluation: point and first derivative."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom_Curve.ResD1) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt: ...
@@ -420,7 +430,11 @@ class Geom_Curve(Geom_Geometry):
     class ResD2:
         """Result of D2 evaluation: point and first two derivatives."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom_Curve.ResD2) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt: ...
@@ -443,7 +457,11 @@ class Geom_Curve(Geom_Geometry):
     class ResD3:
         """Result of D3 evaluation: point and first three derivatives."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom_Curve.ResD3) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt: ...
@@ -1096,7 +1114,11 @@ class Geom_Surface(Geom_Geometry):
     class ResD1:
         """Result of D1 evaluation: point and partial first derivatives."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom_Surface.ResD1) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt: ...
@@ -1121,7 +1143,11 @@ class Geom_Surface(Geom_Geometry):
         Result of D2 evaluation: point and partial derivatives up to 2nd order.
         """
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom_Surface.ResD2) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt: ...
@@ -1164,7 +1190,11 @@ class Geom_Surface(Geom_Geometry):
         Result of D3 evaluation: point and partial derivatives up to 3rd order.
         """
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom_Surface.ResD3) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt: ...
@@ -4284,6 +4314,9 @@ class Geom_CartesianPoint(Geom_Point):
         Constructs a point defined by its three Cartesian coordinates X, Y and Z.
         """
 
+    @overload
+    def __init__(self, theOther: Geom_CartesianPoint) -> None: ...
+
     def SetCoord(self, X: float, Y: float, Z: float) -> None:
         """Assigns the coordinates X, Y and Z to this point."""
 
@@ -4499,6 +4532,9 @@ class Geom_Circle(Geom_Conic):
         Note: It is possible to create a circle where Radius is equal to 0.0.
         raised if Radius < 0.
         """
+
+    @overload
+    def __init__(self, theOther: Geom_Circle) -> None: ...
 
     def SetCirc(self, C: nanoocp.gp.gp_Circ) -> None:
         """Set <me> so that <me> has the same geometric properties as C."""
@@ -4772,6 +4808,9 @@ class Geom_ConicalSurface(Geom_ElementarySurface):
         std::abs(Ang) >= PI/2 - Resolution
         """
 
+    @overload
+    def __init__(self, theOther: Geom_ConicalSurface) -> None: ...
+
     def SetCone(self, C: nanoocp.gp.gp_Cone) -> None:
         """Set <me> so that <me> has the same geometric properties as C."""
 
@@ -5036,6 +5075,9 @@ class Geom_CylindricalSurface(Geom_ElementarySurface):
         Radius = 0.0
         Raised if Radius < 0.0
         """
+
+    @overload
+    def __init__(self, theOther: Geom_CylindricalSurface) -> None: ...
 
     def SetCylinder(self, C: nanoocp.gp.gp_Cylinder) -> None:
         """Set <me> so that <me> has the same geometric properties as C."""
@@ -5328,6 +5370,9 @@ class Geom_Direction(Geom_Vector):
         Raised if std::sqrt( X*X + Y*Y + Z*Z) <= Resolution from gp.
         """
 
+    @overload
+    def __init__(self, theOther: Geom_Direction) -> None: ...
+
     def SetCoord(self, X: float, Y: float, Z: float) -> None:
         """
         Sets <me> to X,Y,Z coordinates.
@@ -5479,6 +5524,9 @@ class Geom_Ellipse(Geom_Conic):
         construction of an ellipse where MajorRadius and
         MinorRadius are equal.
         """
+
+    @overload
+    def __init__(self, theOther: Geom_Ellipse) -> None: ...
 
     def SetElips(self, E: nanoocp.gp.gp_Elips) -> None:
         """Converts the gp_Elips ellipse E into this ellipse."""
@@ -5711,6 +5759,9 @@ class Geom_Hyperbola(Geom_Conic):
         - MinorRadius is less than 0.0.
         """
 
+    @overload
+    def __init__(self, theOther: Geom_Hyperbola) -> None: ...
+
     def SetHypr(self, H: nanoocp.gp.gp_Hypr) -> None:
         """Converts the gp_Hypr hyperbola H into this hyperbola."""
 
@@ -5940,6 +5991,9 @@ class Geom_Line(Geom_Curve):
         (P and V are, respectively, the origin and the unit
         vector of the positioning axis of the line).
         """
+
+    @overload
+    def __init__(self, theOther: Geom_Line) -> None: ...
 
     def SetLin(self, L: nanoocp.gp.gp_Lin) -> None:
         """Set <me> so that <me> has the same geometric properties as L."""
@@ -6835,6 +6889,9 @@ class Geom_Parabola(Geom_Conic):
         YAxis.
         """
 
+    @overload
+    def __init__(self, theOther: Geom_Parabola) -> None: ...
+
     def SetFocal(self, Focal: float) -> None:
         """
         Assigns the value Focal to the focal distance of this parabola.
@@ -7051,6 +7108,9 @@ class Geom_Plane(Geom_ElementarySurface):
         @endcode
         Raised if std::sqrt(A*A + B*B + C*C) <= Resolution from gp
         """
+
+    @overload
+    def __init__(self, theOther: Geom_Plane) -> None: ...
 
     def SetPln(self, Pl: nanoocp.gp.gp_Pln) -> None:
         """Set <me> so that <me> has the same geometric properties as Pl."""
@@ -7281,6 +7341,9 @@ class Geom_RectangularTrimmedSurface(Geom_BoundedSurface):
         bounds of S.
         U1 = U2 or V1 = V2
         """
+
+    @overload
+    def __init__(self, theOther: Geom_RectangularTrimmedSurface) -> None: ...
 
     @overload
     def SetTrim(self, U1: float, U2: float, V1: float, V2: float, USense: bool = True, VSense: bool = True) -> None:
@@ -7603,6 +7666,9 @@ class Geom_SphericalSurface(Geom_ElementarySurface):
         Raised if Radius < 0.0.
         """
 
+    @overload
+    def __init__(self, theOther: Geom_SphericalSurface) -> None: ...
+
     def SetRadius(self, R: float) -> None:
         """
         Assigns the value R to the radius of this sphere.
@@ -7827,6 +7893,7 @@ class Geom_SurfaceOfLinearExtrusion(Geom_SweptSurface):
     to that line.
     """
 
+    @overload
     def __init__(self, C: Geom_Curve, V: nanoocp.gp.gp_Dir) -> None:
         """
         V is the direction of extrusion.
@@ -7841,6 +7908,9 @@ class Geom_SurfaceOfLinearExtrusion(Geom_SweptSurface):
         curve C is a line and V is parallel to the direction of this
         line.
         """
+
+    @overload
+    def __init__(self, theOther: Geom_SurfaceOfLinearExtrusion) -> None: ...
 
     def HasEvalRepresentation(self) -> bool:
         """Returns true if an evaluation representation is attached."""
@@ -8101,6 +8171,7 @@ class Geom_SurfaceOfRevolution(Geom_SweptSurface):
     curve, using a cylindrical projection in the reference plane.
     """
 
+    @overload
     def __init__(self, C: Geom_Curve, A1: nanoocp.gp.gp_Ax1) -> None:
         """
         C : is the meridian or the referenced curve.
@@ -8122,6 +8193,9 @@ class Geom_SurfaceOfRevolution(Geom_SweptSurface):
         It is not checked that the revolved curve C doesn't
         self-intersects.
         """
+
+    @overload
+    def __init__(self, theOther: Geom_SurfaceOfRevolution) -> None: ...
 
     def HasEvalRepresentation(self) -> bool:
         """Returns true if an evaluation representation is attached."""
@@ -8446,6 +8520,9 @@ class Geom_ToroidalSurface(Geom_ElementarySurface):
         Raised if MinorRadius < 0.0 or if MajorRadius < 0.0
         """
 
+    @overload
+    def __init__(self, theOther: Geom_ToroidalSurface) -> None: ...
+
     def SetMajorRadius(self, MajorRadius: float) -> None:
         """
         Modifies this torus by changing its major radius.
@@ -8657,6 +8734,9 @@ class Geom_Transformation(nanoocp.Standard.Standard_Transient):
     def __init__(self, T: nanoocp.gp.gp_Trsf) -> None:
         """Creates a transient copy of T."""
 
+    @overload
+    def __init__(self, theOther: Geom_Transformation) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -8840,6 +8920,7 @@ class Geom_TrimmedCurve(Geom_BoundedCurve):
     orientation as the basis curve or the opposite orientation.
     """
 
+    @overload
     def __init__(self, C: Geom_Curve, U1: float, U2: float, Sense: bool = True, theAdjustPeriodic: bool = True) -> None:
         """
         Constructs a trimmed curve from the basis curve C
@@ -8878,6 +8959,9 @@ class Geom_TrimmedCurve(Geom_BoundedCurve):
         bounds of C, or
         - U1 is equal to U2.
         """
+
+    @overload
+    def __init__(self, theOther: Geom_TrimmedCurve) -> None: ...
 
     def Reverse(self) -> None:
         """
@@ -9100,6 +9184,9 @@ class Geom_VectorWithMagnitude(Geom_Vector):
     @overload
     def __init__(self, X: float, Y: float, Z: float) -> None:
         """Creates a vector with three cartesian coordinates."""
+
+    @overload
+    def __init__(self, theOther: Geom_VectorWithMagnitude) -> None: ...
 
     def SetCoord(self, X: float, Y: float, Z: float) -> None:
         """Assigns the values X, Y and Z to the coordinates of this vector."""

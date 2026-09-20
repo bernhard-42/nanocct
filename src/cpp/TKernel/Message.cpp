@@ -740,6 +740,7 @@ convenience, by default all are converted to ExtendedString.)nbdoc")
         .def("SendWarning", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendWarning), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Warning))nbdoc")
         .def("SendInfo", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendInfo), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Info))nbdoc")
         .def("SendTrace", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendTrace), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Trace))nbdoc");
+    nanoocp_implicit_copy_ctor<Message_Messenger>(nb::borrow<nb::class_<Message_Messenger>>(m.attr("Message_Messenger")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Message_Printer> &>, Message_Messenger>();
     nb::borrow<nb::class_<Message_Messenger::StreamBuffer>>(m.attr("Message_Messenger").attr("StreamBuffer"))
         .def(nb::init<const Message_Messenger::StreamBuffer &>(), nb::arg("theOther"), R"nbdoc(Formal copy constructor.
@@ -805,6 +806,7 @@ When theToCreate is true - automatically creates message report when not exist.)
 @param theMemInfo [int] memory info type
 @param[out] theMetric  filled message metric
 @return true if converted)nbdoc");
+    nanoocp_implicit_copy_ctor<Message>(nb::borrow<nb::class_<Message>>(m.attr("Message")));
     nanoocp_implicit_default_ctor<Message_Alert>(nb::borrow<nb::class_<Message_Alert>>(m.attr("Message_Alert")));
     nb::borrow<nb::class_<Message_Alert>>(m.attr("Message_Alert"))
         .def("GetMessageKey", static_cast<const char * (Message_Alert::*)() const>(&Message_Alert::GetMessageKey), R"nbdoc(Return a C string to be used as a key for generating text user
@@ -821,6 +823,7 @@ Base implementation always returns true.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Alert::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Alert::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Alert::*)() const>(&Message_Alert::DynamicType));
+    nanoocp_implicit_copy_ctor<Message_Alert>(nb::borrow<nb::class_<Message_Alert>>(m.attr("Message_Alert")));
     nb::borrow<nb::class_<Message_AlertExtended>>(m.attr("Message_AlertExtended"))
         .def(nb::new_([]() { return opencascade::handle<Message_AlertExtended>(new Message_AlertExtended()); }), R"nbdoc(Empty constructor)nbdoc")
         .def_static("AddAlert", static_cast<occ::handle<Message_Alert> (*)(const occ::handle<Message_Report> &, const occ::handle<Message_Attribute> &, const Message_Gravity)>(&Message_AlertExtended::AddAlert), nb::arg("theReport"), nb::arg("theAttribute"), nb::arg("theGravity"), R"nbdoc(Creates new instance of the alert and put it into report with Message_Info gravity.
@@ -848,6 +851,7 @@ Base implementation always returns false.
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AlertExtended::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AlertExtended::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AlertExtended::*)() const>(&Message_AlertExtended::DynamicType));
+    nanoocp_implicit_copy_ctor<Message_AlertExtended>(nb::borrow<nb::class_<Message_AlertExtended>>(m.attr("Message_AlertExtended")));
     nb::borrow<nb::class_<Message_ExecStatus>>(m.attr("Message_ExecStatus"))
         .def(nb::init<>(), R"nbdoc(Create empty execution status)nbdoc")
         .def(nb::init<Message_Status>(), nb::arg("theStatus"), R"nbdoc(Initialise the execution status)nbdoc")
@@ -876,6 +880,7 @@ Base implementation always returns false.
 in range [1, StatusesPerType])nbdoc")
         .def_static("TypeOfStatus", static_cast<Message_StatusType (*)(Message_Status)>(&Message_ExecStatus::TypeOfStatus), nb::arg("theStatus"), R"nbdoc(Returns status type (DONE, WARN, ALARM, or FAIL))nbdoc")
         .def_static("StatusByIndex", static_cast<Message_Status (*)(const int)>(&Message_ExecStatus::StatusByIndex), nb::arg("theIndex"), R"nbdoc(Returns status with index theIndex in whole range [FirstStatus, LastStatus])nbdoc");
+    nanoocp_implicit_copy_ctor<Message_ExecStatus>(nb::borrow<nb::class_<Message_ExecStatus>>(m.attr("Message_ExecStatus")));
     nb::implicitly_convertible<std::decay_t<Message_Status>, Message_ExecStatus>();
     nb::borrow<nb::class_<Message_Msg>>(m.attr("Message_Msg"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
@@ -968,6 +973,7 @@ in theReportSeq sequence, but not more than theMaxCount)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Algorithm::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Algorithm::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Algorithm::*)() const>(&Message_Algorithm::DynamicType));
+    nanoocp_implicit_copy_ctor<Message_Algorithm>(nb::borrow<nb::class_<Message_Algorithm>>(m.attr("Message_Algorithm")));
     nb::borrow<nb::class_<Message_Attribute>>(m.attr("Message_Attribute"))
         .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_Attribute>(new Message_Attribute(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Empty constructor)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Attribute::get_type_name))
@@ -980,6 +986,7 @@ Base implementation returns dynamic type name of the instance.)nbdoc")
 @return alert name)nbdoc")
         .def("SetName", static_cast<void (Message_Attribute::*)(const TCollection_AsciiString &)>(&Message_Attribute::SetName), nb::arg("theName"), R"nbdoc(Sets the custom name of alert
 @param theName a name for the alert)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_Attribute>(nb::borrow<nb::class_<Message_Attribute>>(m.attr("Message_Attribute")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_Attribute>();
     nb::borrow<nb::class_<Message_AttributeMeter>>(m.attr("Message_AttributeMeter"))
         .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeMeter>(new Message_AttributeMeter(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor with string argument)nbdoc")
@@ -1012,6 +1019,7 @@ Processed only alert with Message_AttributeMeter attribute
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AttributeMeter::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AttributeMeter::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeMeter::*)() const>(&Message_AttributeMeter::DynamicType));
+    nanoocp_implicit_copy_ctor<Message_AttributeMeter>(nb::borrow<nb::class_<Message_AttributeMeter>>(m.attr("Message_AttributeMeter")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_AttributeMeter>();
     nb::borrow<nb::class_<Message_AttributeObject>>(m.attr("Message_AttributeObject"))
         .def(nb::new_([](const occ::handle<Standard_Transient> & theObject, const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeObject>(new Message_AttributeObject(theObject, theName)); }), nb::arg("theObject"), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor with string argument)nbdoc")
@@ -1022,11 +1030,13 @@ Processed only alert with Message_AttributeMeter attribute
 @return the object instance)nbdoc")
         .def("SetObject", static_cast<void (Message_AttributeObject::*)(const occ::handle<Standard_Transient> &)>(&Message_AttributeObject::SetObject), nb::arg("theObject"), R"nbdoc(Sets the object
 @param theObject an instance)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_AttributeObject>(nb::borrow<nb::class_<Message_AttributeObject>>(m.attr("Message_AttributeObject")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Standard_Transient> &>, Message_AttributeObject>();
     nb::borrow<nb::class_<Message_AttributeStream>>(m.attr("Message_AttributeStream"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AttributeStream::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AttributeStream::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeStream::*)() const>(&Message_AttributeStream::DynamicType));
+    nanoocp_implicit_copy_ctor<Message_AttributeStream>(nb::borrow<nb::class_<Message_AttributeStream>>(m.attr("Message_AttributeStream")));
     nb::borrow<nb::class_<Message_CompositeAlerts>>(m.attr("Message_CompositeAlerts"))
         .def(nb::new_([]() { return opencascade::handle<Message_CompositeAlerts>(new Message_CompositeAlerts()); }), R"nbdoc(Empty constructor)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_CompositeAlerts::get_type_name))
@@ -1053,6 +1063,7 @@ Processed only alert with Message_AttributeMeter attribute
 @param theGravity an alert gravity)nbdoc")
         .def("Clear", static_cast<void (Message_CompositeAlerts::*)(const occ::handle<Standard_Type> &)>(&Message_CompositeAlerts::Clear), nb::arg("theType"), R"nbdoc(Clears collected alerts with specified type
 @param theType an alert type)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_CompositeAlerts>(nb::borrow<nb::class_<Message_CompositeAlerts>>(m.attr("Message_CompositeAlerts")));
     nb::borrow<nb::class_<Message_ProgressScope>>(m.attr("Message_ProgressScope"))
         .def(nb::init<>(), R"nbdoc(@name Preparation methods
 Creates dummy scope.
@@ -1098,6 +1109,7 @@ descendant of Message_ProgressIndicator.)nbdoc")
         .def("GetPortion", static_cast<double (Message_ProgressScope::*)() const>(&Message_ProgressScope::GetPortion), R"nbdoc(Get the portion of the indicator covered by this scope (from 0 to 1))nbdoc")
         .def("Close", static_cast<void (Message_ProgressScope::*)()>(&Message_ProgressScope::Close), R"nbdoc(Closes the scope and advances the progress to its end.
 Closed scope should not be used.)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_ProgressScope>(nb::borrow<nb::class_<Message_ProgressScope>>(m.attr("Message_ProgressScope")));
     nb::borrow<nb::class_<Message_ProgressRange>>(m.attr("Message_ProgressRange"))
         .def(nb::init<>(), R"nbdoc(Constructor of the empty range)nbdoc")
         .def(nb::init<const Message_ProgressRange &>(), nb::arg("theOther"), R"nbdoc(Copy constructor disarms the source)nbdoc")
@@ -1137,6 +1149,7 @@ it does nothing.
 @param theGravity an alert gravity
 @param theAlert an alert
 @return true if alert is added)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_Level>(nb::borrow<nb::class_<Message_Level>>(m.attr("Message_Level")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_Level>();
     nanoocp_implicit_default_ctor<Message_MsgFile>(nb::borrow<nb::class_<Message_MsgFile>>(m.attr("Message_MsgFile")));
     nb::borrow<nb::class_<Message_MsgFile>>(m.attr("Message_MsgFile"))
@@ -1168,6 +1181,7 @@ If there are no messages with such keyword defined, the error message is returne
 In that case reference to static string is returned, it can be changed with next call(s) to
 Msg(). Note: The error message is constructed like 'Unknown message: <key>', and can itself be
 customized by defining message with key Message_Msg_BadKeyword.)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_MsgFile>(nb::borrow<nb::class_<Message_MsgFile>>(m.attr("Message_MsgFile")));
     nb::borrow<nb::class_<Message_PrinterOStream>>(m.attr("Message_PrinterOStream"))
         .def(nb::new_([](const Message_Gravity theTraceLevel) { return opencascade::handle<Message_PrinterOStream>(new Message_PrinterOStream(theTraceLevel)); }), nb::arg("theTraceLevel") = static_cast<std::decay_t<const Message_Gravity>>(Message_Info), R"nbdoc(Empty constructor, defaulting to cout)nbdoc")
         .def(nb::new_([](const char *const theFileName, const bool theDoAppend, const Message_Gravity theTraceLevel) { return opencascade::handle<Message_PrinterOStream>(new Message_PrinterOStream(theFileName, theDoAppend, theTraceLevel)); }), nb::arg("theFileName"), nb::arg("theDoAppend"), nb::arg("theTraceLevel") = static_cast<std::decay_t<const Message_Gravity>>(Message_Info), R"nbdoc(Create printer for output to a specified file.
@@ -1183,12 +1197,14 @@ file stream))nbdoc")
         .def("ToColorize", static_cast<bool (Message_PrinterOStream::*)() const>(&Message_PrinterOStream::ToColorize), R"nbdoc(Returns TRUE if text output into console should be colorized depending on message gravity;
 TRUE by default.)nbdoc")
         .def("SetToColorize", static_cast<void (Message_PrinterOStream::*)(bool)>(&Message_PrinterOStream::SetToColorize), nb::arg("theToColorize"), R"nbdoc(Set if text output into console should be colorized depending on message gravity.)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_PrinterOStream>(nb::borrow<nb::class_<Message_PrinterOStream>>(m.attr("Message_PrinterOStream")));
     nb::implicitly_convertible<std::decay_t<const Message_Gravity>, Message_PrinterOStream>();
     nb::borrow<nb::class_<Message_PrinterSystemLog>>(m.attr("Message_PrinterSystemLog"))
         .def(nb::new_([](const TCollection_AsciiString & theEventSourceName, const Message_Gravity theTraceLevel) { return opencascade::handle<Message_PrinterSystemLog>(new Message_PrinterSystemLog(theEventSourceName, theTraceLevel)); }), nb::arg("theEventSourceName"), nb::arg("theTraceLevel") = static_cast<std::decay_t<const Message_Gravity>>(Message_Info), R"nbdoc(Main constructor.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_PrinterSystemLog::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_PrinterSystemLog::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_PrinterSystemLog::*)() const>(&Message_PrinterSystemLog::DynamicType));
+    nanoocp_implicit_copy_ctor<Message_PrinterSystemLog>(nb::borrow<nb::class_<Message_PrinterSystemLog>>(m.attr("Message_PrinterSystemLog")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_PrinterSystemLog>();
     nb::borrow<nb::class_<Message_PrinterToReport>>(m.attr("Message_PrinterToReport"))
         .def(nb::new_([]() { return opencascade::handle<Message_PrinterToReport>(new Message_PrinterToReport()); }), R"nbdoc(Create printer for redirecting messages into report.)nbdoc")
@@ -1202,9 +1218,11 @@ TRUE by default.)nbdoc")
 The object is converted to string in format: <object kind> : <object pointer>.
 The parameter theToPutEol specified whether end-of-line should be added to the end of the
 message. Default implementation calls first method Send().)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_PrinterToReport>(nb::borrow<nb::class_<Message_PrinterToReport>>(m.attr("Message_PrinterToReport")));
     nb::borrow<nb::class_<Message_ProgressSentry>>(m.attr("Message_ProgressSentry"))
         .def(nb::init<const Message_ProgressRange &, const char *const, const double, const double, const double, const bool, const double>(), nb::arg("theRange"), nb::arg("theName"), nb::arg("theMin"), nb::arg("theMax"), nb::arg("theStep"), nb::arg("theIsInf") = static_cast<std::decay_t<const bool>>(false), nb::arg("theNewScopeSpan") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Deprecated constructor, Message_ProgressScope should be created instead.)nbdoc")
         .def("Relieve", static_cast<void (Message_ProgressSentry::*)()>(&Message_ProgressSentry::Relieve), R"nbdoc(Method Relieve() was replaced by Close() in Message_ProgressScope)nbdoc");
+    nanoocp_implicit_copy_ctor<Message_ProgressSentry>(nb::borrow<nb::class_<Message_ProgressSentry>>(m.attr("Message_ProgressSentry")));
     nb::borrow<nb::class_<Message_Report>>(m.attr("Message_Report"))
         .def(nb::new_([]() { return opencascade::handle<Message_Report>(new Message_Report()); }), R"nbdoc(Empty constructor)nbdoc")
         .def("AddAlert", static_cast<void (Message_Report::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_Report::AddAlert), nb::arg("theGravity"), nb::arg("theAlert"), R"nbdoc(Add alert with specified gravity.
@@ -1245,4 +1263,5 @@ key returned by alert, and sends it in the messenger.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Report::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Report::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Report::*)() const>(&Message_Report::DynamicType));
+    nanoocp_implicit_copy_ctor<Message_Report>(nb::borrow<nb::class_<Message_Report>>(m.attr("Message_Report")));
 }

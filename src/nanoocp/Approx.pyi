@@ -34,7 +34,11 @@ class Approx_Status(enum.IntEnum):
 class Approx_Curve2d:
     """Makes an approximation for HCurve2d from Adaptor3d"""
 
+    @overload
     def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, First: float, Last: float, TolU: float, TolV: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Approx_Curve2d) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -47,11 +51,15 @@ class Approx_Curve2d:
     def MaxError2dV(self) -> float: ...
 
 class Approx_Curve3d:
+    @overload
     def __init__(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve, Tol3d: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxSegments: int, MaxDegree: int) -> None:
         """
         Approximation of a curve with respect of the
         required tolerance Tol3D.
         """
+
+    @overload
+    def __init__(self, theOther: Approx_Curve3d) -> None: ...
 
     def Curve(self) -> nanoocp.Geom.Geom_BSplineCurve: ...
 
@@ -77,6 +85,7 @@ class Approx_Curve3d:
 class Approx_CurveOnSurface:
     """Approximation of curve on surface"""
 
+    @overload
     def __init__(self, theC2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theSurf: nanoocp.Adaptor3d.Adaptor3d_Surface, theFirst: float, theLast: float, theTol: float) -> None:
         """
         This constructor does not call perform method.
@@ -86,6 +95,9 @@ class Approx_CurveOnSurface:
         @param theFirst Last parameter of resulting curve.
         @param theTol   Computation tolerance.
         """
+
+    @overload
+    def __init__(self, theOther: Approx_CurveOnSurface) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -143,6 +155,9 @@ class Approx_CurvilinearParameter:
     def __init__(self, C2D1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, Surf1: nanoocp.Adaptor3d.Adaptor3d_Surface, C2D2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, Surf2: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None:
         """case of a curve on two surfaces"""
 
+    @overload
+    def __init__(self, theOther: Approx_CurvilinearParameter) -> None: ...
+
     def IsDone(self) -> bool: ...
 
     def HasResult(self) -> bool: ...
@@ -185,6 +200,9 @@ class Approx_CurvlinFunc(nanoocp.Standard.Standard_Transient):
 
     @overload
     def __init__(self, C2D1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C2D2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, S1: nanoocp.Adaptor3d.Adaptor3d_Surface, S2: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Approx_CurvlinFunc) -> None: ...
 
     def SetTol(self, Tol: float) -> None:
         """---Purpose Update the tolerance to used"""
@@ -262,6 +280,9 @@ class Approx_FitAndDivide:
         with a cutting if the corresponding boolean is True.
         """
 
+    @overload
+    def __init__(self, theOther: Approx_FitAndDivide) -> None: ...
+
     def Perform(self, Line: nanoocp.AppCont.AppCont_Function) -> None:
         """runs the algorithm after having initialized the fields."""
 
@@ -331,6 +352,9 @@ class Approx_FitAndDivide2d:
         with a cutting if the corresponding boolean is True.
         """
 
+    @overload
+    def __init__(self, theOther: Approx_FitAndDivide2d) -> None: ...
+
     def Perform(self, Line: nanoocp.AppCont.AppCont_Function) -> None:
         """runs the algorithm after having initialized the fields."""
 
@@ -387,7 +411,11 @@ class Approx_FitAndDivide2d:
     def Parameters(self, Index: int) -> tuple[float, float]: ...
 
 class Approx_MCurvesToBSpCurve:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Approx_MCurvesToBSpCurve) -> None: ...
 
     def Reset(self) -> None: ...
 
@@ -474,7 +502,11 @@ class Approx_SweepApproximation:
     This algorithm can be used by blending, sweeping...
     """
 
+    @overload
     def __init__(self, Func: Approx_SweepFunction) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Approx_SweepApproximation) -> None: ...
 
     def Perform(self, First: float, Last: float, Tol3d: float, BoundTol: float, Tol2d: float, TolAngular: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C0, Degmax: int = 11, Segmax: int = 50) -> None:
         """

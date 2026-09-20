@@ -755,6 +755,7 @@ then points and weights will be computed. Returns true
 if Index is odd, it is equal to the size of Points and Weights
 and the computation of Points and Weights is performed successfully.
 Otherwise this method returns false.)nbdoc");
+    nanoocp_implicit_copy_ctor<math>(nb::borrow<nb::class_<math>>(m.attr("math")));
     nb::borrow<nb::class_<math_BFGS>>(m.attr("math_BFGS"))
         .def(nb::init<const int, const double, const int, const double>(), nb::arg("NbVariables"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-8), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(200), nb::arg("ZEPS") = static_cast<std::decay_t<const double>>(1.0e-12), R"nbdoc(Initializes the computation of the minimum of a function with
 NbVariables.
@@ -793,6 +794,7 @@ equal to the range of the StartingPoint.)nbdoc")
         .def("NbIterations", static_cast<int (math_BFGS::*)() const>(&math_BFGS::NbIterations), R"nbdoc(Returns the number of iterations really done in the
 calculation of the minimum.
 The exception NotDone is raised if the minimum was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_BFGS>(nb::borrow<nb::class_<math_BFGS>>(m.attr("math_BFGS")));
     nb::implicitly_convertible<std::decay_t<const int>, math_BFGS>();
     nb::borrow<nb::class_<math_BissecNewton>>(m.attr("math_BissecNewton"))
         .def(nb::init<const double>(), nb::arg("theXTolerance"), R"nbdoc(Constructor.
@@ -815,6 +817,7 @@ Exception NotDone is raised if the minimum was not found.)nbdoc")
 Exception NotDone is raised if the minimum was not found.)nbdoc")
         .def("Value", static_cast<double (math_BissecNewton::*)() const>(&math_BissecNewton::Value), R"nbdoc(returns the value of the function at the root.
 Exception NotDone is raised if the minimum was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_BissecNewton>(nb::borrow<nb::class_<math_BissecNewton>>(m.attr("math_BissecNewton")));
     nb::implicitly_convertible<std::decay_t<const double>, math_BissecNewton>();
     nb::borrow<nb::class_<math_BracketedRoot>>(m.attr("math_BracketedRoot"))
         .def(nb::init<math_Function &, const double, const double, const double, const int, const double>(), nb::arg("F"), nb::arg("Bound1"), nb::arg("Bound2"), nb::arg("Tolerance"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(100), nb::arg("ZEPS") = static_cast<std::decay_t<const double>>(1.0e-12), R"nbdoc(The Brent method is used to find the root of the function F between
@@ -832,6 +835,7 @@ Exception NotDone is raised if the minimum was not found.)nbdoc")
         .def("NbIterations", static_cast<int (math_BracketedRoot::*)() const>(&math_BracketedRoot::NbIterations), R"nbdoc(returns the number of iterations really done during the
 computation of the Root.
 Exception NotDone is raised if the minimum was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_BracketedRoot>(nb::borrow<nb::class_<math_BracketedRoot>>(m.attr("math_BracketedRoot")));
     nb::borrow<nb::class_<math_BracketMinimum>>(m.attr("math_BracketMinimum"))
         .def(nb::init<const double, const double>(), nb::arg("A"), nb::arg("B"), R"nbdoc(Constructor preparing A and B parameters only. It does not perform the job.)nbdoc")
         .def(nb::init<math_Function &, const double, const double>(), nb::arg("F"), nb::arg("A"), nb::arg("B"), R"nbdoc(Given two initial values this class computes a
@@ -864,6 +868,7 @@ StdFail_NotDone if the algorithm fails (and IsDone returns false).)nbdoc")
         .def("FunctionValues", [](const math_BracketMinimum &self) { double FA{}; double FB{}; double FC{}; self.FunctionValues(FA, FB, FC); return std::make_tuple(FA, FB, FC); }, R"nbdoc(returns the bracketed triplet function values.
 Exceptions
 StdFail_NotDone if the algorithm fails (and IsDone returns false).)nbdoc");
+    nanoocp_implicit_copy_ctor<math_BracketMinimum>(nb::borrow<nb::class_<math_BracketMinimum>>(m.attr("math_BracketMinimum")));
     nb::borrow<nb::class_<math_BrentMinimum>>(m.attr("math_BrentMinimum"))
         .def(nb::init<const double, const int, const double>(), nb::arg("TolX"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(100), nb::arg("ZEPS") = static_cast<std::decay_t<const double>>(1.0e-12), R"nbdoc(This constructor should be used in a sub-class to initialize
 correctly all the fields of this class.)nbdoc")
@@ -886,24 +891,28 @@ Exception NotDone is raised if the minimum was not found.)nbdoc")
         .def("NbIterations", static_cast<int (math_BrentMinimum::*)() const>(&math_BrentMinimum::NbIterations), R"nbdoc(returns the number of iterations really done during the
 computation of the minimum.
 Exception NotDone is raised if the minimum was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_BrentMinimum>(nb::borrow<nb::class_<math_BrentMinimum>>(m.attr("math_BrentMinimum")));
     nb::implicitly_convertible<std::decay_t<const double>, math_BrentMinimum>();
     nb::borrow<nb::class_<math_BullardGenerator>>(m.attr("math_BullardGenerator"))
         .def(nb::init<unsigned int>(), nb::arg("theSeed") = static_cast<std::decay_t<unsigned int>>(1), R"nbdoc(Creates new Xorshift 64-bit RNG.)nbdoc")
         .def("SetSeed", static_cast<void (math_BullardGenerator::*)(unsigned int)>(&math_BullardGenerator::SetSeed), nb::arg("theSeed") = static_cast<std::decay_t<unsigned int>>(1), R"nbdoc(Setup new seed / reset defaults.)nbdoc")
         .def("NextInt", static_cast<unsigned int (math_BullardGenerator::*)()>(&math_BullardGenerator::NextInt), R"nbdoc(Generates new 64-bit integer value.)nbdoc")
         .def("NextReal", static_cast<double (math_BullardGenerator::*)()>(&math_BullardGenerator::NextReal), R"nbdoc(Generates new floating-point value.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_BullardGenerator>(nb::borrow<nb::class_<math_BullardGenerator>>(m.attr("math_BullardGenerator")));
     nb::implicitly_convertible<std::decay_t<unsigned int>, math_BullardGenerator>();
     nb::borrow<nb::class_<math_ComputeGaussPointsAndWeights>>(m.attr("math_ComputeGaussPointsAndWeights"))
         .def(nb::init<const int>(), nb::arg("Number"))
         .def("IsDone", static_cast<bool (math_ComputeGaussPointsAndWeights::*)() const>(&math_ComputeGaussPointsAndWeights::IsDone))
         .def("Points", static_cast<math_Vector (math_ComputeGaussPointsAndWeights::*)() const>(&math_ComputeGaussPointsAndWeights::Points))
         .def("Weights", static_cast<math_Vector (math_ComputeGaussPointsAndWeights::*)() const>(&math_ComputeGaussPointsAndWeights::Weights));
+    nanoocp_implicit_copy_ctor<math_ComputeGaussPointsAndWeights>(nb::borrow<nb::class_<math_ComputeGaussPointsAndWeights>>(m.attr("math_ComputeGaussPointsAndWeights")));
     nb::implicitly_convertible<std::decay_t<const int>, math_ComputeGaussPointsAndWeights>();
     nb::borrow<nb::class_<math_ComputeKronrodPointsAndWeights>>(m.attr("math_ComputeKronrodPointsAndWeights"))
         .def(nb::init<const int>(), nb::arg("Number"))
         .def("IsDone", static_cast<bool (math_ComputeKronrodPointsAndWeights::*)() const>(&math_ComputeKronrodPointsAndWeights::IsDone))
         .def("Points", static_cast<math_Vector (math_ComputeKronrodPointsAndWeights::*)() const>(&math_ComputeKronrodPointsAndWeights::Points))
         .def("Weights", static_cast<math_Vector (math_ComputeKronrodPointsAndWeights::*)() const>(&math_ComputeKronrodPointsAndWeights::Weights));
+    nanoocp_implicit_copy_ctor<math_ComputeKronrodPointsAndWeights>(nb::borrow<nb::class_<math_ComputeKronrodPointsAndWeights>>(m.attr("math_ComputeKronrodPointsAndWeights")));
     nb::implicitly_convertible<std::decay_t<const int>, math_ComputeKronrodPointsAndWeights>();
     nb::borrow<nb::class_<math_Crout>>(m.attr("math_Crout"))
         .def(nb::init<const math_Matrix &, const double>(), nb::arg("A"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.0e-20), R"nbdoc(Given an input matrix A, this algorithm inverts A by the
@@ -932,6 +941,7 @@ Exception NotDone is raised if NotDone.)nbdoc")
 decomposed matrix A. Zero is returned if the matrix A is considered as singular.
 Exceptions
 StdFail_NotDone if the algorithm fails (and IsDone returns false).)nbdoc");
+    nanoocp_implicit_copy_ctor<math_Crout>(nb::borrow<nb::class_<math_Crout>>(m.attr("math_Crout")));
     nb::implicitly_convertible<std::decay_t<const math_Matrix &>, math_Crout>();
     nb::borrow<nb::class_<math_DirectPolynomialRoots>>(m.attr("math_DirectPolynomialRoots"))
         .def(nb::init<const double, const double>(), nb::arg("theA"), nb::arg("theB"), R"nbdoc(Computes the real root of the linear equation Ax + B = 0.
@@ -1000,6 +1010,7 @@ or theIndex > NbSolutions.
 
 @param theIndex root index (1-based)
 @return root value)nbdoc");
+    nanoocp_implicit_copy_ctor<math_DirectPolynomialRoots>(nb::borrow<nb::class_<math_DirectPolynomialRoots>>(m.attr("math_DirectPolynomialRoots")));
     nb::borrow<nb::class_<math_EigenValuesSearcher>>(m.attr("math_EigenValuesSearcher"))
         .def(nb::init<const NCollection_Array1<double> &, const NCollection_Array1<double> &>(), nb::arg("theDiagonal"), nb::arg("theSubdiagonal"))
         .def("IsDone", static_cast<bool (math_EigenValuesSearcher::*)() const>(&math_EigenValuesSearcher::IsDone), R"nbdoc(Returns true if computation is performed successfully.
@@ -1018,6 +1029,7 @@ v is the eigenvector, and lambda is the corresponding eigenvalue.
 
 @param theIndex index of the desired eigenvector (1-based indexing)
 @return the normalized eigenvector corresponding to EigenValue(theIndex))nbdoc");
+    nanoocp_implicit_copy_ctor<math_EigenValuesSearcher>(nb::borrow<nb::class_<math_EigenValuesSearcher>>(m.attr("math_EigenValuesSearcher")));
     nb::borrow<nb::class_<math_FRPR>>(m.attr("math_FRPR"))
         .def(nb::init<const math_MultipleVarFunctionWithGradient &, const double, const int, const double>(), nb::arg("theFunction"), nb::arg("theTolerance"), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(200), nb::arg("theZEPS") = static_cast<std::decay_t<const double>>(1.0e-12), R"nbdoc(Initializes the computation of the minimum of F.
 Warning: constructor does not perform computations.)nbdoc")
@@ -1044,6 +1056,7 @@ equal to the range of the StartingPoint.)nbdoc")
         .def("NbIterations", static_cast<int (math_FRPR::*)() const>(&math_FRPR::NbIterations), R"nbdoc(returns the number of iterations really done during the
 computation of the minimum.
 Exception NotDone is raised if the minimum was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_FRPR>(nb::borrow<nb::class_<math_FRPR>>(m.attr("math_FRPR")));
     nb::borrow<nb::class_<math_Function>>(m.attr("math_Function"))
         .def("Value", [](math_Function &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function <F> for a given value of
 variable <X>.
@@ -1090,6 +1103,7 @@ An exception is raised if Index<=0 or Index >NbPoints.)nbdoc")
         .def("GetPointState", static_cast<int (math_FunctionAllRoots::*)(const int) const>(&math_FunctionAllRoots::GetPointState), nb::arg("Index"), R"nbdoc(returns the State Number associated to the point Index.
 An exception is raised if IsDone returns False;
 An exception is raised if Index<=0 or Index >Nbintervals.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_FunctionAllRoots>(nb::borrow<nb::class_<math_FunctionAllRoots>>(m.attr("math_FunctionAllRoots")));
     nb::borrow<nb::class_<math_FunctionRoot>>(m.attr("math_FunctionRoot"))
         .def(nb::init<math_FunctionWithDerivative &, const double, const double, const int>(), nb::arg("F"), nb::arg("Guess"), nb::arg("Tolerance"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(100), R"nbdoc(The Newton-Raphson method is done to find the root of the function F
 from the initial guess Guess.The tolerance required on
@@ -1114,6 +1128,7 @@ Exception NotDone is raised if the root was not found.)nbdoc")
         .def("NbIterations", static_cast<int (math_FunctionRoot::*)() const>(&math_FunctionRoot::NbIterations), R"nbdoc(returns the number of iterations really done on the
 computation of the Root.
 Exception NotDone is raised if the root was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_FunctionRoot>(nb::borrow<nb::class_<math_FunctionRoot>>(m.attr("math_FunctionRoot")));
     nb::borrow<nb::class_<math_FunctionRoots>>(m.attr("math_FunctionRoots"))
         .def(nb::init<math_FunctionWithDerivative &, const double, const double, const int, const double, const double, const double, const double>(), nb::arg("F"), nb::arg("A"), nb::arg("B"), nb::arg("NbSample"), nb::arg("EpsX") = static_cast<std::decay_t<const double>>(0.0), nb::arg("EpsF") = static_cast<std::decay_t<const double>>(0.0), nb::arg("EpsNull") = static_cast<std::decay_t<const double>>(0.0), nb::arg("K") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Calculates all the real roots of a function F-K within the range
 A..B. without conditions on A and B
@@ -1134,6 +1149,7 @@ StdFail_NotDone if the algorithm fails (and IsDone returns false).)nbdoc")
         .def("StateNumber", static_cast<int (math_FunctionRoots::*)(const int) const>(&math_FunctionRoots::StateNumber), nb::arg("Nieme"), R"nbdoc(returns the StateNumber of the Nieme root.
 Exception RangeError is raised if Nieme is < 1
 or Nieme > NbSolutions.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_FunctionRoots>(nb::borrow<nb::class_<math_FunctionRoots>>(m.attr("math_FunctionRoots")));
     nb::borrow<nb::class_<math_FunctionSample>>(m.attr("math_FunctionSample"))
         .def(nb::init<const double, const double, const int>(), nb::arg("A"), nb::arg("B"), nb::arg("N"))
         .def("Bounds", [](const math_FunctionSample &self) { double A{}; double B{}; self.Bounds(A, B); return std::make_tuple(A, B); }, R"nbdoc(Returns the bounds of parameters.)nbdoc")
@@ -1141,6 +1157,7 @@ or Nieme > NbSolutions.)nbdoc");
         .def("GetParameter", static_cast<double (math_FunctionSample::*)(const int) const>(&math_FunctionSample::GetParameter), nb::arg("Index"), R"nbdoc(Returns the value of parameter of the point of
 range Index : A + ((Index-1)/(NbPoints-1))*B.
 An exception is raised if Index<=0 or Index>NbPoints.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_FunctionSample>(nb::borrow<nb::class_<math_FunctionSample>>(m.attr("math_FunctionSample")));
     nb::borrow<nb::class_<math_FunctionSet>>(m.attr("math_FunctionSet"))
         .def("NbVariables", static_cast<int (math_FunctionSet::*)() const>(&math_FunctionSet::NbVariables), R"nbdoc(Returns the number of variables of the function.)nbdoc")
         .def("NbEquations", static_cast<int (math_FunctionSet::*)() const>(&math_FunctionSet::NbEquations), R"nbdoc(Returns the number of equations of the function.)nbdoc")
@@ -1326,6 +1343,7 @@ Exception NotDone is raised if the root was not found.
 Exception DimensionError is raised if the range of Err
 is not equal to the range of the StartingPoint.)nbdoc")
         .def("IsDivergent", static_cast<bool (math_FunctionSetRoot::*)() const>(&math_FunctionSetRoot::IsDivergent));
+    nanoocp_implicit_copy_ctor<math_FunctionSetRoot>(nb::borrow<nb::class_<math_FunctionSetRoot>>(m.attr("math_FunctionSetRoot")));
     nb::implicitly_convertible<std::decay_t<math_FunctionSetWithDerivatives &>, math_FunctionSetRoot>();
     nb::borrow<nb::class_<math_FunctionSetWithDerivatives>>(m.attr("math_FunctionSetWithDerivatives"))
         .def("NbVariables", static_cast<int (math_FunctionSetWithDerivatives::*)() const>(&math_FunctionSetWithDerivatives::NbVariables), R"nbdoc(Returns the number of variables of the function.)nbdoc")
@@ -1383,6 +1401,7 @@ successfully, zero is returned if the matrix A was considered as singular.)nbdoc
 matrix A.
 Exception DimensionError is raised if the ranges of B are not
 equal to the ranges of A.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_Gauss>(nb::borrow<nb::class_<math_Gauss>>(m.attr("math_Gauss")));
     nb::implicitly_convertible<std::decay_t<const math_Matrix &>, math_Gauss>();
     nb::borrow<nb::class_<math_GaussLeastSquare>>(m.attr("math_GaussLeastSquare"))
         .def(nb::init<const math_Matrix &, const double>(), nb::arg("A"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.0e-20), R"nbdoc(Given an input n X m matrix A with n >= m this constructor
@@ -1401,6 +1420,7 @@ Exception DimensionError is raised if the range of B Inv is
 not equal to the rowrange of A.
 Exception DimensionError is raised if the range of X Inv is
 not equal to the colrange of A.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_GaussLeastSquare>(nb::borrow<nb::class_<math_GaussLeastSquare>>(m.attr("math_GaussLeastSquare")));
     nb::implicitly_convertible<std::decay_t<const math_Matrix &>, math_GaussLeastSquare>();
     nb::borrow<nb::class_<math_GaussMultipleIntegration>>(m.attr("math_GaussMultipleIntegration"))
         .def(nb::init<math_MultipleVarFunction &, const math_Vector &, const math_Vector &, const math_IntegerVector &>(), nb::arg("F"), nb::arg("Lower"), nb::arg("Upper"), nb::arg("Order"), R"nbdoc(The Gauss-Legendre integration with Order = points of
@@ -1408,12 +1428,14 @@ integration for each unknown, is done on the function F
 between the bounds Lower and Upper.)nbdoc")
         .def("IsDone", static_cast<bool (math_GaussMultipleIntegration::*)() const>(&math_GaussMultipleIntegration::IsDone), R"nbdoc(returns True if all has been correctly done.)nbdoc")
         .def("Value", static_cast<double (math_GaussMultipleIntegration::*)() const>(&math_GaussMultipleIntegration::Value), R"nbdoc(returns the value of the integral.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_GaussMultipleIntegration>(nb::borrow<nb::class_<math_GaussMultipleIntegration>>(m.attr("math_GaussMultipleIntegration")));
     nb::borrow<nb::class_<math_GaussSetIntegration>>(m.attr("math_GaussSetIntegration"))
         .def(nb::init<math_FunctionSet &, const math_Vector &, const math_Vector &, const math_IntegerVector &>(), nb::arg("F"), nb::arg("Lower"), nb::arg("Upper"), nb::arg("Order"), R"nbdoc(The Gauss-Legendre integration with Order = points of
 integration for each unknown, is done on the function F
 between the bounds Lower and Upper.)nbdoc")
         .def("IsDone", static_cast<bool (math_GaussSetIntegration::*)() const>(&math_GaussSetIntegration::IsDone), R"nbdoc(returns True if all has been correctly done.)nbdoc")
         .def("Value", static_cast<const math_Vector & (math_GaussSetIntegration::*)() const>(&math_GaussSetIntegration::Value), R"nbdoc(returns the value of the integral.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_GaussSetIntegration>(nb::borrow<nb::class_<math_GaussSetIntegration>>(m.attr("math_GaussSetIntegration")));
     nb::borrow<nb::class_<math_GaussSingleIntegration>>(m.attr("math_GaussSingleIntegration"))
         .def(nb::init<>())
         .def(nb::init<math_Function &, const double, const double, const int>(), nb::arg("F"), nb::arg("Lower"), nb::arg("Upper"), nb::arg("Order"), R"nbdoc(The Gauss-Legendre integration with N = Order points of integration,
@@ -1423,6 +1445,7 @@ given tolerance = Tol is done on the function F between the bounds
 Lower and Upper.)nbdoc")
         .def("IsDone", static_cast<bool (math_GaussSingleIntegration::*)() const>(&math_GaussSingleIntegration::IsDone), R"nbdoc(returns True if all has been correctly done.)nbdoc")
         .def("Value", static_cast<double (math_GaussSingleIntegration::*)() const>(&math_GaussSingleIntegration::Value), R"nbdoc(returns the value of the integral.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_GaussSingleIntegration>(nb::borrow<nb::class_<math_GaussSingleIntegration>>(m.attr("math_GaussSingleIntegration")));
     nb::borrow<nb::class_<math_MultipleVarFunction>>(m.attr("math_MultipleVarFunction"))
         .def("NbVariables", static_cast<int (math_MultipleVarFunction::*)() const>(&math_MultipleVarFunction::NbVariables), R"nbdoc(Returns the number of variables of the function)nbdoc")
         .def("Value", [](math_MultipleVarFunction &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions <F> for the
@@ -1476,6 +1499,7 @@ Index is more than the number of columns of B.)nbdoc")
 A.X = B.
 Exception NotDone is raised is the resolution has not be
 done.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_Householder>(nb::borrow<nb::class_<math_Householder>>(m.attr("math_Householder")));
     nb::borrow<nb::class_<math_Jacobi>>(m.attr("math_Jacobi"))
         .def(nb::init<const math_Matrix &>(), nb::arg("A"), R"nbdoc(Given a Real n X n matrix A, this constructor computes all its
 eigenvalues and eigenvectors using the Jacobi method.
@@ -1492,6 +1516,7 @@ Exception NotDone is raised if calculation is not done successfully.)nbdoc")
         .def("Vector", static_cast<void (math_Jacobi::*)(const int, math_Vector &) const>(&math_Jacobi::Vector), nb::arg("Num"), nb::arg("V"), R"nbdoc(Returns the eigenvector V of number Num.
 Eigenvectors are in the range (1..n).
 Exception NotDone is raised if calculation is not done successfully.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_Jacobi>(nb::borrow<nb::class_<math_Jacobi>>(m.attr("math_Jacobi")));
     nb::implicitly_convertible<std::decay_t<const math_Matrix &>, math_Jacobi>();
     nb::borrow<nb::class_<math_KronrodSingleIntegration>>(m.attr("math_KronrodSingleIntegration"))
         .def(nb::init<>(), R"nbdoc(An empty constructor.)nbdoc")
@@ -1525,6 +1550,7 @@ for which the result is computed.)nbdoc")
         .def("NbIterReached", static_cast<int (math_KronrodSingleIntegration::*)() const>(&math_KronrodSingleIntegration::NbIterReached), R"nbdoc(Returns the number of iterations
 that were made to compute result.)nbdoc")
         .def_static("GKRule", [](math_Function & theFunction, const double theLower, const double theUpper, const math_Vector & theGaussP, const math_Vector & theGaussW, const math_Vector & theKronrodP, const math_Vector & theKronrodW) { double theValue{}; double theError{}; auto result = math_KronrodSingleIntegration::GKRule(theFunction, theLower, theUpper, theGaussP, theGaussW, theKronrodP, theKronrodW, theValue, theError); return std::make_tuple(result, theValue, theError); }, nb::arg("theFunction"), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theGaussP"), nb::arg("theGaussW"), nb::arg("theKronrodP"), nb::arg("theKronrodW"));
+    nanoocp_implicit_copy_ctor<math_KronrodSingleIntegration>(nb::borrow<nb::class_<math_KronrodSingleIntegration>>(m.attr("math_KronrodSingleIntegration")));
     nb::borrow<nb::class_<math_MultipleVarFunctionWithGradient>>(m.attr("math_MultipleVarFunctionWithGradient"))
         .def("NbVariables", static_cast<int (math_MultipleVarFunctionWithGradient::*)() const>(&math_MultipleVarFunctionWithGradient::NbVariables), R"nbdoc(Returns the number of variables of the function.)nbdoc")
         .def("Value", [](math_MultipleVarFunctionWithGradient &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions <F> for the variable <X>.
@@ -1582,6 +1608,7 @@ Exception NotDone is raised if the root was not found.)nbdoc")
         .def("NbIterations", static_cast<int (math_NewtonFunctionRoot::*)() const>(&math_NewtonFunctionRoot::NbIterations), R"nbdoc(Returns the number of iterations really done on the
 computation of the Root.
 Exception NotDone is raised if the root was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_NewtonFunctionRoot>(nb::borrow<nb::class_<math_NewtonFunctionRoot>>(m.attr("math_NewtonFunctionRoot")));
     nb::borrow<nb::class_<math_NewtonFunctionSetRoot>>(m.attr("math_NewtonFunctionSetRoot"))
         .def(nb::init<math_FunctionSetWithDerivatives &, const double, const int>(), nb::arg("theFunction"), nb::arg("theFTolerance"), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(100), R"nbdoc(This constructor should be used in a sub-class to initialize
 correctly all the fields of this class.
@@ -1630,6 +1657,7 @@ not equal to the range of the StartingPoint.)nbdoc")
         .def("NbIterations", static_cast<int (math_NewtonFunctionSetRoot::*)() const>(&math_NewtonFunctionSetRoot::NbIterations), R"nbdoc(Returns the number of iterations really done
 during the computation of the Root.
 Exception NotDone is raised if the root was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_NewtonFunctionSetRoot>(nb::borrow<nb::class_<math_NewtonFunctionSetRoot>>(m.attr("math_NewtonFunctionSetRoot")));
     nb::borrow<nb::class_<math_NewtonMinimum>>(m.attr("math_NewtonMinimum"))
         .def(nb::init<const math_MultipleVarFunctionWithHessian &, const double, const int, const double, const bool>(), nb::arg("theFunction"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision :: Confusion ( )), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(40), nb::arg("theConvexity") = static_cast<std::decay_t<const double>>(1.0e-6), nb::arg("theWithSingularity") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The tolerance required on the solution is given by Tolerance.
 Iteration are stopped if (!WithSingularity) and H(F(Xi)) is not definite
@@ -1662,6 +1690,7 @@ calculation of the minimum.
 The exception NotDone is raised if an error has occurred.)nbdoc")
         .def("GetStatus", static_cast<math_Status (math_NewtonMinimum::*)() const>(&math_NewtonMinimum::GetStatus), R"nbdoc(Returns the Status of computation.
 The exception NotDone is raised if an error has occurred.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_NewtonMinimum>(nb::borrow<nb::class_<math_NewtonMinimum>>(m.attr("math_NewtonMinimum")));
     nb::implicitly_convertible<std::decay_t<const math_MultipleVarFunctionWithHessian &>, math_NewtonMinimum>();
     nb::borrow<nb::class_<math_Powell>>(m.attr("math_Powell"))
         .def(nb::init<const math_MultipleVarFunction &, const double, const int, const double>(), nb::arg("theFunction"), nb::arg("theTolerance"), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(200), nb::arg("theZEPS") = static_cast<std::decay_t<const double>>(1.0e-12), R"nbdoc(Constructor. Initialize new entity.)nbdoc")
@@ -1685,6 +1714,7 @@ Exception NotDone is raised if the minimum was not found.)nbdoc")
         .def("NbIterations", static_cast<int (math_Powell::*)() const>(&math_Powell::NbIterations), R"nbdoc(Returns the number of iterations really done during the
 computation of the minimum.
 Exception NotDone is raised if the minimum was not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_Powell>(nb::borrow<nb::class_<math_Powell>>(m.attr("math_Powell")));
     nb::borrow<nb::class_<math_PSO>>(m.attr("math_PSO"))
         .def(nb::init<math_MultipleVarFunction *, const math_Vector &, const math_Vector &, const math_Vector &, const int, const int>(), nb::arg("theFunc"), nb::arg("theLowBorder"), nb::arg("theUppBorder"), nb::arg("theSteps"), nb::arg("theNbParticles") = static_cast<std::decay_t<const int>>(32), nb::arg("theNbIter") = static_cast<std::decay_t<const int>>(100), R"nbdoc(Constructor.
 
@@ -1698,16 +1728,19 @@ This parameter used to define stop condition (TerminalVelocity).
 @param theNbIter defines maximum number of iterations.)nbdoc")
         .def("Perform", [](math_PSO &self, const math_Vector & theSteps, math_Vector & theOutPnt, const int theNbIter) { double theValue{}; self.Perform(theSteps, theValue, theOutPnt, theNbIter); return theValue; }, nb::arg("theSteps"), nb::arg("theOutPnt"), nb::arg("theNbIter") = static_cast<std::decay_t<const int>>(100), R"nbdoc(Perform computations, particles array is constructed inside of this function.)nbdoc")
         .def("Perform", [](math_PSO &self, math_PSOParticlesPool & theParticles, int theNbParticles, math_Vector & theOutPnt, const int theNbIter) { double theValue{}; self.Perform(theParticles, theNbParticles, theValue, theOutPnt, theNbIter); return theValue; }, nb::arg("theParticles"), nb::arg("theNbParticles"), nb::arg("theOutPnt"), nb::arg("theNbIter") = static_cast<std::decay_t<const int>>(100), R"nbdoc(Perform computations with given particles array.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_PSO>(nb::borrow<nb::class_<math_PSO>>(m.attr("math_PSO")));
     nb::borrow<nb::class_<PSO_Particle>>(m.attr("PSO_Particle"))
         .def(nb::init<>())
-        .def("__lt__", static_cast<bool (PSO_Particle::*)(const PSO_Particle &) const>(&PSO_Particle::operator<), nb::arg("thePnt"), R"nbdoc(Compares the particles according to their distances.)nbdoc", nb::is_operator())
-        .def_rw("Distance", &PSO_Particle::Distance)
-        .def_rw("BestDistance", &PSO_Particle::BestDistance);
+        .def("__lt__", static_cast<bool (PSO_Particle::*)(const PSO_Particle &) const>(&PSO_Particle::operator<), nb::arg("thePnt"), R"nbdoc(Compares the particles according to their distances.)nbdoc", nb::is_operator());
+    nanoocp_implicit_copy_ctor<PSO_Particle>(nb::borrow<nb::class_<PSO_Particle>>(m.attr("PSO_Particle")));
+    nanoocp_def_field(nb::borrow<nb::class_<PSO_Particle>>(m.attr("PSO_Particle")), "Distance", &PSO_Particle::Distance);
+    nanoocp_def_field(nb::borrow<nb::class_<PSO_Particle>>(m.attr("PSO_Particle")), "BestDistance", &PSO_Particle::BestDistance);
     nb::borrow<nb::class_<math_PSOParticlesPool>>(m.attr("math_PSOParticlesPool"))
         .def(nb::init<const int, const int>(), nb::arg("theParticlesCount"), nb::arg("theDimensionCount"))
         .def("GetParticle", static_cast<PSO_Particle * (math_PSOParticlesPool::*)(const int)>(&math_PSOParticlesPool::GetParticle), nb::rv_policy::reference, nb::arg("theIdx"))
         .def("GetBestParticle", static_cast<PSO_Particle * (math_PSOParticlesPool::*)()>(&math_PSOParticlesPool::GetBestParticle), nb::rv_policy::reference)
         .def("GetWorstParticle", static_cast<PSO_Particle * (math_PSOParticlesPool::*)()>(&math_PSOParticlesPool::GetWorstParticle), nb::rv_policy::reference);
+    nanoocp_implicit_copy_ctor<math_PSOParticlesPool>(nb::borrow<nb::class_<math_PSOParticlesPool>>(m.attr("math_PSOParticlesPool")));
     nb::borrow<nb::class_<math_SVD>>(m.attr("math_SVD"))
         .def(nb::init<const math_Matrix &>(), nb::arg("A"), R"nbdoc(Given as input an n X m matrix A with n < m, n = m or n > m
 this constructor performs the Singular Value Decomposition.)nbdoc")
@@ -1725,6 +1758,7 @@ Exceptions
 StdFail_NotDone if the algorithm fails (and IsDone returns false).
 Standard_DimensionError if the ranges of Inv are
 compatible with the ranges of A.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_SVD>(nb::borrow<nb::class_<math_SVD>>(m.attr("math_SVD")));
     nb::implicitly_convertible<std::decay_t<const math_Matrix &>, math_SVD>();
     nb::borrow<nb::class_<math_TrigonometricFunctionRoots>>(m.attr("math_TrigonometricFunctionRoots"))
         .def(nb::init<const double, const double, const double, const double>(), nb::arg("D"), nb::arg("E"), nb::arg("InfBound"), nb::arg("SupBound"), R"nbdoc(Given the two coefficients d and e, it performs
@@ -1748,11 +1782,13 @@ An exception is raised if there is an infinity of solutions.)nbdoc")
         .def("NbSolutions", static_cast<int (math_TrigonometricFunctionRoots::*)() const>(&math_TrigonometricFunctionRoots::NbSolutions), R"nbdoc(Returns the number of solutions found.
 An exception is raised if NotDone.
 An exception is raised if there is an infinity of solutions.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_TrigonometricFunctionRoots>(nb::borrow<nb::class_<math_TrigonometricFunctionRoots>>(m.attr("math_TrigonometricFunctionRoots")));
     nb::borrow<nb::class_<math_TrigonometricEquationFunction>>(m.attr("math_TrigonometricEquationFunction"))
         .def(nb::init<const double, const double, const double, const double, const double>(), nb::arg("A"), nb::arg("B"), nb::arg("C"), nb::arg("D"), nb::arg("E"))
         .def("Value", [](math_TrigonometricEquationFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
         .def("Derivative", [](math_TrigonometricEquationFunction &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"))
         .def("Values", [](math_TrigonometricEquationFunction &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"));
+    nanoocp_implicit_copy_ctor<math_TrigonometricEquationFunction>(nb::borrow<nb::class_<math_TrigonometricEquationFunction>>(m.attr("math_TrigonometricEquationFunction")));
     nb::borrow<nb::class_<math_Uzawa>>(m.attr("math_Uzawa"))
         .def(nb::init<const math_Matrix &, const math_Vector &, const math_Vector &, const double, const double, const int>(), nb::arg("Cont"), nb::arg("Secont"), nb::arg("StartingPoint"), nb::arg("EpsLix") = static_cast<std::decay_t<const double>>(1.0e-06), nb::arg("EpsLic") = static_cast<std::decay_t<const double>>(1.0e-06), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(500), R"nbdoc(Given an input matrix Cont, two input vectors Secont
 and StartingPoint, it solves Cont*X = Secont (only
@@ -1792,12 +1828,14 @@ An exception is raised if NotDone.)nbdoc")
         .def("InverseCont", static_cast<const math_Matrix & (math_Uzawa::*)() const>(&math_Uzawa::InverseCont), R"nbdoc(returns the inverse matrix of (C * Transposed(C)).
 This result is needed for the computation of the gradient
 when approximating a curve.)nbdoc");
+    nanoocp_implicit_copy_ctor<math_Uzawa>(nb::borrow<nb::class_<math_Uzawa>>(m.attr("math_Uzawa")));
     nb::borrow<nb::class_<math_ValueAndWeight>>(m.attr("math_ValueAndWeight"))
         .def(nb::init<>())
         .def(nb::init<double, double>(), nb::arg("theValue"), nb::arg("theWeight"))
         .def("Value", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Value))
         .def("Weight", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Weight))
         .def("__lt__", [](const math_ValueAndWeight & theLeft, const math_ValueAndWeight & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */;
+    nanoocp_implicit_copy_ctor<math_ValueAndWeight>(nb::borrow<nb::class_<math_ValueAndWeight>>(m.attr("math_ValueAndWeight")));
     m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
     m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, math_Vector & vv, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, vv, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
     m.def("LU_Solve", static_cast<void (*)(const math_Matrix &, const math_IntegerVector &, math_Vector &)>(&LU_Solve), nb::arg("a"), nb::arg("indx"), nb::arg("b"));

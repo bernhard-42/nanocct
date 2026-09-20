@@ -10,7 +10,11 @@ import nanoocp.gp
 class GeomProjLib:
     """Projection of a curve on a surface."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomProjLib) -> None: ...
 
     @overload
     @staticmethod

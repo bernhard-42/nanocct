@@ -11,7 +11,11 @@ import nanoocp.math
 class CPnts_MyGaussFunction(nanoocp.math.math_Function):
     """for implementation, compute values for Gauss"""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: CPnts_MyGaussFunction) -> None: ...
 
     def Value(self, X: float) -> tuple[bool, float]: ...
 
@@ -22,7 +26,11 @@ class CPnts_MyRootFunction(nanoocp.math.math_FunctionWithDerivative):
     (compute Length and Derivative of the curve for Newton)
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: CPnts_MyRootFunction) -> None: ...
 
     @overload
     def Init(self, X0: float, L: float) -> None:
@@ -84,6 +92,9 @@ class CPnts_AbscissaPoint:
         <Resolution> is the error allowed in the computation.
         The computed point can be outside of the curve 's bounds.
         """
+
+    @overload
+    def __init__(self, theOther: CPnts_AbscissaPoint) -> None: ...
 
     @overload
     @staticmethod
@@ -262,6 +273,9 @@ class CPnts_UniformDeflection:
     @overload
     def __init__(self, C: nanoocp.Adaptor2d.Adaptor2d_Curve2d, Deflection: float, U1: float, U2: float, Resolution: float, WithControl: bool) -> None:
         """As above with 2d curve"""
+
+    @overload
+    def __init__(self, theOther: CPnts_UniformDeflection) -> None: ...
 
     @overload
     def Initialize(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, Deflection: float, Resolution: float, WithControl: bool) -> None: ...

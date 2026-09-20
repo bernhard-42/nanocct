@@ -237,6 +237,7 @@ the input surface.
 @param theParam Line parameter.
 @param theIsForward Flag indicating forward parameterization on a isoline.
 @return true when 3d curve is built and false otherwise.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib>(nb::borrow<nb::class_<GeomLib>>(m.attr("GeomLib")));
     nb::borrow<nb::class_<GeomLib_Check2dBSplineCurve>>(m.attr("GeomLib_Check2dBSplineCurve"))
         .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const double, const double>(), nb::arg("Curve"), nb::arg("Tolerance"), nb::arg("AngularTolerance"))
         .def("IsDone", static_cast<bool (GeomLib_Check2dBSplineCurve::*)() const>(&GeomLib_Check2dBSplineCurve::IsDone))
@@ -247,6 +248,7 @@ by fixing the first or the last tangencies
 
 if Index3D not in the Range [1,Nb3dSpaces]
 if the Approx is not Done)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_Check2dBSplineCurve>(nb::borrow<nb::class_<GeomLib_Check2dBSplineCurve>>(m.attr("GeomLib_Check2dBSplineCurve")));
     nb::borrow<nb::class_<GeomLib_CheckCurveOnSurface>>(m.attr("GeomLib_CheckCurveOnSurface"))
         .def(nb::init<>(), R"nbdoc(Default constructor)nbdoc")
         .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const double>(), nb::arg("theCurve"), nb::arg("theTolRange") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Constructor)nbdoc")
@@ -266,6 +268,7 @@ The possible values are:
 3 - error in calculations.)nbdoc")
         .def("MaxDistance", static_cast<double (GeomLib_CheckCurveOnSurface::*)() const>(&GeomLib_CheckCurveOnSurface::MaxDistance), R"nbdoc(Returns max distance)nbdoc")
         .def("MaxParameter", static_cast<double (GeomLib_CheckCurveOnSurface::*)() const>(&GeomLib_CheckCurveOnSurface::MaxParameter), R"nbdoc(Returns parameter in which the distance is maximal)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_CheckCurveOnSurface>(nb::borrow<nb::class_<GeomLib_CheckCurveOnSurface>>(m.attr("GeomLib_CheckCurveOnSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Curve> &>, GeomLib_CheckCurveOnSurface>();
     nb::borrow<nb::class_<GeomLib_CheckBSplineCurve>>(m.attr("GeomLib_CheckBSplineCurve"))
         .def(nb::init<const occ::handle<Geom_BSplineCurve> &, const double, const double>(), nb::arg("Curve"), nb::arg("Tolerance"), nb::arg("AngularTolerance"))
@@ -277,6 +280,7 @@ by fixing the first or the last tangencies
 
 if Index3D not in the Range [1,Nb3dSpaces]
 if the Approx is not Done)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_CheckBSplineCurve>(nb::borrow<nb::class_<GeomLib_CheckBSplineCurve>>(m.attr("GeomLib_CheckBSplineCurve")));
     nb::borrow<nb::class_<GeomLib_DenominatorMultiplier>>(m.attr("GeomLib_DenominatorMultiplier"))
         .def(nb::init<const occ::handle<Geom_BSplineSurface> &, const NCollection_Array1<double> &>(), nb::arg("Surface"), nb::arg("KnotVector"), R"nbdoc(if the surface is rational this will define the evaluator
 of a real function of 2 variables a(u,v) such that
@@ -298,21 +302,25 @@ D U
 D Denominator(Umax,Vparameter)
 - ------------------------------[H2(u)]/(Denominator(Umax,Vparameter)^2)
 D U)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_DenominatorMultiplier>(nb::borrow<nb::class_<GeomLib_DenominatorMultiplier>>(m.attr("GeomLib_DenominatorMultiplier")));
     nb::borrow<nb::class_<GeomLib_Interpolate>>(m.attr("GeomLib_Interpolate"))
         .def(nb::init<const int, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &>(), nb::arg("Degree"), nb::arg("NumPoints"), nb::arg("Points"), nb::arg("Parameters"))
         .def("IsDone", static_cast<bool (GeomLib_Interpolate::*)() const>(&GeomLib_Interpolate::IsDone), R"nbdoc(returns if everything went OK)nbdoc")
         .def("Error", static_cast<GeomLib_InterpolationErrors (GeomLib_Interpolate::*)() const>(&GeomLib_Interpolate::Error), R"nbdoc(returns the error type if any)nbdoc")
         .def("Curve", static_cast<occ::handle<Geom_BSplineCurve> (GeomLib_Interpolate::*)() const>(&GeomLib_Interpolate::Curve), R"nbdoc(returns the interpolated curve of the requested degree)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_Interpolate>(nb::borrow<nb::class_<GeomLib_Interpolate>>(m.attr("GeomLib_Interpolate")));
     nb::borrow<nb::class_<GeomLib_IsPlanarSurface>>(m.attr("GeomLib_IsPlanarSurface"))
         .def(nb::init<const occ::handle<Geom_Surface> &, const double>(), nb::arg("S"), nb::arg("Tol") = static_cast<std::decay_t<const double>>(1.0e-7))
         .def("IsPlanar", static_cast<bool (GeomLib_IsPlanarSurface::*)() const>(&GeomLib_IsPlanarSurface::IsPlanar), R"nbdoc(Return if the Surface is a plan)nbdoc")
         .def("Plan", static_cast<const gp_Pln & (GeomLib_IsPlanarSurface::*)() const>(&GeomLib_IsPlanarSurface::Plan), R"nbdoc(Return the plan definition)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_IsPlanarSurface>(nb::borrow<nb::class_<GeomLib_IsPlanarSurface>>(m.attr("GeomLib_IsPlanarSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomLib_IsPlanarSurface>();
     nb::borrow<nb::class_<GeomLib_LogSample>>(m.attr("GeomLib_LogSample"))
         .def(nb::init<const double, const double, const int>(), nb::arg("A"), nb::arg("B"), nb::arg("N"))
         .def("GetParameter", static_cast<double (GeomLib_LogSample::*)(const int) const>(&GeomLib_LogSample::GetParameter), nb::arg("Index"), R"nbdoc(Returns the value of parameter of the point of
 range Index : A + ((Index-1)/(NbPoints-1))*B.
 An exception is raised if Index<=0 or Index>NbPoints.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_LogSample>(nb::borrow<nb::class_<GeomLib_LogSample>>(m.attr("GeomLib_LogSample")));
     nb::borrow<nb::class_<GeomLib_MakeCurvefromApprox>>(m.attr("GeomLib_MakeCurvefromApprox"))
         .def(nb::init<const AdvApprox_ApproxAFunction &>(), nb::arg("Approx"))
         .def("IsDone", static_cast<bool (GeomLib_MakeCurvefromApprox::*)() const>(&GeomLib_MakeCurvefromApprox::IsDone))
@@ -345,6 +353,7 @@ to the index1d 1D space.
 if Index1D not in the Range [1,Nb1dSpaces]
 if Index3D not in the Range [1,Nb3dSpaces]
 if the Approx is not Done)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_MakeCurvefromApprox>(nb::borrow<nb::class_<GeomLib_MakeCurvefromApprox>>(m.attr("GeomLib_MakeCurvefromApprox")));
     nb::implicitly_convertible<std::decay_t<const AdvApprox_ApproxAFunction &>, GeomLib_MakeCurvefromApprox>();
     nb::borrow<nb::class_<GeomLib_PolyFunc>>(m.attr("GeomLib_PolyFunc"))
         .def(nb::init<const math_Vector &>(), nb::arg("Coeffs"))
@@ -359,6 +368,7 @@ False otherwise.)nbdoc")
 function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_PolyFunc>(nb::borrow<nb::class_<GeomLib_PolyFunc>>(m.attr("GeomLib_PolyFunc")));
     nb::implicitly_convertible<std::decay_t<const math_Vector &>, GeomLib_PolyFunc>();
     nanoocp_implicit_default_ctor<GeomLib_Tool>(nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool")));
     nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool"))
@@ -368,5 +378,6 @@ or at a distance less than the MaxDist value.)nbdoc")
 or at a distance less than the MaxDist value.)nbdoc")
         .def_static("Parameter", [](const occ::handle<Geom2d_Curve> & Curve, const gp_Pnt2d & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve"), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 2D point lying on a 2D curve
 or at a distance less than the MaxDist value.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLib_Tool>(nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool")));
     m.attr("Adaptor2d_Curve2d") = nb::module_::import_("nanoocp._TKG2d.Adaptor2d").attr("Adaptor2d_Curve2d");   // Adaptor2d_Curve2d = Adaptor2d_Curve2d
 }

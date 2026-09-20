@@ -146,6 +146,7 @@ values VMin and VMax.
 B is then enlarged by the tolerance value Tol.
 UMax-UMin can be in [0,2*pi],
 VMin,VMax can be [-pi/2,pi/2])nbdoc");
+    nanoocp_implicit_copy_ctor<BndLib>(nb::borrow<nb::class_<BndLib>>(m.attr("BndLib")));
     nanoocp_implicit_default_ctor<BndLib_Add2dCurve>(nb::borrow<nb::class_<BndLib_Add2dCurve>>(m.attr("BndLib_Add2dCurve")));
     nb::borrow<nb::class_<BndLib_Add2dCurve>>(m.attr("BndLib_Add2dCurve"))
         .def_static("Add", static_cast<void (*)(const Adaptor2d_Curve2d &, const double, Bnd_Box2d &)>(&BndLib_Add2dCurve::Add), nb::arg("C"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds to the bounding box B the curve C
@@ -227,6 +228,7 @@ algorithms is used to include it in the bounding box B:
 -   numerical calculation of bounding box sizes, based on minimization algorithm, for other
 types of curve If Tol = < Precision::PConfusion(), Precision::PConfusion is used as tolerance
 for calculation)nbdoc");
+    nanoocp_implicit_copy_ctor<BndLib_Add2dCurve>(nb::borrow<nb::class_<BndLib_Add2dCurve>>(m.attr("BndLib_Add2dCurve")));
     nanoocp_implicit_default_ctor<BndLib_Add3dCurve>(nb::borrow<nb::class_<BndLib_Add3dCurve>>(m.attr("BndLib_Add3dCurve")));
     nb::borrow<nb::class_<BndLib_Add3dCurve>>(m.attr("BndLib_Add3dCurve"))
         .def_static("Add", static_cast<void (*)(const Adaptor3d_Curve &, const double, Bnd_Box &)>(&BndLib_Add3dCurve::Add), nb::arg("C"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds to the bounding box B the curve C
@@ -285,6 +287,7 @@ numbers, or two positive infinite real numbers.)nbdoc")
 These methods use more precise algorithms for building bnd box
 then methods Add(...))nbdoc")
         .def_static("AddOptimal", static_cast<void (*)(const Adaptor3d_Curve &, const double, const double, const double, Bnd_Box &)>(&BndLib_Add3dCurve::AddOptimal), nb::arg("C"), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), nb::arg("B"));
+    nanoocp_implicit_copy_ctor<BndLib_Add3dCurve>(nb::borrow<nb::class_<BndLib_Add3dCurve>>(m.attr("BndLib_Add3dCurve")));
     nanoocp_implicit_default_ctor<BndLib_AddSurface>(nb::borrow<nb::class_<BndLib_AddSurface>>(m.attr("BndLib_AddSurface")));
     nb::borrow<nb::class_<BndLib_AddSurface>>(m.attr("BndLib_AddSurface"))
         .def_static("Add", static_cast<void (*)(const Adaptor3d_Surface &, const double, Bnd_Box &)>(&BndLib_AddSurface::Add), nb::arg("S"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds to the bounding box B the surface S
@@ -349,4 +352,5 @@ AddSurface::Add ( S, Tol, B );)nbdoc")
         .def_static("AddOptimal", static_cast<void (*)(const Adaptor3d_Surface &, const double, Bnd_Box &)>(&BndLib_AddSurface::AddOptimal), nb::arg("S"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds the surface S to the bounding box B.
 This algorithm builds precise bounding box)nbdoc")
         .def_static("AddOptimal", static_cast<void (*)(const Adaptor3d_Surface &, const double, const double, const double, const double, const double, Bnd_Box &)>(&BndLib_AddSurface::AddOptimal), nb::arg("S"), nb::arg("UMin"), nb::arg("UMax"), nb::arg("VMin"), nb::arg("VMax"), nb::arg("Tol"), nb::arg("B"));
+    nanoocp_implicit_copy_ctor<BndLib_AddSurface>(nb::borrow<nb::class_<BndLib_AddSurface>>(m.attr("BndLib_AddSurface")));
 }

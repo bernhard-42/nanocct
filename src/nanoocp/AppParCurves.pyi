@@ -32,7 +32,11 @@ class AppParCurves:
     The result of the approximation will be a MultiCurve.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppParCurves) -> None: ...
 
     @staticmethod
     def BernsteinMatrix(NbPoles: int, U: nanoocp.math.math_Vector, A: nanoocp.math.math_Matrix) -> None: ...
@@ -62,6 +66,9 @@ class AppParCurves_ConstraintCouple:
         Create a couple the object <Index> will have the
         constraint <Cons>.
         """
+
+    @overload
+    def __init__(self, theOther: AppParCurves_ConstraintCouple) -> None: ...
 
     def Index(self) -> int:
         """returns the index of the constraint object."""
@@ -117,6 +124,9 @@ class AppParCurves_MultiPoint:
         Points will be initialized with SetPoint and SetPoint2d.
         NbPoints is the total number of Points.
         """
+
+    @overload
+    def __init__(self, theOther: AppParCurves_MultiPoint) -> None: ...
 
     def SetPoint(self, Index: int, Point: nanoocp.gp.gp_Pnt) -> None:
         """
@@ -220,6 +230,9 @@ class AppParCurves_MultiCurve:
         containing the same number of MultiPoint.
         Each MultiPoint must have NbCurves Poles.
         """
+
+    @overload
+    def __init__(self, theOther: AppParCurves_MultiCurve) -> None: ...
 
     def SetNbPoles(self, nbPoles: int) -> None:
         """
@@ -413,6 +426,9 @@ class AppParCurves_MultiBSpCurve(AppParCurves_MultiCurve):
         creates a MultiBSpCurve, describing BSpline
         curves, taking control points from <SC>.
         """
+
+    @overload
+    def __init__(self, theOther: AppParCurves_MultiBSpCurve) -> None: ...
 
     def SetKnots(self, theKnots: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """Knots of the multiBSpCurve are assigned to <theknots>."""

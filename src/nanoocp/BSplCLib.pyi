@@ -126,7 +126,11 @@ class BSplCLib:
     a practical guide Gerald Farin
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BSplCLib) -> None: ...
 
     @staticmethod
     def Hunt(theArray: nanoocp.NCollection.NCollection_Array1[float], theX: float) -> int:

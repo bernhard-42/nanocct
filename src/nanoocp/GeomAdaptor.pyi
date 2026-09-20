@@ -21,7 +21,11 @@ class GeomAdaptor:
     curve and surface necessary to use algorithms.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomAdaptor) -> None: ...
 
     @staticmethod
     def MakeCurve(C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> nanoocp.Geom.Geom_Curve:
@@ -63,10 +67,17 @@ class GeomAdaptor_Curve(nanoocp.Adaptor3d.Adaptor3d_Curve):
         Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion()
         """
 
+    @overload
+    def __init__(self, theOther: GeomAdaptor_Curve) -> None: ...
+
     class OffsetData:
         """Internal structure for offset curve evaluation data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Curve.OffsetData) -> None: ...
 
         @property
         def BasisAdaptor(self) -> GeomAdaptor_Curve:
@@ -99,7 +110,11 @@ class GeomAdaptor_Curve(nanoocp.Adaptor3d.Adaptor3d_Curve):
     class BezierData:
         """Internal structure for Bezier curve cache data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Curve.BezierData) -> None: ...
 
         @property
         def Curve(self) -> nanoocp.Geom.Geom_BezierCurve:
@@ -125,7 +140,11 @@ class GeomAdaptor_Curve(nanoocp.Adaptor3d.Adaptor3d_Curve):
     class BSplineData:
         """Internal structure for BSpline curve cache data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Curve.BSplineData) -> None: ...
 
         @property
         def Curve(self) -> nanoocp.Geom.Geom_BSplineCurve:
@@ -312,10 +331,17 @@ class GeomAdaptor_Surface(nanoocp.Adaptor3d.Adaptor3d_Surface):
     def __init__(self, theSurf: nanoocp.Geom.Geom_Surface, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
         """Standard_ConstructionError is raised if UFirst>ULast or VFirst>VLast"""
 
+    @overload
+    def __init__(self, theOther: GeomAdaptor_Surface) -> None: ...
+
     class ExtrusionData:
         """Internal structure for extrusion surface evaluation data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Surface.ExtrusionData) -> None: ...
 
         @property
         def BasisCurve(self) -> nanoocp.Adaptor3d.Adaptor3d_Curve:
@@ -341,7 +367,11 @@ class GeomAdaptor_Surface(nanoocp.Adaptor3d.Adaptor3d_Surface):
     class RevolutionData:
         """Internal structure for revolution surface evaluation data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Surface.RevolutionData) -> None: ...
 
         @property
         def BasisCurve(self) -> nanoocp.Adaptor3d.Adaptor3d_Curve:
@@ -367,7 +397,11 @@ class GeomAdaptor_Surface(nanoocp.Adaptor3d.Adaptor3d_Surface):
     class OffsetData:
         """Internal structure for offset surface evaluation data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Surface.OffsetData) -> None: ...
 
         @property
         def BasisAdaptor(self) -> GeomAdaptor_Surface:
@@ -407,7 +441,11 @@ class GeomAdaptor_Surface(nanoocp.Adaptor3d.Adaptor3d_Surface):
     class BezierData:
         """Internal structure for Bezier surface cache data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Surface.BezierData) -> None: ...
 
         @property
         def Surface(self) -> nanoocp.Geom.Geom_BezierSurface:
@@ -433,7 +471,11 @@ class GeomAdaptor_Surface(nanoocp.Adaptor3d.Adaptor3d_Surface):
     class BSplineData:
         """Internal structure for BSpline surface cache data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: GeomAdaptor_Surface.BSplineData) -> None: ...
 
         @property
         def Surface(self) -> nanoocp.Geom.Geom_BSplineSurface:
@@ -668,6 +710,9 @@ class GeomAdaptor_SurfaceOfLinearExtrusion(GeomAdaptor_Surface):
     def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, V: nanoocp.gp.gp_Dir) -> None:
         """Thew Curve and the Direction are loaded."""
 
+    @overload
+    def __init__(self, theOther: GeomAdaptor_SurfaceOfLinearExtrusion) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -831,6 +876,9 @@ class GeomAdaptor_SurfaceOfRevolution(GeomAdaptor_Surface):
     @overload
     def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, V: nanoocp.gp.gp_Ax1) -> None:
         """The Curve and the Direction are loaded."""
+
+    @overload
+    def __init__(self, theOther: GeomAdaptor_SurfaceOfRevolution) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1006,6 +1054,9 @@ class GeomAdaptor_TransformedCurve(nanoocp.Adaptor3d.Adaptor3d_Curve):
         @param theTrsf transformation to apply
         """
 
+    @overload
+    def __init__(self, theOther: GeomAdaptor_TransformedCurve) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -1165,6 +1216,9 @@ class GeomAdaptor_TransformedSurface(nanoocp.Adaptor3d.Adaptor3d_Surface):
         @param theTolU tolerance in U direction
         @param theTolV tolerance in V direction
         """
+
+    @overload
+    def __init__(self, theOther: GeomAdaptor_TransformedSurface) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...

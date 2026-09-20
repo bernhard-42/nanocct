@@ -36,7 +36,11 @@ class GeomLib:
     on geometric entity from packages Geom and Geom2d.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib) -> None: ...
 
     @staticmethod
     def To3d(Position: nanoocp.gp.gp_Ax2, Curve2d: nanoocp.Geom2d.Geom2d_Curve) -> nanoocp.Geom.Geom_Curve:
@@ -287,7 +291,11 @@ class GeomLib_Check2dBSplineCurve:
     are reversed
     """
 
+    @overload
     def __init__(self, Curve: nanoocp.Geom2d.Geom2d_BSplineCurve, Tolerance: float, AngularTolerance: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_Check2dBSplineCurve) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -317,6 +325,9 @@ class GeomLib_CheckCurveOnSurface:
     @overload
     def __init__(self, theCurve: nanoocp.Adaptor3d.Adaptor3d_Curve, theTolRange: float = 1e-09) -> None:
         """Constructor"""
+
+    @overload
+    def __init__(self, theOther: GeomLib_CheckCurveOnSurface) -> None: ...
 
     @overload
     def Init(self, theCurve: nanoocp.Adaptor3d.Adaptor3d_Curve, theTolRange: float = 1e-09) -> None:
@@ -364,7 +375,11 @@ class GeomLib_CheckBSplineCurve:
     are reversed regarding the third or n-3rd control
     """
 
+    @overload
     def __init__(self, Curve: nanoocp.Geom.Geom_BSplineCurve, Tolerance: float, AngularTolerance: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_CheckBSplineCurve) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -388,6 +403,7 @@ class GeomLib_DenominatorMultiplier:
     direction.
     """
 
+    @overload
     def __init__(self, Surface: nanoocp.Geom.Geom_BSplineSurface, KnotVector: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         if the surface is rational this will define the evaluator
@@ -397,6 +413,9 @@ class GeomLib_DenominatorMultiplier:
         NewF(u,v) = ----------------
         a(u,v) * D(u,v)
         """
+
+    @overload
+    def __init__(self, theOther: GeomLib_DenominatorMultiplier) -> None: ...
 
     def Value(self, UParameter: float, VParameter: float) -> float:
         """
@@ -428,7 +447,11 @@ class GeomLib_Interpolate:
     degree - 1 so that the degree of the curve is odd
     """
 
+    @overload
     def __init__(self, Degree: int, NumPoints: int, Points: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], Parameters: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_Interpolate) -> None: ...
 
     def IsDone(self) -> bool:
         """returns if everything went OK"""
@@ -442,7 +465,11 @@ class GeomLib_Interpolate:
 class GeomLib_IsPlanarSurface:
     """Find if a surface is a planar surface."""
 
+    @overload
     def __init__(self, S: nanoocp.Geom.Geom_Surface, Tol: float = 1e-07) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_IsPlanarSurface) -> None: ...
 
     def IsPlanar(self) -> bool:
         """Return if the Surface is a plan"""
@@ -451,7 +478,11 @@ class GeomLib_IsPlanarSurface:
         """Return the plan definition"""
 
 class GeomLib_LogSample(nanoocp.math.math_FunctionSample):
+    @overload
     def __init__(self, A: float, B: float, N: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_LogSample) -> None: ...
 
     def GetParameter(self, Index: int) -> float:
         """
@@ -466,7 +497,11 @@ class GeomLib_MakeCurvefromApprox:
     from an Approximation (ApproxAFunction from AdvApprox).
     """
 
+    @overload
     def __init__(self, Approx: nanoocp.AdvApprox.AdvApprox_ApproxAFunction) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_MakeCurvefromApprox) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -532,7 +567,11 @@ class GeomLib_MakeCurvefromApprox:
 class GeomLib_PolyFunc(nanoocp.math.math_FunctionWithDerivative):
     """Polynomial Function"""
 
+    @overload
     def __init__(self, Coeffs: nanoocp.math.math_Vector) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_PolyFunc) -> None: ...
 
     def Value(self, X: float) -> tuple[bool, float]:
         """
@@ -570,7 +609,11 @@ class GeomLib_Tool:
     limit or if computation fails.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLib_Tool) -> None: ...
 
     @overload
     @staticmethod

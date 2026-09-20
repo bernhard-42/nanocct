@@ -424,6 +424,7 @@ For a line: D1 = Direction, DN = 0 for N > 1.
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing),
 or empty array if geometry is null or no parameters)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Line>(nb::borrow<nb::class_<GeomGridEval_Line>>(m.attr("GeomGridEval_Line")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Line> &>, GeomGridEval_Line>();
     nb::borrow<nb::class_<GeomGridEval_Circle>>(m.attr("GeomGridEval_Circle"))
         .def(nb::init<const occ::handle<Geom_Circle> &>(), nb::arg("theCircle"), R"nbdoc(Constructor with geometry.
@@ -458,6 +459,7 @@ D4 = R * (cos(u) * X + sin(u) * Y) = D0, then repeats
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing),
 or empty array if geometry is null or no parameters)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Circle>(nb::borrow<nb::class_<GeomGridEval_Circle>>(m.attr("GeomGridEval_Circle")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Circle> &>, GeomGridEval_Circle>();
     nb::borrow<nb::class_<GeomGridEval_Ellipse>>(m.attr("GeomGridEval_Ellipse"))
         .def(nb::init<const occ::handle<Geom_Ellipse> &>(), nb::arg("theEllipse"), R"nbdoc(Constructor with geometry.
@@ -485,6 +487,7 @@ D4 = MajR * cos(u) * X + MinR * sin(u) * Y = D0, then repeats
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Ellipse>(nb::borrow<nb::class_<GeomGridEval_Ellipse>>(m.attr("GeomGridEval_Ellipse")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Ellipse> &>, GeomGridEval_Ellipse>();
     nb::borrow<nb::class_<GeomGridEval_Hyperbola>>(m.attr("GeomGridEval_Hyperbola"))
         .def(nb::init<const occ::handle<Geom_Hyperbola> &>(), nb::arg("theHyperbola"), R"nbdoc(Constructor with geometry.
@@ -511,6 +514,7 @@ D3 = D1, D4 = D0, etc.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Hyperbola>(nb::borrow<nb::class_<GeomGridEval_Hyperbola>>(m.attr("GeomGridEval_Hyperbola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Hyperbola> &>, GeomGridEval_Hyperbola>();
     nb::borrow<nb::class_<GeomGridEval_Parabola>>(m.attr("GeomGridEval_Parabola"))
         .def(nb::init<const occ::handle<Geom_Parabola> &>(), nb::arg("theParabola"), R"nbdoc(Constructor with geometry.
@@ -537,6 +541,7 @@ DN = 0 for N >= 3
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Parabola>(nb::borrow<nb::class_<GeomGridEval_Parabola>>(m.attr("GeomGridEval_Parabola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Parabola> &>, GeomGridEval_Parabola>();
     nb::borrow<nb::class_<GeomGridEval_BezierCurve>>(m.attr("GeomGridEval_BezierCurve"))
         .def(nb::init<const occ::handle<Geom_BezierCurve> &>(), nb::arg("theBezier"), R"nbdoc(Constructor with geometry.
@@ -561,6 +566,7 @@ For orders > 3, uses BSplCLib::DN.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_BezierCurve>(nb::borrow<nb::class_<GeomGridEval_BezierCurve>>(m.attr("GeomGridEval_BezierCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BezierCurve> &>, GeomGridEval_BezierCurve>();
     nb::borrow<nb::class_<GeomGridEval_BSplineCurve>>(m.attr("GeomGridEval_BSplineCurve"))
         .def(nb::init<const occ::handle<Geom_BSplineCurve> &>(), nb::arg("theCurve"), R"nbdoc(Constructor with geometry.
@@ -589,6 +595,7 @@ For orders > 3, uses geometry DN method.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_BSplineCurve>(nb::borrow<nb::class_<GeomGridEval_BSplineCurve>>(m.attr("GeomGridEval_BSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BSplineCurve> &>, GeomGridEval_BSplineCurve>();
     nb::borrow<nb::class_<GeomGridEval_OtherCurve>>(m.attr("GeomGridEval_OtherCurve"))
         .def(nb::init<const Adaptor3d_Curve &>(), nb::arg("theCurve"), R"nbdoc(Constructor with curve adaptor reference.
@@ -616,6 +623,7 @@ For orders > 3, uses adaptor DN method.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_OtherCurve>(nb::borrow<nb::class_<GeomGridEval_OtherCurve>>(m.attr("GeomGridEval_OtherCurve")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Curve &>, GeomGridEval_OtherCurve>();
     nb::borrow<nb::class_<GeomGridEval_OffsetCurve>>(m.attr("GeomGridEval_OffsetCurve"))
         .def(nb::init<const occ::handle<Geom_OffsetCurve> &>(), nb::arg("theOffset"), R"nbdoc(Constructor with geometry.
@@ -644,6 +652,7 @@ For orders > 3, uses geometry DN method.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_OffsetCurve>(nb::borrow<nb::class_<GeomGridEval_OffsetCurve>>(m.attr("GeomGridEval_OffsetCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_OffsetCurve> &>, GeomGridEval_OffsetCurve>();
     nb::borrow<nb::class_<GeomGridEval_Curve>>(m.attr("GeomGridEval_Curve"))
         .def(nb::init<const Adaptor3d_Curve &>(), nb::arg("theCurve"), R"nbdoc(Construct from adaptor reference (auto-detects curve type).
@@ -671,6 +680,7 @@ of this evaluator when using fallback evaluation.
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc")
         .def("GetType", static_cast<GeomAbs_CurveType (GeomGridEval_Curve::*)() const>(&GeomGridEval_Curve::GetType), R"nbdoc(Returns the detected curve type.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Curve>(nb::borrow<nb::class_<GeomGridEval_Curve>>(m.attr("GeomGridEval_Curve")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Curve &>, GeomGridEval_Curve>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Curve> &>, GeomGridEval_Curve>();
     nb::borrow<nb::class_<GeomGridEval_Plane>>(m.attr("GeomGridEval_Plane"))
@@ -699,6 +709,7 @@ of this evaluator when using fallback evaluation.
 @param theNU derivative order in U direction
 @param theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Plane>(nb::borrow<nb::class_<GeomGridEval_Plane>>(m.attr("GeomGridEval_Plane")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Plane> &>, GeomGridEval_Plane>();
     nb::borrow<nb::class_<GeomGridEval_Cylinder>>(m.attr("GeomGridEval_Cylinder"))
         .def(nb::init<const occ::handle<Geom_CylindricalSurface> &>(), nb::arg("theCylinder"), R"nbdoc(Constructor with geometry.
@@ -730,6 +741,7 @@ For a cylinder:
 @param theNU derivative order in U direction
 @param theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Cylinder>(nb::borrow<nb::class_<GeomGridEval_Cylinder>>(m.attr("GeomGridEval_Cylinder")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_CylindricalSurface> &>, GeomGridEval_Cylinder>();
     nb::borrow<nb::class_<GeomGridEval_Sphere>>(m.attr("GeomGridEval_Sphere"))
         .def(nb::init<const occ::handle<Geom_SphericalSurface> &>(), nb::arg("theSphere"), R"nbdoc(Constructor with geometry.
@@ -759,6 +771,7 @@ For orders > 3, uses geometry DN method.
 @param theNU derivative order in U direction
 @param theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Sphere>(nb::borrow<nb::class_<GeomGridEval_Sphere>>(m.attr("GeomGridEval_Sphere")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SphericalSurface> &>, GeomGridEval_Sphere>();
     nb::borrow<nb::class_<GeomGridEval_Cone>>(m.attr("GeomGridEval_Cone"))
         .def(nb::init<const occ::handle<Geom_ConicalSurface> &>(), nb::arg("theCone"), R"nbdoc(Constructor with geometry.
@@ -788,6 +801,7 @@ For orders > 3, uses geometry DN method.
 @param theNU derivative order in U direction
 @param theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Cone>(nb::borrow<nb::class_<GeomGridEval_Cone>>(m.attr("GeomGridEval_Cone")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_ConicalSurface> &>, GeomGridEval_Cone>();
     nb::borrow<nb::class_<GeomGridEval_Torus>>(m.attr("GeomGridEval_Torus"))
         .def(nb::init<const occ::handle<Geom_ToroidalSurface> &>(), nb::arg("theTorus"), R"nbdoc(Constructor with geometry.
@@ -817,6 +831,7 @@ For orders > 3, uses geometry DN method.
 @param theNU derivative order in U direction
 @param theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Torus>(nb::borrow<nb::class_<GeomGridEval_Torus>>(m.attr("GeomGridEval_Torus")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_ToroidalSurface> &>, GeomGridEval_Torus>();
     nb::borrow<nb::class_<GeomGridEval_BezierSurface>>(m.attr("GeomGridEval_BezierSurface"))
         .def(nb::init<const occ::handle<Geom_BezierSurface> &>(), nb::arg("theBezier"), R"nbdoc(Constructor with geometry.
@@ -851,6 +866,7 @@ For orders > 3, uses geometry DN method.
 @param[in] theNU derivative order in U direction
 @param[in] theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_BezierSurface>(nb::borrow<nb::class_<GeomGridEval_BezierSurface>>(m.attr("GeomGridEval_BezierSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BezierSurface> &>, GeomGridEval_BezierSurface>();
     nb::borrow<nb::class_<GeomGridEval_OffsetSurface>>(m.attr("GeomGridEval_OffsetSurface"))
         .def(nb::init<const occ::handle<Geom_OffsetSurface> &>(), nb::arg("theOffset"), R"nbdoc(Constructor with geometry.
@@ -884,6 +900,7 @@ Uses geometry DN method.
 @param[in] theNU derivative order in U direction
 @param[in] theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_OffsetSurface>(nb::borrow<nb::class_<GeomGridEval_OffsetSurface>>(m.attr("GeomGridEval_OffsetSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_OffsetSurface> &>, GeomGridEval_OffsetSurface>();
     nb::borrow<nb::class_<GeomGridEval_BSplineSurface>>(m.attr("GeomGridEval_BSplineSurface"))
         .def(nb::init<const occ::handle<Geom_BSplineSurface> &>(), nb::arg("theSurface"), R"nbdoc(Constructor with geometry.
@@ -919,6 +936,7 @@ Uses direct geometry DN method.
 @param theNU derivative order in U direction
 @param theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_BSplineSurface>(nb::borrow<nb::class_<GeomGridEval_BSplineSurface>>(m.attr("GeomGridEval_BSplineSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BSplineSurface> &>, GeomGridEval_BSplineSurface>();
     nb::borrow<nb::class_<GeomGridEval_OtherSurface>>(m.attr("GeomGridEval_OtherSurface"))
         .def(nb::init<const Adaptor3d_Surface *>(), nb::arg("theSurface"), R"nbdoc(Constructor with surface adaptor pointer.
@@ -947,6 +965,7 @@ Uses direct geometry DN method.
 @param theNU derivative order in U direction
 @param theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_OtherSurface>(nb::borrow<nb::class_<GeomGridEval_OtherSurface>>(m.attr("GeomGridEval_OtherSurface")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Surface *>, GeomGridEval_OtherSurface>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomGridEval_OtherSurface>();
     nb::borrow<nb::class_<GeomGridEval_SurfaceOfRevolution>>(m.attr("GeomGridEval_SurfaceOfRevolution"))
@@ -979,6 +998,7 @@ or empty array if geometry is null or no parameters set)nbdoc")
 @param[in] theNU derivative order in U direction
 @param[in] theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_SurfaceOfRevolution>(nb::borrow<nb::class_<GeomGridEval_SurfaceOfRevolution>>(m.attr("GeomGridEval_SurfaceOfRevolution")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SurfaceOfRevolution> &>, GeomGridEval_SurfaceOfRevolution>();
     nb::borrow<nb::class_<GeomGridEval_SurfaceOfExtrusion>>(m.attr("GeomGridEval_SurfaceOfExtrusion"))
         .def(nb::init<const occ::handle<Geom_SurfaceOfLinearExtrusion> &>(), nb::arg("theExtrusion"), R"nbdoc(Constructor with geometry.
@@ -1010,6 +1030,7 @@ or empty array if geometry is null or no parameters set)nbdoc")
 @param[in] theNU derivative order in U direction
 @param[in] theNV derivative order in V direction
 @return 2D array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_SurfaceOfExtrusion>(nb::borrow<nb::class_<GeomGridEval_SurfaceOfExtrusion>>(m.attr("GeomGridEval_SurfaceOfExtrusion")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SurfaceOfLinearExtrusion> &>, GeomGridEval_SurfaceOfExtrusion>();
     nb::borrow<nb::class_<GeomGridEval_Surface>>(m.attr("GeomGridEval_Surface"))
         .def(nb::init<const Adaptor3d_Surface &>(), nb::arg("theSurface"), R"nbdoc(Construct from adaptor reference (auto-detects surface type).
@@ -1045,6 +1066,7 @@ of this evaluator when using fallback evaluation.
         .def("GetType", static_cast<GeomAbs_SurfaceType (GeomGridEval_Surface::*)() const>(&GeomGridEval_Surface::GetType), R"nbdoc(Returns the detected surface type.)nbdoc")
         .def("HasTransformation", static_cast<bool (GeomGridEval_Surface::*)() const>(&GeomGridEval_Surface::HasTransformation), R"nbdoc(Returns true if a transformation is applied.)nbdoc")
         .def("GetTransformation", static_cast<const std::optional<gp_Trsf> & (GeomGridEval_Surface::*)() const>(&GeomGridEval_Surface::GetTransformation), R"nbdoc(Returns the transformation (empty if not set).)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomGridEval_Surface>(nb::borrow<nb::class_<GeomGridEval_Surface>>(m.attr("GeomGridEval_Surface")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Surface &>, GeomGridEval_Surface>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomGridEval_Surface>();
     m.attr("CurveD1") = nb::module_::import_("nanoocp._TKG3d.Geom").attr("Geom_Curve").attr("ResD1");   // CurveD1 = Geom_Curve::ResD1

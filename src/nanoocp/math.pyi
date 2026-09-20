@@ -810,7 +810,11 @@ class math_Vector:
         """
 
 class math:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math) -> None: ...
 
     @staticmethod
     def GaussPointsMax() -> int: ...
@@ -872,6 +876,7 @@ class math_BFGS:
     borders.
     """
 
+    @overload
     def __init__(self, NbVariables: int, Tolerance: float = 1e-08, NbIterations: int = 200, ZEPS: float = 1e-12) -> None:
         """
         Initializes the computation of the minimum of a function with
@@ -882,6 +887,9 @@ class math_BFGS:
         initialization to effectively compute the minimum of the
         function F.
         """
+
+    @overload
+    def __init__(self, theOther: math_BFGS) -> None: ...
 
     def SetBoundary(self, theLeftBorder: math_Vector, theRightBorder: math_Vector) -> None:
         """
@@ -964,11 +972,15 @@ class math_BissecNewton:
     Knowledge of the derivative is required.
     """
 
+    @overload
     def __init__(self, theXTolerance: float) -> None:
         """
         Constructor.
         @param theXTolerance - algorithm tolerance.
         """
+
+    @overload
+    def __init__(self, theOther: math_BissecNewton) -> None: ...
 
     def Perform(self, F: math_FunctionWithDerivative, Bound1: float, Bound2: float, NbIterations: int = 100) -> None:
         """
@@ -1016,6 +1028,7 @@ class math_BracketedRoot:
     located within two bounds. No knowledge of the derivative is required.
     """
 
+    @overload
     def __init__(self, F: math_Function, Bound1: float, Bound2: float, Tolerance: float, NbIterations: int = 100, ZEPS: float = 1e-12) -> None:
         """
         The Brent method is used to find the root of the function F between
@@ -1026,6 +1039,9 @@ class math_BracketedRoot:
         abs(Xi - Xi-1) <= Tolerance;
         The maximum number of iterations allowed is given by NbIterations.
         """
+
+    @overload
+    def __init__(self, theOther: math_BracketedRoot) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -1102,6 +1118,9 @@ class math_BracketMinimum:
         This constructor has to be used if F(A) and F(B) are known.
         """
 
+    @overload
+    def __init__(self, theOther: math_BracketMinimum) -> None: ...
+
     def SetLimits(self, theLeft: float, theRight: float) -> None:
         """
         Set limits of the parameter. By default no limits are applied to the parameter change.
@@ -1161,6 +1180,9 @@ class math_BrentMinimum:
         It has to be used if F(Bx) is known.
         """
 
+    @overload
+    def __init__(self, theOther: math_BrentMinimum) -> None: ...
+
     def Perform(self, F: math_Function, Ax: float, Bx: float, Cx: float) -> None:
         """
         Brent minimization is performed on function F from a given
@@ -1206,8 +1228,12 @@ class math_BullardGenerator:
     Fast random number generator (the algorithm proposed by Ian C. Bullard).
     """
 
+    @overload
     def __init__(self, theSeed: int = 1) -> None:
         """Creates new Xorshift 64-bit RNG."""
+
+    @overload
+    def __init__(self, theOther: math_BullardGenerator) -> None: ...
 
     def SetSeed(self, theSeed: int = 1) -> None:
         """Setup new seed / reset defaults."""
@@ -1219,7 +1245,11 @@ class math_BullardGenerator:
         """Generates new floating-point value."""
 
 class math_ComputeGaussPointsAndWeights:
+    @overload
     def __init__(self, Number: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math_ComputeGaussPointsAndWeights) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -1228,7 +1258,11 @@ class math_ComputeGaussPointsAndWeights:
     def Weights(self) -> math_Vector: ...
 
 class math_ComputeKronrodPointsAndWeights:
+    @overload
     def __init__(self, Number: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math_ComputeKronrodPointsAndWeights) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -1245,6 +1279,7 @@ class math_Crout:
     Only the inferior triangle of A and the diagonal can be given.
     """
 
+    @overload
     def __init__(self, A: math_Matrix, MinPivot: float = 1e-20) -> None:
         """
         Given an input matrix A, this algorithm inverts A by the
@@ -1257,6 +1292,9 @@ class math_Crout:
         considered as singular.
         Exception NotSquare is raised if A is not a square matrix.
         """
+
+    @overload
+    def __init__(self, theOther: math_Crout) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns True if all has been correctly done."""
@@ -1382,6 +1420,9 @@ class math_DirectPolynomialRoots:
         @param theE constant term
         """
 
+    @overload
+    def __init__(self, theOther: math_DirectPolynomialRoots) -> None: ...
+
     def IsDone(self) -> bool:
         """
         Returns true if the computations are successful, otherwise returns false.
@@ -1430,7 +1471,11 @@ class math_EigenValuesSearcher:
     - Proper handling of degenerate cases
     """
 
+    @overload
     def __init__(self, theDiagonal: nanoocp.NCollection.NCollection_Array1[float], theSubdiagonal: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math_EigenValuesSearcher) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -1469,11 +1514,15 @@ class math_FRPR:
     Knowledge of the function's gradient is required.
     """
 
+    @overload
     def __init__(self, theFunction: math_MultipleVarFunctionWithGradient, theTolerance: float, theNbIterations: int = 200, theZEPS: float = 1e-12) -> None:
         """
         Initializes the computation of the minimum of F.
         Warning: constructor does not perform computations.
         """
+
+    @overload
+    def __init__(self, theOther: math_FRPR) -> None: ...
 
     def Perform(self, theFunction: math_MultipleVarFunctionWithGradient, theStartingPoint: math_Vector) -> None:
         """
@@ -1579,6 +1628,7 @@ class math_FunctionAllRoots:
     Knowledge of the derivative is required.
     """
 
+    @overload
     def __init__(self, F: math_FunctionWithDerivative, S: math_FunctionSample, EpsX: float, EpsF: float, EpsNul: float) -> None:
         """
         The algorithm uses the sample to find intervals on which
@@ -1590,6 +1640,9 @@ class math_FunctionAllRoots:
         Between two intervals, the roots of the function F are
         calculated using the FunctionRoots algorithm.
         """
+
+    @overload
+    def __init__(self, theOther: math_FunctionAllRoots) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns True if the computation has been done successfully."""
@@ -1666,6 +1719,9 @@ class math_FunctionRoot:
         The maximum number of iterations allowed is given by NbIterations.
         """
 
+    @overload
+    def __init__(self, theOther: math_FunctionRoot) -> None: ...
+
     def IsDone(self) -> bool:
         """
         Returns true if the computations are successful, otherwise returns false.
@@ -1703,6 +1759,7 @@ class math_FunctionRoots:
     Knowledge of the derivative is required.
     """
 
+    @overload
     def __init__(self, F: math_FunctionWithDerivative, A: float, B: float, NbSample: int, EpsX: float = 0.0, EpsF: float = 0.0, EpsNull: float = 0.0, K: float = 0.0) -> None:
         """
         Calculates all the real roots of a function F-K within the range
@@ -1712,6 +1769,9 @@ class math_FunctionRoots:
         The function is considered as null between A and B if
         abs(F-K) <= EpsNull within this range.
         """
+
+    @overload
+    def __init__(self, theOther: math_FunctionRoots) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -1753,7 +1813,11 @@ class math_FunctionSample:
     two bound A,B.
     """
 
+    @overload
     def __init__(self, A: float, B: float, N: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math_FunctionSample) -> None: ...
 
     def Bounds(self) -> tuple[float, float]:
         """Returns the bounds of parameters."""
@@ -2150,6 +2214,9 @@ class math_FunctionSetRoot:
         respected for all vectors and matrix declarations.
         """
 
+    @overload
+    def __init__(self, theOther: math_FunctionSetRoot) -> None: ...
+
     def SetTolerance(self, Tolerance: math_Vector) -> None:
         """Initializes the tolerance values."""
 
@@ -2327,6 +2394,7 @@ class math_Gauss:
     - determinant of a matrix.
     """
 
+    @overload
     def __init__(self, A: math_Matrix, MinPivot: float = 1e-20, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Given an input n X n matrix A this constructor performs its LU
@@ -2337,6 +2405,9 @@ class math_Gauss:
         considered as singular.
         Exception NotSquare is raised if A is not a square matrix.
         """
+
+    @overload
+    def __init__(self, theOther: math_Gauss) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -2390,6 +2461,7 @@ class math_GaussLeastSquare:
     than math_SVD.
     """
 
+    @overload
     def __init__(self, A: math_Matrix, MinPivot: float = 1e-20) -> None:
         """
         Given an input n X m matrix A with n >= m this constructor
@@ -2400,6 +2472,9 @@ class math_GaussLeastSquare:
         If the largest pivot found is less than MinPivot the matrix <A>
         is considered as singular.
         """
+
+    @overload
+    def __init__(self, theOther: math_GaussLeastSquare) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -2425,12 +2500,16 @@ class math_GaussMultipleIntegration:
     Warning: Each element of Order must be inferior or equal to 61.
     """
 
+    @overload
     def __init__(self, F: math_MultipleVarFunction, Lower: math_Vector, Upper: math_Vector, Order: math_IntegerVector) -> None:
         """
         The Gauss-Legendre integration with Order = points of
         integration for each unknown, is done on the function F
         between the bounds Lower and Upper.
         """
+
+    @overload
+    def __init__(self, theOther: math_GaussMultipleIntegration) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -2446,12 +2525,16 @@ class math_GaussSetIntegration:
     Warning: The case M>1 is not implemented.
     """
 
+    @overload
     def __init__(self, F: math_FunctionSet, Lower: math_Vector, Upper: math_Vector, Order: math_IntegerVector) -> None:
         """
         The Gauss-Legendre integration with Order = points of
         integration for each unknown, is done on the function F
         between the bounds Lower and Upper.
         """
+
+    @overload
+    def __init__(self, theOther: math_GaussSetIntegration) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -2483,6 +2566,9 @@ class math_GaussSingleIntegration:
         given tolerance = Tol is done on the function F between the bounds
         Lower and Upper.
         """
+
+    @overload
+    def __init__(self, theOther: math_GaussSingleIntegration) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -2564,6 +2650,9 @@ class math_Householder:
         is different from the A row number.
         """
 
+    @overload
+    def __init__(self, theOther: math_Householder) -> None: ...
+
     def IsDone(self) -> bool:
         """
         Returns true if the computations are successful, otherwise returns false.
@@ -2594,6 +2683,7 @@ class math_Jacobi:
     A sort of eigenvalues is done.
     """
 
+    @overload
     def __init__(self, A: math_Matrix) -> None:
         """
         Given a Real n X n matrix A, this constructor computes all its
@@ -2601,6 +2691,9 @@ class math_Jacobi:
         The exception NotSquare is raised if the matrix is not square.
         No verification that the matrix A is really symmetric is done.
         """
+
+    @overload
+    def __init__(self, theOther: math_Jacobi) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -2658,6 +2751,9 @@ class math_KronrodSingleIntegration:
         tolerance value and the maximal number of iterations as
         parameters.
         """
+
+    @overload
+    def __init__(self, theOther: math_KronrodSingleIntegration) -> None: ...
 
     @overload
     def Perform(self, theFunction: math_Function, theLower: float, theUpper: float, theNbPnts: int) -> None:
@@ -2819,6 +2915,9 @@ class math_NewtonFunctionRoot:
         The maximum number of iterations allowed is given by NbIterations.
         """
 
+    @overload
+    def __init__(self, theOther: math_NewtonFunctionRoot) -> None: ...
+
     def Perform(self, F: math_FunctionWithDerivative, Guess: float) -> None:
         """is used internally by the constructors."""
 
@@ -2877,6 +2976,9 @@ class math_NewtonFunctionSetRoot:
         The range (1, F.NbVariables()) must be especially respected for
         all vectors and matrix declarations.
         """
+
+    @overload
+    def __init__(self, theOther: math_NewtonFunctionSetRoot) -> None: ...
 
     def SetTolerance(self, XTol: math_Vector) -> None:
         """Initializes the tolerance values for the unknowns."""
@@ -2972,6 +3074,7 @@ class math_NewtonFunctionSetRoot:
         """
 
 class math_NewtonMinimum:
+    @overload
     def __init__(self, theFunction: math_MultipleVarFunctionWithHessian, theTolerance: float = 1e-07, theNbIterations: int = 40, theConvexity: float = 1e-06, theWithSingularity: bool = True) -> None:
         """
         The tolerance required on the solution is given by Tolerance.
@@ -2980,6 +3083,9 @@ class math_NewtonMinimum:
         or IsConverged() returns True for 2 successives Iterations.
         Warning: This constructor does not perform computation.
         """
+
+    @overload
+    def __init__(self, theOther: math_NewtonMinimum) -> None: ...
 
     def Perform(self, theFunction: math_MultipleVarFunctionWithHessian, theStartingPoint: math_Vector) -> None:
         """Search the solution."""
@@ -3055,8 +3161,12 @@ class math_Powell:
     function of multiple variables (the gradient does not have to be known).
     """
 
+    @overload
     def __init__(self, theFunction: math_MultipleVarFunction, theTolerance: float, theNbIterations: int = 200, theZEPS: float = 1e-12) -> None:
         """Constructor. Initialize new entity."""
+
+    @overload
+    def __init__(self, theOther: math_Powell) -> None: ...
 
     def Perform(self, theFunction: math_MultipleVarFunction, theStartingPoint: math_Vector, theStartingDirections: math_Matrix) -> None:
         """
@@ -3142,6 +3252,7 @@ class math_PSO:
     Warning: In PSO used fixed seed in RNG, so results are reproducible.
     """
 
+    @overload
     def __init__(self, theFunc: math_MultipleVarFunction, theLowBorder: math_Vector, theUppBorder: math_Vector, theSteps: math_Vector, theNbParticles: int = 32, theNbIter: int = 100) -> None:
         """
         Constructor.
@@ -3155,6 +3266,9 @@ class math_PSO:
         @param theNbParticles defines number of particles.
         @param theNbIter defines maximum number of iterations.
         """
+
+    @overload
+    def __init__(self, theOther: math_PSO) -> None: ...
 
     @overload
     def Perform(self, theSteps: math_Vector, theOutPnt: math_Vector, theNbIter: int = 100) -> float:
@@ -3173,7 +3287,11 @@ class PSO_Particle:
     0 <= aDimidx <= myDimensionCount - 1
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: PSO_Particle) -> None: ...
 
     def __lt__(self, thePnt: PSO_Particle) -> bool:
         """Compares the particles according to their distances."""
@@ -3191,7 +3309,11 @@ class PSO_Particle:
     def BestDistance(self, arg: float, /) -> None: ...
 
 class math_PSOParticlesPool:
+    @overload
     def __init__(self, theParticlesCount: int, theDimensionCount: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math_PSOParticlesPool) -> None: ...
 
     def GetParticle(self, theIdx: int) -> PSO_Particle: ...
 
@@ -3211,11 +3333,15 @@ class math_SVD:
     or GaussLeastSquare.
     """
 
+    @overload
     def __init__(self, A: math_Matrix) -> None:
         """
         Given as input an n X m matrix A with n < m, n = m or n > m
         this constructor performs the Singular Value Decomposition.
         """
+
+    @overload
+    def __init__(self, theOther: math_SVD) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -3277,6 +3403,9 @@ class math_TrigonometricFunctionRoots:
         InfBound and SupBound can be set by default to 0 and 2*PI.
         """
 
+    @overload
+    def __init__(self, theOther: math_TrigonometricFunctionRoots) -> None: ...
+
     def IsDone(self) -> bool:
         """
         Returns true if the computations are successful, otherwise returns false.
@@ -3309,7 +3438,11 @@ class math_TrigonometricEquationFunction(math_FunctionWithDerivative):
     See class math_TrigonometricFunctionRoots
     """
 
+    @overload
     def __init__(self, A: float, B: float, C: float, D: float, E: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math_TrigonometricEquationFunction) -> None: ...
 
     def Value(self, X: float) -> tuple[bool, float]: ...
 
@@ -3365,6 +3498,9 @@ class math_Uzawa:
         Nce + Nci.
         """
 
+    @overload
+    def __init__(self, theOther: math_Uzawa) -> None: ...
+
     def IsDone(self) -> bool:
         """
         Returns true if the computations are successful, otherwise returns false.
@@ -3413,6 +3549,9 @@ class math_ValueAndWeight:
 
     @overload
     def __init__(self, theValue: float, theWeight: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: math_ValueAndWeight) -> None: ...
 
     def Value(self) -> float: ...
 

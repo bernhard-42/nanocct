@@ -19,7 +19,11 @@ class GeomLProp:
     other curves (or portions of curves) at their junction point.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomLProp) -> None: ...
 
     @overload
     @staticmethod
@@ -86,6 +90,9 @@ class GeomLProp_CLProps:
         set to the value <U>.
         All the computations done will be related to <C> and <U>.
         """
+
+    @overload
+    def __init__(self, theOther: GeomLProp_CLProps) -> None: ...
 
     def SetParameter(self, U: float) -> None:
         """
@@ -185,6 +192,9 @@ class GeomLProp_CLProps2d:
         All the computations done will be related to <C> and <U>.
         """
 
+    @overload
+    def __init__(self, theOther: GeomLProp_CLProps2d) -> None: ...
+
     def SetParameter(self, U: float) -> None:
         """
         Initializes the local properties of the curve
@@ -249,6 +259,7 @@ class GeomLProp_CurAndInf2d(nanoocp.LProp.LProp_CurAndInf):
     - consulting the results.
     """
 
+    @overload
     def __init__(self) -> None:
         """
         Initializes the framework.
@@ -256,6 +267,9 @@ class GeomLProp_CurAndInf2d(nanoocp.LProp.LProp_CurAndInf):
         computed is defined using one of the following
         functions: Perform, PerformCurExt or PerformInf.
         """
+
+    @overload
+    def __init__(self, theOther: GeomLProp_CurAndInf2d) -> None: ...
 
     def Perform(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None:
         """
@@ -324,6 +338,9 @@ class GeomLProp_SLProps:
         <Resolution> is the linear tolerance (it is used to test
         if a vector is null).
         """
+
+    @overload
+    def __init__(self, theOther: GeomLProp_SLProps) -> None: ...
 
     def SetSurface(self, S: nanoocp.Geom.Geom_Surface) -> None:
         """

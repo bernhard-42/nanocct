@@ -1,5 +1,7 @@
 """OCCT package GeomTools (toolkit TKGeomBase)"""
 
+from typing import overload
+
 import nanoocp.Geom
 import nanoocp.Geom2d
 import nanoocp.Standard
@@ -15,7 +17,11 @@ class GeomTools:
     * Methods to dump, write, read curves and surfaces.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomTools) -> None: ...
 
     @staticmethod
     def SetUndefinedTypeHandler(aHandler: GeomTools_UndefinedTypeHandler) -> None: ...
@@ -26,8 +32,12 @@ class GeomTools:
 class GeomTools_Curve2dSet:
     """Stores a set of Curves from Geom2d."""
 
+    @overload
     def __init__(self) -> None:
         """Returns an empty set of Curves."""
+
+    @overload
+    def __init__(self, theOther: GeomTools_Curve2dSet) -> None: ...
 
     def Clear(self) -> None:
         """Clears the content of the set."""
@@ -47,8 +57,12 @@ class GeomTools_Curve2dSet:
 class GeomTools_CurveSet:
     """Stores a set of Curves from Geom."""
 
+    @overload
     def __init__(self) -> None:
         """Returns an empty set of Curves."""
+
+    @overload
+    def __init__(self, theOther: GeomTools_CurveSet) -> None: ...
 
     def Clear(self) -> None:
         """Clears the content of the set."""
@@ -68,8 +82,12 @@ class GeomTools_CurveSet:
 class GeomTools_SurfaceSet:
     """Stores a set of Surfaces from Geom."""
 
+    @overload
     def __init__(self) -> None:
         """Returns an empty set of Surfaces."""
+
+    @overload
+    def __init__(self, theOther: GeomTools_SurfaceSet) -> None: ...
 
     def Clear(self) -> None:
         """Clears the content of the set."""
@@ -87,7 +105,11 @@ class GeomTools_SurfaceSet:
         """Returns the index of <L>."""
 
 class GeomTools_UndefinedTypeHandler(nanoocp.Standard.Standard_Transient):
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomTools_UndefinedTypeHandler) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...

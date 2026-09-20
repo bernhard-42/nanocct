@@ -52,7 +52,11 @@ class GProp:
     line of a set of points.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GProp) -> None: ...
 
     @staticmethod
     def HOperator(G: nanoocp.gp.gp_Pnt, Q: nanoocp.gp.gp_Pnt, Mass: float, Operator: nanoocp.gp.gp_Mat) -> None:
@@ -170,6 +174,9 @@ class GProp_GProps:
         @param[in] SystemLocation reference point of the system used for
         inertia accumulation
         """
+
+    @overload
+    def __init__(self, theOther: GProp_GProps) -> None: ...
 
     def Add(self, Item: GProp_GProps, Density: float = 1.0) -> None:
         """
@@ -321,6 +328,9 @@ class GProp_CelGProps(GProp_GProps):
     @overload
     def __init__(self, C: nanoocp.gp.gp_Lin, U1: float, U2: float, CLocation: nanoocp.gp.gp_Pnt) -> None: ...
 
+    @overload
+    def __init__(self, theOther: GProp_CelGProps) -> None: ...
+
     def SetLocation(self, CLocation: nanoocp.gp.gp_Pnt) -> None: ...
 
     @overload
@@ -344,12 +354,16 @@ class GProp_PEquation:
     always available regardless of the fitted type.
     """
 
+    @overload
     def __init__(self, thePnts: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], theTol: float) -> None:
         """
         Constructs the analysis from a set of points and a tolerance.
         @param[in] thePnts array of points to analyze
         @param[in] theTol  tolerance for dimensional collapse detection
         """
+
+    @overload
+    def __init__(self, theOther: GProp_PEquation) -> None: ...
 
     class Type(enum.Enum):
         """Type of geometric entity that best fits the cloud."""
@@ -468,6 +482,9 @@ class GProp_PGProps(GProp_GProps):
         """
 
     @overload
+    def __init__(self, theOther: GProp_PGProps) -> None: ...
+
+    @overload
     def AddPoint(self, thePnt: nanoocp.gp.gp_Pnt) -> None:
         """Adds a point with unit mass."""
 
@@ -530,8 +547,12 @@ class GProp_PrincipalProps:
     framework nor by the GProp_GProps object which activates it.
     """
 
+    @overload
     def __init__(self) -> None:
         """creates an undefined PrincipalProps."""
+
+    @overload
+    def __init__(self, theOther: GProp_PrincipalProps) -> None: ...
 
     @overload
     def HasSymmetryAxis(self) -> bool:
@@ -659,6 +680,9 @@ class GProp_SelGProps(GProp_GProps):
     @overload
     def __init__(self, S: nanoocp.gp.gp_Torus, Teta1: float, Teta2: float, Alpha1: float, Alpha2: float, SLocation: nanoocp.gp.gp_Pnt) -> None: ...
 
+    @overload
+    def __init__(self, theOther: GProp_SelGProps) -> None: ...
+
     def SetLocation(self, SLocation: nanoocp.gp.gp_Pnt) -> None: ...
 
     @overload
@@ -697,6 +721,9 @@ class GProp_VelGProps(GProp_GProps):
 
     @overload
     def __init__(self, S: nanoocp.gp.gp_Torus, Teta1: float, Teta2: float, Alpha1: float, Alpha2: float, VLocation: nanoocp.gp.gp_Pnt) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GProp_VelGProps) -> None: ...
 
     def SetLocation(self, VLocation: nanoocp.gp.gp_Pnt) -> None: ...
 

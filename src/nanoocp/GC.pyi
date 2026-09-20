@@ -14,7 +14,11 @@ class GC_Root:
     reporting construction errors.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GC_Root) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if the construction is successful."""
@@ -101,6 +105,9 @@ class GC_MakeArcOfCircle(GC_Root):
         @param[in] theSense orientation of resulting arc
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfCircle) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_TrimmedCurve:
         """
         Returns the constructed arc of circle.
@@ -167,6 +174,9 @@ class GC_MakeArcOfCircle2d(GC_Root):
         @param[in] theP2 end point
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfCircle2d) -> None: ...
+
     def Value(self) -> nanoocp.Geom2d.Geom2d_TrimmedCurve:
         """
         Returns the constructed arc of circle.
@@ -220,6 +230,9 @@ class GC_MakeArcOfEllipse(GC_Root):
         @note IsDone always returns true.
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfEllipse) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_TrimmedCurve:
         """
         Returns the constructed arc of ellipse.
@@ -269,6 +282,9 @@ class GC_MakeArcOfEllipse2d(GC_Root):
         otherwise opposite.
         @note IsDone always returns true.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfEllipse2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_TrimmedCurve:
         """
@@ -320,6 +336,9 @@ class GC_MakeArcOfHyperbola(GC_Root):
         -   the opposite orientation if `theSense` is false.
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfHyperbola) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_TrimmedCurve:
         """
         Returns the constructed arc of hyperbola.
@@ -370,6 +389,9 @@ class GC_MakeArcOfHyperbola2d(GC_Root):
         @note IsDone always returns true.
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfHyperbola2d) -> None: ...
+
     def Value(self) -> nanoocp.Geom2d.Geom2d_TrimmedCurve:
         """
         Returns the constructed arc of hyperbola.
@@ -416,6 +438,9 @@ class GC_MakeArcOfParabola(GC_Root):
         @param[in] theP2 second point
         @param[in] theSense orientation of resulting arc
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfParabola) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_TrimmedCurve:
         """
@@ -466,6 +491,9 @@ class GC_MakeArcOfParabola2d(GC_Root):
         otherwise opposite.
         @note IsDone always returns true.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeArcOfParabola2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_TrimmedCurve:
         """
@@ -561,6 +589,9 @@ class GC_MakeCircle(GC_Root):
         @param[in] theRadius circle radius
         @note The direction is defined by vector (`theCenter`,`thePtAxis`).
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeCircle) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_Circle:
         """
@@ -658,6 +689,9 @@ class GC_MakeCircle2d(GC_Root):
         @note Error status is provided by the underlying `gce_MakeCirc2d`.
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeCircle2d) -> None: ...
+
     def Value(self) -> nanoocp.Geom2d.Geom2d_Circle:
         """
         Returns the constructed circle.
@@ -751,6 +785,9 @@ class GC_MakeConicalSurface(GC_Root):
         @note `theR1` and `theR2` are radii of sections passing through
         `theP1` and `theP2`.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeConicalSurface) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_ConicalSurface:
         """
@@ -853,6 +890,9 @@ class GC_MakeCylindricalSurface(GC_Root):
         distance between point `theP3` and that axis.
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeCylindricalSurface) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_CylindricalSurface:
         """
         Returns the constructed cylinder.
@@ -907,6 +947,9 @@ class GC_MakeEllipse(GC_Root):
         @param[in] theS2 point defining the minor radius
         @param[in] theCenter ellipse center
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeEllipse) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_Ellipse:
         """
@@ -967,6 +1010,9 @@ class GC_MakeEllipse2d(GC_Root):
         @param[in] theCenter center point
         @note Error status is provided by the underlying `gce_MakeElips2d`.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeEllipse2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_Ellipse:
         """
@@ -1041,6 +1087,9 @@ class GC_MakeHyperbola(GC_Root):
         @param[in] theCenter hyperbola center
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeHyperbola) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_Hyperbola:
         """
         Returns the constructed hyperbola.
@@ -1102,6 +1151,9 @@ class GC_MakeHyperbola2d(GC_Root):
         (for example `gce_NegativeRadius`).
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeHyperbola2d) -> None: ...
+
     def Value(self) -> nanoocp.Geom2d.Geom2d_Hyperbola:
         """
         Returns the constructed hyperbola.
@@ -1162,6 +1214,9 @@ class GC_MakeLine(GC_Root):
         @param[in] theP2 second point
         @note Construction fails with `gce_ConfusedPoints` if the two points are coincident.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeLine) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_Line:
         """
@@ -1235,6 +1290,9 @@ class GC_MakeLine2d(GC_Root):
         @note Status is `gce_ConfusedPoints` if points are coincident.
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeLine2d) -> None: ...
+
     def Value(self) -> nanoocp.Geom2d.Geom2d_Line:
         """
         Returns the constructed line.
@@ -1292,6 +1350,9 @@ class GC_MakeMirror:
         @param[in] theDirec axis direction
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeMirror) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_Transformation:
         """
         Returns the constructed transformation.
@@ -1337,6 +1398,9 @@ class GC_MakeMirror2d:
         @param[in] thePoint point on symmetry axis
         @param[in] theDirec symmetry direction
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeMirror2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_Transformation:
         """
@@ -1420,6 +1484,9 @@ class GC_MakePlane(GC_Root):
         is below gp resolution.
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakePlane) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_Plane:
         """
         Returns the constructed plane.
@@ -1463,6 +1530,9 @@ class GC_MakeRotation:
         @param[in] theAngle rotation angle in radians
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeRotation) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_Transformation:
         """
         Returns the constructed transformation.
@@ -1480,12 +1550,16 @@ class GC_MakeRotation2d:
     - querying the resulting transformation via `Value()`.
     """
 
+    @overload
     def __init__(self, thePoint: nanoocp.gp.gp_Pnt2d, theAngle: float) -> None:
         """
         Constructs a rotation through angle Angle about the center Point.
         @param[in] thePoint rotation center
         @param[in] theAngle rotation angle in radians
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeRotation2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_Transformation:
         """
@@ -1504,12 +1578,16 @@ class GC_MakeScale:
     -   consulting the result.
     """
 
+    @overload
     def __init__(self, thePoint: nanoocp.gp.gp_Pnt, theScale: float) -> None:
         """
         Constructs a scaling transformation.
         @param[in] thePoint center point of scaling
         @param[in] theScale scale factor
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeScale) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_Transformation:
         """
@@ -1528,12 +1606,16 @@ class GC_MakeScale2d:
     - querying the resulting transformation via `Value()`.
     """
 
+    @overload
     def __init__(self, thePoint: nanoocp.gp.gp_Pnt2d, theScale: float) -> None:
         """
         Constructs a scaling transformation.
         @param[in] thePoint center point
         @param[in] theScale scale factor
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeScale2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_Transformation:
         """
@@ -1589,6 +1671,9 @@ class GC_MakeSegment(GC_Root):
         @param[in] theP2 second point
         @note Construction fails if trimming parameters are equal.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeSegment) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_TrimmedCurve:
         """
@@ -1655,6 +1740,9 @@ class GC_MakeSegment2d(GC_Root):
         @param[in] theP2 second point
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeSegment2d) -> None: ...
+
     def Value(self) -> nanoocp.Geom2d.Geom2d_TrimmedCurve:
         """
         Returns the constructed line segment.
@@ -1688,6 +1776,9 @@ class GC_MakeTranslation:
         @param[in] thePoint2 end point
         """
 
+    @overload
+    def __init__(self, theOther: GC_MakeTranslation) -> None: ...
+
     def Value(self) -> nanoocp.Geom.Geom_Transformation:
         """
         Returns the constructed transformation.
@@ -1719,6 +1810,9 @@ class GC_MakeTranslation2d:
         @param[in] thePoint1 first point
         @param[in] thePoint2 second point
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeTranslation2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_Transformation:
         """
@@ -1767,6 +1861,9 @@ class GC_MakeTrimmedCone(GC_Root):
         @note On failure, status is propagated from
         `GC_MakeConicalSurface(theP1, theP2, theR1, theR2)`.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeTrimmedCone) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_RectangularTrimmedSurface:
         """
@@ -1824,6 +1921,9 @@ class GC_MakeTrimmedCylinder(GC_Root):
         result has the same orientation as `theA1`.
         @note If `theHeight` is negative, it has the opposite orientation.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeTrimmedCylinder) -> None: ...
 
     def Value(self) -> nanoocp.Geom.Geom_RectangularTrimmedSurface:
         """
@@ -1890,6 +1990,9 @@ class GC_MakeParabola2d(GC_Root):
         @param[in] theSense orientation flag
         @note Construction fails with `gce_NullFocusLength` if `theFocal` is negative.
         """
+
+    @overload
+    def __init__(self, theOther: GC_MakeParabola2d) -> None: ...
 
     def Value(self) -> nanoocp.Geom2d.Geom2d_Parabola:
         """

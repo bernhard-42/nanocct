@@ -38,7 +38,11 @@ class Extrema_ExtFlag(enum.IntEnum):
     Extrema_ExtFlag_MINMAX = 2
 
 class Extrema_CurveTool:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Extrema_CurveTool) -> None: ...
 
     @staticmethod
     def FirstParameter(theC: nanoocp.Adaptor3d.Adaptor3d_Curve) -> float: ...
@@ -148,6 +152,9 @@ class Extrema_POnCurv:
         value on the curve and a Pnt from gp.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_POnCurv) -> None: ...
+
     def SetValues(self, theU: float, theP: nanoocp.gp.gp_Pnt) -> None:
         """Sets the point and parameter values."""
 
@@ -180,6 +187,9 @@ class Extrema_CCLocFOfLocECC(nanoocp.math.math_FunctionSetWithDerivatives):
     @overload
     def __init__(self, theC1: nanoocp.Adaptor3d.Adaptor3d_Curve, theC2: nanoocp.Adaptor3d.Adaptor3d_Curve, theTol: float = 1e-10) -> None:
         """Constructor with curves."""
+
+    @overload
+    def __init__(self, theOther: Extrema_CCLocFOfLocECC) -> None: ...
 
     def SetCurve(self, theRank: int, theC: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
         """Sets the curve for the specified rank (1 or 2)."""
@@ -223,7 +233,11 @@ class Extrema_CCLocFOfLocECC(nanoocp.math.math_FunctionSetWithDerivatives):
         """Determines boundaries of subinterval for find of root."""
 
 class Extrema_Curve2dTool:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Extrema_Curve2dTool) -> None: ...
 
     @staticmethod
     def FirstParameter(theC: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> float: ...
@@ -353,6 +367,9 @@ class Extrema_POnCurv2d:
         value on the curve and a Pnt from gp.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_POnCurv2d) -> None: ...
+
     def SetValues(self, theU: float, theP: nanoocp.gp.gp_Pnt2d) -> None:
         """Sets the point and parameter values."""
 
@@ -385,6 +402,9 @@ class Extrema_CCLocFOfLocECC2d(nanoocp.math.math_FunctionSetWithDerivatives):
     @overload
     def __init__(self, theC1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theC2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theTol: float = 1e-10) -> None:
         """Constructor with curves."""
+
+    @overload
+    def __init__(self, theOther: Extrema_CCLocFOfLocECC2d) -> None: ...
 
     def SetCurve(self, theRank: int, theC: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> None:
         """Sets the curve for the specified rank (1 or 2)."""
@@ -457,6 +477,9 @@ class Extrema_PCFOfEPCOfExtPC(nanoocp.math.math_FunctionWithDerivative):
         @param theP Point to compute distance from
         @param theC Curve to compute distance to
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_PCFOfEPCOfExtPC) -> None: ...
 
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
         """
@@ -576,6 +599,9 @@ class Extrema_EPCOfExtPC:
         @param theTolU    Tolerance on parameter u
         @param theTolF    Tolerance on function value
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_EPCOfExtPC) -> None: ...
 
     @overload
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theNbU: int, theTolU: float, theTolF: float) -> None:
@@ -726,6 +752,9 @@ class Extrema_ExtPElC:
         """
 
     @overload
+    def __init__(self, theOther: Extrema_ExtPElC) -> None: ...
+
+    @overload
     def Perform(self, P: nanoocp.gp.gp_Pnt, C: nanoocp.gp.gp_Lin, Tol: float, Uinf: float, Usup: float) -> None: ...
 
     @overload
@@ -802,6 +831,9 @@ class Extrema_ExtPC:
         @param theTolF Tolerance on function value (default 1.0e-10)
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_ExtPC) -> None: ...
+
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theUinf: float, theUsup: float, theTolF: float = 1e-10) -> None:
         """
         Initializes the algorithm with curve and parameter range.
@@ -868,6 +900,9 @@ class Extrema_GlobOptFuncCCC0(nanoocp.math.math_MultipleVarFunction):
     @overload
     def __init__(self, C1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C2: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Extrema_GlobOptFuncCCC0) -> None: ...
+
     def NbVariables(self) -> int: ...
 
     def Value(self, X: nanoocp.math.math_Vector) -> tuple[bool, float]: ...
@@ -883,6 +918,9 @@ class Extrema_GlobOptFuncCCC1(nanoocp.math.math_MultipleVarFunctionWithGradient)
 
     @overload
     def __init__(self, C1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C2: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Extrema_GlobOptFuncCCC1) -> None: ...
 
     def NbVariables(self) -> int: ...
 
@@ -903,6 +941,9 @@ class Extrema_GlobOptFuncCCC2(nanoocp.math.math_MultipleVarFunctionWithHessian):
 
     @overload
     def __init__(self, C1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C2: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Extrema_GlobOptFuncCCC2) -> None: ...
 
     def NbVariables(self) -> int: ...
 
@@ -942,6 +983,9 @@ class Extrema_ECC:
     @overload
     def __init__(self, theC1: nanoocp.Adaptor3d.Adaptor3d_Curve, theC2: nanoocp.Adaptor3d.Adaptor3d_Curve, theUinf: float, theUsup: float, theVinf: float, theVsup: float) -> None:
         """Constructor with two curves and parameter bounds."""
+
+    @overload
+    def __init__(self, theOther: Extrema_ECC) -> None: ...
 
     def SetParams(self, theC1: nanoocp.Adaptor3d.Adaptor3d_Curve, theC2: nanoocp.Adaptor3d.Adaptor3d_Curve, theUinf: float, theUsup: float, theVinf: float, theVsup: float) -> None:
         """Sets parameters for computation."""
@@ -1003,6 +1047,9 @@ class Extrema_PCFOfEPCOfExtPC2d(nanoocp.math.math_FunctionWithDerivative):
         @param theP Point to compute distance from
         @param theC Curve to compute distance to
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_PCFOfEPCOfExtPC2d) -> None: ...
 
     def Initialize(self, theC: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> None:
         """
@@ -1122,6 +1169,9 @@ class Extrema_EPCOfExtPC2d:
         @param theTolU    Tolerance on parameter u
         @param theTolF    Tolerance on function value
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_EPCOfExtPC2d) -> None: ...
 
     @overload
     def Initialize(self, theC: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theNbU: int, theTolU: float, theTolF: float) -> None:
@@ -1272,6 +1322,9 @@ class Extrema_ExtPElC2d:
         """
 
     @overload
+    def __init__(self, theOther: Extrema_ExtPElC2d) -> None: ...
+
+    @overload
     def Perform(self, P: nanoocp.gp.gp_Pnt2d, L: nanoocp.gp.gp_Lin2d, Tol: float, Uinf: float, Usup: float) -> None: ...
 
     @overload
@@ -1347,6 +1400,9 @@ class Extrema_ExtPC2d:
         @param theUsup Upper bound of parameter range
         @param theTolF Tolerance on function value (default 1.0e-10)
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_ExtPC2d) -> None: ...
 
     def Initialize(self, theC: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theUinf: float, theUsup: float, theTolF: float = 1e-10) -> None:
         """
@@ -1428,6 +1484,9 @@ class Extrema_ECC2d:
     @overload
     def __init__(self, theC1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theC2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theUinf: float, theUsup: float, theVinf: float, theVsup: float) -> None:
         """Constructor with two curves and parameter bounds."""
+
+    @overload
+    def __init__(self, theOther: Extrema_ECC2d) -> None: ...
 
     def SetParams(self, theC1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theC2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theUinf: float, theUsup: float, theVinf: float, theVsup: float) -> None:
         """Sets parameters for computation."""
@@ -1546,6 +1605,9 @@ class Extrema_ExtCC2d:
     def __init__(self, C1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, U1: float, U2: float, V1: float, V2: float, TolC1: float = 1e-10, TolC2: float = 1e-10) -> None:
         """It calculates all the distances."""
 
+    @overload
+    def __init__(self, theOther: Extrema_ExtCC2d) -> None: ...
+
     def Initialize(self, C2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, V1: float, V2: float, TolC1: float = 1e-10, TolC2: float = 1e-10) -> None:
         """initializes the fields."""
 
@@ -1600,6 +1662,9 @@ class Extrema_POnSurf:
         Creation of a point on surface with parameter
         values on the surface and a Pnt from gp.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_POnSurf) -> None: ...
 
     def Value(self) -> nanoocp.gp.gp_Pnt:
         """Returns the 3d point."""
@@ -1697,6 +1762,9 @@ class Extrema_ExtElCS:
         Calculates the distances between a hyperbola and a
         plane.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_ExtElCS) -> None: ...
 
     @overload
     def Perform(self, C: nanoocp.gp.gp_Lin, S: nanoocp.gp.gp_Pln) -> None: ...
@@ -1853,6 +1921,9 @@ class Extrema_ExtElC:
         circle.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_ExtElC) -> None: ...
+
     def IsDone(self) -> bool:
         """Returns True if the distances are found."""
 
@@ -1945,6 +2016,9 @@ class Extrema_ExtElC2d:
         circle.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_ExtElC2d) -> None: ...
+
     def IsDone(self) -> bool:
         """Returns True if the distances are found."""
 
@@ -2014,6 +2088,9 @@ class Extrema_ExtElSS:
         Calculates the distances between a sphere
         and a torus.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_ExtElSS) -> None: ...
 
     @overload
     def Perform(self, S1: nanoocp.gp.gp_Pln, S2: nanoocp.gp.gp_Pln) -> None: ...
@@ -2103,6 +2180,9 @@ class Extrema_ExtPElS:
         """
 
     @overload
+    def __init__(self, theOther: Extrema_ExtPElS) -> None: ...
+
+    @overload
     def Perform(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.gp.gp_Cylinder, Tol: float) -> None: ...
 
     @overload
@@ -2146,6 +2226,9 @@ class Extrema_POnSurfParams(Extrema_POnSurf):
         Creation of a point on surface with parameter
         values on the surface and a Pnt from gp.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_POnSurfParams) -> None: ...
 
     def SetSqrDistance(self, theSqrDistance: float) -> None:
         """
@@ -2203,6 +2286,9 @@ class Extrema_FuncPSNorm(nanoocp.math.math_FunctionSetWithDerivatives):
 
     @overload
     def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Extrema_FuncPSNorm) -> None: ...
 
     def Initialize(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
         """sets the field mysurf of the function."""
@@ -2466,6 +2552,9 @@ class Extrema_ExtSS:
     def __init__(self, S1: nanoocp.Adaptor3d.Adaptor3d_Surface, S2: nanoocp.Adaptor3d.Adaptor3d_Surface, Uinf1: float, Usup1: float, Vinf1: float, Vsup1: float, Uinf2: float, Usup2: float, Vinf2: float, Vsup2: float, TolS1: float, TolS2: float) -> None:
         """It calculates all the distances between S1 and S2."""
 
+    @overload
+    def __init__(self, theOther: Extrema_ExtSS) -> None: ...
+
     def Initialize(self, S2: nanoocp.Adaptor3d.Adaptor3d_Surface, Uinf2: float, Usup2: float, Vinf2: float, Vsup2: float, TolS1: float) -> None:
         """Initializes the fields of the algorithm."""
 
@@ -2502,6 +2591,9 @@ class Extrema_FuncExtCS(nanoocp.math.math_FunctionSetWithDerivatives):
 
     @overload
     def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Extrema_FuncExtCS) -> None: ...
 
     def Initialize(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
         """sets the field mysurf of the function."""
@@ -2587,6 +2679,9 @@ class Extrema_FuncExtSS(nanoocp.math.math_FunctionSetWithDerivatives):
 
     @overload
     def __init__(self, S1: nanoocp.Adaptor3d.Adaptor3d_Surface, S2: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Extrema_FuncExtSS) -> None: ...
 
     def Initialize(self, S1: nanoocp.Adaptor3d.Adaptor3d_Surface, S2: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
         """sets the field mysurf of the function."""
@@ -2784,6 +2879,9 @@ class Extrema_GenLocateExtCS:
         a zero near the close points.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_GenLocateExtCS) -> None: ...
+
     def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, T: float, U: float, V: float, Tol1: float, Tol2: float) -> None: ...
 
     def IsDone(self) -> bool:
@@ -2854,6 +2952,9 @@ class Extrema_GenLocateExtSS:
         a zero near the close points.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_GenLocateExtSS) -> None: ...
+
     def Perform(self, S1: nanoocp.Adaptor3d.Adaptor3d_Surface, S2: nanoocp.Adaptor3d.Adaptor3d_Surface, U1: float, V1: float, U2: float, V2: float, Tol1: float, Tol2: float) -> None: ...
 
     def IsDone(self) -> bool:
@@ -2874,10 +2975,14 @@ class Extrema_GlobOptFuncCS(nanoocp.math.math_MultipleVarFunctionWithHessian):
     between point on curve and point on surface in case of continuity is C2.
     """
 
+    @overload
     def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
         """
         Curve and surface should exist during all the lifetime of Extrema_GlobOptFuncCS.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_GlobOptFuncCS) -> None: ...
 
     def NbVariables(self) -> int: ...
 
@@ -2909,6 +3014,9 @@ class Extrema_GlobOptFuncConicS(nanoocp.math.math_MultipleVarFunction):
     @overload
     def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, theUf: float, theUl: float, theVf: float, theVl: float) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Extrema_GlobOptFuncConicS) -> None: ...
+
     def LoadConic(self, S: nanoocp.Adaptor3d.Adaptor3d_Curve, theTf: float, theTl: float) -> None: ...
 
     def NbVariables(self) -> int: ...
@@ -2936,6 +3044,9 @@ class Extrema_GlobOptFuncCQuadric(nanoocp.math.math_MultipleVarFunction):
     @overload
     def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, theTf: float, theTl: float) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Extrema_GlobOptFuncCQuadric) -> None: ...
+
     def LoadQuad(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, theUf: float, theUl: float, theVf: float, theVl: float) -> None: ...
 
     def NbVariables(self) -> int: ...
@@ -2952,6 +3063,7 @@ class Extrema_LocateExtCC:
     minimum.
     """
 
+    @overload
     def __init__(self, C1: nanoocp.Adaptor3d.Adaptor3d_Curve, C2: nanoocp.Adaptor3d.Adaptor3d_Curve, U0: float, V0: float) -> None:
         """
         Calculates the distance with a close point. The
@@ -2961,6 +3073,9 @@ class Extrema_LocateExtCC:
         extremun when gradient(f)=0. The algorithm searches
         the zero near the close point.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_LocateExtCC) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns True if the distance is found."""
@@ -2981,6 +3096,7 @@ class Extrema_LocateExtCC2d:
     minimum.
     """
 
+    @overload
     def __init__(self, C1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, U0: float, V0: float) -> None:
         """
         Calculates the distance with a close point. The
@@ -2990,6 +3106,9 @@ class Extrema_LocateExtCC2d:
         extremun when gradient(f)=0. The algorithm searches
         the zero near the close point.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_LocateExtCC2d) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns True if the distance is found."""
@@ -3046,6 +3165,9 @@ class Extrema_LocEPCOfLocateExtPC:
         At the nth iteration, the criteria is:
         abs(Un - Un-1) < TolU.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_LocEPCOfLocateExtPC) -> None: ...
 
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theUmin: float, theUsup: float, theTolU: float) -> None:
         """Sets the fields of the algorithm."""
@@ -3106,6 +3228,9 @@ class Extrema_LocateExtPC:
         TolF is used to decide to stop the iterations.
         At the nth iteration, the criteria is: abs(Un - Un-1) < TolF.
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_LocateExtPC) -> None: ...
 
     def Initialize(self, theC: nanoocp.Adaptor3d.Adaptor3d_Curve, theUmin: float, theUsup: float, theTolF: float) -> None:
         """Sets the fields of the algorithm."""
@@ -3169,6 +3294,9 @@ class Extrema_LocEPCOfLocateExtPC2d:
         abs(Un - Un-1) < TolU.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_LocEPCOfLocateExtPC2d) -> None: ...
+
     def Initialize(self, theC: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theUmin: float, theUsup: float, theTolU: float) -> None:
         """Sets the fields of the algorithm."""
 
@@ -3229,6 +3357,9 @@ class Extrema_LocateExtPC2d:
         At the nth iteration, the criteria is: abs(Un - Un-1) < TolF.
         """
 
+    @overload
+    def __init__(self, theOther: Extrema_LocateExtPC2d) -> None: ...
+
     def Initialize(self, theC: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theUmin: float, theUsup: float, theTolF: float) -> None:
         """Sets the fields of the algorithm."""
 
@@ -3259,6 +3390,7 @@ class Extrema_LocECC:
     @tparam TheCCLocF  Function type for curve-curve local extremum
     """
 
+    @overload
     def __init__(self, theC1: nanoocp.Adaptor3d.Adaptor3d_Curve, theC2: nanoocp.Adaptor3d.Adaptor3d_Curve, theU0: float, theV0: float, theTolU: float, theTolV: float) -> None:
         """
         Calculates the distance between two curves C1 and C2.
@@ -3270,6 +3402,9 @@ class Extrema_LocECC:
         @param theTolU Tolerance on parameter of first curve
         @param theTolV Tolerance on parameter of second curve
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_LocECC) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns True if the distance is found."""
@@ -3296,6 +3431,7 @@ class Extrema_LocECC2d:
     @tparam TheCCLocF  Function type for curve-curve local extremum
     """
 
+    @overload
     def __init__(self, theC1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theC2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theU0: float, theV0: float, theTolU: float, theTolV: float) -> None:
         """
         Calculates the distance between two curves C1 and C2.
@@ -3307,6 +3443,9 @@ class Extrema_LocECC2d:
         @param theTolU Tolerance on parameter of first curve
         @param theTolV Tolerance on parameter of second curve
         """
+
+    @overload
+    def __init__(self, theOther: Extrema_LocECC2d) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns True if the distance is found."""

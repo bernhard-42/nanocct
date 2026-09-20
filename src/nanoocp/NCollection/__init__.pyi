@@ -601,6 +601,9 @@ from typing import overload
 import nanoocp.AdvApp2Var
 import nanoocp.AppDef
 import nanoocp.AppParCurves
+import nanoocp.BRep
+import nanoocp.BRepGraph
+import nanoocp.BRepGraphInc
 import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Extrema
@@ -615,6 +618,8 @@ import nanoocp.Poly
 import nanoocp.Standard
 import nanoocp.Storage
 import nanoocp.TCollection
+import nanoocp.TopLoc
+import nanoocp.TopoDS
 import nanoocp.Units
 import nanoocp.gp
 
@@ -680,6 +685,8 @@ class NCollection_BaseMap:
     class Iterator:
         """Memory allocation"""
 
+        def __init__(self, theOther: NCollection_BaseMap.Iterator) -> None: ...
+
         def Initialize(self, theMap: NCollection_BaseMap) -> None:
             """Initialize"""
 
@@ -712,7 +719,11 @@ class NCollection_BaseMap:
 class NCollection_DefaultHasher__bool:
     """Explicit specialization for bool."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__bool) -> None: ...
 
     @overload
     def __call__(self, theKey: bool) -> int: ...
@@ -723,7 +734,11 @@ class NCollection_DefaultHasher__bool:
 class NCollection_DefaultHasher__char:
     """Explicit specialization for char."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__char) -> None: ...
 
     @overload
     def __call__(self, theKey: str) -> int: ...
@@ -734,7 +749,11 @@ class NCollection_DefaultHasher__char:
 class NCollection_DefaultHasher__signed_char:
     """Explicit specialization for signed char."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__signed_char) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -745,7 +764,11 @@ class NCollection_DefaultHasher__signed_char:
 class NCollection_DefaultHasher__unsigned_char:
     """Explicit specialization for unsigned char."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__unsigned_char) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -756,7 +779,11 @@ class NCollection_DefaultHasher__unsigned_char:
 class NCollection_DefaultHasher__wchar_t:
     """Explicit specialization for wchar_t."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__wchar_t) -> None: ...
 
     @overload
     def __call__(self, theKey: "wchar_t") -> int: ...
@@ -767,7 +794,11 @@ class NCollection_DefaultHasher__wchar_t:
 class NCollection_DefaultHasher__char16_t:
     """Explicit specialization for char16_t."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__char16_t) -> None: ...
 
     @overload
     def __call__(self, theKey: "char16_t") -> int: ...
@@ -778,7 +809,11 @@ class NCollection_DefaultHasher__char16_t:
 class NCollection_DefaultHasher__char32_t:
     """Explicit specialization for char32_t."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__char32_t) -> None: ...
 
     @overload
     def __call__(self, theKey: "char32_t") -> int: ...
@@ -789,7 +824,11 @@ class NCollection_DefaultHasher__char32_t:
 class NCollection_DefaultHasher__short:
     """Explicit specialization for short."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__short) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -800,7 +839,11 @@ class NCollection_DefaultHasher__short:
 class NCollection_DefaultHasher__int:
     """Explicit specialization for int."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__int) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -811,7 +854,11 @@ class NCollection_DefaultHasher__int:
 class NCollection_DefaultHasher__long:
     """Explicit specialization for long."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__long) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -822,7 +869,11 @@ class NCollection_DefaultHasher__long:
 class NCollection_DefaultHasher__long_long:
     """Explicit specialization for long long."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__long_long) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -833,7 +884,11 @@ class NCollection_DefaultHasher__long_long:
 class NCollection_DefaultHasher__unsigned_short:
     """Explicit specialization for unsigned short."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__unsigned_short) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -844,7 +899,11 @@ class NCollection_DefaultHasher__unsigned_short:
 class NCollection_DefaultHasher__unsigned_int:
     """Explicit specialization for unsigned int."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__unsigned_int) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -855,7 +914,11 @@ class NCollection_DefaultHasher__unsigned_int:
 class NCollection_DefaultHasher__unsigned_long:
     """Explicit specialization for unsigned long."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__unsigned_long) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -866,7 +929,11 @@ class NCollection_DefaultHasher__unsigned_long:
 class NCollection_DefaultHasher__unsigned_long_long:
     """Explicit specialization for unsigned long long."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DefaultHasher__unsigned_long_long) -> None: ...
 
     @overload
     def __call__(self, theKey: int) -> int: ...
@@ -899,6 +966,9 @@ class NCollection_BaseSequence:
         @overload
         def __init__(self, theSeq: NCollection_BaseSequence, isStart: bool) -> None:
             """Constructor with initialisation"""
+
+        @overload
+        def __init__(self, theOther: NCollection_BaseSequence.Iterator) -> None: ...
 
         def Init(self, theSeq: NCollection_BaseSequence, isStart: bool = True) -> None:
             """Initialisation"""
@@ -968,6 +1038,8 @@ class NCollection_AlignedAllocator(NCollection_BaseAllocator):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
 class NCollection_BaseList:
+    def __init__(self, theOther: NCollection_BaseList) -> None: ...
+
     class Iterator:
         """Memory allocation"""
 
@@ -976,6 +1048,9 @@ class NCollection_BaseList:
 
         @overload
         def __init__(self, theList: NCollection_BaseList) -> None: ...
+
+        @overload
+        def __init__(self, theOther: NCollection_BaseList.Iterator) -> None: ...
 
         def Init(self, theList: NCollection_BaseList) -> None: ...
 
@@ -1017,6 +1092,8 @@ class NCollection_BaseList:
 
 class NCollection_Buffer(nanoocp.Standard.Standard_Transient):
     """Low-level buffer object."""
+
+    def __init__(self, theOther: NCollection_Buffer) -> None: ...
 
     def IsEmpty(self) -> bool:
         """@return true if buffer is not allocated"""
@@ -1149,7 +1226,11 @@ class NCollection_IncAllocator(NCollection_BaseAllocator):
 class NCollection_ForwardRangeSentinel:
     """Empty sentinel type used as the end marker for range-for loops."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_ForwardRangeSentinel) -> None: ...
 
 class NCollection_HeapAllocator(NCollection_BaseAllocator):
     """Allocator that uses the global dynamic heap (malloc / free)."""
@@ -1178,6 +1259,8 @@ class NCollection_SparseArrayBase:
 
     class Iterator:
         """Iterator"""
+
+        def __init__(self, theOther: NCollection_SparseArrayBase.Iterator) -> None: ...
 
         def Restart(self) -> None:
             """Restart iterations on the same array"""
@@ -1654,3 +1737,1971 @@ class NCollection_Sequence__Handle_Geom2d_Curve(NCollection_Sequence[nanoocp.Geo
 class NCollection_Array1__AppDef_MultiPointConstraint(NCollection_Array1[nanoocp.AppDef.AppDef_MultiPointConstraint]): ...
 class NCollection_Array1__AppParCurves_ConstraintCouple(NCollection_Array1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple]): ...
 class NCollection_HArray1__AppParCurves_ConstraintCouple(NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple]): ...
+class NCollection_List__TopoDS_Shape(NCollection_List[nanoocp.TopoDS.TopoDS_Shape]): ...
+class NCollection_IndexedDataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher(NCollection_IndexedDataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.NCollection.NCollection_List__TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]): ...
+class NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher(NCollection_IndexedMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]): ...
+class NCollection_Map__TopoDS_Shape__TopTools_ShapeMapHasher(NCollection_Map[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]): ...
+class NCollection_List__Handle_BRep_CurveRepresentation(NCollection_List[nanoocp.BRep.BRep_CurveRepresentation]): ...
+class NCollection_List__Handle_BRep_PointRepresentation(NCollection_List[nanoocp.BRep.BRep_PointRepresentation]): ...
+class NCollection_Array1__BRepGraphInc_ParityOrientation(NCollection_Array1[nanoocp.BRepGraphInc.ParityOrientation]): ...
+class NCollection_Array1__BRepGraph_ItemUID(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_ItemUID]): ...
+class NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)2>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)10>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)1>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)0>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire) -> NCollection_Array1__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_NodeId(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_NodeId]): ...
+class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Child:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)5>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Face:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)1>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Occurrence:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)6>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Shell:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)0>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Solid:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)4>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__BRepGraph_RefId(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_RefId]): ...
+class NCollection_Array1__BRepGraph_UID(NCollection_Array1[nanoocp.BRepGraph.BRepGraph_UID]): ...
+class NCollection_Array1__TopLoc_Location(NCollection_Array1[nanoocp.TopLoc.TopLoc_Location]): ...
+class NCollection_DataMap__TopoDS_Shape__BRepGraph_NodeId__TopTools_ShapeMapHasher(NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher]): ...
+class NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire) -> NCollection_Array1__BRepGraph_RefId_Typed__BRepGraph_RefId_Kind_Wire:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """@return first element"""
+
+    def Last(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)2>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """

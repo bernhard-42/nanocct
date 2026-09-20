@@ -50,11 +50,11 @@ void nanoocp_templates_ExtremaPC(nb::module_ &m) {
 
 void nanoocp_define_ExtremaPC(nb::module_ &m) {
     nanoocp_implicit_default_ctor<ExtremaPC::ExtremumResult>(nb::borrow<nb::class_<ExtremaPC::ExtremumResult>>(m.attr("ExtremumResult")));
-    nb::borrow<nb::class_<ExtremaPC::ExtremumResult>>(m.attr("ExtremumResult"))
-        .def_rw("Parameter", &ExtremaPC::ExtremumResult::Parameter, R"nbdoc(Parameter value on curve)nbdoc")
-        .def_rw("Point", &ExtremaPC::ExtremumResult::Point, R"nbdoc(Point on curve at parameter)nbdoc")
-        .def_rw("SquareDistance", &ExtremaPC::ExtremumResult::SquareDistance, R"nbdoc(Square of the distance from query point to curve point)nbdoc")
-        .def_rw("IsMinimum", &ExtremaPC::ExtremumResult::IsMinimum, R"nbdoc(True if this is a local minimum, false if maximum)nbdoc");
+    nanoocp_implicit_copy_ctor<ExtremaPC::ExtremumResult>(nb::borrow<nb::class_<ExtremaPC::ExtremumResult>>(m.attr("ExtremumResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::ExtremumResult>>(m.attr("ExtremumResult")), "Parameter", &ExtremaPC::ExtremumResult::Parameter, R"nbdoc(Parameter value on curve)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::ExtremumResult>>(m.attr("ExtremumResult")), "Point", &ExtremaPC::ExtremumResult::Point, R"nbdoc(Point on curve at parameter)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::ExtremumResult>>(m.attr("ExtremumResult")), "SquareDistance", &ExtremaPC::ExtremumResult::SquareDistance, R"nbdoc(Square of the distance from query point to curve point)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::ExtremumResult>>(m.attr("ExtremumResult")), "IsMinimum", &ExtremaPC::ExtremumResult::IsMinimum, R"nbdoc(True if this is a local minimum, false if maximum)nbdoc");
     nb::borrow<nb::class_<ExtremaPC::Result>>(m.attr("Result"))
         .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
         .def("IsDone", static_cast<bool (ExtremaPC::Result::*)() const>(&ExtremaPC::Result::IsDone), R"nbdoc(Returns true if computation succeeded with finite number of extrema.)nbdoc")
@@ -70,17 +70,18 @@ Returns 0 if no extrema found.)nbdoc")
         .def("MaxIndex", static_cast<int (ExtremaPC::Result::*)() const>(&ExtremaPC::Result::MaxIndex), R"nbdoc(Returns the index of the farthest extremum (0-based).
 Returns -1 if no extrema found.)nbdoc")
         .def("Clear", static_cast<void (ExtremaPC::Result::*)()>(&ExtremaPC::Result::Clear), R"nbdoc(Clear the result for reuse.
-Preserves allocated memory in Extrema vector.)nbdoc")
-        .def_rw("Status", &ExtremaPC::Result::Status, R"nbdoc(Computation status)nbdoc")
-        .def_rw("Extrema", &ExtremaPC::Result::Extrema, R"nbdoc(Collection of found extrema)nbdoc")
-        .def_rw("InfiniteSquareDistance", &ExtremaPC::Result::InfiniteSquareDistance, R"nbdoc(For infinite solutions, stores the constant squared distance.
+Preserves allocated memory in Extrema vector.)nbdoc");
+    nanoocp_implicit_copy_ctor<ExtremaPC::Result>(nb::borrow<nb::class_<ExtremaPC::Result>>(m.attr("Result")));
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Result>>(m.attr("Result")), "Status", &ExtremaPC::Result::Status, R"nbdoc(Computation status)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Result>>(m.attr("Result")), "Extrema", &ExtremaPC::Result::Extrema, R"nbdoc(Collection of found extrema)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Result>>(m.attr("Result")), "InfiniteSquareDistance", &ExtremaPC::Result::InfiniteSquareDistance, R"nbdoc(For infinite solutions, stores the constant squared distance.
 Only meaningful when Status == Status::InfiniteSolutions.)nbdoc");
     nanoocp_implicit_default_ctor<ExtremaPC::Config>(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")));
-    nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config"))
-        .def_rw("Tolerance", &ExtremaPC::Config::Tolerance, R"nbdoc(Tolerance for root finding)nbdoc")
-        .def_rw("Domain", &ExtremaPC::Config::Domain, R"nbdoc(Parameter domain (nullopt = use natural/unbounded))nbdoc")
-        .def_rw("NbSamples", &ExtremaPC::Config::NbSamples, R"nbdoc(Number of samples for numerical methods)nbdoc")
-        .def_rw("Mode", &ExtremaPC::Config::Mode, R"nbdoc(Search mode (MinMax, Min, or Max))nbdoc")
-        .def_rw("IncludeEndpoints", &ExtremaPC::Config::IncludeEndpoints, R"nbdoc(Include endpoints as potential extrema)nbdoc");
+    nanoocp_implicit_copy_ctor<ExtremaPC::Config>(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")));
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")), "Tolerance", &ExtremaPC::Config::Tolerance, R"nbdoc(Tolerance for root finding)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")), "Domain", &ExtremaPC::Config::Domain, R"nbdoc(Parameter domain (nullopt = use natural/unbounded))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")), "NbSamples", &ExtremaPC::Config::NbSamples, R"nbdoc(Number of samples for numerical methods)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")), "Mode", &ExtremaPC::Config::Mode, R"nbdoc(Search mode (MinMax, Min, or Max))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<ExtremaPC::Config>>(m.attr("Config")), "IncludeEndpoints", &ExtremaPC::Config::IncludeEndpoints, R"nbdoc(Include endpoints as potential extrema)nbdoc");
     m.attr("Domain1D") = nb::module_::import_("nanoocp._TKMath.MathUtils").attr("Domain1D");   // Domain1D = MathUtils::Domain1D
 }

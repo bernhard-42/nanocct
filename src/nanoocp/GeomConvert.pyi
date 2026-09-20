@@ -49,7 +49,11 @@ class GeomConvert:
     CAGD 1 1984
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomConvert) -> None: ...
 
     @overload
     @staticmethod
@@ -367,6 +371,9 @@ class GeomConvert_ApproxCurve:
         polynomial defining the BSpline curve may have.
         """
 
+    @overload
+    def __init__(self, theOther: GeomConvert_ApproxCurve) -> None: ...
+
     def Curve(self) -> nanoocp.Geom.Geom_BSplineCurve:
         """Returns the BSpline curve resulting from the approximation algorithm."""
 
@@ -429,6 +436,9 @@ class GeomConvert_ApproxSurface:
         -   the index of precision PrecisCode.
         """
 
+    @overload
+    def __init__(self, theOther: GeomConvert_ApproxSurface) -> None: ...
+
     def Surface(self) -> nanoocp.Geom.Geom_BSplineSurface:
         """
         Returns the BSpline surface resulting from the approximation algorithm.
@@ -476,6 +486,7 @@ class GeomConvert_BSplineCurveKnotSplitting:
     -   consulting the results.
     """
 
+    @overload
     def __init__(self, BasisCurve: nanoocp.Geom.Geom_BSplineCurve, ContinuityRange: int) -> None:
         """
         Determines points at which the BSpline curve
@@ -489,6 +500,9 @@ class GeomConvert_BSplineCurveKnotSplitting:
         Exceptions
         Standard_RangeError if ContinuityRange is less than zero.
         """
+
+    @overload
+    def __init__(self, theOther: GeomConvert_BSplineCurveKnotSplitting) -> None: ...
 
     def NbSplits(self) -> int:
         """
@@ -575,6 +589,9 @@ class GeomConvert_BSplineCurveToBezierCurve:
         Raised if Abs (U2 - U1) <= ParametricTolerance.
         """
 
+    @overload
+    def __init__(self, theOther: GeomConvert_BSplineCurveToBezierCurve) -> None: ...
+
     def Arc(self, Index: int) -> nanoocp.Geom.Geom_BezierCurve:
         """
         Constructs and returns the Bezier curve of index
@@ -648,6 +665,7 @@ class GeomConvert_BSplineSurfaceKnotSplitting:
     LocalD3, LocalDN of the class BSplineSurface from package Geom.
     """
 
+    @overload
     def __init__(self, BasisSurface: nanoocp.Geom.Geom_BSplineSurface, UContinuityRange: int, VContinuityRange: int) -> None:
         """
         Determines the u- and v-isoparametric curves
@@ -669,6 +687,9 @@ class GeomConvert_BSplineSurfaceKnotSplitting:
         Standard_RangeError if UContinuityRange or
         VContinuityRange is less than zero.
         """
+
+    @overload
+    def __init__(self, theOther: GeomConvert_BSplineSurfaceKnotSplitting) -> None: ...
 
     def NbUSplits(self) -> int:
         """
@@ -816,6 +837,9 @@ class GeomConvert_BSplineSurfaceToBezierSurface:
         Raised if U2 - U1 <= ParametricTolerance or
         V2 - V1 <= ParametricTolerance.
         """
+
+    @overload
+    def __init__(self, theOther: GeomConvert_BSplineSurfaceToBezierSurface) -> None: ...
 
     def Patch(self, UIndex: int, VIndex: int) -> nanoocp.Geom.Geom_BezierSurface:
         """
@@ -1097,6 +1121,9 @@ class GeomConvert_CompBezierSurfacesToBSplineSurface:
         surfaces in the Beziers grid is rational.
         """
 
+    @overload
+    def __init__(self, theOther: GeomConvert_CompBezierSurfacesToBSplineSurface) -> None: ...
+
     def NbUKnots(self) -> int:
         """
         Returns the number of knots in the U direction
@@ -1197,6 +1224,9 @@ class GeomConvert_CompCurveToBSplineCurve:
         - Parameterisation is used to convert
         """
 
+    @overload
+    def __init__(self, theOther: GeomConvert_CompCurveToBSplineCurve) -> None: ...
+
     def Add(self, NewCurve: nanoocp.Geom.Geom_BoundedCurve, Tolerance: float, After: bool = False, WithRatio: bool = True, MinM: int = 0) -> bool:
         """
         Append a curve in the BSpline Return False if the
@@ -1219,7 +1249,11 @@ class GeomConvert_CompCurveToBSplineCurve:
 class GeomConvert_Units:
     """Class contains conversion methods for 2d geom objects"""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomConvert_Units) -> None: ...
 
     @staticmethod
     def RadianToDegree(theCurve: nanoocp.Geom2d.Geom2d_Curve, theSurface: nanoocp.Geom.Geom_Surface, theLengthFactor: float, theFactorRadianDegree: float) -> nanoocp.Geom2d.Geom2d_Curve:
@@ -1239,6 +1273,9 @@ class GeomConvert_CurveToAnaCurve:
 
     @overload
     def __init__(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomConvert_CurveToAnaCurve) -> None: ...
 
     def Init(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
 
@@ -1326,6 +1363,9 @@ class GeomConvert_SurfToAnaSurf:
     @overload
     def __init__(self, S: nanoocp.Geom.Geom_Surface) -> None: ...
 
+    @overload
+    def __init__(self, theOther: GeomConvert_SurfToAnaSurf) -> None: ...
+
     def Init(self, S: nanoocp.Geom.Geom_Surface) -> None: ...
 
     def SetConvType(self, theConvType: GeomConvert_ConvType = GeomConvert_ConvType.GeomConvert_Simplest) -> None: ...
@@ -1385,6 +1425,9 @@ class GeomConvert_FuncSphereLSDist(nanoocp.math.math_MultipleVarFunctionWithGrad
     @overload
     def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
 
+    @overload
+    def __init__(self, theOther: GeomConvert_FuncSphereLSDist) -> None: ...
+
     def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
 
     def NbVariables(self) -> int:
@@ -1441,6 +1484,9 @@ class GeomConvert_FuncCylinderLSDist(nanoocp.math.math_MultipleVarFunctionWithGr
     @overload
     def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ], theDir: nanoocp.gp.gp_Dir) -> None: ...
 
+    @overload
+    def __init__(self, theOther: GeomConvert_FuncCylinderLSDist) -> None: ...
+
     def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
 
     def SetDir(self, theDir: nanoocp.gp.gp_Dir) -> None: ...
@@ -1470,6 +1516,9 @@ class GeomConvert_FuncConeLSDist(nanoocp.math.math_MultipleVarFunction):
 
     @overload
     def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ], theDir: nanoocp.gp.gp_Dir) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeomConvert_FuncConeLSDist) -> None: ...
 
     def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
 

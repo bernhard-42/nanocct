@@ -80,6 +80,7 @@ tl and ta are the linear and angular tolerance used two
 compare the derivative.)nbdoc")
         .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double, const double, const bool, const bool)>(&GeomLProp::Continuity), nb::arg("C1"), nb::arg("C2"), nb::arg("u1"), nb::arg("u2"), nb::arg("r1"), nb::arg("r2"), R"nbdoc(The same as preceding but using the standard
 tolerances from package Precision.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLProp>(nb::borrow<nb::class_<GeomLProp>>(m.attr("GeomLProp")));
     nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps"))
         .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U> and the curve is set
@@ -117,6 +118,7 @@ three first derivatives are all null.)nbdoc")
         .def("Curvature", static_cast<double (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)()>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::Curvature), R"nbdoc(Returns the curvature.)nbdoc")
         .def("Normal", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Dir &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::Normal), nb::arg("N"), R"nbdoc(Returns the normal direction <N>.)nbdoc")
         .def("CentreOfCurvature", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Pnt &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::CentreOfCurvature), nb::arg("P"), R"nbdoc(Returns the centre of curvature <P>.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps")));
     nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps2d"))
         .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U> and the curve is set
@@ -154,6 +156,7 @@ three first derivatives are all null.)nbdoc")
         .def("Curvature", static_cast<double (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)()>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::Curvature), R"nbdoc(Returns the curvature.)nbdoc")
         .def("Normal", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Dir2d &)>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::Normal), nb::arg("N"), R"nbdoc(Returns the normal direction <N>.)nbdoc")
         .def("CentreOfCurvature", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Pnt2d &)>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::CentreOfCurvature), nb::arg("P"), R"nbdoc(Returns the centre of curvature <P>.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps2d")));
     nb::borrow<nb::class_<GeomLProp_CurAndInf2d>>(m.attr("GeomLProp_CurAndInf2d"))
         .def(nb::init<>(), R"nbdoc(Initializes the framework.
 Note: The curve on which the local properties are
@@ -175,7 +178,9 @@ These functions can be used to analyze a series of
 curves, however it is necessary to clear the table of
 results between each computation.)nbdoc")
         .def("IsDone", static_cast<bool (GeomLProp_CurAndInf2d::*)() const>(&GeomLProp_CurAndInf2d::IsDone), R"nbdoc(True if the solutions are found.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLProp_CurAndInf2d>(nb::borrow<nb::class_<GeomLProp_CurAndInf2d>>(m.attr("GeomLProp_CurAndInf2d")));
     nanoocp_implicit_default_ctor<LProp_SurfaceUtils::DirectAccess>(nb::borrow<nb::class_<LProp_SurfaceUtils::DirectAccess>>(m.attr("LProp_SurfaceUtils").attr("DirectAccess")));
+    nanoocp_implicit_copy_ctor<LProp_SurfaceUtils::DirectAccess>(nb::borrow<nb::class_<LProp_SurfaceUtils::DirectAccess>>(m.attr("LProp_SurfaceUtils").attr("DirectAccess")));
     nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("GeomLProp_SLProps"))
         .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
 of parameters <U> and <V> and the surface.
@@ -226,6 +231,7 @@ curvature is constant).)nbdoc")
 <MaxD> and <MinD>)nbdoc")
         .def("MeanCurvature", static_cast<double (GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::*)()>(&GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::MeanCurvature), R"nbdoc(Returns the mean curvature.)nbdoc")
         .def("GaussianCurvature", static_cast<double (GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::*)()>(&GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::GaussianCurvature), R"nbdoc(Returns the Gaussian curvature)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("GeomLProp_SLProps")));
     nb::borrow<nb::module_>(m.attr("LProp_SurfaceUtils")).def("GetSurfBounds", [](const Geom_Surface & theSurf) { double theU1{}; double theV1{}; double theU2{}; double theV2{}; LProp_SurfaceUtils::GetSurfBounds(theSurf, theU1, theV1, theU2, theV2); return std::make_tuple(theU1, theV1, theU2, theV2); }, nb::arg("theSurf"), R"nbdoc(Get bounds from Geom_Surface (uses Bounds method with U1, U2, V1, V2 order).)nbdoc");
     nb::borrow<nb::module_>(m.attr("LProp_SurfaceUtils")).def("GetSurfBounds", [](const Adaptor3d_Surface & theSurf) { double theU1{}; double theV1{}; double theU2{}; double theV2{}; LProp_SurfaceUtils::GetSurfBounds(theSurf, theU1, theV1, theU2, theV2); return std::make_tuple(theU1, theV1, theU2, theV2); }, nb::arg("theSurf"), R"nbdoc(Get bounds from Adaptor3d_Surface (uses individual parameter methods).
 Also works for BRepAdaptor_Surface which inherits from Adaptor3d_Surface.)nbdoc");

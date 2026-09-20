@@ -31,7 +31,11 @@ class BndLib:
     tool for the topology (only the edges in 2d dimensions)
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BndLib) -> None: ...
 
     @overload
     @staticmethod
@@ -217,7 +221,11 @@ class BndLib_Add2dCurve:
     The 2D curve is defined from a Geom2d curve.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BndLib_Add2dCurve) -> None: ...
 
     @overload
     @staticmethod
@@ -334,7 +342,11 @@ class BndLib_Add3dCurve:
     The 3D curve is defined from a Geom curve.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BndLib_Add3dCurve) -> None: ...
 
     @overload
     @staticmethod
@@ -420,7 +432,11 @@ class BndLib_AddSurface:
     The surface is defined from a Geom surface.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BndLib_AddSurface) -> None: ...
 
     @overload
     @staticmethod

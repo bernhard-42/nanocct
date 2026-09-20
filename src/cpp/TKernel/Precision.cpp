@@ -307,4 +307,5 @@ infinite number. Currently R > 1e100)nbdoc")
 infinite number. Currently R < -1e100)nbdoc")
         .def_static("Infinite", static_cast<double (*)()>(&Precision::Infinite), R"nbdoc(Returns a big number that can be considered as
 infinite. Use -Infinite() for a negative big number.)nbdoc");
+    nanoocp_implicit_copy_ctor<Precision>(nb::borrow<nb::class_<Precision>>(m.attr("Precision")));
 }

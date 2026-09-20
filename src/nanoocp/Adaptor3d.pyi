@@ -29,7 +29,11 @@ class Adaptor3d_Curve(nanoocp.Standard.Standard_Transient):
     thread-safe and parallel evaluations need to be prevented.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Adaptor3d_Curve) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -206,7 +210,11 @@ class Adaptor3d_Surface(nanoocp.Standard.Standard_Transient):
     prevented.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Adaptor3d_Surface) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -438,6 +446,9 @@ class Adaptor3d_CurveOnSurface(Adaptor3d_Curve):
         the surface <S>.
         """
 
+    @overload
+    def __init__(self, theOther: Adaptor3d_CurveOnSurface) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -555,7 +566,11 @@ class Adaptor3d_CurveOnSurface(Adaptor3d_Curve):
     def BSpline(self) -> nanoocp.Geom.Geom_BSplineCurve: ...
 
 class Adaptor3d_HSurfaceTool:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Adaptor3d_HSurfaceTool) -> None: ...
 
     @staticmethod
     def FirstUParameter(theSurf: Adaptor3d_Surface) -> float: ...
@@ -696,6 +711,9 @@ class Adaptor3d_HVertex(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, P: nanoocp.gp.gp_Pnt2d, Ori: nanoocp.TopAbs.TopAbs_Orientation, Resolution: float) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Adaptor3d_HVertex) -> None: ...
+
     def Value(self) -> nanoocp.gp.gp_Pnt2d: ...
 
     def Parameter(self, C: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> float: ...
@@ -724,11 +742,15 @@ class Adaptor3d_InterFunc(nanoocp.math.math_FunctionWithDerivative):
     find the roots of the functions
     """
 
+    @overload
     def __init__(self, C: nanoocp.Adaptor2d.Adaptor2d_Curve2d, FixVal: float, Fix: int) -> None:
         """
         build the function U(t)=FixVal if Fix =1 or
         V(t)=FixVal if Fix=2
         """
+
+    @overload
+    def __init__(self, theOther: Adaptor3d_InterFunc) -> None: ...
 
     def Value(self, X: float) -> tuple[bool, float]:
         """
@@ -785,6 +807,9 @@ class Adaptor3d_IsoCurve(Adaptor3d_Curve):
         (isoU or isov). Param defines the value of the
         iso. WFirst,WLast define the bounds of the iso.
         """
+
+    @overload
+    def __init__(self, theOther: Adaptor3d_IsoCurve) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -925,6 +950,9 @@ class Adaptor3d_TopolTool(nanoocp.Standard.Standard_Transient):
 
     @overload
     def __init__(self, Surface: Adaptor3d_Surface) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Adaptor3d_TopolTool) -> None: ...
 
     @overload
     def Initialize(self) -> None: ...

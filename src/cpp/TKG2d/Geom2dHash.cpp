@@ -17,8 +17,9 @@ void nanoocp_define_Geom2dHash(nb::module_ &m) {
     nb::borrow<nb::class_<Geom2dHash_CurveHasher>>(m.attr("Geom2dHash_CurveHasher"))
         .def(nb::init<double, double>(), nb::arg("theCompTolerance") = static_cast<std::decay_t<double>>(Precision :: Angular ( )), nb::arg("theHashTolerance") = static_cast<std::decay_t<double>>(Precision :: Confusion ( )))
         .def("__call__", static_cast<std::size_t (Geom2dHash_CurveHasher::*)(const occ::handle<Geom2d_Curve> &) const noexcept>(&Geom2dHash_CurveHasher::operator()), nb::arg("theCurve"), nb::is_operator())
-        .def("__call__", static_cast<bool (Geom2dHash_CurveHasher::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &) const noexcept>(&Geom2dHash_CurveHasher::operator()), nb::arg("theCurve1"), nb::arg("theCurve2"), nb::is_operator())
-        .def_rw("CompTolerance", &Geom2dHash_CurveHasher::CompTolerance)
-        .def_rw("HashTolerance", &Geom2dHash_CurveHasher::HashTolerance);
+        .def("__call__", static_cast<bool (Geom2dHash_CurveHasher::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &) const noexcept>(&Geom2dHash_CurveHasher::operator()), nb::arg("theCurve1"), nb::arg("theCurve2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<Geom2dHash_CurveHasher>(nb::borrow<nb::class_<Geom2dHash_CurveHasher>>(m.attr("Geom2dHash_CurveHasher")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dHash_CurveHasher>>(m.attr("Geom2dHash_CurveHasher")), "CompTolerance", &Geom2dHash_CurveHasher::CompTolerance);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dHash_CurveHasher>>(m.attr("Geom2dHash_CurveHasher")), "HashTolerance", &Geom2dHash_CurveHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<double>, Geom2dHash_CurveHasher>();
 }

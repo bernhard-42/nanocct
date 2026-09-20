@@ -45,6 +45,9 @@ class AdvApprox_ApproxAFunction:
     def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float], TwoDTol: nanoocp.NCollection.NCollection_HArray1[float], ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float], First: float, Last: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDeg: int, MaxSeg: int, Func: AdvApprox_EvaluatorFunction, CutTool: AdvApprox_Cutting) -> None:
         """Approximation with user method of cutting"""
 
+    @overload
+    def __init__(self, theOther: AdvApprox_ApproxAFunction) -> None: ...
+
     @staticmethod
     def Approximation(TotalDimension: int, TotalNumSS: int, LocalDimension: nanoocp.NCollection.NCollection_Array1[int], First: float, Last: float, Evaluator: AdvApprox_EvaluatorFunction, CutTool: AdvApprox_Cutting, ContinuityOrder: int, NumMaxCoeffs: int, MaxSegments: int, TolerancesArray: nanoocp.NCollection.NCollection_Array1[float], code_precis: int, NumCoeffPerCurveArray: nanoocp.NCollection.NCollection_Array1[int], LocalCoefficientArray: nanoocp.NCollection.NCollection_Array1[float], IntervalsArray: nanoocp.NCollection.NCollection_Array1[float], ErrorMaxArray: nanoocp.NCollection.NCollection_Array1[float], AverageErrorArray: nanoocp.NCollection.NCollection_Array1[float]) -> tuple[int, int]: ...
 
@@ -111,7 +114,11 @@ class AdvApprox_Cutting:
 class AdvApprox_DichoCutting(AdvApprox_Cutting):
     """if Cutting is necessary in [a,b], we cut at (a+b) / 2."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AdvApprox_DichoCutting) -> None: ...
 
     def Value(self, a: float, b: float) -> tuple[bool, float]: ...
 
@@ -122,7 +129,11 @@ class AdvApprox_PrefAndRec(AdvApprox_Cutting):
     if Cutting is necessary in [a,b], we cut at the di nearest from (a+b)/2
     """
 
+    @overload
     def __init__(self, RecomendedCut: nanoocp.NCollection.NCollection_Array1[float], PrefferedCut: nanoocp.NCollection.NCollection_Array1[float], Weight: float = 5.0) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AdvApprox_PrefAndRec) -> None: ...
 
     def Value(self, a: float, b: float) -> tuple[bool, float]:
         """
@@ -140,7 +151,11 @@ class AdvApprox_PrefCutting(AdvApprox_Cutting):
     if Cutting is necessary in [a,b], we cut at the di nearest from (a+b)/2.
     """
 
+    @overload
     def __init__(self, CutPnts: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AdvApprox_PrefCutting) -> None: ...
 
     def Value(self, a: float, b: float) -> tuple[bool, float]: ...
 
@@ -153,7 +168,11 @@ class AdvApprox_SimpleApprox:
     resulting from approximating the function by the polynomial are computed
     """
 
+    @overload
     def __init__(self, TotalDimension: int, TotalNumSS: int, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, WorkDegree: int, NbGaussPoints: int, JacobiBase: nanoocp.PLib.PLib_JacobiPolynomial, Func: AdvApprox_EvaluatorFunction) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AdvApprox_SimpleApprox) -> None: ...
 
     def Perform(self, LocalDimension: nanoocp.NCollection.NCollection_Array1[int], LocalTolerancesArray: nanoocp.NCollection.NCollection_Array1[float], First: float, Last: float, MaxDegree: int) -> None:
         """

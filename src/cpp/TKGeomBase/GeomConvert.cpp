@@ -469,6 +469,7 @@ geometrical tolerance : it allows for the maximum deformation
 The Angular tolerance is in radians and measures the angle of
 the tangents on the left and on the right to decide if the curve
 is C1 or not at a given point)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert>(nb::borrow<nb::class_<GeomConvert>>(m.attr("GeomConvert")));
     nb::borrow<nb::class_<GeomConvert_ApproxCurve>>(m.attr("GeomConvert_ApproxCurve"))
         .def(nb::init<const occ::handle<Geom_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve"), nb::arg("Tol3d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Constructs a curve approximation framework defined by -
 -      the conic Curve,
@@ -495,6 +496,7 @@ with a result that is not NECESSARELY within the required tolerance)nbdoc")
 source conic and the BSpline curve resulting from the
 approximation. (>0 when an approximation
 has been done, 0 if no approximation))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_ApproxCurve>(nb::borrow<nb::class_<GeomConvert_ApproxCurve>>(m.attr("GeomConvert_ApproxCurve")));
     nb::borrow<nb::class_<GeomConvert_ApproxSurface>>(m.attr("GeomConvert_ApproxSurface"))
         .def(nb::init<const occ::handle<Geom_Surface> &, const double, const GeomAbs_Shape, const GeomAbs_Shape, const int, const int, const int, const int>(), nb::arg("Surf"), nb::arg("Tol3d"), nb::arg("UContinuity"), nb::arg("VContinuity"), nb::arg("MaxDegU"), nb::arg("MaxDegV"), nb::arg("MaxSegments"), nb::arg("PrecisCode"), R"nbdoc(Constructs a surface approximation framework defined by
 -   the conic Surf
@@ -527,6 +529,7 @@ that is not recognized with the wished continuities.)nbdoc")
 source conic surface and the BSpline surface
 resulting from the approximation (>0 when an approximation
 has been done, 0 if no  approximation ))nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_ApproxSurface>(nb::borrow<nb::class_<GeomConvert_ApproxSurface>>(m.attr("GeomConvert_ApproxSurface")));
     nb::borrow<nb::class_<GeomConvert_BSplineCurveKnotSplitting>>(m.attr("GeomConvert_BSplineCurveKnotSplitting"))
         .def(nb::init<const occ::handle<Geom_BSplineCurve> &, const int>(), nb::arg("BasisCurve"), nb::arg("ContinuityRange"), R"nbdoc(Determines points at which the BSpline curve
 BasisCurve should be split in order to obtain arcs
@@ -573,6 +576,7 @@ point is the last point of the curve.
 Exceptions
 Standard_RangeError if Index is less than 1 or
 greater than the number of split knots computed in this framework.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_BSplineCurveKnotSplitting>(nb::borrow<nb::class_<GeomConvert_BSplineCurveKnotSplitting>>(m.attr("GeomConvert_BSplineCurveKnotSplitting")));
     nb::borrow<nb::class_<GeomConvert_BSplineCurveToBezierCurve>>(m.attr("GeomConvert_BSplineCurveToBezierCurve"))
         .def(nb::init<const occ::handle<Geom_BSplineCurve> &>(), nb::arg("BasisCurve"), R"nbdoc(Computes all the data needed to convert the
 BSpline curve BasisCurve into a series of adjacent Bezier arcs.)nbdoc")
@@ -620,6 +624,7 @@ the interval [UFirst, ULast].
 If you have decomposed the whole basis B-spline curve the number
 of BezierCurve arcs NbArcs is equal to the number of knots less
 one.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_BSplineCurveToBezierCurve>(nb::borrow<nb::class_<GeomConvert_BSplineCurveToBezierCurve>>(m.attr("GeomConvert_BSplineCurveToBezierCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BSplineCurve> &>, GeomConvert_BSplineCurveToBezierCurve>();
     nb::borrow<nb::class_<GeomConvert_BSplineSurfaceKnotSplitting>>(m.attr("GeomConvert_BSplineSurfaceKnotSplitting"))
         .def(nb::init<const occ::handle<Geom_BSplineSurface> &, const int, const int>(), nb::arg("BasisSurface"), nb::arg("UContinuityRange"), nb::arg("VContinuityRange"), R"nbdoc(Determines the u- and v-isoparametric curves
@@ -706,6 +711,7 @@ parameter of one of the bounding curves of the surface.
 Exceptions
 Standard_RangeError if VIndex is less than 1 or greater than the number
 of split knots for the v parametric direction computed in this framework.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_BSplineSurfaceKnotSplitting>(nb::borrow<nb::class_<GeomConvert_BSplineSurfaceKnotSplitting>>(m.attr("GeomConvert_BSplineSurfaceKnotSplitting")));
     nb::borrow<nb::class_<GeomConvert_BSplineSurfaceToBezierSurface>>(m.attr("GeomConvert_BSplineSurfaceToBezierSurface"))
         .def(nb::init<const occ::handle<Geom_BSplineSurface> &>(), nb::arg("BasisSurface"), R"nbdoc(Computes all the data needed to convert
 -   the BSpline surface BasisSurface into a series of adjacent Bezier surfaces.
@@ -815,6 +821,7 @@ knots included inside the interval [VFirst, VLast].
 If you have decomposed the whole basis B-spline surface the
 number of Bezier surfaces NbVPatches is equal to the number of
 VKnots less one.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_BSplineSurfaceToBezierSurface>(nb::borrow<nb::class_<GeomConvert_BSplineSurfaceToBezierSurface>>(m.attr("GeomConvert_BSplineSurfaceToBezierSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BSplineSurface> &>, GeomConvert_BSplineSurfaceToBezierSurface>();
     nb::borrow<nb::class_<GeomConvert_CompBezierSurfacesToBSplineSurface>>(m.attr("GeomConvert_CompBezierSurfacesToBSplineSurface"))
         .def(nb::init<const NCollection_Array2<opencascade::handle<Geom_BezierSurface>> &>(), nb::arg("Beziers"), R"nbdoc(Computes all the data needed to build a "C0"
@@ -996,6 +1003,7 @@ degree of continuity on the BSpline surface, and the
 maximum tolerance accepted for local deformations
 of the surface. In such a case the computed data
 does not satisfy all the initial constraints.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_CompBezierSurfacesToBSplineSurface>(nb::borrow<nb::class_<GeomConvert_CompBezierSurfacesToBSplineSurface>>(m.attr("GeomConvert_CompBezierSurfacesToBSplineSurface")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array2<opencascade::handle<Geom_BezierSurface>> &>, GeomConvert_CompBezierSurfacesToBSplineSurface>();
     nb::borrow<nb::class_<GeomConvert_CompCurveToBSplineCurve>>(m.attr("GeomConvert_CompCurveToBSplineCurve"))
         .def(nb::init<const Convert_ParameterisationType>(), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(Initialize the algorithm
@@ -1014,6 +1022,7 @@ decrease the speed of algorithms like CPnts_AbscissaPoint::AdvPerform
 when applied to the resulting curve.)nbdoc")
         .def("BSplineCurve", static_cast<occ::handle<Geom_BSplineCurve> (GeomConvert_CompCurveToBSplineCurve::*)() const>(&GeomConvert_CompCurveToBSplineCurve::BSplineCurve))
         .def("Clear", static_cast<void (GeomConvert_CompCurveToBSplineCurve::*)()>(&GeomConvert_CompCurveToBSplineCurve::Clear), R"nbdoc(Clear a result curve)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_CompCurveToBSplineCurve>(nb::borrow<nb::class_<GeomConvert_CompCurveToBSplineCurve>>(m.attr("GeomConvert_CompCurveToBSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const Convert_ParameterisationType>, GeomConvert_CompCurveToBSplineCurve>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BoundedCurve> &>, GeomConvert_CompCurveToBSplineCurve>();
     nanoocp_implicit_default_ctor<GeomConvert_Units>(nb::borrow<nb::class_<GeomConvert_Units>>(m.attr("GeomConvert_Units")));
@@ -1021,6 +1030,7 @@ when applied to the resulting curve.)nbdoc")
         .def_static("RadianToDegree", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const double, const double)>(&GeomConvert_Units::RadianToDegree), nb::arg("theCurve"), nb::arg("theSurface"), nb::arg("theLengthFactor"), nb::arg("theFactorRadianDegree"), R"nbdoc(Convert 2d curve for change angle unit from radian to degree)nbdoc")
         .def_static("DegreeToRadian", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const double, const double)>(&GeomConvert_Units::DegreeToRadian), nb::arg("theCurve"), nb::arg("theSurface"), nb::arg("theLengthFactor"), nb::arg("theFactorRadianDegree"), R"nbdoc(Convert 2d curve for change angle unit from degree to radian)nbdoc")
         .def_static("MirrorPCurve", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom2d_Curve> &)>(&GeomConvert_Units::MirrorPCurve), nb::arg("theCurve"), R"nbdoc(return 2d curve as 'mirror' for given)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_Units>(nb::borrow<nb::class_<GeomConvert_Units>>(m.attr("GeomConvert_Units")));
     nb::borrow<nb::class_<GeomConvert_CurveToAnaCurve>>(m.attr("GeomConvert_CurveToAnaCurve"))
         .def(nb::init<>())
         .def(nb::init<const occ::handle<Geom_Curve> &>(), nb::arg("C"))
@@ -1049,6 +1059,7 @@ one computed by last call to ConvertToAnalytical)nbdoc")
         .def("SetConvType", static_cast<void (GeomConvert_CurveToAnaCurve::*)(const GeomConvert_ConvType)>(&GeomConvert_CurveToAnaCurve::SetConvType), nb::arg("theConvType"), R"nbdoc(Sets type of conversion)nbdoc")
         .def("GetTarget", static_cast<GeomAbs_CurveType (GeomConvert_CurveToAnaCurve::*)() const>(&GeomConvert_CurveToAnaCurve::GetTarget), R"nbdoc(Returns target curve type)nbdoc")
         .def("SetTarget", static_cast<void (GeomConvert_CurveToAnaCurve::*)(const GeomAbs_CurveType)>(&GeomConvert_CurveToAnaCurve::SetTarget), nb::arg("theTarget"), R"nbdoc(Sets target curve type)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_CurveToAnaCurve>(nb::borrow<nb::class_<GeomConvert_CurveToAnaCurve>>(m.attr("GeomConvert_CurveToAnaCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Curve> &>, GeomConvert_CurveToAnaCurve>();
     nb::borrow<nb::class_<GeomConvert_SurfToAnaSurf>>(m.attr("GeomConvert_SurfToAnaSurf"))
         .def(nb::init<>())
@@ -1064,6 +1075,7 @@ In case of failure, returns a Null Handle)nbdoc")
         .def("ConvertToAnalytical", static_cast<occ::handle<Geom_Surface> (GeomConvert_SurfToAnaSurf::*)(const double, const double, const double, const double, const double)>(&GeomConvert_SurfToAnaSurf::ConvertToAnalytical), nb::arg("InitialToler"), nb::arg("Umin"), nb::arg("Umax"), nb::arg("Vmin"), nb::arg("Vmax"))
         .def_static("IsSame", static_cast<bool (*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const double)>(&GeomConvert_SurfToAnaSurf::IsSame), nb::arg("S1"), nb::arg("S2"), nb::arg("tol"), R"nbdoc(Returns true if surfaces is same with the given tolerance)nbdoc")
         .def_static("IsCanonical", static_cast<bool (*)(const occ::handle<Geom_Surface> &)>(&GeomConvert_SurfToAnaSurf::IsCanonical), nb::arg("S"), R"nbdoc(Returns true, if surface is canonical)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_SurfToAnaSurf>(nb::borrow<nb::class_<GeomConvert_SurfToAnaSurf>>(m.attr("GeomConvert_SurfToAnaSurf")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomConvert_SurfToAnaSurf>();
     nb::borrow<nb::class_<GeomConvert_FuncSphereLSDist>>(m.attr("GeomConvert_FuncSphereLSDist"))
         .def(nb::init<>(), R"nbdoc(Constructor.)nbdoc")
@@ -1073,6 +1085,7 @@ In case of failure, returns a Null Handle)nbdoc")
         .def("Value", [](GeomConvert_FuncSphereLSDist &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Value.)nbdoc")
         .def("Gradient", static_cast<bool (GeomConvert_FuncSphereLSDist::*)(const math_Vector &, math_Vector &)>(&GeomConvert_FuncSphereLSDist::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(Gradient.)nbdoc")
         .def("Values", [](GeomConvert_FuncSphereLSDist &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(Value and gradient.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_FuncSphereLSDist>(nb::borrow<nb::class_<GeomConvert_FuncSphereLSDist>>(m.attr("GeomConvert_FuncSphereLSDist")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_HArray1<gp_XYZ>> &>, GeomConvert_FuncSphereLSDist>();
     nb::borrow<nb::class_<GeomConvert_FuncCylinderLSDist>>(m.attr("GeomConvert_FuncCylinderLSDist"))
         .def(nb::init<>(), R"nbdoc(Constructor.)nbdoc")
@@ -1083,6 +1096,7 @@ In case of failure, returns a Null Handle)nbdoc")
         .def("Value", [](GeomConvert_FuncCylinderLSDist &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Value.)nbdoc")
         .def("Gradient", static_cast<bool (GeomConvert_FuncCylinderLSDist::*)(const math_Vector &, math_Vector &)>(&GeomConvert_FuncCylinderLSDist::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(Gradient.)nbdoc")
         .def("Values", [](GeomConvert_FuncCylinderLSDist &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(Value and gradient.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_FuncCylinderLSDist>(nb::borrow<nb::class_<GeomConvert_FuncCylinderLSDist>>(m.attr("GeomConvert_FuncCylinderLSDist")));
     nb::borrow<nb::class_<GeomConvert_FuncConeLSDist>>(m.attr("GeomConvert_FuncConeLSDist"))
         .def(nb::init<>(), R"nbdoc(Constructor.)nbdoc")
         .def(nb::init<const occ::handle<NCollection_HArray1<gp_XYZ>> &, const gp_Dir &>(), nb::arg("thePoints"), nb::arg("theDir"))
@@ -1090,4 +1104,5 @@ In case of failure, returns a Null Handle)nbdoc")
         .def("SetDir", static_cast<void (GeomConvert_FuncConeLSDist::*)(const gp_Dir &)>(&GeomConvert_FuncConeLSDist::SetDir), nb::arg("theDir"))
         .def("NbVariables", static_cast<int (GeomConvert_FuncConeLSDist::*)() const>(&GeomConvert_FuncConeLSDist::NbVariables), R"nbdoc(Number of variables.)nbdoc")
         .def("Value", [](GeomConvert_FuncConeLSDist &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Value.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomConvert_FuncConeLSDist>(nb::borrow<nb::class_<GeomConvert_FuncConeLSDist>>(m.attr("GeomConvert_FuncConeLSDist")));
 }

@@ -32,7 +32,11 @@ class UnitsMethods_LengthUnit(enum.IntEnum):
 class UnitsMethods:
     """Class for using global units variables"""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: UnitsMethods) -> None: ...
 
     @staticmethod
     def GetLengthFactorValue(theUnit: int) -> float:

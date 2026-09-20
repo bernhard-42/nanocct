@@ -25,6 +25,9 @@ class Bnd_B2d:
     def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
         """Constructor."""
 
+    @overload
+    def __init__(self, theOther: Bnd_B2d) -> None: ...
+
     def IsVoid(self) -> bool:
         """Returns True if the box is void (non-initialized)."""
 
@@ -177,6 +180,9 @@ class Bnd_B2f:
     def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
         """Constructor."""
 
+    @overload
+    def __init__(self, theOther: Bnd_B2f) -> None: ...
+
     def IsVoid(self) -> bool:
         """Returns True if the box is void (non-initialized)."""
 
@@ -328,6 +334,9 @@ class Bnd_B3d:
     @overload
     def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
         """Constructor."""
+
+    @overload
+    def __init__(self, theOther: Bnd_B3d) -> None: ...
 
     def IsVoid(self) -> bool:
         """Returns True if the box is void (non-initialized)."""
@@ -486,6 +495,9 @@ class Bnd_B3f:
     @overload
     def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
         """Constructor."""
+
+    @overload
+    def __init__(self, theOther: Bnd_B3f) -> None: ...
 
     def IsVoid(self) -> bool:
         """Returns True if the box is void (non-initialized)."""
@@ -673,13 +685,20 @@ class Bnd_Box:
         The constructed box is qualified Void. Its gap is null.
         """
 
+    @overload
+    def __init__(self, theOther: Bnd_Box) -> None: ...
+
     class Limits:
         """
         Structure containing the box limits (Xmin, Xmax, Ymin, Ymax, Zmin, Zmax).
         The values include the gap and account for open directions.
         """
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Bnd_Box.Limits) -> None: ...
 
         @property
         def Xmin(self) -> float:
@@ -1052,11 +1071,15 @@ class Bnd_BoundSortBox:
     the box or plane passed as argument.
     """
 
+    @overload
     def __init__(self) -> None:
         """
         Constructs an empty comparison algorithm for bounding boxes.
         The bounding boxes are then defined using the Initialize function.
         """
+
+    @overload
+    def __init__(self, theOther: Bnd_BoundSortBox) -> None: ...
 
     @overload
     def Initialize(self, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box]) -> None:
@@ -1149,7 +1172,11 @@ class Bnd_Box2d:
     the box.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Bnd_Box2d) -> None: ...
 
     class Limits:
         """
@@ -1157,7 +1184,11 @@ class Bnd_Box2d:
         The values include the gap and account for open directions.
         """
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Bnd_Box2d.Limits) -> None: ...
 
         @property
         def Xmin(self) -> float:
@@ -1422,6 +1453,9 @@ class Bnd_OBB:
     def __init__(self, theCenter: nanoocp.gp.gp_Pnt, theXDirection: nanoocp.gp.gp_Dir, theYDirection: nanoocp.gp.gp_Dir, theZDirection: nanoocp.gp.gp_Dir, theHXSize: float, theHYSize: float, theHZSize: float) -> None:
         """Constructor taking all defining parameters"""
 
+    @overload
+    def __init__(self, theOther: Bnd_OBB) -> None: ...
+
     class HalfSizes:
         """
         Structure containing the OBB half-size dimensions.
@@ -1431,7 +1465,11 @@ class Bnd_OBB:
         @endcode
         """
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Bnd_OBB.HalfSizes) -> None: ...
 
         @property
         def X(self) -> float:
@@ -1583,6 +1621,9 @@ class Bnd_Range:
     def __init__(self, theMin: float, theMax: float) -> None:
         """Constructor. Never creates VOID range."""
 
+    @overload
+    def __init__(self, theOther: Bnd_Range) -> None: ...
+
     class IntersectStatus(enum.IntEnum):
         """
         Status of intersection check with a periodic value.
@@ -1604,7 +1645,11 @@ class Bnd_Range:
         @endcode
         """
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Bnd_Range.Bounds) -> None: ...
 
         @property
         def Min(self) -> float:
@@ -1788,6 +1833,9 @@ class Bnd_Sphere:
     def __init__(self, theCntr: nanoocp.gp.gp_XYZ, theRad: float, theU: int, theV: int) -> None:
         """Constructor of a definite sphere"""
 
+    @overload
+    def __init__(self, theOther: Bnd_Sphere) -> None: ...
+
     def U(self) -> int:
         """Returns the U parameter on shape"""
 
@@ -1845,7 +1893,11 @@ class Bnd_Sphere:
 class Bnd_Tools:
     """Defines a set of static methods operating with bounding boxes"""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Bnd_Tools) -> None: ...
 
     @overload
     @staticmethod

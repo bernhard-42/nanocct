@@ -35,7 +35,11 @@ class Geom2dConvert:
     CAGD 1 1984
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Geom2dConvert) -> None: ...
 
     @overload
     @staticmethod
@@ -235,6 +239,9 @@ class Geom2dConvert_PPoint:
     def __init__(self, theParameter: float, thePoint: nanoocp.gp.gp_XY, theD1: nanoocp.gp.gp_XY) -> None:
         """Constructor."""
 
+    @overload
+    def __init__(self, theOther: Geom2dConvert_PPoint) -> None: ...
+
     def Dist(self, theOth: Geom2dConvert_PPoint) -> float:
         """Compute the distance between two 2d points."""
 
@@ -259,8 +266,12 @@ class Geom2dConvert_PPoint:
 class Geom2dConvert_ApproxArcsSegments:
     """Approximation of a free-form curve by a sequence of arcs+segments."""
 
+    @overload
     def __init__(self, theCurve: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theTolerance: float, theAngleTol: float) -> None:
         """Constructor."""
+
+    @overload
+    def __init__(self, theOther: Geom2dConvert_ApproxArcsSegments) -> None: ...
 
     class Status(enum.IntEnum):
         StatusOK = 0
@@ -292,6 +303,9 @@ class Geom2dConvert_ApproxCurve:
         -   the highest degree MaxDegree which the
         polynomial defining the BSpline is allowed to have.
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dConvert_ApproxCurve) -> None: ...
 
     def Curve(self) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
         """
@@ -342,6 +356,7 @@ class Geom2dConvert_BSplineCurveKnotSplitting:
     -   consulting the results.
     """
 
+    @overload
     def __init__(self, BasisCurve: nanoocp.Geom2d.Geom2d_BSplineCurve, ContinuityRange: int) -> None:
         """
         Determines points at which the BSpline curve
@@ -356,6 +371,9 @@ class Geom2dConvert_BSplineCurveKnotSplitting:
         Exceptions
         Standard_RangeError if ContinuityRange is less than zero.
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dConvert_BSplineCurveKnotSplitting) -> None: ...
 
     def NbSplits(self) -> int:
         """
@@ -451,6 +469,9 @@ class Geom2dConvert_BSplineCurveToBezierCurve:
         Raised if Abs (U2 - U1) <= ParametricTolerance.
         """
 
+    @overload
+    def __init__(self, theOther: Geom2dConvert_BSplineCurveToBezierCurve) -> None: ...
+
     def Arc(self, Index: int) -> nanoocp.Geom2d.Geom2d_BezierCurve:
         """
         Constructs and returns the Bezier curve of index
@@ -515,6 +536,9 @@ class Geom2dConvert_CompCurveToBSplineCurve:
         Initialize the algorithm with one curve
         - Parameterisation is used to convert
         """
+
+    @overload
+    def __init__(self, theOther: Geom2dConvert_CompCurveToBSplineCurve) -> None: ...
 
     def Add(self, NewCurve: nanoocp.Geom2d.Geom2d_BoundedCurve, Tolerance: float, After: bool = False) -> bool:
         """

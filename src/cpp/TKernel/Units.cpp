@@ -143,6 +143,7 @@ completion of the Units_Lexicon.)nbdoc")
         .def_static("FromSI", static_cast<double (*)(const double, const char *const)>(&Units::FromSI), nb::arg("aData"), nb::arg("aUnit"))
         .def_static("FromSI", static_cast<double (*)(const double, const char *const, occ::handle<Units_Dimensions> &)>(&Units::FromSI), nb::arg("aData"), nb::arg("aUnit"), nb::arg("aDim"))
         .def_static("Dimensions", static_cast<occ::handle<Units_Dimensions> (*)(const char *const)>(&Units::Dimensions), nb::arg("aType"), R"nbdoc(return the dimension associated to the Type)nbdoc");
+    nanoocp_implicit_copy_ctor<Units>(nb::borrow<nb::class_<Units>>(m.attr("Units")));
     nb::borrow<nb::class_<Units_Dimensions>>(m.attr("Units_Dimensions"))
         .def(nb::new_([](const double amass, const double alength, const double atime, const double anelectriccurrent, const double athermodynamictemperature, const double anamountofsubstance, const double aluminousintensity, const double aplaneangle, const double asolidangle) { return opencascade::handle<Units_Dimensions>(new Units_Dimensions(amass, alength, atime, anelectriccurrent, athermodynamictemperature, anamountofsubstance, aluminousintensity, aplaneangle, asolidangle)); }), nb::arg("amass"), nb::arg("alength"), nb::arg("atime"), nb::arg("anelectriccurrent"), nb::arg("athermodynamictemperature"), nb::arg("anamountofsubstance"), nb::arg("aluminousintensity"), nb::arg("aplaneangle"), nb::arg("asolidangle"), R"nbdoc(Returns a Dimensions object which represents the
 dimension of a physical quantity. Each of the
@@ -193,6 +194,7 @@ dimensions, true otherwise.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_Dimensions::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_Dimensions::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_Dimensions::*)() const>(&Units_Dimensions::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_Dimensions>(nb::borrow<nb::class_<Units_Dimensions>>(m.attr("Units_Dimensions")));
     nb::borrow<nb::class_<Units_Unit>>(m.attr("Units_Unit"))
         .def(nb::new_([](const char *const aname) { return opencascade::handle<Units_Unit>(new Units_Unit(aname)); }), nb::arg("aname"), R"nbdoc(Creates and returns a unit. <aname> is the name of
 the unit.)nbdoc")
@@ -219,6 +221,7 @@ symbol equal to the name, False otherwise.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_Unit::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_Unit::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_Unit::*)() const>(&Units_Unit::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_Unit>(nb::borrow<nb::class_<Units_Unit>>(m.attr("Units_Unit")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_Unit>();
     nb::borrow<nb::class_<Units_Quantity>>(m.attr("Units_Quantity"))
         .def(nb::new_([](const char *const aname, const occ::handle<Units_Dimensions> & adimensions, const occ::handle<NCollection_HSequence<opencascade::handle<Units_Unit>>> & aunitssequence) { return opencascade::handle<Units_Quantity>(new Units_Quantity(aname, adimensions, aunitssequence)); }), nb::arg("aname"), nb::arg("adimensions"), nb::arg("aunitssequence"), R"nbdoc(Creates a new Quantity object with <aname> which is
@@ -235,6 +238,7 @@ to <astring>, False otherwise.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_Quantity::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_Quantity::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_Quantity::*)() const>(&Units_Quantity::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_Quantity>(nb::borrow<nb::class_<Units_Quantity>>(m.attr("Units_Quantity")));
     nb::borrow<nb::class_<Units_Explorer>>(m.attr("Units_Explorer"))
         .def(nb::init<>(), R"nbdoc(Empty constructor of the class.)nbdoc")
         .def(nb::init<const occ::handle<Units_UnitsSystem> &>(), nb::arg("aunitssystem"), R"nbdoc(Creates a new instance of the class, initialized with
@@ -272,6 +276,7 @@ otherwise.
 If the units system to explore is the units
 dictionary, returns True if the current unit is the
 S.I. unit.)nbdoc");
+    nanoocp_implicit_copy_ctor<Units_Explorer>(nb::borrow<nb::class_<Units_Explorer>>(m.attr("Units_Explorer")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Units_UnitsSystem> &>, Units_Explorer>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Units_UnitsDictionary> &>, Units_Explorer>();
     nb::borrow<nb::class_<Units_Token>>(m.attr("Units_Token"))
@@ -355,6 +360,7 @@ false otherwise.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_Token::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_Token::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_Token::*)() const>(&Units_Token::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_Token>(nb::borrow<nb::class_<Units_Token>>(m.attr("Units_Token")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_Token>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Units_Token> &>, Units_Token>();
     nb::borrow<nb::class_<Units_Lexicon>>(m.attr("Units_Lexicon"))
@@ -370,6 +376,7 @@ existing token is updated.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_Lexicon::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_Lexicon::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_Lexicon::*)() const>(&Units_Lexicon::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_Lexicon>(nb::borrow<nb::class_<Units_Lexicon>>(m.attr("Units_Lexicon")));
     nb::borrow<nb::class_<Units_Sentence>>(m.attr("Units_Sentence"))
         .def(nb::init<const occ::handle<Units_Lexicon> &, const char *const>(), nb::arg("alexicon"), nb::arg("astring"), R"nbdoc(Createsand returns a Sentence, by analyzing the
 string <astring> with the lexicon <alexicon>.)nbdoc")
@@ -381,10 +388,12 @@ expression.)nbdoc")
         .def("IsDone", static_cast<bool (Units_Sentence::*)() const>(&Units_Sentence::IsDone), R"nbdoc(Return True if number of created tokens > 0
 (i.e creation of sentence is successful))nbdoc")
         .def("Dump", static_cast<void (Units_Sentence::*)() const>(&Units_Sentence::Dump), R"nbdoc(Useful for debugging.)nbdoc");
+    nanoocp_implicit_copy_ctor<Units_Sentence>(nb::borrow<nb::class_<Units_Sentence>>(m.attr("Units_Sentence")));
     nb::borrow<nb::class_<Units_MathSentence>>(m.attr("Units_MathSentence"))
         .def(nb::init<const char *const>(), nb::arg("astring"), R"nbdoc(Creates and returns a MathSentence object. The string
 <astring> describes an algebraic formula in natural
 language.)nbdoc");
+    nanoocp_implicit_copy_ctor<Units_MathSentence>(nb::borrow<nb::class_<Units_MathSentence>>(m.attr("Units_MathSentence")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_MathSentence>();
     nb::borrow<nb::class_<Units_Measurement>>(m.attr("Units_Measurement"))
         .def(nb::init<>(), R"nbdoc(It is the empty constructor of the class.)nbdoc")
@@ -428,6 +437,7 @@ the constant <avalue>.)nbdoc")
 <anexponent>.)nbdoc")
         .def("HasToken", static_cast<bool (Units_Measurement::*)() const>(&Units_Measurement::HasToken))
         .def("Dump", static_cast<void (Units_Measurement::*)() const>(&Units_Measurement::Dump), R"nbdoc(Useful for debugging.)nbdoc");
+    nanoocp_implicit_copy_ctor<Units_Measurement>(nb::borrow<nb::class_<Units_Measurement>>(m.attr("Units_Measurement")));
     nb::borrow<nb::class_<Units_ShiftedToken>>(m.attr("Units_ShiftedToken"))
         .def(nb::new_([](const char *const aword, const char *const amean, const double avalue, const double amove, const occ::handle<Units_Dimensions> & adimensions) { return opencascade::handle<Units_ShiftedToken>(new Units_ShiftedToken(aword, amean, avalue, amove, adimensions)); }), nb::arg("aword"), nb::arg("amean"), nb::arg("avalue"), nb::arg("amove"), nb::arg("adimensions"), R"nbdoc(Creates and returns a shifted token. <aword> is a
 string containing the available word, <amean> gives
@@ -447,6 +457,7 @@ conversion.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_ShiftedToken::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_ShiftedToken::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_ShiftedToken::*)() const>(&Units_ShiftedToken::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_ShiftedToken>(nb::borrow<nb::class_<Units_ShiftedToken>>(m.attr("Units_ShiftedToken")));
     nb::borrow<nb::class_<Units_ShiftedUnit>>(m.attr("Units_ShiftedUnit"))
         .def(nb::new_([](const char *const aname) { return opencascade::handle<Units_ShiftedUnit>(new Units_ShiftedUnit(aname)); }), nb::arg("aname"), R"nbdoc(Creates and returns a unit. <aname> is the name of
 the unit.)nbdoc")
@@ -469,6 +480,7 @@ and <amove> equal to 273.15.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_ShiftedUnit::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_ShiftedUnit::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_ShiftedUnit::*)() const>(&Units_ShiftedUnit::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_ShiftedUnit>(nb::borrow<nb::class_<Units_ShiftedUnit>>(m.attr("Units_ShiftedUnit")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_ShiftedUnit>();
     nb::borrow<nb::class_<Units_UnitsDictionary>>(m.attr("Units_UnitsDictionary"))
         .def(nb::new_([]() { return opencascade::handle<Units_UnitsDictionary>(new Units_UnitsDictionary()); }), R"nbdoc(Returns an empty instance of UnitsDictionary.)nbdoc")
@@ -487,6 +499,7 @@ one.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_UnitsDictionary::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_UnitsDictionary::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_UnitsDictionary::*)() const>(&Units_UnitsDictionary::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_UnitsDictionary>(nb::borrow<nb::class_<Units_UnitsDictionary>>(m.attr("Units_UnitsDictionary")));
     nb::borrow<nb::class_<Units_UnitSentence>>(m.attr("Units_UnitSentence"))
         .def(nb::init<const char *const>(), nb::arg("astring"), R"nbdoc(Creates and returns a UnitSentence. The string
 <astring> describes in natural language the unit or
@@ -502,6 +515,7 @@ token.)nbdoc")
         .def("SetUnits", static_cast<void (Units_UnitSentence::*)(const occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> &)>(&Units_UnitSentence::SetUnits), nb::arg("aquantitiessequence"), R"nbdoc(For each token which represents a unit, finds in the
 sequence of physical quantities all the
 characteristics of the unit found.)nbdoc");
+    nanoocp_implicit_copy_ctor<Units_UnitSentence>(nb::borrow<nb::class_<Units_UnitSentence>>(m.attr("Units_UnitSentence")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_UnitSentence>();
     nb::borrow<nb::class_<Units_UnitsLexicon>>(m.attr("Units_UnitsLexicon"))
         .def(nb::new_([]() { return opencascade::handle<Units_UnitsLexicon>(new Units_UnitsLexicon()); }), R"nbdoc(Returns an empty instance of UnitsLexicon)nbdoc")
@@ -512,6 +526,7 @@ create a sequence of tokens stored in
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_UnitsLexicon::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_UnitsLexicon::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_UnitsLexicon::*)() const>(&Units_UnitsLexicon::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_UnitsLexicon>(nb::borrow<nb::class_<Units_UnitsLexicon>>(m.attr("Units_UnitsLexicon")));
     nb::borrow<nb::class_<Units_UnitsSystem>>(m.attr("Units_UnitsSystem"))
         .def(nb::new_([]() { return opencascade::handle<Units_UnitsSystem>(new Units_UnitsSystem()); }), R"nbdoc(Returns an instance of UnitsSystem initialized to the
 S.I. units system.)nbdoc")
@@ -548,6 +563,7 @@ the physical dimensions of the measurement.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_UnitsSystem::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_UnitsSystem::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_UnitsSystem::*)() const>(&Units_UnitsSystem::DynamicType));
+    nanoocp_implicit_copy_ctor<Units_UnitsSystem>(nb::borrow<nb::class_<Units_UnitsSystem>>(m.attr("Units_UnitsSystem")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_UnitsSystem>();
     m.def("pow", static_cast<occ::handle<Units_Dimensions> (*)(const occ::handle<Units_Dimensions> &, const double)>(&pow), nb::arg("arg0"), nb::arg("arg1"));
     m.def("pow", static_cast<occ::handle<Units_Token> (*)(const occ::handle<Units_Token> &, const occ::handle<Units_Token> &)>(&pow), nb::arg("arg0"), nb::arg("arg1"));

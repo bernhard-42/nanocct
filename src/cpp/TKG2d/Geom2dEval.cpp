@@ -181,6 +181,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_AHTBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_AHTBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_AHTBezierCurve::*)() const>(&Geom2dEval_AHTBezierCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_AHTBezierCurve>(nb::borrow<nb::class_<Geom2dEval_AHTBezierCurve>>(m.attr("Geom2dEval_AHTBezierCurve")));
     nb::borrow<nb::class_<Geom2dEval_ArchimedeanSpiralCurve>>(m.attr("Geom2dEval_ArchimedeanSpiralCurve"))
         .def(nb::new_([](const gp_Ax2d & thePosition, double theInitialRadius, double theGrowthRate) { return opencascade::handle<Geom2dEval_ArchimedeanSpiralCurve>(new Geom2dEval_ArchimedeanSpiralCurve(thePosition, theInitialRadius, theGrowthRate)); }), nb::arg("thePosition"), nb::arg("theInitialRadius"), nb::arg("theGrowthRate"), R"nbdoc(Creates an Archimedean spiral.
 @param[in] thePosition the local coordinate system
@@ -212,6 +213,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_ArchimedeanSpiralCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_ArchimedeanSpiralCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_ArchimedeanSpiralCurve::*)() const>(&Geom2dEval_ArchimedeanSpiralCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_ArchimedeanSpiralCurve>(nb::borrow<nb::class_<Geom2dEval_ArchimedeanSpiralCurve>>(m.attr("Geom2dEval_ArchimedeanSpiralCurve")));
     nb::borrow<nb::class_<Geom2dEval_CircleInvoluteCurve>>(m.attr("Geom2dEval_CircleInvoluteCurve"))
         .def(nb::new_([](const gp_Ax2d & thePosition, double theRadius) { return opencascade::handle<Geom2dEval_CircleInvoluteCurve>(new Geom2dEval_CircleInvoluteCurve(thePosition, theRadius)); }), nb::arg("thePosition"), nb::arg("theRadius"), R"nbdoc(Creates an involute of a circle.
 @param[in] thePosition the local coordinate system
@@ -241,6 +243,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_CircleInvoluteCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_CircleInvoluteCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_CircleInvoluteCurve::*)() const>(&Geom2dEval_CircleInvoluteCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_CircleInvoluteCurve>(nb::borrow<nb::class_<Geom2dEval_CircleInvoluteCurve>>(m.attr("Geom2dEval_CircleInvoluteCurve")));
     nb::borrow<nb::class_<Geom2dEval_LogarithmicSpiralCurve>>(m.attr("Geom2dEval_LogarithmicSpiralCurve"))
         .def(nb::new_([](const gp_Ax2d & thePosition, double theScale, double theGrowthExponent) { return opencascade::handle<Geom2dEval_LogarithmicSpiralCurve>(new Geom2dEval_LogarithmicSpiralCurve(thePosition, theScale, theGrowthExponent)); }), nb::arg("thePosition"), nb::arg("theScale"), nb::arg("theGrowthExponent"), R"nbdoc(Creates a logarithmic spiral.
 @param[in] thePosition the local coordinate system
@@ -272,46 +275,52 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_LogarithmicSpiralCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_LogarithmicSpiralCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_LogarithmicSpiralCurve::*)() const>(&Geom2dEval_LogarithmicSpiralCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_LogarithmicSpiralCurve>(nb::borrow<nb::class_<Geom2dEval_LogarithmicSpiralCurve>>(m.attr("Geom2dEval_LogarithmicSpiralCurve")));
     nanoocp_implicit_default_ctor<Geom2dEval_RepCurveDesc::Map1d>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Map1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Map1d")));
     nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Map1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Map1d"))
         .def("IsIdentity", static_cast<bool (Geom2dEval_RepCurveDesc::Map1d::*)() const>(&Geom2dEval_RepCurveDesc::Map1d::IsIdentity))
         .def("IsValid", static_cast<bool (Geom2dEval_RepCurveDesc::Map1d::*)() const>(&Geom2dEval_RepCurveDesc::Map1d::IsValid))
-        .def("Map", static_cast<double (Geom2dEval_RepCurveDesc::Map1d::*)(const double) const>(&Geom2dEval_RepCurveDesc::Map1d::Map), nb::arg("theU"))
-        .def_rw("Scale", &Geom2dEval_RepCurveDesc::Map1d::Scale)
-        .def_rw("Offset", &Geom2dEval_RepCurveDesc::Map1d::Offset);
+        .def("Map", static_cast<double (Geom2dEval_RepCurveDesc::Map1d::*)(const double) const>(&Geom2dEval_RepCurveDesc::Map1d::Map), nb::arg("theU"));
+    nanoocp_implicit_copy_ctor<Geom2dEval_RepCurveDesc::Map1d>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Map1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Map1d")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Map1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Map1d")), "Scale", &Geom2dEval_RepCurveDesc::Map1d::Scale);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Map1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Map1d")), "Offset", &Geom2dEval_RepCurveDesc::Map1d::Offset);
     nanoocp_implicit_default_ctor<Geom2dEval_RepCurveDesc::Domain1d>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Domain1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Domain1d")));
     nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Domain1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Domain1d"))
-        .def("Contains", static_cast<bool (Geom2dEval_RepCurveDesc::Domain1d::*)(const double) const>(&Geom2dEval_RepCurveDesc::Domain1d::Contains), nb::arg("theU"))
-        .def_rw("First", &Geom2dEval_RepCurveDesc::Domain1d::First)
-        .def_rw("Last", &Geom2dEval_RepCurveDesc::Domain1d::Last);
+        .def("Contains", static_cast<bool (Geom2dEval_RepCurveDesc::Domain1d::*)(const double) const>(&Geom2dEval_RepCurveDesc::Domain1d::Contains), nb::arg("theU"));
+    nanoocp_implicit_copy_ctor<Geom2dEval_RepCurveDesc::Domain1d>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Domain1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Domain1d")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Domain1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Domain1d")), "First", &Geom2dEval_RepCurveDesc::Domain1d::First);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Domain1d>>(m.attr("Geom2dEval_RepCurveDesc").attr("Domain1d")), "Last", &Geom2dEval_RepCurveDesc::Domain1d::Last);
     nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Base>>(m.attr("Geom2dEval_RepCurveDesc").attr("Base"))
         .def("GetKind", static_cast<Geom2dEval_RepCurveDesc::Base::Kind (Geom2dEval_RepCurveDesc::Base::*)() const>(&Geom2dEval_RepCurveDesc::Base::GetKind), R"nbdoc(Returns the descriptor kind.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_RepCurveDesc::Base::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_RepCurveDesc::Base::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_RepCurveDesc::Base::*)() const>(&Geom2dEval_RepCurveDesc::Base::DynamicType))
-        .def_rw("Representation", &Geom2dEval_RepCurveDesc::Base::Representation, R"nbdoc(geometry used for evaluation)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_RepCurveDesc::Base::*)() const>(&Geom2dEval_RepCurveDesc::Base::DynamicType));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Base>>(m.attr("Geom2dEval_RepCurveDesc").attr("Base")), "Representation", &Geom2dEval_RepCurveDesc::Base::Representation, R"nbdoc(geometry used for evaluation)nbdoc");
     nanoocp_implicit_default_ctor<Geom2dEval_RepCurveDesc::Full>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Full>>(m.attr("Geom2dEval_RepCurveDesc").attr("Full")));
     nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Full>>(m.attr("Geom2dEval_RepCurveDesc").attr("Full"))
         .def("GetKind", static_cast<Geom2dEval_RepCurveDesc::Base::Kind (Geom2dEval_RepCurveDesc::Full::*)() const>(&Geom2dEval_RepCurveDesc::Full::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_RepCurveDesc::Full::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_RepCurveDesc::Full::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_RepCurveDesc::Full::*)() const>(&Geom2dEval_RepCurveDesc::Full::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_RepCurveDesc::Full>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Full>>(m.attr("Geom2dEval_RepCurveDesc").attr("Full")));
     nanoocp_implicit_default_ctor<Geom2dEval_RepCurveDesc::DerivBounded>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::DerivBounded>>(m.attr("Geom2dEval_RepCurveDesc").attr("DerivBounded")));
     nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::DerivBounded>>(m.attr("Geom2dEval_RepCurveDesc").attr("DerivBounded"))
         .def("GetKind", static_cast<Geom2dEval_RepCurveDesc::Base::Kind (Geom2dEval_RepCurveDesc::DerivBounded::*)() const>(&Geom2dEval_RepCurveDesc::DerivBounded::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_RepCurveDesc::DerivBounded::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_RepCurveDesc::DerivBounded::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_RepCurveDesc::DerivBounded::*)() const>(&Geom2dEval_RepCurveDesc::DerivBounded::DynamicType))
-        .def_rw("MaxDerivOrder", &Geom2dEval_RepCurveDesc::DerivBounded::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_RepCurveDesc::DerivBounded::*)() const>(&Geom2dEval_RepCurveDesc::DerivBounded::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_RepCurveDesc::DerivBounded>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::DerivBounded>>(m.attr("Geom2dEval_RepCurveDesc").attr("DerivBounded")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::DerivBounded>>(m.attr("Geom2dEval_RepCurveDesc").attr("DerivBounded")), "MaxDerivOrder", &Geom2dEval_RepCurveDesc::DerivBounded::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
     nanoocp_implicit_default_ctor<Geom2dEval_RepCurveDesc::Mapped>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Mapped>>(m.attr("Geom2dEval_RepCurveDesc").attr("Mapped")));
     nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Mapped>>(m.attr("Geom2dEval_RepCurveDesc").attr("Mapped"))
         .def("GetKind", static_cast<Geom2dEval_RepCurveDesc::Base::Kind (Geom2dEval_RepCurveDesc::Mapped::*)() const>(&Geom2dEval_RepCurveDesc::Mapped::GetKind))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_RepCurveDesc::Mapped::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_RepCurveDesc::Mapped::get_type_descriptor))
-        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_RepCurveDesc::Mapped::*)() const>(&Geom2dEval_RepCurveDesc::Mapped::DynamicType))
-        .def_rw("MaxDerivOrder", &Geom2dEval_RepCurveDesc::Mapped::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc")
-        .def_rw("Domain", &Geom2dEval_RepCurveDesc::Mapped::Domain, R"nbdoc(nullopt = full domain)nbdoc")
-        .def_rw("ParamMap", &Geom2dEval_RepCurveDesc::Mapped::ParamMap, R"nbdoc(affine parameter transform)nbdoc");
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_RepCurveDesc::Mapped::*)() const>(&Geom2dEval_RepCurveDesc::Mapped::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_RepCurveDesc::Mapped>(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Mapped>>(m.attr("Geom2dEval_RepCurveDesc").attr("Mapped")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Mapped>>(m.attr("Geom2dEval_RepCurveDesc").attr("Mapped")), "MaxDerivOrder", &Geom2dEval_RepCurveDesc::Mapped::MaxDerivOrder, R"nbdoc(max supported derivative order)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Mapped>>(m.attr("Geom2dEval_RepCurveDesc").attr("Mapped")), "Domain", &Geom2dEval_RepCurveDesc::Mapped::Domain, R"nbdoc(nullopt = full domain)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dEval_RepCurveDesc::Mapped>>(m.attr("Geom2dEval_RepCurveDesc").attr("Mapped")), "ParamMap", &Geom2dEval_RepCurveDesc::Mapped::ParamMap, R"nbdoc(affine parameter transform)nbdoc");
     nb::borrow<nb::class_<Geom2dEval_SineWaveCurve>>(m.attr("Geom2dEval_SineWaveCurve"))
         .def(nb::new_([](const gp_Ax2d & thePosition, double theAmplitude, double theOmega, double thePhase) { return opencascade::handle<Geom2dEval_SineWaveCurve>(new Geom2dEval_SineWaveCurve(thePosition, theAmplitude, theOmega, thePhase)); }), nb::arg("thePosition"), nb::arg("theAmplitude"), nb::arg("theOmega"), nb::arg("thePhase") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Creates a 2D sine wave curve.
 @param[in] thePosition the local coordinate system
@@ -345,6 +354,7 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_SineWaveCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_SineWaveCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_SineWaveCurve::*)() const>(&Geom2dEval_SineWaveCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_SineWaveCurve>(nb::borrow<nb::class_<Geom2dEval_SineWaveCurve>>(m.attr("Geom2dEval_SineWaveCurve")));
     nb::borrow<nb::class_<Geom2dEval_TBezierCurve>>(m.attr("Geom2dEval_TBezierCurve"))
         .def(nb::new_([](const NCollection_Array1<gp_Pnt2d> & thePoles, double theAlpha) { return opencascade::handle<Geom2dEval_TBezierCurve>(new Geom2dEval_TBezierCurve(thePoles, theAlpha)); }), nb::arg("thePoles"), nb::arg("theAlpha"), R"nbdoc(Constructs a non-rational T-Bezier curve from poles and alpha.
 @param[in] thePoles control points (1-based, size must be odd >= 3)
@@ -388,4 +398,5 @@ void nanoocp_define_Geom2dEval(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2dEval_TBezierCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2dEval_TBezierCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom2dEval_TBezierCurve::*)() const>(&Geom2dEval_TBezierCurve::DynamicType));
+    nanoocp_implicit_copy_ctor<Geom2dEval_TBezierCurve>(nb::borrow<nb::class_<Geom2dEval_TBezierCurve>>(m.attr("Geom2dEval_TBezierCurve")));
 }

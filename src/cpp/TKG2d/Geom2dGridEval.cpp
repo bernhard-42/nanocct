@@ -176,20 +176,20 @@ void nanoocp_templates_Geom2dGridEval(nb::module_ &m) {
 
 void nanoocp_define_Geom2dGridEval(nb::module_ &m) {
     nanoocp_implicit_default_ctor<Geom2dGridEval::CurveD1>(nb::borrow<nb::class_<Geom2dGridEval::CurveD1>>(m.attr("CurveD1")));
-    nb::borrow<nb::class_<Geom2dGridEval::CurveD1>>(m.attr("CurveD1"))
-        .def_rw("Point", &Geom2dGridEval::CurveD1::Point)
-        .def_rw("D1", &Geom2dGridEval::CurveD1::D1);
+    nanoocp_implicit_copy_ctor<Geom2dGridEval::CurveD1>(nb::borrow<nb::class_<Geom2dGridEval::CurveD1>>(m.attr("CurveD1")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD1>>(m.attr("CurveD1")), "Point", &Geom2dGridEval::CurveD1::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD1>>(m.attr("CurveD1")), "D1", &Geom2dGridEval::CurveD1::D1);
     nanoocp_implicit_default_ctor<Geom2dGridEval::CurveD2>(nb::borrow<nb::class_<Geom2dGridEval::CurveD2>>(m.attr("CurveD2")));
-    nb::borrow<nb::class_<Geom2dGridEval::CurveD2>>(m.attr("CurveD2"))
-        .def_rw("Point", &Geom2dGridEval::CurveD2::Point)
-        .def_rw("D1", &Geom2dGridEval::CurveD2::D1)
-        .def_rw("D2", &Geom2dGridEval::CurveD2::D2);
+    nanoocp_implicit_copy_ctor<Geom2dGridEval::CurveD2>(nb::borrow<nb::class_<Geom2dGridEval::CurveD2>>(m.attr("CurveD2")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD2>>(m.attr("CurveD2")), "Point", &Geom2dGridEval::CurveD2::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD2>>(m.attr("CurveD2")), "D1", &Geom2dGridEval::CurveD2::D1);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD2>>(m.attr("CurveD2")), "D2", &Geom2dGridEval::CurveD2::D2);
     nanoocp_implicit_default_ctor<Geom2dGridEval::CurveD3>(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")));
-    nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3"))
-        .def_rw("Point", &Geom2dGridEval::CurveD3::Point)
-        .def_rw("D1", &Geom2dGridEval::CurveD3::D1)
-        .def_rw("D2", &Geom2dGridEval::CurveD3::D2)
-        .def_rw("D3", &Geom2dGridEval::CurveD3::D3);
+    nanoocp_implicit_copy_ctor<Geom2dGridEval::CurveD3>(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")), "Point", &Geom2dGridEval::CurveD3::Point);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")), "D1", &Geom2dGridEval::CurveD3::D1);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")), "D2", &Geom2dGridEval::CurveD3::D2);
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")), "D3", &Geom2dGridEval::CurveD3::D3);
     nb::borrow<nb::class_<Geom2dGridEval_BezierCurve>>(m.attr("Geom2dGridEval_BezierCurve"))
         .def(nb::init<const occ::handle<Geom2d_BezierCurve> &>(), nb::arg("theBezier"), R"nbdoc(Constructor with geometry.
 @param theBezier the 2D bezier curve geometry to evaluate)nbdoc")
@@ -213,6 +213,7 @@ For orders > 3, uses BSplCLib::DN.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_BezierCurve>(nb::borrow<nb::class_<Geom2dGridEval_BezierCurve>>(m.attr("Geom2dGridEval_BezierCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BezierCurve> &>, Geom2dGridEval_BezierCurve>();
     nb::borrow<nb::class_<Geom2dGridEval_BSplineCurve>>(m.attr("Geom2dGridEval_BSplineCurve"))
         .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &>(), nb::arg("theCurve"), R"nbdoc(Constructor with geometry.
@@ -241,6 +242,7 @@ For orders > 3, uses BSplCLib::DN.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_BSplineCurve>(nb::borrow<nb::class_<Geom2dGridEval_BSplineCurve>>(m.attr("Geom2dGridEval_BSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BSplineCurve> &>, Geom2dGridEval_BSplineCurve>();
     nb::borrow<nb::class_<Geom2dGridEval_Circle>>(m.attr("Geom2dGridEval_Circle"))
         .def(nb::init<const occ::handle<Geom2d_Circle> &>(), nb::arg("theCircle"), R"nbdoc(Constructor with geometry.
@@ -275,6 +277,7 @@ D4 = R * (cos(u) * X + sin(u) * Y) = D0, then repeats
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing),
 or empty array if geometry is null or no parameters)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_Circle>(nb::borrow<nb::class_<Geom2dGridEval_Circle>>(m.attr("Geom2dGridEval_Circle")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Circle> &>, Geom2dGridEval_Circle>();
     nb::borrow<nb::class_<Geom2dGridEval_Ellipse>>(m.attr("Geom2dGridEval_Ellipse"))
         .def(nb::init<const occ::handle<Geom2d_Ellipse> &>(), nb::arg("theEllipse"), R"nbdoc(Constructor with geometry.
@@ -306,6 +309,7 @@ D4 = MajR * cos(u) * X + MinR * sin(u) * Y = D0, then repeats
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing),
 or empty array if geometry is null or no parameters)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_Ellipse>(nb::borrow<nb::class_<Geom2dGridEval_Ellipse>>(m.attr("Geom2dGridEval_Ellipse")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Ellipse> &>, Geom2dGridEval_Ellipse>();
     nb::borrow<nb::class_<Geom2dGridEval_Hyperbola>>(m.attr("Geom2dGridEval_Hyperbola"))
         .def(nb::init<const occ::handle<Geom2d_Hyperbola> &>(), nb::arg("theHyperbola"), R"nbdoc(Constructor with geometry.
@@ -332,6 +336,7 @@ D3 = D1, D4 = D0, etc.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_Hyperbola>(nb::borrow<nb::class_<Geom2dGridEval_Hyperbola>>(m.attr("Geom2dGridEval_Hyperbola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Hyperbola> &>, Geom2dGridEval_Hyperbola>();
     nb::borrow<nb::class_<Geom2dGridEval_Line>>(m.attr("Geom2dGridEval_Line"))
         .def(nb::init<const occ::handle<Geom2d_Line> &>(), nb::arg("theLine"), R"nbdoc(Constructor with geometry.
@@ -362,6 +367,7 @@ For a line: D1 = Direction, DN = 0 for N > 1.
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing),
 or empty array if geometry is null or no parameters)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_Line>(nb::borrow<nb::class_<Geom2dGridEval_Line>>(m.attr("Geom2dGridEval_Line")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Line> &>, Geom2dGridEval_Line>();
     nb::borrow<nb::class_<Geom2dGridEval_OffsetCurve>>(m.attr("Geom2dGridEval_OffsetCurve"))
         .def(nb::init<const occ::handle<Geom2d_OffsetCurve> &>(), nb::arg("theOffset"), R"nbdoc(Constructor with geometry.
@@ -389,6 +395,7 @@ For orders > 3, uses basis curve DN method.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_OffsetCurve>(nb::borrow<nb::class_<Geom2dGridEval_OffsetCurve>>(m.attr("Geom2dGridEval_OffsetCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_OffsetCurve> &>, Geom2dGridEval_OffsetCurve>();
     nb::borrow<nb::class_<Geom2dGridEval_OtherCurve>>(m.attr("Geom2dGridEval_OtherCurve"))
         .def(nb::init<const Adaptor2d_Curve2d &>(), nb::arg("theCurve"), R"nbdoc(Constructor with curve adaptor reference.
@@ -416,6 +423,7 @@ For orders > 3, uses adaptor DN method.
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_OtherCurve>(nb::borrow<nb::class_<Geom2dGridEval_OtherCurve>>(m.attr("Geom2dGridEval_OtherCurve")));
     nb::implicitly_convertible<std::decay_t<const Adaptor2d_Curve2d &>, Geom2dGridEval_OtherCurve>();
     nb::borrow<nb::class_<Geom2dGridEval_Parabola>>(m.attr("Geom2dGridEval_Parabola"))
         .def(nb::init<const occ::handle<Geom2d_Parabola> &>(), nb::arg("theParabola"), R"nbdoc(Constructor with geometry.
@@ -442,6 +450,7 @@ DN = 0 for N >= 3
 @param theParams array of parameter values
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_Parabola>(nb::borrow<nb::class_<Geom2dGridEval_Parabola>>(m.attr("Geom2dGridEval_Parabola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Parabola> &>, Geom2dGridEval_Parabola>();
     nb::borrow<nb::class_<Geom2dGridEval_Curve>>(m.attr("Geom2dGridEval_Curve"))
         .def(nb::init<const Adaptor2d_Curve2d &>(), nb::arg("theCurve"), R"nbdoc(Construct from 2D adaptor reference (auto-detects curve type).
@@ -469,6 +478,7 @@ of this evaluator when using fallback evaluation.
 @param theN derivative order (N >= 1)
 @return array of derivative vectors (1-based indexing))nbdoc")
         .def("GetType", static_cast<GeomAbs_CurveType (Geom2dGridEval_Curve::*)() const>(&Geom2dGridEval_Curve::GetType), R"nbdoc(Returns the detected curve type.)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dGridEval_Curve>(nb::borrow<nb::class_<Geom2dGridEval_Curve>>(m.attr("Geom2dGridEval_Curve")));
     nb::implicitly_convertible<std::decay_t<const Adaptor2d_Curve2d &>, Geom2dGridEval_Curve>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Curve> &>, Geom2dGridEval_Curve>();
 }

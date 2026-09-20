@@ -304,6 +304,7 @@ Raises Standard_OutOfRange if index is not in 1,2,3)nbdoc")
         .def("Value", static_cast<int (Poly_Triangle::*)(const int) const>(&Poly_Triangle::Value), nb::arg("theIndex"), R"nbdoc(Get the node of given Index.
 Raises OutOfRange from Standard if Index is not in 1,2,3)nbdoc")
         .def("__call__", static_cast<int (Poly_Triangle::*)(const int) const>(&Poly_Triangle::operator()), nb::arg("Index"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<Poly_Triangle>(nb::borrow<nb::class_<Poly_Triangle>>(m.attr("Poly_Triangle")));
     nb::borrow<nb::class_<Poly_Triangulation>>(m.attr("Poly_Triangulation"))
         .def(nb::new_([]() { return opencascade::handle<Poly_Triangulation>(new Poly_Triangulation()); }), R"nbdoc(Constructs an empty triangulation.)nbdoc")
         .def(nb::new_([](const occ::handle<Poly_Triangulation> & theTriangulation) { return opencascade::handle<Poly_Triangulation>(new Poly_Triangulation(theTriangulation)); }), nb::arg("theTriangulation"), R"nbdoc(Copy constructor for triangulation.)nbdoc")
@@ -440,6 +441,7 @@ from some deferred storage using specified shared input file system.)nbdoc")
         .def("DetachedLoadDeferredData", static_cast<occ::handle<Poly_Triangulation> (Poly_Triangulation::*)(const occ::handle<OSD_FileSystem> &) const>(&Poly_Triangulation::DetachedLoadDeferredData), nb::arg("theFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ :: handle < OSD_FileSystem > ( )), R"nbdoc(Loads triangulation data into new Poly_Triangulation object
 from some deferred storage using specified shared input file system.)nbdoc")
         .def("UnloadDeferredData", static_cast<bool (Poly_Triangulation::*)()>(&Poly_Triangulation::UnloadDeferredData), R"nbdoc(Releases triangulation data if it has connected deferred storage.)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_Triangulation>(nb::borrow<nb::class_<Poly_Triangulation>>(m.attr("Poly_Triangulation")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_Triangulation>();
     nanoocp_implicit_default_ctor<Poly>(nb::borrow<nb::class_<Poly>>(m.attr("Poly")));
     nb::borrow<nb::class_<Poly>>(m.attr("Poly"))
@@ -480,6 +482,7 @@ otherwise
 @param[in] theV2     third triangle node
 @param[out] theParam  param on line of the intersection point
 @return 1 if intersection was found, 0 otherwise.)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly>(nb::borrow<nb::class_<Poly>>(m.attr("Poly")));
     nb::borrow<nb::class_<Poly_CoherentLink>>(m.attr("Poly_CoherentLink"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const int, const int>(), nb::arg("iNode0"), nb::arg("iNode1"), R"nbdoc(Constructor. Creates a Link that has no reference to 'opposite nodes'.
@@ -505,6 +508,7 @@ index in the current triangulation.
         .def("IsEmpty", static_cast<bool (Poly_CoherentLink::*)() const noexcept>(&Poly_CoherentLink::IsEmpty), R"nbdoc(Query the status of the link - if it is an invalid one.
 An invalid link has Node members equal to -1.)nbdoc")
         .def("Nullify", static_cast<void (Poly_CoherentLink::*)()>(&Poly_CoherentLink::Nullify), R"nbdoc(Invalidate this Link.)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_CoherentLink>(nb::borrow<nb::class_<Poly_CoherentLink>>(m.attr("Poly_CoherentLink")));
     nb::borrow<nb::class_<Poly_CoherentTriPtr>>(m.attr("Poly_CoherentTriPtr"))
         .def("GetTriangle", static_cast<const Poly_CoherentTriangle & (Poly_CoherentTriPtr::*)() const>(&Poly_CoherentTriPtr::GetTriangle), R"nbdoc(Query the stored pointer to Triangle.)nbdoc")
         .def("SetTriangle", static_cast<void (Poly_CoherentTriPtr::*)(const Poly_CoherentTriangle *)>(&Poly_CoherentTriPtr::SetTriangle), nb::arg("pTri"), R"nbdoc(Initialize this instance with a pointer to triangle.)nbdoc")
@@ -535,6 +539,7 @@ Allocator where the current pointer instance was created.)nbdoc")
         .def("Value", static_cast<const Poly_CoherentTriangle & (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::Value), R"nbdoc(Get the current iterated triangle)nbdoc")
         .def("ChangeValue", static_cast<Poly_CoherentTriangle & (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::ChangeValue), nb::rv_policy::reference_internal, R"nbdoc(Get the current iterated triangle (mutable))nbdoc")
         .def("PtrValue", static_cast<const Poly_CoherentTriPtr & (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::PtrValue), R"nbdoc(Get the current iterated pointer to triangle)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_CoherentTriPtr::Iterator>(nb::borrow<nb::class_<Poly_CoherentTriPtr::Iterator>>(m.attr("Poly_CoherentTriPtr").attr("Iterator")));
     nb::implicitly_convertible<std::decay_t<const Poly_CoherentTriPtr &>, Poly_CoherentTriPtr::Iterator>();
     nb::borrow<nb::class_<Poly_CoherentNode>>(m.attr("Poly_CoherentNode"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
@@ -553,6 +558,7 @@ incident triangle.)nbdoc")
         .def("AddTriangle", static_cast<void (Poly_CoherentNode::*)(const Poly_CoherentTriangle &, const occ::handle<NCollection_BaseAllocator> &)>(&Poly_CoherentNode::AddTriangle), nb::arg("theTri"), nb::arg("theA"), R"nbdoc(Connect a triangle to this Node.)nbdoc")
         .def("RemoveTriangle", static_cast<bool (Poly_CoherentNode::*)(const Poly_CoherentTriangle &, const occ::handle<NCollection_BaseAllocator> &)>(&Poly_CoherentNode::RemoveTriangle), nb::arg("theTri"), nb::arg("theA"), R"nbdoc(Disconnect a triangle from this Node.)nbdoc")
         .def("TriangleIterator", static_cast<Poly_CoherentTriPtr::Iterator (Poly_CoherentNode::*)() const>(&Poly_CoherentNode::TriangleIterator), R"nbdoc(Create an iterator of incident triangles.)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_CoherentNode>(nb::borrow<nb::class_<Poly_CoherentNode>>(m.attr("Poly_CoherentNode")));
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, Poly_CoherentNode>();
     nb::borrow<nb::class_<Poly_CoherentTriangle>>(m.attr("Poly_CoherentTriangle"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
@@ -594,6 +600,7 @@ Returns NULL if there is no connection on the specified side.)nbdoc")
         .def("GetLink", static_cast<const Poly_CoherentLink * (Poly_CoherentTriangle::*)(const int) const>(&Poly_CoherentTriangle::GetLink), nb::rv_policy::reference, nb::arg("iLink"), R"nbdoc(Query the Link associate with the given side of the Triangle.
 May return NULL if there are no links in the triangulation.)nbdoc")
         .def("FindConnection", static_cast<int (Poly_CoherentTriangle::*)(const Poly_CoherentTriangle &) const>(&Poly_CoherentTriangle::FindConnection), nb::arg("arg0"), R"nbdoc(Returns the index of the connection with the given triangle, or -1 if not found.)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_CoherentTriangle>(nb::borrow<nb::class_<Poly_CoherentTriangle>>(m.attr("Poly_CoherentTriangle")));
     nb::borrow<nb::class_<Poly_CoherentTriangulation>>(m.attr("Poly_CoherentTriangulation"))
         .def(nb::new_([](const occ::handle<NCollection_BaseAllocator> & theAlloc) { return opencascade::handle<Poly_CoherentTriangulation>(new Poly_CoherentTriangulation(theAlloc)); }), nb::arg("theAlloc") = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::new_([](const occ::handle<Poly_Triangulation> & theTriangulation, const occ::handle<NCollection_BaseAllocator> & theAlloc) { return opencascade::handle<Poly_CoherentTriangulation>(new Poly_CoherentTriangulation(theTriangulation, theAlloc)); }), nb::arg("theTriangulation"), nb::arg("theAlloc") = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), R"nbdoc(Constructor. It does not create Links, you should call ComputeLinks
@@ -656,11 +663,13 @@ objects)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Poly_CoherentTriangulation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Poly_CoherentTriangulation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_CoherentTriangulation::*)() const>(&Poly_CoherentTriangulation::DynamicType));
+    nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation>(nb::borrow<nb::class_<Poly_CoherentTriangulation>>(m.attr("Poly_CoherentTriangulation")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, Poly_CoherentTriangulation>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_CoherentTriangulation>();
     nb::borrow<nb::class_<Poly_CoherentTriangulation::TwoIntegers>>(m.attr("Poly_CoherentTriangulation").attr("TwoIntegers"))
         .def(nb::init<>())
         .def(nb::init<int, int>(), nb::arg("i0"), nb::arg("i1"));
+    nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::TwoIntegers>(nb::borrow<nb::class_<Poly_CoherentTriangulation::TwoIntegers>>(m.attr("Poly_CoherentTriangulation").attr("TwoIntegers")));
     nb::borrow<nb::class_<Poly_Connect>>(m.attr("Poly_Connect"))
         .def(nb::init<>(), R"nbdoc(Constructs an uninitialized algorithm.)nbdoc")
         .def(nb::init<const occ::handle<Poly_Triangulation> &>(), nb::arg("theTriangulation"), R"nbdoc(Constructs an algorithm to explore the adjacency data of
@@ -709,6 +718,7 @@ function More returns false).-)nbdoc")
 iterator, defined with the function Initialize, points. This is
 an index in the triangles table specific to the triangulation
 analyzed by this tool)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_Connect>(nb::borrow<nb::class_<Poly_Connect>>(m.attr("Poly_Connect")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_Connect>();
     nb::borrow<nb::class_<Poly_MakeLoops>>(m.attr("Poly_MakeLoops"))
         .def("Reset", static_cast<void (Poly_MakeLoops::*)(const Poly_MakeLoops::Helper *, const occ::handle<NCollection_BaseAllocator> &)>(&Poly_MakeLoops::Reset), nb::arg("theHelper"), nb::arg("theAlloc") = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), R"nbdoc(It is to reset the algorithm to the initial state.)nbdoc")
@@ -732,13 +742,16 @@ Returns the old value of orientation.)nbdoc")
         .def("Nullify", static_cast<void (Poly_MakeLoops::Link::*)()>(&Poly_MakeLoops::Link::Nullify))
         .def("IsNull", static_cast<bool (Poly_MakeLoops::Link::*)() const>(&Poly_MakeLoops::Link::IsNull))
         .def("__eq__", static_cast<bool (Poly_MakeLoops::Link::*)(const Poly_MakeLoops::Link &) const>(&Poly_MakeLoops::Link::operator==), nb::arg("theOther"), nb::is_operator())
-        .def_rw("node1", &Poly_MakeLoops::Link::node1)
-        .def_rw("node2", &Poly_MakeLoops::Link::node2)
-        .def_rw("flags", &Poly_MakeLoops::Link::flags);
+        .def("__hash__", [](const Poly_MakeLoops::Link &self) { return static_cast<Py_ssize_t>(std::hash<Poly_MakeLoops::Link>{}(self)); });
+    nanoocp_implicit_copy_ctor<Poly_MakeLoops::Link>(nb::borrow<nb::class_<Poly_MakeLoops::Link>>(m.attr("Poly_MakeLoops").attr("Link")));
+    nanoocp_def_field(nb::borrow<nb::class_<Poly_MakeLoops::Link>>(m.attr("Poly_MakeLoops").attr("Link")), "node1", &Poly_MakeLoops::Link::node1);
+    nanoocp_def_field(nb::borrow<nb::class_<Poly_MakeLoops::Link>>(m.attr("Poly_MakeLoops").attr("Link")), "node2", &Poly_MakeLoops::Link::node2);
+    nanoocp_def_field(nb::borrow<nb::class_<Poly_MakeLoops::Link>>(m.attr("Poly_MakeLoops").attr("Link")), "flags", &Poly_MakeLoops::Link::flags);
     nanoocp_implicit_default_ctor<Poly_MakeLoops::Hasher>(nb::borrow<nb::class_<Poly_MakeLoops::Hasher>>(m.attr("Poly_MakeLoops").attr("Hasher")));
     nb::borrow<nb::class_<Poly_MakeLoops::Hasher>>(m.attr("Poly_MakeLoops").attr("Hasher"))
         .def("__call__", static_cast<size_t (Poly_MakeLoops::Hasher::*)(const Poly_MakeLoops::Link &) const noexcept>(&Poly_MakeLoops::Hasher::operator()), nb::arg("theLink"), nb::is_operator())
         .def("__call__", static_cast<bool (Poly_MakeLoops::Hasher::*)(const Poly_MakeLoops::Link &, const Poly_MakeLoops::Link &) const noexcept>(&Poly_MakeLoops::Hasher::operator()), nb::arg("theLink1"), nb::arg("theLink2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<Poly_MakeLoops::Hasher>(nb::borrow<nb::class_<Poly_MakeLoops::Hasher>>(m.attr("Poly_MakeLoops").attr("Hasher")));
     nb::borrow<nb::class_<Poly_MakeLoops::Helper>>(m.attr("Poly_MakeLoops").attr("Helper"))
         .def("GetAdjacentLinks", static_cast<const NCollection_List<Poly_MakeLoops::Link> & (Poly_MakeLoops::Helper::*)(int) const>(&Poly_MakeLoops::Helper::GetAdjacentLinks), nb::arg("theNode"), R"nbdoc(returns the links adjacent to the given node)nbdoc")
         .def("OnAddLink", static_cast<void (Poly_MakeLoops::Helper::*)(int, const Poly_MakeLoops::Link &) const>(&Poly_MakeLoops::Helper::OnAddLink), nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(hook function called from AddLink in _DEBUG mode)nbdoc");
@@ -750,10 +763,12 @@ Returns the old value of orientation.)nbdoc")
         .def("Contains", static_cast<bool (Poly_MakeLoops::HeapOfInteger::*)(const int) const>(&Poly_MakeLoops::HeapOfInteger::Contains), nb::arg("theValue"))
         .def("Remove", static_cast<void (Poly_MakeLoops::HeapOfInteger::*)(const int)>(&Poly_MakeLoops::HeapOfInteger::Remove), nb::arg("theValue"))
         .def("IsEmpty", static_cast<bool (Poly_MakeLoops::HeapOfInteger::*)()>(&Poly_MakeLoops::HeapOfInteger::IsEmpty));
+    nanoocp_implicit_copy_ctor<Poly_MakeLoops::HeapOfInteger>(nb::borrow<nb::class_<Poly_MakeLoops::HeapOfInteger>>(m.attr("Poly_MakeLoops").attr("HeapOfInteger")));
     nb::implicitly_convertible<std::decay_t<const int>, Poly_MakeLoops::HeapOfInteger>();
     nb::borrow<nb::class_<Poly_MakeLoops3D>>(m.attr("Poly_MakeLoops3D"))
         .def(nb::init<const Poly_MakeLoops3D::Helper *, const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theHelper"), nb::arg("theAlloc"), R"nbdoc(Constructor. If helper is NULL then the algorithm will
 probably return a wrong result)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_MakeLoops3D>(nb::borrow<nb::class_<Poly_MakeLoops3D>>(m.attr("Poly_MakeLoops3D")));
     nb::borrow<nb::class_<Poly_MakeLoops3D::Helper>>(m.attr("Poly_MakeLoops3D").attr("Helper"))
         .def("GetFirstTangent", static_cast<bool (Poly_MakeLoops3D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir &) const>(&Poly_MakeLoops3D::Helper::GetFirstTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the first node of a link)nbdoc")
         .def("GetLastTangent", static_cast<bool (Poly_MakeLoops3D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir &) const>(&Poly_MakeLoops3D::Helper::GetLastTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the last node of a link)nbdoc")
@@ -761,6 +776,7 @@ probably return a wrong result)nbdoc");
     nb::borrow<nb::class_<Poly_MakeLoops2D>>(m.attr("Poly_MakeLoops2D"))
         .def(nb::init<const bool, const Poly_MakeLoops2D::Helper *, const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theLeftWay"), nb::arg("theHelper"), nb::arg("theAlloc"), R"nbdoc(Constructor. If helper is NULL then the algorithm will
 probably return a wrong result)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_MakeLoops2D>(nb::borrow<nb::class_<Poly_MakeLoops2D>>(m.attr("Poly_MakeLoops2D")));
     nb::borrow<nb::class_<Poly_MakeLoops2D::Helper>>(m.attr("Poly_MakeLoops2D").attr("Helper"))
         .def("GetFirstTangent", static_cast<bool (Poly_MakeLoops2D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir2d &) const>(&Poly_MakeLoops2D::Helper::GetFirstTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the first node of a link)nbdoc")
         .def("GetLastTangent", static_cast<bool (Poly_MakeLoops2D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir2d &) const>(&Poly_MakeLoops2D::Helper::GetLastTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the last node of a link)nbdoc");
@@ -816,6 +832,7 @@ merged).)nbdoc")
         .def("ChangeOutput", static_cast<occ::handle<Poly_Triangulation> & (Poly_MergeNodesTool::*)()>(&Poly_MergeNodesTool::ChangeOutput), nb::rv_policy::reference_internal, R"nbdoc(Setup output triangulation for modifications.
 When set to NULL, the tool could be used as a merge map for filling in external mesh
 structure.)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_MergeNodesTool>(nb::borrow<nb::class_<Poly_MergeNodesTool>>(m.attr("Poly_MergeNodesTool")));
     nb::implicitly_convertible<std::decay_t<const double>, Poly_MergeNodesTool>();
     nb::borrow<nb::class_<Poly_Polygon2D>>(m.attr("Poly_Polygon2D"))
         .def(nb::new_([](const int theNbNodes) { return opencascade::handle<Poly_Polygon2D>(new Poly_Polygon2D(theNbNodes)); }), nb::arg("theNbNodes"), R"nbdoc(Constructs a 2D polygon with specified number of nodes.)nbdoc")
@@ -850,6 +867,7 @@ triangle, the function NbNodes returns 4.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Poly_Polygon2D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Poly_Polygon2D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_Polygon2D::*)() const>(&Poly_Polygon2D::DynamicType));
+    nanoocp_implicit_copy_ctor<Poly_Polygon2D>(nb::borrow<nb::class_<Poly_Polygon2D>>(m.attr("Poly_Polygon2D")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt2d> &>, Poly_Polygon2D>();
     nb::borrow<nb::class_<Poly_Polygon3D>>(m.attr("Poly_Polygon3D"))
         .def(nb::new_([](const NCollection_Array1<gp_Pnt> & Nodes) { return opencascade::handle<Poly_Polygon3D>(new Poly_Polygon3D(Nodes)); }), nb::arg("Nodes"), R"nbdoc(Constructs a 3D polygon defined by the table of points, Nodes.)nbdoc")
@@ -882,6 +900,7 @@ directly modify the data structure of this polygon.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Poly_Polygon3D::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Poly_Polygon3D::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_Polygon3D::*)() const>(&Poly_Polygon3D::DynamicType));
+    nanoocp_implicit_copy_ctor<Poly_Polygon3D>(nb::borrow<nb::class_<Poly_Polygon3D>>(m.attr("Poly_Polygon3D")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt> &>, Poly_Polygon3D>();
     nb::borrow<nb::class_<Poly_PolygonOnTriangulation>>(m.attr("Poly_PolygonOnTriangulation"))
         .def(nb::new_([](const NCollection_Array1<int> & Nodes) { return opencascade::handle<Poly_PolygonOnTriangulation>(new Poly_PolygonOnTriangulation(Nodes)); }), nb::arg("Nodes"), R"nbdoc(Constructs a 3D polygon on the triangulation of a shape,
@@ -924,6 +943,7 @@ shape.)nbdoc")
         .def("Parameters", static_cast<const occ::handle<NCollection_HArray1<double>> & (Poly_PolygonOnTriangulation::*)() const>(&Poly_PolygonOnTriangulation::Parameters), R"nbdoc(Returns the table of the parameters associated with each node in this polygon.
 Warning! Use the function HasParameters to check if parameters are associated with the nodes
 in this polygon.)nbdoc");
+    nanoocp_implicit_copy_ctor<Poly_PolygonOnTriangulation>(nb::borrow<nb::class_<Poly_PolygonOnTriangulation>>(m.attr("Poly_PolygonOnTriangulation")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<int> &>, Poly_PolygonOnTriangulation>();
     nb::borrow<nb::class_<Poly_TriangulationParameters>>(m.attr("Poly_TriangulationParameters"))
         .def(nb::new_([](const double theDeflection, const double theAngle, const double theMinSize) { return opencascade::handle<Poly_TriangulationParameters>(new Poly_TriangulationParameters(theDeflection, theAngle, theMinSize)); }), nb::arg("theDeflection") = static_cast<std::decay_t<const double>>(- 1.), nb::arg("theAngle") = static_cast<std::decay_t<const double>>(- 1.), nb::arg("theMinSize") = static_cast<std::decay_t<const double>>(- 1.), R"nbdoc(Constructor.
@@ -941,5 +961,6 @@ Initializes object with the given parameters.
         .def_static("get_type_name", static_cast<const char * (*)()>(&Poly_TriangulationParameters::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Poly_TriangulationParameters::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_TriangulationParameters::*)() const>(&Poly_TriangulationParameters::DynamicType));
+    nanoocp_implicit_copy_ctor<Poly_TriangulationParameters>(nb::borrow<nb::class_<Poly_TriangulationParameters>>(m.attr("Poly_TriangulationParameters")));
     nb::implicitly_convertible<std::decay_t<const double>, Poly_TriangulationParameters>();
 }

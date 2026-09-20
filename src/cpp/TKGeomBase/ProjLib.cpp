@@ -178,6 +178,7 @@ void nanoocp_define_ProjLib(nb::module_ &m) {
         .def_static("IsAnaSurf", static_cast<bool (*)(const occ::handle<Adaptor3d_Surface> &)>(&ProjLib::IsAnaSurf), nb::arg("theAS"), R"nbdoc(Returns "true" if surface is analytical, that is it can be
 Plane, Cylinder, Cone, Sphere, Torus.
 For all other types of surface method returns "false".)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib>(nb::borrow<nb::class_<ProjLib>>(m.attr("ProjLib")));
     nb::borrow<nb::class_<ProjLib_Projector>>(m.attr("ProjLib_Projector"))
         .def(nb::init<>(), R"nbdoc(Sets the type to OtherCurve)nbdoc")
         .def("IsDone", static_cast<bool (ProjLib_Projector::*)() const>(&ProjLib_Projector::IsDone))
@@ -206,6 +207,7 @@ in the range [ UFirst, UFirst + Period [)nbdoc")
         .def("VFrame", static_cast<void (ProjLib_Projector::*)(const double, const double, const double, const double)>(&ProjLib_Projector::VFrame), nb::arg("CFirst"), nb::arg("CLast"), nb::arg("VFirst"), nb::arg("Period"), R"nbdoc(Translates the 2d curve
 to set the part of the curve [CFirst, CLast]
 in the range [ VFirst, VFirst + Period [)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_Projector>(nb::borrow<nb::class_<ProjLib_Projector>>(m.attr("ProjLib_Projector")));
     nb::borrow<nb::class_<ProjLib_CompProjectedCurve>>(m.attr("ProjLib_CompProjectedCurve"))
         .def(nb::new_([]() { return opencascade::handle<ProjLib_CompProjectedCurve>(new ProjLib_CompProjectedCurve()); }))
         .def(nb::new_([](const double Tol3d, const occ::handle<Adaptor3d_Surface> & S, const occ::handle<Adaptor3d_Curve> & C, const double MaxDist) { return opencascade::handle<ProjLib_CompProjectedCurve>(new ProjLib_CompProjectedCurve(Tol3d, S, C, MaxDist)); }), nb::arg("Tol3d"), nb::arg("S"), nb::arg("C"), nb::arg("MaxDist") = static_cast<std::decay_t<const double>>(- 1.0), R"nbdoc(this constructor tries to optimize the search using the
@@ -308,6 +310,7 @@ of the curve interval with number Index.)nbdoc")
 of the curve interval with number Index.)nbdoc")
         .def("GetProj2d", static_cast<bool (ProjLib_CompProjectedCurve::*)() const>(&ProjLib_CompProjectedCurve::GetProj2d), R"nbdoc(Returns the parameter, which defines necessity of only 2d results.)nbdoc")
         .def("GetProj3d", static_cast<bool (ProjLib_CompProjectedCurve::*)() const>(&ProjLib_CompProjectedCurve::GetProj3d), R"nbdoc(Returns the parameter, which defines necessity of only 3d results.)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_CompProjectedCurve>(nb::borrow<nb::class_<ProjLib_CompProjectedCurve>>(m.attr("ProjLib_CompProjectedCurve")));
     nb::borrow<nb::class_<ProjLib_ComputeApprox>>(m.attr("ProjLib_ComputeApprox"))
         .def(nb::init<>(), R"nbdoc(Empty constructor, it only sets some initial values for class fields.)nbdoc")
         .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const occ::handle<Adaptor3d_Surface> &, const double>(), nb::arg("C"), nb::arg("S"), nb::arg("Tol"), R"nbdoc(<Tol> is the tolerance with which the approximation is performed.
@@ -329,6 +332,7 @@ is AppParCurves_TangencyPoint;)nbdoc")
         .def("BSpline", static_cast<occ::handle<Geom2d_BSplineCurve> (ProjLib_ComputeApprox::*)() const>(&ProjLib_ComputeApprox::BSpline))
         .def("Bezier", static_cast<occ::handle<Geom2d_BezierCurve> (ProjLib_ComputeApprox::*)() const>(&ProjLib_ComputeApprox::Bezier))
         .def("Tolerance", static_cast<double (ProjLib_ComputeApprox::*)() const>(&ProjLib_ComputeApprox::Tolerance), R"nbdoc(returns the reached Tolerance.)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_ComputeApprox>(nb::borrow<nb::class_<ProjLib_ComputeApprox>>(m.attr("ProjLib_ComputeApprox")));
     nb::borrow<nb::class_<ProjLib_ComputeApproxOnPolarSurface>>(m.attr("ProjLib_ComputeApproxOnPolarSurface"))
         .def(nb::init<>(), R"nbdoc(Empty constructor, it only sets some initial values for class fields.)nbdoc")
         .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const occ::handle<Adaptor3d_Surface> &, const double>(), nb::arg("C"), nb::arg("S"), nb::arg("Tol") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructor, which performs projecting.)nbdoc")
@@ -365,6 +369,7 @@ Method is used in method Perform(...).)nbdoc")
         .def("Curve2d", static_cast<occ::handle<Geom2d_Curve> (ProjLib_ComputeApproxOnPolarSurface::*)() const>(&ProjLib_ComputeApproxOnPolarSurface::Curve2d), R"nbdoc(Returns second 2d curve.)nbdoc")
         .def("IsDone", static_cast<bool (ProjLib_ComputeApproxOnPolarSurface::*)() const>(&ProjLib_ComputeApproxOnPolarSurface::IsDone))
         .def("Tolerance", static_cast<double (ProjLib_ComputeApproxOnPolarSurface::*)() const>(&ProjLib_ComputeApproxOnPolarSurface::Tolerance), R"nbdoc(returns the reached Tolerance.)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_ComputeApproxOnPolarSurface>(nb::borrow<nb::class_<ProjLib_ComputeApproxOnPolarSurface>>(m.attr("ProjLib_ComputeApproxOnPolarSurface")));
     nb::borrow<nb::class_<ProjLib_Cone>>(m.attr("ProjLib_Cone"))
         .def(nb::init<>(), R"nbdoc(Undefined projection.)nbdoc")
         .def(nb::init<const gp_Cone &>(), nb::arg("Co"), R"nbdoc(Projection on the cone <Co>.)nbdoc")
@@ -376,6 +381,7 @@ Method is used in method Perform(...).)nbdoc")
         .def("Project", static_cast<void (ProjLib_Cone::*)(const gp_Elips &)>(&ProjLib_Cone::Project), nb::arg("E"))
         .def("Project", static_cast<void (ProjLib_Cone::*)(const gp_Parab &)>(&ProjLib_Cone::Project), nb::arg("P"))
         .def("Project", static_cast<void (ProjLib_Cone::*)(const gp_Hypr &)>(&ProjLib_Cone::Project), nb::arg("H"));
+    nanoocp_implicit_copy_ctor<ProjLib_Cone>(nb::borrow<nb::class_<ProjLib_Cone>>(m.attr("ProjLib_Cone")));
     nb::implicitly_convertible<std::decay_t<const gp_Cone &>, ProjLib_Cone>();
     nb::borrow<nb::class_<ProjLib_Cylinder>>(m.attr("ProjLib_Cylinder"))
         .def(nb::init<>(), R"nbdoc(Undefined projection.)nbdoc")
@@ -389,6 +395,7 @@ Method is used in method Perform(...).)nbdoc")
         .def("Project", static_cast<void (ProjLib_Cylinder::*)(const gp_Elips &)>(&ProjLib_Cylinder::Project), nb::arg("E"))
         .def("Project", static_cast<void (ProjLib_Cylinder::*)(const gp_Parab &)>(&ProjLib_Cylinder::Project), nb::arg("P"))
         .def("Project", static_cast<void (ProjLib_Cylinder::*)(const gp_Hypr &)>(&ProjLib_Cylinder::Project), nb::arg("H"));
+    nanoocp_implicit_copy_ctor<ProjLib_Cylinder>(nb::borrow<nb::class_<ProjLib_Cylinder>>(m.attr("ProjLib_Cylinder")));
     nb::implicitly_convertible<std::decay_t<const gp_Cylinder &>, ProjLib_Cylinder>();
     nb::borrow<nb::class_<ProjLib_ProjectedCurve>>(m.attr("ProjLib_ProjectedCurve"))
         .def(nb::new_([]() { return opencascade::handle<ProjLib_ProjectedCurve>(new ProjLib_ProjectedCurve()); }), R"nbdoc(Empty constructor, it only sets some initial values for class fields.)nbdoc")
@@ -483,6 +490,7 @@ yourself. Also it will NOT trim the surface to myFirst/Last.)nbdoc")
         .def("BSpline", static_cast<occ::handle<Geom2d_BSplineCurve> (ProjLib_ProjectedCurve::*)() const>(&ProjLib_ProjectedCurve::BSpline), R"nbdoc(Warning! This will NOT make a copy of the BSpline Curve
 If you want to modify the Curve please make a copy
 yourself. Also it will NOT trim the surface to myFirst/Last.)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_ProjectedCurve>(nb::borrow<nb::class_<ProjLib_ProjectedCurve>>(m.attr("ProjLib_ProjectedCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, ProjLib_ProjectedCurve>();
     nb::borrow<nb::class_<ProjLib_Plane>>(m.attr("ProjLib_Plane"))
         .def(nb::init<>(), R"nbdoc(Undefined projection.)nbdoc")
@@ -498,6 +506,7 @@ yourself. Also it will NOT trim the surface to myFirst/Last.)nbdoc");
         .def("Project", static_cast<void (ProjLib_Plane::*)(const gp_Elips &)>(&ProjLib_Plane::Project), nb::arg("E"))
         .def("Project", static_cast<void (ProjLib_Plane::*)(const gp_Parab &)>(&ProjLib_Plane::Project), nb::arg("P"))
         .def("Project", static_cast<void (ProjLib_Plane::*)(const gp_Hypr &)>(&ProjLib_Plane::Project), nb::arg("H"));
+    nanoocp_implicit_copy_ctor<ProjLib_Plane>(nb::borrow<nb::class_<ProjLib_Plane>>(m.attr("ProjLib_Plane")));
     nb::implicitly_convertible<std::decay_t<const gp_Pln &>, ProjLib_Plane>();
     nb::borrow<nb::class_<ProjLib_PrjFunc>>(m.attr("ProjLib_PrjFunc"))
         .def(nb::init<const Adaptor3d_Curve *, const double, const Adaptor3d_Surface *, const int>(), nb::arg("C"), nb::arg("FixVal"), nb::arg("S"), nb::arg("Fix"))
@@ -516,6 +525,7 @@ False otherwise.)nbdoc")
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
         .def("Solution", static_cast<gp_Pnt2d (ProjLib_PrjFunc::*)() const>(&ProjLib_PrjFunc::Solution), R"nbdoc(returns point on surface)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_PrjFunc>(nb::borrow<nb::class_<ProjLib_PrjFunc>>(m.attr("ProjLib_PrjFunc")));
     nb::borrow<nb::class_<ProjLib_PrjResolve>>(m.attr("ProjLib_PrjResolve"))
         .def(nb::init<const Adaptor3d_Curve &, const Adaptor3d_Surface &, const int>(), nb::arg("C"), nb::arg("S"), nb::arg("Fix"))
         .def("Perform", static_cast<void (ProjLib_PrjResolve::*)(const double, const double, const double, const gp_Pnt2d &, const gp_Pnt2d &, const gp_Pnt2d &, const double, const bool)>(&ProjLib_PrjResolve::Perform), nb::arg("t"), nb::arg("U"), nb::arg("V"), nb::arg("Tol"), nb::arg("Inf"), nb::arg("Sup"), nb::arg("FTol") = static_cast<std::decay_t<const double>>(- 1), nb::arg("StrictInside") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Calculates the ort from C(t) to S with a close point.
@@ -524,6 +534,7 @@ The function F(u,v)=distance(S(u,v),C(t)) has an extremum when gradient(F)=0.
 The algorithm searches a zero near the close point.)nbdoc")
         .def("IsDone", static_cast<bool (ProjLib_PrjResolve::*)() const>(&ProjLib_PrjResolve::IsDone), R"nbdoc(Returns True if the distance is found.)nbdoc")
         .def("Solution", static_cast<gp_Pnt2d (ProjLib_PrjResolve::*)() const>(&ProjLib_PrjResolve::Solution), R"nbdoc(Returns the point of the extremum distance.)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_PrjResolve>(nb::borrow<nb::class_<ProjLib_PrjResolve>>(m.attr("ProjLib_PrjResolve")));
     nb::borrow<nb::class_<ProjLib_ProjectOnPlane>>(m.attr("ProjLib_ProjectOnPlane"))
         .def(nb::new_([]() { return opencascade::handle<ProjLib_ProjectOnPlane>(new ProjLib_ProjectOnPlane()); }), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::new_([](const gp_Ax3 & Pl) { return opencascade::handle<ProjLib_ProjectOnPlane>(new ProjLib_ProjectOnPlane(Pl)); }), nb::arg("Pl"), R"nbdoc(The projection will be normal to the Plane defined
@@ -594,6 +605,7 @@ BSpline Curve : If you want to modify
 the Curve please make a copy yourself
 Also it will NOT trim the surface to
 myFirst/Last.)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_ProjectOnPlane>(nb::borrow<nb::class_<ProjLib_ProjectOnPlane>>(m.attr("ProjLib_ProjectOnPlane")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax3 &>, ProjLib_ProjectOnPlane>();
     nb::borrow<nb::class_<ProjLib_ProjectOnSurface>>(m.attr("ProjLib_ProjectOnSurface"))
         .def(nb::init<>(), R"nbdoc(Create an empty projector.)nbdoc")
@@ -603,6 +615,7 @@ To compute the projection, you have to Load the Curve.)nbdoc")
         .def("Load", static_cast<void (ProjLib_ProjectOnSurface::*)(const occ::handle<Adaptor3d_Curve> &, const double)>(&ProjLib_ProjectOnSurface::Load), nb::arg("C"), nb::arg("Tolerance"), R"nbdoc(Compute the projection of the curve <C> on the Surface.)nbdoc")
         .def("IsDone", static_cast<bool (ProjLib_ProjectOnSurface::*)() const>(&ProjLib_ProjectOnSurface::IsDone))
         .def("BSpline", static_cast<occ::handle<Geom_BSplineCurve> (ProjLib_ProjectOnSurface::*)() const>(&ProjLib_ProjectOnSurface::BSpline));
+    nanoocp_implicit_copy_ctor<ProjLib_ProjectOnSurface>(nb::borrow<nb::class_<ProjLib_ProjectOnSurface>>(m.attr("ProjLib_ProjectOnSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, ProjLib_ProjectOnSurface>();
     nb::borrow<nb::class_<ProjLib_Sphere>>(m.attr("ProjLib_Sphere"))
         .def(nb::init<>(), R"nbdoc(Undefined projection.)nbdoc")
@@ -616,6 +629,7 @@ To compute the projection, you have to Load the Curve.)nbdoc")
         .def("Project", static_cast<void (ProjLib_Sphere::*)(const gp_Hypr &)>(&ProjLib_Sphere::Project), nb::arg("H"))
         .def("SetInBounds", static_cast<void (ProjLib_Sphere::*)(const double)>(&ProjLib_Sphere::SetInBounds), nb::arg("U"), R"nbdoc(Set the point of parameter U on C in the natural
 restrictions of the sphere.)nbdoc");
+    nanoocp_implicit_copy_ctor<ProjLib_Sphere>(nb::borrow<nb::class_<ProjLib_Sphere>>(m.attr("ProjLib_Sphere")));
     nb::implicitly_convertible<std::decay_t<const gp_Sphere &>, ProjLib_Sphere>();
     nb::borrow<nb::class_<ProjLib_Torus>>(m.attr("ProjLib_Torus"))
         .def(nb::init<>(), R"nbdoc(Undefined projection.)nbdoc")
@@ -627,6 +641,7 @@ restrictions of the sphere.)nbdoc");
         .def("Project", static_cast<void (ProjLib_Torus::*)(const gp_Elips &)>(&ProjLib_Torus::Project), nb::arg("E"))
         .def("Project", static_cast<void (ProjLib_Torus::*)(const gp_Parab &)>(&ProjLib_Torus::Project), nb::arg("P"))
         .def("Project", static_cast<void (ProjLib_Torus::*)(const gp_Hypr &)>(&ProjLib_Torus::Project), nb::arg("H"));
+    nanoocp_implicit_copy_ctor<ProjLib_Torus>(nb::borrow<nb::class_<ProjLib_Torus>>(m.attr("ProjLib_Torus")));
     nb::implicitly_convertible<std::decay_t<const gp_Torus &>, ProjLib_Torus>();
     m.attr("ProjLib_HCompProjectedCurve") = m.attr("ProjLib_CompProjectedCurve");   // ProjLib_HCompProjectedCurve = ProjLib_CompProjectedCurve
     m.attr("ProjLib_HProjectedCurve") = m.attr("ProjLib_ProjectedCurve");   // ProjLib_HProjectedCurve = ProjLib_ProjectedCurve

@@ -20,7 +20,11 @@ class Geom2dAdaptor:
     templates.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Geom2dAdaptor) -> None: ...
 
     @staticmethod
     def MakeCurve(HC: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> nanoocp.Geom2d.Geom2d_Curve:
@@ -52,10 +56,17 @@ class Geom2dAdaptor_Curve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
     def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve, UFirst: float, ULast: float) -> None:
         """Standard_ConstructionError is raised if Ufirst>Ulast"""
 
+    @overload
+    def __init__(self, theOther: Geom2dAdaptor_Curve) -> None: ...
+
     class OffsetData:
         """Internal structure for 2D offset curve evaluation data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom2dAdaptor_Curve.OffsetData) -> None: ...
 
         @property
         def BasisAdaptor(self) -> Geom2dAdaptor_Curve:
@@ -81,7 +92,11 @@ class Geom2dAdaptor_Curve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
     class BezierData:
         """Internal structure for Bezier curve evaluation data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom2dAdaptor_Curve.BezierData) -> None: ...
 
         @property
         def Curve(self) -> nanoocp.Geom2d.Geom2d_BezierCurve:
@@ -107,7 +122,11 @@ class Geom2dAdaptor_Curve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
     class BSplineData:
         """Internal structure for BSpline curve evaluation data."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom2dAdaptor_Curve.BSplineData) -> None: ...
 
         @property
         def Curve(self) -> nanoocp.Geom2d.Geom2d_BSplineCurve:

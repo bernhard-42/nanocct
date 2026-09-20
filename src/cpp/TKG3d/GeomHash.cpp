@@ -40,47 +40,53 @@ void nanoocp_define_GeomHash(nb::module_ &m) {
     nb::borrow<nb::class_<GeomHash_SurfaceHasher>>(m.attr("GeomHash_SurfaceHasher"))
         .def(nb::init<double, double>(), nb::arg("theCompTolerance") = static_cast<std::decay_t<double>>(Precision :: Angular ( )), nb::arg("theHashTolerance") = static_cast<std::decay_t<double>>(Precision :: Confusion ( )))
         .def("__call__", static_cast<std::size_t (GeomHash_SurfaceHasher::*)(const occ::handle<Geom_Surface> &) const noexcept>(&GeomHash_SurfaceHasher::operator()), nb::arg("theSurface"), nb::is_operator())
-        .def("__call__", static_cast<bool (GeomHash_SurfaceHasher::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &) const noexcept>(&GeomHash_SurfaceHasher::operator()), nb::arg("theSurface1"), nb::arg("theSurface2"), nb::is_operator())
-        .def_rw("CompTolerance", &GeomHash_SurfaceHasher::CompTolerance)
-        .def_rw("HashTolerance", &GeomHash_SurfaceHasher::HashTolerance);
+        .def("__call__", static_cast<bool (GeomHash_SurfaceHasher::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &) const noexcept>(&GeomHash_SurfaceHasher::operator()), nb::arg("theSurface1"), nb::arg("theSurface2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<GeomHash_SurfaceHasher>(nb::borrow<nb::class_<GeomHash_SurfaceHasher>>(m.attr("GeomHash_SurfaceHasher")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_SurfaceHasher>>(m.attr("GeomHash_SurfaceHasher")), "CompTolerance", &GeomHash_SurfaceHasher::CompTolerance);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_SurfaceHasher>>(m.attr("GeomHash_SurfaceHasher")), "HashTolerance", &GeomHash_SurfaceHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<double>, GeomHash_SurfaceHasher>();
     nb::borrow<nb::class_<GeomHash_CurveHasher>>(m.attr("GeomHash_CurveHasher"))
         .def(nb::init<double, double>(), nb::arg("theCompTolerance") = static_cast<std::decay_t<double>>(Precision :: Angular ( )), nb::arg("theHashTolerance") = static_cast<std::decay_t<double>>(Precision :: Confusion ( )))
         .def("__call__", static_cast<std::size_t (GeomHash_CurveHasher::*)(const occ::handle<Geom_Curve> &) const noexcept>(&GeomHash_CurveHasher::operator()), nb::arg("theCurve"), nb::is_operator())
-        .def("__call__", static_cast<bool (GeomHash_CurveHasher::*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &) const noexcept>(&GeomHash_CurveHasher::operator()), nb::arg("theCurve1"), nb::arg("theCurve2"), nb::is_operator())
-        .def_rw("CompTolerance", &GeomHash_CurveHasher::CompTolerance)
-        .def_rw("HashTolerance", &GeomHash_CurveHasher::HashTolerance);
+        .def("__call__", static_cast<bool (GeomHash_CurveHasher::*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &) const noexcept>(&GeomHash_CurveHasher::operator()), nb::arg("theCurve1"), nb::arg("theCurve2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<GeomHash_CurveHasher>(nb::borrow<nb::class_<GeomHash_CurveHasher>>(m.attr("GeomHash_CurveHasher")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_CurveHasher>>(m.attr("GeomHash_CurveHasher")), "CompTolerance", &GeomHash_CurveHasher::CompTolerance);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_CurveHasher>>(m.attr("GeomHash_CurveHasher")), "HashTolerance", &GeomHash_CurveHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<double>, GeomHash_CurveHasher>();
     nb::borrow<nb::class_<GeomHash_TriangulationHasher>>(m.attr("GeomHash_TriangulationHasher"))
         .def(nb::init<const double, const double>(), nb::arg("theCompTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )), nb::arg("theHashTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )))
         .def("__call__", static_cast<std::size_t (GeomHash_TriangulationHasher::*)(const occ::handle<Poly_Triangulation> &) const noexcept>(&GeomHash_TriangulationHasher::operator()), nb::arg("theTri"), nb::is_operator())
-        .def("__call__", static_cast<bool (GeomHash_TriangulationHasher::*)(const occ::handle<Poly_Triangulation> &, const occ::handle<Poly_Triangulation> &) const noexcept>(&GeomHash_TriangulationHasher::operator()), nb::arg("theTri1"), nb::arg("theTri2"), nb::is_operator())
-        .def_rw("CompTolerance", &GeomHash_TriangulationHasher::CompTolerance)
-        .def_rw("HashTolerance", &GeomHash_TriangulationHasher::HashTolerance);
+        .def("__call__", static_cast<bool (GeomHash_TriangulationHasher::*)(const occ::handle<Poly_Triangulation> &, const occ::handle<Poly_Triangulation> &) const noexcept>(&GeomHash_TriangulationHasher::operator()), nb::arg("theTri1"), nb::arg("theTri2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<GeomHash_TriangulationHasher>(nb::borrow<nb::class_<GeomHash_TriangulationHasher>>(m.attr("GeomHash_TriangulationHasher")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_TriangulationHasher>>(m.attr("GeomHash_TriangulationHasher")), "CompTolerance", &GeomHash_TriangulationHasher::CompTolerance);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_TriangulationHasher>>(m.attr("GeomHash_TriangulationHasher")), "HashTolerance", &GeomHash_TriangulationHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<const double>, GeomHash_TriangulationHasher>();
     nb::borrow<nb::class_<GeomHash_Polygon3DHasher>>(m.attr("GeomHash_Polygon3DHasher"))
         .def(nb::init<const double, const double>(), nb::arg("theCompTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )), nb::arg("theHashTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )))
         .def("__call__", static_cast<std::size_t (GeomHash_Polygon3DHasher::*)(const occ::handle<Poly_Polygon3D> &) const noexcept>(&GeomHash_Polygon3DHasher::operator()), nb::arg("thePoly"), nb::is_operator())
-        .def("__call__", static_cast<bool (GeomHash_Polygon3DHasher::*)(const occ::handle<Poly_Polygon3D> &, const occ::handle<Poly_Polygon3D> &) const noexcept>(&GeomHash_Polygon3DHasher::operator()), nb::arg("thePoly1"), nb::arg("thePoly2"), nb::is_operator())
-        .def_rw("CompTolerance", &GeomHash_Polygon3DHasher::CompTolerance)
-        .def_rw("HashTolerance", &GeomHash_Polygon3DHasher::HashTolerance);
+        .def("__call__", static_cast<bool (GeomHash_Polygon3DHasher::*)(const occ::handle<Poly_Polygon3D> &, const occ::handle<Poly_Polygon3D> &) const noexcept>(&GeomHash_Polygon3DHasher::operator()), nb::arg("thePoly1"), nb::arg("thePoly2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<GeomHash_Polygon3DHasher>(nb::borrow<nb::class_<GeomHash_Polygon3DHasher>>(m.attr("GeomHash_Polygon3DHasher")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_Polygon3DHasher>>(m.attr("GeomHash_Polygon3DHasher")), "CompTolerance", &GeomHash_Polygon3DHasher::CompTolerance);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_Polygon3DHasher>>(m.attr("GeomHash_Polygon3DHasher")), "HashTolerance", &GeomHash_Polygon3DHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<const double>, GeomHash_Polygon3DHasher>();
     nb::borrow<nb::class_<GeomHash_Polygon2DHasher>>(m.attr("GeomHash_Polygon2DHasher"))
         .def(nb::init<const double, const double>(), nb::arg("theCompTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )), nb::arg("theHashTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )))
         .def("__call__", static_cast<std::size_t (GeomHash_Polygon2DHasher::*)(const occ::handle<Poly_Polygon2D> &) const noexcept>(&GeomHash_Polygon2DHasher::operator()), nb::arg("thePoly"), nb::is_operator())
-        .def("__call__", static_cast<bool (GeomHash_Polygon2DHasher::*)(const occ::handle<Poly_Polygon2D> &, const occ::handle<Poly_Polygon2D> &) const noexcept>(&GeomHash_Polygon2DHasher::operator()), nb::arg("thePoly1"), nb::arg("thePoly2"), nb::is_operator())
-        .def_rw("CompTolerance", &GeomHash_Polygon2DHasher::CompTolerance)
-        .def_rw("HashTolerance", &GeomHash_Polygon2DHasher::HashTolerance);
+        .def("__call__", static_cast<bool (GeomHash_Polygon2DHasher::*)(const occ::handle<Poly_Polygon2D> &, const occ::handle<Poly_Polygon2D> &) const noexcept>(&GeomHash_Polygon2DHasher::operator()), nb::arg("thePoly1"), nb::arg("thePoly2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<GeomHash_Polygon2DHasher>(nb::borrow<nb::class_<GeomHash_Polygon2DHasher>>(m.attr("GeomHash_Polygon2DHasher")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_Polygon2DHasher>>(m.attr("GeomHash_Polygon2DHasher")), "CompTolerance", &GeomHash_Polygon2DHasher::CompTolerance);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_Polygon2DHasher>>(m.attr("GeomHash_Polygon2DHasher")), "HashTolerance", &GeomHash_Polygon2DHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<const double>, GeomHash_Polygon2DHasher>();
     nanoocp_implicit_default_ctor<PolygonOnTriHashKey>(nb::borrow<nb::class_<PolygonOnTriHashKey>>(m.attr("PolygonOnTriHashKey")));
-    nb::borrow<nb::class_<PolygonOnTriHashKey>>(m.attr("PolygonOnTriHashKey"))
-        .def_rw("Poly", &PolygonOnTriHashKey::Poly)
-        .def_rw("TriRepId", &PolygonOnTriHashKey::TriRepId);
+    nanoocp_implicit_copy_ctor<PolygonOnTriHashKey>(nb::borrow<nb::class_<PolygonOnTriHashKey>>(m.attr("PolygonOnTriHashKey")));
+    nanoocp_def_field(nb::borrow<nb::class_<PolygonOnTriHashKey>>(m.attr("PolygonOnTriHashKey")), "Poly", &PolygonOnTriHashKey::Poly);
+    nanoocp_def_field(nb::borrow<nb::class_<PolygonOnTriHashKey>>(m.attr("PolygonOnTriHashKey")), "TriRepId", &PolygonOnTriHashKey::TriRepId);
     nb::borrow<nb::class_<GeomHash_PolygonOnTriHasher>>(m.attr("GeomHash_PolygonOnTriHasher"))
         .def(nb::init<const double, const double>(), nb::arg("theCompTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )), nb::arg("theHashTolerance") = static_cast<std::decay_t<const double>>(Precision :: Computational ( )))
         .def("__call__", static_cast<std::size_t (GeomHash_PolygonOnTriHasher::*)(const PolygonOnTriHashKey &) const noexcept>(&GeomHash_PolygonOnTriHasher::operator()), nb::arg("theKey"), nb::is_operator())
-        .def("__call__", static_cast<bool (GeomHash_PolygonOnTriHasher::*)(const PolygonOnTriHashKey &, const PolygonOnTriHashKey &) const noexcept>(&GeomHash_PolygonOnTriHasher::operator()), nb::arg("theKey1"), nb::arg("theKey2"), nb::is_operator())
-        .def_rw("CompTolerance", &GeomHash_PolygonOnTriHasher::CompTolerance)
-        .def_rw("HashTolerance", &GeomHash_PolygonOnTriHasher::HashTolerance);
+        .def("__call__", static_cast<bool (GeomHash_PolygonOnTriHasher::*)(const PolygonOnTriHashKey &, const PolygonOnTriHashKey &) const noexcept>(&GeomHash_PolygonOnTriHasher::operator()), nb::arg("theKey1"), nb::arg("theKey2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<GeomHash_PolygonOnTriHasher>(nb::borrow<nb::class_<GeomHash_PolygonOnTriHasher>>(m.attr("GeomHash_PolygonOnTriHasher")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_PolygonOnTriHasher>>(m.attr("GeomHash_PolygonOnTriHasher")), "CompTolerance", &GeomHash_PolygonOnTriHasher::CompTolerance);
+    nanoocp_def_field(nb::borrow<nb::class_<GeomHash_PolygonOnTriHasher>>(m.attr("GeomHash_PolygonOnTriHasher")), "HashTolerance", &GeomHash_PolygonOnTriHasher::HashTolerance);
     nb::implicitly_convertible<std::decay_t<const double>, GeomHash_PolygonOnTriHasher>();
 }

@@ -76,4 +76,5 @@ of the Projected Curve <PC> will be the same as the
 parametrization of the initial curve <C>.
 It means: proj(C(u)) = PC(u) for each u.
 Otherwise, the parametrization may change.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomProjLib>(nb::borrow<nb::class_<GeomProjLib>>(m.attr("GeomProjLib")));
 }

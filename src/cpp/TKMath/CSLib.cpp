@@ -177,6 +177,7 @@ for i = theIduref..theNu+theIduref, j = theIdvref..theNv+theIdvref
 @param[in] theIduref Reference index offset in U (default 0 for regular cases)
 @param[in] theIdvref Reference index offset in V (default 0 for regular cases)
 @return The derivative of the normalized normal vector)nbdoc");
+    nanoocp_implicit_copy_ctor<CSLib>(nb::borrow<nb::class_<CSLib>>(m.attr("CSLib")));
     nb::borrow<nb::class_<CSLib_Class2d>>(m.attr("CSLib_Class2d"))
         .def(nb::init<>(), R"nbdoc(Default constructor. Creates an empty classifier.)nbdoc")
         .def(nb::init<const NCollection_Array1<gp_Pnt2d> &, double, double, double, double, double, double>(), nb::arg("thePnts2d"), nb::arg("theTolU"), nb::arg("theTolV"), nb::arg("theUMin"), nb::arg("theVMin"), nb::arg("theUMax"), nb::arg("theVMax"), R"nbdoc(Constructs a 2D classifier from an array of polygon vertices.
@@ -225,6 +226,7 @@ instead of the tolerances specified at construction.
 @param[in] thePoint The 2D point to classify
 @param[in] theTol   Tolerance for boundary detection
 @return Classification result)nbdoc");
+    nanoocp_implicit_copy_ctor<CSLib_Class2d>(nb::borrow<nb::class_<CSLib_Class2d>>(m.attr("CSLib_Class2d")));
     nb::borrow<nb::class_<CSLib_NormalPolyDef>>(m.attr("CSLib_NormalPolyDef"))
         .def(nb::init<int, const NCollection_Array1<double> &>(), nb::arg("theK0"), nb::arg("theLi"), R"nbdoc(Constructs a polynomial definition for normal computation.
 
@@ -253,4 +255,5 @@ as common subexpressions are computed only once.
 @param[out] theF Computed function value
 @param[out] theD Computed derivative value
 @return true if calculation was successful, false otherwise)nbdoc");
+    nanoocp_implicit_copy_ctor<CSLib_NormalPolyDef>(nb::borrow<nb::class_<CSLib_NormalPolyDef>>(m.attr("CSLib_NormalPolyDef")));
 }

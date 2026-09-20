@@ -38,4 +38,5 @@ be multiplicated with BS later.)nbdoc")
         .def_static("Solutionbis", [](const occ::handle<Geom_BSplineCurve> & BS, const double TolPoles, const double TolKnots) { double Knotmin{}; double Knotmax{}; Hermit::Solutionbis(BS, Knotmin, Knotmax, TolPoles, TolKnots); return std::make_tuple(Knotmin, Knotmax); }, nb::arg("BS"), nb::arg("TolPoles") = static_cast<std::decay_t<const double>>(0.000001), nb::arg("TolKnots") = static_cast<std::decay_t<const double>>(0.000001), R"nbdoc(returns the knots to insert to a(u) to
 stay with a constant sign and in the
 tolerances.)nbdoc");
+    nanoocp_implicit_copy_ctor<Hermit>(nb::borrow<nb::class_<Hermit>>(m.attr("Hermit")));
 }

@@ -13,7 +13,11 @@ import nanoocp.math
 
 
 class AppDef_BSpGradient_BFGSOfMyBSplGradientOfBSplineCompute(nanoocp.math.math_BFGS):
+    @overload
     def __init__(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient, StartingPoint: nanoocp.math.math_Vector, Tolerance3d: float, Tolerance2d: float, Eps: float, NbIterations: int = 200) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppDef_BSpGradient_BFGSOfMyBSplGradientOfBSplineCompute) -> None: ...
 
     def IsSolutionReached(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient) -> bool: ...
 
@@ -49,6 +53,9 @@ class AppDef_BSplineCompute:
         If <Squares> is True, the computation will be done with
         no iteration at all.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_BSplineCompute) -> None: ...
 
     def Interpol(self, Line: AppDef_MultiLine) -> None:
         """
@@ -227,6 +234,9 @@ class AppDef_MultiPointConstraint(nanoocp.AppParCurves.AppParCurves_MultiPoint):
         from (length of <tabCur> + length of <tabCur2d> )
         """
 
+    @overload
+    def __init__(self, theOther: AppDef_MultiPointConstraint) -> None: ...
+
     def SetTang(self, Index: int, Tang: nanoocp.gp.gp_Vec) -> None:
         """
         sets the value of the tangency of the point of range
@@ -360,6 +370,9 @@ class AppDef_MultiLine:
         2d points without their tangencies.
         """
 
+    @overload
+    def __init__(self, theOther: AppDef_MultiLine) -> None: ...
+
     def NbMultiPoints(self) -> int:
         """
         returns the number of MultiPointConstraints of the
@@ -435,6 +448,9 @@ class AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute:
         they are approximated in parallel(so with the same
         parameter, only the vector B changes).
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute) -> None: ...
 
     @overload
     def Perform(self, Parameters: nanoocp.math.math_Vector) -> None:
@@ -542,11 +558,15 @@ class AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute:
         """
 
 class AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute(nanoocp.math.math_MultipleVarFunctionWithGradient):
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], NbPol: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has <NbPol> control points.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute) -> None: ...
 
     def NbVariables(self) -> int:
         """
@@ -651,6 +671,9 @@ class AppDef_Compute:
         no iteration at all.
         """
 
+    @overload
+    def __init__(self, theOther: AppDef_Compute) -> None: ...
+
     def Init(self, degreemin: int = 4, degreemax: int = 8, Tolerance3d: float = 0.001, Tolerance2d: float = 1e-06, NbIterations: int = 5, cutting: bool = True, parametrization: nanoocp.Approx.Approx_ParametrizationType = Approx_ParametrizationType.Approx_ChordLength, Squares: bool = False) -> None:
         """Initializes the fields of the algorithm."""
 
@@ -704,17 +727,29 @@ class AppDef_Compute:
         """
 
 class AppDef_Gradient_BFGSOfMyGradientbisOfBSplineCompute(nanoocp.math.math_BFGS):
+    @overload
     def __init__(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient, StartingPoint: nanoocp.math.math_Vector, Tolerance3d: float, Tolerance2d: float, Eps: float, NbIterations: int = 200) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppDef_Gradient_BFGSOfMyGradientbisOfBSplineCompute) -> None: ...
 
     def IsSolutionReached(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient) -> bool: ...
 
 class AppDef_Gradient_BFGSOfMyGradientOfCompute(nanoocp.math.math_BFGS):
+    @overload
     def __init__(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient, StartingPoint: nanoocp.math.math_Vector, Tolerance3d: float, Tolerance2d: float, Eps: float, NbIterations: int = 200) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppDef_Gradient_BFGSOfMyGradientOfCompute) -> None: ...
 
     def IsSolutionReached(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient) -> bool: ...
 
 class AppDef_Gradient_BFGSOfTheGradient(nanoocp.math.math_BFGS):
+    @overload
     def __init__(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient, StartingPoint: nanoocp.math.math_Vector, Tolerance3d: float, Tolerance2d: float, Eps: float, NbIterations: int = 200) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppDef_Gradient_BFGSOfTheGradient) -> None: ...
 
     def IsSolutionReached(self, F: nanoocp.math.math_MultipleVarFunctionWithGradient) -> bool: ...
 
@@ -774,7 +809,11 @@ class AppDef_LinearCriteria(AppDef_SmoothCriterion):
     Smoothing of points.
     """
 
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppDef_LinearCriteria) -> None: ...
 
     def SetParameters(self, Parameters: nanoocp.NCollection.NCollection_HArray1[float]) -> None: ...
 
@@ -832,6 +871,9 @@ class AppDef_MyBSplGradientOfBSplineCompute:
         The desired degree of the resulting curve is Deg.
         """
 
+    @overload
+    def __init__(self, theOther: AppDef_MyBSplGradientOfBSplineCompute) -> None: ...
+
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
 
@@ -868,6 +910,7 @@ class AppDef_MyBSplGradientOfBSplineCompute:
         """
 
 class AppDef_MyGradientbisOfBSplineCompute:
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
         """
         Tries to minimize the sum (square(||Qui - Bi*Pi||))
@@ -877,6 +920,9 @@ class AppDef_MyGradientbisOfBSplineCompute:
         The tolerance required on this sum is given by Tol.
         The desired degree of the resulting curve is Deg.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_MyGradientbisOfBSplineCompute) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -914,6 +960,7 @@ class AppDef_MyGradientbisOfBSplineCompute:
         """
 
 class AppDef_MyGradientOfCompute:
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
         """
         Tries to minimize the sum (square(||Qui - Bi*Pi||))
@@ -923,6 +970,9 @@ class AppDef_MyGradientOfCompute:
         The tolerance required on this sum is given by Tol.
         The desired degree of the resulting curve is Deg.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_MyGradientOfCompute) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -965,7 +1015,11 @@ class AppDef_MyLineTool:
     For Approx, the tool will not add points if the algorithms want some.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AppDef_MyLineTool) -> None: ...
 
     @staticmethod
     def FirstPoint(ML: AppDef_MultiLine) -> int:
@@ -1123,6 +1177,9 @@ class AppDef_ParLeastSquareOfMyGradientbisOfBSplineCompute:
         """
 
     @overload
+    def __init__(self, theOther: AppDef_ParLeastSquareOfMyGradientbisOfBSplineCompute) -> None: ...
+
+    @overload
     def Perform(self, Parameters: nanoocp.math.math_Vector) -> None:
         """
         Is used after having initialized the fields.
@@ -1228,11 +1285,15 @@ class AppDef_ParLeastSquareOfMyGradientbisOfBSplineCompute:
         """
 
 class AppDef_ParFunctionOfMyGradientbisOfBSplineCompute(nanoocp.math.math_MultipleVarFunctionWithGradient):
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_ParFunctionOfMyGradientbisOfBSplineCompute) -> None: ...
 
     def NbVariables(self) -> int:
         """
@@ -1341,6 +1402,9 @@ class AppDef_ParLeastSquareOfMyGradientOfCompute:
         """
 
     @overload
+    def __init__(self, theOther: AppDef_ParLeastSquareOfMyGradientOfCompute) -> None: ...
+
+    @overload
     def Perform(self, Parameters: nanoocp.math.math_Vector) -> None:
         """
         Is used after having initialized the fields.
@@ -1446,11 +1510,15 @@ class AppDef_ParLeastSquareOfMyGradientOfCompute:
         """
 
 class AppDef_ParFunctionOfMyGradientOfCompute(nanoocp.math.math_MultipleVarFunctionWithGradient):
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_ParFunctionOfMyGradientOfCompute) -> None: ...
 
     def NbVariables(self) -> int:
         """
@@ -1559,6 +1627,9 @@ class AppDef_ParLeastSquareOfTheGradient:
         """
 
     @overload
+    def __init__(self, theOther: AppDef_ParLeastSquareOfTheGradient) -> None: ...
+
+    @overload
     def Perform(self, Parameters: nanoocp.math.math_Vector) -> None:
         """
         Is used after having initialized the fields.
@@ -1664,11 +1735,15 @@ class AppDef_ParLeastSquareOfTheGradient:
         """
 
 class AppDef_ParFunctionOfTheGradient(nanoocp.math.math_MultipleVarFunctionWithGradient):
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_ParFunctionOfTheGradient) -> None: ...
 
     def NbVariables(self) -> int:
         """
@@ -1728,6 +1803,7 @@ class AppDef_ParFunctionOfTheGradient(nanoocp.math.math_MultipleVarFunctionWithG
     def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
 class AppDef_ResConstraintOfMyGradientbisOfBSplineCompute:
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
@@ -1741,6 +1817,9 @@ class AppDef_ResConstraintOfMyGradientbisOfBSplineCompute:
         from an approximation with ParLeastSquare.)
         The MultiCurve is modified. New MultiPoles are given.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_ResConstraintOfMyGradientbisOfBSplineCompute) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -1760,6 +1839,7 @@ class AppDef_ResConstraintOfMyGradientbisOfBSplineCompute:
         """
 
 class AppDef_ResConstraintOfMyGradientOfCompute:
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
@@ -1773,6 +1853,9 @@ class AppDef_ResConstraintOfMyGradientOfCompute:
         from an approximation with ParLeastSquare.)
         The MultiCurve is modified. New MultiPoles are given.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_ResConstraintOfMyGradientOfCompute) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -1792,6 +1875,7 @@ class AppDef_ResConstraintOfMyGradientOfCompute:
         """
 
 class AppDef_ResConstraintOfTheGradient:
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
@@ -1805,6 +1889,9 @@ class AppDef_ResConstraintOfTheGradient:
         from an approximation with ParLeastSquare.)
         The MultiCurve is modified. New MultiPoles are given.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_ResConstraintOfTheGradient) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -1871,6 +1958,9 @@ class AppDef_TheLeastSquares:
         they are approximated in parallel(so with the same
         parameter, only the vector B changes).
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_TheLeastSquares) -> None: ...
 
     @overload
     def Perform(self, Parameters: nanoocp.math.math_Vector) -> None:
@@ -1978,11 +2068,15 @@ class AppDef_TheLeastSquares:
         """
 
 class AppDef_TheFunction(nanoocp.math.math_MultipleVarFunctionWithGradient):
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_TheFunction) -> None: ...
 
     def NbVariables(self) -> int:
         """
@@ -2042,6 +2136,7 @@ class AppDef_TheFunction(nanoocp.math.math_MultipleVarFunctionWithGradient):
     def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
 class AppDef_TheGradient:
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
         """
         Tries to minimize the sum (square(||Qui - Bi*Pi||))
@@ -2051,6 +2146,9 @@ class AppDef_TheGradient:
         The tolerance required on this sum is given by Tol.
         The desired degree of the resulting curve is Deg.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_TheGradient) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -2088,6 +2186,7 @@ class AppDef_TheGradient:
         """
 
 class AppDef_TheResol:
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
@@ -2101,6 +2200,9 @@ class AppDef_TheResol:
         from an approximation with ParLeastSquare.)
         The MultiCurve is modified. New MultiPoles are given.
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_TheResol) -> None: ...
 
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
@@ -2128,6 +2230,7 @@ class AppDef_Variational:
     Variational optimization.
     """
 
+    @overload
     def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], MaxDegree: int = 14, MaxSegment: int = 100, Continuity: nanoocp.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2, WithMinMax: bool = False, WithCutting: bool = True, Tolerance: float = 1.0, NbIterations: int = 2) -> None:
         """
         Constructor.
@@ -2143,6 +2246,9 @@ class AppDef_Variational:
         Limitation : The MultiLine from AppDef has to be composed by
         only one Line ( Dimension 2 or 3).
         """
+
+    @overload
+    def __init__(self, theOther: AppDef_Variational) -> None: ...
 
     def Approximate(self) -> None:
         """Makes the approximation with the current fields."""

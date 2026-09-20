@@ -43,6 +43,9 @@ class GeomEval_AHTBezierCurve(nanoocp.Geom.Geom_BoundedCurve):
         @param[in] theBeta trigonometric frequency (>= 0, 0 = no trig terms)
         """
 
+    @overload
+    def __init__(self, theOther: GeomEval_AHTBezierCurve) -> None: ...
+
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]:
         """Returns the array of poles."""
 
@@ -179,6 +182,9 @@ class GeomEval_AHTBezierSurface(nanoocp.Geom.Geom_BoundedSurface):
         @param[in] theBetaU trigonometric frequency in U (>= 0)
         @param[in] theBetaV trigonometric frequency in V (>= 0)
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_AHTBezierSurface) -> None: ...
 
     def Poles(self) -> nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]:
         """Returns the 2D array of poles."""
@@ -341,6 +347,7 @@ class GeomEval_CircularHelicoidSurface(nanoocp.Geom.Geom_ElementarySurface):
     The surface is neither periodic nor closed. Continuity is GeomAbs_CN.
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax3, thePitch: float) -> None:
         """
         Creates a circular helicoid surface.
@@ -348,6 +355,9 @@ class GeomEval_CircularHelicoidSurface(nanoocp.Geom.Geom_ElementarySurface):
         @param[in] thePitch the axial advance per 2*Pi turn (must be != 0)
         @throw Standard_ConstructionError if thePitch == 0
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_CircularHelicoidSurface) -> None: ...
 
     def Pitch(self) -> float:
         """Returns the pitch."""
@@ -464,6 +474,7 @@ class GeomEval_CircularHelixCurve(nanoocp.Geom.Geom_Curve):
     Continuity is GeomAbs_CN.
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax2, theRadius: float, thePitch: float) -> None:
         """
         Creates a circular helix with the given coordinate system, radius, and pitch.
@@ -472,6 +483,9 @@ class GeomEval_CircularHelixCurve(nanoocp.Geom.Geom_Curve):
         @param[in] thePitch the axial advance per 2*Pi turn (can be negative)
         @throw Standard_ConstructionError if theRadius <= 0
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_CircularHelixCurve) -> None: ...
 
     def Position(self) -> nanoocp.gp.gp_Ax2:
         """Returns the local coordinate system."""
@@ -579,6 +593,7 @@ class GeomEval_EllipsoidSurface(nanoocp.Geom.Geom_ElementarySurface):
     @endcode
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax3, theA: float, theB: float, theC: float) -> None:
         """
         Creates a triaxial ellipsoid surface with the given local coordinate system
@@ -589,6 +604,9 @@ class GeomEval_EllipsoidSurface(nanoocp.Geom.Geom_ElementarySurface):
         @param[in] theC the semi-axis along ZDir (must be > 0)
         @throw Standard_ConstructionError if any semi-axis <= 0
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_EllipsoidSurface) -> None: ...
 
     def SemiAxisA(self) -> float:
         """Returns the semi-axis A (along XDir)."""
@@ -768,6 +786,7 @@ class GeomEval_HypParaboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
     @endcode
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax3, theA: float, theB: float) -> None:
         """
         Creates a hyperbolic paraboloid surface with the given local coordinate system
@@ -777,6 +796,9 @@ class GeomEval_HypParaboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
         @param[in] theB the second semi-axis length (must be > 0)
         @throw Standard_ConstructionError if theA <= 0 or theB <= 0
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_HypParaboloidSurface) -> None: ...
 
     def SemiAxisA(self) -> float:
         """Returns the first semi-axis length A."""
@@ -946,6 +968,7 @@ class GeomEval_HyperboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
     - (-inf, +inf) for v (not periodic, not closed).
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax3, theR1: float, theR2: float, theMode: GeomEval_HyperboloidSurface.SheetMode = GeomEval_HyperboloidSurface.SheetMode.OneSheet) -> None:
         """
         Creates a hyperboloid surface with the given local coordinate system,
@@ -956,6 +979,9 @@ class GeomEval_HyperboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
         @param[in] theMode one-sheet or two-sheet mode
         @throw Standard_ConstructionError if theR1 <= 0 or theR2 <= 0
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_HyperboloidSurface) -> None: ...
 
     class SheetMode(enum.Enum):
         """Sheet mode selector."""
@@ -1132,6 +1158,7 @@ class GeomEval_ParaboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
     @endcode
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax3, theFocal: float) -> None:
         """
         Creates a paraboloid surface with the given local coordinate system
@@ -1140,6 +1167,9 @@ class GeomEval_ParaboloidSurface(nanoocp.Geom.Geom_ElementarySurface):
         @param[in] theFocal the focal distance (must be > 0)
         @throw Standard_ConstructionError if theFocal <= 0
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_ParaboloidSurface) -> None: ...
 
     def Focal(self) -> float:
         """Returns the focal distance of this paraboloid."""
@@ -1288,6 +1318,7 @@ class GeomEval_SineWaveCurve(nanoocp.Geom.Geom_Curve):
     The parameter range is (-inf, +inf). The curve is not periodic.
     """
 
+    @overload
     def __init__(self, thePosition: nanoocp.gp.gp_Ax2, theAmplitude: float, theOmega: float, thePhase: float = 0.0) -> None:
         """
         Creates a 3D sine wave curve.
@@ -1297,6 +1328,9 @@ class GeomEval_SineWaveCurve(nanoocp.Geom.Geom_Curve):
         @param[in] thePhase the phase shift (default 0)
         @throw Standard_ConstructionError if theAmplitude <= 0 or theOmega <= 0
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_SineWaveCurve) -> None: ...
 
     def Position(self) -> nanoocp.gp.gp_Ax2:
         """Returns the local coordinate system."""
@@ -1418,6 +1452,9 @@ class GeomEval_TBezierCurve(nanoocp.Geom.Geom_BoundedCurve):
         @param[in] theAlpha frequency parameter (must be > 0)
         @throw Standard_ConstructionError if validation fails
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_TBezierCurve) -> None: ...
 
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]:
         """Returns the poles array."""
@@ -1553,6 +1590,9 @@ class GeomEval_TBezierSurface(nanoocp.Geom.Geom_BoundedSurface):
         @param[in] theAlphaV frequency parameter in V direction (must be > 0)
         @throw Standard_ConstructionError if validation fails
         """
+
+    @overload
+    def __init__(self, theOther: GeomEval_TBezierSurface) -> None: ...
 
     def Poles(self) -> nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]:
         """Returns the poles grid."""

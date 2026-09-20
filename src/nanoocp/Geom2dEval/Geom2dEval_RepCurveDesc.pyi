@@ -1,6 +1,7 @@
 """C++ namespace Geom2dEval_RepCurveDesc (OCCT package Geom2dEval)"""
 
 import enum
+from typing import overload
 
 import nanoocp.Geom2d
 import nanoocp.Standard
@@ -9,7 +10,11 @@ import nanoocp.Standard
 class Map1d:
     """1D affine parameter map: uRep = Scale * u + Offset."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Map1d) -> None: ...
 
     def IsIdentity(self) -> bool: ...
 
@@ -32,7 +37,11 @@ class Map1d:
 class Domain1d:
     """1D parameter domain interval."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Domain1d) -> None: ...
 
     def Contains(self, theU: float) -> bool: ...
 
@@ -87,7 +96,11 @@ class Full(Base):
     Fastest evaluation path - direct delegation to Representation.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Full) -> None: ...
 
     def GetKind(self) -> Base.Kind: ...
 
@@ -104,7 +117,11 @@ class DerivBounded(Base):
     Derivative-bounded descriptor: full domain, identity map, limited to MaxDerivOrder.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: DerivBounded) -> None: ...
 
     def GetKind(self) -> Base.Kind: ...
 
@@ -129,7 +146,11 @@ class Mapped(Base):
     Adds optional bounded domain and affine parameter map.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Mapped) -> None: ...
 
     def GetKind(self) -> Base.Kind: ...
 

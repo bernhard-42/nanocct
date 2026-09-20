@@ -102,6 +102,8 @@ class Convert_ConicToBSplineCurve:
     framework for storing and consulting this computed data.
     """
 
+    def __init__(self, theOther: Convert_ConicToBSplineCurve) -> None: ...
+
     def Degree(self) -> int:
         """
         Returns the degree of the BSpline curve whose data is
@@ -172,6 +174,9 @@ class Convert_CircleToBSplineCurve(Convert_ConicToBSplineCurve):
         Raised if U1 = U2 or U1 = U2 + 2.0 * Pi
         """
 
+    @overload
+    def __init__(self, theOther: Convert_CircleToBSplineCurve) -> None: ...
+
 class Convert_CompPolynomialToPoles:
     """
     Convert a serie of Polynomial N-Dimensional Curves
@@ -238,6 +243,9 @@ class Convert_CompPolynomialToPoles:
         Warning: The Length of Continuity have to be NumCurves-1
         """
 
+    @overload
+    def __init__(self, theOther: Convert_CompPolynomialToPoles) -> None: ...
+
     def NbPoles(self) -> int:
         """Returns the number of poles of the n-dimensional BSpline."""
 
@@ -272,6 +280,8 @@ class Convert_ElementarySurfaceToBSplineSurface:
     construct a BSpline surface equivalent to the cylinder,
     cone, sphere or torus.
     """
+
+    def __init__(self, theOther: Convert_ElementarySurfaceToBSplineSurface) -> None: ...
 
     def UDegree(self) -> int:
         """Returns the degree in the U parametric direction."""
@@ -350,6 +360,9 @@ class Convert_ConeToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
         Raised if V1 = V2.
         """
 
+    @overload
+    def __init__(self, theOther: Convert_ConeToBSplineSurface) -> None: ...
+
 class Convert_CylinderToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
     """
     This algorithm converts a bounded cylinder into a rational
@@ -383,6 +396,9 @@ class Convert_CylinderToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface
         Raised if V1 = V2.
         """
 
+    @overload
+    def __init__(self, theOther: Convert_CylinderToBSplineSurface) -> None: ...
+
 class Convert_EllipseToBSplineCurve(Convert_ConicToBSplineCurve):
     """
     This algorithm converts a ellipse into a rational B-spline curve.
@@ -413,6 +429,9 @@ class Convert_EllipseToBSplineCurve(Convert_ConicToBSplineCurve):
 
         Raised if U1 = U2 or U1 = U2 + 2.0 * Pi
         """
+
+    @overload
+    def __init__(self, theOther: Convert_EllipseToBSplineCurve) -> None: ...
 
 class Convert_GridPolynomialToPoles:
     """
@@ -466,6 +485,9 @@ class Convert_GridPolynomialToPoles:
     def __init__(self, theNbUSurfaces: int, theNbVSurfaces: int, theUContinuity: int, theVContinuity: int, theMaxUDegree: int, theMaxVDegree: int, theNumCoeffPerSurface: nanoocp.NCollection.NCollection_HArray2[int], theCoefficients: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1[float], theTrueUIntervals: nanoocp.NCollection.NCollection_HArray1[float], theTrueVIntervals: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
         """Handle-based overload (delegates to the array-based constructor)."""
 
+    @overload
+    def __init__(self, theOther: Convert_GridPolynomialToPoles) -> None: ...
+
     def NbUPoles(self) -> int:
         """Returns the number of poles in the U parametric direction."""
 
@@ -516,12 +538,16 @@ class Convert_HyperbolaToBSplineCurve(Convert_ConicToBSplineCurve):
     Convert, Hyperbola, BSplineCurve, 2D .
     """
 
+    @overload
     def __init__(self, H: nanoocp.gp.gp_Hypr2d, U1: float, U2: float) -> None:
         """
         The hyperbola H is limited between the parametric values U1, U2
         and the equivalent B-spline curve has the same orientation as the
         hyperbola.
         """
+
+    @overload
+    def __init__(self, theOther: Convert_HyperbolaToBSplineCurve) -> None: ...
 
 class Convert_ParabolaToBSplineCurve(Convert_ConicToBSplineCurve):
     """
@@ -536,12 +562,16 @@ class Convert_ParabolaToBSplineCurve(Convert_ConicToBSplineCurve):
     Convert, Parabola, BSplineCurve, 2D .
     """
 
+    @overload
     def __init__(self, Prb: nanoocp.gp.gp_Parab2d, U1: float, U2: float) -> None:
         """
         The parabola Prb is limited between the parametric values U1, U2
         and the equivalent B-spline curve as the same orientation as the
         parabola Prb.
         """
+
+    @overload
+    def __init__(self, theOther: Convert_ParabolaToBSplineCurve) -> None: ...
 
 class Convert_SphereToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
     """
@@ -586,6 +616,9 @@ class Convert_SphereToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
         Raised if V1 = V2.
         """
 
+    @overload
+    def __init__(self, theOther: Convert_SphereToBSplineSurface) -> None: ...
+
 class Convert_TorusToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
     """
     This algorithm converts a bounded Torus into a rational
@@ -626,5 +659,8 @@ class Convert_TorusToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
         Raised if U1 = U2 or U1 = U2 + 2.0 * Pi
         Raised if V1 = V2 or V1 = V2 + 2.0 * Pi
         """
+
+    @overload
+    def __init__(self, theOther: Convert_TorusToBSplineSurface) -> None: ...
 
 def BuildPolynomialCosAndSin(theUFirst: float, theULast: float, theNumPoles: int, theCosNumerator: nanoocp.NCollection.NCollection_Array1[float], theSinNumerator: nanoocp.NCollection.NCollection_Array1[float], theDenominator: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...

@@ -105,6 +105,9 @@ class TColStd_HPackedMapOfInteger(nanoocp.Standard.Standard_Transient):
         @param theOther the map to copy
         """
 
+    @overload
+    def __init__(self, theOther: TColStd_HPackedMapOfInteger) -> None: ...
+
     def Map(self) -> TColStd_PackedMapOfInteger:
         """Returns const reference to the underlying map."""
 

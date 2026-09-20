@@ -17,6 +17,9 @@ class KronrodConfig(nanoocp.MathUtils.IntegConfig):
     def __init__(self, theTolerance: float, theMaxIter: int = 100) -> None:
         """Constructor with tolerance."""
 
+    @overload
+    def __init__(self, theOther: KronrodConfig) -> None: ...
+
     @property
     def NbGaussPoints(self) -> int:
         """Number of Gauss points (n), Kronrod will use 2n+1 points"""
@@ -42,6 +45,9 @@ class DoubleExpConfig(nanoocp.MathUtils.IntegConfig):
     def __init__(self, theTolerance: float, theMaxIter: int = 100) -> None:
         """Constructor with tolerance."""
 
+    @overload
+    def __init__(self, theOther: DoubleExpConfig) -> None: ...
+
     @property
     def NbLevels(self) -> int:
         """Number of refinement levels (each doubles points)"""
@@ -59,7 +65,11 @@ class DoubleExpConfig(nanoocp.MathUtils.IntegConfig):
 class MultipleConfig:
     """Configuration for multi-dimensional Gauss integration."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: MultipleConfig) -> None: ...
 
     @property
     def MaxOrder(self) -> int:
@@ -71,7 +81,11 @@ class MultipleConfig:
 class SetResult:
     """Result for vector function integration."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: SetResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 

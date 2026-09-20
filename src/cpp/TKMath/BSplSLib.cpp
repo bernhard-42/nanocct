@@ -346,6 +346,7 @@ Otherwise, allocates a new array and fills with 1.0.
 @param[in] theNbUPoles number of poles in U direction
 @param[in] theNbVPoles number of poles in V direction
 @return array of unit weights with bounds [1, theNbUPoles] x [1, theNbVPoles])nbdoc");
+    nanoocp_implicit_copy_ctor<BSplSLib>(nb::borrow<nb::class_<BSplSLib>>(m.attr("BSplSLib")));
     nb::borrow<nb::class_<BSplSLib_Cache>>(m.attr("BSplSLib_Cache"))
         .def(nb::new_([](const int & theDegreeU, const bool & thePeriodicU, const NCollection_Array1<double> & theFlatKnotsU, const int & theDegreeV, const bool & thePeriodicV, const NCollection_Array1<double> & theFlatKnotsV, const NCollection_Array2<double> * theWeights) { return opencascade::handle<BSplSLib_Cache>(new BSplSLib_Cache(theDegreeU, thePeriodicU, theFlatKnotsU, theDegreeV, thePeriodicV, theFlatKnotsV, theWeights)); }), nb::arg("theDegreeU"), nb::arg("thePeriodicU"), nb::arg("theFlatKnotsU"), nb::arg("theDegreeV"), nb::arg("thePeriodicV"), nb::arg("theFlatKnotsV"), nb::arg("theWeights") = static_cast<std::decay_t<const NCollection_Array2<double> *>>(nullptr), R"nbdoc(Constructor for caching of the span for the surface
 \param theDegreeU    degree along the first parameter (U) of the surface
@@ -413,4 +414,5 @@ This bypasses periodic normalization and local parameter calculation.
         .def_static("get_type_name", static_cast<const char * (*)()>(&BSplSLib_Cache::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BSplSLib_Cache::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BSplSLib_Cache::*)() const>(&BSplSLib_Cache::DynamicType));
+    nanoocp_implicit_copy_ctor<BSplSLib_Cache>(nb::borrow<nb::class_<BSplSLib_Cache>>(m.attr("BSplSLib_Cache")));
 }

@@ -124,6 +124,7 @@ first parameter of its domain.)nbdoc")
         .def("SetIsLastOpen", static_cast<void (IntAna_Curve::*)(const bool)>(&IntAna_Curve::SetIsLastOpen), nb::arg("Flag"), R"nbdoc(If flag is True, the Curve is not defined at the
 first parameter of its domain.)nbdoc")
         .def("SetDomain", static_cast<void (IntAna_Curve::*)(const double, const double)>(&IntAna_Curve::SetDomain), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Trims this curve)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna_Curve>(nb::borrow<nb::class_<IntAna_Curve>>(m.attr("IntAna_Curve")));
     nb::borrow<nb::class_<IntAna_Int3Pln>>(m.attr("IntAna_Int3Pln"))
         .def(nb::init<>())
         .def(nb::init<const gp_Pln &, const gp_Pln &, const gp_Pln &>(), nb::arg("P1"), nb::arg("P2"), nb::arg("P3"), R"nbdoc(Determination of the intersection point between
@@ -135,6 +136,7 @@ first parameter of its domain.)nbdoc")
 If 2 planes are identical or parallel, IsEmpty
 will return TRUE.)nbdoc")
         .def("Value", static_cast<const gp_Pnt & (IntAna_Int3Pln::*)() const>(&IntAna_Int3Pln::Value), R"nbdoc(Returns the intersection point.)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna_Int3Pln>(nb::borrow<nb::class_<IntAna_Int3Pln>>(m.attr("IntAna_Int3Pln")));
     nb::borrow<nb::class_<IntAna_IntConicQuad>>(m.attr("IntAna_IntConicQuad"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const gp_Lin &, const IntAna_Quadric &>(), nb::arg("L"), nb::arg("Q"), R"nbdoc(Creates the intersection between a line and a quadric.)nbdoc")
@@ -194,6 +196,7 @@ is parallel to the quadric.)nbdoc")
         .def("Point", static_cast<const gp_Pnt & (IntAna_IntConicQuad::*)(const int) const>(&IntAna_IntConicQuad::Point), nb::arg("N"), R"nbdoc(Returns the point of range N.)nbdoc")
         .def("ParamOnConic", static_cast<double (IntAna_IntConicQuad::*)(const int) const>(&IntAna_IntConicQuad::ParamOnConic), nb::arg("N"), R"nbdoc(Returns the parameter on the line of the intersection
 point of range N.)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna_IntConicQuad>(nb::borrow<nb::class_<IntAna_IntConicQuad>>(m.attr("IntAna_IntConicQuad")));
     nb::borrow<nb::class_<IntAna_IntLinTorus>>(m.attr("IntAna_IntLinTorus"))
         .def(nb::init<>())
         .def(nb::init<const gp_Lin &, const gp_Torus &>(), nb::arg("L"), nb::arg("T"), R"nbdoc(Creates the intersection between a line and a torus.)nbdoc")
@@ -205,6 +208,7 @@ point of range N.)nbdoc");
 point of range Index.)nbdoc")
         .def("ParamOnTorus", [](const IntAna_IntLinTorus &self, const int Index) { double FI{}; double THETA{}; self.ParamOnTorus(Index, FI, THETA); return std::make_tuple(FI, THETA); }, nb::arg("Index"), R"nbdoc(Returns the parameters on the torus of the intersection
 point of range Index.)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna_IntLinTorus>(nb::borrow<nb::class_<IntAna_IntLinTorus>>(m.attr("IntAna_IntLinTorus")));
     nb::borrow<nb::class_<IntAna_IntQuadQuad>>(m.attr("IntAna_IntQuadQuad"))
         .def(nb::init<>(), R"nbdoc(Empty Constructor)nbdoc")
         .def(nb::init<const gp_Cylinder &, const IntAna_Quadric &, const double>(), nb::arg("C"), nb::arg("Q"), nb::arg("Tol"), R"nbdoc(Creates the intersection between a cylinder and a quadric.
@@ -245,6 +249,7 @@ first parameter of the curve J give the same
 point. Else the first parameter of the curve I and
 the last parameter of the curve J are the same
 point.)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna_IntQuadQuad>(nb::borrow<nb::class_<IntAna_IntQuadQuad>>(m.attr("IntAna_IntQuadQuad")));
     nb::borrow<nb::class_<IntAna_QuadQuadGeo>>(m.attr("IntAna_QuadQuadGeo"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const gp_Pln &, const gp_Sphere &>(), nb::arg("P"), nb::arg("S"), R"nbdoc(Creates the intersection between a plane and a sphere.)nbdoc")
@@ -332,6 +337,7 @@ The possible intersections are :
         .def("Hyperbola", static_cast<gp_Hypr (IntAna_QuadQuadGeo::*)(const int) const>(&IntAna_QuadQuadGeo::Hyperbola), nb::arg("Num"), R"nbdoc(Returns the hyperbola solution of range Num.)nbdoc")
         .def("HasCommonGen", static_cast<bool (IntAna_QuadQuadGeo::*)() const>(&IntAna_QuadQuadGeo::HasCommonGen))
         .def("PChar", static_cast<const gp_Pnt & (IntAna_QuadQuadGeo::*)() const>(&IntAna_QuadQuadGeo::PChar));
+    nanoocp_implicit_copy_ctor<IntAna_QuadQuadGeo>(nb::borrow<nb::class_<IntAna_QuadQuadGeo>>(m.attr("IntAna_QuadQuadGeo")));
     nb::borrow<nb::class_<IntAna_Quadric>>(m.attr("IntAna_Quadric"))
         .def(nb::init<>(), R"nbdoc(Empty Constructor)nbdoc")
         .def(nb::init<const gp_Pln &>(), nb::arg("P"), R"nbdoc(Creates a Quadric from a Pln)nbdoc")
@@ -352,6 +358,7 @@ xCXX x**2 + xCYY y**2 + xCZZ z**2
 ( written in the natural coordinates system )
 in the local coordinates system defined by Axis)nbdoc")
         .def("SpecialPoints", static_cast<const NCollection_List<gp_Pnt> & (IntAna_Quadric::*)() const>(&IntAna_Quadric::SpecialPoints), R"nbdoc(Returns the list of special points (with singularities))nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna_Quadric>(nb::borrow<nb::class_<IntAna_Quadric>>(m.attr("IntAna_Quadric")));
     nb::implicitly_convertible<std::decay_t<const gp_Pln &>, IntAna_Quadric>();
     nb::implicitly_convertible<std::decay_t<const gp_Sphere &>, IntAna_Quadric>();
     nb::implicitly_convertible<std::decay_t<const gp_Cylinder &>, IntAna_Quadric>();

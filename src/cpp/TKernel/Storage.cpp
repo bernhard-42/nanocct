@@ -225,6 +225,7 @@ void nanoocp_define_Storage(nb::module_ &m) {
     nanoocp_implicit_default_ctor<Storage>(nb::borrow<nb::class_<Storage>>(m.attr("Storage")));
     nb::borrow<nb::class_<Storage>>(m.attr("Storage"))
         .def_static("Version", static_cast<TCollection_AsciiString (*)()>(&Storage::Version), R"nbdoc(returns the version of Storage's read/write routines)nbdoc");
+    nanoocp_implicit_copy_ctor<Storage>(nb::borrow<nb::class_<Storage>>(m.attr("Storage")));
     nb::borrow<nb::class_<Storage_Root>>(m.attr("Storage_Root"))
         .def(nb::new_([]() { return opencascade::handle<Storage_Root>(new Storage_Root()); }))
         .def(nb::new_([](const TCollection_AsciiString & theName, const occ::handle<Standard_Persistent> & theObject) { return opencascade::handle<Storage_Root>(new Storage_Root(theName, theObject)); }), nb::arg("theName"), nb::arg("theObject"))
@@ -253,6 +254,7 @@ into the container.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_Root::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_Root::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_Root::*)() const>(&Storage_Root::DynamicType));
+    nanoocp_implicit_copy_ctor<Storage_Root>(nb::borrow<nb::class_<Storage_Root>>(m.attr("Storage_Root")));
     nb::borrow<nb::class_<Storage_Data>>(m.attr("Storage_Data"))
         .def(nb::new_([]() { return opencascade::handle<Storage_Data>(new Storage_Data()); }), R"nbdoc(Creates an empty set of data.
 You explicitly create a Storage_Data object
@@ -347,6 +349,7 @@ Storage_Schema algorithm used to store or retrieve them.)nbdoc")
         .def("TypeData", static_cast<occ::handle<Storage_TypeData> (Storage_Data::*)() const>(&Storage_Data::TypeData))
         .def("InternalData", static_cast<occ::handle<Storage_InternalData> (Storage_Data::*)() const>(&Storage_Data::InternalData))
         .def("Clear", static_cast<void (Storage_Data::*)() const>(&Storage_Data::Clear));
+    nanoocp_implicit_copy_ctor<Storage_Data>(nb::borrow<nb::class_<Storage_Data>>(m.attr("Storage_Data")));
     nb::borrow<nb::class_<Storage_BaseDriver>>(m.attr("Storage_BaseDriver"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_BaseDriver::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_BaseDriver::get_type_descriptor))
@@ -426,6 +429,7 @@ Storage_Schema algorithm used to store or retrieve them.)nbdoc")
         .def(nb::init<>())
         .def(nb::init<const int>(), nb::arg("theSpaceSize"))
         .def("Clear", static_cast<void (Storage_Bucket::*)()>(&Storage_Bucket::Clear));
+    nanoocp_implicit_copy_ctor<Storage_Bucket>(nb::borrow<nb::class_<Storage_Bucket>>(m.attr("Storage_Bucket")));
     nb::implicitly_convertible<std::decay_t<const int>, Storage_Bucket>();
     nb::borrow<nb::class_<Storage_BucketOfPersistent>>(m.attr("Storage_BucketOfPersistent"))
         .def(nb::init<const int, const int>(), nb::arg("theBucketSize") = static_cast<std::decay_t<const int>>(300000), nb::arg("theBucketNumber") = static_cast<std::decay_t<const int>>(100))
@@ -433,6 +437,7 @@ Storage_Schema algorithm used to store or retrieve them.)nbdoc")
         .def("Append", static_cast<void (Storage_BucketOfPersistent::*)(const occ::handle<Standard_Persistent> &)>(&Storage_BucketOfPersistent::Append), nb::arg("sp"))
         .def("Value", [](Storage_BucketOfPersistent &self, const int theIndex) { opencascade::handle<Standard_Persistent> result(self.Value(theIndex)); return result; }, nb::arg("theIndex"))
         .def("Clear", static_cast<void (Storage_BucketOfPersistent::*)()>(&Storage_BucketOfPersistent::Clear));
+    nanoocp_implicit_copy_ctor<Storage_BucketOfPersistent>(nb::borrow<nb::class_<Storage_BucketOfPersistent>>(m.attr("Storage_BucketOfPersistent")));
     nb::implicitly_convertible<std::decay_t<const int>, Storage_BucketOfPersistent>();
     nb::borrow<nb::class_<Storage_BucketIterator>>(m.attr("Storage_BucketIterator"))
         .def(nb::init<Storage_BucketOfPersistent *>(), nb::arg("arg0"))
@@ -441,6 +446,7 @@ Storage_Schema algorithm used to store or retrieve them.)nbdoc")
         .def("Value", [](const Storage_BucketIterator &self) { opencascade::handle<Standard_Persistent> result(self.Value()); return result; })
         .def("More", static_cast<bool (Storage_BucketIterator::*)() const>(&Storage_BucketIterator::More))
         .def("Next", static_cast<void (Storage_BucketIterator::*)()>(&Storage_BucketIterator::Next));
+    nanoocp_implicit_copy_ctor<Storage_BucketIterator>(nb::borrow<nb::class_<Storage_BucketIterator>>(m.attr("Storage_BucketIterator")));
     nb::implicitly_convertible<std::decay_t<Storage_BucketOfPersistent *>, Storage_BucketIterator>();
     nb::borrow<nb::class_<Storage_CallBack>>(m.attr("Storage_CallBack"))
         .def("New", static_cast<occ::handle<Standard_Persistent> (Storage_CallBack::*)() const>(&Storage_CallBack::New))
@@ -459,6 +465,7 @@ Storage_Schema algorithm used to store or retrieve them.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_DefaultCallBack::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_DefaultCallBack::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_DefaultCallBack::*)() const>(&Storage_DefaultCallBack::DynamicType));
+    nanoocp_implicit_copy_ctor<Storage_DefaultCallBack>(nb::borrow<nb::class_<Storage_DefaultCallBack>>(m.attr("Storage_DefaultCallBack")));
     nb::borrow<nb::class_<Storage_HeaderData>>(m.attr("Storage_HeaderData"))
         .def(nb::new_([]() { return opencascade::handle<Storage_HeaderData>(new Storage_HeaderData()); }))
         .def("Read", static_cast<bool (Storage_HeaderData::*)(const occ::handle<Storage_BaseDriver> &)>(&Storage_HeaderData::Read), nb::arg("theDriver"))
@@ -491,6 +498,7 @@ the number of persistent objects readed)nbdoc")
         .def("SetCreationDate", static_cast<void (Storage_HeaderData::*)(const TCollection_AsciiString &)>(&Storage_HeaderData::SetCreationDate), nb::arg("aDate"))
         .def("SetSchemaVersion", static_cast<void (Storage_HeaderData::*)(const TCollection_AsciiString &)>(&Storage_HeaderData::SetSchemaVersion), nb::arg("aVersion"))
         .def("SetSchemaName", static_cast<void (Storage_HeaderData::*)(const TCollection_AsciiString &)>(&Storage_HeaderData::SetSchemaName), nb::arg("aName"));
+    nanoocp_implicit_copy_ctor<Storage_HeaderData>(nb::borrow<nb::class_<Storage_HeaderData>>(m.attr("Storage_HeaderData")));
     nb::borrow<nb::class_<Storage_TypedCallBack>>(m.attr("Storage_TypedCallBack"))
         .def(nb::new_([]() { return opencascade::handle<Storage_TypedCallBack>(new Storage_TypedCallBack()); }))
         .def(nb::new_([](const TCollection_AsciiString & aTypeName, const occ::handle<Storage_CallBack> & aCallBack) { return opencascade::handle<Storage_TypedCallBack>(new Storage_TypedCallBack(aTypeName, aCallBack)); }), nb::arg("aTypeName"), nb::arg("aCallBack"))
@@ -503,6 +511,7 @@ the number of persistent objects readed)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_TypedCallBack::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_TypedCallBack::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_TypedCallBack::*)() const>(&Storage_TypedCallBack::DynamicType));
+    nanoocp_implicit_copy_ctor<Storage_TypedCallBack>(nb::borrow<nb::class_<Storage_TypedCallBack>>(m.attr("Storage_TypedCallBack")));
     nb::borrow<nb::class_<Storage_InternalData>>(m.attr("Storage_InternalData"))
         .def(nb::new_([]() { return opencascade::handle<Storage_InternalData>(new Storage_InternalData()); }))
         .def("ReadArray", static_cast<occ::handle<NCollection_HArray1<opencascade::handle<Standard_Persistent>>> & (Storage_InternalData::*)()>(&Storage_InternalData::ReadArray), nb::rv_policy::reference_internal)
@@ -510,6 +519,7 @@ the number of persistent objects readed)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_InternalData::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_InternalData::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_InternalData::*)() const>(&Storage_InternalData::DynamicType));
+    nanoocp_implicit_copy_ctor<Storage_InternalData>(nb::borrow<nb::class_<Storage_InternalData>>(m.attr("Storage_InternalData")));
     nb::borrow<nb::class_<Storage_RootData>>(m.attr("Storage_RootData"))
         .def(nb::new_([]() { return opencascade::handle<Storage_RootData>(new Storage_RootData()); }))
         .def("Read", static_cast<bool (Storage_RootData::*)(const occ::handle<Storage_BaseDriver> &)>(&Storage_RootData::Read), nb::arg("theDriver"))
@@ -527,6 +537,7 @@ will be replaced by <aRoot>.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_RootData::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_RootData::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_RootData::*)() const>(&Storage_RootData::DynamicType));
+    nanoocp_implicit_copy_ctor<Storage_RootData>(nb::borrow<nb::class_<Storage_RootData>>(m.attr("Storage_RootData")));
     nb::borrow<nb::class_<Storage_Schema>>(m.attr("Storage_Schema"))
         .def(nb::new_([]() { return opencascade::handle<Storage_Schema>(new Storage_Schema()); }), R"nbdoc(Builds a storage/retrieval algorithm based on a
 given data schema.
@@ -586,6 +597,7 @@ UseDefaultCallBack() is set.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_Schema::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_Schema::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_Schema::*)() const>(&Storage_Schema::DynamicType));
+    nanoocp_implicit_copy_ctor<Storage_Schema>(nb::borrow<nb::class_<Storage_Schema>>(m.attr("Storage_Schema")));
     nb::borrow<nb::class_<Storage_TypeData>>(m.attr("Storage_TypeData"))
         .def(nb::new_([]() { return opencascade::handle<Storage_TypeData>(new Storage_TypeData()); }))
         .def("Read", static_cast<bool (Storage_TypeData::*)(const occ::handle<Storage_BaseDriver> &)>(&Storage_TypeData::Read), nb::arg("theDriver"))
@@ -602,4 +614,5 @@ UseDefaultCallBack() is set.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_TypeData::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_TypeData::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_TypeData::*)() const>(&Storage_TypeData::DynamicType));
+    nanoocp_implicit_copy_ctor<Storage_TypeData>(nb::borrow<nb::class_<Storage_TypeData>>(m.attr("Storage_TypeData")));
 }

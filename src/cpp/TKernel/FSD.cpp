@@ -41,21 +41,22 @@ void nanoocp_define_FSD(nb::module_ &m) {
 @param[in] theStr the input encoded string
 @param[in] theLen the length of input encoded string
 @return null handle in case of out of memory condition)nbdoc");
+    nanoocp_implicit_copy_ctor<FSD_Base64>(nb::borrow<nb::class_<FSD_Base64>>(m.attr("FSD_Base64")));
     nanoocp_implicit_default_ctor<FSD_FileHeader>(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")));
-    nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader"))
-        .def_rw("testindian", &FSD_FileHeader::testindian)
-        .def_rw("binfo", &FSD_FileHeader::binfo)
-        .def_rw("einfo", &FSD_FileHeader::einfo)
-        .def_rw("bcomment", &FSD_FileHeader::bcomment)
-        .def_rw("ecomment", &FSD_FileHeader::ecomment)
-        .def_rw("btype", &FSD_FileHeader::btype)
-        .def_rw("etype", &FSD_FileHeader::etype)
-        .def_rw("broot", &FSD_FileHeader::broot)
-        .def_rw("eroot", &FSD_FileHeader::eroot)
-        .def_rw("bref", &FSD_FileHeader::bref)
-        .def_rw("eref", &FSD_FileHeader::eref)
-        .def_rw("bdata", &FSD_FileHeader::bdata)
-        .def_rw("edata", &FSD_FileHeader::edata);
+    nanoocp_implicit_copy_ctor<FSD_FileHeader>(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")));
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "testindian", &FSD_FileHeader::testindian);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "binfo", &FSD_FileHeader::binfo);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "einfo", &FSD_FileHeader::einfo);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "bcomment", &FSD_FileHeader::bcomment);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "ecomment", &FSD_FileHeader::ecomment);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "btype", &FSD_FileHeader::btype);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "etype", &FSD_FileHeader::etype);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "broot", &FSD_FileHeader::broot);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "eroot", &FSD_FileHeader::eroot);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "bref", &FSD_FileHeader::bref);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "eref", &FSD_FileHeader::eref);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "bdata", &FSD_FileHeader::bdata);
+    nanoocp_def_field(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")), "edata", &FSD_FileHeader::edata);
     nb::borrow<nb::class_<FSD_BinaryFile>>(m.attr("FSD_BinaryFile"))
         .def(nb::new_([]() { return opencascade::handle<FSD_BinaryFile>(new FSD_BinaryFile()); }))
         .def_static("get_type_name", static_cast<const char * (*)()>(&FSD_BinaryFile::get_type_name))
@@ -139,6 +140,7 @@ void nanoocp_define_FSD(nb::module_ &m) {
         .def_static("InverseSize", static_cast<size_t (*)(const size_t)>(&FSD_BinaryFile::InverseSize), nb::arg("theValue"), R"nbdoc(Inverse bytes in size value)nbdoc")
         .def_static("InverseUint64", static_cast<uint64_t (*)(const uint64_t)>(&FSD_BinaryFile::InverseUint64), nb::arg("theValue"), R"nbdoc(Inverse bytes in 64bit unsigned int value)nbdoc")
         .def_static("MagicNumber", static_cast<const char * (*)()>(&FSD_BinaryFile::MagicNumber));
+    nanoocp_implicit_copy_ctor<FSD_BinaryFile>(nb::borrow<nb::class_<FSD_BinaryFile>>(m.attr("FSD_BinaryFile")));
     nb::borrow<nb::class_<FSD_File>>(m.attr("FSD_File"))
         .def(nb::new_([]() { return opencascade::handle<FSD_File>(new FSD_File()); }), R"nbdoc(Constructs a driver defining as a file, the physical
 container for data to be stored or retrieved.
@@ -227,6 +229,7 @@ closure is correctly done, or any other value of
 the Storage_Error enumeration which specifies the problem encountered.)nbdoc")
         .def("Destroy", static_cast<void (FSD_File::*)()>(&FSD_File::Destroy))
         .def_static("MagicNumber", static_cast<const char * (*)()>(&FSD_File::MagicNumber));
+    nanoocp_implicit_copy_ctor<FSD_File>(nb::borrow<nb::class_<FSD_File>>(m.attr("FSD_File")));
     nb::borrow<nb::class_<FSD_CmpFile>>(m.attr("FSD_CmpFile"))
         .def(nb::new_([]() { return opencascade::handle<FSD_CmpFile>(new FSD_CmpFile()); }))
         .def_static("get_type_name", static_cast<const char * (*)()>(&FSD_CmpFile::get_type_name))
@@ -248,4 +251,5 @@ the Storage_Error enumeration which specifies the problem encountered.)nbdoc")
         .def("EndReadPersistentObjectData", static_cast<void (FSD_CmpFile::*)()>(&FSD_CmpFile::EndReadPersistentObjectData))
         .def("Destroy", static_cast<void (FSD_CmpFile::*)()>(&FSD_CmpFile::Destroy))
         .def_static("MagicNumber", static_cast<const char * (*)()>(&FSD_CmpFile::MagicNumber));
+    nanoocp_implicit_copy_ctor<FSD_CmpFile>(nb::borrow<nb::class_<FSD_CmpFile>>(m.attr("FSD_CmpFile")));
 }

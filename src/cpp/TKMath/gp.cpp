@@ -837,6 +837,7 @@ In 2D space)nbdoc")
 and its unit vector coordinates are: X = 1.0, Y = 0.0)nbdoc")
         .def_static("OY2d", static_cast<const gp_Ax2d & (*)() noexcept>(&gp::OY2d), R"nbdoc(Identifies an axis where its origin is Origin2d
 and its unit vector coordinates are Y = 1.0, X = 0.0)nbdoc");
+    nanoocp_implicit_copy_ctor<gp>(nb::borrow<nb::class_<gp>>(m.attr("gp")));
     nb::borrow<nb::class_<gp_Mat>>(m.attr("gp_Mat"))
         .def(nb::init<>(), R"nbdoc(Creates a matrix with null coefficients.)nbdoc")
         .def(nb::init<const gp_XYZ &, const gp_XYZ &, const gp_XYZ &>(), nb::arg("theCol1"), nb::arg("theCol2"), nb::arg("theCol3"), R"nbdoc(Creates a matrix.
@@ -942,6 +943,7 @@ inversible)nbdoc")
         .def("Transposed", static_cast<gp_Mat (gp_Mat::*)() const>(&gp_Mat::Transposed), R"nbdoc(Transposes the matrix. A(j, i) -> A (i, j))nbdoc")
         .def("__rmul__", [](const gp_Mat & theMat3D, const double theScalar) { return theScalar * theMat3D; }, nb::is_operator()) /* free operator* */
         .def("__mul__", [](const gp_Mat & theMatrix, const gp_XYZ & theCoord1) { return theMatrix * theCoord1; }, nb::is_operator()) /* free operator* */;
+    nanoocp_implicit_copy_ctor<gp_Mat>(nb::borrow<nb::class_<gp_Mat>>(m.attr("gp_Mat")));
     nb::borrow<nb::class_<gp_XYZ>>(m.attr("gp_XYZ"))
         .def(nb::init<>(), R"nbdoc(Creates an XYZ object with zero coordinates (0,0,0))nbdoc")
         .def(nb::init<const double, const double, const double>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(creates an XYZ with given coordinates)nbdoc")
@@ -1096,6 +1098,7 @@ theA1 * theXYZ1 + theXYZ2
 theXYZ1 + theXYZ2
 @endcode)nbdoc")
         .def("__rmul__", [](const gp_XYZ & theCoord1, const double theScalar) { return theScalar * theCoord1; }, nb::is_operator()) /* free operator* */;
+    nanoocp_implicit_copy_ctor<gp_XYZ>(nb::borrow<nb::class_<gp_XYZ>>(m.attr("gp_XYZ")));
     nb::borrow<nb::class_<gp_Pnt>>(m.attr("gp_Pnt"))
         .def(nb::init<>(), R"nbdoc(Creates a point with zero coordinates.)nbdoc")
         .def(nb::init<const gp_XYZ &>(), nb::arg("theCoord"), R"nbdoc(Creates a point from a XYZ object.)nbdoc")
@@ -1154,7 +1157,9 @@ theAng is the angular value of the rotation in radians.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translated", static_cast<gp_Pnt (gp_Pnt::*)(const gp_Vec &) const noexcept>(&gp_Pnt::Translated), nb::arg("theV"))
         .def("Translate", static_cast<void (gp_Pnt::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Pnt::Translate), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a point from the point theP1 to the point theP2.)nbdoc")
-        .def("Translated", static_cast<gp_Pnt (gp_Pnt::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Pnt::Translated), nb::arg("theP1"), nb::arg("theP2"));
+        .def("Translated", static_cast<gp_Pnt (gp_Pnt::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Pnt::Translated), nb::arg("theP1"), nb::arg("theP2"))
+        .def("__hash__", [](const gp_Pnt &self) { return static_cast<Py_ssize_t>(std::hash<gp_Pnt>{}(self)); });
+    nanoocp_implicit_copy_ctor<gp_Pnt>(nb::borrow<nb::class_<gp_Pnt>>(m.attr("gp_Pnt")));
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, gp_Pnt>();
     nb::borrow<nb::class_<gp_Trsf>>(m.attr("gp_Trsf"))
         .def(nb::init<>(), R"nbdoc(Returns the identity transformation.)nbdoc")
@@ -1323,6 +1328,7 @@ Raises if theN < 0 and if the matrix of the transformation not
 inversible.)nbdoc")
         .def("Transforms", [](const gp_Trsf &self, double theX, double theY, double theZ) { self.Transforms(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"))
         .def("Transforms", static_cast<void (gp_Trsf::*)(gp_XYZ &) const noexcept>(&gp_Trsf::Transforms), nb::arg("theCoord"), R"nbdoc(Transformation of a triplet XYZ with a Trsf)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Trsf>(nb::borrow<nb::class_<gp_Trsf>>(m.attr("gp_Trsf")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf2d &>, gp_Trsf>();
     nb::borrow<nb::class_<gp_Mat2d>>(m.attr("gp_Mat2d"))
         .def(nb::init<>(), R"nbdoc(Creates a matrix with null coefficients.)nbdoc")
@@ -1409,6 +1415,7 @@ inversible)nbdoc")
         .def("Transposed", static_cast<gp_Mat2d (gp_Mat2d::*)() const noexcept>(&gp_Mat2d::Transposed), R"nbdoc(Transposes the matrix. A(j, i) -> A (i, j))nbdoc")
         .def("__rmul__", [](const gp_Mat2d & theMat2D, const double theScalar) { return theScalar * theMat2D; }, nb::is_operator()) /* free operator* */
         .def("__mul__", [](const gp_Mat2d & theMatrix, const gp_XY & theCoord1) { return theMatrix * theCoord1; }, nb::is_operator()) /* free operator* */;
+    nanoocp_implicit_copy_ctor<gp_Mat2d>(nb::borrow<nb::class_<gp_Mat2d>>(m.attr("gp_Mat2d")));
     nb::borrow<nb::class_<gp_XY>>(m.attr("gp_XY"))
         .def(nb::init<>(), R"nbdoc(Creates XY object with zero coordinates (0,0).)nbdoc")
         .def(nb::init<const double, const double>(), nb::arg("theX"), nb::arg("theY"), R"nbdoc(a number pair defined by the XY coordinates)nbdoc")
@@ -1530,6 +1537,7 @@ new.Y() = <me>.Y() - theOther.Y()
 @endcode)nbdoc")
         .def("__sub__", static_cast<gp_XY (gp_XY::*)(const gp_XY &) const noexcept>(&gp_XY::operator-), nb::arg("theOther"), nb::is_operator())
         .def("__rmul__", [](const gp_XY & theCoord1, const double theScalar) { return theScalar * theCoord1; }, nb::is_operator()) /* free operator* */;
+    nanoocp_implicit_copy_ctor<gp_XY>(nb::borrow<nb::class_<gp_XY>>(m.attr("gp_XY")));
     nb::borrow<nb::class_<gp_Trsf2d>>(m.attr("gp_Trsf2d"))
         .def(nb::init<>(), R"nbdoc(Returns identity transformation.)nbdoc")
         .def(nb::init<const gp_Trsf &>(), nb::arg("theT"), R"nbdoc(Creates a 2d transformation in the XY plane from a
@@ -1606,6 +1614,7 @@ y' = a21 x + a22 y + a23
 The method Value(i,j) will return aij.
 Raises ConstructionError if the determinant of the aij is null.
 If the matrix as not a uniform scale it will be orthogonalized before future using.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Trsf2d>(nb::borrow<nb::class_<gp_Trsf2d>>(m.attr("gp_Trsf2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, gp_Trsf2d>();
     nb::borrow<nb::class_<gp_Pnt2d>>(m.attr("gp_Pnt2d"))
         .def(nb::init<>(), R"nbdoc(Creates a point with zero coordinates.)nbdoc")
@@ -1654,6 +1663,7 @@ The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translated", static_cast<gp_Pnt2d (gp_Pnt2d::*)(const gp_Vec2d &) const noexcept>(&gp_Pnt2d::Translated), nb::arg("theV"))
         .def("Translate", static_cast<void (gp_Pnt2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Pnt2d::Translate), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a point from the point theP1 to the point theP2.)nbdoc")
         .def("Translated", static_cast<gp_Pnt2d (gp_Pnt2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Pnt2d::Translated), nb::arg("theP1"), nb::arg("theP2"));
+    nanoocp_implicit_copy_ctor<gp_Pnt2d>(nb::borrow<nb::class_<gp_Pnt2d>>(m.attr("gp_Pnt2d")));
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, gp_Pnt2d>();
     nb::borrow<nb::class_<gp_Vec2d>>(m.attr("gp_Vec2d"))
         .def(nb::init<>(), R"nbdoc(Creates a zero vector.)nbdoc")
@@ -1763,6 +1773,7 @@ rotation in radians.)nbdoc")
         .def("Transform", static_cast<void (gp_Vec2d::*)(const gp_Trsf2d &) noexcept>(&gp_Vec2d::Transform), nb::arg("theT"))
         .def("Transformed", static_cast<gp_Vec2d (gp_Vec2d::*)(const gp_Trsf2d &) const>(&gp_Vec2d::Transformed), nb::arg("theT"), R"nbdoc(Transforms a vector with a Trsf from gp.)nbdoc")
         .def("__rmul__", [](const gp_Vec2d & theV, const double theScalar) { return theScalar * theV; }, nb::is_operator()) /* free operator* */;
+    nanoocp_implicit_copy_ctor<gp_Vec2d>(nb::borrow<nb::class_<gp_Vec2d>>(m.attr("gp_Vec2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Dir2d &>, gp_Vec2d>();
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, gp_Vec2d>();
     nb::borrow<nb::class_<gp_Dir2d>>(m.attr("gp_Dir2d"))
@@ -1898,6 +1909,7 @@ the rotation in radians.)nbdoc")
 Warnings :
 If the scale factor of the "Trsf" theT is negative then the
 direction <me> is reversed.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Dir2d>(nb::borrow<nb::class_<gp_Dir2d>>(m.attr("gp_Dir2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec2d &>, gp_Dir2d>();
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, gp_Dir2d>();
     nb::borrow<nb::class_<gp_Ax2d>>(m.attr("gp_Ax2d"))
@@ -1955,6 +1967,7 @@ The "Direction" is reversed if the scale is negative.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Ax2d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Ax2d (gp_Ax2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Ax2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Ax2d>(nb::borrow<nb::class_<gp_Ax2d>>(m.attr("gp_Ax2d")));
     nb::borrow<nb::class_<gp_Vec>>(m.attr("gp_Vec"))
         .def(nb::init<>(), R"nbdoc(Creates a zero vector.)nbdoc")
         .def(nb::init<const gp_Dir &>(), nb::arg("theV"), R"nbdoc(Creates a unitary vector from a direction theV.)nbdoc")
@@ -2092,6 +2105,7 @@ theAng is the angular value of the rotation in radians.)nbdoc")
         .def("Transform", static_cast<void (gp_Vec::*)(const gp_Trsf &)>(&gp_Vec::Transform), nb::arg("theT"), R"nbdoc(Transforms a vector with the transformation theT.)nbdoc")
         .def("Transformed", static_cast<gp_Vec (gp_Vec::*)(const gp_Trsf &) const>(&gp_Vec::Transformed), nb::arg("theT"), R"nbdoc(Transforms a vector with the transformation theT.)nbdoc")
         .def("__rmul__", [](const gp_Vec & theV, const double theScalar) { return theScalar * theV; }, nb::is_operator()) /* free operator* */;
+    nanoocp_implicit_copy_ctor<gp_Vec>(nb::borrow<nb::class_<gp_Vec>>(m.attr("gp_Vec")));
     nb::implicitly_convertible<std::decay_t<const gp_Dir &>, gp_Vec>();
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, gp_Vec>();
     nb::borrow<nb::class_<gp_Dir>>(m.attr("gp_Dir"))
@@ -2304,6 +2318,7 @@ and assigns the result to this axis.)nbdoc")
         .def("Translated", static_cast<gp_Ax1 (gp_Ax1::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Ax1::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates this axis by:
 the vector (theP1, theP2) defined from point theP1 to point theP2.
 and creates a new one.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Ax1>(nb::borrow<nb::class_<gp_Ax1>>(m.attr("gp_Ax1")));
     nb::borrow<nb::class_<gp_Ax2>>(m.attr("gp_Ax2"))
         .def(nb::init<>(), R"nbdoc(Creates an object corresponding to the reference
 coordinate system (OXYZ).)nbdoc")
@@ -2479,6 +2494,7 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax2::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Ax2::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Ax2 (gp_Ax2::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Ax2::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point <theP1> to the point <theP2>.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Ax2>(nb::borrow<nb::class_<gp_Ax2>>(m.attr("gp_Ax2")));
     nb::borrow<nb::class_<gp_Ax3>>(m.attr("gp_Ax3"))
         .def(nb::init<>(), R"nbdoc(Creates an object corresponding to the reference
 coordinate system (OXYZ).)nbdoc")
@@ -2610,6 +2626,7 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax3::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Ax3::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Ax3 (gp_Ax3::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Ax3::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point <theP1> to the
 point <theP2>.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Ax3>(nb::borrow<nb::class_<gp_Ax3>>(m.attr("gp_Ax3")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2 &>, gp_Ax3>();
     nb::borrow<nb::class_<gp_Ax22d>>(m.attr("gp_Ax22d"))
         .def(nb::init<>(), R"nbdoc(Creates an object representing the reference
@@ -2697,6 +2714,7 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
         .def("Translate", static_cast<void (gp_Ax22d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Ax22d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Ax22d (gp_Ax22d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Ax22d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an axis placement from the point <theP1> to the
 point <theP2>.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Ax22d>(nb::borrow<nb::class_<gp_Ax22d>>(m.attr("gp_Ax22d")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2d &>, gp_Ax22d>();
     nb::borrow<nb::class_<gp_Circ>>(m.attr("gp_Circ"))
         .def(nb::init<>(), R"nbdoc(Creates an indefinite circle.)nbdoc")
@@ -2765,6 +2783,7 @@ an ellipse.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Circ::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Circ::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Circ (gp_Circ::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Circ::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a circle from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Circ>(nb::borrow<nb::class_<gp_Circ>>(m.attr("gp_Circ")));
     nb::borrow<nb::class_<gp_Circ2d>>(m.attr("gp_Circ2d"))
         .def(nb::init<>(), R"nbdoc(creates an indefinite circle.)nbdoc")
         .def(nb::init<const gp_Ax2d &, const double, const bool>(), nb::arg("theXAxis"), nb::arg("theRadius"), nb::arg("theIsSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The location point of theXAxis is the center of the circle.
@@ -2837,6 +2856,7 @@ an ellipse.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Circ2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Circ2d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Circ2d (gp_Circ2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Circ2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a circle from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Circ2d>(nb::borrow<nb::class_<gp_Circ2d>>(m.attr("gp_Circ2d")));
     nb::borrow<nb::class_<gp_Cone>>(m.attr("gp_Cone"))
         .def(nb::init<>(), R"nbdoc(Creates an indefinite Cone.)nbdoc")
         .def(nb::init<const gp_Ax3 &, const double, const double>(), nb::arg("theA3"), nb::arg("theAng"), nb::arg("theRadius"), R"nbdoc(Creates an infinite conical surface. theA3 locates the cone
@@ -2905,6 +2925,7 @@ The absolute value of theS is used to scale the cone)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Cone::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Cone::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Cone (gp_Cone::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Cone::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a cone from the point P1 to the point P2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Cone>(nb::borrow<nb::class_<gp_Cone>>(m.attr("gp_Cone")));
     nb::borrow<nb::class_<gp_Cylinder>>(m.attr("gp_Cylinder"))
         .def(nb::init<>(), R"nbdoc(Creates a indefinite cylinder.)nbdoc")
         .def(nb::init<const gp_Ax3 &, const double>(), nb::arg("theA3"), nb::arg("theRadius"), R"nbdoc(Creates a cylinder of radius Radius, whose axis is the "main
@@ -2957,6 +2978,7 @@ The absolute value of theS is used to scale the cylinder)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Cylinder::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Cylinder::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Cylinder (gp_Cylinder::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Cylinder::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a cylinder from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Cylinder>(nb::borrow<nb::class_<gp_Cylinder>>(m.attr("gp_Cylinder")));
     nb::borrow<nb::class_<gp_Elips>>(m.attr("gp_Elips"))
         .def(nb::init<>(), R"nbdoc(Creates an indefinite ellipse.)nbdoc")
         .def(nb::init<const gp_Ax2 &, const double, const double>(), nb::arg("theA2"), nb::arg("theMajorRadius"), nb::arg("theMinorRadius"), R"nbdoc(The major radius of the ellipse is on the "XAxis" and the
@@ -3053,6 +3075,7 @@ theAng is the angular value of the rotation in radians.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Elips::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Elips::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Elips (gp_Elips::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Elips::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an ellipse from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Elips>(nb::borrow<nb::class_<gp_Elips>>(m.attr("gp_Elips")));
     nb::borrow<nb::class_<gp_Elips2d>>(m.attr("gp_Elips2d"))
         .def(nb::init<>(), R"nbdoc(Creates an indefinite ellipse.)nbdoc")
         .def(nb::init<const gp_Ax2d &, const double, const double, const bool>(), nb::arg("theMajorAxis"), nb::arg("theMajorRadius"), nb::arg("theMinorRadius"), nb::arg("theIsSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates an ellipse with the major axis, the major and the
@@ -3155,6 +3178,7 @@ to an axis placement which is the axis of the symmetry.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Elips2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Elips2d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Elips2d (gp_Elips2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Elips2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a ellipse from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Elips2d>(nb::borrow<nb::class_<gp_Elips2d>>(m.attr("gp_Elips2d")));
     nb::borrow<nb::class_<gp_GTrsf>>(m.attr("gp_GTrsf"))
         .def(nb::init<>(), R"nbdoc(Returns the Identity transformation.)nbdoc")
         .def(nb::init<const gp_Trsf &>(), nb::arg("theT"), R"nbdoc(Converts the gp_Trsf transformation theT into a
@@ -3257,6 +3281,7 @@ transformation not inversible.)nbdoc")
         .def("Transforms", static_cast<void (gp_GTrsf::*)(gp_XYZ &) const noexcept>(&gp_GTrsf::Transforms), nb::arg("theCoord"))
         .def("Transforms", [](const gp_GTrsf &self, double theX, double theY, double theZ) { self.Transforms(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Transforms a triplet XYZ with a GTrsf.)nbdoc")
         .def("Trsf", static_cast<gp_Trsf (gp_GTrsf::*)() const>(&gp_GTrsf::Trsf));
+    nanoocp_implicit_copy_ctor<gp_GTrsf>(nb::borrow<nb::class_<gp_GTrsf>>(m.attr("gp_GTrsf")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, gp_GTrsf>();
     nb::borrow<nb::class_<gp_GTrsf2d>>(m.attr("gp_GTrsf2d"))
         .def(nb::init<>(), R"nbdoc(returns identity transformation.)nbdoc")
@@ -3345,6 +3370,7 @@ Note:
 Exceptions
 Standard_ConstructionError if this transformation
 cannot be converted, i.e. if its form is gp_Other.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_GTrsf2d>(nb::borrow<nb::class_<gp_GTrsf2d>>(m.attr("gp_GTrsf2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf2d &>, gp_GTrsf2d>();
     nb::borrow<nb::class_<gp_Hypr>>(m.attr("gp_Hypr"))
         .def(nb::init<>(), R"nbdoc(Creates of an indefinite hyperbola.)nbdoc")
@@ -3466,6 +3492,7 @@ class Trsf.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Hypr::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Hypr::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Hypr (gp_Hypr::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Hypr::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an hyperbola from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Hypr>(nb::borrow<nb::class_<gp_Hypr>>(m.attr("gp_Hypr")));
     nb::borrow<nb::class_<gp_Hypr2d>>(m.attr("gp_Hypr2d"))
         .def(nb::init<>(), R"nbdoc(Creates of an indefinite hyperbola.)nbdoc")
         .def(nb::init<const gp_Ax2d &, const double, const double, const bool>(), nb::arg("theMajorAxis"), nb::arg("theMajorRadius"), nb::arg("theMinorRadius"), nb::arg("theIsSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates a hyperbola with radii theMajorRadius and
@@ -3603,6 +3630,7 @@ class Trsf2d.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Hypr2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Hypr2d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Hypr2d (gp_Hypr2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Hypr2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates an hyperbola from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Hypr2d>(nb::borrow<nb::class_<gp_Hypr2d>>(m.attr("gp_Hypr2d")));
     nb::borrow<nb::class_<gp_Lin>>(m.attr("gp_Lin"))
         .def(nb::init<>(), R"nbdoc(Creates a Line corresponding to Z axis of the
 reference coordinate system.)nbdoc")
@@ -3664,6 +3692,7 @@ The "Direction" is reversed if the scale is negative.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Lin::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Lin::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Lin (gp_Lin::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Lin::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a line from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Lin>(nb::borrow<nb::class_<gp_Lin>>(m.attr("gp_Lin")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, gp_Lin>();
     nb::borrow<nb::class_<gp_Lin2d>>(m.attr("gp_Lin2d"))
         .def(nb::init<>(), R"nbdoc(Creates a Line corresponding to X axis of the
@@ -3722,6 +3751,7 @@ origin of the line is modified.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Lin2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Lin2d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Lin2d (gp_Lin2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Lin2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a line from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Lin2d>(nb::borrow<nb::class_<gp_Lin2d>>(m.attr("gp_Lin2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2d &>, gp_Lin2d>();
     nb::borrow<nb::class_<gp_Parab>>(m.attr("gp_Parab"))
         .def(nb::init<>(), R"nbdoc(Creates an indefinite Parabola.)nbdoc")
@@ -3803,6 +3833,7 @@ XAxis is reversed and the direction of the YAxis too.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Parab::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Parab::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Parab (gp_Parab::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Parab::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a parabola from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Parab>(nb::borrow<nb::class_<gp_Parab>>(m.attr("gp_Parab")));
     nb::borrow<nb::class_<gp_Parab2d>>(m.attr("gp_Parab2d"))
         .def(nb::init<>(), R"nbdoc(Creates an indefinite parabola.)nbdoc")
         .def(nb::init<const gp_Ax2d &, const double, const bool>(), nb::arg("theMirrorAxis"), nb::arg("theFocalLength"), nb::arg("theSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates a parabola with its vertex point, its axis of symmetry
@@ -3893,6 +3924,7 @@ If theS is negative the direction of the symmetry axis
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Parab2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) noexcept>(&gp_Parab2d::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Parab2d (gp_Parab2d::*)(const gp_Pnt2d &, const gp_Pnt2d &) const noexcept>(&gp_Parab2d::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a parabola from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Parab2d>(nb::borrow<nb::class_<gp_Parab2d>>(m.attr("gp_Parab2d")));
     nb::borrow<nb::class_<gp_Pln>>(m.attr("gp_Pln"))
         .def(nb::init<>(), R"nbdoc(Creates a plane coincident with OXY plane of the
 reference coordinate system.)nbdoc")
@@ -4006,6 +4038,7 @@ the "XDirection" and the "YDirection" after transformation.)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Pln::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Pln::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Pln (gp_Pln::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Pln::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a plane from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Pln>(nb::borrow<nb::class_<gp_Pln>>(m.attr("gp_Pln")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax3 &>, gp_Pln>();
     nb::borrow<nb::class_<gp_Quaternion>>(m.attr("gp_Quaternion"))
         .def(nb::init<>(), R"nbdoc(Creates an identity quaternion)nbdoc")
@@ -4096,6 +4129,7 @@ qq^-1 = q;
         .def("GetRotationAngle", static_cast<double (gp_Quaternion::*)() const>(&gp_Quaternion::GetRotationAngle), R"nbdoc(Return rotation angle from -PI to PI)nbdoc")
         .def("Multiply", static_cast<gp_Vec (gp_Quaternion::*)(const gp_Vec &) const>(&gp_Quaternion::Multiply), nb::arg("theVec"), R"nbdoc(Rotates vector by quaternion as rotation operator)nbdoc")
         .def("__mul__", static_cast<gp_Vec (gp_Quaternion::*)(const gp_Vec &) const>(&gp_Quaternion::operator*), nb::arg("theVec"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<gp_Quaternion>(nb::borrow<nb::class_<gp_Quaternion>>(m.attr("gp_Quaternion")));
     nb::implicitly_convertible<std::decay_t<const gp_Mat &>, gp_Quaternion>();
     nb::borrow<nb::class_<gp_QuaternionNLerp>>(m.attr("gp_QuaternionNLerp"))
         .def(nb::init<>(), R"nbdoc(Empty constructor,)nbdoc")
@@ -4108,6 +4142,7 @@ with 0 pointing to theStart and 1 to theEnd.)nbdoc")
         .def("Init", static_cast<void (gp_QuaternionNLerp::*)(const gp_Quaternion &, const gp_Quaternion &)>(&gp_QuaternionNLerp::Init), nb::arg("theQStart"), nb::arg("theQEnd"), R"nbdoc(Initialize the tool with Start and End values.)nbdoc")
         .def("InitFromUnit", static_cast<void (gp_QuaternionNLerp::*)(const gp_Quaternion &, const gp_Quaternion &)>(&gp_QuaternionNLerp::InitFromUnit), nb::arg("theQStart"), nb::arg("theQEnd"), R"nbdoc(Initialize the tool with Start and End unit quaternions.)nbdoc")
         .def("Interpolate", static_cast<void (gp_QuaternionNLerp::*)(double, gp_Quaternion &) const>(&gp_QuaternionNLerp::Interpolate), nb::arg("theT"), nb::arg("theResultQ"), R"nbdoc(Set interpolated quaternion for theT position (from 0.0 to 1.0))nbdoc");
+    nanoocp_implicit_copy_ctor<gp_QuaternionNLerp>(nb::borrow<nb::class_<gp_QuaternionNLerp>>(m.attr("gp_QuaternionNLerp")));
     nb::borrow<nb::class_<gp_QuaternionSLerp>>(m.attr("gp_QuaternionSLerp"))
         .def(nb::init<>(), R"nbdoc(Empty constructor,)nbdoc")
         .def(nb::init<const gp_Quaternion &, const gp_Quaternion &>(), nb::arg("theQStart"), nb::arg("theQEnd"), R"nbdoc(Constructor with initialization.)nbdoc")
@@ -4119,6 +4154,7 @@ with 0 pointing to theStart and 1 to theEnd.)nbdoc")
         .def("Init", static_cast<void (gp_QuaternionSLerp::*)(const gp_Quaternion &, const gp_Quaternion &)>(&gp_QuaternionSLerp::Init), nb::arg("theQStart"), nb::arg("theQEnd"), R"nbdoc(Initialize the tool with Start and End values.)nbdoc")
         .def("InitFromUnit", static_cast<void (gp_QuaternionSLerp::*)(const gp_Quaternion &, const gp_Quaternion &)>(&gp_QuaternionSLerp::InitFromUnit), nb::arg("theQStart"), nb::arg("theQEnd"), R"nbdoc(Initialize the tool with Start and End unit quaternions.)nbdoc")
         .def("Interpolate", static_cast<void (gp_QuaternionSLerp::*)(double, gp_Quaternion &) const>(&gp_QuaternionSLerp::Interpolate), nb::arg("theT"), nb::arg("theResultQ"), R"nbdoc(Set interpolated quaternion for theT position (from 0.0 to 1.0))nbdoc");
+    nanoocp_implicit_copy_ctor<gp_QuaternionSLerp>(nb::borrow<nb::class_<gp_QuaternionSLerp>>(m.attr("gp_QuaternionSLerp")));
     nb::borrow<nb::class_<gp_Sphere>>(m.attr("gp_Sphere"))
         .def(nb::init<>(), R"nbdoc(Creates an indefinite sphere.)nbdoc")
         .def(nb::init<const gp_Ax3 &, const double>(), nb::arg("theA3"), nb::arg("theRadius"), R"nbdoc(Constructs a sphere with radius theRadius, centered on the origin
@@ -4177,6 +4213,7 @@ The absolute value of S is used to scale the sphere)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Sphere::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Sphere::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Sphere (gp_Sphere::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Sphere::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a sphere from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Sphere>(nb::borrow<nb::class_<gp_Sphere>>(m.attr("gp_Sphere")));
     nb::borrow<nb::class_<gp_Torus>>(m.attr("gp_Torus"))
         .def(nb::init<>(), R"nbdoc(creates an indefinite Torus.)nbdoc")
         .def(nb::init<const gp_Ax3 &, const double, const double>(), nb::arg("theA3"), nb::arg("theMajorRadius"), nb::arg("theMinorRadius"), R"nbdoc(a torus centered on the origin of coordinate system
@@ -4258,6 +4295,7 @@ The absolute value of S is used to scale the torus)nbdoc")
 The magnitude of the translation is the vector's magnitude.)nbdoc")
         .def("Translate", static_cast<void (gp_Torus::*)(const gp_Pnt &, const gp_Pnt &) noexcept>(&gp_Torus::Translate), nb::arg("theP1"), nb::arg("theP2"))
         .def("Translated", static_cast<gp_Torus (gp_Torus::*)(const gp_Pnt &, const gp_Pnt &) const noexcept>(&gp_Torus::Translated), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Translates a torus from the point theP1 to the point theP2.)nbdoc");
+    nanoocp_implicit_copy_ctor<gp_Torus>(nb::borrow<nb::class_<gp_Torus>>(m.attr("gp_Torus")));
     nb::borrow<nb::class_<NCollection_Lerp<gp_Trsf>>>(m.attr("NCollection_Lerp__gp_Trsf"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
         .def(nb::init<const gp_Trsf &, const gp_Trsf &>(), nb::arg("theStart"), nb::arg("theEnd"), R"nbdoc(Main constructor.)nbdoc")
@@ -4266,4 +4304,5 @@ The magnitude of the translation is the vector's magnitude.)nbdoc")
 @param theT normalized interpolation coefficient within [0, 1] range,
 with 0 pointing to first value and 1 to the second value.
 @param[out] theResult  interpolated value)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_Lerp<gp_Trsf>>(nb::borrow<nb::class_<NCollection_Lerp<gp_Trsf>>>(m.attr("NCollection_Lerp__gp_Trsf")));
 }

@@ -1,5 +1,6 @@
 """C++ namespace LProp_CurveUtils (OCCT package LProp)"""
 
+from typing import overload
 
 
 class DirectAccess:
@@ -8,4 +9,8 @@ class DirectAccess:
     Works with occ::handle<T> and by-value curve types.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: DirectAccess) -> None: ...

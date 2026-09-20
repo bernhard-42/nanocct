@@ -179,6 +179,7 @@ Raises an exception on failure.)nbdoc")
 Raises an exception on failure.)nbdoc")
         .def("EvalDN", static_cast<gp_Vec (Adaptor3d_Curve::*)(const double, const int) const>(&Adaptor3d_Curve::EvalDN), nb::arg("theU"), nb::arg("theN"), R"nbdoc(Computes the Nth derivative at parameter U.
 Raises an exception on failure.)nbdoc");
+    nanoocp_implicit_copy_ctor<Adaptor3d_Curve>(nb::borrow<nb::class_<Adaptor3d_Curve>>(m.attr("Adaptor3d_Curve")));
     nanoocp_implicit_default_ctor<Adaptor3d_Surface>(nb::borrow<nb::class_<Adaptor3d_Surface>>(m.attr("Adaptor3d_Surface")));
     nb::borrow<nb::class_<Adaptor3d_Surface>>(m.attr("Adaptor3d_Surface"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Adaptor3d_Surface::get_type_name))
@@ -272,6 +273,7 @@ Raises an exception on failure.)nbdoc")
 Raises an exception on failure.)nbdoc")
         .def("EvalDN", static_cast<gp_Vec (Adaptor3d_Surface::*)(const double, const double, const int, const int) const>(&Adaptor3d_Surface::EvalDN), nb::arg("theU"), nb::arg("theV"), nb::arg("theNu"), nb::arg("theNv"), R"nbdoc(Computes the derivative of order Nu in U and Nv in V at (U, V).
 Raises an exception on failure.)nbdoc");
+    nanoocp_implicit_copy_ctor<Adaptor3d_Surface>(nb::borrow<nb::class_<Adaptor3d_Surface>>(m.attr("Adaptor3d_Surface")));
     nb::borrow<nb::class_<Adaptor3d_CurveOnSurface>>(m.attr("Adaptor3d_CurveOnSurface"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor3d_CurveOnSurface>(new Adaptor3d_CurveOnSurface()); }))
         .def(nb::new_([](const occ::handle<Adaptor3d_Surface> & S) { return opencascade::handle<Adaptor3d_CurveOnSurface>(new Adaptor3d_CurveOnSurface(S)); }), nb::arg("S"))
@@ -326,6 +328,7 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
         .def("NbKnots", static_cast<int (Adaptor3d_CurveOnSurface::*)() const>(&Adaptor3d_CurveOnSurface::NbKnots))
         .def("Bezier", static_cast<occ::handle<Geom_BezierCurve> (Adaptor3d_CurveOnSurface::*)() const>(&Adaptor3d_CurveOnSurface::Bezier))
         .def("BSpline", static_cast<occ::handle<Geom_BSplineCurve> (Adaptor3d_CurveOnSurface::*)() const>(&Adaptor3d_CurveOnSurface::BSpline));
+    nanoocp_implicit_copy_ctor<Adaptor3d_CurveOnSurface>(nb::borrow<nb::class_<Adaptor3d_CurveOnSurface>>(m.attr("Adaptor3d_CurveOnSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, Adaptor3d_CurveOnSurface>();
     nanoocp_implicit_default_ctor<Adaptor3d_HSurfaceTool>(nb::borrow<nb::class_<Adaptor3d_HSurfaceTool>>(m.attr("Adaptor3d_HSurfaceTool")));
     nb::borrow<nb::class_<Adaptor3d_HSurfaceTool>>(m.attr("Adaptor3d_HSurfaceTool"))
@@ -371,6 +374,7 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
         .def_static("NbSamplesV", static_cast<int (*)(const occ::handle<Adaptor3d_Surface> &)>(&Adaptor3d_HSurfaceTool::NbSamplesV), nb::arg("S"))
         .def_static("NbSamplesU", static_cast<int (*)(const occ::handle<Adaptor3d_Surface> &, const double, const double)>(&Adaptor3d_HSurfaceTool::NbSamplesU), nb::arg("S"), nb::arg("u1"), nb::arg("u2"))
         .def_static("NbSamplesV", static_cast<int (*)(const occ::handle<Adaptor3d_Surface> &, const double, const double)>(&Adaptor3d_HSurfaceTool::NbSamplesV), nb::arg("arg0"), nb::arg("v1"), nb::arg("v2"));
+    nanoocp_implicit_copy_ctor<Adaptor3d_HSurfaceTool>(nb::borrow<nb::class_<Adaptor3d_HSurfaceTool>>(m.attr("Adaptor3d_HSurfaceTool")));
     nb::borrow<nb::class_<Adaptor3d_HVertex>>(m.attr("Adaptor3d_HVertex"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor3d_HVertex>(new Adaptor3d_HVertex()); }))
         .def(nb::new_([](const gp_Pnt2d & P, const TopAbs_Orientation Ori, const double Resolution) { return opencascade::handle<Adaptor3d_HVertex>(new Adaptor3d_HVertex(P, Ori, Resolution)); }), nb::arg("P"), nb::arg("Ori"), nb::arg("Resolution"))
@@ -382,6 +386,7 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Adaptor3d_HVertex::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Adaptor3d_HVertex::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Adaptor3d_HVertex::*)() const>(&Adaptor3d_HVertex::DynamicType));
+    nanoocp_implicit_copy_ctor<Adaptor3d_HVertex>(nb::borrow<nb::class_<Adaptor3d_HVertex>>(m.attr("Adaptor3d_HVertex")));
     nb::borrow<nb::class_<Adaptor3d_InterFunc>>(m.attr("Adaptor3d_InterFunc"))
         .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const double, const int>(), nb::arg("C"), nb::arg("FixVal"), nb::arg("Fix"), R"nbdoc(build the function U(t)=FixVal if Fix =1 or
 V(t)=FixVal if Fix=2)nbdoc")
@@ -396,6 +401,7 @@ False otherwise.)nbdoc")
 function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc");
+    nanoocp_implicit_copy_ctor<Adaptor3d_InterFunc>(nb::borrow<nb::class_<Adaptor3d_InterFunc>>(m.attr("Adaptor3d_InterFunc")));
     nb::borrow<nb::class_<Adaptor3d_IsoCurve>>(m.attr("Adaptor3d_IsoCurve"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor3d_IsoCurve>(new Adaptor3d_IsoCurve()); }), R"nbdoc(The iso is set to NoneIso.)nbdoc")
         .def(nb::new_([](const occ::handle<Adaptor3d_Surface> & S) { return opencascade::handle<Adaptor3d_IsoCurve>(new Adaptor3d_IsoCurve(S)); }), nb::arg("S"), R"nbdoc(The surface is loaded. The iso is set to NoneIso.)nbdoc")
@@ -459,6 +465,7 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
         .def("NbKnots", static_cast<int (Adaptor3d_IsoCurve::*)() const>(&Adaptor3d_IsoCurve::NbKnots))
         .def("Bezier", static_cast<occ::handle<Geom_BezierCurve> (Adaptor3d_IsoCurve::*)() const>(&Adaptor3d_IsoCurve::Bezier))
         .def("BSpline", static_cast<occ::handle<Geom_BSplineCurve> (Adaptor3d_IsoCurve::*)() const>(&Adaptor3d_IsoCurve::BSpline));
+    nanoocp_implicit_copy_ctor<Adaptor3d_IsoCurve>(nb::borrow<nb::class_<Adaptor3d_IsoCurve>>(m.attr("Adaptor3d_IsoCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, Adaptor3d_IsoCurve>();
     nb::borrow<nb::class_<Adaptor3d_TopolTool>>(m.attr("Adaptor3d_TopolTool"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor3d_TopolTool>(new Adaptor3d_TopolTool()); }))
@@ -522,5 +529,6 @@ by adaptive algorithm for BSpline surfaces - is used in SamplePnts
         .def_static("get_type_name", static_cast<const char * (*)()>(&Adaptor3d_TopolTool::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Adaptor3d_TopolTool::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Adaptor3d_TopolTool::*)() const>(&Adaptor3d_TopolTool::DynamicType));
+    nanoocp_implicit_copy_ctor<Adaptor3d_TopolTool>(nb::borrow<nb::class_<Adaptor3d_TopolTool>>(m.attr("Adaptor3d_TopolTool")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, Adaptor3d_TopolTool>();
 }

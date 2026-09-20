@@ -61,6 +61,7 @@ void nanoocp_define_CPnts(nb::module_ &m) {
     nb::borrow<nb::class_<CPnts_MyGaussFunction>>(m.attr("CPnts_MyGaussFunction"))
         .def(nb::init<>())
         .def("Value", [](CPnts_MyGaussFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"));
+    nanoocp_implicit_copy_ctor<CPnts_MyGaussFunction>(nb::borrow<nb::class_<CPnts_MyGaussFunction>>(m.attr("CPnts_MyGaussFunction")));
     nb::borrow<nb::class_<CPnts_MyRootFunction>>(m.attr("CPnts_MyRootFunction"))
         .def(nb::init<>())
         .def("Init", static_cast<void (CPnts_MyRootFunction::*)(const double, const double)>(&CPnts_MyRootFunction::Init), nb::arg("X0"), nb::arg("L"), R"nbdoc(We want to solve Integral(X0,X,F(X,D)) = L)nbdoc")
@@ -69,6 +70,7 @@ with given tolerance)nbdoc")
         .def("Value", [](CPnts_MyRootFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(This is Integral(X0,X,F(X,D)) - L)nbdoc")
         .def("Derivative", [](CPnts_MyRootFunction &self, const double X) { double Df{}; auto result = self.Derivative(X, Df); return std::make_tuple(result, Df); }, nb::arg("X"), R"nbdoc(This is F(X,D))nbdoc")
         .def("Values", [](CPnts_MyRootFunction &self, const double X) { double F{}; double Df{}; auto result = self.Values(X, F, Df); return std::make_tuple(result, F, Df); }, nb::arg("X"));
+    nanoocp_implicit_copy_ctor<CPnts_MyRootFunction>(nb::borrow<nb::class_<CPnts_MyRootFunction>>(m.attr("CPnts_MyRootFunction")));
     nb::borrow<nb::class_<CPnts_AbscissaPoint>>(m.attr("CPnts_AbscissaPoint"))
         .def(nb::init<>())
         .def(nb::init<const Adaptor3d_Curve &, const double, const double, const double>(), nb::arg("C"), nb::arg("Abscissa"), nb::arg("U0"), nb::arg("Resolution"), R"nbdoc(the algorithm computes a point on a curve <Curve> at the
@@ -134,6 +136,7 @@ process (should be close to the final solution).)nbdoc")
         .def("IsDone", static_cast<bool (CPnts_AbscissaPoint::*)() const>(&CPnts_AbscissaPoint::IsDone), R"nbdoc(True if the computation was successful, False otherwise.)nbdoc")
         .def("Parameter", static_cast<double (CPnts_AbscissaPoint::*)() const>(&CPnts_AbscissaPoint::Parameter), R"nbdoc(Returns the parameter of the solution.)nbdoc")
         .def("SetParameter", static_cast<void (CPnts_AbscissaPoint::*)(const double)>(&CPnts_AbscissaPoint::SetParameter), nb::arg("P"), R"nbdoc(Enforce the solution, used by GCPnts.)nbdoc");
+    nanoocp_implicit_copy_ctor<CPnts_AbscissaPoint>(nb::borrow<nb::class_<CPnts_AbscissaPoint>>(m.attr("CPnts_AbscissaPoint")));
     nb::borrow<nb::class_<CPnts_UniformDeflection>>(m.attr("CPnts_UniformDeflection"))
         .def(nb::init<>(), R"nbdoc(creation of a indefinite UniformDeflection)nbdoc")
         .def(nb::init<const Adaptor3d_Curve &, const double, const double, const bool>(), nb::arg("C"), nb::arg("Deflection"), nb::arg("Resolution"), nb::arg("WithControl"), R"nbdoc(Computes a uniform deflection distribution of points
@@ -172,4 +175,5 @@ Returns True if the calculus was successful.)nbdoc")
         .def("More", static_cast<bool (CPnts_UniformDeflection::*)()>(&CPnts_UniformDeflection::More), R"nbdoc(returns True if it exists a next Point.)nbdoc")
         .def("Value", static_cast<double (CPnts_UniformDeflection::*)() const>(&CPnts_UniformDeflection::Value), R"nbdoc(return the computed parameter)nbdoc")
         .def("Point", static_cast<gp_Pnt (CPnts_UniformDeflection::*)() const>(&CPnts_UniformDeflection::Point), R"nbdoc(return the computed parameter)nbdoc");
+    nanoocp_implicit_copy_ctor<CPnts_UniformDeflection>(nb::borrow<nb::class_<CPnts_UniformDeflection>>(m.attr("CPnts_UniformDeflection")));
 }

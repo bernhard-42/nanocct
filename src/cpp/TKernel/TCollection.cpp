@@ -79,6 +79,7 @@ is a limit on the result (today the limit is
 around 1 000 000). This is not a limit of the number
 of items but a limit in the number of buckets. i.e.
 there will be more collisions in the map.)nbdoc");
+    nanoocp_implicit_copy_ctor<TCollection>(nb::borrow<nb::class_<TCollection>>(m.attr("TCollection")));
     nb::borrow<nb::class_<TCollection_AsciiString>>(m.attr("TCollection_AsciiString"))
         .def(nb::init<>(), R"nbdoc(Initializes a AsciiString to an empty AsciiString.)nbdoc")
         .def(nb::init<const std::string_view &>(), nb::arg("theStringView"), R"nbdoc(Initializes a AsciiString with a string_view.
@@ -1221,7 +1222,8 @@ otherwise checks if string starts with a real value
 @param[in] theOther the string to compare with
 @param[in] theIsCaseSensitive flag indicating case sensitivity
 @note When case-insensitive, only ASCII characters (a-z, A-Z) are affected.
-@return true if strings contain same characters)nbdoc");
+@return true if strings contain same characters)nbdoc")
+        .def("__hash__", [](const TCollection_ExtendedString &self) { return static_cast<Py_ssize_t>(std::hash<TCollection_ExtendedString>{}(self)); });
     nb::implicitly_convertible<std::decay_t<const char *const>, TCollection_ExtendedString>();
     nb::implicitly_convertible<std::decay_t<const char>, TCollection_ExtendedString>();
     nb::implicitly_convertible<std::decay_t<const char16_t>, TCollection_ExtendedString>();
@@ -1516,6 +1518,7 @@ aString.Value(2) returns 'e')nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TCollection_HAsciiString::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TCollection_HAsciiString::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::DynamicType));
+    nanoocp_implicit_copy_ctor<TCollection_HAsciiString>(nb::borrow<nb::class_<TCollection_HAsciiString>>(m.attr("TCollection_HAsciiString")));
     nb::implicitly_convertible<std::decay_t<const char *const>, TCollection_HAsciiString>();
     nb::implicitly_convertible<std::decay_t<const char>, TCollection_HAsciiString>();
     nb::implicitly_convertible<std::decay_t<const int>, TCollection_HAsciiString>();
@@ -1589,6 +1592,7 @@ aString.Value(2) returns 'e')nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TCollection_HExtendedString::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TCollection_HExtendedString::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::DynamicType));
+    nanoocp_implicit_copy_ctor<TCollection_HExtendedString>(nb::borrow<nb::class_<TCollection_HExtendedString>>(m.attr("TCollection_HExtendedString")));
     nb::implicitly_convertible<std::decay_t<const char *const>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const char16_t>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const TCollection_ExtendedString &>, TCollection_HExtendedString>();

@@ -55,7 +55,11 @@ class UnitsAPI:
     of the UnitsAPI functions.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: UnitsAPI) -> None: ...
 
     @staticmethod
     def CurrentToLS(aData: float, aQuantity: str) -> float:

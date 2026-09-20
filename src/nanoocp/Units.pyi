@@ -15,7 +15,11 @@ class Units:
     units.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Units) -> None: ...
 
     @staticmethod
     def UnitsFile(afile: str) -> None:
@@ -96,6 +100,7 @@ class Units_Dimensions(nanoocp.Standard.Standard_Transient):
     quantities.
     """
 
+    @overload
     def __init__(self, amass: float, alength: float, atime: float, anelectriccurrent: float, athermodynamictemperature: float, anamountofsubstance: float, aluminousintensity: float, aplaneangle: float, asolidangle: float) -> None:
         """
         Returns a Dimensions object which represents the
@@ -107,6 +112,9 @@ class Units_Dimensions(nanoocp.Standard.Standard_Transient):
         quantity and the 2 secondary fundamental units of
         physical quantity.
         """
+
+    @overload
+    def __init__(self, theOther: Units_Dimensions) -> None: ...
 
     def Mass(self) -> float:
         """Returns the power of mass stored in the dimensions."""
@@ -259,6 +267,9 @@ class Units_Unit(nanoocp.Standard.Standard_Transient):
         International System of Units.
         """
 
+    @overload
+    def __init__(self, theOther: Units_Unit) -> None: ...
+
     def Name(self) -> nanoocp.TCollection.TCollection_AsciiString:
         """Returns the name of the unit <thename>"""
 
@@ -316,6 +327,7 @@ class Units_Quantity(nanoocp.Standard.Standard_Transient):
     S.I. unit system.
     """
 
+    @overload
     def __init__(self, aname: str, adimensions: Units_Dimensions, aunitssequence: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Unit]) -> None:
         """
         Creates a new Quantity object with <aname> which is
@@ -323,6 +335,9 @@ class Units_Quantity(nanoocp.Standard.Standard_Transient):
         is the physical dimensions, and <aunitssequence> which
         describes all the units known for this quantity.
         """
+
+    @overload
+    def __init__(self, theOther: Units_Quantity) -> None: ...
 
     def Name(self) -> nanoocp.TCollection.TCollection_AsciiString:
         """Returns in a AsciiString from TCollection the name of the quantity."""
@@ -392,6 +407,9 @@ class Units_Explorer:
         the UnitsDictionary <aunitsdictionary> and positioned
         at the quantity <aquantity>.
         """
+
+    @overload
+    def __init__(self, theOther: Units_Explorer) -> None: ...
 
     @overload
     def Init(self, aunitssystem: Units_UnitsSystem) -> None:
@@ -508,6 +526,9 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         value of the dimension, and <adimensions> is the
         dimension of the given word <aword>.
         """
+
+    @overload
+    def __init__(self, theOther: Units_Token) -> None: ...
 
     def Creates(self) -> Units_Token:
         """Creates and returns a token, which is a ShiftedToken."""
@@ -689,8 +710,12 @@ class Units_Lexicon(nanoocp.Standard.Standard_Transient):
     tokens.
     """
 
+    @overload
     def __init__(self) -> None:
         """Creates an empty instance of Lexicon."""
+
+    @overload
+    def __init__(self, theOther: Units_Lexicon) -> None: ...
 
     def Creates(self) -> None:
         """
@@ -726,11 +751,15 @@ class Units_Sentence:
     compute an expression contained in a string.
     """
 
+    @overload
     def __init__(self, alexicon: Units_Lexicon, astring: str) -> None:
         """
         Createsand returns a Sentence, by analyzing the
         string <astring> with the lexicon <alexicon>.
         """
+
+    @overload
+    def __init__(self, theOther: Units_Sentence) -> None: ...
 
     def SetConstants(self) -> None:
         """For each constant encountered, sets the value."""
@@ -764,12 +793,16 @@ class Units_MathSentence(Units_Sentence):
     compute an algebraic formula.
     """
 
+    @overload
     def __init__(self, astring: str) -> None:
         """
         Creates and returns a MathSentence object. The string
         <astring> describes an algebraic formula in natural
         language.
         """
+
+    @overload
+    def __init__(self, theOther: Units_MathSentence) -> None: ...
 
 class Units_Measurement:
     """
@@ -796,6 +829,9 @@ class Units_Measurement:
         the measurement, and <aunit> the unit used,
         described in natural language.
         """
+
+    @overload
+    def __init__(self, theOther: Units_Measurement) -> None: ...
 
     def Convert(self, aunit: str) -> None:
         """
@@ -916,6 +952,7 @@ class Units_ShiftedToken(Units_Token):
     and Fahrenheit degree of temperature.
     """
 
+    @overload
     def __init__(self, aword: str, amean: str, avalue: float, amove: float, adimensions: Units_Dimensions) -> None:
         """
         Creates and returns a shifted token. <aword> is a
@@ -925,6 +962,9 @@ class Units_ShiftedToken(Units_Token):
         and <adimensions> is the dimension of the given word
         <aword>.
         """
+
+    @overload
+    def __init__(self, theOther: Units_ShiftedToken) -> None: ...
 
     def Creates(self) -> Units_Token:
         """Creates and returns a token, which is a ShiftedToken."""
@@ -995,6 +1035,9 @@ class Units_ShiftedUnit(Units_Unit):
         """
 
     @overload
+    def __init__(self, theOther: Units_ShiftedUnit) -> None: ...
+
+    @overload
     def Move(self, amove: float) -> None:
         """Sets the field <themove> to <amove>"""
 
@@ -1021,8 +1064,12 @@ class Units_UnitsDictionary(nanoocp.Standard.Standard_Transient):
     you want to know.
     """
 
+    @overload
     def __init__(self) -> None:
         """Returns an empty instance of UnitsDictionary."""
+
+    @overload
+    def __init__(self, theOther: Units_UnitsDictionary) -> None: ...
 
     def Creates(self) -> None:
         """
@@ -1089,6 +1136,9 @@ class Units_UnitSentence(Units_Sentence):
         dictionary of units you want to use.
         """
 
+    @overload
+    def __init__(self, theOther: Units_UnitSentence) -> None: ...
+
     def Analyse(self) -> None:
         """
         Analyzes the sequence of tokens created by the
@@ -1111,8 +1161,12 @@ class Units_UnitsLexicon(Units_Lexicon):
     tokens.
     """
 
+    @overload
     def __init__(self) -> None:
         """Returns an empty instance of UnitsLexicon"""
+
+    @overload
+    def __init__(self, theOther: Units_UnitsLexicon) -> None: ...
 
     def Creates(self, amode: bool = True) -> None:
         """
@@ -1158,6 +1212,9 @@ class Units_UnitsSystem(nanoocp.Standard.Standard_Transient):
         $CSF_`aName`UserDefaults/.aName
         See : Resource_Manager for the description of this file.
         """
+
+    @overload
+    def __init__(self, theOther: Units_UnitsSystem) -> None: ...
 
     def QuantitiesSequence(self) -> nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Quantity]:
         """Returns the sequence of refined quantities."""

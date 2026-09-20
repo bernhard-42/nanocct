@@ -109,7 +109,11 @@ class Storage:
     -   close the driver.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage) -> None: ...
 
     @staticmethod
     def Version() -> nanoocp.TCollection.TCollection_AsciiString:
@@ -140,6 +144,9 @@ class Storage_Root(nanoocp.Standard.Standard_Transient):
 
     @overload
     def __init__(self, theName: nanoocp.TCollection.TCollection_AsciiString, theRef: int, theType: nanoocp.TCollection.TCollection_AsciiString) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_Root) -> None: ...
 
     def SetName(self, theName: nanoocp.TCollection.TCollection_AsciiString) -> None: ...
 
@@ -217,6 +224,7 @@ class Storage_Data(nanoocp.Standard.Standard_Transient):
     supported by Storage_Schema algorithm
     """
 
+    @overload
     def __init__(self) -> None:
         """
         Creates an empty set of data.
@@ -231,6 +239,9 @@ class Storage_Data(nanoocp.Standard.Standard_Transient):
         NumberOfRoots and Roots to find the roots
         which were stored in the read container.
         """
+
+    @overload
+    def __init__(self, theOther: Storage_Data) -> None: ...
 
     def ErrorStatus(self) -> Storage_Error:
         """
@@ -574,10 +585,17 @@ class Storage_Bucket:
     @overload
     def __init__(self, theSpaceSize: int) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Storage_Bucket) -> None: ...
+
     def Clear(self) -> None: ...
 
 class Storage_BucketOfPersistent:
+    @overload
     def __init__(self, theBucketSize: int = 300000, theBucketNumber: int = 100) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_BucketOfPersistent) -> None: ...
 
     def Length(self) -> int: ...
 
@@ -588,7 +606,11 @@ class Storage_BucketOfPersistent:
     def Clear(self) -> None: ...
 
 class Storage_BucketIterator:
+    @overload
     def __init__(self, arg0: Storage_BucketOfPersistent) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_BucketIterator) -> None: ...
 
     def Init(self, arg0: Storage_BucketOfPersistent) -> None: ...
 
@@ -618,7 +640,11 @@ class Storage_CallBack(nanoocp.Standard.Standard_Transient):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
 class Storage_DefaultCallBack(Storage_CallBack):
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_DefaultCallBack) -> None: ...
 
     def New(self) -> nanoocp.Standard.Standard_Persistent: ...
 
@@ -637,7 +663,11 @@ class Storage_DefaultCallBack(Storage_CallBack):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
 class Storage_HeaderData(nanoocp.Standard.Standard_Transient):
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_HeaderData) -> None: ...
 
     def Read(self, theDriver: Storage_BaseDriver) -> bool: ...
 
@@ -725,6 +755,9 @@ class Storage_TypedCallBack(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, aTypeName: nanoocp.TCollection.TCollection_AsciiString, aCallBack: Storage_CallBack) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Storage_TypedCallBack) -> None: ...
+
     def SetType(self, aType: nanoocp.TCollection.TCollection_AsciiString) -> None: ...
 
     def Type(self) -> nanoocp.TCollection.TCollection_AsciiString: ...
@@ -746,7 +779,11 @@ class Storage_TypedCallBack(nanoocp.Standard.Standard_Transient):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
 class Storage_InternalData(nanoocp.Standard.Standard_Transient):
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_InternalData) -> None: ...
 
     def ReadArray(self) -> nanoocp.NCollection.NCollection_HArray1[nanoocp.Standard.Standard_Persistent]: ...
 
@@ -761,7 +798,11 @@ class Storage_InternalData(nanoocp.Standard.Standard_Transient):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
 class Storage_RootData(nanoocp.Standard.Standard_Transient):
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_RootData) -> None: ...
 
     def Read(self, theDriver: Storage_BaseDriver) -> bool: ...
 
@@ -828,6 +869,7 @@ class Storage_Schema(nanoocp.Standard.Standard_Transient):
     between containers.
     """
 
+    @overload
     def __init__(self) -> None:
         """
         Builds a storage/retrieval algorithm based on a
@@ -843,6 +885,9 @@ class Storage_Schema(nanoocp.Standard.Standard_Transient):
         USER API -- --------------------------------------------------------------
         -------- --
         """
+
+    @overload
+    def __init__(self, theOther: Storage_Schema) -> None: ...
 
     def SetVersion(self, aVersion: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """returns version of the schema"""
@@ -971,7 +1016,11 @@ class Storage_StreamWriteError(nanoocp.Standard.Standard_Failure):
     pass
 
 class Storage_TypeData(nanoocp.Standard.Standard_Transient):
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Storage_TypeData) -> None: ...
 
     def Read(self, theDriver: Storage_BaseDriver) -> bool: ...
 

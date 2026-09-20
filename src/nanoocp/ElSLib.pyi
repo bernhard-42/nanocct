@@ -27,7 +27,11 @@ class ElSLib:
     Note: ElSLib stands for Elementary Surfaces Library.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: ElSLib) -> None: ...
 
     @overload
     @staticmethod

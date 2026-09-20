@@ -143,6 +143,7 @@ void nanoocp_define_AdvApp2Var(nb::module_ &m) {
         .def("IToler", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApp2Var_Context::*)() const>(&AdvApp2Var_Context::IToler))
         .def("FToler", static_cast<occ::handle<NCollection_HArray2<double>> (AdvApp2Var_Context::*)() const>(&AdvApp2Var_Context::FToler))
         .def("CToler", static_cast<occ::handle<NCollection_HArray2<double>> (AdvApp2Var_Context::*)() const>(&AdvApp2Var_Context::CToler));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_Context>(nb::borrow<nb::class_<AdvApp2Var_Context>>(m.attr("AdvApp2Var_Context")));
     nb::borrow<nb::class_<AdvApp2Var_Patch>>(m.attr("AdvApp2Var_Patch"))
         .def(nb::new_([]() { return opencascade::handle<AdvApp2Var_Patch>(new AdvApp2Var_Patch()); }))
         .def(nb::new_([](const double U0, const double U1, const double V0, const double V1, const int iu, const int iv) { return opencascade::handle<AdvApp2Var_Patch>(new AdvApp2Var_Patch(U0, U1, V0, V1, iu, iv)); }), nb::arg("U0"), nb::arg("U1"), nb::arg("V0"), nb::arg("V1"), nb::arg("iu"), nb::arg("iv"))
@@ -177,6 +178,7 @@ void nanoocp_define_AdvApp2Var(nb::module_ &m) {
         .def("IsoErrors", static_cast<occ::handle<NCollection_HArray2<double>> (AdvApp2Var_Patch::*)() const>(&AdvApp2Var_Patch::IsoErrors))
         .def("CritValue", static_cast<double (AdvApp2Var_Patch::*)() const>(&AdvApp2Var_Patch::CritValue))
         .def("SetCritValue", static_cast<void (AdvApp2Var_Patch::*)(const double)>(&AdvApp2Var_Patch::SetCritValue), nb::arg("dist"));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_Patch>(nb::borrow<nb::class_<AdvApp2Var_Patch>>(m.attr("AdvApp2Var_Patch")));
     nb::borrow<nb::class_<AdvApp2Var_Network>>(m.attr("AdvApp2Var_Network"))
         .def(nb::init<>())
         .def(nb::init<const NCollection_Sequence<opencascade::handle<AdvApp2Var_Patch>> &, const NCollection_Sequence<double> &, const NCollection_Sequence<double> &>(), nb::arg("Net"), nb::arg("TheU"), nb::arg("TheV"))
@@ -194,6 +196,7 @@ if all Patches are approximated false is returned)nbdoc")
         .def("VParameter", static_cast<double (AdvApp2Var_Network::*)(const int) const>(&AdvApp2Var_Network::VParameter), nb::arg("Index"))
         .def("Patch", [](const AdvApp2Var_Network &self, const int UIndex, const int VIndex) { opencascade::handle<AdvApp2Var_Patch> result(&(self.Patch(UIndex, VIndex))); return result; }, nb::arg("UIndex"), nb::arg("VIndex"))
         .def("__call__", [](const AdvApp2Var_Network &self, const int UIndex, const int VIndex) { opencascade::handle<AdvApp2Var_Patch> result(&(self.operator()(UIndex, VIndex))); return result; }, nb::arg("UIndex"), nb::arg("VIndex"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<AdvApp2Var_Network>(nb::borrow<nb::class_<AdvApp2Var_Network>>(m.attr("AdvApp2Var_Network")));
     nb::borrow<nb::class_<AdvApp2Var_Node>>(m.attr("AdvApp2Var_Node"))
         .def(nb::new_([]() { return opencascade::handle<AdvApp2Var_Node>(new AdvApp2Var_Node()); }))
         .def(nb::new_([](const int iu, const int iv) { return opencascade::handle<AdvApp2Var_Node>(new AdvApp2Var_Node(iu, iv)); }), nb::arg("iu"), nb::arg("iv"))
@@ -209,6 +212,7 @@ if all Patches are approximated false is returned)nbdoc")
         .def("Point", static_cast<const gp_Pnt & (AdvApp2Var_Node::*)(const int, const int) const>(&AdvApp2Var_Node::Point), nb::arg("iu"), nb::arg("iv"), R"nbdoc(returns the value F(U,V) or its derivates on the node (U,V))nbdoc")
         .def("SetError", static_cast<void (AdvApp2Var_Node::*)(const int, const int, const double)>(&AdvApp2Var_Node::SetError), nb::arg("iu"), nb::arg("iv"), nb::arg("error"), R"nbdoc(affects the error between F(U,V) and its approximation)nbdoc")
         .def("Error", static_cast<double (AdvApp2Var_Node::*)(const int, const int) const>(&AdvApp2Var_Node::Error), nb::arg("iu"), nb::arg("iv"), R"nbdoc(returns the error between F(U,V) and its approximation)nbdoc");
+    nanoocp_implicit_copy_ctor<AdvApp2Var_Node>(nb::borrow<nb::class_<AdvApp2Var_Node>>(m.attr("AdvApp2Var_Node")));
     nb::borrow<nb::class_<AdvApp2Var_Iso>>(m.attr("AdvApp2Var_Iso"))
         .def(nb::new_([]() { return opencascade::handle<AdvApp2Var_Iso>(new AdvApp2Var_Iso()); }))
         .def(nb::new_([](const GeomAbs_IsoType type, const int iu, const int iv) { return opencascade::handle<AdvApp2Var_Iso>(new AdvApp2Var_Iso(type, iu, iv)); }), nb::arg("type"), nb::arg("iu"), nb::arg("iv"))
@@ -242,6 +246,7 @@ if all Patches are approximated false is returned)nbdoc")
         .def("DifTab", static_cast<occ::handle<NCollection_HArray1<double>> (AdvApp2Var_Iso::*)() const>(&AdvApp2Var_Iso::DifTab))
         .def("MaxErrors", static_cast<occ::handle<NCollection_HArray2<double>> (AdvApp2Var_Iso::*)() const>(&AdvApp2Var_Iso::MaxErrors))
         .def("MoyErrors", static_cast<occ::handle<NCollection_HArray2<double>> (AdvApp2Var_Iso::*)() const>(&AdvApp2Var_Iso::MoyErrors));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_Iso>(nb::borrow<nb::class_<AdvApp2Var_Iso>>(m.attr("AdvApp2Var_Iso")));
     nb::borrow<nb::class_<AdvApp2Var_Framework>>(m.attr("AdvApp2Var_Framework"))
         .def(nb::init<>())
         .def(nb::init<const NCollection_Sequence<opencascade::handle<AdvApp2Var_Node>> &, const NCollection_Sequence<NCollection_Sequence<opencascade::handle<AdvApp2Var_Iso>>> &, const NCollection_Sequence<NCollection_Sequence<opencascade::handle<AdvApp2Var_Iso>>> &>(), nb::arg("Frame"), nb::arg("UFrontier"), nb::arg("VFrontier"))
@@ -258,6 +263,7 @@ if all Isos are approximated NULL is returned.)nbdoc")
         .def("UpdateInV", static_cast<void (AdvApp2Var_Framework::*)(const double)>(&AdvApp2Var_Framework::UpdateInV), nb::arg("CuttingValue"))
         .def("UEquation", static_cast<const occ::handle<NCollection_HArray1<double>> & (AdvApp2Var_Framework::*)(const int, const int) const>(&AdvApp2Var_Framework::UEquation), nb::arg("IndexIso"), nb::arg("IndexStrip"))
         .def("VEquation", static_cast<const occ::handle<NCollection_HArray1<double>> & (AdvApp2Var_Framework::*)(const int, const int) const>(&AdvApp2Var_Framework::VEquation), nb::arg("IndexIso"), nb::arg("IndexStrip"));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_Framework>(nb::borrow<nb::class_<AdvApp2Var_Framework>>(m.attr("AdvApp2Var_Framework")));
     nb::borrow<nb::class_<AdvApp2Var_ApproxAFunc2Var>>(m.attr("AdvApp2Var_ApproxAFunc2Var"))
         .def(nb::init<const int, const int, const int, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray2<double>> &, const occ::handle<NCollection_HArray2<double>> &, const occ::handle<NCollection_HArray2<double>> &, const double, const double, const double, const double, const GeomAbs_IsoType, const GeomAbs_Shape, const GeomAbs_Shape, const int, const int, const int, const int, const AdvApp2Var_EvaluatorFunc2Var &, AdvApprox_Cutting &, AdvApprox_Cutting &>(), nb::arg("Num1DSS"), nb::arg("Num2DSS"), nb::arg("Num3DSS"), nb::arg("OneDTol"), nb::arg("TwoDTol"), nb::arg("ThreeDTol"), nb::arg("OneDTolFr"), nb::arg("TwoDTolFr"), nb::arg("ThreeDTolFr"), nb::arg("FirstInU"), nb::arg("LastInU"), nb::arg("FirstInV"), nb::arg("LastInV"), nb::arg("FavorIso"), nb::arg("ContInU"), nb::arg("ContInV"), nb::arg("PrecisCode"), nb::arg("MaxDegInU"), nb::arg("MaxDegInV"), nb::arg("MaxPatch"), nb::arg("Func"), nb::arg("UChoice"), nb::arg("VChoice"))
         .def(nb::init<const int, const int, const int, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray2<double>> &, const occ::handle<NCollection_HArray2<double>> &, const occ::handle<NCollection_HArray2<double>> &, const double, const double, const double, const double, const GeomAbs_IsoType, const GeomAbs_Shape, const GeomAbs_Shape, const int, const int, const int, const int, const AdvApp2Var_EvaluatorFunc2Var &, const AdvApp2Var_Criterion &, AdvApprox_Cutting &, AdvApprox_Cutting &>(), nb::arg("Num1DSS"), nb::arg("Num2DSS"), nb::arg("Num3DSS"), nb::arg("OneDTol"), nb::arg("TwoDTol"), nb::arg("ThreeDTol"), nb::arg("OneDTolFr"), nb::arg("TwoDTolFr"), nb::arg("ThreeDTolFr"), nb::arg("FirstInU"), nb::arg("LastInU"), nb::arg("FirstInV"), nb::arg("LastInV"), nb::arg("FavorIso"), nb::arg("ContInU"), nb::arg("ContInV"), nb::arg("PrecisCode"), nb::arg("MaxDegInU"), nb::arg("MaxDegInV"), nb::arg("MaxPatch"), nb::arg("Func"), nb::arg("Crit"), nb::arg("UChoice"), nb::arg("VChoice"))
@@ -283,7 +289,9 @@ Dimension must be equal to 3.)nbdoc")
         .def("UFrontError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::UFrontError), nb::arg("Dimension"), nb::arg("Index"), R"nbdoc(returns the error max of the BSplineSurface of range Index on a UFrontier)nbdoc")
         .def("VFrontError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::VFrontError), nb::arg("Dimension"), nb::arg("Index"), R"nbdoc(returns the error max of the BSplineSurface of range Index on a VFrontier)nbdoc")
         .def("CritError", static_cast<double (AdvApp2Var_ApproxAFunc2Var::*)(const int, const int) const>(&AdvApp2Var_ApproxAFunc2Var::CritError), nb::arg("Dimension"), nb::arg("Index"));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_ApproxAFunc2Var>(nb::borrow<nb::class_<AdvApp2Var_ApproxAFunc2Var>>(m.attr("AdvApp2Var_ApproxAFunc2Var")));
     nanoocp_implicit_default_ctor<AdvApp2Var_ApproxF2var>(nb::borrow<nb::class_<AdvApp2Var_ApproxF2var>>(m.attr("AdvApp2Var_ApproxF2var")));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_ApproxF2var>(nb::borrow<nb::class_<AdvApp2Var_ApproxF2var>>(m.attr("AdvApp2Var_ApproxF2var")));
     nb::borrow<nb::class_<AdvApp2Var_Criterion>>(m.attr("AdvApp2Var_Criterion"))
         .def("Value", static_cast<void (AdvApp2Var_Criterion::*)(AdvApp2Var_Patch &, const AdvApp2Var_Context &) const>(&AdvApp2Var_Criterion::Value), nb::arg("P"), nb::arg("C"))
         .def("IsSatisfied", static_cast<bool (AdvApp2Var_Criterion::*)(const AdvApp2Var_Patch &) const>(&AdvApp2Var_Criterion::IsSatisfied), nb::arg("P"))
@@ -291,6 +299,7 @@ Dimension must be equal to 3.)nbdoc")
         .def("Type", static_cast<AdvApp2Var_CriterionType (AdvApp2Var_Criterion::*)() const>(&AdvApp2Var_Criterion::Type))
         .def("Repartition", static_cast<AdvApp2Var_CriterionRepartition (AdvApp2Var_Criterion::*)() const>(&AdvApp2Var_Criterion::Repartition));
     nanoocp_implicit_default_ctor<AdvApp2Var_MathBase>(nb::borrow<nb::class_<AdvApp2Var_MathBase>>(m.attr("AdvApp2Var_MathBase")));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_MathBase>(nb::borrow<nb::class_<AdvApp2Var_MathBase>>(m.attr("AdvApp2Var_MathBase")));
     nb::borrow<nb::class_<AdvApp2Var_SysBase>>(m.attr("AdvApp2Var_SysBase"))
         .def(nb::init<>())
         .def("mainial_", static_cast<int (AdvApp2Var_SysBase::*)()>(&AdvApp2Var_SysBase::mainial_))
@@ -298,4 +307,5 @@ Dimension must be equal to 3.)nbdoc")
         .def_static("mgenmsg_", static_cast<int (*)(const char *, long)>(&AdvApp2Var_SysBase::mgenmsg_), nb::arg("nomprg"), nb::arg("nomprg_len"))
         .def_static("mgsomsg_", static_cast<int (*)(const char *, long)>(&AdvApp2Var_SysBase::mgsomsg_), nb::arg("nomprg"), nb::arg("nomprg_len"))
         .def_static("mswrdbg_", static_cast<int (*)(const char *, long)>(&AdvApp2Var_SysBase::mswrdbg_), nb::arg("ctexte"), nb::arg("ctexte_len"));
+    nanoocp_implicit_copy_ctor<AdvApp2Var_SysBase>(nb::borrow<nb::class_<AdvApp2Var_SysBase>>(m.attr("AdvApp2Var_SysBase")));
 }

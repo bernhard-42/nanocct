@@ -12,7 +12,11 @@ import nanoocp.math
 class FEmTool_Assembly:
     """Assemble and solve system from (one dimensional) Finite Elements"""
 
+    @overload
     def __init__(self, Dependence: nanoocp.NCollection.NCollection_Array2[int], Table: nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]]) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FEmTool_Assembly) -> None: ...
 
     def NullifyMatrix(self) -> None:
         """Nullify all Matrix's Coefficient"""
@@ -56,7 +60,11 @@ class FEmTool_Assembly:
 class FEmTool_Curve(nanoocp.Standard.Standard_Transient):
     """Curve defined by Polynomial Elements."""
 
+    @overload
     def __init__(self, Dimension: int, NbElements: int, TheBase: nanoocp.PLib.PLib_HermitJacobi, Tolerance: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FEmTool_Curve) -> None: ...
 
     def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]: ...
 
@@ -145,7 +153,11 @@ class FEmTool_ElementsOfRefMatrix(nanoocp.math.math_FunctionSet):
     (') means derivative.
     """
 
+    @overload
     def __init__(self, TheBase: nanoocp.PLib.PLib_HermitJacobi, DerOrder: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FEmTool_ElementsOfRefMatrix) -> None: ...
 
     def NbVariables(self) -> int:
         """
@@ -170,7 +182,11 @@ class FEmTool_ElementsOfRefMatrix(nanoocp.math.math_FunctionSet):
 class FEmTool_LinearFlexion(FEmTool_ElementaryCriterion):
     """Criterium of LinearFlexion To Hermit-Jacobi elements"""
 
+    @overload
     def __init__(self, WorkDegree: int, ConstraintOrder: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FEmTool_LinearFlexion) -> None: ...
 
     def DependenceTable(self) -> nanoocp.NCollection.NCollection_HArray2[int]: ...
 
@@ -191,7 +207,11 @@ class FEmTool_LinearFlexion(FEmTool_ElementaryCriterion):
 class FEmTool_LinearJerk(FEmTool_ElementaryCriterion):
     """Criterion of LinearJerk To Hermit-Jacobi elements"""
 
+    @overload
     def __init__(self, WorkDegree: int, ConstraintOrder: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FEmTool_LinearJerk) -> None: ...
 
     def DependenceTable(self) -> nanoocp.NCollection.NCollection_HArray2[int]: ...
 
@@ -212,7 +232,11 @@ class FEmTool_LinearJerk(FEmTool_ElementaryCriterion):
 class FEmTool_LinearTension(FEmTool_ElementaryCriterion):
     """Criterium of LinearTension To Hermit-Jacobi elements"""
 
+    @overload
     def __init__(self, WorkDegree: int, ConstraintOrder: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FEmTool_LinearTension) -> None: ...
 
     def DependenceTable(self) -> nanoocp.NCollection.NCollection_HArray2[int]: ...
 
@@ -275,7 +299,11 @@ class FEmTool_ProfileMatrix(FEmTool_SparseMatrix):
     Element methods
     """
 
+    @overload
     def __init__(self, FirstIndexes: nanoocp.NCollection.NCollection_Array1[int]) -> None: ...
+
+    @overload
+    def __init__(self, theOther: FEmTool_ProfileMatrix) -> None: ...
 
     def Init(self, Value: float) -> None: ...
 

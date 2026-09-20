@@ -28,7 +28,11 @@ class ElCLib:
     for the equivalent Geom or Geom2d curves.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: ElCLib) -> None: ...
 
     @staticmethod
     def InPeriod(U: float, UFirst: float, ULast: float) -> float:

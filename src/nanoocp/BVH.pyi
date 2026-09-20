@@ -43,6 +43,9 @@ class BVH_Vec2i:
     def __init__(self, theX: int, theY: int) -> None:
         """Per-component constructor."""
 
+    @overload
+    def __init__(self, theOther: BVH_Vec2i) -> None: ...
+
     @staticmethod
     def Length() -> int:
         """Returns the number of components."""
@@ -184,6 +187,9 @@ class BVH_Vec3i:
     @overload
     def __init__(self, theX: int, theY: int, theZ: int) -> None:
         """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: BVH_Vec3i) -> None: ...
 
     @staticmethod
     def Length() -> int:
@@ -416,6 +422,9 @@ class BVH_Vec4i:
     @overload
     def __init__(self, theX: int, theY: int, theZ: int, theW: int) -> None:
         """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: BVH_Vec4i) -> None: ...
 
     @staticmethod
     def Length() -> int:
@@ -1390,6 +1399,9 @@ class BVH_Vec2f:
     def __init__(self, theX: float, theY: float) -> None:
         """Per-component constructor."""
 
+    @overload
+    def __init__(self, theOther: BVH_Vec2f) -> None: ...
+
     @staticmethod
     def Length() -> int:
         """Returns the number of components."""
@@ -1531,6 +1543,9 @@ class BVH_Vec3f:
     @overload
     def __init__(self, theX: float, theY: float, theZ: float) -> None:
         """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: BVH_Vec3f) -> None: ...
 
     @staticmethod
     def Length() -> int:
@@ -1763,6 +1778,9 @@ class BVH_Vec4f:
     @overload
     def __init__(self, theX: float, theY: float, theZ: float, theW: float) -> None:
         """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: BVH_Vec4f) -> None: ...
 
     @staticmethod
     def Length() -> int:
@@ -2737,6 +2755,9 @@ class BVH_Vec2d:
     def __init__(self, theX: float, theY: float) -> None:
         """Per-component constructor."""
 
+    @overload
+    def __init__(self, theOther: BVH_Vec2d) -> None: ...
+
     @staticmethod
     def Length() -> int:
         """Returns the number of components."""
@@ -2878,6 +2899,9 @@ class BVH_Vec3d:
     @overload
     def __init__(self, theX: float, theY: float, theZ: float) -> None:
         """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: BVH_Vec3d) -> None: ...
 
     @staticmethod
     def Length() -> int:
@@ -3110,6 +3134,9 @@ class BVH_Vec4d:
     @overload
     def __init__(self, theX: float, theY: float, theZ: float, theW: float) -> None:
         """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: BVH_Vec4d) -> None: ...
 
     @staticmethod
     def Length() -> int:
@@ -4074,11 +4101,15 @@ class BVH_Mat4f:
     Warning, empty constructor returns an identity matrix.
     """
 
+    @overload
     def __init__(self) -> None:
         """
         Empty constructor.
         Construct the identity matrix.
         """
+
+    @overload
+    def __init__(self, theOther: BVH_Mat4f) -> None: ...
 
     @staticmethod
     def Rows() -> int:
@@ -4419,11 +4450,15 @@ class BVH_Mat4d:
     Warning, empty constructor returns an identity matrix.
     """
 
+    @overload
     def __init__(self) -> None:
         """
         Empty constructor.
         Construct the identity matrix.
         """
+
+    @overload
+    def __init__(self, theOther: BVH_Mat4d) -> None: ...
 
     @staticmethod
     def Rows() -> int:
@@ -4762,6 +4797,8 @@ class BVH_TreeBaseTransient(nanoocp.Standard.Standard_Transient):
     (just to have a named base class).
     """
 
+    def __init__(self, theOther: BVH_TreeBaseTransient) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -4773,18 +4810,28 @@ class BVH_TreeBaseTransient(nanoocp.Standard.Standard_Transient):
 class BVH_QuadTree:
     """Type corresponding to quad BVH."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BVH_QuadTree) -> None: ...
 
 class BVH_BinaryTree:
     """Type corresponding to binary BVH."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BVH_BinaryTree) -> None: ...
 
 class BVH_BuilderTransient(nanoocp.Standard.Standard_Transient):
     """
     A non-template class for using as base for BVH_Builder
     (just to have a named base class).
     """
+
+    def __init__(self, theOther: BVH_BuilderTransient) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -4841,8 +4888,12 @@ class BVH_BuildTool:
 class BVH_BuildThread(nanoocp.Standard.Standard_Transient):
     """Wrapper for BVH build thread."""
 
+    @overload
     def __init__(self, theBuildTool: BVH_BuildTool, theBuildQueue: BVH_BuildQueue) -> None:
         """Creates new BVH build thread."""
+
+    @overload
+    def __init__(self, theOther: BVH_BuildThread) -> None: ...
 
     def Run(self) -> None:
         """Starts execution of BVH build thread."""
@@ -4874,6 +4925,8 @@ class BVH_ObjectTransient(nanoocp.Standard.Standard_Transient):
     A non-template class for using as base for BVH_Object
     (just to have a named base class).
     """
+
+    def __init__(self, theOther: BVH_ObjectTransient) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -4907,8 +4960,12 @@ class BVH_Builder3d(BVH_BuilderTransient):
         """Builds BVH using specific algorithm."""
 
 class BitPredicate:
+    @overload
     def __init__(self, theDigit: int) -> None:
         """Creates new radix sort predicate."""
+
+    @overload
+    def __init__(self, theOther: BitPredicate) -> None: ...
 
     def __call__(self, theLink: tuple[int, int]) -> bool:
         """Returns predicate value."""
@@ -4922,8 +4979,12 @@ class BitPredicate:
 class BitComparator:
     """STL compare tool used in binary search algorithm."""
 
+    @overload
     def __init__(self, theDigit: int) -> None:
         """Creates new STL comparator."""
+
+    @overload
+    def __init__(self, theOther: BitComparator) -> None: ...
 
     def __call__(self, theLink1: tuple[int, int], arg1: tuple[int, int]) -> bool:
         """Checks left value for the given bit."""
@@ -4937,7 +4998,11 @@ class BitComparator:
 class RadixSorter:
     """Tool object for sorting link array using radix sort algorithm."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: RadixSorter) -> None: ...
 
     @staticmethod
     def Sort(theStart: "NCollection_IndexedIterator<std::__1::random_access_iterator_tag, NCollection_Array1<std::__1::pair<unsigned int, int>>, std::__1::pair<unsigned int, int>, false>", theFinal: "NCollection_IndexedIterator<std::__1::random_access_iterator_tag, NCollection_Array1<std::__1::pair<unsigned int, int>>, std::__1::pair<unsigned int, int>, false>", theDigit: int, isParallel: bool) -> None: ...

@@ -47,6 +47,20 @@ def _generic_spelling(concrete: str, templates: dict[str, dict]) -> str:
     return concrete
 
 
+def _generic_or_none(name: str, templates: dict[str, dict]) -> str | None:
+    """NCollection_Map[int] for a concrete instantiation name whose every argument has a stub spelling; None when an
+    argument is not bound (NCollection_Array1<BRepGraph_NodeId::Typed<...>>: the concrete class stays)."""
+    manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
+    for key, inst in templates.items():
+        if inst.get("name") == name:
+            kind, args = re.match(r"(\w+)<(.+)>$", key).groups()
+            spelled = [_type_arg(a, manifest["classes"], templates) for a in _split_args(args)]
+            if any(sp is None for sp in spelled):
+                return None
+            return f"{kind}[{', '.join(spelled)}]"    # type: ignore[arg-type]
+    return None
+
+
 def _stub_arg(arg: str, templates: dict[str, dict]) -> str:
     manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
     return _type_arg(arg, manifest["classes"], templates) or arg
@@ -220,9 +234,13 @@ def main() -> int:
     # NCollection_Array1[float](...) produces statically) is accepted as an argument. The concrete class derives from
     # the generic one, so the rewrite is sound for parameters and results alike; the NCollection stub itself keeps the
     # concrete names (they are its class definitions).
-    generic_of = {inst["name"]: "nanoocp.NCollection." + _generic_spelling(inst["name"], templates)
-                  for key, inst in templates.items()
-                  if not inst.get("skipped", False) and re.match(r"(\w+)<", key).group(1) in BINDERS}
+    generic_of: dict[str, str] = {}
+    for key, inst in templates.items():
+        if inst.get("skipped", False) or re.match(r"(\w+)<", key).group(1) not in BINDERS:
+            continue
+        generic = _generic_or_none(inst["name"], templates)
+        if generic is not None:
+            generic_of[inst["name"]] = "nanoocp.NCollection." + generic
     for stub in sorted(SRC.rglob("*.pyi")):
         if stub == nc:
             continue

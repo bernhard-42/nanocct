@@ -51,6 +51,7 @@ void nanoocp_define_Geom2dAdaptor(nb::module_ &m) {
 handled by reference.
 Creates a 2d curve from a HCurve2d. This
 cannot process the OtherCurves.)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dAdaptor>(nb::borrow<nb::class_<Geom2dAdaptor>>(m.attr("Geom2dAdaptor")));
     nb::borrow<nb::class_<Geom2dAdaptor_Curve>>(m.attr("Geom2dAdaptor_Curve"))
         .def(nb::new_([]() { return opencascade::handle<Geom2dAdaptor_Curve>(new Geom2dAdaptor_Curve()); }))
         .def(nb::new_([](const occ::handle<Geom2d_Curve> & C) { return opencascade::handle<Geom2dAdaptor_Curve>(new Geom2dAdaptor_Curve(C)); }), nb::arg("C"))
@@ -120,20 +121,21 @@ Raised if N < 1.)nbdoc")
         .def("EvalD2", static_cast<Geom2d_Curve::ResD2 (Geom2dAdaptor_Curve::*)(const double) const>(&Geom2dAdaptor_Curve::EvalD2), nb::arg("theU"), R"nbdoc(D2 evaluation. Raises an exception on failure.)nbdoc")
         .def("EvalD3", static_cast<Geom2d_Curve::ResD3 (Geom2dAdaptor_Curve::*)(const double) const>(&Geom2dAdaptor_Curve::EvalD3), nb::arg("theU"), R"nbdoc(D3 evaluation. Raises an exception on failure.)nbdoc")
         .def("EvalDN", static_cast<gp_Vec2d (Geom2dAdaptor_Curve::*)(const double, const int) const>(&Geom2dAdaptor_Curve::EvalDN), nb::arg("theU"), nb::arg("theN"), R"nbdoc(DN evaluation. Raises an exception on failure.)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dAdaptor_Curve>(nb::borrow<nb::class_<Geom2dAdaptor_Curve>>(m.attr("Geom2dAdaptor_Curve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Curve> &>, Geom2dAdaptor_Curve>();
     nanoocp_implicit_default_ctor<Geom2dAdaptor_Curve::OffsetData>(nb::borrow<nb::class_<Geom2dAdaptor_Curve::OffsetData>>(m.attr("Geom2dAdaptor_Curve").attr("OffsetData")));
-    nb::borrow<nb::class_<Geom2dAdaptor_Curve::OffsetData>>(m.attr("Geom2dAdaptor_Curve").attr("OffsetData"))
-        .def_rw("BasisAdaptor", &Geom2dAdaptor_Curve::OffsetData::BasisAdaptor, R"nbdoc(Adaptor for basis curve)nbdoc")
-        .def_rw("Offset", &Geom2dAdaptor_Curve::OffsetData::Offset, R"nbdoc(Offset distance)nbdoc")
-        .def_rw("EvalRep", &Geom2dAdaptor_Curve::OffsetData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dAdaptor_Curve::OffsetData>(nb::borrow<nb::class_<Geom2dAdaptor_Curve::OffsetData>>(m.attr("Geom2dAdaptor_Curve").attr("OffsetData")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::OffsetData>>(m.attr("Geom2dAdaptor_Curve").attr("OffsetData")), "BasisAdaptor", &Geom2dAdaptor_Curve::OffsetData::BasisAdaptor, R"nbdoc(Adaptor for basis curve)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::OffsetData>>(m.attr("Geom2dAdaptor_Curve").attr("OffsetData")), "Offset", &Geom2dAdaptor_Curve::OffsetData::Offset, R"nbdoc(Offset distance)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::OffsetData>>(m.attr("Geom2dAdaptor_Curve").attr("OffsetData")), "EvalRep", &Geom2dAdaptor_Curve::OffsetData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<Geom2dAdaptor_Curve::BezierData>(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BezierData>>(m.attr("Geom2dAdaptor_Curve").attr("BezierData")));
-    nb::borrow<nb::class_<Geom2dAdaptor_Curve::BezierData>>(m.attr("Geom2dAdaptor_Curve").attr("BezierData"))
-        .def_rw("Curve", &Geom2dAdaptor_Curve::BezierData::Curve, R"nbdoc(Bezier curve to prevent downcasts)nbdoc")
-        .def_rw("Cache", &Geom2dAdaptor_Curve::BezierData::Cache, R"nbdoc(Cached data for evaluation)nbdoc")
-        .def_rw("EvalRep", &Geom2dAdaptor_Curve::BezierData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dAdaptor_Curve::BezierData>(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BezierData>>(m.attr("Geom2dAdaptor_Curve").attr("BezierData")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BezierData>>(m.attr("Geom2dAdaptor_Curve").attr("BezierData")), "Curve", &Geom2dAdaptor_Curve::BezierData::Curve, R"nbdoc(Bezier curve to prevent downcasts)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BezierData>>(m.attr("Geom2dAdaptor_Curve").attr("BezierData")), "Cache", &Geom2dAdaptor_Curve::BezierData::Cache, R"nbdoc(Cached data for evaluation)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BezierData>>(m.attr("Geom2dAdaptor_Curve").attr("BezierData")), "EvalRep", &Geom2dAdaptor_Curve::BezierData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<Geom2dAdaptor_Curve::BSplineData>(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData")));
-    nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData"))
-        .def_rw("Curve", &Geom2dAdaptor_Curve::BSplineData::Curve, R"nbdoc(BSpline curve to prevent downcasts)nbdoc")
-        .def_rw("Cache", &Geom2dAdaptor_Curve::BSplineData::Cache, R"nbdoc(Cached data for evaluation)nbdoc")
-        .def_rw("EvalRep", &Geom2dAdaptor_Curve::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<Geom2dAdaptor_Curve::BSplineData>(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData")));
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData")), "Curve", &Geom2dAdaptor_Curve::BSplineData::Curve, R"nbdoc(BSpline curve to prevent downcasts)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData")), "Cache", &Geom2dAdaptor_Curve::BSplineData::Cache, R"nbdoc(Cached data for evaluation)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Geom2dAdaptor_Curve::BSplineData>>(m.attr("Geom2dAdaptor_Curve").attr("BSplineData")), "EvalRep", &Geom2dAdaptor_Curve::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
 }

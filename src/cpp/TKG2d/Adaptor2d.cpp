@@ -113,6 +113,7 @@ Raises an exception on failure.)nbdoc")
 Raises an exception on failure.)nbdoc")
         .def("EvalDN", static_cast<gp_Vec2d (Adaptor2d_Curve2d::*)(const double, const int) const>(&Adaptor2d_Curve2d::EvalDN), nb::arg("theU"), nb::arg("theN"), R"nbdoc(Computes the Nth derivative at parameter U.
 Raises an exception on failure.)nbdoc");
+    nanoocp_implicit_copy_ctor<Adaptor2d_Curve2d>(nb::borrow<nb::class_<Adaptor2d_Curve2d>>(m.attr("Adaptor2d_Curve2d")));
     nb::borrow<nb::class_<Adaptor2d_Line2d>>(m.attr("Adaptor2d_Line2d"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor2d_Line2d>(new Adaptor2d_Line2d()); }))
         .def(nb::new_([](const gp_Pnt2d & P, const gp_Dir2d & D, const double UFirst, const double ULast) { return opencascade::handle<Adaptor2d_Line2d>(new Adaptor2d_Line2d(P, D, UFirst, ULast)); }), nb::arg("P"), nb::arg("D"), nb::arg("UFirst"), nb::arg("ULast"))
@@ -159,6 +160,7 @@ If <First> >= <Last>)nbdoc")
         .def("NbKnots", static_cast<int (Adaptor2d_Line2d::*)() const>(&Adaptor2d_Line2d::NbKnots))
         .def("Bezier", static_cast<occ::handle<Geom2d_BezierCurve> (Adaptor2d_Line2d::*)() const>(&Adaptor2d_Line2d::Bezier))
         .def("BSpline", static_cast<occ::handle<Geom2d_BSplineCurve> (Adaptor2d_Line2d::*)() const>(&Adaptor2d_Line2d::BSpline));
+    nanoocp_implicit_copy_ctor<Adaptor2d_Line2d>(nb::borrow<nb::class_<Adaptor2d_Line2d>>(m.attr("Adaptor2d_Line2d")));
     nb::borrow<nb::class_<Adaptor2d_OffsetCurve>>(m.attr("Adaptor2d_OffsetCurve"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve()); }), R"nbdoc(The Offset is set to 0.)nbdoc")
         .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C) { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve(C)); }), nb::arg("C"), R"nbdoc(The curve is loaded. The Offset is set to 0.)nbdoc")
@@ -229,5 +231,6 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
         .def("Bezier", static_cast<occ::handle<Geom2d_BezierCurve> (Adaptor2d_OffsetCurve::*)() const>(&Adaptor2d_OffsetCurve::Bezier))
         .def("BSpline", static_cast<occ::handle<Geom2d_BSplineCurve> (Adaptor2d_OffsetCurve::*)() const>(&Adaptor2d_OffsetCurve::BSpline))
         .def("NbSamples", static_cast<int (Adaptor2d_OffsetCurve::*)() const>(&Adaptor2d_OffsetCurve::NbSamples));
+    nanoocp_implicit_copy_ctor<Adaptor2d_OffsetCurve>(nb::borrow<nb::class_<Adaptor2d_OffsetCurve>>(m.attr("Adaptor2d_OffsetCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor2d_Curve2d> &>, Adaptor2d_OffsetCurve>();
 }

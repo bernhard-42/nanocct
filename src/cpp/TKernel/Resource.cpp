@@ -70,6 +70,7 @@ void nanoocp_define_Resource(nb::module_ &m) {
     nb::borrow<nb::class_<Resource_LexicalCompare>>(m.attr("Resource_LexicalCompare"))
         .def(nb::init<>())
         .def("IsLower", static_cast<bool (Resource_LexicalCompare::*)(const TCollection_AsciiString &, const TCollection_AsciiString &) const>(&Resource_LexicalCompare::IsLower), nb::arg("Left"), nb::arg("Right"), R"nbdoc(Returns True if <Left> is lower than <Right>.)nbdoc");
+    nanoocp_implicit_copy_ctor<Resource_LexicalCompare>(nb::borrow<nb::class_<Resource_LexicalCompare>>(m.attr("Resource_LexicalCompare")));
     nb::borrow<nb::class_<Resource_Manager>>(m.attr("Resource_Manager"))
         .def(nb::new_([]() { return opencascade::handle<Resource_Manager>(new Resource_Manager()); }), R"nbdoc(Create an empty Resource manager)nbdoc")
         .def(nb::new_([](const char *const aName, const bool Verbose) { return opencascade::handle<Resource_Manager>(new Resource_Manager(aName, Verbose)); }), nb::arg("aName"), nb::arg("Verbose") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Create a Resource manager.
@@ -113,6 +114,7 @@ If corresponding environment variable is not set
 or file doesn't exist returns empty string.)nbdoc")
         .def("GetMap", static_cast<NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>> & (Resource_Manager::*)(bool)>(&Resource_Manager::GetMap), nb::rv_policy::reference_internal, nb::arg("theRefMap") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Returns internal Ref or User map with parameters)nbdoc")
         .def("IsInitialized", static_cast<bool (Resource_Manager::*)() const>(&Resource_Manager::IsInitialized), R"nbdoc(Returns true if Resource have been found)nbdoc");
+    nanoocp_implicit_copy_ctor<Resource_Manager>(nb::borrow<nb::class_<Resource_Manager>>(m.attr("Resource_Manager")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Resource_Manager>();
     nanoocp_implicit_default_ctor<Resource_Unicode>(nb::borrow<nb::class_<Resource_Unicode>>(m.attr("Resource_Unicode")));
     nb::borrow<nb::class_<Resource_Unicode>>(m.attr("Resource_Unicode"))
@@ -143,4 +145,5 @@ characters.
 @param[in] theFormat   source encoding
 @param[in] theFromStr  text to convert
 @param[out] theToStr   destination string)nbdoc");
+    nanoocp_implicit_copy_ctor<Resource_Unicode>(nb::borrow<nb::class_<Resource_Unicode>>(m.attr("Resource_Unicode")));
 }

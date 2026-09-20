@@ -14,7 +14,11 @@ class DirectAccess:
     Works with occ::handle<T> and by-value surface types.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: DirectAccess) -> None: ...
 
 @overload
 def GetSurfBounds(theSurf: nanoocp.Geom.Geom_Surface) -> tuple[float, float, float, float]:

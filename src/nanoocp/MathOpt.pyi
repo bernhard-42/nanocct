@@ -65,6 +65,9 @@ class FRPRConfig(nanoocp.MathUtils.Config):
     def __init__(self, theTolerance: float, theMaxIter: int = 100) -> None:
         """Constructor with tolerance."""
 
+    @overload
+    def __init__(self, theOther: FRPRConfig) -> None: ...
+
     @property
     def Formula(self) -> ConjugateGradientFormula:
         """Beta formula"""
@@ -90,6 +93,9 @@ class NewtonConfig(nanoocp.MathUtils.Config):
     def __init__(self, theTolerance: float, theMaxIter: int = 100) -> None:
         """Constructor with tolerance."""
 
+    @overload
+    def __init__(self, theOther: NewtonConfig) -> None: ...
+
     @property
     def Regularization(self) -> float:
         """Diagonal regularization for non-positive definite Hessian"""
@@ -112,6 +118,9 @@ class PSOSeedParticle:
 
     @overload
     def __init__(self, thePos: nanoocp.math.math_Vector, theValue: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: PSOSeedParticle) -> None: ...
 
     @property
     def Position(self) -> nanoocp.math.math_Vector:
@@ -137,7 +146,11 @@ class PSOSeedParticle:
 class PSOStats:
     """Statistics collected during PSO execution."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: PSOStats) -> None: ...
 
     @property
     def NbFunctionEvals(self) -> int:
@@ -198,6 +211,9 @@ class PSOConfig(nanoocp.MathUtils.NDimConfig):
     @overload
     def __init__(self, theNbParticles: int, theMaxIter: int = 100, theTolerance: float = 1e-08) -> None:
         """Constructor with parameters."""
+
+    @overload
+    def __init__(self, theOther: PSOConfig) -> None: ...
 
     @property
     def NbParticles(self) -> int:
@@ -326,6 +342,9 @@ class GlobalConfig(nanoocp.MathUtils.NDimConfig):
     def __init__(self, theStrategy: GlobalStrategy, theMaxIter: int = 200) -> None:
         """Constructor with strategy."""
 
+    @overload
+    def __init__(self, theOther: GlobalConfig) -> None: ...
+
     @property
     def Strategy(self) -> GlobalStrategy:
         """Algorithm to use"""
@@ -378,7 +397,11 @@ class GlobalConfig(nanoocp.MathUtils.NDimConfig):
 class UzawaResult:
     """Result for Uzawa constrained optimization."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: UzawaResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -432,7 +455,11 @@ class UzawaResult:
 class UzawaConfig:
     """Configuration for Uzawa algorithm."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: UzawaConfig) -> None: ...
 
     @property
     def EpsLix(self) -> float:

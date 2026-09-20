@@ -87,7 +87,11 @@ class ScalarResult:
     Contains the found root/minimum location and diagnostic information.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: ScalarResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
@@ -133,7 +137,11 @@ class PolyResult:
     Supports up to 4 real roots (for quartic equations).
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: PolyResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
@@ -172,7 +180,11 @@ class VectorResult:
     Contains the solution vector and optional gradient/Jacobian information.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: VectorResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
@@ -225,7 +237,11 @@ class LinearResult:
     Contains the solution vector and matrix determinant if computed.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: LinearResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
@@ -257,7 +273,11 @@ class LinearMultipleResult:
     Contains the full solution matrix and determinant if computed.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: LinearMultipleResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
@@ -289,7 +309,11 @@ class EigenResult:
     Contains eigenvalues and optionally eigenvectors.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: EigenResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
@@ -328,7 +352,11 @@ class DecompResult:
     Structure depends on decomposition type.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: DecompResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if decomposition succeeded."""
@@ -374,7 +402,11 @@ class IntegResult:
     Contains integral value and error estimates.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: IntegResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if integration succeeded."""
@@ -427,7 +459,11 @@ class InverseResult:
     Contains the inverse matrix if computation succeeded.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: InverseResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if inversion succeeded."""
@@ -470,6 +506,9 @@ class Config:
         @param theTolerance convergence tolerance
         @param theMaxIter maximum iterations
         """
+
+    @overload
+    def __init__(self, theOther: Config) -> None: ...
 
     @property
     def MaxIterations(self) -> int:
@@ -526,6 +565,9 @@ class BoundedConfig(Config):
         @param theMaxIter maximum iterations
         """
 
+    @overload
+    def __init__(self, theOther: BoundedConfig) -> None: ...
+
     @property
     def LowerBound(self) -> float:
         """Lower bound of search interval"""
@@ -559,6 +601,9 @@ class NDimConfig(Config):
         @param theUseBounds whether to use bounds
         """
 
+    @overload
+    def __init__(self, theOther: NDimConfig) -> None: ...
+
     @property
     def UseBounds(self) -> bool:
         """Whether to enforce bounds during optimization"""
@@ -583,6 +628,9 @@ class IntegConfig:
         @param theTolerance relative tolerance
         @param theMaxIter maximum adaptive iterations
         """
+
+    @overload
+    def __init__(self, theOther: IntegConfig) -> None: ...
 
     @property
     def InitialOrder(self) -> int:
@@ -618,8 +666,12 @@ class LinConfig:
     Provides settings for singularity detection and pivoting.
     """
 
+    @overload
     def __init__(self) -> None:
         """Default constructor."""
+
+    @overload
+    def __init__(self, theOther: LinConfig) -> None: ...
 
     @property
     def SingularityTolerance(self) -> float:
@@ -659,6 +711,9 @@ class Domain1D:
         @param theMin lower bound
         @param theMax upper bound
         """
+
+    @overload
+    def __init__(self, theOther: Domain1D) -> None: ...
 
     def Length(self) -> float:
         """Returns the length of the domain."""
@@ -776,6 +831,9 @@ class Domain2D:
         @param theVMax upper V bound
         """
 
+    @overload
+    def __init__(self, theOther: Domain2D) -> None: ...
+
     def U(self) -> Domain1D:
         """Returns the U subdomain."""
 
@@ -880,6 +938,7 @@ class RandomGenerator:
     and any application requiring high-quality randomness.
     """
 
+    @overload
     def __init__(self, theSeed: int = 1) -> None:
         """
         Initialize with a seed value.
@@ -887,6 +946,9 @@ class RandomGenerator:
         ensuring good initialization even from poor seeds.
         @param theSeed seed value (default 1)
         """
+
+    @overload
+    def __init__(self, theOther: RandomGenerator) -> None: ...
 
     def SetSeed(self, theSeed: int) -> None:
         """
@@ -910,7 +972,11 @@ class RandomGenerator:
 class BracketResult:
     """Result of root bracketing operation."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BracketResult) -> None: ...
 
     @property
     def IsValid(self) -> bool:
@@ -950,7 +1016,11 @@ class BracketResult:
 class MinBracketResult:
     """Result of minimum bracketing operation."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: MinBracketResult) -> None: ...
 
     @property
     def IsValid(self) -> bool:
@@ -1004,7 +1074,11 @@ class MinBracketResult:
 class MinBracketOptions:
     """Options for minimum bracketing."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: MinBracketOptions) -> None: ...
 
     @property
     def MaxIterations(self) -> int:
@@ -1065,7 +1139,11 @@ class MinBracketOptions:
 class LineSearchResult:
     """Result of line search operation."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: LineSearchResult) -> None: ...
 
     @property
     def IsValid(self) -> bool:
@@ -1110,11 +1188,15 @@ class Polynomial:
     @endcode
     """
 
+    @overload
     def __init__(self, theCoeffs: nanoocp.math.math_Vector) -> None:
         """
         Constructor from math_Vector.
         @param theCoeffs coefficients in ascending power order
         """
+
+    @overload
+    def __init__(self, theOther: Polynomial) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1158,12 +1240,16 @@ class Rational:
     @endcode
     """
 
+    @overload
     def __init__(self, theNum: nanoocp.math.math_Vector, theDenom: nanoocp.math.math_Vector) -> None:
         """
         Constructor from math_Vector.
         @param theNum numerator coefficients (ascending power order)
         @param theDenom denominator coefficients (ascending power order)
         """
+
+    @overload
+    def __init__(self, theOther: Rational) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1176,11 +1262,15 @@ class Rational:
 class Constant:
     """Constant function functor: f(x) = c."""
 
+    @overload
     def __init__(self, theValue: float) -> None:
         """
         Constructor from constant value.
         @param theValue constant value
         """
+
+    @overload
+    def __init__(self, theOther: Constant) -> None: ...
 
     def Value(self, arg0: float) -> tuple[bool, float]:
         """
@@ -1202,12 +1292,16 @@ class Constant:
 class Linear:
     """Linear function functor: f(x) = a*x + b."""
 
+    @overload
     def __init__(self, theSlope: float, theIntercept: float) -> None:
         """
         Constructor from slope and intercept.
         @param theSlope coefficient a (slope)
         @param theIntercept coefficient b (y-intercept)
         """
+
+    @overload
+    def __init__(self, theOther: Linear) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1229,6 +1323,7 @@ class Linear:
 class Sine:
     """Sine function functor: f(x) = a * sin(b*x + c) + d."""
 
+    @overload
     def __init__(self, theAmplitude: float = 1.0, theFrequency: float = 1.0, thePhase: float = 0.0, theOffset: float = 0.0) -> None:
         """
         Constructor with full parameters.
@@ -1237,6 +1332,9 @@ class Sine:
         @param thePhase phase shift c
         @param theOffset vertical offset d
         """
+
+    @overload
+    def __init__(self, theOther: Sine) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1258,6 +1356,7 @@ class Sine:
 class Cosine:
     """Cosine function functor: f(x) = a * cos(b*x + c) + d."""
 
+    @overload
     def __init__(self, theAmplitude: float = 1.0, theFrequency: float = 1.0, thePhase: float = 0.0, theOffset: float = 0.0) -> None:
         """
         Constructor with full parameters.
@@ -1266,6 +1365,9 @@ class Cosine:
         @param thePhase phase shift c
         @param theOffset vertical offset d
         """
+
+    @overload
+    def __init__(self, theOther: Cosine) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1287,6 +1389,7 @@ class Cosine:
 class Exponential:
     """Exponential function functor: f(x) = a * exp(b*x) + c."""
 
+    @overload
     def __init__(self, theScale: float = 1.0, theRate: float = 1.0, theOffset: float = 0.0) -> None:
         """
         Constructor with full parameters.
@@ -1294,6 +1397,9 @@ class Exponential:
         @param theRate rate b
         @param theOffset vertical offset c
         """
+
+    @overload
+    def __init__(self, theOther: Exponential) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1315,6 +1421,7 @@ class Exponential:
 class Power:
     """Power function functor: f(x) = a * x^n + b."""
 
+    @overload
     def __init__(self, theExponent: float, theScale: float = 1.0, theOffset: float = 0.0) -> None:
         """
         Constructor with full parameters.
@@ -1322,6 +1429,9 @@ class Power:
         @param theScale scale factor a
         @param theOffset vertical offset b
         """
+
+    @overload
+    def __init__(self, theOther: Power) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1343,6 +1453,7 @@ class Power:
 class Gaussian:
     """Gaussian function functor: f(x) = a * exp(-((x-mu)^2)/(2*sigma^2))."""
 
+    @overload
     def __init__(self, theAmplitude: float = 1.0, theMean: float = 0.0, theSigma: float = 1.0) -> None:
         """
         Constructor with full parameters.
@@ -1350,6 +1461,9 @@ class Gaussian:
         @param theMean mean mu (center)
         @param theSigma standard deviation sigma (width)
         """
+
+    @overload
+    def __init__(self, theOther: Gaussian) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """
@@ -1385,6 +1499,7 @@ class QuadraticForm:
     @endcode
     """
 
+    @overload
     def __init__(self, theA: nanoocp.math.math_Matrix, theB: nanoocp.math.math_Vector, theC: float) -> None:
         """
         Constructor from matrix, vector, and constant.
@@ -1392,6 +1507,9 @@ class QuadraticForm:
         @param theB linear coefficient vector
         @param theC constant term
         """
+
+    @overload
+    def __init__(self, theOther: QuadraticForm) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1435,12 +1553,16 @@ class Rosenbrock:
     @endcode
     """
 
+    @overload
     def __init__(self, theA: float = 1.0, theB: float = 100.0) -> None:
         """
         Constructor with parameters.
         @param theA parameter a (default 1.0)
         @param theB parameter b (default 100.0)
         """
+
+    @overload
+    def __init__(self, theOther: Rosenbrock) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1483,7 +1605,11 @@ class Sphere:
     @endcode
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Sphere) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1526,7 +1652,11 @@ class Booth:
     @endcode
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Booth) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1560,7 +1690,11 @@ class Beale:
     Global minimum at (3, 0.5) with f = 0.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Beale) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1595,7 +1729,11 @@ class Himmelblau:
     (3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126)
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Himmelblau) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1631,11 +1769,15 @@ class Rastrigin:
     Highly multimodal - challenging for local optimizers.
     """
 
+    @overload
     def __init__(self, theA: float = 10.0) -> None:
         """
         Constructor with parameter.
         @param theA parameter A (default 10.0)
         """
+
+    @overload
+    def __init__(self, theOther: Rastrigin) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1670,6 +1812,7 @@ class Ackley:
     Global minimum at origin with f = 0.
     """
 
+    @overload
     def __init__(self, theA: float = 20.0, theB: float = 0.2, theC: float = 6.283185307179586) -> None:
         """
         Constructor with parameters.
@@ -1677,6 +1820,9 @@ class Ackley:
         @param theB parameter b (default 0.2)
         @param theC parameter c (default 2*pi)
         """
+
+    @overload
+    def __init__(self, theOther: Ackley) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """
@@ -1703,12 +1849,16 @@ class LinearResidual:
     @endcode
     """
 
+    @overload
     def __init__(self, theA: nanoocp.math.math_Matrix, theB: nanoocp.math.math_Vector) -> None:
         """
         Constructor from matrix and right-hand side.
         @param theA coefficient matrix (m x n)
         @param theB right-hand side vector (m)
         """
+
+    @overload
+    def __init__(self, theOther: LinearResidual) -> None: ...
 
     def Value(self, theX: nanoocp.math.math_Vector) -> tuple[bool, float]:
         """

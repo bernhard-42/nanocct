@@ -337,6 +337,7 @@ void nanoocp_define_gce(nb::module_ &m) {
 -   another value of the gce_ErrorType enumeration
 indicating why the construction failed.
 @return construction status)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_Root>(nb::borrow<nb::class_<gce_Root>>(m.attr("gce_Root")));
     nb::borrow<nb::class_<gce_MakeCirc>>(m.attr("gce_MakeCirc"))
         .def(nb::init<const gp_Ax2 &, const double>(), nb::arg("A2"), nb::arg("Radius"), R"nbdoc(Creates a circle from axis placement and radius.
 @note Construction fails with `gce_NegativeRadius` if `Radius` is negative.
@@ -375,6 +376,7 @@ Exceptions StdFail_NotDone if no circle is constructed.
 @return resulting circle)nbdoc")
         .def("Operator", static_cast<gp_Circ (gce_MakeCirc::*)() const>(&gce_MakeCirc::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeCirc>(nb::borrow<nb::class_<gce_MakeCirc>>(m.attr("gce_MakeCirc")));
     nb::borrow<nb::class_<gce_MakeCirc2d>>(m.attr("gce_MakeCirc2d"))
         .def(nb::init<const gp_Ax2d &, const double, const bool>(), nb::arg("XAxis"), nb::arg("Radius"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates a circle from axis and radius.
 @note The location of `XAxis` is the circle center.
@@ -415,6 +417,7 @@ Exceptions StdFail_NotDone if no circle is constructed.
 @return resulting circle)nbdoc")
         .def("Operator", static_cast<gp_Circ2d (gce_MakeCirc2d::*)() const>(&gce_MakeCirc2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeCirc2d>(nb::borrow<nb::class_<gce_MakeCirc2d>>(m.attr("gce_MakeCirc2d")));
     nb::borrow<nb::class_<gce_MakeCone>>(m.attr("gce_MakeCone"))
         .def(nb::init<const gp_Cone &, const gp_Pnt &>(), nb::arg("Cone"), nb::arg("Point"), R"nbdoc(Creates a cone coaxial to input cone and passing through a point.
 @note Construction fails with `gce_NegativeRadius` when no non-negative
@@ -480,6 +483,7 @@ Exceptions StdFail_NotDone if no cone is constructed.
 @return resulting cone)nbdoc")
         .def("Operator", static_cast<gp_Cone (gce_MakeCone::*)() const>(&gce_MakeCone::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeCone>(nb::borrow<nb::class_<gce_MakeCone>>(m.attr("gce_MakeCone")));
     nb::borrow<nb::class_<gce_MakeCylinder>>(m.attr("gce_MakeCylinder"))
         .def(nb::init<const gp_Circ &>(), nb::arg("Circ"), R"nbdoc(Creates a cylinder from circular base.
 @note The resulting cylinder axis equals the circle axis.
@@ -510,6 +514,7 @@ Exceptions StdFail_NotDone if no cylinder is constructed.
 @return resulting cylinder)nbdoc")
         .def("Operator", static_cast<gp_Cylinder (gce_MakeCylinder::*)() const>(&gce_MakeCylinder::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeCylinder>(nb::borrow<nb::class_<gce_MakeCylinder>>(m.attr("gce_MakeCylinder")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ &>, gce_MakeCylinder>();
     nb::borrow<nb::class_<gce_MakeDir>>(m.attr("gce_MakeDir"))
         .def(nb::init<const gp_Vec &>(), nb::arg("V"), R"nbdoc(Normalizes the vector V and creates a direction.
@@ -535,6 +540,7 @@ Exceptions StdFail_NotDone if no unit vector is constructed.
 @return resulting direction)nbdoc")
         .def("Operator", static_cast<gp_Dir (gce_MakeDir::*)() const>(&gce_MakeDir::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeDir>(nb::borrow<nb::class_<gce_MakeDir>>(m.attr("gce_MakeDir")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec &>, gce_MakeDir>();
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, gce_MakeDir>();
     nb::borrow<nb::class_<gce_MakeDir2d>>(m.attr("gce_MakeDir2d"))
@@ -560,6 +566,7 @@ Exceptions StdFail_NotDone if no unit vector is constructed.
 @return resulting direction)nbdoc")
         .def("Operator", static_cast<gp_Dir2d (gce_MakeDir2d::*)() const>(&gce_MakeDir2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeDir2d>(nb::borrow<nb::class_<gce_MakeDir2d>>(m.attr("gce_MakeDir2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec2d &>, gce_MakeDir2d>();
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, gce_MakeDir2d>();
     nb::borrow<nb::class_<gce_MakeElips>>(m.attr("gce_MakeElips"))
@@ -590,6 +597,7 @@ Exceptions StdFail_NotDone if no ellipse is constructed.
 @return resulting ellipse)nbdoc")
         .def("Operator", static_cast<gp_Elips (gce_MakeElips::*)() const>(&gce_MakeElips::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeElips>(nb::borrow<nb::class_<gce_MakeElips>>(m.attr("gce_MakeElips")));
     nb::borrow<nb::class_<gce_MakeElips2d>>(m.attr("gce_MakeElips2d"))
         .def(nb::init<const gp_Ax2d &, const double, const double, const bool>(), nb::arg("MajorAxis"), nb::arg("MajorRadius"), nb::arg("MinorRadius"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates an ellipse with the major axis, the major and the
 minor radius. The location of the MajorAxis is the center
@@ -632,6 +640,7 @@ Exceptions StdFail_NotDone if no ellipse is constructed.
 @return resulting ellipse)nbdoc")
         .def("Operator", static_cast<gp_Elips2d (gce_MakeElips2d::*)() const>(&gce_MakeElips2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeElips2d>(nb::borrow<nb::class_<gce_MakeElips2d>>(m.attr("gce_MakeElips2d")));
     nb::borrow<nb::class_<gce_MakeHypr>>(m.attr("gce_MakeHypr"))
         .def(nb::init<const gp_Ax2 &, const double, const double>(), nb::arg("A2"), nb::arg("MajorRadius"), nb::arg("MinorRadius"), R"nbdoc(Creates a hyperbola from a local coordinate system and radii.
 @note In the local coordinate system of `A2`, the equation is
@@ -658,6 +667,7 @@ Exceptions StdFail_NotDone if no hyperbola is constructed.
 @return resulting hyperbola)nbdoc")
         .def("Operator", static_cast<gp_Hypr (gce_MakeHypr::*)() const>(&gce_MakeHypr::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeHypr>(nb::borrow<nb::class_<gce_MakeHypr>>(m.attr("gce_MakeHypr")));
     nb::borrow<nb::class_<gce_MakeHypr2d>>(m.attr("gce_MakeHypr2d"))
         .def(nb::init<const gp_Pnt2d &, const gp_Pnt2d &, const gp_Pnt2d &>(), nb::arg("S1"), nb::arg("S2"), nb::arg("Center"), R"nbdoc(Creates a hyperbola from center and two points.
 @note `Center` is the hyperbola center, `Center`-`S1` defines major axis,
@@ -692,6 +702,7 @@ Exceptions StdFail_NotDone if no hyperbola is constructed.
 @return resulting hyperbola)nbdoc")
         .def("Operator", static_cast<gp_Hypr2d (gce_MakeHypr2d::*)() const>(&gce_MakeHypr2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeHypr2d>(nb::borrow<nb::class_<gce_MakeHypr2d>>(m.attr("gce_MakeHypr2d")));
     nb::borrow<nb::class_<gce_MakeLin>>(m.attr("gce_MakeLin"))
         .def(nb::init<const gp_Ax1 &>(), nb::arg("A1"), R"nbdoc(Creates a line located along the axis A1.
 @note The location of `A1` is the line origin.
@@ -712,6 +723,7 @@ Exceptions StdFail_NotDone is raised if no line is constructed.
 @return resulting line)nbdoc")
         .def("Operator", static_cast<gp_Lin (gce_MakeLin::*)() const>(&gce_MakeLin::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeLin>(nb::borrow<nb::class_<gce_MakeLin>>(m.attr("gce_MakeLin")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, gce_MakeLin>();
     nb::borrow<nb::class_<gce_MakeLin2d>>(m.attr("gce_MakeLin2d"))
         .def(nb::init<const gp_Ax2d &>(), nb::arg("A"), R"nbdoc(Creates a line located with A.
@@ -745,6 +757,7 @@ Exceptions StdFail_NotDone if no line is constructed.
 @return resulting line)nbdoc")
         .def("Operator", static_cast<gp_Lin2d (gce_MakeLin2d::*)() const>(&gce_MakeLin2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeLin2d>(nb::borrow<nb::class_<gce_MakeLin2d>>(m.attr("gce_MakeLin2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2d &>, gce_MakeLin2d>();
     nb::borrow<nb::class_<gce_MakeMirror>>(m.attr("gce_MakeMirror"))
         .def(nb::init<const gp_Pnt &>(), nb::arg("Point"), R"nbdoc(Constructs a central symmetry about a point.
@@ -764,6 +777,7 @@ Exceptions StdFail_NotDone if no line is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf (gce_MakeMirror::*)() const>(&gce_MakeMirror::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeMirror>(nb::borrow<nb::class_<gce_MakeMirror>>(m.attr("gce_MakeMirror")));
     nb::implicitly_convertible<std::decay_t<const gp_Pnt &>, gce_MakeMirror>();
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, gce_MakeMirror>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin &>, gce_MakeMirror>();
@@ -783,6 +797,7 @@ Exceptions StdFail_NotDone if no line is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf2d (gce_MakeMirror2d::*)() const>(&gce_MakeMirror2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeMirror2d>(nb::borrow<nb::class_<gce_MakeMirror2d>>(m.attr("gce_MakeMirror2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Pnt2d &>, gce_MakeMirror2d>();
     nb::implicitly_convertible<std::decay_t<const gp_Ax2d &>, gce_MakeMirror2d>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin2d &>, gce_MakeMirror2d>();
@@ -799,6 +814,7 @@ Exceptions StdFail_NotDone if no line is constructed.
 @throw StdFail_NotDone if construction has failed)nbdoc")
         .def("Operator", static_cast<gp_Parab (gce_MakeParab::*)() const>(&gce_MakeParab::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting parabola)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeParab>(nb::borrow<nb::class_<gce_MakeParab>>(m.attr("gce_MakeParab")));
     nb::borrow<nb::class_<gce_MakeParab2d>>(m.attr("gce_MakeParab2d"))
         .def(nb::init<const gp_Ax2d &, const double, const bool>(), nb::arg("MirrorAxis"), nb::arg("Focal"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates a parabola from symmetry axis and focal length.
 @param[in] MirrorAxis symmetry axis of the parabola
@@ -826,6 +842,7 @@ Exceptions StdFail_NotDone if no line is constructed.
 @throw StdFail_NotDone if construction has failed)nbdoc")
         .def("Operator", static_cast<gp_Parab2d (gce_MakeParab2d::*)() const>(&gce_MakeParab2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting parabola)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeParab2d>(nb::borrow<nb::class_<gce_MakeParab2d>>(m.attr("gce_MakeParab2d")));
     nb::borrow<nb::class_<gce_MakePln>>(m.attr("gce_MakePln"))
         .def(nb::init<const gp_Ax2 &>(), nb::arg("A2"), R"nbdoc(The coordinate system of the plane is defined with the axis
 placement A2.
@@ -872,6 +889,7 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting plane)nbdoc")
         .def("Operator", static_cast<gp_Pln (gce_MakePln::*)() const>(&gce_MakePln::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting object)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakePln>(nb::borrow<nb::class_<gce_MakePln>>(m.attr("gce_MakePln")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2 &>, gce_MakePln>();
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, gce_MakePln>();
     nb::borrow<nb::class_<gce_MakeRotation>>(m.attr("gce_MakeRotation"))
@@ -889,6 +907,7 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf (gce_MakeRotation::*)() const>(&gce_MakeRotation::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeRotation>(nb::borrow<nb::class_<gce_MakeRotation>>(m.attr("gce_MakeRotation")));
     nb::borrow<nb::class_<gce_MakeRotation2d>>(m.attr("gce_MakeRotation2d"))
         .def(nb::init<const gp_Pnt2d &, const double>(), nb::arg("Point"), nb::arg("Angle"), R"nbdoc(Constructs a rotation around a point in 2D.
 @param[in] Point rotation center
@@ -897,6 +916,7 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf2d (gce_MakeRotation2d::*)() const>(&gce_MakeRotation2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeRotation2d>(nb::borrow<nb::class_<gce_MakeRotation2d>>(m.attr("gce_MakeRotation2d")));
     nb::borrow<nb::class_<gce_MakeScale>>(m.attr("gce_MakeScale"))
         .def(nb::init<const gp_Pnt &, const double>(), nb::arg("Point"), nb::arg("Scale"), R"nbdoc(Constructs a scaling transformation.
 @param[in] Point center of scaling
@@ -905,6 +925,7 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf (gce_MakeScale::*)() const>(&gce_MakeScale::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeScale>(nb::borrow<nb::class_<gce_MakeScale>>(m.attr("gce_MakeScale")));
     nb::borrow<nb::class_<gce_MakeScale2d>>(m.attr("gce_MakeScale2d"))
         .def(nb::init<const gp_Pnt2d &, const double>(), nb::arg("Point"), nb::arg("Scale"), R"nbdoc(Constructs a scaling transformation.
 @param[in] Point center of scaling
@@ -913,6 +934,7 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf2d (gce_MakeScale2d::*)() const>(&gce_MakeScale2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeScale2d>(nb::borrow<nb::class_<gce_MakeScale2d>>(m.attr("gce_MakeScale2d")));
     nb::borrow<nb::class_<gce_MakeTranslation>>(m.attr("gce_MakeTranslation"))
         .def(nb::init<const gp_Vec &>(), nb::arg("Vect"), R"nbdoc(Constructs a translation from a vector.
 @param[in] Vect translation vector)nbdoc")
@@ -923,6 +945,7 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf (gce_MakeTranslation::*)() const>(&gce_MakeTranslation::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeTranslation>(nb::borrow<nb::class_<gce_MakeTranslation>>(m.attr("gce_MakeTranslation")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec &>, gce_MakeTranslation>();
     nb::borrow<nb::class_<gce_MakeTranslation2d>>(m.attr("gce_MakeTranslation2d"))
         .def(nb::init<const gp_Vec2d &>(), nb::arg("Vect"), R"nbdoc(Constructs a translation from a vector.
@@ -934,5 +957,6 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting transformation)nbdoc")
         .def("Operator", static_cast<gp_Trsf2d (gce_MakeTranslation2d::*)() const>(&gce_MakeTranslation2d::Operator), R"nbdoc(Alias for Value() returning a copy.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<gce_MakeTranslation2d>(nb::borrow<nb::class_<gce_MakeTranslation2d>>(m.attr("gce_MakeTranslation2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec2d &>, gce_MakeTranslation2d>();
 }

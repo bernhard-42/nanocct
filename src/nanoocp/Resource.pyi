@@ -80,7 +80,11 @@ class Resource_FormatType(enum.IntEnum):
     Resource_GB = 3
 
 class Resource_LexicalCompare:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Resource_LexicalCompare) -> None: ...
 
     def IsLower(self, Left: nanoocp.TCollection.TCollection_AsciiString, Right: nanoocp.TCollection.TCollection_AsciiString) -> bool:
         """Returns True if <Left> is lower than <Right>."""
@@ -118,6 +122,9 @@ class Resource_Manager(nanoocp.Standard.Standard_Transient):
         @param[in] theUserDefaultsDirectory  user folder for looking description file
         @param[in] theIsVerbose  print verbose messages
         """
+
+    @overload
+    def __init__(self, theOther: Resource_Manager) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -203,7 +210,11 @@ class Resource_Unicode:
     Unicode string of extended characters, and vice versa.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Resource_Unicode) -> None: ...
 
     @staticmethod
     def ConvertSJISToUnicode(fromstr: str, tostr: nanoocp.TCollection.TCollection_ExtendedString) -> None:

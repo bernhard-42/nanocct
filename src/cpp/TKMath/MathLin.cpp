@@ -37,50 +37,56 @@ void nanoocp_templates_MathLin(nb::module_ &m) {
 void nanoocp_define_MathLin(nb::module_ &m) {
     nanoocp_implicit_default_ctor<MathLin::LUResult>(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")));
     nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult"))
-        .def("IsDone", static_cast<bool (MathLin::LUResult::*)() const>(&MathLin::LUResult::IsDone))
-        .def_rw("Status", &MathLin::LUResult::Status)
-        .def_rw("LU", &MathLin::LUResult::LU, R"nbdoc(Combined L and U matrices)nbdoc")
-        .def_rw("Pivot", &MathLin::LUResult::Pivot, R"nbdoc(Pivot indices)nbdoc")
-        .def_rw("Determinant", &MathLin::LUResult::Determinant)
-        .def_rw("Sign", &MathLin::LUResult::Sign, R"nbdoc(Sign from row interchanges)nbdoc");
+        .def("IsDone", static_cast<bool (MathLin::LUResult::*)() const>(&MathLin::LUResult::IsDone));
+    nanoocp_implicit_copy_ctor<MathLin::LUResult>(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")), "Status", &MathLin::LUResult::Status);
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")), "LU", &MathLin::LUResult::LU, R"nbdoc(Combined L and U matrices)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")), "Pivot", &MathLin::LUResult::Pivot, R"nbdoc(Pivot indices)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")), "Determinant", &MathLin::LUResult::Determinant);
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")), "Sign", &MathLin::LUResult::Sign, R"nbdoc(Sign from row interchanges)nbdoc");
     nanoocp_implicit_default_ctor<MathLin::CroutResult>(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")));
     nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult"))
-        .def("IsDone", static_cast<bool (MathLin::CroutResult::*)() const>(&MathLin::CroutResult::IsDone))
-        .def_rw("Status", &MathLin::CroutResult::Status)
-        .def_rw("L", &MathLin::CroutResult::L, R"nbdoc(Lower triangular matrix (unit diagonal))nbdoc")
-        .def_rw("D", &MathLin::CroutResult::D, R"nbdoc(Diagonal elements)nbdoc")
-        .def_rw("Inverse", &MathLin::CroutResult::Inverse, R"nbdoc(Inverse matrix (lower triangle only))nbdoc")
-        .def_rw("Determinant", &MathLin::CroutResult::Determinant, R"nbdoc(Matrix determinant)nbdoc");
+        .def("IsDone", static_cast<bool (MathLin::CroutResult::*)() const>(&MathLin::CroutResult::IsDone));
+    nanoocp_implicit_copy_ctor<MathLin::CroutResult>(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")), "Status", &MathLin::CroutResult::Status);
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")), "L", &MathLin::CroutResult::L, R"nbdoc(Lower triangular matrix (unit diagonal))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")), "D", &MathLin::CroutResult::D, R"nbdoc(Diagonal elements)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")), "Inverse", &MathLin::CroutResult::Inverse, R"nbdoc(Inverse matrix (lower triangle only))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")), "Determinant", &MathLin::CroutResult::Determinant, R"nbdoc(Matrix determinant)nbdoc");
     nanoocp_implicit_default_ctor<MathLin::SVDResult>(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")));
     nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult"))
-        .def("IsDone", static_cast<bool (MathLin::SVDResult::*)() const>(&MathLin::SVDResult::IsDone))
-        .def_rw("Status", &MathLin::SVDResult::Status)
-        .def_rw("U", &MathLin::SVDResult::U, R"nbdoc(Left singular vectors (m x n))nbdoc")
-        .def_rw("SingularValues", &MathLin::SVDResult::SingularValues, R"nbdoc(Singular values (n elements))nbdoc")
-        .def_rw("V", &MathLin::SVDResult::V, R"nbdoc(Right singular vectors (n x n))nbdoc")
-        .def_rw("Rank", &MathLin::SVDResult::Rank, R"nbdoc(Numerical rank)nbdoc");
+        .def("IsDone", static_cast<bool (MathLin::SVDResult::*)() const>(&MathLin::SVDResult::IsDone));
+    nanoocp_implicit_copy_ctor<MathLin::SVDResult>(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")), "Status", &MathLin::SVDResult::Status);
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")), "U", &MathLin::SVDResult::U, R"nbdoc(Left singular vectors (m x n))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")), "SingularValues", &MathLin::SVDResult::SingularValues, R"nbdoc(Singular values (n elements))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")), "V", &MathLin::SVDResult::V, R"nbdoc(Right singular vectors (n x n))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")), "Rank", &MathLin::SVDResult::Rank, R"nbdoc(Numerical rank)nbdoc");
     nanoocp_implicit_default_ctor<MathLin::QRResult>(nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult")));
     nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult"))
-        .def("IsDone", static_cast<bool (MathLin::QRResult::*)() const>(&MathLin::QRResult::IsDone))
-        .def_rw("Status", &MathLin::QRResult::Status)
-        .def_rw("Q", &MathLin::QRResult::Q, R"nbdoc(Orthogonal matrix Q (m x m))nbdoc")
-        .def_rw("R", &MathLin::QRResult::R, R"nbdoc(Upper triangular matrix R (m x n))nbdoc")
-        .def_rw("Rank", &MathLin::QRResult::Rank, R"nbdoc(Numerical rank)nbdoc");
+        .def("IsDone", static_cast<bool (MathLin::QRResult::*)() const>(&MathLin::QRResult::IsDone));
+    nanoocp_implicit_copy_ctor<MathLin::QRResult>(nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult")), "Status", &MathLin::QRResult::Status);
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult")), "Q", &MathLin::QRResult::Q, R"nbdoc(Orthogonal matrix Q (m x m))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult")), "R", &MathLin::QRResult::R, R"nbdoc(Upper triangular matrix R (m x n))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult")), "Rank", &MathLin::QRResult::Rank, R"nbdoc(Numerical rank)nbdoc");
     nanoocp_implicit_default_ctor<MathLin::LeastSquaresResult>(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")));
     nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult"))
-        .def("IsDone", static_cast<bool (MathLin::LeastSquaresResult::*)() const>(&MathLin::LeastSquaresResult::IsDone))
-        .def_rw("Status", &MathLin::LeastSquaresResult::Status)
-        .def_rw("Solution", &MathLin::LeastSquaresResult::Solution, R"nbdoc(Least squares solution x)nbdoc")
-        .def_rw("Residual", &MathLin::LeastSquaresResult::Residual, R"nbdoc(||Ax - b||_2 (L2 norm of residual))nbdoc")
-        .def_rw("ResidualSq", &MathLin::LeastSquaresResult::ResidualSq, R"nbdoc(||Ax - b||_2^2 (squared residual))nbdoc")
-        .def_rw("Rank", &MathLin::LeastSquaresResult::Rank, R"nbdoc(Numerical rank of A (for SVD))nbdoc");
+        .def("IsDone", static_cast<bool (MathLin::LeastSquaresResult::*)() const>(&MathLin::LeastSquaresResult::IsDone));
+    nanoocp_implicit_copy_ctor<MathLin::LeastSquaresResult>(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")), "Status", &MathLin::LeastSquaresResult::Status);
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")), "Solution", &MathLin::LeastSquaresResult::Solution, R"nbdoc(Least squares solution x)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")), "Residual", &MathLin::LeastSquaresResult::Residual, R"nbdoc(||Ax - b||_2 (L2 norm of residual))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")), "ResidualSq", &MathLin::LeastSquaresResult::ResidualSq, R"nbdoc(||Ax - b||_2^2 (squared residual))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")), "Rank", &MathLin::LeastSquaresResult::Rank, R"nbdoc(Numerical rank of A (for SVD))nbdoc");
     nanoocp_implicit_default_ctor<MathLin::EigenResult>(nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult")));
     nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult"))
-        .def("IsDone", static_cast<bool (MathLin::EigenResult::*)() const>(&MathLin::EigenResult::IsDone))
-        .def_rw("Status", &MathLin::EigenResult::Status)
-        .def_rw("EigenValues", &MathLin::EigenResult::EigenValues, R"nbdoc(Computed eigenvalues)nbdoc")
-        .def_rw("EigenVectors", &MathLin::EigenResult::EigenVectors, R"nbdoc(Eigenvectors as columns)nbdoc")
-        .def_rw("Dimension", &MathLin::EigenResult::Dimension);
+        .def("IsDone", static_cast<bool (MathLin::EigenResult::*)() const>(&MathLin::EigenResult::IsDone));
+    nanoocp_implicit_copy_ctor<MathLin::EigenResult>(nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult")), "Status", &MathLin::EigenResult::Status);
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult")), "EigenValues", &MathLin::EigenResult::EigenValues, R"nbdoc(Computed eigenvalues)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult")), "EigenVectors", &MathLin::EigenResult::EigenVectors, R"nbdoc(Eigenvectors as columns)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult")), "Dimension", &MathLin::EigenResult::Dimension);
     m.def("LU", static_cast<MathLin::LUResult (*)(const math_Matrix &, double)>(&MathLin::LU), nb::arg("theA"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Perform LU decomposition of matrix A with partial pivoting.
 Decomposes A into L*U where L is lower triangular with unit diagonal
 and U is upper triangular. The result stores L and U in a combined matrix.

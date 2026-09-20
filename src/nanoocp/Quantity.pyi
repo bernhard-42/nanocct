@@ -1100,6 +1100,9 @@ class Quantity_Color:
         Throws exception if values are out of range.
         """
 
+    @overload
+    def __init__(self, theOther: Quantity_Color) -> None: ...
+
     def Name(self) -> Quantity_NameOfColor:
         """
         Returns the name of the nearest color from the Quantity_NameOfColor enumeration.
@@ -1392,6 +1395,8 @@ class Quantity_Color:
     def SetEpsilon(theEpsilon: float) -> None:
         """Set the value used to compare two colors for equality."""
 
+    def __hash__(self) -> int: ...
+
 class Quantity_ColorRGBA:
     """
     The pair of Quantity_Color and Alpha component (1.0 opaque, 0.0 transparent).
@@ -1416,6 +1421,9 @@ class Quantity_ColorRGBA:
     @overload
     def __init__(self, theRed: float, theGreen: float, theBlue: float, theAlpha: float) -> None:
         """Creates the color from RGBA values."""
+
+    @overload
+    def __init__(self, theOther: Quantity_ColorRGBA) -> None: ...
 
     def SetValues(self, theRed: float, theGreen: float, theBlue: float, theAlpha: float) -> None:
         """Assign new values to the color."""
@@ -1487,6 +1495,8 @@ class Quantity_ColorRGBA:
     def Convert_sRGB_To_LinearRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
         """Convert sRGB components into linear RGB using OpenGL specs formula."""
 
+    def __hash__(self) -> int: ...
+
 class Quantity_Date:
     """
     This class provides services to manage date information.
@@ -1528,6 +1538,9 @@ class Quantity_Date:
         Quantity_DateDefinitionError if mm, dd, hh,
         mn, ss, mis and mics are not the components of the valid date.
         """
+
+    @overload
+    def __init__(self, theOther: Quantity_Date) -> None: ...
 
     def Values(self) -> tuple[int, int, int, int, int, int, int, int]:
         """
@@ -1685,6 +1698,9 @@ class Quantity_Period:
         0 <= mis
         0 <= mics
         """
+
+    @overload
+    def __init__(self, theOther: Quantity_Period) -> None: ...
 
     @overload
     def Values(self) -> tuple[int, int, int, int, int, int]:

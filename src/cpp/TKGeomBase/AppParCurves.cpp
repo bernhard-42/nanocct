@@ -99,6 +99,7 @@ void nanoocp_define_AppParCurves(nb::module_ &m) {
         .def_static("Bernstein", static_cast<void (*)(const int, const math_Vector &, math_Matrix &, math_Matrix &)>(&AppParCurves::Bernstein), nb::arg("NbPoles"), nb::arg("U"), nb::arg("A"), nb::arg("DA"))
         .def_static("SecondDerivativeBernstein", static_cast<void (*)(const double, math_Vector &)>(&AppParCurves::SecondDerivativeBernstein), nb::arg("U"), nb::arg("DDA"))
         .def_static("SplineFunction", static_cast<void (*)(const int, const int, const math_Vector &, const math_Vector &, math_Matrix &, math_Matrix &, math_IntegerVector &)>(&AppParCurves::SplineFunction), nb::arg("NbPoles"), nb::arg("Degree"), nb::arg("Parameters"), nb::arg("FlatKnots"), nb::arg("A"), nb::arg("DA"), nb::arg("Index"));
+    nanoocp_implicit_copy_ctor<AppParCurves>(nb::borrow<nb::class_<AppParCurves>>(m.attr("AppParCurves")));
     nb::borrow<nb::class_<AppParCurves_ConstraintCouple>>(m.attr("AppParCurves_ConstraintCouple"))
         .def(nb::init<>(), R"nbdoc(returns an indefinite ConstraintCouple.)nbdoc")
         .def(nb::init<const int, const AppParCurves_Constraint>(), nb::arg("TheIndex"), nb::arg("Cons"), R"nbdoc(Create a couple the object <Index> will have the
@@ -107,6 +108,7 @@ constraint <Cons>.)nbdoc")
         .def("Constraint", static_cast<AppParCurves_Constraint (AppParCurves_ConstraintCouple::*)() const>(&AppParCurves_ConstraintCouple::Constraint), R"nbdoc(returns the constraint of the object.)nbdoc")
         .def("SetIndex", static_cast<void (AppParCurves_ConstraintCouple::*)(const int)>(&AppParCurves_ConstraintCouple::SetIndex), nb::arg("TheIndex"), R"nbdoc(Changes the index of the constraint object.)nbdoc")
         .def("SetConstraint", static_cast<void (AppParCurves_ConstraintCouple::*)(const AppParCurves_Constraint)>(&AppParCurves_ConstraintCouple::SetConstraint), nb::arg("Cons"), R"nbdoc(Changes the constraint of the object.)nbdoc");
+    nanoocp_implicit_copy_ctor<AppParCurves_ConstraintCouple>(nb::borrow<nb::class_<AppParCurves_ConstraintCouple>>(m.attr("AppParCurves_ConstraintCouple")));
     nb::borrow<nb::class_<AppParCurves_MultiPoint>>(m.attr("AppParCurves_MultiPoint"))
         .def(nb::init<>(), R"nbdoc(creates an indefinite MultiPoint.)nbdoc")
         .def(nb::init<const NCollection_Array1<gp_Pnt> &>(), nb::arg("tabP"), R"nbdoc(creates a MultiPoint only composed of 3D points.)nbdoc")
@@ -148,6 +150,7 @@ newz = z + dz*oldz)nbdoc")
 <CuIndex>.
 newx = x + dx*oldx
 newy = y + dy*oldy    for all points of the curve.)nbdoc");
+    nanoocp_implicit_copy_ctor<AppParCurves_MultiPoint>(nb::borrow<nb::class_<AppParCurves_MultiPoint>>(m.attr("AppParCurves_MultiPoint")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt> &>, AppParCurves_MultiPoint>();
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<gp_Pnt2d> &>, AppParCurves_MultiPoint>();
     nb::borrow<nb::class_<AppParCurves_MultiCurve>>(m.attr("AppParCurves_MultiCurve"))
@@ -214,6 +217,7 @@ An exception is raised if the curve dimension is 3d.)nbdoc")
 on the Bezier curve number CuIndex.
 An exception is raised if CuIndex <0 or > NbCurves.
 An exception is raised if the curve dimension is 2d.)nbdoc");
+    nanoocp_implicit_copy_ctor<AppParCurves_MultiCurve>(nb::borrow<nb::class_<AppParCurves_MultiCurve>>(m.attr("AppParCurves_MultiCurve")));
     nb::implicitly_convertible<std::decay_t<const int>, AppParCurves_MultiCurve>();
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<AppParCurves_MultiPoint> &>, AppParCurves_MultiCurve>();
     nb::borrow<nb::class_<AppParCurves_MultiBSpCurve>>(m.attr("AppParCurves_MultiBSpCurve"))
@@ -258,5 +262,6 @@ An exception is raised if the curve dimension is 3d.)nbdoc")
 on the BSpline curve number CuIndex.
 An exception is raised if CuIndex <0 or > NbCurves.
 An exception is raised if the curve dimension is 2d.)nbdoc");
+    nanoocp_implicit_copy_ctor<AppParCurves_MultiBSpCurve>(nb::borrow<nb::class_<AppParCurves_MultiBSpCurve>>(m.attr("AppParCurves_MultiBSpCurve")));
     nb::implicitly_convertible<std::decay_t<const int>, AppParCurves_MultiBSpCurve>();
 }

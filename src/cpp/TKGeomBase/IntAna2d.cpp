@@ -55,6 +55,7 @@ on the first element, U2 the parameter on the second one.)nbdoc")
         .def("ParamOnSecond", static_cast<double (IntAna2d_IntPoint::*)() const>(&IntAna2d_IntPoint::ParamOnSecond), R"nbdoc(Returns the parameter on the second element.
 If the second element is an implicit curve, an exception
 is raised.)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna2d_IntPoint>(nb::borrow<nb::class_<IntAna2d_IntPoint>>(m.attr("IntAna2d_IntPoint")));
     nb::borrow<nb::class_<IntAna2d_AnaIntersection>>(m.attr("IntAna2d_AnaIntersection"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. IsDone returns False.)nbdoc")
         .def(nb::init<const gp_Lin2d &, const gp_Lin2d &>(), nb::arg("L1"), nb::arg("L2"), R"nbdoc(Intersection between two lines.)nbdoc")
@@ -90,6 +91,7 @@ The function returns FALSE in all the other cases.)nbdoc")
         .def("NbPoints", static_cast<int (IntAna2d_AnaIntersection::*)() const>(&IntAna2d_AnaIntersection::NbPoints), R"nbdoc(returns the number of IntPoint between the 2 curves.)nbdoc")
         .def("Point", static_cast<const IntAna2d_IntPoint & (IntAna2d_AnaIntersection::*)(const int) const>(&IntAna2d_AnaIntersection::Point), nb::arg("N"), R"nbdoc(returns the intersection point of range N;
 If (N<=0) or (N>NbPoints), an exception is raised.)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna2d_AnaIntersection>(nb::borrow<nb::class_<IntAna2d_AnaIntersection>>(m.attr("IntAna2d_AnaIntersection")));
     nb::borrow<nb::class_<IntAna2d_Conic>>(m.attr("IntAna2d_Conic"))
         .def(nb::init<const gp_Circ2d &>(), nb::arg("C"))
         .def(nb::init<const gp_Lin2d &>(), nb::arg("C"))
@@ -107,6 +109,7 @@ A.X**2 + B.Y**2 + 2.C.X*Y + 2.D.X + 2.E.Y + F = 0.)nbdoc")
 ( written in the natural coordinates system )
 A x x + B y y + 2 C x y + 2 D x + 2 E y + F
 in the local coordinates system defined by Axis)nbdoc");
+    nanoocp_implicit_copy_ctor<IntAna2d_Conic>(nb::borrow<nb::class_<IntAna2d_Conic>>(m.attr("IntAna2d_Conic")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ2d &>, IntAna2d_Conic>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin2d &>, IntAna2d_Conic>();
     nb::implicitly_convertible<std::decay_t<const gp_Parab2d &>, IntAna2d_Conic>();
@@ -119,6 +122,7 @@ in the local coordinates system defined by Axis)nbdoc");
         .def("Value", static_cast<double (MyDirectPolynomialRoots::*)(const int) const>(&MyDirectPolynomialRoots::Value), nb::arg("i"))
         .def("IsDone", static_cast<double (MyDirectPolynomialRoots::*)() const>(&MyDirectPolynomialRoots::IsDone))
         .def("InfiniteRoots", static_cast<bool (MyDirectPolynomialRoots::*)() const>(&MyDirectPolynomialRoots::InfiniteRoots));
+    nanoocp_implicit_copy_ctor<MyDirectPolynomialRoots>(nb::borrow<nb::class_<MyDirectPolynomialRoots>>(m.attr("MyDirectPolynomialRoots")));
     m.def("Points_Confondus", static_cast<bool (*)(const double, const double, const double, const double)>(&Points_Confondus), nb::arg("xa"), nb::arg("ya"), nb::arg("xb"), nb::arg("yb"));
     m.def("Traitement_Points_Confondus", [](IntAna2d_IntPoint * pts) { int nb_pts{}; Traitement_Points_Confondus(nb_pts, pts); return nb_pts; }, nb::arg("pts"));
     m.def("Coord_Ancien_Repere", [](const gp_Ax2d & Axe_Nouveau_Repere) { double Ancien_X{}; double Ancien_Y{}; Coord_Ancien_Repere(Ancien_X, Ancien_Y, Axe_Nouveau_Repere); return std::make_tuple(Ancien_X, Ancien_Y); }, nb::arg("Axe_Nouveau_Repere"));

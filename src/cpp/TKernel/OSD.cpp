@@ -506,6 +506,7 @@ not. If yes then raises Exception_CTRL_BREAK.)nbdoc")
 0 by default meaning no stack trace.
 @sa Standard_Failure::GetStackString())nbdoc")
         .def_static("SetSignalStackTraceLength", static_cast<void (*)(int)>(&OSD::SetSignalStackTraceLength), nb::arg("theLength"), R"nbdoc(Sets a length of stack trace to be put into exception redirected from signal.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD>(nb::borrow<nb::class_<OSD>>(m.attr("OSD")));
     nb::borrow<nb::class_<OSD_FileSystem>>(m.attr("OSD_FileSystem"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&OSD_FileSystem::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&OSD_FileSystem::get_type_descriptor))
@@ -529,6 +530,7 @@ OSD_FileSystem::DefaultFileSystem().)nbdoc")
         .def("LinkedFileSystem", static_cast<const occ::handle<OSD_FileSystem> & (OSD_CachedFileSystem::*)() const>(&OSD_CachedFileSystem::LinkedFileSystem), R"nbdoc(Return linked file system; initialized with OSD_FileSystem::DefaultFileSystem() by default.)nbdoc")
         .def("SetLinkedFileSystem", static_cast<void (OSD_CachedFileSystem::*)(const occ::handle<OSD_FileSystem> &)>(&OSD_CachedFileSystem::SetLinkedFileSystem), nb::arg("theLinkedFileSystem"), R"nbdoc(Sets linked file system.)nbdoc")
         .def("IsSupportedPath", static_cast<bool (OSD_CachedFileSystem::*)(const TCollection_AsciiString &) const>(&OSD_CachedFileSystem::IsSupportedPath), nb::arg("theUrl"), R"nbdoc(Returns TRUE if URL defines a supported protocol.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_CachedFileSystem>(nb::borrow<nb::class_<OSD_CachedFileSystem>>(m.attr("OSD_CachedFileSystem")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<OSD_FileSystem> &>, OSD_CachedFileSystem>();
     nb::borrow<nb::class_<OSD_Chronometer>>(m.attr("OSD_Chronometer"))
         .def(nb::init<bool>(), nb::arg("theThisThreadOnly") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Initializes a stopped Chronometer.
@@ -565,6 +567,7 @@ and is platform-specific.)nbdoc")
 thread since its start. Note that this measurement is
 platform-specific, as threads are implemented and managed
 differently on different platforms and CPUs.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Chronometer>(nb::borrow<nb::class_<OSD_Chronometer>>(m.attr("OSD_Chronometer")));
     nb::implicitly_convertible<std::decay_t<bool>, OSD_Chronometer>();
     nb::borrow<nb::class_<OSD_Path>>(m.attr("OSD_Path"))
         .def(nb::init<>(), R"nbdoc(Creates a Path object initialized to an empty string.
@@ -728,6 +731,7 @@ Detection is based on path syntax - no any filesystem / network access performed
         .def_static("IsAbsolutePath", static_cast<bool (*)(const char *)>(&OSD_Path::IsAbsolutePath), nb::arg("thePath"), R"nbdoc(Method to recognize path is absolute or not.
 Detection is based on path syntax - no any filesystem / network access performed.
 @return true if path is complete (absolute))nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Path>(nb::borrow<nb::class_<OSD_Path>>(m.attr("OSD_Path")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, OSD_Path>();
     nb::borrow<nb::class_<OSD_Error>>(m.attr("OSD_Error"))
         .def(nb::init<>(), R"nbdoc(Initializes Error to be without any Error.
@@ -742,6 +746,7 @@ To test these values, you must include "OSD_ErrorList.hxx")nbdoc")
 This is a way to test if a system call succeeded or not.)nbdoc")
         .def("Reset", static_cast<void (OSD_Error::*)()>(&OSD_Error::Reset), R"nbdoc(Resets error counter to zero
 This allows the user to ignore an error (WARNING).)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Error>(nb::borrow<nb::class_<OSD_Error>>(m.attr("OSD_Error")));
     nb::borrow<nb::class_<OSD_FileNode>>(m.attr("OSD_FileNode"))
         .def("Path", static_cast<void (OSD_FileNode::*)(OSD_Path &) const>(&OSD_FileNode::Path), nb::arg("Name"), R"nbdoc(Gets file name and path.)nbdoc")
         .def("SetPath", static_cast<void (OSD_FileNode::*)(const OSD_Path &)>(&OSD_FileNode::SetPath), nb::arg("Name"), R"nbdoc(Sets file name and path.
@@ -762,6 +767,7 @@ same value.)nbdoc")
         .def("Reset", static_cast<void (OSD_FileNode::*)()>(&OSD_FileNode::Reset), R"nbdoc(Resets error counter to zero)nbdoc")
         .def("Perror", static_cast<void (OSD_FileNode::*)()>(&OSD_FileNode::Perror), R"nbdoc(Raises OSD_Error)nbdoc")
         .def("Error", static_cast<int (OSD_FileNode::*)() const>(&OSD_FileNode::Error), R"nbdoc(Returns error number if 'Failed' is TRUE.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_FileNode>(nb::borrow<nb::class_<OSD_FileNode>>(m.attr("OSD_FileNode")));
     nb::borrow<nb::class_<OSD_Directory>>(m.attr("OSD_Directory"))
         .def(nb::init<>(), R"nbdoc(Creates Directory object.
 It is initialized to an empty name.)nbdoc")
@@ -774,6 +780,7 @@ returned, and only <Protect> is applied to the existing directory.
 
 If Build is used and <me> is instantiated without a name,
 OSDError is raised.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Directory>(nb::borrow<nb::class_<OSD_Directory>>(m.attr("OSD_Directory")));
     nb::implicitly_convertible<std::decay_t<const OSD_Path &>, OSD_Directory>();
     nb::borrow<nb::class_<OSD_DirectoryIterator>>(m.attr("OSD_DirectoryIterator"))
         .def(nb::init<>(), R"nbdoc(Instantiates Object as empty Iterator;)nbdoc")
@@ -792,6 +799,7 @@ position of the iterator.)nbdoc")
         .def("Reset", static_cast<void (OSD_DirectoryIterator::*)()>(&OSD_DirectoryIterator::Reset), R"nbdoc(Resets error counter to zero)nbdoc")
         .def("Perror", static_cast<void (OSD_DirectoryIterator::*)()>(&OSD_DirectoryIterator::Perror), R"nbdoc(Raises OSD_Error)nbdoc")
         .def("Error", static_cast<int (OSD_DirectoryIterator::*)() const>(&OSD_DirectoryIterator::Error), R"nbdoc(Returns error number if 'Failed' is TRUE.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_DirectoryIterator>(nb::borrow<nb::class_<OSD_DirectoryIterator>>(m.attr("OSD_DirectoryIterator")));
     nb::borrow<nb::class_<OSD_Disk>>(m.attr("OSD_Disk"))
         .def(nb::init<>(), R"nbdoc(Creates a disk object.
 This is used only when a class contains a Disk field.
@@ -812,6 +820,7 @@ file associated to /tmp.)nbdoc")
         .def("Reset", static_cast<void (OSD_Disk::*)()>(&OSD_Disk::Reset), R"nbdoc(Resets error counter to zero)nbdoc")
         .def("Perror", static_cast<void (OSD_Disk::*)()>(&OSD_Disk::Perror), R"nbdoc(Raises OSD_Error)nbdoc")
         .def("Error", static_cast<int (OSD_Disk::*)() const>(&OSD_Disk::Error), R"nbdoc(Returns error number if 'Failed' is TRUE.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Disk>(nb::borrow<nb::class_<OSD_Disk>>(m.attr("OSD_Disk")));
     nb::implicitly_convertible<std::decay_t<const OSD_Path &>, OSD_Disk>();
     nb::implicitly_convertible<std::decay_t<const char *const>, OSD_Disk>();
     nb::borrow<nb::class_<OSD_Environment>>(m.attr("OSD_Environment"))
@@ -836,6 +845,7 @@ into system (physically).)nbdoc")
         .def("Reset", static_cast<void (OSD_Environment::*)()>(&OSD_Environment::Reset), R"nbdoc(Resets error counter to zero)nbdoc")
         .def("Perror", static_cast<void (OSD_Environment::*)()>(&OSD_Environment::Perror), R"nbdoc(Raises OSD_Error)nbdoc")
         .def("Error", static_cast<int (OSD_Environment::*)() const>(&OSD_Environment::Error), R"nbdoc(Returns error number if 'Failed' is TRUE.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Environment>(nb::borrow<nb::class_<OSD_Environment>>(m.attr("OSD_Environment")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, OSD_Environment>();
     nb::borrow<nb::class_<OSD_File>>(m.attr("OSD_File"))
         .def(nb::init<>(), R"nbdoc(Creates File object.)nbdoc")
@@ -901,6 +911,7 @@ If meanwhile the file increases returns the next line, otherwise
 returns FALSE.)nbdoc")
         .def("Edit", static_cast<bool (OSD_File::*)()>(&OSD_File::Edit), R"nbdoc(find an editor on the system and edit the given file)nbdoc")
         .def("Rewind", static_cast<void (OSD_File::*)()>(&OSD_File::Rewind), R"nbdoc(Set file pointer position to the beginning of the file)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_File>(nb::borrow<nb::class_<OSD_File>>(m.attr("OSD_File")));
     nb::implicitly_convertible<std::decay_t<const OSD_Path &>, OSD_File>();
     nb::borrow<nb::class_<OSD_FileIterator>>(m.attr("OSD_FileIterator"))
         .def(nb::init<>(), R"nbdoc(Instantiates Object as empty Iterator;)nbdoc")
@@ -919,6 +930,7 @@ position of the iterator.)nbdoc")
         .def("Reset", static_cast<void (OSD_FileIterator::*)()>(&OSD_FileIterator::Reset), R"nbdoc(Resets error counter to zero)nbdoc")
         .def("Perror", static_cast<void (OSD_FileIterator::*)()>(&OSD_FileIterator::Perror), R"nbdoc(Raises OSD_Error)nbdoc")
         .def("Error", static_cast<int (OSD_FileIterator::*)() const>(&OSD_FileIterator::Error), R"nbdoc(Returns error number if 'Failed' is TRUE.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_FileIterator>(nb::borrow<nb::class_<OSD_FileIterator>>(m.attr("OSD_FileIterator")));
     nb::borrow<nb::class_<OSD_FileSystemSelector>>(m.attr("OSD_FileSystemSelector"))
         .def(nb::new_([]() { return opencascade::handle<OSD_FileSystemSelector>(new OSD_FileSystemSelector()); }), R"nbdoc(Constructor.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&OSD_FileSystemSelector::get_type_name))
@@ -930,6 +942,7 @@ position of the iterator.)nbdoc")
 otherwise)nbdoc")
         .def("RemoveProtocol", static_cast<void (OSD_FileSystemSelector::*)(const occ::handle<OSD_FileSystem> &)>(&OSD_FileSystemSelector::RemoveProtocol), nb::arg("theFileSystem"), R"nbdoc(Unregisters file system within this selector.)nbdoc")
         .def("IsSupportedPath", static_cast<bool (OSD_FileSystemSelector::*)(const TCollection_AsciiString &) const>(&OSD_FileSystemSelector::IsSupportedPath), nb::arg("theUrl"), R"nbdoc(Returns TRUE if URL defines a supported protocol.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_FileSystemSelector>(nb::borrow<nb::class_<OSD_FileSystemSelector>>(m.attr("OSD_FileSystemSelector")));
     nb::borrow<nb::class_<OSD_Host>>(m.attr("OSD_Host"))
         .def(nb::init<>(), R"nbdoc(Initializes current host by default.)nbdoc")
         .def("SystemVersion", static_cast<TCollection_AsciiString (OSD_Host::*)()>(&OSD_Host::SystemVersion), R"nbdoc(Returns system name and version)nbdoc")
@@ -942,12 +955,14 @@ otherwise)nbdoc")
         .def("Reset", static_cast<void (OSD_Host::*)()>(&OSD_Host::Reset), R"nbdoc(Resets error counter to zero)nbdoc")
         .def("Perror", static_cast<void (OSD_Host::*)()>(&OSD_Host::Perror), R"nbdoc(Raises OSD_Error)nbdoc")
         .def("Error", static_cast<int (OSD_Host::*)() const>(&OSD_Host::Error), R"nbdoc(Returns error number if 'Failed' is TRUE.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Host>(nb::borrow<nb::class_<OSD_Host>>(m.attr("OSD_Host")));
     nb::borrow<nb::class_<OSD_LocalFileSystem>>(m.attr("OSD_LocalFileSystem"))
         .def(nb::new_([]() { return opencascade::handle<OSD_LocalFileSystem>(new OSD_LocalFileSystem()); }), R"nbdoc(Constructor.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&OSD_LocalFileSystem::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&OSD_LocalFileSystem::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (OSD_LocalFileSystem::*)() const>(&OSD_LocalFileSystem::DynamicType))
         .def("IsSupportedPath", static_cast<bool (OSD_LocalFileSystem::*)(const TCollection_AsciiString &) const>(&OSD_LocalFileSystem::IsSupportedPath), nb::arg("theUrl"), R"nbdoc(Returns TRUE if URL defines a supported protocol.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_LocalFileSystem>(nb::borrow<nb::class_<OSD_LocalFileSystem>>(m.attr("OSD_LocalFileSystem")));
     nb::borrow<nb::class_<OSD_MemInfo>>(m.attr("OSD_MemInfo"))
         .def(nb::init<const bool>(), nb::arg("theImmediateUpdate") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Create and initialize. By default all countes are active)nbdoc")
         .def("IsActive", static_cast<bool (OSD_MemInfo::*)(const OSD_MemInfo::Counter) const>(&OSD_MemInfo::IsActive), nb::arg("theCounter"), R"nbdoc(Return true if the counter is active)nbdoc")
@@ -969,6 +984,7 @@ size_t(-1) means invalid (unavailable) value.)nbdoc")
 Notice that NOT all counters are available on various systems.
 double(-1) means invalid (unavailable) value.)nbdoc")
         .def_static("PrintInfo", static_cast<TCollection_AsciiString (*)()>(&OSD_MemInfo::PrintInfo), R"nbdoc(Return the string representation for all available counter.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_MemInfo>(nb::borrow<nb::class_<OSD_MemInfo>>(m.attr("OSD_MemInfo")));
     nb::implicitly_convertible<std::decay_t<const bool>, OSD_MemInfo>();
     nb::borrow<nb::class_<OSD_Thread>>(m.attr("OSD_Thread"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
@@ -1010,6 +1026,7 @@ Should be set BEFORE first usage.)nbdoc")
         .def("IsInUse", static_cast<bool (OSD_ThreadPool::*)()>(&OSD_ThreadPool::IsInUse), R"nbdoc(Checks if thread pools has active consumers.)nbdoc")
         .def("Init", static_cast<void (OSD_ThreadPool::*)(int)>(&OSD_ThreadPool::Init), nb::arg("theNbThreads"), R"nbdoc(Reinitialize the thread pool with a different number of threads.
 Should be called only with no active jobs, or exception Standard_ProgramError will be thrown!)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_ThreadPool>(nb::borrow<nb::class_<OSD_ThreadPool>>(m.attr("OSD_ThreadPool")));
     nb::implicitly_convertible<std::decay_t<int>, OSD_ThreadPool>();
     nb::borrow<nb::class_<OSD_ThreadPool::Launcher>>(m.attr("OSD_ThreadPool").attr("Launcher"))
         .def(nb::init<OSD_ThreadPool &, int>(), nb::arg("thePool"), nb::arg("theMaxThreads") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Lock specified number of threads from the thread pool.
@@ -1026,6 +1043,7 @@ self-thread); otherwise, the functor will be executed within the caller thread.)
         .def("LowerThreadIndex", static_cast<int (OSD_ThreadPool::Launcher::*)() const>(&OSD_ThreadPool::Launcher::LowerThreadIndex), R"nbdoc(Return the lower thread index.)nbdoc")
         .def("UpperThreadIndex", static_cast<int (OSD_ThreadPool::Launcher::*)() const>(&OSD_ThreadPool::Launcher::UpperThreadIndex), R"nbdoc(Return the upper thread index (last index is reserved for the self-thread).)nbdoc")
         .def("Release", static_cast<void (OSD_ThreadPool::Launcher::*)()>(&OSD_ThreadPool::Launcher::Release), R"nbdoc(Release threads before Launcher destruction.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_ThreadPool::Launcher>(nb::borrow<nb::class_<OSD_ThreadPool::Launcher>>(m.attr("OSD_ThreadPool").attr("Launcher")));
     nb::implicitly_convertible<std::decay_t<OSD_ThreadPool &>, OSD_ThreadPool::Launcher>();
     nanoocp_implicit_default_ctor<OSD_Parallel>(nb::borrow<nb::class_<OSD_Parallel>>(m.attr("OSD_Parallel")));
     nb::borrow<nb::class_<OSD_Parallel>>(m.attr("OSD_Parallel"))
@@ -1036,6 +1054,7 @@ otherwise.)nbdoc")
         .def_static("SetUseOcctThreads", static_cast<void (*)(bool)>(&OSD_Parallel::SetUseOcctThreads), nb::arg("theToUseOcct"), R"nbdoc(Sets if OCCT threads should be used instead of auxiliary threads library.
 Has no effect if OCCT has been built with no auxiliary threads library.)nbdoc")
         .def_static("NbLogicalProcessors", static_cast<int (*)()>(&OSD_Parallel::NbLogicalProcessors), R"nbdoc(Returns number of logical processors.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Parallel>(nb::borrow<nb::class_<OSD_Parallel>>(m.attr("OSD_Parallel")));
     nb::borrow<nb::class_<OSD_PerfMeter>>(m.attr("OSD_PerfMeter"))
         .def(nb::init<>(), R"nbdoc(Constructs a void meter (to further call Init and Start).)nbdoc")
         .def(nb::init<const TCollection_AsciiString &, const bool>(), nb::arg("theMeterName"), nb::arg("theToAutoStart") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs and starts (if autoStart is true) the named meter.
@@ -1055,6 +1074,7 @@ in other places of the code.)nbdoc")
         .def("Print", static_cast<TCollection_AsciiString (OSD_PerfMeter::*)() const>(&OSD_PerfMeter::Print), R"nbdoc(Prints the data of this meter.)nbdoc")
         .def_static("PrintALL", static_cast<TCollection_AsciiString (*)()>(&OSD_PerfMeter::PrintALL), R"nbdoc(Prints the data of all meters with non-zero elapsed time.)nbdoc")
         .def_static("ResetALL", static_cast<void (*)()>(&OSD_PerfMeter::ResetALL), R"nbdoc(Resets all meters.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_PerfMeter>(nb::borrow<nb::class_<OSD_PerfMeter>>(m.attr("OSD_PerfMeter")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, OSD_PerfMeter>();
     nb::borrow<nb::class_<OSD_Process>>(m.attr("OSD_Process"))
         .def(nb::init<>(), R"nbdoc(Initializes the object and prepare for a possible dump)nbdoc")
@@ -1071,6 +1091,7 @@ in other places of the code.)nbdoc")
         .def("Reset", static_cast<void (OSD_Process::*)()>(&OSD_Process::Reset), R"nbdoc(Resets error counter to zero)nbdoc")
         .def("Perror", static_cast<void (OSD_Process::*)()>(&OSD_Process::Perror), R"nbdoc(Raises OSD_Error)nbdoc")
         .def("Error", static_cast<int (OSD_Process::*)() const>(&OSD_Process::Error), R"nbdoc(Returns error number if 'Failed' is TRUE.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Process>(nb::borrow<nb::class_<OSD_Process>>(m.attr("OSD_Process")));
     nb::borrow<nb::class_<OSD_Protection>>(m.attr("OSD_Protection"))
         .def(nb::init<>(), R"nbdoc(Initializes global access rights as follows
 
@@ -1096,6 +1117,7 @@ me.Add(aProt,X)  -> aProt = RWXD)nbdoc")
 ex: aProt = RWD
 me.Sub(aProt,RW) -> aProt = D
 But me.Sub(aProt,RWX) is also valid and gives same result.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Protection>(nb::borrow<nb::class_<OSD_Protection>>(m.attr("OSD_Protection")));
     nb::borrow<nb::class_<OSD_SharedLibrary>>(m.attr("OSD_SharedLibrary"))
         .def(nb::init<>(), R"nbdoc(Creates a SharedLibrary object with name NULL.)nbdoc")
         .def(nb::init<const char *const>(), nb::arg("aFilename"), R"nbdoc(Creates a SharedLibrary object with name aFilename.)nbdoc")
@@ -1131,6 +1153,7 @@ the results are undefined.)nbdoc")
 the last error that occurred from
 a call to DlOpen, DlClose or DlSym.)nbdoc")
         .def("Destroy", static_cast<void (OSD_SharedLibrary::*)()>(&OSD_SharedLibrary::Destroy), R"nbdoc(Frees memory allocated.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_SharedLibrary>(nb::borrow<nb::class_<OSD_SharedLibrary>>(m.attr("OSD_SharedLibrary")));
     nb::implicitly_convertible<std::decay_t<const char *const>, OSD_SharedLibrary>();
     nb::borrow<nb::class_<OSD_Timer>>(m.attr("OSD_Timer"))
         .def(nb::init<bool>(), nb::arg("theThisThreadOnly") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Builds a Chronometer initialized and stopped.
@@ -1156,6 +1179,7 @@ and CPU time.)nbdoc")
         .def("Start", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Start), R"nbdoc(Starts (after Create or Reset) or restarts (after Stop)
 the Timer.)nbdoc")
         .def("ElapsedTime", static_cast<double (OSD_Timer::*)() const>(&OSD_Timer::ElapsedTime), R"nbdoc(Returns elapsed time in seconds.)nbdoc");
+    nanoocp_implicit_copy_ctor<OSD_Timer>(nb::borrow<nb::class_<OSD_Timer>>(m.attr("OSD_Timer")));
     nb::implicitly_convertible<std::decay_t<bool>, OSD_Timer>();
     m.def("OSD_OpenFile", static_cast<FILE * (*)(const TCollection_ExtendedString &, const char *)>(&OSD_OpenFile), nb::rv_policy::reference, nb::arg("theName"), nb::arg("theMode"), R"nbdoc(Function opens the file.
 @param theName name of file encoded in UTF-16

@@ -119,7 +119,11 @@ def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | 
         if ref.kind not in (K.DECL_REF_EXPR, K.TYPE_REF) or ref.referenced is None:
             continue
         target = ref.referenced
-        qualified = _namespace_qualified(target)
+        if ref.kind == K.TYPE_REF and target.kind not in (K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL, K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
+            continue                             # template parameters (Element_t(0) in NCollection_Vec3) are substituted, not qualified
+        # a type nested in a class is qualified too (`= Options()` inside BRepGraphInc_Populate); a value reference
+        # only when a namespace is involved (class members are handled above, other classes' members are written qualified)
+        qualified = _scope_qualified(target, need_namespace=ref.kind == K.DECL_REF_EXPR)
         if qualified is None:
             continue
         for i, tok in enumerate(expr):
@@ -128,8 +132,9 @@ def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | 
     return _apply_subst(" ".join(expr))          # template parameters in defaults (Element_t(0)) while instantiating.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
 
 
-def _namespace_qualified(decl: cindex.Cursor) -> str | None:
-    """Fully qualified name of a declaration whose enclosing scopes include a (named) namespace; None otherwise."""
+def _scope_qualified(decl: cindex.Cursor, need_namespace: bool) -> str | None:
+    """Fully qualified name of a declaration nested in classes/namespaces; None when it is not nested at all (or, with
+    need_namespace, when no named namespace is among the enclosing scopes) or sits in an anonymous namespace."""
     parts = [decl.spelling]
     parent = decl.semantic_parent
     has_namespace = False
@@ -147,9 +152,28 @@ def _namespace_qualified(decl: cindex.Cursor) -> str | None:
         else:
             return None
         parent = parent.semantic_parent
-    if not has_namespace:
+    if len(parts) == 1 or (need_namespace and not has_namespace):
         return None
     return "::".join(reversed(parts))
+
+
+def _class_behind(t: cindex.Type) -> str:
+    """Canonical name of the OCCT class or enum a parameter type refers to (through const/&/*), "" for anything
+    else (scalars, std types, opencascade::handle -> the handle's pointee is what must be bound)."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind not in (TK.RECORD, TK.ENUM):
+        return ""
+    decl = canon.get_declaration()
+    if decl.kind == K.NO_DECL_FOUND:
+        return ""
+    if decl.spelling == "handle" and canon.get_num_template_arguments() == 1:
+        return _class_behind(canon.get_template_argument_type(0))
+    parent = decl.semantic_parent
+    if parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")):
+        return ""
+    return _canonical_args(canon).replace("const ", "")
 
 
 def _is_out_param(t: cindex.Type) -> bool:
@@ -349,7 +373,8 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             name = f"arg{i}"
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
-        params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=is_out, is_inout=is_out and inout))
+        params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=is_out, is_inout=is_out and inout,
+                            class_name=_class_behind(p.type)))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None
@@ -431,6 +456,29 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     return m
 
 
+def _incomplete_in(t: cindex.Type) -> str | None:
+    """Name of a record type with no definition in the translation unit that t holds by value: t itself or a
+    template argument of it (NCollection_LinearVector<Slot>); pointers/references/handles are fine."""
+    canon = t.get_canonical()
+    if canon.kind in (TK.POINTER, TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
+        return None
+    if canon.kind != TK.RECORD:
+        return None
+    decl = canon.get_declaration()
+    if decl.kind != K.NO_DECL_FOUND and decl.spelling in ("handle", "unique_ptr", "shared_ptr", "weak_ptr"):
+        return None                              # pointer-like: the pointee may stay incomplete in the header
+    if decl.kind != K.NO_DECL_FOUND and decl.get_definition() is None and canon.get_num_template_arguments() <= 0:
+        return canon.spelling
+    for i in range(canon.get_num_template_arguments()):
+        arg = canon.get_template_argument_type(i)
+        if arg.kind == TK.INVALID:
+            continue
+        r = _incomplete_in(arg)
+        if r is not None:
+            return r
+    return None
+
+
 def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") -> Class:
     cpp_name = _type_spelling(cursor.type)          # 'NCollection_Lerp<gp_Trsf>' for a specialization
     if cpp_name == "":                              # a class template walked for an alias instantiation (6c)
@@ -446,6 +494,15 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             members.add(ch.spelling)
         if ch.kind == K.ENUM_DECL:
             members.update(v.spelling for v in ch.get_children() if v.kind == K.ENUM_CONSTANT_DECL)
+    # a data member (any access) of a type that is only declared in the headers (BRepGraph_CacheMesh::Slot, defined in
+    # the .cxx) makes the destructor uninstantiable -> nb::class_ cannot be formed
+    for ch in cursor.get_children():
+        if ch.kind == K.FIELD_DECL:
+            inc = _incomplete_in(ch.type)
+            if inc is not None:
+                c.skipped.append(f"{c.name}: member {ch.spelling} of incomplete type {inc} -> class skipped")
+                c.unbindable = True
+                break
     # nanobind constructs value types with placement new: possible only if the class declares no
     # operator new at all, or a public operator new(size_t, void*) (DEFINE_STANDARD_ALLOC does).
     news = [ch for ch in cursor.get_children() if ch.kind == K.CXX_METHOD and ch.spelling == "operator new"]
@@ -505,7 +562,11 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             elif len(_subst) > 0:
                 c.skipped.append(f"{cursor.spelling}::{ch.spelling}: nested class of a class template (alias instantiation)")
             else:
-                c.nested.append(_class(ch, header, package, outer=c.name))
+                n = _class(ch, header, package, outer=c.name)
+                if n.unbindable:
+                    c.skipped.extend(n.skipped)
+                else:
+                    c.nested.append(n)
         elif ch.kind == K.CLASS_TEMPLATE:
             c.skipped.append(f"{c.name}::{ch.spelling}: nested class template")
     return c
@@ -694,6 +755,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
                 ir.report.append(f"{header}: {cur.spelling}: anonymous namespace (not bound)")
                 continue
             if any(part in _SKIP_NAMESPACES for part in ns_parts):
+                if ns_parts == ["std"] and cur.kind == K.STRUCT_DECL and cur.spelling == "hash" and cur.is_definition() \
+                        and cur.type.get_num_template_arguments() == 1:
+                    ir.hashable.add(_canonical_args(cur.type.get_template_argument_type(0)))   # std::hash<TopoDS_Shape> -> __hash__
+                    continue
                 if cur.is_definition() or cur.kind == K.FUNCTION_DECL:
                     ir.report.append(f"{ns}{cur.spelling}: namespace skipped (overrides.toml [skip] namespaces)")
                 continue
@@ -711,6 +776,9 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
                 c = _class(cur, header, pkg.name)
                 if c.name in _SKIP_CLASSES:
                     ir.report.append(f"{c.name}: skipped (overrides.toml [skip])")
+                    continue
+                if c.unbindable:
+                    ir.report.extend(c.skipped)
                     continue
                 add_class(c)
             elif cur.kind == K.ENUM_DECL and cur.is_definition():

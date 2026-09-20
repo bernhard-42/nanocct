@@ -443,6 +443,9 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
     def __init__(self, thePrinter: Message_Printer) -> None:
         """Create messenger with single printer"""
 
+    @overload
+    def __init__(self, theOther: Message_Messenger) -> None: ...
+
     class StreamBuffer:
         """
         Auxiliary class wrapping std::stringstream thus allowing constructing
@@ -580,7 +583,11 @@ class Message:
     - basic tools intended for progress indication
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Message) -> None: ...
 
     @staticmethod
     def DefaultMessenger() -> Message_Messenger:
@@ -725,7 +732,11 @@ class Message_Alert(nanoocp.Standard.Standard_Transient):
     merge if possible and return true in that case and false otherwise.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Message_Alert) -> None: ...
 
     def GetMessageKey(self) -> str:
         """
@@ -766,8 +777,12 @@ class Message_AlertExtended(Message_Alert):
     sub-alerts collecting.
     """
 
+    @overload
     def __init__(self) -> None:
         """Empty constructor"""
+
+    @overload
+    def __init__(self, theOther: Message_AlertExtended) -> None: ...
 
     @staticmethod
     def AddAlert(theReport: Message_Report, theAttribute: Message_Attribute, theGravity: Message_Gravity) -> Message_Alert:
@@ -852,6 +867,9 @@ class Message_ExecStatus:
     @overload
     def __init__(self, theStatus: Message_Status) -> None:
         """Initialise the execution status"""
+
+    @overload
+    def __init__(self, theOther: Message_ExecStatus) -> None: ...
 
     class StatusRange(enum.IntEnum):
         """Definitions of range of available statuses"""
@@ -1074,8 +1092,12 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
     By default, Message::DefaultMessenger() is used.
     """
 
+    @overload
     def __init__(self) -> None:
         """Empty constructor"""
+
+    @overload
+    def __init__(self, theOther: Message_Algorithm) -> None: ...
 
     @overload
     def SetStatus(self, theStat: Message_Status) -> None:
@@ -1222,8 +1244,12 @@ class Message_Attribute(nanoocp.Standard.Standard_Transient):
     To provide other custom attribute container, it might be redefined.
     """
 
+    @overload
     def __init__(self, theName: nanoocp.TCollection.TCollection_AsciiString = ...) -> None:
         """Empty constructor"""
+
+    @overload
+    def __init__(self, theOther: Message_Attribute) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1258,8 +1284,12 @@ class Message_AttributeMeter(Message_Attribute):
     Start and stop values for each metric.
     """
 
+    @overload
     def __init__(self, theName: nanoocp.TCollection.TCollection_AsciiString = ...) -> None:
         """Constructor with string argument"""
+
+    @overload
+    def __init__(self, theOther: Message_AttributeMeter) -> None: ...
 
     @staticmethod
     def UndefinedMetricValue() -> float:
@@ -1342,8 +1372,12 @@ class Message_AttributeMeter(Message_Attribute):
 class Message_AttributeObject(Message_Attribute):
     """Alert object storing a transient object"""
 
+    @overload
     def __init__(self, theObject: nanoocp.Standard.Standard_Transient, theName: nanoocp.TCollection.TCollection_AsciiString = ...) -> None:
         """Constructor with string argument"""
+
+    @overload
+    def __init__(self, theOther: Message_AttributeObject) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1379,8 +1413,12 @@ class Message_AttributeStream(Message_Attribute):
 class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
     """Class providing container of alerts"""
 
+    @overload
     def __init__(self) -> None:
         """Empty constructor"""
+
+    @overload
+    def __init__(self, theOther: Message_CompositeAlerts) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1852,12 +1890,16 @@ class Message_Level:
     required outside.
     """
 
+    @overload
     def __init__(self, theName: nanoocp.TCollection.TCollection_AsciiString = ...) -> None:
         """
         Constructor.
         One string key is used for all alert meters.
         The perf meter is not started automatically, it will be done in AddAlert() method
         """
+
+    @overload
+    def __init__(self, theOther: Message_Level) -> None: ...
 
     def RootAlert(self) -> Message_AlertExtended:
         """
@@ -1910,7 +1952,11 @@ class Message_MsgFile:
     class are also static.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Message_MsgFile) -> None: ...
 
     @staticmethod
     def Load(theDirName: str, theFileName: str) -> bool:
@@ -1997,6 +2043,9 @@ class Message_PrinterOStream(Message_Printer):
         For specific file names (cout, cerr) standard streams are used
         """
 
+    @overload
+    def __init__(self, theOther: Message_PrinterOStream) -> None: ...
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -2032,8 +2081,12 @@ class Message_PrinterSystemLog(Message_Printer):
     - UNIX/Linux, through syslog().
     """
 
+    @overload
     def __init__(self, theEventSourceName: nanoocp.TCollection.TCollection_AsciiString, theTraceLevel: Message_Gravity = Message_Gravity.Message_Info) -> None:
         """Main constructor."""
+
+    @overload
+    def __init__(self, theOther: Message_PrinterSystemLog) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -2050,8 +2103,12 @@ class Message_PrinterToReport(Message_Printer):
     The alerts are sent into set report or default report of Message.
     """
 
+    @overload
     def __init__(self) -> None:
         """Create printer for redirecting messages into report."""
+
+    @overload
+    def __init__(self, theOther: Message_PrinterToReport) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...

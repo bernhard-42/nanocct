@@ -117,4 +117,5 @@ CSF_CurrentUnitsUserDefaults environment variable.)nbdoc")
         .def_static("Check", static_cast<bool (*)(const char *const, const char *const)>(&UnitsAPI::Check), nb::arg("aQuantity"), nb::arg("aUnit"), R"nbdoc(Checks the coherence between the quantity <aQuantity>
 and the unit <aUnits> in the current system and
 returns FALSE when it's WRONG.)nbdoc");
+    nanoocp_implicit_copy_ctor<UnitsAPI>(nb::borrow<nb::class_<UnitsAPI>>(m.attr("UnitsAPI")));
 }

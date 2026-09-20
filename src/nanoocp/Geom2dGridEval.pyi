@@ -13,7 +13,11 @@ import nanoocp.Geom2dGridEval
 class CurveD1:
     """Result structure for curve D1 evaluation (point and first derivative)."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: CurveD1) -> None: ...
 
     @property
     def Point(self) -> nanoocp.gp.gp_Pnt2d: ...
@@ -32,7 +36,11 @@ class CurveD2:
     Result structure for curve D2 evaluation (point and first two derivatives).
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: CurveD2) -> None: ...
 
     @property
     def Point(self) -> nanoocp.gp.gp_Pnt2d: ...
@@ -57,7 +65,11 @@ class CurveD3:
     Result structure for curve D3 evaluation (point and first three derivatives).
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: CurveD3) -> None: ...
 
     @property
     def Point(self) -> nanoocp.gp.gp_Pnt2d: ...

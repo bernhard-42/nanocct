@@ -1,6 +1,7 @@
 """OCCT package MathRoot (toolkit TKMath)"""
 
 from collections.abc import Sequence
+from typing import overload
 
 import nanoocp.MathUtils
 import nanoocp.NCollection
@@ -12,7 +13,11 @@ class MultipleResult:
     Contains all found roots sorted in ascending order.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: MultipleResult) -> None: ...
 
     def IsDone(self) -> bool:
         """Returns true if computation succeeded."""
@@ -61,7 +66,11 @@ class MultipleResult:
 class MultipleConfig:
     """Configuration for multiple root finding."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: MultipleConfig) -> None: ...
 
     @property
     def NbSamples(self) -> int:
@@ -108,19 +117,29 @@ class MultipleConfig:
 class MultipleGetValueFn:
     """Returns the sampled value at a given index from a math_Vector."""
 
+    def __init__(self, theOther: MultipleGetValueFn) -> None: ...
+
     def __call__(self, theIndex: int) -> float: ...
 
 class MultipleNoExtraHandler:
     """No-op interval handler for functions without derivative."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: MultipleNoExtraHandler) -> None: ...
 
     def __call__(self, arg0: int, arg1: float, arg2: float, arg3: float, arg4: float, arg5: MultipleResult, arg6: float) -> None: ...
 
 class NullInterval:
     """Represents an interval where the function is null (within tolerance)."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NullInterval) -> None: ...
 
     @property
     def A(self) -> float:
@@ -146,7 +165,11 @@ class NullInterval:
 class AllRootsResult:
     """Result for all roots finder including null intervals."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AllRootsResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 
@@ -184,7 +207,11 @@ class AllRootsResult:
 class TrigResult:
     """Result for trigonometric equation solver."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: TrigResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 

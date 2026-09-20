@@ -49,6 +49,9 @@ class AdvApp2Var_Context:
     @overload
     def __init__(self, ifav: int, iu: int, iv: int, nlimu: int, nlimv: int, iprecis: int, nb1Dss: int, nb2Dss: int, nb3Dss: int, tol1D: nanoocp.NCollection.NCollection_HArray1[float], tol2D: nanoocp.NCollection.NCollection_HArray1[float], tol3D: nanoocp.NCollection.NCollection_HArray1[float], tof1D: nanoocp.NCollection.NCollection_HArray2[float], tof2D: nanoocp.NCollection.NCollection_HArray2[float], tof3D: nanoocp.NCollection.NCollection_HArray2[float]) -> None: ...
 
+    @overload
+    def __init__(self, theOther: AdvApp2Var_Context) -> None: ...
+
     def TotalDimension(self) -> int: ...
 
     def TotalNumberSSP(self) -> int: ...
@@ -169,6 +172,9 @@ class AdvApp2Var_Network:
 
     @overload
     def __init__(self, Net: nanoocp.NCollection.NCollection_Sequence[nanoocp.AdvApp2Var.AdvApp2Var_Patch], TheU: nanoocp.NCollection.NCollection_Sequence[float], TheV: nanoocp.NCollection.NCollection_Sequence[float]) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AdvApp2Var_Network) -> None: ...
 
     def FirstNotApprox(self) -> tuple[bool, int]:
         """
@@ -327,6 +333,9 @@ class AdvApp2Var_Framework:
     @overload
     def __init__(self, Frame: nanoocp.NCollection.NCollection_Sequence[nanoocp.AdvApp2Var.AdvApp2Var_Node], UFrontier: nanoocp.NCollection.NCollection_Sequence[nanoocp.NCollection.NCollection_Sequence[nanoocp.AdvApp2Var.AdvApp2Var_Iso]], VFrontier: nanoocp.NCollection.NCollection_Sequence[nanoocp.NCollection.NCollection_Sequence[nanoocp.AdvApp2Var.AdvApp2Var_Iso]]) -> None: ...
 
+    @overload
+    def __init__(self, theOther: AdvApp2Var_Framework) -> None: ...
+
     def FirstNotApprox(self) -> tuple[AdvApp2Var_Iso, int, int]:
         """
         search the Index of the first Iso not approximated,
@@ -413,6 +422,9 @@ class AdvApp2Var_ApproxAFunc2Var:
     @overload
     def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float], TwoDTol: nanoocp.NCollection.NCollection_HArray1[float], ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float], OneDTolFr: nanoocp.NCollection.NCollection_HArray2[float], TwoDTolFr: nanoocp.NCollection.NCollection_HArray2[float], ThreeDTolFr: nanoocp.NCollection.NCollection_HArray2[float], FirstInU: float, LastInU: float, FirstInV: float, LastInV: float, FavorIso: nanoocp.GeomAbs.GeomAbs_IsoType, ContInU: nanoocp.GeomAbs.GeomAbs_Shape, ContInV: nanoocp.GeomAbs.GeomAbs_Shape, PrecisCode: int, MaxDegInU: int, MaxDegInV: int, MaxPatch: int, Func: AdvApp2Var_EvaluatorFunc2Var, Crit: AdvApp2Var_Criterion, UChoice: nanoocp.AdvApprox.AdvApprox_Cutting, VChoice: nanoocp.AdvApprox.AdvApprox_Cutting) -> None: ...
 
+    @overload
+    def __init__(self, theOther: AdvApp2Var_ApproxAFunc2Var) -> None: ...
+
     def IsDone(self) -> bool:
         """
         True if the approximation succeeded within the imposed
@@ -482,7 +494,11 @@ class AdvApp2Var_ApproxAFunc2Var:
     def CritError(self, Dimension: int, Index: int) -> float: ...
 
 class AdvApp2Var_ApproxF2var:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AdvApp2Var_ApproxF2var) -> None: ...
 
 class AdvApp2Var_Criterion:
     """this class contains a given criterion to be satisfied"""
@@ -498,10 +514,18 @@ class AdvApp2Var_Criterion:
     def Repartition(self) -> AdvApp2Var_CriterionRepartition: ...
 
 class AdvApp2Var_MathBase:
+    @overload
     def __init__(self) -> None: ...
 
+    @overload
+    def __init__(self, theOther: AdvApp2Var_MathBase) -> None: ...
+
 class AdvApp2Var_SysBase:
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: AdvApp2Var_SysBase) -> None: ...
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection

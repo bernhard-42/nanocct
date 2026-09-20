@@ -36,12 +36,13 @@ void nanoocp_define_AppCont(nb::module_ &m) {
 @param theDimIdx Defines index in output parameters space. 1 <= theDimIdx <= 3 * myNbPnt + 2 *
 myNbPnt2d.)nbdoc");
     nanoocp_implicit_default_ctor<PeriodicityInfo>(nb::borrow<nb::class_<PeriodicityInfo>>(m.attr("PeriodicityInfo")));
-    nb::borrow<nb::class_<PeriodicityInfo>>(m.attr("PeriodicityInfo"))
-        .def_rw("isPeriodic", &PeriodicityInfo::isPeriodic)
-        .def_rw("myPeriod", &PeriodicityInfo::myPeriod);
+    nanoocp_implicit_copy_ctor<PeriodicityInfo>(nb::borrow<nb::class_<PeriodicityInfo>>(m.attr("PeriodicityInfo")));
+    nanoocp_def_field(nb::borrow<nb::class_<PeriodicityInfo>>(m.attr("PeriodicityInfo")), "isPeriodic", &PeriodicityInfo::isPeriodic);
+    nanoocp_def_field(nb::borrow<nb::class_<PeriodicityInfo>>(m.attr("PeriodicityInfo")), "myPeriod", &PeriodicityInfo::myPeriod);
     nb::borrow<nb::class_<AppCont_LeastSquare>>(m.attr("AppCont_LeastSquare"))
         .def(nb::init<const AppCont_Function &, const double, const double, const AppParCurves_Constraint, const AppParCurves_Constraint, const int, const int>(), nb::arg("SSP"), nb::arg("U0"), nb::arg("U1"), nb::arg("FirstCons"), nb::arg("LastCons"), nb::arg("Deg"), nb::arg("NbPoints"))
         .def("Value", static_cast<const AppParCurves_MultiCurve & (AppCont_LeastSquare::*)()>(&AppCont_LeastSquare::Value))
         .def("Error", [](const AppCont_LeastSquare &self) { double F{}; double MaxE3d{}; double MaxE2d{}; self.Error(F, MaxE3d, MaxE2d); return std::make_tuple(F, MaxE3d, MaxE2d); })
         .def("IsDone", static_cast<bool (AppCont_LeastSquare::*)() const>(&AppCont_LeastSquare::IsDone));
+    nanoocp_implicit_copy_ctor<AppCont_LeastSquare>(nb::borrow<nb::class_<AppCont_LeastSquare>>(m.attr("AppCont_LeastSquare")));
 }

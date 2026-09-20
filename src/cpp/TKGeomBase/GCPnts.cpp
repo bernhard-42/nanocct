@@ -164,6 +164,7 @@ solution of this algorithm.
 Exceptions
 StdFail_NotDone if the computation was not
 successful, or was not done.)nbdoc");
+    nanoocp_implicit_copy_ctor<GCPnts_AbscissaPoint>(nb::borrow<nb::class_<GCPnts_AbscissaPoint>>(m.attr("GCPnts_AbscissaPoint")));
     nb::borrow<nb::class_<GCPnts_QuasiUniformAbscissa>>(m.attr("GCPnts_QuasiUniformAbscissa"))
         .def(nb::init<>(), R"nbdoc(Constructs an empty algorithm.
 To define the problem to be solved, use the function Initialize.)nbdoc")
@@ -249,6 +250,7 @@ condition is not checked by this function.
 Exceptions
 StdFail_NotDone if this algorithm has not been
 initialized, or if the computation was not successful.)nbdoc");
+    nanoocp_implicit_copy_ctor<GCPnts_QuasiUniformAbscissa>(nb::borrow<nb::class_<GCPnts_QuasiUniformAbscissa>>(m.attr("GCPnts_QuasiUniformAbscissa")));
     nb::borrow<nb::class_<GCPnts_QuasiUniformDeflection>>(m.attr("GCPnts_QuasiUniformDeflection"))
         .def(nb::init<>(), R"nbdoc(Constructs an empty algorithm.
 To define the problem to be solved, use the function Initialize().)nbdoc")
@@ -376,6 +378,7 @@ of construction (or initialization).
 Exceptions
 StdFail_NotDone if this algorithm has not been
 initialized, or if the computation was not successful.)nbdoc");
+    nanoocp_implicit_copy_ctor<GCPnts_QuasiUniformDeflection>(nb::borrow<nb::class_<GCPnts_QuasiUniformDeflection>>(m.attr("GCPnts_QuasiUniformDeflection")));
     nb::borrow<nb::class_<GCPnts_TangentialDeflection>>(m.attr("GCPnts_TangentialDeflection"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.
 @sa Initialize())nbdoc")
@@ -450,18 +453,23 @@ or founded with parametric tolerance (replaced if theIsReplace is true))nbdoc")
         .def("Parameter", static_cast<double (GCPnts_TangentialDeflection::*)(const int) const>(&GCPnts_TangentialDeflection::Parameter), nb::arg("I"))
         .def("Value", static_cast<gp_Pnt (GCPnts_TangentialDeflection::*)(const int) const>(&GCPnts_TangentialDeflection::Value), nb::arg("I"))
         .def_static("ArcAngularStep", static_cast<double (*)(const double, const double, const double, const double)>(&GCPnts_TangentialDeflection::ArcAngularStep), nb::arg("theRadius"), nb::arg("theLinearDeflection"), nb::arg("theAngularDeflection"), nb::arg("theMinLength"), R"nbdoc(Computes angular step for the arc using the given parameters.)nbdoc");
+    nanoocp_implicit_copy_ctor<GCPnts_TangentialDeflection>(nb::borrow<nb::class_<GCPnts_TangentialDeflection>>(m.attr("GCPnts_TangentialDeflection")));
     nb::borrow<nb::class_<GCPnts_DistFunctionMV>>(m.attr("GCPnts_DistFunctionMV"))
         .def(nb::init<GCPnts_DistFunction &>(), nb::arg("theCurvLinDist"))
         .def("Value", [](GCPnts_DistFunctionMV &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
         .def("NbVariables", static_cast<int (GCPnts_DistFunctionMV::*)() const>(&GCPnts_DistFunctionMV::NbVariables));
+    nanoocp_implicit_copy_ctor<GCPnts_DistFunctionMV>(nb::borrow<nb::class_<GCPnts_DistFunctionMV>>(m.attr("GCPnts_DistFunctionMV")));
     nb::implicitly_convertible<std::decay_t<GCPnts_DistFunction &>, GCPnts_DistFunctionMV>();
     nb::borrow<nb::class_<GCPnts_DistFunction2dMV>>(m.attr("GCPnts_DistFunction2dMV"))
         .def(nb::init<GCPnts_DistFunction2d &>(), nb::arg("theCurvLinDist"))
         .def("Value", [](GCPnts_DistFunction2dMV &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
         .def("NbVariables", static_cast<int (GCPnts_DistFunction2dMV::*)() const>(&GCPnts_DistFunction2dMV::NbVariables));
+    nanoocp_implicit_copy_ctor<GCPnts_DistFunction2dMV>(nb::borrow<nb::class_<GCPnts_DistFunction2dMV>>(m.attr("GCPnts_DistFunction2dMV")));
     nb::implicitly_convertible<std::decay_t<GCPnts_DistFunction2d &>, GCPnts_DistFunction2dMV>();
     nanoocp_implicit_default_ctor<GCPnts_TCurveTypes<Adaptor3d_Curve>>(nb::borrow<nb::class_<GCPnts_TCurveTypes<Adaptor3d_Curve>>>(m.attr("GCPnts_TCurveTypes__Adaptor3d_Curve")));
+    nanoocp_implicit_copy_ctor<GCPnts_TCurveTypes<Adaptor3d_Curve>>(nb::borrow<nb::class_<GCPnts_TCurveTypes<Adaptor3d_Curve>>>(m.attr("GCPnts_TCurveTypes__Adaptor3d_Curve")));
     nanoocp_implicit_default_ctor<GCPnts_TCurveTypes<Adaptor2d_Curve2d>>(nb::borrow<nb::class_<GCPnts_TCurveTypes<Adaptor2d_Curve2d>>>(m.attr("GCPnts_TCurveTypes__Adaptor2d_Curve2d")));
+    nanoocp_implicit_copy_ctor<GCPnts_TCurveTypes<Adaptor2d_Curve2d>>(nb::borrow<nb::class_<GCPnts_TCurveTypes<Adaptor2d_Curve2d>>>(m.attr("GCPnts_TCurveTypes__Adaptor2d_Curve2d")));
     nb::borrow<nb::class_<GCPnts_UniformAbscissa>>(m.attr("GCPnts_UniformAbscissa"))
         .def(nb::init<>(), R"nbdoc(creation of a indefinite UniformAbscissa)nbdoc")
         .def(nb::init<const Adaptor3d_Curve &, const double, const double>(), nb::arg("theC"), nb::arg("theAbscissa"), nb::arg("theToler") = static_cast<std::decay_t<const double>>(- 1), R"nbdoc(Computes a uniform abscissa distribution of points on the 3D curve.
@@ -564,6 +572,7 @@ or founded with parametric tolerance (replaced if theIsReplace is true))nbdoc")
         .def("NbPoints", static_cast<int (GCPnts_UniformAbscissa::*)() const>(&GCPnts_UniformAbscissa::NbPoints))
         .def("Parameter", static_cast<double (GCPnts_UniformAbscissa::*)(const int) const>(&GCPnts_UniformAbscissa::Parameter), nb::arg("Index"), R"nbdoc(returns the computed Parameter of index <Index>.)nbdoc")
         .def("Abscissa", static_cast<double (GCPnts_UniformAbscissa::*)() const>(&GCPnts_UniformAbscissa::Abscissa), R"nbdoc(Returns the current abscissa, i.e. the distance between two consecutive points.)nbdoc");
+    nanoocp_implicit_copy_ctor<GCPnts_UniformAbscissa>(nb::borrow<nb::class_<GCPnts_UniformAbscissa>>(m.attr("GCPnts_UniformAbscissa")));
     nb::borrow<nb::class_<GCPnts_UniformDeflection>>(m.attr("GCPnts_UniformDeflection"))
         .def(nb::init<>(), R"nbdoc(Constructs an empty algorithm.
 To define the problem to be solved, use the function Initialize.)nbdoc")
@@ -665,4 +674,5 @@ time of construction (or initialization).
 Exceptions
 StdFail_NotDone if this algorithm has not been
 initialized, or if the computation was not successful.)nbdoc");
+    nanoocp_implicit_copy_ctor<GCPnts_UniformDeflection>(nb::borrow<nb::class_<GCPnts_UniformDeflection>>(m.attr("GCPnts_UniformDeflection")));
 }

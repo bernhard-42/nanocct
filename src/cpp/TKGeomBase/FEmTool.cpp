@@ -73,6 +73,7 @@ Returns false if the computation failed.)nbdoc")
         .def("NbGlobVar", static_cast<int (FEmTool_Assembly::*)() const>(&FEmTool_Assembly::NbGlobVar))
         .def("AssemblyTable", static_cast<const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> & (FEmTool_Assembly::*)() const>(&FEmTool_Assembly::AssemblyTable), R"nbdoc(Returns the assembly table mapping element-local indices to global indices.
 @return const reference to the assembly table)nbdoc");
+    nanoocp_implicit_copy_ctor<FEmTool_Assembly>(nb::borrow<nb::class_<FEmTool_Assembly>>(m.attr("FEmTool_Assembly")));
     nb::borrow<nb::class_<FEmTool_Curve>>(m.attr("FEmTool_Curve"))
         .def(nb::new_([](const int Dimension, const int NbElements, const PLib_HermitJacobi & TheBase, const double Tolerance) { return opencascade::handle<FEmTool_Curve>(new FEmTool_Curve(Dimension, NbElements, TheBase, Tolerance)); }), nb::arg("Dimension"), nb::arg("NbElements"), nb::arg("TheBase"), nb::arg("Tolerance"))
         .def("Knots", static_cast<NCollection_Array1<double> & (FEmTool_Curve::*)() const>(&FEmTool_Curve::Knots), nb::rv_policy::reference_internal)
@@ -92,6 +93,7 @@ Returns false if the computation failed.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&FEmTool_Curve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&FEmTool_Curve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (FEmTool_Curve::*)() const>(&FEmTool_Curve::DynamicType));
+    nanoocp_implicit_copy_ctor<FEmTool_Curve>(nb::borrow<nb::class_<FEmTool_Curve>>(m.attr("FEmTool_Curve")));
     nb::borrow<nb::class_<FEmTool_ElementaryCriterion>>(m.attr("FEmTool_ElementaryCriterion"))
         .def("Set", static_cast<void (FEmTool_ElementaryCriterion::*)(const occ::handle<NCollection_HArray2<double>> &)>(&FEmTool_ElementaryCriterion::Set), nb::arg("Coeff"), R"nbdoc(Set the coefficient of the Element (the Curve))nbdoc")
         .def("Set", static_cast<void (FEmTool_ElementaryCriterion::*)(const double, const double)>(&FEmTool_ElementaryCriterion::Set), nb::arg("FirstKnot"), nb::arg("LastKnot"), R"nbdoc(Set the definition interval of the Element)nbdoc")
@@ -118,6 +120,7 @@ False otherwise.
 F contains results only for i<=j in following order:
 P0*P0, P0*P1, P0*P2... P1*P1, P1*P2,... (upper triangle of
 matrix {PiPj}))nbdoc");
+    nanoocp_implicit_copy_ctor<FEmTool_ElementsOfRefMatrix>(nb::borrow<nb::class_<FEmTool_ElementsOfRefMatrix>>(m.attr("FEmTool_ElementsOfRefMatrix")));
     nb::borrow<nb::class_<FEmTool_LinearFlexion>>(m.attr("FEmTool_LinearFlexion"))
         .def(nb::new_([](const int WorkDegree, const GeomAbs_Shape ConstraintOrder) { return opencascade::handle<FEmTool_LinearFlexion>(new FEmTool_LinearFlexion(WorkDegree, ConstraintOrder)); }), nb::arg("WorkDegree"), nb::arg("ConstraintOrder"))
         .def("DependenceTable", static_cast<occ::handle<NCollection_HArray2<int>> (FEmTool_LinearFlexion::*)() const>(&FEmTool_LinearFlexion::DependenceTable))
@@ -127,6 +130,7 @@ matrix {PiPj}))nbdoc");
         .def_static("get_type_name", static_cast<const char * (*)()>(&FEmTool_LinearFlexion::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&FEmTool_LinearFlexion::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (FEmTool_LinearFlexion::*)() const>(&FEmTool_LinearFlexion::DynamicType));
+    nanoocp_implicit_copy_ctor<FEmTool_LinearFlexion>(nb::borrow<nb::class_<FEmTool_LinearFlexion>>(m.attr("FEmTool_LinearFlexion")));
     nb::borrow<nb::class_<FEmTool_LinearJerk>>(m.attr("FEmTool_LinearJerk"))
         .def(nb::new_([](const int WorkDegree, const GeomAbs_Shape ConstraintOrder) { return opencascade::handle<FEmTool_LinearJerk>(new FEmTool_LinearJerk(WorkDegree, ConstraintOrder)); }), nb::arg("WorkDegree"), nb::arg("ConstraintOrder"))
         .def("DependenceTable", static_cast<occ::handle<NCollection_HArray2<int>> (FEmTool_LinearJerk::*)() const>(&FEmTool_LinearJerk::DependenceTable))
@@ -136,6 +140,7 @@ matrix {PiPj}))nbdoc");
         .def_static("get_type_name", static_cast<const char * (*)()>(&FEmTool_LinearJerk::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&FEmTool_LinearJerk::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (FEmTool_LinearJerk::*)() const>(&FEmTool_LinearJerk::DynamicType));
+    nanoocp_implicit_copy_ctor<FEmTool_LinearJerk>(nb::borrow<nb::class_<FEmTool_LinearJerk>>(m.attr("FEmTool_LinearJerk")));
     nb::borrow<nb::class_<FEmTool_LinearTension>>(m.attr("FEmTool_LinearTension"))
         .def(nb::new_([](const int WorkDegree, const GeomAbs_Shape ConstraintOrder) { return opencascade::handle<FEmTool_LinearTension>(new FEmTool_LinearTension(WorkDegree, ConstraintOrder)); }), nb::arg("WorkDegree"), nb::arg("ConstraintOrder"))
         .def("DependenceTable", static_cast<occ::handle<NCollection_HArray2<int>> (FEmTool_LinearTension::*)() const>(&FEmTool_LinearTension::DependenceTable))
@@ -145,6 +150,7 @@ matrix {PiPj}))nbdoc");
         .def_static("get_type_name", static_cast<const char * (*)()>(&FEmTool_LinearTension::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&FEmTool_LinearTension::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (FEmTool_LinearTension::*)() const>(&FEmTool_LinearTension::DynamicType));
+    nanoocp_implicit_copy_ctor<FEmTool_LinearTension>(nb::borrow<nb::class_<FEmTool_LinearTension>>(m.attr("FEmTool_LinearTension")));
     nb::borrow<nb::class_<FEmTool_SparseMatrix>>(m.attr("FEmTool_SparseMatrix"))
         .def("Init", static_cast<void (FEmTool_SparseMatrix::*)(const double)>(&FEmTool_SparseMatrix::Init), nb::arg("Value"))
         .def("Decompose", static_cast<bool (FEmTool_SparseMatrix::*)()>(&FEmTool_SparseMatrix::Decompose), R"nbdoc(To make a Factorization of <me>)nbdoc")
@@ -175,5 +181,6 @@ An exception is raised if the dimensions are different)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&FEmTool_ProfileMatrix::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&FEmTool_ProfileMatrix::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (FEmTool_ProfileMatrix::*)() const>(&FEmTool_ProfileMatrix::DynamicType));
+    nanoocp_implicit_copy_ctor<FEmTool_ProfileMatrix>(nb::borrow<nb::class_<FEmTool_ProfileMatrix>>(m.attr("FEmTool_ProfileMatrix")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<int> &>, FEmTool_ProfileMatrix>();
 }

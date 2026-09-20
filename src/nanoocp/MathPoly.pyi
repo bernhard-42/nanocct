@@ -1,6 +1,7 @@
 """OCCT package MathPoly (toolkit TKMath)"""
 
 from collections.abc import Sequence
+from typing import overload
 
 import nanoocp.MathUtils
 
@@ -10,7 +11,11 @@ THE_MAX_POLY_DEGREE: int = 20
 class GeneralPolyResult:
     """Result for general polynomial solver."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: GeneralPolyResult) -> None: ...
 
     def IsDone(self) -> bool: ...
 

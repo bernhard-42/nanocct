@@ -72,7 +72,11 @@ class BSplSLib:
     a practical guide Gerald Farin
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BSplSLib) -> None: ...
 
     @staticmethod
     def RationalDerivative(UDeg: int, VDeg: int, N: int, M: int, All: bool = True) -> tuple[float, float]:

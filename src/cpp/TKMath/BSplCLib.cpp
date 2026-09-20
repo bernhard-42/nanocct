@@ -1197,6 +1197,7 @@ we have |f (u1) - f (u0)| < Tolerance3D)nbdoc")
 @param[in] theTolerance the tolerance
 @param[in,out] theIntervals the array to store intervals if isn't nullptr
 @return the number of intervals)nbdoc");
+    nanoocp_implicit_copy_ctor<BSplCLib>(nb::borrow<nb::class_<BSplCLib>>(m.attr("BSplCLib")));
     nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams"))
         .def(nb::init<int, bool, const NCollection_Array1<double> &>(), nb::arg("theDegree"), nb::arg("thePeriodic"), nb::arg("theFlatKnots"), R"nbdoc(Constructor, prepares data structures for caching.
 \param theDegree     degree of the B-spline (or Bezier)
@@ -1208,16 +1209,17 @@ we have |f (u1) - f (u0)| < Tolerance3D)nbdoc")
 \param theParameter parameter of the point placed in the span)nbdoc")
         .def("LocateParameter", [](BSplCLib_CacheParams &self, const NCollection_Array1<double> & theFlatKnots) { double theParameter{}; self.LocateParameter(theParameter, theFlatKnots); return theParameter; }, nb::arg("theFlatKnots"), R"nbdoc(Computes span for the specified parameter
 \param theParameter parameter of the point placed in the span
-\param theFlatKnots  knots of Bezier / B-spline parameterization)nbdoc")
-        .def_ro("Degree", &BSplCLib_CacheParams::Degree, R"nbdoc(< degree of Bezier/B-spline)nbdoc")
-        .def_ro("IsPeriodic", &BSplCLib_CacheParams::IsPeriodic, R"nbdoc(< true of the B-spline is periodic)nbdoc")
-        .def_ro("FirstParameter", &BSplCLib_CacheParams::FirstParameter, R"nbdoc(< first valid parameter)nbdoc")
-        .def_ro("LastParameter", &BSplCLib_CacheParams::LastParameter, R"nbdoc(< last valid parameter)nbdoc")
-        .def_ro("SpanIndexMin", &BSplCLib_CacheParams::SpanIndexMin, R"nbdoc(< minimal index of span)nbdoc")
-        .def_ro("SpanIndexMax", &BSplCLib_CacheParams::SpanIndexMax, R"nbdoc(< maximal index of span)nbdoc")
-        .def_rw("SpanStart", &BSplCLib_CacheParams::SpanStart, R"nbdoc(< parameter for the frst point of the span)nbdoc")
-        .def_rw("SpanLength", &BSplCLib_CacheParams::SpanLength, R"nbdoc(< length of the span)nbdoc")
-        .def_rw("SpanIndex", &BSplCLib_CacheParams::SpanIndex, R"nbdoc(< index of the span)nbdoc");
+\param theFlatKnots  knots of Bezier / B-spline parameterization)nbdoc");
+    nanoocp_implicit_copy_ctor<BSplCLib_CacheParams>(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")));
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "Degree", &BSplCLib_CacheParams::Degree, R"nbdoc(< degree of Bezier/B-spline)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "IsPeriodic", &BSplCLib_CacheParams::IsPeriodic, R"nbdoc(< true of the B-spline is periodic)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "FirstParameter", &BSplCLib_CacheParams::FirstParameter, R"nbdoc(< first valid parameter)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "LastParameter", &BSplCLib_CacheParams::LastParameter, R"nbdoc(< last valid parameter)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "SpanIndexMin", &BSplCLib_CacheParams::SpanIndexMin, R"nbdoc(< minimal index of span)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "SpanIndexMax", &BSplCLib_CacheParams::SpanIndexMax, R"nbdoc(< maximal index of span)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "SpanStart", &BSplCLib_CacheParams::SpanStart, R"nbdoc(< parameter for the frst point of the span)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "SpanLength", &BSplCLib_CacheParams::SpanLength, R"nbdoc(< length of the span)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<BSplCLib_CacheParams>>(m.attr("BSplCLib_CacheParams")), "SpanIndex", &BSplCLib_CacheParams::SpanIndex, R"nbdoc(< index of the span)nbdoc");
     nb::borrow<nb::class_<BSplCLib_Cache>>(m.attr("BSplCLib_Cache"))
         .def(nb::new_([](const int & theDegree, const bool & thePeriodic, const NCollection_Array1<double> & theFlatKnots, const NCollection_Array1<gp_Pnt2d> & thePoles2d, const NCollection_Array1<double> * theWeights) { return opencascade::handle<BSplCLib_Cache>(new BSplCLib_Cache(theDegree, thePeriodic, theFlatKnots, thePoles2d, theWeights)); }), nb::arg("theDegree"), nb::arg("thePeriodic"), nb::arg("theFlatKnots"), nb::arg("thePoles2d"), nb::arg("theWeights") = static_cast<std::decay_t<const NCollection_Array1<double> *>>(nullptr), R"nbdoc(Constructor, prepares data structures for caching values on a 2d curve.
 \param theDegree     degree of the curve
@@ -1311,4 +1313,5 @@ parameter.
         .def_static("get_type_name", static_cast<const char * (*)()>(&BSplCLib_Cache::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BSplCLib_Cache::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BSplCLib_Cache::*)() const>(&BSplCLib_Cache::DynamicType));
+    nanoocp_implicit_copy_ctor<BSplCLib_Cache>(nb::borrow<nb::class_<BSplCLib_Cache>>(m.attr("BSplCLib_Cache")));
 }

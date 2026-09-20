@@ -1,6 +1,7 @@
 """C++ namespace GeomEval_RepSurfaceDesc (OCCT package GeomEval)"""
 
 import enum
+from typing import overload
 
 import nanoocp.Geom
 import nanoocp.Standard
@@ -13,7 +14,11 @@ class Map2d:
     With swap:    uRep = ScaleU*v + OffsetU, vRep = ScaleV*u + OffsetV.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Map2d) -> None: ...
 
     def IsIdentity(self) -> bool: ...
 
@@ -54,7 +59,11 @@ class Map2d:
 class Domain2d:
     """2D parameter domain."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Domain2d) -> None: ...
 
     def Contains(self, theU: float, theV: float) -> bool: ...
 
@@ -121,7 +130,11 @@ class Full(Base):
     Fastest evaluation path - direct delegation to Representation.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Full) -> None: ...
 
     def GetKind(self) -> Base.Kind: ...
 
@@ -138,7 +151,11 @@ class DerivBounded(Base):
     Derivative-bounded descriptor: full domain, identity map, limited to MaxDerivOrder.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: DerivBounded) -> None: ...
 
     def GetKind(self) -> Base.Kind: ...
 
@@ -165,7 +182,11 @@ class Mapped(Base):
     Future subclasses can support multi-region descriptors with per-patch UV domains and maps.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Mapped) -> None: ...
 
     def GetKind(self) -> Base.Kind: ...
 

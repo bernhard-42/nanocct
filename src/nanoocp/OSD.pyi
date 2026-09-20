@@ -226,7 +226,11 @@ class OSD_SingleProtection(enum.IntEnum):
 class OSD:
     """Set of Operating System Dependent (OSD) tools."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OSD) -> None: ...
 
     @overload
     @staticmethod
@@ -420,8 +424,12 @@ class OSD_CachedFileSystem(OSD_FileSystem):
     OSD_CachedFileSystem for each working thread to avoid data races.
     """
 
+    @overload
     def __init__(self, theLinkedFileSystem: OSD_FileSystem = None) -> None:
         """Constructor."""
+
+    @overload
+    def __init__(self, theOther: OSD_CachedFileSystem) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -454,6 +462,7 @@ class OSD_Chronometer:
     yield false values.
     """
 
+    @overload
     def __init__(self, theThisThreadOnly: bool = False) -> None:
         """
         Initializes a stopped Chronometer.
@@ -462,6 +471,9 @@ class OSD_Chronometer:
         time of the current thread only; otherwise CPU of the
         process (all threads, and completed children) is measured.
         """
+
+    @overload
+    def __init__(self, theOther: OSD_Chronometer) -> None: ...
 
     def IsStarted(self) -> bool:
         """Return true if timer has been started."""
@@ -592,6 +604,9 @@ class OSD_Path:
         "subdir|" - On UNIX -> "subdir/"
         - On VMS  -> "[.subdir.]\"
         """
+
+    @overload
+    def __init__(self, theOther: OSD_Path) -> None: ...
 
     def Values(self, aNode: nanoocp.TCollection.TCollection_AsciiString, aUsername: nanoocp.TCollection.TCollection_AsciiString, aPassword: nanoocp.TCollection.TCollection_AsciiString, aDisk: nanoocp.TCollection.TCollection_AsciiString, aTrek: nanoocp.TCollection.TCollection_AsciiString, aName: nanoocp.TCollection.TCollection_AsciiString, anExtension: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """Gets each component of a path."""
@@ -867,11 +882,15 @@ class OSD_Path:
 class OSD_Error:
     """Accurate management of OSD specific errors."""
 
+    @overload
     def __init__(self) -> None:
         """
         Initializes Error to be without any Error.
         This is only used by OSD, not by programmer.
         """
+
+    @overload
+    def __init__(self, theOther: OSD_Error) -> None: ...
 
     def Perror(self) -> None:
         """Raises OSD_Error with accurate error message."""
@@ -976,6 +995,9 @@ class OSD_Directory(OSD_FileNode):
     def __init__(self, theName: OSD_Path) -> None:
         """Creates Directory object initialized with theName."""
 
+    @overload
+    def __init__(self, theOther: OSD_Directory) -> None: ...
+
     @staticmethod
     def BuildTemporary() -> OSD_Directory:
         """
@@ -1011,6 +1033,9 @@ class OSD_DirectoryIterator:
         Wild-card "*" can be used in Mask the same way it
         is used by unix shell for file names
         """
+
+    @overload
+    def __init__(self, theOther: OSD_DirectoryIterator) -> None: ...
 
     def Destroy(self) -> None: ...
 
@@ -1074,6 +1099,9 @@ class OSD_Disk:
         file associated to /tmp.
         """
 
+    @overload
+    def __init__(self, theOther: OSD_Disk) -> None: ...
+
     def Name(self) -> OSD_Path:
         """Returns disk name of <me>."""
 
@@ -1122,6 +1150,9 @@ class OSD_Environment:
     @overload
     def __init__(self, Name: nanoocp.TCollection.TCollection_AsciiString, Value: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """Creates an Environment variable initialized with Value."""
+
+    @overload
+    def __init__(self, theOther: OSD_Environment) -> None: ...
 
     def SetValue(self, Value: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """
@@ -1216,6 +1247,9 @@ class OSD_File(OSD_FileNode):
     @overload
     def __init__(self, Name: OSD_Path) -> None:
         """Instantiates the object file, storing its name"""
+
+    @overload
+    def __init__(self, theOther: OSD_File) -> None: ...
 
     def Build(self, Mode: OSD_OpenMode, Protect: OSD_Protection) -> None:
         """
@@ -1366,6 +1400,9 @@ class OSD_FileIterator:
         is used by unix shell for file names
         """
 
+    @overload
+    def __init__(self, theOther: OSD_FileIterator) -> None: ...
+
     def Destroy(self) -> None: ...
 
     def Initialize(self, where: OSD_Path, Mask: nanoocp.TCollection.TCollection_AsciiString) -> None:
@@ -1404,8 +1441,12 @@ class OSD_FileSystemSelector(OSD_FileSystem):
     File system implementation which tried to open stream using registered list of file systems.
     """
 
+    @overload
     def __init__(self) -> None:
         """Constructor."""
+
+    @overload
+    def __init__(self, theOther: OSD_FileSystemSelector) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1435,8 +1476,12 @@ class OSD_Host:
     System version ,host name, nodename ...
     """
 
+    @overload
     def __init__(self) -> None:
         """Initializes current host by default."""
+
+    @overload
+    def __init__(self, theOther: OSD_Host) -> None: ...
 
     def SystemVersion(self) -> nanoocp.TCollection.TCollection_AsciiString:
         """Returns system name and version"""
@@ -1471,8 +1516,12 @@ class OSD_Host:
 class OSD_LocalFileSystem(OSD_FileSystem):
     """A file system opening local files (or files from mount systems)."""
 
+    @overload
     def __init__(self) -> None:
         """Constructor."""
+
+    @overload
+    def __init__(self, theOther: OSD_LocalFileSystem) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1517,8 +1566,12 @@ class OSD_MemInfo:
     memory management by application itself.
     """
 
+    @overload
     def __init__(self, theImmediateUpdate: bool = True) -> None:
         """Create and initialize. By default all countes are active"""
+
+    @overload
+    def __init__(self, theOther: OSD_MemInfo) -> None: ...
 
     class Counter(enum.IntEnum):
         MemPrivate = 0
@@ -1809,7 +1862,11 @@ class OSD_Parallel:
     more efficient to use it directly instead of using OSD_Parallel.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OSD_Parallel) -> None: ...
 
     @staticmethod
     def ToUseOcctThreads() -> bool:
@@ -1854,6 +1911,9 @@ class OSD_PerfMeter:
         Note that if meter already exists, theToAutoStart == true will reset it.
         """
 
+    @overload
+    def __init__(self, theOther: OSD_PerfMeter) -> None: ...
+
     def Init(self, theMeterName: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """
         Prepares the named meter. If the meter with such name was already created,
@@ -1890,8 +1950,12 @@ class OSD_PerfMeter:
 class OSD_Process:
     """A set of system process tools"""
 
+    @overload
     def __init__(self) -> None:
         """Initializes the object and prepare for a possible dump"""
+
+    @overload
+    def __init__(self, theOther: OSD_Process) -> None: ...
 
     @staticmethod
     def ExecutablePath() -> nanoocp.TCollection.TCollection_AsciiString:
@@ -1974,6 +2038,9 @@ class OSD_Protection:
     def __init__(self, System: OSD_SingleProtection, User: OSD_SingleProtection, Group: OSD_SingleProtection, World: OSD_SingleProtection) -> None:
         """Sets values of fields"""
 
+    @overload
+    def __init__(self, theOther: OSD_Protection) -> None: ...
+
     def Values(self) -> tuple[OSD_SingleProtection, OSD_SingleProtection, OSD_SingleProtection, OSD_SingleProtection]:
         """Retrieves values of fields"""
 
@@ -2033,6 +2100,9 @@ class OSD_SharedLibrary:
     @overload
     def __init__(self, aFilename: str) -> None:
         """Creates a SharedLibrary object with name aFilename."""
+
+    @overload
+    def __init__(self, theOther: OSD_SharedLibrary) -> None: ...
 
     def SetName(self, aName: str) -> None:
         """Sets a name associated to the shared object."""
@@ -2126,6 +2196,7 @@ class OSD_Timer(OSD_Chronometer):
     // t1 and t2.
     """
 
+    @overload
     def __init__(self, theThisThreadOnly: bool = False) -> None:
         """
         Builds a Chronometer initialized and stopped.
@@ -2135,6 +2206,9 @@ class OSD_Timer(OSD_Chronometer):
         measured; this flag does NOT affect ElapsedTime() value, only values
         returned by OSD_Chronometer
         """
+
+    @overload
+    def __init__(self, theOther: OSD_Timer) -> None: ...
 
     @staticmethod
     def GetWallClockTime() -> float:

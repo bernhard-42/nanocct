@@ -100,6 +100,17 @@ class Emitter:
             for ident in _IDENT_RE.findall(t):
                 self._idents.add(ident)
 
+    def _unbound_default(self, params: list[Param]) -> str | None:
+        """The type of a defaulted parameter that no binding knows: nanobind converts defaults to Python objects at
+        .def time, so such a member would abort the module import (nb::cast -> std::bad_cast)."""
+        for p in params:
+            if p.default is None or p.class_name == "" or p.default in ("nullptr", "NULL", "0") and "*" in p.type:
+                continue                           # a null pointer casts to None without looking the type up
+            if p.class_name in self.known or p.class_name in self.templates:
+                continue
+            return p.class_name
+        return None
+
     def _args(self, params: list[Param], skip_out: bool) -> str:
         parts: list[str] = []
         for p in params:
@@ -164,6 +175,10 @@ class Emitter:
 
     def _method(self, cls: Class, m: Method, mixed: set[str]) -> str | None:
         if m.skip_reason is not None:
+            return None
+        unbound = self._unbound_default(m.params)
+        if unbound is not None:
+            self.report.append(f"{cls.name}::{m.name}({self._sig(m.params)}): default argument of unbound type {unbound} -> method skipped")
             return None
         py = _py_name(m)
         if py is None:
@@ -330,6 +345,7 @@ class Emitter:
         ir = self.ir
         skipped: set[str] = set()
         classes = [c for c in self._ordered_classes() if self._base_ok(c, skipped)]
+        instances = self._instances()   # registers this package's NCollection instantiations in self.templates (defaults may use them)
         free_ops: dict[str, list[str]] = {}
         module_fns: list[str] = []
         for fn in ir.functions:
@@ -342,6 +358,10 @@ class Emitter:
                 else:
                     free_ops.setdefault(r[0], []).append(r[1])
             else:
+                unbound = self._unbound_default(fn.params)
+                if unbound is not None:
+                    self.report.append(f"{fn.name}({self._sig(fn.params)}): default argument of unbound type {unbound} -> function skipped")
+                    continue
                 self._note_types(fn.result, *(p.type for p in fn.params))
                 ne = " noexcept" if fn.is_noexcept else ""
                 if fn.result_kind in ("ptr_transient", "ref_transient"):
@@ -402,6 +422,10 @@ class Emitter:
                 declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
                 implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
                 for k in declared:
+                    unbound = self._unbound_default(k.params)
+                    if unbound is not None:
+                        self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): default argument of unbound type {unbound} -> constructor skipped")
+                        continue
                     body.append(self._ctor(c, k.params, k.doc))
             bound = [m for m in c.methods if m.skip_reason is None]
             mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
@@ -420,19 +444,26 @@ class Emitter:
                 s = self._method(c, m, mixed)
                 if s is not None:
                     body.append(s)
-            for f in c.fields:
-                self._note_types(f.type)
-                kind = "def_ro" if f.is_const else "def_rw"
-                dd = _cpp_doc(f.doc)
-                body.append(f'.{kind}("{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""})')
             body += free_ops.get(c.name, [])
+            if c.name in ir.hashable:          # std::hash<T> specialised by OCCT -> Python hashability consistent with __eq__
+                body.append(f'.def("__hash__", [](const {c.name} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
+            cls_expr = f'nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}"))'
             if implicit_default:
-                define.append(f'    nanoocp_implicit_default_ctor<{c.name}>(nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}")));')
-            if len(body) == 0:
+                define.append(f'    nanoocp_implicit_default_ctor<{c.name}>({cls_expr});')
+            if len(body) > 0:
+                define.append(f'    {cls_expr}')
+                define += ["        " + b for b in body]
+                define[-1] += ";"
+            # the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
+            # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
+            if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
+                define.append(f'    nanoocp_implicit_copy_ctor<{c.name}>({cls_expr});')
+            for f in c.fields:                 # read/write when the field type is copy-assignable (decided at compile time), else read-only
+                self._note_types(f.type)
+                dd = _cpp_doc(f.doc)
+                define.append(f'    nanoocp_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
+            if len(body) == 0 and len(c.fields) == 0:
                 continue
-            define.append(f'    nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}"))')
-            define += ["        " + b for b in body]
-            define[-1] += ";"
             # C++ implicit conversions (non-explicit converting constructors) apply in Python too
             if not c.is_abstract and c.constructible:
                 seen: set[str] = set()
@@ -460,7 +491,6 @@ class Emitter:
             src = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
             define.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
 
-        instances = self._instances()
         includes = [f"#include <{h}>" for h in ir.prelude + ir.headers]
         if len(instances) > 0:
             includes.insert(0, '#include "nanoocp_ncollection.h"')

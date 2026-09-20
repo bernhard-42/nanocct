@@ -265,6 +265,7 @@ this framework is periodic.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array1<double> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Weights), R"nbdoc(Returns the weights of the BSpline curve.)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Knots), R"nbdoc(Returns the knots of the BSpline curve.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Multiplicities), R"nbdoc(Returns the multiplicities of the BSpline curve.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_ConicToBSplineCurve>(nb::borrow<nb::class_<Convert_ConicToBSplineCurve>>(m.attr("Convert_ConicToBSplineCurve")));
     nb::borrow<nb::class_<Convert_CircleToBSplineCurve>>(m.attr("Convert_CircleToBSplineCurve"))
         .def(nb::init<const gp_Circ2d &, const Convert_ParameterisationType>(), nb::arg("C"), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(The equivalent B-spline curve has the same orientation
 as the circle C.)nbdoc")
@@ -274,6 +275,7 @@ The equivalent B-spline curve is oriented from U1 to U2 and has
 the same orientation as the circle C.
 
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_CircleToBSplineCurve>(nb::borrow<nb::class_<Convert_CircleToBSplineCurve>>(m.attr("Convert_CircleToBSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ2d &>, Convert_CircleToBSplineCurve>();
     nb::borrow<nb::class_<Convert_CompPolynomialToPoles>>(m.attr("Convert_CompPolynomialToPoles"))
         .def(nb::init<const int, const int, const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &>(), nb::arg("Dimension"), nb::arg("MaxDegree"), nb::arg("Degree"), nb::arg("Coefficients"), nb::arg("PolynomialIntervals"), nb::arg("TrueIntervals"), R"nbdoc(To Convert only one span.)nbdoc")
@@ -311,6 +313,7 @@ in the following format:
         .def("Knots", static_cast<const NCollection_Array1<double> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Knots), R"nbdoc(Returns the knots of the n-dimensional BSpline.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Multiplicities), R"nbdoc(Returns the multiplicities of the knots in the BSpline.)nbdoc")
         .def("IsDone", static_cast<bool (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::IsDone), R"nbdoc(Returns true if the conversion was successful.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_CompPolynomialToPoles>(nb::borrow<nb::class_<Convert_CompPolynomialToPoles>>(m.attr("Convert_CompPolynomialToPoles")));
     nb::borrow<nb::class_<Convert_ElementarySurfaceToBSplineSurface>>(m.attr("Convert_ElementarySurfaceToBSplineSurface"))
         .def("UDegree", static_cast<int (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::UDegree), R"nbdoc(Returns the degree in the U parametric direction.)nbdoc")
         .def("VDegree", static_cast<int (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::VDegree), R"nbdoc(Returns the degree in the V parametric direction.)nbdoc")
@@ -326,6 +329,7 @@ in the following format:
         .def("VKnots", static_cast<const NCollection_Array1<double> & (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::VKnots), R"nbdoc(Returns the V-knots of the BSpline surface.)nbdoc")
         .def("UMultiplicities", static_cast<const NCollection_Array1<int> & (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::UMultiplicities), R"nbdoc(Returns the U-multiplicities of the BSpline surface.)nbdoc")
         .def("VMultiplicities", static_cast<const NCollection_Array1<int> & (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::VMultiplicities), R"nbdoc(Returns the V-multiplicities of the BSpline surface.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_ElementarySurfaceToBSplineSurface>(nb::borrow<nb::class_<Convert_ElementarySurfaceToBSplineSurface>>(m.attr("Convert_ElementarySurfaceToBSplineSurface")));
     nb::borrow<nb::class_<Convert_ConeToBSplineSurface>>(m.attr("Convert_ConeToBSplineSurface"))
         .def(nb::init<const gp_Cone &, const double, const double>(), nb::arg("C"), nb::arg("V1"), nb::arg("V2"), R"nbdoc(The equivalent B-spline surface as the same orientation as the
 Cone in the U and V parametric directions.
@@ -336,6 +340,7 @@ Cone in the U and V parametric directions.
 
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi
 Raised if V1 = V2.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_ConeToBSplineSurface>(nb::borrow<nb::class_<Convert_ConeToBSplineSurface>>(m.attr("Convert_ConeToBSplineSurface")));
     nb::borrow<nb::class_<Convert_CylinderToBSplineSurface>>(m.attr("Convert_CylinderToBSplineSurface"))
         .def(nb::init<const gp_Cylinder &, const double, const double>(), nb::arg("Cyl"), nb::arg("V1"), nb::arg("V2"), R"nbdoc(The equivalent B-splineSurface as the same orientation as the
 cylinder in the U and V parametric directions.
@@ -346,6 +351,7 @@ cylinder in the U and V parametric directions.
 
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi
 Raised if V1 = V2.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_CylinderToBSplineSurface>(nb::borrow<nb::class_<Convert_CylinderToBSplineSurface>>(m.attr("Convert_CylinderToBSplineSurface")));
     nb::borrow<nb::class_<Convert_EllipseToBSplineCurve>>(m.attr("Convert_EllipseToBSplineCurve"))
         .def(nb::init<const gp_Elips2d &, const Convert_ParameterisationType>(), nb::arg("E"), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(The equivalent B-spline curve has the same orientation
 as the ellipse E.)nbdoc")
@@ -354,6 +360,7 @@ The equivalent B-spline curve is oriented from U1 to U2 and has
 the same orientation as E.
 
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_EllipseToBSplineCurve>(nb::borrow<nb::class_<Convert_EllipseToBSplineCurve>>(m.attr("Convert_EllipseToBSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const gp_Elips2d &>, Convert_EllipseToBSplineCurve>();
     nb::borrow<nb::class_<Convert_GridPolynomialToPoles>>(m.attr("Convert_GridPolynomialToPoles"))
         .def(nb::init<const int, const int, const NCollection_Array1<int> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &>(), nb::arg("theMaxUDegree"), nb::arg("theMaxVDegree"), nb::arg("theNumCoeff"), nb::arg("theCoefficients"), nb::arg("thePolynomialUIntervals"), nb::arg("thePolynomialVIntervals"), R"nbdoc(To only one polynomial Surface.
@@ -394,14 +401,17 @@ if <Coefficients> is not a)nbdoc")
         .def("UMultiplicities", static_cast<const NCollection_Array1<int> & (Convert_GridPolynomialToPoles::*)() const>(&Convert_GridPolynomialToPoles::UMultiplicities), R"nbdoc(Returns the multiplicities of the knots in the U direction.)nbdoc")
         .def("VMultiplicities", static_cast<const NCollection_Array1<int> & (Convert_GridPolynomialToPoles::*)() const>(&Convert_GridPolynomialToPoles::VMultiplicities), R"nbdoc(Returns the multiplicities of the knots in the V direction.)nbdoc")
         .def("IsDone", static_cast<bool (Convert_GridPolynomialToPoles::*)() const>(&Convert_GridPolynomialToPoles::IsDone), R"nbdoc(Returns true if the conversion was successful.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_GridPolynomialToPoles>(nb::borrow<nb::class_<Convert_GridPolynomialToPoles>>(m.attr("Convert_GridPolynomialToPoles")));
     nb::borrow<nb::class_<Convert_HyperbolaToBSplineCurve>>(m.attr("Convert_HyperbolaToBSplineCurve"))
         .def(nb::init<const gp_Hypr2d &, const double, const double>(), nb::arg("H"), nb::arg("U1"), nb::arg("U2"), R"nbdoc(The hyperbola H is limited between the parametric values U1, U2
 and the equivalent B-spline curve has the same orientation as the
 hyperbola.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_HyperbolaToBSplineCurve>(nb::borrow<nb::class_<Convert_HyperbolaToBSplineCurve>>(m.attr("Convert_HyperbolaToBSplineCurve")));
     nb::borrow<nb::class_<Convert_ParabolaToBSplineCurve>>(m.attr("Convert_ParabolaToBSplineCurve"))
         .def(nb::init<const gp_Parab2d &, const double, const double>(), nb::arg("Prb"), nb::arg("U1"), nb::arg("U2"), R"nbdoc(The parabola Prb is limited between the parametric values U1, U2
 and the equivalent B-spline curve as the same orientation as the
 parabola Prb.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_ParabolaToBSplineCurve>(nb::borrow<nb::class_<Convert_ParabolaToBSplineCurve>>(m.attr("Convert_ParabolaToBSplineCurve")));
     nb::borrow<nb::class_<Convert_SphereToBSplineSurface>>(m.attr("Convert_SphereToBSplineSurface"))
         .def(nb::init<const gp_Sphere &>(), nb::arg("Sph"), R"nbdoc(The equivalent B-spline surface as the same orientation
 as the sphere in the U and V parametric directions.)nbdoc")
@@ -416,6 +426,7 @@ sphere in the U and V parametric directions.
 
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi
 Raised if V1 = V2.)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_SphereToBSplineSurface>(nb::borrow<nb::class_<Convert_SphereToBSplineSurface>>(m.attr("Convert_SphereToBSplineSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Sphere &>, Convert_SphereToBSplineSurface>();
     nb::borrow<nb::class_<Convert_TorusToBSplineSurface>>(m.attr("Convert_TorusToBSplineSurface"))
         .def(nb::init<const gp_Torus &>(), nb::arg("T"), R"nbdoc(The equivalent B-spline surface as the same orientation as the
@@ -429,6 +440,7 @@ torus in the U and V parametric directions.
 
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi
 Raised if V1 = V2 or V1 = V2 + 2.0 * Pi)nbdoc");
+    nanoocp_implicit_copy_ctor<Convert_TorusToBSplineSurface>(nb::borrow<nb::class_<Convert_TorusToBSplineSurface>>(m.attr("Convert_TorusToBSplineSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Torus &>, Convert_TorusToBSplineSurface>();
     m.def("BuildPolynomialCosAndSin", static_cast<void (*)(const double, const double, const int, NCollection_Array1<double> &, NCollection_Array1<double> &, NCollection_Array1<double> &)>(&BuildPolynomialCosAndSin), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theNumPoles"), nb::arg("theCosNumerator"), nb::arg("theSinNumerator"), nb::arg("theDenominator"));
 }

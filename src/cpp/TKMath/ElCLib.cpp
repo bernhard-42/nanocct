@@ -272,4 +272,5 @@ The following functions build a 3d curve from a
 The "X Axis" and the "Y Axis" of the global coordinate
 system (i.e. 2D space) are lined up respectively with the
 "X Axis" and "Y Axis" of the 3D coordinate system, Pos.)nbdoc");
+    nanoocp_implicit_copy_ctor<ElCLib>(nb::borrow<nb::class_<ElCLib>>(m.attr("ElCLib")));
 }

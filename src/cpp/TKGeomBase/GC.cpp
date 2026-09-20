@@ -431,6 +431,7 @@ void nanoocp_define_GC(nb::module_ &m) {
 -   gce_Done, if the construction is successful, or
 -   another value of the gce_ErrorType enumeration
 indicating why the construction failed.)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_Root>(nb::borrow<nb::class_<GC_Root>>(m.attr("GC_Root")));
     nb::borrow<nb::class_<GC_MakeArcOfCircle>>(m.attr("GC_MakeArcOfCircle"))
         .def(nb::init<const gp_Pnt &, const gp_Pnt &, const gp_Pnt &>(), nb::arg("theP1"), nb::arg("theP2"), nb::arg("theP3"), R"nbdoc(Creates an arc of circle passing through three points.
 @param[in] theP1 first point
@@ -470,6 +471,7 @@ lines used to define circle center do not intersect.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_TrimmedCurve> & (GC_MakeArcOfCircle::*)() const>(&GC_MakeArcOfCircle::Value), R"nbdoc(Returns the constructed arc of circle.
 Exceptions StdFail_NotDone if no arc of circle is constructed.
 @return resulting arc)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfCircle>(nb::borrow<nb::class_<GC_MakeArcOfCircle>>(m.attr("GC_MakeArcOfCircle")));
     nb::borrow<nb::class_<GC_MakeArcOfCircle2d>>(m.attr("GC_MakeArcOfCircle2d"))
         .def(nb::init<const gp_Circ2d &, const double, const double, const bool>(), nb::arg("theCircle"), nb::arg("theAlpha1"), nb::arg("theAlpha2"), nb::arg("theSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs an arc from angular bounds on a circle.
 @param[in] theCircle source circle
@@ -497,6 +499,7 @@ Exceptions StdFail_NotDone if no arc of circle is constructed.
         .def("Value", static_cast<const occ::handle<Geom2d_TrimmedCurve> & (GC_MakeArcOfCircle2d::*)() const>(&GC_MakeArcOfCircle2d::Value), R"nbdoc(Returns the constructed arc of circle.
 Exceptions StdFail_NotDone if no arc of circle is constructed.
 @return resulting trimmed curve)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfCircle2d>(nb::borrow<nb::class_<GC_MakeArcOfCircle2d>>(m.attr("GC_MakeArcOfCircle2d")));
     nb::borrow<nb::class_<GC_MakeArcOfEllipse>>(m.attr("GC_MakeArcOfEllipse"))
         .def(nb::init<const gp_Elips &, const double, const double, const bool>(), nb::arg("theElips"), nb::arg("theAlpha1"), nb::arg("theAlpha2"), nb::arg("theSense"), R"nbdoc(Constructs an arc from angular bounds on an ellipse.
 @param[in] theElips source ellipse
@@ -520,6 +523,7 @@ Exceptions StdFail_NotDone if no arc of circle is constructed.
 @note IsDone always returns true.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_TrimmedCurve> & (GC_MakeArcOfEllipse::*)() const>(&GC_MakeArcOfEllipse::Value), R"nbdoc(Returns the constructed arc of ellipse.
 @return resulting arc)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfEllipse>(nb::borrow<nb::class_<GC_MakeArcOfEllipse>>(m.attr("GC_MakeArcOfEllipse")));
     nb::borrow<nb::class_<GC_MakeArcOfEllipse2d>>(m.attr("GC_MakeArcOfEllipse2d"))
         .def(nb::init<const gp_Elips2d &, const double, const double, const bool>(), nb::arg("theEllipse"), nb::arg("theAlpha1"), nb::arg("theAlpha2"), nb::arg("theSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs an arc from angular bounds on an ellipse.
 @param[in] theEllipse source ellipse
@@ -541,6 +545,7 @@ otherwise opposite.
 @note IsDone always returns true.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_TrimmedCurve> & (GC_MakeArcOfEllipse2d::*)() const>(&GC_MakeArcOfEllipse2d::Value), R"nbdoc(Returns the constructed arc of ellipse.
 @return resulting trimmed curve)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfEllipse2d>(nb::borrow<nb::class_<GC_MakeArcOfEllipse2d>>(m.attr("GC_MakeArcOfEllipse2d")));
     nb::borrow<nb::class_<GC_MakeArcOfHyperbola>>(m.attr("GC_MakeArcOfHyperbola"))
         .def(nb::init<const gp_Hypr &, const double, const double, const bool>(), nb::arg("theHypr"), nb::arg("theAlpha1"), nb::arg("theAlpha2"), nb::arg("theSense"), R"nbdoc(Constructs an arc from angular bounds on a hyperbola.
 @param[in] theHypr source hyperbola
@@ -562,6 +567,7 @@ otherwise opposite.
 -   the opposite orientation if `theSense` is false.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_TrimmedCurve> & (GC_MakeArcOfHyperbola::*)() const>(&GC_MakeArcOfHyperbola::Value), R"nbdoc(Returns the constructed arc of hyperbola.
 @return resulting arc)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfHyperbola>(nb::borrow<nb::class_<GC_MakeArcOfHyperbola>>(m.attr("GC_MakeArcOfHyperbola")));
     nb::borrow<nb::class_<GC_MakeArcOfHyperbola2d>>(m.attr("GC_MakeArcOfHyperbola2d"))
         .def(nb::init<const gp_Hypr2d &, const double, const double, const bool>(), nb::arg("theHyperbola"), nb::arg("theAlpha1"), nb::arg("theAlpha2"), nb::arg("theSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs an arc from angular bounds on a hyperbola.
 @param[in] theHyperbola source hyperbola
@@ -583,6 +589,7 @@ otherwise opposite.
 @note IsDone always returns true.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_TrimmedCurve> & (GC_MakeArcOfHyperbola2d::*)() const>(&GC_MakeArcOfHyperbola2d::Value), R"nbdoc(Returns the constructed arc of hyperbola.
 @return resulting trimmed curve)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfHyperbola2d>(nb::borrow<nb::class_<GC_MakeArcOfHyperbola2d>>(m.attr("GC_MakeArcOfHyperbola2d")));
     nb::borrow<nb::class_<GC_MakeArcOfParabola>>(m.attr("GC_MakeArcOfParabola"))
         .def(nb::init<const gp_Parab &, const double, const double, const bool>(), nb::arg("theParab"), nb::arg("theAlpha1"), nb::arg("theAlpha2"), nb::arg("theSense"), R"nbdoc(Constructs an arc from angular bounds on a parabola.
 @param[in] theParab source parabola
@@ -601,6 +608,7 @@ otherwise opposite.
 @param[in] theSense orientation of resulting arc)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_TrimmedCurve> & (GC_MakeArcOfParabola::*)() const>(&GC_MakeArcOfParabola::Value), R"nbdoc(Returns the constructed arc of parabola.
 @return resulting arc)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfParabola>(nb::borrow<nb::class_<GC_MakeArcOfParabola>>(m.attr("GC_MakeArcOfParabola")));
     nb::borrow<nb::class_<GC_MakeArcOfParabola2d>>(m.attr("GC_MakeArcOfParabola2d"))
         .def(nb::init<const gp_Parab2d &, const double, const double, const bool>(), nb::arg("theParabola"), nb::arg("theAlpha1"), nb::arg("theAlpha2"), nb::arg("theSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs an arc from angular bounds on a parabola.
 @param[in] theParabola source parabola
@@ -622,6 +630,7 @@ otherwise opposite.
 @note IsDone always returns true.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_TrimmedCurve> & (GC_MakeArcOfParabola2d::*)() const>(&GC_MakeArcOfParabola2d::Value), R"nbdoc(Returns the constructed arc of parabola.
 @return resulting trimmed curve)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeArcOfParabola2d>(nb::borrow<nb::class_<GC_MakeArcOfParabola2d>>(m.attr("GC_MakeArcOfParabola2d")));
     nb::borrow<nb::class_<GC_MakeCircle>>(m.attr("GC_MakeCircle"))
         .def(nb::init<const gp_Circ &>(), nb::arg("theC"), R"nbdoc(Creates a circle from a `gp_Circ`.
 @param[in] theC source circle)nbdoc")
@@ -656,6 +665,7 @@ otherwise opposite.
 Exceptions
 StdFail_NotDone if no circle is constructed.
 @return resulting circle)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeCircle>(nb::borrow<nb::class_<GC_MakeCircle>>(m.attr("GC_MakeCircle")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ &>, GC_MakeCircle>();
     nb::borrow<nb::class_<GC_MakeCircle2d>>(m.attr("GC_MakeCircle2d"))
         .def(nb::init<const gp_Circ2d &>(), nb::arg("theCircle"), R"nbdoc(Creates a circle from a non-persistent one from package gp.
@@ -697,6 +707,7 @@ StdFail_NotDone if no circle is constructed.
         .def("Value", static_cast<const occ::handle<Geom2d_Circle> & (GC_MakeCircle2d::*)() const>(&GC_MakeCircle2d::Value), R"nbdoc(Returns the constructed circle.
 Exceptions StdFail_NotDone if no circle is constructed.
 @return resulting circle)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeCircle2d>(nb::borrow<nb::class_<GC_MakeCircle2d>>(m.attr("GC_MakeCircle2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ2d &>, GC_MakeCircle2d>();
     nb::borrow<nb::class_<GC_MakeConicalSurface>>(m.attr("GC_MakeConicalSurface"))
         .def(nb::init<const gp_Cone &>(), nb::arg("theC"), R"nbdoc(Creates a conical surface from a `gp_Cone`.
@@ -741,6 +752,7 @@ to vector (`theP1`,`theP2`).)nbdoc")
 Exceptions
 StdFail_NotDone if no cone is constructed.
 @return resulting conical surface)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeConicalSurface>(nb::borrow<nb::class_<GC_MakeConicalSurface>>(m.attr("GC_MakeConicalSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Cone &>, GC_MakeConicalSurface>();
     nb::borrow<nb::class_<GC_MakeCylindricalSurface>>(m.attr("GC_MakeCylindricalSurface"))
         .def(nb::init<const gp_Cylinder &>(), nb::arg("theC"), R"nbdoc(Creates a cylindrical surface from a `gp_Cylinder`.
@@ -778,6 +790,7 @@ distance between point `theP3` and that axis.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_CylindricalSurface> & (GC_MakeCylindricalSurface::*)() const>(&GC_MakeCylindricalSurface::Value), R"nbdoc(Returns the constructed cylinder.
 Exceptions StdFail_NotDone if no cylinder is constructed.
 @return resulting cylindrical surface)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeCylindricalSurface>(nb::borrow<nb::class_<GC_MakeCylindricalSurface>>(m.attr("GC_MakeCylindricalSurface")));
     nb::implicitly_convertible<std::decay_t<const gp_Cylinder &>, GC_MakeCylindricalSurface>();
     nb::implicitly_convertible<std::decay_t<const gp_Circ &>, GC_MakeCylindricalSurface>();
     nb::borrow<nb::class_<GC_MakeEllipse>>(m.attr("GC_MakeEllipse"))
@@ -806,6 +819,7 @@ the "X Axis" and "Y Axis" of the coordinate system A2, where:
         .def("Value", static_cast<const occ::handle<Geom_Ellipse> & (GC_MakeEllipse::*)() const>(&GC_MakeEllipse::Value), R"nbdoc(Returns the constructed ellipse.
 Exceptions StdFail_NotDone if no ellipse is constructed.
 @return resulting ellipse)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeEllipse>(nb::borrow<nb::class_<GC_MakeEllipse>>(m.attr("GC_MakeEllipse")));
     nb::implicitly_convertible<std::decay_t<const gp_Elips &>, GC_MakeEllipse>();
     nb::borrow<nb::class_<GC_MakeEllipse2d>>(m.attr("GC_MakeEllipse2d"))
         .def(nb::init<const gp_Elips2d &>(), nb::arg("theEllipse"), R"nbdoc(Creates an ellipse from a non-persistent one from package gp.
@@ -831,6 +845,7 @@ Exceptions StdFail_NotDone if no ellipse is constructed.
         .def("Value", static_cast<const occ::handle<Geom2d_Ellipse> & (GC_MakeEllipse2d::*)() const>(&GC_MakeEllipse2d::Value), R"nbdoc(Returns the constructed ellipse.
 Exceptions StdFail_NotDone if no ellipse is constructed.
 @return resulting ellipse)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeEllipse2d>(nb::borrow<nb::class_<GC_MakeEllipse2d>>(m.attr("GC_MakeEllipse2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Elips2d &>, GC_MakeEllipse2d>();
     nb::borrow<nb::class_<GC_MakeHyperbola>>(m.attr("GC_MakeHyperbola"))
         .def(nb::init<const gp_Hypr &>(), nb::arg("theH"), R"nbdoc(Creates a hyperbola from a `gp_Hypr`.
@@ -853,6 +868,7 @@ the plane of the hyperbola is defined by the "X Axis" and "Y Axis" of A2,
         .def("Value", static_cast<const occ::handle<Geom_Hyperbola> & (GC_MakeHyperbola::*)() const>(&GC_MakeHyperbola::Value), R"nbdoc(Returns the constructed hyperbola.
 Exceptions StdFail_NotDone if no hyperbola is constructed.
 @return resulting hyperbola)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeHyperbola>(nb::borrow<nb::class_<GC_MakeHyperbola>>(m.attr("GC_MakeHyperbola")));
     nb::implicitly_convertible<std::decay_t<const gp_Hypr &>, GC_MakeHyperbola>();
     nb::borrow<nb::class_<GC_MakeHyperbola2d>>(m.attr("GC_MakeHyperbola2d"))
         .def(nb::init<const gp_Hypr2d &>(), nb::arg("theHyperbola"), R"nbdoc(Creates a hyperbola from a non-persistent one from package gp.
@@ -879,6 +895,7 @@ Exceptions StdFail_NotDone if no hyperbola is constructed.
         .def("Value", static_cast<const occ::handle<Geom2d_Hyperbola> & (GC_MakeHyperbola2d::*)() const>(&GC_MakeHyperbola2d::Value), R"nbdoc(Returns the constructed hyperbola.
 Exceptions: StdFail_NotDone if no hyperbola is constructed.
 @return resulting hyperbola)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeHyperbola2d>(nb::borrow<nb::class_<GC_MakeHyperbola2d>>(m.attr("GC_MakeHyperbola2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Hypr2d &>, GC_MakeHyperbola2d>();
     nb::borrow<nb::class_<GC_MakeLine>>(m.attr("GC_MakeLine"))
         .def(nb::init<const gp_Ax1 &>(), nb::arg("theA1"), R"nbdoc(Creates a line located in 3D space with the axis placement A1.
@@ -899,6 +916,7 @@ Exceptions: StdFail_NotDone if no hyperbola is constructed.
         .def("Value", static_cast<const occ::handle<Geom_Line> & (GC_MakeLine::*)() const>(&GC_MakeLine::Value), R"nbdoc(Returns the constructed line.
 Exceptions StdFail_NotDone if no line is constructed.
 @return resulting line)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeLine>(nb::borrow<nb::class_<GC_MakeLine>>(m.attr("GC_MakeLine")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, GC_MakeLine>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin &>, GC_MakeLine>();
     nb::borrow<nb::class_<GC_MakeLine2d>>(m.attr("GC_MakeLine2d"))
@@ -923,6 +941,7 @@ Exceptions StdFail_NotDone if no line is constructed.
         .def("Value", static_cast<const occ::handle<Geom2d_Line> & (GC_MakeLine2d::*)() const>(&GC_MakeLine2d::Value), R"nbdoc(Returns the constructed line.
 Exceptions StdFail_NotDone if no line is constructed.
 @return resulting line)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeLine2d>(nb::borrow<nb::class_<GC_MakeLine2d>>(m.attr("GC_MakeLine2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Ax2d &>, GC_MakeLine2d>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin2d &>, GC_MakeLine2d>();
     nb::borrow<nb::class_<GC_MakeMirror>>(m.attr("GC_MakeMirror"))
@@ -941,6 +960,7 @@ Exceptions StdFail_NotDone if no line is constructed.
 @param[in] theDirec axis direction)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_Transformation> & (GC_MakeMirror::*)() const>(&GC_MakeMirror::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeMirror>(nb::borrow<nb::class_<GC_MakeMirror>>(m.attr("GC_MakeMirror")));
     nb::implicitly_convertible<std::decay_t<const gp_Pnt &>, GC_MakeMirror>();
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, GC_MakeMirror>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin &>, GC_MakeMirror>();
@@ -958,6 +978,7 @@ Exceptions StdFail_NotDone if no line is constructed.
 @param[in] theDirec symmetry direction)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_Transformation> & (GC_MakeMirror2d::*)() const>(&GC_MakeMirror2d::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeMirror2d>(nb::borrow<nb::class_<GC_MakeMirror2d>>(m.attr("GC_MakeMirror2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Pnt2d &>, GC_MakeMirror2d>();
     nb::implicitly_convertible<std::decay_t<const gp_Ax2d &>, GC_MakeMirror2d>();
     nb::implicitly_convertible<std::decay_t<const gp_Lin2d &>, GC_MakeMirror2d>();
@@ -992,6 +1013,7 @@ is below gp resolution.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_Plane> & (GC_MakePlane::*)() const>(&GC_MakePlane::Value), R"nbdoc(Returns the constructed plane.
 Exceptions StdFail_NotDone if no plane is constructed.
 @return resulting plane)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakePlane>(nb::borrow<nb::class_<GC_MakePlane>>(m.attr("GC_MakePlane")));
     nb::implicitly_convertible<std::decay_t<const gp_Pln &>, GC_MakePlane>();
     nb::implicitly_convertible<std::decay_t<const gp_Ax1 &>, GC_MakePlane>();
     nb::borrow<nb::class_<GC_MakeRotation>>(m.attr("GC_MakeRotation"))
@@ -1007,24 +1029,28 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @param[in] theAngle rotation angle in radians)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_Transformation> & (GC_MakeRotation::*)() const>(&GC_MakeRotation::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeRotation>(nb::borrow<nb::class_<GC_MakeRotation>>(m.attr("GC_MakeRotation")));
     nb::borrow<nb::class_<GC_MakeRotation2d>>(m.attr("GC_MakeRotation2d"))
         .def(nb::init<const gp_Pnt2d &, const double>(), nb::arg("thePoint"), nb::arg("theAngle"), R"nbdoc(Constructs a rotation through angle Angle about the center Point.
 @param[in] thePoint rotation center
 @param[in] theAngle rotation angle in radians)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_Transformation> & (GC_MakeRotation2d::*)() const>(&GC_MakeRotation2d::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeRotation2d>(nb::borrow<nb::class_<GC_MakeRotation2d>>(m.attr("GC_MakeRotation2d")));
     nb::borrow<nb::class_<GC_MakeScale>>(m.attr("GC_MakeScale"))
         .def(nb::init<const gp_Pnt &, const double>(), nb::arg("thePoint"), nb::arg("theScale"), R"nbdoc(Constructs a scaling transformation.
 @param[in] thePoint center point of scaling
 @param[in] theScale scale factor)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_Transformation> & (GC_MakeScale::*)() const>(&GC_MakeScale::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeScale>(nb::borrow<nb::class_<GC_MakeScale>>(m.attr("GC_MakeScale")));
     nb::borrow<nb::class_<GC_MakeScale2d>>(m.attr("GC_MakeScale2d"))
         .def(nb::init<const gp_Pnt2d &, const double>(), nb::arg("thePoint"), nb::arg("theScale"), R"nbdoc(Constructs a scaling transformation.
 @param[in] thePoint center point
 @param[in] theScale scale factor)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_Transformation> & (GC_MakeScale2d::*)() const>(&GC_MakeScale2d::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeScale2d>(nb::borrow<nb::class_<GC_MakeScale2d>>(m.attr("GC_MakeScale2d")));
     nb::borrow<nb::class_<GC_MakeSegment>>(m.attr("GC_MakeSegment"))
         .def(nb::init<const gp_Pnt &, const gp_Pnt &>(), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Creates a segment of a line from two points.
 @param[in] theP1 first point
@@ -1047,6 +1073,7 @@ Exceptions StdFail_NotDone if no plane is constructed.
 @note Construction fails if trimming parameters are equal.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_TrimmedCurve> & (GC_MakeSegment::*)() const>(&GC_MakeSegment::Value), R"nbdoc(Returns the constructed line segment.
 @return resulting line segment)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeSegment>(nb::borrow<nb::class_<GC_MakeSegment>>(m.attr("GC_MakeSegment")));
     nb::borrow<nb::class_<GC_MakeSegment2d>>(m.attr("GC_MakeSegment2d"))
         .def(nb::init<const gp_Pnt2d &, const gp_Pnt2d &>(), nb::arg("theP1"), nb::arg("theP2"), R"nbdoc(Creates a segment between two points.
 @param[in] theP1 first point
@@ -1075,6 +1102,7 @@ endpoint is coincident with `theP1` within resolution.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_TrimmedCurve> & (GC_MakeSegment2d::*)() const>(&GC_MakeSegment2d::Value), R"nbdoc(Returns the constructed line segment.
 Exceptions StdFail_NotDone if no line segment is constructed.
 @return resulting trimmed curve)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeSegment2d>(nb::borrow<nb::class_<GC_MakeSegment2d>>(m.attr("GC_MakeSegment2d")));
     nb::borrow<nb::class_<GC_MakeTranslation>>(m.attr("GC_MakeTranslation"))
         .def(nb::init<const gp_Vec &>(), nb::arg("theVect"), R"nbdoc(Constructs a translation from a vector.
 @param[in] theVect translation vector)nbdoc")
@@ -1083,6 +1111,7 @@ Exceptions StdFail_NotDone if no line segment is constructed.
 @param[in] thePoint2 end point)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_Transformation> & (GC_MakeTranslation::*)() const>(&GC_MakeTranslation::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeTranslation>(nb::borrow<nb::class_<GC_MakeTranslation>>(m.attr("GC_MakeTranslation")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec &>, GC_MakeTranslation>();
     nb::borrow<nb::class_<GC_MakeTranslation2d>>(m.attr("GC_MakeTranslation2d"))
         .def(nb::init<const gp_Vec2d &>(), nb::arg("theVect"), R"nbdoc(Constructs a translation along a vector.
@@ -1092,6 +1121,7 @@ Exceptions StdFail_NotDone if no line segment is constructed.
 @param[in] thePoint2 second point)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom2d_Transformation> & (GC_MakeTranslation2d::*)() const>(&GC_MakeTranslation2d::Value), R"nbdoc(Returns the constructed transformation.
 @return resulting transformation)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeTranslation2d>(nb::borrow<nb::class_<GC_MakeTranslation2d>>(m.attr("GC_MakeTranslation2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Vec2d &>, GC_MakeTranslation2d>();
     nb::borrow<nb::class_<GC_MakeTrimmedCone>>(m.attr("GC_MakeTrimmedCone"))
         .def(nb::init<const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const gp_Pnt &>(), nb::arg("theP1"), nb::arg("theP2"), nb::arg("theP3"), nb::arg("theP4"), R"nbdoc(Creates a rectangular trimmed conical surface from four points.
@@ -1118,6 +1148,7 @@ to vector P1P2.)nbdoc")
         .def("Value", static_cast<const occ::handle<Geom_RectangularTrimmedSurface> & (GC_MakeTrimmedCone::*)() const>(&GC_MakeTrimmedCone::Value), R"nbdoc(Returns the constructed trimmed cone.
 StdFail_NotDone if no trimmed cone is constructed.
 @return resulting trimmed conical surface)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeTrimmedCone>(nb::borrow<nb::class_<GC_MakeTrimmedCone>>(m.attr("GC_MakeTrimmedCone")));
     nb::borrow<nb::class_<GC_MakeTrimmedCylinder>>(m.attr("GC_MakeTrimmedCylinder"))
         .def(nb::init<const gp_Circ &, const double>(), nb::arg("theCirc"), nb::arg("theHeight"), R"nbdoc(Creates a trimmed cylindrical surface from a base circle and height.
 @param[in] theCirc base circle
@@ -1147,6 +1178,7 @@ result has the same orientation as `theA1`.
 Exceptions
 StdFail_NotDone if no trimmed cylinder is constructed.
 @return resulting trimmed cylindrical surface)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeTrimmedCylinder>(nb::borrow<nb::class_<GC_MakeTrimmedCylinder>>(m.attr("GC_MakeTrimmedCylinder")));
     nb::borrow<nb::class_<GC_MakeParabola2d>>(m.attr("GC_MakeParabola2d"))
         .def(nb::init<const gp_Parab2d &>(), nb::arg("theParabola"), R"nbdoc(Creates a parabola from a non-persistent one from package gp.
 @param[in] theParabola source parabola)nbdoc")
@@ -1171,5 +1203,6 @@ StdFail_NotDone if no trimmed cylinder is constructed.
         .def("Value", static_cast<const occ::handle<Geom2d_Parabola> & (GC_MakeParabola2d::*)() const>(&GC_MakeParabola2d::Value), R"nbdoc(Returns the constructed parabola.
 Exceptions StdFail_NotDone if no parabola is constructed.
 @return resulting parabola)nbdoc");
+    nanoocp_implicit_copy_ctor<GC_MakeParabola2d>(nb::borrow<nb::class_<GC_MakeParabola2d>>(m.attr("GC_MakeParabola2d")));
     nb::implicitly_convertible<std::decay_t<const gp_Parab2d &>, GC_MakeParabola2d>();
 }

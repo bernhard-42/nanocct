@@ -303,6 +303,7 @@ void nanoocp_define_Standard(nb::module_ &m) {
         .def_static("Purge", static_cast<int (*)()>(&Standard::Purge), R"nbdoc(Deallocates the storage retained on the free list
 and clears the list.
 Returns non-zero if some memory has been actually freed.)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard>(nb::borrow<nb::class_<Standard>>(m.attr("Standard")));
     nb::borrow<nb::class_<Standard_Transient>>(m.attr("Standard_Transient"))
         .def(nb::new_([]() { return opencascade::handle<Standard_Transient>(new Standard_Transient()); }), R"nbdoc(Empty constructor)nbdoc")
         .def(nb::new_([](const Standard_Transient & arg0) { return opencascade::handle<Standard_Transient>(new Standard_Transient(arg0)); }), nb::arg("arg0"), R"nbdoc(Copy constructor -- does nothing)nbdoc")
@@ -344,8 +345,10 @@ Note that multiple inheritance is not supported.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Standard_Type::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Standard_Type::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Standard_Type::*)() const>(&Standard_Type::DynamicType));
+    nanoocp_implicit_copy_ctor<Standard_Type>(nb::borrow<nb::class_<Standard_Type>>(m.attr("Standard_Type")));
     nb::borrow<nb::class_<Standard_CLocaleSentry>>(m.attr("Standard_CLocaleSentry"))
         .def(nb::init<>(), R"nbdoc(Setup current C locale to "C".)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_CLocaleSentry>(nb::borrow<nb::class_<Standard_CLocaleSentry>>(m.attr("Standard_CLocaleSentry")));
     nb::borrow<nb::class_<Standard_Condition>>(m.attr("Standard_Condition"))
         .def(nb::init<bool>(), nb::arg("theIsSet") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Default constructor.
 @param theIsSet Initial flag state)nbdoc")
@@ -360,16 +363,19 @@ Note that multiple inheritance is not supported.)nbdoc")
         .def("CheckReset", static_cast<bool (Standard_Condition::*)()>(&Standard_Condition::CheckReset), R"nbdoc(Method perform two steps at-once - reset the event object
 and returns true if it was in signaling state.
 @return true if event object was in signaling state.)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_Condition>(nb::borrow<nb::class_<Standard_Condition>>(m.attr("Standard_Condition")));
     nb::implicitly_convertible<std::decay_t<bool>, Standard_Condition>();
     nanoocp_implicit_default_ctor<Standard_CStringHasher>(nb::borrow<nb::class_<Standard_CStringHasher>>(m.attr("Standard_CStringHasher")));
     nb::borrow<nb::class_<Standard_CStringHasher>>(m.attr("Standard_CStringHasher"))
         .def("__call__", static_cast<size_t (Standard_CStringHasher::*)(const char *const) const noexcept>(&Standard_CStringHasher::operator()), nb::arg("theString"), nb::is_operator())
         .def("__call__", static_cast<bool (Standard_CStringHasher::*)(const char *const, const char *const) const noexcept>(&Standard_CStringHasher::operator()), nb::arg("theString1"), nb::arg("theString2"), nb::is_operator());
+    nanoocp_implicit_copy_ctor<Standard_CStringHasher>(nb::borrow<nb::class_<Standard_CStringHasher>>(m.attr("Standard_CStringHasher")));
     nb::borrow<nb::class_<Standard_DumpValue>>(m.attr("Standard_DumpValue"))
         .def(nb::init<>())
-        .def(nb::init<const TCollection_AsciiString &, const int>(), nb::arg("theValue"), nb::arg("theStartPos"))
-        .def_rw("myValue", &Standard_DumpValue::myValue, R"nbdoc(current string value)nbdoc")
-        .def_rw("myStartPosition", &Standard_DumpValue::myStartPosition, R"nbdoc(position of the value first char in the whole stream)nbdoc");
+        .def(nb::init<const TCollection_AsciiString &, const int>(), nb::arg("theValue"), nb::arg("theStartPos"));
+    nanoocp_implicit_copy_ctor<Standard_DumpValue>(nb::borrow<nb::class_<Standard_DumpValue>>(m.attr("Standard_DumpValue")));
+    nanoocp_def_field(nb::borrow<nb::class_<Standard_DumpValue>>(m.attr("Standard_DumpValue")), "myValue", &Standard_DumpValue::myValue, R"nbdoc(current string value)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<Standard_DumpValue>>(m.attr("Standard_DumpValue")), "myStartPosition", &Standard_DumpValue::myStartPosition, R"nbdoc(position of the value first char in the whole stream)nbdoc");
     nanoocp_implicit_default_ctor<Standard_Dump>(nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump")));
     nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump"))
         .def_static("SplitJson", static_cast<bool (*)(const TCollection_AsciiString &, NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue, NCollection_DefaultHasher<TCollection_AsciiString>> &)>(&Standard_Dump::SplitJson), nb::arg("theStreamStr"), nb::arg("theKeyToValues"), R"nbdoc(Converts stream into map of values.
@@ -411,6 +417,7 @@ empty string.
         .def_static("DumpFieldToName", static_cast<TCollection_AsciiString (*)(const TCollection_AsciiString &)>(&Standard_Dump::DumpFieldToName), nb::arg("theField"), R"nbdoc(Convert field name into dump text value, removes "&" and "my" prefixes
 An example, for field myValue, theName is Value, for &myCLass, the name is Class
 @param theField a source value)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_Dump>(nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump")));
     nb::borrow<nb::class_<Standard_ErrorHandler>>(m.attr("Standard_ErrorHandler"))
         .def(nb::init<>(), R"nbdoc(Create a ErrorHandler (to be used with try{}catch(){}).
 It uses the "setjmp" and "longjmp" routines.)nbdoc")
@@ -420,6 +427,7 @@ otherwise prints error and terminates program.)nbdoc")
         .def("Label", static_cast<jmp_buf & (Standard_ErrorHandler::*)()>(&Standard_ErrorHandler::Label), R"nbdoc(Returns label for jump)nbdoc")
         .def("Error", static_cast<const std::variant<std::monostate, OSD_SIGBUS, OSD_SIGHUP, OSD_SIGILL, OSD_SIGINT, OSD_SIGKILL, OSD_SIGQUIT, OSD_SIGSEGV, OSD_SIGSYS, OSD_Exception_ACCESS_VIOLATION, OSD_Exception_ARRAY_BOUNDS_EXCEEDED, OSD_Exception_ILLEGAL_INSTRUCTION, OSD_Exception_IN_PAGE_ERROR, OSD_Exception_INT_OVERFLOW, OSD_Exception_INVALID_DISPOSITION, OSD_Exception_NONCONTINUABLE_EXCEPTION, OSD_Exception_PRIV_INSTRUCTION, OSD_Exception_STACK_OVERFLOW, OSD_Exception_STATUS_NO_MEMORY, Standard_DivideByZero, Standard_NumericError, Standard_Overflow, Standard_ProgramError, Standard_Underflow> & (Standard_ErrorHandler::*)() const>(&Standard_ErrorHandler::Error), R"nbdoc(Returns the current Error variant.)nbdoc")
         .def_static("IsInTryBlock", static_cast<bool (*)()>(&Standard_ErrorHandler::IsInTryBlock), R"nbdoc(Test if the code is currently running in a try block)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_ErrorHandler>(nb::borrow<nb::class_<Standard_ErrorHandler>>(m.attr("Standard_ErrorHandler")));
     nb::borrow<nb::class_<Standard_ErrorHandler::Callback>>(m.attr("Standard_ErrorHandler").attr("Callback"))
         .def("RegisterCallback", static_cast<void (Standard_ErrorHandler::Callback::*)()>(&Standard_ErrorHandler::Callback::RegisterCallback))
         .def("UnregisterCallback", static_cast<void (Standard_ErrorHandler::Callback::*)()>(&Standard_ErrorHandler::Callback::UnregisterCallback))
@@ -427,10 +435,10 @@ otherwise prints error and terminates program.)nbdoc")
 Called by the exception handler when it is being destroyed but
 still has this callback registered.)nbdoc");
     nanoocp_implicit_default_ctor<Standard_UUID>(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")));
-    nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID"))
-        .def_rw("Data1", &Standard_UUID::Data1)
-        .def_rw("Data2", &Standard_UUID::Data2)
-        .def_rw("Data3", &Standard_UUID::Data3);
+    nanoocp_implicit_copy_ctor<Standard_UUID>(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")));
+    nanoocp_def_field(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")), "Data1", &Standard_UUID::Data1);
+    nanoocp_def_field(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")), "Data2", &Standard_UUID::Data2);
+    nanoocp_def_field(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")), "Data3", &Standard_UUID::Data3);
     nb::borrow<nb::class_<Standard_GUID>>(m.attr("Standard_GUID"))
         .def(nb::init<>(), R"nbdoc(Creates a GUID with all zeros.)nbdoc")
         .def(nb::init<const char *const>(), nb::arg("aGuid"), R"nbdoc(build a GUID from an ascii string with the
@@ -448,7 +456,8 @@ Length : 36 char
         .def("Assign", static_cast<void (Standard_GUID::*)(const Standard_GUID &) noexcept>(&Standard_GUID::Assign), nb::arg("uid"), R"nbdoc(Assigns uid to this GUID.)nbdoc")
         .def("Assign", static_cast<void (Standard_GUID::*)(const Standard_UUID &) noexcept>(&Standard_GUID::Assign), nb::arg("uid"), R"nbdoc(Assigns uid to this GUID.)nbdoc")
         .def_static("CheckGUIDFormat", static_cast<bool (*)(const char *const)>(&Standard_GUID::CheckGUIDFormat), nb::arg("aGuid"), R"nbdoc(Check the format of a GUID string.
-It checks the size, the position of the '-' and the correct size of fields.)nbdoc");
+It checks the size, the position of the '-' and the correct size of fields.)nbdoc")
+        .def("__hash__", [](const Standard_GUID &self) { return static_cast<Py_ssize_t>(std::hash<Standard_GUID>{}(self)); });
     nb::implicitly_convertible<std::decay_t<const char *const>, Standard_GUID>();
     nb::implicitly_convertible<std::decay_t<const Standard_UUID &>, Standard_GUID>();
     nb::borrow<nb::class_<Standard_MMgrRoot>>(m.attr("Standard_MMgrRoot"))
@@ -472,6 +481,7 @@ nullified. For description of other parameters, see description
 of the class above.)nbdoc")
         .def("Purge", static_cast<int (Standard_MMgrOpt::*)(bool)>(&Standard_MMgrOpt::Purge), nb::arg("isDestroyed"), R"nbdoc(Release medium-sized blocks of memory in free lists to the system.
 Returns number of actually freed blocks)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_MMgrOpt>(nb::borrow<nb::class_<Standard_MMgrOpt>>(m.attr("Standard_MMgrOpt")));
     nb::implicitly_convertible<std::decay_t<const bool>, Standard_MMgrOpt>();
     nb::borrow<nb::class_<Standard_Mutex>>(m.attr("Standard_Mutex"))
         .def(nb::init<>(), R"nbdoc(Constructor: creates a mutex object and initializes it.
@@ -483,11 +493,13 @@ by other threads, locks it and then returns)nbdoc")
 locks it and returns True; otherwise returns False without waiting
 mutex to be released.)nbdoc")
         .def("Unlock", static_cast<void (Standard_Mutex::*)()>(&Standard_Mutex::Unlock), R"nbdoc(Method to unlock the mutex; releases it to other users)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_Mutex>(nb::borrow<nb::class_<Standard_Mutex>>(m.attr("Standard_Mutex")));
     nb::borrow<nb::class_<Standard_Mutex::Sentry>>(m.attr("Standard_Mutex").attr("Sentry"))
         .def(nb::init<Standard_Mutex &>(), nb::arg("theMutex"), R"nbdoc(Constructor - initializes the sentry object by reference to a
 mutex (which must be initialized) and locks the mutex immediately)nbdoc")
         .def(nb::init<Standard_Mutex *>(), nb::arg("theMutex"), R"nbdoc(Constructor - initializes the sentry object by pointer to a
 mutex and locks the mutex if its pointer is not NULL)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_Mutex::Sentry>(nb::borrow<nb::class_<Standard_Mutex::Sentry>>(m.attr("Standard_Mutex").attr("Sentry")));
     nb::implicitly_convertible<std::decay_t<Standard_Mutex &>, Standard_Mutex::Sentry>();
     nb::implicitly_convertible<std::decay_t<Standard_Mutex *>, Standard_Mutex::Sentry>();
     nb::borrow<nb::class_<Standard_Persistent>>(m.attr("Standard_Persistent"))
@@ -495,6 +507,7 @@ mutex and locks the mutex if its pointer is not NULL)nbdoc");
         .def_static("get_type_name", static_cast<const char * (*)()>(&Standard_Persistent::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Standard_Persistent::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Standard_Persistent::*)() const>(&Standard_Persistent::DynamicType));
+    nanoocp_implicit_copy_ctor<Standard_Persistent>(nb::borrow<nb::class_<Standard_Persistent>>(m.attr("Standard_Persistent")));
     nb::borrow<nb::class_<Standard_ReadBuffer>>(m.attr("Standard_ReadBuffer"))
         .def(nb::init<int64_t, size_t, bool>(), nb::arg("theDataLen"), nb::arg("theChunkLen"), nb::arg("theIsPartialPayload") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Constructor with initialization.)nbdoc")
         .def("Init", static_cast<void (Standard_ReadBuffer::*)(int64_t, size_t, bool)>(&Standard_ReadBuffer::Init), nb::arg("theDataLen"), nb::arg("theChunkLen"), nb::arg("theIsPartialPayload") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Initialize the buffer.
@@ -506,6 +519,7 @@ when TRUE, last chunk will be read from stream exactly till
 theDataLen allowing portion of chunk to be uninitialized
 (useful for interleaved data))nbdoc")
         .def("IsDone", static_cast<bool (Standard_ReadBuffer::*)() const>(&Standard_ReadBuffer::IsDone), R"nbdoc(Return TRUE if amount of read bytes is equal to requested length of entire data.)nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_ReadBuffer>(nb::borrow<nb::class_<Standard_ReadBuffer>>(m.attr("Standard_ReadBuffer")));
     nb::borrow<nb::class_<Standard_ReadLineBuffer>>(m.attr("Standard_ReadLineBuffer"))
         .def(nb::init<size_t>(), nb::arg("theMaxBufferSizeBytes"), R"nbdoc(Constructor with initialization.
 @param theMaxBufferSizeBytes the length of buffer to read (in bytes))nbdoc")
@@ -526,6 +540,7 @@ Will become "1/2/3 4/5/6" when flag is TRUE, and "1/2/35/5/6" otherwise.)nbdoc")
         .def("SetMultilineMode", static_cast<void (Standard_ReadLineBuffer::*)(bool, bool)>(&Standard_ReadLineBuffer::SetMultilineMode), nb::arg("theMultilineMode"), nb::arg("theToPutGap") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Sets or unsets the multi-line mode.
 @param[in] theMultilineMode  multiline mode flag
 @param[in] theToPutGap       put gap space while connecting lines (no gap otherwise))nbdoc");
+    nanoocp_implicit_copy_ctor<Standard_ReadLineBuffer>(nb::borrow<nb::class_<Standard_ReadLineBuffer>>(m.attr("Standard_ReadLineBuffer")));
     nb::implicitly_convertible<std::decay_t<size_t>, Standard_ReadLineBuffer>();
     m.attr("Standard_ErrorHandlerCallback") = m.attr("Standard_ErrorHandler").attr("Callback");   // Standard_ErrorHandlerCallback = Standard_ErrorHandler::Callback
     m.def("Abs", static_cast<int (*)(const int)>(&Abs), nb::arg("theValue"), R"nbdoc(Returns the absolute value of a int @p Value.

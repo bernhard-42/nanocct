@@ -134,6 +134,9 @@ class Geom2d_AxisPlacement(Geom2d_Geometry):
     def __init__(self, P: nanoocp.gp.gp_Pnt2d, V: nanoocp.gp.gp_Dir2d) -> None:
         """Constructs an axis from a given origin P and unit vector V."""
 
+    @overload
+    def __init__(self, theOther: Geom2d_AxisPlacement) -> None: ...
+
     def Reverse(self) -> None: ...
 
     def Reversed(self) -> Geom2d_AxisPlacement:
@@ -228,7 +231,11 @@ class Geom2d_Curve(Geom2d_Geometry):
     class ResD1:
         """Result of D1 evaluation: point and first derivative."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom2d_Curve.ResD1) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt2d: ...
@@ -245,7 +252,11 @@ class Geom2d_Curve(Geom2d_Geometry):
     class ResD2:
         """Result of D2 evaluation: point and first two derivatives."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom2d_Curve.ResD2) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt2d: ...
@@ -268,7 +279,11 @@ class Geom2d_Curve(Geom2d_Geometry):
     class ResD3:
         """Result of D3 evaluation: point and first three derivatives."""
 
+        @overload
         def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: Geom2d_Curve.ResD3) -> None: ...
 
         @property
         def Point(self) -> nanoocp.gp.gp_Pnt2d: ...
@@ -1775,6 +1790,9 @@ class Geom2d_CartesianPoint(Geom2d_Point):
     @overload
     def __init__(self, X: float, Y: float) -> None: ...
 
+    @overload
+    def __init__(self, theOther: Geom2d_CartesianPoint) -> None: ...
+
     def SetCoord(self, X: float, Y: float) -> None:
         """Set <me> to X, Y coordinates."""
 
@@ -1983,6 +2001,9 @@ class Geom2d_Circle(Geom2d_Conic):
         orientation of the circle.
         """
 
+    @overload
+    def __init__(self, theOther: Geom2d_Circle) -> None: ...
+
     def SetCirc2d(self, C: nanoocp.gp.gp_Circ2d) -> None:
         """Converts the gp_Circ2d circle C into this circle."""
 
@@ -2138,6 +2159,9 @@ class Geom2d_Direction(Geom2d_Vector):
         Raised if std::sqrt( X*X + Y*Y) <= Resolution from gp.
         """
 
+    @overload
+    def __init__(self, theOther: Geom2d_Direction) -> None: ...
+
     def SetCoord(self, X: float, Y: float) -> None:
         """
         Assigns the coordinates X and Y to this unit vector,
@@ -2274,6 +2298,9 @@ class Geom2d_Ellipse(Geom2d_Conic):
         - MajorRadius is less than MinorRadius, or
         - MinorRadius is less than 0.
         """
+
+    @overload
+    def __init__(self, theOther: Geom2d_Ellipse) -> None: ...
 
     def SetElips2d(self, E: nanoocp.gp.gp_Elips2d) -> None:
         """Converts the gp_Elips2d ellipse E into this ellipse."""
@@ -2511,6 +2538,9 @@ class Geom2d_Hyperbola(Geom2d_Conic):
         the minor radius is on the "YAxis" of the hyperbola.
         Raised if MajorRadius < 0.0 or if MinorRadius < 0.0
         """
+
+    @overload
+    def __init__(self, theOther: Geom2d_Hyperbola) -> None: ...
 
     def SetHypr2d(self, H: nanoocp.gp.gp_Hypr2d) -> None:
         """Converts the gp_Hypr2d hyperbola H into this hyperbola."""
@@ -2768,6 +2798,9 @@ class Geom2d_Line(Geom2d_Curve):
         vector V (P and V are, respectively, the origin
         and the unit vector of the positioning axis of the line).
         """
+
+    @overload
+    def __init__(self, theOther: Geom2d_Line) -> None: ...
 
     def SetLin2d(self, L: nanoocp.gp.gp_Lin2d) -> None:
         """Set <me> so that <me> has the same geometric properties as L."""
@@ -3266,6 +3299,9 @@ class Geom2d_Parabola(Geom2d_Conic):
         point is the vertex of the parabola.
         """
 
+    @overload
+    def __init__(self, theOther: Geom2d_Parabola) -> None: ...
+
     def SetFocal(self, Focal: float) -> None:
         """
         Assigns the value Focal to the focal length of this parabola.
@@ -3445,6 +3481,9 @@ class Geom2d_Transformation(nanoocp.Standard.Standard_Transient):
         """Creates a persistent copy of T."""
 
     @overload
+    def __init__(self, theOther: Geom2d_Transformation) -> None: ...
+
+    @overload
     def SetMirror(self, P: nanoocp.gp.gp_Pnt2d) -> None:
         """
         Makes the transformation into a symmetrical transformation
@@ -3620,6 +3659,7 @@ class Geom2d_TrimmedCurve(Geom2d_BoundedCurve):
     orientation as the basis curve or the opposite orientation.
     """
 
+    @overload
     def __init__(self, C: Geom2d_Curve, U1: float, U2: float, Sense: bool = True, theAdjustPeriodic: bool = True) -> None:
         """
         Creates a trimmed curve from the basis curve C limited between
@@ -3655,6 +3695,9 @@ class Geom2d_TrimmedCurve(Geom2d_BoundedCurve):
         the bounds of C.
         Raised if U1 = U2.
         """
+
+    @overload
+    def __init__(self, theOther: Geom2d_TrimmedCurve) -> None: ...
 
     def Reverse(self) -> None:
         """
@@ -3879,6 +3922,9 @@ class Geom2d_VectorWithMagnitude(Geom2d_Vector):
         Creates a vector from the point P1 to the point P2.
         The magnitude of the vector is the distance between P1 and P2
         """
+
+    @overload
+    def __init__(self, theOther: Geom2d_VectorWithMagnitude) -> None: ...
 
     def SetCoord(self, X: float, Y: float) -> None:
         """Set <me> to X, Y coordinates."""

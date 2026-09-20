@@ -70,7 +70,11 @@ class CSLib:
     - Derivatives of the non-normalized and normalized normal vectors
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: CSLib) -> None: ...
 
     @overload
     @staticmethod
@@ -311,6 +315,7 @@ class CSLib_NormalPolyDef(nanoocp.math.math_FunctionWithDerivative):
     at singular surface points by solving for zeros of this polynomial.
     """
 
+    @overload
     def __init__(self, theK0: int, theLi: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Constructs a polynomial definition for normal computation.
@@ -318,6 +323,9 @@ class CSLib_NormalPolyDef(nanoocp.math.math_FunctionWithDerivative):
         @param[in] theK0 Polynomial degree (must be >= 0)
         @param[in] theLi Array of coefficients with indices 0 to theK0
         """
+
+    @overload
+    def __init__(self, theOther: CSLib_NormalPolyDef) -> None: ...
 
     def Value(self, theX: float) -> tuple[bool, float]:
         """

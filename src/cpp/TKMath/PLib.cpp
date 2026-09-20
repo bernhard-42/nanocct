@@ -320,6 +320,7 @@ Code: Code d' init. des parametres de discretisation.
         .def_static("ConstraintOrder", static_cast<GeomAbs_Shape (*)(const int)>(&PLib::ConstraintOrder), nb::arg("NivConstr"), R"nbdoc(translates from Integer to GeomAbs_Shape)nbdoc")
         .def_static("EvalLength", [](const int Degree, const int Dimension, const double U1, const double U2) { double PolynomialCoeff{}; double Length{}; PLib::EvalLength(Degree, Dimension, PolynomialCoeff, U1, U2, Length); return std::make_tuple(PolynomialCoeff, Length); }, nb::arg("Degree"), nb::arg("Dimension"), nb::arg("U1"), nb::arg("U2"))
         .def_static("EvalLength", [](const int Degree, const int Dimension, const double U1, const double U2, const double Tol) { double PolynomialCoeff{}; double Length{}; double Error{}; PLib::EvalLength(Degree, Dimension, PolynomialCoeff, U1, U2, Tol, Length, Error); return std::make_tuple(PolynomialCoeff, Length, Error); }, nb::arg("Degree"), nb::arg("Dimension"), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"));
+    nanoocp_implicit_copy_ctor<PLib>(nb::borrow<nb::class_<PLib>>(m.attr("PLib")));
     nb::borrow<nb::class_<PLib_JacobiPolynomial>>(m.attr("PLib_JacobiPolynomial"))
         .def(nb::init<const int, const GeomAbs_Shape>(), nb::arg("theWorkDegree"), nb::arg("theConstraintOrder"), R"nbdoc(Initialize the polynomial class
 Degree has to be <= 30
@@ -367,6 +368,7 @@ the basis functions in u)nbdoc")
 the basis functions in u)nbdoc")
         .def("WorkDegree", static_cast<int (PLib_JacobiPolynomial::*)() const noexcept>(&PLib_JacobiPolynomial::WorkDegree), R"nbdoc(returns WorkDegree)nbdoc")
         .def("NivConstr", static_cast<int (PLib_JacobiPolynomial::*)() const noexcept>(&PLib_JacobiPolynomial::NivConstr), R"nbdoc(returns NivConstr)nbdoc");
+    nanoocp_implicit_copy_ctor<PLib_JacobiPolynomial>(nb::borrow<nb::class_<PLib_JacobiPolynomial>>(m.attr("PLib_JacobiPolynomial")));
     nb::borrow<nb::class_<PLib_HermitJacobi>>(m.attr("PLib_HermitJacobi"))
         .def(nb::init<const int, const GeomAbs_Shape>(), nb::arg("WorkDegree"), nb::arg("ConstraintOrder"), R"nbdoc(Initialize the polynomial class
 Degree has to be <= 30
@@ -392,4 +394,5 @@ the basis functions in u)nbdoc")
 the basis functions in u)nbdoc")
         .def("WorkDegree", static_cast<int (PLib_HermitJacobi::*)() const noexcept>(&PLib_HermitJacobi::WorkDegree), R"nbdoc(returns WorkDegree)nbdoc")
         .def("NivConstr", static_cast<int (PLib_HermitJacobi::*)() const noexcept>(&PLib_HermitJacobi::NivConstr), R"nbdoc(returns NivConstr)nbdoc");
+    nanoocp_implicit_copy_ctor<PLib_HermitJacobi>(nb::borrow<nb::class_<PLib_HermitJacobi>>(m.attr("PLib_HermitJacobi")));
 }

@@ -82,7 +82,11 @@ class Precision:
     may take a great deal of time.
     """
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Precision) -> None: ...
 
     @staticmethod
     def Angular() -> float:

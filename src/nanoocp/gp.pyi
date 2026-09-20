@@ -235,6 +235,9 @@ class gp_Mat:
     @overload
     def __init__(self, theA11: float, theA12: float, theA13: float, theA21: float, theA22: float, theA23: float, theA31: float, theA32: float, theA33: float) -> None: ...
 
+    @overload
+    def __init__(self, theOther: gp_Mat) -> None: ...
+
     def SetCol(self, theCol: int, theValue: gp_XYZ) -> None:
         """
         Assigns the three coordinates of theValue to the column of index
@@ -470,6 +473,9 @@ class gp_XYZ:
     @overload
     def __init__(self, theX: float, theY: float, theZ: float) -> None:
         """creates an XYZ with given coordinates"""
+
+    @overload
+    def __init__(self, theOther: gp_XYZ) -> None: ...
 
     @overload
     def SetCoord(self, theX: float, theY: float, theZ: float) -> None:
@@ -822,6 +828,9 @@ class gp_Pnt:
         """
 
     @overload
+    def __init__(self, theOther: gp_Pnt) -> None: ...
+
+    @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:
         """
         Changes the coordinate of range theIndex:
@@ -973,6 +982,8 @@ class gp_Pnt:
     @overload
     def Translated(self, theP1: gp_Pnt, theP2: gp_Pnt) -> gp_Pnt: ...
 
+    def __hash__(self) -> int: ...
+
 class gp_Trsf:
     """
     Defines a non-persistent transformation in 3D space.
@@ -1020,6 +1031,9 @@ class gp_Trsf:
         origin (0., 0., 0.) and the vectors DX (1., 0., 0.), and DY
         (0., 1., 0.)). The scale factor is applied to the entire space.
         """
+
+    @overload
+    def __init__(self, theOther: gp_Trsf) -> None: ...
 
     @overload
     def SetMirror(self, theP: gp_Pnt) -> None:
@@ -1311,6 +1325,9 @@ class gp_Mat2d:
     def __init__(self, theCol1: gp_XY, theCol2: gp_XY) -> None:
         """theCol1, theCol2 are the 2 columns of the matrix."""
 
+    @overload
+    def __init__(self, theOther: gp_Mat2d) -> None: ...
+
     def SetCol(self, theCol: int, theValue: gp_XY) -> None:
         """
         Assigns the two coordinates of theValue to the column of range
@@ -1519,6 +1536,9 @@ class gp_XY:
     @overload
     def __init__(self, theX: float, theY: float) -> None:
         """a number pair defined by the XY coordinates"""
+
+    @overload
+    def __init__(self, theOther: gp_XY) -> None: ...
 
     @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:
@@ -1825,6 +1845,9 @@ class gp_Trsf2d:
         """
 
     @overload
+    def __init__(self, theOther: gp_Trsf2d) -> None: ...
+
+    @overload
     def SetMirror(self, theP: gp_Pnt2d) -> None:
         """
         Changes the transformation into a symmetrical transformation.
@@ -2012,6 +2035,9 @@ class gp_Pnt2d:
         """Creates a point with its 2 cartesian's coordinates: theXp, theYp."""
 
     @overload
+    def __init__(self, theOther: gp_Pnt2d) -> None: ...
+
+    @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:
         """
         Assigns the value Xi to the coordinate that corresponds to theIndex:
@@ -2164,6 +2190,9 @@ class gp_Vec2d:
         Creates a vector from two points. The length of the vector
         is the distance between theP1 and theP2
         """
+
+    @overload
+    def __init__(self, theOther: gp_Vec2d) -> None: ...
 
     @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:
@@ -2461,6 +2490,9 @@ class gp_Dir2d:
         @note Constexpr-compatible when input is already normalized.
         """
 
+    @overload
+    def __init__(self, theOther: gp_Dir2d) -> None: ...
+
     class D(enum.Enum):
         """Standard directions in 2D space for optimized constexpr construction"""
 
@@ -2734,6 +2766,9 @@ class gp_Ax2d:
     def __init__(self, theP: gp_Pnt2d, theDir: gp_Dir2d.D) -> None:
         """Creates an axis with the given location point and standard direction."""
 
+    @overload
+    def __init__(self, theOther: gp_Ax2d) -> None: ...
+
     def SetLocation(self, theP: gp_Pnt2d) -> None:
         """Changes the "Location" point (origin) of <me>."""
 
@@ -2879,6 +2914,9 @@ class gp_Vec:
     @overload
     def __init__(self, theXv: float, theYv: float, theZv: float) -> None:
         """Creates a point with its three cartesian coordinates."""
+
+    @overload
+    def __init__(self, theOther: gp_Vec) -> None: ...
 
     @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:
@@ -3551,6 +3589,9 @@ class gp_Ax1:
     def __init__(self, theP: gp_Pnt, theDir: gp_Dir.D) -> None:
         """Creates an axis with the given location point and standard direction."""
 
+    @overload
+    def __init__(self, theOther: gp_Ax1) -> None: ...
+
     def SetDirection(self, theV: gp_Dir) -> None:
         """Assigns V as the "Direction" of this axis."""
 
@@ -3801,6 +3842,9 @@ class gp_Ax2:
     @overload
     def __init__(self, theP: gp_Pnt, theN: gp_Dir.D, theVx: gp_Dir.D) -> None:
         """Creates an axis placement with standard directions."""
+
+    @overload
+    def __init__(self, theOther: gp_Ax2) -> None: ...
 
     def SetAxis(self, A1: gp_Ax1) -> None:
         """
@@ -4148,6 +4192,9 @@ class gp_Ax3:
         This constructor allows constexpr and noexcept construction when using standard directions.
         """
 
+    @overload
+    def __init__(self, theOther: gp_Ax3) -> None: ...
+
     def XReverse(self) -> None:
         """Reverses the X direction of <me>."""
 
@@ -4429,6 +4476,9 @@ class gp_Ax22d:
         Raises ConstructionError if theVx and theVy are parallel (same or opposite orientation).
         """
 
+    @overload
+    def __init__(self, theOther: gp_Ax22d) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax22d) -> None:
         """
         Assigns the origin and the two unit vectors of the
@@ -4619,6 +4669,9 @@ class gp_Circ:
         It is not forbidden to create a circle with theRadius = 0.0
         Raises ConstructionError if theRadius < 0.0
         """
+
+    @overload
+    def __init__(self, theOther: gp_Circ) -> None: ...
 
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
@@ -4827,6 +4880,9 @@ class gp_Circ2d:
         Raises ConstructionError if theRadius < 0.0.
         """
 
+    @overload
+    def __init__(self, theOther: gp_Circ2d) -> None: ...
+
     def SetLocation(self, theP: gp_Pnt2d) -> None:
         """Changes the location point (center) of the circle."""
 
@@ -5033,6 +5089,9 @@ class gp_Cone:
         * std::abs(theAng) < Resolution from gp or std::abs(theAng) >= (PI/2) - Resolution.
         """
 
+    @overload
+    def __init__(self, theOther: gp_Cone) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
         Changes the symmetry axis of the cone. Raises ConstructionError
@@ -5224,6 +5283,9 @@ class gp_Cylinder:
         Raises ConstructionErrord if theRadius < 0.0
         """
 
+    @overload
+    def __init__(self, theOther: gp_Cylinder) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
         Changes the symmetry axis of the cylinder. Raises ConstructionError if the direction of theA1
@@ -5402,6 +5464,9 @@ class gp_Elips:
         theMinorRadius.
         Raises ConstructionError if theMajorRadius < theMinorRadius or theMinorRadius < 0.
         """
+
+    @overload
+    def __init__(self, theOther: gp_Elips) -> None: ...
 
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
@@ -5664,6 +5729,9 @@ class gp_Elips2d:
         Raises ConstructionError if theMajorRadius < theMinorRadius or theMinorRadius < 0.0
         """
 
+    @overload
+    def __init__(self, theOther: gp_Elips2d) -> None: ...
+
     def SetLocation(self, theP: gp_Pnt2d) -> None:
         """
         Modifies this ellipse, by redefining its local coordinate system so that
@@ -5903,6 +5971,9 @@ class gp_GTrsf:
         """
 
     @overload
+    def __init__(self, theOther: gp_GTrsf) -> None: ...
+
+    @overload
     def SetAffinity(self, theA1: gp_Ax1, theRatio: float) -> None:
         """
         Changes this transformation into an affinity of ratio theRatio
@@ -6123,6 +6194,9 @@ class gp_GTrsf2d:
         vector theV where theM defines the vectorial part of the
         transformation, and theV the translation part.
         """
+
+    @overload
+    def __init__(self, theOther: gp_GTrsf2d) -> None: ...
 
     def SetAffinity(self, theA: gp_Ax2d, theRatio: float) -> None:
         """
@@ -6354,6 +6428,9 @@ class gp_Hypr:
         Raises ConstructionError if theMajorRadius < 0.0 or theMinorRadius < 0.0
         Raised if theMajorRadius < 0.0 or theMinorRadius < 0.0
         """
+
+    @overload
+    def __init__(self, theOther: gp_Hypr) -> None: ...
 
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
@@ -6678,6 +6755,9 @@ class gp_Hypr2d:
         Raises ConstructionError if theMajorRadius < 0.0 or theMinorRadius < 0.0
         """
 
+    @overload
+    def __init__(self, theOther: gp_Hypr2d) -> None: ...
+
     def SetLocation(self, theP: gp_Pnt2d) -> None:
         """
         Modifies this hyperbola, by redefining its local
@@ -6973,6 +7053,9 @@ class gp_Lin:
         the unit vector of the positioning axis of the line).
         """
 
+    @overload
+    def __init__(self, theOther: gp_Lin) -> None: ...
+
     def Reverse(self) -> None: ...
 
     def Reversed(self) -> gp_Lin:
@@ -7163,6 +7246,9 @@ class gp_Lin2d:
         std::sqrt(theA*theA + theB*theB) <= Resolution from gp. Raised if std::sqrt(theA*theA +
         theB*theB) <= Resolution from gp.
         """
+
+    @overload
+    def __init__(self, theOther: gp_Lin2d) -> None: ...
 
     def Reverse(self) -> None: ...
 
@@ -7360,6 +7446,9 @@ class gp_Parab:
         of the parabola is the cross product between the XAxis and the
         YAxis.
         """
+
+    @overload
+    def __init__(self, theOther: gp_Parab) -> None: ...
 
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
@@ -7586,6 +7675,9 @@ class gp_Parab2d:
         like a line, which is perpendicular to the directrix.
         """
 
+    @overload
+    def __init__(self, theOther: gp_Parab2d) -> None: ...
+
     def SetFocal(self, theFocal: float) -> None:
         """
         Changes the focal distance of the parabola
@@ -7802,6 +7894,9 @@ class gp_Pln:
         Raises ConstructionError if std::sqrt (theA*theA + theB*theB + theC*theC) <= Resolution from
         gp.
         """
+
+    @overload
+    def __init__(self, theOther: gp_Pln) -> None: ...
 
     def Coefficients(self) -> tuple[float, float, float, float]:
         """
@@ -8070,6 +8165,9 @@ class gp_Quaternion:
     def __init__(self, theX: float, theY: float, theZ: float, theW: float) -> None:
         """Creates quaternion directly from component values"""
 
+    @overload
+    def __init__(self, theOther: gp_Quaternion) -> None: ...
+
     def IsEqual(self, theOther: gp_Quaternion) -> bool:
         """Simple equal test without precision"""
 
@@ -8268,6 +8366,9 @@ class gp_QuaternionNLerp:
     def __init__(self, theQStart: gp_Quaternion, theQEnd: gp_Quaternion) -> None:
         """Constructor with initialization."""
 
+    @overload
+    def __init__(self, theOther: gp_QuaternionNLerp) -> None: ...
+
     @staticmethod
     def Interpolate_s(theQStart: gp_Quaternion, theQEnd: gp_Quaternion, theT: float) -> gp_Quaternion:
         """
@@ -8300,6 +8401,9 @@ class gp_QuaternionSLerp:
     @overload
     def __init__(self, theQStart: gp_Quaternion, theQEnd: gp_Quaternion) -> None:
         """Constructor with initialization."""
+
+    @overload
+    def __init__(self, theOther: gp_QuaternionSLerp) -> None: ...
 
     @staticmethod
     def Interpolate_s(theQStart: gp_Quaternion, theQEnd: gp_Quaternion, theT: float) -> gp_Quaternion:
@@ -8357,6 +8461,9 @@ class gp_Sphere:
         It is not forbidden to create a sphere with null radius.
         Raises ConstructionError if theRadius < 0.0
         """
+
+    @overload
+    def __init__(self, theOther: gp_Sphere) -> None: ...
 
     def SetLocation(self, theLoc: gp_Pnt) -> None:
         """Changes the center of the sphere."""
@@ -8548,6 +8655,9 @@ class gp_Torus:
         Raises ConstructionError if theMinorRadius < 0.0 or if theMajorRadius < 0.0
         """
 
+    @overload
+    def __init__(self, theOther: gp_Torus) -> None: ...
+
     def SetAxis(self, theA1: gp_Ax1) -> None:
         """
         Modifies this torus, by redefining its local coordinate
@@ -8736,6 +8846,9 @@ class NCollection_Lerp__gp_Trsf:
     @overload
     def __init__(self, theStart: gp_Trsf, theEnd: gp_Trsf) -> None:
         """Main constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Lerp__gp_Trsf) -> None: ...
 
     def Init(self, theStart: gp_Trsf, theEnd: gp_Trsf) -> None:
         """Initialize values."""

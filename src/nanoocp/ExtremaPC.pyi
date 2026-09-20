@@ -1,6 +1,7 @@
 """OCCT package ExtremaPC (toolkit TKGeomBase)"""
 
 import enum
+from typing import overload
 
 import nanoocp.MathUtils
 from nanoocp.MathUtils import Domain1D as Domain1D
@@ -75,7 +76,11 @@ class SearchMode(enum.Enum):
 class ExtremumResult:
     """Result of a single extremum computation."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: ExtremumResult) -> None: ...
 
     @property
     def Parameter(self) -> float:
@@ -183,7 +188,11 @@ class Result:
 class Config:
     """Configuration for extrema computation."""
 
+    @overload
     def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: Config) -> None: ...
 
     @property
     def Tolerance(self) -> float:

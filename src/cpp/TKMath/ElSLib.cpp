@@ -180,4 +180,5 @@ MinorRadius * std::sin(U) * ZDirection)nbdoc")
         .def_static("SphereVIso", static_cast<gp_Circ (*)(const gp_Ax3 &, const double, const double)>(&ElSLib::SphereVIso), nb::arg("Pos"), nb::arg("Radius"), nb::arg("V"), R"nbdoc(compute the V Isoparametric gp_Circ of the sphere,
 (the meridian is not trimmed).)nbdoc")
         .def_static("TorusVIso", static_cast<gp_Circ (*)(const gp_Ax3 &, const double, const double, const double)>(&ElSLib::TorusVIso), nb::arg("Pos"), nb::arg("MajorRadius"), nb::arg("MinorRadius"), nb::arg("V"), R"nbdoc(compute the V Isoparametric gp_Circ of the torus.)nbdoc");
+    nanoocp_implicit_copy_ctor<ElSLib>(nb::borrow<nb::class_<ElSLib>>(m.attr("ElSLib")));
 }

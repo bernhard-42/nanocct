@@ -8,10 +8,14 @@ import nanoocp.MathUtils
 class NewtonOptions(nanoocp.MathUtils.Config):
     """Solver options for small-dimension Newton methods."""
 
+    @overload
     def __init__(self) -> None:
         """
         Default constructor with strict residual/step tolerances for specialized Newton.
         """
+
+    @overload
+    def __init__(self, theOther: NewtonOptions) -> None: ...
 
     @property
     def MaxStepRatio(self) -> float:
@@ -58,6 +62,9 @@ class LMConfig(nanoocp.MathUtils.Config):
         @param theTolerance convergence tolerance
         @param theMaxIter maximum iterations
         """
+
+    @overload
+    def __init__(self, theOther: LMConfig) -> None: ...
 
     @property
     def LambdaInit(self) -> float:

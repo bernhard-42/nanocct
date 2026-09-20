@@ -141,6 +141,7 @@ Curve from Adaptor3d)nbdoc")
         .def_static("MakeSurface", static_cast<occ::handle<Geom_Surface> (*)(const Adaptor3d_Surface &, const bool)>(&GeomAdaptor::MakeSurface), nb::arg("theS"), nb::arg("theTrimFlag") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Build a Geom_Surface using the information from the Surface from Adaptor3d
 @param theS - Surface adaptor to convert.
 @param theTrimFlag - True if perform trim surface values by adaptor and false otherwise.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor>(nb::borrow<nb::class_<GeomAdaptor>>(m.attr("GeomAdaptor")));
     nb::borrow<nb::class_<GeomAdaptor_Curve>>(m.attr("GeomAdaptor_Curve"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_Curve>(new GeomAdaptor_Curve()); }))
         .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve) { return opencascade::handle<GeomAdaptor_Curve>(new GeomAdaptor_Curve(theCurve)); }), nb::arg("theCurve"))
@@ -206,23 +207,24 @@ myFirst/Last.)nbdoc")
         .def("EvalD2", static_cast<Geom_Curve::ResD2 (GeomAdaptor_Curve::*)(const double) const>(&GeomAdaptor_Curve::EvalD2), nb::arg("theU"), R"nbdoc(D2 evaluation. Raises an exception on failure.)nbdoc")
         .def("EvalD3", static_cast<Geom_Curve::ResD3 (GeomAdaptor_Curve::*)(const double) const>(&GeomAdaptor_Curve::EvalD3), nb::arg("theU"), R"nbdoc(D3 evaluation. Raises an exception on failure.)nbdoc")
         .def("EvalDN", static_cast<gp_Vec (GeomAdaptor_Curve::*)(const double, const int) const>(&GeomAdaptor_Curve::EvalDN), nb::arg("theU"), nb::arg("theN"), R"nbdoc(DN evaluation. Raises an exception on failure.)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Curve>(nb::borrow<nb::class_<GeomAdaptor_Curve>>(m.attr("GeomAdaptor_Curve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Curve> &>, GeomAdaptor_Curve>();
     nanoocp_implicit_default_ctor<GeomAdaptor_Curve::OffsetData>(nb::borrow<nb::class_<GeomAdaptor_Curve::OffsetData>>(m.attr("GeomAdaptor_Curve").attr("OffsetData")));
-    nb::borrow<nb::class_<GeomAdaptor_Curve::OffsetData>>(m.attr("GeomAdaptor_Curve").attr("OffsetData"))
-        .def_rw("BasisAdaptor", &GeomAdaptor_Curve::OffsetData::BasisAdaptor, R"nbdoc(Adaptor for basis curve)nbdoc")
-        .def_rw("Offset", &GeomAdaptor_Curve::OffsetData::Offset, R"nbdoc(Offset distance)nbdoc")
-        .def_rw("Direction", &GeomAdaptor_Curve::OffsetData::Direction, R"nbdoc(Offset direction)nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Curve::OffsetData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Curve::OffsetData>(nb::borrow<nb::class_<GeomAdaptor_Curve::OffsetData>>(m.attr("GeomAdaptor_Curve").attr("OffsetData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::OffsetData>>(m.attr("GeomAdaptor_Curve").attr("OffsetData")), "BasisAdaptor", &GeomAdaptor_Curve::OffsetData::BasisAdaptor, R"nbdoc(Adaptor for basis curve)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::OffsetData>>(m.attr("GeomAdaptor_Curve").attr("OffsetData")), "Offset", &GeomAdaptor_Curve::OffsetData::Offset, R"nbdoc(Offset distance)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::OffsetData>>(m.attr("GeomAdaptor_Curve").attr("OffsetData")), "Direction", &GeomAdaptor_Curve::OffsetData::Direction, R"nbdoc(Offset direction)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::OffsetData>>(m.attr("GeomAdaptor_Curve").attr("OffsetData")), "EvalRep", &GeomAdaptor_Curve::OffsetData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<GeomAdaptor_Curve::BezierData>(nb::borrow<nb::class_<GeomAdaptor_Curve::BezierData>>(m.attr("GeomAdaptor_Curve").attr("BezierData")));
-    nb::borrow<nb::class_<GeomAdaptor_Curve::BezierData>>(m.attr("GeomAdaptor_Curve").attr("BezierData"))
-        .def_rw("Curve", &GeomAdaptor_Curve::BezierData::Curve, R"nbdoc(Bezier curve to prevent downcasts)nbdoc")
-        .def_rw("Cache", &GeomAdaptor_Curve::BezierData::Cache, R"nbdoc(Cached data for evaluation)nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Curve::BezierData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Curve::BezierData>(nb::borrow<nb::class_<GeomAdaptor_Curve::BezierData>>(m.attr("GeomAdaptor_Curve").attr("BezierData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::BezierData>>(m.attr("GeomAdaptor_Curve").attr("BezierData")), "Curve", &GeomAdaptor_Curve::BezierData::Curve, R"nbdoc(Bezier curve to prevent downcasts)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::BezierData>>(m.attr("GeomAdaptor_Curve").attr("BezierData")), "Cache", &GeomAdaptor_Curve::BezierData::Cache, R"nbdoc(Cached data for evaluation)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::BezierData>>(m.attr("GeomAdaptor_Curve").attr("BezierData")), "EvalRep", &GeomAdaptor_Curve::BezierData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<GeomAdaptor_Curve::BSplineData>(nb::borrow<nb::class_<GeomAdaptor_Curve::BSplineData>>(m.attr("GeomAdaptor_Curve").attr("BSplineData")));
-    nb::borrow<nb::class_<GeomAdaptor_Curve::BSplineData>>(m.attr("GeomAdaptor_Curve").attr("BSplineData"))
-        .def_rw("Curve", &GeomAdaptor_Curve::BSplineData::Curve, R"nbdoc(BSpline curve to prevent downcasts)nbdoc")
-        .def_rw("Cache", &GeomAdaptor_Curve::BSplineData::Cache, R"nbdoc(Cached data for evaluation)nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Curve::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Curve::BSplineData>(nb::borrow<nb::class_<GeomAdaptor_Curve::BSplineData>>(m.attr("GeomAdaptor_Curve").attr("BSplineData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::BSplineData>>(m.attr("GeomAdaptor_Curve").attr("BSplineData")), "Curve", &GeomAdaptor_Curve::BSplineData::Curve, R"nbdoc(BSpline curve to prevent downcasts)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::BSplineData>>(m.attr("GeomAdaptor_Curve").attr("BSplineData")), "Cache", &GeomAdaptor_Curve::BSplineData::Cache, R"nbdoc(Cached data for evaluation)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::BSplineData>>(m.attr("GeomAdaptor_Curve").attr("BSplineData")), "EvalRep", &GeomAdaptor_Curve::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nb::borrow<nb::class_<GeomAdaptor_Surface>>(m.attr("GeomAdaptor_Surface"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_Surface>(new GeomAdaptor_Surface()); }))
         .def(nb::new_([](const occ::handle<Geom_Surface> & theSurf) { return opencascade::handle<GeomAdaptor_Surface>(new GeomAdaptor_Surface(theSurf)); }), nb::arg("theSurf"))
@@ -311,34 +313,35 @@ myU/VFirst/Last.)nbdoc")
         .def("BasisCurve", static_cast<occ::handle<Adaptor3d_Curve> (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::BasisCurve))
         .def("BasisSurface", static_cast<occ::handle<Adaptor3d_Surface> (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::BasisSurface))
         .def("OffsetValue", static_cast<double (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::OffsetValue));
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Surface>(nb::borrow<nb::class_<GeomAdaptor_Surface>>(m.attr("GeomAdaptor_Surface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomAdaptor_Surface>();
     nanoocp_implicit_default_ctor<GeomAdaptor_Surface::ExtrusionData>(nb::borrow<nb::class_<GeomAdaptor_Surface::ExtrusionData>>(m.attr("GeomAdaptor_Surface").attr("ExtrusionData")));
-    nb::borrow<nb::class_<GeomAdaptor_Surface::ExtrusionData>>(m.attr("GeomAdaptor_Surface").attr("ExtrusionData"))
-        .def_rw("BasisCurve", &GeomAdaptor_Surface::ExtrusionData::BasisCurve, R"nbdoc(Adaptor for basis curve)nbdoc")
-        .def_rw("Direction", &GeomAdaptor_Surface::ExtrusionData::Direction, R"nbdoc(Extrusion direction XYZ (normalized))nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Surface::ExtrusionData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Surface::ExtrusionData>(nb::borrow<nb::class_<GeomAdaptor_Surface::ExtrusionData>>(m.attr("GeomAdaptor_Surface").attr("ExtrusionData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::ExtrusionData>>(m.attr("GeomAdaptor_Surface").attr("ExtrusionData")), "BasisCurve", &GeomAdaptor_Surface::ExtrusionData::BasisCurve, R"nbdoc(Adaptor for basis curve)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::ExtrusionData>>(m.attr("GeomAdaptor_Surface").attr("ExtrusionData")), "Direction", &GeomAdaptor_Surface::ExtrusionData::Direction, R"nbdoc(Extrusion direction XYZ (normalized))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::ExtrusionData>>(m.attr("GeomAdaptor_Surface").attr("ExtrusionData")), "EvalRep", &GeomAdaptor_Surface::ExtrusionData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<GeomAdaptor_Surface::RevolutionData>(nb::borrow<nb::class_<GeomAdaptor_Surface::RevolutionData>>(m.attr("GeomAdaptor_Surface").attr("RevolutionData")));
-    nb::borrow<nb::class_<GeomAdaptor_Surface::RevolutionData>>(m.attr("GeomAdaptor_Surface").attr("RevolutionData"))
-        .def_rw("BasisCurve", &GeomAdaptor_Surface::RevolutionData::BasisCurve, R"nbdoc(Adaptor for basis curve)nbdoc")
-        .def_rw("Axis", &GeomAdaptor_Surface::RevolutionData::Axis, R"nbdoc(Revolution axis)nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Surface::RevolutionData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Surface::RevolutionData>(nb::borrow<nb::class_<GeomAdaptor_Surface::RevolutionData>>(m.attr("GeomAdaptor_Surface").attr("RevolutionData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::RevolutionData>>(m.attr("GeomAdaptor_Surface").attr("RevolutionData")), "BasisCurve", &GeomAdaptor_Surface::RevolutionData::BasisCurve, R"nbdoc(Adaptor for basis curve)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::RevolutionData>>(m.attr("GeomAdaptor_Surface").attr("RevolutionData")), "Axis", &GeomAdaptor_Surface::RevolutionData::Axis, R"nbdoc(Revolution axis)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::RevolutionData>>(m.attr("GeomAdaptor_Surface").attr("RevolutionData")), "EvalRep", &GeomAdaptor_Surface::RevolutionData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<GeomAdaptor_Surface::OffsetData>(nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData")));
-    nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData"))
-        .def_rw("BasisAdaptor", &GeomAdaptor_Surface::OffsetData::BasisAdaptor, R"nbdoc(Adaptor for basis surface)nbdoc")
-        .def_rw("EquivalentAdaptor", &GeomAdaptor_Surface::OffsetData::EquivalentAdaptor, R"nbdoc(Adaptor for equivalent surface (if exists))nbdoc")
-        .def_rw("OffsetSurface", &GeomAdaptor_Surface::OffsetData::OffsetSurface, R"nbdoc(Original offset surface for osculating queries)nbdoc")
-        .def_rw("Offset", &GeomAdaptor_Surface::OffsetData::Offset, R"nbdoc(Offset distance)nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Surface::OffsetData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Surface::OffsetData>(nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData")), "BasisAdaptor", &GeomAdaptor_Surface::OffsetData::BasisAdaptor, R"nbdoc(Adaptor for basis surface)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData")), "EquivalentAdaptor", &GeomAdaptor_Surface::OffsetData::EquivalentAdaptor, R"nbdoc(Adaptor for equivalent surface (if exists))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData")), "OffsetSurface", &GeomAdaptor_Surface::OffsetData::OffsetSurface, R"nbdoc(Original offset surface for osculating queries)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData")), "Offset", &GeomAdaptor_Surface::OffsetData::Offset, R"nbdoc(Offset distance)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::OffsetData>>(m.attr("GeomAdaptor_Surface").attr("OffsetData")), "EvalRep", &GeomAdaptor_Surface::OffsetData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<GeomAdaptor_Surface::BezierData>(nb::borrow<nb::class_<GeomAdaptor_Surface::BezierData>>(m.attr("GeomAdaptor_Surface").attr("BezierData")));
-    nb::borrow<nb::class_<GeomAdaptor_Surface::BezierData>>(m.attr("GeomAdaptor_Surface").attr("BezierData"))
-        .def_rw("Surface", &GeomAdaptor_Surface::BezierData::Surface, R"nbdoc(Bezier surface to prevent downcasts)nbdoc")
-        .def_rw("Cache", &GeomAdaptor_Surface::BezierData::Cache, R"nbdoc(Cached data for evaluation)nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Surface::BezierData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Surface::BezierData>(nb::borrow<nb::class_<GeomAdaptor_Surface::BezierData>>(m.attr("GeomAdaptor_Surface").attr("BezierData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::BezierData>>(m.attr("GeomAdaptor_Surface").attr("BezierData")), "Surface", &GeomAdaptor_Surface::BezierData::Surface, R"nbdoc(Bezier surface to prevent downcasts)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::BezierData>>(m.attr("GeomAdaptor_Surface").attr("BezierData")), "Cache", &GeomAdaptor_Surface::BezierData::Cache, R"nbdoc(Cached data for evaluation)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::BezierData>>(m.attr("GeomAdaptor_Surface").attr("BezierData")), "EvalRep", &GeomAdaptor_Surface::BezierData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nanoocp_implicit_default_ctor<GeomAdaptor_Surface::BSplineData>(nb::borrow<nb::class_<GeomAdaptor_Surface::BSplineData>>(m.attr("GeomAdaptor_Surface").attr("BSplineData")));
-    nb::borrow<nb::class_<GeomAdaptor_Surface::BSplineData>>(m.attr("GeomAdaptor_Surface").attr("BSplineData"))
-        .def_rw("Surface", &GeomAdaptor_Surface::BSplineData::Surface, R"nbdoc(BSpline surface to prevent downcasts)nbdoc")
-        .def_rw("Cache", &GeomAdaptor_Surface::BSplineData::Cache, R"nbdoc(Cached data for evaluation)nbdoc")
-        .def_rw("EvalRep", &GeomAdaptor_Surface::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
+    nanoocp_implicit_copy_ctor<GeomAdaptor_Surface::BSplineData>(nb::borrow<nb::class_<GeomAdaptor_Surface::BSplineData>>(m.attr("GeomAdaptor_Surface").attr("BSplineData")));
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::BSplineData>>(m.attr("GeomAdaptor_Surface").attr("BSplineData")), "Surface", &GeomAdaptor_Surface::BSplineData::Surface, R"nbdoc(BSpline surface to prevent downcasts)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::BSplineData>>(m.attr("GeomAdaptor_Surface").attr("BSplineData")), "Cache", &GeomAdaptor_Surface::BSplineData::Cache, R"nbdoc(Cached data for evaluation)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::BSplineData>>(m.attr("GeomAdaptor_Surface").attr("BSplineData")), "EvalRep", &GeomAdaptor_Surface::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nb::borrow<nb::class_<GeomAdaptor_SurfaceOfLinearExtrusion>>(m.attr("GeomAdaptor_SurfaceOfLinearExtrusion"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_SurfaceOfLinearExtrusion>(new GeomAdaptor_SurfaceOfLinearExtrusion()); }))
         .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C) { return opencascade::handle<GeomAdaptor_SurfaceOfLinearExtrusion>(new GeomAdaptor_SurfaceOfLinearExtrusion(C)); }), nb::arg("C"), R"nbdoc(The Curve is loaded.)nbdoc")
@@ -400,6 +403,7 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
         .def("AxeOfRevolution", static_cast<gp_Ax1 (GeomAdaptor_SurfaceOfLinearExtrusion::*)() const>(&GeomAdaptor_SurfaceOfLinearExtrusion::AxeOfRevolution))
         .def("Direction", static_cast<gp_Dir (GeomAdaptor_SurfaceOfLinearExtrusion::*)() const>(&GeomAdaptor_SurfaceOfLinearExtrusion::Direction))
         .def("BasisCurve", static_cast<occ::handle<Adaptor3d_Curve> (GeomAdaptor_SurfaceOfLinearExtrusion::*)() const>(&GeomAdaptor_SurfaceOfLinearExtrusion::BasisCurve));
+    nanoocp_implicit_copy_ctor<GeomAdaptor_SurfaceOfLinearExtrusion>(nb::borrow<nb::class_<GeomAdaptor_SurfaceOfLinearExtrusion>>(m.attr("GeomAdaptor_SurfaceOfLinearExtrusion")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Curve> &>, GeomAdaptor_SurfaceOfLinearExtrusion>();
     nb::borrow<nb::class_<GeomAdaptor_SurfaceOfRevolution>>(m.attr("GeomAdaptor_SurfaceOfRevolution"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_SurfaceOfRevolution>(new GeomAdaptor_SurfaceOfRevolution()); }))
@@ -464,6 +468,7 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
         .def("BSpline", static_cast<occ::handle<Geom_BSplineSurface> (GeomAdaptor_SurfaceOfRevolution::*)() const>(&GeomAdaptor_SurfaceOfRevolution::BSpline))
         .def("Axis", static_cast<const gp_Ax3 & (GeomAdaptor_SurfaceOfRevolution::*)() const>(&GeomAdaptor_SurfaceOfRevolution::Axis))
         .def("BasisCurve", static_cast<occ::handle<Adaptor3d_Curve> (GeomAdaptor_SurfaceOfRevolution::*)() const>(&GeomAdaptor_SurfaceOfRevolution::BasisCurve));
+    nanoocp_implicit_copy_ctor<GeomAdaptor_SurfaceOfRevolution>(nb::borrow<nb::class_<GeomAdaptor_SurfaceOfRevolution>>(m.attr("GeomAdaptor_SurfaceOfRevolution")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Curve> &>, GeomAdaptor_SurfaceOfRevolution>();
     nb::borrow<nb::class_<GeomAdaptor_TransformedCurve>>(m.attr("GeomAdaptor_TransformedCurve"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_TransformedCurve>(new GeomAdaptor_TransformedCurve()); }), R"nbdoc(Creates an undefined curve with identity transformation.)nbdoc")
@@ -524,6 +529,7 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
         .def("Bezier", static_cast<occ::handle<Geom_BezierCurve> (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::Bezier))
         .def("BSpline", static_cast<occ::handle<Geom_BSplineCurve> (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::BSpline))
         .def("OffsetCurve", static_cast<occ::handle<Geom_OffsetCurve> (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::OffsetCurve));
+    nanoocp_implicit_copy_ctor<GeomAdaptor_TransformedCurve>(nb::borrow<nb::class_<GeomAdaptor_TransformedCurve>>(m.attr("GeomAdaptor_TransformedCurve")));
     nb::borrow<nb::class_<GeomAdaptor_TransformedSurface>>(m.attr("GeomAdaptor_TransformedSurface"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_TransformedSurface>(new GeomAdaptor_TransformedSurface()); }), R"nbdoc(Creates an undefined surface with identity transformation.)nbdoc")
         .def(nb::new_([](const occ::handle<Geom_Surface> & theSurface, const gp_Trsf & theTrsf) { return opencascade::handle<GeomAdaptor_TransformedSurface>(new GeomAdaptor_TransformedSurface(theSurface, theTrsf)); }), nb::arg("theSurface"), nb::arg("theTrsf"), R"nbdoc(Creates a surface adaptor with transformation.
@@ -611,4 +617,5 @@ Uses the original adaptor for identity transformation to preserve existing trimm
         .def("BasisCurve", static_cast<occ::handle<Adaptor3d_Curve> (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::BasisCurve))
         .def("BasisSurface", static_cast<occ::handle<Adaptor3d_Surface> (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::BasisSurface))
         .def("OffsetValue", static_cast<double (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::OffsetValue));
+    nanoocp_implicit_copy_ctor<GeomAdaptor_TransformedSurface>(nb::borrow<nb::class_<GeomAdaptor_TransformedSurface>>(m.attr("GeomAdaptor_TransformedSurface")));
 }

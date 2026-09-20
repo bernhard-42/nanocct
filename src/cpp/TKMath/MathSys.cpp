@@ -20,19 +20,21 @@ void nanoocp_templates_MathSys(nb::module_ &m) {
 
 void nanoocp_define_MathSys(nb::module_ &m) {
     nb::borrow<nb::class_<MathSys::NewtonOptions>>(m.attr("NewtonOptions"))
-        .def(nb::init<>(), R"nbdoc(Default constructor with strict residual/step tolerances for specialized Newton.)nbdoc")
-        .def_rw("MaxStepRatio", &MathSys::NewtonOptions::MaxStepRatio, R"nbdoc(Max step as ratio of largest domain size)nbdoc")
-        .def_rw("EnableLineSearch", &MathSys::NewtonOptions::EnableLineSearch, R"nbdoc(Enable Armijo backtracking line search)nbdoc")
-        .def_rw("AllowSoftBounds", &MathSys::NewtonOptions::AllowSoftBounds, R"nbdoc(Allow slight bounds extension)nbdoc")
-        .def_rw("SoftBoundsExtension", &MathSys::NewtonOptions::SoftBoundsExtension, R"nbdoc(Extension ratio for soft bounds)nbdoc");
+        .def(nb::init<>(), R"nbdoc(Default constructor with strict residual/step tolerances for specialized Newton.)nbdoc");
+    nanoocp_implicit_copy_ctor<MathSys::NewtonOptions>(nb::borrow<nb::class_<MathSys::NewtonOptions>>(m.attr("NewtonOptions")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::NewtonOptions>>(m.attr("NewtonOptions")), "MaxStepRatio", &MathSys::NewtonOptions::MaxStepRatio, R"nbdoc(Max step as ratio of largest domain size)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::NewtonOptions>>(m.attr("NewtonOptions")), "EnableLineSearch", &MathSys::NewtonOptions::EnableLineSearch, R"nbdoc(Enable Armijo backtracking line search)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::NewtonOptions>>(m.attr("NewtonOptions")), "AllowSoftBounds", &MathSys::NewtonOptions::AllowSoftBounds, R"nbdoc(Allow slight bounds extension)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::NewtonOptions>>(m.attr("NewtonOptions")), "SoftBoundsExtension", &MathSys::NewtonOptions::SoftBoundsExtension, R"nbdoc(Extension ratio for soft bounds)nbdoc");
     nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig"))
         .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
         .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with custom tolerance.
 @param theTolerance convergence tolerance
-@param theMaxIter maximum iterations)nbdoc")
-        .def_rw("LambdaInit", &MathSys::LMConfig::LambdaInit, R"nbdoc(Initial damping parameter)nbdoc")
-        .def_rw("LambdaIncrease", &MathSys::LMConfig::LambdaIncrease, R"nbdoc(Factor to increase lambda on rejected step)nbdoc")
-        .def_rw("LambdaDecrease", &MathSys::LMConfig::LambdaDecrease, R"nbdoc(Factor to decrease lambda on accepted step)nbdoc")
-        .def_rw("LambdaMax", &MathSys::LMConfig::LambdaMax, R"nbdoc(Maximum lambda value before failing)nbdoc")
-        .def_rw("LambdaMin", &MathSys::LMConfig::LambdaMin, R"nbdoc(Minimum lambda value)nbdoc");
+@param theMaxIter maximum iterations)nbdoc");
+    nanoocp_implicit_copy_ctor<MathSys::LMConfig>(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")));
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")), "LambdaInit", &MathSys::LMConfig::LambdaInit, R"nbdoc(Initial damping parameter)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")), "LambdaIncrease", &MathSys::LMConfig::LambdaIncrease, R"nbdoc(Factor to increase lambda on rejected step)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")), "LambdaDecrease", &MathSys::LMConfig::LambdaDecrease, R"nbdoc(Factor to decrease lambda on accepted step)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")), "LambdaMax", &MathSys::LMConfig::LambdaMax, R"nbdoc(Maximum lambda value before failing)nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig")), "LambdaMin", &MathSys::LMConfig::LambdaMin, R"nbdoc(Minimum lambda value)nbdoc");
 }

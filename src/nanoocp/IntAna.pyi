@@ -34,8 +34,12 @@ class IntAna_Curve:
     of the intersection between two quadrics.
     """
 
+    @overload
     def __init__(self) -> None:
         """Empty Constructor"""
+
+    @overload
+    def __init__(self, theOther: IntAna_Curve) -> None: ...
 
     def SetCylinderQuadValues(self, Cylinder: nanoocp.gp.gp_Cylinder, Qxx: float, Qyy: float, Qzz: float, Qxy: float, Qxz: float, Qyz: float, Qx: float, Qy: float, Qz: float, Q1: float, Tol: float, DomInf: float, DomSup: float, TwoZForATheta: bool, ZIsPositive: bool) -> None:
         """
@@ -116,6 +120,9 @@ class IntAna_Int3Pln:
         Determination of the intersection point between
         3 planes.
         """
+
+    @overload
+    def __init__(self, theOther: IntAna_Int3Pln) -> None: ...
 
     def Perform(self, P1: nanoocp.gp.gp_Pln, P2: nanoocp.gp.gp_Pln, P3: nanoocp.gp.gp_Pln) -> None:
         """
@@ -228,6 +235,9 @@ class IntAna_IntConicQuad:
         """
 
     @overload
+    def __init__(self, theOther: IntAna_IntConicQuad) -> None: ...
+
+    @overload
     def Perform(self, L: nanoocp.gp.gp_Lin, Q: IntAna_Quadric) -> None:
         """Intersects a line and a quadric."""
 
@@ -325,6 +335,9 @@ class IntAna_IntLinTorus:
     def __init__(self, L: nanoocp.gp.gp_Lin, T: nanoocp.gp.gp_Torus) -> None:
         """Creates the intersection between a line and a torus."""
 
+    @overload
+    def __init__(self, theOther: IntAna_IntLinTorus) -> None: ...
+
     def Perform(self, L: nanoocp.gp.gp_Lin, T: nanoocp.gp.gp_Torus) -> None:
         """Intersects a line and a torus."""
 
@@ -379,6 +392,9 @@ class IntAna_IntQuadQuad:
         Creates the intersection between a cone and a quadric.
         Tol est a definir plus precisemment.
         """
+
+    @overload
+    def __init__(self, theOther: IntAna_IntQuadQuad) -> None: ...
 
     @overload
     def Perform(self, C: nanoocp.gp.gp_Cylinder, Q: IntAna_Quadric, Tol: float) -> None:
@@ -566,6 +582,9 @@ class IntAna_QuadQuadGeo:
         """
 
     @overload
+    def __init__(self, theOther: IntAna_QuadQuadGeo) -> None: ...
+
+    @overload
     def Perform(self, P1: nanoocp.gp.gp_Pln, P2: nanoocp.gp.gp_Pln, TolAng: float, Tol: float) -> None:
         """
         Intersects two planes.
@@ -715,6 +734,9 @@ class IntAna_Quadric:
     @overload
     def __init__(self, Cone: nanoocp.gp.gp_Cone) -> None:
         """Creates a Quadric from a Cone"""
+
+    @overload
+    def __init__(self, theOther: IntAna_Quadric) -> None: ...
 
     @overload
     def SetQuadric(self, P: nanoocp.gp.gp_Pln) -> None:
