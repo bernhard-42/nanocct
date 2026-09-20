@@ -13,8 +13,9 @@ from pathlib import Path
 _QUALIFIED_RE = re.compile(r"^((?:[A-Za-z_]\w*::)+)(operator\(\)|~?[A-Za-z_]\w*|operator\S*?)\(")
 
 
-def defined_methods(install: Path, toolkit: str) -> set[str] | None:
-    """Set of 'Class::Method' names with at least one definition in lib<toolkit>; None if unavailable."""
+def defined_methods(install: Path, toolkit: str) -> tuple[set[str], set[str]] | None:
+    """('Class::Method' names with at least one definition in lib<toolkit>, full demangled signatures without
+    whitespace, e.g. 'GCPnts_DistFunction::GCPnts_DistFunction(GCPnts_DistFunctionconst&)'); None if unavailable."""
     nm = shutil.which("nm")
     if nm is None or platform.system() == "Windows":
         return None
@@ -28,6 +29,7 @@ def defined_methods(install: Path, toolkit: str) -> set[str] | None:
         cmd = [nm, "-D", "--defined-only", "-C", str(libs[0])]
     out = subprocess.run(cmd, capture_output=True, text=True, check=True).stdout
     names: set[str] = set()
+    signatures: set[str] = set()
     for line in out.splitlines():
         parts = line.split(" ", 2)
         if len(parts) < 3 or parts[1] not in ("T", "W", "t"):
@@ -35,4 +37,5 @@ def defined_methods(install: Path, toolkit: str) -> set[str] | None:
         m = _QUALIFIED_RE.match(parts[2])
         if m is not None:
             names.add(m.group(1) + m.group(2))
-    return names
+            signatures.add(re.sub(r"\s+", "", parts[2]))
+    return names, signatures

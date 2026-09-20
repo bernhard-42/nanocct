@@ -28,6 +28,12 @@ namespaces = ["std", "detail", "Detail", "Internal"]
 # itself only includes from .cxx files under #ifdef.
 headers = [
     "OSD_WNT.hxx",          # Windows only (includes <windows.h>)
+    # OCCT 8.0.1 packaging bug: these public headers include GeomBndLib_InfiniteHelpers.pxx, a private file that
+    # is not installed (GeomBndLib_Curve/Curve2d include GeomBndLib_Line/Line2d). BndLib_Add3dCurve etc. cover the use.
+    "GeomBndLib_Line.hxx",
+    "GeomBndLib_Line2d.hxx",
+    "GeomBndLib_Curve.hxx",
+    "GeomBndLib_Curve2d.hxx",
 ]
 # Members declared in a header but never defined in the OCCT libraries (link errors otherwise).
 # "Class::Name" skips every overload, "Class::Name(<param types>)" one overload. Methods without any

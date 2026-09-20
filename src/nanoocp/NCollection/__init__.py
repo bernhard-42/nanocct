@@ -9,6 +9,9 @@ from nanoocp._TKernel.NCollection import *  # noqa: F401,F403
 from nanoocp._templates import Template as _Template
 
 NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
+    (('nanoocp.AppDef', 'AppDef_MultiPointConstraint'),): "NCollection_Array1__AppDef_MultiPointConstraint",
+    (('nanoocp.AppParCurves', 'AppParCurves_ConstraintCouple'),): "NCollection_Array1__AppParCurves_ConstraintCouple",
+    (('nanoocp.AppParCurves', 'AppParCurves_MultiPoint'),): "NCollection_Array1__AppParCurves_MultiPoint",
     (('nanoocp.Bnd', 'Bnd_Box'),): "NCollection_Array1__Bnd_Box",
     (('nanoocp.Geom2dGridEval', 'CurveD1'),): "NCollection_Array1__Geom2dGridEval_CurveD1",
     (('nanoocp.Geom2dGridEval', 'CurveD2'),): "NCollection_Array1__Geom2dGridEval_CurveD2",
@@ -19,6 +22,11 @@ NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.Geom', 'Geom_Surface.ResD1'),): "NCollection_Array1__Geom_Surface_ResD1",
     (('nanoocp.Geom', 'Geom_Surface.ResD2'),): "NCollection_Array1__Geom_Surface_ResD2",
     (('nanoocp.Geom', 'Geom_Surface.ResD3'),): "NCollection_Array1__Geom_Surface_ResD3",
+    (('nanoocp.Geom2d', 'Geom2d_BSplineCurve'),): "NCollection_Array1__Handle_Geom2d_BSplineCurve",
+    (('nanoocp.Geom2d', 'Geom2d_BezierCurve'),): "NCollection_Array1__Handle_Geom2d_BezierCurve",
+    (('nanoocp.Geom', 'Geom_BSplineCurve'),): "NCollection_Array1__Handle_Geom_BSplineCurve",
+    (('nanoocp.Geom', 'Geom_BezierCurve'),): "NCollection_Array1__Handle_Geom_BezierCurve",
+    (('nanoocp.Geom', 'Geom_BezierSurface'),): "NCollection_Array1__Handle_Geom_BezierSurface",
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_Array1__Handle_Standard_Persistent",
     (('nanoocp.BVH', 'BVH_Vec3f'),): "NCollection_Array1__NCollection_Vec3__float",
     (('nanoocp.Poly', 'Poly_Triangle'),): "NCollection_Array1__Poly_Triangle",
@@ -27,17 +35,21 @@ NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.gp', 'gp_Pnt2d'),): "NCollection_Array1__gp_Pnt2d",
     (('nanoocp.gp', 'gp_Vec'),): "NCollection_Array1__gp_Vec",
     (('nanoocp.gp', 'gp_Vec2d'),): "NCollection_Array1__gp_Vec2d",
+    (('nanoocp.gp', 'gp_XYZ'),): "NCollection_Array1__gp_XYZ",
     (('builtins', 'int'),): "NCollection_Array1__int",
+    (('nanoocp.NCollection', 'NCollection_HArray1__int'),): "NCollection_Array1__opencascade_handle__NCollection_HArray1__int",
 })
 NCollection_Array2 = _Template("NCollection_Array2", "nanoocp.NCollection", {
     (('nanoocp.Geom', 'Geom_Surface.ResD1'),): "NCollection_Array2__Geom_Surface_ResD1",
     (('nanoocp.Geom', 'Geom_Surface.ResD2'),): "NCollection_Array2__Geom_Surface_ResD2",
     (('nanoocp.Geom', 'Geom_Surface.ResD3'),): "NCollection_Array2__Geom_Surface_ResD3",
+    (('nanoocp.Geom', 'Geom_BezierSurface'),): "NCollection_Array2__Handle_Geom_BezierSurface",
     (('builtins', 'float'),): "NCollection_Array2__double",
     (('nanoocp.gp', 'gp_Pnt'),): "NCollection_Array2__gp_Pnt",
     (('nanoocp.gp', 'gp_Pnt2d'),): "NCollection_Array2__gp_Pnt2d",
     (('nanoocp.gp', 'gp_Vec'),): "NCollection_Array2__gp_Vec",
     (('builtins', 'int'),): "NCollection_Array2__int",
+    (('nanoocp.NCollection', 'NCollection_HArray1__int'),): "NCollection_Array2__opencascade_handle__NCollection_HArray1__int",
 })
 NCollection_DataMap = _Template("NCollection_DataMap", "nanoocp.NCollection", {
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.TCollection', 'TCollection_AsciiString')): "NCollection_DataMap__TCollection_AsciiString__TCollection_AsciiString",
@@ -52,12 +64,16 @@ NCollection_DynamicArray = _Template("NCollection_DynamicArray", "nanoocp.NColle
     (('builtins', 'int'),): "NCollection_DynamicArray__int",
 })
 NCollection_HArray1 = _Template("NCollection_HArray1", "nanoocp.NCollection", {
+    (('nanoocp.AppParCurves', 'AppParCurves_ConstraintCouple'),): "NCollection_HArray1__AppParCurves_ConstraintCouple",
     (('nanoocp.Bnd', 'Bnd_Box'),): "NCollection_HArray1__Bnd_Box",
+    (('nanoocp.Geom2d', 'Geom2d_BSplineCurve'),): "NCollection_HArray1__Handle_Geom2d_BSplineCurve",
+    (('nanoocp.Geom', 'Geom_BSplineCurve'),): "NCollection_HArray1__Handle_Geom_BSplineCurve",
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_HArray1__Handle_Standard_Persistent",
     (('nanoocp.Poly', 'Poly_Triangle'),): "NCollection_HArray1__Poly_Triangle",
     (('builtins', 'float'),): "NCollection_HArray1__double",
     (('nanoocp.gp', 'gp_Pnt'),): "NCollection_HArray1__gp_Pnt",
     (('nanoocp.gp', 'gp_Pnt2d'),): "NCollection_HArray1__gp_Pnt2d",
+    (('nanoocp.gp', 'gp_XYZ'),): "NCollection_HArray1__gp_XYZ",
     (('builtins', 'int'),): "NCollection_HArray1__int",
 })
 NCollection_HArray2 = _Template("NCollection_HArray2", "nanoocp.NCollection", {
@@ -65,6 +81,7 @@ NCollection_HArray2 = _Template("NCollection_HArray2", "nanoocp.NCollection", {
     (('nanoocp.gp', 'gp_Pnt'),): "NCollection_HArray2__gp_Pnt",
     (('nanoocp.gp', 'gp_Pnt2d'),): "NCollection_HArray2__gp_Pnt2d",
     (('builtins', 'int'),): "NCollection_HArray2__int",
+    (('nanoocp.NCollection', 'NCollection_HArray1__int'),): "NCollection_HArray2__opencascade_handle__NCollection_HArray1__int",
 })
 NCollection_HSequence = _Template("NCollection_HSequence", "nanoocp.NCollection", {
     (('nanoocp.Storage', 'Storage_Root'),): "NCollection_HSequence__Handle_Storage_Root",
@@ -74,7 +91,9 @@ NCollection_HSequence = _Template("NCollection_HSequence", "nanoocp.NCollection"
     (('nanoocp.Units', 'Units_Token'),): "NCollection_HSequence__Handle_Units_Token",
     (('nanoocp.Units', 'Units_Unit'),): "NCollection_HSequence__Handle_Units_Unit",
     (('nanoocp.TCollection', 'TCollection_AsciiString'),): "NCollection_HSequence__TCollection_AsciiString",
+    (('nanoocp.gp', 'gp_Pnt'),): "NCollection_HSequence__gp_Pnt",
     (('builtins', 'int'),): "NCollection_HSequence__int",
+    (('nanoocp.NCollection', 'NCollection_HSequence__gp_Pnt'),): "NCollection_HSequence__opencascade_handle__NCollection_HSequence__gp_Pnt",
 })
 NCollection_IndexedDataMap = _Template("NCollection_IndexedDataMap", "nanoocp.NCollection", {
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.Standard', 'Standard_DumpValue')): "NCollection_IndexedDataMap__TCollection_AsciiString__Standard_DumpValue",
@@ -90,12 +109,21 @@ NCollection_List = _Template("NCollection_List", "nanoocp.NCollection", {
     (('nanoocp.Poly', 'Poly_Triangulation'),): "NCollection_List__Handle_Poly_Triangulation",
     (('nanoocp.Poly', 'Poly_CoherentTriangulation.TwoIntegers'),): "NCollection_List__Poly_CoherentTriangulation_TwoIntegers",
     (('nanoocp.Poly', 'Poly_MakeLoops.Link'),): "NCollection_List__Poly_MakeLoops_Link",
+    (('builtins', 'float'),): "NCollection_List__double",
+    (('nanoocp.gp', 'gp_Pnt'),): "NCollection_List__gp_Pnt",
     (('builtins', 'int'),): "NCollection_List__int",
 })
 NCollection_Map = _Template("NCollection_Map", "nanoocp.NCollection", {
     (('builtins', 'int'),): "NCollection_Map__int",
 })
 NCollection_Sequence = _Template("NCollection_Sequence", "nanoocp.NCollection", {
+    (('nanoocp.AppParCurves', 'AppParCurves_MultiCurve'),): "NCollection_Sequence__AppParCurves_MultiCurve",
+    (('nanoocp.Extrema', 'Extrema_POnCurv'),): "NCollection_Sequence__Extrema_POnCurv",
+    (('nanoocp.Extrema', 'Extrema_POnSurf'),): "NCollection_Sequence__Extrema_POnSurf",
+    (('nanoocp.AdvApp2Var', 'AdvApp2Var_Iso'),): "NCollection_Sequence__Handle_AdvApp2Var_Iso",
+    (('nanoocp.AdvApp2Var', 'AdvApp2Var_Node'),): "NCollection_Sequence__Handle_AdvApp2Var_Node",
+    (('nanoocp.AdvApp2Var', 'AdvApp2Var_Patch'),): "NCollection_Sequence__Handle_AdvApp2Var_Patch",
+    (('nanoocp.Geom2d', 'Geom2d_Curve'),): "NCollection_Sequence__Handle_Geom2d_Curve",
     (('nanoocp.Message', 'Message_Printer'),): "NCollection_Sequence__Handle_Message_Printer",
     (('nanoocp.Standard', 'Standard_Transient'),): "NCollection_Sequence__Handle_Standard_Transient",
     (('nanoocp.Storage', 'Storage_Root'),): "NCollection_Sequence__Handle_Storage_Root",
@@ -104,10 +132,14 @@ NCollection_Sequence = _Template("NCollection_Sequence", "nanoocp.NCollection", 
     (('nanoocp.Units', 'Units_Quantity'),): "NCollection_Sequence__Handle_Units_Quantity",
     (('nanoocp.Units', 'Units_Token'),): "NCollection_Sequence__Handle_Units_Token",
     (('nanoocp.Units', 'Units_Unit'),): "NCollection_Sequence__Handle_Units_Unit",
+    (('nanoocp.NCollection', 'NCollection_Sequence__Handle_AdvApp2Var_Iso'),): "NCollection_Sequence__NCollection_Sequence__Handle_AdvApp2Var_Iso",
     (('nanoocp.TCollection', 'TCollection_AsciiString'),): "NCollection_Sequence__TCollection_AsciiString",
     (('nanoocp.TCollection', 'TCollection_ExtendedString'),): "NCollection_Sequence__TCollection_ExtendedString",
+    (('builtins', 'float'),): "NCollection_Sequence__double",
+    (('nanoocp.gp', 'gp_Pnt'),): "NCollection_Sequence__gp_Pnt",
     (('nanoocp.gp', 'gp_Pnt2d'),): "NCollection_Sequence__gp_Pnt2d",
     (('builtins', 'int'),): "NCollection_Sequence__int",
+    (('nanoocp.NCollection', 'NCollection_HSequence__gp_Pnt'),): "NCollection_Sequence__opencascade_handle__NCollection_HSequence__gp_Pnt",
 })
 NCollection_Shared = _Template("NCollection_Shared", "nanoocp.NCollection", {
     (('nanoocp.NCollection', 'NCollection_Map__int'),): "NCollection_Shared__NCollection_Map__int",

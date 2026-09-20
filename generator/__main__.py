@@ -146,16 +146,25 @@ def main(argv: list[str]) -> int:
             print(f"{tk_name}: no packages selected", file=sys.stderr)
             return 1
         irs = [parse_package(tree, pkg) for pkg in pkgs]
-        defined = defined_methods(args.occt, tk_name)
-        if defined is None:
+        symbols = defined_methods(args.occt, tk_name)
+        if symbols is None:
             print(f"{tk_name}: library symbols not checked (nm unavailable)", file=sys.stderr)
         else:
+            defined, signatures = symbols
             for ir in irs:
                 for c in ir.classes:
                     for m in c.methods:
                         if m.skip_reason is None and not m.defined_in_header and f"{c.name}::{m.name}" not in defined:
                             m.skip_reason = "declared but not defined in the library"
                             ir.report.append(f"{c.name}::{m.name}: declared in the header, no definition in lib{tk_name}")
+                # a copy constructor declared but never defined (GCPnts_DistFunction: the old idiom to forbid copies) is
+                # still "copy constructible" for nanobind, which then instantiates a copy wrapper -> link error:
+                # the class cannot be bound at all
+                unlinkable = [c for c in ir.classes if "<" not in c.name and any(
+                    k.is_copy and not k.defined_in_header and f"{c.name}::{c.name}({c.name}const&)" not in signatures for k in c.ctors)]
+                for c in unlinkable:
+                    ir.report.append(f"{c.name}: copy constructor declared in the header, no definition in lib{tk_name} -> class skipped")
+                    ir.classes.remove(c)
         for ir in irs:
             generated_pkgs[ir.name] = tk_name
             manifest.setdefault("namespaces", {})[ir.name] = [list(ns) for ns in ir.namespaces]

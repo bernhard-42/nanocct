@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .model import Class, Enum, Function, Method, PackageIR, Param, TemplateInstance
 from .ncollection import BINDERS
-from .parse import _py_identifier, py_path
+from .parse import _py_identifier, py_path, py_safe
 
 # C++ operator -> (binary python name, unary python name, reflected python name)
 _BINARY_OPS = {
@@ -55,7 +55,7 @@ def _strip_ref(t: str) -> str:
 def _py_name(m: Method) -> str | None:
     """Python attribute name for a method; None when the operator has no Python counterpart."""
     if not m.is_operator:
-        return m.name
+        return py_safe(m.name)
     if m.name in _INPLACE_OPS:
         return _INPLACE_OPS[m.name]
     entry = _BINARY_OPS.get(m.name)
@@ -352,9 +352,9 @@ class Emitter:
                 if any(p.is_out for p in fn.params):        # out-params -> returned tuple, as for methods
                     as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
                                        result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=fn.doc)
-                    module_fns.append(f'    {self._module(fn.scope)}.def("{fn.name}", {self._lambda_call(None, as_method)}{self._extras(fn.doc, fn.params, True, False)});')
+                    module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", {self._lambda_call(None, as_method)}{self._extras(fn.doc, fn.params, True, False)});')
                     continue
-                module_fns.append(f'    {self._module(fn.scope)}.def("{fn.name}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(fn.doc, fn.params, False, False)});')
+                module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(fn.doc, fn.params, False, False)});')
 
         declare: list[str] = []
         define: list[str] = []
@@ -424,7 +424,7 @@ class Emitter:
                 self._note_types(f.type)
                 kind = "def_ro" if f.is_const else "def_rw"
                 dd = _cpp_doc(f.doc)
-                body.append(f'.{kind}("{f.name}", &{c.name}::{f.name}{", " + dd if dd is not None else ""})')
+                body.append(f'.{kind}("{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""})')
             body += free_ops.get(c.name, [])
             if implicit_default:
                 define.append(f'    nanoocp_implicit_default_ctor<{c.name}>(nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}")));')

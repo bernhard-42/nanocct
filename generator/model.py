@@ -35,6 +35,8 @@ class Constructor:
     doc: str
     skip_reason: str | None = None
     is_implicit: bool = False     # non-explicit converting constructor -> nb::implicitly_convertible
+    is_copy: bool = False
+    defined_in_header: bool = False
 
 
 @dataclass

@@ -20,11 +20,13 @@ _ALIASES = {
     "TColStd_HSequenceOfHExtendedString": ("nanoocp.NCollection", "NCollection_HSequence__Handle_TCollection_HExtendedString"),
     "TColStd_HSequenceOfInteger": ("nanoocp.NCollection", "NCollection_HSequence__int"),
     "TColStd_ListOfInteger": ("nanoocp.NCollection", "NCollection_List__int"),
+    "TColStd_ListOfReal": ("nanoocp.NCollection", "NCollection_List__double"),
     "TColStd_SequenceOfAsciiString": ("nanoocp.NCollection", "NCollection_Sequence__TCollection_AsciiString"),
     "TColStd_SequenceOfExtendedString": ("nanoocp.NCollection", "NCollection_Sequence__TCollection_ExtendedString"),
     "TColStd_SequenceOfHAsciiString": ("nanoocp.NCollection", "NCollection_Sequence__Handle_TCollection_HAsciiString"),
     "TColStd_SequenceOfHExtendedString": ("nanoocp.NCollection", "NCollection_Sequence__Handle_TCollection_HExtendedString"),
     "TColStd_SequenceOfInteger": ("nanoocp.NCollection", "NCollection_Sequence__int"),
+    "TColStd_SequenceOfReal": ("nanoocp.NCollection", "NCollection_Sequence__double"),
     "TColStd_SequenceOfTransient": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Standard_Transient"),
 }
 

@@ -1,6 +1,7 @@
 """libclang front end: parse one OCCT package as a single translation unit and build the IR."""
 from __future__ import annotations
 
+import keyword
 import platform
 import re
 import shutil
@@ -381,13 +382,20 @@ def _derives_from(cls: cindex.Cursor, root: str) -> bool:
     return result
 
 
+def py_safe(name: str) -> str:
+    """Python name for a C++ identifier: keywords get a trailing underscore (GProp_PEquation::Type::None -> None_)."""
+    if keyword.iskeyword(name):
+        return name + "_"
+    return name
+
+
 def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
     qual = f"{scope}::{cursor.spelling}" if scope is not None else cursor.spelling
     values: list[tuple[str, str]] = []
     for v in cursor.get_children():
         if v.kind == K.ENUM_CONSTANT_DECL:
             cpp = f"{qual}::{v.spelling}" if cursor.is_scoped_enum() else (f"{scope}::{v.spelling}" if scope is not None else v.spelling)
-            values.append((v.spelling, cpp))
+            values.append((py_safe(v.spelling), cpp))
     return Enum(name=qual, py_name=cursor.spelling, values=values, is_scoped=cursor.is_scoped_enum(), doc=_doc(cursor), header=header,
                 is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("))
 
@@ -425,6 +433,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
 
 def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") -> Class:
     cpp_name = _type_spelling(cursor.type)          # 'NCollection_Lerp<gp_Trsf>' for a specialization
+    if cpp_name == "":                              # a class template walked for an alias instantiation (6c)
+        cpp_name = _apply_subst(cursor.spelling)
     path = py_path(cpp_name, package).split(".")
     c = Class(name=cpp_name, py_name=path[-1], bases=[], header=header, doc=_doc(cursor),
               is_transient=_derives_from(cursor, "Standard_Transient"),
@@ -461,7 +471,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             required = [q for q in params if q.default is None]
             implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
                         and not ch.is_copy_constructor() and not ch.is_move_constructor())
-            ctor = Constructor(params=params, doc=_doc(ch), skip_reason=reason, is_implicit=implicit)
+            ctor = Constructor(params=params, doc=_doc(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
+                               defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or len(_subst) > 0)
             if ctor.skip_reason is None and ch.availability == cindex.AvailabilityKind.DEPRECATED:
                 ctor.skip_reason = "deprecated"
             if ctor.skip_reason is not None:

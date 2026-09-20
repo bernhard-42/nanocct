@@ -1596,7 +1596,7 @@ class GeomGridEval_Surface:
     def GetTransformation(self) -> nanoocp.gp.gp_Trsf | None:
         """Returns the transformation (empty if not set)."""
 
-# aliases of nested classes (C++ typedefs)
+# C++ typedef aliases
 CurveD1 = nanoocp.Geom.Geom_Curve.ResD1
 CurveD2 = nanoocp.Geom.Geom_Curve.ResD2
 CurveD3 = nanoocp.Geom.Geom_Curve.ResD3

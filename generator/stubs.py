@@ -119,18 +119,19 @@ out = Path(sys.argv[2])
 sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out)   # recursive: C++ namespaces are submodules
 sg.put(mod)
 text = sg.get()
-# stubgen binds an imported class by __name__ ("from nanoocp.Geom import ResD1 as CurveD1"), which is wrong for a
-# nested class (using CurveD1 = Geom_Curve::ResD1): re-bind such aliases by module + __qualname__
+# stubgen binds an imported class as "from nanoocp.GC import GC_MakeSegment2d as GCE2d_MakeSegment", which a stub
+# does not re-export (typing spec: only the `X as X` form does; ty enforces it), and by __name__, which is wrong for
+# a nested class (using CurveD1 = Geom_Curve::ResD1): re-bind such aliases as assignments by module + __qualname__
 fixes = []
 for name, value in vars(mod).items():
-    if isinstance(value, type) and value.__module__ != mod.__name__ and "." in value.__qualname__:
+    if isinstance(value, type) and value.__module__ != mod.__name__ and name != value.__qualname__:
         text, n = re.subn(rf"^    {re.escape(value.__name__)} as {re.escape(name)},?\n", "", text, flags=re.M)
         if n > 0:
             fixes.append(f"{name} = {value.__module__}.{value.__qualname__}\n")
             have = re.search(rf"^import {re.escape(value.__module__)}$", text, flags=re.M) is not None
             text = re.sub(rf"^from {re.escape(value.__module__)} import \(\n\)\n", "" if have else f"import {value.__module__}\n", text, flags=re.M)
 if len(fixes) > 0:
-    text = text.rstrip("\n") + "\n\n# aliases of nested classes (C++ typedefs)\n" + "".join(fixes)
+    text = text.rstrip("\n") + "\n\n# C++ typedef aliases\n" + "".join(fixes)
 out.write_text(text)
 """
 

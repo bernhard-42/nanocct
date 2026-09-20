@@ -8,13 +8,17 @@ _ALIASES = {
     "TColgp_Array1OfPnt2d": ("nanoocp.NCollection", "NCollection_Array1__gp_Pnt2d"),
     "TColgp_Array1OfVec": ("nanoocp.NCollection", "NCollection_Array1__gp_Vec"),
     "TColgp_Array1OfVec2d": ("nanoocp.NCollection", "NCollection_Array1__gp_Vec2d"),
+    "TColgp_Array1OfXYZ": ("nanoocp.NCollection", "NCollection_Array1__gp_XYZ"),
     "TColgp_Array2OfPnt": ("nanoocp.NCollection", "NCollection_Array2__gp_Pnt"),
     "TColgp_Array2OfPnt2d": ("nanoocp.NCollection", "NCollection_Array2__gp_Pnt2d"),
     "TColgp_Array2OfVec": ("nanoocp.NCollection", "NCollection_Array2__gp_Vec"),
     "TColgp_HArray1OfPnt": ("nanoocp.NCollection", "NCollection_HArray1__gp_Pnt"),
     "TColgp_HArray1OfPnt2d": ("nanoocp.NCollection", "NCollection_HArray1__gp_Pnt2d"),
+    "TColgp_HArray1OfXYZ": ("nanoocp.NCollection", "NCollection_HArray1__gp_XYZ"),
     "TColgp_HArray2OfPnt": ("nanoocp.NCollection", "NCollection_HArray2__gp_Pnt"),
     "TColgp_HArray2OfPnt2d": ("nanoocp.NCollection", "NCollection_HArray2__gp_Pnt2d"),
+    "TColgp_HSequenceOfPnt": ("nanoocp.NCollection", "NCollection_HSequence__gp_Pnt"),
+    "TColgp_SequenceOfPnt": ("nanoocp.NCollection", "NCollection_Sequence__gp_Pnt"),
     "TColgp_SequenceOfPnt2d": ("nanoocp.NCollection", "NCollection_Sequence__gp_Pnt2d"),
 }
 
