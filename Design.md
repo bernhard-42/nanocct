@@ -216,6 +216,30 @@ Rule: a package-level `typedef`/`using` whose canonical type is an instantiation
 7. Repository initialisation (`git init`) — pending the user's go.
 8. Python-side subclassing of OCCT classes (nanobind trampolines) — not planned for now.
 
+## 8a. Coverage of FoundationClasses and ModelingData (2026-09-20)
+
+Numbers from a fresh generator run of the six toolkits (`python -m generator --toolkit X --out <scratch>`, tree untouched).
+
+**Bound:** 1 484 classes, 14 756 methods, 256 free functions — TKernel 230/2 137/123, TKMath 271/3 789/105, TKG2d 59/892/0, TKG3d 128/2 137/0, TKGeomBase 326/2 426/9, TKBRep 470/3 375/19 (classes/methods/functions). Every package of both modules is generated; the OCCT 8 idioms that used to block whole APIs (namespaces, nested classes, nested and dependent templates, conversion operators, streams, mutable primitive references) are handled by rules, not by hand (6, 6c).
+
+**Not bound, 1 360 report lines, all in explainable categories:**
+
+| Lines | Category | Verdict |
+|---|---|---|
+| 551 | function/class templates and template members: functor-based algorithms (`MathOpt::BFGS<F>`, `MathRoot::Newton<F>`, `MathInteg::*`, `MathSys::Newton<F>`), `NCollection_MapAlgo`/`PackedMapAlgo` set algebra, `IsValidIn<CountProviderT>` | the one *chosen* gap: needs Python callables (trampolines); the classic `math_*` classes cover the same ground (6, "not planned") |
+| 126 | STL-style iterators (`begin()`/`end()`, `DynamicIterator` overloads) | Python iterates with `__iter__` / `More`-`Next`-`Value` |
+| 125 | raw pointers to primitives: 67 `AdvApp2Var` Fortran-style internals, buffers (`NCollection_Buffer`, `FSD_Base64`), `char16_t*` non-const | inherent |
+| 122 | `operator++`, `operator<<`, `operator>>` | no Python equivalent |
+| 62 / 50 / 48 / 44 | deprecated members / `std`, `detail`, `Internal` namespaces / `void*` allocator APIs / raw element pointers (`Data()`) | by rule |
+| 48 | stream leftovers: stream-holding constructors and members (`BinTools_IStream`, `Message_PrinterOStream`), `ostream&` returns without a stream parameter, free `operator<<` | inherent (an object may keep the reference) |
+| 30 | overload collisions after out-param removal | one overload reachable, chosen by the result type (6); all listed |
+| 28 / 26 / 11 / 9 | `_s` renames / conversion operators to enums or `string_view` / declared-but-undefined (`nm`) / `overrides.toml` | naming convention / no spelling / not callable in C++ either / documented |
+| ~80 | misc: 16 free operators without a class operand, 15 `char*&`, 8 rvalue references, C arrays, variadics, `initializer_list`, anonymous namespaces | inherent |
+
+**Usability check:** bound members whose signature names a type nanobind does not know (grep of quoted annotations in the stubs): 52, down from 275 before the gap audit — STL iterator overloads, `char32_t`/`wchar_t` hashers, `NCollection_FlatDataMap`/`FlatMap` internals of BRepGraph, `BVH_Box/Set/Tree<double, 3>` (CRTP base is dependent inside the 6c walk), members of two skipped classes. Everything else that is bound is callable.
+
+**Carried forward:** (1) `handle<T>&` out-parameters (`GeomTools::Read(handle<Geom_Curve>&, istream)`) are bound but cannot hand the new handle back to Python — the same class of issue `double&` had; a rule is due when ModelingAlgorithms makes it bite. (2) Coverage is verified on macOS only; Linux/Windows generator runs are open (8). (3) Functor templates stay out unless Python callables become a goal.
+
 ## 9. Working state and how to continue (kept current for context resets)
 
 **State on 2026-09-20 (branch `main`, no remote):** FoundationClasses and ModelingData complete — `TKernel` (18 packages), `TKMath` (21), `TKG2d` (6), `TKG3d` (8), `TKGeomBase` (27), `TKBRep` (10: `TopoDS`, `TopExp`, `TopTools`, `BRep`, `BRepLProp`, `BRepAdaptor`, `BRepTools`, `BinTools`, `BRepGraph`, `BRepGraphInc`) generated, built, stubbed; all 14 NCollection container kinds bound (6a); class-template aliases instantiated (6c); C++ namespaces, nested classes, typedef aliases and conversion operators bound (5.1, 6); 190 tests pass (`tests/`), mypy and ty included. `BRepGraph`/`BRepGraphInc` (OCCT 8's graph-based BRep) are bound including the typed ids and iterators (6c, nested templates); 184 tests. Gap audit (2026-09-20): bound members whose signature names a type nanobind does not know went from 275 to 51 (grep of quoted annotations in the stubs; the rest are STL iterator overloads, `char32_t`/`wchar_t` hashers, `FlatDataMap`, `BVH_Box/Set/Tree`, skipped classes). Stream APIs are bound (`DumpJson` → `str`, `Read` ← file-like object). ModelingAlgorithms and everything after are not generated yet. A clean regeneration reproduces the checked-in sources byte for byte (verified at this state). A clean regeneration (`rm src/cpp/manifest.json`, then the toolkits in order) reproduced the checked-in sources byte for byte at the TKG2d commit.
@@ -239,6 +263,8 @@ Generation order matters the first time after deleting `src/cpp/manifest.json`: 
 **Debugging a nanobind "Critical nanobind error" at import** (Release builds hide the message): build the Debug tree `build/debug` (`cmake -S . -B build/debug -G Ninja -DCMAKE_BUILD_TYPE=Debug -DPython_EXECUTABLE=$PWD/.venv/bin/python -DCMAKE_INSTALL_PREFIX=$PWD/build/stage-debug`, `cmake --build build/debug`, `cmake --install build/debug`, copy `src/nanoocp/*.py` into `build/stage-debug/nanoocp/`), then `PYTHONPATH=build/stage-debug .venv/bin/python -S -c "import nanoocp._TKMath"` — `-S` is required because the editable-install `.pth` hook would otherwise load the Release module. For a C++ exception at init: `lldb --batch -o "break set -E c++" -o run -o "bt 12" -- .venv/bin/python -S -c "import nanoocp._TKernel"`.
 
 **Recurring pitfalls:** safe-chain hides packages younger than 48 h from `uv`; the user overrides it themselves (nanobind is in the exclusions now). A `str.replace(old, new)` with an empty `old` inserts `new` between every character — it happened once to `parse.py` and was recovered exactly; use asserts on anchors. Partial regeneration of a single package is safe (toolkit module stays complete, manifest entries of the package are refreshed). Every new package tends to reveal one or two OCCT-specific idioms: the report printed by the generator (`- …: reason`) is the place to look, and the compiler/linker tells the rest.
+
+**Coverage of FoundationClasses/ModelingData:** see 8a (1 484 classes, 14 756 methods; every omission categorised).
 
 **Next steps, in order:** (1) ModelingAlgorithms (`TKGeomAlgo`, `TKTopAlgo`, `TKPrim`, `TKBO`, `TKBool`, `TKShHealing`, `TKFillet`, `TKOffset`, `TKFeat`, `TKMesh`, `TKHLR`, `TKXMesh` — check `TOOLKITS.cmake`; expect `BRepPrimAPI_MakeBox` & co. as the first user-facing milestone, `BOPDS_*`/`BOPTools_Set` `std::hash` specialisations, more `Detail`/`Internal` namespaces). Python subclassing of `Adaptor3d_Curve` remains not planned. (2) Conversion operators whose target lives in a later toolkit (`Quantity_Color` → `NCollection_Vec3<float>`) could be emitted from the target's package via the manifest if wanted. (3) Phase 2 (`ApplicationFramework` subset, `DataExchange`), plus the font slice of Visualization (`Font`, `StdPrs_BRepFont`, `StdPrs_BRepTextBuilder` — TKService/TKV3d must be added as toolkits). (4) Linux/Windows runs of the generator and the wheel pipeline (bundle OCCT dylibs; the static FreeType is inside `libTKService`).
 
