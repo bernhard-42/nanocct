@@ -127,13 +127,24 @@ def _type_spelling(t: cindex.Type) -> str:
     """Type as written in the header (keeps portable typedef names such as Standard_Size), except that
     types nested in a class are spelled fully qualified (the header may say 'D' inside gp_Dir)."""
     base = t
+    suffix = ""                      # qualifiers/declarators outside the base type, rebuilt below
     while base.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        suffix = {TK.LVALUEREFERENCE: " &", TK.RVALUEREFERENCE: " &&", TK.POINTER: " *"}[base.kind] + (" const" if base.is_const_qualified() else "") + suffix
         base = base.get_pointee()
     decl = base.get_declaration()
     if decl.kind != K.NO_DECL_FOUND:
         parent = decl.semantic_parent
         if parent is not None and parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
             return t.get_canonical().spelling
+    canon_base = base.get_canonical()
+    if canon_base.kind == TK.RECORD and canon_base.get_num_template_arguments() > 0 and "<" in base.spelling:
+        # template arguments may themselves be nested types (NCollection_List<TwoIntegers>): respell each one.
+        # Non-type arguments (BVH_Box<double, 3>, Standard_Static_Assert<true>) have no type: keep the spelling as written.
+        arg_types = [canon_base.get_template_argument_type(i) for i in range(canon_base.get_num_template_arguments())]
+        if all(a.kind != TK.INVALID for a in arg_types):
+            head = base.spelling[: base.spelling.index("<")].replace("const ", "").strip()
+            args = [_type_spelling(a) for a in arg_types]
+            return ("const " if base.is_const_qualified() else "") + f"{head}<{', '.join(args)}>" + suffix
     s = t.spelling
     for kw in ("class ", "struct ", "enum "):
         s = s.replace(kw, "")
@@ -165,12 +176,15 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
         return "iostream type"
     if canon.kind == TK.RVALUEREFERENCE:
         return "rvalue reference"
+    if canon.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
+        return "array"
     if canon.kind == TK.POINTER:
         pointee = canon.get_pointee()
         pk = pointee.get_canonical().kind
         if pk == TK.RECORD:
             d = pointee.get_declaration()
-            if d.kind == K.NO_DECL_FOUND or d.get_definition() is None:
+            # template instantiations (NCollection_Array1<double>*) have no definition cursor in the TU but are complete
+            if d.kind == K.NO_DECL_FOUND or (d.get_definition() is None and pointee.get_canonical().get_num_template_arguments() <= 0):
                 return "pointer to incomplete type"
         if pk == TK.FUNCTIONPROTO or pk == TK.FUNCTIONNOPROTO:
             return "function pointer"
@@ -291,7 +305,8 @@ def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
         if v.kind == K.ENUM_CONSTANT_DECL:
             cpp = f"{qual}::{v.spelling}" if cursor.is_scoped_enum() else (f"{scope}::{v.spelling}" if scope is not None else v.spelling)
             values.append((v.spelling, cpp))
-    return Enum(name=qual, py_name=cursor.spelling, values=values, is_scoped=cursor.is_scoped_enum(), doc=_doc(cursor), header=header)
+    return Enum(name=qual, py_name=cursor.spelling, values=values, is_scoped=cursor.is_scoped_enum(), doc=_doc(cursor), header=header,
+                is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("))
 
 
 def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method | None:
@@ -309,6 +324,9 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False)
         if m.skip_reason is not None:
             m.skip_reason = "return: " + m.skip_reason
+    # inline (in-class or out-of-class in the header) vs. defined in the library; needs bodies parsed
+    m.defined_in_header = (cursor.is_definition() or cursor.get_definition() is not None
+                           or cursor.is_pure_virtual_method())      # pure virtual: dispatched via vtable, no symbol
     if m.skip_reason is None and cursor.is_deleted_method():
         m.skip_reason = "deleted"
     if m.skip_reason is None:
@@ -429,18 +447,40 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
     _instances_seen.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
-        umbrella.write_text("".join(f"#include <{h}>\n" for h in ir.headers))
+        # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
+        umbrella.write_text("#include <cstddef>\n#include <cstdint>\n#include <cstring>\n#include <string>\n"
+                            + "".join(f"#include <{h}>\n" for h in ir.headers))
         index = cindex.Index.create()
-        tu = index.parse(str(umbrella), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
+        # bodies are parsed (no PARSE_SKIP_FUNCTION_BODIES): only then does get_definition() find the
+        # out-of-class inline definitions that decide whether a method needs a library symbol
+        tu = index.parse(str(umbrella), args=args)
         errors = [d for d in tu.diagnostics if d.severity >= cindex.Diagnostic.Error]
         if len(errors) > 0:
             raise RuntimeError(f"{pkg.name}: {len(errors)} parse errors, first: {errors[0]}")
-        for cur in tu.cursor.get_children():
-            f = cur.location.file
-            if f is None:
+        def top_level(cursor: cindex.Cursor, ns: str):
+            """File-scope declarations, descending into namespaces (OCCT 8 math packages use them)."""
+            for cur in cursor.get_children():
+                f = cur.location.file
+                if f is None:
+                    continue
+                if Path(f.name).name not in headers:
+                    continue
+                if cur.kind == K.NAMESPACE:
+                    yield from top_level(cur, f"{ns}{cur.spelling}::")
+                else:
+                    yield cur, ns
+
+        for cur, ns in top_level(tu.cursor, ""):
+            header = Path(cur.location.file.name).name
+            if ns != "" and cur.kind == K.VAR_DECL and cur.type.is_const_qualified():
+                # namespace-level constants (constexpr double MathUtils::THE_NEWTON_FTOL_SQ = ...) -> module attributes
+                ir.constants.append((cur.spelling, f"{ns}{cur.spelling}", _doc(cur)))
                 continue
-            header = Path(f.name).name
-            if header not in headers:
+            if ns != "" and cur.kind in (K.FUNCTION_TEMPLATE, K.CLASS_TEMPLATE):
+                ir.report.append(f"{ns}{cur.spelling}: template in namespace (not bound)")
+                continue
+            if ns != "" and cur.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL, K.FUNCTION_DECL):
+                ir.report.append(f"{ns}{cur.spelling}: declaration inside a namespace (not bound yet)")
                 continue
             if cur.kind in (K.CLASS_DECL, K.STRUCT_DECL) and cur.is_definition():
                 c = _class(cur, header)

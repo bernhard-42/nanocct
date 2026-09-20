@@ -7,8 +7,13 @@ from nanoocp._TKernel.TColStd import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "TColStd_Array1OfInteger": ("nanoocp.NCollection", "NCollection_Array1__int"),
     "TColStd_Array1OfReal": ("nanoocp.NCollection", "NCollection_Array1__double"),
+    "TColStd_Array2OfInteger": ("nanoocp.NCollection", "NCollection_Array2__int"),
     "TColStd_Array2OfReal": ("nanoocp.NCollection", "NCollection_Array2__double"),
+    "TColStd_HArray1OfInteger": ("nanoocp.NCollection", "NCollection_HArray1__int"),
+    "TColStd_HArray1OfReal": ("nanoocp.NCollection", "NCollection_HArray1__double"),
+    "TColStd_HArray2OfInteger": ("nanoocp.NCollection", "NCollection_HArray2__int"),
     "TColStd_HArray2OfReal": ("nanoocp.NCollection", "NCollection_HArray2__double"),
     "TColStd_HSequenceOfAsciiString": ("nanoocp.NCollection", "NCollection_HSequence__TCollection_AsciiString"),
     "TColStd_HSequenceOfHAsciiString": ("nanoocp.NCollection", "NCollection_HSequence__Handle_TCollection_HAsciiString"),

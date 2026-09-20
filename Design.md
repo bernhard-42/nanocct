@@ -113,6 +113,13 @@ Per toolkit `src/cpp/<TK>/<pkg>.cpp` (one per package, `nanoocp_declare_<pkg>` +
 | static and instance method with the same name | static gets suffix `_s` (`gp_QuaternionNLerp.Interpolate_s`) | Python cannot overload across static/instance; same choice as OCP |
 | explicit template specialisation without an OCCT typedef (`NCollection_Lerp<gp_Trsf>`) | `NCollection_Lerp_gp_Trsf` | `<`, `,` → `_`, `>` dropped |
 | unscoped enum | `nb::enum_` with `is_arithmetic` (`int(e)` works) | matches C++ implicit conversion |
+| anonymous enum (`enum { BVH_Constants_MaxTreeDepth = 32 };`) | integer attributes on the module/class | C++ integer constants |
+| `constexpr` constants in a namespace (`MathUtils::THE_NEWTON_MAX_ITER`) | attributes of the package module | OCCT 8 math packages use namespaces |
+| function/class templates in a namespace (`MathSys::Newton<FuncSetType>`) | not bound, reported | need a concrete functor type; the classic `math_*` classes are the Python-facing API |
+| method declared, never defined by OCCT (`math_NewtonMinimum::IsConvex`, `OSD_Path::LocateExecFile`) | skipped automatically | `generator/symbols.py`: `nm` on the toolkit library vs. methods without an inline definition (bodies are parsed so `get_definition()` sees out-of-class inline definitions; pure virtuals excluded); overload-specific cases stay in `overrides.toml` |
+| class with several bases (`IMeshData_Edge : IMeshData_TessellatedShape, IMeshData_StatusOwner`) | first base only, others reported | nanobind single inheritance (4.2) |
+| array parameter (`const Poly_CoherentTriangle *pTri[2]`) | skipped | |
+| class whose implicit copy/move constructor does not compile (`math_GlobOptMin`) | skipped via `overrides.toml` | nanobind instantiates the move wrapper unconditionally |
 | nested `enum class` | attribute of the class (`gp_Dir.D.Z`) | |
 | `handle<T>` return | most-derived registered type; null → `None` | caster |
 | `T*` / `T&` return, T Transient | wrapped in `handle<T>` (same Python object as before) | never let nanobind own a Transient |
@@ -164,7 +171,8 @@ All 14 container kinds of the scope are bound.
 
 ## 8. Open questions and next steps
 
-1. Remaining NCollection binder kinds (section 6a), then the rest of `TKMath` and `ModelingData`.
+1. **OCCT class templates with aliases** — `math_Vector = math_VectorBase<double>`, `math_IntegerVector`, `Extrema_ExtPC = Extrema_GGExtPC<Adaptor3d_Curve, …>` and the other `Extrema_G*` aliases, `GeomLProp_CLProps`, `BVH_Box<double, 3>`, `IntPolyh_Array<…>`: about 40 aliases over ~10 templates in the scope, all user-facing. Not containers, so 6a's hand-written binders do not apply: this needs option (a) — instantiate the template's members from libclang with template-argument substitution, bound under the alias name, docs from the template header. `math_Vector` is therefore missing from `nanoocp.math` today (tested as such).
+2. `ModelingData`.
 3. Stubs for the remaining container kinds as their binders arrive; stubs for OCCT out-param tuples are already produced by stubgen.
 4. Generator on Linux and Windows (libclang selection, MSVC/libstdc++ header discovery, platform-dependent `#ifdef`s in OCCT headers such as `OSD_*`).
 5. Vendor RapidJSON; decide whether to vendor the ~23 clang builtin headers so the pip `libclang` fallback works without a host clang.
@@ -187,3 +195,4 @@ All 14 container kinds of the scope are bound.
 - **2026-09-20** — NCollection `List`, `Sequence`, `HSequence` binders with nested iterators (62 tests); packages emitted in declaration order.
 - **2026-09-20** — NCollection hashed kinds (`Map`, `DataMap`, `IndexedMap`, `IndexedDataMap`) with default-hasher stripping, `[instantiate]` override, enums as element types (68 tests).
 - **2026-09-20** — Multiple-inheritance rule discovered and fixed (offset-0 base + MI registry in the handle caster); `Array2`, `HArray2`, `DynamicArray`, `DoubleMap`, `Shared` bound — all 14 NCollection kinds done (72 tests).
+- **2026-09-20** — Rest of `TKMath` generated (21 packages, 98 tests): namespaces descended (constants bound, templates reported), anonymous enums as constants, `nm`-based check for declared-but-undefined methods (full-body parsing), first-base-only rule for multi-base classes, array parameters skipped, template arguments respelled recursively (nested types), non-type template arguments kept as written, `math_GlobOptMin` skipped. Open: aliases of OCCT class templates (`math_Vector`, `Extrema_ExtPC`, …).

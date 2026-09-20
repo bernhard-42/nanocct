@@ -30,6 +30,7 @@
 #include <Message_Status.hxx>
 #include <Message_StatusType.hxx>
 #include <Message_Report.hxx>
+#include <NCollection_DefaultHasher.hxx>
 #include <NCollection_HSequence.hxx>
 #include <NCollection_IndexedMap.hxx>
 #include <NCollection_List.hxx>
@@ -712,8 +713,8 @@ and removed.)nbdoc")
         .def("RemovePrinters", static_cast<int (Message_Messenger::*)(const occ::handle<Standard_Type> &)>(&Message_Messenger::RemovePrinters), nb::arg("theType"), R"nbdoc(Removes printers of specified type (including derived classes)
 from the messenger.
 Returns number of removed printers.)nbdoc")
-        .def("Printers", static_cast<const NCollection_Sequence<occ::handle<Message_Printer>> & (Message_Messenger::*)() const>(&Message_Messenger::Printers), R"nbdoc(Returns current sequence of printers)nbdoc")
-        .def("ChangePrinters", static_cast<NCollection_Sequence<occ::handle<Message_Printer>> & (Message_Messenger::*)()>(&Message_Messenger::ChangePrinters), nb::rv_policy::reference_internal, R"nbdoc(Returns sequence of printers
+        .def("Printers", static_cast<const NCollection_Sequence<opencascade::handle<Message_Printer>> & (Message_Messenger::*)() const>(&Message_Messenger::Printers), R"nbdoc(Returns current sequence of printers)nbdoc")
+        .def("ChangePrinters", static_cast<NCollection_Sequence<opencascade::handle<Message_Printer>> & (Message_Messenger::*)()>(&Message_Messenger::ChangePrinters), nb::rv_policy::reference_internal, R"nbdoc(Returns sequence of printers
 The sequence can be modified.)nbdoc")
         .def("Send", static_cast<void (Message_Messenger::*)(const char *const, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theString"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(Dispatch a message to all the printers in the list.
 Three versions of string representations are accepted for
@@ -938,11 +939,11 @@ only those items are moved that correspond to statuses
 set in theStatus)nbdoc")
         .def("GetMessageNumbers", static_cast<occ::handle<TColStd_HPackedMapOfInteger> (Message_Algorithm::*)(const Message_Status &) const>(&Message_Algorithm::GetMessageNumbers), nb::arg("theStatus"), R"nbdoc(Return the numbers associated with the indicated status;
 Null handle if no such status or no numbers associated with it)nbdoc")
-        .def("GetMessageStrings", static_cast<occ::handle<NCollection_HSequence<occ::handle<TCollection_HExtendedString>>> (Message_Algorithm::*)(const Message_Status &) const>(&Message_Algorithm::GetMessageStrings), nb::arg("theStatus"), R"nbdoc(Return the strings associated with the indicated status;
+        .def("GetMessageStrings", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<TCollection_HExtendedString>>> (Message_Algorithm::*)(const Message_Status &) const>(&Message_Algorithm::GetMessageStrings), nb::arg("theStatus"), R"nbdoc(Return the strings associated with the indicated status;
 Null handle if no such status or no strings associated with it)nbdoc")
         .def_static("PrepareReport", static_cast<TCollection_ExtendedString (*)(const occ::handle<TColStd_HPackedMapOfInteger> &, const int)>(&Message_Algorithm::PrepareReport), nb::arg("theError"), nb::arg("theMaxCount"), R"nbdoc(Prepares a string containing a list of integers contained
 in theError map, but not more than theMaxCount)nbdoc")
-        .def_static("PrepareReport", static_cast<TCollection_ExtendedString (*)(const NCollection_Sequence<occ::handle<TCollection_HExtendedString>> &, const int)>(&Message_Algorithm::PrepareReport), nb::arg("theReportSeq"), nb::arg("theMaxCount"), R"nbdoc(Prepares a string containing a list of names contained
+        .def_static("PrepareReport", static_cast<TCollection_ExtendedString (*)(const NCollection_Sequence<opencascade::handle<TCollection_HExtendedString>> &, const int)>(&Message_Algorithm::PrepareReport), nb::arg("theReportSeq"), nb::arg("theMaxCount"), R"nbdoc(Prepares a string containing a list of names contained
 in theReportSeq sequence, but not more than theMaxCount)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Algorithm::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Algorithm::get_type_descriptor))
@@ -1011,7 +1012,7 @@ Processed only alert with Message_AttributeMeter attribute
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_CompositeAlerts::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_CompositeAlerts::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_CompositeAlerts::*)() const>(&Message_CompositeAlerts::DynamicType))
-        .def("Alerts", static_cast<const NCollection_List<occ::handle<Message_Alert>> & (Message_CompositeAlerts::*)(const Message_Gravity) const>(&Message_CompositeAlerts::Alerts), nb::arg("theGravity"), R"nbdoc(Returns list of collected alerts with specified gravity)nbdoc")
+        .def("Alerts", static_cast<const NCollection_List<opencascade::handle<Message_Alert>> & (Message_CompositeAlerts::*)(const Message_Gravity) const>(&Message_CompositeAlerts::Alerts), nb::arg("theGravity"), R"nbdoc(Returns list of collected alerts with specified gravity)nbdoc")
         .def("AddAlert", static_cast<bool (Message_CompositeAlerts::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_CompositeAlerts::AddAlert), nb::arg("theGravity"), nb::arg("theAlert"), R"nbdoc(Add alert with specified gravity. If the alert supports merge it will be merged.
 @param theGravity an alert gravity
 @param theAlert an alert to be added as a child alert
@@ -1188,7 +1189,7 @@ message. Default implementation calls first method Send().)nbdoc");
         .def(nb::new_([]() { return opencascade::handle<Message_Report>(new Message_Report()); }), R"nbdoc(Empty constructor)nbdoc")
         .def("AddAlert", static_cast<void (Message_Report::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_Report::AddAlert), nb::arg("theGravity"), nb::arg("theAlert"), R"nbdoc(Add alert with specified gravity.
 This method is thread-safe, i.e. alerts can be added from parallel threads safely.)nbdoc")
-        .def("GetAlerts", static_cast<const NCollection_List<occ::handle<Message_Alert>> & (Message_Report::*)(Message_Gravity) const>(&Message_Report::GetAlerts), nb::arg("theGravity"), R"nbdoc(Returns list of collected alerts with specified gravity)nbdoc")
+        .def("GetAlerts", static_cast<const NCollection_List<opencascade::handle<Message_Alert>> & (Message_Report::*)(Message_Gravity) const>(&Message_Report::GetAlerts), nb::arg("theGravity"), R"nbdoc(Returns list of collected alerts with specified gravity)nbdoc")
         .def("HasAlert", static_cast<bool (Message_Report::*)(const occ::handle<Standard_Type> &)>(&Message_Report::HasAlert), nb::arg("theType"), R"nbdoc(Returns true if specific type of alert is recorded)nbdoc")
         .def("HasAlert", static_cast<bool (Message_Report::*)(const occ::handle<Standard_Type> &, Message_Gravity)>(&Message_Report::HasAlert), nb::arg("theType"), nb::arg("theGravity"), R"nbdoc(Returns true if specific type of alert is recorded with specified gravity)nbdoc")
         .def("IsActiveInMessenger", static_cast<bool (Message_Report::*)(const occ::handle<Message_Messenger> &) const>(&Message_Report::IsActiveInMessenger), nb::arg("theMessenger") = static_cast<std::decay_t<const occ::handle<Message_Messenger> &>>(nullptr), R"nbdoc(Returns true if a report printer for the current report is registered in the messenger
@@ -1206,7 +1207,7 @@ It becomes true if messenger contains at least one instance of Message_PrinterTo
         .def("Clear", static_cast<void (Message_Report::*)()>(&Message_Report::Clear), R"nbdoc(Clears all collected alerts)nbdoc")
         .def("Clear", static_cast<void (Message_Report::*)(Message_Gravity)>(&Message_Report::Clear), nb::arg("theGravity"), R"nbdoc(Clears collected alerts with specified gravity)nbdoc")
         .def("Clear", static_cast<void (Message_Report::*)(const occ::handle<Standard_Type> &)>(&Message_Report::Clear), nb::arg("theType"), R"nbdoc(Clears collected alerts with specified type)nbdoc")
-        .def("ActiveMetrics", static_cast<const NCollection_IndexedMap<Message_MetricType> & (Message_Report::*)() const>(&Message_Report::ActiveMetrics), R"nbdoc(Returns computed metrics when alerts are performed)nbdoc")
+        .def("ActiveMetrics", static_cast<const NCollection_IndexedMap<Message_MetricType, NCollection_DefaultHasher<Message_MetricType>> & (Message_Report::*)() const>(&Message_Report::ActiveMetrics), R"nbdoc(Returns computed metrics when alerts are performed)nbdoc")
         .def("SetActiveMetric", static_cast<void (Message_Report::*)(const Message_MetricType, const bool)>(&Message_Report::SetActiveMetric), nb::arg("theMetricType"), nb::arg("theActivate"), R"nbdoc(Sets metrics to compute when alerts are performed
 @param theMetrics container of metrics)nbdoc")
         .def("ClearMetrics", static_cast<void (Message_Report::*)()>(&Message_Report::ClearMetrics), R"nbdoc(Removes all activated metrics)nbdoc")

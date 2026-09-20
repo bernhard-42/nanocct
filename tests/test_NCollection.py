@@ -99,7 +99,7 @@ def test_template_accessor_spelling():
     a.Init(3.0)
     assert list(a) == [3.0, 3.0]
     with pytest.raises(TypeError, match="not bound"):
-        NCollection.NCollection_Array1[int]
+        NCollection.NCollection_Array1[bytes]                             # no OCCT signature uses Array1<bytes>
     with pytest.raises(TypeError, match="template"):
         NCollection.NCollection_Array1(1, 2)
     assert "NCollection_Array1__double" in NCollection.NCollection_Array1.bound()

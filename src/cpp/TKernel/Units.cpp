@@ -208,7 +208,7 @@ International System of Units.)nbdoc")
         .def("Value", static_cast<double (Units_Unit::*)() const>(&Units_Unit::Value), R"nbdoc(Returns the value in relation with the International
 System of Units.)nbdoc")
         .def("Quantity", static_cast<occ::handle<Units_Quantity> (Units_Unit::*)() const>(&Units_Unit::Quantity), R"nbdoc(Returns <thequantity> contained in <me>.)nbdoc")
-        .def("SymbolsSequence", static_cast<occ::handle<NCollection_HSequence<occ::handle<TCollection_HAsciiString>>> (Units_Unit::*)() const>(&Units_Unit::SymbolsSequence), R"nbdoc(Returns the sequence of symbols <thesymbolssequence>)nbdoc")
+        .def("SymbolsSequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<TCollection_HAsciiString>>> (Units_Unit::*)() const>(&Units_Unit::SymbolsSequence), R"nbdoc(Returns the sequence of symbols <thesymbolssequence>)nbdoc")
         .def("Value", static_cast<void (Units_Unit::*)(const double)>(&Units_Unit::Value), nb::arg("avalue"), R"nbdoc(Sets the value <avalue> to <me>.)nbdoc")
         .def("Quantity", static_cast<void (Units_Unit::*)(const occ::handle<Units_Quantity> &)>(&Units_Unit::Quantity), nb::arg("aquantity"), R"nbdoc(Sets the physical Quantity <aquantity> to <me>.)nbdoc")
         .def("Token", static_cast<occ::handle<Units_Token> (Units_Unit::*)() const>(&Units_Unit::Token), R"nbdoc(Starting with <me>, returns a new Token object.)nbdoc")
@@ -221,13 +221,13 @@ symbol equal to the name, False otherwise.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_Unit::*)() const>(&Units_Unit::DynamicType));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_Unit>();
     nb::borrow<nb::class_<Units_Quantity>>(m.attr("Units_Quantity"))
-        .def(nb::new_([](const char *const aname, const occ::handle<Units_Dimensions> & adimensions, const occ::handle<NCollection_HSequence<occ::handle<Units_Unit>>> & aunitssequence) { return opencascade::handle<Units_Quantity>(new Units_Quantity(aname, adimensions, aunitssequence)); }), nb::arg("aname"), nb::arg("adimensions"), nb::arg("aunitssequence"), R"nbdoc(Creates a new Quantity object with <aname> which is
+        .def(nb::new_([](const char *const aname, const occ::handle<Units_Dimensions> & adimensions, const occ::handle<NCollection_HSequence<opencascade::handle<Units_Unit>>> & aunitssequence) { return opencascade::handle<Units_Quantity>(new Units_Quantity(aname, adimensions, aunitssequence)); }), nb::arg("aname"), nb::arg("adimensions"), nb::arg("aunitssequence"), R"nbdoc(Creates a new Quantity object with <aname> which is
 the name of the physical quantity, <adimensions> which
 is the physical dimensions, and <aunitssequence> which
 describes all the units known for this quantity.)nbdoc")
         .def("Name", static_cast<TCollection_AsciiString (Units_Quantity::*)() const>(&Units_Quantity::Name), R"nbdoc(Returns in a AsciiString from TCollection the name of the quantity.)nbdoc")
         .def("Dimensions", static_cast<occ::handle<Units_Dimensions> (Units_Quantity::*)() const>(&Units_Quantity::Dimensions), R"nbdoc(Returns the physical dimensions of the quantity.)nbdoc")
-        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<occ::handle<Units_Unit>>> (Units_Quantity::*)() const>(&Units_Quantity::Sequence), R"nbdoc(Returns <theunitssequence>, which is the sequence of
+        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Units_Unit>>> (Units_Quantity::*)() const>(&Units_Quantity::Sequence), R"nbdoc(Returns <theunitssequence>, which is the sequence of
 all the units stored for this physical quantity.)nbdoc")
         .def("IsEqual", static_cast<bool (Units_Quantity::*)(const char *const) const>(&Units_Quantity::IsEqual), nb::arg("astring"), R"nbdoc(Returns True if the name of the Quantity <me> is equal
 to <astring>, False otherwise.)nbdoc")
@@ -361,7 +361,7 @@ false otherwise.)nbdoc")
         .def(nb::new_([]() { return opencascade::handle<Units_Lexicon>(new Units_Lexicon()); }), R"nbdoc(Creates an empty instance of Lexicon.)nbdoc")
         .def("Creates", static_cast<void (Units_Lexicon::*)()>(&Units_Lexicon::Creates), R"nbdoc(Reads the file <afilename> to create a sequence of tokens
 stored in <thesequenceoftokens>.)nbdoc")
-        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<occ::handle<Units_Token>>> (Units_Lexicon::*)() const>(&Units_Lexicon::Sequence), R"nbdoc(Returns the first item of the sequence of tokens.)nbdoc")
+        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Units_Token>>> (Units_Lexicon::*)() const>(&Units_Lexicon::Sequence), R"nbdoc(Returns the first item of the sequence of tokens.)nbdoc")
         .def("AddToken", static_cast<void (Units_Lexicon::*)(const char *const, const char *const, const double)>(&Units_Lexicon::AddToken), nb::arg("aword"), nb::arg("amean"), nb::arg("avalue"), R"nbdoc(Adds to the lexicon a new token with <aword>, <amean>,
 <avalue> as arguments. If there is already a token
 with the field <theword> equal to <aword>, the
@@ -374,8 +374,8 @@ existing token is updated.)nbdoc")
         .def(nb::init<const occ::handle<Units_Lexicon> &, const char *const>(), nb::arg("alexicon"), nb::arg("astring"), R"nbdoc(Createsand returns a Sentence, by analyzing the
 string <astring> with the lexicon <alexicon>.)nbdoc")
         .def("SetConstants", static_cast<void (Units_Sentence::*)()>(&Units_Sentence::SetConstants), R"nbdoc(For each constant encountered, sets the value.)nbdoc")
-        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<occ::handle<Units_Token>>> (Units_Sentence::*)() const>(&Units_Sentence::Sequence), R"nbdoc(Returns <thesequenceoftokens>.)nbdoc")
-        .def("Sequence", static_cast<void (Units_Sentence::*)(const occ::handle<NCollection_HSequence<occ::handle<Units_Token>>> &)>(&Units_Sentence::Sequence), nb::arg("asequenceoftokens"), R"nbdoc(Sets the field <thesequenceoftokens> to <asequenceoftokens>.)nbdoc")
+        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Units_Token>>> (Units_Sentence::*)() const>(&Units_Sentence::Sequence), R"nbdoc(Returns <thesequenceoftokens>.)nbdoc")
+        .def("Sequence", static_cast<void (Units_Sentence::*)(const occ::handle<NCollection_HSequence<opencascade::handle<Units_Token>>> &)>(&Units_Sentence::Sequence), nb::arg("asequenceoftokens"), R"nbdoc(Sets the field <thesequenceoftokens> to <asequenceoftokens>.)nbdoc")
         .def("Evaluate", static_cast<occ::handle<Units_Token> (Units_Sentence::*)()>(&Units_Sentence::Evaluate), R"nbdoc(Computes and returns in a token the result of the
 expression.)nbdoc")
         .def("IsDone", static_cast<bool (Units_Sentence::*)() const>(&Units_Sentence::IsDone), R"nbdoc(Return True if number of created tokens > 0
@@ -475,7 +475,7 @@ and <amove> equal to 273.15.)nbdoc")
         .def("Creates", static_cast<void (Units_UnitsDictionary::*)()>(&Units_UnitsDictionary::Creates), R"nbdoc(Returns a UnitsDictionary object which contains the
 sequence of all the units you want to consider,
 physical quantity by physical quantity.)nbdoc")
-        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<occ::handle<Units_Quantity>>> (Units_UnitsDictionary::*)() const>(&Units_UnitsDictionary::Sequence), R"nbdoc(Returns the head of the sequence of physical
+        .def("Sequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> (Units_UnitsDictionary::*)() const>(&Units_UnitsDictionary::Sequence), R"nbdoc(Returns the head of the sequence of physical
 quantities.)nbdoc")
         .def("ActiveUnit", static_cast<TCollection_AsciiString (Units_UnitsDictionary::*)(const char *const) const>(&Units_UnitsDictionary::ActiveUnit), nb::arg("aquantity"), R"nbdoc(Returns for <aquantity> the active unit.)nbdoc")
         .def("Dump", static_cast<void (Units_UnitsDictionary::*)(const int) const>(&Units_UnitsDictionary::Dump), nb::arg("alevel"), R"nbdoc(Dumps only the sequence of quantities without the
@@ -491,7 +491,7 @@ one.)nbdoc")
         .def(nb::init<const char *const>(), nb::arg("astring"), R"nbdoc(Creates and returns a UnitSentence. The string
 <astring> describes in natural language the unit or
 the composed unit to be analysed.)nbdoc")
-        .def(nb::init<const char *const, const occ::handle<NCollection_HSequence<occ::handle<Units_Quantity>>> &>(), nb::arg("astring"), nb::arg("aquantitiessequence"), R"nbdoc(Creates and returns a UnitSentence. The string
+        .def(nb::init<const char *const, const occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> &>(), nb::arg("astring"), nb::arg("aquantitiessequence"), R"nbdoc(Creates and returns a UnitSentence. The string
 <astring> describes in natural language the unit to be
 analysed. The sequence of physical quantities
 <asequenceofquantities> describes the available
@@ -499,7 +499,7 @@ dictionary of units you want to use.)nbdoc")
         .def("Analyse", static_cast<void (Units_UnitSentence::*)()>(&Units_UnitSentence::Analyse), R"nbdoc(Analyzes the sequence of tokens created by the
 constructor to find the true significance of each
 token.)nbdoc")
-        .def("SetUnits", static_cast<void (Units_UnitSentence::*)(const occ::handle<NCollection_HSequence<occ::handle<Units_Quantity>>> &)>(&Units_UnitSentence::SetUnits), nb::arg("aquantitiessequence"), R"nbdoc(For each token which represents a unit, finds in the
+        .def("SetUnits", static_cast<void (Units_UnitSentence::*)(const occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> &)>(&Units_UnitSentence::SetUnits), nb::arg("aquantitiessequence"), R"nbdoc(For each token which represents a unit, finds in the
 sequence of physical quantities all the
 characteristics of the unit found.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_UnitSentence>();
@@ -524,7 +524,7 @@ $CSF_`aName`SiteDefaults/.aName
 $CSF_`aName`GroupDefaults/.aName
 $CSF_`aName`UserDefaults/.aName
 See : Resource_Manager for the description of this file.)nbdoc")
-        .def("QuantitiesSequence", static_cast<occ::handle<NCollection_HSequence<occ::handle<Units_Quantity>>> (Units_UnitsSystem::*)() const>(&Units_UnitsSystem::QuantitiesSequence), R"nbdoc(Returns the sequence of refined quantities.)nbdoc")
+        .def("QuantitiesSequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> (Units_UnitsSystem::*)() const>(&Units_UnitsSystem::QuantitiesSequence), R"nbdoc(Returns the sequence of refined quantities.)nbdoc")
         .def("ActiveUnitsSequence", static_cast<occ::handle<NCollection_HSequence<int>> (Units_UnitsSystem::*)() const>(&Units_UnitsSystem::ActiveUnitsSequence), R"nbdoc(Returns a sequence of integer in correspondence with
 the sequence of quantities, which indicates, for each
 redefined quantity, the index into the sequence of

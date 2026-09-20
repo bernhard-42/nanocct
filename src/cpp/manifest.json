@@ -1,10 +1,65 @@
 {
 "classes": {
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/BVH_Constants.hxx:17:1)": "BVH",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Poly_MeshPurpose.hxx:20:1)": "Poly",
+"BSplCLib": "BSplCLib",
+"BSplCLib_Cache": "BSplCLib",
+"BSplCLib_CacheParams": "BSplCLib",
+"BSplCLib_EvaluatorFunction": "BSplCLib",
+"BSplCLib_KnotDistribution": "BSplCLib",
+"BSplCLib_MultDistribution": "BSplCLib",
+"BSplSLib": "BSplSLib",
+"BSplSLib_Cache": "BSplSLib",
+"BSplSLib_EvaluatorFunction": "BSplSLib",
+"BVH_BinaryTree": "BVH",
+"BVH_BuildQueue": "BVH",
+"BVH_BuildThread": "BVH",
+"BVH_BuildTool": "BVH",
+"BVH_BuilderTransient": "BVH",
+"BVH_ObjectTransient": "BVH",
+"BVH_Properties": "BVH",
+"BVH_QuadTree": "BVH",
+"BVH_TreeBaseTransient": "BVH",
+"Bnd_BoundSortBox": "Bnd",
+"Bnd_Box": "Bnd",
+"Bnd_Box2d": "Bnd",
+"Bnd_OBB": "Bnd",
+"Bnd_Range": "Bnd",
+"Bnd_Sphere": "Bnd",
+"Bnd_Tools": "Bnd",
+"CSLib": "CSLib",
+"CSLib_Class2d": "CSLib",
+"CSLib_DerivativeStatus": "CSLib",
+"CSLib_NormalPolyDef": "CSLib",
+"CSLib_NormalStatus": "CSLib",
+"Convert_CircleToBSplineCurve": "Convert",
+"Convert_CompBezierCurves2dToBSplineCurve2d": "Convert",
+"Convert_CompBezierCurvesToBSplineCurve": "Convert",
+"Convert_CompPolynomialToPoles": "Convert",
+"Convert_ConeToBSplineSurface": "Convert",
+"Convert_ConicToBSplineCurve": "Convert",
+"Convert_CylinderToBSplineSurface": "Convert",
+"Convert_ElementarySurfaceToBSplineSurface": "Convert",
+"Convert_EllipseToBSplineCurve": "Convert",
+"Convert_GridPolynomialToPoles": "Convert",
+"Convert_HyperbolaToBSplineCurve": "Convert",
+"Convert_ParabolaToBSplineCurve": "Convert",
+"Convert_ParameterisationType": "Convert",
+"Convert_SphereToBSplineSurface": "Convert",
+"Convert_TorusToBSplineSurface": "Convert",
+"ElCLib": "ElCLib",
+"ElSLib": "ElSLib",
 "FSD_Base64": "FSD",
 "FSD_BinaryFile": "FSD",
 "FSD_CmpFile": "FSD",
 "FSD_File": "FSD",
 "FSD_FileHeader": "FSD",
+"GeomAbs_BSplKnotDistribution": "GeomAbs",
+"GeomAbs_CurveType": "GeomAbs",
+"GeomAbs_IsoType": "GeomAbs",
+"GeomAbs_JoinType": "GeomAbs",
+"GeomAbs_Shape": "GeomAbs",
+"GeomAbs_SurfaceType": "GeomAbs",
 "Message": "Message",
 "Message_Alert": "Message",
 "Message_AlertExtended": "Message",
@@ -122,8 +177,31 @@
 "OSD_ThreadPool": "OSD",
 "OSD_Timer": "OSD",
 "OSD_WhoAmI": "OSD",
+"PLib": "PLib",
+"PLib_HermitJacobi": "PLib",
+"PLib_JacobiPolynomial": "PLib",
+"PSO_Particle": "math",
 "Plugin": "Plugin",
 "Plugin_Failure": "Plugin",
+"Poly": "Poly",
+"Poly_ArrayOfNodes": "Poly",
+"Poly_ArrayOfUVNodes": "Poly",
+"Poly_CoherentLink": "Poly",
+"Poly_CoherentNode": "Poly",
+"Poly_CoherentTriPtr": "Poly",
+"Poly_CoherentTriangle": "Poly",
+"Poly_CoherentTriangulation": "Poly",
+"Poly_Connect": "Poly",
+"Poly_MakeLoops": "Poly",
+"Poly_MakeLoops2D": "Poly",
+"Poly_MakeLoops3D": "Poly",
+"Poly_MergeNodesTool": "Poly",
+"Poly_Polygon2D": "Poly",
+"Poly_Polygon3D": "Poly",
+"Poly_PolygonOnTriangulation": "Poly",
+"Poly_Triangle": "Poly",
+"Poly_Triangulation": "Poly",
+"Poly_TriangulationParameters": "Poly",
 "Precision": "Precision",
 "Quantity_Color": "Quantity",
 "Quantity_ColorRGBA": "Quantity",
@@ -218,6 +296,11 @@
 "TCollection_ExtendedString": "TCollection",
 "TCollection_HAsciiString": "TCollection",
 "TCollection_HExtendedString": "TCollection",
+"TopLoc_Datum3D": "TopLoc",
+"TopLoc_ItemLocation": "TopLoc",
+"TopLoc_Location": "TopLoc",
+"TopLoc_SListNodeOfItemLocation": "TopLoc",
+"TopLoc_SListOfItemLocation": "TopLoc",
 "Units": "Units",
 "UnitsAPI": "UnitsAPI",
 "UnitsAPI_SystemUnits": "UnitsAPI",
@@ -280,14 +363,111 @@
 "gp_Vec2d": "gp",
 "gp_VectorWithNullMagnitude": "gp",
 "gp_XY": "gp",
-"gp_XYZ": "gp"
+"gp_XYZ": "gp",
+"math": "math",
+"math_BFGS": "math",
+"math_BissecNewton": "math",
+"math_BracketMinimum": "math",
+"math_BracketedRoot": "math",
+"math_BrentMinimum": "math",
+"math_BullardGenerator": "math",
+"math_ComputeGaussPointsAndWeights": "math",
+"math_ComputeKronrodPointsAndWeights": "math",
+"math_Crout": "math",
+"math_DirectPolynomialRoots": "math",
+"math_DoubleTab": "math",
+"math_EigenValuesSearcher": "math",
+"math_FRPR": "math",
+"math_Function": "math",
+"math_FunctionAllRoots": "math",
+"math_FunctionRoot": "math",
+"math_FunctionRoots": "math",
+"math_FunctionSample": "math",
+"math_FunctionSet": "math",
+"math_FunctionSetRoot": "math",
+"math_FunctionSetWithDerivatives": "math",
+"math_FunctionWithDerivative": "math",
+"math_Gauss": "math",
+"math_GaussLeastSquare": "math",
+"math_GaussMultipleIntegration": "math",
+"math_GaussSetIntegration": "math",
+"math_GaussSingleIntegration": "math",
+"math_Householder": "math",
+"math_Jacobi": "math",
+"math_KronrodSingleIntegration": "math",
+"math_Matrix": "math",
+"math_MultipleVarFunction": "math",
+"math_MultipleVarFunctionWithGradient": "math",
+"math_MultipleVarFunctionWithHessian": "math",
+"math_NewtonFunctionRoot": "math",
+"math_NewtonFunctionSetRoot": "math",
+"math_NewtonMinimum": "math",
+"math_NotSquare": "math",
+"math_PSO": "math",
+"math_PSOParticlesPool": "math",
+"math_Powell": "math",
+"math_SVD": "math",
+"math_SingularMatrix": "math",
+"math_Status": "math",
+"math_TrigonometricEquationFunction": "math",
+"math_TrigonometricFunctionRoots": "math",
+"math_Uzawa": "math",
+"math_ValueAndWeight": "math"
 },
 "templates": {
+"NCollection_Array1<Bnd_Box>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__Bnd_Box",
+"by": "Bnd"
+},
+"NCollection_Array1<NCollection_Vec3<float>>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__NCollection_Vec3__float",
+"by": "Poly"
+},
+"NCollection_Array1<Poly_Triangle>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__Poly_Triangle",
+"by": "Poly"
+},
 "NCollection_Array1<double>": {
 "toolkit": "TKernel",
 "package": "NCollection",
 "name": "NCollection_Array1__double",
 "by": "NCollection"
+},
+"NCollection_Array1<float>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__float",
+"by": "Poly"
+},
+"NCollection_Array1<gp_Pnt2d>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__gp_Pnt2d",
+"by": "BSplCLib"
+},
+"NCollection_Array1<gp_Pnt>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__gp_Pnt",
+"by": "BSplCLib"
+},
+"NCollection_Array1<gp_Vec>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__gp_Vec",
+"by": "CSLib"
+},
+"NCollection_Array1<int>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array1__int",
+"by": "BSplCLib"
 },
 "NCollection_Array1<opencascade::handle<Standard_Persistent>>": {
 "toolkit": "TKernel",
@@ -300,6 +480,24 @@
 "package": "NCollection",
 "name": "NCollection_Array2__double",
 "by": "NCollection"
+},
+"NCollection_Array2<gp_Pnt>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array2__gp_Pnt",
+"by": "BSplSLib"
+},
+"NCollection_Array2<gp_Vec>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array2__gp_Vec",
+"by": "CSLib"
+},
+"NCollection_Array2<int>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Array2__int",
+"by": "Convert"
 },
 "NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString>": {
 "toolkit": "TKernel",
@@ -325,11 +523,59 @@
 "name": "NCollection_DoubleMap__int__TCollection_AsciiString",
 "by": "NCollection"
 },
+"NCollection_DynamicArray<gp_Pnt2d>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__gp_Pnt2d",
+"by": "CSLib"
+},
 "NCollection_DynamicArray<int>": {
 "toolkit": "TKernel",
 "package": "NCollection",
 "name": "NCollection_DynamicArray__int",
 "by": "NCollection"
+},
+"NCollection_HArray1<Bnd_Box>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray1__Bnd_Box",
+"by": "Bnd"
+},
+"NCollection_HArray1<Poly_Triangle>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray1__Poly_Triangle",
+"by": "Poly"
+},
+"NCollection_HArray1<double>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray1__double",
+"by": "BSplCLib"
+},
+"NCollection_HArray1<float>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray1__float",
+"by": "Poly"
+},
+"NCollection_HArray1<gp_Pnt2d>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray1__gp_Pnt2d",
+"by": "Poly"
+},
+"NCollection_HArray1<gp_Pnt>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray1__gp_Pnt",
+"by": "Poly"
+},
+"NCollection_HArray1<int>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray1__int",
+"by": "BSplCLib"
 },
 "NCollection_HArray1<opencascade::handle<Standard_Persistent>>": {
 "toolkit": "TKernel",
@@ -342,6 +588,12 @@
 "package": "NCollection",
 "name": "NCollection_HArray2__double",
 "by": "NCollection"
+},
+"NCollection_HArray2<int>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_HArray2__int",
+"by": "Convert"
 },
 "NCollection_HSequence<TCollection_AsciiString>": {
 "toolkit": "TKernel",
@@ -415,6 +667,24 @@
 "name": "NCollection_IndexedMap__TCollection_AsciiString",
 "by": "NCollection"
 },
+"NCollection_List<Bnd_Range>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_List__Bnd_Range",
+"by": "Bnd"
+},
+"NCollection_List<Poly_CoherentTriangulation::TwoIntegers>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_List__Poly_CoherentTriangulation_TwoIntegers",
+"by": "Poly"
+},
+"NCollection_List<Poly_MakeLoops::Link>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_List__Poly_MakeLoops_Link",
+"by": "Poly"
+},
 "NCollection_List<int>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -426,6 +696,12 @@
 "package": "NCollection",
 "name": "NCollection_List__Handle_Message_Alert",
 "by": "Message"
+},
+"NCollection_List<opencascade::handle<Poly_Triangulation>>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_List__Handle_Poly_Triangulation",
+"by": "Poly"
 },
 "NCollection_Map<int>": {
 "toolkit": "TKernel",
@@ -444,6 +720,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__TCollection_ExtendedString",
 "by": "Storage"
+},
+"NCollection_Sequence<gp_Pnt2d>": {
+"toolkit": "TKMath",
+"package": "NCollection",
+"name": "NCollection_Sequence__gp_Pnt2d",
+"by": "CSLib"
 },
 "NCollection_Sequence<int>": {
 "toolkit": "TKernel",
@@ -505,5 +787,46 @@
 "name": "NCollection_Shared__NCollection_Map__int",
 "by": "NCollection"
 }
+},
+"packages": {
+"BSplCLib": "TKMath",
+"BSplSLib": "TKMath",
+"BVH": "TKMath",
+"Bnd": "TKMath",
+"CSLib": "TKMath",
+"Convert": "TKMath",
+"ElCLib": "TKMath",
+"ElSLib": "TKMath",
+"FSD": "TKernel",
+"FlexLexer": "TKernel",
+"GeomAbs": "TKMath",
+"MathInteg": "TKMath",
+"MathLin": "TKMath",
+"MathOpt": "TKMath",
+"MathPoly": "TKMath",
+"MathRoot": "TKMath",
+"MathSys": "TKMath",
+"MathUtils": "TKMath",
+"Message": "TKernel",
+"NCollection": "TKernel",
+"OSD": "TKernel",
+"PLib": "TKMath",
+"Plugin": "TKernel",
+"Poly": "TKMath",
+"Precision": "TKernel",
+"Quantity": "TKernel",
+"Resource": "TKernel",
+"Standard": "TKernel",
+"StdFail": "TKernel",
+"Storage": "TKernel",
+"TColStd": "TKernel",
+"TCollection": "TKernel",
+"TShort": "TKernel",
+"TopLoc": "TKMath",
+"Units": "TKernel",
+"UnitsAPI": "TKernel",
+"UnitsMethods": "TKernel",
+"gp": "TKMath",
+"math": "TKMath"
 }
 }

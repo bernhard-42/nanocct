@@ -41,8 +41,13 @@ class TColStd_HPackedMapOfInteger(nanoocp.Standard.Standard_Transient):
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection
+TColStd_Array1OfInteger = nanoocp.NCollection.NCollection_Array1__int
 TColStd_Array1OfReal = nanoocp.NCollection.NCollection_Array1__double
+TColStd_Array2OfInteger = nanoocp.NCollection.NCollection_Array2__int
 TColStd_Array2OfReal = nanoocp.NCollection.NCollection_Array2__double
+TColStd_HArray1OfInteger = nanoocp.NCollection.NCollection_HArray1__int
+TColStd_HArray1OfReal = nanoocp.NCollection.NCollection_HArray1__double
+TColStd_HArray2OfInteger = nanoocp.NCollection.NCollection_HArray2__int
 TColStd_HArray2OfReal = nanoocp.NCollection.NCollection_HArray2__double
 TColStd_HSequenceOfAsciiString = nanoocp.NCollection.NCollection_HSequence__TCollection_AsciiString
 TColStd_HSequenceOfHAsciiString = nanoocp.NCollection.NCollection_HSequence__Handle_TCollection_HAsciiString

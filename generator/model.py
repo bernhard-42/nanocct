@@ -26,6 +26,7 @@ class Method:
     doc: str
     is_operator: bool = False
     skip_reason: str | None = None
+    defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
 
 
 @dataclass
@@ -52,6 +53,7 @@ class Enum:
     is_scoped: bool
     doc: str
     header: str
+    is_anonymous: bool = False   # enum { A = 1, B = 2 }; -> integer constants, no Python enum type
 
 
 @dataclass
@@ -104,5 +106,6 @@ class PackageIR:
     enums: list[Enum] = field(default_factory=list)
     functions: list[Function] = field(default_factory=list)
     typedefs: list[tuple[str, str]] = field(default_factory=list)   # (alias, target)
+    constants: list[tuple[str, str, str]] = field(default_factory=list)  # (py name, C++ expression, doc): namespace-level constexpr
     instances: dict[str, TemplateInstance] = field(default_factory=dict)  # NCollection instances used in bound signatures
     report: list[str] = field(default_factory=list)

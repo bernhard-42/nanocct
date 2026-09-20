@@ -8,6 +8,7 @@
 #include <Resource_NoSuchResource.hxx>
 #include <Resource_Unicode.hxx>
 #include <NCollection_DataMap.hxx>
+#include <NCollection_DefaultHasher.hxx>
 #include <Standard_NoSuchObject.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
@@ -110,7 +111,7 @@ If the resource does not exist, it is created.)nbdoc")
         .def_static("GetResourcePath", static_cast<void (*)(TCollection_AsciiString &, const char *const, const bool)>(&Resource_Manager::GetResourcePath), nb::arg("aPath"), nb::arg("aName"), nb::arg("isUserDefaults"), R"nbdoc(Gets the resource file full path by its name.
 If corresponding environment variable is not set
 or file doesn't exist returns empty string.)nbdoc")
-        .def("GetMap", static_cast<NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString> & (Resource_Manager::*)(bool)>(&Resource_Manager::GetMap), nb::rv_policy::reference_internal, nb::arg("theRefMap") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Returns internal Ref or User map with parameters)nbdoc")
+        .def("GetMap", static_cast<NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>> & (Resource_Manager::*)(bool)>(&Resource_Manager::GetMap), nb::rv_policy::reference_internal, nb::arg("theRefMap") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Returns internal Ref or User map with parameters)nbdoc")
         .def("IsInitialized", static_cast<bool (Resource_Manager::*)() const>(&Resource_Manager::IsInitialized), R"nbdoc(Returns true if Resource have been found)nbdoc");
     nb::implicitly_convertible<std::decay_t<const char *const>, Resource_Manager>();
     nb::borrow<nb::class_<Resource_Unicode>>(m.attr("Resource_Unicode"))

@@ -16,6 +16,10 @@ inout = [
 [skip]
 classes = [
     "Standard_Static_Assert<true>",
+    # implicitly copy/move constructible on paper, but a member (NCollection_CellFilter<...>::Cell inside an
+    # NCollection_Map) has a deleted copy constructor; nanobind instantiates the move wrapper unconditionally
+    # (std::is_move_constructible, no hook) -> hard compile error
+    "math_GlobOptMin",
 ]
 # Headers not included in the package translation unit: platform-specific internals that OCCT
 # itself only includes from .cxx files under #ifdef.
@@ -23,10 +27,13 @@ headers = [
     "OSD_WNT.hxx",          # Windows only (includes <windows.h>)
 ]
 # Members declared in a header but never defined in the OCCT libraries (link errors otherwise).
-# "Class::Name" skips every overload, "Class::Name(<param types>)" one overload.
+# "Class::Name" skips every overload, "Class::Name(<param types>)" one overload. Methods without any
+# defined overload are detected automatically (generator/symbols.py, nm on the toolkit library); only
+# overload-specific cases need an entry here.
 methods = [
     "TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const)",
-    "OSD_Path::LocateExecFile",
+    "BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &)",
+    "BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &)",
 ]
 
 # NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical

@@ -74,6 +74,7 @@
 #include <Standard_VersionInfo.hxx>
 #include <Standard_WarningsDisable.hxx>
 #include <Standard_WarningsRestore.hxx>
+#include <NCollection_DefaultHasher.hxx>
 #include <NCollection_IndexedDataMap.hxx>
 #include <NCollection_List.hxx>
 #include <OSD_Exception_ACCESS_VIOLATION.hxx>
@@ -343,7 +344,7 @@ and returns true if it was in signaling state.
         .def_rw("myStartPosition", &Standard_DumpValue::myStartPosition, R"nbdoc(position of the value first char in the whole stream)nbdoc");
     nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump"))
         .def(nb::init<>())
-        .def_static("SplitJson", static_cast<bool (*)(const TCollection_AsciiString &, NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue> &)>(&Standard_Dump::SplitJson), nb::arg("theStreamStr"), nb::arg("theKeyToValues"), R"nbdoc(Converts stream into map of values.
+        .def_static("SplitJson", static_cast<bool (*)(const TCollection_AsciiString &, NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue, NCollection_DefaultHasher<TCollection_AsciiString>> &)>(&Standard_Dump::SplitJson), nb::arg("theStreamStr"), nb::arg("theKeyToValues"), R"nbdoc(Converts stream into map of values.
 
 The one level stream example: 'key_1: value_1, key_2: value_2'
 In output: values contain 'key_1: value_1' and 'key_2: value_2'.
@@ -356,7 +357,7 @@ might be processed later using the same method.
 @param theStreamStr stream value
 @param[out] theKeyToValues  container of split values. It contains key to value and position
 of the value in the stream text)nbdoc")
-        .def_static("HierarchicalValueIndices", static_cast<NCollection_List<int> (*)(const NCollection_IndexedDataMap<TCollection_AsciiString, TCollection_AsciiString> &)>(&Standard_Dump::HierarchicalValueIndices), nb::arg("theValues"), R"nbdoc(Returns container of indices in values, that has hierarchical value)nbdoc")
+        .def_static("HierarchicalValueIndices", static_cast<NCollection_List<int> (*)(const NCollection_IndexedDataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>> &)>(&Standard_Dump::HierarchicalValueIndices), nb::arg("theValues"), R"nbdoc(Returns container of indices in values, that has hierarchical value)nbdoc")
         .def_static("HasChildKey", static_cast<bool (*)(const TCollection_AsciiString &)>(&Standard_Dump::HasChildKey), nb::arg("theSourceValue"), R"nbdoc(Returns true if the value has bracket key)nbdoc")
         .def_static("JsonKeyToString", static_cast<const char * (*)(const Standard_JsonKey)>(&Standard_Dump::JsonKeyToString), nb::arg("theKey"), R"nbdoc(Returns key value for enum type)nbdoc")
         .def_static("JsonKeyLength", static_cast<int (*)(const Standard_JsonKey)>(&Standard_Dump::JsonKeyLength), nb::arg("theKey"), R"nbdoc(Returns length value for enum type)nbdoc")

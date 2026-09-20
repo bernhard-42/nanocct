@@ -318,7 +318,7 @@ references without any semantic values.)nbdoc")
 Warning
 Nothing is done if there is no root object whose
 name is aName in this set of data.)nbdoc")
-        .def("Roots", static_cast<occ::handle<NCollection_HSequence<occ::handle<Storage_Root>>> (Storage_Data::*)() const>(&Storage_Data::Roots), R"nbdoc(Returns the roots of this set of data in a sequence.
+        .def("Roots", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Storage_Root>>> (Storage_Data::*)() const>(&Storage_Data::Roots), R"nbdoc(Returns the roots of this set of data in a sequence.
 -   When preparing a storage operation, the
 sequence contains the roots inserted into this
 set of data with the function AddRoot.
@@ -505,7 +505,7 @@ the number of persistent objects readed)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Storage_TypedCallBack::*)() const>(&Storage_TypedCallBack::DynamicType));
     nb::borrow<nb::class_<Storage_InternalData>>(m.attr("Storage_InternalData"))
         .def(nb::new_([]() { return opencascade::handle<Storage_InternalData>(new Storage_InternalData()); }))
-        .def("ReadArray", static_cast<occ::handle<NCollection_HArray1<occ::handle<Standard_Persistent>>> & (Storage_InternalData::*)()>(&Storage_InternalData::ReadArray), nb::rv_policy::reference_internal)
+        .def("ReadArray", static_cast<occ::handle<NCollection_HArray1<opencascade::handle<Standard_Persistent>>> & (Storage_InternalData::*)()>(&Storage_InternalData::ReadArray), nb::rv_policy::reference_internal)
         .def("Clear", static_cast<void (Storage_InternalData::*)()>(&Storage_InternalData::Clear))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Storage_InternalData::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Storage_InternalData::get_type_descriptor))
@@ -516,7 +516,7 @@ the number of persistent objects readed)nbdoc")
         .def("NumberOfRoots", static_cast<int (Storage_RootData::*)() const>(&Storage_RootData::NumberOfRoots), R"nbdoc(returns the number of roots.)nbdoc")
         .def("AddRoot", static_cast<void (Storage_RootData::*)(const occ::handle<Storage_Root> &)>(&Storage_RootData::AddRoot), nb::arg("aRoot"), R"nbdoc(add a root to <me>. If a root with same name is present, it
 will be replaced by <aRoot>.)nbdoc")
-        .def("Roots", static_cast<occ::handle<NCollection_HSequence<occ::handle<Storage_Root>>> (Storage_RootData::*)() const>(&Storage_RootData::Roots))
+        .def("Roots", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Storage_Root>>> (Storage_RootData::*)() const>(&Storage_RootData::Roots))
         .def("Find", static_cast<occ::handle<Storage_Root> (Storage_RootData::*)(const TCollection_AsciiString &) const>(&Storage_RootData::Find), nb::arg("aName"), R"nbdoc(find a root with name <aName>.)nbdoc")
         .def("IsRoot", static_cast<bool (Storage_RootData::*)(const TCollection_AsciiString &) const>(&Storage_RootData::IsRoot), nb::arg("aName"), R"nbdoc(returns true if <me> contains a root named <aName>)nbdoc")
         .def("RemoveRoot", static_cast<void (Storage_RootData::*)(const TCollection_AsciiString &)>(&Storage_RootData::RemoveRoot), nb::arg("aName"), R"nbdoc(remove the root named <aName>.)nbdoc")

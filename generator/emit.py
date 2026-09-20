@@ -206,6 +206,8 @@ class Emitter:
         return None
 
     def _enum(self, e: Enum, scope: str) -> list[str]:
+        if e.is_anonymous:      # C++ integer constants: enum { X = 1 };  -> scope.X = 1
+            return [f'{scope}.attr("{py}") = nb::int_(static_cast<long long>({cpp}));' for py, cpp in e.values]
         d = _cpp_doc(e.doc)
         head = f'nb::enum_<{e.name}>({scope}, "{e.py_name}"'
         if d is not None:
@@ -327,6 +329,9 @@ class Emitter:
 
         declare: list[str] = []
         define: list[str] = []
+        for py, cpp, doc in ir.constants:
+            declare.append(f'    m.attr("{py}") = nb::cast({cpp});')
+            self._note_types(cpp)
         for e in ir.enums:
             declare += ["    " + l for l in self._enum(e, "m")]
         for c in classes:
@@ -334,7 +339,11 @@ class Emitter:
             if c.is_exception:
                 declare.append(self._exception(c))
                 continue
-            bases = "".join(f", {b}" for b in c.bases)
+            # nanobind takes one base and reuses the derived pointer for it, so only the first (offset-0) base
+            # can be declared; further bases are reported (their members are not inherited in Python)
+            for extra in c.bases[1:]:
+                self.report.append(f"{c.name}: additional base {extra} not declared (nanobind: single inheritance, offset-0 base only)")
+            bases = "".join(f", {b}" for b in c.bases[:1])
             d = _cpp_doc(c.doc)
             doc_arg = f", {d}" if d is not None else ""
             declare.append(f'    {{ nb::class_<{c.name}{bases}> cls(m, "{c.py_name}"{doc_arg});')
@@ -398,6 +407,7 @@ class Emitter:
             '#include "nanoocp_common.h"',
             *includes,
             "",
+
             f"void nanoocp_declare_{ir.name}(nb::module_ &m) {{",
             *declare,
             "}",

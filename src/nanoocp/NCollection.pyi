@@ -598,11 +598,14 @@ from collections.abc import Iterator
 import enum
 from typing import overload
 
+import nanoocp.Bnd
 import nanoocp.Message
+import nanoocp.Poly
 import nanoocp.Standard
 import nanoocp.Storage
 import nanoocp.TCollection
 import nanoocp.Units
+import nanoocp.gp
 
 
 class NCollection_CellFilter_Action(enum.IntEnum):
@@ -1152,3 +1155,652 @@ class NCollection_HSequence__Handle_TCollection_HExtendedString(NCollection_HSeq
 class NCollection_IndexedMap__Message_MetricType(NCollection_IndexedMap[nanoocp.Message.Message_MetricType]): ...
 class NCollection_List__Handle_Message_Alert(NCollection_List[nanoocp.Message.Message_Alert]): ...
 class NCollection_Sequence__Handle_Message_Printer(NCollection_Sequence[nanoocp.Message.Message_Printer]): ...
+class NCollection_Array1__gp_Pnt2d(NCollection_Array1[nanoocp.gp.gp_Pnt2d]): ...
+class NCollection_Array1__gp_Pnt(NCollection_Array1[nanoocp.gp.gp_Pnt]): ...
+class NCollection_Array1__int(NCollection_Array1[int]): ...
+class NCollection_HArray1__double(NCollection_HArray1[float]): ...
+class NCollection_HArray1__int(NCollection_HArray1[int]): ...
+class NCollection_Array2__gp_Pnt(NCollection_Array2[nanoocp.gp.gp_Pnt]): ...
+class NCollection_Array1__NCollection_Vec3__float:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__NCollection_Vec3__float) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: "NCollection_Vec3<float>") -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__NCollection_Vec3__float) -> NCollection_Array1__NCollection_Vec3__float:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__NCollection_Vec3__float) -> NCollection_Array1__NCollection_Vec3__float:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> "NCollection_Vec3<float>":
+        """@return first element"""
+
+    def Last(self) -> "NCollection_Vec3<float>":
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> "NCollection_Vec3<float>":
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> "NCollection_Vec3<float>":
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: "NCollection_Vec3<float>") -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> "NCollection_Vec3<float>":
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> "NCollection_Vec3<float>":
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: "NCollection_Vec3<float>") -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["NCollection_Vec3<float>"]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+    def ChangeFirst(self) -> "NCollection_Vec3<float>":
+        """@return first element"""
+
+    def ChangeLast(self) -> "NCollection_Vec3<float>":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "NCollection_Vec3<float>":
+        """Variable value access"""
+
+    def ChangeAt(self, theIndex: int) -> "NCollection_Vec3<float>":
+        """
+        0-based checked mutable access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+class NCollection_Array1__Poly_Triangle(NCollection_Array1[nanoocp.Poly.Poly_Triangle]): ...
+class NCollection_HArray1__Poly_Triangle(NCollection_HArray1[nanoocp.Poly.Poly_Triangle]): ...
+class NCollection_Array1__float:
+    """
+    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
+    The range of the index is user defined.
+    An array1 can be constructed with a "C array".
+    This functionality is useful to call methods expecting an Array1.
+    It allows to carry the bounds inside the arrays.
+
+    Examples:
+    @code
+    Item tab[100]; // an example with a C array
+    NCollection_Array1<Item> ttab (tab[0], 1, 100);
+
+    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
+    @endcode
+    If you want to reindex an array from 1 to Length do:
+    @code
+    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
+    @endcode
+    Warning: Programs client of such a class must be independent of the range of the first element.
+    Then, a C++ for loop must be written like this
+    @code
+    for (i = A.Lower(); i <= A.Upper(); i++)
+    @endcode
+
+    Zero-based (size_t) construction mode:
+    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
+    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
+    preferred access path - they address elements directly without any offset subtraction.
+    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
+    @code
+    int aBuffer[100];
+    NCollection_Array1<int> aZero(100);      // allocates, lower=0
+    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
+    for (size_t i = 0; i < aWrap.Size(); ++i)
+    aWrap.At(i) = static_cast<int>(i);
+    @endcode
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__float) -> None:
+        """
+        Zero-based constructor from first element reference.
+        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
+        Otherwise allocates own storage of theSize elements.
+        """
+
+    def Init(self, theValue: float) -> None:
+        """Initialise the items with theValue"""
+
+    def Size(self) -> int:
+        """Size query."""
+
+    def Length(self) -> int:
+        """Length query (legacy int-returning API)."""
+
+    def IsEmpty(self) -> bool:
+        """Return TRUE if array has zero length."""
+
+    def Lower(self) -> int:
+        """Lower bound"""
+
+    def Upper(self) -> int:
+        """Upper bound"""
+
+    def IsDeletable(self) -> bool: ...
+
+    def Assign(self, theOther: NCollection_Array1__float) -> NCollection_Array1__float:
+        """
+        Replaces this array by a copy of theOther array.
+        Bounds and length are copied from theOther.
+        When this array wraps an external (non-owned) buffer:
+        - if theOther has the same length, values are copied in place into the
+        external buffer and ownership is unchanged;
+        - if theOther has a different length, this array detaches from the
+        external buffer and allocates a fresh owned buffer.
+        Use CopyValues() to preserve this array's bounds.
+        """
+
+    def CopyValues(self, theOther: NCollection_Array1__float) -> NCollection_Array1__float:
+        """
+        Copies values from theOther array without changing this array bounds.
+        This array should be pre-allocated and have the same length as theOther;
+        otherwise exception Standard_DimensionMismatch is thrown.
+        """
+
+    def First(self) -> float:
+        """@return first element"""
+
+    def Last(self) -> float:
+        """@return last element"""
+
+    def Value(self, theIndex: int) -> float:
+        """Constant value access"""
+
+    def At(self, theIndex: int) -> float:
+        """
+        0-based checked access independent of Lower()/Upper().
+        @param[in] theIndex 0-based index in [0, Size()-1]
+        """
+
+    def SetValue(self, theIndex: int, theItem: float) -> None:
+        """Set value"""
+
+    def UpdateLowerBound(self, theLower: int) -> None:
+        """Changes the lowest bound. Do not move data"""
+
+    def UpdateUpperBound(self, theUpper: int) -> None:
+        """Changes the upper bound. Do not move data"""
+
+    @overload
+    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
+
+    @overload
+    def Resize(self, theSize: int, theToCopyData: bool) -> None:
+        """
+        Resizes the array to specified bounds.
+        No re-allocation will be done if length of array does not change,
+        but existing values will not be discarded if theToCopyData set to FALSE.
+        @param theLower new lower bound of array
+        @param theUpper new upper bound of array
+        @param theToCopyData flag to copy existing data into new array
+        """
+
+    def __call__(self, theIndex: int) -> float:
+        """operator() - alias to Value"""
+
+    def __getitem__(self, theIndex: int) -> float:
+        """operator[] - alias to Value"""
+
+    def __setitem__(self, theIndex: int, theItem: float) -> None:
+        """Python addition: alias to SetValue (OCCT index)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator[float]:
+        """Python addition: iterates over the values from Lower() to Upper()."""
+
+class NCollection_HArray1__float(NCollection_Array1__float):
+    """
+    Template class for Handle-managed 1D arrays.
+    Inherits from both NCollection_Array1<TheItemType> and Standard_Transient,
+    providing reference-counted array functionality.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None: ...
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int, theValue: float) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_Array1__float) -> None:
+        """Default constructor."""
+
+    def Array1(self) -> NCollection_Array1__float:
+        """Returns const reference to the underlying array."""
+
+    def ChangeArray1(self) -> NCollection_Array1__float:
+        """Returns mutable reference to the underlying array."""
+
+    def GetRefCount(self) -> int:
+        """Get the reference counter of this object (Standard_Transient)."""
+
+    def DynamicType(self) -> nanoocp.Standard.Standard_Type:
+        """Returns a type descriptor about this object (Standard_Transient)."""
+
+    def IsInstance(self, theTypeName: str) -> bool:
+        """Standard_Transient::IsInstance"""
+
+    def IsKind(self, theTypeName: str) -> bool:
+        """Standard_Transient::IsKind"""
+
+    @staticmethod
+    def get_type_name() -> str: ...
+
+    @staticmethod
+    def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
+
+class NCollection_HArray1__gp_Pnt2d(NCollection_HArray1[nanoocp.gp.gp_Pnt2d]): ...
+class NCollection_HArray1__gp_Pnt(NCollection_HArray1[nanoocp.gp.gp_Pnt]): ...
+class NCollection_List__Poly_CoherentTriangulation_TwoIntegers:
+    """
+    Purpose:      Simple list to link  items together keeping the first
+    and the last one.
+    Inherits BaseList, adding the data item to each node.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theAllocator: NCollection_BaseAllocator | None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None:
+        """Empty constructor."""
+
+    class Iterator:
+        """
+        Purpose:     This Iterator class iterates on BaseList of TListNode and is
+        instantiated in List/Set/Queue/Stack
+        Remark:      TListIterator is internal class
+        """
+
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theList: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None:
+            """Empty constructor - for later Init"""
+
+        def Initialize(self, theList: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None: ...
+
+        def More(self) -> bool:
+            """Check end"""
+
+        def Next(self) -> None:
+            """Make step"""
+
+        def Value(self) -> "Poly_CoherentTriangulation::TwoIntegers":
+            """Constant Value access"""
+
+        def ChangeValue(self) -> "Poly_CoherentTriangulation::TwoIntegers":
+            """Non-const Value access"""
+
+    def Extent(self) -> int: ...
+
+    def Length(self) -> int:
+        """
+        Length - number of nodes (legacy int-returning API, synonym of Extent()).
+        """
+
+    def Size(self) -> int:
+        """Size - number of nodes."""
+
+    def IsEmpty(self) -> bool: ...
+
+    def Allocator(self) -> NCollection_BaseAllocator:
+        """Returns attached allocator"""
+
+    def Assign(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> NCollection_List__Poly_CoherentTriangulation_TwoIntegers:
+        """
+        Replace this list by the items of another list (theOther parameter).
+        This method does not change the internal allocator.
+        """
+
+    def Clear(self, theAllocator: NCollection_BaseAllocator | None = None) -> None:
+        """Clear this list"""
+
+    def First(self) -> "Poly_CoherentTriangulation::TwoIntegers":
+        """First item"""
+
+    def Last(self) -> "Poly_CoherentTriangulation::TwoIntegers":
+        """Last item"""
+
+    @overload
+    def Append(self, theItem: "Poly_CoherentTriangulation::TwoIntegers", theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None: ...
+
+    @overload
+    def Append(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None: ...
+
+    @overload
+    def Append(self, theItem: "Poly_CoherentTriangulation::TwoIntegers") -> "Poly_CoherentTriangulation::TwoIntegers":
+        """Append one item at the end"""
+
+    @overload
+    def Prepend(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None: ...
+
+    @overload
+    def Prepend(self, theItem: "Poly_CoherentTriangulation::TwoIntegers") -> "Poly_CoherentTriangulation::TwoIntegers":
+        """Prepend one item at the beginning"""
+
+    def RemoveFirst(self) -> None:
+        """RemoveFirst item"""
+
+    def Remove(self, theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None:
+        """
+        Remove item pointed by iterator theIter;
+        theIter is then set to the next item
+        """
+
+    @overload
+    def InsertBefore(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers, theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None: ...
+
+    @overload
+    def InsertBefore(self, theItem: "Poly_CoherentTriangulation::TwoIntegers", theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> "Poly_CoherentTriangulation::TwoIntegers":
+        """InsertBefore"""
+
+    @overload
+    def InsertAfter(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers, theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None: ...
+
+    @overload
+    def InsertAfter(self, theItem: "Poly_CoherentTriangulation::TwoIntegers", theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> "Poly_CoherentTriangulation::TwoIntegers":
+        """InsertAfter"""
+
+    def Reverse(self) -> None:
+        """Reverse the list"""
+
+    def Exchange(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None:
+        """
+        Exchange the content of two lists without re-allocations.
+        Swaps all internal state including allocators, ensuring correct
+        deallocation. Existing iterators remain valid but will point to
+        the other list's elements.
+        """
+
+    def __len__(self) -> int:
+        """Python addition: alias to Extent."""
+
+    def __iter__(self) -> Iterator["Poly_CoherentTriangulation::TwoIntegers"]:
+        """Python addition: iterates over the values."""
+
+class NCollection_List__Poly_MakeLoops_Link:
+    """
+    Purpose:      Simple list to link  items together keeping the first
+    and the last one.
+    Inherits BaseList, adding the data item to each node.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theAllocator: NCollection_BaseAllocator | None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None:
+        """Empty constructor."""
+
+    class Iterator:
+        """
+        Purpose:     This Iterator class iterates on BaseList of TListNode and is
+        instantiated in List/Set/Queue/Stack
+        Remark:      TListIterator is internal class
+        """
+
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theList: NCollection_List__Poly_MakeLoops_Link) -> None:
+            """Empty constructor - for later Init"""
+
+        def Initialize(self, theList: NCollection_List__Poly_MakeLoops_Link) -> None: ...
+
+        def More(self) -> bool:
+            """Check end"""
+
+        def Next(self) -> None:
+            """Make step"""
+
+        def Value(self) -> "Poly_MakeLoops::Link":
+            """Constant Value access"""
+
+        def ChangeValue(self) -> "Poly_MakeLoops::Link":
+            """Non-const Value access"""
+
+    def Extent(self) -> int: ...
+
+    def Length(self) -> int:
+        """
+        Length - number of nodes (legacy int-returning API, synonym of Extent()).
+        """
+
+    def Size(self) -> int:
+        """Size - number of nodes."""
+
+    def IsEmpty(self) -> bool: ...
+
+    def Allocator(self) -> NCollection_BaseAllocator:
+        """Returns attached allocator"""
+
+    def Assign(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> NCollection_List__Poly_MakeLoops_Link:
+        """
+        Replace this list by the items of another list (theOther parameter).
+        This method does not change the internal allocator.
+        """
+
+    def Clear(self, theAllocator: NCollection_BaseAllocator | None = None) -> None:
+        """Clear this list"""
+
+    def First(self) -> "Poly_MakeLoops::Link":
+        """First item"""
+
+    def Last(self) -> "Poly_MakeLoops::Link":
+        """Last item"""
+
+    @overload
+    def Append(self, theItem: "Poly_MakeLoops::Link", theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
+
+    @overload
+    def Append(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None: ...
+
+    @overload
+    def Append(self, theItem: "Poly_MakeLoops::Link") -> "Poly_MakeLoops::Link":
+        """Append one item at the end"""
+
+    @overload
+    def Prepend(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None: ...
+
+    @overload
+    def Prepend(self, theItem: "Poly_MakeLoops::Link") -> "Poly_MakeLoops::Link":
+        """Prepend one item at the beginning"""
+
+    def RemoveFirst(self) -> None:
+        """RemoveFirst item"""
+
+    @overload
+    def Remove(self, theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
+
+    @overload
+    def Remove(self, theObject: "Poly_MakeLoops::Link") -> bool:
+        """
+        Remove item pointed by iterator theIter;
+        theIter is then set to the next item
+        """
+
+    @overload
+    def InsertBefore(self, theOther: NCollection_List__Poly_MakeLoops_Link, theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
+
+    @overload
+    def InsertBefore(self, theItem: "Poly_MakeLoops::Link", theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> "Poly_MakeLoops::Link":
+        """InsertBefore"""
+
+    @overload
+    def InsertAfter(self, theOther: NCollection_List__Poly_MakeLoops_Link, theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
+
+    @overload
+    def InsertAfter(self, theItem: "Poly_MakeLoops::Link", theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> "Poly_MakeLoops::Link":
+        """InsertAfter"""
+
+    def Reverse(self) -> None:
+        """Reverse the list"""
+
+    def Exchange(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None:
+        """
+        Exchange the content of two lists without re-allocations.
+        Swaps all internal state including allocators, ensuring correct
+        deallocation. Existing iterators remain valid but will point to
+        the other list's elements.
+        """
+
+    def __len__(self) -> int:
+        """Python addition: alias to Extent."""
+
+    def __iter__(self) -> Iterator["Poly_MakeLoops::Link"]:
+        """Python addition: iterates over the values."""
+
+    def Contains(self, theObject: "Poly_MakeLoops::Link") -> bool:
+        """Return true if object is stored in the list."""
+
+    def __contains__(self, theObject: "Poly_MakeLoops::Link") -> bool:
+        """Python addition: alias to Contains."""
+
+class NCollection_List__Handle_Poly_Triangulation(NCollection_List[nanoocp.Poly.Poly_Triangulation]): ...
+class NCollection_Array1__gp_Vec(NCollection_Array1[nanoocp.gp.gp_Vec]): ...
+class NCollection_Array2__gp_Vec(NCollection_Array2[nanoocp.gp.gp_Vec]): ...
+class NCollection_DynamicArray__gp_Pnt2d(NCollection_DynamicArray[nanoocp.gp.gp_Pnt2d]): ...
+class NCollection_Sequence__gp_Pnt2d(NCollection_Sequence[nanoocp.gp.gp_Pnt2d]): ...
+class NCollection_Array2__int(NCollection_Array2[int]): ...
+class NCollection_HArray2__int(NCollection_HArray2[int]): ...
+class NCollection_Array1__Bnd_Box(NCollection_Array1[nanoocp.Bnd.Bnd_Box]): ...
+class NCollection_HArray1__Bnd_Box(NCollection_HArray1[nanoocp.Bnd.Bnd_Box]): ...
+class NCollection_List__Bnd_Range(NCollection_List[nanoocp.Bnd.Bnd_Range]): ...
