@@ -3,6 +3,7 @@
 import enum
 from typing import overload
 
+import nanoocp.BVH
 import nanoocp.Standard
 import nanoocp.TCollection
 
@@ -1089,7 +1090,7 @@ class Quantity_Color:
         """Creates the color from enumeration value."""
 
     @overload
-    def __init__(self, theRgb: "NCollection_Vec3<float>") -> None:
+    def __init__(self, theRgb: nanoocp.BVH.BVH_Vec3f) -> None:
         """Define color from linear RGB values."""
 
     @overload
@@ -1115,7 +1116,7 @@ class Quantity_Color:
         Throws exception if values are out of range.
         """
 
-    def Rgb(self) -> "NCollection_Vec3<float>":
+    def Rgb(self) -> nanoocp.BVH.BVH_Vec3f:
         """Return the color as vector of 3 float elements."""
 
     def Values(self, theType: Quantity_TypeOfColor) -> tuple[float, float, float]:
@@ -1260,38 +1261,38 @@ class Quantity_Color:
         """Returns hex sRGB string in format "#FFAAFF"."""
 
     @staticmethod
-    def Convert_sRGB_To_HLS(theRgb: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_sRGB_To_HLS(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts sRGB components into HLS ones."""
 
     @staticmethod
-    def Convert_HLS_To_sRGB(theHls: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_HLS_To_sRGB(theHls: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts HLS components into RGB ones."""
 
     @staticmethod
-    def Convert_LinearRGB_To_HLS(theRgb: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_LinearRGB_To_HLS(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts Linear RGB components into HLS ones."""
 
     @staticmethod
-    def Convert_HLS_To_LinearRGB(theHls: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_HLS_To_LinearRGB(theHls: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts HLS components into linear RGB ones."""
 
     @staticmethod
-    def Convert_LinearRGB_To_Lab(theRgb: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_LinearRGB_To_Lab(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts linear RGB components into CIE Lab ones."""
 
     @staticmethod
-    def Convert_Lab_To_Lch(theLab: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_Lab_To_Lch(theLab: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts CIE Lab components into CIE Lch ones."""
 
     @staticmethod
-    def Convert_Lab_To_LinearRGB(theLab: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_Lab_To_LinearRGB(theLab: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """
         Converts CIE Lab components into linear RGB ones.
         Note that the resulting values may be out of the valid range for RGB.
         """
 
     @staticmethod
-    def Convert_Lch_To_Lab(theLch: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_Lch_To_Lab(theLch: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """Converts CIE Lch components into CIE Lab ones."""
 
     @staticmethod
@@ -1354,7 +1355,7 @@ class Quantity_Color:
 
     @overload
     @staticmethod
-    def Convert_LinearRGB_To_sRGB_approx22(theRGB: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_LinearRGB_To_sRGB_approx22(theRGB: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """
         Convert linear RGB components into sRGB using approximated uniform gamma coefficient 2.2
         """
@@ -1368,7 +1369,7 @@ class Quantity_Color:
 
     @overload
     @staticmethod
-    def Convert_sRGB_To_LinearRGB_approx22(theRGB: "NCollection_Vec3<float>") -> "NCollection_Vec3<float>":
+    def Convert_sRGB_To_LinearRGB_approx22(theRGB: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
         """
         Convert sRGB components into linear RGB using approximated uniform gamma coefficient 2.2
         """
@@ -1405,7 +1406,7 @@ class Quantity_ColorRGBA:
         """Creates the color with specified RGB value."""
 
     @overload
-    def __init__(self, theRgba: "NCollection_Vec4<float>") -> None:
+    def __init__(self, theRgba: nanoocp.BVH.BVH_Vec4f) -> None:
         """Creates the color from RGBA vector."""
 
     @overload
@@ -1479,11 +1480,11 @@ class Quantity_ColorRGBA:
         """Returns hex sRGBA string in format "#RRGGBBAA"."""
 
     @staticmethod
-    def Convert_LinearRGB_To_sRGB(theRGB: "NCollection_Vec4<float>") -> "NCollection_Vec4<float>":
+    def Convert_LinearRGB_To_sRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
         """Convert linear RGB components into sRGB using OpenGL specs formula."""
 
     @staticmethod
-    def Convert_sRGB_To_LinearRGB(theRGB: "NCollection_Vec4<float>") -> "NCollection_Vec4<float>":
+    def Convert_sRGB_To_LinearRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
         """Convert sRGB components into linear RGB using OpenGL specs formula."""
 
 class Quantity_Date:

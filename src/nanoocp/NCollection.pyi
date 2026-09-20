@@ -598,6 +598,7 @@ from collections.abc import Iterator
 import enum
 from typing import overload
 
+import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Message
 import nanoocp.Poly
@@ -1090,6 +1091,135 @@ class NCollection_SparseArrayBase:
     def HasValue(self, theIndex: int) -> bool:
         """Check whether the value at given index is set"""
 
+class NCollection_String:
+    """
+    This template class represent constant UTF-* string.
+    String stored in memory continuously, always NULL-terminated
+    and can be used as standard C-string using ToCString() method.
+
+    Notice that changing the string is not allowed
+    and any modifications should produce new string.
+
+    In comments to this class, terms "Unicode symbol" is used as
+    synonym of "Unicode code point".
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Initialize empty string."""
+
+    @overload
+    def __init__(self, theCopy: NCollection_String) -> None:
+        """
+        Copy constructor.
+        @param theCopy string to copy.
+        """
+
+    @overload
+    def __init__(self, theCopyUtf8: str, theLength: int = -1) -> None:
+        """
+        Copy constructor from UTF-8 string.
+        @param theCopyUtf8 UTF-8 string to copy
+        @param theLength   optional length limit in Unicode symbols (NOT bytes!)
+        The string is copied till NULL symbol or, if theLength >0,
+        till either NULL or theLength-th symbol (which comes first).
+        """
+
+    def Iterator(self) -> "NCollection_UtfIterator<char>": ...
+
+    def Size(self) -> int:
+        """
+        @return the size of the buffer in bytes, excluding NULL-termination symbol
+        """
+
+    def Length(self) -> int:
+        """@return the length of the string in Unicode symbols"""
+
+    def GetChar(self, theCharIndex: int) -> "char32_t":
+        """
+        Retrieve Unicode symbol at specified position.
+        Warning! This is a slow access. Iterator should be used for consecutive parsing.
+        @param theCharIndex the index of the symbol, should be lesser than Length()
+        @return the Unicode symbol value
+        """
+
+    def GetCharBuffer(self, theCharIndex: int) -> str:
+        """
+        Retrieve string buffer at specified position.
+        Warning! This is a slow access. Iterator should be used for consecutive parsing.
+        @param theCharIndex the index of the symbol, should be less than Length()
+        (first symbol of the string has index 0)
+        @return the pointer to the symbol
+        """
+
+    def __getitem__(self, theCharIndex: int) -> "char32_t":
+        """
+        Retrieve Unicode symbol at specified position.
+        Warning! This is a slow access. Iterator should be used for consecutive parsing.
+        """
+
+    def FromLocale(self, theString: str, theLength: int = -1) -> None:
+        """
+        Copy from multibyte string in current system locale.
+        @param theString multibyte string
+        @param theLength the length limit in Unicode symbols
+        The string is copied till NULL symbol or, if theLength >0,
+        till either NULL or theLength-th symbol (which comes first).
+        """
+
+    def IsEqual(self, theCompare: NCollection_String) -> bool:
+        """Compares this string with another one."""
+
+    def SubString(self, theStart: int, theEnd: int) -> NCollection_String:
+        """
+        Returns the substring.
+        @param theStart start index (inclusive) of subString
+        @param theEnd   end index   (exclusive) of subString
+        @return the substring
+        """
+
+    def ToCString(self) -> str:
+        """
+        Returns NULL-terminated Unicode string.
+        Should not be modified or deleted!
+        @return (const Type* ) pointer to string
+        """
+
+    def ToUtf8(self) -> NCollection_String:
+        """@return copy in UTF-8 format"""
+
+    def ToUtf16(self) -> "NCollection_UtfString<char16_t>":
+        """@return copy in UTF-16 format"""
+
+    def ToUtf32(self) -> "NCollection_UtfString<char32_t>":
+        """@return copy in UTF-32 format"""
+
+    def ToUtfWide(self) -> "NCollection_UtfString<wchar_t>":
+        """@return copy in wide format (UTF-16 on Windows and UTF-32 on Linux)"""
+
+    def IsEmpty(self) -> bool:
+        """@return true if string is empty"""
+
+    def Clear(self) -> None:
+        """Zero string."""
+
+    def Assign(self, theOther: NCollection_String) -> NCollection_String:
+        """
+        @name assign operators
+        Copy from another string.
+        """
+
+    def Swap(self, theOther: NCollection_String) -> None:
+        """Exchange the data of two strings (without reallocating memory)."""
+
+    def __iadd__(self, theAppend: NCollection_String) -> NCollection_String:
+        """Join strings."""
+
+    def __eq__(self, theCompare: NCollection_String) -> bool:
+        """@name compare operators"""
+
+    def __ne__(self, theCompare: NCollection_String) -> bool: ...
+
 class NCollection_WinHeapAllocator(NCollection_BaseAllocator):
     """
     This memory allocator creates dedicated heap for allocations.
@@ -1161,169 +1291,7 @@ class NCollection_Array1__int(NCollection_Array1[int]): ...
 class NCollection_HArray1__double(NCollection_HArray1[float]): ...
 class NCollection_HArray1__int(NCollection_HArray1[int]): ...
 class NCollection_Array2__gp_Pnt(NCollection_Array2[nanoocp.gp.gp_Pnt]): ...
-class NCollection_Array1__NCollection_Vec3__float:
-    """
-    The class NCollection_Array1 represents unidimensional arrays of fixed size known at run time.
-    The range of the index is user defined.
-    An array1 can be constructed with a "C array".
-    This functionality is useful to call methods expecting an Array1.
-    It allows to carry the bounds inside the arrays.
-
-    Examples:
-    @code
-    Item tab[100]; // an example with a C array
-    NCollection_Array1<Item> ttab (tab[0], 1, 100);
-
-    NCollection_Array1<Item> tttab (ttab(10), 10, 20); // a slice of ttab
-    @endcode
-    If you want to reindex an array from 1 to Length do:
-    @code
-    NCollection_Array1<Item> tab1 (tab (tab.Lower()), 1, tab.Length());
-    @endcode
-    Warning: Programs client of such a class must be independent of the range of the first element.
-    Then, a C++ for loop must be written like this
-    @code
-    for (i = A.Lower(); i <= A.Upper(); i++)
-    @endcode
-
-    Zero-based (size_t) construction mode:
-    Use NCollection_Array1(size_t theSize) or NCollection_Array1(pointer, size_t) to create
-    a zero-based array (Lower()==0). In this mode At()/ChangeAt() and STL iterators are the
-    preferred access path - they address elements directly without any offset subtraction.
-    Buffer-reuse variants do NOT own the memory and will not free it on destruction.
-    @code
-    int aBuffer[100];
-    NCollection_Array1<int> aZero(100);      // allocates, lower=0
-    NCollection_Array1<int> aWrap(aBuffer, 100); // wraps aBuffer, lower=0, not owner
-    for (size_t i = 0; i < aWrap.Size(); ++i)
-    aWrap.At(i) = static_cast<int>(i);
-    @endcode
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theLower: int, theUpper: int) -> None: ...
-
-    @overload
-    def __init__(self, theSize: int) -> None: ...
-
-    @overload
-    def __init__(self, theOther: NCollection_Array1__NCollection_Vec3__float) -> None:
-        """
-        Zero-based constructor from first element reference.
-        When theUseBuffer is true, wraps contiguous storage starting at theBegin.
-        Otherwise allocates own storage of theSize elements.
-        """
-
-    def Init(self, theValue: "NCollection_Vec3<float>") -> None:
-        """Initialise the items with theValue"""
-
-    def Size(self) -> int:
-        """Size query."""
-
-    def Length(self) -> int:
-        """Length query (legacy int-returning API)."""
-
-    def IsEmpty(self) -> bool:
-        """Return TRUE if array has zero length."""
-
-    def Lower(self) -> int:
-        """Lower bound"""
-
-    def Upper(self) -> int:
-        """Upper bound"""
-
-    def IsDeletable(self) -> bool: ...
-
-    def Assign(self, theOther: NCollection_Array1__NCollection_Vec3__float) -> NCollection_Array1__NCollection_Vec3__float:
-        """
-        Replaces this array by a copy of theOther array.
-        Bounds and length are copied from theOther.
-        When this array wraps an external (non-owned) buffer:
-        - if theOther has the same length, values are copied in place into the
-        external buffer and ownership is unchanged;
-        - if theOther has a different length, this array detaches from the
-        external buffer and allocates a fresh owned buffer.
-        Use CopyValues() to preserve this array's bounds.
-        """
-
-    def CopyValues(self, theOther: NCollection_Array1__NCollection_Vec3__float) -> NCollection_Array1__NCollection_Vec3__float:
-        """
-        Copies values from theOther array without changing this array bounds.
-        This array should be pre-allocated and have the same length as theOther;
-        otherwise exception Standard_DimensionMismatch is thrown.
-        """
-
-    def First(self) -> "NCollection_Vec3<float>":
-        """@return first element"""
-
-    def Last(self) -> "NCollection_Vec3<float>":
-        """@return last element"""
-
-    def Value(self, theIndex: int) -> "NCollection_Vec3<float>":
-        """Constant value access"""
-
-    def At(self, theIndex: int) -> "NCollection_Vec3<float>":
-        """
-        0-based checked access independent of Lower()/Upper().
-        @param[in] theIndex 0-based index in [0, Size()-1]
-        """
-
-    def SetValue(self, theIndex: int, theItem: "NCollection_Vec3<float>") -> None:
-        """Set value"""
-
-    def UpdateLowerBound(self, theLower: int) -> None:
-        """Changes the lowest bound. Do not move data"""
-
-    def UpdateUpperBound(self, theUpper: int) -> None:
-        """Changes the upper bound. Do not move data"""
-
-    @overload
-    def Resize(self, theLower: int, theUpper: int, theToCopyData: bool) -> None: ...
-
-    @overload
-    def Resize(self, theSize: int, theToCopyData: bool) -> None:
-        """
-        Resizes the array to specified bounds.
-        No re-allocation will be done if length of array does not change,
-        but existing values will not be discarded if theToCopyData set to FALSE.
-        @param theLower new lower bound of array
-        @param theUpper new upper bound of array
-        @param theToCopyData flag to copy existing data into new array
-        """
-
-    def __call__(self, theIndex: int) -> "NCollection_Vec3<float>":
-        """operator() - alias to Value"""
-
-    def __getitem__(self, theIndex: int) -> "NCollection_Vec3<float>":
-        """operator[] - alias to Value"""
-
-    def __setitem__(self, theIndex: int, theItem: "NCollection_Vec3<float>") -> None:
-        """Python addition: alias to SetValue (OCCT index)."""
-
-    def __len__(self) -> int:
-        """Python addition: alias to Length."""
-
-    def __iter__(self) -> Iterator["NCollection_Vec3<float>"]:
-        """Python addition: iterates over the values from Lower() to Upper()."""
-
-    def ChangeFirst(self) -> "NCollection_Vec3<float>":
-        """@return first element"""
-
-    def ChangeLast(self) -> "NCollection_Vec3<float>":
-        """@return last element"""
-
-    def ChangeValue(self, theIndex: int) -> "NCollection_Vec3<float>":
-        """Variable value access"""
-
-    def ChangeAt(self, theIndex: int) -> "NCollection_Vec3<float>":
-        """
-        0-based checked mutable access independent of Lower()/Upper().
-        @param[in] theIndex 0-based index in [0, Size()-1]
-        """
-
+class NCollection_Array1__NCollection_Vec3__float(NCollection_Array1[nanoocp.BVH.BVH_Vec3f]): ...
 class NCollection_Array1__Poly_Triangle(NCollection_Array1[nanoocp.Poly.Poly_Triangle]): ...
 class NCollection_HArray1__Poly_Triangle(NCollection_HArray1[nanoocp.Poly.Poly_Triangle]): ...
 class NCollection_Array1__float:

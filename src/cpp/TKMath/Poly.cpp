@@ -414,9 +414,9 @@ Always check triangulation size of actually loaded data in code to avoid out-of-
 Note: this is estimated values, which might be different from actually loaded values
 Always check triangulation size of actually loaded data in code to avoid out-of-range issues.)nbdoc")
         .def("HasDeferredData", static_cast<bool (Poly_Triangulation::*)() const>(&Poly_Triangulation::HasDeferredData), R"nbdoc(Returns TRUE if there is some triangulation data that can be loaded using LoadDeferredData().)nbdoc")
-        .def("LoadDeferredData", static_cast<bool (Poly_Triangulation::*)(const occ::handle<OSD_FileSystem> &)>(&Poly_Triangulation::LoadDeferredData), nb::arg("theFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ::handle < OSD_FileSystem >()), R"nbdoc(Loads triangulation data into itself
+        .def("LoadDeferredData", static_cast<bool (Poly_Triangulation::*)(const occ::handle<OSD_FileSystem> &)>(&Poly_Triangulation::LoadDeferredData), nb::arg("theFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ :: handle < OSD_FileSystem > ( )), R"nbdoc(Loads triangulation data into itself
 from some deferred storage using specified shared input file system.)nbdoc")
-        .def("DetachedLoadDeferredData", static_cast<occ::handle<Poly_Triangulation> (Poly_Triangulation::*)(const occ::handle<OSD_FileSystem> &) const>(&Poly_Triangulation::DetachedLoadDeferredData), nb::arg("theFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ::handle < OSD_FileSystem >()), R"nbdoc(Loads triangulation data into new Poly_Triangulation object
+        .def("DetachedLoadDeferredData", static_cast<occ::handle<Poly_Triangulation> (Poly_Triangulation::*)(const occ::handle<OSD_FileSystem> &) const>(&Poly_Triangulation::DetachedLoadDeferredData), nb::arg("theFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ :: handle < OSD_FileSystem > ( )), R"nbdoc(Loads triangulation data into new Poly_Triangulation object
 from some deferred storage using specified shared input file system.)nbdoc")
         .def("UnloadDeferredData", static_cast<bool (Poly_Triangulation::*)()>(&Poly_Triangulation::UnloadDeferredData), R"nbdoc(Releases triangulation data if it has connected deferred storage.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_Triangulation>();
@@ -727,7 +727,7 @@ merged).)nbdoc")
         .def("ToMergeElems", static_cast<bool (Poly_MergeNodesTool::*)() const>(&Poly_MergeNodesTool::ToMergeElems), R"nbdoc(Return TRUE if equal elements should be filtered; FALSE by default.)nbdoc")
         .def("SetMergeElems", static_cast<void (Poly_MergeNodesTool::*)(bool)>(&Poly_MergeNodesTool::SetMergeElems), nb::arg("theToMerge"), R"nbdoc(Set if equal elements should be filtered.)nbdoc")
         .def("computeTriNormal", static_cast<NCollection_Vec3<float> (Poly_MergeNodesTool::*)() const>(&Poly_MergeNodesTool::computeTriNormal), R"nbdoc(Compute normal for the mesh element.)nbdoc")
-        .def("AddTriangulation", static_cast<void (Poly_MergeNodesTool::*)(const occ::handle<Poly_Triangulation> &, const gp_Trsf &, const bool)>(&Poly_MergeNodesTool::AddTriangulation), nb::arg("theTris"), nb::arg("theTrsf") = static_cast<std::decay_t<const gp_Trsf &>>(gp_Trsf()), nb::arg("theToReverse") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Add another triangulation to created one.
+        .def("AddTriangulation", static_cast<void (Poly_MergeNodesTool::*)(const occ::handle<Poly_Triangulation> &, const gp_Trsf &, const bool)>(&Poly_MergeNodesTool::AddTriangulation), nb::arg("theTris"), nb::arg("theTrsf") = static_cast<std::decay_t<const gp_Trsf &>>(gp_Trsf ( )), nb::arg("theToReverse") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Add another triangulation to created one.
 @param[in] theTris triangulation to add
 @param[in] theTrsf transformation to apply
 @param[in] theToReverse reverse triangle nodes order)nbdoc")

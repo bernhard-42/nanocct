@@ -27,11 +27,11 @@ def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> 
     m = re.match(r"(?:opencascade::)?handle<(.+)>$", arg)
     if m is not None:
         arg = m.group(1)
-    if arg in classes:
-        return f"nanoocp.{classes[arg]}.{arg}"
-    inst = templates.get(arg)
-    if inst is not None:
+    inst = templates.get(arg)                    # template instantiations first: their Python name is the alias
+    if inst is not None and not inst.get("skipped", False):
         return f"nanoocp.{inst['package']}.{inst['name']}"
+    if arg in classes and "<" not in arg:
+        return f"nanoocp.{classes[arg]}.{arg}"
     return None
 
 
@@ -112,7 +112,9 @@ def main() -> int:
     nc = SRC / "NCollection.pyi"
     text = nc.read_text()
     generic_parts = []
-    kinds = sorted({re.match(r"(\w+)<", key).group(1) for key, inst in templates.items() if not inst.get("skipped", False)})
+    from .ncollection import BINDERS
+    kinds = sorted({re.match(r"(\w+)<", key).group(1) for key, inst in templates.items()
+                    if not inst.get("skipped", False) and re.match(r"(\w+)<", key).group(1) in BINDERS})
     for kind in kinds:
         g = GENERIC / f"{kind}.pyi"
         if kind == "NCollection_Shared":
@@ -139,6 +141,8 @@ def main() -> int:
         if inst.get("skipped", False):
             continue
         kind, args = re.match(r"(\w+)<(.+)>$", key).groups()
+        if kind not in BINDERS:
+            continue                                   # alias-instantiated class: stubgen's concrete class stays
         spelled = [_type_arg(a, classes, templates) for a in _split_args(args)]
         if any(sp is None for sp in spelled) or not (GENERIC / f"{kind}.pyi").exists():
             continue

@@ -1,11 +1,632 @@
 """OCCT package Bnd (toolkit TKMath)"""
 
+from collections.abc import Sequence
 import enum
 from typing import overload
 
 import nanoocp.NCollection
 import nanoocp.gp
 
+
+class Bnd_B2d:
+    """
+    Template class for 2D bounding box.
+    This is a base template that is instantiated for double and float.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theCenter: nanoocp.gp.gp_XY, theHSize: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
+        """Constructor."""
+
+    def IsVoid(self) -> bool:
+        """Returns True if the box is void (non-initialized)."""
+
+    def Clear(self) -> None:
+        """Reset the box data."""
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_Pnt2d) -> None:
+        """Update the box by a point."""
+
+    @overload
+    def Add(self, theBox: Bnd_B2d) -> None:
+        """Update the box by another box."""
+
+    def CornerMin(self) -> nanoocp.gp.gp_XY:
+        """
+        Query a box corner: (Center - HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def CornerMax(self) -> nanoocp.gp.gp_XY:
+        """
+        Query a box corner: (Center + HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def SquareExtent(self) -> float:
+        """
+        Query the square diagonal. If the box is VOID (see method IsVoid())
+        then a very big real value is returned.
+        """
+
+    def Enlarge(self, theDiff: float) -> None:
+        """Extend the Box by the absolute value of theDiff."""
+
+    def Limit(self, theOtherBox: Bnd_B2d) -> bool:
+        """
+        Limit the Box by the internals of theOtherBox.
+        Returns True if the limitation takes place, otherwise False
+        indicating that the boxes do not intersect.
+        """
+
+    def Transformed(self, theTrsf: nanoocp.gp.gp_Trsf2d) -> Bnd_B2d:
+        """
+        Transform the bounding box with the given transformation.
+        The resulting box will be larger if theTrsf contains rotation.
+        """
+
+    @overload
+    def IsOut(self, thePnt: nanoocp.gp.gp_XY) -> bool:
+        """
+        Check the given point for the inclusion in the Box.
+        Returns True if the point is outside.
+        """
+
+    @overload
+    def IsOut(self, theCenter: nanoocp.gp.gp_XY, theRadius: float, isCircleHollow: bool = False) -> bool:
+        """
+        Check a circle for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B2d) -> bool:
+        """
+        Check the given box for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B2d, theTrsf: nanoocp.gp.gp_Trsf2d) -> bool:
+        """
+        Check the given box oriented by the given transformation
+        for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theLine: nanoocp.gp.gp_Ax2d) -> bool:
+        """
+        Check the given Line for the intersection with the current box.
+        Returns True if there is no intersection.
+        """
+
+    @overload
+    def IsOut(self, theP0: nanoocp.gp.gp_XY, theP1: nanoocp.gp.gp_XY) -> bool:
+        """
+        Check the Segment defined by the couple of input points
+        for the intersection with the current box.
+        Returns True if there is no intersection.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B2d) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'. Returns
+        True if 'this' box is fully inside 'theBox'.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B2d, theTrsf: nanoocp.gp.gp_Trsf2d) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'
+        transformed by 'theTrsf'. Returns True if 'this' box is fully
+        inside the transformed 'theBox'.
+        """
+
+    @overload
+    def SetCenter(self, theCenter: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def SetCenter(self, theCenter: Sequence[float]) -> None:
+        """Set the Center coordinates"""
+
+    @overload
+    def SetHSize(self, theHSize: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def SetHSize(self, theHSize: Sequence[float]) -> None:
+        """
+        Set the HSize (half-diagonal) coordinates.
+        All components of theHSize must be non-negative.
+        """
+
+    def Center(self) -> list[float]:
+        """Get the Center coordinates"""
+
+    def HSize(self) -> list[float]:
+        """Get the HSize (half-diagonal) coordinates"""
+
+class Bnd_B2f:
+    """
+    Template class for 2D bounding box.
+    This is a base template that is instantiated for double and float.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theCenter: nanoocp.gp.gp_XY, theHSize: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
+        """Constructor."""
+
+    def IsVoid(self) -> bool:
+        """Returns True if the box is void (non-initialized)."""
+
+    def Clear(self) -> None:
+        """Reset the box data."""
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_Pnt2d) -> None:
+        """Update the box by a point."""
+
+    @overload
+    def Add(self, theBox: Bnd_B2f) -> None:
+        """Update the box by another box."""
+
+    def CornerMin(self) -> nanoocp.gp.gp_XY:
+        """
+        Query a box corner: (Center - HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def CornerMax(self) -> nanoocp.gp.gp_XY:
+        """
+        Query a box corner: (Center + HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def SquareExtent(self) -> float:
+        """
+        Query the square diagonal. If the box is VOID (see method IsVoid())
+        then a very big real value is returned.
+        """
+
+    def Enlarge(self, theDiff: float) -> None:
+        """Extend the Box by the absolute value of theDiff."""
+
+    def Limit(self, theOtherBox: Bnd_B2f) -> bool:
+        """
+        Limit the Box by the internals of theOtherBox.
+        Returns True if the limitation takes place, otherwise False
+        indicating that the boxes do not intersect.
+        """
+
+    def Transformed(self, theTrsf: nanoocp.gp.gp_Trsf2d) -> Bnd_B2f:
+        """
+        Transform the bounding box with the given transformation.
+        The resulting box will be larger if theTrsf contains rotation.
+        """
+
+    @overload
+    def IsOut(self, thePnt: nanoocp.gp.gp_XY) -> bool:
+        """
+        Check the given point for the inclusion in the Box.
+        Returns True if the point is outside.
+        """
+
+    @overload
+    def IsOut(self, theCenter: nanoocp.gp.gp_XY, theRadius: float, isCircleHollow: bool = False) -> bool:
+        """
+        Check a circle for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B2f) -> bool:
+        """
+        Check the given box for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B2f, theTrsf: nanoocp.gp.gp_Trsf2d) -> bool:
+        """
+        Check the given box oriented by the given transformation
+        for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theLine: nanoocp.gp.gp_Ax2d) -> bool:
+        """
+        Check the given Line for the intersection with the current box.
+        Returns True if there is no intersection.
+        """
+
+    @overload
+    def IsOut(self, theP0: nanoocp.gp.gp_XY, theP1: nanoocp.gp.gp_XY) -> bool:
+        """
+        Check the Segment defined by the couple of input points
+        for the intersection with the current box.
+        Returns True if there is no intersection.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B2f) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'. Returns
+        True if 'this' box is fully inside 'theBox'.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B2f, theTrsf: nanoocp.gp.gp_Trsf2d) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'
+        transformed by 'theTrsf'. Returns True if 'this' box is fully
+        inside the transformed 'theBox'.
+        """
+
+    @overload
+    def SetCenter(self, theCenter: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def SetCenter(self, theCenter: Sequence[float]) -> None:
+        """Set the Center coordinates"""
+
+    @overload
+    def SetHSize(self, theHSize: nanoocp.gp.gp_XY) -> None: ...
+
+    @overload
+    def SetHSize(self, theHSize: Sequence[float]) -> None:
+        """
+        Set the HSize (half-diagonal) coordinates.
+        All components of theHSize must be non-negative.
+        """
+
+    def Center(self) -> list[float]:
+        """Get the Center coordinates"""
+
+    def HSize(self) -> list[float]:
+        """Get the HSize (half-diagonal) coordinates"""
+
+class Bnd_B3d:
+    """
+    Template class for 3D bounding box.
+    This is a base template that is instantiated for double and float.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theCenter: nanoocp.gp.gp_XYZ, theHSize: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
+        """Constructor."""
+
+    def IsVoid(self) -> bool:
+        """Returns True if the box is void (non-initialized)."""
+
+    def Clear(self) -> None:
+        """Reset the box data."""
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_Pnt) -> None:
+        """Update the box by a point."""
+
+    @overload
+    def Add(self, theBox: Bnd_B3d) -> None:
+        """Update the box by another box."""
+
+    def CornerMin(self) -> nanoocp.gp.gp_XYZ:
+        """
+        Query the lower corner: (Center - HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def CornerMax(self) -> nanoocp.gp.gp_XYZ:
+        """
+        Query the upper corner: (Center + HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def SquareExtent(self) -> float:
+        """
+        Query the square diagonal. If the box is VOID (see method IsVoid())
+        then a very big real value is returned.
+        """
+
+    def Enlarge(self, theDiff: float) -> None:
+        """Extend the Box by the absolute value of theDiff."""
+
+    def Limit(self, theOtherBox: Bnd_B3d) -> bool:
+        """
+        Limit the Box by the internals of theOtherBox.
+        Returns True if the limitation takes place, otherwise False
+        indicating that the boxes do not intersect.
+        """
+
+    def Transformed(self, theTrsf: nanoocp.gp.gp_Trsf) -> Bnd_B3d:
+        """
+        Transform the bounding box with the given transformation.
+        The resulting box will be larger if theTrsf contains rotation.
+        """
+
+    @overload
+    def IsOut(self, thePnt: nanoocp.gp.gp_XYZ) -> bool:
+        """
+        Check the given point for the inclusion in the Box.
+        Returns True if the point is outside.
+        """
+
+    @overload
+    def IsOut(self, theCenter: nanoocp.gp.gp_XYZ, theRadius: float, isSphereHollow: bool = False) -> bool:
+        """
+        Check a sphere for the intersection with the current box.
+        Returns True if there is no intersection between boxes. If the
+        parameter 'IsSphereHollow' is True, then the intersection is not
+        reported for a box that is completely inside the sphere (otherwise
+        this method would report an intersection).
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B3d) -> bool:
+        """
+        Check the given box for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B3d, theTrsf: nanoocp.gp.gp_Trsf) -> bool:
+        """
+        Check the given box oriented by the given transformation
+        for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theLine: nanoocp.gp.gp_Ax1, isRay: bool = False, theOverthickness: float = 0.0) -> bool:
+        """
+        Check the given Line for the intersection with the current box.
+        Returns True if there is no intersection.
+        isRay==True means intersection check with the positive half-line
+        theOverthickness is the addition to the size of the current box
+        (may be negative). If positive, it can be treated as the thickness
+        of the line 'theLine' or the radius of the cylinder along 'theLine'
+        """
+
+    @overload
+    def IsOut(self, thePlane: nanoocp.gp.gp_Ax3) -> bool:
+        """
+        Check the given Plane for the intersection with the current box.
+        Returns True if there is no intersection.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B3d) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'. Returns
+        True if 'this' box is fully inside 'theBox'.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B3d, theTrsf: nanoocp.gp.gp_Trsf) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'
+        transformed by 'theTrsf'. Returns True if 'this' box is fully
+        inside the transformed 'theBox'.
+        """
+
+    @overload
+    def SetCenter(self, theCenter: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def SetCenter(self, theCenter: Sequence[float]) -> None:
+        """Set the Center coordinates"""
+
+    @overload
+    def SetHSize(self, theHSize: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def SetHSize(self, theHSize: Sequence[float]) -> None:
+        """
+        Set the HSize (half-diagonal) coordinates.
+        All components of theHSize must be non-negative.
+        """
+
+    def Center(self) -> list[float]:
+        """Get the Center coordinates"""
+
+    def HSize(self) -> list[float]:
+        """Get the HSize (half-diagonal) coordinates"""
+
+class Bnd_B3f:
+    """
+    Template class for 3D bounding box.
+    This is a base template that is instantiated for double and float.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theCenter: nanoocp.gp.gp_XYZ, theHSize: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def __init__(self, theCenter: Sequence[float], theHSize: Sequence[float]) -> None:
+        """Constructor."""
+
+    def IsVoid(self) -> bool:
+        """Returns True if the box is void (non-initialized)."""
+
+    def Clear(self) -> None:
+        """Reset the box data."""
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def Add(self, thePnt: nanoocp.gp.gp_Pnt) -> None:
+        """Update the box by a point."""
+
+    @overload
+    def Add(self, theBox: Bnd_B3f) -> None:
+        """Update the box by another box."""
+
+    def CornerMin(self) -> nanoocp.gp.gp_XYZ:
+        """
+        Query the lower corner: (Center - HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def CornerMax(self) -> nanoocp.gp.gp_XYZ:
+        """
+        Query the upper corner: (Center + HSize). You must make sure that
+        the box is NOT VOID (see IsVoid()), otherwise the method returns
+        irrelevant result.
+        """
+
+    def SquareExtent(self) -> float:
+        """
+        Query the square diagonal. If the box is VOID (see method IsVoid())
+        then a very big real value is returned.
+        """
+
+    def Enlarge(self, theDiff: float) -> None:
+        """Extend the Box by the absolute value of theDiff."""
+
+    def Limit(self, theOtherBox: Bnd_B3f) -> bool:
+        """
+        Limit the Box by the internals of theOtherBox.
+        Returns True if the limitation takes place, otherwise False
+        indicating that the boxes do not intersect.
+        """
+
+    def Transformed(self, theTrsf: nanoocp.gp.gp_Trsf) -> Bnd_B3f:
+        """
+        Transform the bounding box with the given transformation.
+        The resulting box will be larger if theTrsf contains rotation.
+        """
+
+    @overload
+    def IsOut(self, thePnt: nanoocp.gp.gp_XYZ) -> bool:
+        """
+        Check the given point for the inclusion in the Box.
+        Returns True if the point is outside.
+        """
+
+    @overload
+    def IsOut(self, theCenter: nanoocp.gp.gp_XYZ, theRadius: float, isSphereHollow: bool = False) -> bool:
+        """
+        Check a sphere for the intersection with the current box.
+        Returns True if there is no intersection between boxes. If the
+        parameter 'IsSphereHollow' is True, then the intersection is not
+        reported for a box that is completely inside the sphere (otherwise
+        this method would report an intersection).
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B3f) -> bool:
+        """
+        Check the given box for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theOtherBox: Bnd_B3f, theTrsf: nanoocp.gp.gp_Trsf) -> bool:
+        """
+        Check the given box oriented by the given transformation
+        for the intersection with the current box.
+        Returns True if there is no intersection between boxes.
+        """
+
+    @overload
+    def IsOut(self, theLine: nanoocp.gp.gp_Ax1, isRay: bool = False, theOverthickness: float = 0.0) -> bool:
+        """
+        Check the given Line for the intersection with the current box.
+        Returns True if there is no intersection.
+        isRay==True means intersection check with the positive half-line
+        theOverthickness is the addition to the size of the current box
+        (may be negative). If positive, it can be treated as the thickness
+        of the line 'theLine' or the radius of the cylinder along 'theLine'
+        """
+
+    @overload
+    def IsOut(self, thePlane: nanoocp.gp.gp_Ax3) -> bool:
+        """
+        Check the given Plane for the intersection with the current box.
+        Returns True if there is no intersection.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B3f) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'. Returns
+        True if 'this' box is fully inside 'theBox'.
+        """
+
+    @overload
+    def IsIn(self, theBox: Bnd_B3f, theTrsf: nanoocp.gp.gp_Trsf) -> bool:
+        """
+        Check that the box 'this' is inside the given box 'theBox'
+        transformed by 'theTrsf'. Returns True if 'this' box is fully
+        inside the transformed 'theBox'.
+        """
+
+    @overload
+    def SetCenter(self, theCenter: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def SetCenter(self, theCenter: Sequence[float]) -> None:
+        """Set the Center coordinates"""
+
+    @overload
+    def SetHSize(self, theHSize: nanoocp.gp.gp_XYZ) -> None: ...
+
+    @overload
+    def SetHSize(self, theHSize: Sequence[float]) -> None:
+        """
+        Set the HSize (half-diagonal) coordinates.
+        All components of theHSize must be non-negative.
+        """
+
+    def Center(self) -> list[float]:
+        """Get the Center coordinates"""
+
+    def HSize(self) -> list[float]:
+        """Get the HSize (half-diagonal) coordinates"""
 
 class Bnd_Box:
     """

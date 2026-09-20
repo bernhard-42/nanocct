@@ -67,6 +67,7 @@ class Class:
     is_exception: bool          # derives (transitively) from Standard_Failure -> bound as Python exception
     is_abstract: bool
     has_declared_ctor: bool = False   # any constructor at any access level (suppresses the implicit default ctor)
+    template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
     constructible: bool = True        # False when operator new is not public (placement new impossible)
     ctors: list[Constructor] = field(default_factory=list)
     methods: list[Method] = field(default_factory=list)

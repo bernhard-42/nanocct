@@ -2,10 +2,20 @@
 #include "nanoocp_common.h"
 #include <TColStd_HPackedMapOfInteger.hxx>
 #include <TColStd_PackedMapOfInteger.hxx>
+#include <NCollection_PackedMap.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 
 void nanoocp_declare_TColStd(nb::module_ &m) {
+    { nb::class_<NCollection_PackedMap<int>> cls(m, "TColStd_PackedMapOfInteger", R"nbdoc(@brief Optimized Map for integer values of various integral types.
+
+This template class provides a memory-efficient storage for sets of integers.
+Each block of BitsPerBlock (32 or 64) consecutive integers is stored compactly
+using bit manipulation. The block size is automatically selected based on
+the integer type: 32 bits for int/unsigned, 64 bits for int64_t/size_t.
+
+@tparam IntType The integral type to store (int, unsigned int, int64_t, size_t, etc.))nbdoc");
+    }
     { nb::class_<TColStd_HPackedMapOfInteger, Standard_Transient> cls(m, "TColStd_HPackedMapOfInteger", R"nbdoc(@deprecated This Handle wrapper class is deprecated.
 Use TColStd_PackedMapOfInteger directly instead.)nbdoc");
     }
@@ -15,6 +25,32 @@ void nanoocp_templates_TColStd(nb::module_ &m) {
 }
 
 void nanoocp_define_TColStd(nb::module_ &m) {
+    nb::borrow<nb::class_<NCollection_PackedMap<int>>>(m.attr("TColStd_PackedMapOfInteger"))
+        .def(nb::init<const size_t>(), nb::arg("theNbBuckets") = static_cast<std::decay_t<const size_t>>(1), R"nbdoc(Constructor)nbdoc")
+        .def(nb::init<const int>(), nb::arg("theNbBuckets"), R"nbdoc(Constructor (legacy int-taking).)nbdoc")
+        .def(nb::init<const NCollection_PackedMap<int> &>(), nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
+        .def("Assign", static_cast<NCollection_PackedMap<int> & (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Assign), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Assignment operator)nbdoc")
+        .def("ReSize", static_cast<void (NCollection_PackedMap<int>::*)(const size_t)>(&NCollection_PackedMap<int>::ReSize), nb::arg("theNbBuckets"), R"nbdoc(Resize the map)nbdoc")
+        .def("ReSize", static_cast<void (NCollection_PackedMap<int>::*)(const int)>(&NCollection_PackedMap<int>::ReSize), nb::arg("theNbBuckets"), R"nbdoc(Resize the map (legacy int-taking).)nbdoc")
+        .def("Clear", static_cast<void (NCollection_PackedMap<int>::*)()>(&NCollection_PackedMap<int>::Clear), R"nbdoc(Clear the map)nbdoc")
+        .def("Add", static_cast<bool (NCollection_PackedMap<int>::*)(const int)>(&NCollection_PackedMap<int>::Add), nb::arg("theKey"), R"nbdoc(Add a key to the map
+@param[in] theKey the key to add
+@return true if the key was added, false if it already existed)nbdoc")
+        .def("Contains", static_cast<bool (NCollection_PackedMap<int>::*)(const int) const>(&NCollection_PackedMap<int>::Contains), nb::arg("theKey"), R"nbdoc(Check if the map contains a key
+@param[in] theKey the key to check
+@return true if the key is in the map)nbdoc")
+        .def("Remove", static_cast<bool (NCollection_PackedMap<int>::*)(const int)>(&NCollection_PackedMap<int>::Remove), nb::arg("theKey"), R"nbdoc(Remove a key from the map
+@param[in] theKey the key to remove
+@return true if the key was removed, false if it was not present)nbdoc")
+        .def("NbBuckets", static_cast<size_t (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::NbBuckets), R"nbdoc(Returns the number of map buckets.)nbdoc")
+        .def("Extent", static_cast<int (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::Extent), R"nbdoc(Returns map extent (legacy int-returning API).)nbdoc")
+        .def("Length", static_cast<int (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::Length), R"nbdoc(Returns map extent (legacy int-returning API, synonym of Extent()).)nbdoc")
+        .def("Size", static_cast<size_t (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::Size), R"nbdoc(Returns map extent.)nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::IsEmpty), R"nbdoc(Returns TRUE if map is empty.)nbdoc")
+        .def("GetMinimalMapped", static_cast<int (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::GetMinimalMapped), R"nbdoc(Query the minimal contained key value.)nbdoc")
+        .def("GetMaximalMapped", static_cast<int (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::GetMaximalMapped), R"nbdoc(Query the maximal contained key value.)nbdoc");
+    nb::implicitly_convertible<std::decay_t<const size_t>, NCollection_PackedMap<int>>();
+    nb::implicitly_convertible<std::decay_t<const int>, NCollection_PackedMap<int>>();
     nb::borrow<nb::class_<TColStd_HPackedMapOfInteger>>(m.attr("TColStd_HPackedMapOfInteger"))
         .def(nb::new_([](const int theNbBuckets) { return opencascade::handle<TColStd_HPackedMapOfInteger>(new TColStd_HPackedMapOfInteger(theNbBuckets)); }), nb::arg("theNbBuckets") = static_cast<std::decay_t<const int>>(1), R"nbdoc(Constructor of empty map.
 @param theNbBuckets initial number of buckets)nbdoc")

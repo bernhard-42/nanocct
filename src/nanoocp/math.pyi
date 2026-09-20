@@ -6,6 +6,7 @@ from typing import overload
 import nanoocp.Message
 import nanoocp.NCollection
 import nanoocp.Standard
+import nanoocp.gp
 
 
 class math_Status(enum.IntEnum):
@@ -230,7 +231,7 @@ class math_Matrix:
         """
 
     @overload
-    def Multiply(self, Left: "math_VectorBase<double>", Right: "math_VectorBase<double>") -> None:
+    def Multiply(self, Left: math_Vector, Right: math_Vector) -> None:
         """
         Computes a matrix as the product of 2 vectors.
         An exception is raised if the dimensions are different.
@@ -272,7 +273,7 @@ class math_Matrix:
         """
 
     @overload
-    def Multiplied(self, Right: "math_VectorBase<double>") -> "math_VectorBase<double>":
+    def Multiplied(self, Right: math_Vector) -> math_Vector:
         """
         Returns the product of a matrix by a vector.
         An exception is raised if the dimensions are different.
@@ -285,7 +286,7 @@ class math_Matrix:
     def __mul__(self, Right: math_Matrix) -> math_Matrix: ...
 
     @overload
-    def __mul__(self, Right: "math_VectorBase<double>") -> "math_VectorBase<double>": ...
+    def __mul__(self, Right: math_Vector) -> math_Vector: ...
 
     def TMultiplied(self, Right: float) -> math_Matrix:
         """
@@ -398,7 +399,7 @@ class math_Matrix:
         -   J2 - J1 + 1 is not equal to the number of columns of matrix M.
         """
 
-    def SetRow(self, Row: int, V: "math_VectorBase<double>") -> None:
+    def SetRow(self, Row: int, V: math_Vector) -> None:
         """
         Sets the row of index Row of a matrix to the vector <V>.
         An exception is raised if the dimensions are different.
@@ -406,7 +407,7 @@ class math_Matrix:
         row of the matrix or <Row> is superior to the upper row.
         """
 
-    def SetCol(self, Col: int, V: "math_VectorBase<double>") -> None:
+    def SetCol(self, Col: int, V: math_Vector) -> None:
         """
         Sets the column of index Col of a matrix to the vector <V>.
         An exception is raised if the dimensions are different.
@@ -421,10 +422,10 @@ class math_Matrix:
         An exception is raised if the matrix is not square.
         """
 
-    def Row(self, Row: int) -> "math_VectorBase<double>":
+    def Row(self, Row: int) -> math_Vector:
         """Returns the row of index Row of a matrix."""
 
-    def Col(self, Col: int) -> "math_VectorBase<double>":
+    def Col(self, Col: int) -> math_Vector:
         """Returns the column of index <Col> of a matrix."""
 
     def SwapRow(self, Row1: int, Row2: int) -> None:
@@ -495,6 +496,319 @@ class math_Matrix:
 class math_NotSquare(nanoocp.Standard.Standard_DimensionError):
     pass
 
+class math_Vector:
+    """
+    This class implements the real vector abstract data type.
+    Vectors can have an arbitrary range which must be defined at
+    the declaration and cannot be changed after this declaration.
+    @code
+    math_VectorBase<TheItemType> V1(-3, 5); // a vector with range [-3..5]
+    @endcode
+
+    Vector are copied through assignment:
+    @code
+    math_VectorBase<TheItemType> V2( 1, 9);
+    ....
+    V2 = V1;
+    V1(1) = 2.0; // the vector V2 will not be modified.
+    @endcode
+
+    The Exception RangeError is raised when trying to access outside
+    the range of a vector :
+    @code
+    V1(11) = 0.0 // --> will raise RangeError;
+    @endcode
+
+    The Exception DimensionError is raised when the dimensions of two
+    vectors are not compatible :
+    @code
+    math_VectorBase<TheItemType> V3(1, 2);
+    V3 = V1;    // --> will raise DimensionError;
+    V1.Add(V3)  // --> will raise DimensionError;
+    @endcode
+    """
+
+    @overload
+    def __init__(self, Other: nanoocp.gp.gp_XY) -> None:
+        """Constructor for converting gp_XY to math_VectorBase"""
+
+    @overload
+    def __init__(self, Other: nanoocp.gp.gp_XYZ) -> None:
+        """Constructor for converting gp_XYZ to math_VectorBase"""
+
+    @overload
+    def __init__(self, theOther: math_Vector) -> None:
+        """Constructs a copy for initialization."""
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None:
+        """
+        Constructs a non-initialized vector in the range [theLower..theUpper]
+        "theLower" and "theUpper" are the indexes of the lower and upper bounds of the constructed
+        vector.
+        """
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int, theInitialValue: float) -> None: ...
+
+    @overload
+    def __init__(self, theTab: float, theLower: int, theUpper: int) -> None:
+        """
+        Constructs a vector in the range [theLower..theUpper]
+        whose values are all initialized with the value "theInitialValue\"
+        """
+
+    def Init(self, theInitialValue: float) -> None:
+        """Initialize all the elements of a vector with "theInitialValue"."""
+
+    def Length(self) -> int:
+        """Returns the length of a vector"""
+
+    def Lower(self) -> int:
+        """Returns the lower index of the vector"""
+
+    def Upper(self) -> int:
+        """Returns the upper index of the vector"""
+
+    def Norm(self) -> float:
+        """Returns the value or the square of the norm of this vector."""
+
+    def Norm2(self) -> float:
+        """Returns the value of the square of the norm of a vector."""
+
+    def Max(self) -> int:
+        """Returns the index of the maximum element of a vector. (first found)"""
+
+    def Min(self) -> int:
+        """Returns the index of the minimum element of a vector. (first found)"""
+
+    def Normalize(self) -> None:
+        """
+        Normalizes this vector (the norm of the result
+        is equal to 1.0) and assigns the result to this vector
+        Exceptions
+        Standard_NullValue if this vector is null (i.e. if its norm is
+        less than or equal to double::RealEpsilon().
+        """
+
+    def Normalized(self) -> math_Vector:
+        """
+        Normalizes this vector (the norm of the result
+        is equal to 1.0) and creates a new vector
+        Exceptions
+        Standard_NullValue if this vector is null (i.e. if its norm is
+        less than or equal to double::RealEpsilon().
+        """
+
+    def Invert(self) -> None:
+        """Inverts this vector and assigns the result to this vector."""
+
+    def Inverse(self) -> math_Vector:
+        """Inverts this vector and creates a new vector."""
+
+    def Set(self, theI1: int, theI2: int, theV: math_Vector) -> None:
+        """
+        sets a vector from "theI1" to "theI2" to the vector "theV";
+        An exception is raised if "theI1" is less than "LowerIndex" or "theI2" is greater than
+        "UpperIndex" or "theI1" is greater than "theI2". An exception is raised if "theI2-theI1+1" is
+        different from the "Length" of "theV".
+        """
+
+    def Slice(self, theI1: int, theI2: int) -> math_Vector:
+        """
+        Creates a new vector by inverting the values of this vector
+        between indexes "theI1" and "theI2".
+        If the values of this vector were (1., 2., 3., 4.,5., 6.),
+        by slicing it between indexes 2 and 5 the values
+        of the resulting vector are (1., 5., 4., 3., 2., 6.)
+        """
+
+    @overload
+    def Multiply(self, theRight: float) -> None:
+        """Updates current vector by multiplying each element on current value."""
+
+    @overload
+    def Multiply(self, theLeft: math_Vector, theRight: math_Matrix) -> None:
+        """
+        sets a vector to the product of the vector "theLeft"
+        with the matrix "theRight".
+        """
+
+    @overload
+    def Multiply(self, theLeft: math_Matrix, theRight: math_Vector) -> None:
+        """
+        sets a vector to the product of the matrix "theLeft"
+        with the vector "theRight".
+        """
+
+    @overload
+    def Multiply(self, theLeft: float, theRight: math_Vector) -> None:
+        """
+        returns the multiplication of a real by a vector.
+        "me" = "theLeft" * "theRight\"
+        """
+
+    def __imul__(self, theRight: float) -> math_Vector: ...
+
+    @overload
+    def Multiplied(self, theRight: float) -> math_Vector:
+        """returns the product of a vector and a real value."""
+
+    @overload
+    def Multiplied(self, theRight: math_Vector) -> float:
+        """
+        returns the inner product of 2 vectors.
+        An exception is raised if the lengths are not equal.
+        """
+
+    @overload
+    def Multiplied(self, theRight: math_Matrix) -> math_Vector:
+        """returns the product of a vector by a matrix."""
+
+    @overload
+    def __mul__(self, theRight: float) -> math_Vector: ...
+
+    @overload
+    def __mul__(self, theRight: math_Vector) -> float: ...
+
+    @overload
+    def __mul__(self, theRight: math_Matrix) -> math_Vector: ...
+
+    def TMultiplied(self, theRight: float) -> math_Vector:
+        """returns the product of a vector and a real value."""
+
+    def Divide(self, theRight: float) -> None:
+        """
+        divides a vector by the value "theRight".
+        An exception is raised if "theRight" = 0.
+        """
+
+    def __itruediv__(self, theRight: float) -> math_Vector: ...
+
+    def Divided(self, theRight: float) -> math_Vector:
+        """
+        Returns new vector as dividing current vector with the value "theRight".
+        An exception is raised if "theRight" = 0.
+        """
+
+    def __truediv__(self, theRight: float) -> math_Vector: ...
+
+    @overload
+    def Add(self, theRight: math_Vector) -> None:
+        """
+        adds the vector "theRight" to a vector.
+        An exception is raised if the vectors have not the same length.
+        Warning
+        In order to avoid time-consuming copying of vectors, it
+        is preferable to use operator += or the function Add whenever possible.
+        """
+
+    @overload
+    def Add(self, theLeft: math_Vector, theRight: math_Vector) -> None:
+        """
+        sets a vector to the sum of the vector "theLeft"
+        and the vector "theRight".
+        An exception is raised if the lengths are different.
+        """
+
+    def __iadd__(self, theRight: math_Vector) -> math_Vector: ...
+
+    def Added(self, theRight: math_Vector) -> math_Vector:
+        """
+        Returns new vector as adding current vector with the value "theRight".
+        An exception is raised if the vectors do not have the same length.
+        An exception is raised if the lengths are not equal.
+        """
+
+    def __add__(self, theRight: math_Vector) -> math_Vector: ...
+
+    @overload
+    def TMultiply(self, theTLeft: math_Matrix, theRight: math_Vector) -> None:
+        """
+        sets a vector to the product of the transpose
+        of the matrix "theTLeft" by the vector "theRight".
+        """
+
+    @overload
+    def TMultiply(self, theLeft: math_Vector, theTRight: math_Matrix) -> None:
+        """
+        sets a vector to the product of the vector
+        "theLeft" by the transpose of the matrix "theTRight".
+        """
+
+    @overload
+    def Subtract(self, theLeft: math_Vector, theRight: math_Vector) -> None:
+        """
+        sets a vector to the Subtraction of the
+        vector theRight from the vector theLeft.
+        An exception is raised if the vectors have not the same length.
+        Warning
+        In order to avoid time-consuming copying of vectors, it
+        is preferable to use operator -= or the function
+        Subtract whenever possible.
+        """
+
+    @overload
+    def Subtract(self, theRight: math_Vector) -> None:
+        """
+        returns the subtraction of "theRight" from "me".
+        An exception is raised if the vectors have not the same length.
+        """
+
+    @overload
+    def Value(self, theNum: int) -> float:
+        """accesses the value of index "theNum" of a vector."""
+
+    @overload
+    def Value(self, theNum: int) -> float:
+        """
+        accesses (in read or write mode) the value of index "theNum" of a vector.
+        """
+
+    @overload
+    def __call__(self, theNum: int) -> float: ...
+
+    @overload
+    def __call__(self, theNum: int) -> float: ...
+
+    def Initialized(self, theOther: math_Vector) -> math_Vector:
+        """
+        Initialises a vector by copying "theOther".
+        An exception is raised if the Lengths are different.
+        """
+
+    def Opposite(self) -> math_Vector:
+        """returns the opposite of a vector."""
+
+    def __neg__(self) -> math_Vector: ...
+
+    def __isub__(self, theRight: math_Vector) -> math_Vector: ...
+
+    def Subtracted(self, theRight: math_Vector) -> math_Vector:
+        """
+        returns the subtraction of "theRight" from "me".
+        An exception is raised if the vectors have not the same length.
+        """
+
+    def __sub__(self, theRight: math_Vector) -> math_Vector: ...
+
+    def Array1(self) -> nanoocp.NCollection.NCollection_Array1__double:
+        """
+        Returns the underlying array for interoperability with legacy APIs.
+        Allows passing math_Vector data to functions expecting NCollection_Array1.
+        """
+
+    def Resize(self, theSize: int) -> None:
+        """
+        Resizes the vector to a new size, keeping the same lower bound.
+        Existing data within the new range is preserved.
+        The method optimizes memory usage:
+        - If new size fits in stack buffer (<=32), uses stack allocation
+        - If new size requires heap and was already on heap, resizes in place
+        - Transitions between stack and heap as needed
+        @param theSize new size of the vector
+        """
+
 class math:
     def __init__(self) -> None: ...
 
@@ -502,10 +816,10 @@ class math:
     def GaussPointsMax() -> int: ...
 
     @staticmethod
-    def GaussPoints(Index: int, Points: "math_VectorBase<double>") -> None: ...
+    def GaussPoints(Index: int, Points: math_Vector) -> None: ...
 
     @staticmethod
-    def GaussWeights(Index: int, Weights: "math_VectorBase<double>") -> None: ...
+    def GaussWeights(Index: int, Weights: math_Vector) -> None: ...
 
     @staticmethod
     def KronrodPointsMax() -> int:
@@ -516,7 +830,7 @@ class math:
         """
 
     @staticmethod
-    def OrderedGaussPointsAndWeights(Index: int, Points: "math_VectorBase<double>", Weights: "math_VectorBase<double>") -> bool:
+    def OrderedGaussPointsAndWeights(Index: int, Points: math_Vector, Weights: math_Vector) -> bool:
         """
         Returns a vector of Gauss points and a vector of their weights.
         The difference with the
@@ -529,7 +843,7 @@ class math:
         """
 
     @staticmethod
-    def KronrodPointsAndWeights(Index: int, Points: "math_VectorBase<double>", Weights: "math_VectorBase<double>") -> bool:
+    def KronrodPointsAndWeights(Index: int, Points: math_Vector, Weights: math_Vector) -> bool:
         """
         Returns a vector of Kronrod points and a vector of their
         weights for Gauss-Kronrod computation method.
@@ -569,13 +883,13 @@ class math_BFGS:
         function F.
         """
 
-    def SetBoundary(self, theLeftBorder: "math_VectorBase<double>", theRightBorder: "math_VectorBase<double>") -> None:
+    def SetBoundary(self, theLeftBorder: math_Vector, theRightBorder: math_Vector) -> None:
         """
         Set boundaries for conditional optimization.
         The expected indices range of vectors is [1, NbVariables].
         """
 
-    def Perform(self, F: math_MultipleVarFunctionWithGradient, StartingPoint: "math_VectorBase<double>") -> None:
+    def Perform(self, F: math_MultipleVarFunctionWithGradient, StartingPoint: math_Vector) -> None:
         """
         Given the starting point StartingPoint,
         minimization is done on the function F.
@@ -599,14 +913,14 @@ class math_BFGS:
         """
 
     @overload
-    def Location(self) -> "math_VectorBase<double>":
+    def Location(self) -> math_Vector:
         """
         returns the location vector of the minimum.
         Exception NotDone is raised if the minimum was not found.
         """
 
     @overload
-    def Location(self, Loc: "math_VectorBase<double>") -> None:
+    def Location(self, Loc: math_Vector) -> None:
         """
         outputs the location vector of the minimum in Loc.
         Exception NotDone is raised if the minimum was not found.
@@ -621,14 +935,14 @@ class math_BFGS:
         """
 
     @overload
-    def Gradient(self) -> "math_VectorBase<double>":
+    def Gradient(self) -> math_Vector:
         """
         Returns the gradient vector at the minimum.
         Exception NotDone is raised if the minimum was not found.
         """
 
     @overload
-    def Gradient(self, Grad: "math_VectorBase<double>") -> None:
+    def Gradient(self, Grad: math_Vector) -> None:
         """
         Returns the value of the gradient vector at the minimum in Grad.
         Exception NotDone is raised if the minimum was not found.
@@ -909,18 +1223,18 @@ class math_ComputeGaussPointsAndWeights:
 
     def IsDone(self) -> bool: ...
 
-    def Points(self) -> "math_VectorBase<double>": ...
+    def Points(self) -> math_Vector: ...
 
-    def Weights(self) -> "math_VectorBase<double>": ...
+    def Weights(self) -> math_Vector: ...
 
 class math_ComputeKronrodPointsAndWeights:
     def __init__(self, Number: int) -> None: ...
 
     def IsDone(self) -> bool: ...
 
-    def Points(self) -> "math_VectorBase<double>": ...
+    def Points(self) -> math_Vector: ...
 
-    def Weights(self) -> "math_VectorBase<double>": ...
+    def Weights(self) -> math_Vector: ...
 
 class math_Crout:
     """
@@ -947,7 +1261,7 @@ class math_Crout:
     def IsDone(self) -> bool:
         """Returns True if all has been correctly done."""
 
-    def Solve(self, B: "math_VectorBase<double>", X: "math_VectorBase<double>") -> None:
+    def Solve(self, B: math_Vector, X: math_Vector) -> None:
         """
         Given an input vector <B>, this routine returns the
         solution of the set of linear equations A . X = B.
@@ -1137,7 +1451,7 @@ class math_EigenValuesSearcher:
         @return the eigenvalue at the specified index
         """
 
-    def EigenVector(self, theIndex: int) -> "math_VectorBase<double>":
+    def EigenVector(self, theIndex: int) -> math_Vector:
         """
         Returns the specified eigenvector.
         The returned eigenvector is normalized and orthogonal to all other eigenvectors.
@@ -1161,7 +1475,7 @@ class math_FRPR:
         Warning: constructor does not perform computations.
         """
 
-    def Perform(self, theFunction: math_MultipleVarFunctionWithGradient, theStartingPoint: "math_VectorBase<double>") -> None:
+    def Perform(self, theFunction: math_MultipleVarFunctionWithGradient, theStartingPoint: math_Vector) -> None:
         """
         The solution F = Fi is found when
         2.0 * abs(Fi - Fi-1) <= Tolerance * (abs(Fi) + abs(Fi-1) + ZEPS).
@@ -1180,14 +1494,14 @@ class math_FRPR:
         """
 
     @overload
-    def Location(self) -> "math_VectorBase<double>":
+    def Location(self) -> math_Vector:
         """
         returns the location vector of the minimum.
         Exception NotDone is raised if the minimum was not found.
         """
 
     @overload
-    def Location(self, Loc: "math_VectorBase<double>") -> None:
+    def Location(self, Loc: math_Vector) -> None:
         """
         outputs the location vector of the minimum in Loc.
         Exception NotDone is raised if the minimum was not found.
@@ -1202,14 +1516,14 @@ class math_FRPR:
         """
 
     @overload
-    def Gradient(self) -> "math_VectorBase<double>":
+    def Gradient(self) -> math_Vector:
         """
         returns the gradient vector at the minimum.
         Exception NotDone is raised if the minimum was not found.
         """
 
     @overload
-    def Gradient(self, Grad: "math_VectorBase<double>") -> None:
+    def Gradient(self, Grad: math_Vector) -> None:
         """
         outputs the gradient vector at the minimum in Grad.
         Exception NotDone is raised if the minimum was not found.
@@ -1466,7 +1780,7 @@ class math_FunctionSet:
     def NbEquations(self) -> int:
         """Returns the number of equations of the function."""
 
-    def Value(self, X: "math_VectorBase<double>", F: "math_VectorBase<double>") -> bool:
+    def Value(self, X: math_Vector, F: math_Vector) -> bool:
         """
         Computes the values <F> of the functions for the
         variable <X>.
@@ -1492,6 +1806,319 @@ class math_FunctionSet:
         an Integer that allows retrieval of the state.
         """
 
+class math_IntegerVector:
+    """
+    This class implements the real vector abstract data type.
+    Vectors can have an arbitrary range which must be defined at
+    the declaration and cannot be changed after this declaration.
+    @code
+    math_VectorBase<TheItemType> V1(-3, 5); // a vector with range [-3..5]
+    @endcode
+
+    Vector are copied through assignment:
+    @code
+    math_VectorBase<TheItemType> V2( 1, 9);
+    ....
+    V2 = V1;
+    V1(1) = 2.0; // the vector V2 will not be modified.
+    @endcode
+
+    The Exception RangeError is raised when trying to access outside
+    the range of a vector :
+    @code
+    V1(11) = 0.0 // --> will raise RangeError;
+    @endcode
+
+    The Exception DimensionError is raised when the dimensions of two
+    vectors are not compatible :
+    @code
+    math_VectorBase<TheItemType> V3(1, 2);
+    V3 = V1;    // --> will raise DimensionError;
+    V1.Add(V3)  // --> will raise DimensionError;
+    @endcode
+    """
+
+    @overload
+    def __init__(self, Other: nanoocp.gp.gp_XY) -> None:
+        """Constructor for converting gp_XY to math_VectorBase"""
+
+    @overload
+    def __init__(self, Other: nanoocp.gp.gp_XYZ) -> None:
+        """Constructor for converting gp_XYZ to math_VectorBase"""
+
+    @overload
+    def __init__(self, theOther: math_IntegerVector) -> None:
+        """Constructs a copy for initialization."""
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int) -> None:
+        """
+        Constructs a non-initialized vector in the range [theLower..theUpper]
+        "theLower" and "theUpper" are the indexes of the lower and upper bounds of the constructed
+        vector.
+        """
+
+    @overload
+    def __init__(self, theLower: int, theUpper: int, theInitialValue: int) -> None: ...
+
+    @overload
+    def __init__(self, theTab: int, theLower: int, theUpper: int) -> None:
+        """
+        Constructs a vector in the range [theLower..theUpper]
+        whose values are all initialized with the value "theInitialValue\"
+        """
+
+    def Init(self, theInitialValue: int) -> None:
+        """Initialize all the elements of a vector with "theInitialValue"."""
+
+    def Length(self) -> int:
+        """Returns the length of a vector"""
+
+    def Lower(self) -> int:
+        """Returns the lower index of the vector"""
+
+    def Upper(self) -> int:
+        """Returns the upper index of the vector"""
+
+    def Norm(self) -> float:
+        """Returns the value or the square of the norm of this vector."""
+
+    def Norm2(self) -> float:
+        """Returns the value of the square of the norm of a vector."""
+
+    def Max(self) -> int:
+        """Returns the index of the maximum element of a vector. (first found)"""
+
+    def Min(self) -> int:
+        """Returns the index of the minimum element of a vector. (first found)"""
+
+    def Normalize(self) -> None:
+        """
+        Normalizes this vector (the norm of the result
+        is equal to 1.0) and assigns the result to this vector
+        Exceptions
+        Standard_NullValue if this vector is null (i.e. if its norm is
+        less than or equal to double::RealEpsilon().
+        """
+
+    def Normalized(self) -> math_IntegerVector:
+        """
+        Normalizes this vector (the norm of the result
+        is equal to 1.0) and creates a new vector
+        Exceptions
+        Standard_NullValue if this vector is null (i.e. if its norm is
+        less than or equal to double::RealEpsilon().
+        """
+
+    def Invert(self) -> None:
+        """Inverts this vector and assigns the result to this vector."""
+
+    def Inverse(self) -> math_IntegerVector:
+        """Inverts this vector and creates a new vector."""
+
+    def Set(self, theI1: int, theI2: int, theV: math_IntegerVector) -> None:
+        """
+        sets a vector from "theI1" to "theI2" to the vector "theV";
+        An exception is raised if "theI1" is less than "LowerIndex" or "theI2" is greater than
+        "UpperIndex" or "theI1" is greater than "theI2". An exception is raised if "theI2-theI1+1" is
+        different from the "Length" of "theV".
+        """
+
+    def Slice(self, theI1: int, theI2: int) -> math_IntegerVector:
+        """
+        Creates a new vector by inverting the values of this vector
+        between indexes "theI1" and "theI2".
+        If the values of this vector were (1., 2., 3., 4.,5., 6.),
+        by slicing it between indexes 2 and 5 the values
+        of the resulting vector are (1., 5., 4., 3., 2., 6.)
+        """
+
+    @overload
+    def Multiply(self, theRight: int) -> None:
+        """Updates current vector by multiplying each element on current value."""
+
+    @overload
+    def Multiply(self, theLeft: math_IntegerVector, theRight: math_Matrix) -> None:
+        """
+        sets a vector to the product of the vector "theLeft"
+        with the matrix "theRight".
+        """
+
+    @overload
+    def Multiply(self, theLeft: math_Matrix, theRight: math_IntegerVector) -> None:
+        """
+        sets a vector to the product of the matrix "theLeft"
+        with the vector "theRight".
+        """
+
+    @overload
+    def Multiply(self, theLeft: int, theRight: math_IntegerVector) -> None:
+        """
+        returns the multiplication of a real by a vector.
+        "me" = "theLeft" * "theRight\"
+        """
+
+    def __imul__(self, theRight: int) -> math_IntegerVector: ...
+
+    @overload
+    def Multiplied(self, theRight: int) -> math_IntegerVector:
+        """returns the product of a vector and a real value."""
+
+    @overload
+    def Multiplied(self, theRight: math_IntegerVector) -> int:
+        """
+        returns the inner product of 2 vectors.
+        An exception is raised if the lengths are not equal.
+        """
+
+    @overload
+    def Multiplied(self, theRight: math_Matrix) -> math_IntegerVector:
+        """returns the product of a vector by a matrix."""
+
+    @overload
+    def __mul__(self, theRight: int) -> math_IntegerVector: ...
+
+    @overload
+    def __mul__(self, theRight: math_IntegerVector) -> int: ...
+
+    @overload
+    def __mul__(self, theRight: math_Matrix) -> math_IntegerVector: ...
+
+    def TMultiplied(self, theRight: int) -> math_IntegerVector:
+        """returns the product of a vector and a real value."""
+
+    def Divide(self, theRight: int) -> None:
+        """
+        divides a vector by the value "theRight".
+        An exception is raised if "theRight" = 0.
+        """
+
+    def __itruediv__(self, theRight: int) -> math_IntegerVector: ...
+
+    def Divided(self, theRight: int) -> math_IntegerVector:
+        """
+        Returns new vector as dividing current vector with the value "theRight".
+        An exception is raised if "theRight" = 0.
+        """
+
+    def __truediv__(self, theRight: int) -> math_IntegerVector: ...
+
+    @overload
+    def Add(self, theRight: math_IntegerVector) -> None:
+        """
+        adds the vector "theRight" to a vector.
+        An exception is raised if the vectors have not the same length.
+        Warning
+        In order to avoid time-consuming copying of vectors, it
+        is preferable to use operator += or the function Add whenever possible.
+        """
+
+    @overload
+    def Add(self, theLeft: math_IntegerVector, theRight: math_IntegerVector) -> None:
+        """
+        sets a vector to the sum of the vector "theLeft"
+        and the vector "theRight".
+        An exception is raised if the lengths are different.
+        """
+
+    def __iadd__(self, theRight: math_IntegerVector) -> math_IntegerVector: ...
+
+    def Added(self, theRight: math_IntegerVector) -> math_IntegerVector:
+        """
+        Returns new vector as adding current vector with the value "theRight".
+        An exception is raised if the vectors do not have the same length.
+        An exception is raised if the lengths are not equal.
+        """
+
+    def __add__(self, theRight: math_IntegerVector) -> math_IntegerVector: ...
+
+    @overload
+    def TMultiply(self, theTLeft: math_Matrix, theRight: math_IntegerVector) -> None:
+        """
+        sets a vector to the product of the transpose
+        of the matrix "theTLeft" by the vector "theRight".
+        """
+
+    @overload
+    def TMultiply(self, theLeft: math_IntegerVector, theTRight: math_Matrix) -> None:
+        """
+        sets a vector to the product of the vector
+        "theLeft" by the transpose of the matrix "theTRight".
+        """
+
+    @overload
+    def Subtract(self, theLeft: math_IntegerVector, theRight: math_IntegerVector) -> None:
+        """
+        sets a vector to the Subtraction of the
+        vector theRight from the vector theLeft.
+        An exception is raised if the vectors have not the same length.
+        Warning
+        In order to avoid time-consuming copying of vectors, it
+        is preferable to use operator -= or the function
+        Subtract whenever possible.
+        """
+
+    @overload
+    def Subtract(self, theRight: math_IntegerVector) -> None:
+        """
+        returns the subtraction of "theRight" from "me".
+        An exception is raised if the vectors have not the same length.
+        """
+
+    @overload
+    def Value(self, theNum: int) -> int:
+        """accesses the value of index "theNum" of a vector."""
+
+    @overload
+    def Value(self, theNum: int) -> int:
+        """
+        accesses (in read or write mode) the value of index "theNum" of a vector.
+        """
+
+    @overload
+    def __call__(self, theNum: int) -> int: ...
+
+    @overload
+    def __call__(self, theNum: int) -> int: ...
+
+    def Initialized(self, theOther: math_IntegerVector) -> math_IntegerVector:
+        """
+        Initialises a vector by copying "theOther".
+        An exception is raised if the Lengths are different.
+        """
+
+    def Opposite(self) -> math_IntegerVector:
+        """returns the opposite of a vector."""
+
+    def __neg__(self) -> math_IntegerVector: ...
+
+    def __isub__(self, theRight: math_IntegerVector) -> math_IntegerVector: ...
+
+    def Subtracted(self, theRight: math_IntegerVector) -> math_IntegerVector:
+        """
+        returns the subtraction of "theRight" from "me".
+        An exception is raised if the vectors have not the same length.
+        """
+
+    def __sub__(self, theRight: math_IntegerVector) -> math_IntegerVector: ...
+
+    def Array1(self) -> nanoocp.NCollection.NCollection_Array1__int:
+        """
+        Returns the underlying array for interoperability with legacy APIs.
+        Allows passing math_Vector data to functions expecting NCollection_Array1.
+        """
+
+    def Resize(self, theSize: int) -> None:
+        """
+        Resizes the vector to a new size, keeping the same lower bound.
+        Existing data within the new range is preserved.
+        The method optimizes memory usage:
+        - If new size fits in stack buffer (<=32), uses stack allocation
+        - If new size requires heap and was already on heap, resizes in place
+        - Transitions between stack and heap as needed
+        @param theSize new size of the vector
+        """
+
 class math_FunctionSetRoot:
     """
     The math_FunctionSetRoot class calculates the root
@@ -1515,7 +2142,7 @@ class math_FunctionSetRoot:
         """
 
     @overload
-    def __init__(self, F: math_FunctionSetWithDerivatives, Tolerance: "math_VectorBase<double>", NbIterations: int = 100) -> None:
+    def __init__(self, F: math_FunctionSetWithDerivatives, Tolerance: math_Vector, NbIterations: int = 100) -> None:
         """
         is used in a sub-class to initialize correctly all the fields
         of this class.
@@ -1523,7 +2150,7 @@ class math_FunctionSetRoot:
         respected for all vectors and matrix declarations.
         """
 
-    def SetTolerance(self, Tolerance: "math_VectorBase<double>") -> None:
+    def SetTolerance(self, Tolerance: math_Vector) -> None:
         """Initializes the tolerance values."""
 
     def IsSolutionReached(self, arg0: math_FunctionSetWithDerivatives) -> bool:
@@ -1536,7 +2163,7 @@ class math_FunctionSetRoot:
         """
 
     @overload
-    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: "math_VectorBase<double>", theStopOnDivergent: bool = False) -> None:
+    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: math_Vector, theStopOnDivergent: bool = False) -> None:
         """
         Improves the root of function from the initial guess point.
         The infinum and supremum may be given to constrain the solution.
@@ -1545,7 +2172,7 @@ class math_FunctionSetRoot:
         """
 
     @overload
-    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: "math_VectorBase<double>", theInfBound: "math_VectorBase<double>", theSupBound: "math_VectorBase<double>", theStopOnDivergent: bool = False) -> None:
+    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: math_Vector, theInfBound: math_Vector, theSupBound: math_Vector, theStopOnDivergent: bool = False) -> None:
         """
         Improves the root of function from the initial guess point.
         The infinum and supremum may be given to constrain the solution.
@@ -1572,14 +2199,14 @@ class math_FunctionSetRoot:
         """
 
     @overload
-    def Root(self) -> "math_VectorBase<double>":
+    def Root(self) -> math_Vector:
         """
         Returns the value of the root of function F.
         Exception NotDone is raised if the root was not found.
         """
 
     @overload
-    def Root(self, Root: "math_VectorBase<double>") -> None:
+    def Root(self, Root: math_Vector) -> None:
         """
         Outputs the root vector in Root.
         Exception NotDone is raised if the root was not found.
@@ -1605,7 +2232,7 @@ class math_FunctionSetRoot:
         """
 
     @overload
-    def FunctionSetErrors(self) -> "math_VectorBase<double>":
+    def FunctionSetErrors(self) -> math_Vector:
         """
         returns the vector value of the error done
         on the functions at the root.
@@ -1613,7 +2240,7 @@ class math_FunctionSetRoot:
         """
 
     @overload
-    def FunctionSetErrors(self, Err: "math_VectorBase<double>") -> None:
+    def FunctionSetErrors(self, Err: math_Vector) -> None:
         """
         outputs the vector value of the error done
         on the functions at the root in Err.
@@ -1636,7 +2263,7 @@ class math_FunctionSetWithDerivatives(math_FunctionSet):
     def NbEquations(self) -> int:
         """Returns the number of equations of the function."""
 
-    def Value(self, X: "math_VectorBase<double>", F: "math_VectorBase<double>") -> bool:
+    def Value(self, X: math_Vector, F: math_Vector) -> bool:
         """
         Computes the values <F> of the Functions for the
         variable <X>.
@@ -1644,7 +2271,7 @@ class math_FunctionSetWithDerivatives(math_FunctionSet):
         False otherwise.
         """
 
-    def Derivatives(self, X: "math_VectorBase<double>", D: math_Matrix) -> bool:
+    def Derivatives(self, X: math_Vector, D: math_Matrix) -> bool:
         """
         Returns the values <D> of the derivatives for the
         variable <X>.
@@ -1652,7 +2279,7 @@ class math_FunctionSetWithDerivatives(math_FunctionSet):
         False otherwise.
         """
 
-    def Values(self, X: "math_VectorBase<double>", F: "math_VectorBase<double>", D: math_Matrix) -> bool:
+    def Values(self, X: math_Vector, F: math_Vector, D: math_Matrix) -> bool:
         """
         returns the values <F> of the functions and the derivatives
         <D> for the variable <X>.
@@ -1717,7 +2344,7 @@ class math_Gauss:
         """
 
     @overload
-    def Solve(self, B: "math_VectorBase<double>", X: "math_VectorBase<double>") -> None:
+    def Solve(self, B: math_Vector, X: math_Vector) -> None:
         """
         Given the input Vector B this routine returns the solution X of the set
         of linear equations A . X = B.
@@ -1728,7 +2355,7 @@ class math_Gauss:
         """
 
     @overload
-    def Solve(self, B: "math_VectorBase<double>") -> None:
+    def Solve(self, B: math_Vector) -> None:
         """
         Given the input Vector B this routine solves the set of linear
         equations A . X = B. B is replaced by the vector solution X.
@@ -1779,7 +2406,7 @@ class math_GaussLeastSquare:
         Returns true if the computations are successful, otherwise returns false.e
         """
 
-    def Solve(self, B: "math_VectorBase<double>", X: "math_VectorBase<double>") -> None:
+    def Solve(self, B: math_Vector, X: math_Vector) -> None:
         """
         Given the input Vector <B> this routine solves the set
         of linear equations A . X = B.
@@ -1798,7 +2425,7 @@ class math_GaussMultipleIntegration:
     Warning: Each element of Order must be inferior or equal to 61.
     """
 
-    def __init__(self, F: math_MultipleVarFunction, Lower: "math_VectorBase<double>", Upper: "math_VectorBase<double>", Order: "math_VectorBase<int>") -> None:
+    def __init__(self, F: math_MultipleVarFunction, Lower: math_Vector, Upper: math_Vector, Order: math_IntegerVector) -> None:
         """
         The Gauss-Legendre integration with Order = points of
         integration for each unknown, is done on the function F
@@ -1819,7 +2446,7 @@ class math_GaussSetIntegration:
     Warning: The case M>1 is not implemented.
     """
 
-    def __init__(self, F: math_FunctionSet, Lower: "math_VectorBase<double>", Upper: "math_VectorBase<double>", Order: "math_VectorBase<int>") -> None:
+    def __init__(self, F: math_FunctionSet, Lower: math_Vector, Upper: math_Vector, Order: math_IntegerVector) -> None:
         """
         The Gauss-Legendre integration with Order = points of
         integration for each unknown, is done on the function F
@@ -1829,7 +2456,7 @@ class math_GaussSetIntegration:
     def IsDone(self) -> bool:
         """returns True if all has been correctly done."""
 
-    def Value(self) -> "math_VectorBase<double>":
+    def Value(self) -> math_Vector:
         """returns the value of the integral."""
 
 class math_GaussSingleIntegration:
@@ -1871,7 +2498,7 @@ class math_MultipleVarFunction:
     def NbVariables(self) -> int:
         """Returns the number of variables of the function"""
 
-    def Value(self, X: "math_VectorBase<double>") -> tuple[bool, float]:
+    def Value(self, X: math_Vector) -> tuple[bool, float]:
         """
         Computes the values of the Functions <F> for the
         variable <X>.
@@ -1914,7 +2541,7 @@ class math_Householder:
     def __init__(self, A: math_Matrix, B: math_Matrix, EPS: float = 1e-20) -> None: ...
 
     @overload
-    def __init__(self, A: math_Matrix, B: "math_VectorBase<double>", EPS: float = 1e-20) -> None:
+    def __init__(self, A: math_Matrix, B: math_Vector, EPS: float = 1e-20) -> None:
         """
         Given an input matrix A with n>= m, given an input vector B
         this constructor performs the least square resolution of
@@ -1942,7 +2569,7 @@ class math_Householder:
         Returns true if the computations are successful, otherwise returns false.
         """
 
-    def Value(self, sol: "math_VectorBase<double>", Index: int = 1) -> None:
+    def Value(self, sol: math_Vector, Index: int = 1) -> None:
         """
         Given the integer Index, this routine returns the
         corresponding least square solution sol.
@@ -1980,7 +2607,7 @@ class math_Jacobi:
         Returns true if the computations are successful, otherwise returns false.
         """
 
-    def Values(self) -> "math_VectorBase<double>":
+    def Values(self) -> math_Vector:
         """
         Returns the eigenvalues vector.
         Exception NotDone is raised if calculation is not done successfully.
@@ -1999,7 +2626,7 @@ class math_Jacobi:
         Exception NotDone is raised if calculation is not done successfully.
         """
 
-    def Vector(self, Num: int, V: "math_VectorBase<double>") -> None:
+    def Vector(self, Num: int, V: math_Vector) -> None:
         """
         Returns the eigenvector V of number Num.
         Eigenvectors are in the range (1..n).
@@ -2084,7 +2711,7 @@ class math_KronrodSingleIntegration:
         """
 
     @staticmethod
-    def GKRule(theFunction: math_Function, theLower: float, theUpper: float, theGaussP: "math_VectorBase<double>", theGaussW: "math_VectorBase<double>", theKronrodP: "math_VectorBase<double>", theKronrodW: "math_VectorBase<double>") -> tuple[bool, float, float]: ...
+    def GKRule(theFunction: math_Function, theLower: float, theUpper: float, theGaussP: math_Vector, theGaussW: math_Vector, theKronrodP: math_Vector, theKronrodW: math_Vector) -> tuple[bool, float, float]: ...
 
 class math_MultipleVarFunctionWithGradient(math_MultipleVarFunction):
     """
@@ -2095,21 +2722,21 @@ class math_MultipleVarFunctionWithGradient(math_MultipleVarFunction):
     def NbVariables(self) -> int:
         """Returns the number of variables of the function."""
 
-    def Value(self, X: "math_VectorBase<double>") -> tuple[bool, float]:
+    def Value(self, X: math_Vector) -> tuple[bool, float]:
         """
         Computes the values of the Functions <F> for the variable <X>.
         Returns True if the computation was done successfully,
         False otherwise.
         """
 
-    def Gradient(self, X: "math_VectorBase<double>", G: "math_VectorBase<double>") -> bool:
+    def Gradient(self, X: math_Vector, G: math_Vector) -> bool:
         """
         Computes the gradient <G> of the functions for the variable <X>.
         Returns True if the computation was done successfully,
         False otherwise.
         """
 
-    def Values(self, X: "math_VectorBase<double>", G: "math_VectorBase<double>") -> tuple[bool, float]:
+    def Values(self, X: math_Vector, G: math_Vector) -> tuple[bool, float]:
         """
         computes the value <F> and the gradient <G> of the
         functions for the variable <X>.
@@ -2121,7 +2748,7 @@ class math_MultipleVarFunctionWithHessian(math_MultipleVarFunctionWithGradient):
     def NbVariables(self) -> int:
         """returns the number of variables of the function."""
 
-    def Value(self, X: "math_VectorBase<double>") -> tuple[bool, float]:
+    def Value(self, X: math_Vector) -> tuple[bool, float]:
         """
         computes the values of the Functions <F> for the
         variable <X>.
@@ -2129,7 +2756,7 @@ class math_MultipleVarFunctionWithHessian(math_MultipleVarFunctionWithGradient):
         False otherwise.
         """
 
-    def Gradient(self, X: "math_VectorBase<double>", G: "math_VectorBase<double>") -> bool:
+    def Gradient(self, X: math_Vector, G: math_Vector) -> bool:
         """
         computes the gradient <G> of the functions for the
         variable <X>.
@@ -2138,7 +2765,7 @@ class math_MultipleVarFunctionWithHessian(math_MultipleVarFunctionWithGradient):
         """
 
     @overload
-    def Values(self, X: "math_VectorBase<double>", G: "math_VectorBase<double>") -> tuple[bool, float]:
+    def Values(self, X: math_Vector, G: math_Vector) -> tuple[bool, float]:
         """
         computes the value <F> and the gradient <G> of the
         functions for the variable <X>.
@@ -2147,7 +2774,7 @@ class math_MultipleVarFunctionWithHessian(math_MultipleVarFunctionWithGradient):
         """
 
     @overload
-    def Values(self, X: "math_VectorBase<double>", G: "math_VectorBase<double>", H: math_Matrix) -> tuple[bool, float]:
+    def Values(self, X: math_Vector, G: math_Vector, H: math_Matrix) -> tuple[bool, float]:
         """
         computes the value <F>, the gradient <G> and the
         hessian <H> of the functions for the variable <X>.
@@ -2244,18 +2871,18 @@ class math_NewtonFunctionSetRoot:
         """
 
     @overload
-    def __init__(self, theFunction: math_FunctionSetWithDerivatives, theXTolerance: "math_VectorBase<double>", theFTolerance: float, theNbIterations: int = 100) -> None:
+    def __init__(self, theFunction: math_FunctionSetWithDerivatives, theXTolerance: math_Vector, theFTolerance: float, theNbIterations: int = 100) -> None:
         """
         Initialize correctly all the fields of this class.
         The range (1, F.NbVariables()) must be especially respected for
         all vectors and matrix declarations.
         """
 
-    def SetTolerance(self, XTol: "math_VectorBase<double>") -> None:
+    def SetTolerance(self, XTol: math_Vector) -> None:
         """Initializes the tolerance values for the unknowns."""
 
     @overload
-    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: "math_VectorBase<double>") -> None:
+    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: math_Vector) -> None:
         """
         The Newton method is done to improve the root of the function
         from the initial guess point. The solution is found when:
@@ -2263,7 +2890,7 @@ class math_NewtonFunctionSetRoot:
         """
 
     @overload
-    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: "math_VectorBase<double>", theInfBound: "math_VectorBase<double>", theSupBound: "math_VectorBase<double>") -> None:
+    def Perform(self, theFunction: math_FunctionSetWithDerivatives, theStartingPoint: math_Vector, theInfBound: math_Vector, theSupBound: math_Vector) -> None:
         """
         The Newton method is done to improve the root of the function
         from the initial guess point. Bounds may be given, to constrain the solution.
@@ -2286,7 +2913,7 @@ class math_NewtonFunctionSetRoot:
         """
 
     @overload
-    def Root(self) -> "math_VectorBase<double>":
+    def Root(self) -> math_Vector:
         """
         Returns the value of the root of function F.
         Exceptions
@@ -2294,7 +2921,7 @@ class math_NewtonFunctionSetRoot:
         """
 
     @overload
-    def Root(self, Root: "math_VectorBase<double>") -> None:
+    def Root(self, Root: math_Vector) -> None:
         """
         outputs the root vector in Root.
         Exception NotDone is raised if the root was not found.
@@ -2320,7 +2947,7 @@ class math_NewtonFunctionSetRoot:
         """
 
     @overload
-    def FunctionSetErrors(self) -> "math_VectorBase<double>":
+    def FunctionSetErrors(self) -> math_Vector:
         """
         Returns the vector value of the error done on the
         functions at the root.
@@ -2328,7 +2955,7 @@ class math_NewtonFunctionSetRoot:
         """
 
     @overload
-    def FunctionSetErrors(self, Err: "math_VectorBase<double>") -> None:
+    def FunctionSetErrors(self, Err: math_Vector) -> None:
         """
         Outputs the vector value of the error done on the
         functions at the root in Err.
@@ -2354,7 +2981,7 @@ class math_NewtonMinimum:
         Warning: This constructor does not perform computation.
         """
 
-    def Perform(self, theFunction: math_MultipleVarFunctionWithHessian, theStartingPoint: "math_VectorBase<double>") -> None:
+    def Perform(self, theFunction: math_MultipleVarFunctionWithHessian, theStartingPoint: math_Vector) -> None:
         """Search the solution."""
 
     def IsConverged(self) -> bool:
@@ -2368,14 +2995,14 @@ class math_NewtonMinimum:
         """Tests if an error has occurred."""
 
     @overload
-    def Location(self) -> "math_VectorBase<double>":
+    def Location(self) -> math_Vector:
         """
         returns the location vector of the minimum.
         Exception NotDone is raised if an error has occurred.
         """
 
     @overload
-    def Location(self, Loc: "math_VectorBase<double>") -> None:
+    def Location(self, Loc: math_Vector) -> None:
         """
         outputs the location vector of the minimum in Loc.
         Exception NotDone is raised if an error has occurred.
@@ -2383,7 +3010,7 @@ class math_NewtonMinimum:
         equal to the range of the StartingPoint.
         """
 
-    def SetBoundary(self, theLeftBorder: "math_VectorBase<double>", theRightBorder: "math_VectorBase<double>") -> None:
+    def SetBoundary(self, theLeftBorder: math_Vector, theRightBorder: math_Vector) -> None:
         """Set boundaries."""
 
     def Minimum(self) -> float:
@@ -2393,7 +3020,7 @@ class math_NewtonMinimum:
         """
 
     @overload
-    def Gradient(self) -> "math_VectorBase<double>":
+    def Gradient(self) -> math_Vector:
         """
         returns the gradient vector at the minimum.
         Exception NotDone is raised if an error has occurred.
@@ -2401,7 +3028,7 @@ class math_NewtonMinimum:
         """
 
     @overload
-    def Gradient(self, Grad: "math_VectorBase<double>") -> None:
+    def Gradient(self, Grad: math_Vector) -> None:
         """
         outputs the gradient vector at the minimum in Grad.
         Exception NotDone is raised if the minimum was not found.
@@ -2431,7 +3058,7 @@ class math_Powell:
     def __init__(self, theFunction: math_MultipleVarFunction, theTolerance: float, theNbIterations: int = 200, theZEPS: float = 1e-12) -> None:
         """Constructor. Initialize new entity."""
 
-    def Perform(self, theFunction: math_MultipleVarFunction, theStartingPoint: "math_VectorBase<double>", theStartingDirections: math_Matrix) -> None:
+    def Perform(self, theFunction: math_MultipleVarFunction, theStartingPoint: math_Vector, theStartingDirections: math_Matrix) -> None:
         """
         Computes Powell minimization on the function F given
         theStartingPoint, and an initial matrix theStartingDirection
@@ -2453,14 +3080,14 @@ class math_Powell:
         """
 
     @overload
-    def Location(self) -> "math_VectorBase<double>":
+    def Location(self) -> math_Vector:
         """
         returns the location vector of the minimum.
         Exception NotDone is raised if the minimum was not found.
         """
 
     @overload
-    def Location(self, Loc: "math_VectorBase<double>") -> None:
+    def Location(self, Loc: math_Vector) -> None:
         """
         outputs the location vector of the minimum in Loc.
         Exception NotDone is raised if the minimum was not found.
@@ -2515,7 +3142,7 @@ class math_PSO:
     Warning: In PSO used fixed seed in RNG, so results are reproducible.
     """
 
-    def __init__(self, theFunc: math_MultipleVarFunction, theLowBorder: "math_VectorBase<double>", theUppBorder: "math_VectorBase<double>", theSteps: "math_VectorBase<double>", theNbParticles: int = 32, theNbIter: int = 100) -> None:
+    def __init__(self, theFunc: math_MultipleVarFunction, theLowBorder: math_Vector, theUppBorder: math_Vector, theSteps: math_Vector, theNbParticles: int = 32, theNbIter: int = 100) -> None:
         """
         Constructor.
 
@@ -2530,13 +3157,13 @@ class math_PSO:
         """
 
     @overload
-    def Perform(self, theSteps: "math_VectorBase<double>", theOutPnt: "math_VectorBase<double>", theNbIter: int = 100) -> float:
+    def Perform(self, theSteps: math_Vector, theOutPnt: math_Vector, theNbIter: int = 100) -> float:
         """
         Perform computations, particles array is constructed inside of this function.
         """
 
     @overload
-    def Perform(self, theParticles: math_PSOParticlesPool, theNbParticles: int, theOutPnt: "math_VectorBase<double>", theNbIter: int = 100) -> float:
+    def Perform(self, theParticles: math_PSOParticlesPool, theNbParticles: int, theOutPnt: math_Vector, theNbIter: int = 100) -> float:
         """Perform computations with given particles array."""
 
 class PSO_Particle:
@@ -2595,7 +3222,7 @@ class math_SVD:
         Returns true if the computations are successful, otherwise returns false.
         """
 
-    def Solve(self, B: "math_VectorBase<double>", X: "math_VectorBase<double>", Eps: float = 1e-06) -> None:
+    def Solve(self, B: math_Vector, X: math_Vector, Eps: float = 1e-06) -> None:
         """
         Given the input Vector B this routine solves the set of linear
         equations A . X = B.
@@ -2705,7 +3332,7 @@ class math_Uzawa:
     """
 
     @overload
-    def __init__(self, Cont: math_Matrix, Secont: "math_VectorBase<double>", StartingPoint: "math_VectorBase<double>", EpsLix: float = 1e-06, EpsLic: float = 1e-06, NbIterations: int = 500) -> None:
+    def __init__(self, Cont: math_Matrix, Secont: math_Vector, StartingPoint: math_Vector, EpsLix: float = 1e-06, EpsLic: float = 1e-06, NbIterations: int = 500) -> None:
         """
         Given an input matrix Cont, two input vectors Secont
         and StartingPoint, it solves Cont*X = Secont (only
@@ -2720,7 +3347,7 @@ class math_Uzawa:
         """
 
     @overload
-    def __init__(self, Cont: math_Matrix, Secont: "math_VectorBase<double>", StartingPoint: "math_VectorBase<double>", Nci: int, Nce: int, EpsLix: float = 1e-06, EpsLic: float = 1e-06, NbIterations: int = 500) -> None:
+    def __init__(self, Cont: math_Matrix, Secont: math_Vector, StartingPoint: math_Vector, Nci: int, Nce: int, EpsLix: float = 1e-06, EpsLic: float = 1e-06, NbIterations: int = 500) -> None:
         """
         Given an input matrix Cont, two input vectors Secont
         and StartingPoint, it solves Cont*X = Secont (the Nce
@@ -2743,22 +3370,22 @@ class math_Uzawa:
         Returns true if the computations are successful, otherwise returns false.
         """
 
-    def Value(self) -> "math_VectorBase<double>":
+    def Value(self) -> math_Vector:
         """
         Returns the vector solution of the system above.
         An exception is raised if NotDone.
         """
 
-    def InitialError(self) -> "math_VectorBase<double>":
+    def InitialError(self) -> math_Vector:
         """
         Returns the initial error Cont*StartingPoint-Secont.
         An exception is raised if NotDone.
         """
 
-    def Duale(self, V: "math_VectorBase<double>") -> None:
+    def Duale(self, V: math_Vector) -> None:
         """returns the duale variables V of the systeme."""
 
-    def Error(self) -> "math_VectorBase<double>":
+    def Error(self) -> math_Vector:
         """
         Returns the difference between X solution and the
         StartingPoint.
@@ -2794,25 +3421,25 @@ class math_ValueAndWeight:
     def __lt__(self, arg: math_ValueAndWeight, /) -> bool: ...
 
 @overload
-def LU_Decompose(a: math_Matrix, indx: "math_VectorBase<int>", d: float, TINY: float = 1e-20, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> int: ...
+def LU_Decompose(a: math_Matrix, indx: math_IntegerVector, d: float, TINY: float = 1e-20, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> int: ...
 
 @overload
-def LU_Decompose(a: math_Matrix, indx: "math_VectorBase<int>", d: float, vv: "math_VectorBase<double>", TINY: float = 1e-30, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> int: ...
+def LU_Decompose(a: math_Matrix, indx: math_IntegerVector, d: float, vv: math_Vector, TINY: float = 1e-30, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> int: ...
 
-def LU_Solve(a: math_Matrix, indx: "math_VectorBase<int>", b: "math_VectorBase<double>") -> None: ...
+def LU_Solve(a: math_Matrix, indx: math_IntegerVector, b: math_Vector) -> None: ...
 
 def LU_Invert(a: math_Matrix) -> int: ...
 
 @overload
-def SVD_Decompose(a: math_Matrix, w: "math_VectorBase<double>", v: math_Matrix) -> int: ...
+def SVD_Decompose(a: math_Matrix, w: math_Vector, v: math_Matrix) -> int: ...
 
 @overload
-def SVD_Decompose(a: math_Matrix, w: "math_VectorBase<double>", v: math_Matrix, rv1: "math_VectorBase<double>") -> int: ...
+def SVD_Decompose(a: math_Matrix, w: math_Vector, v: math_Matrix, rv1: math_Vector) -> int: ...
 
-def SVD_Solve(u: math_Matrix, w: "math_VectorBase<double>", v: math_Matrix, b: "math_VectorBase<double>", x: "math_VectorBase<double>") -> None: ...
+def SVD_Solve(u: math_Matrix, w: math_Vector, v: math_Matrix, b: math_Vector, x: math_Vector) -> None: ...
 
-def DACTCL_Decompose(a: "math_VectorBase<double>", indx: "math_VectorBase<int>", MinPivot: float = 1e-20) -> int: ...
+def DACTCL_Decompose(a: math_Vector, indx: math_IntegerVector, MinPivot: float = 1e-20) -> int: ...
 
-def DACTCL_Solve(a: "math_VectorBase<double>", b: "math_VectorBase<double>", indx: "math_VectorBase<int>", MinPivot: float = 1e-20) -> int: ...
+def DACTCL_Solve(a: math_Vector, b: math_Vector, indx: math_IntegerVector, MinPivot: float = 1e-20) -> int: ...
 
-def Jacobi(a: math_Matrix, d: "math_VectorBase<double>", v: math_Matrix, nrot: int) -> int: ...
+def Jacobi(a: math_Matrix, d: math_Vector, v: math_Matrix, nrot: int) -> int: ...

@@ -334,8 +334,16 @@ class Emitter:
             self._note_types(cpp)
         for e in ir.enums:
             declare += ["    " + l for l in self._enum(e, "m")]
+        aliased: set[str] = set()      # instantiations already bound by another package: alias only
         for c in classes:
             self._note_types(*c.bases)
+            if c.template_key != "":
+                found = self.templates.get(c.template_key)
+                if found is not None and found.get("by") != self.ir.name and not found.get("skipped", False):
+                    declare.append(f'    m.attr("{c.py_name}") = nb::module_::import_("nanoocp._{found["toolkit"]}.{found["package"]}").attr("{found["name"]}");')
+                    aliased.add(c.name)
+                    continue
+                self.templates[c.template_key] = {"toolkit": self.toolkit_of[self.ir.name], "package": self.ir.name, "name": c.py_name, "by": self.ir.name}
             if c.is_exception:
                 declare.append(self._exception(c))
                 continue
@@ -352,7 +360,7 @@ class Emitter:
             declare.append("    }")
 
             body: list[str] = []
-            if c.is_exception:
+            if c.is_exception or c.name in aliased:
                 continue
             if not c.constructible:
                 self.report.append(f"{c.name}: operator new is not public -> no constructors")

@@ -47,12 +47,30 @@ def test_poly_triangulation_from_arrays():
 def test_toploc_and_math():
     assert TopLoc.TopLoc_Location().IsIdentity() is True
     assert TopLoc.TopLoc_Location(gp.gp_Trsf()).IsIdentity() is False   # OCCT always creates a datum item from a gp_Trsf
-    # math_Vector = math_VectorBase<double> is an alias of an OCCT class template: not bound yet (Design.md 8.1)
-    assert not hasattr(occ_math, "math_Vector")
+    v = occ_math.math_Vector(1, 3)                                     # alias of the class template math_VectorBase<double>
+    v.Init(2.0)
+    assert type(v).__name__ == "math_Vector" and v.Norm() == pytest.approx(12.0 ** 0.5) and v(2) == 2.0
+    assert (v + occ_math.math_Vector(gp.gp_XYZ(1.0, 2.0, 3.0)))(1) == 3.0 and v * v == 12.0
+    assert occ_math.math_IntegerVector(1, 2).Length() == 2
     m = occ_math.math_Matrix(1, 2, 1, 2)
     m.Init(0.0)
     m.SetDiag(3.0)
     assert m.Determinant() == 9.0 and m(1, 1) == 3.0 and m.Value(2, 2) == 3.0
+    assert type(m.Row(1)).__name__ == "math_Vector"                    # math_VectorBase<double> resolves to the alias class
+
+
+def test_other_alias_instantiations():
+    from nanoocp import BVH, Bnd, TColStd
+    vec = BVH.BVH_Vec3d(1.0, 2.0, 3.0)                                  # BVH::VectorType<double, 3>::Type -> NCollection_Vec3<double>
+    assert (vec.x(), vec.y(), vec.z()) == (1.0, 2.0, 3.0) and vec.Dot(BVH.BVH_Vec3d(1.0, 0.0, 0.0)) == 1.0
+    b = Bnd.Bnd_B3d()
+    b.Add(gp.gp_XYZ(0.0, 0.0, 0.0))
+    b.Add(gp.gp_XYZ(2.0, 2.0, 2.0))
+    assert b.IsOut(gp.gp_XYZ(5.0, 5.0, 5.0)) is True
+    pm = TColStd.TColStd_PackedMapOfInteger()                          # NCollection_PackedMap<int>, a real class in TColStd
+    pm.Add(3)
+    assert pm.Contains(3) is True and pm.Extent() == 1
+    assert NCollection.NCollection_Array1[BVH.BVH_Vec3f].__name__ == "NCollection_Array1__NCollection_Vec3__float"
 
 
 def test_namespace_constants_and_anonymous_enums():

@@ -11,6 +11,7 @@ from nanoocp._templates import Template as _Template
 NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.Bnd', 'Bnd_Box'),): "NCollection_Array1__Bnd_Box",
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_Array1__Handle_Standard_Persistent",
+    (('nanoocp.BVH', 'BVH_Vec3f'),): "NCollection_Array1__NCollection_Vec3__float",
     (('nanoocp.Poly', 'Poly_Triangle'),): "NCollection_Array1__Poly_Triangle",
     (('builtins', 'float'),): "NCollection_Array1__double",
     (('nanoocp.gp', 'gp_Pnt'),): "NCollection_Array1__gp_Pnt",

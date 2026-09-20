@@ -14,6 +14,8 @@
 #include <NCollection_Array1.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_List.hxx>
+#include <gp_Ax1.hxx>
+#include <gp_Ax2d.hxx>
 #include <gp_Ax3.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Dir2d.hxx>
@@ -24,9 +26,22 @@
 #include <gp_Pnt2d.hxx>
 #include <gp_Trsf.hxx>
 #include <gp_Trsf2d.hxx>
+#include <gp_XY.hxx>
 #include <gp_XYZ.hxx>
 
 void nanoocp_declare_Bnd(nb::module_ &m) {
+    { nb::class_<Bnd_B2<double>> cls(m, "Bnd_B2d", R"nbdoc(Template class for 2D bounding box.
+This is a base template that is instantiated for double and float.)nbdoc");
+    }
+    { nb::class_<Bnd_B2<float>> cls(m, "Bnd_B2f", R"nbdoc(Template class for 2D bounding box.
+This is a base template that is instantiated for double and float.)nbdoc");
+    }
+    { nb::class_<Bnd_B3<double>> cls(m, "Bnd_B3d", R"nbdoc(Template class for 3D bounding box.
+This is a base template that is instantiated for double and float.)nbdoc");
+    }
+    { nb::class_<Bnd_B3<float>> cls(m, "Bnd_B3f", R"nbdoc(Template class for 3D bounding box.
+This is a base template that is instantiated for double and float.)nbdoc");
+    }
     { nb::class_<Bnd_Box> cls(m, "Bnd_Box", R"nbdoc(Describes a bounding box in 3D space.
 A bounding box is parallel to the axes of the coordinates
 system. If it is finite, it is defined by the three intervals:
@@ -120,6 +135,218 @@ void nanoocp_templates_Bnd(nb::module_ &m) {
 }
 
 void nanoocp_define_Bnd(nb::module_ &m) {
+    nb::borrow<nb::class_<Bnd_B2<double>>>(m.attr("Bnd_B2d"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
+        .def(nb::init<const gp_XY &, const gp_XY &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def(nb::init<const std::array<double, 2> &, const std::array<double, 2> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("IsVoid", static_cast<bool (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
+        .def("Clear", static_cast<void (Bnd_B2<double>::*)() noexcept>(&Bnd_B2<double>::Clear), R"nbdoc(Reset the box data.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B2<double>::*)(const gp_XY &)>(&Bnd_B2<double>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B2<double>::*)(const gp_Pnt2d &)>(&Bnd_B2<double>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B2<double>::*)(const Bnd_B2<double> &)>(&Bnd_B2<double>::Add), nb::arg("theBox"), R"nbdoc(Update the box by another box.)nbdoc")
+        .def("CornerMin", static_cast<gp_XY (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::CornerMin), R"nbdoc(Query a box corner: (Center - HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("CornerMax", static_cast<gp_XY (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::CornerMax), R"nbdoc(Query a box corner: (Center + HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("SquareExtent", static_cast<double (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::SquareExtent), R"nbdoc(Query the square diagonal. If the box is VOID (see method IsVoid())
+then a very big real value is returned.)nbdoc")
+        .def("Enlarge", static_cast<void (Bnd_B2<double>::*)(const double) noexcept>(&Bnd_B2<double>::Enlarge), nb::arg("theDiff"), R"nbdoc(Extend the Box by the absolute value of theDiff.)nbdoc")
+        .def("Limit", static_cast<bool (Bnd_B2<double>::*)(const Bnd_B2<double> &)>(&Bnd_B2<double>::Limit), nb::arg("theOtherBox"), R"nbdoc(Limit the Box by the internals of theOtherBox.
+Returns True if the limitation takes place, otherwise False
+indicating that the boxes do not intersect.)nbdoc")
+        .def("Transformed", static_cast<Bnd_B2<double> (Bnd_B2<double>::*)(const gp_Trsf2d &) const>(&Bnd_B2<double>::Transformed), nb::arg("theTrsf"), R"nbdoc(Transform the bounding box with the given transformation.
+The resulting box will be larger if theTrsf contains rotation.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<double>::*)(const gp_XY &) const noexcept>(&Bnd_B2<double>::IsOut), nb::arg("thePnt"), R"nbdoc(Check the given point for the inclusion in the Box.
+Returns True if the point is outside.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<double>::*)(const gp_XY &, const double, const bool) const>(&Bnd_B2<double>::IsOut), nb::arg("theCenter"), nb::arg("theRadius"), nb::arg("isCircleHollow") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Check a circle for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<double>::*)(const Bnd_B2<double> &) const noexcept>(&Bnd_B2<double>::IsOut), nb::arg("theOtherBox"), R"nbdoc(Check the given box for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<double>::*)(const Bnd_B2<double> &, const gp_Trsf2d &) const>(&Bnd_B2<double>::IsOut), nb::arg("theOtherBox"), nb::arg("theTrsf"), R"nbdoc(Check the given box oriented by the given transformation
+for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<double>::*)(const gp_Ax2d &) const>(&Bnd_B2<double>::IsOut), nb::arg("theLine"), R"nbdoc(Check the given Line for the intersection with the current box.
+Returns True if there is no intersection.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<double>::*)(const gp_XY &, const gp_XY &) const>(&Bnd_B2<double>::IsOut), nb::arg("theP0"), nb::arg("theP1"), R"nbdoc(Check the Segment defined by the couple of input points
+for the intersection with the current box.
+Returns True if there is no intersection.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B2<double>::*)(const Bnd_B2<double> &) const noexcept>(&Bnd_B2<double>::IsIn), nb::arg("theBox"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'. Returns
+True if 'this' box is fully inside 'theBox'.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B2<double>::*)(const Bnd_B2<double> &, const gp_Trsf2d &) const>(&Bnd_B2<double>::IsIn), nb::arg("theBox"), nb::arg("theTrsf"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'
+transformed by 'theTrsf'. Returns True if 'this' box is fully
+inside the transformed 'theBox'.)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B2<double>::*)(const gp_XY &) noexcept>(&Bnd_B2<double>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B2<double>::*)(const std::array<double, 2> &) noexcept>(&Bnd_B2<double>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B2<double>::*)(const gp_XY &) noexcept>(&Bnd_B2<double>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B2<double>::*)(const std::array<double, 2> &) noexcept>(&Bnd_B2<double>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("Center", static_cast<const std::array<double, 2> & (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::Center), R"nbdoc(Get the Center coordinates)nbdoc")
+        .def("HSize", static_cast<const std::array<double, 2> & (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::HSize), R"nbdoc(Get the HSize (half-diagonal) coordinates)nbdoc");
+    nb::borrow<nb::class_<Bnd_B2<float>>>(m.attr("Bnd_B2f"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
+        .def(nb::init<const gp_XY &, const gp_XY &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def(nb::init<const std::array<float, 2> &, const std::array<float, 2> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("IsVoid", static_cast<bool (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
+        .def("Clear", static_cast<void (Bnd_B2<float>::*)() noexcept>(&Bnd_B2<float>::Clear), R"nbdoc(Reset the box data.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B2<float>::*)(const gp_XY &)>(&Bnd_B2<float>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B2<float>::*)(const gp_Pnt2d &)>(&Bnd_B2<float>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B2<float>::*)(const Bnd_B2<float> &)>(&Bnd_B2<float>::Add), nb::arg("theBox"), R"nbdoc(Update the box by another box.)nbdoc")
+        .def("CornerMin", static_cast<gp_XY (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::CornerMin), R"nbdoc(Query a box corner: (Center - HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("CornerMax", static_cast<gp_XY (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::CornerMax), R"nbdoc(Query a box corner: (Center + HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("SquareExtent", static_cast<double (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::SquareExtent), R"nbdoc(Query the square diagonal. If the box is VOID (see method IsVoid())
+then a very big real value is returned.)nbdoc")
+        .def("Enlarge", static_cast<void (Bnd_B2<float>::*)(const double) noexcept>(&Bnd_B2<float>::Enlarge), nb::arg("theDiff"), R"nbdoc(Extend the Box by the absolute value of theDiff.)nbdoc")
+        .def("Limit", static_cast<bool (Bnd_B2<float>::*)(const Bnd_B2<float> &)>(&Bnd_B2<float>::Limit), nb::arg("theOtherBox"), R"nbdoc(Limit the Box by the internals of theOtherBox.
+Returns True if the limitation takes place, otherwise False
+indicating that the boxes do not intersect.)nbdoc")
+        .def("Transformed", static_cast<Bnd_B2<float> (Bnd_B2<float>::*)(const gp_Trsf2d &) const>(&Bnd_B2<float>::Transformed), nb::arg("theTrsf"), R"nbdoc(Transform the bounding box with the given transformation.
+The resulting box will be larger if theTrsf contains rotation.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<float>::*)(const gp_XY &) const noexcept>(&Bnd_B2<float>::IsOut), nb::arg("thePnt"), R"nbdoc(Check the given point for the inclusion in the Box.
+Returns True if the point is outside.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<float>::*)(const gp_XY &, const double, const bool) const>(&Bnd_B2<float>::IsOut), nb::arg("theCenter"), nb::arg("theRadius"), nb::arg("isCircleHollow") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Check a circle for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<float>::*)(const Bnd_B2<float> &) const noexcept>(&Bnd_B2<float>::IsOut), nb::arg("theOtherBox"), R"nbdoc(Check the given box for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<float>::*)(const Bnd_B2<float> &, const gp_Trsf2d &) const>(&Bnd_B2<float>::IsOut), nb::arg("theOtherBox"), nb::arg("theTrsf"), R"nbdoc(Check the given box oriented by the given transformation
+for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<float>::*)(const gp_Ax2d &) const>(&Bnd_B2<float>::IsOut), nb::arg("theLine"), R"nbdoc(Check the given Line for the intersection with the current box.
+Returns True if there is no intersection.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B2<float>::*)(const gp_XY &, const gp_XY &) const>(&Bnd_B2<float>::IsOut), nb::arg("theP0"), nb::arg("theP1"), R"nbdoc(Check the Segment defined by the couple of input points
+for the intersection with the current box.
+Returns True if there is no intersection.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B2<float>::*)(const Bnd_B2<float> &) const noexcept>(&Bnd_B2<float>::IsIn), nb::arg("theBox"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'. Returns
+True if 'this' box is fully inside 'theBox'.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B2<float>::*)(const Bnd_B2<float> &, const gp_Trsf2d &) const>(&Bnd_B2<float>::IsIn), nb::arg("theBox"), nb::arg("theTrsf"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'
+transformed by 'theTrsf'. Returns True if 'this' box is fully
+inside the transformed 'theBox'.)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B2<float>::*)(const gp_XY &) noexcept>(&Bnd_B2<float>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B2<float>::*)(const std::array<float, 2> &) noexcept>(&Bnd_B2<float>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B2<float>::*)(const gp_XY &) noexcept>(&Bnd_B2<float>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B2<float>::*)(const std::array<float, 2> &) noexcept>(&Bnd_B2<float>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("Center", static_cast<const std::array<float, 2> & (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::Center), R"nbdoc(Get the Center coordinates)nbdoc")
+        .def("HSize", static_cast<const std::array<float, 2> & (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::HSize), R"nbdoc(Get the HSize (half-diagonal) coordinates)nbdoc");
+    nb::borrow<nb::class_<Bnd_B3<double>>>(m.attr("Bnd_B3d"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
+        .def(nb::init<const gp_XYZ &, const gp_XYZ &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def(nb::init<const std::array<double, 3> &, const std::array<double, 3> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("IsVoid", static_cast<bool (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
+        .def("Clear", static_cast<void (Bnd_B3<double>::*)() noexcept>(&Bnd_B3<double>::Clear), R"nbdoc(Reset the box data.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B3<double>::*)(const gp_XYZ &)>(&Bnd_B3<double>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B3<double>::*)(const gp_Pnt &)>(&Bnd_B3<double>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B3<double>::*)(const Bnd_B3<double> &)>(&Bnd_B3<double>::Add), nb::arg("theBox"), R"nbdoc(Update the box by another box.)nbdoc")
+        .def("CornerMin", static_cast<gp_XYZ (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::CornerMin), R"nbdoc(Query the lower corner: (Center - HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("CornerMax", static_cast<gp_XYZ (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::CornerMax), R"nbdoc(Query the upper corner: (Center + HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("SquareExtent", static_cast<double (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::SquareExtent), R"nbdoc(Query the square diagonal. If the box is VOID (see method IsVoid())
+then a very big real value is returned.)nbdoc")
+        .def("Enlarge", static_cast<void (Bnd_B3<double>::*)(const double) noexcept>(&Bnd_B3<double>::Enlarge), nb::arg("theDiff"), R"nbdoc(Extend the Box by the absolute value of theDiff.)nbdoc")
+        .def("Limit", static_cast<bool (Bnd_B3<double>::*)(const Bnd_B3<double> &)>(&Bnd_B3<double>::Limit), nb::arg("theOtherBox"), R"nbdoc(Limit the Box by the internals of theOtherBox.
+Returns True if the limitation takes place, otherwise False
+indicating that the boxes do not intersect.)nbdoc")
+        .def("Transformed", static_cast<Bnd_B3<double> (Bnd_B3<double>::*)(const gp_Trsf &) const>(&Bnd_B3<double>::Transformed), nb::arg("theTrsf"), R"nbdoc(Transform the bounding box with the given transformation.
+The resulting box will be larger if theTrsf contains rotation.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<double>::*)(const gp_XYZ &) const noexcept>(&Bnd_B3<double>::IsOut), nb::arg("thePnt"), R"nbdoc(Check the given point for the inclusion in the Box.
+Returns True if the point is outside.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<double>::*)(const gp_XYZ &, const double, const bool) const>(&Bnd_B3<double>::IsOut), nb::arg("theCenter"), nb::arg("theRadius"), nb::arg("isSphereHollow") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Check a sphere for the intersection with the current box.
+Returns True if there is no intersection between boxes. If the
+parameter 'IsSphereHollow' is True, then the intersection is not
+reported for a box that is completely inside the sphere (otherwise
+this method would report an intersection).)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<double>::*)(const Bnd_B3<double> &) const noexcept>(&Bnd_B3<double>::IsOut), nb::arg("theOtherBox"), R"nbdoc(Check the given box for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<double>::*)(const Bnd_B3<double> &, const gp_Trsf &) const>(&Bnd_B3<double>::IsOut), nb::arg("theOtherBox"), nb::arg("theTrsf"), R"nbdoc(Check the given box oriented by the given transformation
+for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<double>::*)(const gp_Ax1 &, const bool, const double) const>(&Bnd_B3<double>::IsOut), nb::arg("theLine"), nb::arg("isRay") = static_cast<std::decay_t<const bool>>(false), nb::arg("theOverthickness") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Check the given Line for the intersection with the current box.
+Returns True if there is no intersection.
+isRay==True means intersection check with the positive half-line
+theOverthickness is the addition to the size of the current box
+(may be negative). If positive, it can be treated as the thickness
+of the line 'theLine' or the radius of the cylinder along 'theLine')nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<double>::*)(const gp_Ax3 &) const>(&Bnd_B3<double>::IsOut), nb::arg("thePlane"), R"nbdoc(Check the given Plane for the intersection with the current box.
+Returns True if there is no intersection.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B3<double>::*)(const Bnd_B3<double> &) const noexcept>(&Bnd_B3<double>::IsIn), nb::arg("theBox"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'. Returns
+True if 'this' box is fully inside 'theBox'.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B3<double>::*)(const Bnd_B3<double> &, const gp_Trsf &) const>(&Bnd_B3<double>::IsIn), nb::arg("theBox"), nb::arg("theTrsf"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'
+transformed by 'theTrsf'. Returns True if 'this' box is fully
+inside the transformed 'theBox'.)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B3<double>::*)(const gp_XYZ &) noexcept>(&Bnd_B3<double>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B3<double>::*)(const std::array<double, 3> &) noexcept>(&Bnd_B3<double>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B3<double>::*)(const gp_XYZ &) noexcept>(&Bnd_B3<double>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B3<double>::*)(const std::array<double, 3> &) noexcept>(&Bnd_B3<double>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("Center", static_cast<const std::array<double, 3> & (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::Center), R"nbdoc(Get the Center coordinates)nbdoc")
+        .def("HSize", static_cast<const std::array<double, 3> & (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::HSize), R"nbdoc(Get the HSize (half-diagonal) coordinates)nbdoc");
+    nb::borrow<nb::class_<Bnd_B3<float>>>(m.attr("Bnd_B3f"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
+        .def(nb::init<const gp_XYZ &, const gp_XYZ &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def(nb::init<const std::array<float, 3> &, const std::array<float, 3> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("IsVoid", static_cast<bool (Bnd_B3<float>::*)() const noexcept>(&Bnd_B3<float>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
+        .def("Clear", static_cast<void (Bnd_B3<float>::*)() noexcept>(&Bnd_B3<float>::Clear), R"nbdoc(Reset the box data.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B3<float>::*)(const gp_XYZ &)>(&Bnd_B3<float>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B3<float>::*)(const gp_Pnt &)>(&Bnd_B3<float>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
+        .def("Add", static_cast<void (Bnd_B3<float>::*)(const Bnd_B3<float> &)>(&Bnd_B3<float>::Add), nb::arg("theBox"), R"nbdoc(Update the box by another box.)nbdoc")
+        .def("CornerMin", static_cast<gp_XYZ (Bnd_B3<float>::*)() const noexcept>(&Bnd_B3<float>::CornerMin), R"nbdoc(Query the lower corner: (Center - HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("CornerMax", static_cast<gp_XYZ (Bnd_B3<float>::*)() const noexcept>(&Bnd_B3<float>::CornerMax), R"nbdoc(Query the upper corner: (Center + HSize). You must make sure that
+the box is NOT VOID (see IsVoid()), otherwise the method returns
+irrelevant result.)nbdoc")
+        .def("SquareExtent", static_cast<double (Bnd_B3<float>::*)() const noexcept>(&Bnd_B3<float>::SquareExtent), R"nbdoc(Query the square diagonal. If the box is VOID (see method IsVoid())
+then a very big real value is returned.)nbdoc")
+        .def("Enlarge", static_cast<void (Bnd_B3<float>::*)(const double) noexcept>(&Bnd_B3<float>::Enlarge), nb::arg("theDiff"), R"nbdoc(Extend the Box by the absolute value of theDiff.)nbdoc")
+        .def("Limit", static_cast<bool (Bnd_B3<float>::*)(const Bnd_B3<float> &)>(&Bnd_B3<float>::Limit), nb::arg("theOtherBox"), R"nbdoc(Limit the Box by the internals of theOtherBox.
+Returns True if the limitation takes place, otherwise False
+indicating that the boxes do not intersect.)nbdoc")
+        .def("Transformed", static_cast<Bnd_B3<float> (Bnd_B3<float>::*)(const gp_Trsf &) const>(&Bnd_B3<float>::Transformed), nb::arg("theTrsf"), R"nbdoc(Transform the bounding box with the given transformation.
+The resulting box will be larger if theTrsf contains rotation.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<float>::*)(const gp_XYZ &) const noexcept>(&Bnd_B3<float>::IsOut), nb::arg("thePnt"), R"nbdoc(Check the given point for the inclusion in the Box.
+Returns True if the point is outside.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<float>::*)(const gp_XYZ &, const double, const bool) const>(&Bnd_B3<float>::IsOut), nb::arg("theCenter"), nb::arg("theRadius"), nb::arg("isSphereHollow") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Check a sphere for the intersection with the current box.
+Returns True if there is no intersection between boxes. If the
+parameter 'IsSphereHollow' is True, then the intersection is not
+reported for a box that is completely inside the sphere (otherwise
+this method would report an intersection).)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<float>::*)(const Bnd_B3<float> &) const noexcept>(&Bnd_B3<float>::IsOut), nb::arg("theOtherBox"), R"nbdoc(Check the given box for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<float>::*)(const Bnd_B3<float> &, const gp_Trsf &) const>(&Bnd_B3<float>::IsOut), nb::arg("theOtherBox"), nb::arg("theTrsf"), R"nbdoc(Check the given box oriented by the given transformation
+for the intersection with the current box.
+Returns True if there is no intersection between boxes.)nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<float>::*)(const gp_Ax1 &, const bool, const double) const>(&Bnd_B3<float>::IsOut), nb::arg("theLine"), nb::arg("isRay") = static_cast<std::decay_t<const bool>>(false), nb::arg("theOverthickness") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Check the given Line for the intersection with the current box.
+Returns True if there is no intersection.
+isRay==True means intersection check with the positive half-line
+theOverthickness is the addition to the size of the current box
+(may be negative). If positive, it can be treated as the thickness
+of the line 'theLine' or the radius of the cylinder along 'theLine')nbdoc")
+        .def("IsOut", static_cast<bool (Bnd_B3<float>::*)(const gp_Ax3 &) const>(&Bnd_B3<float>::IsOut), nb::arg("thePlane"), R"nbdoc(Check the given Plane for the intersection with the current box.
+Returns True if there is no intersection.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B3<float>::*)(const Bnd_B3<float> &) const noexcept>(&Bnd_B3<float>::IsIn), nb::arg("theBox"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'. Returns
+True if 'this' box is fully inside 'theBox'.)nbdoc")
+        .def("IsIn", static_cast<bool (Bnd_B3<float>::*)(const Bnd_B3<float> &, const gp_Trsf &) const>(&Bnd_B3<float>::IsIn), nb::arg("theBox"), nb::arg("theTrsf"), R"nbdoc(Check that the box 'this' is inside the given box 'theBox'
+transformed by 'theTrsf'. Returns True if 'this' box is fully
+inside the transformed 'theBox'.)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B3<float>::*)(const gp_XYZ &) noexcept>(&Bnd_B3<float>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetCenter", static_cast<void (Bnd_B3<float>::*)(const std::array<float, 3> &) noexcept>(&Bnd_B3<float>::SetCenter), nb::arg("theCenter"), R"nbdoc(Set the Center coordinates)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B3<float>::*)(const gp_XYZ &) noexcept>(&Bnd_B3<float>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("SetHSize", static_cast<void (Bnd_B3<float>::*)(const std::array<float, 3> &) noexcept>(&Bnd_B3<float>::SetHSize), nb::arg("theHSize"), R"nbdoc(Set the HSize (half-diagonal) coordinates.
+All components of theHSize must be non-negative.)nbdoc")
+        .def("Center", static_cast<const std::array<float, 3> & (Bnd_B3<float>::*)() const noexcept>(&Bnd_B3<float>::Center), R"nbdoc(Get the Center coordinates)nbdoc")
+        .def("HSize", static_cast<const std::array<float, 3> & (Bnd_B3<float>::*)() const noexcept>(&Bnd_B3<float>::HSize), R"nbdoc(Get the HSize (half-diagonal) coordinates)nbdoc");
     nb::borrow<nb::class_<Bnd_Box>>(m.attr("Bnd_Box"))
         .def(nb::init<>(), R"nbdoc(Creates an empty Box.
 The constructed box is qualified Void. Its gap is null.)nbdoc")

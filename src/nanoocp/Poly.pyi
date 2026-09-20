@@ -3,6 +3,7 @@
 import enum
 from typing import overload
 
+import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.NCollection
 import nanoocp.OSD
@@ -237,7 +238,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Normal(self, theIndex: int, theVec3: "NCollection_Vec3<float>") -> None:
+    def Normal(self, theIndex: int, theVec3: nanoocp.BVH.BVH_Vec3f) -> None:
         """
         Returns normal at the given index.
         @param[in]  theIndex node index within [1, NbNodes()] range
@@ -245,7 +246,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def SetNormal(self, theIndex: int, theNormal: "NCollection_Vec3<float>") -> None:
+    def SetNormal(self, theIndex: int, theNormal: nanoocp.BVH.BVH_Vec3f) -> None:
         """
         Changes normal at the given index.
         @param[in] theIndex node index within [1, NbNodes()] range
@@ -1268,7 +1269,7 @@ class Poly_MergeNodesTool(nanoocp.Standard.Standard_Transient):
     def SetMergeElems(self, theToMerge: bool) -> None:
         """Set if equal elements should be filtered."""
 
-    def computeTriNormal(self) -> "NCollection_Vec3<float>":
+    def computeTriNormal(self) -> nanoocp.BVH.BVH_Vec3f:
         """Compute normal for the mesh element."""
 
     def AddTriangulation(self, theTris: Poly_Triangulation, theTrsf: nanoocp.gp.gp_Trsf = ..., theToReverse: bool = False) -> None:

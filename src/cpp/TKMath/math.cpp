@@ -59,6 +59,8 @@
 #include <Precision.hxx>
 #include <Standard_DimensionError.hxx>
 #include <Standard_Failure.hxx>
+#include <gp_XY.hxx>
+#include <gp_XYZ.hxx>
 
 void nanoocp_declare_math(nb::module_ &m) {
     nb::enum_<math_Status>(m, "math_Status", nb::is_arithmetic())
@@ -110,6 +112,35 @@ math_Matrix B (tab2[0],    1, 10, 1, 20);
 @endcode)nbdoc");
     }
     nanoocp_register_exception<math_NotSquare>(nanoocp_new_exception(m, "math_NotSquare", nullptr, nb::module_::import_("nanoocp._TKernel.Standard").attr("Standard_DimensionError").ptr()));
+    { nb::class_<math_VectorBase<double>> cls(m, "math_Vector", R"nbdoc(This class implements the real vector abstract data type.
+Vectors can have an arbitrary range which must be defined at
+the declaration and cannot be changed after this declaration.
+@code
+math_VectorBase<TheItemType> V1(-3, 5); // a vector with range [-3..5]
+@endcode
+
+Vector are copied through assignment:
+@code
+math_VectorBase<TheItemType> V2( 1, 9);
+....
+V2 = V1;
+V1(1) = 2.0; // the vector V2 will not be modified.
+@endcode
+
+The Exception RangeError is raised when trying to access outside
+the range of a vector :
+@code
+V1(11) = 0.0 // --> will raise RangeError;
+@endcode
+
+The Exception DimensionError is raised when the dimensions of two
+vectors are not compatible :
+@code
+math_VectorBase<TheItemType> V3(1, 2);
+V3 = V1;    // --> will raise DimensionError;
+V1.Add(V3)  // --> will raise DimensionError;
+@endcode)nbdoc");
+    }
     { nb::class_<math> cls(m, "math");
     }
     { nb::class_<math_BFGS> cls(m, "math_BFGS", R"nbdoc(This class implements the Broyden-Fletcher-Goldfarb-Shanno variant of
@@ -211,6 +242,35 @@ two bound A,B.)nbdoc");
     }
     { nb::class_<math_FunctionSet> cls(m, "math_FunctionSet", R"nbdoc(This abstract class describes the virtual functions associated to
 a set on N Functions of M independent variables.)nbdoc");
+    }
+    { nb::class_<math_VectorBase<int>> cls(m, "math_IntegerVector", R"nbdoc(This class implements the real vector abstract data type.
+Vectors can have an arbitrary range which must be defined at
+the declaration and cannot be changed after this declaration.
+@code
+math_VectorBase<TheItemType> V1(-3, 5); // a vector with range [-3..5]
+@endcode
+
+Vector are copied through assignment:
+@code
+math_VectorBase<TheItemType> V2( 1, 9);
+....
+V2 = V1;
+V1(1) = 2.0; // the vector V2 will not be modified.
+@endcode
+
+The Exception RangeError is raised when trying to access outside
+the range of a vector :
+@code
+V1(11) = 0.0 // --> will raise RangeError;
+@endcode
+
+The Exception DimensionError is raised when the dimensions of two
+vectors are not compatible :
+@code
+math_VectorBase<TheItemType> V3(1, 2);
+V3 = V1;    // --> will raise DimensionError;
+V1.Add(V3)  // --> will raise DimensionError;
+@endcode)nbdoc");
     }
     { nb::class_<math_FunctionSetRoot> cls(m, "math_FunctionSetRoot", R"nbdoc(The math_FunctionSetRoot class calculates the root
 of a set of N functions of M variables (N<M, N=M or N>M). Knowing
@@ -555,6 +615,117 @@ An exception is raised if the dimensions are different.)nbdoc")
         .def("Opposite", static_cast<math_Matrix (math_Matrix::*)() const>(&math_Matrix::Opposite), R"nbdoc(Returns the opposite of a matrix.
 An exception is raised if the dimensions are different.)nbdoc")
         .def("__neg__", static_cast<math_Matrix (math_Matrix::*)() const>(&math_Matrix::operator-), nb::is_operator());
+    nb::borrow<nb::class_<math_VectorBase<double>>>(m.attr("math_Vector"))
+        .def(nb::init<const gp_XY &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XY to math_VectorBase)nbdoc")
+        .def(nb::init<const gp_XYZ &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XYZ to math_VectorBase)nbdoc")
+        .def(nb::init<const math_VectorBase<double> &>(), nb::arg("theOther"), R"nbdoc(Constructs a copy for initialization.)nbdoc")
+        .def(nb::init<const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a non-initialized vector in the range [theLower..theUpper]
+"theLower" and "theUpper" are the indexes of the lower and upper bounds of the constructed
+vector.)nbdoc")
+        .def(nb::init<const int, const int, const double>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
+whose values are all initialized with the value "theInitialValue")nbdoc")
+        .def(nb::init<const double *, const int, const int>(), nb::arg("theTab"), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
+whose values are all initialized with the value "theInitialValue")nbdoc")
+        .def("Init", static_cast<void (math_VectorBase<double>::*)(const double)>(&math_VectorBase<double>::Init), nb::arg("theInitialValue"), R"nbdoc(Initialize all the elements of a vector with "theInitialValue".)nbdoc")
+        .def("Length", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Length), R"nbdoc(Returns the length of a vector)nbdoc")
+        .def("Lower", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Lower), R"nbdoc(Returns the lower index of the vector)nbdoc")
+        .def("Upper", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Upper), R"nbdoc(Returns the upper index of the vector)nbdoc")
+        .def("Norm", static_cast<double (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Norm), R"nbdoc(Returns the value or the square of the norm of this vector.)nbdoc")
+        .def("Norm2", static_cast<double (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Norm2), R"nbdoc(Returns the value of the square of the norm of a vector.)nbdoc")
+        .def("Max", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Max), R"nbdoc(Returns the index of the maximum element of a vector. (first found))nbdoc")
+        .def("Min", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Min), R"nbdoc(Returns the index of the minimum element of a vector. (first found))nbdoc")
+        .def("Normalize", static_cast<void (math_VectorBase<double>::*)()>(&math_VectorBase<double>::Normalize), R"nbdoc(Normalizes this vector (the norm of the result
+is equal to 1.0) and assigns the result to this vector
+Exceptions
+Standard_NullValue if this vector is null (i.e. if its norm is
+less than or equal to double::RealEpsilon().)nbdoc")
+        .def("Normalized", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Normalized), R"nbdoc(Normalizes this vector (the norm of the result
+is equal to 1.0) and creates a new vector
+Exceptions
+Standard_NullValue if this vector is null (i.e. if its norm is
+less than or equal to double::RealEpsilon().)nbdoc")
+        .def("Invert", static_cast<void (math_VectorBase<double>::*)()>(&math_VectorBase<double>::Invert), R"nbdoc(Inverts this vector and assigns the result to this vector.)nbdoc")
+        .def("Inverse", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Inverse), R"nbdoc(Inverts this vector and creates a new vector.)nbdoc")
+        .def("Set", static_cast<void (math_VectorBase<double>::*)(const int, const int, const math_VectorBase<double> &)>(&math_VectorBase<double>::Set), nb::arg("theI1"), nb::arg("theI2"), nb::arg("theV"), R"nbdoc(sets a vector from "theI1" to "theI2" to the vector "theV";
+An exception is raised if "theI1" is less than "LowerIndex" or "theI2" is greater than
+"UpperIndex" or "theI1" is greater than "theI2". An exception is raised if "theI2-theI1+1" is
+different from the "Length" of "theV".)nbdoc")
+        .def("Slice", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const int, const int) const>(&math_VectorBase<double>::Slice), nb::arg("theI1"), nb::arg("theI2"), R"nbdoc(Creates a new vector by inverting the values of this vector
+between indexes "theI1" and "theI2".
+If the values of this vector were (1., 2., 3., 4.,5., 6.),
+by slicing it between indexes 2 and 5 the values
+of the resulting vector are (1., 5., 4., 3., 2., 6.))nbdoc")
+        .def("Multiply", static_cast<void (math_VectorBase<double>::*)(const double)>(&math_VectorBase<double>::Multiply), nb::arg("theRight"), R"nbdoc(Updates current vector by multiplying each element on current value.)nbdoc")
+        .def("__imul__", [](math_VectorBase<double> &self, const double theRight) -> math_VectorBase<double> & { self.operator*=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Multiplied", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const double) const>(&math_VectorBase<double>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the product of a vector and a real value.)nbdoc")
+        .def("__mul__", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const double) const>(&math_VectorBase<double>::operator*), nb::arg("theRight"), nb::is_operator())
+        .def("TMultiplied", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const double) const>(&math_VectorBase<double>::TMultiplied), nb::arg("theRight"), R"nbdoc(returns the product of a vector and a real value.)nbdoc")
+        .def("Divide", static_cast<void (math_VectorBase<double>::*)(const double)>(&math_VectorBase<double>::Divide), nb::arg("theRight"), R"nbdoc(divides a vector by the value "theRight".
+An exception is raised if "theRight" = 0.)nbdoc")
+        .def("__itruediv__", [](math_VectorBase<double> &self, const double theRight) -> math_VectorBase<double> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Divided", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const double) const>(&math_VectorBase<double>::Divided), nb::arg("theRight"), R"nbdoc(Returns new vector as dividing current vector with the value "theRight".
+An exception is raised if "theRight" = 0.)nbdoc")
+        .def("__truediv__", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const double) const>(&math_VectorBase<double>::operator/), nb::arg("theRight"), nb::is_operator())
+        .def("Add", static_cast<void (math_VectorBase<double>::*)(const math_VectorBase<double> &)>(&math_VectorBase<double>::Add), nb::arg("theRight"), R"nbdoc(adds the vector "theRight" to a vector.
+An exception is raised if the vectors have not the same length.
+Warning
+In order to avoid time-consuming copying of vectors, it
+is preferable to use operator += or the function Add whenever possible.)nbdoc")
+        .def("__iadd__", [](math_VectorBase<double> &self, const math_VectorBase<double> & theRight) -> math_VectorBase<double> & { self.operator+=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Added", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const math_VectorBase<double> &) const>(&math_VectorBase<double>::Added), nb::arg("theRight"), R"nbdoc(Returns new vector as adding current vector with the value "theRight".
+An exception is raised if the vectors do not have the same length.
+An exception is raised if the lengths are not equal.)nbdoc")
+        .def("__add__", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const math_VectorBase<double> &) const>(&math_VectorBase<double>::operator+), nb::arg("theRight"), nb::is_operator())
+        .def("Multiply", static_cast<void (math_VectorBase<double>::*)(const math_VectorBase<double> &, const math_Matrix &)>(&math_VectorBase<double>::Multiply), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the product of the vector "theLeft"
+with the matrix "theRight".)nbdoc")
+        .def("Multiply", static_cast<void (math_VectorBase<double>::*)(const math_Matrix &, const math_VectorBase<double> &)>(&math_VectorBase<double>::Multiply), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the product of the matrix "theLeft"
+with the vector "theRight".)nbdoc")
+        .def("TMultiply", static_cast<void (math_VectorBase<double>::*)(const math_Matrix &, const math_VectorBase<double> &)>(&math_VectorBase<double>::TMultiply), nb::arg("theTLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the product of the transpose
+of the matrix "theTLeft" by the vector "theRight".)nbdoc")
+        .def("TMultiply", static_cast<void (math_VectorBase<double>::*)(const math_VectorBase<double> &, const math_Matrix &)>(&math_VectorBase<double>::TMultiply), nb::arg("theLeft"), nb::arg("theTRight"), R"nbdoc(sets a vector to the product of the vector
+"theLeft" by the transpose of the matrix "theTRight".)nbdoc")
+        .def("Add", static_cast<void (math_VectorBase<double>::*)(const math_VectorBase<double> &, const math_VectorBase<double> &)>(&math_VectorBase<double>::Add), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the sum of the vector "theLeft"
+and the vector "theRight".
+An exception is raised if the lengths are different.)nbdoc")
+        .def("Subtract", static_cast<void (math_VectorBase<double>::*)(const math_VectorBase<double> &, const math_VectorBase<double> &)>(&math_VectorBase<double>::Subtract), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the Subtraction of the
+vector theRight from the vector theLeft.
+An exception is raised if the vectors have not the same length.
+Warning
+In order to avoid time-consuming copying of vectors, it
+is preferable to use operator -= or the function
+Subtract whenever possible.)nbdoc")
+        .def("Value", static_cast<const double & (math_VectorBase<double>::*)(const int) const>(&math_VectorBase<double>::Value), nb::arg("theNum"), R"nbdoc(accesses the value of index "theNum" of a vector.)nbdoc")
+        .def("Value", static_cast<double & (math_VectorBase<double>::*)(const int)>(&math_VectorBase<double>::Value), nb::arg("theNum"), R"nbdoc(accesses (in read or write mode) the value of index "theNum" of a vector.)nbdoc")
+        .def("__call__", static_cast<const double & (math_VectorBase<double>::*)(const int) const>(&math_VectorBase<double>::operator()), nb::arg("theNum"), nb::is_operator())
+        .def("__call__", static_cast<double & (math_VectorBase<double>::*)(const int)>(&math_VectorBase<double>::operator()), nb::arg("theNum"), nb::is_operator())
+        .def("Initialized", static_cast<math_VectorBase<double> & (math_VectorBase<double>::*)(const math_VectorBase<double> &)>(&math_VectorBase<double>::Initialized), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Initialises a vector by copying "theOther".
+An exception is raised if the Lengths are different.)nbdoc")
+        .def("Multiplied", static_cast<double (math_VectorBase<double>::*)(const math_VectorBase<double> &) const>(&math_VectorBase<double>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the inner product of 2 vectors.
+An exception is raised if the lengths are not equal.)nbdoc")
+        .def("__mul__", static_cast<double (math_VectorBase<double>::*)(const math_VectorBase<double> &) const>(&math_VectorBase<double>::operator*), nb::arg("theRight"), nb::is_operator())
+        .def("Multiplied", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const math_Matrix &) const>(&math_VectorBase<double>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the product of a vector by a matrix.)nbdoc")
+        .def("__mul__", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const math_Matrix &) const>(&math_VectorBase<double>::operator*), nb::arg("theRight"), nb::is_operator())
+        .def("Opposite", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)()>(&math_VectorBase<double>::Opposite), R"nbdoc(returns the opposite of a vector.)nbdoc")
+        .def("__neg__", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)()>(&math_VectorBase<double>::operator-), nb::is_operator())
+        .def("Subtract", static_cast<void (math_VectorBase<double>::*)(const math_VectorBase<double> &)>(&math_VectorBase<double>::Subtract), nb::arg("theRight"), R"nbdoc(returns the subtraction of "theRight" from "me".
+An exception is raised if the vectors have not the same length.)nbdoc")
+        .def("__isub__", [](math_VectorBase<double> &self, const math_VectorBase<double> & theRight) -> math_VectorBase<double> & { self.operator-=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Subtracted", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const math_VectorBase<double> &) const>(&math_VectorBase<double>::Subtracted), nb::arg("theRight"), R"nbdoc(returns the subtraction of "theRight" from "me".
+An exception is raised if the vectors have not the same length.)nbdoc")
+        .def("__sub__", static_cast<math_VectorBase<double> (math_VectorBase<double>::*)(const math_VectorBase<double> &) const>(&math_VectorBase<double>::operator-), nb::arg("theRight"), nb::is_operator())
+        .def("Multiply", static_cast<void (math_VectorBase<double>::*)(const double, const math_VectorBase<double> &)>(&math_VectorBase<double>::Multiply), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(returns the multiplication of a real by a vector.
+"me" = "theLeft" * "theRight")nbdoc")
+        .def("Array1", static_cast<const NCollection_Array1<double> & (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Array1), R"nbdoc(Returns the underlying array for interoperability with legacy APIs.
+Allows passing math_Vector data to functions expecting NCollection_Array1.)nbdoc")
+        .def("Resize", static_cast<void (math_VectorBase<double>::*)(const int)>(&math_VectorBase<double>::Resize), nb::arg("theSize"), R"nbdoc(Resizes the vector to a new size, keeping the same lower bound.
+Existing data within the new range is preserved.
+The method optimizes memory usage:
+- If new size fits in stack buffer (<=32), uses stack allocation
+- If new size requires heap and was already on heap, resizes in place
+- Transitions between stack and heap as needed
+@param theSize new size of the vector)nbdoc");
+    nb::implicitly_convertible<std::decay_t<const gp_XY &>, math_VectorBase<double>>();
+    nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, math_VectorBase<double>>();
     nb::borrow<nb::class_<math>>(m.attr("math"))
         .def(nb::init<>())
         .def_static("GaussPointsMax", static_cast<int (*)()>(&math::GaussPointsMax))
@@ -991,6 +1162,117 @@ algorithm: no state has been saved). It is the
 responsibility of the programmer to decide if he needs
 to save the current state of the function and to return
 an Integer that allows retrieval of the state.)nbdoc");
+    nb::borrow<nb::class_<math_VectorBase<int>>>(m.attr("math_IntegerVector"))
+        .def(nb::init<const gp_XY &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XY to math_VectorBase)nbdoc")
+        .def(nb::init<const gp_XYZ &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XYZ to math_VectorBase)nbdoc")
+        .def(nb::init<const math_VectorBase<int> &>(), nb::arg("theOther"), R"nbdoc(Constructs a copy for initialization.)nbdoc")
+        .def(nb::init<const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a non-initialized vector in the range [theLower..theUpper]
+"theLower" and "theUpper" are the indexes of the lower and upper bounds of the constructed
+vector.)nbdoc")
+        .def(nb::init<const int, const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
+whose values are all initialized with the value "theInitialValue")nbdoc")
+        .def(nb::init<const int *, const int, const int>(), nb::arg("theTab"), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
+whose values are all initialized with the value "theInitialValue")nbdoc")
+        .def("Init", static_cast<void (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Init), nb::arg("theInitialValue"), R"nbdoc(Initialize all the elements of a vector with "theInitialValue".)nbdoc")
+        .def("Length", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Length), R"nbdoc(Returns the length of a vector)nbdoc")
+        .def("Lower", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Lower), R"nbdoc(Returns the lower index of the vector)nbdoc")
+        .def("Upper", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Upper), R"nbdoc(Returns the upper index of the vector)nbdoc")
+        .def("Norm", static_cast<double (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Norm), R"nbdoc(Returns the value or the square of the norm of this vector.)nbdoc")
+        .def("Norm2", static_cast<double (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Norm2), R"nbdoc(Returns the value of the square of the norm of a vector.)nbdoc")
+        .def("Max", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Max), R"nbdoc(Returns the index of the maximum element of a vector. (first found))nbdoc")
+        .def("Min", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Min), R"nbdoc(Returns the index of the minimum element of a vector. (first found))nbdoc")
+        .def("Normalize", static_cast<void (math_VectorBase<int>::*)()>(&math_VectorBase<int>::Normalize), R"nbdoc(Normalizes this vector (the norm of the result
+is equal to 1.0) and assigns the result to this vector
+Exceptions
+Standard_NullValue if this vector is null (i.e. if its norm is
+less than or equal to double::RealEpsilon().)nbdoc")
+        .def("Normalized", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Normalized), R"nbdoc(Normalizes this vector (the norm of the result
+is equal to 1.0) and creates a new vector
+Exceptions
+Standard_NullValue if this vector is null (i.e. if its norm is
+less than or equal to double::RealEpsilon().)nbdoc")
+        .def("Invert", static_cast<void (math_VectorBase<int>::*)()>(&math_VectorBase<int>::Invert), R"nbdoc(Inverts this vector and assigns the result to this vector.)nbdoc")
+        .def("Inverse", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Inverse), R"nbdoc(Inverts this vector and creates a new vector.)nbdoc")
+        .def("Set", static_cast<void (math_VectorBase<int>::*)(const int, const int, const math_VectorBase<int> &)>(&math_VectorBase<int>::Set), nb::arg("theI1"), nb::arg("theI2"), nb::arg("theV"), R"nbdoc(sets a vector from "theI1" to "theI2" to the vector "theV";
+An exception is raised if "theI1" is less than "LowerIndex" or "theI2" is greater than
+"UpperIndex" or "theI1" is greater than "theI2". An exception is raised if "theI2-theI1+1" is
+different from the "Length" of "theV".)nbdoc")
+        .def("Slice", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const int, const int) const>(&math_VectorBase<int>::Slice), nb::arg("theI1"), nb::arg("theI2"), R"nbdoc(Creates a new vector by inverting the values of this vector
+between indexes "theI1" and "theI2".
+If the values of this vector were (1., 2., 3., 4.,5., 6.),
+by slicing it between indexes 2 and 5 the values
+of the resulting vector are (1., 5., 4., 3., 2., 6.))nbdoc")
+        .def("Multiply", static_cast<void (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Multiply), nb::arg("theRight"), R"nbdoc(Updates current vector by multiplying each element on current value.)nbdoc")
+        .def("__imul__", [](math_VectorBase<int> &self, const int theRight) -> math_VectorBase<int> & { self.operator*=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Multiplied", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the product of a vector and a real value.)nbdoc")
+        .def("__mul__", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::operator*), nb::arg("theRight"), nb::is_operator())
+        .def("TMultiplied", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::TMultiplied), nb::arg("theRight"), R"nbdoc(returns the product of a vector and a real value.)nbdoc")
+        .def("Divide", static_cast<void (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Divide), nb::arg("theRight"), R"nbdoc(divides a vector by the value "theRight".
+An exception is raised if "theRight" = 0.)nbdoc")
+        .def("__itruediv__", [](math_VectorBase<int> &self, const int theRight) -> math_VectorBase<int> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Divided", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::Divided), nb::arg("theRight"), R"nbdoc(Returns new vector as dividing current vector with the value "theRight".
+An exception is raised if "theRight" = 0.)nbdoc")
+        .def("__truediv__", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::operator/), nb::arg("theRight"), nb::is_operator())
+        .def("Add", static_cast<void (math_VectorBase<int>::*)(const math_VectorBase<int> &)>(&math_VectorBase<int>::Add), nb::arg("theRight"), R"nbdoc(adds the vector "theRight" to a vector.
+An exception is raised if the vectors have not the same length.
+Warning
+In order to avoid time-consuming copying of vectors, it
+is preferable to use operator += or the function Add whenever possible.)nbdoc")
+        .def("__iadd__", [](math_VectorBase<int> &self, const math_VectorBase<int> & theRight) -> math_VectorBase<int> & { self.operator+=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Added", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const math_VectorBase<int> &) const>(&math_VectorBase<int>::Added), nb::arg("theRight"), R"nbdoc(Returns new vector as adding current vector with the value "theRight".
+An exception is raised if the vectors do not have the same length.
+An exception is raised if the lengths are not equal.)nbdoc")
+        .def("__add__", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const math_VectorBase<int> &) const>(&math_VectorBase<int>::operator+), nb::arg("theRight"), nb::is_operator())
+        .def("Multiply", static_cast<void (math_VectorBase<int>::*)(const math_VectorBase<int> &, const math_Matrix &)>(&math_VectorBase<int>::Multiply), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the product of the vector "theLeft"
+with the matrix "theRight".)nbdoc")
+        .def("Multiply", static_cast<void (math_VectorBase<int>::*)(const math_Matrix &, const math_VectorBase<int> &)>(&math_VectorBase<int>::Multiply), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the product of the matrix "theLeft"
+with the vector "theRight".)nbdoc")
+        .def("TMultiply", static_cast<void (math_VectorBase<int>::*)(const math_Matrix &, const math_VectorBase<int> &)>(&math_VectorBase<int>::TMultiply), nb::arg("theTLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the product of the transpose
+of the matrix "theTLeft" by the vector "theRight".)nbdoc")
+        .def("TMultiply", static_cast<void (math_VectorBase<int>::*)(const math_VectorBase<int> &, const math_Matrix &)>(&math_VectorBase<int>::TMultiply), nb::arg("theLeft"), nb::arg("theTRight"), R"nbdoc(sets a vector to the product of the vector
+"theLeft" by the transpose of the matrix "theTRight".)nbdoc")
+        .def("Add", static_cast<void (math_VectorBase<int>::*)(const math_VectorBase<int> &, const math_VectorBase<int> &)>(&math_VectorBase<int>::Add), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the sum of the vector "theLeft"
+and the vector "theRight".
+An exception is raised if the lengths are different.)nbdoc")
+        .def("Subtract", static_cast<void (math_VectorBase<int>::*)(const math_VectorBase<int> &, const math_VectorBase<int> &)>(&math_VectorBase<int>::Subtract), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(sets a vector to the Subtraction of the
+vector theRight from the vector theLeft.
+An exception is raised if the vectors have not the same length.
+Warning
+In order to avoid time-consuming copying of vectors, it
+is preferable to use operator -= or the function
+Subtract whenever possible.)nbdoc")
+        .def("Value", static_cast<const int & (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::Value), nb::arg("theNum"), R"nbdoc(accesses the value of index "theNum" of a vector.)nbdoc")
+        .def("Value", static_cast<int & (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Value), nb::arg("theNum"), R"nbdoc(accesses (in read or write mode) the value of index "theNum" of a vector.)nbdoc")
+        .def("__call__", static_cast<const int & (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::operator()), nb::arg("theNum"), nb::is_operator())
+        .def("__call__", static_cast<int & (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::operator()), nb::arg("theNum"), nb::is_operator())
+        .def("Initialized", static_cast<math_VectorBase<int> & (math_VectorBase<int>::*)(const math_VectorBase<int> &)>(&math_VectorBase<int>::Initialized), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Initialises a vector by copying "theOther".
+An exception is raised if the Lengths are different.)nbdoc")
+        .def("Multiplied", static_cast<int (math_VectorBase<int>::*)(const math_VectorBase<int> &) const>(&math_VectorBase<int>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the inner product of 2 vectors.
+An exception is raised if the lengths are not equal.)nbdoc")
+        .def("__mul__", static_cast<int (math_VectorBase<int>::*)(const math_VectorBase<int> &) const>(&math_VectorBase<int>::operator*), nb::arg("theRight"), nb::is_operator())
+        .def("Multiplied", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const math_Matrix &) const>(&math_VectorBase<int>::Multiplied), nb::arg("theRight"), R"nbdoc(returns the product of a vector by a matrix.)nbdoc")
+        .def("__mul__", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const math_Matrix &) const>(&math_VectorBase<int>::operator*), nb::arg("theRight"), nb::is_operator())
+        .def("Opposite", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)()>(&math_VectorBase<int>::Opposite), R"nbdoc(returns the opposite of a vector.)nbdoc")
+        .def("__neg__", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)()>(&math_VectorBase<int>::operator-), nb::is_operator())
+        .def("Subtract", static_cast<void (math_VectorBase<int>::*)(const math_VectorBase<int> &)>(&math_VectorBase<int>::Subtract), nb::arg("theRight"), R"nbdoc(returns the subtraction of "theRight" from "me".
+An exception is raised if the vectors have not the same length.)nbdoc")
+        .def("__isub__", [](math_VectorBase<int> &self, const math_VectorBase<int> & theRight) -> math_VectorBase<int> & { self.operator-=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), nb::is_operator())
+        .def("Subtracted", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const math_VectorBase<int> &) const>(&math_VectorBase<int>::Subtracted), nb::arg("theRight"), R"nbdoc(returns the subtraction of "theRight" from "me".
+An exception is raised if the vectors have not the same length.)nbdoc")
+        .def("__sub__", static_cast<math_VectorBase<int> (math_VectorBase<int>::*)(const math_VectorBase<int> &) const>(&math_VectorBase<int>::operator-), nb::arg("theRight"), nb::is_operator())
+        .def("Multiply", static_cast<void (math_VectorBase<int>::*)(const int, const math_VectorBase<int> &)>(&math_VectorBase<int>::Multiply), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(returns the multiplication of a real by a vector.
+"me" = "theLeft" * "theRight")nbdoc")
+        .def("Array1", static_cast<const NCollection_Array1<int> & (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Array1), R"nbdoc(Returns the underlying array for interoperability with legacy APIs.
+Allows passing math_Vector data to functions expecting NCollection_Array1.)nbdoc")
+        .def("Resize", static_cast<void (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Resize), nb::arg("theSize"), R"nbdoc(Resizes the vector to a new size, keeping the same lower bound.
+Existing data within the new range is preserved.
+The method optimizes memory usage:
+- If new size fits in stack buffer (<=32), uses stack allocation
+- If new size requires heap and was already on heap, resizes in place
+- Transitions between stack and heap as needed
+@param theSize new size of the vector)nbdoc");
+    nb::implicitly_convertible<std::decay_t<const gp_XY &>, math_VectorBase<int>>();
+    nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, math_VectorBase<int>>();
     nb::borrow<nb::class_<math_FunctionSetRoot>>(m.attr("math_FunctionSetRoot"))
         .def(nb::init<math_FunctionSetWithDerivatives &, const int>(), nb::arg("F"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(100), R"nbdoc(is used in a sub-class to initialize correctly all the fields
 of this class.
@@ -1073,7 +1355,7 @@ function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc");
     nb::borrow<nb::class_<math_Gauss>>(m.attr("math_Gauss"))
-        .def(nb::init<const math_Matrix &, const double, const Message_ProgressRange &>(), nb::arg("A"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Given an input n X n matrix A this constructor performs its LU
+        .def(nb::init<const math_Matrix &, const double, const Message_ProgressRange &>(), nb::arg("A"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Given an input n X n matrix A this constructor performs its LU
 decomposition with partial pivoting (interchange of rows).
 This LU decomposition is stored internally and may be used to
 do subsequent calculation.
@@ -1349,7 +1631,7 @@ not equal to the range of the StartingPoint.)nbdoc")
 during the computation of the Root.
 Exception NotDone is raised if the root was not found.)nbdoc");
     nb::borrow<nb::class_<math_NewtonMinimum>>(m.attr("math_NewtonMinimum"))
-        .def(nb::init<const math_MultipleVarFunctionWithHessian &, const double, const int, const double, const bool>(), nb::arg("theFunction"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision::Confusion()), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(40), nb::arg("theConvexity") = static_cast<std::decay_t<const double>>(1.0e-6), nb::arg("theWithSingularity") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The tolerance required on the solution is given by Tolerance.
+        .def(nb::init<const math_MultipleVarFunctionWithHessian &, const double, const int, const double, const bool>(), nb::arg("theFunction"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision :: Confusion ( )), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(40), nb::arg("theConvexity") = static_cast<std::decay_t<const double>>(1.0e-6), nb::arg("theWithSingularity") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The tolerance required on the solution is given by Tolerance.
 Iteration are stopped if (!WithSingularity) and H(F(Xi)) is not definite
 positive (if the smaller eigenvalue of H < Convexity)
 or IsConverged() returns True for 2 successives Iterations.
@@ -1516,8 +1798,8 @@ when approximating a curve.)nbdoc");
         .def("Value", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Value))
         .def("Weight", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Weight))
         .def("__lt__", [](const math_ValueAndWeight & theLeft, const math_ValueAndWeight & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */;
-    m.def("LU_Decompose", static_cast<int (*)(math_Matrix &, math_IntegerVector &, double &, double, const Message_ProgressRange &)>(&LU_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("d"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
-    m.def("LU_Decompose", static_cast<int (*)(math_Matrix &, math_IntegerVector &, double &, math_Vector &, double, const Message_ProgressRange &)>(&LU_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("d"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
+    m.def("LU_Decompose", static_cast<int (*)(math_Matrix &, math_IntegerVector &, double &, double, const Message_ProgressRange &)>(&LU_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("d"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
+    m.def("LU_Decompose", static_cast<int (*)(math_Matrix &, math_IntegerVector &, double &, math_Vector &, double, const Message_ProgressRange &)>(&LU_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("d"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
     m.def("LU_Solve", static_cast<void (*)(const math_Matrix &, const math_IntegerVector &, math_Vector &)>(&LU_Solve), nb::arg("a"), nb::arg("indx"), nb::arg("b"));
     m.def("LU_Invert", static_cast<int (*)(math_Matrix &)>(&LU_Invert), nb::arg("a"));
     m.def("SVD_Decompose", static_cast<int (*)(math_Matrix &, math_Vector &, math_Matrix &)>(&SVD_Decompose), nb::arg("a"), nb::arg("w"), nb::arg("v"));

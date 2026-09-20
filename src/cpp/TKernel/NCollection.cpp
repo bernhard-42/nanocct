@@ -197,6 +197,16 @@ Type-specific item operations (construction, destruction, copy)
 are provided by the derived template class via function pointers
 passed as arguments to the protected methods.)nbdoc");
     }
+    { nb::class_<NCollection_UtfString<char>> cls(m, "NCollection_String", R"nbdoc(This template class represent constant UTF-* string.
+String stored in memory continuously, always NULL-terminated
+and can be used as standard C-string using ToCString() method.
+
+Notice that changing the string is not allowed
+and any modifications should produce new string.
+
+In comments to this class, terms "Unicode symbol" is used as
+synonym of "Unicode code point".)nbdoc");
+    }
     { nb::class_<NCollection_WinHeapAllocator, NCollection_BaseAllocator> cls(m, "NCollection_WinHeapAllocator", R"nbdoc(This memory allocator creates dedicated heap for allocations.
 This technics available only on Windows platform
 (no alternative on Unix systems).
@@ -381,6 +391,55 @@ for future allocations.)nbdoc")
     nb::borrow<nb::class_<NCollection_SparseArrayBase>>(m.attr("NCollection_SparseArrayBase"))
         .def("Size", static_cast<size_t (NCollection_SparseArrayBase::*)() const noexcept>(&NCollection_SparseArrayBase::Size), R"nbdoc(Returns number of currently contained items)nbdoc")
         .def("HasValue", static_cast<bool (NCollection_SparseArrayBase::*)(const size_t) const>(&NCollection_SparseArrayBase::HasValue), nb::arg("theIndex"), R"nbdoc(Check whether the value at given index is set)nbdoc");
+    nb::borrow<nb::class_<NCollection_UtfString<char>>>(m.attr("NCollection_String"))
+        .def(nb::init<>(), R"nbdoc(Initialize empty string.)nbdoc")
+        .def(nb::init<const NCollection_UtfString<char> &>(), nb::arg("theCopy"), R"nbdoc(Copy constructor.
+@param theCopy string to copy.)nbdoc")
+        .def(nb::init<const char *, const int>(), nb::arg("theCopyUtf8"), nb::arg("theLength") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Copy constructor from UTF-8 string.
+@param theCopyUtf8 UTF-8 string to copy
+@param theLength   optional length limit in Unicode symbols (NOT bytes!)
+The string is copied till NULL symbol or, if theLength >0,
+till either NULL or theLength-th symbol (which comes first).)nbdoc")
+        .def("Iterator", static_cast<NCollection_UtfIterator<char> (NCollection_UtfString<char>::*)() const>(&NCollection_UtfString<char>::Iterator))
+        .def("Size", static_cast<int (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::Size), R"nbdoc(@return the size of the buffer in bytes, excluding NULL-termination symbol)nbdoc")
+        .def("Length", static_cast<int (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::Length), R"nbdoc(@return the length of the string in Unicode symbols)nbdoc")
+        .def("GetChar", static_cast<char32_t (NCollection_UtfString<char>::*)(const int) const>(&NCollection_UtfString<char>::GetChar), nb::arg("theCharIndex"), R"nbdoc(Retrieve Unicode symbol at specified position.
+Warning! This is a slow access. Iterator should be used for consecutive parsing.
+@param theCharIndex the index of the symbol, should be lesser than Length()
+@return the Unicode symbol value)nbdoc")
+        .def("GetCharBuffer", static_cast<const char * (NCollection_UtfString<char>::*)(const int) const>(&NCollection_UtfString<char>::GetCharBuffer), nb::arg("theCharIndex"), R"nbdoc(Retrieve string buffer at specified position.
+Warning! This is a slow access. Iterator should be used for consecutive parsing.
+@param theCharIndex the index of the symbol, should be less than Length()
+(first symbol of the string has index 0)
+@return the pointer to the symbol)nbdoc")
+        .def("__getitem__", static_cast<char32_t (NCollection_UtfString<char>::*)(const int) const>(&NCollection_UtfString<char>::operator[]), nb::arg("theCharIndex"), R"nbdoc(Retrieve Unicode symbol at specified position.
+Warning! This is a slow access. Iterator should be used for consecutive parsing.)nbdoc", nb::is_operator())
+        .def("FromLocale", static_cast<void (NCollection_UtfString<char>::*)(const char *, const int)>(&NCollection_UtfString<char>::FromLocale), nb::arg("theString"), nb::arg("theLength") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Copy from multibyte string in current system locale.
+@param theString multibyte string
+@param theLength the length limit in Unicode symbols
+The string is copied till NULL symbol or, if theLength >0,
+till either NULL or theLength-th symbol (which comes first).)nbdoc")
+        .def("IsEqual", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::IsEqual), nb::arg("theCompare"), R"nbdoc(Compares this string with another one.)nbdoc")
+        .def("SubString", static_cast<NCollection_UtfString<char> (NCollection_UtfString<char>::*)(const int, const int) const>(&NCollection_UtfString<char>::SubString), nb::arg("theStart"), nb::arg("theEnd"), R"nbdoc(Returns the substring.
+@param theStart start index (inclusive) of subString
+@param theEnd   end index   (exclusive) of subString
+@return the substring)nbdoc")
+        .def("ToCString", static_cast<const char * (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::ToCString), R"nbdoc(Returns NULL-terminated Unicode string.
+Should not be modified or deleted!
+@return (const Type* ) pointer to string)nbdoc")
+        .def("ToUtf8", static_cast<const NCollection_UtfString<char> (NCollection_UtfString<char>::*)() const>(&NCollection_UtfString<char>::ToUtf8), R"nbdoc(@return copy in UTF-8 format)nbdoc")
+        .def("ToUtf16", static_cast<const NCollection_UtfString<char16_t> (NCollection_UtfString<char>::*)() const>(&NCollection_UtfString<char>::ToUtf16), R"nbdoc(@return copy in UTF-16 format)nbdoc")
+        .def("ToUtf32", static_cast<const NCollection_UtfString<char32_t> (NCollection_UtfString<char>::*)() const>(&NCollection_UtfString<char>::ToUtf32), R"nbdoc(@return copy in UTF-32 format)nbdoc")
+        .def("ToUtfWide", static_cast<const NCollection_UtfString<wchar_t> (NCollection_UtfString<char>::*)() const>(&NCollection_UtfString<char>::ToUtfWide), R"nbdoc(@return copy in wide format (UTF-16 on Windows and UTF-32 on Linux))nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::IsEmpty), R"nbdoc(@return true if string is empty)nbdoc")
+        .def("Clear", static_cast<void (NCollection_UtfString<char>::*)()>(&NCollection_UtfString<char>::Clear), R"nbdoc(Zero string.)nbdoc")
+        .def("Assign", static_cast<const NCollection_UtfString<char> & (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &)>(&NCollection_UtfString<char>::Assign), nb::arg("theOther"), R"nbdoc(@name assign operators
+Copy from another string.)nbdoc")
+        .def("Swap", static_cast<void (NCollection_UtfString<char>::*)(NCollection_UtfString<char> &) noexcept>(&NCollection_UtfString<char>::Swap), nb::arg("theOther"), R"nbdoc(Exchange the data of two strings (without reallocating memory).)nbdoc")
+        .def("__iadd__", [](NCollection_UtfString<char> &self, const NCollection_UtfString<char> & theAppend) -> NCollection_UtfString<char> & { self.operator+=(theAppend); return self; }, nb::rv_policy::reference, nb::arg("theAppend"), R"nbdoc(Join strings.)nbdoc", nb::is_operator())
+        .def("__eq__", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::operator==), nb::arg("theCompare"), R"nbdoc(@name compare operators)nbdoc", nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::operator!=), nb::arg("theCompare"), nb::is_operator());
+    nb::implicitly_convertible<std::decay_t<const char *>, NCollection_UtfString<char>>();
     nb::borrow<nb::class_<NCollection_WinHeapAllocator>>(m.attr("NCollection_WinHeapAllocator"))
         .def(nb::new_([](const size_t theInitSizeBytes) { return opencascade::handle<NCollection_WinHeapAllocator>(new NCollection_WinHeapAllocator(theInitSizeBytes)); }), nb::arg("theInitSizeBytes") = static_cast<std::decay_t<const size_t>>(0x80000), R"nbdoc(Main constructor)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&NCollection_WinHeapAllocator::get_type_name))

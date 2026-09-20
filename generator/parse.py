@@ -111,7 +111,7 @@ def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | 
         for i, tok in enumerate(expr):
             if tok in members and (i == 0 or expr[i - 1] != "::") and not (i + 1 < len(expr) and expr[i + 1] == "("):
                 expr[i] = f"{scope}::{tok}"
-    return " ".join(expr).replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
+    return _apply_subst(" ".join(expr))          # template parameters in defaults (Element_t(0)) while instantiating.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
 
 
 def _is_out_param(t: cindex.Type) -> bool:
@@ -123,9 +123,30 @@ def _is_out_param(t: cindex.Type) -> bool:
     return pointee.get_canonical().kind in _PRIMITIVE_KINDS
 
 
+_subst: dict[str, str] = {}          # template parameter -> argument while walking a class template (alias instantiation)
+_subst_self: tuple[str, str] | None = None   # (template name, full instantiation) for the injected class name
+
+
+def _apply_subst(spelling: str) -> str:
+    if len(_subst) == 0:
+        return spelling
+    out = spelling
+    for param, arg in _subst.items():
+        out = re.sub(rf"\b{re.escape(param)}\b", arg, out)
+    if _subst_self is not None:
+        tmpl, full = _subst_self
+        out = re.sub(rf"\b{re.escape(tmpl)}\b(?!\s*<)", full, out)      # injected class name: math_VectorBase -> math_VectorBase<double>
+    return out
+
+
 def _type_spelling(t: cindex.Type) -> str:
     """Type as written in the header (keeps portable typedef names such as Standard_Size), except that
-    types nested in a class are spelled fully qualified (the header may say 'D' inside gp_Dir)."""
+    types nested in a class are spelled fully qualified (the header may say 'D' inside gp_Dir). While a
+    class template is walked for an alias instantiation, template parameters are substituted."""
+    return _apply_subst(_type_spelling_raw(t))
+
+
+def _type_spelling_raw(t: cindex.Type) -> str:
     base = t
     suffix = ""                      # qualifiers/declarators outside the base type, rebuilt below
     while base.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
@@ -258,6 +279,8 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         members = set()
     for i, p in enumerate(cursor.get_arguments()):
         reason = _unsupported(p.type, allow_out=True)
+        if reason is None and "type-parameter-" in _type_spelling(p.type):
+            reason = "dependent type (unresolved template parameter)"
         if reason is not None:
             return params, f"param '{p.spelling}': {reason}"
         name = p.spelling
@@ -322,6 +345,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_operator=name.startswith("operator"), skip_reason=reason)
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False)
+        if m.skip_reason is None and "type-parameter-" in m.result:
+            m.skip_reason = "dependent type (unresolved template parameter)"
         if m.skip_reason is not None:
             m.skip_reason = "return: " + m.skip_reason
     # inline (in-class or out-of-class in the header) vs. defined in the library; needs bodies parsed
@@ -436,6 +461,91 @@ def _note_instance(t: cindex.Type) -> None:
     _instances_seen.setdefault(key, TemplateInstance(template=decl.spelling, args=args, key=key, element=args[0]))
 
 
+def _split_top(text: str) -> list[str]:
+    out, depth, cur = [], 0, ""
+    for ch in text:
+        depth += ch == "<"
+        depth -= ch == ">"
+        if ch == "," and depth == 0:
+            out.append(cur.strip()); cur = ""
+        else:
+            cur += ch
+    out.append(cur.strip())
+    return out
+
+
+def _find_class_template(tu: cindex.TranslationUnit, name: str) -> tuple[cindex.Cursor | None, list[list[str]]]:
+    """The template's definition plus the parameter names of every declaration (a forward declaration may
+    name the parameters differently, and libclang spells some dependent types with those names)."""
+    definition = None
+    param_lists: list[list[str]] = []
+    for cur in tu.cursor.get_children():
+        if cur.kind == K.CLASS_TEMPLATE and cur.spelling == name:
+            param_lists.append([p.spelling for p in cur.get_children() if p.kind in (K.TEMPLATE_TYPE_PARAMETER, K.TEMPLATE_NON_TYPE_PARAMETER)])
+            if cur.is_definition():
+                definition = cur
+    return definition, param_lists
+
+
+def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str, report: list[str]) -> Class | None:
+    """using math_Vector = math_VectorBase<double>; -> the template's members instantiated for these arguments
+    (Design.md 6c). NCollection containers (hand-written binders) and std types are not handled here."""
+    from .ncollection import BINDERS
+    t = cur.underlying_typedef_type
+    canon = t.get_canonical()
+    if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0 or "<" not in t.spelling:
+        return None
+    tmpl_name = canon.get_declaration().spelling
+    if tmpl_name in BINDERS or tmpl_name == "handle" or t.spelling.startswith("std::"):
+        return None
+    tmpl, param_lists = _find_class_template(tu, tmpl_name)
+    if tmpl is None:
+        report.append(f"{cur.spelling} = {t.spelling}: class template {tmpl_name} not found in the translation unit")
+        return None
+    params = [p for p in tmpl.get_children() if p.kind in (K.TEMPLATE_TYPE_PARAMETER, K.TEMPLATE_NON_TYPE_PARAMETER)]
+    # arguments as written, from the canonical type when the alias goes through a metafunction
+    # (BVH_Vec3d = BVH::VectorType<double, 3>::Type resolves to NCollection_Vec3<double>)
+    spelled = t.spelling if t.spelling.split("<", 1)[0].split("::")[-1] == tmpl_name else canon.spelling
+    if "<" not in spelled:
+        report.append(f"{cur.spelling} = {t.spelling}: cannot read template arguments")
+        return None
+    written = _split_top(spelled[spelled.index("<") + 1 : spelled.rindex(">")])
+    n = canon.get_num_template_arguments()
+    if len(params) < n or len(written) > n:
+        report.append(f"{cur.spelling} = {t.spelling}: cannot match template arguments")
+        return None
+    args: list[str] = []
+    keys: list[str] = []
+    for i in range(n):
+        at = canon.get_template_argument_type(i)
+        if at.kind != TK.INVALID:
+            args.append(_type_spelling_raw(at)); keys.append(_canonical_args(at))
+        elif i < len(written):
+            args.append(written[i]); keys.append(written[i])          # non-type argument, as written
+        else:
+            report.append(f"{cur.spelling} = {t.spelling}: defaulted non-type argument not supported")
+            return None
+    global _subst, _subst_self
+    full = f"{tmpl_name}<{', '.join(args)}>"
+    _subst = {}
+    for names in param_lists:                      # every declaration's parameter names, position-wise
+        for name, a in zip(names, args):
+            _subst.setdefault(name, a)
+    _subst_self = (tmpl_name, full)
+    try:
+        c = _class(tmpl, header)
+    finally:
+        _subst = {}
+        _subst_self = None
+    c.name = full
+    c.py_name = cur.spelling
+    c.template_key = f"{tmpl_name}<{', '.join(keys)}>"
+    c.doc = c.doc if c.doc != "" else _doc(cur)
+    for m in c.methods:
+        m.defined_in_header = True            # instantiated from the header, no library symbol involved
+    return c
+
+
 def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -> PackageIR:
     if args is None:
         args = clang_args(tree)
@@ -504,6 +614,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
                 ir.functions.append(fn)
             elif cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
                 ir.typedefs.append((cur.spelling, _type_spelling(cur.underlying_typedef_type)))
+                if not any(c.py_name == cur.spelling for c in ir.classes):     # the same alias appears in several headers
+                    inst = _alias_instance(tu, cur, header, ir.report)
+                    if inst is not None:
+                        ir.classes.append(inst)
             elif cur.kind in (K.CLASS_TEMPLATE, K.FUNCTION_TEMPLATE):
                 ir.report.append(f"{cur.spelling}: template (not bound)")
     for c in ir.classes:

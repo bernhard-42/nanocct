@@ -75,21 +75,22 @@ def _element_spec(arg: str, known: dict[str, str], templates: dict[str, dict]) -
     m = re.match(r"(?:opencascade::)?handle<(.+)>$", arg)
     if m is not None:
         arg = m.group(1)
-    if arg in known:
-        return (f"nanoocp.{known[arg]}", arg)
-    inst = templates.get(arg)
-    if inst is not None:
+    inst = templates.get(arg)                    # template instantiations first: their Python name is the alias
+    if inst is not None and not inst.get("skipped", False):
         return (f"nanoocp.{inst['package']}", inst["name"])
+    if arg in known and "<" not in arg:
+        return (f"nanoocp.{known[arg]}", arg)
     return None
 
 
 def _accessors(known: dict[str, str], templates: dict[str, dict]) -> dict[str, dict[tuple[tuple[str, str], ...], str]]:
     import re
     out: dict[str, dict[tuple[tuple[str, str], ...], str]] = {}
+    from .ncollection import BINDERS
     for key, inst in templates.items():
         m = re.match(r"(\w+)<(.+)>$", key)
-        if m is None or inst.get("skipped", False):
-            continue
+        if m is None or inst.get("skipped", False) or m.group(1) not in BINDERS:
+            continue                                   # alias-instantiated templates (math_Vector) are plain classes
         tmpl, args = m.group(1), _split_args(m.group(2))
         specs = [_element_spec(a, known, templates) for a in args]
         if any(sp is None for sp in specs):
@@ -174,8 +175,14 @@ def main(argv: list[str]) -> int:
         tk_dir = cpp_root / tk_name
         tk_dir.mkdir(parents=True, exist_ok=True)
         # emit in runtime (declaration) order: template instances are bound in that order and an
-        # HSequence<T> must find its Sequence<T> already registered
-        order = _package_order(irs, known)
+        # HSequence<T> must find its Sequence<T> already registered. A partial run (--package) keeps the
+        # stored order of the toolkit and appends packages not seen before.
+        stored = manifest.setdefault("order", {}).get(tk_name, [])
+        if args.package is None or len(stored) == 0:
+            order = _package_order(irs, known)
+        else:
+            order = stored + [ir.name for ir in irs if ir.name not in stored]
+        manifest["order"][tk_name] = order
         irs = sorted(irs, key=lambda ir: order.index(ir.name))
         pkgs = [tree.packages[ir.name] for ir in irs]
         for ir, pkg in zip(irs, pkgs):
@@ -187,7 +194,7 @@ def main(argv: list[str]) -> int:
             for line in ir.report + em.report:
                 print(f"    - {line}", file=sys.stderr)
         depends = [d for d in tk.depends if d in generated_toolkits]
-        (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends))
+        (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends))   # every package of the toolkit
     ordered = _topo(tree, generated_toolkits)
     # Python shims: one per generated package (+ deprecated typedef aliases), one per alias-only prefix
     aliases, unbound = deprecated_aliases(args.occt_src / "src" / "Deprecated" / "NCollectionAliases", clang_args(tree), templates)
@@ -206,7 +213,7 @@ def main(argv: list[str]) -> int:
         "# that NCollection instantiations bound by a later toolkit into an earlier package are always present.\n"
         + "".join(f"import nanoocp._{tk}  # noqa: F401\n" for tk in ordered))
     manifest_path.write_text(json.dumps({"classes": dict(sorted(known.items())), "templates": dict(sorted(templates.items())),
-                                         "packages": dict(sorted(generated_pkgs.items()))}, indent=0) + "\n")
+                                         "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"]}, indent=0) + "\n")
     docs, warnings = template_docs(tree.include_dir, clang_args(tree))
     (cpp_root / "common" / "ncollection_docs.h").write_text(docs)
     for w in warnings:
