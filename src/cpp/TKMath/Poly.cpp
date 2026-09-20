@@ -30,6 +30,7 @@
 #include <Standard_Type.hxx>
 #include <gp_Ax1.hxx>
 #include <gp_Dir.hxx>
+#include <gp_Dir2d.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Pnt2d.hxx>
 #include <gp_Trsf.hxx>
@@ -92,6 +93,10 @@ Any Link can store an arbitrary pointer that is called Attribute.)nbdoc");
     }
     { nb::class_<Poly_CoherentTriPtr> cls(m, "Poly_CoherentTriPtr", R"nbdoc(Implementation of both list node for Poly_CoherentTriangle type and
 round double-linked list of these nodes.)nbdoc");
+    }
+    { nb::class_<Poly_CoherentTriPtr::Iterator> cls(m.attr("Poly_CoherentTriPtr"), "Iterator", R"nbdoc(Iterator class for this list of triangles. Because the list is round,
+an iteration can be started from any member and it finishes before taking
+this member again. The iteration sense is always forward (Next).)nbdoc");
     }
     { nb::class_<Poly_CoherentNode, gp_XYZ> cls(m, "Poly_CoherentNode", R"nbdoc(Node of coherent triangulation. Contains:
 <ul>
@@ -172,6 +177,8 @@ standard OCCT allocator (aka NCollection_BaseAllocator) is used. But if you need
 performance you can use NCollection_IncAllocator instead.
 </ul>)nbdoc");
     }
+    { nb::class_<Poly_CoherentTriangulation::TwoIntegers> cls(m.attr("Poly_CoherentTriangulation"), "TwoIntegers", R"nbdoc(Couple of integer indices (used in RemoveDegenerated()).)nbdoc");
+    }
     { nb::class_<Poly_Connect> cls(m, "Poly_Connect", R"nbdoc(Provides an algorithm to explore, inside a triangulation, the
 adjacency data for a node or a triangle.
 Adjacency data for a node consists of triangles which
@@ -219,9 +226,23 @@ a pair of integer indices of nodes.)nbdoc");
           .value("RC_HangingLinks", Poly_MakeLoops::RC_HangingLinks)
           .value("RC_Failure", Poly_MakeLoops::RC_Failure);
     }
+    { nb::class_<Poly_MakeLoops::Link> cls(m.attr("Poly_MakeLoops"), "Link", R"nbdoc(The Link structure)nbdoc");
+    }
+    { nb::class_<Poly_MakeLoops::Hasher> cls(m.attr("Poly_MakeLoops"), "Hasher");
+    }
+    { nb::class_<Poly_MakeLoops::Helper> cls(m.attr("Poly_MakeLoops"), "Helper", R"nbdoc(The abstract helper class)nbdoc");
+    }
+    { nb::class_<Poly_MakeLoops::HeapOfInteger> cls(m.attr("Poly_MakeLoops"), "HeapOfInteger", R"nbdoc(This class implements a heap of integers. The most effective usage
+of it is first to add there all items, and then get top item and remove
+any items till it becomes empty.)nbdoc");
+    }
     { nb::class_<Poly_MakeLoops3D, Poly_MakeLoops> cls(m, "Poly_MakeLoops3D");
     }
+    { nb::class_<Poly_MakeLoops3D::Helper, Poly_MakeLoops::Helper> cls(m.attr("Poly_MakeLoops3D"), "Helper", R"nbdoc(The abstract helper class)nbdoc");
+    }
     { nb::class_<Poly_MakeLoops2D, Poly_MakeLoops> cls(m, "Poly_MakeLoops2D");
+    }
+    { nb::class_<Poly_MakeLoops2D::Helper, Poly_MakeLoops::Helper> cls(m.attr("Poly_MakeLoops2D"), "Helper", R"nbdoc(The abstract helper class)nbdoc");
     }
     { nb::class_<Poly_MergeNodesTool, Standard_Transient> cls(m, "Poly_MergeNodesTool", R"nbdoc(Auxiliary tool for merging triangulation nodes for visualization purposes.
 Tool tries to merge all nodes within input triangulation, but split the ones on sharp corners at
@@ -420,8 +441,8 @@ from some deferred storage using specified shared input file system.)nbdoc")
 from some deferred storage using specified shared input file system.)nbdoc")
         .def("UnloadDeferredData", static_cast<bool (Poly_Triangulation::*)()>(&Poly_Triangulation::UnloadDeferredData), R"nbdoc(Releases triangulation data if it has connected deferred storage.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_Triangulation>();
+    nanoocp_implicit_default_ctor<Poly>(nb::borrow<nb::class_<Poly>>(m.attr("Poly")));
     nb::borrow<nb::class_<Poly>>(m.attr("Poly"))
-        .def(nb::init<>())
         .def_static("Catenate", static_cast<occ::handle<Poly_Triangulation> (*)(const NCollection_List<opencascade::handle<Poly_Triangulation>> &)>(&Poly::Catenate), nb::arg("lstTri"), R"nbdoc(Computes and stores the link from nodes to
 triangles and from triangles to neighbouring
 triangles.
@@ -505,6 +526,16 @@ This class instance that should be removed from its list.
 @param theA
 Allocator where the current pointer instance was created.)nbdoc")
         .def_static("RemoveList", static_cast<void (*)(Poly_CoherentTriPtr *, const occ::handle<NCollection_BaseAllocator> &)>(&Poly_CoherentTriPtr::RemoveList), nb::arg("thePtr"), nb::arg("arg1"), R"nbdoc(Remove the list containing the given pointer to triangle.)nbdoc");
+    nb::borrow<nb::class_<Poly_CoherentTriPtr::Iterator>>(m.attr("Poly_CoherentTriPtr").attr("Iterator"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
+        .def(nb::init<const Poly_CoherentTriPtr &>(), nb::arg("thePtr"), R"nbdoc(Constructor)nbdoc")
+        .def("First", static_cast<const Poly_CoherentTriangle * (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::First), nb::rv_policy::reference, R"nbdoc(Query the triangle that started the current iteration.)nbdoc")
+        .def("More", static_cast<bool (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::More), R"nbdoc(Query if there is available triangle pointer on this iteration)nbdoc")
+        .def("Next", static_cast<void (Poly_CoherentTriPtr::Iterator::*)()>(&Poly_CoherentTriPtr::Iterator::Next), R"nbdoc(Go to the next iteration.)nbdoc")
+        .def("Value", static_cast<const Poly_CoherentTriangle & (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::Value), R"nbdoc(Get the current iterated triangle)nbdoc")
+        .def("ChangeValue", static_cast<Poly_CoherentTriangle & (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::ChangeValue), nb::rv_policy::reference_internal, R"nbdoc(Get the current iterated triangle (mutable))nbdoc")
+        .def("PtrValue", static_cast<const Poly_CoherentTriPtr & (Poly_CoherentTriPtr::Iterator::*)() const>(&Poly_CoherentTriPtr::Iterator::PtrValue), R"nbdoc(Get the current iterated pointer to triangle)nbdoc");
+    nb::implicitly_convertible<std::decay_t<const Poly_CoherentTriPtr &>, Poly_CoherentTriPtr::Iterator>();
     nb::borrow<nb::class_<Poly_CoherentNode>>(m.attr("Poly_CoherentNode"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::init<const gp_XYZ &>(), nb::arg("thePnt"), R"nbdoc(Constructor.)nbdoc")
@@ -627,6 +658,9 @@ objects)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Poly_CoherentTriangulation::*)() const>(&Poly_CoherentTriangulation::DynamicType));
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, Poly_CoherentTriangulation>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_CoherentTriangulation>();
+    nb::borrow<nb::class_<Poly_CoherentTriangulation::TwoIntegers>>(m.attr("Poly_CoherentTriangulation").attr("TwoIntegers"))
+        .def(nb::init<>())
+        .def(nb::init<int, int>(), nb::arg("i0"), nb::arg("i1"));
     nb::borrow<nb::class_<Poly_Connect>>(m.attr("Poly_Connect"))
         .def(nb::init<>(), R"nbdoc(Constructs an uninitialized algorithm.)nbdoc")
         .def(nb::init<const occ::handle<Poly_Triangulation> &>(), nb::arg("theTriangulation"), R"nbdoc(Constructs an algorithm to explore the adjacency data of
@@ -690,12 +724,46 @@ Returns the old value of orientation.)nbdoc")
         .def("GetLoop", static_cast<const NCollection_List<Poly_MakeLoops::Link> & (Poly_MakeLoops::*)(int) const>(&Poly_MakeLoops::GetLoop), nb::arg("theIndex"), R"nbdoc(Returns the loop of the given index)nbdoc")
         .def("GetNbHanging", static_cast<int (Poly_MakeLoops::*)() const>(&Poly_MakeLoops::GetNbHanging), R"nbdoc(Returns the number of detected hanging chains)nbdoc")
         .def("GetHangingLinks", static_cast<void (Poly_MakeLoops::*)(NCollection_List<Poly_MakeLoops::Link> &) const>(&Poly_MakeLoops::GetHangingLinks), nb::arg("theLinks"), R"nbdoc(Fills in the list of hanging links)nbdoc");
+    nb::borrow<nb::class_<Poly_MakeLoops::Link>>(m.attr("Poly_MakeLoops").attr("Link"))
+        .def(nb::init<>())
+        .def(nb::init<int, int>(), nb::arg("theNode1"), nb::arg("theNode2"))
+        .def("Reverse", static_cast<void (Poly_MakeLoops::Link::*)()>(&Poly_MakeLoops::Link::Reverse))
+        .def("IsReversed", static_cast<bool (Poly_MakeLoops::Link::*)() const>(&Poly_MakeLoops::Link::IsReversed))
+        .def("Nullify", static_cast<void (Poly_MakeLoops::Link::*)()>(&Poly_MakeLoops::Link::Nullify))
+        .def("IsNull", static_cast<bool (Poly_MakeLoops::Link::*)() const>(&Poly_MakeLoops::Link::IsNull))
+        .def("__eq__", static_cast<bool (Poly_MakeLoops::Link::*)(const Poly_MakeLoops::Link &) const>(&Poly_MakeLoops::Link::operator==), nb::arg("theOther"), nb::is_operator())
+        .def_rw("node1", &Poly_MakeLoops::Link::node1)
+        .def_rw("node2", &Poly_MakeLoops::Link::node2)
+        .def_rw("flags", &Poly_MakeLoops::Link::flags);
+    nanoocp_implicit_default_ctor<Poly_MakeLoops::Hasher>(nb::borrow<nb::class_<Poly_MakeLoops::Hasher>>(m.attr("Poly_MakeLoops").attr("Hasher")));
+    nb::borrow<nb::class_<Poly_MakeLoops::Hasher>>(m.attr("Poly_MakeLoops").attr("Hasher"))
+        .def("__call__", static_cast<size_t (Poly_MakeLoops::Hasher::*)(const Poly_MakeLoops::Link &) const noexcept>(&Poly_MakeLoops::Hasher::operator()), nb::arg("theLink"), nb::is_operator())
+        .def("__call__", static_cast<bool (Poly_MakeLoops::Hasher::*)(const Poly_MakeLoops::Link &, const Poly_MakeLoops::Link &) const noexcept>(&Poly_MakeLoops::Hasher::operator()), nb::arg("theLink1"), nb::arg("theLink2"), nb::is_operator());
+    nb::borrow<nb::class_<Poly_MakeLoops::Helper>>(m.attr("Poly_MakeLoops").attr("Helper"))
+        .def("GetAdjacentLinks", static_cast<const NCollection_List<Poly_MakeLoops::Link> & (Poly_MakeLoops::Helper::*)(int) const>(&Poly_MakeLoops::Helper::GetAdjacentLinks), nb::arg("theNode"), R"nbdoc(returns the links adjacent to the given node)nbdoc")
+        .def("OnAddLink", static_cast<void (Poly_MakeLoops::Helper::*)(int, const Poly_MakeLoops::Link &) const>(&Poly_MakeLoops::Helper::OnAddLink), nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(hook function called from AddLink in _DEBUG mode)nbdoc");
+    nb::borrow<nb::class_<Poly_MakeLoops::HeapOfInteger>>(m.attr("Poly_MakeLoops").attr("HeapOfInteger"))
+        .def(nb::init<const int>(), nb::arg("theNbPreAllocated") = static_cast<std::decay_t<const int>>(1))
+        .def("Clear", static_cast<void (Poly_MakeLoops::HeapOfInteger::*)()>(&Poly_MakeLoops::HeapOfInteger::Clear))
+        .def("Add", static_cast<void (Poly_MakeLoops::HeapOfInteger::*)(const int)>(&Poly_MakeLoops::HeapOfInteger::Add), nb::arg("theValue"))
+        .def("Top", static_cast<int (Poly_MakeLoops::HeapOfInteger::*)()>(&Poly_MakeLoops::HeapOfInteger::Top))
+        .def("Contains", static_cast<bool (Poly_MakeLoops::HeapOfInteger::*)(const int) const>(&Poly_MakeLoops::HeapOfInteger::Contains), nb::arg("theValue"))
+        .def("Remove", static_cast<void (Poly_MakeLoops::HeapOfInteger::*)(const int)>(&Poly_MakeLoops::HeapOfInteger::Remove), nb::arg("theValue"))
+        .def("IsEmpty", static_cast<bool (Poly_MakeLoops::HeapOfInteger::*)()>(&Poly_MakeLoops::HeapOfInteger::IsEmpty));
+    nb::implicitly_convertible<std::decay_t<const int>, Poly_MakeLoops::HeapOfInteger>();
     nb::borrow<nb::class_<Poly_MakeLoops3D>>(m.attr("Poly_MakeLoops3D"))
         .def(nb::init<const Poly_MakeLoops3D::Helper *, const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theHelper"), nb::arg("theAlloc"), R"nbdoc(Constructor. If helper is NULL then the algorithm will
 probably return a wrong result)nbdoc");
+    nb::borrow<nb::class_<Poly_MakeLoops3D::Helper>>(m.attr("Poly_MakeLoops3D").attr("Helper"))
+        .def("GetFirstTangent", static_cast<bool (Poly_MakeLoops3D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir &) const>(&Poly_MakeLoops3D::Helper::GetFirstTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the first node of a link)nbdoc")
+        .def("GetLastTangent", static_cast<bool (Poly_MakeLoops3D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir &) const>(&Poly_MakeLoops3D::Helper::GetLastTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the last node of a link)nbdoc")
+        .def("GetNormal", static_cast<bool (Poly_MakeLoops3D::Helper::*)(int, gp_Dir &) const>(&Poly_MakeLoops3D::Helper::GetNormal), nb::arg("theNode"), nb::arg("theDir"), R"nbdoc(returns the normal to the surface at a given node)nbdoc");
     nb::borrow<nb::class_<Poly_MakeLoops2D>>(m.attr("Poly_MakeLoops2D"))
         .def(nb::init<const bool, const Poly_MakeLoops2D::Helper *, const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theLeftWay"), nb::arg("theHelper"), nb::arg("theAlloc"), R"nbdoc(Constructor. If helper is NULL then the algorithm will
 probably return a wrong result)nbdoc");
+    nb::borrow<nb::class_<Poly_MakeLoops2D::Helper>>(m.attr("Poly_MakeLoops2D").attr("Helper"))
+        .def("GetFirstTangent", static_cast<bool (Poly_MakeLoops2D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir2d &) const>(&Poly_MakeLoops2D::Helper::GetFirstTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the first node of a link)nbdoc")
+        .def("GetLastTangent", static_cast<bool (Poly_MakeLoops2D::Helper::*)(const Poly_MakeLoops::Link &, gp_Dir2d &) const>(&Poly_MakeLoops2D::Helper::GetLastTangent), nb::arg("theLink"), nb::arg("theDir"), R"nbdoc(returns the tangent vector at the last node of a link)nbdoc");
     nb::borrow<nb::class_<Poly_MergeNodesTool>>(m.attr("Poly_MergeNodesTool"))
         .def(nb::new_([](const double theSmoothAngle, const double theMergeTolerance, const int theNbFacets) { return opencascade::handle<Poly_MergeNodesTool>(new Poly_MergeNodesTool(theSmoothAngle, theMergeTolerance, theNbFacets)); }), nb::arg("theSmoothAngle"), nb::arg("theMergeTolerance") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theNbFacets") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Constructor
 @param[in] theSmoothAngle smooth angle in radians or 0.0 to disable merging by angle

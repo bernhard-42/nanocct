@@ -97,13 +97,25 @@ template <typename T> void nanoocp_register_exception(nb::handle py_type) {
     nanoocp_exception_map()[typeid(T).name()] = py_type.ptr();
 }
 
-inline nb::object nanoocp_new_exception(nb::module_ &m, const char *name, const char *doc, PyObject *base) {
+// scope: the package module or a namespace submodule
+inline nb::object nanoocp_new_exception(nb::handle m, const char *name, const char *doc, PyObject *base) {
     std::string qualified = nb::borrow<nb::str>(m.attr("__name__")).c_str();
     qualified += ".";
     qualified += name;
     nb::object type = nb::steal(PyErr_NewExceptionWithDoc(qualified.c_str(), doc, base, nullptr));
     m.attr(name) = type;
     return type;
+}
+
+// The implicit default constructor of a class that declares none: bound only when it exists (a reference
+// member or a non-default-constructible member deletes it; the header does not say so).
+template <typename T> void nanoocp_implicit_default_ctor(nb::class_<T> cls) {
+    if constexpr (std::is_default_constructible_v<T>) {
+        if constexpr (std::is_base_of_v<Standard_Transient, T>)
+            cls.def(nb::new_([]() { return opencascade::handle<T>(new T()); }));
+        else
+            cls.def(nb::init<>());
+    }
 }
 
 // fallback: the Python type for Standard_Failure, or nullptr to pass unknown exceptions on

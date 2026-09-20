@@ -8600,7 +8600,7 @@ class gp_Torus:
     def Axis(self) -> gp_Ax1:
         """returns the symmetry axis of the torus."""
 
-    def Coefficients(self, theCoef: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def Coefficients(self, theCoef: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Computes the coefficients of the implicit equation of the surface
         in the absolute Cartesian coordinate system:

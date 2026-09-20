@@ -1679,6 +1679,44 @@ class OSD_ThreadPool(nanoocp.Standard.Standard_Transient):
         (if -1 is specified then OSD_Parallel::NbLogicalProcessors() will be used)
         """
 
+    class Launcher:
+        """
+        Launcher object locking a subset of threads (or all threads)
+        in a thread pool to perform parallel execution of the job.
+        """
+
+        def __init__(self, thePool: OSD_ThreadPool, theMaxThreads: int = -1) -> None:
+            """
+            Lock specified number of threads from the thread pool.
+            If thread pool is already locked by another user,
+            Launcher will lock as many threads as possible
+            (if none will be locked, then single threaded execution will be done).
+            @param thePool       thread pool to lock the threads
+            @param theMaxThreads number of threads to lock;
+            -1 specifies that default number of threads
+            to be used OSD_ThreadPool::NbDefaultThreadsToLaunch()
+            """
+
+        def HasThreads(self) -> bool:
+            """
+            Return TRUE if at least 2 threads have been locked for parallel execution (including
+            self-thread); otherwise, the functor will be executed within the caller thread.
+            """
+
+        def NbThreads(self) -> int:
+            """Return amount of locked threads; >= 1."""
+
+        def LowerThreadIndex(self) -> int:
+            """Return the lower thread index."""
+
+        def UpperThreadIndex(self) -> int:
+            """
+            Return the upper thread index (last index is reserved for the self-thread).
+            """
+
+        def Release(self) -> None:
+            """Release threads before Launcher destruction."""
+
     @staticmethod
     def get_type_name() -> str: ...
 

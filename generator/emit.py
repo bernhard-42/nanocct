@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import re
+import shutil
 from pathlib import Path
 
 from .model import Class, Enum, Function, Method, PackageIR, Param, TemplateInstance
 from .ncollection import BINDERS
-from .parse import _py_identifier
+from .parse import _py_identifier, py_path
 
 # C++ operator -> (binary python name, unary python name, reflected python name)
 _BINARY_OPS = {
@@ -81,6 +82,19 @@ class Emitter:
         self._idents: set[str] = set()
 
     # ---- helpers -------------------------------------------------------------------------------
+    @staticmethod
+    def _attr(scope: tuple[str, ...]) -> str:
+        """Expression for the Python object at a scope path below the package module m (a namespace submodule
+        or an enclosing class): nb::class_/nb::enum_ take it as the scope handle."""
+        return "m" + "".join(f'.attr("{s}")' for s in scope)
+
+    @staticmethod
+    def _module(scope: tuple[str, ...]) -> str:
+        """Same as _attr for a namespace scope, typed as nb::module_ (for .def / def_submodule)."""
+        if len(scope) == 0:
+            return "m"
+        return f'nb::borrow<nb::module_>({Emitter._attr(scope)})'
+
     def _note_types(self, *texts: str) -> None:
         for t in texts:
             for ident in _IDENT_RE.findall(t):
@@ -273,18 +287,25 @@ class Emitter:
             for b in c.bases:
                 if b in by_name:
                     visit(by_name[b])
+            if c.outer in by_name:            # a nested class is declared into its outer class
+                visit(by_name[c.outer])
             done.append(c)
 
         for c in self.ir.classes:
             visit(c)
         return done
 
-    def _base_ok(self, c: Class) -> bool:
+    def _base_ok(self, c: Class, skipped: set[str]) -> bool:
+        if c.outer in skipped:
+            self.report.append(f"{c.name}: outer class {c.outer} is not bound -> nested class skipped")
+            skipped.add(c.name)
+            return False
         for b in c.bases:
             if c.is_exception and b.startswith("std::"):
                 continue
             if b not in self.known:
                 self.report.append(f"{c.name}: base class {b} is not bound (package not generated) -> class skipped")
+                skipped.add(c.name)
                 return False
         return True
 
@@ -299,14 +320,16 @@ class Emitter:
             # sibling packages are looked up through the extension submodule (registered in sys.modules
             # before any package is declared), never through the nanoocp.<pkg> shim: importing the shim
             # while the toolkit module is still initialising would freeze a half-filled namespace
-            base = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}").attr("{b}").ptr()'
-                    if pkg != self.ir.name else f'm.attr("{b}").ptr()')
+            attrs = "".join(f'.attr("{a}")' for a in py_path(b, pkg).split("."))
+            base = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}.ptr()'
+                    if pkg != self.ir.name else f'm{attrs}.ptr()')
         d = _cpp_doc(c.doc)
-        return f'    nanoocp_register_exception<{c.name}>(nanoocp_new_exception(m, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
+        return f'    nanoocp_register_exception<{c.name}>(nanoocp_new_exception({self._attr(c.scope)}, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
 
     def emit(self) -> str:
         ir = self.ir
-        classes = [c for c in self._ordered_classes() if self._base_ok(c)]
+        skipped: set[str] = set()
+        classes = [c for c in self._ordered_classes() if self._base_ok(c, skipped)]
         free_ops: dict[str, list[str]] = {}
         module_fns: list[str] = []
         for fn in ir.functions:
@@ -325,15 +348,23 @@ class Emitter:
                     self.report.append(f"{fn.name}({self._sig(fn.params)}): free function returning Transient pointer/reference not supported yet")
                     continue
                 policy = {"ptr_class": ", nb::rv_policy::reference", "ref_mutable": ", nb::rv_policy::reference"}.get(fn.result_kind, "")
-                module_fns.append(f'    m.def("{fn.name}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{fn.name}){policy}{self._extras(fn.doc, fn.params, False, False)});')
+                qualified = fn.qualified if fn.qualified != "" else fn.name
+                if any(p.is_out for p in fn.params):        # out-params -> returned tuple, as for methods
+                    as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
+                                       result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=fn.doc)
+                    module_fns.append(f'    {self._module(fn.scope)}.def("{fn.name}", {self._lambda_call(None, as_method)}{self._extras(fn.doc, fn.params, True, False)});')
+                    continue
+                module_fns.append(f'    {self._module(fn.scope)}.def("{fn.name}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(fn.doc, fn.params, False, False)});')
 
         declare: list[str] = []
         define: list[str] = []
-        for py, cpp, doc in ir.constants:
-            declare.append(f'    m.attr("{py}") = nb::cast({cpp});')
-            self._note_types(cpp)
+        for ns in ir.namespaces:      # C++ namespaces other than the package's own -> submodules
+            declare.append(f'    {self._module(ns[:-1])}.def_submodule("{ns[-1]}", "C++ namespace {"::".join(ns)} (OCCT package {ir.name})");')
+        for k in ir.constants:
+            declare.append(f'    {self._attr(k.scope)}.attr("{k.py_name}") = nb::cast({k.cpp});')
+            self._note_types(k.cpp)
         for e in ir.enums:
-            declare += ["    " + l for l in self._enum(e, "m")]
+            declare += ["    " + l for l in self._enum(e, self._attr(e.scope))]
         aliased: set[str] = set()      # instantiations already bound by another package: alias only
         for c in classes:
             self._note_types(*c.bases)
@@ -354,12 +385,13 @@ class Emitter:
             bases = "".join(f", {b}" for b in c.bases[:1])
             d = _cpp_doc(c.doc)
             doc_arg = f", {d}" if d is not None else ""
-            declare.append(f'    {{ nb::class_<{c.name}{bases}> cls(m, "{c.py_name}"{doc_arg});')
+            declare.append(f'    {{ nb::class_<{c.name}{bases}> cls({self._attr(c.scope)}, "{c.py_name}"{doc_arg});')
             for e in c.enums:
                 declare += ["      " + l for l in self._enum(e, "cls")]
             declare.append("    }")
 
             body: list[str] = []
+            implicit_default = False
             if c.is_exception or c.name in aliased:
                 continue
             if not c.constructible:
@@ -368,8 +400,7 @@ class Emitter:
                 declared = [k for k in c.ctors if k.skip_reason is None]
                 # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count
                 declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
-                if not c.has_declared_ctor:
-                    body.append(self._ctor(c, [], ""))      # implicit default constructor
+                implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
                 for k in declared:
                     body.append(self._ctor(c, k.params, k.doc))
             bound = [m for m in c.methods if m.skip_reason is None]
@@ -386,9 +417,11 @@ class Emitter:
                 dd = _cpp_doc(f.doc)
                 body.append(f'.{kind}("{f.name}", &{c.name}::{f.name}{", " + dd if dd is not None else ""})')
             body += free_ops.get(c.name, [])
+            if implicit_default:
+                define.append(f'    nanoocp_implicit_default_ctor<{c.name}>(nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}")));')
             if len(body) == 0:
                 continue
-            define.append(f'    nb::borrow<nb::class_<{c.name}>>(m.attr("{c.py_name}"))')
+            define.append(f'    nb::borrow<nb::class_<{c.name}>>({self._attr(c.scope)}.attr("{c.py_name}"))')
             define += ["        " + b for b in body]
             define[-1] += ";"
             # C++ implicit conversions (non-explicit converting constructors) apply in Python too
@@ -433,7 +466,7 @@ class Emitter:
         return "\n".join(out)
 
 
-def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str]) -> str:
+def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str], namespaces: dict[str, list[tuple[str, ...]]]) -> str:
     decls = "\n".join(f"void nanoocp_declare_{p}(nb::module_ &);\nvoid nanoocp_templates_{p}(nb::module_ &);\nvoid nanoocp_define_{p}(nb::module_ &);" for p in packages)
     imports = "\n".join(f'    nb::module_::import_("nanoocp._{d}");' for d in depends)
     subs = "\n".join(
@@ -441,7 +474,14 @@ def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str]) -
         f'    m_{p}.attr("__name__") = "nanoocp.{p}";\n'
         f'    sys_modules["nanoocp._{toolkit}.{p}"] = m_{p};'
         for p in packages)
-    declares = "\n".join(f"    nanoocp_declare_{p}(m_{p});" for p in packages)
+    # C++ namespaces (submodules created by the declare phase) are importable by their dotted name, like packages.
+    # nanobind registers a submodule under <parent __name__>.<name>, i.e. nanoocp.<pkg>.<ns>: that key belongs to
+    # the Python shim module (nanoocp/<pkg>/<ns>.py) and is removed again, or `import nanoocp.<pkg>.<ns>` would
+    # find the extension submodule without ever importing the package shim.
+    declares = "\n".join(f"    nanoocp_declare_{p}(m_{p});" + "".join(
+        f'\n    sys_modules["nanoocp._{toolkit}.{p}.{".".join(ns)}"] = m_{p}{"".join(f".attr(\"{a}\")" for a in ns)};'
+        f'\n    sys_modules.attr("pop")("nanoocp.{p}.{".".join(ns)}", nb::none());'
+        for ns in namespaces.get(p, [])) for p in packages)
     templates = "\n".join(f"    nanoocp_templates_{p}(m_{p});" for p in packages)
     defines = "\n".join(f"    nanoocp_define_{p}(m_{p});" for p in packages)
     if toolkit == "TKernel":
@@ -468,6 +508,49 @@ NB_MODULE(_{toolkit}, m) {{
 {defines}
 }}
 """
+
+
+def write_package_shims(py_root: Path, package: str, toolkit: str | None, aliases: dict[str, tuple[str, str]],
+                        namespaces: list[tuple[str, ...]],
+                        accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None) -> None:
+    """nanoocp/<package>.py, or for a package whose C++ code declares namespaces of its own (Geom2dEval_RepCurveDesc
+    in package Geom2dEval) the Python package nanoocp/<package>/__init__.py with one module per namespace, so that
+    `from nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc import Base` and the .pyi layout follow the C++ nesting."""
+    shim = emit_package_shim(package, toolkit, aliases, accessors)
+    pkg_dir = py_root / package
+    module_file = py_root / f"{package}.py"
+    if len(namespaces) == 0:
+        if pkg_dir.is_dir():
+            shutil.rmtree(pkg_dir)                  # the package lost its namespaces (regeneration)
+        module_file.write_text(shim)
+        return
+    assert toolkit is not None
+    module_file.unlink(missing_ok=True)
+    (py_root / f"{package}.pyi").unlink(missing_ok=True)
+    pkg_dir.mkdir(exist_ok=True)
+    top = sorted({ns[0] for ns in namespaces})
+    files: dict[Path, str] = {}
+    # absolute imports: `from . import X` would keep the extension submodule that the star import above already bound
+    files[pkg_dir / "__init__.py"] = (shim + "\n# C++ namespaces of the package (Python modules nanoocp.<package>.<namespace>)\n"
+                                      + "".join(f"import nanoocp.{package}.{n}  # noqa: E402,F401\n" for n in top))
+    for ns in namespaces:
+        has_children = any(len(other) == len(ns) + 1 and other[:len(ns)] == ns for other in namespaces)
+        target = pkg_dir.joinpath(*ns)
+        if has_children:
+            target.mkdir(exist_ok=True)
+            target = target / "__init__.py"
+        else:
+            target = target.with_suffix(".py")
+        children = sorted(other[-1] for other in namespaces if len(other) == len(ns) + 1 and other[:len(ns)] == ns)
+        files[target] = (
+            f'"""C++ namespace {"::".join(ns)} (OCCT package {package}, toolkit {toolkit})."""\n'
+            f'from nanoocp._{toolkit}.{package}.{".".join(ns)} import *  # noqa: F401,F403\n'
+            + "".join(f'import nanoocp.{package}.{".".join(ns)}.{n}  # noqa: E402,F401\n' for n in children))
+    for target, text in files.items():
+        target.write_text(text)
+    for stale in pkg_dir.rglob("*.py"):             # namespace modules of an earlier run; stubs (.pyi) are left alone
+        if stale not in files:
+            stale.unlink()
 
 
 def emit_package_shim(package: str, toolkit: str | None, aliases: dict[str, tuple[str, str]],

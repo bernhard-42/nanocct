@@ -8,12 +8,152 @@
 #include <MathOpt_PSO.hxx>
 #include <MathOpt_GlobOpt.hxx>
 #include <MathOpt_Uzawa.hxx>
+#include <math_Matrix.hxx>
+#include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_MathOpt(nb::module_ &m) {
+    nb::enum_<MathOpt::ConjugateGradientFormula>(m, "ConjugateGradientFormula", R"nbdoc(Conjugate gradient formula selection.)nbdoc")
+        .value("FletcherReeves", MathOpt::ConjugateGradientFormula::FletcherReeves)
+        .value("PolakRibiere", MathOpt::ConjugateGradientFormula::PolakRibiere)
+        .value("HestenesStiefel", MathOpt::ConjugateGradientFormula::HestenesStiefel)
+        .value("DaiYuan", MathOpt::ConjugateGradientFormula::DaiYuan);
+    nb::enum_<MathOpt::PSOInitMode>(m, "PSOInitMode", R"nbdoc(Initialization mode for PSO particles.)nbdoc")
+        .value("RandomOnly", MathOpt::PSOInitMode::RandomOnly)
+        .value("SeededOnly", MathOpt::PSOInitMode::SeededOnly)
+        .value("SeededPlusRandom", MathOpt::PSOInitMode::SeededPlusRandom);
+    nb::enum_<MathOpt::PSOBoundaryMode>(m, "PSOBoundaryMode", R"nbdoc(Boundary handling mode for particles leaving the search space.)nbdoc")
+        .value("Clamp", MathOpt::PSOBoundaryMode::Clamp)
+        .value("Reflect", MathOpt::PSOBoundaryMode::Reflect)
+        .value("Wrap", MathOpt::PSOBoundaryMode::Wrap);
+    nb::enum_<MathOpt::PSOInertiaSchedule>(m, "PSOInertiaSchedule", R"nbdoc(Inertia weight schedule.)nbdoc")
+        .value("Constant", MathOpt::PSOInertiaSchedule::Constant)
+        .value("LinearDecay", MathOpt::PSOInertiaSchedule::LinearDecay);
+    nb::enum_<MathOpt::GlobalStrategy>(m, "GlobalStrategy", R"nbdoc(Global optimization strategy selection.)nbdoc")
+        .value("PSO", MathOpt::GlobalStrategy::PSO)
+        .value("MultiStart", MathOpt::GlobalStrategy::MultiStart)
+        .value("PSOHybrid", MathOpt::GlobalStrategy::PSOHybrid)
+        .value("DifferentialEvolution", MathOpt::GlobalStrategy::DifferentialEvolution);
+    { nb::class_<MathOpt::FRPRConfig, MathUtils::Config> cls(m, "FRPRConfig", R"nbdoc(Configuration for FRPR conjugate gradient method.)nbdoc");
+    }
+    { nb::class_<MathOpt::NewtonConfig, MathUtils::Config> cls(m, "NewtonConfig", R"nbdoc(Configuration for Newton minimization with Hessian.)nbdoc");
+    }
+    { nb::class_<MathOpt::PSOSeedParticle> cls(m, "PSOSeedParticle", R"nbdoc(Seed particle for PSO initialization.)nbdoc");
+    }
+    { nb::class_<MathOpt::PSOStats> cls(m, "PSOStats", R"nbdoc(Statistics collected during PSO execution.)nbdoc");
+    }
+    { nb::class_<MathOpt::PSOConfig, MathUtils::NDimConfig> cls(m, "PSOConfig", R"nbdoc(Configuration for Particle Swarm Optimization.)nbdoc");
+    }
+    { nb::class_<MathOpt::GlobalConfig, MathUtils::NDimConfig> cls(m, "GlobalConfig", R"nbdoc(Configuration for global optimization.)nbdoc");
+    }
+    { nb::class_<MathOpt::UzawaResult> cls(m, "UzawaResult", R"nbdoc(Result for Uzawa constrained optimization.)nbdoc");
+    }
+    { nb::class_<MathOpt::UzawaConfig> cls(m, "UzawaConfig", R"nbdoc(Configuration for Uzawa algorithm.)nbdoc");
+    }
 }
 
 void nanoocp_templates_MathOpt(nb::module_ &m) {
 }
 
 void nanoocp_define_MathOpt(nb::module_ &m) {
+    nb::borrow<nb::class_<MathOpt::FRPRConfig>>(m.attr("FRPRConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with tolerance.)nbdoc")
+        .def_rw("Formula", &MathOpt::FRPRConfig::Formula, R"nbdoc(Beta formula)nbdoc")
+        .def_rw("RestartInterval", &MathOpt::FRPRConfig::RestartInterval, R"nbdoc(Restart every N iterations (0 = n, where n is dimension))nbdoc");
+    nb::borrow<nb::class_<MathOpt::NewtonConfig>>(m.attr("NewtonConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with tolerance.)nbdoc")
+        .def_rw("Regularization", &MathOpt::NewtonConfig::Regularization, R"nbdoc(Diagonal regularization for non-positive definite Hessian)nbdoc")
+        .def_rw("UseLineSearch", &MathOpt::NewtonConfig::UseLineSearch, R"nbdoc(Whether to use line search (recommended))nbdoc");
+    nb::borrow<nb::class_<MathOpt::PSOSeedParticle>>(m.attr("PSOSeedParticle"))
+        .def(nb::init<const math_Vector &>(), nb::arg("thePos"))
+        .def(nb::init<const math_Vector &, const double>(), nb::arg("thePos"), nb::arg("theValue"))
+        .def_rw("Position", &MathOpt::PSOSeedParticle::Position, R"nbdoc(Initial position (will be clamped to bounds))nbdoc")
+        .def_rw("Value", &MathOpt::PSOSeedParticle::Value, R"nbdoc(Known function value (nullopt = will be evaluated))nbdoc")
+        .def_rw("Velocity", &MathOpt::PSOSeedParticle::Velocity, R"nbdoc(Initial velocity (nullopt = generate bounded random))nbdoc");
+    nb::implicitly_convertible<std::decay_t<const math_Vector &>, MathOpt::PSOSeedParticle>();
+    nanoocp_implicit_default_ctor<MathOpt::PSOStats>(nb::borrow<nb::class_<MathOpt::PSOStats>>(m.attr("PSOStats")));
+    nb::borrow<nb::class_<MathOpt::PSOStats>>(m.attr("PSOStats"))
+        .def_rw("NbFunctionEvals", &MathOpt::PSOStats::NbFunctionEvals, R"nbdoc(Total function evaluations)nbdoc")
+        .def_rw("NbIterations", &MathOpt::PSOStats::NbIterations, R"nbdoc(Iterations performed)nbdoc")
+        .def_rw("NbBoundaryCorrections", &MathOpt::PSOStats::NbBoundaryCorrections, R"nbdoc(Boundary corrections applied)nbdoc")
+        .def_rw("NbStagnationEvents", &MathOpt::PSOStats::NbStagnationEvents, R"nbdoc(Times stagnation was detected)nbdoc")
+        .def_rw("NbRestarts", &MathOpt::PSOStats::NbRestarts, R"nbdoc(Restarts performed)nbdoc")
+        .def_rw("InitialBest", &MathOpt::PSOStats::InitialBest, R"nbdoc(Best value after initialization)nbdoc")
+        .def_rw("FinalBest", &MathOpt::PSOStats::FinalBest, R"nbdoc(Best value at termination)nbdoc");
+    nb::borrow<nb::class_<MathOpt::PSOConfig>>(m.attr("PSOConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<int, int, double>(), nb::arg("theNbParticles"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-8), R"nbdoc(Constructor with parameters.)nbdoc")
+        .def_rw("NbParticles", &MathOpt::PSOConfig::NbParticles, R"nbdoc(Number of particles in the swarm)nbdoc")
+        .def_rw("Omega", &MathOpt::PSOConfig::Omega, R"nbdoc(Inertia weight (velocity decay))nbdoc")
+        .def_rw("PhiPersonal", &MathOpt::PSOConfig::PhiPersonal, R"nbdoc(Personal best attraction coefficient)nbdoc")
+        .def_rw("PhiGlobal", &MathOpt::PSOConfig::PhiGlobal, R"nbdoc(Global best attraction coefficient)nbdoc")
+        .def_rw("VelocityClamp", &MathOpt::PSOConfig::VelocityClamp, R"nbdoc(Max velocity as fraction of search space)nbdoc")
+        .def_rw("Seed", &MathOpt::PSOConfig::Seed, R"nbdoc(Random seed for reproducibility)nbdoc")
+        .def_rw("InitMode", &MathOpt::PSOConfig::InitMode)
+        .def_rw("BoundaryMode", &MathOpt::PSOConfig::BoundaryMode)
+        .def_rw("InertiaSchedule", &MathOpt::PSOConfig::InertiaSchedule)
+        .def_rw("OmegaMin", &MathOpt::PSOConfig::OmegaMin, R"nbdoc(Min inertia for LinearDecay)nbdoc")
+        .def_rw("MinIterations", &MathOpt::PSOConfig::MinIterations, R"nbdoc(Minimum iterations before convergence)nbdoc")
+        .def_rw("TargetValue", &MathOpt::PSOConfig::TargetValue, R"nbdoc(Early stop if best <= target (nullopt = disabled))nbdoc")
+        .def_rw("NoImproveTol", &MathOpt::PSOConfig::NoImproveTol, R"nbdoc(Stagnation tolerance (0 = use Tolerance))nbdoc")
+        .def_rw("NoImproveIters", &MathOpt::PSOConfig::NoImproveIters, R"nbdoc(Stagnation iteration threshold)nbdoc")
+        .def_rw("RestartFraction", &MathOpt::PSOConfig::RestartFraction, R"nbdoc(Fraction of particles to reinitialize (0 = no restarts))nbdoc")
+        .def_rw("MaxRestarts", &MathOpt::PSOConfig::MaxRestarts, R"nbdoc(Maximum restart count (0 = unlimited when fraction > 0))nbdoc")
+        .def_rw("PolishBudgetPerDim", &MathOpt::PSOConfig::PolishBudgetPerDim, R"nbdoc(Max polishing evals per dimension (0 = no polishing))nbdoc");
+    nb::implicitly_convertible<std::decay_t<int>, MathOpt::PSOConfig>();
+    nb::borrow<nb::class_<MathOpt::GlobalConfig>>(m.attr("GlobalConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<MathOpt::GlobalStrategy, int>(), nb::arg("theStrategy"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(200), R"nbdoc(Constructor with strategy.)nbdoc")
+        .def_rw("Strategy", &MathOpt::GlobalConfig::Strategy, R"nbdoc(Algorithm to use)nbdoc")
+        .def_rw("NbPopulation", &MathOpt::GlobalConfig::NbPopulation, R"nbdoc(Population/swarm size)nbdoc")
+        .def_rw("NbStarts", &MathOpt::GlobalConfig::NbStarts, R"nbdoc(Number of random starts (for MultiStart))nbdoc")
+        .def_rw("MutationScale", &MathOpt::GlobalConfig::MutationScale, R"nbdoc(Mutation scale (for DE))nbdoc")
+        .def_rw("CrossoverProb", &MathOpt::GlobalConfig::CrossoverProb, R"nbdoc(Crossover probability (for DE))nbdoc")
+        .def_rw("Seed", &MathOpt::GlobalConfig::Seed, R"nbdoc(Random seed)nbdoc")
+        .def_rw("PolishBudgetPerDim", &MathOpt::GlobalConfig::PolishBudgetPerDim, R"nbdoc(Max polishing evals per dimension (0 = no polishing))nbdoc");
+    nb::implicitly_convertible<std::decay_t<MathOpt::GlobalStrategy>, MathOpt::GlobalConfig>();
+    nanoocp_implicit_default_ctor<MathOpt::UzawaResult>(nb::borrow<nb::class_<MathOpt::UzawaResult>>(m.attr("UzawaResult")));
+    nb::borrow<nb::class_<MathOpt::UzawaResult>>(m.attr("UzawaResult"))
+        .def("IsDone", static_cast<bool (MathOpt::UzawaResult::*)() const>(&MathOpt::UzawaResult::IsDone))
+        .def_rw("Status", &MathOpt::UzawaResult::Status)
+        .def_rw("Solution", &MathOpt::UzawaResult::Solution, R"nbdoc(Solution vector X)nbdoc")
+        .def_rw("Dual", &MathOpt::UzawaResult::Dual, R"nbdoc(Dual (Lagrange) variables)nbdoc")
+        .def_rw("Error", &MathOpt::UzawaResult::Error, R"nbdoc(X - X0 (difference from starting point))nbdoc")
+        .def_rw("InitialError", &MathOpt::UzawaResult::InitialError, R"nbdoc(C*X0 - S (initial constraint violation))nbdoc")
+        .def_rw("InverseCTC", &MathOpt::UzawaResult::InverseCTC, R"nbdoc((C * C^T)^-1 for gradient computation)nbdoc")
+        .def_rw("NbIterations", &MathOpt::UzawaResult::NbIterations);
+    nanoocp_implicit_default_ctor<MathOpt::UzawaConfig>(nb::borrow<nb::class_<MathOpt::UzawaConfig>>(m.attr("UzawaConfig")));
+    nb::borrow<nb::class_<MathOpt::UzawaConfig>>(m.attr("UzawaConfig"))
+        .def_rw("EpsLix", &MathOpt::UzawaConfig::EpsLix, R"nbdoc(Tolerance for X convergence)nbdoc")
+        .def_rw("EpsLic", &MathOpt::UzawaConfig::EpsLic, R"nbdoc(Tolerance for dual variable convergence)nbdoc")
+        .def_rw("MaxIterations", &MathOpt::UzawaConfig::MaxIterations, R"nbdoc(Maximum iterations)nbdoc");
+    m.def("Uzawa", static_cast<MathOpt::UzawaResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, int, int, const MathOpt::UzawaConfig &)>(&MathOpt::Uzawa), nb::arg("theCont"), nb::arg("theSecont"), nb::arg("theStartingPoint"), nb::arg("theNce"), nb::arg("theNci"), nb::arg("theConfig") = static_cast<std::decay_t<const MathOpt::UzawaConfig &>>(MathOpt::UzawaConfig ( )), R"nbdoc(Solve constrained least squares using Uzawa algorithm.
+
+Solves: min ||X - X0||^2 subject to C*X = S
+
+For equality constraints only, uses direct Crout decomposition.
+For mixed equality/inequality constraints, uses iterative Uzawa method.
+
+The Uzawa algorithm is a dual decomposition method that:
+1. Updates primal variables X to minimize Lagrangian
+2. Updates dual variables (Lagrange multipliers) for constraint violations
+
+@param theCont constraint matrix C (Nce+Nci rows x N cols)
+@param theSecont right-hand side S
+@param theStartingPoint initial point X0
+@param theNce number of equality constraints (first rows)
+@param theNci number of inequality constraints (last rows, C*X <= S)
+@param theConfig algorithm configuration
+@return UzawaResult with solution and auxiliary data)nbdoc");
+    m.def("UzawaEquality", static_cast<MathOpt::UzawaResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, const MathOpt::UzawaConfig &)>(&MathOpt::UzawaEquality), nb::arg("theCont"), nb::arg("theSecont"), nb::arg("theStartingPoint"), nb::arg("theConfig") = static_cast<std::decay_t<const MathOpt::UzawaConfig &>>(MathOpt::UzawaConfig ( )), R"nbdoc(Solve constrained least squares with equality constraints only.
+
+Convenience function for C*X = S with min ||X - X0||.
+
+@param theCont constraint matrix C
+@param theSecont right-hand side S
+@param theStartingPoint initial point X0
+@param theConfig algorithm configuration
+@return UzawaResult with solution)nbdoc");
 }

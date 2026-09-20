@@ -8,12 +8,109 @@
 #include <MathRoot_Newton.hxx>
 #include <MathRoot_Secant.hxx>
 #include <MathRoot_Trig.hxx>
+#include <NCollection_DynamicArray.hxx>
 
 void nanoocp_declare_MathRoot(nb::module_ &m) {
+    { nb::class_<MathRoot::MultipleResult> cls(m, "MultipleResult", R"nbdoc(Result for multiple root finding.
+Contains all found roots sorted in ascending order.)nbdoc");
+    }
+    { nb::class_<MathRoot::MultipleConfig> cls(m, "MultipleConfig", R"nbdoc(Configuration for multiple root finding.)nbdoc");
+    }
+    { nb::class_<MathRoot::MultipleGetValueFn> cls(m, "MultipleGetValueFn", R"nbdoc(Returns the sampled value at a given index from a math_Vector.)nbdoc");
+    }
+    { nb::class_<MathRoot::MultipleNoExtraHandler> cls(m, "MultipleNoExtraHandler", R"nbdoc(No-op interval handler for functions without derivative.)nbdoc");
+    }
+    { nb::class_<MathRoot::NullInterval> cls(m, "NullInterval", R"nbdoc(Represents an interval where the function is null (within tolerance).)nbdoc");
+    }
+    { nb::class_<MathRoot::AllRootsResult> cls(m, "AllRootsResult", R"nbdoc(Result for all roots finder including null intervals.)nbdoc");
+    }
+    { nb::class_<MathRoot::TrigResult> cls(m, "TrigResult", R"nbdoc(Result for trigonometric equation solver.)nbdoc");
+    }
 }
 
 void nanoocp_templates_MathRoot(nb::module_ &m) {
 }
 
 void nanoocp_define_MathRoot(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<MathRoot::MultipleResult>(nb::borrow<nb::class_<MathRoot::MultipleResult>>(m.attr("MultipleResult")));
+    nb::borrow<nb::class_<MathRoot::MultipleResult>>(m.attr("MultipleResult"))
+        .def("IsDone", static_cast<bool (MathRoot::MultipleResult::*)() const>(&MathRoot::MultipleResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def("NbRoots", static_cast<int (MathRoot::MultipleResult::*)() const>(&MathRoot::MultipleResult::NbRoots), R"nbdoc(Returns the number of roots found.)nbdoc")
+        .def("__getitem__", static_cast<double (MathRoot::MultipleResult::*)(int) const>(&MathRoot::MultipleResult::operator[]), nb::arg("theIndex"), R"nbdoc(Access root by index (0-based).)nbdoc", nb::is_operator())
+        .def_rw("Status", &MathRoot::MultipleResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("NbIterations", &MathRoot::MultipleResult::NbIterations, R"nbdoc(Total iterations across all roots)nbdoc")
+        .def_rw("Roots", &MathRoot::MultipleResult::Roots, R"nbdoc(Found roots (sorted))nbdoc")
+        .def_rw("Values", &MathRoot::MultipleResult::Values, R"nbdoc(Function values at roots)nbdoc")
+        .def_rw("IsAllNull", &MathRoot::MultipleResult::IsAllNull, R"nbdoc(True if function is essentially zero in range)nbdoc");
+    nanoocp_implicit_default_ctor<MathRoot::MultipleConfig>(nb::borrow<nb::class_<MathRoot::MultipleConfig>>(m.attr("MultipleConfig")));
+    nb::borrow<nb::class_<MathRoot::MultipleConfig>>(m.attr("MultipleConfig"))
+        .def_rw("NbSamples", &MathRoot::MultipleConfig::NbSamples, R"nbdoc(Number of sample points for initial search)nbdoc")
+        .def_rw("XTolerance", &MathRoot::MultipleConfig::XTolerance, R"nbdoc(Tolerance on X for convergence)nbdoc")
+        .def_rw("FTolerance", &MathRoot::MultipleConfig::FTolerance, R"nbdoc(Tolerance on F(X) for convergence)nbdoc")
+        .def_rw("NullTolerance", &MathRoot::MultipleConfig::NullTolerance, R"nbdoc(Tolerance to consider function as null)nbdoc")
+        .def_rw("MaxIterations", &MathRoot::MultipleConfig::MaxIterations, R"nbdoc(Max iterations per root refinement)nbdoc")
+        .def_rw("Offset", &MathRoot::MultipleConfig::Offset, R"nbdoc(Find roots of f(x) - Offset = 0)nbdoc");
+    nanoocp_implicit_default_ctor<MathRoot::MultipleGetValueFn>(nb::borrow<nb::class_<MathRoot::MultipleGetValueFn>>(m.attr("MultipleGetValueFn")));
+    nb::borrow<nb::class_<MathRoot::MultipleGetValueFn>>(m.attr("MultipleGetValueFn"))
+        .def("__call__", static_cast<double (MathRoot::MultipleGetValueFn::*)(int) const>(&MathRoot::MultipleGetValueFn::operator()), nb::arg("theIndex"), nb::is_operator());
+    nanoocp_implicit_default_ctor<MathRoot::MultipleNoExtraHandler>(nb::borrow<nb::class_<MathRoot::MultipleNoExtraHandler>>(m.attr("MultipleNoExtraHandler")));
+    nb::borrow<nb::class_<MathRoot::MultipleNoExtraHandler>>(m.attr("MultipleNoExtraHandler"))
+        .def("__call__", static_cast<void (MathRoot::MultipleNoExtraHandler::*)(int, double, double, double, double, MathRoot::MultipleResult &, double) const>(&MathRoot::MultipleNoExtraHandler::operator()), nb::arg("arg0"), nb::arg("arg1"), nb::arg("arg2"), nb::arg("arg3"), nb::arg("arg4"), nb::arg("arg5"), nb::arg("arg6"), nb::is_operator());
+    nanoocp_implicit_default_ctor<MathRoot::NullInterval>(nb::borrow<nb::class_<MathRoot::NullInterval>>(m.attr("NullInterval")));
+    nb::borrow<nb::class_<MathRoot::NullInterval>>(m.attr("NullInterval"))
+        .def_rw("A", &MathRoot::NullInterval::A, R"nbdoc(Interval start)nbdoc")
+        .def_rw("B", &MathRoot::NullInterval::B, R"nbdoc(Interval end)nbdoc")
+        .def_rw("State", &MathRoot::NullInterval::State, R"nbdoc(State number (for parametric curves))nbdoc");
+    nanoocp_implicit_default_ctor<MathRoot::AllRootsResult>(nb::borrow<nb::class_<MathRoot::AllRootsResult>>(m.attr("AllRootsResult")));
+    nb::borrow<nb::class_<MathRoot::AllRootsResult>>(m.attr("AllRootsResult"))
+        .def("IsDone", static_cast<bool (MathRoot::AllRootsResult::*)() const>(&MathRoot::AllRootsResult::IsDone))
+        .def("NbRoots", static_cast<int (MathRoot::AllRootsResult::*)() const>(&MathRoot::AllRootsResult::NbRoots))
+        .def("NbIntervals", static_cast<int (MathRoot::AllRootsResult::*)() const>(&MathRoot::AllRootsResult::NbIntervals))
+        .def_rw("Status", &MathRoot::AllRootsResult::Status)
+        .def_rw("Roots", &MathRoot::AllRootsResult::Roots, R"nbdoc(Isolated root locations)nbdoc")
+        .def_rw("RootStates", &MathRoot::AllRootsResult::RootStates, R"nbdoc(State numbers for roots)nbdoc")
+        .def_rw("NullIntervals", &MathRoot::AllRootsResult::NullIntervals, R"nbdoc(Intervals where function is null)nbdoc");
+    nanoocp_implicit_default_ctor<MathRoot::TrigResult>(nb::borrow<nb::class_<MathRoot::TrigResult>>(m.attr("TrigResult")));
+    nb::borrow<nb::class_<MathRoot::TrigResult>>(m.attr("TrigResult"))
+        .def("IsDone", static_cast<bool (MathRoot::TrigResult::*)() const>(&MathRoot::TrigResult::IsDone))
+        .def_rw("Status", &MathRoot::TrigResult::Status)
+        .def_rw("Roots", &MathRoot::TrigResult::Roots)
+        .def_rw("NbRoots", &MathRoot::TrigResult::NbRoots)
+        .def_rw("InfiniteRoots", &MathRoot::TrigResult::InfiniteRoots);
+    m.def("SortRoots", static_cast<void (*)(MathRoot::MultipleResult &)>(&MathRoot::SortRoots), nb::arg("theResult"), R"nbdoc(In-place insertion sort of roots and corresponding values by ascending root value.)nbdoc");
+    m.def("AddRoot", static_cast<void (*)(MathRoot::MultipleResult &, double, double, double)>(&MathRoot::AddRoot), nb::arg("theResult"), nb::arg("theEpsX"), nb::arg("theRoot"), nb::arg("theValue"), R"nbdoc(Helper to add a root if it is not a duplicate of an already found root.)nbdoc");
+    m.def("EffectiveXTolerance", static_cast<double (*)(double, double, double)>(&MathRoot::EffectiveXTolerance), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theXTolerance"), R"nbdoc(Compute the minimal X tolerance compatible with the established multi-root behavior.)nbdoc");
+    m.def("Trigonometric", static_cast<MathRoot::TrigResult (*)(double, double, double, double, double, double, double, double)>(&MathRoot::Trigonometric), nb::arg("theA"), nb::arg("theB"), nb::arg("theC"), nb::arg("theD"), nb::arg("theE"), nb::arg("theInfBound") = static_cast<std::decay_t<double>>(0.0), nb::arg("theSupBound") = static_cast<std::decay_t<double>>(MathUtils::THE_2PI), nb::arg("theEps") = static_cast<std::decay_t<double>>(1.5e-12), R"nbdoc(Solve trigonometric equation: a*cos^2(x) + 2*b*cos(x)*sin(x) + c*cos(x) + d*sin(x) + e = 0.
+
+Uses half-angle substitution t = tan(x/2) to convert to polynomial:
+- cos(x) = (1-t^2)/(1+t^2)
+- sin(x) = 2t/(1+t^2)
+
+Resulting polynomial is of degree 4, 3, or 2 depending on coefficients.
+Roots are filtered to lie within [theInfBound, theSupBound].
+
+@param theA coefficient of cos^2(x)
+@param theB coefficient of cos(x)*sin(x) (equation uses 2*b)
+@param theC coefficient of cos(x)
+@param theD coefficient of sin(x)
+@param theE constant term
+@param theInfBound lower bound for roots (default 0)
+@param theSupBound upper bound for roots (default 2*PI)
+@param theEps tolerance for coefficient comparison
+@return TrigResult containing roots in specified interval)nbdoc");
+    m.def("TrigonometricLinear", static_cast<MathRoot::TrigResult (*)(double, double, double, double)>(&MathRoot::TrigonometricLinear), nb::arg("theD"), nb::arg("theE"), nb::arg("theInfBound") = static_cast<std::decay_t<double>>(0.0), nb::arg("theSupBound") = static_cast<std::decay_t<double>>(MathUtils::THE_2PI), R"nbdoc(Solve linear trigonometric equation: d*sin(x) + e = 0.
+
+@param theD coefficient of sin(x)
+@param theE constant term
+@param theInfBound lower bound for roots
+@param theSupBound upper bound for roots
+@return TrigResult containing roots)nbdoc");
+    m.def("TrigonometricCDE", static_cast<MathRoot::TrigResult (*)(double, double, double, double, double)>(&MathRoot::TrigonometricCDE), nb::arg("theC"), nb::arg("theD"), nb::arg("theE"), nb::arg("theInfBound") = static_cast<std::decay_t<double>>(0.0), nb::arg("theSupBound") = static_cast<std::decay_t<double>>(MathUtils::THE_2PI), R"nbdoc(Solve trigonometric equation: c*cos(x) + d*sin(x) + e = 0.
+
+@param theC coefficient of cos(x)
+@param theD coefficient of sin(x)
+@param theE constant term
+@param theInfBound lower bound for roots
+@param theSupBound upper bound for roots
+@return TrigResult containing roots)nbdoc");
 }

@@ -35,14 +35,14 @@ void nanoocp_templates_FSD(nb::module_ &m) {
 }
 
 void nanoocp_define_FSD(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<FSD_Base64>(nb::borrow<nb::class_<FSD_Base64>>(m.attr("FSD_Base64")));
     nb::borrow<nb::class_<FSD_Base64>>(m.attr("FSD_Base64"))
-        .def(nb::init<>())
         .def_static("Decode", static_cast<occ::handle<NCollection_Buffer> (*)(const char *, const size_t)>(&FSD_Base64::Decode), nb::arg("theStr"), nb::arg("theLen"), R"nbdoc(Function decoding base64 string.
 @param[in] theStr the input encoded string
 @param[in] theLen the length of input encoded string
 @return null handle in case of out of memory condition)nbdoc");
+    nanoocp_implicit_default_ctor<FSD_FileHeader>(nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader")));
     nb::borrow<nb::class_<FSD_FileHeader>>(m.attr("FSD_FileHeader"))
-        .def(nb::init<>())
         .def_rw("testindian", &FSD_FileHeader::testindian)
         .def_rw("binfo", &FSD_FileHeader::binfo)
         .def_rw("einfo", &FSD_FileHeader::einfo)

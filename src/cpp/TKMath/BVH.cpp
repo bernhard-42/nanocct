@@ -35,6 +35,7 @@
 #include <BVH_Triangulation.hxx>
 #include <BVH_Types.hxx>
 #include <NCollection_Array1.hxx>
+#include <NCollection_IndexedIterator.hxx>
 #include <NCollection_LinearVector.hxx>
 #include <NCollection_Mat3.hxx>
 #include <NCollection_Mat4.hxx>
@@ -299,6 +300,12 @@ Warning, empty constructor returns an identity matrix.)nbdoc");
 boxes (AABBs) of abstract objects.
 \tparam T Numeric data type
 \tparam N Vector dimension)nbdoc");
+    }
+    { nb::class_<BVH::BitPredicate> cls(m, "BitPredicate");
+    }
+    { nb::class_<BVH::BitComparator> cls(m, "BitComparator", R"nbdoc(STL compare tool used in binary search algorithm.)nbdoc");
+    }
+    { nb::class_<BVH::RadixSorter> cls(m, "RadixSorter", R"nbdoc(Tool object for sorting link array using radix sort algorithm.)nbdoc");
     }
 }
 
@@ -1736,10 +1743,8 @@ the data is returned in column-major order.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BVH_TreeBaseTransient::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BVH_TreeBaseTransient::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BVH_TreeBaseTransient::*)() const>(&BVH_TreeBaseTransient::DynamicType));
-    nb::borrow<nb::class_<BVH_QuadTree>>(m.attr("BVH_QuadTree"))
-        .def(nb::init<>());
-    nb::borrow<nb::class_<BVH_BinaryTree>>(m.attr("BVH_BinaryTree"))
-        .def(nb::init<>());
+    nanoocp_implicit_default_ctor<BVH_QuadTree>(nb::borrow<nb::class_<BVH_QuadTree>>(m.attr("BVH_QuadTree")));
+    nanoocp_implicit_default_ctor<BVH_BinaryTree>(nb::borrow<nb::class_<BVH_BinaryTree>>(m.attr("BVH_BinaryTree")));
     nb::borrow<nb::class_<BVH_BuilderTransient>>(m.attr("BVH_BuilderTransient"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&BVH_BuilderTransient::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BVH_BuilderTransient::get_type_descriptor))
@@ -1781,4 +1786,22 @@ finding an empty queue to determine if they should exit or wait.)nbdoc");
         .def("MarkDirty", static_cast<void (BVH_ObjectTransient::*)()>(&BVH_ObjectTransient::MarkDirty), R"nbdoc(Marks object state as outdated (needs BVH rebuilding).)nbdoc");
     nb::borrow<nb::class_<BVH_Builder<double, 3>>>(m.attr("BVH_Builder3d"))
         .def("Build", static_cast<void (BVH_Builder<double, 3>::*)(BVH_Set<double, 3> *, BVH_Tree<double, 3> *, const BVH_Box<double, 3> &) const>(&BVH_Builder<double, 3>::Build), nb::arg("theSet"), nb::arg("theBVH"), nb::arg("theBox"), R"nbdoc(Builds BVH using specific algorithm.)nbdoc");
+    nb::borrow<nb::class_<BVH::BitPredicate>>(m.attr("BitPredicate"))
+        .def(nb::init<const int>(), nb::arg("theDigit"), R"nbdoc(Creates new radix sort predicate.)nbdoc")
+        .def("__call__", static_cast<bool (BVH::BitPredicate::*)(const BVH_EncodedLink) const>(&BVH::BitPredicate::operator()), nb::arg("theLink"), R"nbdoc(Returns predicate value.)nbdoc", nb::is_operator())
+        .def_rw("myBit", &BVH::BitPredicate::myBit);
+    nb::implicitly_convertible<std::decay_t<const int>, BVH::BitPredicate>();
+    nb::borrow<nb::class_<BVH::BitComparator>>(m.attr("BitComparator"))
+        .def(nb::init<const int>(), nb::arg("theDigit"), R"nbdoc(Creates new STL comparator.)nbdoc")
+        .def("__call__", static_cast<bool (BVH::BitComparator::*)(BVH_EncodedLink, BVH_EncodedLink)>(&BVH::BitComparator::operator()), nb::arg("theLink1"), nb::arg("arg1"), R"nbdoc(Checks left value for the given bit.)nbdoc", nb::is_operator())
+        .def_rw("myBit", &BVH::BitComparator::myBit);
+    nb::implicitly_convertible<std::decay_t<const int>, BVH::BitComparator>();
+    nanoocp_implicit_default_ctor<BVH::RadixSorter>(nb::borrow<nb::class_<BVH::RadixSorter>>(m.attr("RadixSorter")));
+    nb::borrow<nb::class_<BVH::RadixSorter>>(m.attr("RadixSorter"))
+        .def_static("Sort", static_cast<void (*)(NCollection_IndexedIterator<std::random_access_iterator_tag, NCollection_Array1<std::pair<unsigned int, int>>, std::pair<unsigned int, int>, false>, NCollection_IndexedIterator<std::random_access_iterator_tag, NCollection_Array1<std::pair<unsigned int, int>>, std::pair<unsigned int, int>, false>, int, const bool)>(&BVH::RadixSorter::Sort), nb::arg("theStart"), nb::arg("theFinal"), nb::arg("theDigit"), nb::arg("isParallel"));
+    m.def("EncodeMortonCode", static_cast<unsigned int (*)(unsigned int, unsigned int, unsigned int)>(&BVH::EncodeMortonCode), nb::arg("theVoxelX"), nb::arg("theVoxelY"), nb::arg("theVoxelZ"), R"nbdoc(Encodes 10-bit voxel coordinates into 30-bit Morton code using LUT.
+@param theVoxelX X coordinate (0-1023)
+@param theVoxelY Y coordinate (0-1023)
+@param theVoxelZ Z coordinate (0-1023)
+@return 30-bit Morton code with interleaved bits)nbdoc");
 }

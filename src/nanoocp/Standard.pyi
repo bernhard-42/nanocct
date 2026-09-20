@@ -5,6 +5,7 @@ from typing import overload
 
 import nanoocp.NCollection
 import nanoocp.TCollection
+import nanoocp.Standard
 
 
 class Standard_JsonKey(enum.IntEnum):
@@ -337,7 +338,7 @@ class Standard_Dump:
     def __init__(self) -> None: ...
 
     @staticmethod
-    def SplitJson(theStreamStr: nanoocp.TCollection.TCollection_AsciiString, theKeyToValues: nanoocp.NCollection.NCollection_IndexedDataMap__TCollection_AsciiString__Standard_DumpValue) -> bool:
+    def SplitJson(theStreamStr: nanoocp.TCollection.TCollection_AsciiString, theKeyToValues: nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.Standard.Standard_DumpValue]) -> bool:
         """
         Converts stream into map of values.
 
@@ -355,7 +356,7 @@ class Standard_Dump:
         """
 
     @staticmethod
-    def HierarchicalValueIndices(theValues: nanoocp.NCollection.NCollection_IndexedDataMap__TCollection_AsciiString__TCollection_AsciiString) -> nanoocp.NCollection.NCollection_List__int:
+    def HierarchicalValueIndices(theValues: nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.TCollection.TCollection_AsciiString]) -> nanoocp.NCollection.NCollection_List[int]:
         """Returns container of indices in values, that has hierarchical value"""
 
     @staticmethod
@@ -444,6 +445,38 @@ class Standard_ErrorHandler:
         Create a ErrorHandler (to be used with try{}catch(){}).
         It uses the "setjmp" and "longjmp" routines.
         """
+
+    class Callback:
+        """
+        Defines a base class for callback objects that can be registered
+        in the OCC error handler (the class simulating C++ exceptions)
+        so as to be correctly destroyed when error handler is activated.
+
+        Note that this is needed only when Open CASCADE is compiled with
+        OCC_CONVERT_SIGNALS options (i.e. on UNIX/Linux).
+        In that case, raising OCC exception and/or signal will not cause
+        C++ stack unwinding and destruction of objects created in the stack.
+
+        This class is intended to protect critical objects and operations in
+        the try {} catch {} block from being bypassed by OCC signal or exception.
+
+        Inherit your object from that class, implement DestroyCallback() function,
+        and call Register/Unregister in critical points.
+
+        Note that you must ensure that your object has life span longer than
+        that of the try {} block in which it calls Register().
+        """
+
+        def RegisterCallback(self) -> None: ...
+
+        def UnregisterCallback(self) -> None: ...
+
+        def DestroyCallback(self) -> None:
+            """
+            The callback function to perform necessary callback action.
+            Called by the exception handler when it is being destroyed but
+            still has this callback registered.
+            """
 
     def Destroy(self) -> None:
         """Unlinks and checks if there is a raised exception."""
@@ -628,6 +661,55 @@ class Standard_MMgrOpt(Standard_MMgrRoot):
 
 class Standard_MultiplyDefined(Standard_DomainError):
     pass
+
+class Standard_Mutex(Standard_ErrorHandler.Callback):
+    def __init__(self) -> None:
+        """
+        Constructor: creates a mutex object and initializes it.
+        It is strongly recommended that mutexes were created as
+        static objects whenever possible.
+        """
+
+    class Sentry:
+        """
+        @brief Simple sentry class providing convenient interface to mutex.
+
+        Provides automatic locking and unlocking a mutex in its constructor
+        and destructor, thus ensuring correct unlock of the mutex even in case of
+        raising an exception or signal from the protected code.
+
+        Create instance of that class when entering critical section.
+        """
+
+        @overload
+        def __init__(self, theMutex: Standard_Mutex) -> None:
+            """
+            Constructor - initializes the sentry object by reference to a
+            mutex (which must be initialized) and locks the mutex immediately
+            """
+
+        @overload
+        def __init__(self, theMutex: Standard_Mutex) -> None:
+            """
+            Constructor - initializes the sentry object by pointer to a
+            mutex and locks the mutex if its pointer is not NULL
+            """
+
+    def Lock(self) -> None:
+        """
+        Method to lock the mutex; waits until the mutex is released
+        by other threads, locks it and then returns
+        """
+
+    def TryLock(self) -> bool:
+        """
+        Method to test the mutex; if the mutex is not hold by other thread,
+        locks it and returns True; otherwise returns False without waiting
+        mutex to be released.
+        """
+
+    def Unlock(self) -> None:
+        """Method to unlock the mutex; releases it to other users"""
 
 class Standard_NegativeValue(Standard_RangeError):
     pass

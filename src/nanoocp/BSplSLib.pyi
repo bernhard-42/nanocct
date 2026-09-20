@@ -161,22 +161,22 @@ class BSplSLib:
         """
 
     @staticmethod
-    def D0(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt) -> None: ...
+    def D0(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt) -> None: ...
 
     @staticmethod
-    def D1(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, Degree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt, Vu: nanoocp.gp.gp_Vec, Vv: nanoocp.gp.gp_Vec) -> None: ...
+    def D1(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], Degree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt, Vu: nanoocp.gp.gp_Vec, Vv: nanoocp.gp.gp_Vec) -> None: ...
 
     @staticmethod
-    def D2(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt, Vu: nanoocp.gp.gp_Vec, Vv: nanoocp.gp.gp_Vec, Vuu: nanoocp.gp.gp_Vec, Vvv: nanoocp.gp.gp_Vec, Vuv: nanoocp.gp.gp_Vec) -> None: ...
+    def D2(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt, Vu: nanoocp.gp.gp_Vec, Vv: nanoocp.gp.gp_Vec, Vuu: nanoocp.gp.gp_Vec, Vvv: nanoocp.gp.gp_Vec, Vuv: nanoocp.gp.gp_Vec) -> None: ...
 
     @staticmethod
-    def D3(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt, Vu: nanoocp.gp.gp_Vec, Vv: nanoocp.gp.gp_Vec, Vuu: nanoocp.gp.gp_Vec, Vvv: nanoocp.gp.gp_Vec, Vuv: nanoocp.gp.gp_Vec, Vuuu: nanoocp.gp.gp_Vec, Vvvv: nanoocp.gp.gp_Vec, Vuuv: nanoocp.gp.gp_Vec, Vuvv: nanoocp.gp.gp_Vec) -> None: ...
+    def D3(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt, Vu: nanoocp.gp.gp_Vec, Vv: nanoocp.gp.gp_Vec, Vuu: nanoocp.gp.gp_Vec, Vvv: nanoocp.gp.gp_Vec, Vuv: nanoocp.gp.gp_Vec, Vuuu: nanoocp.gp.gp_Vec, Vvvv: nanoocp.gp.gp_Vec, Vuuv: nanoocp.gp.gp_Vec, Vuvv: nanoocp.gp.gp_Vec) -> None: ...
 
     @staticmethod
-    def DN(U: float, V: float, Nu: int, Nv: int, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, Vn: nanoocp.gp.gp_Vec) -> None: ...
+    def DN(U: float, V: float, Nu: int, Nv: int, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, Vn: nanoocp.gp.gp_Vec) -> None: ...
 
     @staticmethod
-    def Iso(Param: float, IsU: bool, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Knots: nanoocp.NCollection.NCollection_Array1__double, Mults: nanoocp.NCollection.NCollection_Array1__int, Degree: int, Periodic: bool, CPoles: nanoocp.NCollection.NCollection_Array1__gp_Pnt, CWeights: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def Iso(Param: float, IsU: bool, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], Degree: int, Periodic: bool, CPoles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], CWeights: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Computes the poles and weights of an isoparametric
         curve at parameter <Param> (UIso if <IsU> is True,
@@ -185,7 +185,7 @@ class BSplSLib:
 
     @overload
     @staticmethod
-    def Reverse(Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Last: int, UDirection: bool) -> None:
+    def Reverse(Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Last: int, UDirection: bool) -> None:
         """
         Reverses the array of poles. Last is the Index of
         the new first Row( Col) of Poles.
@@ -200,11 +200,11 @@ class BSplSLib:
 
     @overload
     @staticmethod
-    def Reverse(Weights: nanoocp.NCollection.NCollection_Array2__double, Last: int, UDirection: bool) -> None:
+    def Reverse(Weights: nanoocp.NCollection.NCollection_Array2[float], Last: int, UDirection: bool) -> None:
         """Reverses the array of weights."""
 
     @staticmethod
-    def HomogeneousD0(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt) -> float:
+    def HomogeneousD0(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, P: nanoocp.gp.gp_Pnt) -> float:
         """
         Makes an homogeneous evaluation of Poles and Weights
         any and returns in P the Numerator value and
@@ -213,7 +213,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def HomogeneousD1(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, N: nanoocp.gp.gp_Pnt, Nu: nanoocp.gp.gp_Vec, Nv: nanoocp.gp.gp_Vec) -> tuple[float, float, float]:
+    def HomogeneousD1(U: float, V: float, UIndex: int, VIndex: int, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, N: nanoocp.gp.gp_Pnt, Nu: nanoocp.gp.gp_Vec, Nv: nanoocp.gp.gp_Vec) -> tuple[float, float, float]:
         """
         Makes an homogeneous evaluation of Poles and Weights
         any and returns in P the Numerator value and
@@ -222,7 +222,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def IsRational(Weights: nanoocp.NCollection.NCollection_Array2__double, I1: int, I2: int, J1: int, J2: int, Epsilon: float = 0.0) -> bool:
+    def IsRational(Weights: nanoocp.NCollection.NCollection_Array2[float], I1: int, I2: int, J1: int, J2: int, Epsilon: float = 0.0) -> bool:
         """
         Returns False if all the weights of the array <Weights>
         in the area [I1,I2] * [J1,J2] are identic.
@@ -232,24 +232,24 @@ class BSplSLib:
 
     @overload
     @staticmethod
-    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, FP: nanoocp.NCollection.NCollection_Array1__double, UDirection: bool) -> None: ...
+    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], FP: nanoocp.NCollection.NCollection_Array1[float], UDirection: bool) -> None: ...
 
     @overload
     @staticmethod
-    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, FP: nanoocp.NCollection.NCollection_Array1__double, UDirection: bool) -> None:
+    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], FP: nanoocp.NCollection.NCollection_Array1[float], UDirection: bool) -> None:
         """Copy in FP the coordinates of the poles."""
 
     @overload
     @staticmethod
-    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, UDirection: bool) -> None: ...
+    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], UDirection: bool) -> None: ...
 
     @overload
     @staticmethod
-    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UDirection: bool) -> None:
+    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UDirection: bool) -> None:
         """Get from FP the coordinates of the poles."""
 
     @staticmethod
-    def MovePoint(U: float, V: float, Displ: nanoocp.gp.gp_Vec, UIndex1: int, UIndex2: int, VIndex1: int, VIndex2: int, UDegree: int, VDegree: int, Rational: bool, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UFlatKnots: nanoocp.NCollection.NCollection_Array1__double, VFlatKnots: nanoocp.NCollection.NCollection_Array1__double, NewPoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt) -> tuple[int, int, int, int]:
+    def MovePoint(U: float, V: float, Displ: nanoocp.gp.gp_Vec, UIndex1: int, UIndex2: int, VIndex1: int, VIndex2: int, UDegree: int, VDegree: int, Rational: bool, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UFlatKnots: nanoocp.NCollection.NCollection_Array1[float], VFlatKnots: nanoocp.NCollection.NCollection_Array1[float], NewPoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]) -> tuple[int, int, int, int]:
         """
         Find the new poles which allows an old point (with a
         given u,v as parameters) to reach a new position
@@ -267,24 +267,24 @@ class BSplSLib:
         """
 
     @staticmethod
-    def InsertKnots(UDirection: bool, Degree: int, Periodic: bool, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Knots: nanoocp.NCollection.NCollection_Array1__double, Mults: nanoocp.NCollection.NCollection_Array1__int, AddKnots: nanoocp.NCollection.NCollection_Array1__double, AddMults: nanoocp.NCollection.NCollection_Array1__int, NewPoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, NewWeights: nanoocp.NCollection.NCollection_Array2__double, NewKnots: nanoocp.NCollection.NCollection_Array1__double, NewMults: nanoocp.NCollection.NCollection_Array1__int, Epsilon: float, Add: bool = True) -> None: ...
+    def InsertKnots(UDirection: bool, Degree: int, Periodic: bool, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], AddKnots: nanoocp.NCollection.NCollection_Array1[float], AddMults: nanoocp.NCollection.NCollection_Array1[int], NewPoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], NewWeights: nanoocp.NCollection.NCollection_Array2[float], NewKnots: nanoocp.NCollection.NCollection_Array1[float], NewMults: nanoocp.NCollection.NCollection_Array1[int], Epsilon: float, Add: bool = True) -> None: ...
 
     @staticmethod
-    def RemoveKnot(UDirection: bool, Index: int, Mult: int, Degree: int, Periodic: bool, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Knots: nanoocp.NCollection.NCollection_Array1__double, Mults: nanoocp.NCollection.NCollection_Array1__int, NewPoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, NewWeights: nanoocp.NCollection.NCollection_Array2__double, NewKnots: nanoocp.NCollection.NCollection_Array1__double, NewMults: nanoocp.NCollection.NCollection_Array1__int, Tolerance: float) -> bool: ...
+    def RemoveKnot(UDirection: bool, Index: int, Mult: int, Degree: int, Periodic: bool, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], NewPoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], NewWeights: nanoocp.NCollection.NCollection_Array2[float], NewKnots: nanoocp.NCollection.NCollection_Array1[float], NewMults: nanoocp.NCollection.NCollection_Array1[int], Tolerance: float) -> bool: ...
 
     @staticmethod
-    def IncreaseDegree(UDirection: bool, Degree: int, NewDegree: int, Periodic: bool, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Knots: nanoocp.NCollection.NCollection_Array1__double, Mults: nanoocp.NCollection.NCollection_Array1__int, NewPoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, NewWeights: nanoocp.NCollection.NCollection_Array2__double, NewKnots: nanoocp.NCollection.NCollection_Array1__double, NewMults: nanoocp.NCollection.NCollection_Array1__int) -> None: ...
+    def IncreaseDegree(UDirection: bool, Degree: int, NewDegree: int, Periodic: bool, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], NewPoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], NewWeights: nanoocp.NCollection.NCollection_Array2[float], NewKnots: nanoocp.NCollection.NCollection_Array1[float], NewMults: nanoocp.NCollection.NCollection_Array1[int]) -> None: ...
 
     @staticmethod
-    def Unperiodize(UDirection: bool, Degree: int, Mults: nanoocp.NCollection.NCollection_Array1__int, Knots: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, NewMults: nanoocp.NCollection.NCollection_Array1__int, NewKnots: nanoocp.NCollection.NCollection_Array1__double, NewPoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, NewWeights: nanoocp.NCollection.NCollection_Array2__double) -> None: ...
+    def Unperiodize(UDirection: bool, Degree: int, Mults: nanoocp.NCollection.NCollection_Array1[int], Knots: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], NewMults: nanoocp.NCollection.NCollection_Array1[int], NewKnots: nanoocp.NCollection.NCollection_Array1[float], NewPoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], NewWeights: nanoocp.NCollection.NCollection_Array2[float]) -> None: ...
 
     @staticmethod
-    def NoWeights() -> nanoocp.NCollection.NCollection_Array2__double:
+    def NoWeights() -> nanoocp.NCollection.NCollection_Array2[float]:
         """Used as argument for a non rational curve."""
 
     @overload
     @staticmethod
-    def BuildCache(U: float, V: float, USpanDomain: float, VSpanDomain: float, UPeriodicFlag: bool, VPeriodicFlag: bool, UDegree: int, VDegree: int, UIndex: int, VIndex: int, UFlatKnots: nanoocp.NCollection.NCollection_Array1__double, VFlatKnots: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, CachePoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, CacheWeights: nanoocp.NCollection.NCollection_Array2__double) -> None:
+    def BuildCache(U: float, V: float, USpanDomain: float, VSpanDomain: float, UPeriodicFlag: bool, VPeriodicFlag: bool, UDegree: int, VDegree: int, UIndex: int, VIndex: int, UFlatKnots: nanoocp.NCollection.NCollection_Array1[float], VFlatKnots: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], CachePoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], CacheWeights: nanoocp.NCollection.NCollection_Array2[float]) -> None:
         """
         Perform the evaluation of the Taylor expansion
         of the Bspline normalized between 0 and 1.
@@ -294,7 +294,7 @@ class BSplSLib:
 
     @overload
     @staticmethod
-    def BuildCache(theU: float, theV: float, theUSpanDomain: float, theVSpanDomain: float, theUPeriodic: bool, theVPeriodic: bool, theUDegree: int, theVDegree: int, theUIndex: int, theVIndex: int, theUFlatKnots: nanoocp.NCollection.NCollection_Array1__double, theVFlatKnots: nanoocp.NCollection.NCollection_Array1__double, thePoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, theWeights: nanoocp.NCollection.NCollection_Array2__double, theCacheArray: nanoocp.NCollection.NCollection_Array2__double) -> None:
+    def BuildCache(theU: float, theV: float, theUSpanDomain: float, theVSpanDomain: float, theUPeriodic: bool, theVPeriodic: bool, theUDegree: int, theVDegree: int, theUIndex: int, theVIndex: int, theUFlatKnots: nanoocp.NCollection.NCollection_Array1[float], theVFlatKnots: nanoocp.NCollection.NCollection_Array1[float], thePoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], theWeights: nanoocp.NCollection.NCollection_Array2[float], theCacheArray: nanoocp.NCollection.NCollection_Array2[float]) -> None:
         """
         Perform the evaluation of the Taylor expansion
         of the Bspline normalized between 0 and 1.
@@ -302,7 +302,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def CacheD0(U: float, V: float, UDegree: int, VDegree: int, UCacheParameter: float, VCacheParameter: float, USpanLenght: float, VSpanLength: float, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Point: nanoocp.gp.gp_Pnt) -> None:
+    def CacheD0(U: float, V: float, UDegree: int, VDegree: int, UCacheParameter: float, VCacheParameter: float, USpanLenght: float, VSpanLength: float, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Point: nanoocp.gp.gp_Pnt) -> None:
         """
         Perform the evaluation of the of the cache
         the parameter must be normalized between
@@ -318,7 +318,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def CoefsD0(U: float, V: float, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Point: nanoocp.gp.gp_Pnt) -> None:
+    def CoefsD0(U: float, V: float, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Point: nanoocp.gp.gp_Pnt) -> None:
         """
         Calls CacheD0 for Bezier Surfaces Arrays computed with
         the method PolesCoefficients.
@@ -326,7 +326,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def CacheD1(U: float, V: float, UDegree: int, VDegree: int, UCacheParameter: float, VCacheParameter: float, USpanLenght: float, VSpanLength: float, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec) -> None:
+    def CacheD1(U: float, V: float, UDegree: int, VDegree: int, UCacheParameter: float, VCacheParameter: float, USpanLenght: float, VSpanLength: float, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec) -> None:
         """
         Perform the evaluation of the of the cache
         the parameter must be normalized between
@@ -342,7 +342,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def CoefsD1(U: float, V: float, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec) -> None:
+    def CoefsD1(U: float, V: float, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec) -> None:
         """
         Calls CacheD0 for Bezier Surfaces Arrays computed with
         the method PolesCoefficients.
@@ -350,7 +350,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def CacheD2(U: float, V: float, UDegree: int, VDegree: int, UCacheParameter: float, VCacheParameter: float, USpanLenght: float, VSpanLength: float, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec, VecUU: nanoocp.gp.gp_Vec, VecUV: nanoocp.gp.gp_Vec, VecVV: nanoocp.gp.gp_Vec) -> None:
+    def CacheD2(U: float, V: float, UDegree: int, VDegree: int, UCacheParameter: float, VCacheParameter: float, USpanLenght: float, VSpanLength: float, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec, VecUU: nanoocp.gp.gp_Vec, VecUV: nanoocp.gp.gp_Vec, VecVV: nanoocp.gp.gp_Vec) -> None:
         """
         Perform the evaluation of the of the cache
         the parameter must be normalized between
@@ -366,7 +366,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def CoefsD2(U: float, V: float, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec, VecUU: nanoocp.gp.gp_Vec, VecUV: nanoocp.gp.gp_Vec, VecVV: nanoocp.gp.gp_Vec) -> None:
+    def CoefsD2(U: float, V: float, Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], Point: nanoocp.gp.gp_Pnt, VecU: nanoocp.gp.gp_Vec, VecV: nanoocp.gp.gp_Vec, VecUU: nanoocp.gp.gp_Vec, VecUV: nanoocp.gp.gp_Vec, VecVV: nanoocp.gp.gp_Vec) -> None:
         """
         Calls CacheD0 for Bezier Surfaces Arrays computed with
         the method PolesCoefficients.
@@ -375,12 +375,12 @@ class BSplSLib:
 
     @overload
     @staticmethod
-    def PolesCoefficients(Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, CachePoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt) -> None:
+    def PolesCoefficients(Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], CachePoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]) -> None:
         """Warning! To be used for BezierSurfaces ONLY!!!"""
 
     @overload
     @staticmethod
-    def PolesCoefficients(Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, CachePoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, CacheWeights: nanoocp.NCollection.NCollection_Array2__double) -> None:
+    def PolesCoefficients(Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], CachePoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], CacheWeights: nanoocp.NCollection.NCollection_Array2[float]) -> None:
         """
         Encapsulation of BuildCache to perform the
         evaluation of the Taylor expansion for beziersurfaces
@@ -389,7 +389,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def Resolution(Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UKnots: nanoocp.NCollection.NCollection_Array1__double, VKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, Tolerance3D: float) -> tuple[float, float]:
+    def Resolution(Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UKnots: nanoocp.NCollection.NCollection_Array1[float], VKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], UDegree: int, VDegree: int, URat: bool, VRat: bool, UPer: bool, VPer: bool, Tolerance3D: float) -> tuple[float, float]:
         """
         Given a tolerance in 3D space returns two
         tolerances, one in U one in V such that for
@@ -402,7 +402,7 @@ class BSplSLib:
 
     @overload
     @staticmethod
-    def Interpolate(UDegree: int, VDegree: int, UFlatKnots: nanoocp.NCollection.NCollection_Array1__double, VFlatKnots: nanoocp.NCollection.NCollection_Array1__double, UParameters: nanoocp.NCollection.NCollection_Array1__double, VParameters: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double) -> int:
+    def Interpolate(UDegree: int, VDegree: int, UFlatKnots: nanoocp.NCollection.NCollection_Array1[float], VFlatKnots: nanoocp.NCollection.NCollection_Array1[float], UParameters: nanoocp.NCollection.NCollection_Array1[float], VParameters: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float]) -> int:
         """
         Performs the interpolation of the data points given in
         the Poles array in the form
@@ -425,7 +425,7 @@ class BSplSLib:
 
     @overload
     @staticmethod
-    def Interpolate(UDegree: int, VDegree: int, UFlatKnots: nanoocp.NCollection.NCollection_Array1__double, VFlatKnots: nanoocp.NCollection.NCollection_Array1__double, UParameters: nanoocp.NCollection.NCollection_Array1__double, VParameters: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt) -> int:
+    def Interpolate(UDegree: int, VDegree: int, UFlatKnots: nanoocp.NCollection.NCollection_Array1[float], VFlatKnots: nanoocp.NCollection.NCollection_Array1[float], UParameters: nanoocp.NCollection.NCollection_Array1[float], VParameters: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]) -> int:
         """
         Performs the interpolation of the data points given in
         the Poles array.
@@ -446,7 +446,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def FunctionMultiply(Function: BSplSLib_EvaluatorFunction, UBSplineDegree: int, VBSplineDegree: int, UBSplineKnots: nanoocp.NCollection.NCollection_Array1__double, VBSplineKnots: nanoocp.NCollection.NCollection_Array1__double, UMults: nanoocp.NCollection.NCollection_Array1__int, VMults: nanoocp.NCollection.NCollection_Array1__int, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array2__double, UFlatKnots: nanoocp.NCollection.NCollection_Array1__double, VFlatKnots: nanoocp.NCollection.NCollection_Array1__double, UNewDegree: int, VNewDegree: int, NewNumerator: nanoocp.NCollection.NCollection_Array2__gp_Pnt, NewDenominator: nanoocp.NCollection.NCollection_Array2__double) -> int:
+    def FunctionMultiply(Function: BSplSLib_EvaluatorFunction, UBSplineDegree: int, VBSplineDegree: int, UBSplineKnots: nanoocp.NCollection.NCollection_Array1[float], VBSplineKnots: nanoocp.NCollection.NCollection_Array1[float], UMults: nanoocp.NCollection.NCollection_Array1[int], VMults: nanoocp.NCollection.NCollection_Array1[int], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array2[float], UFlatKnots: nanoocp.NCollection.NCollection_Array1[float], VFlatKnots: nanoocp.NCollection.NCollection_Array1[float], UNewDegree: int, VNewDegree: int, NewNumerator: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], NewDenominator: nanoocp.NCollection.NCollection_Array2[float]) -> int:
         """
         this will multiply a given BSpline numerator N(u,v)
         and denominator D(u,v) defined by its
@@ -476,7 +476,7 @@ class BSplSLib:
         """
 
     @staticmethod
-    def UnitWeights(theNbUPoles: int, theNbVPoles: int) -> nanoocp.NCollection.NCollection_Array2__double:
+    def UnitWeights(theNbUPoles: int, theNbVPoles: int) -> nanoocp.NCollection.NCollection_Array2[float]:
         """
         Returns an NCollection_Array2<double> filled with 1.0 values.
         If theNbUPoles * theNbVPoles <= BSplCLib::MaxUnitWeightsSize(),
@@ -496,7 +496,7 @@ class BSplSLib_Cache(nanoocp.Standard.Standard_Transient):
     The data should be recalculated in going from span to span.
     """
 
-    def __init__(self, theDegreeU: int, thePeriodicU: bool, theFlatKnotsU: nanoocp.NCollection.NCollection_Array1__double, theDegreeV: int, thePeriodicV: bool, theFlatKnotsV: nanoocp.NCollection.NCollection_Array1__double, theWeights: nanoocp.NCollection.NCollection_Array2__double = None) -> None:
+    def __init__(self, theDegreeU: int, thePeriodicU: bool, theFlatKnotsU: nanoocp.NCollection.NCollection_Array1[float], theDegreeV: int, thePeriodicV: bool, theFlatKnotsV: nanoocp.NCollection.NCollection_Array1[float], theWeights: nanoocp.NCollection.NCollection_Array2[float] = None) -> None:
         """
         Constructor for caching of the span for the surface
         \\param theDegreeU    degree along the first parameter (U) of the surface
@@ -515,7 +515,7 @@ class BSplSLib_Cache(nanoocp.Standard.Standard_Transient):
         \\param theParameterV  second parameter of the point placed in the span
         """
 
-    def BuildCache(self, theParameterU: float, theParameterV: float, theFlatKnotsU: nanoocp.NCollection.NCollection_Array1__double, theFlatKnotsV: nanoocp.NCollection.NCollection_Array1__double, thePoles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, theWeights: nanoocp.NCollection.NCollection_Array2__double = None) -> None:
+    def BuildCache(self, theParameterU: float, theParameterV: float, theFlatKnotsU: nanoocp.NCollection.NCollection_Array1[float], theFlatKnotsV: nanoocp.NCollection.NCollection_Array1[float], thePoles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], theWeights: nanoocp.NCollection.NCollection_Array2[float] = None) -> None:
         """
         Recomputes the cache data. Does not verify validity of the cache
         \\param theParameterU  the parametric value on the U axis to identify the span

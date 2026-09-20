@@ -4,6 +4,7 @@ from typing import overload
 
 import nanoocp.NCollection
 import nanoocp.Standard
+import nanoocp.BVH
 
 
 THE_NODE_MIN_SIZE: float = 1e-05
@@ -2506,7 +2507,7 @@ class BVH_Array3f:
         @param[in] theReleaseMemory if true, deallocate the buffer
         """
 
-    def ToArray1(self) -> nanoocp.NCollection.NCollection_Array1__NCollection_Vec3__float:
+    def ToArray1(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.BVH.BVH_Vec3f]:
         """
         Returns a span as Array1 with shared memory.
         Modifying the vector or the array may invalidate the shared buffer.
@@ -4904,3 +4905,48 @@ class BVH_Builder3d(BVH_BuilderTransient):
 
     def Build(self, theSet: "BVH_Set<double, 3>", theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>", theBox: "BVH_Box<double, 3>") -> None:
         """Builds BVH using specific algorithm."""
+
+class BitPredicate:
+    def __init__(self, theDigit: int) -> None:
+        """Creates new radix sort predicate."""
+
+    def __call__(self, theLink: tuple[int, int]) -> bool:
+        """Returns predicate value."""
+
+    @property
+    def myBit(self) -> int: ...
+
+    @myBit.setter
+    def myBit(self, arg: int, /) -> None: ...
+
+class BitComparator:
+    """STL compare tool used in binary search algorithm."""
+
+    def __init__(self, theDigit: int) -> None:
+        """Creates new STL comparator."""
+
+    def __call__(self, theLink1: tuple[int, int], arg1: tuple[int, int]) -> bool:
+        """Checks left value for the given bit."""
+
+    @property
+    def myBit(self) -> int: ...
+
+    @myBit.setter
+    def myBit(self, arg: int, /) -> None: ...
+
+class RadixSorter:
+    """Tool object for sorting link array using radix sort algorithm."""
+
+    def __init__(self) -> None: ...
+
+    @staticmethod
+    def Sort(theStart: "NCollection_IndexedIterator<std::__1::random_access_iterator_tag, NCollection_Array1<std::__1::pair<unsigned int, int>>, std::__1::pair<unsigned int, int>, false>", theFinal: "NCollection_IndexedIterator<std::__1::random_access_iterator_tag, NCollection_Array1<std::__1::pair<unsigned int, int>>, std::__1::pair<unsigned int, int>, false>", theDigit: int, isParallel: bool) -> None: ...
+
+def EncodeMortonCode(theVoxelX: int, theVoxelY: int, theVoxelZ: int) -> int:
+    """
+    Encodes 10-bit voxel coordinates into 30-bit Morton code using LUT.
+    @param theVoxelX X coordinate (0-1023)
+    @param theVoxelY Y coordinate (0-1023)
+    @param theVoxelZ Z coordinate (0-1023)
+    @return 30-bit Morton code with interleaved bits
+    """

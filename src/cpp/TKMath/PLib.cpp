@@ -83,8 +83,8 @@ void nanoocp_templates_PLib(nb::module_ &m) {
 }
 
 void nanoocp_define_PLib(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<PLib>(nb::borrow<nb::class_<PLib>>(m.attr("PLib")));
     nb::borrow<nb::class_<PLib>>(m.attr("PLib"))
-        .def(nb::init<>())
         .def_static("NoWeights", static_cast<NCollection_Array1<double> * (*)()>(&PLib::NoWeights), nb::rv_policy::reference, R"nbdoc(Used as argument for a non rational functions)nbdoc")
         .def_static("NoWeights2", static_cast<NCollection_Array2<double> * (*)()>(&PLib::NoWeights2), nb::rv_policy::reference, R"nbdoc(Used as argument for a non rational functions)nbdoc")
         .def_static("SetPoles", static_cast<void (*)(const NCollection_Array1<gp_Pnt> &, NCollection_Array1<double> &)>(&PLib::SetPoles), nb::arg("Poles"), nb::arg("FP"), R"nbdoc(Copy in FP the coordinates of the poles.)nbdoc")

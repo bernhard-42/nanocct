@@ -14,6 +14,9 @@
 #include <MathUtils_GaussKronrodWeights.hxx>
 #include <MathUtils_FunctorScalar.hxx>
 #include <MathUtils_FunctorVector.hxx>
+#include <math_Matrix.hxx>
+#include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_MathUtils(nb::module_ &m) {
     m.attr("THE_NEWTON_FTOL_SQ") = nb::cast(MathUtils::THE_NEWTON_FTOL_SQ);
@@ -40,10 +43,852 @@ void nanoocp_declare_MathUtils(nb::module_ &m) {
     m.attr("THE_2PI") = nb::cast(MathUtils::THE_2PI);
     m.attr("THE_GOLDEN_RATIO") = nb::cast(MathUtils::THE_GOLDEN_RATIO);
     m.attr("THE_GOLDEN_SECTION") = nb::cast(MathUtils::THE_GOLDEN_SECTION);
+    nb::enum_<MathUtils::Status>(m, "Status", R"nbdoc(Computation status for all math solvers.
+Provides detailed information about solver outcome.)nbdoc")
+        .value("OK", MathUtils::Status::OK)
+        .value("NotConverged", MathUtils::Status::NotConverged)
+        .value("MaxIterations", MathUtils::Status::MaxIterations)
+        .value("NumericalError", MathUtils::Status::NumericalError)
+        .value("InvalidInput", MathUtils::Status::InvalidInput)
+        .value("InfiniteSolutions", MathUtils::Status::InfiniteSolutions)
+        .value("NoSolution", MathUtils::Status::NoSolution)
+        .value("NotPositiveDefinite", MathUtils::Status::NotPositiveDefinite)
+        .value("Singular", MathUtils::Status::Singular)
+        .value("NonDescentDirection", MathUtils::Status::NonDescentDirection);
+    { nb::class_<MathUtils::ScalarResult> cls(m, "ScalarResult", R"nbdoc(Result for scalar (1D) root finding and minimization.
+Contains the found root/minimum location and diagnostic information.)nbdoc");
+    }
+    { nb::class_<MathUtils::PolyResult> cls(m, "PolyResult", R"nbdoc(Result for polynomial root finding.
+Supports up to 4 real roots (for quartic equations).)nbdoc");
+    }
+    { nb::class_<MathUtils::VectorResult> cls(m, "VectorResult", R"nbdoc(Result for N-dimensional optimization and system solving.
+Contains the solution vector and optional gradient/Jacobian information.)nbdoc");
+    }
+    { nb::class_<MathUtils::LinearResult> cls(m, "LinearResult", R"nbdoc(Result for linear system solving (Ax = b).
+Contains the solution vector and matrix determinant if computed.)nbdoc");
+    }
+    { nb::class_<MathUtils::LinearMultipleResult> cls(m, "LinearMultipleResult", R"nbdoc(Result for multiple linear systems solving (AX = B with matrix RHS).
+Contains the full solution matrix and determinant if computed.)nbdoc");
+    }
+    { nb::class_<MathUtils::EigenResult> cls(m, "EigenResult", R"nbdoc(Result for eigenvalue/eigenvector computation.
+Contains eigenvalues and optionally eigenvectors.)nbdoc");
+    }
+    { nb::class_<MathUtils::DecompResult> cls(m, "DecompResult", R"nbdoc(Result for matrix decomposition (LU, SVD, QR).
+Structure depends on decomposition type.)nbdoc");
+    }
+    { nb::class_<MathUtils::IntegResult> cls(m, "IntegResult", R"nbdoc(Result for numerical integration.
+Contains integral value and error estimates.)nbdoc");
+    }
+    { nb::class_<MathUtils::InverseResult> cls(m, "InverseResult", R"nbdoc(Result for matrix inverse computation.
+Contains the inverse matrix if computation succeeded.)nbdoc");
+    }
+    { nb::class_<MathUtils::Config> cls(m, "Config", R"nbdoc(Configuration for iterative solvers.
+Provides common settings for convergence criteria and iteration limits.)nbdoc");
+    }
+    { nb::class_<MathUtils::BoundedConfig, MathUtils::Config> cls(m, "BoundedConfig", R"nbdoc(Configuration for bounded 1D optimization and root finding.
+Extends Config with interval bounds.)nbdoc");
+    }
+    { nb::class_<MathUtils::NDimConfig, MathUtils::Config> cls(m, "NDimConfig", R"nbdoc(Configuration for N-dimensional optimization with optional bounds.
+Bounds are passed separately as math_Vector for flexibility.)nbdoc");
+    }
+    { nb::class_<MathUtils::IntegConfig> cls(m, "IntegConfig", R"nbdoc(Configuration for numerical integration.
+Provides settings for quadrature order and adaptive refinement.)nbdoc");
+    }
+    { nb::class_<MathUtils::LinConfig> cls(m, "LinConfig", R"nbdoc(Configuration for linear algebra solvers.
+Provides settings for singularity detection and pivoting.)nbdoc");
+    }
+    { nb::class_<MathUtils::Domain1D> cls(m, "Domain1D", R"nbdoc(@brief 1D parameter domain for curves.
+
+Represents a parameter range [Min, Max] with utility methods for:
+- Bounds checking (Contains)
+- Parameter clamping (Clamp)
+- Domain analysis (IsLarge, IsFullPeriod)
+
+@note This is a lightweight value type designed for efficiency.
+All methods are inline and constexpr where possible.)nbdoc");
+    }
+    { nb::class_<MathUtils::Domain2D> cls(m, "Domain2D", R"nbdoc(@brief 2D parameter domain for surfaces.
+
+Represents a rectangular parameter domain [UMin, UMax] x [VMin, VMax]
+with utility methods for:
+- Bounds checking (Contains)
+- Parameter clamping (Clamp)
+- Domain analysis (IsLarge, IsFullPeriod)
+- Access to U and V subdomains
+
+@note This is a lightweight value type designed for efficiency.)nbdoc");
+    }
+    { nb::class_<MathUtils::RandomGenerator> cls(m, "RandomGenerator", R"nbdoc(High-quality pseudo-random number generator based on xoshiro256**.
+
+xoshiro256** is a general-purpose PRNG designed by David Blackman
+and Sebastiano Vigna. It has:
+- 256-bit state (period 2^256 - 1)
+- Passes all BigCrush statistical tests
+- Very fast on 64-bit hardware
+- Equidistributed to 4 dimensions
+
+Suitable for Monte Carlo methods, stochastic optimization,
+and any application requiring high-quality randomness.)nbdoc");
+    }
+    { nb::class_<MathUtils::BracketResult> cls(m, "BracketResult", R"nbdoc(Result of root bracketing operation.)nbdoc");
+    }
+    { nb::class_<MathUtils::MinBracketResult> cls(m, "MinBracketResult", R"nbdoc(Result of minimum bracketing operation.)nbdoc");
+    }
+    { nb::class_<MathUtils::MinBracketOptions> cls(m, "MinBracketOptions", R"nbdoc(Options for minimum bracketing.)nbdoc");
+    }
+    { nb::class_<MathUtils::LineSearchResult> cls(m, "LineSearchResult", R"nbdoc(Result of line search operation.)nbdoc");
+    }
+    { nb::class_<MathUtils::Polynomial> cls(m, "Polynomial", R"nbdoc(Polynomial functor: f(x) = sum(a[i] * x^i).
+Coefficients are stored in order: a[0] + a[1]*x + a[2]*x^2 + ...
+
+Usage:
+@code
+// x^2 - 2 (find sqrt(2))
+Polynomial aPoly({-2.0, 0.0, 1.0});
+
+// x^3 - 6x^2 + 11x - 6 = (x-1)(x-2)(x-3)
+Polynomial aCubic({-6.0, 11.0, -6.0, 1.0});
+@endcode)nbdoc");
+    }
+    { nb::class_<MathUtils::Rational> cls(m, "Rational", R"nbdoc(Rational function functor: f(x) = P(x) / Q(x).
+Both numerator P and denominator Q are polynomials.
+
+Usage:
+@code
+// (x + 1) / (x^2 + 1)
+Rational aRat({1.0, 1.0}, {1.0, 0.0, 1.0});
+@endcode)nbdoc");
+    }
+    { nb::class_<MathUtils::Constant> cls(m, "Constant", R"nbdoc(Constant function functor: f(x) = c.)nbdoc");
+    }
+    { nb::class_<MathUtils::Linear> cls(m, "Linear", R"nbdoc(Linear function functor: f(x) = a*x + b.)nbdoc");
+    }
+    { nb::class_<MathUtils::Sine> cls(m, "Sine", R"nbdoc(Sine function functor: f(x) = a * sin(b*x + c) + d.)nbdoc");
+    }
+    { nb::class_<MathUtils::Cosine> cls(m, "Cosine", R"nbdoc(Cosine function functor: f(x) = a * cos(b*x + c) + d.)nbdoc");
+    }
+    { nb::class_<MathUtils::Exponential> cls(m, "Exponential", R"nbdoc(Exponential function functor: f(x) = a * exp(b*x) + c.)nbdoc");
+    }
+    { nb::class_<MathUtils::Power> cls(m, "Power", R"nbdoc(Power function functor: f(x) = a * x^n + b.)nbdoc");
+    }
+    { nb::class_<MathUtils::Gaussian> cls(m, "Gaussian", R"nbdoc(Gaussian function functor: f(x) = a * exp(-((x-mu)^2)/(2*sigma^2)).)nbdoc");
+    }
+    { nb::class_<MathUtils::QuadraticForm> cls(m, "QuadraticForm", R"nbdoc(Quadratic form functor: f(x) = x^T A x + b^T x + c.
+Commonly used for testing optimization algorithms.
+
+Usage:
+@code
+math_Matrix A(1, 2, 1, 2);
+A(1,1) = 2.0; A(1,2) = 0.0;
+A(2,1) = 0.0; A(2,2) = 2.0;
+math_Vector b(1, 2);
+b(1) = -4.0; b(2) = -4.0;
+QuadraticForm aFunc(A, b, 8.0);  // f(x) = 2*x1^2 + 2*x2^2 - 4*x1 - 4*x2 + 8
+// Minimum at (1, 1) with value 4
+@endcode)nbdoc");
+    }
+    { nb::class_<MathUtils::Rosenbrock> cls(m, "Rosenbrock", R"nbdoc(Rosenbrock function functor (for testing optimization).
+f(x,y) = (a - x)^2 + b*(y - x^2)^2
+Default: a = 1, b = 100
+Global minimum at (a, a^2) = (1, 1) with f = 0.
+
+Usage:
+@code
+Rosenbrock aRosen;  // Default a=1, b=100
+math_Vector aStart(1, 2);
+aStart(1) = -1.0; aStart(2) = 1.0;
+auto aResult = MathOpt::BFGS(aRosen, aStart);
+// Should converge to (1, 1)
+@endcode)nbdoc");
+    }
+    { nb::class_<MathUtils::Sphere> cls(m, "Sphere", R"nbdoc(Sphere function functor (for testing optimization).
+f(x) = sum(x[i]^2) for all i.
+Global minimum at origin with f = 0.
+
+Usage:
+@code
+Sphere aSphere;
+math_Vector aStart(1, 3);
+aStart.Init(1.0);  // Start at (1, 1, 1)
+auto aResult = MathOpt::Powell(aSphere, aStart);
+// Should converge to (0, 0, 0)
+@endcode)nbdoc");
+    }
+    { nb::class_<MathUtils::Booth> cls(m, "Booth", R"nbdoc(Booth function functor (for testing optimization).
+f(x,y) = (x + 2y - 7)^2 + (2x + y - 5)^2
+Global minimum at (1, 3) with f = 0.
+
+Usage:
+@code
+Booth aBooth;
+math_Vector aStart(1, 2);
+aStart(1) = 0.0; aStart(2) = 0.0;
+auto aResult = MathOpt::BFGS(aBooth, aStart);
+// Should converge to (1, 3)
+@endcode)nbdoc");
+    }
+    { nb::class_<MathUtils::Beale> cls(m, "Beale", R"nbdoc(Beale function functor (for testing optimization).
+f(x,y) = (1.5 - x + xy)^2 + (2.25 - x + xy^2)^2 + (2.625 - x + xy^3)^2
+Global minimum at (3, 0.5) with f = 0.)nbdoc");
+    }
+    { nb::class_<MathUtils::Himmelblau> cls(m, "Himmelblau", R"nbdoc(Himmelblau function functor (for testing optimization).
+f(x,y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
+Has four local minima, all with f = 0:
+(3.0, 2.0), (-2.805118, 3.131312), (-3.779310, -3.283186), (3.584428, -1.848126))nbdoc");
+    }
+    { nb::class_<MathUtils::Rastrigin> cls(m, "Rastrigin", R"nbdoc(Rastrigin function functor (for testing global optimization).
+f(x) = A*n + sum(x[i]^2 - A*cos(2*pi*x[i])) for all i
+Default: A = 10
+Global minimum at origin with f = 0.
+Highly multimodal - challenging for local optimizers.)nbdoc");
+    }
+    { nb::class_<MathUtils::Ackley> cls(m, "Ackley", R"nbdoc(Ackley function functor (for testing global optimization).
+f(x) = -a*exp(-b*sqrt(sum(x[i]^2)/n)) - exp(sum(cos(c*x[i]))/n) + a + e
+Default: a = 20, b = 0.2, c = 2*pi
+Global minimum at origin with f = 0.)nbdoc");
+    }
+    { nb::class_<MathUtils::LinearResidual> cls(m, "LinearResidual", R"nbdoc(Linear system residual functor: f(x) = ||Ax - b||^2.
+Useful for solving overdetermined linear systems via optimization.
+
+Usage:
+@code
+math_Matrix A(1, 3, 1, 2);  // 3x2 overdetermined system
+math_Vector b(1, 3);
+// ... fill A and b ...
+LinearResidual aRes(A, b);
+math_Vector aStart(1, 2);
+aStart.Init(0.0);
+auto aResult = MathOpt::BFGS(aRes, aStart);
+@endcode)nbdoc");
+    }
 }
 
 void nanoocp_templates_MathUtils(nb::module_ &m) {
 }
 
 void nanoocp_define_MathUtils(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<MathUtils::ScalarResult>(nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult")));
+    nb::borrow<nb::class_<MathUtils::ScalarResult>>(m.attr("ScalarResult"))
+        .def("IsDone", static_cast<bool (MathUtils::ScalarResult::*)() const>(&MathUtils::ScalarResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::ScalarResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("NbIterations", &MathUtils::ScalarResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc")
+        .def_rw("Root", &MathUtils::ScalarResult::Root, R"nbdoc(Found root or minimum location)nbdoc")
+        .def_rw("Value", &MathUtils::ScalarResult::Value, R"nbdoc(Function value at root/minimum)nbdoc")
+        .def_rw("Derivative", &MathUtils::ScalarResult::Derivative, R"nbdoc(Derivative at root (if computed))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::PolyResult>(nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult")));
+    nb::borrow<nb::class_<MathUtils::PolyResult>>(m.attr("PolyResult"))
+        .def("IsDone", static_cast<bool (MathUtils::PolyResult::*)() const>(&MathUtils::PolyResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def("__getitem__", static_cast<double (MathUtils::PolyResult::*)(int) const>(&MathUtils::PolyResult::operator[]), nb::arg("theIndex"), R"nbdoc(Access root by index (0-based).
+@param theIndex root index (0 to NbRoots-1)
+@return root value)nbdoc", nb::is_operator())
+        .def_rw("Status", &MathUtils::PolyResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("NbRoots", &MathUtils::PolyResult::NbRoots, R"nbdoc(Number of real roots found)nbdoc")
+        .def_rw("Roots", &MathUtils::PolyResult::Roots, R"nbdoc(Array of real roots (sorted))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::VectorResult>(nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult")));
+    nb::borrow<nb::class_<MathUtils::VectorResult>>(m.attr("VectorResult"))
+        .def("IsDone", static_cast<bool (MathUtils::VectorResult::*)() const>(&MathUtils::VectorResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::VectorResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("NbIterations", &MathUtils::VectorResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc")
+        .def_rw("Solution", &MathUtils::VectorResult::Solution, R"nbdoc(Solution vector (set by solver on success))nbdoc")
+        .def_rw("Value", &MathUtils::VectorResult::Value, R"nbdoc(Function value at solution (if computed))nbdoc")
+        .def_rw("Gradient", &MathUtils::VectorResult::Gradient, R"nbdoc(Gradient at solution (if computed))nbdoc")
+        .def_rw("Jacobian", &MathUtils::VectorResult::Jacobian, R"nbdoc(Jacobian at solution (if computed))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::LinearResult>(nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult")));
+    nb::borrow<nb::class_<MathUtils::LinearResult>>(m.attr("LinearResult"))
+        .def("IsDone", static_cast<bool (MathUtils::LinearResult::*)() const>(&MathUtils::LinearResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::LinearResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("Solution", &MathUtils::LinearResult::Solution, R"nbdoc(Solution vector X in AX = B (set by solver))nbdoc")
+        .def_rw("Determinant", &MathUtils::LinearResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::LinearMultipleResult>(nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult")));
+    nb::borrow<nb::class_<MathUtils::LinearMultipleResult>>(m.attr("LinearMultipleResult"))
+        .def("IsDone", static_cast<bool (MathUtils::LinearMultipleResult::*)() const>(&MathUtils::LinearMultipleResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::LinearMultipleResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("Solutions", &MathUtils::LinearMultipleResult::Solutions, R"nbdoc(Solution matrix X in AX = B (set by solver))nbdoc")
+        .def_rw("Determinant", &MathUtils::LinearMultipleResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::EigenResult>(nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult")));
+    nb::borrow<nb::class_<MathUtils::EigenResult>>(m.attr("EigenResult"))
+        .def("IsDone", static_cast<bool (MathUtils::EigenResult::*)() const>(&MathUtils::EigenResult::IsDone), R"nbdoc(Returns true if computation succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::EigenResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("NbIterations", &MathUtils::EigenResult::NbIterations, R"nbdoc(Number of iterations performed)nbdoc")
+        .def_rw("EigenValues", &MathUtils::EigenResult::EigenValues, R"nbdoc(Computed eigenvalues (set by solver))nbdoc")
+        .def_rw("EigenVectors", &MathUtils::EigenResult::EigenVectors, R"nbdoc(Computed eigenvectors (set by solver))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::DecompResult>(nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult")));
+    nb::borrow<nb::class_<MathUtils::DecompResult>>(m.attr("DecompResult"))
+        .def("IsDone", static_cast<bool (MathUtils::DecompResult::*)() const>(&MathUtils::DecompResult::IsDone), R"nbdoc(Returns true if decomposition succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::DecompResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("L", &MathUtils::DecompResult::L, R"nbdoc(Lower triangular (LU) or left singular vectors (SVD))nbdoc")
+        .def_rw("U", &MathUtils::DecompResult::U, R"nbdoc(Upper triangular (LU) or right singular vectors (SVD))nbdoc")
+        .def_rw("D", &MathUtils::DecompResult::D, R"nbdoc(Diagonal elements or singular values)nbdoc")
+        .def_rw("Determinant", &MathUtils::DecompResult::Determinant, R"nbdoc(Matrix determinant (if computed))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::IntegResult>(nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult")));
+    nb::borrow<nb::class_<MathUtils::IntegResult>>(m.attr("IntegResult"))
+        .def("IsDone", static_cast<bool (MathUtils::IntegResult::*)() const>(&MathUtils::IntegResult::IsDone), R"nbdoc(Returns true if integration succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::IntegResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("NbIterations", &MathUtils::IntegResult::NbIterations, R"nbdoc(Number of adaptive iterations)nbdoc")
+        .def_rw("NbPoints", &MathUtils::IntegResult::NbPoints, R"nbdoc(Total number of quadrature points used)nbdoc")
+        .def_rw("Value", &MathUtils::IntegResult::Value, R"nbdoc(Computed integral value)nbdoc")
+        .def_rw("AbsoluteError", &MathUtils::IntegResult::AbsoluteError, R"nbdoc(Estimated absolute error (if computed))nbdoc")
+        .def_rw("RelativeError", &MathUtils::IntegResult::RelativeError, R"nbdoc(Estimated relative error (if computed))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::InverseResult>(nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult")));
+    nb::borrow<nb::class_<MathUtils::InverseResult>>(m.attr("InverseResult"))
+        .def("IsDone", static_cast<bool (MathUtils::InverseResult::*)() const>(&MathUtils::InverseResult::IsDone), R"nbdoc(Returns true if inversion succeeded.)nbdoc")
+        .def_rw("Status", &MathUtils::InverseResult::Status, R"nbdoc(Computation status)nbdoc")
+        .def_rw("Inverse", &MathUtils::InverseResult::Inverse, R"nbdoc(Computed inverse matrix)nbdoc")
+        .def_rw("Determinant", &MathUtils::InverseResult::Determinant, R"nbdoc(Determinant of matrix (if computed))nbdoc");
+    nb::borrow<nb::class_<MathUtils::Config>>(m.attr("Config"))
+        .def(nb::init<>(), R"nbdoc(Default constructor with standard tolerances.)nbdoc")
+        .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with custom tolerance (sets all tolerances to same value).
+@param theTolerance convergence tolerance
+@param theMaxIter maximum iterations)nbdoc")
+        .def_rw("MaxIterations", &MathUtils::Config::MaxIterations, R"nbdoc(Maximum number of iterations allowed)nbdoc")
+        .def_rw("Tolerance", &MathUtils::Config::Tolerance, R"nbdoc(General convergence tolerance)nbdoc")
+        .def_rw("XTolerance", &MathUtils::Config::XTolerance, R"nbdoc(Tolerance for solution change |x_{n+1} - x_n|)nbdoc")
+        .def_rw("FTolerance", &MathUtils::Config::FTolerance, R"nbdoc(Tolerance for function value |f(x)|)nbdoc")
+        .def_rw("StepMin", &MathUtils::Config::StepMin, R"nbdoc(Minimum step size before declaring convergence or failure.)nbdoc");
+    nb::borrow<nb::class_<MathUtils::BoundedConfig>>(m.attr("BoundedConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, double, double, int>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-10), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with bounds.
+@param theLower lower bound
+@param theUpper upper bound
+@param theTolerance convergence tolerance
+@param theMaxIter maximum iterations)nbdoc")
+        .def_rw("LowerBound", &MathUtils::BoundedConfig::LowerBound, R"nbdoc(Lower bound of search interval)nbdoc")
+        .def_rw("UpperBound", &MathUtils::BoundedConfig::UpperBound, R"nbdoc(Upper bound of search interval)nbdoc");
+    nb::borrow<nb::class_<MathUtils::NDimConfig>>(m.attr("NDimConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, int, bool>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), nb::arg("theUseBounds") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Constructor with tolerance.
+@param theTolerance convergence tolerance
+@param theMaxIter maximum iterations
+@param theUseBounds whether to use bounds)nbdoc")
+        .def_rw("UseBounds", &MathUtils::NDimConfig::UseBounds, R"nbdoc(Whether to enforce bounds during optimization)nbdoc");
+    nb::borrow<nb::class_<MathUtils::IntegConfig>>(m.attr("IntegConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with custom tolerance.
+@param theTolerance relative tolerance
+@param theMaxIter maximum adaptive iterations)nbdoc")
+        .def_rw("InitialOrder", &MathUtils::IntegConfig::InitialOrder, R"nbdoc(Initial number of quadrature points)nbdoc")
+        .def_rw("MaxOrder", &MathUtils::IntegConfig::MaxOrder, R"nbdoc(Maximum quadrature order (Gauss-Legendre limit))nbdoc")
+        .def_rw("MaxIterations", &MathUtils::IntegConfig::MaxIterations, R"nbdoc(Maximum adaptive subdivision iterations)nbdoc")
+        .def_rw("Tolerance", &MathUtils::IntegConfig::Tolerance, R"nbdoc(Relative tolerance for error estimation)nbdoc");
+    nb::borrow<nb::class_<MathUtils::LinConfig>>(m.attr("LinConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def_rw("SingularityTolerance", &MathUtils::LinConfig::SingularityTolerance, R"nbdoc(Tolerance for detecting singular matrices)nbdoc")
+        .def_rw("UsePivoting", &MathUtils::LinConfig::UsePivoting, R"nbdoc(Whether to use pivoting for stability)nbdoc");
+    nb::borrow<nb::class_<MathUtils::Domain1D>>(m.attr("Domain1D"))
+        .def(nb::init<>(), R"nbdoc(Default constructor - creates empty domain [0, 0].)nbdoc")
+        .def(nb::init<double, double>(), nb::arg("theMin"), nb::arg("theMax"), R"nbdoc(Construct from bounds.
+@param theMin lower bound
+@param theMax upper bound)nbdoc")
+        .def("Length", static_cast<double (MathUtils::Domain1D::*)() const>(&MathUtils::Domain1D::Length), R"nbdoc(Returns the length of the domain.)nbdoc")
+        .def("Mid", static_cast<double (MathUtils::Domain1D::*)() const>(&MathUtils::Domain1D::Mid), R"nbdoc(Returns the midpoint of the domain.)nbdoc")
+        .def("Contains", static_cast<bool (MathUtils::Domain1D::*)(double, double) const>(&MathUtils::Domain1D::Contains), nb::arg("theU"), nb::arg("theTol") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Check if value is within domain.
+@param theU parameter value to check
+@param theTol tolerance for boundary check
+@return true if theU is in [Min - theTol, Max + theTol])nbdoc")
+        .def("Clamp", static_cast<double (MathUtils::Domain1D::*)(double) const>(&MathUtils::Domain1D::Clamp), nb::arg("theU"), R"nbdoc(Clamp value to domain bounds.
+@param theU parameter value to clamp
+@return clamped value in [Min, Max])nbdoc")
+        .def("IsLarge", static_cast<bool (MathUtils::Domain1D::*)(double) const>(&MathUtils::Domain1D::IsLarge), nb::arg("theThreshold") = static_cast<std::decay_t<double>>(1000.0), R"nbdoc(Check if domain is "large" (effectively unbounded for optimization).
+Large domains allow skipping bounds checking for performance.
+@param theThreshold size threshold (default 1000)
+@return true if Length() > theThreshold)nbdoc")
+        .def("IsFullPeriod", static_cast<bool (MathUtils::Domain1D::*)(double, double) const>(&MathUtils::Domain1D::IsFullPeriod), nb::arg("thePeriod"), nb::arg("theTol") = static_cast<std::decay_t<double>>(1.0e-10), R"nbdoc(Check if domain covers a full periodic range.
+@param thePeriod period of the parameter (e.g., 2*PI for angles)
+@param theTol tolerance
+@return true if domain covers at least one full period)nbdoc")
+        .def("Lerp", static_cast<double (MathUtils::Domain1D::*)(double) const>(&MathUtils::Domain1D::Lerp), nb::arg("theT"), R"nbdoc(Interpolate within domain.
+@param theT interpolation parameter in [0, 1]
+@return Min + theT * Length())nbdoc")
+        .def("Normalize", static_cast<double (MathUtils::Domain1D::*)(double) const>(&MathUtils::Domain1D::Normalize), nb::arg("theU"), R"nbdoc(Normalize parameter to [0, 1] range.
+@param theU parameter value
+@return (theU - Min) / Length(), or 0.5 if Length() == 0)nbdoc")
+        .def("IsFinite", static_cast<bool (MathUtils::Domain1D::*)(double) const>(&MathUtils::Domain1D::IsFinite), nb::arg("theInfLimit") = static_cast<std::decay_t<double>>(1.0e100), R"nbdoc(Check if domain has finite bounds (not effectively infinite).
+@param theInfLimit threshold for "infinity" (default 1e100)
+@return true if both Min and Max are within finite range)nbdoc")
+        .def("IsEqual", static_cast<bool (MathUtils::Domain1D::*)(const MathUtils::Domain1D &, double) const>(&MathUtils::Domain1D::IsEqual), nb::arg("theOther"), nb::arg("theTol") = static_cast<std::decay_t<double>>(1.0e-10), R"nbdoc(Check if this domain equals another within tolerance.
+@param theOther domain to compare with
+@param theTol tolerance for comparison
+@return true if domains are equal within tolerance)nbdoc")
+        .def_rw("Min", &MathUtils::Domain1D::Min, R"nbdoc(Lower bound of the domain)nbdoc")
+        .def_rw("Max", &MathUtils::Domain1D::Max, R"nbdoc(Upper bound of the domain)nbdoc");
+    nb::borrow<nb::class_<MathUtils::Domain2D>>(m.attr("Domain2D"))
+        .def(nb::init<>(), R"nbdoc(Default constructor - creates empty domain.)nbdoc")
+        .def(nb::init<const MathUtils::Domain1D &, const MathUtils::Domain1D &>(), nb::arg("theUDomain"), nb::arg("theVDomain"), R"nbdoc(Construct from two 1D domains.
+@param theUDomain U parameter domain
+@param theVDomain V parameter domain)nbdoc")
+        .def(nb::init<double, double, double, double>(), nb::arg("theUMin"), nb::arg("theUMax"), nb::arg("theVMin"), nb::arg("theVMax"), R"nbdoc(Construct from bounds.
+@param theUMin lower U bound
+@param theUMax upper U bound
+@param theVMin lower V bound
+@param theVMax upper V bound)nbdoc")
+        .def("U", static_cast<MathUtils::Domain1D (MathUtils::Domain2D::*)() const>(&MathUtils::Domain2D::U), R"nbdoc(Returns the U subdomain.)nbdoc")
+        .def("V", static_cast<MathUtils::Domain1D (MathUtils::Domain2D::*)() const>(&MathUtils::Domain2D::V), R"nbdoc(Returns the V subdomain.)nbdoc")
+        .def("ULength", static_cast<double (MathUtils::Domain2D::*)() const>(&MathUtils::Domain2D::ULength), R"nbdoc(Returns U length.)nbdoc")
+        .def("VLength", static_cast<double (MathUtils::Domain2D::*)() const>(&MathUtils::Domain2D::VLength), R"nbdoc(Returns V length.)nbdoc")
+        .def("UMid", static_cast<double (MathUtils::Domain2D::*)() const>(&MathUtils::Domain2D::UMid), R"nbdoc(Returns U midpoint.)nbdoc")
+        .def("VMid", static_cast<double (MathUtils::Domain2D::*)() const>(&MathUtils::Domain2D::VMid), R"nbdoc(Returns V midpoint.)nbdoc")
+        .def("Contains", static_cast<bool (MathUtils::Domain2D::*)(double, double, double) const>(&MathUtils::Domain2D::Contains), nb::arg("theU"), nb::arg("theV"), nb::arg("theTol") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Check if UV point is within domain.
+@param theU U parameter
+@param theV V parameter
+@param theTol tolerance for boundary check
+@return true if (theU, theV) is in domain)nbdoc")
+        .def("Clamp", [](const MathUtils::Domain2D &self) { double theU{}; double theV{}; self.Clamp(theU, theV); return std::make_tuple(theU, theV); }, R"nbdoc(Clamp UV to domain bounds.
+@param theU U parameter (modified in place)
+@param theV V parameter (modified in place))nbdoc")
+        .def("IsLarge", static_cast<bool (MathUtils::Domain2D::*)(double) const>(&MathUtils::Domain2D::IsLarge), nb::arg("theThreshold") = static_cast<std::decay_t<double>>(1000.0), R"nbdoc(Check if both U and V domains are "large".
+@param theThreshold size threshold (default 1000)
+@return true if both U and V lengths exceed threshold)nbdoc")
+        .def("IsUFullPeriod", static_cast<bool (MathUtils::Domain2D::*)(double, double) const>(&MathUtils::Domain2D::IsUFullPeriod), nb::arg("thePeriod"), nb::arg("theTol") = static_cast<std::decay_t<double>>(1.0e-10), R"nbdoc(Check if U domain covers a full period.
+@param thePeriod period of U parameter
+@param theTol tolerance)nbdoc")
+        .def("IsVFullPeriod", static_cast<bool (MathUtils::Domain2D::*)(double, double) const>(&MathUtils::Domain2D::IsVFullPeriod), nb::arg("thePeriod"), nb::arg("theTol") = static_cast<std::decay_t<double>>(1.0e-10), R"nbdoc(Check if V domain covers a full period.
+@param thePeriod period of V parameter
+@param theTol tolerance)nbdoc")
+        .def("IsFinite", static_cast<bool (MathUtils::Domain2D::*)(double) const>(&MathUtils::Domain2D::IsFinite), nb::arg("theInfLimit") = static_cast<std::decay_t<double>>(1.0e100), R"nbdoc(Check if domain has finite bounds (not effectively infinite).
+@param theInfLimit threshold for "infinity" (default 1e100))nbdoc")
+        .def_rw("UMin", &MathUtils::Domain2D::UMin, R"nbdoc(Lower U bound)nbdoc")
+        .def_rw("UMax", &MathUtils::Domain2D::UMax, R"nbdoc(Upper U bound)nbdoc")
+        .def_rw("VMin", &MathUtils::Domain2D::VMin, R"nbdoc(Lower V bound)nbdoc")
+        .def_rw("VMax", &MathUtils::Domain2D::VMax, R"nbdoc(Upper V bound)nbdoc");
+    nb::borrow<nb::class_<MathUtils::RandomGenerator>>(m.attr("RandomGenerator"))
+        .def(nb::init<const uint64_t>(), nb::arg("theSeed") = static_cast<std::decay_t<const uint64_t>>(1), R"nbdoc(Initialize with a seed value.
+Uses SplitMix64 to expand a single seed into the full 256-bit state,
+ensuring good initialization even from poor seeds.
+@param theSeed seed value (default 1))nbdoc")
+        .def("SetSeed", static_cast<void (MathUtils::RandomGenerator::*)(const uint64_t)>(&MathUtils::RandomGenerator::SetSeed), nb::arg("theSeed"), R"nbdoc(Re-seed the generator.
+@param theSeed seed value)nbdoc")
+        .def("NextInt", static_cast<uint64_t (MathUtils::RandomGenerator::*)()>(&MathUtils::RandomGenerator::NextInt), R"nbdoc(Generate next 64-bit unsigned integer.
+@return pseudo-random value in [0, 2^64))nbdoc")
+        .def("NextReal", static_cast<double (MathUtils::RandomGenerator::*)()>(&MathUtils::RandomGenerator::NextReal), R"nbdoc(Generate next double in [0, 1).
+Uses 53 bits of randomness for full double precision.
+@return pseudo-random value in [0, 1))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::BracketResult>(nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult")));
+    nb::borrow<nb::class_<MathUtils::BracketResult>>(m.attr("BracketResult"))
+        .def_rw("IsValid", &MathUtils::BracketResult::IsValid, R"nbdoc(True if valid bracket found)nbdoc")
+        .def_rw("A", &MathUtils::BracketResult::A, R"nbdoc(Lower bound)nbdoc")
+        .def_rw("B", &MathUtils::BracketResult::B, R"nbdoc(Upper bound)nbdoc")
+        .def_rw("Fa", &MathUtils::BracketResult::Fa, R"nbdoc(Function value at A)nbdoc")
+        .def_rw("Fb", &MathUtils::BracketResult::Fb, R"nbdoc(Function value at B)nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::MinBracketResult>(nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult")));
+    nb::borrow<nb::class_<MathUtils::MinBracketResult>>(m.attr("MinBracketResult"))
+        .def_rw("IsValid", &MathUtils::MinBracketResult::IsValid, R"nbdoc(True if valid bracket found (Fb < Fa and Fb < Fc))nbdoc")
+        .def_rw("A", &MathUtils::MinBracketResult::A, R"nbdoc(Left bound)nbdoc")
+        .def_rw("B", &MathUtils::MinBracketResult::B, R"nbdoc(Middle point (minimum location estimate))nbdoc")
+        .def_rw("C", &MathUtils::MinBracketResult::C, R"nbdoc(Right bound)nbdoc")
+        .def_rw("Fa", &MathUtils::MinBracketResult::Fa, R"nbdoc(Function value at A)nbdoc")
+        .def_rw("Fb", &MathUtils::MinBracketResult::Fb, R"nbdoc(Function value at B)nbdoc")
+        .def_rw("Fc", &MathUtils::MinBracketResult::Fc, R"nbdoc(Function value at C)nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::MinBracketOptions>(nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions")));
+    nb::borrow<nb::class_<MathUtils::MinBracketOptions>>(m.attr("MinBracketOptions"))
+        .def_rw("MaxIterations", &MathUtils::MinBracketOptions::MaxIterations, R"nbdoc(Maximum iterations)nbdoc")
+        .def_rw("UseLimits", &MathUtils::MinBracketOptions::UseLimits, R"nbdoc(Enable hard limits for parameter)nbdoc")
+        .def_rw("LeftLimit", &MathUtils::MinBracketOptions::LeftLimit, R"nbdoc(Left hard limit (inclusive))nbdoc")
+        .def_rw("RightLimit", &MathUtils::MinBracketOptions::RightLimit, R"nbdoc(Right hard limit (inclusive))nbdoc")
+        .def_rw("HasFA", &MathUtils::MinBracketOptions::HasFA, R"nbdoc(True if FA is precomputed)nbdoc")
+        .def_rw("HasFB", &MathUtils::MinBracketOptions::HasFB, R"nbdoc(True if FB is precomputed)nbdoc")
+        .def_rw("FA", &MathUtils::MinBracketOptions::FA, R"nbdoc(Precomputed f(A))nbdoc")
+        .def_rw("FB", &MathUtils::MinBracketOptions::FB, R"nbdoc(Precomputed f(B))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::LineSearchResult>(nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult")));
+    nb::borrow<nb::class_<MathUtils::LineSearchResult>>(m.attr("LineSearchResult"))
+        .def_rw("IsValid", &MathUtils::LineSearchResult::IsValid, R"nbdoc(True if line search succeeded)nbdoc")
+        .def_rw("Alpha", &MathUtils::LineSearchResult::Alpha, R"nbdoc(Step size found)nbdoc")
+        .def_rw("FNew", &MathUtils::LineSearchResult::FNew, R"nbdoc(Function value at new point)nbdoc")
+        .def_rw("NbEvals", &MathUtils::LineSearchResult::NbEvals, R"nbdoc(Number of function evaluations)nbdoc");
+    nb::borrow<nb::class_<MathUtils::Polynomial>>(m.attr("Polynomial"))
+        .def(nb::init<const math_Vector &>(), nb::arg("theCoeffs"), R"nbdoc(Constructor from math_Vector.
+@param theCoeffs coefficients in ascending power order)nbdoc")
+        .def("Value", [](const MathUtils::Polynomial &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates polynomial at theX using Horner's method.
+@param[in] theX input value
+@param[out] theY polynomial value p(theX)
+@return true (always succeeds for polynomials))nbdoc")
+        .def("Values", [](const MathUtils::Polynomial &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates polynomial and its derivative at theX.
+@param[in] theX input value
+@param[out] theY polynomial value p(theX)
+@param[out] theDY derivative value p'(theX)
+@return true (always succeeds for polynomials))nbdoc")
+        .def("Degree", static_cast<int (MathUtils::Polynomial::*)() const>(&MathUtils::Polynomial::Degree), R"nbdoc(Returns the degree of the polynomial.
+@return polynomial degree (number of coefficients - 1))nbdoc")
+        .def("Coefficient", static_cast<double (MathUtils::Polynomial::*)(int) const>(&MathUtils::Polynomial::Coefficient), nb::arg("theIndex"), R"nbdoc(Returns coefficient by index.
+@param theIndex coefficient index (0 = constant term)
+@return coefficient value)nbdoc");
+    nb::borrow<nb::class_<MathUtils::Rational>>(m.attr("Rational"))
+        .def(nb::init<const math_Vector &, const math_Vector &>(), nb::arg("theNum"), nb::arg("theDenom"), R"nbdoc(Constructor from math_Vector.
+@param theNum numerator coefficients (ascending power order)
+@param theDenom denominator coefficients (ascending power order))nbdoc")
+        .def("Value", [](const MathUtils::Rational &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates rational function at theX.
+@param[in] theX input value
+@param[out] theY function value P(theX)/Q(theX)
+@return false if denominator is zero)nbdoc");
+    nb::borrow<nb::class_<MathUtils::Constant>>(m.attr("Constant"))
+        .def(nb::init<double>(), nb::arg("theValue"), R"nbdoc(Constructor from constant value.
+@param theValue constant value)nbdoc")
+        .def("Value", [](const MathUtils::Constant &self, double arg0) { double theY{}; auto result = self.Value(arg0, theY); return std::make_tuple(result, theY); }, nb::arg("arg0"), R"nbdoc(Evaluates constant function.
+@param[in] theX input value (ignored)
+@param[out] theY constant value
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Constant &self, double arg0) { double theY{}; double theDY{}; auto result = self.Values(arg0, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("arg0"), R"nbdoc(Evaluates constant and derivative (derivative is always 0).
+@param[in] theX input value (ignored)
+@param[out] theY constant value
+@param[out] theDY derivative (always 0)
+@return true (always succeeds))nbdoc");
+    nb::borrow<nb::class_<MathUtils::Linear>>(m.attr("Linear"))
+        .def(nb::init<double, double>(), nb::arg("theSlope"), nb::arg("theIntercept"), R"nbdoc(Constructor from slope and intercept.
+@param theSlope coefficient a (slope)
+@param theIntercept coefficient b (y-intercept))nbdoc")
+        .def("Value", [](const MathUtils::Linear &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates linear function a*x + b.
+@param[in] theX input value
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Linear &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates linear function and derivative.
+@param[in] theX input value
+@param[out] theY function value
+@param[out] theDY derivative (= slope)
+@return true (always succeeds))nbdoc");
+    nb::borrow<nb::class_<MathUtils::Sine>>(m.attr("Sine"))
+        .def(nb::init<double, double, double, double>(), nb::arg("theAmplitude") = static_cast<std::decay_t<double>>(1.0), nb::arg("theFrequency") = static_cast<std::decay_t<double>>(1.0), nb::arg("thePhase") = static_cast<std::decay_t<double>>(0.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
+@param theAmplitude amplitude a
+@param theFrequency angular frequency b
+@param thePhase phase shift c
+@param theOffset vertical offset d)nbdoc")
+        .def("Value", [](const MathUtils::Sine &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates sine function.
+@param[in] theX input value
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Sine &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates sine function and derivative.
+@param[in] theX input value
+@param[out] theY function value
+@param[out] theDY derivative value
+@return true (always succeeds))nbdoc");
+    nb::implicitly_convertible<std::decay_t<double>, MathUtils::Sine>();
+    nb::borrow<nb::class_<MathUtils::Cosine>>(m.attr("Cosine"))
+        .def(nb::init<double, double, double, double>(), nb::arg("theAmplitude") = static_cast<std::decay_t<double>>(1.0), nb::arg("theFrequency") = static_cast<std::decay_t<double>>(1.0), nb::arg("thePhase") = static_cast<std::decay_t<double>>(0.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
+@param theAmplitude amplitude a
+@param theFrequency angular frequency b
+@param thePhase phase shift c
+@param theOffset vertical offset d)nbdoc")
+        .def("Value", [](const MathUtils::Cosine &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates cosine function.
+@param[in] theX input value
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Cosine &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates cosine function and derivative.
+@param[in] theX input value
+@param[out] theY function value
+@param[out] theDY derivative value
+@return true (always succeeds))nbdoc");
+    nb::implicitly_convertible<std::decay_t<double>, MathUtils::Cosine>();
+    nb::borrow<nb::class_<MathUtils::Exponential>>(m.attr("Exponential"))
+        .def(nb::init<double, double, double>(), nb::arg("theScale") = static_cast<std::decay_t<double>>(1.0), nb::arg("theRate") = static_cast<std::decay_t<double>>(1.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
+@param theScale scale factor a
+@param theRate rate b
+@param theOffset vertical offset c)nbdoc")
+        .def("Value", [](const MathUtils::Exponential &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates exponential function.
+@param[in] theX input value
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Exponential &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates exponential function and derivative.
+@param[in] theX input value
+@param[out] theY function value
+@param[out] theDY derivative value
+@return true (always succeeds))nbdoc");
+    nb::implicitly_convertible<std::decay_t<double>, MathUtils::Exponential>();
+    nb::borrow<nb::class_<MathUtils::Power>>(m.attr("Power"))
+        .def(nb::init<double, double, double>(), nb::arg("theExponent"), nb::arg("theScale") = static_cast<std::decay_t<double>>(1.0), nb::arg("theOffset") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Constructor with full parameters.
+@param theExponent power n
+@param theScale scale factor a
+@param theOffset vertical offset b)nbdoc")
+        .def("Value", [](const MathUtils::Power &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates power function.
+@param[in] theX input value
+@param[out] theY function value
+@return false if x < 0 and exponent is non-integer)nbdoc")
+        .def("Values", [](const MathUtils::Power &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates power function and derivative.
+@param[in] theX input value
+@param[out] theY function value
+@param[out] theDY derivative value
+@return false if x < 0 and exponent is non-integer)nbdoc");
+    nb::implicitly_convertible<std::decay_t<double>, MathUtils::Power>();
+    nb::borrow<nb::class_<MathUtils::Gaussian>>(m.attr("Gaussian"))
+        .def(nb::init<double, double, double>(), nb::arg("theAmplitude") = static_cast<std::decay_t<double>>(1.0), nb::arg("theMean") = static_cast<std::decay_t<double>>(0.0), nb::arg("theSigma") = static_cast<std::decay_t<double>>(1.0), R"nbdoc(Constructor with full parameters.
+@param theAmplitude amplitude a (peak height)
+@param theMean mean mu (center)
+@param theSigma standard deviation sigma (width))nbdoc")
+        .def("Value", [](const MathUtils::Gaussian &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates Gaussian function.
+@param[in] theX input value
+@param[out] theY function value
+@return false if sigma is zero)nbdoc")
+        .def("Values", [](const MathUtils::Gaussian &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates Gaussian function and derivative.
+@param[in] theX input value
+@param[out] theY function value
+@param[out] theDY derivative value
+@return false if sigma is zero)nbdoc");
+    nb::implicitly_convertible<std::decay_t<double>, MathUtils::Gaussian>();
+    nb::borrow<nb::class_<MathUtils::QuadraticForm>>(m.attr("QuadraticForm"))
+        .def(nb::init<const math_Matrix &, const math_Vector &, double>(), nb::arg("theA"), nb::arg("theB"), nb::arg("theC"), R"nbdoc(Constructor from matrix, vector, and constant.
+@param theA quadratic coefficient matrix (must be square)
+@param theB linear coefficient vector
+@param theC constant term)nbdoc")
+        .def("Value", [](const MathUtils::QuadraticForm &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the quadratic form f(x) = x^T A x + b^T x + c.
+@param[in] theX input vector
+@param[out] theY function value
+@return true if evaluation succeeded)nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::QuadraticForm::*)(const math_Vector &, math_Vector &) const>(&MathUtils::QuadraticForm::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient: g = 2*A*x + b.
+@param[in] theX input vector
+@param[out] theG gradient vector
+@return true if evaluation succeeded)nbdoc")
+        .def("Values", [](const MathUtils::QuadraticForm &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX input vector
+@param[out] theY function value
+@param[out] theG gradient vector
+@return true if evaluation succeeded)nbdoc");
+    nb::borrow<nb::class_<MathUtils::Rosenbrock>>(m.attr("Rosenbrock"))
+        .def(nb::init<double, double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(1.0), nb::arg("theB") = static_cast<std::decay_t<double>>(100.0), R"nbdoc(Constructor with parameters.
+@param theA parameter a (default 1.0)
+@param theB parameter b (default 100.0))nbdoc")
+        .def("Value", [](const MathUtils::Rosenbrock &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Rosenbrock function.
+@param[in] theX input vector (must have length 2)
+@param[out] theY function value
+@return true if evaluation succeeded)nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::Rosenbrock::*)(const math_Vector &, math_Vector &) const>(&MathUtils::Rosenbrock::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient of the Rosenbrock function.
+@param[in] theX input vector
+@param[out] theG gradient vector
+@return true if evaluation succeeded)nbdoc")
+        .def("Values", [](const MathUtils::Rosenbrock &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX input vector
+@param[out] theY function value
+@param[out] theG gradient vector
+@return true if evaluation succeeded)nbdoc");
+    nb::implicitly_convertible<std::decay_t<double>, MathUtils::Rosenbrock>();
+    nanoocp_implicit_default_ctor<MathUtils::Sphere>(nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere")));
+    nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere"))
+        .def("Value", [](const MathUtils::Sphere &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the sphere function.
+@param[in] theX input vector
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::Sphere::*)(const math_Vector &, math_Vector &) const>(&MathUtils::Sphere::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient of the sphere function.
+@param[in] theX input vector
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Sphere &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX input vector
+@param[out] theY function value
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::Booth>(nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth")));
+    nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth"))
+        .def("Value", [](const MathUtils::Booth &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Booth function.
+@param[in] theX input vector (must have length 2)
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::Booth::*)(const math_Vector &, math_Vector &) const>(&MathUtils::Booth::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient of the Booth function.
+@param[in] theX input vector
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Booth &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX input vector
+@param[out] theY function value
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::Beale>(nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale")));
+    nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale"))
+        .def("Value", [](const MathUtils::Beale &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Beale function.
+@param[in] theX input vector (must have length 2)
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::Beale::*)(const math_Vector &, math_Vector &) const>(&MathUtils::Beale::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient of the Beale function.
+@param[in] theX input vector
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Beale &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX input vector
+@param[out] theY function value
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc");
+    nanoocp_implicit_default_ctor<MathUtils::Himmelblau>(nb::borrow<nb::class_<MathUtils::Himmelblau>>(m.attr("Himmelblau")));
+    nb::borrow<nb::class_<MathUtils::Himmelblau>>(m.attr("Himmelblau"))
+        .def("Value", [](const MathUtils::Himmelblau &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Himmelblau function.
+@param[in] theX input vector (must have length 2)
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::Himmelblau::*)(const math_Vector &, math_Vector &) const>(&MathUtils::Himmelblau::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient of the Himmelblau function.
+@param[in] theX input vector
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Himmelblau &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX input vector
+@param[out] theY function value
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc");
+    nb::borrow<nb::class_<MathUtils::Rastrigin>>(m.attr("Rastrigin"))
+        .def(nb::init<double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(10.0), R"nbdoc(Constructor with parameter.
+@param theA parameter A (default 10.0))nbdoc")
+        .def("Value", [](const MathUtils::Rastrigin &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Rastrigin function.
+@param[in] theX input vector
+@param[out] theY function value
+@return true (always succeeds))nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::Rastrigin::*)(const math_Vector &, math_Vector &) const>(&MathUtils::Rastrigin::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient of the Rastrigin function.
+@param[in] theX input vector
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::Rastrigin &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX input vector
+@param[out] theY function value
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc");
+    nb::borrow<nb::class_<MathUtils::Ackley>>(m.attr("Ackley"))
+        .def(nb::init<double, double, double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(20.0), nb::arg("theB") = static_cast<std::decay_t<double>>(0.2), nb::arg("theC") = static_cast<std::decay_t<double>>(2.0 * 3.14159265358979323846), R"nbdoc(Constructor with parameters.
+@param theA parameter a (default 20.0)
+@param theB parameter b (default 0.2)
+@param theC parameter c (default 2*pi))nbdoc")
+        .def("Value", [](const MathUtils::Ackley &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Ackley function.
+@param[in] theX input vector
+@param[out] theY function value
+@return true (always succeeds))nbdoc");
+    nb::implicitly_convertible<std::decay_t<double>, MathUtils::Ackley>();
+    nb::borrow<nb::class_<MathUtils::LinearResidual>>(m.attr("LinearResidual"))
+        .def(nb::init<const math_Matrix &, const math_Vector &>(), nb::arg("theA"), nb::arg("theB"), R"nbdoc(Constructor from matrix and right-hand side.
+@param theA coefficient matrix (m x n)
+@param theB right-hand side vector (m))nbdoc")
+        .def("Value", [](const MathUtils::LinearResidual &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the residual ||Ax - b||^2.
+@param[in] theX solution vector (n)
+@param[out] theY squared residual norm
+@return true (always succeeds))nbdoc")
+        .def("Gradient", static_cast<bool (MathUtils::LinearResidual::*)(const math_Vector &, math_Vector &) const>(&MathUtils::LinearResidual::Gradient), nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates the gradient: g = 2 * A^T * (Ax - b).
+@param[in] theX solution vector
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc")
+        .def("Values", [](const MathUtils::LinearResidual &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+@param[in] theX solution vector
+@param[out] theY squared residual norm
+@param[out] theG gradient vector
+@return true (always succeeds))nbdoc");
+    m.def("Clamp", static_cast<double (*)(double, double, double)>(&MathUtils::Clamp), nb::arg("theValue"), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Clamp value to range [theLower, theUpper].
+@param theValue value to clamp
+@param theLower lower bound
+@param theUpper upper bound
+@return clamped value)nbdoc");
+    m.def("IsZero", static_cast<bool (*)(double, double)>(&MathUtils::IsZero), nb::arg("theValue"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(MathUtils::THE_ZERO_TOL), R"nbdoc(Check if value is effectively zero.
+@param theValue value to check
+@param theTolerance tolerance for zero comparison
+@return true if |theValue| < theTolerance)nbdoc");
+    m.def("IsEqual", static_cast<bool (*)(double, double, double)>(&MathUtils::IsEqual), nb::arg("theA"), nb::arg("theB"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(MathUtils::THE_ZERO_TOL), R"nbdoc(Check if two values are approximately equal.
+@param theA first value
+@param theB second value
+@param theTolerance relative tolerance
+@return true if values are approximately equal)nbdoc");
+    m.def("SafeDiv", static_cast<double (*)(double, double, double)>(&MathUtils::SafeDiv), nb::arg("theNumerator"), nb::arg("theDenominator"), nb::arg("theDefault") = static_cast<std::decay_t<double>>(0.0), R"nbdoc(Safe division avoiding division by zero.
+@param theNumerator numerator
+@param theDenominator denominator
+@param theDefault default value if denominator is zero
+@return theNumerator / theDenominator or theDefault)nbdoc");
+    m.def("Sign", static_cast<int (*)(double)>(&MathUtils::Sign), nb::arg("theValue"), R"nbdoc(Sign function.
+@param theValue input value
+@return -1 if negative, 0 if zero, +1 if positive)nbdoc");
+    m.def("SignTransfer", static_cast<double (*)(double, double)>(&MathUtils::SignTransfer), nb::arg("theA"), nb::arg("theB"), R"nbdoc(Sign transfer function: returns |theA| with sign of theB.
+Equivalent to copysign but avoids edge cases with zero.
+@param theA value whose magnitude is used
+@param theB value whose sign is used
+@return |theA| * sign(theB))nbdoc");
+    m.def("Sqr", static_cast<double (*)(double)>(&MathUtils::Sqr), nb::arg("theValue"), R"nbdoc(Square of a value.
+@param theValue input value
+@return theValue * theValue)nbdoc");
+    m.def("Cube", static_cast<double (*)(double)>(&MathUtils::Cube), nb::arg("theValue"), R"nbdoc(Cube of a value.
+@param theValue input value
+@return theValue^3)nbdoc");
+    m.def("CubeRoot", static_cast<double (*)(double)>(&MathUtils::CubeRoot), nb::arg("theValue"), R"nbdoc(Cube root with proper sign handling.
+Unlike std::cbrt, this handles negative values correctly on all platforms.
+@param theValue input value
+@return cube root of theValue)nbdoc");
+    m.def("IsFinite", static_cast<bool (*)(double)>(&MathUtils::IsFinite), nb::arg("theValue"), R"nbdoc(Check if value is finite (not NaN or Inf).
+@param theValue value to check
+@return true if finite)nbdoc");
+    m.def("DotProduct", static_cast<double (*)(const math_Vector &, const math_Vector &)>(&MathUtils::DotProduct), nb::arg("theA"), nb::arg("theB"), R"nbdoc(Compute dot product of two vectors.
+@param theA first vector
+@param theB second vector
+@return dot product sum(A[i] * B[i]))nbdoc");
+    m.def("VectorNorm", static_cast<double (*)(const math_Vector &)>(&MathUtils::VectorNorm), nb::arg("theVec"), R"nbdoc(Compute Euclidean norm of a vector.
+@param theVec input vector
+@return sqrt(sum(V[i]^2)))nbdoc");
+    m.def("VectorInfNorm", static_cast<double (*)(const math_Vector &)>(&MathUtils::VectorInfNorm), nb::arg("theVec"), R"nbdoc(Compute infinity norm (maximum absolute value) of a vector.
+@param theVec input vector
+@return max(|V[i]|))nbdoc");
+    m.def("IsXConverged", static_cast<bool (*)(double, double, double)>(&MathUtils::IsXConverged), nb::arg("theXOld"), nb::arg("theXNew"), nb::arg("theTolerance"), R"nbdoc(Check convergence based on relative change in X.
+Uses relative tolerance scaled by current value magnitude.
+@param theXOld previous X value
+@param theXNew current X value
+@param theTolerance relative tolerance
+@return true if converged)nbdoc");
+    m.def("IsFConverged", static_cast<bool (*)(double, double)>(&MathUtils::IsFConverged), nb::arg("theFValue"), nb::arg("theTolerance"), R"nbdoc(Check convergence based on absolute function value.
+@param theFValue function value f(x)
+@param theTolerance absolute tolerance
+@return true if |f(x)| < tolerance)nbdoc");
+    m.def("IsConverged", static_cast<bool (*)(double, double, double, const MathUtils::Config &)>(&MathUtils::IsConverged), nb::arg("theXOld"), nb::arg("theXNew"), nb::arg("theFValue"), nb::arg("theConfig"), R"nbdoc(Combined convergence test for scalar root finders.
+Checks both X convergence and function value convergence.
+@param theXOld previous X value
+@param theXNew current X value
+@param theFValue function value at theXNew
+@param theConfig solver configuration
+@return true if either criterion is satisfied)nbdoc");
+    m.def("IsMinConverged", static_cast<bool (*)(double, double, double, double, const MathUtils::Config &)>(&MathUtils::IsMinConverged), nb::arg("theXOld"), nb::arg("theXNew"), nb::arg("theFOld"), nb::arg("theFNew"), nb::arg("theConfig"), R"nbdoc(Convergence test for minimization (checks both X and F change).
+@param theXOld previous X value
+@param theXNew current X value
+@param theFOld previous function value
+@param theFNew current function value
+@param theConfig solver configuration
+@return true if converged)nbdoc");
+    m.def("IsVectorConverged", static_cast<bool (*)(const math_Vector &, const math_Vector &, double)>(&MathUtils::IsVectorConverged), nb::arg("theOld"), nb::arg("theNew"), nb::arg("theTolerance"), R"nbdoc(Convergence test for vector solvers using infinity norm.
+@param theOld previous solution vector
+@param theNew current solution vector
+@param theTolerance relative tolerance
+@return true if max|new_i - old_i| / max(1, |new_i|) < tolerance)nbdoc");
+    m.def("IsGradientConverged", static_cast<bool (*)(const math_Vector &, double)>(&MathUtils::IsGradientConverged), nb::arg("theGradient"), nb::arg("theTolerance"), R"nbdoc(Convergence test using gradient norm for minimization.
+@param theGradient gradient vector
+@param theTolerance tolerance for gradient norm
+@return true if ||gradient|| < tolerance)nbdoc");
+    m.def("InfinityNorm", static_cast<double (*)(const math_Vector &)>(&MathUtils::InfinityNorm), nb::arg("theVector"), R"nbdoc(Compute infinity norm of a vector.
+@param theVector input vector
+@return max|v_i|)nbdoc");
+    m.def("EuclideanNorm", static_cast<double (*)(const math_Vector &)>(&MathUtils::EuclideanNorm), nb::arg("theVector"), R"nbdoc(Compute Euclidean (L2) norm of a vector.
+@param theVector input vector
+@return sqrt(sum(v_i^2)))nbdoc");
+    m.def("DepressCubic", [](double theB, double theC, double theD) { double theP{}; double theQ{}; double theShift{}; MathUtils::DepressCubic(theB, theC, theD, theP, theQ, theShift); return std::make_tuple(theP, theQ, theShift); }, nb::arg("theB"), nb::arg("theC"), nb::arg("theD"), R"nbdoc(Compute depressed cubic coefficients.
+Transforms x^3 + bx^2 + cx + d to t^3 + pt + q via x = t - b/3.
+@param theB coefficient of x^2 (after dividing by leading coeff)
+@param theC coefficient of x
+@param theD constant term
+@param[out] theP coefficient of t in depressed form
+@param[out] theQ constant term in depressed form
+@param[out] theShift substitution shift (b/3))nbdoc");
+    m.def("DepressQuartic", [](double theB, double theC, double theD, double theE) { double theP{}; double theQ{}; double theR{}; double theShift{}; MathUtils::DepressQuartic(theB, theC, theD, theE, theP, theQ, theR, theShift); return std::make_tuple(theP, theQ, theR, theShift); }, nb::arg("theB"), nb::arg("theC"), nb::arg("theD"), nb::arg("theE"), R"nbdoc(Compute depressed quartic coefficients.
+Transforms x^4 + bx^3 + cx^2 + dx + e to t^4 + pt^2 + qt + r via x = t - b/4.
+@param theB coefficient of x^3 (after dividing by leading coeff)
+@param theC coefficient of x^2
+@param theD coefficient of x
+@param theE constant term
+@param[out] theP coefficient of t^2 in depressed form
+@param[out] theQ coefficient of t in depressed form
+@param[out] theR constant term in depressed form
+@param[out] theShift substitution shift (b/4))nbdoc");
+    m.def("GetGaussPointsAndWeights", static_cast<bool (*)(int, math_Vector &, math_Vector &)>(&MathUtils::GetGaussPointsAndWeights), nb::arg("theOrder"), nb::arg("thePoints"), nb::arg("theWeights"), R"nbdoc(Get ordered Gauss-Legendre points and weights for given order.
+Points are returned in ascending order on [-1, 1].
+@param theOrder number of quadrature points (>= 1)
+@param[out] thePoints points array
+@param[out] theWeights weights array
+@return true if points/weights are available)nbdoc");
+    m.def("QuadraticInterpolation", static_cast<double (*)(double, double, double, double)>(&MathUtils::QuadraticInterpolation), nb::arg("thePhi0"), nb::arg("thePhi0Prime"), nb::arg("theAlpha1"), nb::arg("thePhi1"), R"nbdoc(Quadratic interpolation step for line search.
+Given phi(0), phi'(0), and phi(alpha1), finds minimum of quadratic fit.
+
+@param thePhi0 function value at 0
+@param thePhi0Prime directional derivative at 0
+@param theAlpha1 current step size
+@param thePhi1 function value at alpha1
+@return interpolated step size)nbdoc");
+    m.def("GetKronrodPointsAndWeights", static_cast<bool (*)(int, math_Vector &, math_Vector &)>(&MathUtils::GetKronrodPointsAndWeights), nb::arg("theNbKronrod"), nb::arg("thePoints"), nb::arg("theWeights"), R"nbdoc(Get Gauss-Kronrod points and weights.
+@param theNbKronrod number of Kronrod points (should be 2n+1)
+@param thePoints output vector for points
+@param theWeights output vector for weights
+@return true if successful)nbdoc");
+    m.def("GetOrderedGaussPointsAndWeights", static_cast<bool (*)(int, math_Vector &, math_Vector &)>(&MathUtils::GetOrderedGaussPointsAndWeights), nb::arg("theNbGauss"), nb::arg("thePoints"), nb::arg("theWeights"), R"nbdoc(Get ordered Gauss points and weights.
+@param theNbGauss number of Gauss points
+@param thePoints output vector for points
+@param theWeights output vector for weights
+@return true if successful)nbdoc");
 }

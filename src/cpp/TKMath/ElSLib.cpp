@@ -38,8 +38,8 @@ void nanoocp_templates_ElSLib(nb::module_ &m) {
 }
 
 void nanoocp_define_ElSLib(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<ElSLib>(nb::borrow<nb::class_<ElSLib>>(m.attr("ElSLib")));
     nb::borrow<nb::class_<ElSLib>>(m.attr("ElSLib"))
-        .def(nb::init<>())
         .def_static("Value", static_cast<gp_Pnt (*)(const double, const double, const gp_Pln &)>(&ElSLib::Value), nb::arg("U"), nb::arg("V"), nb::arg("Pl"), R"nbdoc(For elementary surfaces from the gp package (planes,
 cones, cylinders, spheres and tori), computes the point
 of parameters (U, V).)nbdoc")

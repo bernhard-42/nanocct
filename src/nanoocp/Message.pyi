@@ -443,6 +443,36 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
     def __init__(self, thePrinter: Message_Printer) -> None:
         """Create messenger with single printer"""
 
+    class StreamBuffer:
+        """
+        Auxiliary class wrapping std::stringstream thus allowing constructing
+        message via stream interface, and putting result into its creator
+        Message_Messenger within destructor.
+
+        It is intended to be used either as temporary object or as local
+        variable, note that content will be lost if it is copied.
+        """
+
+        def __init__(self, theOther: Message_Messenger.StreamBuffer) -> None:
+            """
+            Formal copy constructor.
+
+            Since buffer is intended for use as temporary object or local
+            variable, copy (or move) is needed only formally to be able to
+            return the new instance from relevant creation method.
+            In practice it should never be called because modern compilers
+            create such instances in place.
+            However note that if this constructor is called, the buffer
+            content (string) will not be copied (move is not supported for
+            std::stringstream class on old compilers such as gcc 4.4, msvc 9).
+            """
+
+        def Flush(self, doForce: bool = False) -> None:
+            """Flush collected string to messenger"""
+
+        def Messenger(self) -> Message_Messenger:
+            """Access to the messenger"""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -472,10 +502,10 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         Returns number of removed printers.
         """
 
-    def Printers(self) -> nanoocp.NCollection.NCollection_Sequence__Handle_Message_Printer:
+    def Printers(self) -> nanoocp.NCollection.NCollection_Sequence[nanoocp.Message.Message_Printer]:
         """Returns current sequence of printers"""
 
-    def ChangePrinters(self) -> nanoocp.NCollection.NCollection_Sequence__Handle_Message_Printer:
+    def ChangePrinters(self) -> nanoocp.NCollection.NCollection_Sequence[nanoocp.Message.Message_Printer]:
         """
         Returns sequence of printers
         The sequence can be modified.
@@ -496,7 +526,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
     def Send(self, theString: nanoocp.TCollection.TCollection_ExtendedString, theGravity: Message_Gravity = Message_Gravity.Message_Warning) -> None: ...
 
     @overload
-    def Send(self, theGravity: Message_Gravity) -> "Message_Messenger::StreamBuffer":
+    def Send(self, theGravity: Message_Gravity) -> Message_Messenger.StreamBuffer:
         """Create string buffer for message of specified type"""
 
     @overload
@@ -504,7 +534,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """See above"""
 
     @overload
-    def SendFail(self) -> "Message_Messenger::StreamBuffer":
+    def SendFail(self) -> Message_Messenger.StreamBuffer:
         """Create string buffer for sending Fail message"""
 
     @overload
@@ -512,7 +542,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """Short-cut to Send (theMessage, Message_Fail)"""
 
     @overload
-    def SendAlarm(self) -> "Message_Messenger::StreamBuffer":
+    def SendAlarm(self) -> Message_Messenger.StreamBuffer:
         """Create string buffer for sending Alarm message"""
 
     @overload
@@ -520,7 +550,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """Short-cut to Send (theMessage, Message_Alarm)"""
 
     @overload
-    def SendWarning(self) -> "Message_Messenger::StreamBuffer":
+    def SendWarning(self) -> Message_Messenger.StreamBuffer:
         """Create string buffer for sending Warning message"""
 
     @overload
@@ -528,7 +558,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """Short-cut to Send (theMessage, Message_Warning)"""
 
     @overload
-    def SendInfo(self) -> "Message_Messenger::StreamBuffer":
+    def SendInfo(self) -> Message_Messenger.StreamBuffer:
         """Create string buffer for sending Info message"""
 
     @overload
@@ -536,7 +566,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """Short-cut to Send (theMessage, Message_Info)"""
 
     @overload
-    def SendTrace(self) -> "Message_Messenger::StreamBuffer":
+    def SendTrace(self) -> Message_Messenger.StreamBuffer:
         """Create string buffer for sending Trace message"""
 
     @overload
@@ -571,7 +601,7 @@ class Message:
 
     @overload
     @staticmethod
-    def Send(theGravity: Message_Gravity) -> "Message_Messenger::StreamBuffer":
+    def Send(theGravity: Message_Gravity) -> Message_Messenger.StreamBuffer:
         """@name Short-cuts to DefaultMessenger"""
 
     @overload
@@ -580,7 +610,7 @@ class Message:
 
     @overload
     @staticmethod
-    def SendFail() -> "Message_Messenger::StreamBuffer": ...
+    def SendFail() -> Message_Messenger.StreamBuffer: ...
 
     @overload
     @staticmethod
@@ -588,7 +618,7 @@ class Message:
 
     @overload
     @staticmethod
-    def SendAlarm() -> "Message_Messenger::StreamBuffer": ...
+    def SendAlarm() -> Message_Messenger.StreamBuffer: ...
 
     @overload
     @staticmethod
@@ -596,7 +626,7 @@ class Message:
 
     @overload
     @staticmethod
-    def SendWarning() -> "Message_Messenger::StreamBuffer": ...
+    def SendWarning() -> Message_Messenger.StreamBuffer: ...
 
     @overload
     @staticmethod
@@ -604,7 +634,7 @@ class Message:
 
     @overload
     @staticmethod
-    def SendInfo() -> "Message_Messenger::StreamBuffer": ...
+    def SendInfo() -> Message_Messenger.StreamBuffer: ...
 
     @overload
     @staticmethod
@@ -612,7 +642,7 @@ class Message:
 
     @overload
     @staticmethod
-    def SendTrace() -> "Message_Messenger::StreamBuffer": ...
+    def SendTrace() -> Message_Messenger.StreamBuffer: ...
 
     @overload
     @staticmethod
@@ -1156,7 +1186,7 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
         Null handle if no such status or no numbers associated with it
         """
 
-    def GetMessageStrings(self, theStatus: Message_Status) -> nanoocp.NCollection.NCollection_HSequence__Handle_TCollection_HExtendedString:
+    def GetMessageStrings(self, theStatus: Message_Status) -> nanoocp.NCollection.NCollection_HSequence[nanoocp.TCollection.TCollection_HExtendedString]:
         """
         Return the strings associated with the indicated status;
         Null handle if no such status or no strings associated with it
@@ -1172,7 +1202,7 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
 
     @overload
     @staticmethod
-    def PrepareReport(theReportSeq: nanoocp.NCollection.NCollection_Sequence__Handle_TCollection_HExtendedString, theMaxCount: int) -> nanoocp.TCollection.TCollection_ExtendedString:
+    def PrepareReport(theReportSeq: nanoocp.NCollection.NCollection_Sequence[nanoocp.TCollection.TCollection_HExtendedString], theMaxCount: int) -> nanoocp.TCollection.TCollection_ExtendedString:
         """
         Prepares a string containing a list of names contained
         in theReportSeq sequence, but not more than theMaxCount
@@ -1360,7 +1390,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
-    def Alerts(self, theGravity: Message_Gravity) -> nanoocp.NCollection.NCollection_List__Handle_Message_Alert:
+    def Alerts(self, theGravity: Message_Gravity) -> nanoocp.NCollection.NCollection_List[nanoocp.Message.Message_Alert]:
         """Returns list of collected alerts with specified gravity"""
 
     def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert) -> bool:
@@ -2099,7 +2129,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         This method is thread-safe, i.e. alerts can be added from parallel threads safely.
         """
 
-    def GetAlerts(self, theGravity: Message_Gravity) -> nanoocp.NCollection.NCollection_List__Handle_Message_Alert:
+    def GetAlerts(self, theGravity: Message_Gravity) -> nanoocp.NCollection.NCollection_List[nanoocp.Message.Message_Alert]:
         """Returns list of collected alerts with specified gravity"""
 
     @overload
@@ -2154,7 +2184,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
     def Clear(self, theType: nanoocp.Standard.Standard_Type) -> None:
         """Clears collected alerts with specified type"""
 
-    def ActiveMetrics(self) -> nanoocp.NCollection.NCollection_IndexedMap__Message_MetricType:
+    def ActiveMetrics(self) -> nanoocp.NCollection.NCollection_IndexedMap[nanoocp.Message.Message_MetricType]:
         """Returns computed metrics when alerts are performed"""
 
     def SetActiveMetric(self, theMetricType: Message_MetricType, theActivate: bool) -> None:
@@ -2209,5 +2239,6 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection
-Message_ListOfAlert = nanoocp.NCollection.NCollection_List__Handle_Message_Alert
-Message_SequenceOfPrinters = nanoocp.NCollection.NCollection_Sequence__Handle_Message_Printer
+import nanoocp.Message
+Message_ListOfAlert = nanoocp.NCollection.NCollection_List[nanoocp.Message.Message_Alert]
+Message_SequenceOfPrinters = nanoocp.NCollection.NCollection_Sequence[nanoocp.Message.Message_Printer]

@@ -187,7 +187,7 @@ class Resource_Manager(nanoocp.Standard.Standard_Transient):
         or file doesn't exist returns empty string.
         """
 
-    def GetMap(self, theRefMap: bool = True) -> nanoocp.NCollection.NCollection_DataMap__TCollection_AsciiString__TCollection_AsciiString:
+    def GetMap(self, theRefMap: bool = True) -> nanoocp.NCollection.NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.TCollection.TCollection_AsciiString]:
         """Returns internal Ref or User map with parameters"""
 
     def IsInitialized(self) -> bool:

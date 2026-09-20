@@ -600,7 +600,11 @@ from typing import overload
 
 import nanoocp.BVH
 import nanoocp.Bnd
+import nanoocp.Geom2dGridEval
 import nanoocp.Message
+from nanoocp.NCollection import (
+    NCollection_Primes as NCollection_Primes
+)
 import nanoocp.Poly
 import nanoocp.Standard
 import nanoocp.Storage
@@ -666,6 +670,18 @@ class NCollection_BaseMap:
     IndexedDataMap
     Provides utilitites for managing the buckets.
     """
+
+    class Iterator:
+        """Memory allocation"""
+
+        def Initialize(self, theMap: NCollection_BaseMap) -> None:
+            """Initialize"""
+
+        def Reset(self) -> None:
+            """Reset"""
+
+        def IsEqual(self, theOther: NCollection_BaseMap.Iterator) -> bool:
+            """Performs comparison of two iterators."""
 
     def NbBuckets(self) -> int:
         """NbBuckets"""
@@ -867,6 +883,23 @@ class NCollection_BaseSequence:
     an indexed bidirectional list of NCollection_SeqNode's.
     """
 
+    class Iterator:
+        """Memory allocation"""
+
+        @overload
+        def __init__(self) -> None:
+            """Empty constructor"""
+
+        @overload
+        def __init__(self, theSeq: NCollection_BaseSequence, isStart: bool) -> None:
+            """Constructor with initialisation"""
+
+        def Init(self, theSeq: NCollection_BaseSequence, isStart: bool = True) -> None:
+            """Initialisation"""
+
+        def Previous(self) -> None:
+            """Switch to previous element; note that it will reset"""
+
     def IsEmpty(self) -> bool: ...
 
     def Length(self) -> int:
@@ -929,6 +962,38 @@ class NCollection_AlignedAllocator(NCollection_BaseAllocator):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
 class NCollection_BaseList:
+    class Iterator:
+        """Memory allocation"""
+
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theList: NCollection_BaseList) -> None: ...
+
+        def Init(self, theList: NCollection_BaseList) -> None: ...
+
+        def Initialize(self, theList: NCollection_BaseList) -> None: ...
+
+        def More(self) -> bool: ...
+
+        def __eq__(self, theIt: NCollection_BaseList.Iterator) -> bool: ...
+
+        def IsEqual(self, theOther: NCollection_BaseList.Iterator) -> bool:
+            """Performs comparison of two iterators"""
+
+        @property
+        def myCurrent(self) -> NCollection_ListNode: ...
+
+        @myCurrent.setter
+        def myCurrent(self, arg: NCollection_ListNode, /) -> None: ...
+
+        @property
+        def myPrevious(self) -> NCollection_ListNode: ...
+
+        @myPrevious.setter
+        def myPrevious(self, arg: NCollection_ListNode, /) -> None: ...
+
     def Extent(self) -> int: ...
 
     def Length(self) -> int:
@@ -1028,6 +1093,26 @@ class NCollection_IncAllocator(NCollection_BaseAllocator):
 
         Max = 4
 
+    class IBlock:
+        """
+        Forward list to keep multi-time allocated pointers.
+        On Reset operation objects will be reused.
+        """
+
+        @property
+        def NextBlock(self) -> NCollection_IncAllocator.IBlock:
+            """Pointer to next sorted block"""
+
+        @NextBlock.setter
+        def NextBlock(self, arg: NCollection_IncAllocator.IBlock, /) -> None: ...
+
+        @property
+        def NextOrderedBlock(self) -> NCollection_IncAllocator.IBlock:
+            """Pointer to next ordered block"""
+
+        @NextOrderedBlock.setter
+        def NextOrderedBlock(self, arg: NCollection_IncAllocator.IBlock, /) -> None: ...
+
     def SetThreadSafe(self, theIsThreadSafe: bool = True) -> None:
         """
         Setup mutex for thread-safe allocations.
@@ -1084,6 +1169,21 @@ class NCollection_SparseArrayBase:
     are provided by the derived template class via function pointers
     passed as arguments to the protected methods.
     """
+
+    class Iterator:
+        """Iterator"""
+
+        def Restart(self) -> None:
+            """Restart iterations on the same array"""
+
+        def More(self) -> bool:
+            """Returns True if current item is available"""
+
+        def Next(self) -> None:
+            """Advances to the next item"""
+
+        def Index(self) -> int:
+            """Returns current index"""
 
     def Size(self) -> int:
         """Returns number of currently contained items"""
@@ -1488,280 +1588,8 @@ class NCollection_HArray1__float(NCollection_Array1__float):
 
 class NCollection_HArray1__gp_Pnt2d(NCollection_HArray1[nanoocp.gp.gp_Pnt2d]): ...
 class NCollection_HArray1__gp_Pnt(NCollection_HArray1[nanoocp.gp.gp_Pnt]): ...
-class NCollection_List__Poly_CoherentTriangulation_TwoIntegers:
-    """
-    Purpose:      Simple list to link  items together keeping the first
-    and the last one.
-    Inherits BaseList, adding the data item to each node.
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theAllocator: NCollection_BaseAllocator | None) -> None: ...
-
-    @overload
-    def __init__(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None:
-        """Empty constructor."""
-
-    class Iterator:
-        """
-        Purpose:     This Iterator class iterates on BaseList of TListNode and is
-        instantiated in List/Set/Queue/Stack
-        Remark:      TListIterator is internal class
-        """
-
-        @overload
-        def __init__(self) -> None: ...
-
-        @overload
-        def __init__(self, theList: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None:
-            """Empty constructor - for later Init"""
-
-        def Initialize(self, theList: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None: ...
-
-        def More(self) -> bool:
-            """Check end"""
-
-        def Next(self) -> None:
-            """Make step"""
-
-        def Value(self) -> "Poly_CoherentTriangulation::TwoIntegers":
-            """Constant Value access"""
-
-        def ChangeValue(self) -> "Poly_CoherentTriangulation::TwoIntegers":
-            """Non-const Value access"""
-
-    def Extent(self) -> int: ...
-
-    def Length(self) -> int:
-        """
-        Length - number of nodes (legacy int-returning API, synonym of Extent()).
-        """
-
-    def Size(self) -> int:
-        """Size - number of nodes."""
-
-    def IsEmpty(self) -> bool: ...
-
-    def Allocator(self) -> NCollection_BaseAllocator:
-        """Returns attached allocator"""
-
-    def Assign(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> NCollection_List__Poly_CoherentTriangulation_TwoIntegers:
-        """
-        Replace this list by the items of another list (theOther parameter).
-        This method does not change the internal allocator.
-        """
-
-    def Clear(self, theAllocator: NCollection_BaseAllocator | None = None) -> None:
-        """Clear this list"""
-
-    def First(self) -> "Poly_CoherentTriangulation::TwoIntegers":
-        """First item"""
-
-    def Last(self) -> "Poly_CoherentTriangulation::TwoIntegers":
-        """Last item"""
-
-    @overload
-    def Append(self, theItem: "Poly_CoherentTriangulation::TwoIntegers", theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None: ...
-
-    @overload
-    def Append(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None: ...
-
-    @overload
-    def Append(self, theItem: "Poly_CoherentTriangulation::TwoIntegers") -> "Poly_CoherentTriangulation::TwoIntegers":
-        """Append one item at the end"""
-
-    @overload
-    def Prepend(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None: ...
-
-    @overload
-    def Prepend(self, theItem: "Poly_CoherentTriangulation::TwoIntegers") -> "Poly_CoherentTriangulation::TwoIntegers":
-        """Prepend one item at the beginning"""
-
-    def RemoveFirst(self) -> None:
-        """RemoveFirst item"""
-
-    def Remove(self, theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None:
-        """
-        Remove item pointed by iterator theIter;
-        theIter is then set to the next item
-        """
-
-    @overload
-    def InsertBefore(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers, theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None: ...
-
-    @overload
-    def InsertBefore(self, theItem: "Poly_CoherentTriangulation::TwoIntegers", theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> "Poly_CoherentTriangulation::TwoIntegers":
-        """InsertBefore"""
-
-    @overload
-    def InsertAfter(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers, theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> None: ...
-
-    @overload
-    def InsertAfter(self, theItem: "Poly_CoherentTriangulation::TwoIntegers", theIter: NCollection_List__Poly_CoherentTriangulation_TwoIntegers.Iterator) -> "Poly_CoherentTriangulation::TwoIntegers":
-        """InsertAfter"""
-
-    def Reverse(self) -> None:
-        """Reverse the list"""
-
-    def Exchange(self, theOther: NCollection_List__Poly_CoherentTriangulation_TwoIntegers) -> None:
-        """
-        Exchange the content of two lists without re-allocations.
-        Swaps all internal state including allocators, ensuring correct
-        deallocation. Existing iterators remain valid but will point to
-        the other list's elements.
-        """
-
-    def __len__(self) -> int:
-        """Python addition: alias to Extent."""
-
-    def __iter__(self) -> Iterator["Poly_CoherentTriangulation::TwoIntegers"]:
-        """Python addition: iterates over the values."""
-
-class NCollection_List__Poly_MakeLoops_Link:
-    """
-    Purpose:      Simple list to link  items together keeping the first
-    and the last one.
-    Inherits BaseList, adding the data item to each node.
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theAllocator: NCollection_BaseAllocator | None) -> None: ...
-
-    @overload
-    def __init__(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None:
-        """Empty constructor."""
-
-    class Iterator:
-        """
-        Purpose:     This Iterator class iterates on BaseList of TListNode and is
-        instantiated in List/Set/Queue/Stack
-        Remark:      TListIterator is internal class
-        """
-
-        @overload
-        def __init__(self) -> None: ...
-
-        @overload
-        def __init__(self, theList: NCollection_List__Poly_MakeLoops_Link) -> None:
-            """Empty constructor - for later Init"""
-
-        def Initialize(self, theList: NCollection_List__Poly_MakeLoops_Link) -> None: ...
-
-        def More(self) -> bool:
-            """Check end"""
-
-        def Next(self) -> None:
-            """Make step"""
-
-        def Value(self) -> "Poly_MakeLoops::Link":
-            """Constant Value access"""
-
-        def ChangeValue(self) -> "Poly_MakeLoops::Link":
-            """Non-const Value access"""
-
-    def Extent(self) -> int: ...
-
-    def Length(self) -> int:
-        """
-        Length - number of nodes (legacy int-returning API, synonym of Extent()).
-        """
-
-    def Size(self) -> int:
-        """Size - number of nodes."""
-
-    def IsEmpty(self) -> bool: ...
-
-    def Allocator(self) -> NCollection_BaseAllocator:
-        """Returns attached allocator"""
-
-    def Assign(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> NCollection_List__Poly_MakeLoops_Link:
-        """
-        Replace this list by the items of another list (theOther parameter).
-        This method does not change the internal allocator.
-        """
-
-    def Clear(self, theAllocator: NCollection_BaseAllocator | None = None) -> None:
-        """Clear this list"""
-
-    def First(self) -> "Poly_MakeLoops::Link":
-        """First item"""
-
-    def Last(self) -> "Poly_MakeLoops::Link":
-        """Last item"""
-
-    @overload
-    def Append(self, theItem: "Poly_MakeLoops::Link", theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
-
-    @overload
-    def Append(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None: ...
-
-    @overload
-    def Append(self, theItem: "Poly_MakeLoops::Link") -> "Poly_MakeLoops::Link":
-        """Append one item at the end"""
-
-    @overload
-    def Prepend(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None: ...
-
-    @overload
-    def Prepend(self, theItem: "Poly_MakeLoops::Link") -> "Poly_MakeLoops::Link":
-        """Prepend one item at the beginning"""
-
-    def RemoveFirst(self) -> None:
-        """RemoveFirst item"""
-
-    @overload
-    def Remove(self, theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
-
-    @overload
-    def Remove(self, theObject: "Poly_MakeLoops::Link") -> bool:
-        """
-        Remove item pointed by iterator theIter;
-        theIter is then set to the next item
-        """
-
-    @overload
-    def InsertBefore(self, theOther: NCollection_List__Poly_MakeLoops_Link, theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
-
-    @overload
-    def InsertBefore(self, theItem: "Poly_MakeLoops::Link", theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> "Poly_MakeLoops::Link":
-        """InsertBefore"""
-
-    @overload
-    def InsertAfter(self, theOther: NCollection_List__Poly_MakeLoops_Link, theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> None: ...
-
-    @overload
-    def InsertAfter(self, theItem: "Poly_MakeLoops::Link", theIter: NCollection_List__Poly_MakeLoops_Link.Iterator) -> "Poly_MakeLoops::Link":
-        """InsertAfter"""
-
-    def Reverse(self) -> None:
-        """Reverse the list"""
-
-    def Exchange(self, theOther: NCollection_List__Poly_MakeLoops_Link) -> None:
-        """
-        Exchange the content of two lists without re-allocations.
-        Swaps all internal state including allocators, ensuring correct
-        deallocation. Existing iterators remain valid but will point to
-        the other list's elements.
-        """
-
-    def __len__(self) -> int:
-        """Python addition: alias to Extent."""
-
-    def __iter__(self) -> Iterator["Poly_MakeLoops::Link"]:
-        """Python addition: iterates over the values."""
-
-    def Contains(self, theObject: "Poly_MakeLoops::Link") -> bool:
-        """Return true if object is stored in the list."""
-
-    def __contains__(self, theObject: "Poly_MakeLoops::Link") -> bool:
-        """Python addition: alias to Contains."""
-
+class NCollection_List__Poly_CoherentTriangulation_TwoIntegers(NCollection_List[nanoocp.Poly.Poly_CoherentTriangulation.TwoIntegers]): ...
+class NCollection_List__Poly_MakeLoops_Link(NCollection_List[nanoocp.Poly.Poly_MakeLoops.Link]): ...
 class NCollection_List__Handle_Poly_Triangulation(NCollection_List[nanoocp.Poly.Poly_Triangulation]): ...
 class NCollection_Array1__gp_Vec(NCollection_Array1[nanoocp.gp.gp_Vec]): ...
 class NCollection_Array2__gp_Vec(NCollection_Array2[nanoocp.gp.gp_Vec]): ...
@@ -1772,3 +1600,7 @@ class NCollection_HArray2__int(NCollection_HArray2[int]): ...
 class NCollection_Array1__Bnd_Box(NCollection_Array1[nanoocp.Bnd.Bnd_Box]): ...
 class NCollection_HArray1__Bnd_Box(NCollection_HArray1[nanoocp.Bnd.Bnd_Box]): ...
 class NCollection_List__Bnd_Range(NCollection_List[nanoocp.Bnd.Bnd_Range]): ...
+class NCollection_Array1__Geom2dGridEval_CurveD1(NCollection_Array1[nanoocp.Geom2dGridEval.CurveD1]): ...
+class NCollection_Array1__Geom2dGridEval_CurveD2(NCollection_Array1[nanoocp.Geom2dGridEval.CurveD2]): ...
+class NCollection_Array1__Geom2dGridEval_CurveD3(NCollection_Array1[nanoocp.Geom2dGridEval.CurveD3]): ...
+class NCollection_Array1__gp_Vec2d(NCollection_Array1[nanoocp.gp.gp_Vec2d]): ...

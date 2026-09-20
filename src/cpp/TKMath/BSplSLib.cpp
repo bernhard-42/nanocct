@@ -84,8 +84,8 @@ void nanoocp_define_BSplSLib(nb::module_ &m) {
     nb::borrow<nb::class_<BSplSLib_EvaluatorFunction>>(m.attr("BSplSLib_EvaluatorFunction"))
         .def("Evaluate", [](const BSplSLib_EvaluatorFunction &self, const int theDerivativeRequest, const double theUParameter, const double theVParameter) { double theResult{}; int theErrorCode{}; self.Evaluate(theDerivativeRequest, theUParameter, theVParameter, theResult, theErrorCode); return std::make_tuple(theResult, theErrorCode); }, nb::arg("theDerivativeRequest"), nb::arg("theUParameter"), nb::arg("theVParameter"), R"nbdoc(Function evaluation method to be defined by descendant)nbdoc")
         .def("__call__", [](const BSplSLib_EvaluatorFunction &self, const int theDerivativeRequest, const double theUParameter, const double theVParameter) { double theResult{}; int theErrorCode{}; self.operator()(theDerivativeRequest, theUParameter, theVParameter, theResult, theErrorCode); return std::make_tuple(theResult, theErrorCode); }, nb::arg("theDerivativeRequest"), nb::arg("theUParameter"), nb::arg("theVParameter"), R"nbdoc(Shortcut for function-call style usage)nbdoc", nb::is_operator());
+    nanoocp_implicit_default_ctor<BSplSLib>(nb::borrow<nb::class_<BSplSLib>>(m.attr("BSplSLib")));
     nb::borrow<nb::class_<BSplSLib>>(m.attr("BSplSLib"))
-        .def(nb::init<>())
         .def_static("RationalDerivative", [](const int UDeg, const int VDeg, const int N, const int M, const bool All) { double Ders{}; double RDers{}; BSplSLib::RationalDerivative(UDeg, VDeg, N, M, Ders, RDers, All); return std::make_tuple(Ders, RDers); }, nb::arg("UDeg"), nb::arg("VDeg"), nb::arg("N"), nb::arg("M"), nb::arg("All") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(this is a one dimensional function
 typedef  void (*EvaluatorFunction)  (
 int     // Derivative Request

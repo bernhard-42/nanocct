@@ -104,7 +104,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         """Copy constructor for triangulation."""
 
     @overload
-    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1__gp_Pnt, Triangles: nanoocp.NCollection.NCollection_Array1__Poly_Triangle) -> None:
+    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], Triangles: nanoocp.NCollection.NCollection_Array1[nanoocp.Poly.Poly_Triangle]) -> None:
         """
         Constructs a triangulation from a set of triangles. The
         triangulation is initialized with 3D points from Nodes and triangles
@@ -125,7 +125,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1__gp_Pnt, UVNodes: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, Triangles: nanoocp.NCollection.NCollection_Array1__Poly_Triangle) -> None:
+    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], UVNodes: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], Triangles: nanoocp.NCollection.NCollection_Array1[nanoocp.Poly.Poly_Triangle]) -> None:
         """
         Constructs a triangulation from a set of triangles. The
         triangulation is initialized with 3D points from Nodes, 2D points from
@@ -347,35 +347,35 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
     def ComputeNormals(self) -> None:
         """Compute smooth normals by averaging triangle normals."""
 
-    def MapNodeArray(self) -> nanoocp.NCollection.NCollection_HArray1__gp_Pnt:
+    def MapNodeArray(self) -> nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_Pnt]:
         """
         Returns the table of 3D points for read-only access or NULL if nodes array is undefined.
         Poly_Triangulation::Node() should be used instead when possible.
         Returned object should not be used after Poly_Triangulation destruction.
         """
 
-    def MapTriangleArray(self) -> nanoocp.NCollection.NCollection_HArray1__Poly_Triangle:
+    def MapTriangleArray(self) -> nanoocp.NCollection.NCollection_HArray1[nanoocp.Poly.Poly_Triangle]:
         """
         Returns the triangle array for read-only access or NULL if triangle array is undefined.
         Poly_Triangulation::Triangle() should be used instead when possible.
         Returned object should not be used after Poly_Triangulation destruction.
         """
 
-    def MapUVNodeArray(self) -> nanoocp.NCollection.NCollection_HArray1__gp_Pnt2d:
+    def MapUVNodeArray(self) -> nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_Pnt2d]:
         """
         Returns the table of 2D nodes for read-only access or NULL if UV nodes array is undefined.
         Poly_Triangulation::UVNode() should be used instead when possible.
         Returned object should not be used after Poly_Triangulation destruction.
         """
 
-    def MapNormalArray(self) -> nanoocp.NCollection.NCollection_HArray1__float:
+    def MapNormalArray(self) -> nanoocp.NCollection.NCollection_HArray1[float]:
         """
         Returns the table of per-vertex normals for read-only access or NULL if normals array is
         undefined. Poly_Triangulation::Normal() should be used instead when possible. Returned object
         should not be used after Poly_Triangulation destruction.
         """
 
-    def InternalTriangles(self) -> nanoocp.NCollection.NCollection_Array1__Poly_Triangle:
+    def InternalTriangles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.Poly.Poly_Triangle]:
         """
         Returns an internal array of triangles.
         Triangle()/SetTriangle() should be used instead in portable code.
@@ -393,7 +393,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         UBNode()/SetUVNode() should be used instead in portable code.
         """
 
-    def InternalNormals(self) -> nanoocp.NCollection.NCollection_Array1__NCollection_Vec3__float:
+    def InternalNormals(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.BVH.BVH_Vec3f]:
         """
         Return an internal array of normals.
         Normal()/SetNormal() should be used instead in portable code.
@@ -447,7 +447,7 @@ class Poly:
     def __init__(self) -> None: ...
 
     @staticmethod
-    def Catenate(lstTri: nanoocp.NCollection.NCollection_List__Handle_Poly_Triangulation) -> Poly_Triangulation:
+    def Catenate(lstTri: nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_Triangulation]) -> Poly_Triangulation:
         """
         Computes and stores the link from nodes to
         triangles and from triangles to neighbouring
@@ -577,6 +577,39 @@ class Poly_CoherentTriPtr:
     round double-linked list of these nodes.
     """
 
+    class Iterator:
+        """
+        Iterator class for this list of triangles. Because the list is round,
+        an iteration can be started from any member and it finishes before taking
+        this member again. The iteration sense is always forward (Next).
+        """
+
+        @overload
+        def __init__(self) -> None:
+            """Empty constructor"""
+
+        @overload
+        def __init__(self, thePtr: Poly_CoherentTriPtr) -> None:
+            """Constructor"""
+
+        def First(self) -> Poly_CoherentTriangle:
+            """Query the triangle that started the current iteration."""
+
+        def More(self) -> bool:
+            """Query if there is available triangle pointer on this iteration"""
+
+        def Next(self) -> None:
+            """Go to the next iteration."""
+
+        def Value(self) -> Poly_CoherentTriangle:
+            """Get the current iterated triangle"""
+
+        def ChangeValue(self) -> Poly_CoherentTriangle:
+            """Get the current iterated triangle (mutable)"""
+
+        def PtrValue(self) -> Poly_CoherentTriPtr:
+            """Get the current iterated pointer to triangle"""
+
     def GetTriangle(self) -> Poly_CoherentTriangle:
         """Query the stored pointer to Triangle."""
 
@@ -680,7 +713,7 @@ class Poly_CoherentNode(nanoocp.gp.gp_XYZ):
     def RemoveTriangle(self, theTri: Poly_CoherentTriangle, theA: nanoocp.NCollection.NCollection_BaseAllocator) -> bool:
         """Disconnect a triangle from this Node."""
 
-    def TriangleIterator(self) -> "Poly_CoherentTriPtr::Iterator":
+    def TriangleIterator(self) -> Poly_CoherentTriPtr.Iterator:
         """Create an iterator of incident triangles."""
 
 class Poly_CoherentTriangle:
@@ -857,10 +890,19 @@ class Poly_CoherentTriangulation(nanoocp.Standard.Standard_Transient):
         following this constructor if you need these links.
         """
 
+    class TwoIntegers:
+        """Couple of integer indices (used in RemoveDegenerated())."""
+
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, i0: int, i1: int) -> None: ...
+
     def GetTriangulation(self) -> Poly_Triangulation:
         """Create an instance of Poly_Triangulation from this object."""
 
-    def RemoveDegenerated(self, theTol: float, pLstRemovedNode: nanoocp.NCollection.NCollection_List__Poly_CoherentTriangulation_TwoIntegers = None) -> bool:
+    def RemoveDegenerated(self, theTol: float, pLstRemovedNode: nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_CoherentTriangulation.TwoIntegers] = None) -> bool:
         """
         Find and remove degenerated triangles in Triangulation.
         @param theTol
@@ -873,7 +915,7 @@ class Poly_CoherentTriangulation(nanoocp.Standard.Standard_Transient):
         the index of remaining node to which the mesh was reconnected.
         """
 
-    def GetFreeNodes(self, lstNodes: nanoocp.NCollection.NCollection_List__int) -> bool:
+    def GetFreeNodes(self, lstNodes: nanoocp.NCollection.NCollection_List[int]) -> bool:
         """
         Create a list of free nodes. These nodes may appear as a result of any
         custom mesh decimation or RemoveDegenerated() call. This analysis is
@@ -1138,26 +1180,102 @@ class Poly_MakeLoops:
 
         RC_Failure = 4
 
-    def Reset(self, theHelper: "Poly_MakeLoops::Helper", theAlloc: nanoocp.NCollection.NCollection_BaseAllocator = None) -> None:
+    class Link:
+        """The Link structure"""
+
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theNode1: int, theNode2: int) -> None: ...
+
+        def Reverse(self) -> None: ...
+
+        def IsReversed(self) -> bool: ...
+
+        def Nullify(self) -> None: ...
+
+        def IsNull(self) -> bool: ...
+
+        def __eq__(self, theOther: Poly_MakeLoops.Link) -> bool: ...
+
+        @property
+        def node1(self) -> int: ...
+
+        @node1.setter
+        def node1(self, arg: int, /) -> None: ...
+
+        @property
+        def node2(self) -> int: ...
+
+        @node2.setter
+        def node2(self, arg: int, /) -> None: ...
+
+        @property
+        def flags(self) -> int: ...
+
+        @flags.setter
+        def flags(self, arg: int, /) -> None: ...
+
+    class Hasher:
+        def __init__(self) -> None: ...
+
+        @overload
+        def __call__(self, theLink: Poly_MakeLoops.Link) -> int: ...
+
+        @overload
+        def __call__(self, theLink1: Poly_MakeLoops.Link, theLink2: Poly_MakeLoops.Link) -> bool: ...
+
+    class Helper:
+        """The abstract helper class"""
+
+        def GetAdjacentLinks(self, theNode: int) -> nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_MakeLoops.Link]:
+            """returns the links adjacent to the given node"""
+
+        def OnAddLink(self, arg0: int, arg1: Poly_MakeLoops.Link) -> None:
+            """hook function called from AddLink in _DEBUG mode"""
+
+    class HeapOfInteger:
+        """
+        This class implements a heap of integers. The most effective usage
+        of it is first to add there all items, and then get top item and remove
+        any items till it becomes empty.
+        """
+
+        def __init__(self, theNbPreAllocated: int = 1) -> None: ...
+
+        def Clear(self) -> None: ...
+
+        def Add(self, theValue: int) -> None: ...
+
+        def Top(self) -> int: ...
+
+        def Contains(self, theValue: int) -> bool: ...
+
+        def Remove(self, theValue: int) -> None: ...
+
+        def IsEmpty(self) -> bool: ...
+
+    def Reset(self, theHelper: Poly_MakeLoops.Helper, theAlloc: nanoocp.NCollection.NCollection_BaseAllocator = None) -> None:
         """It is to reset the algorithm to the initial state."""
 
-    def AddLink(self, theLink: "Poly_MakeLoops::Link") -> None:
+    def AddLink(self, theLink: Poly_MakeLoops.Link) -> None:
         """
         Adds a link to the set. theOrient defines which orientations of the link
         are allowed.
         """
 
-    def ReplaceLink(self, theLink: "Poly_MakeLoops::Link", theNewLink: "Poly_MakeLoops::Link") -> None:
+    def ReplaceLink(self, theLink: Poly_MakeLoops.Link, theNewLink: Poly_MakeLoops.Link) -> None:
         """Replace one link with another (e.g. to change order of nodes)"""
 
-    def SetLinkOrientation(self, theLink: "Poly_MakeLoops::Link", theOrient: Poly_MakeLoops.LinkFlag) -> Poly_MakeLoops.LinkFlag:
+    def SetLinkOrientation(self, theLink: Poly_MakeLoops.Link, theOrient: Poly_MakeLoops.LinkFlag) -> Poly_MakeLoops.LinkFlag:
         """
         Set a new value of orientation of a link already added earlier.
         It can be used with LF_None to exclude the link from consideration.
         Returns the old value of orientation.
         """
 
-    def FindLink(self, theLink: "Poly_MakeLoops::Link") -> "Poly_MakeLoops::Link":
+    def FindLink(self, theLink: Poly_MakeLoops.Link) -> Poly_MakeLoops.Link:
         """Find the link stored in algo by value"""
 
     def Perform(self) -> int:
@@ -1166,28 +1284,49 @@ class Poly_MakeLoops:
     def GetNbLoops(self) -> int:
         """Returns the number of loops in the result"""
 
-    def GetLoop(self, theIndex: int) -> nanoocp.NCollection.NCollection_List__Poly_MakeLoops_Link:
+    def GetLoop(self, theIndex: int) -> nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_MakeLoops.Link]:
         """Returns the loop of the given index"""
 
     def GetNbHanging(self) -> int:
         """Returns the number of detected hanging chains"""
 
-    def GetHangingLinks(self, theLinks: nanoocp.NCollection.NCollection_List__Poly_MakeLoops_Link) -> None:
+    def GetHangingLinks(self, theLinks: nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_MakeLoops.Link]) -> None:
         """Fills in the list of hanging links"""
 
 class Poly_MakeLoops3D(Poly_MakeLoops):
-    def __init__(self, theHelper: "Poly_MakeLoops3D::Helper", theAlloc: nanoocp.NCollection.NCollection_BaseAllocator) -> None:
+    def __init__(self, theHelper: Poly_MakeLoops3D.Helper, theAlloc: nanoocp.NCollection.NCollection_BaseAllocator) -> None:
         """
         Constructor. If helper is NULL then the algorithm will
         probably return a wrong result
         """
 
+    class Helper(Poly_MakeLoops.Helper):
+        """The abstract helper class"""
+
+        def GetFirstTangent(self, theLink: Poly_MakeLoops.Link, theDir: nanoocp.gp.gp_Dir) -> bool:
+            """returns the tangent vector at the first node of a link"""
+
+        def GetLastTangent(self, theLink: Poly_MakeLoops.Link, theDir: nanoocp.gp.gp_Dir) -> bool:
+            """returns the tangent vector at the last node of a link"""
+
+        def GetNormal(self, theNode: int, theDir: nanoocp.gp.gp_Dir) -> bool:
+            """returns the normal to the surface at a given node"""
+
 class Poly_MakeLoops2D(Poly_MakeLoops):
-    def __init__(self, theLeftWay: bool, theHelper: "Poly_MakeLoops2D::Helper", theAlloc: nanoocp.NCollection.NCollection_BaseAllocator) -> None:
+    def __init__(self, theLeftWay: bool, theHelper: Poly_MakeLoops2D.Helper, theAlloc: nanoocp.NCollection.NCollection_BaseAllocator) -> None:
         """
         Constructor. If helper is NULL then the algorithm will
         probably return a wrong result
         """
+
+    class Helper(Poly_MakeLoops.Helper):
+        """The abstract helper class"""
+
+        def GetFirstTangent(self, theLink: Poly_MakeLoops.Link, theDir: nanoocp.gp.gp_Dir2d) -> bool:
+            """returns the tangent vector at the first node of a link"""
+
+        def GetLastTangent(self, theLink: Poly_MakeLoops.Link, theDir: nanoocp.gp.gp_Dir2d) -> bool:
+            """returns the tangent vector at the last node of a link"""
 
 class Poly_MergeNodesTool(nanoocp.Standard.Standard_Transient):
     """
@@ -1344,7 +1483,7 @@ class Poly_Polygon2D(nanoocp.Standard.Standard_Transient):
         """Constructs a 2D polygon with specified number of nodes."""
 
     @overload
-    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d) -> None:
+    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]) -> None:
         """Constructs a 2D polygon defined by the table of points, <Nodes>."""
 
     def Copy(self) -> Poly_Polygon2D:
@@ -1386,10 +1525,10 @@ class Poly_Polygon2D(nanoocp.Standard.Standard_Transient):
         triangle, the function NbNodes returns 4.
         """
 
-    def Nodes(self) -> nanoocp.NCollection.NCollection_Array1__gp_Pnt2d:
+    def Nodes(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the table of nodes for this polygon."""
 
-    def ChangeNodes(self) -> nanoocp.NCollection.NCollection_Array1__gp_Pnt2d:
+    def ChangeNodes(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the table of nodes for this polygon."""
 
     @staticmethod
@@ -1410,7 +1549,7 @@ class Poly_Polygon3D(nanoocp.Standard.Standard_Transient):
     """
 
     @overload
-    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1__gp_Pnt) -> None:
+    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]) -> None:
         """Constructs a 3D polygon defined by the table of points, Nodes."""
 
     @overload
@@ -1418,7 +1557,7 @@ class Poly_Polygon3D(nanoocp.Standard.Standard_Transient):
         """Constructs a 3D polygon with specific number of nodes."""
 
     @overload
-    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1__gp_Pnt, Parameters: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], Parameters: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Constructs a 3D polygon defined by
         the table of points, Nodes, and the parallel table of
@@ -1451,10 +1590,10 @@ class Poly_Polygon3D(nanoocp.Standard.Standard_Transient):
         triangle the function NbNodes returns 4.
         """
 
-    def Nodes(self) -> nanoocp.NCollection.NCollection_Array1__gp_Pnt:
+    def Nodes(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]:
         """Returns the table of nodes for this polygon."""
 
-    def ChangeNodes(self) -> nanoocp.NCollection.NCollection_Array1__gp_Pnt:
+    def ChangeNodes(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]:
         """Returns the table of nodes for this polygon."""
 
     def HasParameters(self) -> bool:
@@ -1463,13 +1602,13 @@ class Poly_Polygon3D(nanoocp.Standard.Standard_Transient):
         HasParameters function checks if parameters are associated with the nodes of this polygon.
         """
 
-    def Parameters(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def Parameters(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         Returns true if parameters are associated with the nodes
         in this polygon.
         """
 
-    def ChangeParameters(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def ChangeParameters(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         Returns the table of the parameters associated with each node in this polygon.
         ChangeParameters function returns the array as shared.
@@ -1502,7 +1641,7 @@ class Poly_PolygonOnTriangulation(nanoocp.Standard.Standard_Transient):
     """
 
     @overload
-    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1__int) -> None:
+    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1[int]) -> None:
         """
         Constructs a 3D polygon on the triangulation of a shape,
         defined by the table of nodes, <Nodes>.
@@ -1515,7 +1654,7 @@ class Poly_PolygonOnTriangulation(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1__int, Parameters: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def __init__(self, Nodes: nanoocp.NCollection.NCollection_Array1[int], Parameters: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Constructs a 3D polygon on the triangulation of a shape, defined by:
         -   the table of nodes, Nodes, and the table of parameters, <Parameters>.
@@ -1563,7 +1702,7 @@ class Poly_PolygonOnTriangulation(nanoocp.Standard.Standard_Transient):
     def Node(self, theIndex: int) -> int:
         """Returns node at the given index."""
 
-    def ChangeNodeArray(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def ChangeNodeArray(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns mutable node-index array."""
 
     def SetNode(self, theIndex: int, theNode: int) -> None:
@@ -1580,23 +1719,23 @@ class Poly_PolygonOnTriangulation(nanoocp.Standard.Standard_Transient):
     def SetParameter(self, theIndex: int, theValue: float) -> None:
         """Sets parameter at the given index."""
 
-    def ChangeParameterArray(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def ChangeParameterArray(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns mutable parameter array."""
 
-    def SetParameters(self, theParameters: nanoocp.NCollection.NCollection_HArray1__double) -> None:
+    def SetParameters(self, theParameters: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
         """
         Sets the table of the parameters associated with each node in this polygon.
         Raises exception if array size doesn't much number of polygon nodes.
         """
 
-    def Nodes(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def Nodes(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """
         Returns the table of nodes for this polygon.
         A node value is an index in the table of nodes specific to an existing triangulation of a
         shape.
         """
 
-    def Parameters(self) -> nanoocp.NCollection.NCollection_HArray1__double:
+    def Parameters(self) -> nanoocp.NCollection.NCollection_HArray1[float]:
         """
         Returns the table of the parameters associated with each node in this polygon.
         Warning! Use the function HasParameters to check if parameters are associated with the nodes
@@ -1646,6 +1785,7 @@ class Poly_TriangulationParameters(nanoocp.Standard.Standard_Transient):
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection
-Poly_Array1OfTriangle = nanoocp.NCollection.NCollection_Array1__Poly_Triangle
-Poly_HArray1OfTriangle = nanoocp.NCollection.NCollection_HArray1__Poly_Triangle
-Poly_ListOfTriangulation = nanoocp.NCollection.NCollection_List__Handle_Poly_Triangulation
+import nanoocp.Poly
+Poly_Array1OfTriangle = nanoocp.NCollection.NCollection_Array1[nanoocp.Poly.Poly_Triangle]
+Poly_HArray1OfTriangle = nanoocp.NCollection.NCollection_HArray1[nanoocp.Poly.Poly_Triangle]
+Poly_ListOfTriangulation = nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_Triangulation]

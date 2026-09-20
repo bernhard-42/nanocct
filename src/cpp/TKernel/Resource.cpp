@@ -114,8 +114,8 @@ or file doesn't exist returns empty string.)nbdoc")
         .def("GetMap", static_cast<NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>> & (Resource_Manager::*)(bool)>(&Resource_Manager::GetMap), nb::rv_policy::reference_internal, nb::arg("theRefMap") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Returns internal Ref or User map with parameters)nbdoc")
         .def("IsInitialized", static_cast<bool (Resource_Manager::*)() const>(&Resource_Manager::IsInitialized), R"nbdoc(Returns true if Resource have been found)nbdoc");
     nb::implicitly_convertible<std::decay_t<const char *const>, Resource_Manager>();
+    nanoocp_implicit_default_ctor<Resource_Unicode>(nb::borrow<nb::class_<Resource_Unicode>>(m.attr("Resource_Unicode")));
     nb::borrow<nb::class_<Resource_Unicode>>(m.attr("Resource_Unicode"))
-        .def(nb::init<>())
         .def_static("ConvertSJISToUnicode", static_cast<void (*)(const char *const, TCollection_ExtendedString &)>(&Resource_Unicode::ConvertSJISToUnicode), nb::arg("fromstr"), nb::arg("tostr"), R"nbdoc(Converts non-ASCII CString <fromstr> in SJIS format
 to Unicode ExtendedString <tostr>.)nbdoc")
         .def_static("ConvertEUCToUnicode", static_cast<void (*)(const char *const, TCollection_ExtendedString &)>(&Resource_Unicode::ConvertEUCToUnicode), nb::arg("fromstr"), nb::arg("tostr"), R"nbdoc(Converts non-ASCII CString <fromstr> in EUC format

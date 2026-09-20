@@ -242,6 +242,13 @@ The message is sent to messenger on destruction of the stream buffer,
 call to Flush(), or passing manipulator std::ends, std::endl, or std::flush.
 Empty messages are not sent except if manipulator is used.)nbdoc");
     }
+    { nb::class_<Message_Messenger::StreamBuffer> cls(m.attr("Message_Messenger"), "StreamBuffer", R"nbdoc(Auxiliary class wrapping std::stringstream thus allowing constructing
+message via stream interface, and putting result into its creator
+Message_Messenger within destructor.
+
+It is intended to be used either as temporary object or as local
+variable, note that content will be lost if it is copied.)nbdoc");
+    }
     { nb::class_<Message> cls(m, "Message", R"nbdoc(Defines
 - tools to work with messages
 - basic tools intended for progress indication)nbdoc");
@@ -734,8 +741,21 @@ convenience, by default all are converted to ExtendedString.)nbdoc")
         .def("SendInfo", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendInfo), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Info))nbdoc")
         .def("SendTrace", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &)>(&Message_Messenger::SendTrace), nb::arg("theMessage"), R"nbdoc(Short-cut to Send (theMessage, Message_Trace))nbdoc");
     nb::implicitly_convertible<std::decay_t<const occ::handle<Message_Printer> &>, Message_Messenger>();
+    nb::borrow<nb::class_<Message_Messenger::StreamBuffer>>(m.attr("Message_Messenger").attr("StreamBuffer"))
+        .def(nb::init<const Message_Messenger::StreamBuffer &>(), nb::arg("theOther"), R"nbdoc(Formal copy constructor.
+
+Since buffer is intended for use as temporary object or local
+variable, copy (or move) is needed only formally to be able to
+return the new instance from relevant creation method.
+In practice it should never be called because modern compilers
+create such instances in place.
+However note that if this constructor is called, the buffer
+content (string) will not be copied (move is not supported for
+std::stringstream class on old compilers such as gcc 4.4, msvc 9).)nbdoc")
+        .def("Flush", static_cast<void (Message_Messenger::StreamBuffer::*)(bool)>(&Message_Messenger::StreamBuffer::Flush), nb::arg("doForce") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Flush collected string to messenger)nbdoc")
+        .def("Messenger", [](Message_Messenger::StreamBuffer &self) { opencascade::handle<Message_Messenger> result(self.Messenger()); return result; }, R"nbdoc(Access to the messenger)nbdoc");
+    nanoocp_implicit_default_ctor<Message>(nb::borrow<nb::class_<Message>>(m.attr("Message")));
     nb::borrow<nb::class_<Message>>(m.attr("Message"))
-        .def(nb::init<>())
         .def_static("DefaultMessenger", static_cast<const occ::handle<Message_Messenger> & (*)()>(&Message::DefaultMessenger), R"nbdoc(Defines default messenger for OCCT applications.
 This is global static instance of the messenger.
 By default, it contains single printer directed to std::cout.
@@ -785,8 +805,8 @@ When theToCreate is true - automatically creates message report when not exist.)
 @param theMemInfo [int] memory info type
 @param[out] theMetric  filled message metric
 @return true if converted)nbdoc");
+    nanoocp_implicit_default_ctor<Message_Alert>(nb::borrow<nb::class_<Message_Alert>>(m.attr("Message_Alert")));
     nb::borrow<nb::class_<Message_Alert>>(m.attr("Message_Alert"))
-        .def(nb::new_([]() { return opencascade::handle<Message_Alert>(new Message_Alert()); }))
         .def("GetMessageKey", static_cast<const char * (Message_Alert::*)() const>(&Message_Alert::GetMessageKey), R"nbdoc(Return a C string to be used as a key for generating text user
 messages describing this alert.
 The messages are generated with help of Message_Msg class, in
@@ -949,7 +969,7 @@ in theReportSeq sequence, but not more than theMaxCount)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Algorithm::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Algorithm::*)() const>(&Message_Algorithm::DynamicType));
     nb::borrow<nb::class_<Message_Attribute>>(m.attr("Message_Attribute"))
-        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_Attribute>(new Message_Attribute(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Empty constructor)nbdoc")
+        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_Attribute>(new Message_Attribute(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Empty constructor)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Attribute::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Attribute::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Attribute::*)() const>(&Message_Attribute::DynamicType))
@@ -962,7 +982,7 @@ Base implementation returns dynamic type name of the instance.)nbdoc")
 @param theName a name for the alert)nbdoc");
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_Attribute>();
     nb::borrow<nb::class_<Message_AttributeMeter>>(m.attr("Message_AttributeMeter"))
-        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeMeter>(new Message_AttributeMeter(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Constructor with string argument)nbdoc")
+        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeMeter>(new Message_AttributeMeter(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor with string argument)nbdoc")
         .def_static("UndefinedMetricValue", static_cast<double (*)()>(&Message_AttributeMeter::UndefinedMetricValue), R"nbdoc(Returns default value of the metric when it is not defined
 @return undefined value)nbdoc")
         .def("HasMetric", static_cast<bool (Message_AttributeMeter::*)(const Message_MetricType &) const>(&Message_AttributeMeter::HasMetric), nb::arg("theMetric"), R"nbdoc(Checks whether the attribute has values for the metric
@@ -994,7 +1014,7 @@ Processed only alert with Message_AttributeMeter attribute
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeMeter::*)() const>(&Message_AttributeMeter::DynamicType));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_AttributeMeter>();
     nb::borrow<nb::class_<Message_AttributeObject>>(m.attr("Message_AttributeObject"))
-        .def(nb::new_([](const occ::handle<Standard_Transient> & theObject, const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeObject>(new Message_AttributeObject(theObject, theName)); }), nb::arg("theObject"), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Constructor with string argument)nbdoc")
+        .def(nb::new_([](const occ::handle<Standard_Transient> & theObject, const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeObject>(new Message_AttributeObject(theObject, theName)); }), nb::arg("theObject"), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor with string argument)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AttributeObject::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AttributeObject::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeObject::*)() const>(&Message_AttributeObject::DynamicType))
@@ -1104,7 +1124,7 @@ except from implementation of method Show().)nbdoc");
         .def("More", static_cast<bool (Message_LazyProgressScope::*)() const>(&Message_LazyProgressScope::More), R"nbdoc(Return TRUE if progress has been aborted - return the cached state lazily updated.)nbdoc")
         .def("IsAborted", static_cast<bool (Message_LazyProgressScope::*)()>(&Message_LazyProgressScope::IsAborted), R"nbdoc(Return TRUE if progress has been aborted - fetches actual value from the Progress.)nbdoc");
     nb::borrow<nb::class_<Message_Level>>(m.attr("Message_Level"))
-        .def(nb::init<const TCollection_AsciiString &>(), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Constructor.
+        .def(nb::init<const TCollection_AsciiString &>(), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor.
 One string key is used for all alert meters.
 The perf meter is not started automatically, it will be done in AddAlert() method)nbdoc")
         .def("RootAlert", static_cast<const occ::handle<Message_AlertExtended> & (Message_Level::*)() const>(&Message_Level::RootAlert), R"nbdoc(Returns root alert of the level
@@ -1118,8 +1138,8 @@ it does nothing.
 @param theAlert an alert
 @return true if alert is added)nbdoc");
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_Level>();
+    nanoocp_implicit_default_ctor<Message_MsgFile>(nb::borrow<nb::class_<Message_MsgFile>>(m.attr("Message_MsgFile")));
     nb::borrow<nb::class_<Message_MsgFile>>(m.attr("Message_MsgFile"))
-        .def(nb::init<>())
         .def_static("Load", static_cast<bool (*)(const char *const, const char *const)>(&Message_MsgFile::Load), nb::arg("theDirName"), nb::arg("theFileName"), R"nbdoc(Load message file <theFileName> from directory <theDirName>
 or its sub-directory)nbdoc")
         .def_static("LoadFile", static_cast<bool (*)(const char *const)>(&Message_MsgFile::LoadFile), nb::arg("theFName"), R"nbdoc(Load the messages from the given file, additive to any previously

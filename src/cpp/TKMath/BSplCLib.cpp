@@ -139,8 +139,8 @@ void nanoocp_templates_BSplCLib(nb::module_ &m) {
 }
 
 void nanoocp_define_BSplCLib(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<BSplCLib>(nb::borrow<nb::class_<BSplCLib>>(m.attr("BSplCLib")));
     nb::borrow<nb::class_<BSplCLib>>(m.attr("BSplCLib"))
-        .def(nb::init<>())
         .def_static("Hunt", [](const NCollection_Array1<double> & theArray, const double theX) { int theXPos{}; BSplCLib::Hunt(theArray, theX, theXPos); return theXPos; }, nb::arg("theArray"), nb::arg("theX"), R"nbdoc(This routine searches the position of the real value theX
 in the monotonically increasing set of real values theArray using bisection algorithm.
 

@@ -85,8 +85,8 @@ void nanoocp_templates_Precision(nb::module_ &m) {
 }
 
 void nanoocp_define_Precision(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<Precision>(nb::borrow<nb::class_<Precision>>(m.attr("Precision")));
     nb::borrow<nb::class_<Precision>>(m.attr("Precision"))
-        .def(nb::init<>())
         .def_static("Angular", static_cast<double (*)()>(&Precision::Angular), R"nbdoc(Returns the recommended precision value
 when checking the equality of two angles (given in radians).
 double Angle1 = ... , Angle2 = ... ;

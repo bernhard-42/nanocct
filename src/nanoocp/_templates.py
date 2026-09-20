@@ -5,6 +5,7 @@ objects below map Python element types to those classes so that NCollection_Arra
 the OCCT documentation's NCollection_Array1<gp_Pnt>. The generator writes the tables (nanoocp/NCollection.py)."""
 from __future__ import annotations
 
+import functools
 import importlib
 from typing import Any
 
@@ -23,7 +24,8 @@ class Template:
             home = importlib.import_module(self._module)
             table: dict[tuple[Any, ...], Any] = {}
             for specs, cls_name in self._specs.items():
-                key = tuple(getattr(importlib.import_module(mod), attr) for mod, attr in specs)
+                # attr is dotted for a nested class or a class in a namespace (Geom2d_Curve.ResD1)
+                key = tuple(functools.reduce(getattr, attr.split("."), importlib.import_module(mod)) for mod, attr in specs)
                 table[key] = getattr(home, cls_name)
             self._by_type = table
         return self._by_type

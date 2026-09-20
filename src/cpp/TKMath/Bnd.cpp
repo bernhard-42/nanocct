@@ -69,6 +69,9 @@ bounding box if it is infinite or empty, and
 -   a gap, which is included on both sides in any direction
 when consulting the finite bounds of the box.)nbdoc");
     }
+    { nb::class_<Bnd_Box::Limits> cls(m.attr("Bnd_Box"), "Limits", R"nbdoc(Structure containing the box limits (Xmin, Xmax, Ymin, Ymax, Zmin, Zmax).
+The values include the gap and account for open directions.)nbdoc");
+    }
     { nb::class_<Bnd_BoundSortBox> cls(m, "Bnd_BoundSortBox", R"nbdoc(A tool to compare a bounding box or a plane with a set of
 bounding boxes. It sorts the set of bounding boxes to give
 the list of boxes which intersect the element being compared.
@@ -104,6 +107,9 @@ OpenYmax, WholeSpace and Void) which describe the bounding box if it is infinite
 -   a gap, which is included on both sides in any direction when consulting the finite bounds of
 the box.)nbdoc");
     }
+    { nb::class_<Bnd_Box2d::Limits> cls(m.attr("Bnd_Box2d"), "Limits", R"nbdoc(Structure containing the 2D box limits (Xmin, Xmax, Ymin, Ymax).
+The values include the gap and account for open directions.)nbdoc");
+    }
     { nb::class_<Bnd_OBB> cls(m, "Bnd_OBB", R"nbdoc(The class describes the Oriented Bounding Box (OBB),
 much tighter enclosing volume for the shape than the
 Axis Aligned Bounding Box (AABB).
@@ -111,6 +117,12 @@ The OBB is defined by a center of the box, the axes and the halves
 of its three dimensions.
 The OBB can be used more effectively than AABB as a rejection mechanism
 for non-interfering objects.)nbdoc");
+    }
+    { nb::class_<Bnd_OBB::HalfSizes> cls(m.attr("Bnd_OBB"), "HalfSizes", R"nbdoc(Structure containing the OBB half-size dimensions.
+Can be used with C++17 structured bindings:
+@code
+auto [aHX, aHY, aHZ] = anOBB.GetHalfSizes();
+@endcode)nbdoc");
     }
     { nb::class_<Bnd_Range> cls(m, "Bnd_Range", R"nbdoc(This class describes a range in 1D space restricted
 by two real values.
@@ -120,6 +132,12 @@ A range can be void indicating there is no point included in the range.)nbdoc");
           .value("IntersectStatus_Out", Bnd_Range::IntersectStatus_Out)
           .value("IntersectStatus_In", Bnd_Range::IntersectStatus_In)
           .value("IntersectStatus_Boundary", Bnd_Range::IntersectStatus_Boundary);
+    }
+    { nb::class_<Bnd_Range::Bounds> cls(m.attr("Bnd_Range"), "Bounds", R"nbdoc(Structure containing the range bounds (Min, Max).
+Can be used with C++17 structured bindings:
+@code
+auto [aMin, aMax] = aRange.Get();
+@endcode)nbdoc");
     }
     { nb::class_<Bnd_Sphere> cls(m, "Bnd_Sphere", R"nbdoc(This class represents a bounding sphere of a geometric entity
 (triangle, segment of line or whatever else).)nbdoc");
@@ -470,6 +488,14 @@ box). This can be a Void box in case if its sides has been defined as infinite (
 adding any finite points. WARNING! This method relies on Open flags, the infinite points added
 using Add() method will be returned as is.)nbdoc")
         .def("HasFinitePart", static_cast<bool (Bnd_Box::*)() const noexcept>(&Bnd_Box::HasFinitePart), R"nbdoc(Returns TRUE if this box has finite part.)nbdoc");
+    nanoocp_implicit_default_ctor<Bnd_Box::Limits>(nb::borrow<nb::class_<Bnd_Box::Limits>>(m.attr("Bnd_Box").attr("Limits")));
+    nb::borrow<nb::class_<Bnd_Box::Limits>>(m.attr("Bnd_Box").attr("Limits"))
+        .def_rw("Xmin", &Bnd_Box::Limits::Xmin, R"nbdoc(Minimum X coordinate)nbdoc")
+        .def_rw("Xmax", &Bnd_Box::Limits::Xmax, R"nbdoc(Maximum X coordinate)nbdoc")
+        .def_rw("Ymin", &Bnd_Box::Limits::Ymin, R"nbdoc(Minimum Y coordinate)nbdoc")
+        .def_rw("Ymax", &Bnd_Box::Limits::Ymax, R"nbdoc(Maximum Y coordinate)nbdoc")
+        .def_rw("Zmin", &Bnd_Box::Limits::Zmin, R"nbdoc(Minimum Z coordinate)nbdoc")
+        .def_rw("Zmax", &Bnd_Box::Limits::Zmax, R"nbdoc(Maximum Z coordinate)nbdoc");
     nb::borrow<nb::class_<Bnd_BoundSortBox>>(m.attr("Bnd_BoundSortBox"))
         .def(nb::init<>(), R"nbdoc(Constructs an empty comparison algorithm for bounding boxes.
 The bounding boxes are then defined using the Initialize function.)nbdoc")
@@ -512,8 +538,8 @@ The indices correspond to the indices of the bounding boxes in the array provide
 to this algorithm at initialization.
 @param thePlane The plane to be compared.
 @return The list of indices of bounding boxes that intersect the plane thePlane.)nbdoc");
+    nanoocp_implicit_default_ctor<Bnd_Box2d>(nb::borrow<nb::class_<Bnd_Box2d>>(m.attr("Bnd_Box2d")));
     nb::borrow<nb::class_<Bnd_Box2d>>(m.attr("Bnd_Box2d"))
-        .def(nb::init<>())
         .def("SetWhole", static_cast<void (Bnd_Box2d::*)() noexcept>(&Bnd_Box2d::SetWhole), R"nbdoc(Sets this bounding box so that it covers the whole 2D
 space, i.e. it is infinite in all directions.)nbdoc")
         .def("SetVoid", static_cast<void (Bnd_Box2d::*)() noexcept>(&Bnd_Box2d::SetVoid), R"nbdoc(Sets this 2D bounding box so that it is empty. All points are outside a void box.)nbdoc")
@@ -593,6 +619,12 @@ bounding. The default implementation is to make a copy
 of <me> and <Other>, to transform them and to test.)nbdoc")
         .def("Dump", static_cast<void (Bnd_Box2d::*)() const>(&Bnd_Box2d::Dump))
         .def("SquareExtent", static_cast<double (Bnd_Box2d::*)() const noexcept>(&Bnd_Box2d::SquareExtent), R"nbdoc(Computes the squared diagonal of me.)nbdoc");
+    nanoocp_implicit_default_ctor<Bnd_Box2d::Limits>(nb::borrow<nb::class_<Bnd_Box2d::Limits>>(m.attr("Bnd_Box2d").attr("Limits")));
+    nb::borrow<nb::class_<Bnd_Box2d::Limits>>(m.attr("Bnd_Box2d").attr("Limits"))
+        .def_rw("Xmin", &Bnd_Box2d::Limits::Xmin, R"nbdoc(Minimum X coordinate)nbdoc")
+        .def_rw("Xmax", &Bnd_Box2d::Limits::Xmax, R"nbdoc(Maximum X coordinate)nbdoc")
+        .def_rw("Ymin", &Bnd_Box2d::Limits::Ymin, R"nbdoc(Minimum Y coordinate)nbdoc")
+        .def_rw("Ymax", &Bnd_Box2d::Limits::Ymax, R"nbdoc(Maximum Y coordinate)nbdoc");
     nb::borrow<nb::class_<Bnd_OBB>>(m.attr("Bnd_OBB"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
         .def(nb::init<const Bnd_Box &>(), nb::arg("theBox"), R"nbdoc(Constructor to create OBB from AABB.)nbdoc")
@@ -644,6 +676,11 @@ auto [aHX, aHY, aHZ] = anOBB.GetHalfSizes();
         .def("Add", static_cast<void (Bnd_OBB::*)(const gp_Pnt &)>(&Bnd_OBB::Add), nb::arg("theP"), R"nbdoc(Rebuilds this in order to include all previous objects
 (which it was created from) and theP.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const Bnd_Box &>, Bnd_OBB>();
+    nanoocp_implicit_default_ctor<Bnd_OBB::HalfSizes>(nb::borrow<nb::class_<Bnd_OBB::HalfSizes>>(m.attr("Bnd_OBB").attr("HalfSizes")));
+    nb::borrow<nb::class_<Bnd_OBB::HalfSizes>>(m.attr("Bnd_OBB").attr("HalfSizes"))
+        .def_rw("X", &Bnd_OBB::HalfSizes::X, R"nbdoc(Half-size along X axis)nbdoc")
+        .def_rw("Y", &Bnd_OBB::HalfSizes::Y, R"nbdoc(Half-size along Y axis)nbdoc")
+        .def_rw("Z", &Bnd_OBB::HalfSizes::Z, R"nbdoc(Half-size along Z axis)nbdoc");
     nb::borrow<nb::class_<Bnd_Range>>(m.attr("Bnd_Range"))
         .def(nb::init<>(), R"nbdoc(Default constructor. Creates VOID range.)nbdoc")
         .def(nb::init<const double, const double>(), nb::arg("theMin"), nb::arg("theMax"), R"nbdoc(Constructor. Never creates VOID range.)nbdoc")
@@ -677,6 +714,15 @@ If <this> is VOID the method returns false.)nbdoc")
 If <this> is VOID the method returns false.)nbdoc")
         .def("GetBounds", [](const Bnd_Range &self) { double theFirstPar{}; double theLastPar{}; auto result = self.GetBounds(theFirstPar, theLastPar); return std::make_tuple(result, theFirstPar, theLastPar); }, R"nbdoc(Obtain first and last boundary of <this>.
 If <this> is VOID the method returns false.)nbdoc")
+        .def("Get", static_cast<std::optional<Bnd_Range::Bounds> (Bnd_Range::*)() const noexcept>(&Bnd_Range::Get), R"nbdoc(Returns the bounds of this range as a Bounds structure.
+Returns std::nullopt if IsVoid().
+Can be used with C++17 structured bindings:
+@code
+if (auto aBounds = aRange.Get())
+{
+auto [aMin, aMax] = *aBounds;
+}
+@endcode)nbdoc")
         .def("GetIntermediatePoint", [](const Bnd_Range &self, const double theLambda) { double theParameter{}; auto result = self.GetIntermediatePoint(theLambda, theParameter); return std::make_tuple(result, theParameter); }, nb::arg("theLambda"), R"nbdoc(Obtain theParameter satisfied to the equation
 (theParameter-MIN)/(MAX-MIN) == theLambda.
 *  theLambda == 0 --> MIN boundary will be returned;
@@ -706,6 +752,10 @@ Returns std::nullopt if IsVoid().)nbdoc")
         .def("Max", static_cast<std::optional<double> (Bnd_Range::*)() const noexcept>(&Bnd_Range::Max), R"nbdoc(Returns the MAX boundary of <this>.
 Returns std::nullopt if IsVoid().)nbdoc")
         .def("__eq__", static_cast<bool (Bnd_Range::*)(const Bnd_Range &) const noexcept>(&Bnd_Range::operator==), nb::arg("theOther"), R"nbdoc(Returns TRUE if theOther is equal to <*this>)nbdoc", nb::is_operator());
+    nanoocp_implicit_default_ctor<Bnd_Range::Bounds>(nb::borrow<nb::class_<Bnd_Range::Bounds>>(m.attr("Bnd_Range").attr("Bounds")));
+    nb::borrow<nb::class_<Bnd_Range::Bounds>>(m.attr("Bnd_Range").attr("Bounds"))
+        .def_rw("Min", &Bnd_Range::Bounds::Min, R"nbdoc(Minimum value of the range)nbdoc")
+        .def_rw("Max", &Bnd_Range::Bounds::Max, R"nbdoc(Maximum value of the range)nbdoc");
     nb::borrow<nb::class_<Bnd_Sphere>>(m.attr("Bnd_Sphere"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
         .def(nb::init<const gp_XYZ &, const double, const int, const int>(), nb::arg("theCntr"), nb::arg("theRad"), nb::arg("theU"), nb::arg("theV"), R"nbdoc(Constructor of a definite sphere)nbdoc")
@@ -730,8 +780,8 @@ Returns true if success)nbdoc")
         .def("IsOut", static_cast<bool (Bnd_Sphere::*)(const Bnd_Sphere &) const>(&Bnd_Sphere::IsOut), nb::arg("theOther"))
         .def("IsOut", [](const Bnd_Sphere &self, const gp_XYZ & thePnt) { double theMaxDist{}; auto result = self.IsOut(thePnt, theMaxDist); return std::make_tuple(result, theMaxDist); }, nb::arg("thePnt"))
         .def("SquareExtent", static_cast<double (Bnd_Sphere::*)() const>(&Bnd_Sphere::SquareExtent));
+    nanoocp_implicit_default_ctor<Bnd_Tools>(nb::borrow<nb::class_<Bnd_Tools>>(m.attr("Bnd_Tools")));
     nb::borrow<nb::class_<Bnd_Tools>>(m.attr("Bnd_Tools"))
-        .def(nb::init<>())
         .def_static("Bnd2BVH", static_cast<BVH_Box<double, 2> (*)(const Bnd_Box2d &)>(&Bnd_Tools::Bnd2BVH), nb::arg("theBox"), R"nbdoc(@name Bnd_Box to BVH_Box conversion
 Converts the given Bnd_Box2d to BVH_Box)nbdoc")
         .def_static("Bnd2BVH", static_cast<BVH_Box<double, 3> (*)(const Bnd_Box &)>(&Bnd_Tools::Bnd2BVH), nb::arg("theBox"), R"nbdoc(Converts the given Bnd_Box to BVH_Box)nbdoc");

@@ -90,8 +90,8 @@ void nanoocp_templates_CSLib(nb::module_ &m) {
 }
 
 void nanoocp_define_CSLib(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<CSLib>(nb::borrow<nb::class_<CSLib>>(m.attr("CSLib")));
     nb::borrow<nb::class_<CSLib>>(m.attr("CSLib"))
-        .def(nb::init<>())
         .def_static("Normal", [](const gp_Vec & theD1U, const gp_Vec & theD1V, double theSinTol, gp_Dir & theNormal) { CSLib_DerivativeStatus theStatus{}; CSLib::Normal(theD1U, theD1V, theSinTol, theStatus, theNormal); return theStatus; }, nb::arg("theD1U"), nb::arg("theD1V"), nb::arg("theSinTol"), nb::arg("theNormal"), R"nbdoc(Computes the normal direction of a surface as the cross product D1U ^ D1V.
 
 The normal is undefined if:

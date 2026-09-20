@@ -5,6 +5,7 @@ from typing import overload
 import nanoocp.GeomAbs
 import nanoocp.NCollection
 import nanoocp.math
+import nanoocp.gp
 
 
 class PLib:
@@ -20,45 +21,45 @@ class PLib:
     def __init__(self) -> None: ...
 
     @staticmethod
-    def NoWeights() -> nanoocp.NCollection.NCollection_Array1__double:
+    def NoWeights() -> nanoocp.NCollection.NCollection_Array1[float]:
         """Used as argument for a non rational functions"""
 
     @staticmethod
-    def NoWeights2() -> nanoocp.NCollection.NCollection_Array2__double:
+    def NoWeights2() -> nanoocp.NCollection.NCollection_Array2[float]:
         """Used as argument for a non rational functions"""
 
     @overload
     @staticmethod
-    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt, FP: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], FP: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array1__double, FP: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array1[float], FP: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, FP: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], FP: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, Weights: nanoocp.NCollection.NCollection_Array1__double, FP: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def SetPoles(Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], Weights: nanoocp.NCollection.NCollection_Array1[float], FP: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """Copy in FP the coordinates of the poles."""
 
     @overload
     @staticmethod
-    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt) -> None: ...
+    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]) -> None: ...
 
     @overload
     @staticmethod
-    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt, Weights: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d) -> None: ...
+    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]) -> None: ...
 
     @overload
     @staticmethod
-    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, Weights: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def GetPoles(FP: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], Weights: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """Get from FP the coordinates of the poles."""
 
     @staticmethod
@@ -294,48 +295,48 @@ class PLib:
 
     @overload
     @staticmethod
-    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array1__gp_Pnt, WCoefs: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt, WPoles: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], WCoefs: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], WPoles: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, WCoefs: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, WPoles: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], WCoefs: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], WPoles: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array1__double, WCoefs: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__double, WPoles: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array1[float], WCoefs: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[float], WPoles: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def CoefficientsPoles(dim: int, Coefs: nanoocp.NCollection.NCollection_Array1__double, WCoefs: nanoocp.NCollection.NCollection_Array1__double, Poles: nanoocp.NCollection.NCollection_Array1__double, WPoles: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def CoefficientsPoles(dim: int, Coefs: nanoocp.NCollection.NCollection_Array1[float], WCoefs: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[float], WPoles: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array2__gp_Pnt, WCoefs: nanoocp.NCollection.NCollection_Array2__double, Poles: nanoocp.NCollection.NCollection_Array2__gp_Pnt, WPoles: nanoocp.NCollection.NCollection_Array2__double) -> None: ...
+    def CoefficientsPoles(Coefs: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], WCoefs: nanoocp.NCollection.NCollection_Array2[float], Poles: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], WPoles: nanoocp.NCollection.NCollection_Array2[float]) -> None: ...
 
     @overload
     @staticmethod
-    def Trimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array1__gp_Pnt, WCoeffs: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def Trimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], WCoeffs: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def Trimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, WCoeffs: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def Trimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], WCoeffs: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def Trimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array1__double, WCoeffs: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def Trimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array1[float], WCoeffs: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @overload
     @staticmethod
-    def Trimming(U1: float, U2: float, dim: int, Coeffs: nanoocp.NCollection.NCollection_Array1__double, WCoeffs: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def Trimming(U1: float, U2: float, dim: int, Coeffs: nanoocp.NCollection.NCollection_Array1[float], WCoeffs: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     @staticmethod
-    def UTrimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array2__gp_Pnt, WCoeffs: nanoocp.NCollection.NCollection_Array2__double) -> None: ...
+    def UTrimming(U1: float, U2: float, Coeffs: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], WCoeffs: nanoocp.NCollection.NCollection_Array2[float]) -> None: ...
 
     @staticmethod
-    def VTrimming(V1: float, V2: float, Coeffs: nanoocp.NCollection.NCollection_Array2__gp_Pnt, WCoeffs: nanoocp.NCollection.NCollection_Array2__double) -> None: ...
+    def VTrimming(V1: float, V2: float, Coeffs: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt], WCoeffs: nanoocp.NCollection.NCollection_Array2[float]) -> None: ...
 
     @staticmethod
-    def HermiteInterpolate(Dimension: int, FirstParameter: float, LastParameter: float, FirstOrder: int, LastOrder: int, FirstConstr: nanoocp.NCollection.NCollection_Array2__double, LastConstr: nanoocp.NCollection.NCollection_Array2__double, Coefficients: nanoocp.NCollection.NCollection_Array1__double) -> bool:
+    def HermiteInterpolate(Dimension: int, FirstParameter: float, LastParameter: float, FirstOrder: int, LastOrder: int, FirstConstr: nanoocp.NCollection.NCollection_Array2[float], LastConstr: nanoocp.NCollection.NCollection_Array2[float], Coefficients: nanoocp.NCollection.NCollection_Array1[float]) -> bool:
         """
         Compute the coefficients in the canonical base of the
         polynomial satisfying the given constraints
@@ -419,7 +420,7 @@ class PLib_JacobiPolynomial:
         GeomAbs_C2
         """
 
-    def Points(self, theNbGaussPoints: int, theTabPoints: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def Points(self, theNbGaussPoints: int, theTabPoints: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         returns the Jacobi Points for Gauss integration ie
         the positive values of the Legendre roots by increasing values
@@ -432,7 +433,7 @@ class PLib_JacobiPolynomial:
         NbGaussPoints must be greater than Degree
         """
 
-    def Weights(self, theNbGaussPoints: int, theTabWeights: nanoocp.NCollection.NCollection_Array2__double) -> None:
+    def Weights(self, theNbGaussPoints: int, theTabWeights: nanoocp.NCollection.NCollection_Array2[float]) -> None:
         """
         returns the Jacobi weights for Gauss integration only for
         the positive values of the Legendre roots in the order they
@@ -445,7 +446,7 @@ class PLib_JacobiPolynomial:
         35, 40, 50, 61 NbGaussPoints must be greater than Degree
         """
 
-    def MaxValue(self, theTabMax: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def MaxValue(self, theTabMax: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         this method loads for k=0,q the maximum value of
         abs ( W(t)*Jk(t) ) for t bellonging to [-1,1]
@@ -471,25 +472,25 @@ class PLib_JacobiPolynomial:
 
     def AverageError(self, theDimension: int, theNewDegree: int) -> tuple[float, float]: ...
 
-    def ToCoefficients(self, theDimension: int, theDegree: int, theJacCoeff: nanoocp.NCollection.NCollection_Array1__double, theCoefficients: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def ToCoefficients(self, theDimension: int, theDegree: int, theJacCoeff: nanoocp.NCollection.NCollection_Array1[float], theCoefficients: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """Convert the polynomial P(t) = R(t) + W(t) Q(t) in the canonical base."""
 
-    def D0(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D0(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """Compute the values of the basis functions in u"""
 
-    def D1(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1__double, theBasisD1: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D1(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1[float], theBasisD1: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Compute the values and the derivatives values of
         the basis functions in u
         """
 
-    def D2(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1__double, theBasisD1: nanoocp.NCollection.NCollection_Array1__double, theBasisD2: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D2(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1[float], theBasisD1: nanoocp.NCollection.NCollection_Array1[float], theBasisD2: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Compute the values and the derivatives values of
         the basis functions in u
         """
 
-    def D3(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1__double, theBasisD1: nanoocp.NCollection.NCollection_Array1__double, theBasisD2: nanoocp.NCollection.NCollection_Array1__double, theBasisD3: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D3(self, theU: float, theBasisValue: nanoocp.NCollection.NCollection_Array1[float], theBasisD1: nanoocp.NCollection.NCollection_Array1[float], theBasisD2: nanoocp.NCollection.NCollection_Array1[float], theBasisD3: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Compute the values and the derivatives values of
         the basis functions in u
@@ -563,25 +564,25 @@ class PLib_HermitJacobi:
 
     def AverageError(self, Dimension: int, NewDegree: int) -> tuple[float, float]: ...
 
-    def ToCoefficients(self, Dimension: int, Degree: int, HermJacCoeff: nanoocp.NCollection.NCollection_Array1__double, Coefficients: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def ToCoefficients(self, Dimension: int, Degree: int, HermJacCoeff: nanoocp.NCollection.NCollection_Array1[float], Coefficients: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """Convert the polynomial P(t) = H(t) + W(t) Q(t) in the canonical base."""
 
-    def D0(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D0(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """Compute the values of the basis functions in u"""
 
-    def D1(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1__double, BasisD1: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D1(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1[float], BasisD1: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Compute the values and the derivatives values of
         the basis functions in u
         """
 
-    def D2(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1__double, BasisD1: nanoocp.NCollection.NCollection_Array1__double, BasisD2: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D2(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1[float], BasisD1: nanoocp.NCollection.NCollection_Array1[float], BasisD2: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Compute the values and the derivatives values of
         the basis functions in u
         """
 
-    def D3(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1__double, BasisD1: nanoocp.NCollection.NCollection_Array1__double, BasisD2: nanoocp.NCollection.NCollection_Array1__double, BasisD3: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def D3(self, U: float, BasisValue: nanoocp.NCollection.NCollection_Array1[float], BasisD1: nanoocp.NCollection.NCollection_Array1[float], BasisD2: nanoocp.NCollection.NCollection_Array1[float], BasisD3: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Compute the values and the derivatives values of
         the basis functions in u

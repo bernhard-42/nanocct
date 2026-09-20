@@ -49,8 +49,8 @@ void nanoocp_templates_ElCLib(nb::module_ &m) {
 }
 
 void nanoocp_define_ElCLib(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<ElCLib>(nb::borrow<nb::class_<ElCLib>>(m.attr("ElCLib")));
     nb::borrow<nb::class_<ElCLib>>(m.attr("ElCLib"))
-        .def(nb::init<>())
         .def_static("InPeriod", static_cast<double (*)(const double, const double, const double)>(&ElCLib::InPeriod), nb::arg("U"), nb::arg("UFirst"), nb::arg("ULast"), R"nbdoc(Return a value in the range <UFirst, ULast> by
 adding or removing the period <ULast - UFirst> to
 <U>.

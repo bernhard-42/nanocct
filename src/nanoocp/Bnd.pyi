@@ -673,6 +673,56 @@ class Bnd_Box:
         The constructed box is qualified Void. Its gap is null.
         """
 
+    class Limits:
+        """
+        Structure containing the box limits (Xmin, Xmax, Ymin, Ymax, Zmin, Zmax).
+        The values include the gap and account for open directions.
+        """
+
+        def __init__(self) -> None: ...
+
+        @property
+        def Xmin(self) -> float:
+            """Minimum X coordinate"""
+
+        @Xmin.setter
+        def Xmin(self, arg: float, /) -> None: ...
+
+        @property
+        def Xmax(self) -> float:
+            """Maximum X coordinate"""
+
+        @Xmax.setter
+        def Xmax(self, arg: float, /) -> None: ...
+
+        @property
+        def Ymin(self) -> float:
+            """Minimum Y coordinate"""
+
+        @Ymin.setter
+        def Ymin(self, arg: float, /) -> None: ...
+
+        @property
+        def Ymax(self) -> float:
+            """Maximum Y coordinate"""
+
+        @Ymax.setter
+        def Ymax(self, arg: float, /) -> None: ...
+
+        @property
+        def Zmin(self) -> float:
+            """Minimum Z coordinate"""
+
+        @Zmin.setter
+        def Zmin(self, arg: float, /) -> None: ...
+
+        @property
+        def Zmax(self) -> float:
+            """Maximum Z coordinate"""
+
+        @Zmax.setter
+        def Zmax(self, arg: float, /) -> None: ...
+
     def SetWhole(self) -> None:
         """
         Sets this bounding box so that it covers the whole of 3D space.
@@ -743,7 +793,7 @@ class Bnd_Box:
         """
 
     @overload
-    def Get(self) -> "Bnd_Box::Limits":
+    def Get(self) -> Bnd_Box.Limits:
         """
         Returns the bounds of this bounding box as a Limits structure.
         The gap is included. If this bounding box is infinite (i.e. "open"),
@@ -1009,14 +1059,14 @@ class Bnd_BoundSortBox:
         """
 
     @overload
-    def Initialize(self, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1__Bnd_Box) -> None:
+    def Initialize(self, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box]) -> None:
         """
         Initializes this comparison algorithm with the set of boxes.
         @param theSetOfBoxes The set of bounding boxes to be used by this algorithm.
         """
 
     @overload
-    def Initialize(self, theEnclosingBox: Bnd_Box, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1__Bnd_Box) -> None:
+    def Initialize(self, theEnclosingBox: Bnd_Box, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box]) -> None:
         """
         Initializes this comparison algorithm with the set of boxes and the bounding box
         that encloses all those boxes. This version of initialization can be used if complete
@@ -1052,7 +1102,7 @@ class Bnd_BoundSortBox:
         """
 
     @overload
-    def Compare(self, theBox: Bnd_Box) -> nanoocp.NCollection.NCollection_List__int:
+    def Compare(self, theBox: Bnd_Box) -> nanoocp.NCollection.NCollection_List[int]:
         """
         Compares the bounding box theBox, with the set of bounding boxes provided to this
         algorithm at initialization, and returns the list of indices of bounding boxes
@@ -1065,7 +1115,7 @@ class Bnd_BoundSortBox:
         """
 
     @overload
-    def Compare(self, thePlane: nanoocp.gp.gp_Pln) -> nanoocp.NCollection.NCollection_List__int:
+    def Compare(self, thePlane: nanoocp.gp.gp_Pln) -> nanoocp.NCollection.NCollection_List[int]:
         """
         Compares the plane @p thePlane with the set of bounding boxes provided to this
         algorithm at initialization, and returns the list of indices of bounding boxes
@@ -1100,6 +1150,42 @@ class Bnd_Box2d:
     """
 
     def __init__(self) -> None: ...
+
+    class Limits:
+        """
+        Structure containing the 2D box limits (Xmin, Xmax, Ymin, Ymax).
+        The values include the gap and account for open directions.
+        """
+
+        def __init__(self) -> None: ...
+
+        @property
+        def Xmin(self) -> float:
+            """Minimum X coordinate"""
+
+        @Xmin.setter
+        def Xmin(self, arg: float, /) -> None: ...
+
+        @property
+        def Xmax(self) -> float:
+            """Maximum X coordinate"""
+
+        @Xmax.setter
+        def Xmax(self, arg: float, /) -> None: ...
+
+        @property
+        def Ymin(self) -> float:
+            """Minimum Y coordinate"""
+
+        @Ymin.setter
+        def Ymin(self, arg: float, /) -> None: ...
+
+        @property
+        def Ymax(self) -> float:
+            """Maximum Y coordinate"""
+
+        @Ymax.setter
+        def Ymax(self, arg: float, /) -> None: ...
 
     def SetWhole(self) -> None:
         """
@@ -1168,7 +1254,7 @@ class Bnd_Box2d:
         """
 
     @overload
-    def Get(self) -> "Bnd_Box2d::Limits":
+    def Get(self) -> Bnd_Box2d.Limits:
         """
         Returns the bounds of this 2D bounding box as a Limits structure.
         The gap is included. If this bounding box is infinite (i.e. "open"),
@@ -1336,7 +1422,39 @@ class Bnd_OBB:
     def __init__(self, theCenter: nanoocp.gp.gp_Pnt, theXDirection: nanoocp.gp.gp_Dir, theYDirection: nanoocp.gp.gp_Dir, theZDirection: nanoocp.gp.gp_Dir, theHXSize: float, theHYSize: float, theHZSize: float) -> None:
         """Constructor taking all defining parameters"""
 
-    def ReBuild(self, theListOfPoints: nanoocp.NCollection.NCollection_Array1__gp_Pnt, theListOfTolerances: nanoocp.NCollection.NCollection_Array1__double = None, theIsOptimal: bool = False) -> None:
+    class HalfSizes:
+        """
+        Structure containing the OBB half-size dimensions.
+        Can be used with C++17 structured bindings:
+        @code
+        auto [aHX, aHY, aHZ] = anOBB.GetHalfSizes();
+        @endcode
+        """
+
+        def __init__(self) -> None: ...
+
+        @property
+        def X(self) -> float:
+            """Half-size along X axis"""
+
+        @X.setter
+        def X(self, arg: float, /) -> None: ...
+
+        @property
+        def Y(self) -> float:
+            """Half-size along Y axis"""
+
+        @Y.setter
+        def Y(self, arg: float, /) -> None: ...
+
+        @property
+        def Z(self) -> float:
+            """Half-size along Z axis"""
+
+        @Z.setter
+        def Z(self, arg: float, /) -> None: ...
+
+    def ReBuild(self, theListOfPoints: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], theListOfTolerances: nanoocp.NCollection.NCollection_Array1[float] = None, theIsOptimal: bool = False) -> None:
         """
         Creates new OBB covering every point in theListOfPoints.
         Tolerance of every such point is set by *theListOfTolerances array.
@@ -1392,7 +1510,7 @@ class Bnd_OBB:
     def ZHSize(self) -> float:
         """Returns the Z Dimension of OBB"""
 
-    def GetHalfSizes(self) -> "Bnd_OBB::HalfSizes":
+    def GetHalfSizes(self) -> Bnd_OBB.HalfSizes:
         """
         Returns the half-size dimensions of the OBB as a HalfSizes structure.
         Can be used with C++17 structured bindings:
@@ -1477,6 +1595,31 @@ class Bnd_Range:
 
         IntersectStatus_Boundary = 2
 
+    class Bounds:
+        """
+        Structure containing the range bounds (Min, Max).
+        Can be used with C++17 structured bindings:
+        @code
+        auto [aMin, aMax] = aRange.Get();
+        @endcode
+        """
+
+        def __init__(self) -> None: ...
+
+        @property
+        def Min(self) -> float:
+            """Minimum value of the range"""
+
+        @Min.setter
+        def Min(self, arg: float, /) -> None: ...
+
+        @property
+        def Max(self) -> float:
+            """Maximum value of the range"""
+
+        @Max.setter
+        def Max(self, arg: float, /) -> None: ...
+
     def Common(self, theOther: Bnd_Range) -> None:
         """Replaces <this> with common-part of <this> and theOther"""
 
@@ -1489,7 +1632,7 @@ class Bnd_Range:
         @sa use method ::Add() to merge two ranges unconditionally
         """
 
-    def Split(self, theVal: float, theList: nanoocp.NCollection.NCollection_List__Bnd_Range, thePeriod: float = 0.0) -> None:
+    def Split(self, theVal: float, theList: nanoocp.NCollection.NCollection_List[nanoocp.Bnd.Bnd_Range], thePeriod: float = 0.0) -> None:
         """
         Splits <this> to several sub-ranges by theVal value
         (e.g. range [3, 15] will be split by theVal==5 to the two
@@ -1539,6 +1682,19 @@ class Bnd_Range:
         """
         Obtain first and last boundary of <this>.
         If <this> is VOID the method returns false.
+        """
+
+    def Get(self) -> Bnd_Range.Bounds | None:
+        """
+        Returns the bounds of this range as a Bounds structure.
+        Returns std::nullopt if IsVoid().
+        Can be used with C++17 structured bindings:
+        @code
+        if (auto aBounds = aRange.Get())
+        {
+        auto [aMin, aMax] = *aBounds;
+        }
+        @endcode
         """
 
     def GetIntermediatePoint(self, theLambda: float) -> tuple[bool, float]:
@@ -1706,5 +1862,6 @@ class Bnd_Tools:
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection
-Bnd_Array1OfBox = nanoocp.NCollection.NCollection_Array1__Bnd_Box
-Bnd_HArray1OfBox = nanoocp.NCollection.NCollection_HArray1__Bnd_Box
+import nanoocp.Bnd
+Bnd_Array1OfBox = nanoocp.NCollection.NCollection_Array1[nanoocp.Bnd.Bnd_Box]
+Bnd_HArray1OfBox = nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box]

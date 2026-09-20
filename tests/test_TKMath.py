@@ -15,6 +15,12 @@ def test_every_package_imports(pkg):
     assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
 
 
+def test_nested_struct_in_std_optional():
+    bounds = Bnd.Bnd_Range(1.0, 2.0).Get()                            # std::optional<Bnd_Range::Bounds>
+    assert type(bounds) is Bnd.Bnd_Range.Bounds and (bounds.Min, bounds.Max) == (1.0, 2.0)
+    assert Bnd.Bnd_Range().Get() is None                              # void range -> nullopt
+
+
 def test_bnd_box():
     b = Bnd.Bnd_Box()
     b.Add(gp.gp_Pnt(0.0, 0.0, 0.0))
@@ -76,5 +82,18 @@ def test_other_alias_instantiations():
 def test_namespace_constants_and_anonymous_enums():
     assert MathUtils.THE_NEWTON_MAX_ITER == 100                         # constexpr in namespace MathUtils
     assert MathUtils.THE_NEWTON_FTOL_SQ == 1e-32
+
+
+def test_namespace_functions():
+    from nanoocp import MathLin
+    assert MathUtils.DepressCubic(3.0, 3.0, 1.0) == (0.0, 0.0, 1.0)     # namespace MathUtils == package: module function; double& -> tuple
+    a = occ_math.math_Matrix(1, 2, 1, 2, 0.0)
+    a.SetDiag(2.0)
+    assert MathLin.Determinant(a).Determinant == 4.0
+    b = occ_math.math_Vector(1, 2, 3.0)
+    r = MathLin.LeastSquares(a, b)                                      # theMethod defaults to LeastSquaresMethod::QR (qualified by the generator)
+    assert r.IsDone() and (r.Solution.Value(1), r.Solution.Value(2)) == (1.5, 1.5)
+    assert MathLin.LeastSquares(a, b, MathLin.LeastSquaresMethod.SVD).Solution.Value(2) == pytest.approx(1.5)
+    assert not hasattr(MathLin, "Internal") and not hasattr(importlib.import_module("nanoocp.MathSys"), "detail")   # overrides [skip] namespaces
     from nanoocp import BVH
     assert isinstance(BVH.BVH_Constants_MaxTreeDepth, int)              # anonymous enum -> integer constant

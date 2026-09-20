@@ -72,6 +72,7 @@
 #include <TCollection_AsciiString.hxx>
 
 void nanoocp_declare_NCollection(nb::module_ &m) {
+    m.def_submodule("NCollection_Primes", "C++ namespace NCollection_Primes (OCCT package NCollection)");
     nb::enum_<NCollection_CellFilter_Action>(m, "NCollection_CellFilter_Action", R"nbdoc(Auxiliary enumeration serving as response from method Inspect)nbdoc", nb::is_arithmetic())
         .value("CellFilter_Keep", CellFilter_Keep)
         .value("CellFilter_Purge", CellFilter_Purge);
@@ -96,6 +97,8 @@ DoubleMap
 IndexedMap
 IndexedDataMap
 Provides utilitites for managing the buckets.)nbdoc");
+    }
+    { nb::class_<NCollection_BaseMap::Iterator> cls(m.attr("NCollection_BaseMap"), "Iterator", R"nbdoc(Memory allocation)nbdoc");
     }
     { nb::class_<NCollection_DefaultHasher<bool>> cls(m, "NCollection_DefaultHasher__bool", R"nbdoc(Explicit specialization for bool.)nbdoc");
     }
@@ -132,6 +135,8 @@ Provides utilitites for managing the buckets.)nbdoc");
     { nb::class_<NCollection_BaseSequence> cls(m, "NCollection_BaseSequence", R"nbdoc(Purpose:     This  is  a base  class  for  the  Sequence.  It  deals with
 an indexed bidirectional list of NCollection_SeqNode's.)nbdoc");
     }
+    { nb::class_<NCollection_BaseSequence::Iterator> cls(m.attr("NCollection_BaseSequence"), "Iterator", R"nbdoc(Memory allocation)nbdoc");
+    }
     { nb::class_<NCollection_AccAllocator, NCollection_BaseAllocator> cls(m, "NCollection_AccAllocator", R"nbdoc(Class NCollection_AccAllocator - accumulating memory allocator. This
 class allocates memory on request returning the pointer to the allocated
 space. The allocation units are grouped in blocks requested from the
@@ -153,6 +158,8 @@ parameter of the constructor (measured in bytes).)nbdoc");
     { nb::class_<NCollection_AlignedAllocator, NCollection_BaseAllocator> cls(m, "NCollection_AlignedAllocator", R"nbdoc(NCollection allocator with managed memory alignment capabilities.)nbdoc");
     }
     { nb::class_<NCollection_BaseList> cls(m, "NCollection_BaseList");
+    }
+    { nb::class_<NCollection_BaseList::Iterator> cls(m.attr("NCollection_BaseList"), "Iterator", R"nbdoc(Memory allocation)nbdoc");
     }
     { nb::class_<NCollection_Buffer, Standard_Transient> cls(m, "NCollection_Buffer", R"nbdoc(Low-level buffer object.)nbdoc");
     }
@@ -185,6 +192,9 @@ and thread-safety of allocations is DISABLED by default (see SetThreadSafe()).)n
           .value("Large", NCollection_IncAllocator::IBlockSizeLevel::Large)
           .value("Max", NCollection_IncAllocator::IBlockSizeLevel::Max);
     }
+    { nb::class_<NCollection_IncAllocator::IBlock> cls(m.attr("NCollection_IncAllocator"), "IBlock", R"nbdoc(Forward list to keep multi-time allocated pointers.
+On Reset operation objects will be reused.)nbdoc");
+    }
     { nb::class_<NCollection_ForwardRangeSentinel> cls(m, "NCollection_ForwardRangeSentinel", R"nbdoc(Empty sentinel type used as the end marker for range-for loops.)nbdoc");
     }
     { nb::class_<NCollection_HeapAllocator, NCollection_BaseAllocator> cls(m, "NCollection_HeapAllocator", R"nbdoc(Allocator that uses the global dynamic heap (malloc / free).)nbdoc");
@@ -196,6 +206,8 @@ of block allocation, items creation / deletion etc.
 Type-specific item operations (construction, destruction, copy)
 are provided by the derived template class via function pointers
 passed as arguments to the protected methods.)nbdoc");
+    }
+    { nb::class_<NCollection_SparseArrayBase::Iterator> cls(m.attr("NCollection_SparseArrayBase"), "Iterator", R"nbdoc(Iterator)nbdoc");
     }
     { nb::class_<NCollection_UtfString<char>> cls(m, "NCollection_String", R"nbdoc(This template class represent constant UTF-* string.
 String stored in memory continuously, always NULL-terminated
@@ -255,64 +267,68 @@ create more BaseAllocators, but it is injurious.)nbdoc")
         .def("Size", static_cast<size_t (NCollection_BaseMap::*)() const noexcept>(&NCollection_BaseMap::Size), R"nbdoc(Size - number of elements.)nbdoc")
         .def("IsEmpty", static_cast<bool (NCollection_BaseMap::*)() const noexcept>(&NCollection_BaseMap::IsEmpty), R"nbdoc(IsEmpty)nbdoc")
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_BaseMap::*)() const noexcept>(&NCollection_BaseMap::Allocator), R"nbdoc(Returns attached allocator)nbdoc");
+    nb::borrow<nb::class_<NCollection_BaseMap::Iterator>>(m.attr("NCollection_BaseMap").attr("Iterator"))
+        .def("Initialize", static_cast<void (NCollection_BaseMap::Iterator::*)(const NCollection_BaseMap &) noexcept>(&NCollection_BaseMap::Iterator::Initialize), nb::arg("theMap"), R"nbdoc(Initialize)nbdoc")
+        .def("Reset", static_cast<void (NCollection_BaseMap::Iterator::*)() noexcept>(&NCollection_BaseMap::Iterator::Reset), R"nbdoc(Reset)nbdoc")
+        .def("IsEqual", static_cast<bool (NCollection_BaseMap::Iterator::*)(const NCollection_BaseMap::Iterator &) const noexcept>(&NCollection_BaseMap::Iterator::IsEqual), nb::arg("theOther"), R"nbdoc(Performs comparison of two iterators.)nbdoc");
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<bool>>(nb::borrow<nb::class_<NCollection_DefaultHasher<bool>>>(m.attr("NCollection_DefaultHasher__bool")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<bool>>>(m.attr("NCollection_DefaultHasher__bool"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<bool>::*)(const bool) const noexcept>(&NCollection_DefaultHasher<bool>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<bool>::*)(const bool, const bool) const noexcept>(&NCollection_DefaultHasher<bool>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<char>>(nb::borrow<nb::class_<NCollection_DefaultHasher<char>>>(m.attr("NCollection_DefaultHasher__char")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<char>>>(m.attr("NCollection_DefaultHasher__char"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<char>::*)(const char) const noexcept>(&NCollection_DefaultHasher<char>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<char>::*)(const char, const char) const noexcept>(&NCollection_DefaultHasher<char>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<signed char>>(nb::borrow<nb::class_<NCollection_DefaultHasher<signed char>>>(m.attr("NCollection_DefaultHasher__signed_char")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<signed char>>>(m.attr("NCollection_DefaultHasher__signed_char"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<signed char>::*)(const signed char) const noexcept>(&NCollection_DefaultHasher<signed char>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<signed char>::*)(const signed char, const signed char) const noexcept>(&NCollection_DefaultHasher<signed char>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<unsigned char>>(nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned char>>>(m.attr("NCollection_DefaultHasher__unsigned_char")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned char>>>(m.attr("NCollection_DefaultHasher__unsigned_char"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<unsigned char>::*)(const unsigned char) const noexcept>(&NCollection_DefaultHasher<unsigned char>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<unsigned char>::*)(const unsigned char, const unsigned char) const noexcept>(&NCollection_DefaultHasher<unsigned char>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<wchar_t>>(nb::borrow<nb::class_<NCollection_DefaultHasher<wchar_t>>>(m.attr("NCollection_DefaultHasher__wchar_t")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<wchar_t>>>(m.attr("NCollection_DefaultHasher__wchar_t"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<wchar_t>::*)(const wchar_t) const noexcept>(&NCollection_DefaultHasher<wchar_t>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<wchar_t>::*)(const wchar_t, const wchar_t) const noexcept>(&NCollection_DefaultHasher<wchar_t>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<char16_t>>(nb::borrow<nb::class_<NCollection_DefaultHasher<char16_t>>>(m.attr("NCollection_DefaultHasher__char16_t")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<char16_t>>>(m.attr("NCollection_DefaultHasher__char16_t"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<char16_t>::*)(const char16_t) const noexcept>(&NCollection_DefaultHasher<char16_t>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<char16_t>::*)(const char16_t, const char16_t) const noexcept>(&NCollection_DefaultHasher<char16_t>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<char32_t>>(nb::borrow<nb::class_<NCollection_DefaultHasher<char32_t>>>(m.attr("NCollection_DefaultHasher__char32_t")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<char32_t>>>(m.attr("NCollection_DefaultHasher__char32_t"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<char32_t>::*)(const char32_t) const noexcept>(&NCollection_DefaultHasher<char32_t>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<char32_t>::*)(const char32_t, const char32_t) const noexcept>(&NCollection_DefaultHasher<char32_t>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<short>>(nb::borrow<nb::class_<NCollection_DefaultHasher<short>>>(m.attr("NCollection_DefaultHasher__short")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<short>>>(m.attr("NCollection_DefaultHasher__short"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<short>::*)(const short) const noexcept>(&NCollection_DefaultHasher<short>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<short>::*)(const short, const short) const noexcept>(&NCollection_DefaultHasher<short>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<int>>(nb::borrow<nb::class_<NCollection_DefaultHasher<int>>>(m.attr("NCollection_DefaultHasher__int")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<int>>>(m.attr("NCollection_DefaultHasher__int"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<int>::*)(const int) const noexcept>(&NCollection_DefaultHasher<int>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<int>::*)(const int, const int) const noexcept>(&NCollection_DefaultHasher<int>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<long>>(nb::borrow<nb::class_<NCollection_DefaultHasher<long>>>(m.attr("NCollection_DefaultHasher__long")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<long>>>(m.attr("NCollection_DefaultHasher__long"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<long>::*)(const long) const noexcept>(&NCollection_DefaultHasher<long>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<long>::*)(const long, const long) const noexcept>(&NCollection_DefaultHasher<long>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<long long>>(nb::borrow<nb::class_<NCollection_DefaultHasher<long long>>>(m.attr("NCollection_DefaultHasher__long_long")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<long long>>>(m.attr("NCollection_DefaultHasher__long_long"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<long long>::*)(const long long) const noexcept>(&NCollection_DefaultHasher<long long>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<long long>::*)(const long long, const long long) const noexcept>(&NCollection_DefaultHasher<long long>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<unsigned short>>(nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned short>>>(m.attr("NCollection_DefaultHasher__unsigned_short")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned short>>>(m.attr("NCollection_DefaultHasher__unsigned_short"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<unsigned short>::*)(const unsigned short) const noexcept>(&NCollection_DefaultHasher<unsigned short>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<unsigned short>::*)(const unsigned short, const unsigned short) const noexcept>(&NCollection_DefaultHasher<unsigned short>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<unsigned int>>(nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned int>>>(m.attr("NCollection_DefaultHasher__unsigned_int")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned int>>>(m.attr("NCollection_DefaultHasher__unsigned_int"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<unsigned int>::*)(const unsigned int) const noexcept>(&NCollection_DefaultHasher<unsigned int>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<unsigned int>::*)(const unsigned int, const unsigned int) const noexcept>(&NCollection_DefaultHasher<unsigned int>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<unsigned long>>(nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned long>>>(m.attr("NCollection_DefaultHasher__unsigned_long")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned long>>>(m.attr("NCollection_DefaultHasher__unsigned_long"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<unsigned long>::*)(const unsigned long) const noexcept>(&NCollection_DefaultHasher<unsigned long>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<unsigned long>::*)(const unsigned long, const unsigned long) const noexcept>(&NCollection_DefaultHasher<unsigned long>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
+    nanoocp_implicit_default_ctor<NCollection_DefaultHasher<unsigned long long>>(nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned long long>>>(m.attr("NCollection_DefaultHasher__unsigned_long_long")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<unsigned long long>>>(m.attr("NCollection_DefaultHasher__unsigned_long_long"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<unsigned long long>::*)(const unsigned long long) const noexcept>(&NCollection_DefaultHasher<unsigned long long>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<unsigned long long>::*)(const unsigned long long, const unsigned long long) const noexcept>(&NCollection_DefaultHasher<unsigned long long>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
     nb::borrow<nb::class_<NCollection_SeqNode>>(m.attr("NCollection_SeqNode"))
@@ -325,6 +341,11 @@ create more BaseAllocators, but it is injurious.)nbdoc")
         .def("Length", static_cast<int (NCollection_BaseSequence::*)() const noexcept>(&NCollection_BaseSequence::Length), R"nbdoc(Number of items (legacy int-returning API).)nbdoc")
         .def("Size", static_cast<size_t (NCollection_BaseSequence::*)() const noexcept>(&NCollection_BaseSequence::Size), R"nbdoc(Size - number of items.)nbdoc")
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_BaseSequence::*)() const noexcept>(&NCollection_BaseSequence::Allocator), R"nbdoc(Returns attached allocator)nbdoc");
+    nb::borrow<nb::class_<NCollection_BaseSequence::Iterator>>(m.attr("NCollection_BaseSequence").attr("Iterator"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
+        .def(nb::init<const NCollection_BaseSequence &, const bool>(), nb::arg("theSeq"), nb::arg("isStart"), R"nbdoc(Constructor with initialisation)nbdoc")
+        .def("Init", static_cast<void (NCollection_BaseSequence::Iterator::*)(const NCollection_BaseSequence &, const bool) noexcept>(&NCollection_BaseSequence::Iterator::Init), nb::arg("theSeq"), nb::arg("isStart") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Initialisation)nbdoc")
+        .def("Previous", static_cast<void (NCollection_BaseSequence::Iterator::*)() noexcept>(&NCollection_BaseSequence::Iterator::Previous), R"nbdoc(Switch to previous element; note that it will reset)nbdoc");
     nb::borrow<nb::class_<NCollection_AccAllocator>>(m.attr("NCollection_AccAllocator"))
         .def(nb::new_([](const size_t theBlockSize) { return opencascade::handle<NCollection_AccAllocator>(new NCollection_AccAllocator(theBlockSize)); }), nb::arg("theBlockSize") = static_cast<std::decay_t<const size_t>>(NCollection_AccAllocator::DefaultBlockSize), R"nbdoc(Constructor)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&NCollection_AccAllocator::get_type_name))
@@ -345,6 +366,17 @@ create more BaseAllocators, but it is injurious.)nbdoc")
         .def("Size", static_cast<size_t (NCollection_BaseList::*)() const noexcept>(&NCollection_BaseList::Size), R"nbdoc(Size - number of nodes.)nbdoc")
         .def("IsEmpty", static_cast<bool (NCollection_BaseList::*)() const noexcept>(&NCollection_BaseList::IsEmpty))
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_BaseList::*)() const noexcept>(&NCollection_BaseList::Allocator), R"nbdoc(Returns attached allocator)nbdoc");
+    nb::borrow<nb::class_<NCollection_BaseList::Iterator>>(m.attr("NCollection_BaseList").attr("Iterator"))
+        .def(nb::init<>())
+        .def(nb::init<const NCollection_BaseList &>(), nb::arg("theList"))
+        .def("Init", static_cast<void (NCollection_BaseList::Iterator::*)(const NCollection_BaseList &) noexcept>(&NCollection_BaseList::Iterator::Init), nb::arg("theList"))
+        .def("Initialize", static_cast<void (NCollection_BaseList::Iterator::*)(const NCollection_BaseList &) noexcept>(&NCollection_BaseList::Iterator::Initialize), nb::arg("theList"))
+        .def("More", static_cast<bool (NCollection_BaseList::Iterator::*)() const noexcept>(&NCollection_BaseList::Iterator::More))
+        .def("__eq__", static_cast<bool (NCollection_BaseList::Iterator::*)(const NCollection_BaseList::Iterator &) const noexcept>(&NCollection_BaseList::Iterator::operator==), nb::arg("theIt"), nb::is_operator())
+        .def("IsEqual", static_cast<bool (NCollection_BaseList::Iterator::*)(const NCollection_BaseList::Iterator &) const noexcept>(&NCollection_BaseList::Iterator::IsEqual), nb::arg("theOther"), R"nbdoc(Performs comparison of two iterators)nbdoc")
+        .def_rw("myCurrent", &NCollection_BaseList::Iterator::myCurrent)
+        .def_rw("myPrevious", &NCollection_BaseList::Iterator::myPrevious);
+    nb::implicitly_convertible<std::decay_t<const NCollection_BaseList &>, NCollection_BaseList::Iterator>();
     nb::borrow<nb::class_<NCollection_Buffer>>(m.attr("NCollection_Buffer"))
         .def("IsEmpty", static_cast<bool (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::IsEmpty), R"nbdoc(@return true if buffer is not allocated)nbdoc")
         .def("Size", static_cast<size_t (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::Size), R"nbdoc(Return buffer length in bytes.)nbdoc")
@@ -381,8 +413,10 @@ for future allocations.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&NCollection_IncAllocator::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (NCollection_IncAllocator::*)() const>(&NCollection_IncAllocator::DynamicType));
     nb::implicitly_convertible<std::decay_t<const size_t>, NCollection_IncAllocator>();
-    nb::borrow<nb::class_<NCollection_ForwardRangeSentinel>>(m.attr("NCollection_ForwardRangeSentinel"))
-        .def(nb::init<>());
+    nb::borrow<nb::class_<NCollection_IncAllocator::IBlock>>(m.attr("NCollection_IncAllocator").attr("IBlock"))
+        .def_rw("NextBlock", &NCollection_IncAllocator::IBlock::NextBlock, R"nbdoc(Pointer to next sorted block)nbdoc")
+        .def_rw("NextOrderedBlock", &NCollection_IncAllocator::IBlock::NextOrderedBlock, R"nbdoc(Pointer to next ordered block)nbdoc");
+    nanoocp_implicit_default_ctor<NCollection_ForwardRangeSentinel>(nb::borrow<nb::class_<NCollection_ForwardRangeSentinel>>(m.attr("NCollection_ForwardRangeSentinel")));
     nb::borrow<nb::class_<NCollection_HeapAllocator>>(m.attr("NCollection_HeapAllocator"))
         .def_static("GlobalHeapAllocator", static_cast<const occ::handle<NCollection_HeapAllocator> & (*)()>(&NCollection_HeapAllocator::GlobalHeapAllocator))
         .def_static("get_type_name", static_cast<const char * (*)()>(&NCollection_HeapAllocator::get_type_name))
@@ -391,6 +425,11 @@ for future allocations.)nbdoc")
     nb::borrow<nb::class_<NCollection_SparseArrayBase>>(m.attr("NCollection_SparseArrayBase"))
         .def("Size", static_cast<size_t (NCollection_SparseArrayBase::*)() const noexcept>(&NCollection_SparseArrayBase::Size), R"nbdoc(Returns number of currently contained items)nbdoc")
         .def("HasValue", static_cast<bool (NCollection_SparseArrayBase::*)(const size_t) const>(&NCollection_SparseArrayBase::HasValue), nb::arg("theIndex"), R"nbdoc(Check whether the value at given index is set)nbdoc");
+    nb::borrow<nb::class_<NCollection_SparseArrayBase::Iterator>>(m.attr("NCollection_SparseArrayBase").attr("Iterator"))
+        .def("Restart", static_cast<void (NCollection_SparseArrayBase::Iterator::*)()>(&NCollection_SparseArrayBase::Iterator::Restart), R"nbdoc(Restart iterations on the same array)nbdoc")
+        .def("More", static_cast<bool (NCollection_SparseArrayBase::Iterator::*)() const noexcept>(&NCollection_SparseArrayBase::Iterator::More), R"nbdoc(Returns True if current item is available)nbdoc")
+        .def("Next", static_cast<void (NCollection_SparseArrayBase::Iterator::*)()>(&NCollection_SparseArrayBase::Iterator::Next), R"nbdoc(Advances to the next item)nbdoc")
+        .def("Index", static_cast<size_t (NCollection_SparseArrayBase::Iterator::*)() const noexcept>(&NCollection_SparseArrayBase::Iterator::Index), R"nbdoc(Returns current index)nbdoc");
     nb::borrow<nb::class_<NCollection_UtfString<char>>>(m.attr("NCollection_String"))
         .def(nb::init<>(), R"nbdoc(Initialize empty string.)nbdoc")
         .def(nb::init<const NCollection_UtfString<char> &>(), nb::arg("theCopy"), R"nbdoc(Copy constructor.
@@ -446,4 +485,6 @@ Copy from another string.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&NCollection_WinHeapAllocator::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (NCollection_WinHeapAllocator::*)() const>(&NCollection_WinHeapAllocator::DynamicType));
     nb::implicitly_convertible<std::decay_t<const size_t>, NCollection_WinHeapAllocator>();
+    nb::borrow<nb::module_>(m.attr("NCollection_Primes")).def("NextPrimeForMap", static_cast<size_t (*)(const size_t) noexcept>(&NCollection_Primes::NextPrimeForMap), nb::arg("theN"), R"nbdoc(Returns the next prime number greater than or equal to theN.
+If theN exceeds the largest available prime, returns theN + 1.)nbdoc");
 }

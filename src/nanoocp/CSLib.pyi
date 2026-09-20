@@ -134,7 +134,7 @@ class CSLib:
 
     @overload
     @staticmethod
-    def Normal(theMaxOrder: int, theDerNUV: nanoocp.NCollection.NCollection_Array2__gp_Vec, theMagTol: float, theU: float, theV: float, theUmin: float, theUmax: float, theVmin: float, theVmax: float, theNormal: nanoocp.gp.gp_Dir) -> tuple[CSLib_NormalStatus, int, int]:
+    def Normal(theMaxOrder: int, theDerNUV: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Vec], theMagTol: float, theU: float, theV: float, theUmin: float, theUmax: float, theVmin: float, theVmax: float, theNormal: nanoocp.gp.gp_Dir) -> tuple[CSLib_NormalStatus, int, int]:
         """
         Computes the normal at a singular point using higher-order derivatives.
 
@@ -153,7 +153,7 @@ class CSLib:
 
     @overload
     @staticmethod
-    def DNNUV(theNu: int, theNv: int, theDerSurf: nanoocp.NCollection.NCollection_Array2__gp_Vec) -> nanoocp.gp.gp_Vec:
+    def DNNUV(theNu: int, theNv: int, theDerSurf: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Vec]) -> nanoocp.gp.gp_Vec:
         """
         Computes the derivative of order (theNu, theNv) of the non-normalized normal vector.
 
@@ -169,7 +169,7 @@ class CSLib:
 
     @overload
     @staticmethod
-    def DNNUV(theNu: int, theNv: int, theDerSurf1: nanoocp.NCollection.NCollection_Array2__gp_Vec, theDerSurf2: nanoocp.NCollection.NCollection_Array2__gp_Vec) -> nanoocp.gp.gp_Vec:
+    def DNNUV(theNu: int, theNv: int, theDerSurf1: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Vec], theDerSurf2: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Vec]) -> nanoocp.gp.gp_Vec:
         """
         Computes the derivative of the non-normalized vector N = dS1/du ^ dS2/dv.
 
@@ -184,7 +184,7 @@ class CSLib:
         """
 
     @staticmethod
-    def DNNormal(theNu: int, theNv: int, theDerNUV: nanoocp.NCollection.NCollection_Array2__gp_Vec, theIduref: int = 0, theIdvref: int = 0) -> nanoocp.gp.gp_Vec:
+    def DNNormal(theNu: int, theNv: int, theDerNUV: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Vec], theIduref: int = 0, theIdvref: int = 0) -> nanoocp.gp.gp_Vec:
         """
         Computes the derivative of order (theNu, theNv) of the normalized normal vector.
 
@@ -217,7 +217,7 @@ class CSLib_Class2d:
         """Default constructor. Creates an empty classifier."""
 
     @overload
-    def __init__(self, thePnts2d: nanoocp.NCollection.NCollection_Array1__gp_Pnt2d, theTolU: float, theTolV: float, theUMin: float, theVMin: float, theUMax: float, theVMax: float) -> None:
+    def __init__(self, thePnts2d: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d], theTolU: float, theTolV: float, theUMin: float, theVMin: float, theUMax: float, theVMax: float) -> None:
         """
         Constructs a 2D classifier from an array of polygon vertices.
 
@@ -234,7 +234,7 @@ class CSLib_Class2d:
         """
 
     @overload
-    def __init__(self, thePnts2d: nanoocp.NCollection.NCollection_Sequence__gp_Pnt2d, theTolU: float, theTolV: float, theUMin: float, theVMin: float, theUMax: float, theVMax: float) -> None:
+    def __init__(self, thePnts2d: nanoocp.NCollection.NCollection_Sequence[nanoocp.gp.gp_Pnt2d], theTolU: float, theTolV: float, theUMin: float, theVMin: float, theUMax: float, theVMax: float) -> None:
         """
         Constructs a 2D classifier from a sequence of polygon vertices.
 
@@ -250,7 +250,7 @@ class CSLib_Class2d:
         """
 
     @overload
-    def __init__(self, thePnts2d: nanoocp.NCollection.NCollection_DynamicArray__gp_Pnt2d, theTolU: float, theTolV: float, theUMin: float, theVMin: float, theUMax: float, theVMax: float) -> None:
+    def __init__(self, thePnts2d: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.gp.gp_Pnt2d], theTolU: float, theTolV: float, theUMin: float, theVMin: float, theUMax: float, theVMax: float) -> None:
         """
         Constructs a 2D classifier from a vector of polygon vertices.
 
@@ -311,7 +311,7 @@ class CSLib_NormalPolyDef(nanoocp.math.math_FunctionWithDerivative):
     at singular surface points by solving for zeros of this polynomial.
     """
 
-    def __init__(self, theK0: int, theLi: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def __init__(self, theK0: int, theLi: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         Constructs a polynomial definition for normal computation.
 

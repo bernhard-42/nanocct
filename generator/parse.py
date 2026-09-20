@@ -14,7 +14,7 @@ from clang.cindex import AccessSpecifier as Access
 from clang.cindex import CursorKind as K
 from clang.cindex import TypeKind as TK
 
-from .model import Class, Constructor, Enum, Field, Function, Method, PackageIR, Param, TemplateInstance
+from .model import Class, Constant, Constructor, Enum, Field, Function, Method, PackageIR, Param, TemplateInstance
 from .occt import OcctTree, Package
 
 _PRIMITIVE_KINDS = {
@@ -26,6 +26,7 @@ _OVERRIDES = tomllib.loads((Path(__file__).parent / "overrides.toml").read_text(
 _INOUT = set(_OVERRIDES.get("inout", []))
 _SKIP_CLASSES = set(_OVERRIDES.get("skip", {}).get("classes", []))
 _SKIP_HEADERS = set(_OVERRIDES.get("skip", {}).get("headers", []))
+_SKIP_NAMESPACES = set(_OVERRIDES.get("skip", {}).get("namespaces", []))
 _SKIP_METHODS = set(_OVERRIDES.get("skip", {}).get("methods", []))
 _EXTRA_INSTANCES = list(_OVERRIDES.get("instantiate", {}).get("extra", []))
 
@@ -111,7 +112,43 @@ def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | 
         for i, tok in enumerate(expr):
             if tok in members and (i == 0 or expr[i - 1] != "::") and not (i + 1 < len(expr) and expr[i + 1] == "("):
                 expr[i] = f"{scope}::{tok}"
+    # names from a namespace, written unqualified thanks to the enclosing namespace or a using-directive
+    # (MathRoot: `double theSupBound = THE_2PI` with `using namespace MathUtils`): qualify via the AST reference
+    for ref in param.walk_preorder():
+        if ref.kind not in (K.DECL_REF_EXPR, K.TYPE_REF) or ref.referenced is None:
+            continue
+        target = ref.referenced
+        qualified = _namespace_qualified(target)
+        if qualified is None:
+            continue
+        for i, tok in enumerate(expr):
+            if tok == target.spelling and (i == 0 or expr[i - 1] != "::"):
+                expr[i] = qualified
     return _apply_subst(" ".join(expr))          # template parameters in defaults (Element_t(0)) while instantiating.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
+
+
+def _namespace_qualified(decl: cindex.Cursor) -> str | None:
+    """Fully qualified name of a declaration whose enclosing scopes include a (named) namespace; None otherwise."""
+    parts = [decl.spelling]
+    parent = decl.semantic_parent
+    has_namespace = False
+    while parent is not None and parent.kind != K.TRANSLATION_UNIT:
+        if parent.kind == K.NAMESPACE:
+            if parent.spelling == "":
+                return None
+            has_namespace = True
+            parts.append(parent.spelling)
+        elif parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
+            parts.append(parent.spelling)
+        elif parent.kind == K.ENUM_DECL:
+            if parent.is_scoped_enum():
+                parts.append(parent.spelling)
+        else:
+            return None
+        parent = parent.semantic_parent
+    if not has_namespace:
+        return None
+    return "::".join(reversed(parts))
 
 
 def _is_out_param(t: cindex.Type) -> bool:
@@ -146,6 +183,13 @@ def _type_spelling(t: cindex.Type) -> str:
     return _apply_subst(_type_spelling_raw(t))
 
 
+def _in_user_namespace(decl: cindex.Cursor) -> bool:
+    """True for a declaration inside an OCCT namespace (TopoDS::Vertex, Geom2dGridEval::CurveD1), false for std."""
+    parent = decl.semantic_parent
+    return (parent is not None and parent.kind == K.NAMESPACE and parent.spelling != ""
+            and parent.spelling != "std" and not parent.spelling.startswith("__"))
+
+
 def _type_spelling_raw(t: cindex.Type) -> str:
     base = t
     suffix = ""                      # qualifiers/declarators outside the base type, rebuilt below
@@ -156,6 +200,10 @@ def _type_spelling_raw(t: cindex.Type) -> str:
     if decl.kind != K.NO_DECL_FOUND:
         parent = decl.semantic_parent
         if parent is not None and parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
+            return t.get_canonical().spelling
+        # a plain class in an OCCT namespace may be written unqualified inside that namespace (class Full : public Base)
+        if decl.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL) and _in_user_namespace(decl) \
+                and base.get_canonical().get_num_template_arguments() <= 0:
             return t.get_canonical().spelling
     canon_base = base.get_canonical()
     if canon_base.kind == TK.RECORD and canon_base.get_num_template_arguments() > 0 and "<" in base.spelling:
@@ -188,6 +236,18 @@ def _py_identifier(cpp_name: str) -> str:
     s = re.sub(r"\s*>\s*", "", s)
     s = re.sub(r"[^A-Za-z0-9_]", "_", s)
     return s
+
+
+def py_path(cpp_name: str, package: str) -> str:
+    """Python attribute path of a bound C++ type relative to nanoocp.<package>: nested classes and namespaces keep
+    their C++ nesting (gp_Dir::D -> gp_Dir.D, Geom2dEval_RepCurveDesc::Base -> Geom2dEval_RepCurveDesc.Base);
+    a namespace named like the package is the package module itself (Geom2dGridEval::CurveD1 -> CurveD1)."""
+    if "<" in cpp_name:
+        return _py_identifier(cpp_name)
+    parts = cpp_name.split("::")
+    if len(parts) > 1 and parts[0] == package:
+        parts = parts[1:]
+    return ".".join(parts)
 
 
 def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
@@ -240,8 +300,8 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
                         return f"std::{decl.spelling} of {r}"
                     ad = arg.get_canonical().get_declaration()
                     if ad.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ad.semantic_parent is not None \
-                            and ad.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL):
-                        return f"std::{decl.spelling} of nested class {ad.spelling}"
+                            and ad.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ad.access_specifier != Access.PUBLIC:
+                        return f"std::{decl.spelling} of non-public nested class {ad.spelling}"
         elif parent is not None and parent.kind in (K.CLASS_DECL, K.STRUCT_DECL) and base.get_num_template_arguments() == 0:
             pass
     if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind == TK.POINTER:
@@ -363,11 +423,13 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     return m
 
 
-def _class(cursor: cindex.Cursor, header: str) -> Class:
+def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") -> Class:
     cpp_name = _type_spelling(cursor.type)          # 'NCollection_Lerp<gp_Trsf>' for a specialization
-    c = Class(name=cpp_name, py_name=_py_identifier(cpp_name), bases=[], header=header, doc=_doc(cursor),
+    path = py_path(cpp_name, package).split(".")
+    c = Class(name=cpp_name, py_name=path[-1], bases=[], header=header, doc=_doc(cursor),
               is_transient=_derives_from(cursor, "Standard_Transient"),
-              is_exception=_derives_from(cursor, "Standard_Failure"), is_abstract=cursor.is_abstract_record())
+              is_exception=_derives_from(cursor, "Standard_Failure"), is_abstract=cursor.is_abstract_record(),
+              scope=tuple(path[:-1]), outer=outer)
     members: set[str] = set()      # names usable unqualified inside the class (for default arguments)
     for ch in cursor.get_children():
         if ch.kind in (K.VAR_DECL, K.FIELD_DECL, K.ENUM_DECL, K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL):
@@ -416,6 +478,8 @@ def _class(cursor: cindex.Cursor, header: str) -> Class:
             reason = _unsupported(ch.type, allow_out=False)
             if reason is None and ch.type.get_canonical().kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
                 reason = "array"
+            if reason is None and ch.type.get_canonical().kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
+                reason = "reference member (no pointer-to-member)"
             if reason is not None:
                 c.skipped.append(f"{c.name}::{ch.spelling}: field {reason}")
                 continue
@@ -425,7 +489,14 @@ def _class(cursor: cindex.Cursor, header: str) -> Class:
         elif ch.kind in (K.FUNCTION_TEMPLATE,):
             c.skipped.append(f"{c.name}::{ch.spelling}: template member")
         elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition():
-            c.skipped.append(f"{c.name}::{ch.spelling}: nested class")
+            if ch.spelling == "":
+                c.skipped.append(f"{c.name}: anonymous nested struct")
+            elif len(_subst) > 0:
+                c.skipped.append(f"{cursor.spelling}::{ch.spelling}: nested class of a class template (alias instantiation)")
+            else:
+                c.nested.append(_class(ch, header, package, outer=c.name))
+        elif ch.kind == K.CLASS_TEMPLATE:
+            c.skipped.append(f"{c.name}::{ch.spelling}: nested class template")
     return c
 
 
@@ -487,7 +558,7 @@ def _find_class_template(tu: cindex.TranslationUnit, name: str) -> tuple[cindex.
     return definition, param_lists
 
 
-def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str, report: list[str]) -> Class | None:
+def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str, package: str, report: list[str]) -> Class | None:
     """using math_Vector = math_VectorBase<double>; -> the template's members instantiated for these arguments
     (Design.md 6c). NCollection containers (hand-written binders) and std types are not handled here."""
     from .ncollection import BINDERS
@@ -533,7 +604,7 @@ def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str,
             _subst.setdefault(name, a)
     _subst_self = (tmpl_name, full)
     try:
-        c = _class(tmpl, header)
+        c = _class(tmpl, header, package)
     finally:
         _subst = {}
         _subst_self = None
@@ -544,6 +615,11 @@ def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str,
     for m in c.methods:
         m.defined_in_header = True            # instantiated from the header, no library symbol involved
     return c
+
+
+def _prefixes(scope: tuple[str, ...]) -> list[tuple[str, ...]]:
+    """('A', 'B') -> [('A',), ('A', 'B')]"""
+    return [scope[:i] for i in range(1, len(scope) + 1)]
 
 
 def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -> PackageIR:
@@ -580,33 +656,54 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
                 else:
                     yield cur, ns
 
+        def add_class(c: Class) -> None:
+            ir.classes.append(c)
+            for n in c.nested:               # nested classes are bound after (and into) their outer class
+                add_class(n)
+
         for cur, ns in top_level(tu.cursor, ""):
             header = Path(cur.location.file.name).name
+            # a namespace named like the package is the package module itself (TopoDS::Vertex -> nanoocp.TopoDS.Vertex);
+            # every other namespace becomes a submodule (Geom2dEval_RepCurveDesc::Base -> nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base)
+            ns_parts = ns.rstrip(":").split("::") if ns != "" else []
+            if "" in ns_parts:
+                ir.report.append(f"{header}: {cur.spelling}: anonymous namespace (not bound)")
+                continue
+            if any(part in _SKIP_NAMESPACES for part in ns_parts):
+                if cur.is_definition() or cur.kind == K.FUNCTION_DECL:
+                    ir.report.append(f"{ns}{cur.spelling}: namespace skipped (overrides.toml [skip] namespaces)")
+                continue
+            if len(ns_parts) > 0 and ns_parts[0] == pkg.name:
+                ns_parts = ns_parts[1:]
+            scope = tuple(ns_parts)
             if ns != "" and cur.kind == K.VAR_DECL and cur.type.is_const_qualified():
                 # namespace-level constants (constexpr double MathUtils::THE_NEWTON_FTOL_SQ = ...) -> module attributes
-                ir.constants.append((cur.spelling, f"{ns}{cur.spelling}", _doc(cur)))
+                ir.constants.append(Constant(py_name=cur.spelling, cpp=f"{ns}{cur.spelling}", doc=_doc(cur), scope=scope))
                 continue
             if ns != "" and cur.kind in (K.FUNCTION_TEMPLATE, K.CLASS_TEMPLATE):
                 ir.report.append(f"{ns}{cur.spelling}: template in namespace (not bound)")
                 continue
-            if ns != "" and cur.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL, K.FUNCTION_DECL):
-                ir.report.append(f"{ns}{cur.spelling}: declaration inside a namespace (not bound yet)")
+            if ns != "" and cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
+                ir.report.append(f"{ns}{cur.spelling}: type alias in namespace (not bound)")
                 continue
             if cur.kind in (K.CLASS_DECL, K.STRUCT_DECL) and cur.is_definition():
-                c = _class(cur, header)
+                c = _class(cur, header, pkg.name)
                 if c.name in _SKIP_CLASSES:
                     ir.report.append(f"{c.name}: skipped (overrides.toml [skip])")
                     continue
-                ir.classes.append(c)
+                add_class(c)
             elif cur.kind == K.ENUM_DECL and cur.is_definition():
-                ir.enums.append(_enum(cur, header, None))
+                e = _enum(cur, header, ns.rstrip(":") if ns != "" else None)
+                e.scope = scope
+                ir.enums.append(e)
             elif cur.kind == K.FUNCTION_DECL:
-                params, reason = _params(cur)
+                params, reason = _params(cur, f"{ns}{cur.spelling}")
                 rk, rc = _result_kind(cur.result_type)
                 fn = Function(name=cur.spelling, params=params, result=_type_spelling(cur.result_type),
                               result_kind=rk, result_class=rc,
                               is_noexcept=_is_noexcept(cur), doc=_doc(cur), header=header,
-                              is_operator=cur.spelling.startswith("operator"), skip_reason=reason)
+                              is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
+                              qualified=f"{ns}{cur.spelling}", scope=scope)
                 if fn.skip_reason is None:
                     fn.skip_reason = _unsupported(cur.result_type, allow_out=False)
                 if fn.skip_reason is not None:
@@ -615,13 +712,20 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
             elif cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
                 ir.typedefs.append((cur.spelling, _type_spelling(cur.underlying_typedef_type)))
                 if not any(c.py_name == cur.spelling for c in ir.classes):     # the same alias appears in several headers
-                    inst = _alias_instance(tu, cur, header, ir.report)
+                    inst = _alias_instance(tu, cur, header, pkg.name, ir.report)
                     if inst is not None:
                         ir.classes.append(inst)
             elif cur.kind in (K.CLASS_TEMPLATE, K.FUNCTION_TEMPLATE):
                 ir.report.append(f"{cur.spelling}: template (not bound)")
     for c in ir.classes:
         ir.report.extend(c.skipped)
+    # every namespace with a bound member, outer ones first (the emitter creates the submodules in this order);
+    # nested classes are excluded: their scope ends in class names
+    namespaces = {sc for c in ir.classes if c.outer == "" for sc in _prefixes(c.scope)}
+    namespaces |= {sc for e in ir.enums for sc in _prefixes(e.scope)}
+    namespaces |= {sc for f in ir.functions if f.skip_reason is None for sc in _prefixes(f.scope)}
+    namespaces |= {sc for k in ir.constants for sc in _prefixes(k.scope)}
+    ir.namespaces = sorted(namespaces)
     # only instances referenced by members that are actually bound matter, but the over-approximation
     # (every signature seen) is harmless: an unused instantiation just costs compile time
     ir.instances = dict(_instances_seen)

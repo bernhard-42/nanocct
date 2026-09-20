@@ -7,12 +7,346 @@
 #include <MathLin_Jacobi.hxx>
 #include <MathLin_LeastSquares.hxx>
 #include <MathLin_EigenSearch.hxx>
+#include <math_Matrix.hxx>
+#include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_MathLin(nb::module_ &m) {
+    nb::enum_<MathLin::LeastSquaresMethod>(m, "LeastSquaresMethod", R"nbdoc(Method for solving least squares problems.)nbdoc")
+        .value("NormalEquations", MathLin::LeastSquaresMethod::NormalEquations)
+        .value("QR", MathLin::LeastSquaresMethod::QR)
+        .value("SVD", MathLin::LeastSquaresMethod::SVD);
+    { nb::class_<MathLin::LUResult> cls(m, "LUResult", R"nbdoc(Result for LU decomposition.)nbdoc");
+    }
+    { nb::class_<MathLin::CroutResult> cls(m, "CroutResult", R"nbdoc(Result for Crout LDL^T decomposition.
+Specialized for symmetric matrices.)nbdoc");
+    }
+    { nb::class_<MathLin::SVDResult> cls(m, "SVDResult", R"nbdoc(Result for SVD decomposition.)nbdoc");
+    }
+    { nb::class_<MathLin::QRResult> cls(m, "QRResult", R"nbdoc(Result for QR decomposition using Householder reflections.)nbdoc");
+    }
+    { nb::class_<MathLin::LeastSquaresResult> cls(m, "LeastSquaresResult", R"nbdoc(Result for least squares problems.)nbdoc");
+    }
+    { nb::class_<MathLin::EigenResult> cls(m, "EigenResult", R"nbdoc(Result for eigenvalue decomposition of tridiagonal matrix.)nbdoc");
+    }
 }
 
 void nanoocp_templates_MathLin(nb::module_ &m) {
 }
 
 void nanoocp_define_MathLin(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<MathLin::LUResult>(nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult")));
+    nb::borrow<nb::class_<MathLin::LUResult>>(m.attr("LUResult"))
+        .def("IsDone", static_cast<bool (MathLin::LUResult::*)() const>(&MathLin::LUResult::IsDone))
+        .def_rw("Status", &MathLin::LUResult::Status)
+        .def_rw("LU", &MathLin::LUResult::LU, R"nbdoc(Combined L and U matrices)nbdoc")
+        .def_rw("Pivot", &MathLin::LUResult::Pivot, R"nbdoc(Pivot indices)nbdoc")
+        .def_rw("Determinant", &MathLin::LUResult::Determinant)
+        .def_rw("Sign", &MathLin::LUResult::Sign, R"nbdoc(Sign from row interchanges)nbdoc");
+    nanoocp_implicit_default_ctor<MathLin::CroutResult>(nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult")));
+    nb::borrow<nb::class_<MathLin::CroutResult>>(m.attr("CroutResult"))
+        .def("IsDone", static_cast<bool (MathLin::CroutResult::*)() const>(&MathLin::CroutResult::IsDone))
+        .def_rw("Status", &MathLin::CroutResult::Status)
+        .def_rw("L", &MathLin::CroutResult::L, R"nbdoc(Lower triangular matrix (unit diagonal))nbdoc")
+        .def_rw("D", &MathLin::CroutResult::D, R"nbdoc(Diagonal elements)nbdoc")
+        .def_rw("Inverse", &MathLin::CroutResult::Inverse, R"nbdoc(Inverse matrix (lower triangle only))nbdoc")
+        .def_rw("Determinant", &MathLin::CroutResult::Determinant, R"nbdoc(Matrix determinant)nbdoc");
+    nanoocp_implicit_default_ctor<MathLin::SVDResult>(nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult")));
+    nb::borrow<nb::class_<MathLin::SVDResult>>(m.attr("SVDResult"))
+        .def("IsDone", static_cast<bool (MathLin::SVDResult::*)() const>(&MathLin::SVDResult::IsDone))
+        .def_rw("Status", &MathLin::SVDResult::Status)
+        .def_rw("U", &MathLin::SVDResult::U, R"nbdoc(Left singular vectors (m x n))nbdoc")
+        .def_rw("SingularValues", &MathLin::SVDResult::SingularValues, R"nbdoc(Singular values (n elements))nbdoc")
+        .def_rw("V", &MathLin::SVDResult::V, R"nbdoc(Right singular vectors (n x n))nbdoc")
+        .def_rw("Rank", &MathLin::SVDResult::Rank, R"nbdoc(Numerical rank)nbdoc");
+    nanoocp_implicit_default_ctor<MathLin::QRResult>(nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult")));
+    nb::borrow<nb::class_<MathLin::QRResult>>(m.attr("QRResult"))
+        .def("IsDone", static_cast<bool (MathLin::QRResult::*)() const>(&MathLin::QRResult::IsDone))
+        .def_rw("Status", &MathLin::QRResult::Status)
+        .def_rw("Q", &MathLin::QRResult::Q, R"nbdoc(Orthogonal matrix Q (m x m))nbdoc")
+        .def_rw("R", &MathLin::QRResult::R, R"nbdoc(Upper triangular matrix R (m x n))nbdoc")
+        .def_rw("Rank", &MathLin::QRResult::Rank, R"nbdoc(Numerical rank)nbdoc");
+    nanoocp_implicit_default_ctor<MathLin::LeastSquaresResult>(nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult")));
+    nb::borrow<nb::class_<MathLin::LeastSquaresResult>>(m.attr("LeastSquaresResult"))
+        .def("IsDone", static_cast<bool (MathLin::LeastSquaresResult::*)() const>(&MathLin::LeastSquaresResult::IsDone))
+        .def_rw("Status", &MathLin::LeastSquaresResult::Status)
+        .def_rw("Solution", &MathLin::LeastSquaresResult::Solution, R"nbdoc(Least squares solution x)nbdoc")
+        .def_rw("Residual", &MathLin::LeastSquaresResult::Residual, R"nbdoc(||Ax - b||_2 (L2 norm of residual))nbdoc")
+        .def_rw("ResidualSq", &MathLin::LeastSquaresResult::ResidualSq, R"nbdoc(||Ax - b||_2^2 (squared residual))nbdoc")
+        .def_rw("Rank", &MathLin::LeastSquaresResult::Rank, R"nbdoc(Numerical rank of A (for SVD))nbdoc");
+    nanoocp_implicit_default_ctor<MathLin::EigenResult>(nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult")));
+    nb::borrow<nb::class_<MathLin::EigenResult>>(m.attr("EigenResult"))
+        .def("IsDone", static_cast<bool (MathLin::EigenResult::*)() const>(&MathLin::EigenResult::IsDone))
+        .def_rw("Status", &MathLin::EigenResult::Status)
+        .def_rw("EigenValues", &MathLin::EigenResult::EigenValues, R"nbdoc(Computed eigenvalues)nbdoc")
+        .def_rw("EigenVectors", &MathLin::EigenResult::EigenVectors, R"nbdoc(Eigenvectors as columns)nbdoc")
+        .def_rw("Dimension", &MathLin::EigenResult::Dimension);
+    m.def("LU", static_cast<MathLin::LUResult (*)(const math_Matrix &, double)>(&MathLin::LU), nb::arg("theA"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Perform LU decomposition of matrix A with partial pivoting.
+Decomposes A into L*U where L is lower triangular with unit diagonal
+and U is upper triangular. The result stores L and U in a combined matrix.
+
+@param theA input square matrix
+@param theMinPivot minimum pivot value (smaller treated as singular)
+@return LU decomposition result)nbdoc");
+    m.def("Solve", static_cast<MathUtils::LinearResult (*)(const math_Matrix &, const math_Vector &, double)>(&MathLin::Solve), nb::arg("theA"), nb::arg("theB"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Solve linear system AX = B using LU decomposition.
+
+@param theA coefficient matrix (square)
+@param theB right-hand side vector
+@param theMinPivot minimum pivot value
+@return result containing solution vector)nbdoc");
+    m.def("SolveMultiple", static_cast<MathUtils::LinearMultipleResult (*)(const math_Matrix &, const math_Matrix &, double)>(&MathLin::SolveMultiple), nb::arg("theA"), nb::arg("theB"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Solve multiple linear systems AX = B where B is a matrix.
+Each column of B is a separate right-hand side.
+
+@param theA coefficient matrix (square)
+@param theB right-hand side matrix
+@param theMinPivot minimum pivot value
+@return result containing solution matrix)nbdoc");
+    m.def("Determinant", static_cast<MathUtils::LinearResult (*)(const math_Matrix &, double)>(&MathLin::Determinant), nb::arg("theA"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Compute determinant of matrix A.
+
+@param theA input square matrix
+@param theMinPivot minimum pivot value
+@return result containing determinant value)nbdoc");
+    m.def("Invert", static_cast<MathUtils::InverseResult (*)(const math_Matrix &, double)>(&MathLin::Invert), nb::arg("theA"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Compute inverse of matrix A.
+
+@param theA input square matrix
+@param theMinPivot minimum pivot value
+@return result containing inverse matrix)nbdoc");
+    m.def("Crout", static_cast<MathLin::CroutResult (*)(const math_Matrix &, double)>(&MathLin::Crout), nb::arg("theA"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Crout decomposition for symmetric matrices: A = L * D * L^T.
+
+This algorithm decomposes a symmetric matrix A into:
+- L: lower triangular matrix with unit diagonal
+- D: diagonal matrix
+
+Properties:
+- Only the lower triangle of A is used
+- Faster than general LU for symmetric matrices
+- Computes inverse efficiently
+- Requires positive definiteness for stability
+
+@param theA input symmetric matrix (only lower triangle used)
+@param theMinPivot minimum pivot value (smaller treated as singular)
+@return Crout decomposition result)nbdoc");
+    m.def("SolveCrout", static_cast<MathUtils::LinearResult (*)(const math_Matrix &, const math_Vector &, double)>(&MathLin::SolveCrout), nb::arg("theA"), nb::arg("theB"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Solve symmetric linear system Ax = b using Crout decomposition.
+
+Uses precomputed Crout decomposition to solve for x.
+More efficient than LU for symmetric positive definite matrices.
+
+@param theA coefficient matrix (symmetric)
+@param theB right-hand side vector
+@param theMinPivot minimum pivot value
+@return result containing solution vector)nbdoc");
+    m.def("InvertCrout", static_cast<MathUtils::InverseResult (*)(const math_Matrix &, double)>(&MathLin::InvertCrout), nb::arg("theA"), nb::arg("theMinPivot") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Compute inverse of symmetric matrix using Crout decomposition.
+
+@param theA input symmetric matrix
+@param theMinPivot minimum pivot value
+@return result containing full symmetric inverse matrix)nbdoc");
+    m.def("SVD", static_cast<MathLin::SVDResult (*)(const math_Matrix &, double)>(&MathLin::SVD), nb::arg("theA"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Singular Value Decomposition: A = U * diag(S) * V^T.
+
+Decomposes an m x n matrix A into:
+- U: m x n matrix of left singular vectors (orthonormal columns)
+- S: n singular values in descending order
+- V: n x n matrix of right singular vectors (orthonormal)
+
+Properties:
+- Works for any m x n matrix (m can be less, equal, or greater than n)
+- Singular values are always non-negative
+- Provides the best low-rank approximation of a matrix
+- Useful for solving ill-conditioned linear systems
+
+@param theA input matrix A (m x n)
+@param theTolerance for rank determination (relative to largest singular value)
+@return SVD decomposition result)nbdoc");
+    m.def("SolveSVD", static_cast<MathUtils::LinearResult (*)(const math_Matrix &, const math_Vector &, double)>(&MathLin::SolveSVD), nb::arg("theA"), nb::arg("theB"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-6), R"nbdoc(Solve linear system Ax = b using SVD decomposition.
+This is particularly useful for ill-conditioned or singular systems.
+
+For overdetermined systems (m > n), finds the least squares solution.
+For underdetermined systems (m < n), finds the minimum norm solution.
+
+@param theA coefficient matrix (m x n)
+@param theB right-hand side vector (length m)
+@param theTolerance for singular value threshold
+@return result containing solution vector)nbdoc");
+    m.def("PseudoInverse", static_cast<MathUtils::InverseResult (*)(const math_Matrix &, double)>(&MathLin::PseudoInverse), nb::arg("theA"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-6), R"nbdoc(Compute pseudo-inverse (Moore-Penrose inverse) of matrix A.
+A^+ = V * diag(1/w) * U^T where singular values below threshold are set to 0.
+
+Properties:
+- A * A^+ * A = A
+- A^+ * A * A^+ = A^+
+- (A * A^+)^T = A * A^+
+- (A^+ * A)^T = A^+ * A
+
+@param theA input matrix (m x n)
+@param theTolerance for singular value threshold
+@return result containing pseudo-inverse matrix (n x m))nbdoc");
+    m.def("ConditionNumber", static_cast<double (*)(const math_Matrix &)>(&MathLin::ConditionNumber), nb::arg("theA"), R"nbdoc(Compute condition number of matrix using SVD.
+Condition number = sigma_max / sigma_min (ratio of largest to smallest singular value).
+
+High condition number (> 1e10) indicates ill-conditioned matrix.
+
+@param theA input matrix
+@return condition number (infinity if matrix is singular))nbdoc");
+    m.def("NumericalRank", static_cast<int (*)(const math_Matrix &, double)>(&MathLin::NumericalRank), nb::arg("theA"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Compute numerical rank of matrix using SVD.
+Rank is the number of singular values above the threshold.
+
+@param theA input matrix
+@param theTolerance relative tolerance for singular values
+@return numerical rank)nbdoc");
+    m.def("QR", static_cast<MathLin::QRResult (*)(const math_Matrix &, double)>(&MathLin::QR), nb::arg("theA"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(QR decomposition using Householder reflections: A = Q * R.
+
+Decomposes an m x n matrix A (m >= n) into:
+- Q: m x m orthogonal matrix (Q^T * Q = I)
+- R: m x n upper triangular matrix
+
+The Householder method applies orthogonal transformations
+to reduce A to upper triangular form. It is more numerically
+stable than Gram-Schmidt orthogonalization.
+
+Uses: Least squares problems, orthogonalization, computing
+determinant sign.
+
+@param theA input matrix A (m x n, m >= n)
+@param theTolerance for rank determination
+@return QR decomposition result)nbdoc");
+    m.def("SolveQR", static_cast<MathUtils::LinearResult (*)(const math_Matrix &, const math_Vector &, double)>(&MathLin::SolveQR), nb::arg("theA"), nb::arg("theB"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Solve overdetermined system Ax = b using QR decomposition (least squares).
+
+For m x n system with m > n, finds x that minimizes ||Ax - b||_2.
+
+Algorithm:
+1. Decompose A = Q * R
+2. Compute c = Q^T * b
+3. Solve R * x = c[1:n] (back substitution)
+
+@param theA coefficient matrix (m x n, m >= n)
+@param theB right-hand side vector (length m)
+@param theTolerance for singularity detection
+@return result containing least squares solution)nbdoc");
+    m.def("SolveQRMultiple", static_cast<MathUtils::LinearMultipleResult (*)(const math_Matrix &, const math_Matrix &, double)>(&MathLin::SolveQRMultiple), nb::arg("theA"), nb::arg("theB"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-20), R"nbdoc(Solve multiple right-hand sides using QR decomposition.
+
+@param theA coefficient matrix (m x n, m >= n)
+@param theB right-hand side matrix (m x p)
+@param theTolerance for singularity detection
+@return result containing solution matrix (n x p))nbdoc");
+    m.def("Jacobi", static_cast<MathUtils::EigenResult (*)(const math_Matrix &, bool)>(&MathLin::Jacobi), nb::arg("theA"), nb::arg("theSortDescending") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Compute eigenvalues and eigenvectors of a symmetric matrix
+using the Jacobi iterative method.
+
+The Jacobi method applies a sequence of plane rotations (Givens rotations)
+to diagonalize the symmetric matrix A:
+A' = R^T * A * R
+where R is a rotation that zeroes one off-diagonal element.
+
+After convergence, A is diagonal with eigenvalues on the diagonal,
+and the accumulated rotations form the eigenvector matrix.
+
+Properties:
+- Only works for symmetric matrices
+- Eigenvalues are always real for symmetric matrices
+- Eigenvectors are orthonormal
+- Numerically stable
+
+Complexity: O(n^3) per sweep, typically needs 5-10 sweeps.
+
+@param theA input symmetric matrix (n x n)
+@param theSortDescending if true, eigenvalues are sorted in descending order
+@return eigenvalue result)nbdoc");
+    m.def("EigenValues", static_cast<MathUtils::EigenResult (*)(const math_Matrix &, bool)>(&MathLin::EigenValues), nb::arg("theA"), nb::arg("theSortDescending") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Compute only eigenvalues of a symmetric matrix (faster).
+
+Uses the same Jacobi method but may be optimized to not store
+eigenvectors if not needed.
+
+@param theA input symmetric matrix (n x n)
+@param theSortDescending if true, eigenvalues are sorted in descending order
+@return eigenvalue result (only EigenValues is set))nbdoc");
+    m.def("SpectralDecomposition", static_cast<MathUtils::EigenResult (*)(const math_Matrix &)>(&MathLin::SpectralDecomposition), nb::arg("theA"), R"nbdoc(Compute spectral decomposition A = V * D * V^T.
+
+For symmetric matrix A, decomposes into:
+- V: orthogonal matrix of eigenvectors (columns)
+- D: diagonal matrix of eigenvalues
+
+Such that A = V * D * V^T
+
+@param theA input symmetric matrix (n x n)
+@return eigenvalue result with EigenValues (diagonal of D) and EigenVectors (V))nbdoc");
+    m.def("MatrixPower", static_cast<std::optional<math_Matrix> (*)(const math_Matrix &, double)>(&MathLin::MatrixPower), nb::arg("theA"), nb::arg("thePower"), R"nbdoc(Compute matrix power A^p for symmetric positive semi-definite matrix.
+
+Uses spectral decomposition: A^p = V * D^p * V^T
+where D^p is the diagonal matrix with eigenvalues raised to power p.
+
+@param theA input symmetric positive semi-definite matrix
+@param thePower exponent (can be fractional, e.g., 0.5 for sqrt)
+@return A^p matrix)nbdoc");
+    m.def("MatrixSqrt", static_cast<std::optional<math_Matrix> (*)(const math_Matrix &)>(&MathLin::MatrixSqrt), nb::arg("theA"), R"nbdoc(Compute matrix square root of symmetric positive semi-definite matrix.
+
+@param theA input symmetric positive semi-definite matrix
+@return sqrt(A) such that sqrt(A) * sqrt(A) = A)nbdoc");
+    m.def("MatrixInvSqrt", static_cast<std::optional<math_Matrix> (*)(const math_Matrix &)>(&MathLin::MatrixInvSqrt), nb::arg("theA"), R"nbdoc(Compute matrix inverse square root of symmetric positive definite matrix.
+
+@param theA input symmetric positive definite matrix
+@return A^(-1/2) such that A^(-1/2) * A * A^(-1/2) = I)nbdoc");
+    m.def("LeastSquares", static_cast<MathLin::LeastSquaresResult (*)(const math_Matrix &, const math_Vector &, MathLin::LeastSquaresMethod, double)>(&MathLin::LeastSquares), nb::arg("theA"), nb::arg("theB"), nb::arg("theMethod") = static_cast<std::decay_t<MathLin::LeastSquaresMethod>>(MathLin::LeastSquaresMethod :: QR), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Solve overdetermined linear least squares: minimize ||Ax - b||_2.
+
+Given m x n matrix A (m >= n) and m-vector b, finds n-vector x
+that minimizes the 2-norm of the residual r = Ax - b.
+
+Methods:
+- NormalEquations: Solves A^T*A*x = A^T*b (fastest, may lose precision)
+- QR: Uses Householder QR decomposition (good general choice)
+- SVD: Most robust, handles rank-deficient systems
+
+@param theA coefficient matrix (m x n, m >= n)
+@param theB right-hand side vector (length m)
+@param theMethod solution method (default: QR)
+@param theTolerance for rank/singularity detection
+@return least squares result)nbdoc");
+    m.def("WeightedLeastSquares", static_cast<MathLin::LeastSquaresResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, MathLin::LeastSquaresMethod, double)>(&MathLin::WeightedLeastSquares), nb::arg("theA"), nb::arg("theB"), nb::arg("theW"), nb::arg("theMethod") = static_cast<std::decay_t<MathLin::LeastSquaresMethod>>(MathLin::LeastSquaresMethod :: QR), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Solve weighted least squares: minimize ||W^{1/2}(Ax - b)||_2.
+
+Equivalent to minimizing sum of w_i * (a_i^T * x - b_i)^2
+where w_i are the weights.
+
+@param theA coefficient matrix (m x n)
+@param theB right-hand side vector (length m)
+@param theW weight vector (length m, positive values)
+@param theMethod solution method
+@param theTolerance for rank detection
+@return weighted least squares result)nbdoc");
+    m.def("RegularizedLeastSquares", static_cast<MathLin::LeastSquaresResult (*)(const math_Matrix &, const math_Vector &, double, double)>(&MathLin::RegularizedLeastSquares), nb::arg("theA"), nb::arg("theB"), nb::arg("theLambda"), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Solve regularized least squares (Tikhonov/Ridge regression):
+minimize ||Ax - b||_2^2 + lambda*||x||_2^2
+
+Adds regularization to stabilize ill-conditioned problems.
+The solution is: x = (A^T*A + lambda*I)^{-1} * A^T * b
+
+@param theA coefficient matrix (m x n)
+@param theB right-hand side vector (length m)
+@param theLambda regularization parameter (>= 0)
+@param theTolerance for singularity detection
+@return regularized least squares result)nbdoc");
+    m.def("OptimalRegularization", static_cast<double (*)(const math_Matrix &, const math_Vector &, double, double, int)>(&MathLin::OptimalRegularization), nb::arg("theA"), nb::arg("theB"), nb::arg("theLambdaMin") = static_cast<std::decay_t<double>>(1.0e-10), nb::arg("theLambdaMax") = static_cast<std::decay_t<double>>(1.0e2), nb::arg("theNbPoints") = static_cast<std::decay_t<int>>(20), R"nbdoc(Compute optimal regularization parameter using Leave-One-Out Cross-Validation.
+
+Minimizes the LOO-CV score: sum_i (a_i^T * x_{-i} - b_i)^2
+where x_{-i} is the solution with the i-th observation removed.
+
+@param theA coefficient matrix
+@param theB right-hand side vector
+@param theLambdaMin minimum lambda to consider
+@param theLambdaMax maximum lambda to consider
+@param theNbPoints number of lambda values to try
+@return optimal regularization parameter)nbdoc");
+    m.def("EigenTridiagonal", static_cast<MathLin::EigenResult (*)(const math_Vector &, const math_Vector &, int)>(&MathLin::EigenTridiagonal), nb::arg("theDiagonal"), nb::arg("theSubdiagonal"), nb::arg("theMaxIterations") = static_cast<std::decay_t<int>>(30), R"nbdoc(Eigenvalue decomposition of symmetric tridiagonal matrix using QL algorithm.
+
+The QL algorithm with implicit Wilkinson shifts finds all eigenvalues and
+eigenvectors of a symmetric tridiagonal matrix T = Q * D * Q^T.
+
+Properties:
+- All eigenvalues are real (matrix is symmetric)
+- Eigenvectors are orthonormal
+- Numerically stable with implicit shifts
+
+@param theDiagonal diagonal elements of the tridiagonal matrix
+@param theSubdiagonal subdiagonal elements (one less than diagonal)
+@param theMaxIterations maximum iterations per eigenvalue (default 30)
+@return EigenResult containing eigenvalues and eigenvector matrix)nbdoc");
+    m.def("GetEigenVector", static_cast<math_Vector (*)(const MathLin::EigenResult &, int)>(&MathLin::GetEigenVector), nb::arg("theResult"), nb::arg("theIndex"), R"nbdoc(Get a single eigenvector from the result.
+
+@param theResult eigenvalue decomposition result
+@param theIndex 1-based index of eigenvector
+@return eigenvector as math_Vector)nbdoc");
 }

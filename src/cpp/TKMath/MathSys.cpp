@@ -8,14 +8,31 @@
 #include <MathSys_LevenbergMarquardt.hxx>
 
 void nanoocp_declare_MathSys(nb::module_ &m) {
-    m.attr("THE_SINGULAR_DET_TOL") = nb::cast(MathSys::detail::THE_SINGULAR_DET_TOL);
-    m.attr("THE_CRITICAL_GRAD_SQ") = nb::cast(MathSys::detail::THE_CRITICAL_GRAD_SQ);
-    m.attr("THE_LINE_SEARCH_MAX") = nb::cast(MathSys::detail::THE_LINE_SEARCH_MAX);
-    m.attr("THE_ARMIJO_C1") = nb::cast(MathSys::detail::THE_ARMIJO_C1);
+    { nb::class_<MathSys::NewtonOptions, MathUtils::Config> cls(m, "NewtonOptions", R"nbdoc(Solver options for small-dimension Newton methods.)nbdoc");
+    }
+    { nb::class_<MathSys::LMConfig, MathUtils::Config> cls(m, "LMConfig", R"nbdoc(Configuration for Levenberg-Marquardt algorithm.
+Extends base Config with damping parameter settings.)nbdoc");
+    }
 }
 
 void nanoocp_templates_MathSys(nb::module_ &m) {
 }
 
 void nanoocp_define_MathSys(nb::module_ &m) {
+    nb::borrow<nb::class_<MathSys::NewtonOptions>>(m.attr("NewtonOptions"))
+        .def(nb::init<>(), R"nbdoc(Default constructor with strict residual/step tolerances for specialized Newton.)nbdoc")
+        .def_rw("MaxStepRatio", &MathSys::NewtonOptions::MaxStepRatio, R"nbdoc(Max step as ratio of largest domain size)nbdoc")
+        .def_rw("EnableLineSearch", &MathSys::NewtonOptions::EnableLineSearch, R"nbdoc(Enable Armijo backtracking line search)nbdoc")
+        .def_rw("AllowSoftBounds", &MathSys::NewtonOptions::AllowSoftBounds, R"nbdoc(Allow slight bounds extension)nbdoc")
+        .def_rw("SoftBoundsExtension", &MathSys::NewtonOptions::SoftBoundsExtension, R"nbdoc(Extension ratio for soft bounds)nbdoc");
+    nb::borrow<nb::class_<MathSys::LMConfig>>(m.attr("LMConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with custom tolerance.
+@param theTolerance convergence tolerance
+@param theMaxIter maximum iterations)nbdoc")
+        .def_rw("LambdaInit", &MathSys::LMConfig::LambdaInit, R"nbdoc(Initial damping parameter)nbdoc")
+        .def_rw("LambdaIncrease", &MathSys::LMConfig::LambdaIncrease, R"nbdoc(Factor to increase lambda on rejected step)nbdoc")
+        .def_rw("LambdaDecrease", &MathSys::LMConfig::LambdaDecrease, R"nbdoc(Factor to decrease lambda on accepted step)nbdoc")
+        .def_rw("LambdaMax", &MathSys::LMConfig::LambdaMax, R"nbdoc(Maximum lambda value before failing)nbdoc")
+        .def_rw("LambdaMin", &MathSys::LMConfig::LambdaMin, R"nbdoc(Minimum lambda value)nbdoc");
 }

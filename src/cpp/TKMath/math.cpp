@@ -726,8 +726,8 @@ The method optimizes memory usage:
 @param theSize new size of the vector)nbdoc");
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, math_VectorBase<double>>();
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, math_VectorBase<double>>();
+    nanoocp_implicit_default_ctor<math>(nb::borrow<nb::class_<math>>(m.attr("math")));
     nb::borrow<nb::class_<math>>(m.attr("math"))
-        .def(nb::init<>())
         .def_static("GaussPointsMax", static_cast<int (*)()>(&math::GaussPointsMax))
         .def_static("GaussPoints", static_cast<void (*)(const int, math_Vector &)>(&math::GaussPoints), nb::arg("Index"), nb::arg("Points"))
         .def_static("GaussWeights", static_cast<void (*)(const int, math_Vector &)>(&math::GaussWeights), nb::arg("Index"), nb::arg("Weights"))
@@ -1798,8 +1798,8 @@ when approximating a curve.)nbdoc");
         .def("Value", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Value))
         .def("Weight", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Weight))
         .def("__lt__", [](const math_ValueAndWeight & theLeft, const math_ValueAndWeight & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */;
-    m.def("LU_Decompose", static_cast<int (*)(math_Matrix &, math_IntegerVector &, double &, double, const Message_ProgressRange &)>(&LU_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("d"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
-    m.def("LU_Decompose", static_cast<int (*)(math_Matrix &, math_IntegerVector &, double &, math_Vector &, double, const Message_ProgressRange &)>(&LU_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("d"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
+    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
+    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, math_Vector & vv, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, vv, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
     m.def("LU_Solve", static_cast<void (*)(const math_Matrix &, const math_IntegerVector &, math_Vector &)>(&LU_Solve), nb::arg("a"), nb::arg("indx"), nb::arg("b"));
     m.def("LU_Invert", static_cast<int (*)(math_Matrix &)>(&LU_Invert), nb::arg("a"));
     m.def("SVD_Decompose", static_cast<int (*)(math_Matrix &, math_Vector &, math_Matrix &)>(&SVD_Decompose), nb::arg("a"), nb::arg("w"), nb::arg("v"));
@@ -1807,5 +1807,5 @@ when approximating a curve.)nbdoc");
     m.def("SVD_Solve", static_cast<void (*)(const math_Matrix &, const math_Vector &, const math_Matrix &, const math_Vector &, math_Vector &)>(&SVD_Solve), nb::arg("u"), nb::arg("w"), nb::arg("v"), nb::arg("b"), nb::arg("x"));
     m.def("DACTCL_Decompose", static_cast<int (*)(math_Vector &, const math_IntegerVector &, const double)>(&DACTCL_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.e-20));
     m.def("DACTCL_Solve", static_cast<int (*)(const math_Vector &, math_Vector &, const math_IntegerVector &, const double)>(&DACTCL_Solve), nb::arg("a"), nb::arg("b"), nb::arg("indx"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.e-20));
-    m.def("Jacobi", static_cast<int (*)(math_Matrix &, math_Vector &, math_Matrix &, int &)>(&Jacobi), nb::arg("a"), nb::arg("d"), nb::arg("v"), nb::arg("nrot"));
+    m.def("Jacobi", [](math_Matrix & a, math_Vector & d, math_Matrix & v) { int nrot{}; auto result = Jacobi(a, d, v, nrot); return std::make_tuple(result, nrot); }, nb::arg("a"), nb::arg("d"), nb::arg("v"));
 }

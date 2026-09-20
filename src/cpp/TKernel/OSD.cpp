@@ -324,6 +324,9 @@ in the pool allowing other threads to be used concurrently.
 - Each working thread catches exceptions occurred during job execution, and Launcher will
 throw Standard_Failure in a caller thread on completed execution.)nbdoc");
     }
+    { nb::class_<OSD_ThreadPool::Launcher> cls(m.attr("OSD_ThreadPool"), "Launcher", R"nbdoc(Launcher object locking a subset of threads (or all threads)
+in a thread pool to perform parallel execution of the job.)nbdoc");
+    }
     { nb::class_<OSD_Parallel> cls(m, "OSD_Parallel", R"nbdoc(@brief Simple tool for code parallelization.
 
 OSD_Parallel class provides simple interface for parallel processing of
@@ -419,8 +422,8 @@ void nanoocp_templates_OSD(nb::module_ &m) {
 }
 
 void nanoocp_define_OSD(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<OSD>(nb::borrow<nb::class_<OSD>>(m.attr("OSD")));
     nb::borrow<nb::class_<OSD>>(m.attr("OSD"))
-        .def(nb::init<>())
         .def_static("SetSignal", static_cast<void (*)(OSD_SignalMode, bool)>(&OSD::SetSignal), nb::arg("theSignalMode"), nb::arg("theFloatingSignal"), R"nbdoc(Sets or removes signal and FPE (floating-point exception) handlers.
 OCCT signal handlers translate signals raised by C subsystem to C++
 exceptions inheriting Standard_Failure.
@@ -519,7 +522,7 @@ otherwise)nbdoc")
 OSD_FileSystem::DefaultFileSystem().)nbdoc")
         .def("IsSupportedPath", static_cast<bool (OSD_FileSystem::*)(const TCollection_AsciiString &) const>(&OSD_FileSystem::IsSupportedPath), nb::arg("theUrl"), R"nbdoc(Returns TRUE if URL defines a supported protocol.)nbdoc");
     nb::borrow<nb::class_<OSD_CachedFileSystem>>(m.attr("OSD_CachedFileSystem"))
-        .def(nb::new_([](const occ::handle<OSD_FileSystem> & theLinkedFileSystem) { return opencascade::handle<OSD_CachedFileSystem>(new OSD_CachedFileSystem(theLinkedFileSystem)); }), nb::arg("theLinkedFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ::handle < OSD_FileSystem >()), R"nbdoc(Constructor.)nbdoc")
+        .def(nb::new_([](const occ::handle<OSD_FileSystem> & theLinkedFileSystem) { return opencascade::handle<OSD_CachedFileSystem>(new OSD_CachedFileSystem(theLinkedFileSystem)); }), nb::arg("theLinkedFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ :: handle < OSD_FileSystem > ( )), R"nbdoc(Constructor.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&OSD_CachedFileSystem::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&OSD_CachedFileSystem::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (OSD_CachedFileSystem::*)() const>(&OSD_CachedFileSystem::DynamicType))
@@ -1008,8 +1011,24 @@ Should be set BEFORE first usage.)nbdoc")
         .def("Init", static_cast<void (OSD_ThreadPool::*)(int)>(&OSD_ThreadPool::Init), nb::arg("theNbThreads"), R"nbdoc(Reinitialize the thread pool with a different number of threads.
 Should be called only with no active jobs, or exception Standard_ProgramError will be thrown!)nbdoc");
     nb::implicitly_convertible<std::decay_t<int>, OSD_ThreadPool>();
+    nb::borrow<nb::class_<OSD_ThreadPool::Launcher>>(m.attr("OSD_ThreadPool").attr("Launcher"))
+        .def(nb::init<OSD_ThreadPool &, int>(), nb::arg("thePool"), nb::arg("theMaxThreads") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Lock specified number of threads from the thread pool.
+If thread pool is already locked by another user,
+Launcher will lock as many threads as possible
+(if none will be locked, then single threaded execution will be done).
+@param thePool       thread pool to lock the threads
+@param theMaxThreads number of threads to lock;
+-1 specifies that default number of threads
+to be used OSD_ThreadPool::NbDefaultThreadsToLaunch())nbdoc")
+        .def("HasThreads", static_cast<bool (OSD_ThreadPool::Launcher::*)() const>(&OSD_ThreadPool::Launcher::HasThreads), R"nbdoc(Return TRUE if at least 2 threads have been locked for parallel execution (including
+self-thread); otherwise, the functor will be executed within the caller thread.)nbdoc")
+        .def("NbThreads", static_cast<int (OSD_ThreadPool::Launcher::*)() const>(&OSD_ThreadPool::Launcher::NbThreads), R"nbdoc(Return amount of locked threads; >= 1.)nbdoc")
+        .def("LowerThreadIndex", static_cast<int (OSD_ThreadPool::Launcher::*)() const>(&OSD_ThreadPool::Launcher::LowerThreadIndex), R"nbdoc(Return the lower thread index.)nbdoc")
+        .def("UpperThreadIndex", static_cast<int (OSD_ThreadPool::Launcher::*)() const>(&OSD_ThreadPool::Launcher::UpperThreadIndex), R"nbdoc(Return the upper thread index (last index is reserved for the self-thread).)nbdoc")
+        .def("Release", static_cast<void (OSD_ThreadPool::Launcher::*)()>(&OSD_ThreadPool::Launcher::Release), R"nbdoc(Release threads before Launcher destruction.)nbdoc");
+    nb::implicitly_convertible<std::decay_t<OSD_ThreadPool &>, OSD_ThreadPool::Launcher>();
+    nanoocp_implicit_default_ctor<OSD_Parallel>(nb::borrow<nb::class_<OSD_Parallel>>(m.attr("OSD_Parallel")));
     nb::borrow<nb::class_<OSD_Parallel>>(m.attr("OSD_Parallel"))
-        .def(nb::init<>())
         .def_static("ToUseOcctThreads", static_cast<bool (*)()>(&OSD_Parallel::ToUseOcctThreads), R"nbdoc(@name public methods
 Returns TRUE if OCCT threads should be used instead of auxiliary threads library;
 default value is FALSE if alternative library has been enabled while OCCT building and TRUE

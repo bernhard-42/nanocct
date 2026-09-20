@@ -10,6 +10,9 @@ from nanoocp._templates import Template as _Template
 
 NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.Bnd', 'Bnd_Box'),): "NCollection_Array1__Bnd_Box",
+    (('nanoocp.Geom2dGridEval', 'CurveD1'),): "NCollection_Array1__Geom2dGridEval_CurveD1",
+    (('nanoocp.Geom2dGridEval', 'CurveD2'),): "NCollection_Array1__Geom2dGridEval_CurveD2",
+    (('nanoocp.Geom2dGridEval', 'CurveD3'),): "NCollection_Array1__Geom2dGridEval_CurveD3",
     (('nanoocp.Standard', 'Standard_Persistent'),): "NCollection_Array1__Handle_Standard_Persistent",
     (('nanoocp.BVH', 'BVH_Vec3f'),): "NCollection_Array1__NCollection_Vec3__float",
     (('nanoocp.Poly', 'Poly_Triangle'),): "NCollection_Array1__Poly_Triangle",
@@ -17,6 +20,7 @@ NCollection_Array1 = _Template("NCollection_Array1", "nanoocp.NCollection", {
     (('nanoocp.gp', 'gp_Pnt'),): "NCollection_Array1__gp_Pnt",
     (('nanoocp.gp', 'gp_Pnt2d'),): "NCollection_Array1__gp_Pnt2d",
     (('nanoocp.gp', 'gp_Vec'),): "NCollection_Array1__gp_Vec",
+    (('nanoocp.gp', 'gp_Vec2d'),): "NCollection_Array1__gp_Vec2d",
     (('builtins', 'int'),): "NCollection_Array1__int",
 })
 NCollection_Array2 = _Template("NCollection_Array2", "nanoocp.NCollection", {
@@ -72,6 +76,8 @@ NCollection_List = _Template("NCollection_List", "nanoocp.NCollection", {
     (('nanoocp.Bnd', 'Bnd_Range'),): "NCollection_List__Bnd_Range",
     (('nanoocp.Message', 'Message_Alert'),): "NCollection_List__Handle_Message_Alert",
     (('nanoocp.Poly', 'Poly_Triangulation'),): "NCollection_List__Handle_Poly_Triangulation",
+    (('nanoocp.Poly', 'Poly_CoherentTriangulation.TwoIntegers'),): "NCollection_List__Poly_CoherentTriangulation_TwoIntegers",
+    (('nanoocp.Poly', 'Poly_MakeLoops.Link'),): "NCollection_List__Poly_MakeLoops_Link",
     (('builtins', 'int'),): "NCollection_List__int",
 })
 NCollection_Map = _Template("NCollection_Map", "nanoocp.NCollection", {
@@ -105,3 +111,6 @@ def __getattr__(name):
     if target is not None:
         return getattr(_importlib.import_module(target[0]), target[1])
     return getattr(_ext, name)   # NCollection instantiations bound into this package by other toolkits
+
+# C++ namespaces of the package (Python modules nanoocp.<package>.<namespace>)
+import nanoocp.NCollection.NCollection_Primes  # noqa: E402,F401

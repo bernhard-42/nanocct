@@ -131,6 +131,8 @@ NB_MODULE(_TKernel, m) {
     nanoocp_declare_UnitsAPI(m_UnitsAPI);
     nanoocp_declare_UnitsMethods(m_UnitsMethods);
     nanoocp_declare_NCollection(m_NCollection);
+    sys_modules["nanoocp._TKernel.NCollection.NCollection_Primes"] = m_NCollection.attr("NCollection_Primes");
+    sys_modules.attr("pop")("nanoocp.NCollection.NCollection_Primes", nb::none());
     nanoocp_declare_Message(m_Message);
     nanoocp_declare_FlexLexer(m_FlexLexer);
     nanoocp_declare_Precision(m_Precision);

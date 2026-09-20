@@ -9,10 +9,10 @@ import json
 import sys
 from pathlib import Path
 
-from .emit import Emitter, emit_package_shim, emit_toolkit_module
+from .emit import Emitter, emit_toolkit_module, write_package_shims
 from .occt import load_tree
 from .ncollection import deprecated_aliases, template_docs
-from .parse import clang_args, configure_libclang, parse_package
+from .parse import clang_args, configure_libclang, parse_package, py_path
 from .symbols import defined_methods
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -79,7 +79,7 @@ def _element_spec(arg: str, known: dict[str, str], templates: dict[str, dict]) -
     if inst is not None and not inst.get("skipped", False):
         return (f"nanoocp.{inst['package']}", inst["name"])
     if arg in known and "<" not in arg:
-        return (f"nanoocp.{known[arg]}", arg)
+        return (f"nanoocp.{known[arg]}", py_path(arg, known[arg]))     # dotted for nested classes / namespaces
     return None
 
 
@@ -158,6 +158,7 @@ def main(argv: list[str]) -> int:
                             ir.report.append(f"{c.name}::{m.name}: declared in the header, no definition in lib{tk_name}")
         for ir in irs:
             generated_pkgs[ir.name] = tk_name
+            manifest.setdefault("namespaces", {})[ir.name] = [list(ns) for ns in ir.namespaces]
             # a regenerated package re-binds its own classes and template instances: forget the old entries
             for name in [n for n, pk in known.items() if pk == ir.name]:
                 del known[name]
@@ -194,18 +195,20 @@ def main(argv: list[str]) -> int:
             for line in ir.report + em.report:
                 print(f"    - {line}", file=sys.stderr)
         depends = [d for d in tk.depends if d in generated_toolkits]
-        (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends))   # every package of the toolkit
+        namespaces = {p: [tuple(ns) for ns in manifest["namespaces"].get(p, [])] for p in order}
+        (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends, namespaces))   # every package of the toolkit
     ordered = _topo(tree, generated_toolkits)
     # Python shims: one per generated package (+ deprecated typedef aliases), one per alias-only prefix
     aliases, unbound = deprecated_aliases(args.occt_src / "src" / "Deprecated" / "NCollectionAliases", clang_args(tree), templates)
     generated_packages = set(generated_pkgs)          # every generated package, with or without classes
     accessors = _accessors(known, templates)
     for pk in sorted(generated_packages):
-        (py_root / f"{pk}.py").write_text(emit_package_shim(pk, generated_pkgs[pk], aliases.get(pk, {}),
-                                                            accessors if pk == "NCollection" else None))
+        namespaces = [tuple(ns) for ns in manifest["namespaces"].get(pk, [])]
+        write_package_shims(py_root, pk, generated_pkgs[pk], aliases.get(pk, {}), namespaces,
+                            accessors if pk == "NCollection" else None)
     for prefix, amap in sorted(aliases.items()):
         if prefix not in generated_packages:
-            (py_root / f"{prefix}.py").write_text(emit_package_shim(prefix, None, amap))
+            write_package_shims(py_root, prefix, None, amap, [])
     print(f"deprecated typedef aliases: {sum(len(a) for a in aliases.values())} resolved, {unbound} not bound yet", file=sys.stderr)
     (py_root / "__init__.py").write_text(
         '"""nanoOCP: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'
@@ -213,7 +216,8 @@ def main(argv: list[str]) -> int:
         "# that NCollection instantiations bound by a later toolkit into an earlier package are always present.\n"
         + "".join(f"import nanoocp._{tk}  # noqa: F401\n" for tk in ordered))
     manifest_path.write_text(json.dumps({"classes": dict(sorted(known.items())), "templates": dict(sorted(templates.items())),
-                                         "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"]}, indent=0) + "\n")
+                                         "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"],
+                                         "namespaces": dict(sorted(manifest["namespaces"].items()))}, indent=0) + "\n")
     docs, warnings = template_docs(tree.include_dir, clang_args(tree))
     (cpp_root / "common" / "ncollection_docs.h").write_text(docs)
     for w in warnings:

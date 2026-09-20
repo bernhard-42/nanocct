@@ -5,12 +5,40 @@
 #include <MathInteg_DoubleExp.hxx>
 #include <MathInteg_Multiple.hxx>
 #include <MathInteg_Set.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_MathInteg(nb::module_ &m) {
+    { nb::class_<MathInteg::KronrodConfig, MathUtils::IntegConfig> cls(m, "KronrodConfig", R"nbdoc(Configuration for Gauss-Kronrod integration.)nbdoc");
+    }
+    { nb::class_<MathInteg::DoubleExpConfig, MathUtils::IntegConfig> cls(m, "DoubleExpConfig", R"nbdoc(Configuration for double exponential integration.)nbdoc");
+    }
+    { nb::class_<MathInteg::MultipleConfig> cls(m, "MultipleConfig", R"nbdoc(Configuration for multi-dimensional Gauss integration.)nbdoc");
+    }
+    { nb::class_<MathInteg::SetResult> cls(m, "SetResult", R"nbdoc(Result for vector function integration.)nbdoc");
+    }
 }
 
 void nanoocp_templates_MathInteg(nb::module_ &m) {
 }
 
 void nanoocp_define_MathInteg(nb::module_ &m) {
+    nb::borrow<nb::class_<MathInteg::KronrodConfig>>(m.attr("KronrodConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with tolerance.)nbdoc")
+        .def_rw("NbGaussPoints", &MathInteg::KronrodConfig::NbGaussPoints, R"nbdoc(Number of Gauss points (n), Kronrod will use 2n+1 points)nbdoc")
+        .def_rw("Adaptive", &MathInteg::KronrodConfig::Adaptive, R"nbdoc(Whether to use adaptive subdivision)nbdoc");
+    nb::borrow<nb::class_<MathInteg::DoubleExpConfig>>(m.attr("DoubleExpConfig"))
+        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def(nb::init<double, int>(), nb::arg("theTolerance"), nb::arg("theMaxIter") = static_cast<std::decay_t<int>>(100), R"nbdoc(Constructor with tolerance.)nbdoc")
+        .def_rw("NbLevels", &MathInteg::DoubleExpConfig::NbLevels, R"nbdoc(Number of refinement levels (each doubles points))nbdoc")
+        .def_rw("StepFactor", &MathInteg::DoubleExpConfig::StepFactor, R"nbdoc(Initial step size h = StepFactor / NbPoints)nbdoc");
+    nanoocp_implicit_default_ctor<MathInteg::MultipleConfig>(nb::borrow<nb::class_<MathInteg::MultipleConfig>>(m.attr("MultipleConfig")));
+    nb::borrow<nb::class_<MathInteg::MultipleConfig>>(m.attr("MultipleConfig"))
+        .def_rw("MaxOrder", &MathInteg::MultipleConfig::MaxOrder, R"nbdoc(Maximum integration order per dimension)nbdoc");
+    nanoocp_implicit_default_ctor<MathInteg::SetResult>(nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult")));
+    nb::borrow<nb::class_<MathInteg::SetResult>>(m.attr("SetResult"))
+        .def("IsDone", static_cast<bool (MathInteg::SetResult::*)() const>(&MathInteg::SetResult::IsDone))
+        .def_rw("Status", &MathInteg::SetResult::Status)
+        .def_rw("Values", &MathInteg::SetResult::Values, R"nbdoc(Integral of each component)nbdoc")
+        .def_rw("NbEquations", &MathInteg::SetResult::NbEquations);
 }

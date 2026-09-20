@@ -3,3 +3,4 @@
 # that NCollection instantiations bound by a later toolkit into an earlier package are always present.
 import nanoocp._TKernel  # noqa: F401
 import nanoocp._TKMath  # noqa: F401
+import nanoocp._TKG2d  # noqa: F401

@@ -12,6 +12,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from .parse import py_path
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src" / "nanoocp"
 GENERIC = ROOT / "generator" / "stubs"
@@ -31,7 +33,7 @@ def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> 
     if inst is not None and not inst.get("skipped", False):
         return f"nanoocp.{inst['package']}.{inst['name']}"
     if arg in classes and "<" not in arg:
-        return f"nanoocp.{classes[arg]}.{arg}"
+        return f"nanoocp.{classes[arg]}.{py_path(arg, classes[arg])}"
     return None
 
 
@@ -63,6 +65,26 @@ def _split_args(text: str) -> list[str]:
     return out
 
 
+def _with_imports(text: str) -> str:
+    """Add `import nanoocp.<pkg>` for every nanoocp.<pkg>.X reference the generic spellings introduced."""
+    used = set(re.findall(r"\bnanoocp\.(\w+)\.", text))
+    imported = set(re.findall(r"^import nanoocp\.(\w+)$", text, re.M)) | set(re.findall(r"^from nanoocp\.(\w+) import", text, re.M))
+    missing = sorted(used - imported)
+    if len(missing) == 0:
+        return text
+    lines = text.splitlines(keepends=True)
+    anchors = [i for i, line in enumerate(lines) if line.startswith("import nanoocp.")]
+    if len(anchors) > 0:
+        at = anchors[-1] + 1
+    else:                                     # after the module docstring (first line) and a blank
+        at = 1
+        while at < len(lines) and lines[at].strip() != "":
+            at += 1
+        at += 1
+    lines[at:at] = [f"import nanoocp.{m}\n" for m in missing]
+    return "".join(lines)
+
+
 def _replace_class_block(text: str, name: str, replacement: str) -> str:
     """Replace the top-level `class name...` block (up to the next top-level statement) in a stub."""
     m = re.search(rf"^class {re.escape(name)}\b.*?(?=^\S|\Z)", text, re.S | re.M)
@@ -79,37 +101,61 @@ def _aliases_of(shim: Path) -> dict[str, tuple[str, str]]:
     return {}
 
 
+def _shims() -> list[Path]:
+    """nanoocp/<pkg>.py, or nanoocp/<pkg>/__init__.py for a package with C++ namespaces (Python sub-packages)."""
+    return sorted([p for p in SRC.glob("*.py") if not p.name.startswith("_")] + list(SRC.glob("*/__init__.py")))
+
+
+def _stub_of(shim: Path) -> Path:
+    return shim.with_suffix(".pyi")
+
+
+_STUBGEN = """
+import sys, importlib
+from pathlib import Path
+from nanobind.stubgen import StubGen
+mod = importlib.import_module(sys.argv[1])
+out = Path(sys.argv[2])
+sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out)   # recursive: C++ namespaces are submodules
+sg.put(mod)
+out.write_text(sg.get())
+"""
+
+
+def _stubgen(module: str, out: Path) -> None:
+    """nanobind's stubgen through its API: the CLI needs a module __file__ for recursive mode, extension submodules
+    have none. The stub of a namespace submodule lands next to out (<pkg>/__init__.pyi + <pkg>/<Namespace>.pyi)."""
+    subprocess.run([sys.executable, "-c", _STUBGEN, module, str(out)], check=True, cwd="/")
+    assert out.exists(), out
+
+
 def main() -> int:
     manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
     classes, templates = manifest["classes"], manifest["templates"]
     toolkit_of = {}
-    for pkg_file in SRC.glob("*.py"):
+    for pkg_file in _shims():
         m = re.search(r"from nanoocp\._(\w+) import (\w+) as _ext", pkg_file.read_text())
         if m is not None:
-            toolkit_of[m.group(2)] = m.group(1)
-    for pkg, tk in sorted(toolkit_of.items()):
-        out = SRC / f"{pkg}.pyi"
-        subprocess.run([sys.executable, "-m", "nanobind.stubgen", "-m", f"nanoocp._{tk}.{pkg}", "-o", str(out), "-q"],
-                       check=True, cwd="/")
+            toolkit_of[m.group(2)] = (m.group(1), _stub_of(pkg_file))
+    for pkg, (tk, out) in sorted(toolkit_of.items()):
+        _stubgen(f"nanoocp._{tk}.{pkg}", out)
         print(f"stub {out.relative_to(ROOT)}", file=sys.stderr)
     # deprecated typedef aliases (shim _ALIASES tables) -> explicit assignments in the stubs; alias-only
     # modules (e.g. TColgp) get a stub of their own
-    for shim in sorted(SRC.glob("*.py")):
-        if shim.name.startswith("_"):
-            continue
+    for shim in _shims():
         aliases = _aliases_of(shim)
         if len(aliases) == 0:
             continue
-        out = SRC / f"{shim.stem}.pyi"
+        out = _stub_of(shim)
         modules = sorted({mod for mod, _ in aliases.values()})
         block = "\n# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)\n" + "".join(
             f"import {mod}\n" for mod in modules) + "".join(
             f"{alias} = {mod}.{name}\n" for alias, (mod, name) in sorted(aliases.items()))
-        text = out.read_text() if out.exists() else f'"""{shim.stem}: OCCT pre-8.0 typedef names."""\n'
+        text = out.read_text() if out.exists() else f'"""{shim.stem}: OCCT pre-8.0 typedef names."""\n'   # alias-only modules are never packages
         out.write_text(text.rstrip("\n") + "\n" + block)
 
     # NCollection: generic container classes + instantiations as their subclasses
-    nc = SRC / "NCollection.pyi"
+    nc = toolkit_of["NCollection"][1]
     text = nc.read_text()
     generic_parts = []
     from .ncollection import BINDERS
@@ -155,6 +201,26 @@ def main() -> int:
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
     nc.write_text(header + "".join(generic_parts) + "\n" + text)
+    # OCCT signatures: the generic spelling instead of the concrete class (nanoocp.NCollection.NCollection_Array1__double
+    # -> nanoocp.NCollection.NCollection_Array1[float]), so that a value typed NCollection_Array1[float] (what
+    # NCollection_Array1[float](...) produces statically) is accepted as an argument. The concrete class derives from
+    # the generic one, so the rewrite is sound for parameters and results alike; the NCollection stub itself keeps the
+    # concrete names (they are its class definitions).
+    generic_of = {inst["name"]: "nanoocp.NCollection." + _generic_spelling(inst["name"], templates)
+                  for key, inst in templates.items()
+                  if not inst.get("skipped", False) and re.match(r"(\w+)<", key).group(1) in BINDERS}
+    for stub in sorted(SRC.rglob("*.pyi")):
+        if stub == nc:
+            continue
+        text = stub.read_text()
+        for _ in range(4):                    # nested instantiations: the generic argument may name a concrete class
+            new = text
+            for name, generic in generic_of.items():
+                new = re.sub(rf"\bnanoocp\.NCollection\.{re.escape(name)}\b", generic, new)
+            if new == text:
+                break
+            text = new
+        stub.write_text(_with_imports(text))
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)
     return 0

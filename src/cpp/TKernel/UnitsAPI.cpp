@@ -50,8 +50,8 @@ void nanoocp_templates_UnitsAPI(nb::module_ &m) {
 }
 
 void nanoocp_define_UnitsAPI(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<UnitsAPI>(nb::borrow<nb::class_<UnitsAPI>>(m.attr("UnitsAPI")));
     nb::borrow<nb::class_<UnitsAPI>>(m.attr("UnitsAPI"))
-        .def(nb::init<>())
         .def_static("CurrentToLS", static_cast<double (*)(const double, const char *const)>(&UnitsAPI::CurrentToLS), nb::arg("aData"), nb::arg("aQuantity"), R"nbdoc(Converts the current unit value to the local system units value.
 Example: CurrentToLS(1.,"LENGTH") returns 1000. if the current length unit
 is meter and LocalSystem is MDTV.)nbdoc")

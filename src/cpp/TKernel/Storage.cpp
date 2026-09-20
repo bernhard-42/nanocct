@@ -222,8 +222,8 @@ void nanoocp_templates_Storage(nb::module_ &m) {
 }
 
 void nanoocp_define_Storage(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<Storage>(nb::borrow<nb::class_<Storage>>(m.attr("Storage")));
     nb::borrow<nb::class_<Storage>>(m.attr("Storage"))
-        .def(nb::init<>())
         .def_static("Version", static_cast<TCollection_AsciiString (*)()>(&Storage::Version), R"nbdoc(returns the version of Storage's read/write routines)nbdoc");
     nb::borrow<nb::class_<Storage_Root>>(m.attr("Storage_Root"))
         .def(nb::new_([]() { return opencascade::handle<Storage_Root>(new Storage_Root()); }))

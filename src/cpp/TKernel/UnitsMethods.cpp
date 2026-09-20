@@ -24,8 +24,8 @@ void nanoocp_templates_UnitsMethods(nb::module_ &m) {
 }
 
 void nanoocp_define_UnitsMethods(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<UnitsMethods>(nb::borrow<nb::class_<UnitsMethods>>(m.attr("UnitsMethods")));
     nb::borrow<nb::class_<UnitsMethods>>(m.attr("UnitsMethods"))
-        .def(nb::init<>())
         .def_static("GetLengthFactorValue", static_cast<double (*)(const int)>(&UnitsMethods::GetLengthFactorValue), nb::arg("theUnit"), R"nbdoc(Returns value of unit encoded by parameter theUnit
 (integer value denoting unit, as described in IGES
 standard) in millimeters by default)nbdoc")

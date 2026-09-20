@@ -126,16 +126,16 @@ class Convert_ConicToBSplineCurve:
         this framework is periodic.
         """
 
-    def Poles(self) -> nanoocp.NCollection.NCollection_Array1__gp_Pnt2d:
+    def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the poles of the BSpline curve."""
 
-    def Weights(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def Weights(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the weights of the BSpline curve."""
 
-    def Knots(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots of the BSpline curve."""
 
-    def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the BSpline curve."""
 
 class Convert_CircleToBSplineCurve(Convert_ConicToBSplineCurve):
@@ -200,11 +200,11 @@ class Convert_CompPolynomialToPoles:
     """
 
     @overload
-    def __init__(self, Dimension: int, MaxDegree: int, Degree: int, Coefficients: nanoocp.NCollection.NCollection_Array1__double, PolynomialIntervals: nanoocp.NCollection.NCollection_Array1__double, TrueIntervals: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def __init__(self, Dimension: int, MaxDegree: int, Degree: int, Coefficients: nanoocp.NCollection.NCollection_Array1[float], PolynomialIntervals: nanoocp.NCollection.NCollection_Array1[float], TrueIntervals: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """To Convert only one span."""
 
     @overload
-    def __init__(self, NumCurves: int, Continuity: int, Dimension: int, MaxDegree: int, NumCoeffPerCurve: nanoocp.NCollection.NCollection_HArray1__int, Coefficients: nanoocp.NCollection.NCollection_HArray1__double, PolynomialIntervals: nanoocp.NCollection.NCollection_HArray2__double, TrueIntervals: nanoocp.NCollection.NCollection_HArray1__double) -> None:
+    def __init__(self, NumCurves: int, Continuity: int, Dimension: int, MaxDegree: int, NumCoeffPerCurve: nanoocp.NCollection.NCollection_HArray1[int], Coefficients: nanoocp.NCollection.NCollection_HArray1[float], PolynomialIntervals: nanoocp.NCollection.NCollection_HArray2[float], TrueIntervals: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
         """
         Warning!
         Continuity can be at MOST the maximum degree of
@@ -232,7 +232,7 @@ class Convert_CompPolynomialToPoles:
         """
 
     @overload
-    def __init__(self, NumCurves: int, Dimension: int, MaxDegree: int, Continuity: nanoocp.NCollection.NCollection_Array1__int, NumCoeffPerCurve: nanoocp.NCollection.NCollection_Array1__int, Coefficients: nanoocp.NCollection.NCollection_Array1__double, PolynomialIntervals: nanoocp.NCollection.NCollection_Array2__double, TrueIntervals: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def __init__(self, NumCurves: int, Dimension: int, MaxDegree: int, Continuity: nanoocp.NCollection.NCollection_Array1[int], NumCoeffPerCurve: nanoocp.NCollection.NCollection_Array1[int], Coefficients: nanoocp.NCollection.NCollection_Array1[float], PolynomialIntervals: nanoocp.NCollection.NCollection_Array2[float], TrueIntervals: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         To Convert several span with different order of Continuity.
         Warning: The Length of Continuity have to be NumCurves-1
@@ -241,7 +241,7 @@ class Convert_CompPolynomialToPoles:
     def NbPoles(self) -> int:
         """Returns the number of poles of the n-dimensional BSpline."""
 
-    def Poles(self) -> nanoocp.NCollection.NCollection_Array2__double:
+    def Poles(self) -> nanoocp.NCollection.NCollection_Array2[float]:
         """
         Returns the poles of the n-dimensional BSpline
         in the following format:
@@ -254,10 +254,10 @@ class Convert_CompPolynomialToPoles:
     def NbKnots(self) -> int:
         """Returns the number of knots of the n-dimensional BSpline."""
 
-    def Knots(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots of the n-dimensional BSpline."""
 
-    def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the knots in the BSpline."""
 
     def IsDone(self) -> bool:
@@ -297,22 +297,22 @@ class Convert_ElementarySurfaceToBSplineSurface:
     def IsVPeriodic(self) -> bool:
         """Returns true if the surface is periodic in the V parametric direction."""
 
-    def Poles(self) -> nanoocp.NCollection.NCollection_Array2__gp_Pnt:
+    def Poles(self) -> nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]:
         """Returns the poles of the BSpline surface."""
 
-    def Weights(self) -> nanoocp.NCollection.NCollection_Array2__double:
+    def Weights(self) -> nanoocp.NCollection.NCollection_Array2[float]:
         """Returns the weights of the BSpline surface."""
 
-    def UKnots(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def UKnots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the U-knots of the BSpline surface."""
 
-    def VKnots(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def VKnots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the V-knots of the BSpline surface."""
 
-    def UMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def UMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the U-multiplicities of the BSpline surface."""
 
-    def VMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def VMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the V-multiplicities of the BSpline surface."""
 
 class Convert_ConeToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
@@ -423,7 +423,7 @@ class Convert_GridPolynomialToPoles:
     """
 
     @overload
-    def __init__(self, theMaxUDegree: int, theMaxVDegree: int, theNumCoeff: nanoocp.NCollection.NCollection_Array1__int, theCoefficients: nanoocp.NCollection.NCollection_Array1__double, thePolynomialUIntervals: nanoocp.NCollection.NCollection_Array1__double, thePolynomialVIntervals: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def __init__(self, theMaxUDegree: int, theMaxVDegree: int, theNumCoeff: nanoocp.NCollection.NCollection_Array1[int], theCoefficients: nanoocp.NCollection.NCollection_Array1[float], thePolynomialUIntervals: nanoocp.NCollection.NCollection_Array1[float], thePolynomialVIntervals: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         To only one polynomial Surface.
         The Length of <PolynomialUIntervals> and <PolynomialVIntervals>
@@ -436,7 +436,7 @@ class Convert_GridPolynomialToPoles:
         """
 
     @overload
-    def __init__(self, theMaxUDegree: int, theMaxVDegree: int, theNumCoeff: nanoocp.NCollection.NCollection_HArray1__int, theCoefficients: nanoocp.NCollection.NCollection_HArray1__double, thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1__double, thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1__double) -> None:
+    def __init__(self, theMaxUDegree: int, theMaxVDegree: int, theNumCoeff: nanoocp.NCollection.NCollection_HArray1[int], theCoefficients: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
         """
         Handle-based overload (delegates to the array-based constructor).
         Provided for backward compatibility; new code should prefer the
@@ -444,7 +444,7 @@ class Convert_GridPolynomialToPoles:
         """
 
     @overload
-    def __init__(self, theNbUSurfaces: int, theNbVSurfaces: int, theUContinuity: int, theVContinuity: int, theMaxUDegree: int, theMaxVDegree: int, theNumCoeffPerSurface: nanoocp.NCollection.NCollection_Array2__int, theCoefficients: nanoocp.NCollection.NCollection_Array1__double, thePolynomialUIntervals: nanoocp.NCollection.NCollection_Array1__double, thePolynomialVIntervals: nanoocp.NCollection.NCollection_Array1__double, theTrueUIntervals: nanoocp.NCollection.NCollection_Array1__double, theTrueVIntervals: nanoocp.NCollection.NCollection_Array1__double) -> None:
+    def __init__(self, theNbUSurfaces: int, theNbVSurfaces: int, theUContinuity: int, theVContinuity: int, theMaxUDegree: int, theMaxVDegree: int, theNumCoeffPerSurface: nanoocp.NCollection.NCollection_Array2[int], theCoefficients: nanoocp.NCollection.NCollection_Array1[float], thePolynomialUIntervals: nanoocp.NCollection.NCollection_Array1[float], thePolynomialVIntervals: nanoocp.NCollection.NCollection_Array1[float], theTrueUIntervals: nanoocp.NCollection.NCollection_Array1[float], theTrueVIntervals: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         To one grid of polynomial Surface.
         Warning!
@@ -463,7 +463,7 @@ class Convert_GridPolynomialToPoles:
         """
 
     @overload
-    def __init__(self, theNbUSurfaces: int, theNbVSurfaces: int, theUContinuity: int, theVContinuity: int, theMaxUDegree: int, theMaxVDegree: int, theNumCoeffPerSurface: nanoocp.NCollection.NCollection_HArray2__int, theCoefficients: nanoocp.NCollection.NCollection_HArray1__double, thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1__double, thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1__double, theTrueUIntervals: nanoocp.NCollection.NCollection_HArray1__double, theTrueVIntervals: nanoocp.NCollection.NCollection_HArray1__double) -> None:
+    def __init__(self, theNbUSurfaces: int, theNbVSurfaces: int, theUContinuity: int, theVContinuity: int, theMaxUDegree: int, theMaxVDegree: int, theNumCoeffPerSurface: nanoocp.NCollection.NCollection_HArray2[int], theCoefficients: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1[float], theTrueUIntervals: nanoocp.NCollection.NCollection_HArray1[float], theTrueVIntervals: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
         """Handle-based overload (delegates to the array-based constructor)."""
 
     def NbUPoles(self) -> int:
@@ -472,7 +472,7 @@ class Convert_GridPolynomialToPoles:
     def NbVPoles(self) -> int:
         """Returns the number of poles in the V parametric direction."""
 
-    def Poles(self) -> nanoocp.NCollection.NCollection_Array2__gp_Pnt:
+    def Poles(self) -> nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]:
         """Returns the poles of the BSpline Surface."""
 
     def UDegree(self) -> int:
@@ -487,16 +487,16 @@ class Convert_GridPolynomialToPoles:
     def NbVKnots(self) -> int:
         """Returns the number of knots in the V parametric direction."""
 
-    def UKnots(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def UKnots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots in the U direction."""
 
-    def VKnots(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def VKnots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots in the V direction."""
 
-    def UMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def UMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the knots in the U direction."""
 
-    def VMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def VMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the knots in the V direction."""
 
     def IsDone(self) -> bool:
@@ -627,4 +627,4 @@ class Convert_TorusToBSplineSurface(Convert_ElementarySurfaceToBSplineSurface):
         Raised if V1 = V2 or V1 = V2 + 2.0 * Pi
         """
 
-def BuildPolynomialCosAndSin(theUFirst: float, theULast: float, theNumPoles: int, theCosNumerator: nanoocp.NCollection.NCollection_Array1__double, theSinNumerator: nanoocp.NCollection.NCollection_Array1__double, theDenominator: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+def BuildPolynomialCosAndSin(theUFirst: float, theULast: float, theNumPoles: int, theCosNumerator: nanoocp.NCollection.NCollection_Array1[float], theSinNumerator: nanoocp.NCollection.NCollection_Array1[float], theDenominator: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...

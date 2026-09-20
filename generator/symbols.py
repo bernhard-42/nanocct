@@ -9,7 +9,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-_QUALIFIED_RE = re.compile(r"^((?:[A-Za-z_]\w*::)+)(~?[A-Za-z_]\w*|operator\S*?)\(")
+# operator() first: otherwise 'operator' + '(' would match as a plain name and the call operator would be missed
+_QUALIFIED_RE = re.compile(r"^((?:[A-Za-z_]\w*::)+)(operator\(\)|~?[A-Za-z_]\w*|operator\S*?)\(")
 
 
 def defined_methods(install: Path, toolkit: str) -> set[str] | None:

@@ -188,6 +188,24 @@ and callbacks to be called during jump (for proper resource release).
 The active handlers are stored in the global stack, which is used
 to find appropriate handler when signal is raised.)nbdoc");
     }
+    { nb::class_<Standard_ErrorHandler::Callback> cls(m.attr("Standard_ErrorHandler"), "Callback", R"nbdoc(Defines a base class for callback objects that can be registered
+in the OCC error handler (the class simulating C++ exceptions)
+so as to be correctly destroyed when error handler is activated.
+
+Note that this is needed only when Open CASCADE is compiled with
+OCC_CONVERT_SIGNALS options (i.e. on UNIX/Linux).
+In that case, raising OCC exception and/or signal will not cause
+C++ stack unwinding and destruction of objects created in the stack.
+
+This class is intended to protect critical objects and operations in
+the try {} catch {} block from being bypassed by OCC signal or exception.
+
+Inherit your object from that class, implement DestroyCallback() function,
+and call Register/Unregister in critical points.
+
+Note that you must ensure that your object has life span longer than
+that of the try {} block in which it calls Register().)nbdoc");
+    }
     { nb::class_<Standard_UUID> cls(m, "Standard_UUID");
     }
     { nb::class_<Standard_GUID> cls(m, "Standard_GUID");
@@ -238,6 +256,16 @@ blocks is usually less costly than directly by malloc since allocation is made
 once (when allocating a pool) and overheads induced by malloc are minimized.)nbdoc");
     }
     nanoocp_register_exception<Standard_MultiplyDefined>(nanoocp_new_exception(m, "Standard_MultiplyDefined", nullptr, m.attr("Standard_DomainError").ptr()));
+    { nb::class_<Standard_Mutex, Standard_ErrorHandler::Callback> cls(m, "Standard_Mutex");
+    }
+    { nb::class_<Standard_Mutex::Sentry> cls(m.attr("Standard_Mutex"), "Sentry", R"nbdoc(@brief Simple sentry class providing convenient interface to mutex.
+
+Provides automatic locking and unlocking a mutex in its constructor
+and destructor, thus ensuring correct unlock of the mutex even in case of
+raising an exception or signal from the protected code.
+
+Create instance of that class when entering critical section.)nbdoc");
+    }
     nanoocp_register_exception<Standard_NegativeValue>(nanoocp_new_exception(m, "Standard_NegativeValue", nullptr, m.attr("Standard_RangeError").ptr()));
     nanoocp_register_exception<Standard_NoMoreObject>(nanoocp_new_exception(m, "Standard_NoMoreObject", nullptr, m.attr("Standard_DomainError").ptr()));
     nanoocp_register_exception<Standard_NotImplemented>(nanoocp_new_exception(m, "Standard_NotImplemented", nullptr, m.attr("Standard_ProgramError").ptr()));
@@ -269,8 +297,8 @@ void nanoocp_templates_Standard(nb::module_ &m) {
 }
 
 void nanoocp_define_Standard(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<Standard>(nb::borrow<nb::class_<Standard>>(m.attr("Standard")));
     nb::borrow<nb::class_<Standard>>(m.attr("Standard"))
-        .def(nb::init<>())
         .def_static("GetAllocatorType", static_cast<Standard::AllocatorType (*)()>(&Standard::GetAllocatorType), R"nbdoc(Returns default allocator type)nbdoc")
         .def_static("Purge", static_cast<int (*)()>(&Standard::Purge), R"nbdoc(Deallocates the storage retained on the free list
 and clears the list.
@@ -333,8 +361,8 @@ Note that multiple inheritance is not supported.)nbdoc")
 and returns true if it was in signaling state.
 @return true if event object was in signaling state.)nbdoc");
     nb::implicitly_convertible<std::decay_t<bool>, Standard_Condition>();
+    nanoocp_implicit_default_ctor<Standard_CStringHasher>(nb::borrow<nb::class_<Standard_CStringHasher>>(m.attr("Standard_CStringHasher")));
     nb::borrow<nb::class_<Standard_CStringHasher>>(m.attr("Standard_CStringHasher"))
-        .def(nb::init<>())
         .def("__call__", static_cast<size_t (Standard_CStringHasher::*)(const char *const) const noexcept>(&Standard_CStringHasher::operator()), nb::arg("theString"), nb::is_operator())
         .def("__call__", static_cast<bool (Standard_CStringHasher::*)(const char *const, const char *const) const noexcept>(&Standard_CStringHasher::operator()), nb::arg("theString1"), nb::arg("theString2"), nb::is_operator());
     nb::borrow<nb::class_<Standard_DumpValue>>(m.attr("Standard_DumpValue"))
@@ -342,8 +370,8 @@ and returns true if it was in signaling state.
         .def(nb::init<const TCollection_AsciiString &, const int>(), nb::arg("theValue"), nb::arg("theStartPos"))
         .def_rw("myValue", &Standard_DumpValue::myValue, R"nbdoc(current string value)nbdoc")
         .def_rw("myStartPosition", &Standard_DumpValue::myStartPosition, R"nbdoc(position of the value first char in the whole stream)nbdoc");
+    nanoocp_implicit_default_ctor<Standard_Dump>(nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump")));
     nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump"))
-        .def(nb::init<>())
         .def_static("SplitJson", static_cast<bool (*)(const TCollection_AsciiString &, NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue, NCollection_DefaultHasher<TCollection_AsciiString>> &)>(&Standard_Dump::SplitJson), nb::arg("theStreamStr"), nb::arg("theKeyToValues"), R"nbdoc(Converts stream into map of values.
 
 The one level stream example: 'key_1: value_1, key_2: value_2'
@@ -392,8 +420,14 @@ otherwise prints error and terminates program.)nbdoc")
         .def("Label", static_cast<jmp_buf & (Standard_ErrorHandler::*)()>(&Standard_ErrorHandler::Label), R"nbdoc(Returns label for jump)nbdoc")
         .def("Error", static_cast<const std::variant<std::monostate, OSD_SIGBUS, OSD_SIGHUP, OSD_SIGILL, OSD_SIGINT, OSD_SIGKILL, OSD_SIGQUIT, OSD_SIGSEGV, OSD_SIGSYS, OSD_Exception_ACCESS_VIOLATION, OSD_Exception_ARRAY_BOUNDS_EXCEEDED, OSD_Exception_ILLEGAL_INSTRUCTION, OSD_Exception_IN_PAGE_ERROR, OSD_Exception_INT_OVERFLOW, OSD_Exception_INVALID_DISPOSITION, OSD_Exception_NONCONTINUABLE_EXCEPTION, OSD_Exception_PRIV_INSTRUCTION, OSD_Exception_STACK_OVERFLOW, OSD_Exception_STATUS_NO_MEMORY, Standard_DivideByZero, Standard_NumericError, Standard_Overflow, Standard_ProgramError, Standard_Underflow> & (Standard_ErrorHandler::*)() const>(&Standard_ErrorHandler::Error), R"nbdoc(Returns the current Error variant.)nbdoc")
         .def_static("IsInTryBlock", static_cast<bool (*)()>(&Standard_ErrorHandler::IsInTryBlock), R"nbdoc(Test if the code is currently running in a try block)nbdoc");
+    nb::borrow<nb::class_<Standard_ErrorHandler::Callback>>(m.attr("Standard_ErrorHandler").attr("Callback"))
+        .def("RegisterCallback", static_cast<void (Standard_ErrorHandler::Callback::*)()>(&Standard_ErrorHandler::Callback::RegisterCallback))
+        .def("UnregisterCallback", static_cast<void (Standard_ErrorHandler::Callback::*)()>(&Standard_ErrorHandler::Callback::UnregisterCallback))
+        .def("DestroyCallback", static_cast<void (Standard_ErrorHandler::Callback::*)()>(&Standard_ErrorHandler::Callback::DestroyCallback), R"nbdoc(The callback function to perform necessary callback action.
+Called by the exception handler when it is being destroyed but
+still has this callback registered.)nbdoc");
+    nanoocp_implicit_default_ctor<Standard_UUID>(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")));
     nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID"))
-        .def(nb::init<>())
         .def_rw("Data1", &Standard_UUID::Data1)
         .def_rw("Data2", &Standard_UUID::Data2)
         .def_rw("Data3", &Standard_UUID::Data3);
@@ -439,6 +473,23 @@ of the class above.)nbdoc")
         .def("Purge", static_cast<int (Standard_MMgrOpt::*)(bool)>(&Standard_MMgrOpt::Purge), nb::arg("isDestroyed"), R"nbdoc(Release medium-sized blocks of memory in free lists to the system.
 Returns number of actually freed blocks)nbdoc");
     nb::implicitly_convertible<std::decay_t<const bool>, Standard_MMgrOpt>();
+    nb::borrow<nb::class_<Standard_Mutex>>(m.attr("Standard_Mutex"))
+        .def(nb::init<>(), R"nbdoc(Constructor: creates a mutex object and initializes it.
+It is strongly recommended that mutexes were created as
+static objects whenever possible.)nbdoc")
+        .def("Lock", static_cast<void (Standard_Mutex::*)()>(&Standard_Mutex::Lock), R"nbdoc(Method to lock the mutex; waits until the mutex is released
+by other threads, locks it and then returns)nbdoc")
+        .def("TryLock", static_cast<bool (Standard_Mutex::*)()>(&Standard_Mutex::TryLock), R"nbdoc(Method to test the mutex; if the mutex is not hold by other thread,
+locks it and returns True; otherwise returns False without waiting
+mutex to be released.)nbdoc")
+        .def("Unlock", static_cast<void (Standard_Mutex::*)()>(&Standard_Mutex::Unlock), R"nbdoc(Method to unlock the mutex; releases it to other users)nbdoc");
+    nb::borrow<nb::class_<Standard_Mutex::Sentry>>(m.attr("Standard_Mutex").attr("Sentry"))
+        .def(nb::init<Standard_Mutex &>(), nb::arg("theMutex"), R"nbdoc(Constructor - initializes the sentry object by reference to a
+mutex (which must be initialized) and locks the mutex immediately)nbdoc")
+        .def(nb::init<Standard_Mutex *>(), nb::arg("theMutex"), R"nbdoc(Constructor - initializes the sentry object by pointer to a
+mutex and locks the mutex if its pointer is not NULL)nbdoc");
+    nb::implicitly_convertible<std::decay_t<Standard_Mutex &>, Standard_Mutex::Sentry>();
+    nb::implicitly_convertible<std::decay_t<Standard_Mutex *>, Standard_Mutex::Sentry>();
     nb::borrow<nb::class_<Standard_Persistent>>(m.attr("Standard_Persistent"))
         .def(nb::new_([]() { return opencascade::handle<Standard_Persistent>(new Standard_Persistent()); }))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Standard_Persistent::get_type_name))

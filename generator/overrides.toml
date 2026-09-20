@@ -21,6 +21,9 @@ classes = [
     # (std::is_move_constructible, no hook) -> hard compile error
     "math_GlobOptMin",
 ]
+# C++ namespaces never bound: std (OCCT only adds std::hash specialisations there) and the implementation-detail
+# namespaces OCCT keeps in headers for inline code (MathSys::detail, MathLin::Internal, BRepGraph_RefsIterator::Detail).
+namespaces = ["std", "detail", "Detail", "Internal"]
 # Headers not included in the package translation unit: platform-specific internals that OCCT
 # itself only includes from .cxx files under #ifdef.
 headers = [

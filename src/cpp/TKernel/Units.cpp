@@ -119,8 +119,8 @@ void nanoocp_templates_Units(nb::module_ &m) {
 }
 
 void nanoocp_define_Units(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<Units>(nb::borrow<nb::class_<Units>>(m.attr("Units")));
     nb::borrow<nb::class_<Units>>(m.attr("Units"))
-        .def(nb::init<>())
         .def_static("UnitsFile", static_cast<void (*)(const char *const)>(&Units::UnitsFile), nb::arg("afile"), R"nbdoc(Defines the location of the file containing all the
 information useful in creating the dictionary of all
 the units known to the system.)nbdoc")

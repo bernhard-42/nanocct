@@ -54,6 +54,7 @@ class Enum:
     doc: str
     header: str
     is_anonymous: bool = False   # enum { A = 1, B = 2 }; -> integer constants, no Python enum type
+    scope: tuple[str, ...] = ()  # Python attribute path of the enclosing C++ namespace, relative to the package module
 
 
 @dataclass
@@ -66,6 +67,8 @@ class Class:
     is_transient: bool          # derives (transitively) from Standard_Transient
     is_exception: bool          # derives (transitively) from Standard_Failure -> bound as Python exception
     is_abstract: bool
+    scope: tuple[str, ...] = ()       # Python attribute path of the enclosing namespace(s)/class(es), relative to the package module
+    outer: str = ""                   # C++ name of the enclosing class for a nested class (declared after it)
     has_declared_ctor: bool = False   # any constructor at any access level (suppresses the implicit default ctor)
     template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
     constructible: bool = True        # False when operator new is not public (placement new impossible)
@@ -73,6 +76,7 @@ class Class:
     methods: list[Method] = field(default_factory=list)
     fields: list[Field] = field(default_factory=list)
     enums: list[Enum] = field(default_factory=list)
+    nested: list[Class] = field(default_factory=list)  # public nested classes (flattened into PackageIR.classes by the parser)
     skipped: list[str] = field(default_factory=list)   # human readable report lines
 
 
@@ -88,6 +92,16 @@ class Function:
     header: str
     is_operator: bool = False
     skip_reason: str | None = None
+    qualified: str = ""         # C++ name to call (Ns::Name for a function in a namespace); "" -> name
+    scope: tuple[str, ...] = () # Python attribute path of the enclosing C++ namespace, relative to the package module
+
+
+@dataclass
+class Constant:
+    py_name: str
+    cpp: str                    # fully qualified C++ expression
+    doc: str
+    scope: tuple[str, ...] = ()
 
 
 @dataclass
@@ -107,6 +121,7 @@ class PackageIR:
     enums: list[Enum] = field(default_factory=list)
     functions: list[Function] = field(default_factory=list)
     typedefs: list[tuple[str, str]] = field(default_factory=list)   # (alias, target)
-    constants: list[tuple[str, str, str]] = field(default_factory=list)  # (py name, C++ expression, doc): namespace-level constexpr
+    constants: list[Constant] = field(default_factory=list)    # namespace-level constexpr values
+    namespaces: list[tuple[str, ...]] = field(default_factory=list)   # C++ namespaces bound as submodules (Python paths, outer first)
     instances: dict[str, TemplateInstance] = field(default_factory=dict)  # NCollection instances used in bound signatures
     report: list[str] = field(default_factory=list)

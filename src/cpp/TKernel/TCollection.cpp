@@ -71,8 +71,8 @@ void nanoocp_templates_TCollection(nb::module_ &m) {
 }
 
 void nanoocp_define_TCollection(nb::module_ &m) {
+    nanoocp_implicit_default_ctor<TCollection>(nb::borrow<nb::class_<TCollection>>(m.attr("TCollection")));
     nb::borrow<nb::class_<TCollection>>(m.attr("TCollection"))
-        .def(nb::init<>())
         .def_static("NextPrimeForMap", static_cast<int (*)(const int)>(&TCollection::NextPrimeForMap), nb::arg("I"), R"nbdoc(Returns a prime number greater than <I> suitable
 to dimension a Map. When <I> becomes great there
 is a limit on the result (today the limit is

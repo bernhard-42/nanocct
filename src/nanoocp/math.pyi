@@ -792,7 +792,7 @@ class math_Vector:
 
     def __sub__(self, theRight: math_Vector) -> math_Vector: ...
 
-    def Array1(self) -> nanoocp.NCollection.NCollection_Array1__double:
+    def Array1(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         Returns the underlying array for interoperability with legacy APIs.
         Allows passing math_Vector data to functions expecting NCollection_Array1.
@@ -1430,7 +1430,7 @@ class math_EigenValuesSearcher:
     - Proper handling of degenerate cases
     """
 
-    def __init__(self, theDiagonal: nanoocp.NCollection.NCollection_Array1__double, theSubdiagonal: nanoocp.NCollection.NCollection_Array1__double) -> None: ...
+    def __init__(self, theDiagonal: nanoocp.NCollection.NCollection_Array1[float], theSubdiagonal: nanoocp.NCollection.NCollection_Array1[float]) -> None: ...
 
     def IsDone(self) -> bool:
         """
@@ -2102,7 +2102,7 @@ class math_IntegerVector:
 
     def __sub__(self, theRight: math_IntegerVector) -> math_IntegerVector: ...
 
-    def Array1(self) -> nanoocp.NCollection.NCollection_Array1__int:
+    def Array1(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """
         Returns the underlying array for interoperability with legacy APIs.
         Allows passing math_Vector data to functions expecting NCollection_Array1.
@@ -3421,10 +3421,10 @@ class math_ValueAndWeight:
     def __lt__(self, arg: math_ValueAndWeight, /) -> bool: ...
 
 @overload
-def LU_Decompose(a: math_Matrix, indx: math_IntegerVector, d: float, TINY: float = 1e-20, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> int: ...
+def LU_Decompose(a: math_Matrix, indx: math_IntegerVector, TINY: float = 1e-20, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[int, float]: ...
 
 @overload
-def LU_Decompose(a: math_Matrix, indx: math_IntegerVector, d: float, vv: math_Vector, TINY: float = 1e-30, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> int: ...
+def LU_Decompose(a: math_Matrix, indx: math_IntegerVector, vv: math_Vector, TINY: float = 1e-30, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[int, float]: ...
 
 def LU_Solve(a: math_Matrix, indx: math_IntegerVector, b: math_Vector) -> None: ...
 
@@ -3442,4 +3442,4 @@ def DACTCL_Decompose(a: math_Vector, indx: math_IntegerVector, MinPivot: float =
 
 def DACTCL_Solve(a: math_Vector, b: math_Vector, indx: math_IntegerVector, MinPivot: float = 1e-20) -> int: ...
 
-def Jacobi(a: math_Matrix, d: math_Vector, v: math_Matrix, nrot: int) -> int: ...
+def Jacobi(a: math_Matrix, d: math_Vector, v: math_Matrix) -> tuple[int, int]: ...
