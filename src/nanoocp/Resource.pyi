@@ -3,6 +3,7 @@
 import enum
 from typing import overload
 
+import nanoocp.NCollection
 import nanoocp.Standard
 import nanoocp.TCollection
 
@@ -186,7 +187,7 @@ class Resource_Manager(nanoocp.Standard.Standard_Transient):
         or file doesn't exist returns empty string.
         """
 
-    def GetMap(self, theRefMap: bool = True) -> "NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>>":
+    def GetMap(self, theRefMap: bool = True) -> nanoocp.NCollection.NCollection_DataMap__TCollection_AsciiString__TCollection_AsciiString:
         """Returns internal Ref or User map with parameters"""
 
     def IsInitialized(self) -> bool:

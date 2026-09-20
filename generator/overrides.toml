@@ -28,3 +28,13 @@ methods = [
     "TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const)",
     "OSD_Path::LocateExecFile",
 ]
+
+# NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical
+# argument types). They are registered by the NCollection package (TKernel).
+[instantiate]
+extra = [
+    "NCollection_Map<int>",
+    "NCollection_DataMap<int, double>",
+    "NCollection_DataMap<TCollection_AsciiString, int>",
+    "NCollection_IndexedMap<TCollection_AsciiString>",
+]

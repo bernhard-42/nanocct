@@ -11,9 +11,14 @@
 #include <nanobind/make_iterator.h>
 
 #include <NCollection_Array1.hxx>
+#include <NCollection_DataMap.hxx>
+#include <NCollection_DefaultHasher.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_HSequence.hxx>
+#include <NCollection_IndexedDataMap.hxx>
+#include <NCollection_IndexedMap.hxx>
 #include <NCollection_List.hxx>
+#include <NCollection_Map.hxx>
 #include <NCollection_Sequence.hxx>
 
 #define NANOOCP_DOC(tmpl, member) nanoocp_doc::tmpl::member
@@ -242,6 +247,222 @@ template <typename T> void bind_NCollection_HSequence(nb::module_ &m, const char
      .def("ChangeSequence", [](H &self) -> S & { return self.ChangeSequence(); }, nb::rv_policy::reference_internal, D::ChangeSequence);
     def_sequence_members<T, H>(c);
     nb::implicitly_convertible<H, S>();
+}
+
+// ---------------------------------------------------------------------------------------------------
+// hashed containers: members of NCollection_BaseMap plus constructors shared by all four kinds
+inline const opencascade::handle<NCollection_BaseAllocator> null_allocator = nullptr;
+
+struct BaseMapDocs {
+    const char *ctor, *NbBuckets, *Extent, *Length, *Size, *IsEmpty, *Allocator, *Exchange, *Assign, *ReSize, *Clear;
+};
+#define NANOOCP_BASEMAP_DOCS(D) \
+    nanoocp::BaseMapDocs{D::ctor, D::NbBuckets, D::Extent, D::Length, D::Size, D::IsEmpty, D::Allocator, D::Exchange, D::Assign, D::ReSize, D::Clear}
+
+template <typename M, typename... Extra> void def_basemap_members(nb::class_<M, Extra...> &c, const BaseMapDocs &D) {
+    c.def(nb::init<>(), D.ctor)
+     .def(nb::init<const int, const opencascade::handle<NCollection_BaseAllocator> &>(), nb::arg("theNbBuckets"),
+          nb::arg("theAllocator").none() = null_allocator, D.ctor)
+     .def(nb::init<const M &>(), nb::arg("theOther"), D.ctor)
+     .def("NbBuckets", [](const M &self) { return self.NbBuckets(); }, D.NbBuckets)
+     .def("Extent", [](const M &self) { return self.Extent(); }, D.Extent)
+     .def("Length", [](const M &self) { return self.Length(); }, D.Length)
+     .def("Size", [](const M &self) { return self.Size(); }, D.Size)
+     .def("IsEmpty", [](const M &self) { return self.IsEmpty(); }, D.IsEmpty)
+     .def("Allocator", [](const M &self) { return self.Allocator(); }, D.Allocator)
+     .def("Exchange", [](M &self, M &other) { self.Exchange(other); }, nb::arg("theOther"), D.Exchange)
+     .def("Assign", [](M &self, const M &other) -> M & { return self.Assign(other); }, nb::rv_policy::reference, nb::arg("theOther"), D.Assign)
+     .def("ReSize", [](M &self, const int n) { self.ReSize(n); }, nb::arg("N"), D.ReSize)
+     .def("Clear", [](M &self, const bool release) { self.Clear(release); }, nb::arg("doReleaseMemory") = true, D.Clear)
+     .def("Clear", [](M &self, const opencascade::handle<NCollection_BaseAllocator> &a) { self.Clear(a); }, nb::arg("theAllocator").none(), D.Clear)
+     .def("__len__", [](const M &self) { return self.Extent(); }, "Python addition: alias to Extent.");
+}
+
+// iterate over the keys (Map/IndexedMap: Value(); DataMap/IndexedDataMap: Key()) of a hashed container
+template <typename M, typename It, typename Get> auto key_iterator(nb::handle scope, const M &self, Get get) {
+    // nb::make_iterator needs C++ iterators; wrap OCCT's More/Next protocol in a minimal forward iterator
+    struct Cursor {
+        It it; Get get;
+        bool operator==(const Cursor &o) const { return it.More() == o.it.More(); }
+        bool operator!=(const Cursor &o) const { return !(*this == o); }
+        Cursor &operator++() { it.Next(); return *this; }
+        decltype(auto) operator*() const { return get(it); }
+    };
+    return nb::make_iterator(scope, "key_iterator", Cursor{It(self), get}, Cursor{It(), get});
+}
+
+
+// ---- NCollection_Map<K, Hasher>
+template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_Map(nb::module_ &m, const char *name) {
+    using M = NCollection_Map<K, H>;
+    using It = typename M::Iterator;
+    namespace D = nanoocp_doc::NCollection_Map;
+    nb::class_<M> c(m, name, D::class_doc);
+    nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
+        .def(nb::init<>(), D::Iterator::ctor)
+        .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::ctor)
+        .def("Initialize", [](It &self, const M &map) { self.Initialize(map); }, nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::Initialize)
+        .def("Reset", [](It &self) { self.Reset(); }, D::Iterator::Reset)
+        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
+        .def("Value", [](const It &self) -> const K & { return self.Value(); }, D::Iterator::Value)
+        .def("Key", [](const It &self) -> const K & { return self.Key(); }, D::Iterator::Key);
+    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    c.def("Add", [](M &self, const K &k) { return self.Add(k); }, nb::arg("theKey"), D::Add)
+     .def("Added", [](M &self, const K &k) -> const K & { return self.Added(k); }, nb::arg("theKey"), D::Added)
+     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
+     .def("Contains", [](const M &self, const M &other) { return self.Contains(other); }, nb::arg("theOther"), D::Contains)
+     .def("Remove", [](M &self, const K &k) { return self.Remove(k); }, nb::arg("theKey"), D::Remove)
+     .def("IsEqual", [](const M &self, const M &other) { return self.IsEqual(other); }, nb::arg("theOther"), D::IsEqual)
+     .def("Union", [](M &self, const M &a, const M &b) { self.Union(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Union)
+     .def("Unite", [](M &self, const M &other) { return self.Unite(other); }, nb::arg("theOther"), D::Unite)
+     .def("HasIntersection", [](const M &self, const M &other) { return self.HasIntersection(other); }, nb::arg("theMap"), D::HasIntersection)
+     .def("Intersection", [](M &self, const M &a, const M &b) { self.Intersection(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Intersection)
+     .def("Intersect", [](M &self, const M &other) { return self.Intersect(other); }, nb::arg("theOther"), D::Intersect)
+     .def("Subtraction", [](M &self, const M &a, const M &b) { self.Subtraction(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Subtraction)
+     .def("Subtract", [](M &self, const M &other) { return self.Subtract(other); }, nb::arg("theOther"), D::Subtract)
+     .def("Difference", [](M &self, const M &a, const M &b) { self.Difference(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Difference)
+     .def("Differ", [](M &self, const M &other) { return self.Differ(other); }, nb::arg("theOther"), D::Differ)
+     // Python additions
+     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
+     .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.");
+}
+
+// ---- NCollection_DataMap<K, V, Hasher>
+template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_DataMap(nb::module_ &m, const char *name) {
+    using M = NCollection_DataMap<K, V, H>;
+    using It = typename M::Iterator;
+    namespace D = nanoocp_doc::NCollection_DataMap;
+    nb::class_<M> c(m, name, D::class_doc);
+    nb::class_<It> it(c, "Iterator", D::Iterator::class_doc);
+    it.def(nb::init<>(), D::Iterator::ctor)
+      .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::ctor)
+      .def("Initialize", [](It &self, const M &map) { self.Initialize(map); }, nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::Initialize)
+      .def("Reset", [](It &self) { self.Reset(); }, D::Iterator::Reset)
+      .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
+      .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
+      .def("Value", [](const It &self) -> const V & { return self.Value(); }, D::Iterator::Value)
+      .def("Key", [](const It &self) -> const K & { return self.Key(); }, D::Iterator::Key);
+    def_elem<V>(it, "ChangeValue", [](It &self) -> V & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
+    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    c.def("Bind", [](M &self, const K &k, const V &v) { return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
+     .def("TryBind", [](M &self, const K &k, const V &v) { return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
+     .def("IsBound", [](const M &self, const K &k) { return self.IsBound(k); }, nb::arg("theKey"), D::IsBound)
+     .def("UnBind", [](M &self, const K &k) { return self.UnBind(k); }, nb::arg("theKey"), D::UnBind)
+     .def("Find", [](const M &self, const K &k) -> const V & { return self.Find(k); }, nb::arg("theKey"), D::Find)
+     .def("__call__", [](const M &self, const K &k) -> const V & { return self.Find(k); }, nb::arg("theKey"), D::op_call)
+     // Python additions
+     .def("__contains__", [](const M &self, const K &k) { return self.IsBound(k); }, nb::arg("theKey"), "Python addition: alias to IsBound.")
+     .def("__getitem__", [](const M &self, const K &k) -> const V & { return self.Find(k); }, nb::arg("theKey"), "Python addition: alias to Find.")
+     .def("__setitem__", [](M &self, const K &k, const V &v) { self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), "Python addition: alias to Bind.")
+     .def("__delitem__", [](M &self, const K &k) { if (!self.UnBind(k)) throw nb::key_error(); }, nb::arg("theKey"), "Python addition: UnBind, KeyError if the key is not bound.")
+     .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.")
+     .def("items", [](const M &self) {
+              nb::list out;
+              for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(it.Key(), it.Value()));
+              return out; }, "Python addition: list of (key, value) tuples.");
+    // element references: view for class V, value for scalars/handles
+    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { return *self.Bound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bound);
+    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { return self.TryBound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBound);
+    def_elem<V>(c, "ChangeFind", [](M &self, const K &k) -> V & { return self.ChangeFind(k); }, nb::arg("theKey"), D::ChangeFind);
+    // Seek: nullptr when absent -> None
+    if constexpr (std::is_class_v<V>) {
+        c.def("Seek", [](const M &self, const K &k) -> const V * { return self.Seek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::ChangeSeek)
+         .def("Find", [](const M &self, const K &k, V &v) { return self.Find(k, v); }, nb::arg("theKey"), nb::arg("theValue"), D::Find);
+    } else {
+        c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::ChangeSeek);
+    }
+}
+
+// ---- NCollection_IndexedMap<K, Hasher>
+template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_IndexedMap(nb::module_ &m, const char *name) {
+    using M = NCollection_IndexedMap<K, H>;
+    using It = typename M::Iterator;
+    namespace D = nanoocp_doc::NCollection_IndexedMap;
+    nb::class_<M> c(m, name, D::class_doc);
+    nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
+        .def(nb::init<>(), D::Iterator::ctor)
+        .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::ctor)
+        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
+        .def("Value", [](const It &self) -> const K & { return self.Value(); }, D::Iterator::Value)
+        .def("Index", [](const It &self) { return self.Index(); }, D::Iterator::Index)
+        .def("IsEqual", [](const It &self, const It &o) { return self.IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
+    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    c.def("Add", [](M &self, const K &k) { return self.Add(k); }, nb::arg("theKey"), D::Add)
+     .def("Added", [](M &self, const K &k) -> const K & { return self.Added(k); }, nb::arg("theKey"), D::Added)
+     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
+     .def("Substitute", [](M &self, const int i, const K &k) { self.Substitute(i, k); }, nb::arg("theIndex"), nb::arg("theKey"), D::Substitute)
+     .def("Swap", [](M &self, const int i, const int j) { self.Swap(i, j); }, nb::arg("theIndex1"), nb::arg("theIndex2"), D::Swap)
+     .def("RemoveLast", [](M &self) { self.RemoveLast(); }, D::RemoveLast)
+     .def("RemoveFromIndex", [](M &self, const int i) { self.RemoveFromIndex(i); }, nb::arg("theIndex"), D::RemoveFromIndex)
+     .def("RemoveKey", [](M &self, const K &k) { return self.RemoveKey(k); }, nb::arg("theKey"), D::RemoveKey)
+     .def("FindKey", [](const M &self, const int i) -> const K & { return self.FindKey(i); }, nb::arg("theIndex"), D::FindKey)
+     .def("__call__", [](const M &self, const int i) -> const K & { return self.FindKey(i); }, nb::arg("theIndex"), D::op_call)
+     .def("FindIndex", [](const M &self, const K &k) { return self.FindIndex(k); }, nb::arg("theKey"), D::FindIndex)
+     // Python additions
+     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
+     .def("__getitem__", [](const M &self, const int i) -> const K & { return self.FindKey(i); }, nb::arg("theIndex"), "Python addition: alias to FindKey (1-based index).")
+     .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Value(); }); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys in index order.");
+}
+
+// ---- NCollection_IndexedDataMap<K, V, Hasher>
+template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_IndexedDataMap(nb::module_ &m, const char *name) {
+    using M = NCollection_IndexedDataMap<K, V, H>;
+    using It = typename M::Iterator;
+    namespace D = nanoocp_doc::NCollection_IndexedDataMap;
+    nb::class_<M> c(m, name, D::class_doc);
+    nb::class_<It> it(c, "Iterator", D::Iterator::class_doc);
+    it.def(nb::init<>(), D::Iterator::ctor)
+      .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), D::Iterator::ctor)
+      .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
+      .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
+      .def("Value", [](const It &self) -> const V & { return self.Value(); }, D::Iterator::Value)
+      .def("Key", [](const It &self) -> const K & { return self.Key(); }, D::Iterator::Key)
+      .def("Index", [](const It &self) { return self.Index(); }, D::Iterator::Index)
+      .def("IsEqual", [](const It &self, const It &o) { return self.IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
+    def_elem<V>(it, "ChangeValue", [](It &self) -> V & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
+    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    c.def("Add", [](M &self, const K &k, const V &v) { return self.Add(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Add)
+     .def("TryBind", [](M &self, const K &k, const V &v) { return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
+     .def("Bind", [](M &self, const K &k, const V &v) { return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
+     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
+     .def("Substitute", [](M &self, const int i, const K &k, const V &v) { self.Substitute(i, k, v); }, nb::arg("theIndex"), nb::arg("theKey"), nb::arg("theItem"), D::Substitute)
+     .def("Swap", [](M &self, const int i, const int j) { self.Swap(i, j); }, nb::arg("theIndex1"), nb::arg("theIndex2"), D::Swap)
+     .def("RemoveLast", [](M &self) { self.RemoveLast(); }, D::RemoveLast)
+     .def("RemoveFromIndex", [](M &self, const int i) { self.RemoveFromIndex(i); }, nb::arg("theIndex"), D::RemoveFromIndex)
+     .def("RemoveKey", [](M &self, const K &k) { self.RemoveKey(k); }, nb::arg("theKey"), D::RemoveKey)
+     .def("FindKey", [](const M &self, const int i) -> const K & { return self.FindKey(i); }, nb::arg("theIndex"), D::FindKey)
+     .def("FindFromIndex", [](const M &self, const int i) -> const V & { return self.FindFromIndex(i); }, nb::arg("theIndex"), D::FindFromIndex)
+     .def("__call__", [](const M &self, const int i) -> const V & { return self.FindFromIndex(i); }, nb::arg("theIndex"), D::op_call)
+     .def("FindIndex", [](const M &self, const K &k) { return self.FindIndex(k); }, nb::arg("theKey"), D::FindIndex)
+     .def("FindFromKey", [](const M &self, const K &k) -> const V & { return self.FindFromKey(k); }, nb::arg("theKey"), D::FindFromKey)
+     // Python additions
+     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
+     .def("__getitem__", [](const M &self, const int i) -> const V & { return self.FindFromIndex(i); }, nb::arg("theIndex"), "Python addition: alias to FindFromIndex (1-based index).")
+     .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys in index order.")
+     .def("items", [](const M &self) {
+              nb::list out;
+              for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(it.Key(), it.Value()));
+              return out; }, "Python addition: list of (key, value) tuples in index order.");
+    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { return self.TryBound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBound);
+    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { return *self.Bound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bound);
+    def_elem<V>(c, "ChangeFromIndex", [](M &self, const int i) -> V & { return self.ChangeFromIndex(i); }, nb::arg("theIndex"), D::ChangeFromIndex);
+    def_elem<V>(c, "ChangeFromKey", [](M &self, const K &k) -> V & { return self.ChangeFromKey(k); }, nb::arg("theKey"), D::ChangeFromKey);
+    if constexpr (std::is_class_v<V>) {
+        c.def("Seek", [](const M &self, const K &k) -> const V * { return self.Seek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::ChangeSeek)
+         .def("FindFromKey", [](const M &self, const K &k, V &v) { return self.FindFromKey(k, v); }, nb::arg("theKey"), nb::arg("theValue"), D::FindFromKey);
+    } else {
+        c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::ChangeSeek);
+    }
 }
 
 } // namespace nanoocp

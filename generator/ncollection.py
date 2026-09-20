@@ -55,6 +55,58 @@ BINDERS: dict[str, dict] = {
         "requires": ["NCollection_Sequence"],
         "nargs": 1,
     },
+    "NCollection_Map": {
+        "binder": "nanoocp::bind_NCollection_Map",
+        "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Add", "Added",
+                    "Contains", "Remove", "Clear", "IsEqual", "Union", "Unite", "HasIntersection", "Intersection", "Intersect",
+                    "Subtraction", "Subtract", "Difference", "Differ"},
+        "skipped": {"GetHasher", "Contained", "operator=", "Emplace", "Emplaced", "TryEmplace", "TryEmplaced", "begin", "end", "cbegin",
+                    "cend", "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Value", "Key", "Initialize", "Reset"}},
+        "bases": ["NCollection_BaseMap"],
+        "requires": [],
+        "nargs": 2,
+        "defaults": {1: "NCollection_DefaultHasher<{0}>"},      # trailing arguments equal to their default are dropped
+    },
+    "NCollection_DataMap": {
+        "binder": "nanoocp::bind_NCollection_DataMap",
+        "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Bind", "Bound",
+                    "TryBind", "TryBound", "IsBound", "UnBind", "Seek", "Find", "operator()", "ChangeSeek", "ChangeFind", "Clear"},
+        "skipped": {"GetHasher", "Contained", "Items", "operator=", "Emplace", "Emplaced", "TryEmplace", "TryEmplaced", "begin", "end",
+                    "cbegin", "cend", "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Value", "ChangeValue", "Key", "Initialize", "Reset"}},
+        "bases": ["NCollection_BaseMap"],
+        "requires": [],
+        "nargs": 3,
+        "defaults": {2: "NCollection_DefaultHasher<{0}>"},
+    },
+    "NCollection_IndexedMap": {
+        "binder": "nanoocp::bind_NCollection_IndexedMap",
+        "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Add", "Added",
+                    "Contains", "Substitute", "Swap", "RemoveLast", "RemoveFromIndex", "RemoveKey", "FindKey", "operator()",
+                    "FindIndex", "Clear"},
+        "skipped": {"GetHasher", "Contained", "IndexedItems", "operator=", "Emplace", "Emplaced", "TryEmplace", "TryEmplaced", "begin",
+                    "end", "cbegin", "cend", "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Value", "Index", "IsEqual"}},
+        "bases": ["NCollection_BaseMap"],
+        "requires": [],
+        "nargs": 2,
+        "defaults": {1: "NCollection_DefaultHasher<{0}>"},
+    },
+    "NCollection_IndexedDataMap": {
+        "binder": "nanoocp::bind_NCollection_IndexedDataMap",
+        "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Add", "TryBound",
+                    "TryBind", "Bind", "Bound", "Contains", "Substitute", "Swap", "RemoveLast", "RemoveFromIndex", "RemoveKey", "FindKey",
+                    "FindFromIndex", "operator()", "ChangeFromIndex", "FindIndex", "FindFromKey", "ChangeFromKey", "Seek", "ChangeSeek",
+                    "Clear"},
+        "skipped": {"GetHasher", "Contained", "Items", "IndexedItems", "operator=", "Emplace", "Emplaced", "TryEmplace", "TryEmplaced",
+                    "begin", "end", "cbegin", "cend", "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Value", "ChangeValue", "Key", "Index", "IsEqual"}},
+        "bases": ["NCollection_BaseMap"],
+        "requires": [],
+        "nargs": 3,
+        "defaults": {2: "NCollection_DefaultHasher<{0}>"},
+    },
     "NCollection_HArray1": {
         "binder": "nanoocp::bind_NCollection_HArray1",
         "members": {"Array1", "ChangeArray1", "get_type_name", "get_type_descriptor", "DynamicType"},
@@ -63,6 +115,17 @@ BINDERS: dict[str, dict] = {
         "nargs": 1,
     },
 }
+
+def instance_args(tmpl: str, canonical_args: list[str]) -> list[str]:
+    """Template arguments that identify an instantiation: all non-default ones plus trailing ones that differ
+    from their default (a custom hasher stays part of the key/name, the default hasher does not)."""
+    info = BINDERS[tmpl]
+    args = list(canonical_args[: info["nargs"]])
+    defaults = info.get("defaults", {})
+    while len(args) > 0 and (len(args) - 1) in defaults and args[-1] == defaults[len(args) - 1].format(*args):
+        args.pop()
+    return args
+
 
 _OP_NAMES = {"operator()": "op_call", "operator[]": "op_index", "operator=": "op_assign", "operator==": "op_eq",
              "operator!=": "op_ne", "operator+=": "op_iadd", "operator new": "op_new", "operator delete": "op_delete",
@@ -165,7 +228,8 @@ def deprecated_aliases(alias_dir: Path, args: list[str], templates: dict[str, di
         tmpl = canon.get_declaration().spelling
         if tmpl not in BINDERS:
             continue
-        key = f"{tmpl}<{', '.join(_canonical_args(canon.get_template_argument_type(i)) for i in range(BINDERS[tmpl]['nargs']))}>"
+        all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+        key = f"{tmpl}<{', '.join(instance_args(tmpl, all_args))}>"
         found = templates.get(key)
         if found is None:
             unbound += 1

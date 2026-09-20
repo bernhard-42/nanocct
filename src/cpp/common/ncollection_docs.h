@@ -247,6 +247,414 @@ constexpr const char *op_delete_array = R"nbdoc()nbdoc";
 constexpr const char *op_new = R"nbdoc()nbdoc";
 constexpr const char *op_new_array = R"nbdoc()nbdoc";
 } // namespace NCollection_HSequence
+namespace NCollection_Map {
+constexpr const char *class_doc = R"nbdoc(Purpose:     Single hashed Map. This  Map is used  to store and
+retrieve keys in linear time.
+
+The ::Iterator class can be  used to explore  the
+content of the map. It is not  wise to iterate and
+modify a map in parallel.
+
+To compute  the hashcode of  the key the  function
+::HashCode must be defined in the global namespace
+
+To compare two keys the function ::IsEqual must be
+defined in the global namespace.
+
+The performance of  a Map is conditioned  by  its
+number of buckets that  should be kept greater  to
+the number   of keys.  This  map has  an automatic
+management of the number of buckets. It is resized
+when  the number of Keys  becomes greater than the
+number of buckets.
+
+If you have a fair  idea of the number of  objects
+you  can save on automatic   resizing by giving  a
+number of buckets  at creation or using the ReSize
+method. This should be  consider only for  crucial
+optimisation issues.)nbdoc";
+constexpr const char *Add = R"nbdoc(Add)nbdoc";
+constexpr const char *Added = R"nbdoc(Added: add a new key if not yet in the map, and return
+reference to either newly added or previously existing object)nbdoc";
+constexpr const char *Allocator = R"nbdoc(Returns attached allocator)nbdoc";
+constexpr const char *Assign = R"nbdoc(Assign.
+This method does not change the internal allocator.)nbdoc";
+constexpr const char *Clear = R"nbdoc(Clear data. If doReleaseMemory is false then the table of
+buckets is not released and will be reused.)nbdoc";
+constexpr const char *Contained = R"nbdoc(Contained returns optional const reference to the key in the map.
+Returns std::nullopt if the key is not found.)nbdoc";
+constexpr const char *Contains = R"nbdoc(Contains)nbdoc";
+constexpr const char *Differ = R"nbdoc(Apply to this Map the symmetric difference (aka exclusive disjunction, boolean XOR) operation
+with another (given) Map. The result contains the values that are contained only in this or
+the operand map, but not in both. This algorithm is similar to method Difference(). Returns
+True if contents of this map is changed.)nbdoc";
+constexpr const char *Difference = R"nbdoc(Sets this Map to be the result of symmetric difference (aka exclusive disjunction, boolean
+XOR) operation between two given Maps. The new Map contains the values that are contained only
+in the first or the second operand maps but not in both. All previous content of this Map is
+cleared. This map (result of the boolean operation) can also be used as one of operands.)nbdoc";
+constexpr const char *Emplace = R"nbdoc(Emplace constructs key in-place; if key exists, destroys and reconstructs.
+@param theArgs arguments forwarded to key constructor
+@return true if key was newly added, false if key already existed (and was reconstructed))nbdoc";
+constexpr const char *Emplaced = R"nbdoc(Emplaced constructs key in-place; if key exists, destroys and reconstructs.
+@param theArgs arguments forwarded to key constructor
+@return const reference to the key in the map)nbdoc";
+constexpr const char *Exchange = R"nbdoc(Exchange the content of two maps without re-allocations.
+Notice that allocators will be swapped as well!)nbdoc";
+constexpr const char *Extent = R"nbdoc(Extent (number of elements, legacy int-returning API).)nbdoc";
+constexpr const char *GetHasher = R"nbdoc(Returns const reference to the hasher.)nbdoc";
+constexpr const char *HasIntersection = R"nbdoc(Returns true if this and theMap have common elements.)nbdoc";
+constexpr const char *Intersect = R"nbdoc(Apply to this Map the intersection operation (aka multiplication, common, boolean AND) with
+another (given) Map. The result contains only the values that are contained in both this and
+the given maps. This algorithm is similar to method Intersection(). Returns True if contents
+of this map is changed.)nbdoc";
+constexpr const char *Intersection = R"nbdoc(Sets this Map to be the result of intersection (aka multiplication, common, boolean AND)
+operation between two given Maps. The new Map contains only the values that are contained in
+both map operands. All previous content of this Map is cleared. This same map (result of the
+boolean operation) can also be used as one of operands.)nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(IsEmpty)nbdoc";
+constexpr const char *IsEqual = R"nbdoc(Checks if two maps contain exactly the same keys.
+This function compares the keys of this map and another map and returns true
+if they contain exactly the same keys.)nbdoc";
+constexpr const char *Length = R"nbdoc(Length - number of elements (legacy int-returning API, synonym of Extent()).)nbdoc";
+constexpr const char *NbBuckets = R"nbdoc(NbBuckets)nbdoc";
+constexpr const char *ReSize = R"nbdoc(ReSize)nbdoc";
+constexpr const char *Remove = R"nbdoc(Remove)nbdoc";
+constexpr const char *Size = R"nbdoc(Size - number of elements.)nbdoc";
+constexpr const char *Subtract = R"nbdoc(Apply to this Map the subtraction (aka set-theoretic difference, relative complement,
+exclude, cut, boolean NOT) operation with another (given) Map.
+The result contains only the values that were previously contained in this map and not
+contained in this map. This algorithm is similar to method Subtract() with two operands.
+Returns True if contents of this map is changed.)nbdoc";
+constexpr const char *Subtraction = R"nbdoc(Sets this Map to be the result of subtraction (aka set-theoretic difference, relative
+complement, exclude, cut, boolean NOT) operation between two given Maps. The new Map contains
+only the values that are contained in the first map operands and not contained in the second
+one. All previous content of this Map is cleared.)nbdoc";
+constexpr const char *TryEmplace = R"nbdoc(TryEmplace constructs key in-place only if not already present.
+@param theArgs arguments forwarded to key constructor
+@return true if key was newly added, false if key already existed)nbdoc";
+constexpr const char *TryEmplaced = R"nbdoc(TryEmplaced constructs key in-place only if not already present.
+@param theArgs arguments forwarded to key constructor
+@return const reference to the key (existing or newly added))nbdoc";
+constexpr const char *Union = R"nbdoc(Sets this Map to be the result of union (aka addition, fuse, merge, boolean OR) operation
+between two given Maps The new Map contains the values that are contained either in the first
+map or in the second map or in both. All previous content of this Map is cleared. This map
+(result of the boolean operation) can also be passed as one of operands.)nbdoc";
+constexpr const char *Unite = R"nbdoc(Apply to this Map the boolean operation union (aka addition, fuse, merge, boolean OR) with
+another (given) Map. The result contains the values that were previously contained in this map
+or contained in the given (operand) map. This algorithm is similar to method Union(). Returns
+True if contents of this map is changed.)nbdoc";
+constexpr const char *begin = R"nbdoc(Returns an iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cbegin = R"nbdoc(Returns a const iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cend = R"nbdoc(Returns a const iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor.)nbdoc";
+constexpr const char *end = R"nbdoc(Returns an iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_assign = R"nbdoc(Assign operator)nbdoc";
+namespace Iterator {
+constexpr const char *Initialize = R"nbdoc()nbdoc";
+constexpr const char *Key = R"nbdoc(Key)nbdoc";
+constexpr const char *More = R"nbdoc(Query if the end of collection is reached by iterator)nbdoc";
+constexpr const char *Next = R"nbdoc(Make a step along the collection)nbdoc";
+constexpr const char *Reset = R"nbdoc()nbdoc";
+constexpr const char *Value = R"nbdoc(Value inquiry)nbdoc";
+constexpr const char *class_doc = R"nbdoc(Implementation of the Iterator interface.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor)nbdoc";
+} // namespace Iterator
+} // namespace NCollection_Map
+namespace NCollection_DataMap {
+constexpr const char *class_doc = R"nbdoc(Purpose:     The DataMap is a Map to store keys with associated
+Items. See Map  from NCollection for  a discussion
+about the number of buckets.
+
+The DataMap can be seen as an extended array where
+the Keys  are the   indices.  For this reason  the
+operator () is defined on DataMap to fetch an Item
+from a Key. So the following syntax can be used :
+
+anItem = aMap(aKey);
+aMap(aKey) = anItem;
+
+This analogy has its  limit.   aMap(aKey) = anItem
+can  be done only  if aKey was previously bound to
+an item in the map.)nbdoc";
+constexpr const char *Allocator = R"nbdoc(Returns attached allocator)nbdoc";
+constexpr const char *Assign = R"nbdoc(Assignment.
+This method does not change the internal allocator.)nbdoc";
+constexpr const char *Bind = R"nbdoc(Bind binds Item to Key in map.
+@param theKey  key to add/update
+@param theItem new item; overrides value previously bound to the key (uses
+destroy+reconstruct)
+@return true if Key was not bound already)nbdoc";
+constexpr const char *Bound = R"nbdoc(Bound binds Item to Key in map.
+@param theKey  key to add/update
+@param theItem new item; overrides value previously bound to the key (uses
+destroy+reconstruct)
+@return pointer to modifiable Item)nbdoc";
+constexpr const char *ChangeFind = R"nbdoc(ChangeFind returns modifiable Item by Key. Raises if Key was not bound)nbdoc";
+constexpr const char *ChangeSeek = R"nbdoc(ChangeSeek returns modifiable pointer to Item by Key. Returns
+NULL is Key was not bound.)nbdoc";
+constexpr const char *Clear = R"nbdoc(Clear data. If doReleaseMemory is false then the table of
+buckets is not released and will be reused.)nbdoc";
+constexpr const char *Contained = R"nbdoc(Contained returns optional pair of const references to key and value.
+Returns std::nullopt if the key is not found.)nbdoc";
+constexpr const char *Emplace = R"nbdoc(Emplace constructs value in-place; if key exists, destroys and reconstructs value.
+@param theKey  key to add/update
+@param theArgs arguments forwarded to value constructor
+@return true if key was newly added, false if key already existed (and value was
+reconstructed))nbdoc";
+constexpr const char *Emplaced = R"nbdoc(Emplaced constructs value in-place; if key exists, destroys and reconstructs value.
+@param theKey  key to add/update
+@param theArgs arguments forwarded to value constructor
+@return reference to the value (existing reconstructed or newly added))nbdoc";
+constexpr const char *Exchange = R"nbdoc(Exchange the content of two maps without re-allocations.
+Notice that allocators will be swapped as well!)nbdoc";
+constexpr const char *Extent = R"nbdoc(Extent (number of elements, legacy int-returning API).)nbdoc";
+constexpr const char *Find = R"nbdoc(Find returns the Item for Key. Raises if Key was not bound)nbdoc";
+constexpr const char *GetHasher = R"nbdoc(Returns const reference to the hasher.)nbdoc";
+constexpr const char *IsBound = R"nbdoc(IsBound)nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(IsEmpty)nbdoc";
+constexpr const char *Items = R"nbdoc(Returns a view for key-value pair iteration.
+Usage: for (auto [aKey, aValue] : aMap.Items()))nbdoc";
+constexpr const char *Length = R"nbdoc(Length - number of elements (legacy int-returning API, synonym of Extent()).)nbdoc";
+constexpr const char *NbBuckets = R"nbdoc(NbBuckets)nbdoc";
+constexpr const char *ReSize = R"nbdoc(ReSize)nbdoc";
+constexpr const char *Seek = R"nbdoc(Seek returns pointer to Item by Key. Returns
+NULL is Key was not bound.)nbdoc";
+constexpr const char *Size = R"nbdoc(Size - number of elements.)nbdoc";
+constexpr const char *TryBind = R"nbdoc(TryBind binds Item to Key in map only if Key is not yet bound.
+@param theKey  key to add
+@param theItem item to bind if Key is not yet bound
+@return true if Key was newly bound, false if Key already existed (no replacement))nbdoc";
+constexpr const char *TryBound = R"nbdoc(TryBound binds Item to Key in map only if Key is not yet bound.
+@param theKey  key to add
+@param theItem item to bind if Key is not yet bound
+@return reference to existing or newly bound Item)nbdoc";
+constexpr const char *TryEmplace = R"nbdoc(TryEmplace constructs value in-place only if key not already bound.
+@param theKey  key to add
+@param theArgs arguments forwarded to value constructor
+@return true if key was newly added, false if key already existed)nbdoc";
+constexpr const char *TryEmplaced = R"nbdoc(TryEmplaced constructs value in-place only if key not already bound.
+@param theKey  key to add
+@param theArgs arguments forwarded to value constructor
+@return reference to the value (existing or newly added))nbdoc";
+constexpr const char *UnBind = R"nbdoc(UnBind removes Item Key pair from map)nbdoc";
+constexpr const char *begin = R"nbdoc(Returns an iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cbegin = R"nbdoc(Returns a const iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cend = R"nbdoc(Returns a const iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty Constructor.)nbdoc";
+constexpr const char *end = R"nbdoc(Returns an iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_call = R"nbdoc(operator ())nbdoc";
+constexpr const char *op_assign = R"nbdoc(Assignment operator)nbdoc";
+namespace Iterator {
+constexpr const char *ChangeValue = R"nbdoc(Value change access)nbdoc";
+constexpr const char *Initialize = R"nbdoc()nbdoc";
+constexpr const char *Key = R"nbdoc(Key)nbdoc";
+constexpr const char *More = R"nbdoc(Query if the end of collection is reached by iterator)nbdoc";
+constexpr const char *Next = R"nbdoc(Make a step along the collection)nbdoc";
+constexpr const char *Reset = R"nbdoc()nbdoc";
+constexpr const char *Value = R"nbdoc(Value inquiry)nbdoc";
+constexpr const char *class_doc = R"nbdoc()nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor)nbdoc";
+} // namespace Iterator
+} // namespace NCollection_DataMap
+namespace NCollection_IndexedMap {
+constexpr const char *class_doc = R"nbdoc(Purpose:     An indexed map is used to  store  keys and to bind
+an index to them.  Each new key stored in  the map
+gets an index.  Index are incremented  as keys are
+stored in the map. A key can be found by the index
+and an index by the  key. No key  but the last can
+be removed so the indices are in the range 1..Extent.
+See  the  class   Map   from NCollection   for   a
+discussion about the number of buckets.)nbdoc";
+constexpr const char *Add = R"nbdoc(Add adds a new key to the map.
+@param theKey1 key to add
+@return index of the key (new or existing))nbdoc";
+constexpr const char *Added = R"nbdoc(Added: add a new key if not yet in the map, and return
+reference to either newly added or previously existing key.
+@param theKey1 key to add
+@return const reference to the key in the map)nbdoc";
+constexpr const char *Allocator = R"nbdoc(Returns attached allocator)nbdoc";
+constexpr const char *Assign = R"nbdoc(Assign.
+This method does not change the internal allocator.)nbdoc";
+constexpr const char *Clear = R"nbdoc(Clear data. If doReleaseMemory is false then the table of
+buckets is not released and will be reused.)nbdoc";
+constexpr const char *Contained = R"nbdoc(Contained returns optional const reference to the key in the map.
+Returns std::nullopt if the key is not found.)nbdoc";
+constexpr const char *Contains = R"nbdoc(Contains)nbdoc";
+constexpr const char *Emplace = R"nbdoc(Emplace constructs key in-place; if key exists, destroys and reconstructs.
+@param theArgs arguments forwarded to key constructor
+@return index of the key (new or existing))nbdoc";
+constexpr const char *Emplaced = R"nbdoc(Emplaced constructs key in-place; if key exists, overwrites.
+@param theArgs arguments forwarded to key constructor
+@return const reference to the key in the map)nbdoc";
+constexpr const char *Exchange = R"nbdoc(Exchange the content of two maps without re-allocations.
+Notice that allocators will be swapped as well!)nbdoc";
+constexpr const char *Extent = R"nbdoc(Extent (number of elements, legacy int-returning API).)nbdoc";
+constexpr const char *FindIndex = R"nbdoc(FindIndex)nbdoc";
+constexpr const char *FindKey = R"nbdoc(FindKey)nbdoc";
+constexpr const char *GetHasher = R"nbdoc(Returns const reference to the hasher.)nbdoc";
+constexpr const char *IndexedItems = R"nbdoc(Returns a view for key-index pair iteration.
+Usage: for (auto [aKey, anIndex] : aMap.IndexedItems()))nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(IsEmpty)nbdoc";
+constexpr const char *Length = R"nbdoc(Length - number of elements (legacy int-returning API, synonym of Extent()).)nbdoc";
+constexpr const char *NbBuckets = R"nbdoc(NbBuckets)nbdoc";
+constexpr const char *ReSize = R"nbdoc(ReSize)nbdoc";
+constexpr const char *RemoveFromIndex = R"nbdoc(Remove the key of the given index.
+Caution! The index of the last key can be changed.)nbdoc";
+constexpr const char *RemoveKey = R"nbdoc(Remove the given key.
+Caution! The index of the last key can be changed.)nbdoc";
+constexpr const char *RemoveLast = R"nbdoc(RemoveLast)nbdoc";
+constexpr const char *Size = R"nbdoc(Size - number of elements.)nbdoc";
+constexpr const char *Substitute = R"nbdoc(Substitute)nbdoc";
+constexpr const char *Swap = R"nbdoc(Swaps two elements with the given indices.)nbdoc";
+constexpr const char *TryEmplace = R"nbdoc(TryEmplace constructs key in-place only if not already present.
+@param theArgs arguments forwarded to key constructor
+@return index of the key (new or existing))nbdoc";
+constexpr const char *TryEmplaced = R"nbdoc(TryEmplaced constructs key in-place only if not already present.
+@param theArgs arguments forwarded to key constructor
+@return const reference to the key (existing or newly added))nbdoc";
+constexpr const char *begin = R"nbdoc(Returns an iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cbegin = R"nbdoc(Returns a const iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cend = R"nbdoc(Returns a const iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor.)nbdoc";
+constexpr const char *end = R"nbdoc(Returns an iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_call = R"nbdoc(operator ())nbdoc";
+constexpr const char *op_assign = R"nbdoc(Assignment operator)nbdoc";
+namespace Iterator {
+constexpr const char *Index = R"nbdoc(Returns current index (1-based).)nbdoc";
+constexpr const char *IsEqual = R"nbdoc(Performs comparison of two iterators.)nbdoc";
+constexpr const char *More = R"nbdoc(Query if the end of collection is reached by iterator)nbdoc";
+constexpr const char *Next = R"nbdoc(Make a step along the collection)nbdoc";
+constexpr const char *Value = R"nbdoc(Value access)nbdoc";
+constexpr const char *class_doc = R"nbdoc()nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor)nbdoc";
+} // namespace Iterator
+} // namespace NCollection_IndexedMap
+namespace NCollection_IndexedDataMap {
+constexpr const char *class_doc = R"nbdoc(Purpose:     An indexed map is used  to store keys and to  bind
+an index to them.  Each  new key stored in the map
+gets an index.  Index are  incremented as keys are
+stored in the map. A key can be found by the index
+and an index by the key.  No  key but the last can
+be  removed so the  indices   are in the range 1..
+Extent.  An Item is stored with each key.
+
+This   class is   similar  to  IndexedMap     from
+NCollection  with the Item as  a new feature. Note
+the important difference on  the operator  ().  In
+the IndexedMap this operator returns  the Key.  In
+the IndexedDataMap this operator returns the Item.
+
+See  the  class   Map   from NCollection   for   a
+discussion about the number of buckets.)nbdoc";
+constexpr const char *Add = R"nbdoc(Returns the Index of already bound Key or appends new Key with specified Item value.
+@param theKey1 Key to search (and to bind, if it was not bound already)
+@param theItem Item value to set for newly bound Key; ignored if Key was already bound
+@return index of Key)nbdoc";
+constexpr const char *Allocator = R"nbdoc(Returns attached allocator)nbdoc";
+constexpr const char *Assign = R"nbdoc(Assignment.
+This method does not change the internal allocator.)nbdoc";
+constexpr const char *Bind = R"nbdoc(Bind binds Item to Key in map; overwrites value if Key already exists.
+@param theKey1 key to add/update
+@param theItem new item; overrides value previously bound to the key
+@return true if Key was not bound already)nbdoc";
+constexpr const char *Bound = R"nbdoc(Bound binds Item to Key in map; overwrites value if Key already exists.
+@param theKey1 key to add/update
+@param theItem new item; overrides value previously bound to the key
+@return pointer to modifiable Item)nbdoc";
+constexpr const char *ChangeFromIndex = R"nbdoc(ChangeFromIndex)nbdoc";
+constexpr const char *ChangeFromKey = R"nbdoc(ChangeFromKey)nbdoc";
+constexpr const char *ChangeSeek = R"nbdoc(ChangeSeek returns modifiable pointer to Item by Key. Returns
+NULL if Key was not found.)nbdoc";
+constexpr const char *Clear = R"nbdoc(Clear data. If doReleaseMemory is false then the table of
+buckets is not released and will be reused.)nbdoc";
+constexpr const char *Contained = R"nbdoc(Contained returns optional pair of const references to key and value.
+Returns std::nullopt if the key is not found.)nbdoc";
+constexpr const char *Contains = R"nbdoc(Contains)nbdoc";
+constexpr const char *Emplace = R"nbdoc(Emplace constructs value in-place; if key exists, overwrites value.
+@param theKey1 key to add/update
+@param theArgs arguments forwarded to value constructor
+@return index of the key (new or existing))nbdoc";
+constexpr const char *Emplaced = R"nbdoc(Emplaced constructs value in-place; if key exists, destroys and reconstructs value.
+@param theKey1 key to add/update
+@param theArgs arguments forwarded to value constructor
+@return reference to the value (existing reconstructed or newly added))nbdoc";
+constexpr const char *Exchange = R"nbdoc(Exchange the content of two maps without re-allocations.
+Notice that allocators will be swapped as well!)nbdoc";
+constexpr const char *Extent = R"nbdoc(Extent (number of elements, legacy int-returning API).)nbdoc";
+constexpr const char *FindFromIndex = R"nbdoc(FindFromIndex)nbdoc";
+constexpr const char *FindFromKey = R"nbdoc(FindFromKey)nbdoc";
+constexpr const char *FindIndex = R"nbdoc(FindIndex)nbdoc";
+constexpr const char *FindKey = R"nbdoc(FindKey)nbdoc";
+constexpr const char *GetHasher = R"nbdoc(Returns const reference to the hasher.)nbdoc";
+constexpr const char *IndexedItems = R"nbdoc(Returns a view for key-value-index tuple iteration.
+Usage: for (auto [aKey, aValue, anIndex] : aMap.IndexedItems()))nbdoc";
+constexpr const char *IsEmpty = R"nbdoc(IsEmpty)nbdoc";
+constexpr const char *Items = R"nbdoc(Returns a view for key-value pair iteration.
+Usage: for (auto [aKey, aValue] : aMap.Items()))nbdoc";
+constexpr const char *Length = R"nbdoc(Length - number of elements (legacy int-returning API, synonym of Extent()).)nbdoc";
+constexpr const char *NbBuckets = R"nbdoc(NbBuckets)nbdoc";
+constexpr const char *ReSize = R"nbdoc(ReSize)nbdoc";
+constexpr const char *RemoveFromIndex = R"nbdoc(Remove the key of the given index.
+Caution! The index of the last key can be changed.)nbdoc";
+constexpr const char *RemoveKey = R"nbdoc(Remove the given key.
+Caution! The index of the last key can be changed.)nbdoc";
+constexpr const char *RemoveLast = R"nbdoc(RemoveLast)nbdoc";
+constexpr const char *Seek = R"nbdoc(Seek returns pointer to Item by Key. Returns
+NULL if Key was not found.)nbdoc";
+constexpr const char *Size = R"nbdoc(Size - number of elements.)nbdoc";
+constexpr const char *Substitute = R"nbdoc(Substitute)nbdoc";
+constexpr const char *Swap = R"nbdoc(Swaps two elements with the given indices.)nbdoc";
+constexpr const char *TryBind = R"nbdoc(TryBind binds Item to Key only if Key is not yet bound.
+@param theKey1 key to add
+@param theItem item to bind if Key is not yet bound
+@return true if key was newly added, false if key already existed)nbdoc";
+constexpr const char *TryBound = R"nbdoc(TryBound binds Item to Key only if Key is not yet bound.
+@param theKey1 key to add
+@param theItem item to bind if Key is not yet bound
+@return reference to existing or newly bound Item)nbdoc";
+constexpr const char *TryEmplace = R"nbdoc(TryEmplace constructs value in-place only if key not already bound.
+@param theKey1 key to add
+@param theArgs arguments forwarded to value constructor
+@return index of the key (new or existing))nbdoc";
+constexpr const char *TryEmplaced = R"nbdoc(TryEmplaced constructs value in-place only if key not already bound.
+@param theKey1 key to add
+@param theArgs arguments forwarded to value constructor
+@return reference to the value (existing or newly added))nbdoc";
+constexpr const char *begin = R"nbdoc(Returns an iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cbegin = R"nbdoc(Returns a const iterator pointing to the first element in the map.)nbdoc";
+constexpr const char *cend = R"nbdoc(Returns a const iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor.)nbdoc";
+constexpr const char *end = R"nbdoc(Returns an iterator referring to the past-the-end element in the map.)nbdoc";
+constexpr const char *op_delete = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_delete_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_new_array = R"nbdoc(Memory allocation)nbdoc";
+constexpr const char *op_call = R"nbdoc(operator ())nbdoc";
+constexpr const char *op_assign = R"nbdoc(Assignment operator)nbdoc";
+namespace Iterator {
+constexpr const char *ChangeValue = R"nbdoc(ChangeValue access)nbdoc";
+constexpr const char *Index = R"nbdoc(Returns current index (1-based).)nbdoc";
+constexpr const char *IsEqual = R"nbdoc(Performs comparison of two iterators.)nbdoc";
+constexpr const char *Key = R"nbdoc(Key)nbdoc";
+constexpr const char *More = R"nbdoc(Query if the end of collection is reached by iterator)nbdoc";
+constexpr const char *Next = R"nbdoc(Make a step along the collection)nbdoc";
+constexpr const char *Value = R"nbdoc(Value access)nbdoc";
+constexpr const char *class_doc = R"nbdoc(Implementation of the Iterator interface.)nbdoc";
+constexpr const char *ctor = R"nbdoc(Empty constructor)nbdoc";
+} // namespace Iterator
+} // namespace NCollection_IndexedDataMap
 namespace NCollection_HArray1 {
 constexpr const char *class_doc = R"nbdoc(Template class for Handle-managed 1D arrays.
 Inherits from both NCollection_Array1<TheItemType> and Standard_Transient,

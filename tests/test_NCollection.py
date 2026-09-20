@@ -187,3 +187,88 @@ def test_occt_method_returning_a_container():
     printers = Message.Message.DefaultMessenger().Printers()
     assert type(printers).__name__ == "NCollection_Sequence__Handle_Message_Printer"
     assert len(printers) >= 1
+
+
+# ------------------------------------------------------------------------------------ hashed kinds
+Str = TCollection.TCollection_AsciiString
+
+
+def test_map_set_operations():
+    M = NCollection.NCollection_Map[int]
+    m = M()
+    assert m.Add(1) is True and m.Add(2) is True and m.Add(1) is False
+    assert (m.Extent(), len(m)) == (2, 2)
+    assert m.Contains(2) is True and (3 in m) is False
+    assert sorted(m) == [1, 2]
+    other = M()
+    other.Add(2)
+    other.Add(3)
+    u = M()
+    u.Union(m, other)
+    assert sorted(u) == [1, 2, 3]
+    assert m.HasIntersection(other) is True
+    assert m.Remove(1) is True and sorted(m) == [2]
+    it = M.Iterator(u)
+    keys = []
+    while it.More():
+        keys.append(it.Key())
+        it.Next()
+    assert sorted(keys) == [1, 2, 3]
+
+
+def test_datamap_scalar_values():
+    D = NCollection.NCollection_DataMap[int, float]
+    d = D()
+    assert d.Bind(1, 1.5) is True
+    d[2] = 2.5
+    assert d.Find(1) == 1.5 and d(2) == 2.5 and d[2] == 2.5
+    assert d.IsBound(3) is False and (2 in d) is True
+    assert d.Seek(3) is None and d.Seek(1) == 1.5                # nullptr -> None, scalar -> value
+    assert sorted(d.items()) == [(1, 1.5), (2, 2.5)]
+    assert d.TryBound(1, 9.0) == 1.5                             # existing value wins
+    assert d.Bound(3, 3.5) == 3.5 and d.UnBind(3) is True
+    with pytest.raises(Standard.Standard_NoSuchObject):
+        d[7]
+    with pytest.raises(KeyError):
+        del d[7]
+
+
+def test_datamap_class_values_are_views():
+    D = NCollection.NCollection_DataMap[Str, Str]
+    d = D()
+    d.Bind("k", "v")                                             # str -> TCollection_AsciiString implicitly
+    d.ChangeFind("k").AssignCat("!")
+    assert d.Find("k").ToCString() == "v!"
+    assert d.Seek("missing") is None
+    assert type(d.Seek("k")) is Str
+
+
+def test_indexed_map():
+    IM = NCollection.NCollection_IndexedMap[Str]
+    im = IM()
+    assert (im.Add("a"), im.Add("b"), im.Add("a")) == (1, 2, 1)
+    assert im.FindKey(2).ToCString() == "b" and im(2).ToCString() == "b" and im[2].ToCString() == "b"
+    assert im.FindIndex("b") == 2
+    assert [k.ToCString() for k in im] == ["a", "b"]
+    it = IM.Iterator(im)
+    assert (it.Index(), it.Value().ToCString()) == (1, "a")
+
+
+def test_indexed_data_map():
+    IDM = NCollection.NCollection_IndexedDataMap[Str, Str]
+    idm = IDM()
+    idm.Add("x", "1")
+    idm.Add("y", "2")
+    assert idm.FindFromKey("y").ToCString() == "2"
+    assert idm.FindFromIndex(1).ToCString() == "1" and idm(2).ToCString() == "2" and idm[1].ToCString() == "1"
+    assert idm.FindIndex("y") == 2
+    assert [(k.ToCString(), v.ToCString()) for k, v in idm.items()] == [("x", "1"), ("y", "2")]
+    idm.ChangeFromKey("x").AssignCat("!")
+    assert idm.FindFromKey("x").ToCString() == "1!"
+    assert idm.Seek("q") is None
+
+
+def test_map_accessors_and_extra_instantiations():
+    assert NCollection.NCollection_Map[int].__name__ == "NCollection_Map__int"
+    assert NCollection.NCollection_DataMap[int, float].__name__ == "NCollection_DataMap__int__double"
+    assert "NCollection_IndexedMap__TCollection_AsciiString" in NCollection.NCollection_IndexedMap.bound()

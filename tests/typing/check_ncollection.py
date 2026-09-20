@@ -52,3 +52,17 @@ hs_t: Standard.Standard_Transient = hs
 hs_len: int = len(hs)
 l.Append("x")                 # error: str is not int
 sbad: int = s[1]              # error: TCollection_AsciiString is not int
+
+# ---- hashed kinds
+d = NCollection.NCollection_DataMap[int, float]()
+d.Bind(1, 1.5)
+dv: float = d.Find(1)
+dv2: float = d[1]
+maybe: float | None = d.Seek(2)
+im = NCollection.NCollection_IndexedMap[TCollection.TCollection_AsciiString]()
+idx: int = im.Add(TCollection.TCollection_AsciiString("a"))
+key: TCollection.TCollection_AsciiString = im.FindKey(1)
+m = NCollection.NCollection_Map[int]()
+ok: bool = m.Add(3)
+d.Bind("x", 1.0)              # error: str is not int
+bad_key: str = im.FindKey(1)  # error: TCollection_AsciiString is not str

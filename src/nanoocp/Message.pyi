@@ -2154,7 +2154,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
     def Clear(self, theType: nanoocp.Standard.Standard_Type) -> None:
         """Clears collected alerts with specified type"""
 
-    def ActiveMetrics(self) -> "NCollection_IndexedMap<Message_MetricType, NCollection_DefaultHasher<Message_MetricType>>":
+    def ActiveMetrics(self) -> nanoocp.NCollection.NCollection_IndexedMap__Message_MetricType:
         """Returns computed metrics when alerts are performed"""
 
     def SetActiveMetric(self, theMetricType: Message_MetricType, theActivate: bool) -> None:

@@ -337,7 +337,7 @@ class Standard_Dump:
     def __init__(self) -> None: ...
 
     @staticmethod
-    def SplitJson(theStreamStr: nanoocp.TCollection.TCollection_AsciiString, theKeyToValues: "NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue, NCollection_DefaultHasher<TCollection_AsciiString>>") -> bool:
+    def SplitJson(theStreamStr: nanoocp.TCollection.TCollection_AsciiString, theKeyToValues: nanoocp.NCollection.NCollection_IndexedDataMap__TCollection_AsciiString__Standard_DumpValue) -> bool:
         """
         Converts stream into map of values.
 
@@ -355,7 +355,7 @@ class Standard_Dump:
         """
 
     @staticmethod
-    def HierarchicalValueIndices(theValues: "NCollection_IndexedDataMap<TCollection_AsciiString, TCollection_AsciiString, NCollection_DefaultHasher<TCollection_AsciiString>>") -> nanoocp.NCollection.NCollection_List__int:
+    def HierarchicalValueIndices(theValues: nanoocp.NCollection.NCollection_IndexedDataMap__TCollection_AsciiString__TCollection_AsciiString) -> nanoocp.NCollection.NCollection_List__int:
         """Returns container of indices in values, that has hierarchical value"""
 
     @staticmethod

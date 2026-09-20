@@ -27,6 +27,7 @@ _INOUT = set(_OVERRIDES.get("inout", []))
 _SKIP_CLASSES = set(_OVERRIDES.get("skip", {}).get("classes", []))
 _SKIP_HEADERS = set(_OVERRIDES.get("skip", {}).get("headers", []))
 _SKIP_METHODS = set(_OVERRIDES.get("skip", {}).get("methods", []))
+_EXTRA_INSTANCES = list(_OVERRIDES.get("instantiate", {}).get("extra", []))
 
 _UNSUPPORTED_RE = re.compile(
     r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf|"
@@ -408,9 +409,10 @@ def _note_instance(t: cindex.Type) -> None:
         return
     if decl.spelling not in BINDERS:
         return
-    nargs = BINDERS[decl.spelling]["nargs"]           # defaulted template arguments (hashers) are not part of the name
-    args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(nargs)]
-    for i in range(nargs):
+    from .ncollection import instance_args
+    all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+    args = instance_args(decl.spelling, all_args)     # default hashers are not part of the key/name
+    for i in range(len(args)):
         _note_instance(canon.get_template_argument_type(i))
     key = f"{decl.spelling}<{', '.join(args)}>"
     _instances_seen.setdefault(key, TemplateInstance(template=decl.spelling, args=args, key=key, element=args[0]))
@@ -469,4 +471,13 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None) -
     # only instances referenced by members that are actually bound matter, but the over-approximation
     # (every signature seen) is harmless: an unused instantiation just costs compile time
     ir.instances = dict(_instances_seen)
+    if pkg.name == "NCollection":
+        from .ncollection import BINDERS
+        for spelled in _EXTRA_INSTANCES:
+            m = re.match(r"(\w+)<(.+)>$", spelled)
+            if m is None or m.group(1) not in BINDERS:
+                ir.report.append(f"overrides [instantiate]: cannot parse or no binder for {spelled}")
+                continue
+            args = [a.strip() for a in m.group(2).split(",")]
+            ir.instances.setdefault(spelled, TemplateInstance(template=m.group(1), args=args, key=spelled, element=args[0]))
     return ir

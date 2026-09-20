@@ -262,6 +262,8 @@ object oriented databases, now outdated.)nbdoc");
 }
 
 void nanoocp_templates_Standard(nb::module_ &m) {
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue>(home, "NCollection_IndexedDataMap__TCollection_AsciiString__Standard_DumpValue"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_IndexedDataMap<TCollection_AsciiString, TCollection_AsciiString>(home, "NCollection_IndexedDataMap__TCollection_AsciiString__TCollection_AsciiString"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_List<int>(home, "NCollection_List__int"); }
 }
 

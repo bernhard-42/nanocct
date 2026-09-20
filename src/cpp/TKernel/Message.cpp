@@ -668,6 +668,7 @@ Message_PrinterToReport is a printer in Messenger to convert data sent to messen
 void nanoocp_templates_Message(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<opencascade::handle<TCollection_HExtendedString>>(home, "NCollection_Sequence__Handle_TCollection_HExtendedString"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HSequence<opencascade::handle<TCollection_HExtendedString>>(home, "NCollection_HSequence__Handle_TCollection_HExtendedString"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_IndexedMap<Message_MetricType>(home, "NCollection_IndexedMap__Message_MetricType"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_List<opencascade::handle<Message_Alert>>(home, "NCollection_List__Handle_Message_Alert"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<opencascade::handle<Message_Printer>>(home, "NCollection_Sequence__Handle_Message_Printer"); }
 }
