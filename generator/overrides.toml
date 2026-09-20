@@ -1,0 +1,30 @@
+# Hand-maintained exceptions to the generator's generic rules. Keep this file small; every entry
+# is a documented deviation from the "derive everything from the headers" principle.
+
+# Methods whose non-const reference parameters of primitive type are in/out: the value is read
+# AND written (e.g. transform coordinates in place). The default rule treats such parameters as
+# pure outputs (dropped from the Python signature, returned in a tuple). Listed methods keep them
+# as inputs and still return the updated values.
+inout = [
+    "gp_Trsf::Transforms",
+    "gp_Trsf2d::Transforms",
+    "gp_GTrsf::Transforms",
+    "gp_GTrsf2d::Transforms",
+]
+
+# Classes never bound (internal helpers that happen to be public in a header).
+[skip]
+classes = [
+    "Standard_Static_Assert<true>",
+]
+# Headers not included in the package translation unit: platform-specific internals that OCCT
+# itself only includes from .cxx files under #ifdef.
+headers = [
+    "OSD_WNT.hxx",          # Windows only (includes <windows.h>)
+]
+# Members declared in a header but never defined in the OCCT libraries (link errors otherwise).
+# "Class::Name" skips every overload, "Class::Name(<param types>)" one overload.
+methods = [
+    "TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const)",
+    "OSD_Path::LocateExecFile",
+]

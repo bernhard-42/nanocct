@@ -1,0 +1,27 @@
+[project]
+name = "nanoocp"
+version = "0.1.0"
+description = "nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API"
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["scikit-build-core>=1.0", "nanobind>=3.1.0"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+build-dir = "build/{wheel_tag}"
+wheel.py-api = "cp312"
+wheel.packages = ["src/nanoocp"]
+cmake.build-type = "Release"
+
+[dependency-groups]
+dev = [
+    "libclang>=18.1.1",
+    "mypy>=2.3.1",
+    "nanobind>=3.1.0",
+    "pytest>=9.1.1",
+    "scikit-build-core>=1.0.3",
+    "ty>=0.0.82",
+]

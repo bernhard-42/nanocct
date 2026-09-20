@@ -1,0 +1,17 @@
+.venv/
+build/
+__pycache__/
+*.pyc
+.pytest_cache/
+# local OCCT/FreeType builds (see deps/build-*.sh); the scripts and the vendored tarball stay
+deps/occt-src/
+deps/occt-build/
+deps/occt-8.0.1/
+deps/occt-build.log
+deps/freetype-src/
+deps/freetype-build/
+deps/freetype/
+deps/freetype-2.14.3.tar.xz
+poc/build/
+.mypy_cache/
+.ruff_cache/
