@@ -1,13 +1,12 @@
-"""OCCT package BRepTopAdaptor (toolkit TKTopAlgo)."""
+"""OCCT package HLRTopoBRep (toolkit TKHLR)."""
 import importlib as _importlib
 
-from nanoocp._TKTopAlgo import BRepTopAdaptor as _ext
-from nanoocp._TKTopAlgo.BRepTopAdaptor import *  # noqa: F401,F403
+from nanoocp._TKHLR import HLRTopoBRep as _ext
+from nanoocp._TKHLR.HLRTopoBRep import *  # noqa: F401,F403
 
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
-    "BRepTopAdaptor_MapOfShapeTool": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__BRepTopAdaptor_Tool__TopTools_ShapeMapHasher"),
 }
 
 

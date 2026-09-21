@@ -14,7 +14,7 @@ from .binders import BINDERS, instance_args
 from .emit import Emitter, emit_toolkit_module, write_package_shims
 from .occt import load_tree
 from .ncollection import deprecated_aliases, template_docs
-from .parse import INCLUDE_PACKAGES, clang_args, configure_libclang, parse_package, py_path
+from .parse import INCLUDE_PACKAGES, clang_args, configure_libclang, include_prelude, parse_package, py_path
 from .report import write_report
 from .symbols import defined_symbols
 
@@ -266,9 +266,11 @@ def main(argv: list[str]) -> int:
         irs = sorted(irs, key=lambda ir: order.index(ir.name))
         pkgs = [tree.packages[ir.name] for ir in irs]
         report_entries: list[tuple[str, str]] = []            # (package, message) of everything not bound
+        cargs = clang_args(tree)
         for ir, pkg in zip(irs, pkgs):
             em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
-                         _topo(tree, generated_toolkits), paths)
+                         _topo(tree, generated_toolkits), paths,
+                         prelude_check=lambda headers: include_prelude(headers, tree.include_dir, cargs))
             (tk_dir / f"{pkg.name}.cpp").write_text(em.emit())
             for name in em.skipped:            # a class skipped at emit time (base not bound) must not reach the manifest: a later
                 known.pop(name, None)          # toolkit deriving from it would abort at import (nb_type_new: base type not known)

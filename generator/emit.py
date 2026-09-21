@@ -1,6 +1,8 @@
 """IR -> nanobind C++ source."""
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import re
 import shutil
 from pathlib import Path
@@ -72,8 +74,10 @@ def _py_name(m: Method) -> str | None:
 
 class Emitter:
     def __init__(self, ir: PackageIR, include_dir: Path, known_classes: dict[str, str], toolkit_of: dict[str, str],
-                 known_templates: dict[str, dict], toolkit_order: list[str] | None = None, paths: dict[str, str] | None = None):
+                 known_templates: dict[str, dict], toolkit_order: list[str] | None = None, paths: dict[str, str] | None = None,
+                 prelude_check: Callable[[list[str]], list[str]] | None = None):
         self.ir = ir
+        self.prelude_check = prelude_check    # R-PRELUDE for the emitted include list (parse.include_prelude); None in unit tests
         self.paths = paths if paths is not None else {}    # manifest "paths": C++ class -> Python path exceptions
         self.toolkit_order = toolkit_order if toolkit_order is not None else []   # generated toolkits, dependencies first
         self.include_dir = include_dir
@@ -715,10 +719,15 @@ class Emitter:
         includes = [f"#include <{h}>" for h in ir.prelude + ir.headers]
         if with_ncollection:
             includes.insert(0, '#include "nanoocp_ncollection.h"')
-        for ident in sorted(self._idents):
-            hdr = f"{ident}.hxx"
-            if hdr not in ir.headers and (self.include_dir / hdr).exists():
-                includes.append(f"#include <{hdr}>")
+        extra = [f"{ident}.hxx" for ident in sorted(self._idents)
+                 if f"{ident}.hxx" not in ir.headers and (self.include_dir / f"{ident}.hxx").exists()]
+        if self.prelude_check is not None and len(extra) > 0:
+            # an extra header may not be self-contained (Contap_Line.hxx); the headers it needs go first (R-PRELUDE)
+            needed = [h for h in self.prelude_check(ir.prelude + ir.headers + extra) if h not in ir.prelude + ir.headers + extra]
+            if len(needed) > 0:
+                self.report.append(f"{ir.name}: extra headers not self-contained, {', '.join(needed)} included first")
+                extra = needed + extra
+        includes += [f"#include <{h}>" for h in extra]
         return includes
 
 

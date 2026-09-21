@@ -13,3 +13,4 @@ import nanoocp._TKPrim  # noqa: F401
 import nanoocp._TKShHealing  # noqa: F401
 import nanoocp._TKBO  # noqa: F401
 import nanoocp._TKBool  # noqa: F401
+import nanoocp._TKHLR  # noqa: F401

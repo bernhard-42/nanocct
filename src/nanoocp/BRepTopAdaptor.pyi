@@ -185,3 +185,9 @@ class BRepTopAdaptor_TopolTool(nanoocp.Adaptor3d.Adaptor3d_TopolTool):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+import nanoocp.BRepTopAdaptor
+import nanoocp.TopTools
+BRepTopAdaptor_MapOfShapeTool = nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepTopAdaptor.BRepTopAdaptor_Tool, nanoocp.TopTools.TopTools_ShapeMapHasher]

@@ -20,7 +20,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("iterator", r"STL-style iterator|__iter__ added"),
     ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)"),
     ("stream", r"iostream type"),
-    ("raw-pointer", r"raw pointer to primitive|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),
+    ("raw-pointer", r"raw pointer to primitive|is a raw pointer|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),
     ("operator", r"operator has no Python equivalent|free operator not mapped"),
     ("conversion", r"conversion (operator|skipped)"),
     ("overload-collision", r"same Python signature as|ambiguous with another constructor|const twin of a less const overload"),

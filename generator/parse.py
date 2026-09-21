@@ -1069,6 +1069,13 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
                 return None
             args.append(default); spelled_args.append(""); keys.append("")
     full = f"{qualified}<{', '.join(a for a in spelled_args if a != '')}>"
+    pointer_args = [a for a in args if a.endswith("*")]
+    if len(pointer_args) > 0:
+        # HLRBRep instantiates Extrema_GenLocateExtPC<void*, ...>, GeomLProp_CLPropsBase<..., const HLRBRep_Curve*, ...>: every
+        # member takes or returns the pointer (R-UNSUPPORTED), and `const T&` with T a pointer is `T* const&`, not what the
+        # substitution spells; the whole instantiation stays out
+        report.append(f"{what}: template argument {pointer_args[0]} is a raw pointer -> not bound")
+        return None
     assert not _SUBST.active, "nested template walks are not supported"
     for names in param_lists:                      # every declaration's parameter names, position-wise
         for name, a in zip(names, args):
@@ -1122,6 +1129,37 @@ def _prefixes(scope: tuple[str, ...]) -> list[tuple[str, ...]]:
     return [scope[:i] for i in range(1, len(scope) + 1)]
 
 
+def _missing_headers(errors: list, include_dir: Path, have: list[str]) -> list[str]:
+    """R-PRELUDE: the OCCT headers (as '<X.hxx>') that the parse diagnostics say are missing before the parsed ones."""
+    missing = {m.group(1) for d in errors
+               for m in [re.search(r"(?:incomplete (?:return )?type|use of undeclared identifier|unknown type name) '(?:const )?(\w+)'", d.spelling)]
+               if m is not None}
+    return sorted(f"<{name}.hxx>" for name in missing if (include_dir / f"{name}.hxx").exists() and f"<{name}.hxx>" not in have)
+
+
+_STD_PRELUDE = ["<cstddef>", "<cstdint>", "<cstring>", "<string>"]   # some OCCT headers use size_t with only <limits> included
+
+
+# Design.md 6 R-PRELUDE
+def include_prelude(headers: list[str], include_dir: Path, args: list[str]) -> list[str]:
+    """Headers ('X.hxx') that must precede the given OCCT headers so that the list compiles: the R-PRELUDE loop applied to an
+    emitted include list, whose identifier-based extra headers may not be self-contained (Contap_Line.hxx names
+    handle<Adaptor2d_Curve2d> without declaring it; HLRTopoBRep includes Contap_Contour.hxx). Bodies are skipped: one cheap TU."""
+    index = cindex.Index.create()
+    found: list[str] = []
+    with tempfile.TemporaryDirectory() as td:
+        tu_file = Path(td) / "includes.cpp"
+        for _ in range(6):
+            tu_file.write_text("".join(f"#include {h}\n" for h in _STD_PRELUDE + found) + "".join(f"#include <{h}>\n" for h in headers))
+            tu = index.parse(str(tu_file), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
+            errors = [d for d in tu.diagnostics if d.severity >= cindex.Diagnostic.Error]
+            extra = _missing_headers(errors, include_dir, found) if len(errors) > 0 else []
+            if len(extra) == 0:
+                break
+            found += extra
+    return [h.strip("<>") for h in found]
+
+
 def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, known_elsewhere: set[str] | None = None) -> PackageIR:
     """known_elsewhere: C++ names of classes bound by earlier packages/runs (instantiations used in signatures are
     only instantiated when nobody has bound them yet)."""
@@ -1148,7 +1186,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
-        prelude = ["<cstddef>", "<cstdint>", "<cstring>", "<string>"]
+        prelude = list(_STD_PRELUDE)
         index = cindex.Index.create()
         for _ in range(6):
             umbrella.write_text("".join(f"#include {h}\n" for h in prelude) + "".join(f"#include <{h}>\n" for h in ir.headers))
@@ -1162,10 +1200,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             # Geom_Line::Lin() with gp_Lin only forward-declared) or names a class it neither includes nor declares
             # (IntWalk_PWalking.hxx: handle<IntSurf_LineOn2S>; ChFiKPart_ComputeData_ChPlnCon.hxx: ChFiDS_ChamfMode);
             # OCCT's .cxx includes that header first. Include that class's header before the package headers and parse again.
-            missing = {m.group(1) for d in errors
-                       for m in [re.search(r"(?:incomplete (?:return )?type|use of undeclared identifier|unknown type name) '(?:const )?(\w+)'", d.spelling)]
-                       if m is not None}
-            extra = sorted(f"<{name}.hxx>" for name in missing if (tree.include_dir / f"{name}.hxx").exists() and f"<{name}.hxx>" not in prelude)
+            extra = _missing_headers(errors, tree.include_dir, prelude)
             if len(extra) == 0:
                 break
             prelude += extra
