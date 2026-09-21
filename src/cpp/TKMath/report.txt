@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKMath: 418 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 419 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 7
 # conversion: 18
@@ -13,7 +13,7 @@
 # std: 2
 # stream: 3
 # template: 216
-# unbound-type: 3
+# unbound-type: 4
 # undefined: 5
 array	Bnd	Bnd_OBB::GetVertex(): param 'theP': array
 array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
@@ -425,6 +425,7 @@ template	math	math_VectorBase: template (not bound)
 template	math	math_VectorBase: template (not bound)
 template	math	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)
 template	math	math_VectorBase<int>::math_VectorBase<int>(): param 'theTab': raw pointer to primitive (template argument)
+unbound-type	BVH	BVH_PrimitiveSet3d = BVH_PrimitiveSet<double, 3>: type alias of a type that is not bound (skipped)
 unbound-type	BVH	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
 unbound-type	Bnd	BVH_Box<double, 2>: base class BVH_BaseBox<double, 2, BVH_Box<double, 2>> is not bound (package not generated) -> class skipped
 unbound-type	Bnd	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>> is not bound (package not generated) -> class skipped

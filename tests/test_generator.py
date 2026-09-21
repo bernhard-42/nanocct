@@ -32,6 +32,7 @@ HEADER = """
 #include <gp_Pnt.hxx>
 #include <gp_XYZ.hxx>
 #include <NCollection_Array1.hxx>
+#include <NCollection_DynamicArray.hxx>
 #include <gp_Trsf.hxx>
 
 //! A Transient class for the handle rules.
@@ -109,8 +110,16 @@ public:
 };
 
 //! A class whose base no binding knows (the test's Emitter does not know gp_Trsf), and a class deriving from it.
-class Rules_Unbound : public gp_Trsf {};
+//! Its nested enum goes with it: no alias, instantiation or manifest entry may name it (BRepExtrema_ProximityDistTool::ProxPnt_Status).
+class Rules_Unbound : public gp_Trsf
+{
+public:
+  enum Status { Status_A, Status_B };
+};
 class Rules_Orphan : public Rules_Unbound {};
+typedef Rules_Unbound::Status Rules_Status;
+//! A signature naming the skipped class's enum through a container.
+inline int Rules_CountStatus(const NCollection_DynamicArray<Rules_Unbound::Status>& theS) { return theS.Length(); }
 
 //! More()/Next()/Value(): its own Python iterator (R-ITER).
 class Rules_Iter
@@ -303,7 +312,14 @@ def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     assert "nb::class_<Rules_Unbound" not in cpp and "nb::class_<Rules_Orphan" not in cpp
     assert "Rules_Unbound: base class gp_Trsf is not bound (package not generated) -> class skipped" in em.report
     assert "Rules_Orphan: base class Rules_Unbound is not bound (skipped) -> class skipped" in em.report
-    assert em.skipped == {"Rules_Unbound", "Rules_Orphan"}
+    # the nested enum of a skipped class is skipped with it: no attribute alias to a non-existent attribute (which aborted
+    # the import of TKTopAlgo), no accessor entry, no instantiation of a container over it -- and handed back for the manifest
+    assert em.skipped == {"Rules_Unbound", "Rules_Orphan", "Rules_Unbound::Status"}
+    assert 'attr("Rules_Status")' not in cpp and "bind_NCollection_DynamicArray<Rules_Unbound::Status>" not in cpp
+    assert "Rules_Status = Rules_Unbound::Status: type alias of a type that is not bound (skipped)" in em.report
+    assert ("NCollection_DynamicArray<Rules_Unbound::Status>: element type Rules_Unbound::Status is not bound (its class is skipped) "
+            "-> instantiation skipped") in em.report
+    assert em.templates["NCollection_DynamicArray<Rules_Unbound::Status>"]["skipped"] is True
 
 
 def test_resolve_ctor_arities():

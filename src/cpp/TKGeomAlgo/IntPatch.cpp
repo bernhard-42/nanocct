@@ -233,7 +233,6 @@ between 2 parametrised patches.)nbdoc");
 }
 
 void nanoocp_templates_IntPatch(nb::module_ &m) {
-    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair>(home, "NCollection_DynamicArray__IntPatch_BVHTraversal_TrianglePair"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<opencascade::handle<Adaptor3d_Surface>>(home, "NCollection_DynamicArray__Handle_Adaptor3d_Surface"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_List<IntSurf_PntOn2S>(home, "NCollection_List__IntSurf_PntOn2S"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<IntPatch_Point>(home, "NCollection_Sequence__IntPatch_Point"); }

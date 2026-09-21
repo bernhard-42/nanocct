@@ -1,0 +1,57 @@
+# nanoOCP generator report for TKTopAlgo: 47 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# array: 4
+# iterator: 6
+# overload-collision: 9
+# raw-pointer: 4
+# stream: 1
+# template: 4
+# unbound-type: 12
+# undefined: 7
+array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &): param 'theCoeff': array
+array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &, const double): param 'theCoeff': array
+array	BRepGProp	BRepGProp_Gauss::Compute(const BRepGProp_Face &, const gp_Pnt &): param 'theCoeff': array
+array	BRepGProp	BRepGProp_MeshProps::CalculateProps(const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const bool): param 'GProps': array
+iterator	BRepGProp	BRepGProp_Domain: __iter__ added (More/Next/Value)
+iterator	BRepMAT2d	BRepMAT2d_Explorer: __iter__ added (More/Next/Value)
+iterator	BRepMAT2d	BRepMAT2d_LinkTopoBilo: __iter__ added (More/Next/Value)
+iterator	BRepTopAdaptor	BRepTopAdaptor_TopolTool: __iter__ added (More/Next/Value)
+iterator	MAT	MAT_ListOfBisector: __iter__ added (More/Next/Current)
+iterator	MAT	MAT_ListOfEdge: __iter__ added (More/Next/Current)
+overload-collision	BRepClass	BRepClass_Edge::Edge() const: const twin of a less const overload -> not bound
+overload-collision	BRepClass	BRepClass_Edge::Face() const: const twin of a less const overload -> not bound
+overload-collision	BRepClass3d	BRepClass3d_SolidExplorer::FindAPointInTheFace(const TopoDS_Face &, gp_Pnt &, double &): same Python signature as another overload after out-param removal -> bound as FindAPointInTheFace__float
+overload-collision	BRepClass3d	BRepClass3d_SolidExplorer::FindAPointInTheFace(const TopoDS_Face &, gp_Pnt &, double &, double &): same Python signature as another overload after out-param removal -> bound as FindAPointInTheFace__float__float
+overload-collision	BRepClass3d	BRepClass3d_SolidExplorer::FindAPointInTheFace(const TopoDS_Face &, gp_Pnt &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as FindAPointInTheFace__float__float__float
+overload-collision	BRepGProp	BRepGProp_Face::GetTKnots(const double, const double, occ::handle<NCollection_HArray1<double>> &): same Python signature as another overload after out-param removal -> bound as GetTKnots__NCollection_HArray1__double
+overload-collision	BRepGProp	BRepGProp_Face::GetUKnots(const double, const double, occ::handle<NCollection_HArray1<double>> &): same Python signature as another overload after out-param removal -> bound as GetUKnots__NCollection_HArray1__double
+overload-collision	BRepGProp	BRepGProp_MeshCinert::PreparePolygon(const TopoDS_Edge &, occ::handle<NCollection_HArray1<gp_Pnt>> &): same Python signature as another overload after out-param removal -> bound as PreparePolygon__NCollection_HArray1__gp_Pnt
+overload-collision	BRepLib	BRepLib::BuildPCurveForEdgeOnPlane(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, bool &): same Python signature as another overload after out-param removal -> bound as BuildPCurveForEdgeOnPlane__Geom2d_Curve__bool
+raw-pointer	BRepApprox	BRepApprox_TheMultiLineOfApprox::BRepApprox_TheMultiLineOfApprox(const occ::handle<BRepApprox_ApproxLine> &): param 'PtrSvSurfaces': void pointer
+raw-pointer	BRepGProp	BRepGProp_TFunction::BRepGProp_TFunction(const BRepGProp_Face &, const gp_Pnt &, const bool): param 'theCoeffs': raw pointer to primitive
+raw-pointer	BRepGProp	BRepGProp_UFunction::BRepGProp_UFunction(const BRepGProp_Face &, const gp_Pnt &, const bool): param 'theCoeffs': raw pointer to primitive
+raw-pointer	BRepTopAdaptor	BRepTopAdaptor_TopolTool::Edge(): return: void pointer
+stream	BRepBuilderAPI	BRepBuilderAPI_FastSewing::GetStatuses(): param 'theOS': iostream type
+template	BRepExtrema	BRepExtrema_OverlapTool: base class BVH_PairTraverse<double, 3> instantiated as BVH_PairTraverse<double, 3, void, double> (spelling mismatch) -> not bound
+template	BRepGProp	math_Vector = math_VectorBase<double>: class template math_VectorBase not found in the translation unit
+template	BRepGProp	math_VectorBase: template (not bound)
+template	BRepLib	BRepLib::BuildPCurveForEdgesOnPlane: template member
+unbound-type	BRepBuilderAPI	BRepBuilderAPI_BndBoxTreeSelector: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
+unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
+unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine::EdgeParam: outer class BRepClass3d_BndBoxTreeSelectorLine is not bound -> nested class skipped
+unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine::VertParam: outer class BRepClass3d_BndBoxTreeSelectorLine is not bound -> nested class skipped
+unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorPoint: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
+unbound-type	BRepExtrema	BRepExtrema_OverlapTool: base class BVH_PairTraverse<double, 3> is not bound (package not generated) -> class skipped
+unbound-type	BRepExtrema	BRepExtrema_ProximityDistTool: base class BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet> is not bound (skipped) -> class skipped
+unbound-type	BRepExtrema	BRepExtrema_ProximityDistTool::PrjState: outer class BRepExtrema_ProximityDistTool is not bound -> nested class skipped
+unbound-type	BRepExtrema	BRepExtrema_TriangleSet: base class BVH_PrimitiveSet3d is not bound (package not generated) -> class skipped
+unbound-type	BRepExtrema	BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>: base class BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double> is not bound (package not generated) -> class skipped
+unbound-type	BRepExtrema	NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status>: element type BRepExtrema_ProximityDistTool::ProxPnt_Status is not bound (its class is skipped) -> instantiation skipped
+unbound-type	BRepExtrema	ProxPnt_Status = BRepExtrema_ProximityDistTool::ProxPnt_Status: type alias of a type that is not bound (skipped)
+undefined	BRepApprox	BRepApprox_Approx::Perform(): declared in the header, no definition in libTKTopAlgo
+undefined	BRepApprox	BRepApprox_ResConstraintOfMyGradientOfTheComputeLineBezierOfApprox::Error(): declared in the header, no definition in libTKTopAlgo
+undefined	BRepApprox	BRepApprox_ResConstraintOfMyGradientbisOfTheComputeLineOfApprox::Error(): declared in the header, no definition in libTKTopAlgo
+undefined	BRepGProp	BRepGProp_VinertGK::GetAbsolutError(): declared in the header, no definition in libTKTopAlgo
+undefined	BRepLib	BRepLib_PointCloudShape::BRepLib_PointCloudShape(const TopoDS_Shape &, const double): declared in the header, no definition in libTKTopAlgo
+undefined	MAT2d	MAT2d_CutCurve::Perform(const occ::handle<Geom2d_Curve> &, const MAT_Side): declared in the header, no definition in libTKTopAlgo
+undefined	MAT2d	MAT2d_CutCurve::PerformInf(const occ::handle<Geom2d_Curve> &): declared in the header, no definition in libTKTopAlgo

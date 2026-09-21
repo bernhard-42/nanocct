@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKGeomAlgo: 85 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomAlgo: 86 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 3
 # header: 1
@@ -6,7 +6,7 @@
 # override: 3
 # raw-pointer: 4
 # template: 4
-# unbound-type: 4
+# unbound-type: 5
 # undefined: 36
 array	IntImp	IntImp_ComputeTangence(...): param 'DPuv': array
 array	IntPatch	IntPatch_SpecialPoints::AdjustPointAndVertex(const IntSurf_PntOn2S &): param 'theArrPeriods': array
@@ -57,6 +57,7 @@ unbound-type	IntPatch	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double,
 unbound-type	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> is not bound (package not generated) -> class skipped
 unbound-type	IntPatch	IntPatch_BVHTraversal::TrianglePair: outer class IntPatch_BVHTraversal is not bound -> nested class skipped
 unbound-type	IntPatch	IntPatch_PolyhedronBVH: base class BVH_PrimitiveSet<double, 3> is not bound (skipped) -> class skipped
+unbound-type	IntPatch	NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair>: element type IntPatch_BVHTraversal::TrianglePair is not bound (its class is skipped) -> instantiation skipped
 undefined	Geom2dAPI	Geom2dAPI_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo
 undefined	Geom2dGcc	Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const Geom2dAdaptor_Curve &, const gp_Pnt2d &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
 undefined	Geom2dGcc	Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const gp_Circ2d &, const Geom2dAdaptor_Curve &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo

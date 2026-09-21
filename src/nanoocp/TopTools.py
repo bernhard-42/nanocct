@@ -7,6 +7,8 @@ from nanoocp._TKBRep.TopTools import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "TopTools_DataMapOfShapeListOfShape": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher"),
+    "TopTools_DataMapOfShapeShape": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__TopoDS_Shape__TopTools_ShapeMapHasher"),
     "TopTools_IndexedDataMapOfShapeListOfShape": ("nanoocp.NCollection", "NCollection_IndexedDataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher"),
     "TopTools_IndexedMapOfShape": ("nanoocp.NCollection", "NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher"),
     "TopTools_ListOfShape": ("nanoocp.NCollection", "NCollection_List__TopoDS_Shape"),

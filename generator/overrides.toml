@@ -33,6 +33,9 @@ classes = [
 # a generated wrapper struct with deleted copy and move constructors, under the original name.
 noncopyable = [
     "math_GlobOptMin",                  # NCollection_Map<NCollection_CellFilter<...>::Cell> member (see above)
+    "BRepExtrema_ProximityValueTool",   # NCollection_CellFilter<BRepExtrema_VertexInspector> member: same Cell type
+    "BRepExtrema_ShapeProximity",       # holds a BRepExtrema_ProximityValueTool by value
+    "BRepTopAdaptor_FClass2d",          # NCollection_Sequence<CSLib_Class2d> member; CSLib_Class2d's copy constructor is deleted
 ]
 # C++ namespaces never bound: std (OCCT only adds std::hash specialisations there) and the implementation-detail
 # namespaces OCCT keeps in headers for inline code (MathSys::detail, MathLin::Internal, BRepGraph_RefsIterator::Detail).

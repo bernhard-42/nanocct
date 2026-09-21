@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKernel: 414 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 417 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 7
@@ -14,7 +14,7 @@
 # std: 4
 # stream: 28
 # template: 163
-# unbound-type: 4
+# unbound-type: 7
 # undefined: 3
 # variadic: 3
 array	Standard	Standard_UUID::Data4: field array
@@ -421,6 +421,9 @@ template	TCollection	TCollection_AsciiString::operator>: template member
 template	TCollection	TCollection_ExtendedString::AssignCat: template member
 template	TCollection	TCollection_ExtendedString::TCollection_ExtendedString: template member
 template	TCollection	TCollection_ExtendedString::operator+=: template member
+unbound-type	OSD	OSD_IOStreamBuffer = OSD_StreamBuffer<std::iostream>: type alias of a type that is not bound (skipped)
+unbound-type	OSD	OSD_IStreamBuffer = OSD_StreamBuffer<std::istream>: type alias of a type that is not bound (skipped)
+unbound-type	OSD	OSD_OStreamBuffer = OSD_StreamBuffer<std::ostream>: type alias of a type that is not bound (skipped)
 unbound-type	OSD	OSD_StreamBuffer<std::iostream>: base class std::iostream is not bound (package not generated) -> class skipped
 unbound-type	OSD	OSD_StreamBuffer<std::istream>: base class std::istream is not bound (package not generated) -> class skipped
 unbound-type	OSD	OSD_StreamBuffer<std::ostream>: base class std::ostream is not bound (package not generated) -> class skipped

@@ -3,6 +3,8 @@
 import enum
 from typing import overload
 
+import nanoocp.BRepBuilderAPI
+import nanoocp.BRepLib
 import nanoocp.Message
 import nanoocp.NCollection
 import nanoocp.Standard
@@ -204,6 +206,12 @@ class TopoDS_Shape:
 
     @overload
     def __init__(self, theOther: TopoDS_Shape) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeShape) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeShape) -> None: ...
 
     def IsNull(self) -> bool:
         """
@@ -669,6 +677,18 @@ class TopoDS_Wire(TopoDS_Shape):
     @overload
     def __init__(self, theOther: TopoDS_Wire) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakePolygon) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeWire) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakePolygon) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeWire) -> None: ...
+
     def __hash__(self) -> int: ...
 
 class TopoDS_Shell(TopoDS_Shape):
@@ -688,6 +708,12 @@ class TopoDS_Shell(TopoDS_Shape):
 
     @overload
     def __init__(self, theOther: TopoDS_Shell) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeShell) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeShell) -> None: ...
 
     def __hash__(self) -> int: ...
 
@@ -709,6 +735,12 @@ class TopoDS_Solid(TopoDS_Shape):
 
     @overload
     def __init__(self, theOther: TopoDS_Solid) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeSolid) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeSolid) -> None: ...
 
     def __hash__(self) -> int: ...
 
@@ -775,6 +807,24 @@ class TopoDS_Edge(TopoDS_Shape):
     @overload
     def __init__(self, theOther: TopoDS_Edge) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeEdge) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeEdge2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakePolygon) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeEdge) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeEdge2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakePolygon) -> None: ...
+
     def __hash__(self) -> int: ...
 
 class TopoDS_Face(TopoDS_Shape):
@@ -794,6 +844,12 @@ class TopoDS_Face(TopoDS_Shape):
 
     @overload
     def __init__(self, theOther: TopoDS_Face) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeFace) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeFace) -> None: ...
 
     def __hash__(self) -> int: ...
 
@@ -993,6 +1049,12 @@ class TopoDS_Vertex(TopoDS_Shape):
 
     @overload
     def __init__(self, theOther: TopoDS_Vertex) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepLib.BRepLib_MakeVertex) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeVertex) -> None: ...
 
     def __hash__(self) -> int: ...
 

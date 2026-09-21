@@ -333,6 +333,11 @@ class Emitter:
                     self.report.append(f"{key}: wrapped type {wrapped} is not bound -> instantiation skipped")
                     self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
                     return
+            unbound = [a for a in args if a in self.skipped]     # a nested enum/class of a class skipped just before (_base_ok, Design.md 5.2)
+            if len(unbound) > 0:
+                self.report.append(f"{key}: element type {unbound[0]} is not bound (its class is skipped) -> instantiation skipped")
+                self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
+                return
             home = "NCollection"                            # every instantiation lives in nanoocp.NCollection
             if home not in generated:
                 home = self.ir.name
@@ -370,16 +375,20 @@ class Emitter:
         return done
 
     def _base_ok(self, c: Class, skipped: set[str]) -> bool:
+        def skip(c: Class) -> None:
+            skipped.add(c.name)
+            skipped.update(e.name for e in c.enums)     # its nested enums (BRepExtrema_ProximityDistTool::ProxPnt_Status) go with it:
+                                                        # no alias, instantiation or manifest entry may name them (Design.md 5.2)
         if c.outer in skipped:
             self.report.append(f"{c.name}: outer class {c.outer} is not bound -> nested class skipped")
-            skipped.add(c.name)
+            skip(c)
             return False
         for b in c.bases:
             if c.is_exception and b.startswith("std::"):
                 continue
             if b not in self.known or b in skipped:     # skipped: a base of this package that was skipped just before (bases come first)
                 self.report.append(f"{c.name}: base class {b} is not bound ({'skipped' if b in skipped else 'package not generated'}) -> class skipped")
-                skipped.add(c.name)
+                skip(c)
                 return False
         return True
 
@@ -687,8 +696,10 @@ class Emitter:
                 out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = nb::module_::import_("nanoocp._{self.toolkit_of[inst["package"]]}.{inst["package"]}").attr("{inst["name"]}");   // {td.py_name} = {td.written}')
                 continue
             pkg = self.known.get(td.target)
-            if pkg is None or "<" in td.target:
-                if td.scope != ():
+            if pkg is None or "<" in td.target or td.target in self.skipped:
+                if td.target in self.skipped:
+                    self.report.append(f"{td.py_name} = {td.written}: type alias of a type that is not bound (skipped)")
+                elif td.scope != ():
                     self.report.append(f"{'::'.join(td.scope)}::{td.py_name} = {td.written}: type alias of an unbound type (not bound)")
                 continue
             attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
