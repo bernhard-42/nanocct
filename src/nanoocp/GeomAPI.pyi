@@ -598,9 +598,9 @@ class GeomAPI_IntCS:
         raises OutOfRange if Index is not in the range <1..NbPoints>
         """
 
-    def Parameters__float_float_float(self, Index: int) -> tuple[float, float, float]:
+    def Parameters__float__float__float(self, Index: int) -> tuple[float, float, float]:
         """
-        Parameters__float_float_float: the C++ overload Parameters(const int, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Parameters__float__float__float: the C++ overload Parameters(const int, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns parameter W on the curve
         and (parameters U,V) on the surface of the computed intersection point
         of index Index in case of cross intersection.
@@ -629,9 +629,9 @@ class GeomAPI_IntCS:
         where NbSegments is the number of computed intersection segments.
         """
 
-    def Parameters__float_float_float_float(self, Index: int) -> tuple[float, float, float, float]:
+    def Parameters__float__float__float__float(self, Index: int) -> tuple[float, float, float, float]:
         """
-        Parameters__float_float_float_float: the C++ overload Parameters(const int, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Parameters__float__float__float__float: the C++ overload Parameters(const int, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the parameters of the first (U1,V1) and the last (U2,V2) points
         of curve's segment on the surface in case of tangential intersection.
         Index is the number of computed intersection segments.

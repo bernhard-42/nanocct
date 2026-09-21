@@ -574,7 +574,7 @@ Will raise exception if Timer is in started state.)nbdoc")
         .def("Show__float", [](const OSD_Chronometer &self) { double theUserSeconds{}; self.Show(theUserSeconds); return theUserSeconds; }, R"nbdoc(Show__float: the C++ overload Show(double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns the current CPU user time in a variable.
 The chronometer can be running (laps Time) or stopped.)nbdoc")
-        .def("Show__float_float", [](const OSD_Chronometer &self) { double theUserSec{}; double theSystemSec{}; self.Show(theUserSec, theSystemSec); return std::make_tuple(theUserSec, theSystemSec); }, R"nbdoc(Show__float_float: the C++ overload Show(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Show__float__float", [](const OSD_Chronometer &self) { double theUserSec{}; double theSystemSec{}; self.Show(theUserSec, theSystemSec); return std::make_tuple(theUserSec, theSystemSec); }, R"nbdoc(Show__float__float: the C++ overload Show(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns the current CPU user and system time in variables.
 The chronometer can be running (laps Time) or stopped.)nbdoc")
         .def_static("GetProcessCPU", []() { double UserSeconds{}; double SystemSeconds{}; OSD_Chronometer::GetProcessCPU(UserSeconds, SystemSeconds); return std::make_tuple(UserSeconds, SystemSeconds); }, R"nbdoc(Returns CPU time (user and system) consumed by the current
@@ -1195,7 +1195,7 @@ stopped.)nbdoc")
         .def("Show__str", [](const OSD_Timer &self) { std::ostringstream os_stream; self.Show(os_stream); return nanoocp_stream_text(os_stream); }, R"nbdoc(Show__str: the C++ overload Show(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Shows both the elapsed time and CPU time on the
 output stream <OS>.)nbdoc")
-        .def("Show__float_int_int_float", [](const OSD_Timer &self) { double theSeconds{}; int theMinutes{}; int theHours{}; double theCPUtime{}; self.Show(theSeconds, theMinutes, theHours, theCPUtime); return std::make_tuple(theSeconds, theMinutes, theHours, theCPUtime); }, R"nbdoc(Show__float_int_int_float: the C++ overload Show(double &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Show__float__int__int__float", [](const OSD_Timer &self) { double theSeconds{}; int theMinutes{}; int theHours{}; double theCPUtime{}; self.Show(theSeconds, theMinutes, theHours, theCPUtime); return std::make_tuple(theSeconds, theMinutes, theHours, theCPUtime); }, R"nbdoc(Show__float__int__int__float: the C++ overload Show(double &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 returns both the elapsed time(seconds,minutes,hours)
 and CPU time.)nbdoc")
         .def("Stop", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Stop), R"nbdoc(Stops the Timer.)nbdoc")

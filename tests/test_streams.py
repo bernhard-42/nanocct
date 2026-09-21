@@ -20,7 +20,7 @@ def test_dump_json_round_trip():
     assert text == '"gp_Pnt": [1, 2, 3]'
     p = gp.gp_Pnt()
     done, pos = p.InitFromJson(io.StringIO(text), 1)                   # InitFromJson(const Standard_SStream&, int& pos): pos is in/out, starts at 1
-    assert done and p.Coord__float_float_float() == (1.0, 2.0, 3.0) and pos > 1
+    assert done and p.Coord__float__float__float() == (1.0, 2.0, 3.0) and pos > 1
     box = Bnd.Bnd_Box()
     box.Add(gp.gp_Pnt(1.0, 2.0, 3.0))
     assert box.DumpJson() == '"CornerMin": [1, 2, 3], "CornerMax": [1, 2, 3], "Gap": 0, "Flags": 0'

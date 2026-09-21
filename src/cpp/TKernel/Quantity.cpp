@@ -829,13 +829,13 @@ With:
 0 <= ss
 0 <= mis
 0 <= mics)nbdoc")
-        .def("Values__int_int_int_int_int_int", [](const Quantity_Period &self) { int dd{}; int hh{}; int mn{}; int ss{}; int mis{}; int mics{}; self.Values(dd, hh, mn, ss, mis, mics); return std::make_tuple(dd, hh, mn, ss, mis, mics); }, R"nbdoc(Values__int_int_int_int_int_int: the C++ overload Values(int &, int &, int &, int &, int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Values__int__int__int__int__int__int", [](const Quantity_Period &self) { int dd{}; int hh{}; int mn{}; int ss{}; int mis{}; int mics{}; self.Values(dd, hh, mn, ss, mis, mics); return std::make_tuple(dd, hh, mn, ss, mis, mics); }, R"nbdoc(Values__int__int__int__int__int__int: the C++ overload Values(int &, int &, int &, int &, int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Decomposes this period into a number of days,hours,
 minutes,seconds,milliseconds and microseconds
 Example of return values:
 2 days, 15 hours, 0 minute , 0 second
 0 millisecond and 0 microsecond)nbdoc")
-        .def("Values__int_int", [](const Quantity_Period &self) { int ss{}; int mics{}; self.Values(ss, mics); return std::make_tuple(ss, mics); }, R"nbdoc(Values__int_int: the C++ overload Values(int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Values__int__int", [](const Quantity_Period &self) { int ss{}; int mics{}; self.Values(ss, mics); return std::make_tuple(ss, mics); }, R"nbdoc(Values__int__int: the C++ overload Values(int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns the number of seconds in Ss and the
 number of remainding microseconds in Mics of this period.
 Example of return values: 3600 seconds and 0 microseconds)nbdoc")

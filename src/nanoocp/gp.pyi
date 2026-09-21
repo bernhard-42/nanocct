@@ -982,9 +982,9 @@ class gp_Pnt:
     def Coord(self) -> gp_XYZ:
         """For this point, returns its three coordinates as a XYZ object."""
 
-    def Coord__float_float_float(self) -> tuple[float, float, float]:
+    def Coord__float__float__float(self) -> tuple[float, float, float]:
         """
-        Coord__float_float_float: the C++ overload Coord(double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Coord__float__float__float: the C++ overload Coord(double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         For this point gives its three coordinates theXp, theYp and theZp.
         """
 
@@ -2248,9 +2248,9 @@ class gp_Pnt2d:
     def Coord(self) -> gp_XY:
         """For this point, returns its two coordinates as a number pair."""
 
-    def Coord__float_float(self) -> tuple[float, float]:
+    def Coord__float__float(self) -> tuple[float, float]:
         """
-        Coord__float_float: the C++ overload Coord(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Coord__float__float: the C++ overload Coord(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         For this point returns its two coordinates as a number pair.
         """
 

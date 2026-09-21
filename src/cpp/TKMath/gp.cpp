@@ -1132,7 +1132,7 @@ theIndex = 2 => Y is returned
 theIndex = 3 => Z is returned
 Raises OutOfRange if theIndex != {1, 2, 3}.
 Raised if theIndex != {1, 2, 3}.)nbdoc")
-        .def("Coord__float_float_float", [](const gp_Pnt &self) { double theXp{}; double theYp{}; double theZp{}; self.Coord(theXp, theYp, theZp); return std::make_tuple(theXp, theYp, theZp); }, R"nbdoc(Coord__float_float_float: the C++ overload Coord(double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Coord__float__float__float", [](const gp_Pnt &self) { double theXp{}; double theYp{}; double theZp{}; self.Coord(theXp, theYp, theZp); return std::make_tuple(theXp, theYp, theZp); }, R"nbdoc(Coord__float__float__float: the C++ overload Coord(double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 For this point gives its three coordinates theXp, theYp and theZp.)nbdoc")
         .def("X", static_cast<double (gp_Pnt::*)() const noexcept>(&gp_Pnt::X), R"nbdoc(For this point, returns its X coordinate.)nbdoc")
         .def("Y", static_cast<double (gp_Pnt::*)() const noexcept>(&gp_Pnt::Y), R"nbdoc(For this point, returns its Y coordinate.)nbdoc")
@@ -1657,7 +1657,7 @@ Raises OutOfRange if theIndex != {1, 2}.)nbdoc")
 theIndex = 1 => X is returned
 theIndex = 2 => Y is returned
 Raises OutOfRange if theIndex != {1, 2}.)nbdoc")
-        .def("Coord__float_float", [](const gp_Pnt2d &self) { double theXp{}; double theYp{}; self.Coord(theXp, theYp); return std::make_tuple(theXp, theYp); }, R"nbdoc(Coord__float_float: the C++ overload Coord(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Coord__float__float", [](const gp_Pnt2d &self) { double theXp{}; double theYp{}; self.Coord(theXp, theYp); return std::make_tuple(theXp, theYp); }, R"nbdoc(Coord__float__float: the C++ overload Coord(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 For this point returns its two coordinates as a number pair.)nbdoc")
         .def("X", static_cast<double (gp_Pnt2d::*)() const noexcept>(&gp_Pnt2d::X), R"nbdoc(For this point, returns its X coordinate.)nbdoc")
         .def("Y", static_cast<double (gp_Pnt2d::*)() const noexcept>(&gp_Pnt2d::Y), R"nbdoc(For this point, returns its Y coordinate.)nbdoc")

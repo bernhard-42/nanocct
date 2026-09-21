@@ -676,18 +676,18 @@ class Emitter:
 
 # Design.md 6 R-COLLISION
 def out_suffix(params: list[Param]) -> str:
-    """'__float_float' for the removed out-parameters of an overload (streams: str, or bytes in a binary package); '' when
-    the overload has none."""
+    """'__float__float' for the removed out-parameters of an overload (streams: str, or bytes in a binary package); '' when
+    the overload has none. Double underscores separate the parts because OCCT names contain single ones (Design.md 2a)."""
     parts = [("bytes" if p.binary else "str") if p.stream == StreamKind.OUT else p.out_py
              for p in params if p.stream == StreamKind.OUT or p.is_out and not p.is_inout]
-    return "" if len(parts) == 0 else "__" + "_".join(parts)
+    return "" if len(parts) == 0 else "__" + "__".join(parts)
 
 
 def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
     """Overloads that become indistinguishable once out-params are dropped (Python has no dispatch on results) are told
     apart by a suffix naming the removed out-parameters' Python types: gp_Pnt::Coord(double&, double&, double&) is bound
-    as Coord__float_float_float, GeomAPI_IntCS::Parameters(int, double&, double&, double&) as Parameters__float_float_float
-    next to Parameters__float_float_float_float; an overload without out-parameters keeps the plain name (gp_Pnt::Coord()
+    as Coord__float__float__float, GeomAPI_IntCS::Parameters(int, double&, double&, double&) as Parameters__float__float__float
+    next to Parameters__float__float__float__float; an overload without out-parameters keeps the plain name (gp_Pnt::Coord()
     -> gp_XYZ, as in C++). The suffix is unique within a group because C++ overloads cannot share a parameter list.
     Takes Methods or Functions (name, params, skip_reason, optionally is_static). Returns (overload, suffix) for every
     overload that is not skipped, in header order; the suffix is '' outside collision groups."""

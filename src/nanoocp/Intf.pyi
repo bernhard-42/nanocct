@@ -110,25 +110,25 @@ class Intf_SectionPoint:
         element.
         """
 
-    def InfoFirst__Intf_PIType_int_int_float(self) -> tuple[Intf_PIType, int, int, float]:
+    def InfoFirst__Intf_PIType__int__int__float(self) -> tuple[Intf_PIType, int, int, float]:
         """
-        InfoFirst__Intf_PIType_int_int_float: the C++ overload InfoFirst(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        InfoFirst__Intf_PIType__int__int__float: the C++ overload InfoFirst(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         """
 
-    def InfoFirst__Intf_PIType_int_float(self) -> tuple[Intf_PIType, int, float]:
+    def InfoFirst__Intf_PIType__int__float(self) -> tuple[Intf_PIType, int, float]:
         """
-        InfoFirst__Intf_PIType_int_float: the C++ overload InfoFirst(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        InfoFirst__Intf_PIType__int__float: the C++ overload InfoFirst(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Gives the data about the first argument of the Interference.
         """
 
-    def InfoSecond__Intf_PIType_int_int_float(self) -> tuple[Intf_PIType, int, int, float]:
+    def InfoSecond__Intf_PIType__int__int__float(self) -> tuple[Intf_PIType, int, int, float]:
         """
-        InfoSecond__Intf_PIType_int_int_float: the C++ overload InfoSecond(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        InfoSecond__Intf_PIType__int__int__float: the C++ overload InfoSecond(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         """
 
-    def InfoSecond__Intf_PIType_int_float(self) -> tuple[Intf_PIType, int, float]:
+    def InfoSecond__Intf_PIType__int__float(self) -> tuple[Intf_PIType, int, float]:
         """
-        InfoSecond__Intf_PIType_int_float: the C++ overload InfoSecond(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        InfoSecond__Intf_PIType__int__float: the C++ overload InfoSecond(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Gives the data about the second argument of the Interference.
         """
 

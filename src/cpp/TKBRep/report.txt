@@ -245,8 +245,8 @@ operator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator*(): 
 operator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator*(): operator has no Python equivalent
 operator	TopoDS	operator<<(const occ::handle<Message_Messenger> &, const TopoDS_Shape &): free operator not mapped
 overload-collision	BRep	BRep_Tool::Parameter(const TopoDS_Vertex &, const TopoDS_Edge &, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float
-overload-collision	BinTools	BinTools_IStream::ReadBools(bool &, bool &, bool &): same Python signature as another overload after out-param removal -> bound as ReadBools__bool_bool_bool
-overload-collision	BinTools	BinTools_IStream::ReadBools(bool &, bool &, bool &, bool &, bool &, bool &, bool &): same Python signature as another overload after out-param removal -> bound as ReadBools__bool_bool_bool_bool_bool_bool_bool
+overload-collision	BinTools	BinTools_IStream::ReadBools(bool &, bool &, bool &): same Python signature as another overload after out-param removal -> bound as ReadBools__bool__bool__bool
+overload-collision	BinTools	BinTools_IStream::ReadBools(bool &, bool &, bool &, bool &, bool &, bool &, bool &): same Python signature as another overload after out-param removal -> bound as ReadBools__bool__bool__bool__bool__bool__bool__bool
 override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
 override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
 override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)

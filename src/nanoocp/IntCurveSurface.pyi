@@ -681,9 +681,9 @@ class IntCurveSurface_ThePolyhedronOfHInter:
     def Point(self, Index: int, P: nanoocp.gp.gp_Pnt) -> None:
         """Give the point of index i in the MaTriangle."""
 
-    def Point__float_float(self, Index: int) -> tuple[nanoocp.gp.gp_Pnt, float, float]:
+    def Point__float__float(self, Index: int) -> tuple[nanoocp.gp.gp_Pnt, float, float]:
         """
-        Point__float_float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Point__float__float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Give the point of index i in the MaTriangle.
         """
 

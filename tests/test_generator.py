@@ -298,14 +298,14 @@ def test_resolve_overload_collisions_suffixes_by_out_params():
     assert resolve_overload_collisions([with_out, direct]) == [(with_out, "__float"), (direct, "")]     # header order kept
     # both with out-params: both suffixed, no plain name
     a = m("Parameters", [out, out, out]); b = m("Parameters", [out, out, out, out])
-    assert resolve_overload_collisions([a, b]) == [(a, "__float_float_float"), (b, "__float_float_float_float")]
+    assert resolve_overload_collisions([a, b]) == [(a, "__float__float__float"), (b, "__float__float__float__float")]
     # handle out-parameter: the class name; enum: its name; stream: str
     h = Param(name="C", type="occ::handle<Geom_Curve> &", default=None, is_out=True, is_handle=True, out_py="Geom_Curve")
     st = Param(name="os", type="Standard_OStream &", default=None, is_out=False, stream=StreamKind.OUT)
     r1 = m("Read", [h]); r2 = m("Read", [Param(name="S", type="occ::handle<Geom_Surface> &", default=None, is_out=True, is_handle=True, out_py="Geom_Surface")])
     assert resolve_overload_collisions([r1, r2]) == [(r1, "__Geom_Curve"), (r2, "__Geom_Surface")]
     s0 = m("Show", []); s1 = m("Show", [st]); s2 = m("Show", [out, out_i])
-    assert resolve_overload_collisions([s0, s1, s2]) == [(s0, ""), (s1, "__str"), (s2, "__float_int")]
+    assert resolve_overload_collisions([s0, s1, s2]) == [(s0, ""), (s1, "__str"), (s2, "__float__int")]
     # an in/out parameter stays an input: no collision
     io_ = Param(name="x", type="double &", default=None, is_out=True, is_inout=True, out_py="float")
     assert [sfx for _, sfx in resolve_overload_collisions([m("T", [io_]), m("T", [])])] == ["", ""]

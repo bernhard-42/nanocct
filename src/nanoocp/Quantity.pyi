@@ -2742,9 +2742,9 @@ class Quantity_Period:
     @overload
     def __init__(self, theOther: Quantity_Period) -> None: ...
 
-    def Values__int_int_int_int_int_int(self) -> tuple[int, int, int, int, int, int]:
+    def Values__int__int__int__int__int__int(self) -> tuple[int, int, int, int, int, int]:
         """
-        Values__int_int_int_int_int_int: the C++ overload Values(int &, int &, int &, int &, int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Values__int__int__int__int__int__int: the C++ overload Values(int &, int &, int &, int &, int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Decomposes this period into a number of days,hours,
         minutes,seconds,milliseconds and microseconds
         Example of return values:
@@ -2752,9 +2752,9 @@ class Quantity_Period:
         0 millisecond and 0 microsecond
         """
 
-    def Values__int_int(self) -> tuple[int, int]:
+    def Values__int__int(self) -> tuple[int, int]:
         """
-        Values__int_int: the C++ overload Values(int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Values__int__int: the C++ overload Values(int &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the number of seconds in Ss and the
         number of remainding microseconds in Mics of this period.
         Example of return values: 3600 seconds and 0 microseconds

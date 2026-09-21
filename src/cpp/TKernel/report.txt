@@ -70,12 +70,12 @@ overload-collision	FSD	FSD_BinaryFile::EndWriteInfoSection(Standard_OStream &): 
 overload-collision	Message	Message::MetricFromString(const char *const, Message_MetricType &): same Python signature as another overload after out-param removal -> bound as MetricFromString__Message_MetricType
 overload-collision	OSD	OSD_Chronometer::Show(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as Show__str
 overload-collision	OSD	OSD_Chronometer::Show(double &): same Python signature as another overload after out-param removal -> bound as Show__float
-overload-collision	OSD	OSD_Chronometer::Show(double &, double &): same Python signature as another overload after out-param removal -> bound as Show__float_float
+overload-collision	OSD	OSD_Chronometer::Show(double &, double &): same Python signature as another overload after out-param removal -> bound as Show__float__float
 overload-collision	OSD	OSD_File::ReadLine(TCollection_AsciiString &, const int, int &): same Python signature as another overload after out-param removal -> bound as ReadLine__int
 overload-collision	OSD	OSD_Timer::Show(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as Show__str
-overload-collision	OSD	OSD_Timer::Show(double &, int &, int &, double &): same Python signature as another overload after out-param removal -> bound as Show__float_int_int_float
-overload-collision	Quantity	Quantity_Period::Values(int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int_int
-overload-collision	Quantity	Quantity_Period::Values(int &, int &, int &, int &, int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int_int_int_int_int_int
+overload-collision	OSD	OSD_Timer::Show(double &, int &, int &, double &): same Python signature as another overload after out-param removal -> bound as Show__float__int__int__float
+overload-collision	Quantity	Quantity_Period::Values(int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int__int
+overload-collision	Quantity	Quantity_Period::Values(int &, int &, int &, int &, int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int__int__int__int__int__int
 overload-collision	Units	Units::FromSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as FromSI__Units_Dimensions
 overload-collision	Units	Units::ToSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as ToSI__Units_Dimensions
 overload-collision	UnitsAPI	UnitsAPI::AnyToLS(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as AnyToLS__Units_Dimensions

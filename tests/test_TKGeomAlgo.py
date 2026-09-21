@@ -124,10 +124,10 @@ def test_curve_surface_intersection():
     assert (p.X(), p.Y(), p.Z()) == pytest.approx((0.5, 0.5, 1.0))
     # R-COLLISION: Parameters(Index, U&, V&, W&) (a point) and Parameters(Index, U1&, V1&, U2&, V2&) (a segment) have the
     # same inputs; each is bound under the suffix naming its returned out-parameters, there is no plain Parameters
-    u, v, w = ics.Parameters__float_float_float(1)
+    u, v, w = ics.Parameters__float__float__float(1)
     assert (u, v, w) == pytest.approx((0.5, 0.5, 2.0))
     with pytest.raises(Standard.Standard_OutOfRange):
-        ics.Parameters__float_float_float_float(1)              # no segments
+        ics.Parameters__float__float__float__float(1)              # no segments
     assert not hasattr(GeomAPI.GeomAPI_IntCS, "Parameters")
     assert any("GeomAPI_IntCS::Parameters(const int, double &, double &, double &): same Python signature as another overload "
-               "after out-param removal -> bound as Parameters__float_float_float" in l for l in REPORT.read_text().splitlines())
+               "after out-param removal -> bound as Parameters__float__float__float" in l for l in REPORT.read_text().splitlines())

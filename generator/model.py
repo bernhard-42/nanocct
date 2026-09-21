@@ -63,7 +63,7 @@ class Method:
     mangled: str = ""                # linker symbol (libclang mangling); R-UNDEFINED compares it with nm's list
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
     is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring
-    suffix: str = ""                  # R-COLLISION: "__float_float" appended to the Python name when overloads collide after out-param removal
+    suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
 
 
 @dataclass

@@ -1170,9 +1170,9 @@ class BSplCLib:
         """
 
     @staticmethod
-    def Eval__int_float_float(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float]:
+    def Eval__int__float__float(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float]:
         """
-        Eval__int_float_float: the C++ overload Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Eval__int__float__float: the C++ overload Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Perform the De Boor algorithm to evaluate a point at
         parameter <U>, with <Degree> and <Dimension>.
 
@@ -1190,9 +1190,9 @@ class BSplCLib:
         """
 
     @staticmethod
-    def Eval__int_float_float_float_float(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float, float, float]:
+    def Eval__int__float__float__float__float(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float, float, float]:
         """
-        Eval__int_float_float_float_float: the C++ overload Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Eval__int__float__float__float__float: the C++ overload Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Perform the De Boor algorithm to evaluate a point at
         parameter <U>, with <Degree> and <Dimension>.
         Evaluates by multiplying the Poles by the Weights and
@@ -1554,9 +1554,9 @@ class BSplCLib:
         """
 
     @staticmethod
-    def Interpolate__float_int(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, int]:
+    def Interpolate__float__int(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, int]:
         """
-        Interpolate__float_int: the C++ overload Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Interpolate__float__int: the C++ overload Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Performs the interpolation of the data given in
         the Poles array according to the requests in
         ContactOrderArray that is: if
@@ -1582,9 +1582,9 @@ class BSplCLib:
         """
 
     @staticmethod
-    def Interpolate__float_float_int(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, float, int]:
+    def Interpolate__float__float__int(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, float, int]:
         """
-        Interpolate__float_float_int: the C++ overload Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Interpolate__float__float__int: the C++ overload Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         """
 
     @overload

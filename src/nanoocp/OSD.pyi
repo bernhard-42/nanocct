@@ -691,9 +691,9 @@ class OSD_Chronometer:
         The chronometer can be running (laps Time) or stopped.
         """
 
-    def Show__float_float(self) -> tuple[float, float]:
+    def Show__float__float(self) -> tuple[float, float]:
         """
-        Show__float_float: the C++ overload Show(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Show__float__float: the C++ overload Show(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the current CPU user and system time in variables.
         The chronometer can be running (laps Time) or stopped.
         """
@@ -2419,9 +2419,9 @@ class OSD_Timer(OSD_Chronometer):
         output stream <OS>.
         """
 
-    def Show__float_int_int_float(self) -> tuple[float, int, int, float]:
+    def Show__float__int__int__float(self) -> tuple[float, int, int, float]:
         """
-        Show__float_int_int_float: the C++ overload Show(double &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Show__float__int__int__float: the C++ overload Show(double &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         returns both the elapsed time(seconds,minutes,hours)
         and CPU time.
         """
