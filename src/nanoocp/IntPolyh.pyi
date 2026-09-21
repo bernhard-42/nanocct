@@ -153,18 +153,7 @@ class IntPolyh_ArrayOfEdges:
         the const item
         """
 
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_Edge:
-        """
-        query the const value
-        @param aIndex
-        index
-        @return
-        the const item
-        """
-
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_Edge:
+    def ChangeValue(self, aIndex: int) -> IntPolyh_Edge:
         """
         query the value
         @param aIndex
@@ -173,7 +162,7 @@ class IntPolyh_ArrayOfEdges:
         the item
         """
 
-    def ChangeValue(self, aIndex: int) -> IntPolyh_Edge:
+    def __getitem__(self, aIndex: int) -> IntPolyh_Edge:
         """
         query the value
         @param aIndex
@@ -388,18 +377,7 @@ class IntPolyh_ArrayOfPoints:
         the const item
         """
 
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_Point:
-        """
-        query the const value
-        @param aIndex
-        index
-        @return
-        the const item
-        """
-
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_Point:
+    def ChangeValue(self, aIndex: int) -> IntPolyh_Point:
         """
         query the value
         @param aIndex
@@ -408,7 +386,7 @@ class IntPolyh_ArrayOfPoints:
         the item
         """
 
-    def ChangeValue(self, aIndex: int) -> IntPolyh_Point:
+    def __getitem__(self, aIndex: int) -> IntPolyh_Point:
         """
         query the value
         @param aIndex
@@ -547,18 +525,7 @@ class IntPolyh_ArrayOfPointNormal:
         the const item
         """
 
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_PointNormal:
-        """
-        query the const value
-        @param aIndex
-        index
-        @return
-        the const item
-        """
-
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_PointNormal:
+    def ChangeValue(self, aIndex: int) -> IntPolyh_PointNormal:
         """
         query the value
         @param aIndex
@@ -567,7 +534,7 @@ class IntPolyh_ArrayOfPointNormal:
         the item
         """
 
-    def ChangeValue(self, aIndex: int) -> IntPolyh_PointNormal:
+    def __getitem__(self, aIndex: int) -> IntPolyh_PointNormal:
         """
         query the value
         @param aIndex
@@ -660,13 +627,9 @@ class IntPolyh_SectionLine:
 
     def Value(self, nn: int) -> IntPolyh_StartPoint: ...
 
-    @overload
-    def __getitem__(self, nn: int) -> IntPolyh_StartPoint: ...
-
-    @overload
-    def __getitem__(self, nn: int) -> IntPolyh_StartPoint: ...
-
     def ChangeValue(self, nn: int) -> IntPolyh_StartPoint: ...
+
+    def __getitem__(self, nn: int) -> IntPolyh_StartPoint: ...
 
     def Copy(self, Other: IntPolyh_SectionLine) -> IntPolyh_SectionLine: ...
 
@@ -785,18 +748,7 @@ class IntPolyh_ArrayOfSectionLines:
         the const item
         """
 
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_SectionLine:
-        """
-        query the const value
-        @param aIndex
-        index
-        @return
-        the const item
-        """
-
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_SectionLine:
+    def ChangeValue(self, aIndex: int) -> IntPolyh_SectionLine:
         """
         query the value
         @param aIndex
@@ -805,7 +757,7 @@ class IntPolyh_ArrayOfSectionLines:
         the item
         """
 
-    def ChangeValue(self, aIndex: int) -> IntPolyh_SectionLine:
+    def __getitem__(self, aIndex: int) -> IntPolyh_SectionLine:
         """
         query the value
         @param aIndex
@@ -920,18 +872,7 @@ class IntPolyh_ArrayOfTangentZones:
         the const item
         """
 
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_StartPoint:
-        """
-        query the const value
-        @param aIndex
-        index
-        @return
-        the const item
-        """
-
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_StartPoint:
+    def ChangeValue(self, aIndex: int) -> IntPolyh_StartPoint:
         """
         query the value
         @param aIndex
@@ -940,7 +881,7 @@ class IntPolyh_ArrayOfTangentZones:
         the item
         """
 
-    def ChangeValue(self, aIndex: int) -> IntPolyh_StartPoint:
+    def __getitem__(self, aIndex: int) -> IntPolyh_StartPoint:
         """
         query the value
         @param aIndex
@@ -1055,18 +996,7 @@ class IntPolyh_ArrayOfTriangles:
         the const item
         """
 
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_Triangle:
-        """
-        query the const value
-        @param aIndex
-        index
-        @return
-        the const item
-        """
-
-    @overload
-    def __getitem__(self, aIndex: int) -> IntPolyh_Triangle:
+    def ChangeValue(self, aIndex: int) -> IntPolyh_Triangle:
         """
         query the value
         @param aIndex
@@ -1075,7 +1005,7 @@ class IntPolyh_ArrayOfTriangles:
         the item
         """
 
-    def ChangeValue(self, aIndex: int) -> IntPolyh_Triangle:
+    def __getitem__(self, aIndex: int) -> IntPolyh_Triangle:
         """
         query the value
         @param aIndex

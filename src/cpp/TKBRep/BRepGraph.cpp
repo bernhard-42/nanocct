@@ -2762,24 +2762,12 @@ raw Product/Occurrence definition storage, and assembly classification.)nbdoc")
         .def("UIDs", static_cast<const BRepGraph::UIDsView & (BRepGraph::*)() const>(&BRepGraph::UIDs), R"nbdoc(Access unique identifiers.)nbdoc")
         .def("Refs", static_cast<const BRepGraph::RefsView & (BRepGraph::*)() const>(&BRepGraph::Refs), R"nbdoc(Access reference entries and their UIDs.)nbdoc")
         .def("Shapes", static_cast<BRepGraph::ShapesView & (BRepGraph::*)()>(&BRepGraph::Shapes), nb::rv_policy::reference_internal, R"nbdoc(Access cached and fresh shape reconstruction.)nbdoc")
-        .def("Shapes", static_cast<const BRepGraph::ShapesView & (BRepGraph::*)() const>(&BRepGraph::Shapes), R"nbdoc(Access shape ingestion, cached shape reconstruction and fresh shape reconstruction.)nbdoc")
         .def("Editor", static_cast<BRepGraph::EditorView & (BRepGraph::*)()>(&BRepGraph::Editor), nb::rv_policy::reference_internal, R"nbdoc(Access programmatic graph construction and mutation.)nbdoc")
-        .def("Editor", static_cast<const BRepGraph::EditorView & (BRepGraph::*)() const>(&BRepGraph::Editor), R"nbdoc(Const access to editor-specific state queries.
-Exposes IsDeferredMode() and ValidateMutationBoundary() on a const graph.
-All structural mutation methods require the non-const Editor() overload.)nbdoc")
-        .def("Mesh", static_cast<const BRepGraph::MeshView & (BRepGraph::*)() const>(&BRepGraph::Mesh), R"nbdoc(Access mesh data with explicit Cache()/Persistent() sub-views and Editor() for cache
-mutations. Persistent rep creation lives on Editor().Edges(), Editor().CoEdges(),
-Editor().Faces() (since reps back the topology defs).
-@return read-only mesh view)nbdoc")
         .def("Mesh", static_cast<BRepGraph::MeshView & (BRepGraph::*)()>(&BRepGraph::Mesh), nb::rv_policy::reference_internal, R"nbdoc(Non-const access to mesh view (required to call Editor() sub-view for cache mutations).
 @return mutable mesh view)nbdoc")
         .def("LayerRegistry", static_cast<BRepGraph_LayerRegistry & (BRepGraph::*)()>(&BRepGraph::LayerRegistry), nb::rv_policy::reference_internal, R"nbdoc(Access registered graph layers.
 @return layer registry for managing attribute layers)nbdoc")
-        .def("LayerRegistry", static_cast<const BRepGraph_LayerRegistry & (BRepGraph::*)() const>(&BRepGraph::LayerRegistry), R"nbdoc(Access registered graph layers (const).
-@return layer registry for managing attribute layers)nbdoc")
         .def("CacheRegistry", static_cast<BRepGraph_CacheRegistry & (BRepGraph::*)()>(&BRepGraph::CacheRegistry), nb::rv_policy::reference_internal, R"nbdoc(Access registered graph cache services.
-@return cache registry for managing typed transient cache services)nbdoc")
-        .def("CacheRegistry", static_cast<const BRepGraph_CacheRegistry & (BRepGraph::*)() const>(&BRepGraph::CacheRegistry), R"nbdoc(Access registered graph cache services (const).
 @return cache registry for managing typed transient cache services)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph>(nb::borrow<nb::class_<BRepGraph>>(m.attr("BRepGraph")));
     nb::borrow<nb::class_<BRepGraph_Cache>>(m.attr("BRepGraph_Cache"))

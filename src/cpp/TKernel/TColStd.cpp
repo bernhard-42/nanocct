@@ -30,8 +30,8 @@ void nanoocp_define_TColStd(nb::module_ &m) {
         .def(nb::init<const int>(), nb::arg("theNbBuckets"), R"nbdoc(Constructor (legacy int-taking).)nbdoc")
         .def(nb::init<const NCollection_PackedMap<int> &>(), nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
         .def("Assign", static_cast<NCollection_PackedMap<int> & (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Assign), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Assignment operator)nbdoc")
-        .def("ReSize", static_cast<void (NCollection_PackedMap<int>::*)(const size_t)>(&NCollection_PackedMap<int>::ReSize), nb::arg("theNbBuckets"), R"nbdoc(Resize the map)nbdoc")
         .def("ReSize", static_cast<void (NCollection_PackedMap<int>::*)(const int)>(&NCollection_PackedMap<int>::ReSize), nb::arg("theNbBuckets"), R"nbdoc(Resize the map (legacy int-taking).)nbdoc")
+        .def("ReSize", static_cast<void (NCollection_PackedMap<int>::*)(const size_t)>(&NCollection_PackedMap<int>::ReSize), nb::arg("theNbBuckets"), R"nbdoc(Resize the map)nbdoc")
         .def("Clear", static_cast<void (NCollection_PackedMap<int>::*)()>(&NCollection_PackedMap<int>::Clear), R"nbdoc(Clear the map)nbdoc")
         .def("Add", static_cast<bool (NCollection_PackedMap<int>::*)(const int)>(&NCollection_PackedMap<int>::Add), nb::arg("theKey"), R"nbdoc(Add a key to the map
 @param[in] theKey the key to add

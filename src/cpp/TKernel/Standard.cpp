@@ -639,6 +639,10 @@ and the sign of @p theSign. Equivalent to std::copysign.)nbdoc");
 
 Returns the absolute value of a double @p Value.
 Equivalent to std::abs.)nbdoc");
+    m.def("Abs", static_cast<float (*)(const float)>(&Abs), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::abs and will be removed in future releases. Use std::abs instead.
+
+Returns the absolute value of a float @p Value.
+Equivalent to std::abs.)nbdoc");
     m.def("IsEqual", static_cast<bool (*)(const double, const double)>(&IsEqual), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns Standard_True if two doubles are equal within the precision
 defined by RealSmall().)nbdoc");
     m.def("RealDigits", static_cast<int (*)()>(&RealDigits), R"nbdoc(Returns the number of digits of precision in a double.)nbdoc");
@@ -685,9 +689,17 @@ Equivalent to std::log10.)nbdoc");
 
 Returns the maximum value of two doubles.
 Equivalent to std::max.)nbdoc");
+    m.def("Max", static_cast<float (*)(const float, const float)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
+
+Returns the maximum value of two floats.
+Equivalent to std::max.)nbdoc");
     m.def("Min", static_cast<double (*)(const double, const double)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
 
 Returns the minimum value of two doubles.
+Equivalent to std::min.)nbdoc");
+    m.def("Min", static_cast<float (*)(const float, const float)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
+
+Returns the minimum value of two floats.
 Equivalent to std::min.)nbdoc");
     m.def("Pow", static_cast<double (*)(const double, const double)>(&Pow), nb::arg("theValue"), nb::arg("thePower"), R"nbdoc(Deprecated in OCCT: This function duplicates std::pow and will be removed in future releases. Use std::pow instead.
 
@@ -787,10 +799,6 @@ If const_expression is false, a compiler error occurs.
 
 The macros are formed as functions and require semicolon at the end.)nbdoc");
     m.def("ShortRealSmall", static_cast<float (*)()>(&ShortRealSmall), R"nbdoc(Returns the minimum positive float value.)nbdoc");
-    m.def("Abs", static_cast<float (*)(const float)>(&Abs), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::abs and will be removed in future releases. Use std::abs instead.
-
-Returns the absolute value of a float @p Value.
-Equivalent to std::abs.)nbdoc");
     m.def("ShortRealDigits", static_cast<int (*)()>(&ShortRealDigits), R"nbdoc(Returns the number of digits of precision in a float.)nbdoc");
     m.def("ShortRealEpsilon", static_cast<float (*)()>(&ShortRealEpsilon), R"nbdoc(Returns the minimum positive float such that 1.0f + ShortRealEpsilon() != 1.0f.)nbdoc");
     m.def("ShortRealFirst", static_cast<float (*)()>(&ShortRealFirst), R"nbdoc(Returns the minimum negative value of a float.)nbdoc");
@@ -800,14 +808,6 @@ Equivalent to std::abs.)nbdoc");
     m.def("ShortRealMantissa", static_cast<int (*)()>(&ShortRealMantissa), R"nbdoc(Returns the mantissa (number of bits in the significand) of a float.)nbdoc");
     m.def("ShortRealRadix", static_cast<int (*)()>(&ShortRealRadix), R"nbdoc(Returns the radix (base) of a float.)nbdoc");
     m.def("ShortRealSize", static_cast<int (*)()>(&ShortRealSize), R"nbdoc(Returns the size in bits of a float.)nbdoc");
-    m.def("Max", static_cast<float (*)(const float, const float)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
-
-Returns the maximum value of two floats.
-Equivalent to std::max.)nbdoc");
-    m.def("Min", static_cast<float (*)(const float, const float)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
-
-Returns the minimum value of two floats.
-Equivalent to std::min.)nbdoc");
 }
 
 void nanoocp_conversions_Standard(nb::module_ &m) {

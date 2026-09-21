@@ -54,28 +54,20 @@ class BVH_Vec2i:
     def SetValues(self, theX: int, theY: int) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> int: ...
-
-    @overload
-    def x(self) -> int:
-        """Alias to 1st component as X coordinate in XY."""
-
-    @overload
-    def y(self) -> int: ...
-
-    @overload
-    def y(self) -> int:
-        """Alias to 2nd component as Y coordinate in XY."""
-
     def xy(self) -> BVH_Vec2i:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
     def yx(self) -> BVH_Vec2i:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
+    def x(self) -> int:
+        """Alias to 1st component as X coordinate in XY."""
+
     def Setx(self, theValue: int) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def y(self) -> int:
+        """Alias to 2nd component as Y coordinate in XY."""
 
     def Sety(self, theValue: int) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
@@ -207,48 +199,6 @@ class BVH_Vec3i:
     def SetValues(self, theVec2: BVH_Vec2i, theZ: int) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> int: ...
-
-    @overload
-    def x(self) -> int:
-        """Alias to 1st component as X coordinate in XYZ."""
-
-    @overload
-    def r(self) -> int: ...
-
-    @overload
-    def r(self) -> int:
-        """Alias to 1st component as RED channel in RGB."""
-
-    @overload
-    def y(self) -> int: ...
-
-    @overload
-    def y(self) -> int:
-        """Alias to 2nd component as Y coordinate in XYZ."""
-
-    @overload
-    def g(self) -> int: ...
-
-    @overload
-    def g(self) -> int:
-        """Alias to 2nd component as GREEN channel in RGB."""
-
-    @overload
-    def z(self) -> int: ...
-
-    @overload
-    def z(self) -> int:
-        """Alias to 3rd component as Z coordinate in XYZ."""
-
-    @overload
-    def b(self) -> int: ...
-
-    @overload
-    def b(self) -> int:
-        """Alias to 3rd component as BLUE channel in RGB."""
-
     def xy(self) -> BVH_Vec2i:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
@@ -285,20 +235,38 @@ class BVH_Vec3i:
     def zxy(self) -> BVH_Vec3i:
         """@return 3 components by their names in specified order (in GLSL-style)"""
 
+    def x(self) -> int:
+        """Alias to 1st component as X coordinate in XYZ."""
+
     def Setx(self, theValue: int) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> int:
+        """Alias to 1st component as RED channel in RGB."""
 
     def Setr(self, theValue: int) -> None:
         """Python addition: sets the value r() returns by reference in C++."""
 
+    def y(self) -> int:
+        """Alias to 2nd component as Y coordinate in XYZ."""
+
     def Sety(self, theValue: int) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> int:
+        """Alias to 2nd component as GREEN channel in RGB."""
 
     def Setg(self, theValue: int) -> None:
         """Python addition: sets the value g() returns by reference in C++."""
 
+    def z(self) -> int:
+        """Alias to 3rd component as Z coordinate in XYZ."""
+
     def Setz(self, theValue: int) -> None:
         """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> int:
+        """Alias to 3rd component as BLUE channel in RGB."""
 
     def Setb(self, theValue: int) -> None:
         """Python addition: sets the value b() returns by reference in C++."""
@@ -458,62 +426,6 @@ class BVH_Vec4i:
     @overload
     def SetValues(self, theVec3: BVH_Vec3i, theW: int) -> None:
         """Assign new values as 3-component vector and a 4-th value."""
-
-    @overload
-    def x(self) -> int: ...
-
-    @overload
-    def x(self) -> int:
-        """Alias to 1st component as X coordinate in XYZW."""
-
-    @overload
-    def r(self) -> int: ...
-
-    @overload
-    def r(self) -> int:
-        """Alias to 1st component as RED channel in RGBA."""
-
-    @overload
-    def y(self) -> int: ...
-
-    @overload
-    def y(self) -> int:
-        """Alias to 2nd component as Y coordinate in XYZW."""
-
-    @overload
-    def g(self) -> int: ...
-
-    @overload
-    def g(self) -> int:
-        """Alias to 2nd component as GREEN channel in RGBA."""
-
-    @overload
-    def z(self) -> int: ...
-
-    @overload
-    def z(self) -> int:
-        """Alias to 3rd component as Z coordinate in XYZW."""
-
-    @overload
-    def b(self) -> int: ...
-
-    @overload
-    def b(self) -> int:
-        """Alias to 3rd component as BLUE channel in RGBA."""
-
-    @overload
-    def w(self) -> int: ...
-
-    @overload
-    def w(self) -> int:
-        """Alias to 4th component as W coordinate in XYZW."""
-
-    @overload
-    def a(self) -> int: ...
-
-    @overload
-    def a(self) -> int:
-        """Alias to 4th component as ALPHA channel in RGBA."""
 
     def xy(self) -> BVH_Vec2i:
         """
@@ -713,26 +625,50 @@ class BVH_Vec4i:
     def brg(self) -> BVH_Vec3i:
         """@return RGB components as vector"""
 
+    def x(self) -> int:
+        """Alias to 1st component as X coordinate in XYZW."""
+
     def Setx(self, theValue: int) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> int:
+        """Alias to 1st component as RED channel in RGBA."""
 
     def Setr(self, theValue: int) -> None:
         """Python addition: sets the value r() returns by reference in C++."""
 
+    def y(self) -> int:
+        """Alias to 2nd component as Y coordinate in XYZW."""
+
     def Sety(self, theValue: int) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> int:
+        """Alias to 2nd component as GREEN channel in RGBA."""
 
     def Setg(self, theValue: int) -> None:
         """Python addition: sets the value g() returns by reference in C++."""
 
+    def z(self) -> int:
+        """Alias to 3rd component as Z coordinate in XYZW."""
+
     def Setz(self, theValue: int) -> None:
         """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> int:
+        """Alias to 3rd component as BLUE channel in RGBA."""
 
     def Setb(self, theValue: int) -> None:
         """Python addition: sets the value b() returns by reference in C++."""
 
+    def w(self) -> int:
+        """Alias to 4th component as W coordinate in XYZW."""
+
     def Setw(self, theValue: int) -> None:
         """Python addition: sets the value w() returns by reference in C++."""
+
+    def a(self) -> int:
+        """Alias to 4th component as ALPHA channel in RGBA."""
 
     def Seta(self, theValue: int) -> None:
         """Python addition: sets the value a() returns by reference in C++."""
@@ -837,28 +773,20 @@ class BVH_Vec2f:
     def SetValues(self, theX: float, theY: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XY."""
-
-    @overload
-    def y(self) -> float: ...
-
-    @overload
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XY."""
-
     def xy(self) -> BVH_Vec2f:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
     def yx(self) -> BVH_Vec2f:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XY."""
+
     def Setx(self, theValue: float) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XY."""
 
     def Sety(self, theValue: float) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
@@ -981,28 +909,20 @@ class BVH_Vec2d:
     def SetValues(self, theX: float, theY: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XY."""
-
-    @overload
-    def y(self) -> float: ...
-
-    @overload
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XY."""
-
     def xy(self) -> BVH_Vec2d:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
     def yx(self) -> BVH_Vec2d:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XY."""
+
     def Setx(self, theValue: float) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XY."""
 
     def Sety(self, theValue: float) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
@@ -1134,48 +1054,6 @@ class BVH_Vec3d:
     def SetValues(self, theVec2: BVH_Vec2d, theZ: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XYZ."""
-
-    @overload
-    def r(self) -> float: ...
-
-    @overload
-    def r(self) -> float:
-        """Alias to 1st component as RED channel in RGB."""
-
-    @overload
-    def y(self) -> float: ...
-
-    @overload
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XYZ."""
-
-    @overload
-    def g(self) -> float: ...
-
-    @overload
-    def g(self) -> float:
-        """Alias to 2nd component as GREEN channel in RGB."""
-
-    @overload
-    def z(self) -> float: ...
-
-    @overload
-    def z(self) -> float:
-        """Alias to 3rd component as Z coordinate in XYZ."""
-
-    @overload
-    def b(self) -> float: ...
-
-    @overload
-    def b(self) -> float:
-        """Alias to 3rd component as BLUE channel in RGB."""
-
     def xy(self) -> BVH_Vec2d:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
@@ -1212,20 +1090,38 @@ class BVH_Vec3d:
     def zxy(self) -> BVH_Vec3d:
         """@return 3 components by their names in specified order (in GLSL-style)"""
 
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XYZ."""
+
     def Setx(self, theValue: float) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> float:
+        """Alias to 1st component as RED channel in RGB."""
 
     def Setr(self, theValue: float) -> None:
         """Python addition: sets the value r() returns by reference in C++."""
 
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XYZ."""
+
     def Sety(self, theValue: float) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> float:
+        """Alias to 2nd component as GREEN channel in RGB."""
 
     def Setg(self, theValue: float) -> None:
         """Python addition: sets the value g() returns by reference in C++."""
 
+    def z(self) -> float:
+        """Alias to 3rd component as Z coordinate in XYZ."""
+
     def Setz(self, theValue: float) -> None:
         """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> float:
+        """Alias to 3rd component as BLUE channel in RGB."""
 
     def Setb(self, theValue: float) -> None:
         """Python addition: sets the value b() returns by reference in C++."""
@@ -1385,62 +1281,6 @@ class BVH_Vec4d:
     @overload
     def SetValues(self, theVec3: BVH_Vec3d, theW: float) -> None:
         """Assign new values as 3-component vector and a 4-th value."""
-
-    @overload
-    def x(self) -> float: ...
-
-    @overload
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XYZW."""
-
-    @overload
-    def r(self) -> float: ...
-
-    @overload
-    def r(self) -> float:
-        """Alias to 1st component as RED channel in RGBA."""
-
-    @overload
-    def y(self) -> float: ...
-
-    @overload
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XYZW."""
-
-    @overload
-    def g(self) -> float: ...
-
-    @overload
-    def g(self) -> float:
-        """Alias to 2nd component as GREEN channel in RGBA."""
-
-    @overload
-    def z(self) -> float: ...
-
-    @overload
-    def z(self) -> float:
-        """Alias to 3rd component as Z coordinate in XYZW."""
-
-    @overload
-    def b(self) -> float: ...
-
-    @overload
-    def b(self) -> float:
-        """Alias to 3rd component as BLUE channel in RGBA."""
-
-    @overload
-    def w(self) -> float: ...
-
-    @overload
-    def w(self) -> float:
-        """Alias to 4th component as W coordinate in XYZW."""
-
-    @overload
-    def a(self) -> float: ...
-
-    @overload
-    def a(self) -> float:
-        """Alias to 4th component as ALPHA channel in RGBA."""
 
     def xy(self) -> BVH_Vec2d:
         """
@@ -1640,26 +1480,50 @@ class BVH_Vec4d:
     def brg(self) -> BVH_Vec3d:
         """@return RGB components as vector"""
 
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XYZW."""
+
     def Setx(self, theValue: float) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> float:
+        """Alias to 1st component as RED channel in RGBA."""
 
     def Setr(self, theValue: float) -> None:
         """Python addition: sets the value r() returns by reference in C++."""
 
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XYZW."""
+
     def Sety(self, theValue: float) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> float:
+        """Alias to 2nd component as GREEN channel in RGBA."""
 
     def Setg(self, theValue: float) -> None:
         """Python addition: sets the value g() returns by reference in C++."""
 
+    def z(self) -> float:
+        """Alias to 3rd component as Z coordinate in XYZW."""
+
     def Setz(self, theValue: float) -> None:
         """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> float:
+        """Alias to 3rd component as BLUE channel in RGBA."""
 
     def Setb(self, theValue: float) -> None:
         """Python addition: sets the value b() returns by reference in C++."""
 
+    def w(self) -> float:
+        """Alias to 4th component as W coordinate in XYZW."""
+
     def Setw(self, theValue: float) -> None:
         """Python addition: sets the value w() returns by reference in C++."""
+
+    def a(self) -> float:
+        """Alias to 4th component as ALPHA channel in RGBA."""
 
     def Seta(self, theValue: float) -> None:
         """Python addition: sets the value a() returns by reference in C++."""
@@ -1800,10 +1664,6 @@ class BVH_Mat4f:
         @param[in] theValue  the value to set.
         """
 
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
-    @overload
     def __call__(self, theRow: int, theCol: int) -> float:
         """Return value."""
 
@@ -2076,15 +1936,6 @@ class BVH_Mat4f:
     def Adjoint(self) -> BVH_Mat4f:
         """Return adjoint (adjugate matrix, e.g. conjugate transpose)."""
 
-    @overload
-    @staticmethod
-    def Map(theData: float) -> BVH_Mat4f: ...
-
-    @overload
-    @staticmethod
-    def Map(theData: float) -> BVH_Mat4f:
-        """Maps plain C array to matrix type."""
-
     def DumpJson(self, arg1: int) -> object:
         """Dumps the content of me into the stream"""
 
@@ -2152,10 +2003,6 @@ class BVH_Mat4d:
         @param[in] theValue  the value to set.
         """
 
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
-    @overload
     def __call__(self, theRow: int, theCol: int) -> float:
         """Return value."""
 
@@ -2427,15 +2274,6 @@ class BVH_Mat4d:
 
     def Adjoint(self) -> BVH_Mat4d:
         """Return adjoint (adjugate matrix, e.g. conjugate transpose)."""
-
-    @overload
-    @staticmethod
-    def Map(theData: float) -> BVH_Mat4d: ...
-
-    @overload
-    @staticmethod
-    def Map(theData: float) -> BVH_Mat4d:
-        """Maps plain C array to matrix type."""
 
     def DumpJson(self, arg1: int) -> object:
         """Dumps the content of me into the stream"""

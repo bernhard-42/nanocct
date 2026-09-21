@@ -458,9 +458,17 @@ class Emitter:
         module attributes (with the out-param tuple rule of methods)."""
         free_ops: dict[str, list[str]] = {}
         module_fns: list[str] = []
-        for fn, suffix in resolve_overload_collisions([f for f in self.ir.functions if not f.is_operator]):
+        plain = [f for f in self.ir.functions if not f.is_operator]
+        for fn in skip_const_twins(plain):                            # R-CONST-TWIN: TopoDS::Vertex(const TopoDS_Shape&) vs (TopoDS_Shape&)
+            q = fn.qualified if fn.qualified != "" else fn.name
+            self.report.append(f"{q}({self._sig(fn.params)}): const twin of a less const overload -> not bound")
+        plain, demoted = order_by_width(plain)                       # R-WIDTH: Abs(double) before Abs(float)
+        for narrow, wide in demoted:
+            q = wide.qualified if wide.qualified != "" else wide.name
+            self.report.append(f"{q}({self._sig(narrow.params)}): same Python signature as {q}({self._sig(wide.params)}) -> registered after it (width preference)")
+        for fn, suffix in resolve_overload_collisions(plain):
             fn.suffix = suffix           # R-COLLISION applies to namespace functions too
-        for fn in self.ir.functions:
+        for fn in plain + [f for f in self.ir.functions if f.is_operator]:
             if fn.skip_reason is not None:
                 continue
             if fn.is_operator:
@@ -536,8 +544,10 @@ class Emitter:
         if not c.constructible:
             self.report.append(f"{c.name}: operator new is not public -> no constructors")
         if not c.is_abstract and c.constructible:
-            declared = [k for k in c.ctors if k.skip_reason is None]
-            # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count
+            declared, demoted = order_by_width([k for k in c.ctors if k.skip_reason is None])   # R-WIDTH
+            for narrow, wide in demoted:
+                self.report.append(f"{c.name}::{c.name}({self._sig(narrow.params)}): same Python signature as {c.name}({self._sig(wide.params)}) -> registered after it (width preference)")
+            # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count (stable: width order kept)
             declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
             implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
             arities = {id(k): n for k, n in resolve_ctor_arities(declared)}
@@ -555,7 +565,12 @@ class Emitter:
                 body.append(self._ctor(c, k.params[:n], k.doc))
         bound = [m for m in c.methods if m.skip_reason is None]
         mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
-        resolved = resolve_overload_collisions(c.methods)
+        for m in skip_const_twins(c.methods):       # R-CONST-TWIN
+            self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}){' const' if m.is_const else ''}: const twin of a less const overload -> not bound")
+        methods, demoted = order_by_width(c.methods)   # R-WIDTH: wider scalar overloads registered first
+        for narrow, wide in demoted:
+            self.report.append(f"{c.name}::{narrow.name}({self._sig(narrow.params)}): same Python signature as {wide.name}({self._sig(wide.params)}) -> registered after it (width preference)")
+        resolved = resolve_overload_collisions(methods)
         for m, suffix in resolved:
             m.suffix = suffix
             if suffix != "" and _py_name(m) is not None:      # operators without a Python spelling are reported as such
@@ -707,6 +722,81 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
         colliding = len(members) > 1 and any(p.is_out or p.stream == StreamKind.OUT for mm in members for p in mm.params)
         result.append((m, out_suffix(m.params) if colliding else ""))
     return result
+
+
+# Design.md 6 R-CONST-TWIN
+def skip_const_twins(overloads: list) -> list:
+    """Overloads that differ only in constness -- of the method (const T& Value(i) const / T& Value(i)) or of a
+    parameter (TopoDS::Vertex(const TopoDS_Shape&) / (TopoDS_Shape&)) -- look identical from Python, whose objects are
+    never const: C++ would pick the non-const one on such an object, so only the least-const twin is bound. Takes Methods
+    or Functions; returns the skipped twins (their skip_reason is set)."""
+    def key(m) -> tuple:
+        return (getattr(m, "qualified", "") or m.name, getattr(m, "is_static", False), tuple(_strip_ref(p.type) for p in m.params))
+
+    def constness(m) -> int:
+        return (1 if getattr(m, "is_const", False) else 0) + sum(1 for p in m.params if p.type != _strip_ref(p.type) and p.type.startswith("const "))
+
+    live = [m for m in overloads if m.skip_reason is None]
+    groups: dict[tuple, list] = {}
+    for m in live:
+        groups.setdefault(key(m), []).append(m)
+    skipped: list = []
+    for members in groups.values():
+        if len(members) < 2 or len({constness(m) for m in members}) < 2:
+            continue
+        least = min(constness(m) for m in members)
+        for m in members:
+            if constness(m) > least:
+                m.skip_reason = "const twin of a less const overload"
+                skipped.append(m)
+    return skipped
+
+
+# Design.md 6 R-WIDTH
+_WIDTH_RANK = {"double": ("float", 0), "Standard_Real": ("float", 0), "float": ("float", 1), "Standard_ShortReal": ("float", 1),
+               "int": ("int", 0), "Standard_Integer": ("int", 0)}
+_WIDE_INTS = {"size_t", "Standard_Size", "unsigned", "unsigned int", "long", "unsigned long", "long long", "unsigned long long",
+              "short", "unsigned short", "int8_t", "uint8_t", "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t"}
+
+
+def _width(t: str) -> tuple[str, int]:
+    """(Python type, rank) of a scalar parameter type: double/int rank 0, float and the other integer widths rank 1;
+    anything else is its own spelling with rank 0."""
+    base = _strip_ref(t)
+    if base in _WIDTH_RANK:
+        return _WIDTH_RANK[base]
+    if base in _WIDE_INTS:
+        return ("int", 1)
+    return (base, 0)
+
+
+def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:
+    """Overloads that differ only in the width of scalar parameters (Abs(double)/Abs(float), Value(int)/Value(size_t))
+    are the same call from Python; nanobind takes the first registered, so the wider twin (double over float, int over
+    size_t/unsigned/long) is emitted first. Returns the overloads in emission order and every (narrow, wide) pair."""
+    def key(m) -> tuple:     # constructors have no name
+        return (getattr(m, "qualified", "") or getattr(m, "name", ""), getattr(m, "is_static", False), tuple(_width(p.type)[0] for p in m.params))
+
+    def rank(m) -> int:
+        return sum(_width(p.type)[1] for p in m.params)
+
+    live = [m for m in overloads if m.skip_reason is None]
+    groups: dict[tuple, list] = {}
+    for m in live:
+        groups.setdefault(key(m), []).append(m)
+    ordered: list = []
+    demoted: list[tuple[object, object]] = []
+    seen: set[int] = set()
+    for m in overloads:
+        if m.skip_reason is not None or id(m) in seen:
+            continue
+        members = groups[key(m)]
+        by_rank = sorted(members, key=rank)      # stable: header order within equal rank
+        demoted += [(x, by_rank[0]) for x in members if rank(x) > rank(by_rank[0])]   # reported whether or not the order changed
+        for x in by_rank:
+            seen.add(id(x))
+            ordered.append(x)
+    return ordered, demoted
 
 
 # Design.md 6 R-CTOR-AMBIGUOUS

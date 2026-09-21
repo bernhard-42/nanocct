@@ -5249,69 +5249,27 @@ class BRepGraph:
     def Refs(self) -> BRepGraph.RefsView:
         """Access reference entries and their UIDs."""
 
-    @overload
     def Shapes(self) -> BRepGraph.ShapesView:
         """Access cached and fresh shape reconstruction."""
 
-    @overload
-    def Shapes(self) -> BRepGraph.ShapesView:
-        """
-        Access shape ingestion, cached shape reconstruction and fresh shape reconstruction.
-        """
-
-    @overload
     def Editor(self) -> BRepGraph.EditorView:
         """Access programmatic graph construction and mutation."""
 
-    @overload
-    def Editor(self) -> BRepGraph.EditorView:
-        """
-        Const access to editor-specific state queries.
-        Exposes IsDeferredMode() and ValidateMutationBoundary() on a const graph.
-        All structural mutation methods require the non-const Editor() overload.
-        """
-
-    @overload
-    def Mesh(self) -> BRepGraph.MeshView:
-        """
-        Access mesh data with explicit Cache()/Persistent() sub-views and Editor() for cache
-        mutations. Persistent rep creation lives on Editor().Edges(), Editor().CoEdges(),
-        Editor().Faces() (since reps back the topology defs).
-        @return read-only mesh view
-        """
-
-    @overload
     def Mesh(self) -> BRepGraph.MeshView:
         """
         Non-const access to mesh view (required to call Editor() sub-view for cache mutations).
         @return mutable mesh view
         """
 
-    @overload
     def LayerRegistry(self) -> BRepGraph_LayerRegistry:
         """
         Access registered graph layers.
         @return layer registry for managing attribute layers
         """
 
-    @overload
-    def LayerRegistry(self) -> BRepGraph_LayerRegistry:
-        """
-        Access registered graph layers (const).
-        @return layer registry for managing attribute layers
-        """
-
-    @overload
     def CacheRegistry(self) -> BRepGraph_CacheRegistry:
         """
         Access registered graph cache services.
-        @return cache registry for managing typed transient cache services
-        """
-
-    @overload
-    def CacheRegistry(self) -> BRepGraph_CacheRegistry:
-        """
-        Access registered graph cache services (const).
         @return cache registry for managing typed transient cache services
         """
 

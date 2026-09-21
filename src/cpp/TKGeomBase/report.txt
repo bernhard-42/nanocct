@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKGeomBase: 166 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomBase: 167 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # namespace: 4
 # overload-collision: 5
@@ -6,7 +6,7 @@
 # raw-pointer: 77
 # static-rename: 8
 # stream: 3
-# template: 57
+# template: 58
 # undefined: 8
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ChangeIntervals: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_PointsInspector: anonymous namespace (not bound)
@@ -119,6 +119,7 @@ template	Extrema	Extrema_GLocateExtPC: template (not bound)
 template	Extrema	Extrema_GenLocateExtCC: template (not bound)
 template	Extrema	Extrema_GenLocateExtPC: template (not bound)
 template	Extrema	math_VectorBase: template (not bound)
+template	Extrema	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)
 template	ExtremaPC	ExtremaPC::AddEndpointExtrema: template in namespace (not bound)
 template	GCPnts	GCPnts_TCurveTypes: template (not bound)
 template	GeomLProp	GeomLProp_CLPropsBase: template (not bound)

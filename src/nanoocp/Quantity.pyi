@@ -2878,48 +2878,6 @@ class NCollection_Vec3__float:
     def SetValues(self, theVec2: nanoocp.BVH.BVH_Vec2f, theZ: float) -> None:
         """Assign new values to the vector."""
 
-    @overload
-    def x(self) -> float: ...
-
-    @overload
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XYZ."""
-
-    @overload
-    def r(self) -> float: ...
-
-    @overload
-    def r(self) -> float:
-        """Alias to 1st component as RED channel in RGB."""
-
-    @overload
-    def y(self) -> float: ...
-
-    @overload
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XYZ."""
-
-    @overload
-    def g(self) -> float: ...
-
-    @overload
-    def g(self) -> float:
-        """Alias to 2nd component as GREEN channel in RGB."""
-
-    @overload
-    def z(self) -> float: ...
-
-    @overload
-    def z(self) -> float:
-        """Alias to 3rd component as Z coordinate in XYZ."""
-
-    @overload
-    def b(self) -> float: ...
-
-    @overload
-    def b(self) -> float:
-        """Alias to 3rd component as BLUE channel in RGB."""
-
     def xy(self) -> nanoocp.BVH.BVH_Vec2f:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
@@ -2956,20 +2914,38 @@ class NCollection_Vec3__float:
     def zxy(self) -> NCollection_Vec3__float:
         """@return 3 components by their names in specified order (in GLSL-style)"""
 
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XYZ."""
+
     def Setx(self, theValue: float) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> float:
+        """Alias to 1st component as RED channel in RGB."""
 
     def Setr(self, theValue: float) -> None:
         """Python addition: sets the value r() returns by reference in C++."""
 
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XYZ."""
+
     def Sety(self, theValue: float) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> float:
+        """Alias to 2nd component as GREEN channel in RGB."""
 
     def Setg(self, theValue: float) -> None:
         """Python addition: sets the value g() returns by reference in C++."""
 
+    def z(self) -> float:
+        """Alias to 3rd component as Z coordinate in XYZ."""
+
     def Setz(self, theValue: float) -> None:
         """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> float:
+        """Alias to 3rd component as BLUE channel in RGB."""
 
     def Setb(self, theValue: float) -> None:
         """Python addition: sets the value b() returns by reference in C++."""
@@ -3132,62 +3108,6 @@ class NCollection_Vec4__float:
     @overload
     def SetValues(self, theVec3: NCollection_Vec3__float, theW: float) -> None:
         """Assign new values as 3-component vector and a 4-th value."""
-
-    @overload
-    def x(self) -> float: ...
-
-    @overload
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XYZW."""
-
-    @overload
-    def r(self) -> float: ...
-
-    @overload
-    def r(self) -> float:
-        """Alias to 1st component as RED channel in RGBA."""
-
-    @overload
-    def y(self) -> float: ...
-
-    @overload
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XYZW."""
-
-    @overload
-    def g(self) -> float: ...
-
-    @overload
-    def g(self) -> float:
-        """Alias to 2nd component as GREEN channel in RGBA."""
-
-    @overload
-    def z(self) -> float: ...
-
-    @overload
-    def z(self) -> float:
-        """Alias to 3rd component as Z coordinate in XYZW."""
-
-    @overload
-    def b(self) -> float: ...
-
-    @overload
-    def b(self) -> float:
-        """Alias to 3rd component as BLUE channel in RGBA."""
-
-    @overload
-    def w(self) -> float: ...
-
-    @overload
-    def w(self) -> float:
-        """Alias to 4th component as W coordinate in XYZW."""
-
-    @overload
-    def a(self) -> float: ...
-
-    @overload
-    def a(self) -> float:
-        """Alias to 4th component as ALPHA channel in RGBA."""
 
     def xy(self) -> nanoocp.BVH.BVH_Vec2f:
         """
@@ -3387,26 +3307,50 @@ class NCollection_Vec4__float:
     def brg(self) -> NCollection_Vec3__float:
         """@return RGB components as vector"""
 
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XYZW."""
+
     def Setx(self, theValue: float) -> None:
         """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> float:
+        """Alias to 1st component as RED channel in RGBA."""
 
     def Setr(self, theValue: float) -> None:
         """Python addition: sets the value r() returns by reference in C++."""
 
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XYZW."""
+
     def Sety(self, theValue: float) -> None:
         """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> float:
+        """Alias to 2nd component as GREEN channel in RGBA."""
 
     def Setg(self, theValue: float) -> None:
         """Python addition: sets the value g() returns by reference in C++."""
 
+    def z(self) -> float:
+        """Alias to 3rd component as Z coordinate in XYZW."""
+
     def Setz(self, theValue: float) -> None:
         """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> float:
+        """Alias to 3rd component as BLUE channel in RGBA."""
 
     def Setb(self, theValue: float) -> None:
         """Python addition: sets the value b() returns by reference in C++."""
 
+    def w(self) -> float:
+        """Alias to 4th component as W coordinate in XYZW."""
+
     def Setw(self, theValue: float) -> None:
         """Python addition: sets the value w() returns by reference in C++."""
+
+    def a(self) -> float:
+        """Alias to 4th component as ALPHA channel in RGBA."""
 
     def Seta(self, theValue: float) -> None:
         """Python addition: sets the value a() returns by reference in C++."""

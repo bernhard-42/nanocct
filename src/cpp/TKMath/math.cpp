@@ -473,10 +473,8 @@ void nanoocp_define_math(nb::module_ &m) {
         .def("UpperCol", static_cast<int (math_DoubleTab::*)() const noexcept>(&math_DoubleTab::UpperCol), R"nbdoc(Get upper column index)nbdoc")
         .def("NbRows", static_cast<int (math_DoubleTab::*)() const noexcept>(&math_DoubleTab::NbRows), R"nbdoc(Get number of rows)nbdoc")
         .def("NbColumns", static_cast<int (math_DoubleTab::*)() const noexcept>(&math_DoubleTab::NbColumns), R"nbdoc(Get number of columns)nbdoc")
-        .def("Value", static_cast<const double & (math_DoubleTab::*)(const int, const int) const>(&math_DoubleTab::Value), nb::arg("theRowIndex"), nb::arg("theColIndex"), R"nbdoc(Access element at (theRowIndex, theColIndex))nbdoc")
         .def("Value", [](math_DoubleTab &self, const int theRowIndex, const int theColIndex) -> double { return self.Value(theRowIndex, theColIndex); }, nb::arg("theRowIndex"), nb::arg("theColIndex"), R"nbdoc(Change element at (theRowIndex, theColIndex))nbdoc")
         .def("SetValue", [](math_DoubleTab &self, const int theRowIndex, const int theColIndex, double theValue) { self.Value(theRowIndex, theColIndex) = theValue; }, nb::arg("theRowIndex"), nb::arg("theColIndex"), nb::arg("theValue"), "Python addition: sets the value Value(theRowIndex, theColIndex) returns by reference in C++.")
-        .def("__call__", static_cast<const double & (math_DoubleTab::*)(const int, const int) const>(&math_DoubleTab::operator()), nb::arg("theRowIndex"), nb::arg("theColIndex"), R"nbdoc(Operator() - alias to Value)nbdoc", nb::is_operator())
         .def("__call__", [](math_DoubleTab &self, const int theRowIndex, const int theColIndex) -> double { return self.operator()(theRowIndex, theColIndex); }, nb::arg("theRowIndex"), nb::arg("theColIndex"), R"nbdoc(Operator() - alias to ChangeValue)nbdoc", nb::is_operator())
         .def("__getitem__", [](math_DoubleTab &self, std::tuple<int, int> theIndex) -> double { return self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)); }, "Python addition: alias to operator().")
         .def("__setitem__", [](math_DoubleTab &self, std::tuple<int, int> theIndex, double theValue) { self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)) = theValue; }, "Python addition: sets the value operator()(theRowIndex, theColIndex) returns by reference in C++.");
@@ -638,16 +636,11 @@ An exception is raised if the dimensions are different.)nbdoc")
         .def("Subtract", static_cast<void (math_Matrix::*)(const math_Matrix &, const math_Matrix &)>(&math_Matrix::Subtract), nb::arg("Left"), nb::arg("Right"), R"nbdoc(Sets a matrix to the Subtraction of the matrix <Right>
 from the matrix <Left>.
 An exception is raised if the dimensions are different.)nbdoc")
-        .def("Value", static_cast<const double & (math_Matrix::*)(const int, const int) const>(&math_Matrix::Value), nb::arg("Row"), nb::arg("Col"), R"nbdoc(Accesses the value of index <Row>
-and <Col> of a matrix.
-An exception is raised if <Row> and <Col> are not
-in the correct range.)nbdoc")
         .def("Value", [](math_Matrix &self, const int Row, const int Col) -> double { return self.Value(Row, Col); }, nb::arg("Row"), nb::arg("Col"), R"nbdoc(Accesses (in read or write mode) the value of index <Row>
 and <Col> of a matrix.
 An exception is raised if <Row> and <Col> are not
 in the correct range.)nbdoc")
         .def("SetValue", [](math_Matrix &self, const int Row, const int Col, double theValue) { self.Value(Row, Col) = theValue; }, nb::arg("Row"), nb::arg("Col"), nb::arg("theValue"), "Python addition: sets the value Value(Row, Col) returns by reference in C++.")
-        .def("__call__", static_cast<const double & (math_Matrix::*)(const int, const int) const>(&math_Matrix::operator()), nb::arg("Row"), nb::arg("Col"), nb::is_operator())
         .def("__call__", [](math_Matrix &self, const int Row, const int Col) -> double { return self.operator()(Row, Col); }, nb::arg("Row"), nb::arg("Col"), nb::is_operator())
         .def("__getitem__", [](math_Matrix &self, std::tuple<int, int> theIndex) -> double { return self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)); }, "Python addition: alias to operator().")
         .def("__setitem__", [](math_Matrix &self, std::tuple<int, int> theIndex, double theValue) { self.operator()(std::get<0>(theIndex), std::get<1>(theIndex)) = theValue; }, "Python addition: sets the value operator()(Row, Col) returns by reference in C++.")
@@ -675,8 +668,6 @@ Is used to redefine the operator <<.)nbdoc");
 "theLower" and "theUpper" are the indexes of the lower and upper bounds of the constructed
 vector.)nbdoc")
         .def(nb::init<const int, const int, const double>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
-whose values are all initialized with the value "theInitialValue")nbdoc")
-        .def(nb::init<const double *, const int, const int>(), nb::arg("theTab"), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
 whose values are all initialized with the value "theInitialValue")nbdoc")
         .def("Init", static_cast<void (math_VectorBase<double>::*)(const double)>(&math_VectorBase<double>::Init), nb::arg("theInitialValue"), R"nbdoc(Initialize all the elements of a vector with "theInitialValue".)nbdoc")
         .def("Length", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Length), R"nbdoc(Returns the length of a vector)nbdoc")
@@ -746,10 +737,8 @@ Warning
 In order to avoid time-consuming copying of vectors, it
 is preferable to use operator -= or the function
 Subtract whenever possible.)nbdoc")
-        .def("Value", static_cast<const double & (math_VectorBase<double>::*)(const int) const>(&math_VectorBase<double>::Value), nb::arg("theNum"), R"nbdoc(accesses the value of index "theNum" of a vector.)nbdoc")
         .def("Value", [](math_VectorBase<double> &self, const int theNum) -> double { return self.Value(theNum); }, nb::arg("theNum"), R"nbdoc(accesses (in read or write mode) the value of index "theNum" of a vector.)nbdoc")
         .def("SetValue", [](math_VectorBase<double> &self, const int theNum, double theValue) { self.Value(theNum) = theValue; }, nb::arg("theNum"), nb::arg("theValue"), "Python addition: sets the value Value(theNum) returns by reference in C++.")
-        .def("__call__", static_cast<const double & (math_VectorBase<double>::*)(const int) const>(&math_VectorBase<double>::operator()), nb::arg("theNum"), nb::is_operator())
         .def("__call__", [](math_VectorBase<double> &self, const int theNum) -> double { return self.operator()(theNum); }, nb::arg("theNum"), nb::is_operator())
         .def("__getitem__", [](math_VectorBase<double> &self, const int theNum) -> double { return self.operator()(theNum); }, "Python addition: alias to operator().")
         .def("__setitem__", [](math_VectorBase<double> &self, const int theNum, double theValue) { self.operator()(theNum) = theValue; }, "Python addition: sets the value operator()(theNum) returns by reference in C++.")
@@ -1276,8 +1265,6 @@ an Integer that allows retrieval of the state.)nbdoc");
 vector.)nbdoc")
         .def(nb::init<const int, const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
 whose values are all initialized with the value "theInitialValue")nbdoc")
-        .def(nb::init<const int *, const int, const int>(), nb::arg("theTab"), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
-whose values are all initialized with the value "theInitialValue")nbdoc")
         .def("Init", static_cast<void (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Init), nb::arg("theInitialValue"), R"nbdoc(Initialize all the elements of a vector with "theInitialValue".)nbdoc")
         .def("Length", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Length), R"nbdoc(Returns the length of a vector)nbdoc")
         .def("Lower", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Lower), R"nbdoc(Returns the lower index of the vector)nbdoc")
@@ -1346,10 +1333,8 @@ Warning
 In order to avoid time-consuming copying of vectors, it
 is preferable to use operator -= or the function
 Subtract whenever possible.)nbdoc")
-        .def("Value", static_cast<const int & (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::Value), nb::arg("theNum"), R"nbdoc(accesses the value of index "theNum" of a vector.)nbdoc")
         .def("Value", [](math_VectorBase<int> &self, const int theNum) -> int { return self.Value(theNum); }, nb::arg("theNum"), R"nbdoc(accesses (in read or write mode) the value of index "theNum" of a vector.)nbdoc")
         .def("SetValue", [](math_VectorBase<int> &self, const int theNum, int theValue) { self.Value(theNum) = theValue; }, nb::arg("theNum"), nb::arg("theValue"), "Python addition: sets the value Value(theNum) returns by reference in C++.")
-        .def("__call__", static_cast<const int & (math_VectorBase<int>::*)(const int) const>(&math_VectorBase<int>::operator()), nb::arg("theNum"), nb::is_operator())
         .def("__call__", [](math_VectorBase<int> &self, const int theNum) -> int { return self.operator()(theNum); }, nb::arg("theNum"), nb::is_operator())
         .def("__getitem__", [](math_VectorBase<int> &self, const int theNum) -> int { return self.operator()(theNum); }, "Python addition: alias to operator().")
         .def("__setitem__", [](math_VectorBase<int> &self, const int theNum, int theValue) { self.operator()(theNum) = theValue; }, "Python addition: sets the value operator()(theNum) returns by reference in C++.")

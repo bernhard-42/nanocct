@@ -300,11 +300,6 @@ the number of stored items)nbdoc")
 index
 @return
 the const item)nbdoc")
-        .def("__getitem__", static_cast<const IntPolyh_Edge & (IntPolyh_Array<IntPolyh_Edge>::*)(const int) const>(&IntPolyh_Array<IntPolyh_Edge>::operator[]), nb::arg("aIndex"), R"nbdoc(query the const value
-@param aIndex
-index
-@return
-the const item)nbdoc", nb::is_operator())
         .def("ChangeValue", static_cast<IntPolyh_Edge & (IntPolyh_Array<IntPolyh_Edge>::*)(const int)>(&IntPolyh_Array<IntPolyh_Edge>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("aIndex"), R"nbdoc(query the value
 @param aIndex
 index
@@ -382,11 +377,6 @@ the number of stored items)nbdoc")
 index
 @return
 the const item)nbdoc")
-        .def("__getitem__", static_cast<const IntPolyh_Point & (IntPolyh_Array<IntPolyh_Point>::*)(const int) const>(&IntPolyh_Array<IntPolyh_Point>::operator[]), nb::arg("aIndex"), R"nbdoc(query the const value
-@param aIndex
-index
-@return
-the const item)nbdoc", nb::is_operator())
         .def("ChangeValue", static_cast<IntPolyh_Point & (IntPolyh_Array<IntPolyh_Point>::*)(const int)>(&IntPolyh_Array<IntPolyh_Point>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("aIndex"), R"nbdoc(query the value
 @param aIndex
 index
@@ -435,11 +425,6 @@ the number of stored items)nbdoc")
 index
 @return
 the const item)nbdoc")
-        .def("__getitem__", static_cast<const IntPolyh_PointNormal & (IntPolyh_Array<IntPolyh_PointNormal>::*)(const int) const>(&IntPolyh_Array<IntPolyh_PointNormal>::operator[]), nb::arg("aIndex"), R"nbdoc(query the const value
-@param aIndex
-index
-@return
-the const item)nbdoc", nb::is_operator())
         .def("ChangeValue", static_cast<IntPolyh_PointNormal & (IntPolyh_Array<IntPolyh_PointNormal>::*)(const int)>(&IntPolyh_Array<IntPolyh_PointNormal>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("aIndex"), R"nbdoc(query the value
 @param aIndex
 index
@@ -490,7 +475,6 @@ the item)nbdoc", nb::is_operator());
         .def(nb::init<const IntPolyh_SectionLine &>(), nb::arg("theOther"))
         .def("Init", static_cast<void (IntPolyh_SectionLine::*)(const int)>(&IntPolyh_SectionLine::Init), nb::arg("nn"))
         .def("Value", static_cast<const IntPolyh_StartPoint & (IntPolyh_SectionLine::*)(const int) const>(&IntPolyh_SectionLine::Value), nb::arg("nn"))
-        .def("__getitem__", static_cast<const IntPolyh_StartPoint & (IntPolyh_SectionLine::*)(const int) const>(&IntPolyh_SectionLine::operator[]), nb::arg("nn"), nb::is_operator())
         .def("ChangeValue", static_cast<IntPolyh_StartPoint & (IntPolyh_SectionLine::*)(const int)>(&IntPolyh_SectionLine::ChangeValue), nb::rv_policy::reference_internal, nb::arg("nn"))
         .def("__getitem__", static_cast<IntPolyh_StartPoint & (IntPolyh_SectionLine::*)(const int)>(&IntPolyh_SectionLine::operator[]), nb::rv_policy::reference_internal, nb::arg("nn"), nb::is_operator())
         .def("Copy", static_cast<IntPolyh_SectionLine & (IntPolyh_SectionLine::*)(const IntPolyh_SectionLine &)>(&IntPolyh_SectionLine::Copy), nb::rv_policy::reference_internal, nb::arg("Other"))
@@ -533,11 +517,6 @@ the number of stored items)nbdoc")
 index
 @return
 the const item)nbdoc")
-        .def("__getitem__", static_cast<const IntPolyh_SectionLine & (IntPolyh_Array<IntPolyh_SectionLine>::*)(const int) const>(&IntPolyh_Array<IntPolyh_SectionLine>::operator[]), nb::arg("aIndex"), R"nbdoc(query the const value
-@param aIndex
-index
-@return
-the const item)nbdoc", nb::is_operator())
         .def("ChangeValue", static_cast<IntPolyh_SectionLine & (IntPolyh_Array<IntPolyh_SectionLine>::*)(const int)>(&IntPolyh_Array<IntPolyh_SectionLine>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("aIndex"), R"nbdoc(query the value
 @param aIndex
 index
@@ -582,11 +561,6 @@ the number of stored items)nbdoc")
 index
 @return
 the const item)nbdoc")
-        .def("__getitem__", static_cast<const IntPolyh_StartPoint & (IntPolyh_Array<IntPolyh_StartPoint>::*)(const int) const>(&IntPolyh_Array<IntPolyh_StartPoint>::operator[]), nb::arg("aIndex"), R"nbdoc(query the const value
-@param aIndex
-index
-@return
-the const item)nbdoc", nb::is_operator())
         .def("ChangeValue", static_cast<IntPolyh_StartPoint & (IntPolyh_Array<IntPolyh_StartPoint>::*)(const int)>(&IntPolyh_Array<IntPolyh_StartPoint>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("aIndex"), R"nbdoc(query the value
 @param aIndex
 index
@@ -631,11 +605,6 @@ the number of stored items)nbdoc")
 index
 @return
 the const item)nbdoc")
-        .def("__getitem__", static_cast<const IntPolyh_Triangle & (IntPolyh_Array<IntPolyh_Triangle>::*)(const int) const>(&IntPolyh_Array<IntPolyh_Triangle>::operator[]), nb::arg("aIndex"), R"nbdoc(query the const value
-@param aIndex
-index
-@return
-the const item)nbdoc", nb::is_operator())
         .def("ChangeValue", static_cast<IntPolyh_Triangle & (IntPolyh_Array<IntPolyh_Triangle>::*)(const int)>(&IntPolyh_Array<IntPolyh_Triangle>::ChangeValue), nb::rv_policy::reference_internal, nb::arg("aIndex"), R"nbdoc(query the value
 @param aIndex
 index

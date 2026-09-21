@@ -34,11 +34,11 @@ class TColStd_PackedMapOfInteger:
 
     @overload
     def ReSize(self, theNbBuckets: int) -> None:
-        """Resize the map"""
+        """Resize the map (legacy int-taking)."""
 
     @overload
     def ReSize(self, theNbBuckets: int) -> None:
-        """Resize the map (legacy int-taking)."""
+        """Resize the map"""
 
     def Clear(self) -> None:
         """Clear the map"""

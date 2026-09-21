@@ -421,17 +421,13 @@ class gp_Mat:
         Raises OutOfRange if theRow < 1 or theRow > 3 or theCol < 1 or theCol > 3
         """
 
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
     def ChangeValue(self, theRow: int, theCol: int) -> float:
         """
         Returns the coefficient of range (theRow, theCol)
         Raises OutOfRange if theRow < 1 or theRow > 3 or theCol < 1 or theCol > 3
         """
+
+    def __call__(self, theRow: int, theCol: int) -> float: ...
 
     def __getitem__(self, arg: tuple[int, int], /) -> float:
         """Python addition: alias to operator()."""
@@ -1549,18 +1545,14 @@ class gp_Mat2d:
         if theRow < 1 or theRow > 2 or theCol < 1 or theCol > 2
         """
 
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
-    @overload
-    def __call__(self, theRow: int, theCol: int) -> float: ...
-
     def ChangeValue(self, theRow: int, theCol: int) -> float:
         """
         Returns the coefficient of range (theRow, theCol)
         Raises OutOfRange
         if theRow < 1 or theRow > 2 or theCol < 1 or theCol > 2
         """
+
+    def __call__(self, theRow: int, theCol: int) -> float: ...
 
     def __getitem__(self, arg: tuple[int, int], /) -> float:
         """Python addition: alias to operator()."""

@@ -553,6 +553,14 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         reason = _unsupported(p.type, allow_out=True) if stream == StreamKind.NONE else None
         if reason is None and "type-parameter-" in _type_spelling(p.type):
             reason = "dependent type (unresolved template parameter)"
+        if reason is None and _SUBST.active and p.type.get_canonical().kind == TK.POINTER:
+            # 6c: Element_t* becomes float* only after substitution; the libclang type is a pointer to a template parameter,
+            # so the raw-pointer check above did not see it (NCollection_Mat4<T>::Map(T*), R-UNSUPPORTED)
+            spelled = _type_spelling(p.type)
+            base = spelled.rstrip("* ").removeprefix("const ").strip()
+            is_str = spelled.startswith("const ") and base in ("char", "char16_t", "Standard_Character", "Standard_ExtCharacter", "Standard_Utf8Char")
+            if base in _PRIMITIVE_SPELLINGS and not is_str:
+                reason = "raw pointer to primitive (template argument)"
         if reason is not None:
             return params, f"param '{p.spelling}': {reason}"
         name = p.spelling

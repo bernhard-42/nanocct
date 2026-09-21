@@ -121,7 +121,6 @@ returned by Edge.)nbdoc");
         .def("IsBound", static_cast<bool (Geom2dHatch_Elements::*)(const int) const>(&Geom2dHatch_Elements::IsBound), nb::arg("K"))
         .def("UnBind", static_cast<bool (Geom2dHatch_Elements::*)(const int)>(&Geom2dHatch_Elements::UnBind), nb::arg("K"))
         .def("Find", static_cast<const Geom2dHatch_Element & (Geom2dHatch_Elements::*)(const int) const>(&Geom2dHatch_Elements::Find), nb::arg("K"))
-        .def("__call__", static_cast<const Geom2dHatch_Element & (Geom2dHatch_Elements::*)(const int) const>(&Geom2dHatch_Elements::operator()), nb::arg("K"), nb::is_operator())
         .def("ChangeFind", static_cast<Geom2dHatch_Element & (Geom2dHatch_Elements::*)(const int)>(&Geom2dHatch_Elements::ChangeFind), nb::rv_policy::reference_internal, nb::arg("K"))
         .def("__call__", static_cast<Geom2dHatch_Element & (Geom2dHatch_Elements::*)(const int)>(&Geom2dHatch_Elements::operator()), nb::rv_policy::reference_internal, nb::arg("K"), nb::is_operator())
         .def("CheckPoint", static_cast<bool (Geom2dHatch_Elements::*)(gp_Pnt2d &)>(&Geom2dHatch_Elements::CheckPoint), nb::arg("P"))

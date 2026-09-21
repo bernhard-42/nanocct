@@ -1,18 +1,18 @@
-# nanoOCP generator report for TKMath: 349 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 412 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 7
 # conversion: 18
 # field: 1
 # iterator: 1
 # not-constructible: 1
-# overload-collision: 13
+# overload-collision: 70
 # override: 32
 # raw-pointer: 46
 # rvalue: 3
 # static-rename: 4
 # std: 2
 # stream: 3
-# template: 210
+# template: 216
 # unbound-type: 3
 # undefined: 5
 array	Bnd	Bnd_OBB::GetVertex(): param 'theP': array
@@ -47,6 +47,42 @@ overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, 
 overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Eval__int__float__float__float__float
 overload-collision	BSplCLib	BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &): same Python signature as another overload after out-param removal -> bound as Interpolate__float__float__int
 overload-collision	BSplCLib	BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &): same Python signature as another overload after out-param removal -> bound as Interpolate__float__int
+overload-collision	BVH	NCollection_Mat4<double>::operator()(const size_t, const size_t) const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Mat4<float>::operator()(const size_t, const size_t) const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec2<double>::x() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec2<double>::y() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec2<float>::x() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec2<float>::y() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec2<int>::x() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec2<int>::y() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<double>::b() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<double>::g() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<double>::r() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<double>::x() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<double>::y() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<double>::z() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<int>::b() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<int>::g() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<int>::r() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<int>::x() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<int>::y() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec3<int>::z() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::a() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::b() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::g() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::r() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::w() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::x() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::y() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<double>::z() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::a() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::b() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::g() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::r() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::w() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::x() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::y() const: const twin of a less const overload -> not bound
+overload-collision	BVH	NCollection_Vec4<int>::z() const: const twin of a less const overload -> not bound
 overload-collision	Bnd	Bnd_Box2d::Get(double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Get__float__float__float__float
 overload-collision	Bnd	Bnd_Box::Get(double &, double &, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Get__float__float__float__float__float__float
 overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, CSLib_DerivativeStatus &, gp_Dir &): same Python signature as another overload after out-param removal -> bound as Normal__CSLib_DerivativeStatus
@@ -54,8 +90,29 @@ overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, C
 overload-collision	Convert	Convert_CompPolynomialToPoles::Knots(occ::handle<NCollection_HArray1<double>> &): same Python signature as another overload after out-param removal -> bound as Knots__NCollection_HArray1__double
 overload-collision	Convert	Convert_CompPolynomialToPoles::Multiplicities(occ::handle<NCollection_HArray1<int>> &): same Python signature as another overload after out-param removal -> bound as Multiplicities__NCollection_HArray1__int
 overload-collision	Convert	Convert_CompPolynomialToPoles::Poles(occ::handle<NCollection_HArray2<double>> &): same Python signature as another overload after out-param removal -> bound as Poles__NCollection_HArray2__double
+overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Init(const NCollection_DynamicArray<Poly_CoherentLink> &): const twin of a less const overload -> not bound
+overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Initialize(const NCollection_DynamicArray<Poly_CoherentLink> &): const twin of a less const overload -> not bound
+overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Init(const NCollection_DynamicArray<Poly_CoherentNode> &): const twin of a less const overload -> not bound
+overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Initialize(const NCollection_DynamicArray<Poly_CoherentNode> &): const twin of a less const overload -> not bound
+overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Init(const NCollection_DynamicArray<Poly_CoherentTriangle> &): const twin of a less const overload -> not bound
+overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Initialize(const NCollection_DynamicArray<Poly_CoherentTriangle> &): const twin of a less const overload -> not bound
+overload-collision	Poly	Poly_ArrayOfNodes::SetValue(const size_t, const gp_Pnt &): same Python signature as SetValue(int, const gp_Pnt &) -> registered after it (width preference)
+overload-collision	Poly	Poly_ArrayOfNodes::Value(const size_t): same Python signature as Value(int) -> registered after it (width preference)
+overload-collision	Poly	Poly_ArrayOfUVNodes::SetValue(const size_t, const gp_Pnt2d &): same Python signature as SetValue(int, const gp_Pnt2d &) -> registered after it (width preference)
+overload-collision	Poly	Poly_ArrayOfUVNodes::Value(const size_t): same Python signature as Value(int) -> registered after it (width preference)
+overload-collision	Poly	Poly_Triangle::operator()(const int) const: const twin of a less const overload -> not bound
+overload-collision	gp	gp_Mat2d::operator()(const int, const int) const: const twin of a less const overload -> not bound
+overload-collision	gp	gp_Mat::operator()(const int, const int) const: const twin of a less const overload -> not bound
 overload-collision	gp	gp_Pnt2d::Coord(double &, double &): same Python signature as another overload after out-param removal -> bound as Coord__float__float
 overload-collision	gp	gp_Pnt::Coord(double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Coord__float__float__float
+overload-collision	math	math_DoubleTab::Value(const int, const int) const: const twin of a less const overload -> not bound
+overload-collision	math	math_DoubleTab::operator()(const int, const int) const: const twin of a less const overload -> not bound
+overload-collision	math	math_Matrix::Value(const int, const int) const: const twin of a less const overload -> not bound
+overload-collision	math	math_Matrix::operator()(const int, const int) const: const twin of a less const overload -> not bound
+overload-collision	math	math_VectorBase<double>::Value(const int) const: const twin of a less const overload -> not bound
+overload-collision	math	math_VectorBase<double>::operator()(const int) const: const twin of a less const overload -> not bound
+overload-collision	math	math_VectorBase<int>::Value(const int) const: const twin of a less const overload -> not bound
+overload-collision	math	math_VectorBase<int>::operator()(const int) const: const twin of a less const overload -> not bound
 override	MathLin	MathLin::Internal::ComputeWilkinsonShift: namespace skipped (overrides.toml [skip] namespaces)
 override	MathLin	MathLin::Internal::FindSubmatrixEnd: namespace skipped (overrides.toml [skip] namespaces)
 override	MathLin	MathLin::Internal::Hypot: namespace skipped (overrides.toml [skip] namespaces)
@@ -203,9 +260,13 @@ template	BVH	BVH_TreeBase: template (not bound)
 template	BVH	BVH_Triangulation: template (not bound)
 template	BVH	NCollection_Mat4<double>::Convert: template member
 template	BVH	NCollection_Mat4<double>::ConvertFrom: template member
+template	BVH	NCollection_Mat4<double>::Map(): param 'theData': raw pointer to primitive (template argument)
+template	BVH	NCollection_Mat4<double>::Map(): param 'theData': raw pointer to primitive (template argument)
 template	BVH	NCollection_Mat4<double>::NCollection_Mat4<Element_t>: template member
 template	BVH	NCollection_Mat4<float>::Convert: template member
 template	BVH	NCollection_Mat4<float>::ConvertFrom: template member
+template	BVH	NCollection_Mat4<float>::Map(): param 'theData': raw pointer to primitive (template argument)
+template	BVH	NCollection_Mat4<float>::Map(): param 'theData': raw pointer to primitive (template argument)
 template	BVH	NCollection_Mat4<float>::NCollection_Mat4<Element_t>: template member
 template	BVH	NCollection_Vec2<double>::NCollection_Vec2<Element_t>: template member
 template	BVH	NCollection_Vec2<float>::NCollection_Vec2<Element_t>: template member
@@ -356,6 +417,8 @@ template	gp	gp_Trsf::GetMat4: template member
 template	math	math_VectorBase: template (not bound)
 template	math	math_VectorBase: template (not bound)
 template	math	math_VectorBase: template (not bound)
+template	math	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)
+template	math	math_VectorBase<int>::math_VectorBase<int>(): param 'theTab': raw pointer to primitive (template argument)
 unbound-type	BVH	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
 unbound-type	Bnd	BVH_Box<double, 2>: base class BVH_BaseBox<double, 2, BVH_Box<double, 2>> is not bound (package not generated) -> class skipped
 unbound-type	Bnd	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>> is not bound (package not generated) -> class skipped

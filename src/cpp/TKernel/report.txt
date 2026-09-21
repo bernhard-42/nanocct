@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKernel: 391 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 414 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 7
@@ -6,7 +6,7 @@
 # iterator: 1
 # not-constructible: 3
 # operator: 34
-# overload-collision: 16
+# overload-collision: 39
 # override: 13
 # raw-pointer: 89
 # rvalue: 5
@@ -74,8 +74,31 @@ overload-collision	OSD	OSD_Chronometer::Show(double &, double &): same Python si
 overload-collision	OSD	OSD_File::ReadLine(TCollection_AsciiString &, const int, int &): same Python signature as another overload after out-param removal -> bound as ReadLine__int
 overload-collision	OSD	OSD_Timer::Show(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as Show__str
 overload-collision	OSD	OSD_Timer::Show(double &, int &, int &, double &): same Python signature as another overload after out-param removal -> bound as Show__float__int__int__float
+overload-collision	Quantity	NCollection_Vec3<float>::b() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec3<float>::g() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec3<float>::r() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec3<float>::x() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec3<float>::y() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec3<float>::z() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::a() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::b() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::g() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::r() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::w() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::x() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::y() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	NCollection_Vec4<float>::z() const: const twin of a less const overload -> not bound
+overload-collision	Quantity	Quantity_Color::Convert_LinearRGB_To_sRGB(float): same Python signature as Convert_LinearRGB_To_sRGB(double) -> registered after it (width preference)
+overload-collision	Quantity	Quantity_Color::Convert_sRGB_To_LinearRGB(float): same Python signature as Convert_sRGB_To_LinearRGB(double) -> registered after it (width preference)
 overload-collision	Quantity	Quantity_Period::Values(int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int__int
 overload-collision	Quantity	Quantity_Period::Values(int &, int &, int &, int &, int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int__int__int__int__int__int
+overload-collision	Standard	Abs(const float): same Python signature as Abs(const double) -> registered after it (width preference)
+overload-collision	Standard	Max(const float, const float): same Python signature as Max(const double, const double) -> registered after it (width preference)
+overload-collision	Standard	Min(const float, const float): same Python signature as Min(const double, const double) -> registered after it (width preference)
+overload-collision	Storage	Storage_BaseDriver::operator<<(const float): same Python signature as operator<<(const double) -> registered after it (width preference)
+overload-collision	Storage	Storage_BaseDriver::operator>>(float &): same Python signature as operator>>(double &) -> registered after it (width preference)
+overload-collision	TColStd	NCollection_PackedMap<int>::NCollection_PackedMap<int>(const size_t): same Python signature as NCollection_PackedMap<int>(const int) -> registered after it (width preference)
+overload-collision	TColStd	NCollection_PackedMap<int>::ReSize(const size_t): same Python signature as ReSize(const int) -> registered after it (width preference)
 overload-collision	Units	Units::FromSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as FromSI__Units_Dimensions
 overload-collision	Units	Units::ToSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as ToSI__Units_Dimensions
 overload-collision	UnitsAPI	UnitsAPI::AnyToLS(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as AnyToLS__Units_Dimensions

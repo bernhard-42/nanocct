@@ -2191,7 +2191,6 @@ approximation.)nbdoc");
 <Col> and <Mat> of a Tensor.
 An exception is raised if <Row>, <Col> or <Mat> are not
 in the correct range.)nbdoc")
-        .def("__call__", static_cast<const double & (GeomFill_Tensor::*)(const int, const int, const int) const>(&GeomFill_Tensor::operator()), nb::arg("Row"), nb::arg("Col"), nb::arg("Mat"), nb::is_operator())
         .def("ChangeValue", [](GeomFill_Tensor &self, const int Row, const int Col, const int Mat) -> double { return self.ChangeValue(Row, Col, Mat); }, nb::arg("Row"), nb::arg("Col"), nb::arg("Mat"), R"nbdoc(accesses (in read or write mode) the value of index <Row>,
 <Col> and <Mat> of a Tensor.
 An exception is raised if <Row>, <Col> or <Mat> are not

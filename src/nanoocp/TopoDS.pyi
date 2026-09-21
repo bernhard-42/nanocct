@@ -1035,10 +1035,6 @@ class NCollection_ForwardRangeIterator__TopoDS_Iterator:
     @overload
     def __init__(self, theOther: NCollection_ForwardRangeIterator__TopoDS_Iterator) -> None: ...
 
-@overload
-def Vertex(theShape: TopoDS_Shape) -> TopoDS_Vertex: ...
-
-@overload
 def Vertex(theShape: TopoDS_Shape) -> TopoDS_Vertex:
     """
     Casts shape theShape to the more specialized return type, Vertex.
@@ -1047,10 +1043,6 @@ def Vertex(theShape: TopoDS_Shape) -> TopoDS_Vertex:
     @throws Standard_TypeMismatch if theShape cannot be cast to this return type.
     """
 
-@overload
-def Edge(theShape: TopoDS_Shape) -> TopoDS_Edge: ...
-
-@overload
 def Edge(theShape: TopoDS_Shape) -> TopoDS_Edge:
     """
     Casts shape theShape to the more specialized return type, Edge.
@@ -1059,10 +1051,6 @@ def Edge(theShape: TopoDS_Shape) -> TopoDS_Edge:
     @throws Standard_TypeMismatch if theShape cannot be cast to this return type.
     """
 
-@overload
-def Wire(theShape: TopoDS_Shape) -> TopoDS_Wire: ...
-
-@overload
 def Wire(theShape: TopoDS_Shape) -> TopoDS_Wire:
     """
     Casts shape theShape to the more specialized return type, Wire.
@@ -1071,10 +1059,6 @@ def Wire(theShape: TopoDS_Shape) -> TopoDS_Wire:
     @throws Standard_TypeMismatch if theShape cannot be cast to this return type.
     """
 
-@overload
-def Face(theShape: TopoDS_Shape) -> TopoDS_Face: ...
-
-@overload
 def Face(theShape: TopoDS_Shape) -> TopoDS_Face:
     """
     Casts shape theShape to the more specialized return type, Face.
@@ -1083,10 +1067,6 @@ def Face(theShape: TopoDS_Shape) -> TopoDS_Face:
     @throws Standard_TypeMismatch if theShape cannot be cast to this return type.
     """
 
-@overload
-def Shell(theShape: TopoDS_Shape) -> TopoDS_Shell: ...
-
-@overload
 def Shell(theShape: TopoDS_Shape) -> TopoDS_Shell:
     """
     Casts shape theShape to the more specialized return type, Shell.
@@ -1095,10 +1075,6 @@ def Shell(theShape: TopoDS_Shape) -> TopoDS_Shell:
     @throws Standard_TypeMismatch if theShape cannot be cast to this return type.
     """
 
-@overload
-def Solid(theShape: TopoDS_Shape) -> TopoDS_Solid: ...
-
-@overload
 def Solid(theShape: TopoDS_Shape) -> TopoDS_Solid:
     """
     Casts shape theShape to the more specialized return type, Solid.
@@ -1107,10 +1083,6 @@ def Solid(theShape: TopoDS_Shape) -> TopoDS_Solid:
     @throws Standard_TypeMismatch if theShape cannot be cast to this return type.
     """
 
-@overload
-def CompSolid(theShape: TopoDS_Shape) -> TopoDS_CompSolid: ...
-
-@overload
 def CompSolid(theShape: TopoDS_Shape) -> TopoDS_CompSolid:
     """
     Casts shape theShape to the more specialized return type, CompSolid.
@@ -1119,10 +1091,6 @@ def CompSolid(theShape: TopoDS_Shape) -> TopoDS_CompSolid:
     @throws Standard_TypeMismatch if theShape cannot be cast to this return type.
     """
 
-@overload
-def Compound(theShape: TopoDS_Shape) -> TopoDS_Compound: ...
-
-@overload
 def Compound(theShape: TopoDS_Shape) -> TopoDS_Compound:
     """
     Casts shape theShape to the more specialized return type, Compound.

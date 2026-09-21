@@ -4362,12 +4362,6 @@ class GeomFill_Tensor:
         in the correct range.
         """
 
-    @overload
-    def __call__(self, Row: int, Col: int, Mat: int) -> float: ...
-
-    @overload
-    def __call__(self, Row: int, Col: int, Mat: int) -> float: ...
-
     def ChangeValue(self, Row: int, Col: int, Mat: int) -> float:
         """
         accesses (in read or write mode) the value of index <Row>,
@@ -4380,6 +4374,8 @@ class GeomFill_Tensor:
         """
         Python addition: sets the value ChangeValue(Row, Col, Mat) returns by reference in C++.
         """
+
+    def __call__(self, Row: int, Col: int, Mat: int) -> float: ...
 
     def __getitem__(self, arg: tuple[int, int, int], /) -> float:
         """Python addition: alias to operator()."""

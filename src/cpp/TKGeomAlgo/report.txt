@@ -1,11 +1,11 @@
-# nanoOCP generator report for TKGeomAlgo: 75 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomAlgo: 85 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 3
 # header: 1
-# overload-collision: 21
+# overload-collision: 30
 # override: 3
 # raw-pointer: 4
-# template: 3
+# template: 4
 # unbound-type: 4
 # undefined: 36
 array	IntImp	IntImp_ComputeTangence(...): param 'DPuv': array
@@ -14,20 +14,29 @@ array	IntSurf	IntSurf::SetPeriod(const occ::handle<Adaptor3d_Surface> &, const o
 header	IntWalk	IntWalk: headers not self-contained, parsed with <IntSurf_LineOn2S.hxx> included first
 overload-collision	GccEnt	GccEnt::PositionFromString(const char *, GccEnt_Position &): same Python signature as another overload after out-param removal -> bound as PositionFromString__GccEnt_Position
 overload-collision	Geom2dAPI	Geom2dAPI_ProjectPointOnCurve::Parameter(const int, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float
+overload-collision	Geom2dHatch	Geom2dHatch_Elements::operator()(const int) const: const twin of a less const overload -> not bound
 overload-collision	GeomAPI	GeomAPI_IntCS::Parameters(const int, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Parameters__float__float__float
 overload-collision	GeomAPI	GeomAPI_IntCS::Parameters(const int, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Parameters__float__float__float__float
 overload-collision	GeomAPI	GeomAPI_ProjectPointOnCurve::Parameter(const int, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float
+overload-collision	GeomFill	GeomFill_Tensor::operator()(const int, const int, const int) const: const twin of a less const overload -> not bound
 overload-collision	IntCurveSurface	IntCurveSurface_TheHCurveTool::SamplePars(const occ::handle<Adaptor3d_Curve> &, const double, const double, const double, const int, occ::handle<NCollection_HArray1<double>> &): same Python signature as another overload after out-param removal -> bound as SamplePars__NCollection_HArray1__double
 overload-collision	IntCurveSurface	IntCurveSurface_ThePolyhedronOfHInter::Point(const int, double &, double &): same Python signature as another overload after out-param removal -> bound as Point__float__float
 overload-collision	IntPatch	IntPatch_Polyhedron::Point(const int, double &, double &): same Python signature as another overload after out-param removal -> bound as Point__float__float
 overload-collision	IntPatch	IntPatch_WLine::FirstPoint(int &): same Python signature as another overload after out-param removal -> bound as FirstPoint__int
 overload-collision	IntPatch	IntPatch_WLine::LastPoint(int &): same Python signature as another overload after out-param removal -> bound as LastPoint__int
 overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Edge>::IntPolyh_Array<IntPolyh_Edge>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Edge>::operator[](const int) const: const twin of a less const overload -> not bound
 overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Point>::IntPolyh_Array<IntPolyh_Point>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Point>::operator[](const int) const: const twin of a less const overload -> not bound
 overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_PointNormal>::IntPolyh_Array<IntPolyh_PointNormal>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_PointNormal>::operator[](const int) const: const twin of a less const overload -> not bound
 overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_SectionLine>::IntPolyh_Array<IntPolyh_SectionLine>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_SectionLine>::operator[](const int) const: const twin of a less const overload -> not bound
 overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_StartPoint>::IntPolyh_Array<IntPolyh_StartPoint>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_StartPoint>::operator[](const int) const: const twin of a less const overload -> not bound
 overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Triangle>::IntPolyh_Array<IntPolyh_Triangle>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Triangle>::operator[](const int) const: const twin of a less const overload -> not bound
+overload-collision	IntPolyh	IntPolyh_SectionLine::operator[](const int) const: const twin of a less const overload -> not bound
 overload-collision	Intf	Intf_SectionPoint::InfoFirst(Intf_PIType &, int &, double &): same Python signature as another overload after out-param removal -> bound as InfoFirst__Intf_PIType__int__float
 overload-collision	Intf	Intf_SectionPoint::InfoFirst(Intf_PIType &, int &, int &, double &): same Python signature as another overload after out-param removal -> bound as InfoFirst__Intf_PIType__int__int__float
 overload-collision	Intf	Intf_SectionPoint::InfoSecond(Intf_PIType &, int &, double &): same Python signature as another overload after out-param removal -> bound as InfoSecond__Intf_PIType__int__float
@@ -42,6 +51,7 @@ raw-pointer	IntPolyh	IntPolyh_MaillageAffinage::FillArrayOfPnt(const int, const 
 raw-pointer	IntPolyh	IntPolyh_MaillageAffinage::FillArrayOfPnt(const int, const bool, const NCollection_Array1<double> &, const NCollection_Array1<double> &): param 'theDeflTol': raw pointer to primitive
 template	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> instantiated as BVH_PairTraverse<double, 3, void, double> (spelling mismatch) -> not bound
 template	IntPatch	math_VectorBase: template (not bound)
+template	IntPatch	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)
 template	IntPolyh	IntPolyh_Array: template (not bound)
 unbound-type	IntPatch	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
 unbound-type	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> is not bound (package not generated) -> class skipped

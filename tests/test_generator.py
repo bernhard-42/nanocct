@@ -2,6 +2,7 @@
 overload-collision resolver, the report categories, and the reproducibility of a regeneration against the checked-in
 sources. No compiler is involved except the regeneration test's libclang parse (TKG2d, ~5 s)."""
 import filecmp
+import re
 import shutil
 import subprocess
 import sys
@@ -74,6 +75,14 @@ public:
   operator gp_Pnt() const { return gp_Pnt(); }
   //! A container in the signature registers the instantiation.
   int Count(const NCollection_Array1<gp_Pnt>& thePoles) const { return thePoles.Length(); }
+  //! const / non-const twins: only the non-const one is bound (R-CONST-TWIN).
+  const gp_XYZ& Origin() const { return myOrigin; }
+  gp_XYZ& Origin() { return myOrigin; }
+  //! Scalar width twins: double before float, int before size_t (R-WIDTH).
+  float Scale(const float theS) const { return theS; }
+  double Scale(const double theS) const { return theS; }
+  int Width(const size_t theN) const { return static_cast<int>(theN); }
+  int Width(const int theN) const { return theN; }
 
   //! A public nested class.
   struct Nested
@@ -88,6 +97,7 @@ public:
 
 private:
   double myValue = 0.0;
+  gp_XYZ myOrigin;
 };
 
 //! Constructors whose one-argument call is ambiguous in C++ (IntPolyh_Array<T>): the first is bound with no argument.
@@ -243,6 +253,13 @@ def test_emitter_static_rename_and_collision(rules_ir):
     assert '.def("Parameter__float"' in cpp                                                       # R-COLLISION suffix
     assert any("Parameter(const gp_Pnt &, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float" in r for r in em.report)
     assert [p.out_py for p in _method(rules_ir, "Rules_Value", "Coord").params] == ["float", "float"]
+    # R-CONST-TWIN: the const Origin() is skipped, the non-const one (reference_internal) bound
+    assert cpp.count('.def("Origin"') == 1 and 'gp_XYZ & (Rules_Value::*)() const' not in cpp
+    assert "Rules_Value::Origin() const: const twin of a less const overload -> not bound" in em.report
+    # R-WIDTH: the wider twin is registered first although the header declares it second
+    assert cpp.index('(Rules_Value::*)(const double) const') < cpp.index('(Rules_Value::*)(const float) const')
+    assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
+    assert "Rules_Value::Scale(const float): same Python signature as Scale(const double) -> registered after it (width preference)" in em.report
     assert any("Rules_Value::Length: static overloads renamed to Length_s" in r for r in em.report)
 
 
@@ -313,6 +330,41 @@ def test_resolve_overload_collisions_suffixes_by_out_params():
     sk = m("X", [p]); sk.skip_reason = "x"
     assert [sfx for _, sfx in resolve_overload_collisions([m("X", [p]), m("X", []), sk])] == ["", ""]
     assert len(resolve_overload_collisions([sk])) == 0
+
+
+def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
+    """Overloads with identical Python signatures in the checked-in stubs (nanobind takes the first registered) may only
+    be scalar-width twins (R-WIDTH, wider first) or the str-accepting kinds of TCollection (const char* / char /
+    AsciiString / char16_t*); const twins and out-param collisions must be gone (R-CONST-TWIN, R-COLLISION)."""
+    sig_re = re.compile(r"^(\s*)def (\w+)\((.*?)\)(?: -> (.*?))?:(?: \.\.\.)?$")
+    cls_re = re.compile(r"^(\s*)class (\w+)")
+    dups: list[tuple[str, str, tuple]] = []
+    for pyi in sorted((ROOT / "src" / "nanoocp").rglob("*.pyi")):
+        scope: list[tuple[int, str]] = []
+        seen: dict[tuple, int] = {}
+        for line in pyi.read_text().splitlines():
+            m = cls_re.match(line)
+            if m is not None:
+                indent = len(m.group(1))
+                scope = [s for s in scope if s[0] < indent] + [(indent, m.group(2))]
+                continue
+            m = sig_re.match(line)
+            if m is None:
+                continue
+            indent, name, args = len(m.group(1)), m.group(2), m.group(3)
+            owner = ".".join(s[1] for s in scope if s[0] < indent)
+            types = tuple(re.sub(r"\s*=.*$", "", a.split(":", 1)[1]).strip() if ":" in a else a.strip()
+                          for a in re.split(r",\s*(?![^\[]*\])", args) if a.strip() != "")
+            key = (owner, name, types)
+            seen[key] = seen.get(key, 0) + 1
+            if seen[key] == 2:
+                dups.append((pyi.stem, owner, (name, types)))
+    width_ok = {"Abs", "Min", "Max", "Convert_LinearRGB_To_sRGB", "Convert_sRGB_To_LinearRGB", "Value", "SetValue", "ReSize", "__init__"}
+    unexpected = [d for d in dups if not (d[2][0] in width_ok and any(t in ("float", "int") for t in d[2][1]))
+                  and not (d[0] in ("TCollection", "Standard", "Resource") and "str" in d[2][1])
+                  and d[1] != "Standard_Mutex.Sentry"]        # Sentry(Standard_Mutex&) / Sentry(Standard_Mutex*): the same call
+    assert unexpected == [], unexpected
+    assert len(dups) < 60
 
 
 def test_report_categories_are_complete_for_the_checked_in_reports():
