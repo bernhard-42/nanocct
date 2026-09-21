@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKGeomBase: 164 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomBase: 165 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # namespace: 4
 # overload-collision: 4
@@ -7,7 +7,7 @@
 # static-rename: 8
 # stream: 3
 # template: 57
-# undefined: 7
+# undefined: 8
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ChangeIntervals: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_PointsInspector: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ProjPOnC: anonymous namespace (not bound)
@@ -165,10 +165,11 @@ template	LProp	LProp_CurveUtils::Normal: template in namespace (not bound)
 template	LProp	LProp_CurveUtils::SetParameter: template in namespace (not bound)
 template	LProp	LProp_CurveUtils::Tangent: template in namespace (not bound)
 template	LProp	LProp_CurveUtils::ToolAccess: template in namespace (not bound)
-undefined	AppDef	AppDef_MultiLine::SetParameter: declared in the header, no definition in libTKGeomBase
-undefined	AppDef	AppDef_ResConstraintOfMyGradientOfCompute::Error: declared in the header, no definition in libTKGeomBase
-undefined	AppDef	AppDef_ResConstraintOfMyGradientbisOfBSplineCompute::Error: declared in the header, no definition in libTKGeomBase
-undefined	AppDef	AppDef_ResConstraintOfTheGradient::Error: declared in the header, no definition in libTKGeomBase
-undefined	AppDef	AppDef_TheResol::Error: declared in the header, no definition in libTKGeomBase
+undefined	AppDef	AppDef_MultiLine::SetParameter(const int, const double): declared in the header, no definition in libTKGeomBase
+undefined	AppDef	AppDef_ResConstraintOfMyGradientOfCompute::Error(): declared in the header, no definition in libTKGeomBase
+undefined	AppDef	AppDef_ResConstraintOfMyGradientbisOfBSplineCompute::Error(): declared in the header, no definition in libTKGeomBase
+undefined	AppDef	AppDef_ResConstraintOfTheGradient::Error(): declared in the header, no definition in libTKGeomBase
+undefined	AppDef	AppDef_TheResol::Error(): declared in the header, no definition in libTKGeomBase
+undefined	FEmTool	FEmTool_ElementaryCriterion::FEmTool_ElementaryCriterion(): declared in the header, no definition in libTKGeomBase
 undefined	GCPnts	GCPnts_DistFunction2d: copy constructor declared in the header, no definition in libTKGeomBase -> class skipped
 undefined	GCPnts	GCPnts_DistFunction: copy constructor declared in the header, no definition in libTKGeomBase -> class skipped

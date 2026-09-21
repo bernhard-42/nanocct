@@ -407,4 +407,4 @@ template	TopExp	NCollection_ForwardRangeIterator::PostfixProxy: nested class of 
 template	TopoDS	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
 template	TopoDS	TopoDS_Shape::TopoDS_Shape: template member
 template	TopoDS	TopoDS_Shape::operator=: template member
-undefined	BinTools	BinTools_Curve2dSet::Dump: declared in the header, no definition in libTKBRep
+undefined	BinTools	BinTools_Curve2dSet::Dump(Standard_OStream &): declared in the header, no definition in libTKBRep

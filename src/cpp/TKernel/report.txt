@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKernel: 391 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 392 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 7
@@ -7,7 +7,7 @@
 # not-constructible: 3
 # operator: 34
 # overload-collision: 17
-# override: 14
+# override: 13
 # raw-pointer: 89
 # rvalue: 5
 # static-rename: 16
@@ -15,7 +15,7 @@
 # stream: 28
 # template: 163
 # unbound-type: 4
-# undefined: 1
+# undefined: 3
 # variadic: 3
 array	Standard	Standard_UUID::Data4: field array
 conversion	Message	Message_Messenger::StreamBuffer::operator std::ostream &: conversion operator to an unsupported type
@@ -93,7 +93,6 @@ override	NCollection	std::tuple_size: namespace skipped (overrides.toml [skip] n
 override	NCollection	std::tuple_size: namespace skipped (overrides.toml [skip] namespaces)
 override	OSD	OSD_WNT.hxx: skipped (overrides.toml [skip] headers)
 override	Standard	Standard_Static_Assert<true>: skipped (overrides.toml [skip])
-override	TCollection	TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const): overrides.toml [skip] methods
 override	TCollection	std::equal_to: namespace skipped (overrides.toml [skip] namespaces)
 raw-pointer	FSD	FSD_Base64::Decode(): param 'theDecodedData': raw pointer to primitive
 raw-pointer	FSD	FSD_Base64::Encode(): param 'theData': raw pointer to primitive
@@ -404,7 +403,9 @@ unbound-type	OSD	OSD_StreamBuffer<std::iostream>: base class std::iostream is no
 unbound-type	OSD	OSD_StreamBuffer<std::istream>: base class std::istream is not bound (package not generated) -> class skipped
 unbound-type	OSD	OSD_StreamBuffer<std::ostream>: base class std::ostream is not bound (package not generated) -> class skipped
 unbound-type	Standard	Standard_ArrayStreamBuffer: base class std::streambuf is not bound (package not generated) -> class skipped
-undefined	OSD	OSD_Path::LocateExecFile: declared in the header, no definition in libTKernel
+undefined	OSD	OSD_FileSystem::OSD_FileSystem(): declared in the header, no definition in libTKernel
+undefined	OSD	OSD_Path::LocateExecFile(OSD_Path &): declared in the header, no definition in libTKernel
+undefined	TCollection	TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const): declared in the header, no definition in libTKernel
 variadic	Standard	Standard_Dump::DumpCharacterValues(Standard_OStream &, int): variadic
 variadic	Standard	Standard_Dump::DumpRealValues(Standard_OStream &, int): variadic
 variadic	Standard	Standard_Dump::InitRealValues(const TCollection_AsciiString &, int &, int): variadic

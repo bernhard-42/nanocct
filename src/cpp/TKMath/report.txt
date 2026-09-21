@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKMath: 345 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 346 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 7
 # conversion: 18
@@ -6,7 +6,7 @@
 # iterator: 1
 # not-constructible: 1
 # overload-collision: 10
-# override: 34
+# override: 32
 # raw-pointer: 46
 # rvalue: 3
 # static-rename: 4
@@ -14,7 +14,7 @@
 # stream: 3
 # template: 210
 # unbound-type: 3
-# undefined: 2
+# undefined: 5
 array	Bnd	Bnd_OBB::GetVertex(): param 'theP': array
 array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
 array	MathPoly	Octic(...): param 'theCoeffs': array
@@ -53,8 +53,6 @@ overload-collision	Convert	Convert_CompPolynomialToPoles::Multiplicities(occ::ha
 overload-collision	Convert	Convert_CompPolynomialToPoles::Poles(occ::handle<NCollection_HArray2<double>> &): same Python signature as Poles() after out-param removal -> unreachable
 overload-collision	gp	gp_Pnt2d::Coord(): same Python signature as Coord(double &, double &) after out-param removal -> unreachable
 overload-collision	gp	gp_Pnt::Coord(): same Python signature as Coord(double &, double &, double &) after out-param removal -> unreachable
-override	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &): overrides.toml [skip] methods
-override	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &): overrides.toml [skip] methods
 override	MathLin	MathLin::Internal::ComputeWilkinsonShift: namespace skipped (overrides.toml [skip] namespaces)
 override	MathLin	MathLin::Internal::FindSubmatrixEnd: namespace skipped (overrides.toml [skip] namespaces)
 override	MathLin	MathLin::Internal::Hypot: namespace skipped (overrides.toml [skip] namespaces)
@@ -358,5 +356,8 @@ template	math	math_VectorBase: template (not bound)
 unbound-type	BVH	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
 unbound-type	Bnd	BVH_Box<double, 2>: base class BVH_BaseBox<double, 2, BVH_Box<double, 2>> is not bound (package not generated) -> class skipped
 unbound-type	Bnd	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>> is not bound (package not generated) -> class skipped
-undefined	math	math_NewtonFunctionSetRoot::StateNumber: declared in the header, no definition in libTKMath
-undefined	math	math_NewtonMinimum::IsConvex: declared in the header, no definition in libTKMath
+undefined	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &): declared in the header, no definition in libTKMath
+undefined	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &): declared in the header, no definition in libTKMath
+undefined	Poly	Poly_MakeLoops::Poly_MakeLoops(const Poly_MakeLoops::Helper *, const occ::handle<NCollection_BaseAllocator> &): declared in the header, no definition in libTKMath
+undefined	math	math_NewtonFunctionSetRoot::StateNumber(): declared in the header, no definition in libTKMath
+undefined	math	math_NewtonMinimum::IsConvex(): declared in the header, no definition in libTKMath

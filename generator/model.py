@@ -59,6 +59,7 @@ class Method:
     is_operator: bool = False
     skip_reason: str | None = None
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
+    mangled: str = ""                # linker symbol (libclang mangling); R-UNDEFINED compares it with nm's list
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
     result_scalar: bool = False       # result is arithmetic, bool, enum or a C string (the "direct" API when overloads collide)
     is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring; loses an overload collision
@@ -72,6 +73,7 @@ class Constructor:
     is_implicit: bool = False     # non-explicit converting constructor -> nb::implicitly_convertible
     is_copy: bool = False
     defined_in_header: bool = False
+    mangled: str = ""
 
 
 @dataclass

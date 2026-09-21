@@ -53,16 +53,16 @@ headers = [
     "GeomBndLib_Curve.hxx",
     "GeomBndLib_Curve2d.hxx",
 ]
-# Members declared in a header but never defined in the OCCT libraries (link errors otherwise).
-# "Class::Name" skips every overload, "Class::Name(<param types>)" one overload. Methods without any
-# defined overload are detected automatically (generator/symbols.py, nm on the toolkit library); only
-# overload-specific cases need an entry here.
+# Members not bound although the header declares them. "Class::Name" skips every overload,
+# "Class::Name(<param types>)" one overload. Members declared but never defined in the OCCT libraries are detected
+# automatically, per overload (generator/symbols.py: nm on the toolkit library, compared by mangled name).
 methods = [
-    # TCollection_AsciiString.hxx:1415: the only static IsEqual without `inline`; nm libTKernel has no symbol for it (2026-09-21)
-    "TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const)",
-    # BSplCLib.hxx declares 5 DN overloads, nm libTKMath defines 3 (the 10-argument ones); these two 6-argument ones are missing (2026-09-21)
-    "BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &)",
-    "BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &)",
+    # Template members whose body does not compile for the instantiation (Design.md 6c): IntPolyh_Array<T>::Dump() calls
+    # (*this)[i].Dump() with no argument, but IntPolyh_Edge/Triangle::Dump take an int and IntPolyh_PointNormal has none.
+    # Points, SectionLines and StartPoints (Dump() exists) keep it. Debug printf output, no Python use (2026-09-21).
+    "IntPolyh_Array<IntPolyh_Edge>::Dump",
+    "IntPolyh_Array<IntPolyh_Triangle>::Dump",
+    "IntPolyh_Array<IntPolyh_PointNormal>::Dump",
 ]
 
 # NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical

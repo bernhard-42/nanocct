@@ -646,6 +646,7 @@ from collections.abc import Iterator
 import enum
 from typing import overload
 
+import nanoocp.Adaptor3d
 import nanoocp.AdvApp2Var
 import nanoocp.AppDef
 import nanoocp.AppParCurves
@@ -659,11 +660,18 @@ import nanoocp.ExtremaPC
 import nanoocp.Geom
 import nanoocp.Geom2d
 import nanoocp.Geom2dGridEval
+import nanoocp.GeomPlate
+import nanoocp.IntPatch
+import nanoocp.IntPolyh
+import nanoocp.IntSurf
+import nanoocp.IntWalk
+import nanoocp.Law
 import nanoocp.MathRoot
 import nanoocp.Message
 from nanoocp.NCollection import (
     NCollection_Primes as NCollection_Primes
 )
+import nanoocp.Plate
 import nanoocp.Poly
 import nanoocp.Quantity
 import nanoocp.Standard
@@ -2187,3 +2195,151 @@ class NCollection_LinearVector__unsigned_long_long:
         """
 
 class NCollection_LinearVector__BRepGraph_RefId(NCollection_LinearVector[nanoocp.BRepGraph.BRepGraph_RefId]): ...
+class NCollection_Sequence__Handle_IntPatch_Line(NCollection_Sequence[nanoocp.IntPatch.IntPatch_Line]): ...
+class NCollection_Array1__IntWalk_WalkingData(NCollection_Array1[nanoocp.IntWalk.IntWalk_WalkingData]): ...
+class NCollection_LinearVector__IntWalk_WalkingData(NCollection_LinearVector[nanoocp.IntWalk.IntWalk_WalkingData]): ...
+class NCollection_Array1__gp_Lin(NCollection_Array1[nanoocp.gp.gp_Lin]): ...
+class NCollection_DynamicArray__IntPatch_BVHTraversal_TrianglePair:
+    """
+    Class NCollection_DynamicArray (dynamic array of objects)
+
+    The array's indices always start at 0.
+
+    The Vector is always created with 0 length. It can be enlarged by two means:
+    1. Calling the method Append (val) - then "val" is added to the end of the
+    vector (the vector length is incremented)
+    2. Calling the method SetValue (i, val) - if "i" is greater than or equal
+    to the current length of the vector, the vector is enlarged to accomo-
+    date this index
+
+    The methods Append and SetValue return a non-const reference to the copied
+    object inside the vector. This reference is guaranteed to be valid until
+    the vector is destroyed. It can be used to access the vector member directly
+    or to pass its address to other data structures.
+
+    The vector iterator remembers the length of the vector at the moment of the
+    creation or initialisation of the iterator. Therefore the iteration begins
+    at index 0 and stops at the index equal to (remembered_length-1). It is OK
+    to enlarge the vector during the iteration.
+    """
+
+    @overload
+    def __init__(self, theIncrement: int = 256) -> None: ...
+
+    @overload
+    def __init__(self, theIncrement: int, theAlloc: NCollection_BaseAllocator | None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DynamicArray__IntPatch_BVHTraversal_TrianglePair) -> None:
+        """@name public methods"""
+
+    def Size(self) -> int:
+        """Total number of items in the vector."""
+
+    def Length(self) -> int:
+        """Total number of items (legacy int-returning API)."""
+
+    def Lower(self) -> int:
+        """
+        Method for consistency with other collections.
+        @return Lower bound (inclusive) for iteration.
+        """
+
+    def Upper(self) -> int:
+        """
+        Method for consistency with other collections.
+        @return Upper bound (inclusive) for iteration.
+        """
+
+    def IsEmpty(self) -> bool:
+        """Empty query"""
+
+    def Assign(self, theOther: NCollection_DynamicArray__IntPatch_BVHTraversal_TrianglePair, theOwnAllocator: bool = True) -> NCollection_DynamicArray__IntPatch_BVHTraversal_TrianglePair:
+        """Assignment to the collection of the same type"""
+
+    def EraseLast(self) -> None: ...
+
+    def Value(self, theIndex: int) -> "IntPatch_BVHTraversal::TrianglePair": ...
+
+    def __call__(self, theIndex: int) -> "IntPatch_BVHTraversal::TrianglePair":
+        """Operator() - query the const value"""
+
+    def __getitem__(self, theIndex: int) -> "IntPatch_BVHTraversal::TrianglePair":
+        """Operator[] - query the const value"""
+
+    def First(self) -> "IntPatch_BVHTraversal::TrianglePair":
+        """@return first element"""
+
+    def Last(self) -> "IntPatch_BVHTraversal::TrianglePair":
+        """@return last element"""
+
+    def Clear(self, theReleaseMemory: bool = False) -> None: ...
+
+    def SetIncrement(self, theIncrement: int) -> None: ...
+
+    def __setitem__(self, theIndex: int, theItem: "IntPatch_BVHTraversal::TrianglePair") -> None:
+        """Python addition: alias to SetValue (0-based)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator["IntPatch_BVHTraversal::TrianglePair"]:
+        """Python addition: iterates over the values."""
+
+    def Append(self, theValue: "IntPatch_BVHTraversal::TrianglePair") -> "IntPatch_BVHTraversal::TrianglePair":
+        """Append"""
+
+    def InsertAfter(self, theIndex: int, theValue: "IntPatch_BVHTraversal::TrianglePair") -> "IntPatch_BVHTraversal::TrianglePair":
+        """
+        Insert a value after the element at theIndex, shifting subsequent elements right.
+        @param theIndex index after which to insert (must be in [0, Size()-1])
+        @param theValue value to insert
+        @return reference to the inserted element
+        """
+
+    def InsertBefore(self, theIndex: int, theValue: "IntPatch_BVHTraversal::TrianglePair") -> "IntPatch_BVHTraversal::TrianglePair":
+        """
+        Insert a value before the element at theIndex, shifting it and subsequent elements right.
+        @param theIndex index before which to insert (must be in [0, Size()-1])
+        @param theValue value to insert
+        @return reference to the inserted element
+        """
+
+    def Appended(self) -> "IntPatch_BVHTraversal::TrianglePair":
+        """Appends an empty value and returns the reference to it"""
+
+    def SetValue(self, theIndex: int, theValue: "IntPatch_BVHTraversal::TrianglePair") -> "IntPatch_BVHTraversal::TrianglePair":
+        """SetValue () - set or append a value"""
+
+    def ChangeFirst(self) -> "IntPatch_BVHTraversal::TrianglePair":
+        """@return first element"""
+
+    def ChangeLast(self) -> "IntPatch_BVHTraversal::TrianglePair":
+        """@return last element"""
+
+    def ChangeValue(self, theIndex: int) -> "IntPatch_BVHTraversal::TrianglePair": ...
+
+class NCollection_DynamicArray__Handle_Adaptor3d_Surface(NCollection_DynamicArray[nanoocp.Adaptor3d.Adaptor3d_Surface]): ...
+class NCollection_List__IntSurf_PntOn2S(NCollection_List[nanoocp.IntSurf.IntSurf_PntOn2S]): ...
+class NCollection_Sequence__IntPatch_Point(NCollection_Sequence[nanoocp.IntPatch.IntPatch_Point]): ...
+class NCollection_Sequence__IntSurf_InteriorPoint(NCollection_Sequence[nanoocp.IntSurf.IntSurf_InteriorPoint]): ...
+class NCollection_Sequence__IntSurf_PathPoint(NCollection_Sequence[nanoocp.IntSurf.IntSurf_PathPoint]): ...
+class NCollection_Array1__bool(NCollection_Array1[bool]): ...
+class NCollection_HArray1__bool(NCollection_HArray1[bool]): ...
+class NCollection_List__Handle_Law_Function(NCollection_List[nanoocp.Law.Law_Function]): ...
+class NCollection_Array1__Plate_PinpointConstraint(NCollection_Array1[nanoocp.Plate.Plate_PinpointConstraint]): ...
+class NCollection_Array2__gp_XYZ(NCollection_Array2[nanoocp.gp.gp_XYZ]): ...
+class NCollection_HArray2__gp_XYZ(NCollection_HArray2[nanoocp.gp.gp_XYZ]): ...
+class NCollection_Sequence__Plate_PinpointConstraint(NCollection_Sequence[nanoocp.Plate.Plate_PinpointConstraint]): ...
+class NCollection_Sequence__gp_XY(NCollection_Sequence[nanoocp.gp.gp_XY]): ...
+class NCollection_Array1__Handle_Adaptor3d_Curve(NCollection_Array1[nanoocp.Adaptor3d.Adaptor3d_Curve]): ...
+class NCollection_HArray1__Handle_Adaptor3d_Curve(NCollection_HArray1[nanoocp.Adaptor3d.Adaptor3d_Curve]): ...
+class NCollection_Array1__Handle_Geom2d_Curve(NCollection_Array1[nanoocp.Geom2d.Geom2d_Curve]): ...
+class NCollection_HArray1__Handle_Geom2d_Curve(NCollection_HArray1[nanoocp.Geom2d.Geom2d_Curve]): ...
+class NCollection_Sequence__GeomPlate_Aij(NCollection_Sequence[nanoocp.GeomPlate.GeomPlate_Aij]): ...
+class NCollection_Sequence__gp_Vec(NCollection_Sequence[nanoocp.gp.gp_Vec]): ...
+class NCollection_Sequence__gp_XYZ(NCollection_Sequence[nanoocp.gp.gp_XYZ]): ...
+class NCollection_Array1__Handle_Geom_Curve(NCollection_Array1[nanoocp.Geom.Geom_Curve]): ...
+class NCollection_Sequence__gp_Trsf(NCollection_Sequence[nanoocp.gp.gp_Trsf]): ...
+class NCollection_Sequence__Handle_Geom_Curve(NCollection_Sequence[nanoocp.Geom.Geom_Curve]): ...
+class NCollection_List__IntPolyh_Couple(NCollection_List[nanoocp.IntPolyh.IntPolyh_Couple]): ...

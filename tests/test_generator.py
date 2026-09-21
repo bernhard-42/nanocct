@@ -11,8 +11,8 @@ import pytest
 
 from generator import parse
 from generator.binders import BINDERS
-from generator.emit import Emitter, resolve_overload_collisions
-from generator.model import ConversionKind, Method, Param, ResultKind, StreamKind
+from generator.emit import Emitter, resolve_ctor_arities, resolve_overload_collisions
+from generator.model import Constructor, ConversionKind, Method, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
 from generator.report import CATEGORIES, categorize
 
@@ -31,6 +31,7 @@ HEADER = """
 #include <gp_Pnt.hxx>
 #include <gp_XYZ.hxx>
 #include <NCollection_Array1.hxx>
+#include <gp_Trsf.hxx>
 
 //! A Transient class for the handle rules.
 class Rules_Thing : public Standard_Transient
@@ -89,6 +90,18 @@ private:
   double myValue = 0.0;
 };
 
+//! Constructors whose one-argument call is ambiguous in C++ (IntPolyh_Array<T>): the first is bound with no argument.
+class Rules_Ambiguous
+{
+public:
+  Rules_Ambiguous(const int theIncrement = 256) { (void)theIncrement; }
+  Rules_Ambiguous(const int theN, const int theIncrement = 256) { (void)theN; (void)theIncrement; }
+};
+
+//! A class whose base no binding knows (the test's Emitter does not know gp_Trsf), and a class deriving from it.
+class Rules_Unbound : public gp_Trsf {};
+class Rules_Orphan : public Rules_Unbound {};
+
 //! A namespace named like the package is the package module itself.
 namespace Rules
 {
@@ -132,7 +145,7 @@ def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None
 
 def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
-    assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested"]
+    assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan"]
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -228,6 +241,46 @@ def test_emitter_static_rename_and_collision(rules_ir):
     assert cpp.count(".export_values()") == 1
     assert any("Parameter(const gp_Pnt &, double &): same Python signature as Parameter(const gp_Pnt &)" in r for r in em.report)
     assert any("Rules_Value::Length: static overloads renamed to Length_s" in r for r in em.report)
+
+
+def test_ir_records_mangled_names(rules_ir):
+    # R-UNDEFINED compares libclang's mangling with nm's symbol list, per overload
+    coord = _method(rules_ir, "Rules_Value", "Coord")
+    assert coord.mangled.endswith("ZNK11Rules_Value5CoordERdS0_")
+    ctors = next(c for c in rules_ir.classes if c.name == "Rules_Ambiguous").ctors
+    assert [k.mangled.endswith(m) for k, m in zip(ctors, ["15Rules_AmbiguousC1Ei", "15Rules_AmbiguousC1Eii"])] == [True, True]
+
+
+def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
+    known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules"}
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
+                 ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    # R-CTOR-AMBIGUOUS: Rules_Ambiguous(5) is ambiguous in C++ -> nb::init<>() plus the two-argument form, no implicit conversion from int
+    block = cpp[cpp.index('m.attr("Rules_Ambiguous"))'):]
+    block = block[:block.index(";")]                       # the .def chain of Rules_Ambiguous
+    assert ".def(nb::init<>()" in block and ".def(nb::init<const int, const int>()" in block and ".def(nb::init<const int>()" not in block
+    assert "implicitly_convertible<std::decay_t<const int>, Rules_Ambiguous>" not in cpp
+    assert any(r.startswith("Rules_Ambiguous::Rules_Ambiguous(const int): a call with all arguments is ambiguous") and r.endswith("bound with the first 0") for r in em.report)
+    # a class whose base is skipped is skipped too, and both are handed back so the manifest forgets them
+    assert "nb::class_<Rules_Unbound" not in cpp and "nb::class_<Rules_Orphan" not in cpp
+    assert "Rules_Unbound: base class gp_Trsf is not bound (package not generated) -> class skipped" in em.report
+    assert "Rules_Orphan: base class Rules_Unbound is not bound (skipped) -> class skipped" in em.report
+    assert em.skipped == {"Rules_Unbound", "Rules_Orphan"}
+
+
+def test_resolve_ctor_arities():
+    def k(*types_defaults):
+        return Constructor(params=[Param(name=f"p{i}", type=t, default=d, is_out=False) for i, (t, d) in enumerate(types_defaults)], doc="")
+    a = k(("const int", "256"))
+    b = k(("const int", None), ("const int", "256"))
+    assert resolve_ctor_arities([a, b]) == [(a, 0), (b, 2)]            # IntPolyh_Array<T>
+    c = k()
+    assert resolve_ctor_arities([c, a]) == [(a, 1)]                    # X() ambiguous with X(int = 256): a keeps its argument, c is out
+    d = k(("const gp_Pnt &", None), ("const int", "1"))
+    assert resolve_ctor_arities([a, b, d]) == [(a, 0), (b, 2), (d, 2)]  # different first type: no interaction
+    skipped = k(("const int", None)); skipped.skip_reason = "x"
+    assert resolve_ctor_arities([skipped, a]) == [(a, 1)]              # skipped overloads do not count
 
 
 def test_resolve_overload_collisions_prefers_scalar_result():

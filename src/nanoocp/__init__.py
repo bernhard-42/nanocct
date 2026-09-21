@@ -7,3 +7,4 @@ import nanoocp._TKG2d  # noqa: F401
 import nanoocp._TKG3d  # noqa: F401
 import nanoocp._TKGeomBase  # noqa: F401
 import nanoocp._TKBRep  # noqa: F401
+import nanoocp._TKGeomAlgo  # noqa: F401

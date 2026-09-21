@@ -1,5 +1,8 @@
-"""OCCT pre-8.0 typedef names with prefix GeomInt (OCCT src/Deprecated/NCollectionAliases)."""
+"""OCCT package GeomInt (toolkit TKGeomAlgo)."""
 import importlib as _importlib
+
+from nanoocp._TKGeomAlgo import GeomInt as _ext
+from nanoocp._TKGeomAlgo.GeomInt import *  # noqa: F401,F403
 
 
 # deprecated NCollection typedef names -> (home module, bound name)
@@ -12,4 +15,4 @@ def __getattr__(name):
     target = _ALIASES.get(name)
     if target is not None:
         return getattr(_importlib.import_module(target[0]), target[1])
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    return getattr(_ext, name)   # NCollection instantiations bound into this package by other toolkits

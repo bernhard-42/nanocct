@@ -5,7 +5,7 @@ import re
 import shutil
 from pathlib import Path
 
-from .model import Class, ConversionKind, Enum, Function, Method, PackageIR, Param, ResultKind, StreamKind, TemplateInstance
+from .model import Class, Constructor, ConversionKind, Enum, Function, Method, PackageIR, Param, ResultKind, StreamKind, TemplateInstance
 from .ncollection import BINDERS
 from .parse import _py_identifier, py_path, py_safe
 
@@ -82,6 +82,7 @@ class Emitter:
         self.templates = known_templates      # canonical instance key -> {toolkit, package, name}; updated while emitting
         self.local = {c.name for c in ir.classes}
         self.report: list[str] = []
+        self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
         self._idents: set[str] = set()
 
     # ---- helpers -------------------------------------------------------------------------------
@@ -372,8 +373,8 @@ class Emitter:
         for b in c.bases:
             if c.is_exception and b.startswith("std::"):
                 continue
-            if b not in self.known:
-                self.report.append(f"{c.name}: base class {b} is not bound (package not generated) -> class skipped")
+            if b not in self.known or b in skipped:     # skipped: a base of this package that was skipped just before (bases come first)
+                self.report.append(f"{c.name}: base class {b} is not bound ({'skipped' if b in skipped else 'package not generated'}) -> class skipped")
                 skipped.add(c.name)
                 return False
         return True
@@ -399,7 +400,7 @@ class Emitter:
         """The package's .cpp: declare (classes, enums, constants, submodules), templates (NCollection instantiations),
         define (members, free functions, aliases), conversions (operator T() targets) -- one function per phase."""
         ir = self.ir
-        skipped: set[str] = set()
+        skipped = self.skipped
         classes = [c for c in self._ordered_classes() if self._base_ok(c, skipped)]
         instances = self._instances()   # registers this package's NCollection instantiations in self.templates (defaults may use them)
         free_ops, module_fns = self._functions()
@@ -525,12 +526,19 @@ class Emitter:
             # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count
             declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
             implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
+            arities = {id(k): n for k, n in resolve_ctor_arities(declared)}
             for k in declared:
                 unbound = self._unbound_default(k.params)
                 if unbound is not None:
                     self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): default argument of unbound type {unbound} -> constructor skipped")
                     continue
-                body.append(self._ctor(c, k.params, k.doc))
+                n = arities.get(id(k))     # R-CTOR-AMBIGUOUS: the arity nanobind may call without a C++ ambiguity
+                if n is None:
+                    self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): every call form is ambiguous with another constructor in C++ -> constructor skipped")
+                    continue
+                if n < len(k.params):
+                    self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first {n}")
+                body.append(self._ctor(c, k.params[:n], k.doc))
         bound = [m for m in c.methods if m.skip_reason is None]
         mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
         ordered, unreachable = resolve_overload_collisions(c.methods)
@@ -574,7 +582,8 @@ class Emitter:
         if not c.is_abstract and c.constructible:
             seen: set[str] = set()
             for k in c.ctors:
-                if k.skip_reason is None and k.is_implicit:
+                # R-CTOR-AMBIGUOUS: no conversion when the one-argument call is ambiguous (`IntPolyh_Array<T> a = 5;` is ambiguous in C++ too)
+                if k.skip_reason is None and k.is_implicit and not ctor_call_ambiguous(c.ctors, k, 1):
                     src = k.params[0].type
                     if src not in seen:
                         seen.add(src)
@@ -689,6 +698,37 @@ def resolve_overload_collisions(methods: list[Method]) -> tuple[list[Method], li
             emitted.add(id(mm))
             ordered.append(mm)
     return ordered, unreachable
+
+
+# Design.md 6 R-CTOR-AMBIGUOUS
+def ctor_call_ambiguous(ctors: list[Constructor], k: Constructor, n: int) -> bool:
+    """Whether a C++ call of constructor k with its first n parameters is ambiguous with another (not skipped)
+    constructor: one that is viable with n arguments of the same types (required(o) <= n <= len(o.params))."""
+    def types(c: Constructor) -> tuple[str, ...]:
+        return tuple(_strip_ref(p.type) for p in c.params[:n])
+
+    return any(o is not k and o.skip_reason is None and sum(1 for p in o.params if p.default is None) <= n <= len(o.params)
+               and types(o) == types(k) for o in ctors)
+
+
+def resolve_ctor_arities(ctors: list[Constructor]) -> list[tuple[Constructor, int]]:
+    """nanobind's nb::init<Args...> (and the nb::new_ lambda) always calls the C++ constructor with every parameter of
+    the bound overload (Python fills the defaults), so a constructor whose full-arity call is ambiguous in C++ does not
+    compile: IntPolyh_Array(const int aIncrement = 256) next to IntPolyh_Array(const int aN, const int aIncrement = 256)
+    -- `IntPolyh_Array<T>(5)` is ambiguous in C++ too. Such a constructor is bound with the largest number of leading
+    parameters that is unambiguous (here none: the zero-argument form), dropping trailing defaulted ones; the dropped
+    calls are reachable through the other overload. Returns (constructor, arity) for the bindable constructors in the
+    given order; a constructor with no unambiguous arity is left out (the caller reports it)."""
+    result: list[tuple[Constructor, int]] = []
+    for k in ctors:
+        if k.skip_reason is not None:
+            continue
+        required = sum(1 for p in k.params if p.default is None)
+        for n in range(len(k.params), required - 1, -1):
+            if not ctor_call_ambiguous(ctors, k, n):
+                result.append((k, n))
+                break
+    return result
 
 
 def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str], namespaces: dict[str, list[tuple[str, ...]]]) -> str:

@@ -3,6 +3,8 @@
 import enum
 from typing import TextIO, overload
 
+import nanoocp.Geom2dAPI
+import nanoocp.GeomAPI
 import nanoocp.NCollection
 import nanoocp.Standard
 import nanoocp.TopLoc
@@ -930,6 +932,12 @@ class gp_Pnt:
 
     @overload
     def __init__(self, theOther: gp_Pnt) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GeomAPI.GeomAPI_ProjectPointOnCurve) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GeomAPI.GeomAPI_ProjectPointOnSurf) -> None: ...
 
     @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:
@@ -2197,6 +2205,9 @@ class gp_Pnt2d:
 
     @overload
     def __init__(self, theOther: gp_Pnt2d) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.Geom2dAPI.Geom2dAPI_ProjectPointOnCurve) -> None: ...
 
     @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:

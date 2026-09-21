@@ -3,6 +3,7 @@
 from typing import overload
 
 import nanoocp.GC
+import nanoocp.GeomAPI
 import nanoocp.GeomAbs
 import nanoocp.GeomEval.GeomEval_RepCurveDesc
 import nanoocp.GeomEval.GeomEval_RepSurfaceDesc
@@ -2408,6 +2409,12 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
         Poles.Length() == Sum(Mults(i)) except the first or last
         """
 
+    @overload
+    def __init__(self, theFrom: nanoocp.GeomAPI.GeomAPI_Interpolate) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GeomAPI.GeomAPI_PointsToBSpline) -> None: ...
+
     def HasEvalRepresentation(self) -> bool:
         """Returns true if an evaluation representation is attached."""
 
@@ -3353,6 +3360,9 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         The previous conditions for U holds also for V, with the
         RowLength of the poles.
         """
+
+    @overload
+    def __init__(self, theFrom: nanoocp.GeomAPI.GeomAPI_PointsToBSplineSurface) -> None: ...
 
     def HasEvalRepresentation(self) -> bool:
         """Returns true if an evaluation representation is attached."""

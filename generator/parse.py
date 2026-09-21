@@ -673,6 +673,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     # inline (in-class or out-of-class in the header) vs. defined in the library; needs bodies parsed
     m.defined_in_header = (cursor.is_definition() or cursor.get_definition() is not None
                            or cursor.is_pure_virtual_method())      # pure virtual: dispatched via vtable, no symbol
+    m.mangled = cursor.mangled_name
     if m.skip_reason is None and cursor.is_deleted_method():
         m.skip_reason = "deleted"
     if m.skip_reason is None:
@@ -798,7 +799,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
                         and not ch.is_copy_constructor() and not ch.is_move_constructor())
             ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
-                               defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active)
+                               defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
+                               mangled=ch.mangled_name)
             if ctor.skip_reason is not None:
                 c.skipped.append(f"{c.name}::{c.name}({', '.join(p.type for p in params)}): {ctor.skip_reason}")
             c.ctors.append(ctor)
@@ -1082,10 +1084,13 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             errors = [d for d in tu.diagnostics if d.severity >= cindex.Diagnostic.Error]
             if len(errors) == 0:
                 break
-            # a header that uses a forward-declared class in inline code (GeomGridEval_Line.hxx calls Geom_Line::Lin()
-            # with gp_Lin only forward-declared; OCCT's .cxx includes gp_Lin.hxx first): include that class's header
-            # before the package headers and parse again
-            missing = {m.group(1) for d in errors for m in [re.search(r"incomplete (?:return )?type '(?:const )?(\w+)'", d.spelling)] if m is not None}
+            # R-PRELUDE: a header that uses a forward-declared class in inline code (GeomGridEval_Line.hxx calls
+            # Geom_Line::Lin() with gp_Lin only forward-declared) or names a class it neither includes nor declares
+            # (IntWalk_PWalking.hxx: handle<IntSurf_LineOn2S>; ChFiKPart_ComputeData_ChPlnCon.hxx: ChFiDS_ChamfMode);
+            # OCCT's .cxx includes that header first. Include that class's header before the package headers and parse again.
+            missing = {m.group(1) for d in errors
+                       for m in [re.search(r"(?:incomplete (?:return )?type|use of undeclared identifier|unknown type name) '(?:const )?(\w+)'", d.spelling)]
+                       if m is not None}
             extra = sorted(f"<{name}.hxx>" for name in missing if (tree.include_dir / f"{name}.hxx").exists() and f"<{name}.hxx>" not in prelude)
             if len(extra) == 0:
                 break

@@ -1,0 +1,82 @@
+# nanoOCP generator report for TKGeomAlgo: 72 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# array: 3
+# header: 1
+# overload-collision: 18
+# override: 3
+# raw-pointer: 4
+# template: 3
+# unbound-type: 4
+# undefined: 36
+array	IntImp	IntImp_ComputeTangence(...): param 'DPuv': array
+array	IntPatch	IntPatch_SpecialPoints::AdjustPointAndVertex(const IntSurf_PntOn2S &): param 'theArrPeriods': array
+array	IntSurf	IntSurf::SetPeriod(const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_Surface> &): param 'theArrOfPeriod': array
+header	IntWalk	IntWalk: headers not self-contained, parsed with <IntSurf_LineOn2S.hxx> included first
+overload-collision	GccEnt	GccEnt::PositionFromString(const char *, GccEnt_Position &): same Python signature as PositionFromString(const char *) after out-param removal -> unreachable
+overload-collision	Geom2dAPI	Geom2dAPI_ProjectPointOnCurve::Parameter(const int, double &): same Python signature as Parameter(const int) after out-param removal -> unreachable
+overload-collision	GeomAPI	GeomAPI_IntCS::Parameters(const int, double &, double &, double &): same Python signature as Parameters(const int, double &, double &, double &, double &) after out-param removal -> unreachable
+overload-collision	GeomAPI	GeomAPI_ProjectPointOnCurve::Parameter(const int, double &): same Python signature as Parameter(const int) after out-param removal -> unreachable
+overload-collision	IntCurveSurface	IntCurveSurface_TheHCurveTool::SamplePars(const occ::handle<Adaptor3d_Curve> &, const double, const double, const double, const int, occ::handle<NCollection_HArray1<double>> &): same Python signature as SamplePars(const occ::handle<Adaptor3d_Curve> &, const double, const double, const double, const int) after out-param removal -> unreachable
+overload-collision	IntCurveSurface	IntCurveSurface_ThePolyhedronOfHInter::Point(const int): same Python signature as Point(const int, double &, double &) after out-param removal -> unreachable
+overload-collision	IntPatch	IntPatch_Polyhedron::Point(const int): same Python signature as Point(const int, double &, double &) after out-param removal -> unreachable
+overload-collision	IntPatch	IntPatch_WLine::FirstPoint(): same Python signature as FirstPoint(int &) after out-param removal -> unreachable
+overload-collision	IntPatch	IntPatch_WLine::LastPoint(): same Python signature as LastPoint(int &) after out-param removal -> unreachable
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Edge>::IntPolyh_Array<IntPolyh_Edge>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Point>::IntPolyh_Array<IntPolyh_Point>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_PointNormal>::IntPolyh_Array<IntPolyh_PointNormal>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_SectionLine>::IntPolyh_Array<IntPolyh_SectionLine>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_StartPoint>::IntPolyh_Array<IntPolyh_StartPoint>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	IntPolyh	IntPolyh_Array<IntPolyh_Triangle>::IntPolyh_Array<IntPolyh_Triangle>(const int): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first 0
+overload-collision	Intf	Intf_SectionPoint::InfoFirst(Intf_PIType &, int &, double &): same Python signature as InfoFirst(Intf_PIType &, int &, int &, double &) after out-param removal -> unreachable
+overload-collision	Intf	Intf_SectionPoint::InfoSecond(Intf_PIType &, int &, double &): same Python signature as InfoSecond(Intf_PIType &, int &, int &, double &) after out-param removal -> unreachable
+overload-collision	Plate	Plate_Plate::CoefPol(occ::handle<NCollection_HArray2<gp_XYZ>> &): same Python signature as CoefPol() after out-param removal -> unreachable
+override	IntPolyh	IntPolyh_Array<IntPolyh_Edge>::Dump(): overrides.toml [skip] methods
+override	IntPolyh	IntPolyh_Array<IntPolyh_PointNormal>::Dump(): overrides.toml [skip] methods
+override	IntPolyh	IntPolyh_Array<IntPolyh_Triangle>::Dump(): overrides.toml [skip] methods
+raw-pointer	GeomInt	GeomInt_TheMultiLineOfWLApprox::GeomInt_TheMultiLineOfWLApprox(const occ::handle<IntPatch_WLine> &): param 'PtrSvSurfaces': void pointer
+raw-pointer	IntPatch	IntPatch_WLineTool::ExtendTwoWLines(NCollection_Sequence<opencascade::handle<IntPatch_Line>> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_Surface> &, const double): param 'theArrPeriods': raw pointer to primitive
+raw-pointer	IntPolyh	IntPolyh_MaillageAffinage::FillArrayOfPnt(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &): param 'theDeflTol': raw pointer to primitive
+raw-pointer	IntPolyh	IntPolyh_MaillageAffinage::FillArrayOfPnt(const int, const bool, const NCollection_Array1<double> &, const NCollection_Array1<double> &): param 'theDeflTol': raw pointer to primitive
+template	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> instantiated as BVH_PairTraverse<double, 3, void, double> (spelling mismatch) -> not bound
+template	IntPatch	math_VectorBase: template (not bound)
+template	IntPolyh	IntPolyh_Array: template (not bound)
+unbound-type	IntPatch	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
+unbound-type	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> is not bound (package not generated) -> class skipped
+unbound-type	IntPatch	IntPatch_BVHTraversal::TrianglePair: outer class IntPatch_BVHTraversal is not bound -> nested class skipped
+unbound-type	IntPatch	IntPatch_PolyhedronBVH: base class BVH_PrimitiveSet<double, 3> is not bound (skipped) -> class skipped
+undefined	Geom2dAPI	Geom2dAPI_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo
+undefined	Geom2dGcc	Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const Geom2dAdaptor_Curve &, const gp_Pnt2d &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	Geom2dGcc	Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const gp_Circ2d &, const Geom2dAdaptor_Curve &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	Geom2dGcc	Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const gp_Lin2d &, const Geom2dAdaptor_Curve &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	Geom2dGcc	Geom2dGcc_Lin2dTanObl::IsParallel2(): declared in the header, no definition in libTKGeomAlgo
+undefined	Geom2dHatch	Geom2dHatch_Hatcher::IsDone(): declared in the header, no definition in libTKGeomAlgo
+undefined	Geom2dInt	Geom2dInt_Geom2dCurveTool::IsComposite(const Adaptor2d_Curve2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomAPI	GeomAPI_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomFill	GeomFill_FunctionGuide::Deriv2T(const gp_XYZ &, const gp_XYZ &, math_Vector &, math_Vector &): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomFill	GeomFill_SweepSectionGenerator::GeomFill_SweepSectionGenerator(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomFill	GeomFill_SweepSectionGenerator::Init(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomInt	GeomInt_IntSS::SetTolFixTangents(const double, const double): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomInt	GeomInt_IntSS::TolFixTangents(double &, double &): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomInt	GeomInt_ResConstraintOfMyGradientOfTheComputeLineBezierOfWLApprox::Error(): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomInt	GeomInt_ResConstraintOfMyGradientbisOfTheComputeLineOfWLApprox::Error(): declared in the header, no definition in libTKGeomAlgo
+undefined	GeomInt	GeomInt_WLApprox::Perform(): declared in the header, no definition in libTKGeomAlgo
+undefined	IntImpParGen	IntImpParGen_ImpTool::D1(const double, gp_Pnt2d &, gp_Vec2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	IntImpParGen	IntImpParGen_ImpTool::D2(const double, gp_Pnt2d &, gp_Vec2d &, gp_Vec2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	IntImpParGen	IntImpParGen_ImpTool::Distance(const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	IntImpParGen	IntImpParGen_ImpTool::FindParameter(const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	IntImpParGen	IntImpParGen_ImpTool::GradDistance(const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+undefined	IntImpParGen	IntImpParGen_ImpTool::Value(const double): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::HasUMaxSingularity(): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::HasUMinSingularity(): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::HasVMaxSingularity(): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::HasVMinSingularity(): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::Perform(const occ::handle<Adaptor3d_Surface> &, const int, const int): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::UMaxSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::UMinSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::VMaxSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_Polyhedron::VMinSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_RLine::SetParamOnS1(const double, const double): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPatch	IntPatch_RLine::SetParamOnS2(double &, double &): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPolyh	IntPolyh_MaillageAffinage::GetFinTE(const int): declared in the header, no definition in libTKGeomAlgo
+undefined	IntPolyh	IntPolyh_MaillageAffinage::GetFinTT(const int): declared in the header, no definition in libTKGeomAlgo
+undefined	Law	Law_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo

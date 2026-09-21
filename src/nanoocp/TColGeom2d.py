@@ -6,7 +6,9 @@ import importlib as _importlib
 _ALIASES = {
     "TColGeom2d_Array1OfBSplineCurve": ("nanoocp.NCollection", "NCollection_Array1__Handle_Geom2d_BSplineCurve"),
     "TColGeom2d_Array1OfBezierCurve": ("nanoocp.NCollection", "NCollection_Array1__Handle_Geom2d_BezierCurve"),
+    "TColGeom2d_Array1OfCurve": ("nanoocp.NCollection", "NCollection_Array1__Handle_Geom2d_Curve"),
     "TColGeom2d_HArray1OfBSplineCurve": ("nanoocp.NCollection", "NCollection_HArray1__Handle_Geom2d_BSplineCurve"),
+    "TColGeom2d_HArray1OfCurve": ("nanoocp.NCollection", "NCollection_HArray1__Handle_Geom2d_Curve"),
     "TColGeom2d_SequenceOfCurve": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Geom2d_Curve"),
 }
 

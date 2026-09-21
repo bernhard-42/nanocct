@@ -16,7 +16,7 @@ from .occt import load_tree
 from .ncollection import deprecated_aliases, template_docs
 from .parse import INCLUDE_PACKAGES, clang_args, configure_libclang, parse_package, py_path
 from .report import write_report
-from .symbols import defined_methods
+from .symbols import defined_symbols
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -192,22 +192,26 @@ def main(argv: list[str]) -> int:
         for pkg in pkgs:
             bound_elsewhere = {n for n, pk in known.items() if pk != pkg.name} | {c.name for ir in irs for c in ir.classes}
             irs.append(parse_package(tree, pkg, known_elsewhere=bound_elsewhere))
-        symbols = defined_methods(args.occt, tk_name)
+        symbols = defined_symbols(args.occt, tk_name)
         if symbols is None:
             print(f"{tk_name}: library symbols not checked (nm unavailable)", file=sys.stderr)
         else:
-            defined, signatures = symbols
+            # R-UNDEFINED: per overload, by mangled name (GeomInt_WLApprox::Perform() next to three defined Perform overloads)
             for ir in irs:
                 for c in ir.classes:
                     for m in c.methods:
-                        if m.skip_reason is None and not m.defined_in_header and f"{c.name}::{m.name}" not in defined:
+                        if m.skip_reason is None and not m.defined_in_header and m.mangled not in symbols:
                             m.skip_reason = "declared but not defined in the library"
-                            ir.report.append(f"{c.name}::{m.name}: declared in the header, no definition in lib{tk_name}")
+                            ir.report.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}): declared in the header, no definition in lib{tk_name}")
+                    for k in c.ctors:
+                        if k.skip_reason is None and not k.is_copy and not k.defined_in_header and k.mangled not in symbols:
+                            k.skip_reason = "declared but not defined in the library"
+                            ir.report.append(f"{c.name}::{c.name}({', '.join(p.type for p in k.params)}): declared in the header, no definition in lib{tk_name}")
                 # a copy constructor declared but never defined (GCPnts_DistFunction: the old idiom to forbid copies) is
                 # still "copy constructible" for nanobind, which then instantiates a copy wrapper -> link error:
                 # the class cannot be bound at all
                 unlinkable = [c for c in ir.classes if "<" not in c.name and any(
-                    k.is_copy and not k.defined_in_header and f"{c.name}::{c.name}({c.name}const&)" not in signatures for k in c.ctors)]
+                    k.is_copy and not k.defined_in_header and k.mangled not in symbols for k in c.ctors)]
                 for c in unlinkable:
                     ir.report.append(f"{c.name}: copy constructor declared in the header, no definition in lib{tk_name} -> class skipped")
                     ir.classes.remove(c)
@@ -262,6 +266,9 @@ def main(argv: list[str]) -> int:
             em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
                          _topo(tree, generated_toolkits), paths)
             (tk_dir / f"{pkg.name}.cpp").write_text(em.emit())
+            for name in em.skipped:            # a class skipped at emit time (base not bound) must not reach the manifest: a later
+                known.pop(name, None)          # toolkit deriving from it would abort at import (nb_type_new: base type not known)
+                paths.pop(name, None)
             n_methods = sum(1 for c in ir.classes for m in c.methods if m.skip_reason is None)
             print(f"{tk_name}/{pkg.name}: {len(ir.classes)} classes, {len(ir.enums)} enums, {n_methods} methods, "
                   f"{len(ir.functions)} free functions; not bound: {len(ir.report) + len(em.report)}", file=sys.stderr)

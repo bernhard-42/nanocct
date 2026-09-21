@@ -3,6 +3,7 @@
 from typing import overload
 
 import nanoocp.GC
+import nanoocp.Geom2dAPI
 import nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc
 import nanoocp.GeomAbs
 import nanoocp.NCollection
@@ -1068,6 +1069,12 @@ class Geom2d_BSplineCurve(Geom2d_BoundedCurve):
 
         Poles.Length() == Sum(Mults(i)) except the first or last
         """
+
+    @overload
+    def __init__(self, theFrom: nanoocp.Geom2dAPI.Geom2dAPI_Interpolate) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.Geom2dAPI.Geom2dAPI_PointsToBSpline) -> None: ...
 
     def HasEvalRepresentation(self) -> bool:
         """Returns true if an evaluation representation is attached."""

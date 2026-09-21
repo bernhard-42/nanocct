@@ -23,7 +23,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("raw-pointer", r"raw pointer to primitive|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),
     ("operator", r"operator has no Python equivalent|free operator not mapped"),
     ("conversion", r"conversion (operator|skipped)"),
-    ("overload-collision", r"same Python signature as"),
+    ("overload-collision", r"same Python signature as|ambiguous with another constructor"),
     ("static-rename", r"renamed to \w+_s"),
     ("namespace", r"anonymous namespace|namespace skipped"),
     ("unbound-type", r"unbound type|is not bound|not known"),
