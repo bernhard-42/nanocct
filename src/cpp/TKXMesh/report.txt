@@ -1,0 +1,2 @@
+# nanoOCP generator report for TKXMesh: 0 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).

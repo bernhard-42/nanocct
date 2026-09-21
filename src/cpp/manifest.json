@@ -2858,6 +2858,7 @@
 "Units_UnitsDictionary": "Units",
 "Units_UnitsLexicon": "Units",
 "Units_UnitsSystem": "Units",
+"XBRepMesh_Factory": "XBRepMesh",
 "gce_ErrorType": "gce",
 "gce_MakeCirc": "gce",
 "gce_MakeCirc2d": "gce",
@@ -6967,6 +6968,7 @@
 "Units": "TKernel",
 "UnitsAPI": "TKernel",
 "UnitsMethods": "TKernel",
+"XBRepMesh": "TKXMesh",
 "gce": "TKGeomBase",
 "gp": "TKMath",
 "math": "TKMath"
@@ -7203,6 +7205,9 @@
 "TKFeat": [
 "LocOpe",
 "BRepFeat"
+],
+"TKXMesh": [
+"XBRepMesh"
 ]
 },
 "namespaces": {
@@ -7436,6 +7441,7 @@
 "Units": [],
 "UnitsAPI": [],
 "UnitsMethods": [],
+"XBRepMesh": [],
 "gce": [],
 "gp": [],
 "math": []
