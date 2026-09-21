@@ -1655,6 +1655,13 @@
 "Hatch_Line": "Hatch",
 "Hatch_LineForm": "Hatch",
 "Hatch_Parameter": "Hatch",
+"HelixBRep_BuilderHelix": "HelixBRep",
+"HelixGeom_BuilderApproxCurve": "HelixGeom",
+"HelixGeom_BuilderHelix": "HelixGeom",
+"HelixGeom_BuilderHelixCoil": "HelixGeom",
+"HelixGeom_BuilderHelixGen": "HelixGeom",
+"HelixGeom_HelixCurve": "HelixGeom",
+"HelixGeom_Tools": "HelixGeom",
 "Hermit": "Hermit",
 "IntAna2d_AnaIntersection": "IntAna2d",
 "IntAna2d_Conic": "IntAna2d",
@@ -6087,6 +6094,8 @@
 "HLRTopoBRep": "TKHLR",
 "Hatch": "TKGeomAlgo",
 "HatchGen": "TKGeomAlgo",
+"HelixBRep": "TKHelix",
+"HelixGeom": "TKHelix",
 "Hermit": "TKGeomBase",
 "IntAna": "TKGeomBase",
 "IntAna2d": "TKGeomBase",
@@ -6367,6 +6376,10 @@
 "TopBas",
 "TopCnx",
 "Contap"
+],
+"TKHelix": [
+"HelixBRep",
+"HelixGeom"
 ]
 },
 "namespaces": {
@@ -6496,6 +6509,8 @@
 "HLRTopoBRep": [],
 "Hatch": [],
 "HatchGen": [],
+"HelixBRep": [],
+"HelixGeom": [],
 "Hermit": [],
 "IntAna": [],
 "IntAna2d": [],
