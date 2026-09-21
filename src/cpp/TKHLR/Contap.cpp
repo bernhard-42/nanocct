@@ -57,6 +57,7 @@
 #include <math_FunctionWithDerivative.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_Contap(nb::module_ &m) {
     nb::enum_<Contap_TFunction>(m, "Contap_TFunction", nb::is_arithmetic())

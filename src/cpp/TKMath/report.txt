@@ -1,9 +1,10 @@
-# nanoOCP generator report for TKMath: 419 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 420 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 7
 # conversion: 18
 # field: 1
 # iterator: 7
+# noncopyable: 1
 # not-constructible: 1
 # overload-collision: 70
 # override: 32
@@ -48,6 +49,7 @@ iterator	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangl
 iterator	Poly	Poly_CoherentTriPtr::Iterator: __iter__ added (More/Next/Value)
 iterator	Poly	Poly_Connect: __iter__ added (More/Next/Value)
 iterator	TopLoc	TopLoc_SListOfItemLocation: __iter__ added (More/Next/Value)
+noncopyable	math	math_GlobOptMin: member myFilter of type NCollection_CellFilter<math_GlobOptMin::NCollection_CellFilter_Inspector> is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)
 not-constructible	Poly	Poly_CoherentTriPtr: operator new is not public -> no constructors
 overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &): same Python signature as another overload after out-param removal -> bound as Eval__int__float__float
 overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Eval__int__float__float__float__float

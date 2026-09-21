@@ -5,15 +5,23 @@
 #include <Geom2dAPI_Interpolate.hxx>
 #include <Geom2dAPI_PointsToBSpline.hxx>
 #include <Geom2dAPI_ProjectPointOnCurve.hxx>
+#include <Adaptor2d_Curve2d.hxx>
 #include <Approx_ParametrizationType.hxx>
+#include <Extrema_Curve2dTool.hxx>
 #include <Extrema_ExtCC2d.hxx>
 #include <Extrema_ExtPC2d.hxx>
+#include <Extrema_ExtPElC2d.hxx>
+#include <Extrema_GFuncExtPC.hxx>
+#include <Extrema_GGExtPC.hxx>
+#include <Extrema_GGenExtPC.hxx>
+#include <Extrema_POnCurv2d.hxx>
 #include <Geom2dInt_GInter.hxx>
 #include <Geom2d_BSplineCurve.hxx>
 #include <Geom2d_Curve.hxx>
 #include <GeomAbs_Shape.hxx>
 #include <NCollection_Array1.hxx>
 #include <NCollection_HArray1.hxx>
+#include <NCollection_Sequence.hxx>
 #include <gp_Pnt2d.hxx>
 #include <gp_Vec2d.hxx>
 

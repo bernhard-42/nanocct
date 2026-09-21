@@ -213,6 +213,7 @@ class Emitter:
             py += m.suffix
             doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).\n{m.doc}"
         self._note_types(m.result, *(p.type for p in m.params))
+        self._note_types(m.result_class_name, *(p.class_name for p in m.params))   # the class behind a typedef (IMeshData::IFaceHandle = handle<IMeshData_Face>): its header must be included
         T = cls.name                       # member pointers name the class itself ...
         B = cls.bound_type                 # ... lambdas take the bound type (a wrapper for non-copyable classes)
         if m.result_kind == ResultKind.REF_PRIMITIVE:
@@ -335,13 +336,18 @@ class Emitter:
                 bind(req, args)
             if BINDERS[template].get("wraps", False):
                 wrapped = args[0]
-                if wrapped not in self.known and wrapped not in self.templates:
+                if wrapped not in self.known and (wrapped not in self.templates or self.templates[wrapped].get("skipped", False)):
                     self.report.append(f"{key}: wrapped type {wrapped} is not bound -> instantiation skipped")
                     self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
                     return
             unbound = [a for a in args if a in self.skipped]     # a nested enum/class of a class skipped just before (_base_ok, Design.md 5.2)
             if len(unbound) > 0:
                 self.report.append(f"{key}: element type {unbound[0]} is not bound (its class is skipped) -> instantiation skipped")
+                self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
+                return
+            pointers = [a for a in args if a.endswith("*")]      # NCollection_DataMap<IMeshData_Face*, ...> (IMeshData): a raw pointer has no Python spelling
+            if len(pointers) > 0:
+                self.report.append(f"{key}: template argument {pointers[0]} is a raw pointer -> instantiation skipped")
                 self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
                 return
             home = "NCollection"                            # every instantiation lives in nanoocp.NCollection
@@ -541,9 +547,10 @@ class Emitter:
         d = _cpp_doc(c.doc)
         doc_arg = f", {d}" if d is not None else ""
         if c.noncopyable:
-            wrappers.append(f"// {c.name}: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):\n"
+            ctor_name = c.name.split("<")[0]      # inheriting constructors name the template, not the instantiation
+            wrappers.append(f"// {c.name}: its copy/move constructors do not compile although declared (R-NONCOPYABLE):\n"
                             f"// bound through a wrapper with deleted copy and move, under the original name\n"
-                            f"struct {c.bound_type} : {c.name} {{\n    using {c.name}::{c.name};\n"
+                            f"struct {c.bound_type} : {c.name} {{\n    using {c.name}::{ctor_name};\n"
                             f"    {c.bound_type}(const {c.bound_type} &) = delete;\n    {c.bound_type}({c.bound_type} &&) = delete;\n}};")
         declare.append(f'    {{ nb::class_<{c.bound_type}{bases}> cls({self._attr(c.scope)}, "{c.py_name}"{doc_arg});')
         for e in c.enums:

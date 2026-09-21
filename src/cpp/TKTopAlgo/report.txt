@@ -1,7 +1,8 @@
-# nanoOCP generator report for TKTopAlgo: 47 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKTopAlgo: 50 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 4
 # iterator: 6
+# noncopyable: 3
 # overload-collision: 9
 # raw-pointer: 4
 # stream: 1
@@ -18,6 +19,9 @@ iterator	BRepMAT2d	BRepMAT2d_LinkTopoBilo: __iter__ added (More/Next/Value)
 iterator	BRepTopAdaptor	BRepTopAdaptor_TopolTool: __iter__ added (More/Next/Value)
 iterator	MAT	MAT_ListOfBisector: __iter__ added (More/Next/Current)
 iterator	MAT	MAT_ListOfEdge: __iter__ added (More/Next/Current)
+noncopyable	BRepExtrema	BRepExtrema_ProximityValueTool: member myCells of type NCollection_CellFilter<BRepExtrema_VertexInspector> is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)
+noncopyable	BRepExtrema	BRepExtrema_ShapeProximity: member myProxValTool of type BRepExtrema_ProximityValueTool is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)
+noncopyable	BRepTopAdaptor	BRepTopAdaptor_FClass2d: member TabClass of type NCollection_Sequence<CSLib_Class2d> is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)
 overload-collision	BRepClass	BRepClass_Edge::Edge() const: const twin of a less const overload -> not bound
 overload-collision	BRepClass	BRepClass_Edge::Face() const: const twin of a less const overload -> not bound
 overload-collision	BRepClass3d	BRepClass3d_SolidExplorer::FindAPointInTheFace(const TopoDS_Face &, gp_Pnt &, double &): same Python signature as another overload after out-param removal -> bound as FindAPointInTheFace__float

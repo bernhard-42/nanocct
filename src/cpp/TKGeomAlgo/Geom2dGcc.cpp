@@ -48,6 +48,7 @@
 #include <math_FunctionWithDerivative.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_Geom2dGcc(nb::module_ &m) {
     nb::enum_<Geom2dGcc_Type3>(m, "Geom2dGcc_Type3", nb::is_arithmetic())

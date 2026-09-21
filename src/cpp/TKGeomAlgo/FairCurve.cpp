@@ -22,6 +22,7 @@
 #include <math_MultipleVarFunctionWithHessian.hxx>
 #include <math_NewtonMinimum.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_FairCurve(nb::module_ &m) {
     nb::enum_<FairCurve_AnalysisCode>(m, "FairCurve_AnalysisCode", R"nbdoc(To deal with different results in the computation of curvatures.

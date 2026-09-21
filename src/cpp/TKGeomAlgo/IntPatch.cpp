@@ -91,6 +91,7 @@
 #include <math_FunctionWithDerivative.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_IntPatch(nb::module_ &m) {
     nb::enum_<IntPatch_IType>(m, "IntPatch_IType", nb::is_arithmetic())

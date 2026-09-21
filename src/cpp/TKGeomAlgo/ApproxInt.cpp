@@ -13,6 +13,7 @@
 #include <gp_Vec.hxx>
 #include <gp_Vec2d.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_ApproxInt(nb::module_ &m) {
     { nb::class_<ApproxInt_KnotTools> cls(m, "ApproxInt_KnotTools", R"nbdoc(This class intended to build knots sequence on discrete set of points for further approximation

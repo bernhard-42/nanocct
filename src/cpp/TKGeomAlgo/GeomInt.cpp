@@ -70,6 +70,7 @@
 #include <math_Matrix.hxx>
 #include <math_MultipleVarFunctionWithGradient.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_GeomInt(nb::module_ &m) {
     { nb::class_<GeomInt> cls(m, "GeomInt", R"nbdoc(Provides intersections on between two surfaces of Geom.

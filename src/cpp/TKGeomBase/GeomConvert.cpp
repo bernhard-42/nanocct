@@ -45,6 +45,7 @@
 #include <math_MultipleVarFunction.hxx>
 #include <math_MultipleVarFunctionWithGradient.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_GeomConvert(nb::module_ &m) {
     nb::enum_<GeomConvert_ConvType>(m, "GeomConvert_ConvType", nb::is_arithmetic())

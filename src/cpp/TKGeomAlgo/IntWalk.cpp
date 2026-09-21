@@ -20,6 +20,7 @@
 #include <math_FunctionSetWithDerivatives.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_IntWalk(nb::module_ &m) {
     nb::enum_<IntWalk_StatusDeflection>(m, "IntWalk_StatusDeflection", nb::is_arithmetic())

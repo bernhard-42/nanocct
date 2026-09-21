@@ -27,15 +27,12 @@ inout = [
 classes = [
     "Standard_Static_Assert<true>",     # the specialisation behind the STANDARD_STATIC_ASSERT macro; no API
 ]
-# Classes that are copy/move constructible on paper but whose copy or move does not compile (math_GlobOptMin: a
-# member NCollection_Map<NCollection_CellFilter<...>::Cell> has a deleted copy constructor). nanobind instantiates
-# its copy/move wrappers from the type traits (std::is_move_constructible has no hook), so the class is bound through
-# a generated wrapper struct with deleted copy and move constructors, under the original name.
+# Classes that are copy/move constructible on paper but whose copy or move does not compile. nanobind instantiates its
+# copy/move wrappers from the type traits (std::is_move_constructible has no hook), so such a class is bound through a
+# generated wrapper struct with deleted copy and move constructors, under the original name (R-NONCOPYABLE). The parser
+# detects the known causes itself (an NCollection_CellFilter or a container of a type with a deleted copy constructor held
+# by value, and classes holding such a class by value); this list is for any case it cannot see.
 noncopyable = [
-    "math_GlobOptMin",                  # NCollection_Map<NCollection_CellFilter<...>::Cell> member (see above)
-    "BRepExtrema_ProximityValueTool",   # NCollection_CellFilter<BRepExtrema_VertexInspector> member: same Cell type
-    "BRepExtrema_ShapeProximity",       # holds a BRepExtrema_ProximityValueTool by value
-    "BRepTopAdaptor_FClass2d",          # NCollection_Sequence<CSLib_Class2d> member; CSLib_Class2d's copy constructor is deleted
 ]
 # C++ namespaces never bound: std (OCCT only adds std::hash specialisations there) and the implementation-detail
 # namespaces OCCT keeps in headers for inline code (MathSys::detail, MathLin::Internal, BRepGraph_RefsIterator::Detail).

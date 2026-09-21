@@ -17,6 +17,7 @@
 #include <gp_Pnt.hxx>
 #include <math_MultipleVarFunction.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_GCPnts(nb::module_ &m) {
     nb::enum_<GCPnts_AbscissaType>(m, "GCPnts_AbscissaType", nb::is_arithmetic())

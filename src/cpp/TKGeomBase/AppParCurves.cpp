@@ -16,6 +16,7 @@
 #include <math_IntegerVector.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_AppParCurves(nb::module_ &m) {
     nb::enum_<AppParCurves_Constraint>(m, "AppParCurves_Constraint", R"nbdoc(-   NoConstraint: this point has no constraints.

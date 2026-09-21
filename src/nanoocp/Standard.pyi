@@ -563,9 +563,6 @@ class Standard_ErrorHandler:
         otherwise prints error and terminates program.
         """
 
-    def Label(self) -> int:
-        """Returns label for jump"""
-
     def Error(self) -> None | "OSD_SIGBUS" | "OSD_SIGHUP" | "OSD_SIGILL" | "OSD_SIGINT" | "OSD_SIGKILL" | "OSD_SIGQUIT" | "OSD_SIGSEGV" | "OSD_SIGSYS" | "OSD_Exception_ACCESS_VIOLATION" | "OSD_Exception_ARRAY_BOUNDS_EXCEEDED" | "OSD_Exception_ILLEGAL_INSTRUCTION" | "OSD_Exception_IN_PAGE_ERROR" | "OSD_Exception_INT_OVERFLOW" | "OSD_Exception_INVALID_DISPOSITION" | "OSD_Exception_NONCONTINUABLE_EXCEPTION" | "OSD_Exception_PRIV_INSTRUCTION" | "OSD_Exception_STACK_OVERFLOW" | "OSD_Exception_STATUS_NO_MEMORY" | "Standard_DivideByZero" | "Standard_NumericError" | "Standard_Overflow" | "Standard_ProgramError" | "Standard_Underflow":
         """Returns the current Error variant."""
 

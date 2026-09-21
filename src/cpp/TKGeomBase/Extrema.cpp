@@ -116,6 +116,7 @@
 #include <math_MultipleVarFunctionWithGradient.hxx>
 #include <math_MultipleVarFunctionWithHessian.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_Extrema(nb::module_ &m) {
     nb::enum_<Extrema_ElementType>(m, "Extrema_ElementType", nb::is_arithmetic())

@@ -34,6 +34,9 @@ HEADER = """
 #include <NCollection_Array1.hxx>
 #include <NCollection_DynamicArray.hxx>
 #include <NCollection_List.hxx>
+#include <NCollection_Sequence.hxx>
+#include <NCollection_DefineAlloc.hxx>
+#include <utility>
 #include <gp_Trsf.hxx>
 
 //! A Transient class for the handle rules.
@@ -156,6 +159,52 @@ public:
   using Rules_Value::Rules_Value;
 };
 
+//! An element type with a deleted copy constructor (CSLib_Class2d).
+class Rules_NoCopy
+{
+public:
+  Rules_NoCopy() {}
+  Rules_NoCopy(const Rules_NoCopy&) = delete;
+};
+
+//! R-NONCOPYABLE detected: a container of such elements held by value (BRepTopAdaptor_FClass2d), and a class holding this one.
+class Rules_Holder
+{
+public:
+  Rules_Holder() {}
+  NCollection_Sequence<Rules_NoCopy> mySeq;
+};
+class Rules_Holder2
+{
+public:
+  Rules_Holder2() {}
+  Rules_Holder myHolder;
+};
+
+//! Class-level operator new without the placement form (DEFINE_NCOLLECTION_ALLOC): fine while trivially copyable
+//! (Poly_CoherentTriPtr) ...
+class Rules_Alloc
+{
+public:
+  DEFINE_NCOLLECTION_ALLOC
+  int myA = 0;
+};
+//! ... but not with a base (BRepMeshData_Curve): nanobind's copy wrapper needs placement new.
+class Rules_AllocDerived : public Rules_Value
+{
+public:
+  DEFINE_NCOLLECTION_ALLOC
+};
+
+//! An array reference parameter (BRepMesh_Triangle::Initialize) and a std::pair& out-parameter (BRepMesh_ConeRangeSplitter).
+class Rules_Arrays
+{
+public:
+  Rules_Arrays() {}
+  void Nodes(int (&theNodes)[3]) const { theNodes[0] = 1; }
+  double Steps(const int theN, std::pair<int, int>& theSteps) const { theSteps = {theN, theN}; return 1.0; }
+};
+
 //! More()/Next()/Value(): its own Python iterator (R-ITER).
 class Rules_Iter
 {
@@ -214,7 +263,7 @@ def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None
 def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
     assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
-                     "Rules_Algo", "Rules_Inherit", "Rules_Iter"]
+                     "Rules_Algo", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2", "Rules_Alloc", "Rules_Arrays", "Rules_Iter"]
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -387,6 +436,22 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     assert [[p.type for p in k.params] for k in inherit.ctors] == [["const gp_Pnt &"]] and not inherit.has_declared_ctor
     tail = cpp[cpp.index('m.attr("Rules_Inherit"))'):]
     assert "nanoocp_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::arg("thePnt")' in tail
+
+
+def test_ir_noncopyable_detection_hidden_placement_new_arrays_and_std_out(rules_ir):
+    by = {c.name: c for c in rules_ir.classes}
+    # R-NONCOPYABLE detected: a container of a deleted-copy element, and a class holding that class by value
+    assert by["Rules_Holder"].noncopyable and by["Rules_Holder2"].noncopyable and not by["Rules_NoCopy"].noncopyable
+    assert "Rules_Holder: member mySeq of type NCollection_Sequence<Rules_NoCopy> is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)" in by["Rules_Holder"].skipped
+    assert "Rules_Holder2: member myHolder of type Rules_Holder is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)" in by["Rules_Holder2"].skipped
+    # class-level operator new without placement form: constructible=False; skipped only when not trivially copyable
+    assert by["Rules_Alloc"].constructible is False and "Rules_AllocDerived" not in by
+    assert any(r.startswith("Rules_AllocDerived: operator new is not public (no placement form) and the class is not trivially copyable") for r in rules_ir.report)
+    # int (&)[3] is an array (R-ARRAY); std::pair<int, int>& is an out-parameter (R-OUT) with the Python type name tuple
+    arrays = by["Rules_Arrays"]
+    assert _method(rules_ir, "Rules_Arrays", "Nodes").skip_reason == "param 'theNodes': array"
+    steps = _method(rules_ir, "Rules_Arrays", "Steps")
+    assert steps.skip_reason is None and [(p.name, p.is_out, p.out_py) for p in steps.params] == [("theN", False, ""), ("theSteps", True, "tuple")]
 
 
 def test_resolve_ctor_arities():

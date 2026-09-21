@@ -34,6 +34,7 @@
 #include <math_FunctionWithDerivative.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_Geom2dInt(nb::module_ &m) {
     { nb::class_<Geom2dInt_TheDistBetweenPCurvesOfTheIntPCurvePCurveOfGInter, math_FunctionSetWithDerivatives> cls(m, "Geom2dInt_TheDistBetweenPCurvesOfTheIntPCurvePCurveOfGInter");

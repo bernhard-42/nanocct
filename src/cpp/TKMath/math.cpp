@@ -63,7 +63,7 @@
 #include <gp_XY.hxx>
 #include <gp_XYZ.hxx>
 
-// math_GlobOptMin: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):
+// math_GlobOptMin: its copy/move constructors do not compile although declared (R-NONCOPYABLE):
 // bound through a wrapper with deleted copy and move, under the original name
 struct nanoocp_wrap_math_GlobOptMin : math_GlobOptMin {
     using math_GlobOptMin::math_GlobOptMin;

@@ -58,6 +58,7 @@
 #include <math_FunctionSetWithDerivatives.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_ProjLib(nb::module_ &m) {
     { nb::class_<ProjLib> cls(m, "ProjLib", R"nbdoc(The ProjLib package first provides projection of curves on a plane along a given Direction.

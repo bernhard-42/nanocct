@@ -593,7 +593,7 @@ class IntTools_Context(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: IntTools_Context) -> None: ...
 
-    def FClass2d(self, aF: nanoocp.TopoDS.TopoDS_Face) -> IntTools_FClass2d:
+    def FClass2d(self, aF: nanoocp.TopoDS.TopoDS_Face) -> "IntTools_FClass2d":
         """
         Returns a reference to point classifier
         for given face

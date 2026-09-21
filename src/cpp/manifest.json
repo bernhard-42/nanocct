@@ -772,6 +772,62 @@
 "BRepMAT2d_BisectingLocus": "BRepMAT2d",
 "BRepMAT2d_Explorer": "BRepMAT2d",
 "BRepMAT2d_LinkTopoBilo": "BRepMAT2d",
+"BRepMeshData_Model": "BRepMeshData",
+"BRepMesh_BaseMeshAlgo": "BRepMesh",
+"BRepMesh_BoundaryParamsRangeSplitter": "BRepMesh",
+"BRepMesh_Circle": "BRepMesh",
+"BRepMesh_CircleInspector": "BRepMesh",
+"BRepMesh_CircleTool": "BRepMesh",
+"BRepMesh_ConeRangeSplitter": "BRepMesh",
+"BRepMesh_ConstrainedBaseMeshAlgo": "BRepMesh",
+"BRepMesh_Context": "BRepMesh",
+"BRepMesh_CurveTessellator": "BRepMesh",
+"BRepMesh_CustomBaseMeshAlgo": "BRepMesh",
+"BRepMesh_CylinderRangeSplitter": "BRepMesh",
+"BRepMesh_DataStructureOfDelaun": "BRepMesh",
+"BRepMesh_DefaultRangeSplitter": "BRepMesh",
+"BRepMesh_Deflection": "BRepMesh",
+"BRepMesh_DegreeOfFreedom": "BRepMesh",
+"BRepMesh_DelabellaBaseMeshAlgo": "BRepMesh",
+"BRepMesh_DelabellaMeshAlgoFactory": "BRepMesh",
+"BRepMesh_Delaun": "BRepMesh",
+"BRepMesh_DelaunayBaseMeshAlgo": "BRepMesh",
+"BRepMesh_DiscretAlgoFactory": "BRepMesh",
+"BRepMesh_DiscretFactory": "BRepMesh",
+"BRepMesh_DiscretRoot": "BRepMesh",
+"BRepMesh_Edge": "BRepMesh",
+"BRepMesh_EdgeDiscret": "BRepMesh",
+"BRepMesh_EdgeTessellationExtractor": "BRepMesh",
+"BRepMesh_ExtrusionRangeSplitter": "BRepMesh",
+"BRepMesh_FaceChecker": "BRepMesh",
+"BRepMesh_FaceChecker::Segment": "BRepMesh",
+"BRepMesh_FaceDiscret": "BRepMesh",
+"BRepMesh_FastDiscret": "BRepMesh",
+"BRepMesh_GeomTool": "BRepMesh",
+"BRepMesh_GeomTool::IntFlag": "BRepMesh",
+"BRepMesh_IncrementalMesh": "BRepMesh",
+"BRepMesh_IncrementalMeshFactory": "BRepMesh",
+"BRepMesh_MeshAlgoFactory": "BRepMesh",
+"BRepMesh_MeshTool": "BRepMesh",
+"BRepMesh_MeshTool::NodeClassifier": "BRepMesh",
+"BRepMesh_ModelBuilder": "BRepMesh",
+"BRepMesh_ModelHealer": "BRepMesh",
+"BRepMesh_ModelPostProcessor": "BRepMesh",
+"BRepMesh_ModelPreProcessor": "BRepMesh",
+"BRepMesh_NURBSRangeSplitter": "BRepMesh",
+"BRepMesh_OrientedEdge": "BRepMesh",
+"BRepMesh_PairOfIndex": "BRepMesh",
+"BRepMesh_SelectorOfDataStructureOfDelaun": "BRepMesh",
+"BRepMesh_ShapeTool": "BRepMesh",
+"BRepMesh_ShapeVisitor": "BRepMesh",
+"BRepMesh_SphereRangeSplitter": "BRepMesh",
+"BRepMesh_TorusRangeSplitter": "BRepMesh",
+"BRepMesh_Triangle": "BRepMesh",
+"BRepMesh_Triangulator": "BRepMesh",
+"BRepMesh_UVParamRangeSplitter": "BRepMesh",
+"BRepMesh_UndefinedRangeSplitter": "BRepMesh",
+"BRepMesh_Vertex": "BRepMesh",
+"BRepMesh_VertexInspector": "BRepMesh",
 "BRepPreviewAPI_MakeBox": "BRepPreviewAPI",
 "BRepPrimAPI_MakeBox": "BRepPrimAPI",
 "BRepPrimAPI_MakeCone": "BRepPrimAPI",
@@ -1663,6 +1719,29 @@
 "HelixGeom_HelixCurve": "HelixGeom",
 "HelixGeom_Tools": "HelixGeom",
 "Hermit": "Hermit",
+"IMeshData_Curve": "IMeshData",
+"IMeshData_Edge": "IMeshData",
+"IMeshData_Face": "IMeshData",
+"IMeshData_Model": "IMeshData",
+"IMeshData_PCurve": "IMeshData",
+"IMeshData_ParametersList": "IMeshData",
+"IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>": "IMeshData",
+"IMeshData_Shape": "IMeshData",
+"IMeshData_Status": "IMeshData",
+"IMeshData_StatusOwner": "IMeshData",
+"IMeshData_TessellatedShape": "IMeshData",
+"IMeshData_Wire": "IMeshData",
+"IMeshTools_Context": "IMeshTools",
+"IMeshTools_CurveTessellator": "IMeshTools",
+"IMeshTools_MeshAlgo": "IMeshTools",
+"IMeshTools_MeshAlgoFactory": "IMeshTools",
+"IMeshTools_MeshAlgoType": "IMeshTools",
+"IMeshTools_MeshBuilder": "IMeshTools",
+"IMeshTools_ModelAlgo": "IMeshTools",
+"IMeshTools_ModelBuilder": "IMeshTools",
+"IMeshTools_Parameters": "IMeshTools",
+"IMeshTools_ShapeExplorer": "IMeshTools",
+"IMeshTools_ShapeVisitor": "IMeshTools",
 "IntAna2d_AnaIntersection": "IntAna2d",
 "IntAna2d_Conic": "IntAna2d",
 "IntAna2d_IntPoint": "IntAna2d",
@@ -1979,6 +2058,8 @@
 "NCollection_BaseSequence": "NCollection",
 "NCollection_BaseSequence::Iterator": "NCollection",
 "NCollection_Buffer": "NCollection",
+"NCollection_CellFilter<BRepMesh_CircleInspector>": "IMeshData",
+"NCollection_CellFilter<BRepMesh_VertexInspector>": "IMeshData",
 "NCollection_CellFilter_Action": "NCollection",
 "NCollection_DefaultHasher<BRepGraph_ItemId>": "BRepGraph",
 "NCollection_DefaultHasher<BRepGraph_ItemUID>": "BRepGraph",
@@ -2022,10 +2103,15 @@
 "NCollection_ListNode": "NCollection",
 "NCollection_Mat4<double>": "BVH",
 "NCollection_Mat4<float>": "BVH",
+"NCollection_OccAllocator<double>": "IMeshData",
+"NCollection_OccAllocator<gp_Pnt2d>": "IMeshData",
+"NCollection_OccAllocator<gp_Pnt>": "IMeshData",
+"NCollection_OccAllocator<int>": "IMeshData",
 "NCollection_PackedMap<int>": "TColStd",
 "NCollection_SeqNode": "NCollection",
 "NCollection_SparseArrayBase": "NCollection",
 "NCollection_SparseArrayBase::Iterator": "NCollection",
+"NCollection_UBTreeFiller<int, Bnd_Box2d>": "IMeshData",
 "NCollection_UtfString<char>": "NCollection",
 "NCollection_Vec2<double>": "BVH",
 "NCollection_Vec2<float>": "BVH",
@@ -3782,6 +3868,12 @@
 "name": "GeomLProp_SLProps",
 "by": "GeomLProp"
 },
+"IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve",
+"by": "IMeshData"
+},
 "IntPolyh_Array<IntPolyh_Edge>": {
 "toolkit": "TKGeomAlgo",
 "package": "IntPolyh",
@@ -3973,6 +4065,12 @@
 "package": "NCollection",
 "name": "NCollection_Array1__BRepGraph_Validate_Issue",
 "by": "BRepGraph"
+},
+"NCollection_Array1<BRepMesh_Vertex>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Array1__BRepMesh_Vertex",
+"by": "IMeshData"
 },
 "NCollection_Array1<Bnd_Box>": {
 "toolkit": "TKMath",
@@ -4388,6 +4486,18 @@
 "name": "NCollection_Array2__opencascade_handle__NCollection_HArray1__int",
 "by": "FEmTool"
 },
+"NCollection_CellFilter<BRepMesh_CircleInspector>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_CellFilter__BRepMesh_CircleInspector",
+"by": "IMeshData"
+},
+"NCollection_CellFilter<BRepMesh_VertexInspector>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_CellFilter__BRepMesh_VertexInspector",
+"by": "IMeshData"
+},
 "NCollection_DataMap<BRepGraph_ItemUID, NCollection_LinearVector<BRepGraph_ItemUID>>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
@@ -4405,6 +4515,20 @@
 "package": "NCollection",
 "name": "NCollection_DataMap__BRepGraph_UID__NCollection_LinearVector__BRepGraph_UID",
 "by": "BRepGraph"
+},
+"NCollection_DataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<int>>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_DataMap<IMeshData_Face *, opencascade::handle<NCollection_Shared<NCollection_Map<IMeshData_Edge *>>>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
 },
 "NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString>": {
 "toolkit": "TKernel",
@@ -4502,11 +4626,23 @@
 "name": "NCollection_DataMap__int__NCollection_PackedMap__int",
 "by": "BRepExtrema"
 },
+"NCollection_DataMap<int, NCollection_Shared<NCollection_List<int>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DataMap__int__NCollection_Shared__NCollection_List__int",
+"by": "IMeshData"
+},
 "NCollection_DataMap<int, TopoDS_Shape>": {
 "toolkit": "TKTopAlgo",
 "package": "NCollection",
 "name": "NCollection_DataMap__int__TopoDS_Shape",
 "by": "BRepLib"
+},
+"NCollection_DataMap<int, bool>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DataMap__int__bool",
+"by": "IMeshData"
 },
 "NCollection_DataMap<int, double>": {
 "toolkit": "TKernel",
@@ -4647,11 +4783,36 @@
 "by": "BRepExtrema",
 "skipped": true
 },
+"NCollection_DynamicArray<BRepMesh_Circle>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BRepMesh_Circle",
+"by": "IMeshData"
+},
+"NCollection_DynamicArray<BRepMesh_Triangle>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BRepMesh_Triangle",
+"by": "IMeshData"
+},
+"NCollection_DynamicArray<BRepMesh_Vertex>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BRepMesh_Vertex",
+"by": "IMeshData"
+},
 "NCollection_DynamicArray<ExtremaPC::ExtremumResult>": {
 "toolkit": "TKGeomBase",
 "package": "NCollection",
 "name": "NCollection_DynamicArray__ExtremaPC_ExtremumResult",
 "by": "ExtremaPC"
+},
+"NCollection_DynamicArray<IMeshData_Edge *>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
 },
 "NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair>": {
 "toolkit": "",
@@ -4690,11 +4851,23 @@
 "name": "NCollection_DynamicArray__Poly_CoherentTriangle",
 "by": "Poly"
 },
+"NCollection_DynamicArray<TopAbs_Orientation>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__TopAbs_Orientation",
+"by": "IMeshData"
+},
 "NCollection_DynamicArray<TopoDS_Shape>": {
 "toolkit": "TKTopAlgo",
 "package": "NCollection",
 "name": "NCollection_DynamicArray__TopoDS_Shape",
 "by": "BRepExtrema"
+},
+"NCollection_DynamicArray<bool>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__bool",
+"by": "IMeshData"
 },
 "NCollection_DynamicArray<double>": {
 "toolkit": "TKMath",
@@ -4725,6 +4898,37 @@
 "package": "NCollection",
 "name": "NCollection_DynamicArray__Handle_Adaptor3d_Surface",
 "by": "IntPatch"
+},
+"NCollection_DynamicArray<opencascade::handle<IMeshData_Edge>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__Handle_IMeshData_Edge",
+"by": "IMeshData"
+},
+"NCollection_DynamicArray<opencascade::handle<IMeshData_Face>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__Handle_IMeshData_Face",
+"by": "IMeshData"
+},
+"NCollection_DynamicArray<opencascade::handle<IMeshData_PCurve>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__Handle_IMeshData_PCurve",
+"by": "IMeshData"
+},
+"NCollection_DynamicArray<opencascade::handle<IMeshData_Wire>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__Handle_IMeshData_Wire",
+"by": "IMeshData"
+},
+"NCollection_EBTree<int, Bnd_Box2d>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
 },
 "NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>": {
 "toolkit": "TKBRep",
@@ -5050,6 +5254,19 @@
 "name": "NCollection_HSequence__Handle_Units_Unit",
 "by": "Units"
 },
+"NCollection_IndexedDataMap<BRepMesh_Edge, BRepMesh_PairOfIndex>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__BRepMesh_Edge__BRepMesh_PairOfIndex",
+"by": "IMeshData"
+},
+"NCollection_IndexedDataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<opencascade::handle<IMeshData_PCurve>>>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
 "NCollection_IndexedDataMap<TCollection_AsciiString, Standard_DumpValue>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -5139,6 +5356,12 @@
 "package": "NCollection",
 "name": "NCollection_IndexedMap__TopoDS_Shape",
 "by": "TopOpeBRepBuild"
+},
+"NCollection_IndexedMap<double>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__double",
+"by": "IMeshData"
 },
 "NCollection_IndexedMap<opencascade::handle<BOPDS_PaveBlock>>": {
 "toolkit": "TKBO",
@@ -5428,6 +5651,12 @@
 "name": "NCollection_List__NCollection_List__TopoDS_Shape",
 "by": "BOPAlgo"
 },
+"NCollection_List<NCollection_Sequence<int>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_List__NCollection_Sequence__int",
+"by": "BRepMesh"
+},
 "NCollection_List<Poly_CoherentTriangulation::TwoIntegers>": {
 "toolkit": "TKMath",
 "package": "NCollection",
@@ -5440,6 +5669,12 @@
 "name": "NCollection_List__Poly_MakeLoops_Link",
 "by": "Poly"
 },
+"NCollection_List<Poly_Triangle>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_List__Poly_Triangle",
+"by": "BRepMesh"
+},
 "NCollection_List<TopoDS_Shape>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
@@ -5451,6 +5686,12 @@
 "package": "NCollection",
 "name": "NCollection_List__double",
 "by": "IntAna"
+},
+"NCollection_List<gp_Pnt2d>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_List__gp_Pnt2d",
+"by": "IMeshData"
 },
 "NCollection_List<gp_Pnt>": {
 "toolkit": "TKGeomBase",
@@ -5470,6 +5711,12 @@
 "name": "NCollection_List__Handle_BOPDS_PaveBlock",
 "by": "BOPAlgo"
 },
+"NCollection_List<opencascade::handle<BRepMesh_DiscretAlgoFactory>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_List__Handle_BRepMesh_DiscretAlgoFactory",
+"by": "BRepMesh"
+},
 "NCollection_List<opencascade::handle<BRep_CurveRepresentation>>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
@@ -5481,6 +5728,12 @@
 "package": "NCollection",
 "name": "NCollection_List__Handle_BRep_PointRepresentation",
 "by": "BRep"
+},
+"NCollection_List<opencascade::handle<IMeshData_PCurve>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_List__Handle_IMeshData_PCurve",
+"by": "IMeshData"
 },
 "NCollection_List<opencascade::handle<Law_Function>>": {
 "toolkit": "TKGeomAlgo",
@@ -5524,11 +5777,37 @@
 "name": "NCollection_Map__BOPDS_Pair",
 "by": "BOPDS"
 },
+"NCollection_Map<BRepMesh_OrientedEdge>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Map__BRepMesh_OrientedEdge",
+"by": "IMeshData"
+},
+"NCollection_Map<IMeshData_Edge *>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Map<IMeshData_Face *>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
 "NCollection_Map<TopoDS_Shape, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
 "name": "NCollection_Map__TopoDS_Shape__TopTools_ShapeMapHasher",
 "by": "TopExp"
+},
+"NCollection_Map<double>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Map__double",
+"by": "IMeshData"
 },
 "NCollection_Map<int>": {
 "toolkit": "TKernel",
@@ -5554,6 +5833,30 @@
 "name": "BVH_Mat4f",
 "by": "BVH"
 },
+"NCollection_OccAllocator<double>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_OccAllocator__double",
+"by": "IMeshData"
+},
+"NCollection_OccAllocator<gp_Pnt2d>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_OccAllocator__gp_Pnt2d",
+"by": "IMeshData"
+},
+"NCollection_OccAllocator<gp_Pnt>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_OccAllocator__gp_Pnt",
+"by": "IMeshData"
+},
+"NCollection_OccAllocator<int>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_OccAllocator__int",
+"by": "IMeshData"
+},
 "NCollection_PackedMap<int>": {
 "toolkit": "TKernel",
 "package": "TColStd",
@@ -5571,6 +5874,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__BRepExtrema_SolutionElem",
 "by": "BRepExtrema"
+},
+"NCollection_Sequence<Bnd_B2<double>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Sequence__Bnd_B2__double",
+"by": "IMeshData"
 },
 "NCollection_Sequence<Extrema_POnCurv2d>": {
 "toolkit": "TKGeomBase",
@@ -5709,6 +6018,13 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__bool",
 "by": "MAT2d"
+},
+"NCollection_Sequence<const gp_Pnt2d *>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "BRepMesh",
+"skipped": true
 },
 "NCollection_Sequence<double>": {
 "toolkit": "TKGeomBase",
@@ -5890,17 +6206,228 @@
 "name": "NCollection_Sequence__Handle_Units_Unit",
 "by": "Units"
 },
+"NCollection_Shared<NCollection_Array1<BRepMesh_Vertex>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Array1__BRepMesh_Vertex",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_Array1<int>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Array1__int",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<int>>>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_DataMap<IMeshData_Face *, opencascade::handle<NCollection_Shared<NCollection_Map<IMeshData_Edge *>>>>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DataMap__TopoDS_Shape__int__TopTools_ShapeMapHasher",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DataMap<int, NCollection_Shared<NCollection_List<int>>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DataMap__int__NCollection_Shared__NCollection_List__int",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DataMap<int, bool>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DataMap__int__bool",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<BRepMesh_Circle>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__BRepMesh_Circle",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<BRepMesh_Triangle>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__BRepMesh_Triangle",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<BRepMesh_Vertex>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__BRepMesh_Vertex",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<IMeshData_Edge *>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_DynamicArray<TopAbs_Orientation>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__TopAbs_Orientation",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<bool>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__bool",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<int>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__int",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_Edge>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_Edge",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_Face>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_Face",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_PCurve>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_PCurve",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_Wire>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_Wire",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_EBTree<int, Bnd_Box2d>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_IndexedDataMap<BRepMesh_Edge, BRepMesh_PairOfIndex>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_IndexedDataMap__BRepMesh_Edge__BRepMesh_PairOfIndex",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_IndexedDataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<opencascade::handle<IMeshData_PCurve>>>>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_IndexedMap<double>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_IndexedMap__double",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_List<gp_Pnt2d>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_List__gp_Pnt2d",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_List<int>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_List__int",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_List<opencascade::handle<IMeshData_PCurve>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_List__Handle_IMeshData_PCurve",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_Map<BRepMesh_OrientedEdge>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Map__BRepMesh_OrientedEdge",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_Map<IMeshData_Edge *>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_Map<IMeshData_Face *>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_Map<double>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Map__double",
+"by": "IMeshData"
+},
 "NCollection_Shared<NCollection_Map<int>>": {
 "toolkit": "TKernel",
 "package": "NCollection",
 "name": "NCollection_Shared__NCollection_Map__int",
 "by": "NCollection"
 },
+"NCollection_Shared<NCollection_PackedMap<int>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_PackedMap__int",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_Sequence<Bnd_B2<double>>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Sequence__Bnd_B2__double",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_Sequence<double>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Sequence__double",
+"by": "IMeshData"
+},
+"NCollection_Shared<NCollection_Sequence<int>>": {
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_Sequence__int",
+"by": "IMeshData"
+},
 "NCollection_Shared<Standard_Mutex>": {
 "toolkit": "TKernel",
 "package": "NCollection",
 "name": "NCollection_Shared__Standard_Mutex",
 "by": "Standard"
+},
+"NCollection_UBTreeFiller<int, Bnd_Box2d>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_UBTreeFiller__int__Bnd_Box2d",
+"by": "IMeshData"
 },
 "NCollection_UtfString<char>": {
 "toolkit": "TKernel",
@@ -6029,6 +6556,8 @@
 "BRepLProp": "TKBRep",
 "BRepLib": "TKTopAlgo",
 "BRepMAT2d": "TKTopAlgo",
+"BRepMesh": "TKMesh",
+"BRepMeshData": "TKMesh",
 "BRepPreviewAPI": "TKPrim",
 "BRepPrim": "TKPrim",
 "BRepPrimAPI": "TKPrim",
@@ -6097,6 +6626,8 @@
 "HelixBRep": "TKHelix",
 "HelixGeom": "TKHelix",
 "Hermit": "TKGeomBase",
+"IMeshData": "TKMesh",
+"IMeshTools": "TKMesh",
 "IntAna": "TKGeomBase",
 "IntAna2d": "TKGeomBase",
 "IntCurve": "TKGeomAlgo",
@@ -6380,6 +6911,12 @@
 "TKHelix": [
 "HelixBRep",
 "HelixGeom"
+],
+"TKMesh": [
+"IMeshData",
+"IMeshTools",
+"BRepMeshData",
+"BRepMesh"
 ]
 },
 "namespaces": {
@@ -6429,6 +6966,8 @@
 "BRepLProp": [],
 "BRepLib": [],
 "BRepMAT2d": [],
+"BRepMesh": [],
+"BRepMeshData": [],
 "BRepPreviewAPI": [],
 "BRepPrim": [],
 "BRepPrimAPI": [],
@@ -6512,6 +7051,8 @@
 "HelixBRep": [],
 "HelixGeom": [],
 "Hermit": [],
+"IMeshData": [],
+"IMeshTools": [],
 "IntAna": [],
 "IntAna2d": [],
 "IntCurve": [],

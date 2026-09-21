@@ -17,7 +17,7 @@
 #include <gp_Pnt.hxx>
 #include <gp_Pnt2d.hxx>
 
-// BRepTopAdaptor_FClass2d: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):
+// BRepTopAdaptor_FClass2d: its copy/move constructors do not compile although declared (R-NONCOPYABLE):
 // bound through a wrapper with deleted copy and move, under the original name
 struct nanoocp_wrap_BRepTopAdaptor_FClass2d : BRepTopAdaptor_FClass2d {
     using BRepTopAdaptor_FClass2d::BRepTopAdaptor_FClass2d;

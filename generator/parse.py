@@ -225,6 +225,9 @@ def _out_py_type(t: cindex.Type) -> str:
         return "str"
     if canon.kind in (TK.INT, TK.UINT, TK.SHORT, TK.USHORT, TK.LONG, TK.ULONG, TK.LONGLONG, TK.ULONGLONG):
         return "int"
+    std_name = _std_caster_name(canon)
+    if std_name is not None:
+        return _STD_PY_NAMES[std_name]              # std::pair<int, int>& -> tuple
     return _py_identifier(_class_behind(t))        # enum/class name; a container instantiation by its 6a concrete name
 
 
@@ -270,7 +273,25 @@ def _is_out_param(t: cindex.Type) -> bool:
     pointee = t.get_pointee()
     if pointee.is_const_qualified():
         return False
-    return pointee.get_canonical().kind in _PRIMITIVE_KINDS or _is_handle(pointee)
+    return pointee.get_canonical().kind in _PRIMITIVE_KINDS or _is_handle(pointee) or _std_caster_name(pointee) is not None
+
+
+_STD_PY_NAMES = {"pair": "tuple", "tuple": "tuple", "vector": "list", "map": "dict", "unordered_map": "dict", "set": "set",
+                 "unordered_set": "set", "optional": "Optional", "basic_string": "str", "basic_string_view": "str"}
+
+
+def _std_caster_name(t: cindex.Type) -> str | None:
+    """'pair', 'vector', ... when t is a std type nanobind converts by value (R-STL); None otherwise. A non-const reference to
+    one is an out-parameter (BRepMesh_ConeRangeSplitter::GetSplitSteps(..., std::pair<int, int>&)): the caster hands the callee
+    a temporary, so it cannot be filled in place like a class reference."""
+    canon = t.get_canonical()
+    if canon.kind != TK.RECORD:
+        return None
+    decl = canon.get_declaration()
+    parent = decl.semantic_parent
+    if parent is not None and parent.kind == K.NAMESPACE and parent.spelling in ("std", "__1") and decl.spelling in _STD_PY_NAMES:
+        return decl.spelling
+    return None
 
 
 class Substitution:
@@ -439,6 +460,8 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
         return "rvalue reference"
     if canon.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
         return "array"
+    if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
+        return "array"                          # int (&)[3] (BRepMesh_Triangle::Initialize)
     if canon.kind == TK.POINTER:
         pointee = canon.get_pointee()
         pk = pointee.get_canonical().kind
@@ -758,6 +781,30 @@ def _conversion(cursor: cindex.Cursor) -> Conversion | None:
 
 
 # Design.md 6 R-NESTED, R-FIELD, R-INCOMPLETE, R-IMPLICIT-CONV, R-IMPLICIT-DEFAULT, R-MI, R-NONCOPYABLE
+_DETECTED_NONCOPYABLE: set[str] = set()     # classes found non-copyable while parsing this run (CellFilter members), by canonical name
+
+
+def _holds_uncopyable_element(t: cindex.Type) -> bool:
+    """A container member whose element type declares its copy constructor deleted (NCollection_Sequence<CSLib_Class2d> in
+    BRepTopAdaptor_FClass2d): the container's implicit copy does not compile although the traits say it does."""
+    canon = t.get_canonical()
+    if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0 or canon.get_declaration().spelling not in BINDERS:
+        return False                                # only the NCollection value containers store their elements by value
+    for i in range(canon.get_num_template_arguments()):
+        arg = canon.get_template_argument_type(i)
+        if arg.kind == TK.INVALID:
+            continue
+        decl = arg.get_canonical().get_declaration()
+        if decl.kind in (K.CLASS_DECL, K.STRUCT_DECL) and decl.get_definition() is not None and any(
+                ch.kind == K.CONSTRUCTOR and ch.is_copy_constructor() and ch.is_deleted_method() for ch in decl.get_definition().get_children()):
+            return True
+    return False
+
+
+def _strip_cv(spelling: str) -> str:
+    return re.sub(r"^const ", "", spelling).strip()
+
+
 def _members(cursor: cindex.Cursor) -> set[str]:
     """Names usable unqualified inside a class body (for qualifying default arguments, R-DEFAULT)."""
     members: set[str] = set()
@@ -839,12 +886,46 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.skipped.append(f"{c.name}: member {ch.spelling} of incomplete type {inc} -> class skipped")
                 c.unbindable = True
                 break
+            # R-NONCOPYABLE, detected: NCollection_CellFilter<...>::Cell has a user-declared move constructor, so the
+            # NCollection_Map<Cell> inside every CellFilter cannot be copied while the traits say it can (math_GlobOptMin,
+            # BRepExtrema_ProximityValueTool, BRepMesh_CircleTool, BRepMesh_VertexTool); a class holding such a member by value
+            # goes through the wrapper like the hand-listed ones
+            fcanon = ch.type.get_canonical().spelling
+            if "NCollection_CellFilter<" in fcanon or _strip_cv(fcanon) in _DETECTED_NONCOPYABLE or _holds_uncopyable_element(ch.type):
+                if c.is_transient:
+                    # no wrapper for a Transient class (the wrapper would be the registered type while OCCT hands out the OCCT
+                    # class) and nanobind's copy wrapper would not compile: BRepMesh_VertexTool stays out
+                    c.skipped.append(f"{c.name}: member {ch.spelling} of type {_strip_cv(fcanon)} is not copyable and the class is Transient "
+                                     f"(no non-copyable wrapper possible) -> class skipped")
+                    c.unbindable = True
+                    break
+                if not c.noncopyable:
+                    c.skipped.append(f"{c.name}: member {ch.spelling} of type {_strip_cv(fcanon)} is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)")
+                c.noncopyable = True
     # nanobind constructs value types with placement new: possible only if the class declares no
     # operator new at all, or a public operator new(size_t, void*) (DEFINE_STANDARD_ALLOC does).
     news = [ch for ch in cursor.get_children() if ch.kind == K.CXX_METHOD and ch.spelling == "operator new"]
     if len(news) > 0 and not any(ch.access_specifier == Access.PUBLIC and len(list(ch.get_arguments())) == 2
                                  and list(ch.get_arguments())[1].type.get_canonical().spelling == "void *" for ch in news):
         c.constructible = False
+        # nanobind instantiates wrap_copy/wrap_move (placement new) for every non-trivially copy/move-constructible class;
+        # with the placement form hidden that does not compile (BRepMeshData_Curve: DEFINE_INC_ALLOC + a base class).
+        # Poly_CoherentTriPtr (pointer fields only) is trivially copyable and binds fine
+        children = list(cursor.get_children())
+        deleted_copy = any(ch.kind == K.CONSTRUCTOR and ch.is_copy_constructor() and (ch.is_deleted_method() or ch.access_specifier != Access.PUBLIC)
+                           for ch in children)
+        non_trivial = (any(ch.kind == K.CXX_BASE_SPECIFIER for ch in children)
+                       or any(ch.kind == K.CXX_METHOD and ch.is_virtual_method() for ch in children)
+                       or any(ch.kind == K.FIELD_DECL and ch.type.get_canonical().kind == TK.RECORD for ch in children))
+        if non_trivial and not deleted_copy:
+            c.skipped.append(f"{c.name}: operator new is not public (no placement form) and the class is not trivially copyable: "
+                             f"nanobind cannot instantiate its copy/move wrappers -> class skipped")
+            c.unbindable = True
+    if cpp_name.startswith("NCollection_CellFilter<") and not c.noncopyable:      # the CellFilter instantiation itself (its CellMap member)
+        c.skipped.append(f"{c.name}: its NCollection_Map<Cell> member is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)")
+        c.noncopyable = True
+    if c.noncopyable:
+        _DETECTED_NONCOPYABLE.add(c.name)
     for ch in cursor.get_children():
         if ch.kind == K.CXX_BASE_SPECIFIER:
             if ch.access_specifier != Access.PUBLIC:

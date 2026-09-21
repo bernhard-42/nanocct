@@ -21,6 +21,7 @@
 #include <math_FunctionSet.hxx>
 #include <math_Matrix.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_FEmTool(nb::module_ &m) {
     { nb::class_<FEmTool_Assembly> cls(m, "FEmTool_Assembly", R"nbdoc(Assemble and solve system from (one dimensional) Finite Elements)nbdoc");

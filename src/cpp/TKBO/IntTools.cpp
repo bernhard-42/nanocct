@@ -64,6 +64,14 @@
 #include <gp_Pnt.hxx>
 #include <gp_Pnt2d.hxx>
 
+// IntTools_FClass2d: its copy/move constructors do not compile although declared (R-NONCOPYABLE):
+// bound through a wrapper with deleted copy and move, under the original name
+struct nanoocp_wrap_IntTools_FClass2d : IntTools_FClass2d {
+    using IntTools_FClass2d::IntTools_FClass2d;
+    nanoocp_wrap_IntTools_FClass2d(const nanoocp_wrap_IntTools_FClass2d &) = delete;
+    nanoocp_wrap_IntTools_FClass2d(nanoocp_wrap_IntTools_FClass2d &&) = delete;
+};
+
 void nanoocp_declare_IntTools(nb::module_ &m) {
     { nb::class_<IntTools_Root> cls(m, "IntTools_Root", R"nbdoc(The class is to describe the root of
 function of one variable for Edge/Edge
@@ -127,7 +135,7 @@ Common parts between Edge and Face can be:
     { nb::class_<IntTools_FaceFace> cls(m, "IntTools_FaceFace", R"nbdoc(This class provides the intersection of
 face's underlying surfaces.)nbdoc");
     }
-    { nb::class_<IntTools_FClass2d> cls(m, "IntTools_FClass2d", R"nbdoc(Class provides an algorithm to classify a 2d Point
+    { nb::class_<nanoocp_wrap_IntTools_FClass2d> cls(m, "IntTools_FClass2d", R"nbdoc(Class provides an algorithm to classify a 2d Point
 in 2d space of face using boundaries of the face.)nbdoc");
     }
     { nb::class_<IntTools_ShrunkRange> cls(m, "IntTools_ShrunkRange", R"nbdoc(The class provides the computation of
@@ -608,7 +616,7 @@ remain untouched otherwise)nbdoc")
         .def("FuzzyValue", static_cast<double (IntTools_FaceFace::*)() const>(&IntTools_FaceFace::FuzzyValue), R"nbdoc(Returns Fuzzy value)nbdoc")
         .def("Context", static_cast<const occ::handle<IntTools_Context> & (IntTools_FaceFace::*)() const>(&IntTools_FaceFace::Context), R"nbdoc(Gets the intersection context)nbdoc");
     nanoocp_implicit_copy_ctor<IntTools_FaceFace>(nb::borrow<nb::class_<IntTools_FaceFace>>(m.attr("IntTools_FaceFace")));
-    nb::borrow<nb::class_<IntTools_FClass2d>>(m.attr("IntTools_FClass2d"))
+    nb::borrow<nb::class_<nanoocp_wrap_IntTools_FClass2d>>(m.attr("IntTools_FClass2d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
         .def(nb::init<const TopoDS_Face &, const double>(), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Initializes algorithm by the face F
 and tolerance Tol)nbdoc")
@@ -623,7 +631,7 @@ classified.)nbdoc")
 On if some points are OUT an some are IN
 (Caution: Internal use. see the code for more details))nbdoc")
         .def("IsHole", static_cast<bool (IntTools_FClass2d::*)() const>(&IntTools_FClass2d::IsHole));
-    nanoocp_implicit_copy_ctor<IntTools_FClass2d>(nb::borrow<nb::class_<IntTools_FClass2d>>(m.attr("IntTools_FClass2d")));
+    nanoocp_implicit_copy_ctor<nanoocp_wrap_IntTools_FClass2d>(nb::borrow<nb::class_<nanoocp_wrap_IntTools_FClass2d>>(m.attr("IntTools_FClass2d")));
     nb::borrow<nb::class_<IntTools_ShrunkRange>>(m.attr("IntTools_ShrunkRange"))
         .def(nb::init<>())
         .def("SetData", static_cast<void (IntTools_ShrunkRange::*)(const TopoDS_Edge &, const double, const double, const TopoDS_Vertex &, const TopoDS_Vertex &)>(&IntTools_ShrunkRange::SetData), nb::arg("aE"), nb::arg("aT1"), nb::arg("aT2"), nb::arg("aV1"), nb::arg("aV2"))

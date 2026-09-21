@@ -29,6 +29,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("unbound-type", r"unbound type|is not bound|not known"),
     ("incomplete", r"incomplete type"),
     ("not-constructible", r"operator new is not public|copy constructor declared in the header"),
+    ("noncopyable", r"non-copyable wrapper|no non-copyable wrapper possible"),
     ("inheritance", r"additional base|non-public base"),
     ("array", r"\barray\b"),
     ("rvalue", r"rvalue reference"),

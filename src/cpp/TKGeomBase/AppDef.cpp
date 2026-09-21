@@ -55,6 +55,7 @@
 #include <math_Matrix.hxx>
 #include <math_MultipleVarFunctionWithGradient.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_AppDef(nb::module_ &m) {
     { nb::class_<AppDef_BSpGradient_BFGSOfMyBSplGradientOfBSplineCompute, math_BFGS> cls(m, "AppDef_BSpGradient_BFGSOfMyBSplGradientOfBSplineCompute");

@@ -38,14 +38,14 @@
 #include <gp_Pnt.hxx>
 #include <gp_XYZ.hxx>
 
-// BRepExtrema_ProximityValueTool: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):
+// BRepExtrema_ProximityValueTool: its copy/move constructors do not compile although declared (R-NONCOPYABLE):
 // bound through a wrapper with deleted copy and move, under the original name
 struct nanoocp_wrap_BRepExtrema_ProximityValueTool : BRepExtrema_ProximityValueTool {
     using BRepExtrema_ProximityValueTool::BRepExtrema_ProximityValueTool;
     nanoocp_wrap_BRepExtrema_ProximityValueTool(const nanoocp_wrap_BRepExtrema_ProximityValueTool &) = delete;
     nanoocp_wrap_BRepExtrema_ProximityValueTool(nanoocp_wrap_BRepExtrema_ProximityValueTool &&) = delete;
 };
-// BRepExtrema_ShapeProximity: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):
+// BRepExtrema_ShapeProximity: its copy/move constructors do not compile although declared (R-NONCOPYABLE):
 // bound through a wrapper with deleted copy and move, under the original name
 struct nanoocp_wrap_BRepExtrema_ShapeProximity : BRepExtrema_ShapeProximity {
     using BRepExtrema_ShapeProximity::BRepExtrema_ShapeProximity;

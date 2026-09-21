@@ -69,6 +69,7 @@
 #include <math_Matrix.hxx>
 #include <math_MultipleVarFunctionWithGradient.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_BRepApprox(nb::module_ &m) {
     { nb::class_<BRepApprox_TheComputeLineOfApprox> cls(m, "BRepApprox_TheComputeLineOfApprox");
