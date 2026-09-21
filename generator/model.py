@@ -155,6 +155,8 @@ class Function:
     qualified: str = ""         # C++ name to call (Ns::Name for a function in a namespace); "" -> name
     scope: tuple[str, ...] = () # Python attribute path of the enclosing C++ namespace, relative to the package module
     suffix: str = ""            # R-COLLISION, as for methods
+    defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
+    mangled: str = ""                 # linker symbol; R-UNDEFINED compares it with nm's list (FUN_scanloi in TopOpeBRepDS)
 
 
 @dataclass

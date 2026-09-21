@@ -917,6 +917,9 @@ def _canonical_args(t: cindex.Type) -> str:
     return re.sub(r"std::__\w+::", "std::", t.get_canonical().spelling)
 
 
+_NESTED_OWNER = {src: kind for kind, info in BINDERS.items() for src in info.get("nested_from", {}).values()}   # TListIterator -> List
+
+
 def _note_instance(t: cindex.Type) -> None:
     """If t (or its pointee) is an instantiation of an NCollection template we have a binder for, record it,
     including nested instantiations in its arguments. Any other OCCT class template instantiation in a signature
@@ -929,6 +932,16 @@ def _note_instance(t: cindex.Type) -> None:
     decl = canon.get_declaration()
     if decl.spelling == "handle":       # opencascade::handle<NCollection_HArray1<T>> -> look inside
         _note_instance(canon.get_template_argument_type(0))
+        return
+    owner = _NESTED_OWNER.get(decl.spelling)
+    if owner is not None:
+        # NCollection_TListIterator<T> is NCollection_List<T>::Iterator, bound by the List binder (6a) as
+        # NCollection_List__T.Iterator: record the owner instantiation instead of a 6c class of its own (TopOpeBRepDS)
+        args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+        for i in range(len(args)):
+            _note_instance(canon.get_template_argument_type(i))
+        key = f"{owner}<{', '.join(instance_args(owner, args))}>"
+        _instances_seen.setdefault(key, TemplateInstance(template=owner, args=instance_args(owner, args), key=key))
         return
     if decl.spelling not in BINDERS:
         if not _SUBST.active and _is_plain_template_instance(t) and "type-parameter-" not in canon.spelling:
@@ -1232,7 +1245,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                               result_kind=rk, result_class=rc,
                               is_noexcept=_is_noexcept(cur), doc=_doc_with_deprecation(cur), header=header,
                               is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
-                              qualified=f"{ns}{cur.spelling}", scope=scope)
+                              qualified=f"{ns}{cur.spelling}", scope=scope,
+                              defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name)
                 if fn.skip_reason is None:
                     fn.skip_reason = _unsupported(cur.result_type, allow_out=False)
                 if fn.skip_reason is not None:

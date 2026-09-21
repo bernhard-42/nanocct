@@ -33,6 +33,7 @@ HEADER = """
 #include <gp_XYZ.hxx>
 #include <NCollection_Array1.hxx>
 #include <NCollection_DynamicArray.hxx>
+#include <NCollection_List.hxx>
 #include <gp_Trsf.hxx>
 
 //! A Transient class for the handle rules.
@@ -76,6 +77,8 @@ public:
   operator gp_Pnt() const { return gp_Pnt(); }
   //! A container in the signature registers the instantiation.
   int Count(const NCollection_Array1<gp_Pnt>& thePoles) const { return thePoles.Length(); }
+  //! NCollection_TListIterator<T> is NCollection_List<T>::Iterator: registers the List instantiation, no 6c class (TopOpeBRepDS).
+  NCollection_TListIterator<gp_Pnt> Iter(const NCollection_List<gp_Pnt>& theList) const { return NCollection_TListIterator<gp_Pnt>(theList); }
   //! const / non-const twins: only the non-const one is bound (R-CONST-TWIN).
   const gp_XYZ& Origin() const { return myOrigin; }
   gp_XYZ& Origin() { return myOrigin; }
@@ -294,6 +297,10 @@ def test_ir_namespaces_functions_constants(rules_ir):
 def test_ir_container_instantiation_registered(rules_ir):
     assert "NCollection_Array1<gp_Pnt>" in rules_ir.instances
     assert rules_ir.instances["NCollection_Array1<gp_Pnt>"].template in BINDERS
+    # a nested template of a binder kind (NCollection_TListIterator<T> = NCollection_List<T>::Iterator) registers its owner
+    assert "NCollection_List<gp_Pnt>" in rules_ir.instances
+    assert not any(c.name.startswith("NCollection_TListIterator") for c in rules_ir.classes)
+    assert _method(rules_ir, "Rules_Value", "Iter").skip_reason is None
 
 
 def test_emitter_static_rename_and_collision(rules_ir):

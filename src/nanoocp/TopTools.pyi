@@ -349,13 +349,17 @@ import nanoocp.NCollection
 import nanoocp.Bnd
 import nanoocp.TopTools
 TopTools_Array1OfShape = nanoocp.NCollection.NCollection_Array1[nanoocp.TopoDS.TopoDS_Shape]
+TopTools_Array2OfShape = nanoocp.NCollection.NCollection_Array2[nanoocp.TopoDS.TopoDS_Shape]
 TopTools_DataMapOfShapeBox = nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.Bnd.Bnd_Box, nanoocp.TopTools.TopTools_ShapeMapHasher]
+TopTools_DataMapOfShapeInteger = nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, int, nanoocp.TopTools.TopTools_ShapeMapHasher]
 TopTools_DataMapOfShapeListOfShape = nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.NCollection.NCollection_List[nanoocp.TopoDS.TopoDS_Shape], nanoocp.TopTools.TopTools_ShapeMapHasher]
 TopTools_DataMapOfShapeShape = nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]
 TopTools_HArray1OfShape = nanoocp.NCollection.NCollection_HArray1[nanoocp.TopoDS.TopoDS_Shape]
+TopTools_HArray2OfShape = nanoocp.NCollection.NCollection_HArray2[nanoocp.TopoDS.TopoDS_Shape]
 TopTools_HSequenceOfShape = nanoocp.NCollection.NCollection_HSequence[nanoocp.TopoDS.TopoDS_Shape]
 TopTools_IndexedDataMapOfShapeListOfShape = nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.NCollection.NCollection_List[nanoocp.TopoDS.TopoDS_Shape], nanoocp.TopTools.TopTools_ShapeMapHasher]
 TopTools_IndexedDataMapOfShapeReal = nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.TopoDS.TopoDS_Shape, float, nanoocp.TopTools.TopTools_ShapeMapHasher]
+TopTools_IndexedDataMapOfShapeShape = nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]
 TopTools_IndexedMapOfShape = nanoocp.NCollection.NCollection_IndexedMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]
 TopTools_ListOfListOfShape = nanoocp.NCollection.NCollection_List[nanoocp.NCollection.NCollection_List[nanoocp.TopoDS.TopoDS_Shape]]
 TopTools_ListOfShape = nanoocp.NCollection.NCollection_List[nanoocp.TopoDS.TopoDS_Shape]

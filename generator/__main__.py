@@ -207,6 +207,10 @@ def main(argv: list[str]) -> int:
                         if k.skip_reason is None and not k.is_copy and not k.defined_in_header and k.mangled not in symbols:
                             k.skip_reason = "declared but not defined in the library"
                             ir.report.append(f"{c.name}::{c.name}({', '.join(p.type for p in k.params)}): declared in the header, no definition in lib{tk_name}")
+                for fn in ir.functions:            # free functions too (TopOpeBRepDS: FUN_scanloi, FDSSDM_s1s2makesordor)
+                    if fn.skip_reason is None and not fn.defined_in_header and fn.mangled not in symbols:
+                        fn.skip_reason = "declared but not defined in the library"
+                        ir.report.append(f"{fn.qualified}({', '.join(p.type for p in fn.params)}): declared in the header, no definition in lib{tk_name}")
                 # a copy constructor declared but never defined (GCPnts_DistFunction: the old idiom to forbid copies) is
                 # still "copy constructible" for nanobind, which then instantiates a copy wrapper -> link error:
                 # the class cannot be bound at all
