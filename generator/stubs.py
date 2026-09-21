@@ -20,7 +20,9 @@ SRC = ROOT / "src" / "nanoocp"
 GENERIC = ROOT / "generator" / "stubs"
 
 _SCALARS = {"double": "float", "int": "int", "bool": "bool", "std::string": "str"}
-_PATHS: dict[str, str] = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text()).get("paths", {})
+_MANIFEST: dict = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())   # read once (was re-read per call)
+_PATHS: dict[str, str] = _MANIFEST.get("paths", {})
+_CLASSES: dict[str, str] = _MANIFEST["classes"]
 
 
 def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> str | None:
@@ -52,11 +54,10 @@ def _generic_spelling(concrete: str, templates: dict[str, dict]) -> str:
 def _generic_or_none(name: str, templates: dict[str, dict]) -> str | None:
     """NCollection_Map[int] for a concrete instantiation name whose every argument has a stub spelling; None when an
     argument is not bound (NCollection_Array1<BRepGraph_NodeId::Typed<...>>: the concrete class stays)."""
-    manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
     for key, inst in templates.items():
         if inst.get("name") == name:
             kind, args = re.match(r"([\w:]+)<(.*)>$", key).groups()
-            spelled = [_type_arg(a, manifest["classes"], templates) for a in _split_args(args)]
+            spelled = [_type_arg(a, _CLASSES, templates) for a in _split_args(args)]
             if any(sp is None for sp in spelled):
                 return None
             return f"{kind}[{', '.join(spelled)}]"    # type: ignore[arg-type]
@@ -64,8 +65,7 @@ def _generic_or_none(name: str, templates: dict[str, dict]) -> str | None:
 
 
 def _stub_arg(arg: str, templates: dict[str, dict]) -> str:
-    manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
-    return _type_arg(arg, manifest["classes"], templates) or arg
+    return _type_arg(arg, _CLASSES, templates) or arg
 
 
 def _split_args(text: str) -> list[str]:
@@ -160,8 +160,7 @@ def _stubgen(module: str, out: Path) -> None:
 
 
 def main() -> int:
-    manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
-    classes, templates = manifest["classes"], manifest["templates"]
+    classes, templates = _CLASSES, _MANIFEST["templates"]
     toolkit_of = {}
     for pkg_file in _shims():
         m = re.search(r"from nanoocp\._(\w+) import (\w+) as _ext", pkg_file.read_text())

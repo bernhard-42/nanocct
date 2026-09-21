@@ -468,7 +468,10 @@ class Emitter:
             if fn.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT):
                 self.report.append(f"{fn.name}({self._sig(fn.params)}): free function returning Transient pointer/reference not supported yet")
                 continue
-            policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference"}.get(fn.result_kind, "")
+            # R-RESULT for free functions: a mutable reference result (TopoDS::Vertex(TopoDS_Shape&)) has no owner to tie
+            # it to (no self), so it is copied rather than returned as a dangling reference; the const& overloads of
+            # those functions are the reachable ones anyway (registered first)
+            policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
             qualified = fn.qualified if fn.qualified != "" else fn.name
             if any(p.is_out or p.stream != StreamKind.NONE for p in fn.params):   # out-params/streams -> returned tuple, as for methods
                 as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,

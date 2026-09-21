@@ -540,7 +540,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Vertex
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("Vertex", static_cast<TopoDS_Vertex & (*)(TopoDS_Shape &)>(&TopoDS::Vertex), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Vertex.
+    m.def("Vertex", static_cast<TopoDS_Vertex & (*)(TopoDS_Shape &)>(&TopoDS::Vertex), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Vertex.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Vertex
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
@@ -548,7 +548,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Edge
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("Edge", static_cast<TopoDS_Edge & (*)(TopoDS_Shape &)>(&TopoDS::Edge), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Edge.
+    m.def("Edge", static_cast<TopoDS_Edge & (*)(TopoDS_Shape &)>(&TopoDS::Edge), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Edge.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Edge
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
@@ -556,7 +556,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Wire
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("Wire", static_cast<TopoDS_Wire & (*)(TopoDS_Shape &)>(&TopoDS::Wire), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Wire.
+    m.def("Wire", static_cast<TopoDS_Wire & (*)(TopoDS_Shape &)>(&TopoDS::Wire), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Wire.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Wire
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
@@ -564,7 +564,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Face
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("Face", static_cast<TopoDS_Face & (*)(TopoDS_Shape &)>(&TopoDS::Face), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Face.
+    m.def("Face", static_cast<TopoDS_Face & (*)(TopoDS_Shape &)>(&TopoDS::Face), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Face.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Face
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
@@ -572,7 +572,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Shell
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("Shell", static_cast<TopoDS_Shell & (*)(TopoDS_Shape &)>(&TopoDS::Shell), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Shell.
+    m.def("Shell", static_cast<TopoDS_Shell & (*)(TopoDS_Shape &)>(&TopoDS::Shell), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Shell.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Shell
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
@@ -580,7 +580,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Solid
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("Solid", static_cast<TopoDS_Solid & (*)(TopoDS_Shape &)>(&TopoDS::Solid), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Solid.
+    m.def("Solid", static_cast<TopoDS_Solid & (*)(TopoDS_Shape &)>(&TopoDS::Solid), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Solid.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Solid
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
@@ -588,7 +588,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_CompSolid
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("CompSolid", static_cast<TopoDS_CompSolid & (*)(TopoDS_Shape &)>(&TopoDS::CompSolid), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, CompSolid.
+    m.def("CompSolid", static_cast<TopoDS_CompSolid & (*)(TopoDS_Shape &)>(&TopoDS::CompSolid), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, CompSolid.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_CompSolid
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
@@ -596,7 +596,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Compound
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");
-    m.def("Compound", static_cast<TopoDS_Compound & (*)(TopoDS_Shape &)>(&TopoDS::Compound), nb::rv_policy::reference, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Compound.
+    m.def("Compound", static_cast<TopoDS_Compound & (*)(TopoDS_Shape &)>(&TopoDS::Compound), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Compound.
 @param theShape the shape to be cast
 @return the casted shape as TopoDS_Compound
 @throws Standard_TypeMismatch if theShape cannot be cast to this return type.)nbdoc");

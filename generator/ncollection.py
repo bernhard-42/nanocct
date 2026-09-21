@@ -96,7 +96,6 @@ def deprecated_aliases(alias_dir: Path, args: list[str], templates: dict[str, di
     src/Deprecated/NCollectionAliases. Returns {prefix: {alias: (home package, bound name)}} for every typedef
     whose instantiation is bound, plus the number of typedefs whose instantiation is not bound."""
     headers = sorted(h.name for h in alias_dir.glob("*.hxx"))
-    umbrella = alias_dir.parent / "__nanoocp_aliases.hxx"
     text = "".join(f"#include <{h}>\n" for h in headers)
     index = cindex.Index.create()
     tu = index.parse("aliases.hxx", args=args + [f"-I{alias_dir}"], unsaved_files=[("aliases.hxx", text)],

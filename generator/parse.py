@@ -484,8 +484,6 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
                     if ad.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ad.semantic_parent is not None \
                             and ad.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ad.access_specifier != Access.PUBLIC:
                         return f"std::{decl.spelling} of non-public nested class {ad.spelling}"
-        elif parent is not None and parent.kind in (K.CLASS_DECL, K.STRUCT_DECL) and base.get_num_template_arguments() == 0:
-            pass
     if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind == TK.POINTER:
         return "reference to pointer"
     if canon.kind == TK.LVALUEREFERENCE and not allow_out:
