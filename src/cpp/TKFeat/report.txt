@@ -1,0 +1,8 @@
+# nanoOCP generator report for TKFeat: 5 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# undefined: 5
+undefined	BRepFeat	BRepFeat::IsInOut(const BRepTopAdaptor_FClass2d &, const Geom2dAdaptor_Curve &): declared in the header, no definition in libTKFeat
+undefined	BRepFeat	BRepFeat_MakeLinearForm::TransformShapeFU(const int): declared in the header, no definition in libTKFeat
+undefined	LocOpe	LocOpe_Revol::LocOpe_Revol(const TopoDS_Shape &, const gp_Ax1 &, const double): declared in the header, no definition in libTKFeat
+undefined	LocOpe	LocOpe_Revol::LocOpe_Revol(const TopoDS_Shape &, const gp_Ax1 &, const double, const double): declared in the header, no definition in libTKFeat
+undefined	LocOpe	LocOpe_RevolutionForm::LocOpe_RevolutionForm(const TopoDS_Shape &, const gp_Ax1 &, const double): declared in the header, no definition in libTKFeat
