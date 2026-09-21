@@ -39,6 +39,8 @@ HEADER = """
 #include <utility>
 #include <gp_Trsf.hxx>
 
+class Rules_Fwd;
+
 //! A Transient class for the handle rules.
 class Rules_Thing : public Standard_Transient
 {
@@ -91,6 +93,17 @@ public:
   int Width(const size_t theN) const { return static_cast<int>(theN); }
   int Width(const int theN) const { return theN; }
 
+  //! R-OPTIONAL-PTR: an optional output pointer with a null default is dropped (BRepFill_AdvancedEvolved::IsDone).
+  bool Optional(const int theA, unsigned int* theErrorCode = NULL) const { if (theErrorCode) *theErrorCode = 0; return theA > 0; }
+  //! R-FIXED-ARRAY: gp_Pnt theP[8] out (Bnd_OBB::GetVertex), const int (&)[3] in (BRepMesh_Triangle), a double[3] member.
+  bool Corners(gp_Pnt theP[8]) const { theP[0] = gp_Pnt(1, 2, 3); return true; }
+  int SumNodes(const int (&theNodes)[3]) const { return theNodes[0] + theNodes[1] + theNodes[2]; }
+  double myPeriod[3] = {1.0, 2.0, 3.0};
+  //! R-PTR-REF: a T*& result is returned as the pointer (BRepAlgoAPI_BuilderAlgo::Builder()).
+  gp_Pnt*& PtrRef() { return myPtr; }
+  //! R-PTR-INCOMPLETE: a pointer to a class only forward-declared here, whose header exists (BOPAlgo_Builder::PDS()).
+  Rules_Fwd* Fwd() const { return nullptr; }
+
   //! A public nested class.
   struct Nested
   {
@@ -105,6 +118,7 @@ public:
 private:
   double myValue = 0.0;
   gp_XYZ myOrigin;
+  gp_Pnt* myPtr = nullptr;
 };
 
 //! Constructors whose one-argument call is ambiguous in C++ (IntPolyh_Array<T>): the first is bound with no argument.
@@ -242,6 +256,7 @@ def _parse_rules(tmp: Path) -> parse.PackageIR:
     inc = tmp / "include" / "opencascade"
     inc.mkdir(parents=True)
     (inc / "Rules.hxx").write_text(HEADER)
+    (inc / "Rules_Fwd.hxx").write_text("class Rules_Fwd { public: int A = 1; };\n")     # exists, not included by Rules.hxx (R-PTR-INCOMPLETE)
     fake = OcctTree(src=real.src, install=inc.parents[1])
     args = parse.clang_args(real) + [f"-I{inc}"]
     pkg = Package(name="Rules", toolkit="TKRules", module="Test", headers=["Rules.hxx"])
@@ -298,6 +313,7 @@ def test_header_allowlist_override(monkeypatch, tmp_path_factory):
     parse.configure_libclang()
     real = load_tree(OCCT_SRC, OCCT)
     (inc / "Rules.hxx").write_text(HEADER)
+    (inc / "Rules_Fwd.hxx").write_text("class Rules_Fwd { public: int A = 1; };\n")     # exists, not included by Rules.hxx (R-PTR-INCOMPLETE)
     pkg = Package(name="Rules", toolkit="TKRules", module="Test", headers=["Rules.hxx", "Rules_Other.hxx"])
     ir = parse.parse_package(OcctTree(src=real.src, install=inc.parents[1]), pkg, args=parse.clang_args(real) + [f"-I{inc}"])
     assert ir.headers == ["Rules.hxx"] and "Rules_Other" not in [c.name for c in ir.classes]
@@ -447,11 +463,38 @@ def test_ir_noncopyable_detection_hidden_placement_new_arrays_and_std_out(rules_
     # class-level operator new without placement form: constructible=False; skipped only when not trivially copyable
     assert by["Rules_Alloc"].constructible is False and "Rules_AllocDerived" not in by
     assert any(r.startswith("Rules_AllocDerived: operator new is not public (no placement form) and the class is not trivially copyable") for r in rules_ir.report)
-    # int (&)[3] is an array (R-ARRAY); std::pair<int, int>& is an out-parameter (R-OUT) with the Python type name tuple
-    arrays = by["Rules_Arrays"]
-    assert _method(rules_ir, "Rules_Arrays", "Nodes").skip_reason == "param 'theNodes': array"
+    # int (&)[3] is a fixed array returned as a list of 3 (R-FIXED-ARRAY); std::pair<int, int>& is an out-parameter (R-OUT), type name tuple
+    nodes = _method(rules_ir, "Rules_Arrays", "Nodes")
+    assert nodes.skip_reason is None and [(p.type, p.array_len, p.is_out, p.out_py) for p in nodes.params] == [("int", 3, True, "list")]
     steps = _method(rules_ir, "Rules_Arrays", "Steps")
     assert steps.skip_reason is None and [(p.name, p.is_out, p.out_py) for p in steps.params] == [("theN", False, ""), ("theSteps", True, "tuple")]
+
+
+def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
+    # R-OPTIONAL-PTR: the null-defaulted pointer is dropped from the signature, the callee gets nullptr
+    opt = _method(rules_ir, "Rules_Value", "Optional")
+    assert opt.skip_reason is None and [(p.name, p.omitted) for p in opt.params] == [("theA", False), ("theErrorCode", True)]
+    # R-FIXED-ARRAY: out array -> list of N, const array reference -> a sequence of N in, a member -> list property
+    corners = _method(rules_ir, "Rules_Value", "Corners")
+    assert [(p.type, p.array_len, p.is_out, p.out_py) for p in corners.params] == [("gp_Pnt", 8, True, "list")]
+    nodes = _method(rules_ir, "Rules_Value", "SumNodes")
+    assert [(p.type, p.array_len, p.is_out) for p in nodes.params] == [("int", 3, False)]
+    value = next(c for c in rules_ir.classes if c.name == "Rules_Value")
+    assert [(f.name, f.type, f.array_len) for f in value.fields if f.name == "myPeriod"] == [("myPeriod", "double", 3)]
+    # R-PTR-REF: gp_Pnt*& -> gp_Pnt* with rv_policy::reference through a lambda
+    ptr = _method(rules_ir, "Rules_Value", "PtrRef")
+    assert ptr.skip_reason is None and ptr.result == "gp_Pnt *" and ptr.result_kind == ResultKind.PTR_CLASS and ptr.force_lambda
+    # R-PTR-INCOMPLETE: Rules_Fwd is only forward-declared, but Rules_Fwd.hxx exists in the include directory
+    fwd = _method(rules_ir, "Rules_Value", "Fwd")
+    assert fwd.skip_reason is None and fwd.result_class_name == "Rules_Fwd"
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert '.def("Optional", [](const Rules_Value &self, const int theA) { auto result = self.Optional(theA, nullptr); return result; }, nb::arg("theA")' in cpp
+    assert "gp_Pnt theP[8]{}; auto result = self.Corners(theP); std::array<gp_Pnt, 8> theP_out;" in cpp
+    assert "const std::array<int, 3> &theNodes) { int theNodes_arr[3]; std::copy(theNodes.begin(), theNodes.end(), theNodes_arr);" in cpp
+    assert '.def_prop_rw("myPeriod", [](const Rules_Value &self) { std::array<double, 3> a;' in cpp
+    assert '.def("PtrRef", [](Rules_Value &self) { auto result = self.PtrRef(); return result; }, nb::rv_policy::reference' in cpp
 
 
 def test_resolve_ctor_arities():

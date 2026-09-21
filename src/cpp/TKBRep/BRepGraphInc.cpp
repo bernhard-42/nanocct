@@ -25,6 +25,7 @@
 #include <NCollection_Array1.hxx>
 #include <NCollection_BaseAllocator.hxx>
 #include <NCollection_DefaultHasher.hxx>
+#include <NCollection_DynamicArray.hxx>
 #include <NCollection_FlatDataMap.hxx>
 #include <NCollection_IncAllocator.hxx>
 #include <NCollection_LinearVector.hxx>
@@ -311,6 +312,7 @@ Bundles a typed definition id with location and orientation.
 }
 
 void nanoocp_templates_BRepGraphInc(nb::module_ &m) {
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<TopoDS_Shape>(home, "NCollection_DynamicArray__TopoDS_Shape"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_LinearVector<BRepGraph_RefId>(home, "NCollection_LinearVector__BRepGraph_RefId"); }
 }
 
@@ -716,6 +718,7 @@ Vertices and edges already in theCache are returned directly.
     nanoocp_implicit_copy_ctor<BRepGraphInc_Reconstruct::Cache>(nb::borrow<nb::class_<BRepGraphInc_Reconstruct::Cache>>(m.attr("BRepGraphInc_Reconstruct").attr("Cache")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc_Reconstruct::Cache>>(m.attr("BRepGraphInc_Reconstruct").attr("Cache")), "myAllocator", &BRepGraphInc_Reconstruct::Cache::myAllocator);
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc_Reconstruct::Cache>>(m.attr("BRepGraphInc_Reconstruct").attr("Cache")), "myTempAllocator", &BRepGraphInc_Reconstruct::Cache::myTempAllocator);
+    nb::borrow<nb::class_<BRepGraphInc_Reconstruct::Cache>>(m.attr("BRepGraphInc_Reconstruct").attr("Cache")).def_prop_rw("myKinds", [](const BRepGraphInc_Reconstruct::Cache &self) { std::array<NCollection_DynamicArray<TopoDS_Shape>, 12> a; std::copy(std::begin(self.myKinds), std::end(self.myKinds), a.begin()); return a; }, [](BRepGraphInc_Reconstruct::Cache &self, const std::array<NCollection_DynamicArray<TopoDS_Shape>, 12> &a) { std::copy(a.begin(), a.end(), std::begin(self.myKinds)); });
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc_Reconstruct::Cache>>(m.attr("BRepGraphInc_Reconstruct").attr("Cache")), "myTempScopeDepth", &BRepGraphInc_Reconstruct::Cache::myTempScopeDepth);
     nb::borrow<nb::class_<BRepGraphInc_Reconstruct::Cache::TempScope>>(m.attr("BRepGraphInc_Reconstruct").attr("Cache").attr("TempScope"))
         .def(nb::init<BRepGraphInc_Reconstruct::Cache &>(), nb::arg("theCache"));

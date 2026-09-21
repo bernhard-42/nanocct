@@ -666,6 +666,17 @@ The direction (forward or reversed regarding to normal
 direction) is defined by isShiftFwd flag.
 Compute points on one surface and fill an array of points;
 advanced method)nbdoc")
+        .def("FillArrayOfPnt", [](IntPolyh_MaillageAffinage &self, const int SurfID, const NCollection_Array1<double> & Upars, const NCollection_Array1<double> & Vpars) { self.FillArrayOfPnt(SurfID, Upars, Vpars, nullptr); }, nb::arg("SurfID"), nb::arg("Upars"), nb::arg("Vpars"), R"nbdoc(Compute points on one surface and fill an array of points;
+If given, <theDeflTol> is the deflection tolerance of the given sampling.
+standard (default) method)nbdoc")
+        .def("FillArrayOfPnt", [](IntPolyh_MaillageAffinage &self, const int SurfID, const bool isShiftFwd, const NCollection_Array1<double> & Upars, const NCollection_Array1<double> & Vpars) { self.FillArrayOfPnt(SurfID, isShiftFwd, Upars, Vpars, nullptr); }, nb::arg("SurfID"), nb::arg("isShiftFwd"), nb::arg("Upars"), nb::arg("Vpars"), R"nbdoc(isShiftFwd flag is added. The purpose is to define shift
+of points along normal to the surface in this point. The
+shift length represents maximal deflection of triangulation.
+The direction (forward or reversed regarding to normal
+direction) is defined by isShiftFwd flag.
+Compute points on one surface and fill an array of points;
+If given, <theDeflTol> is the deflection tolerance of the given sampling.
+advanced method)nbdoc")
         .def("FillArrayOfPnt", static_cast<void (IntPolyh_MaillageAffinage::*)(const int, const bool, const IntPolyh_ArrayOfPointNormal &, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const double)>(&IntPolyh_MaillageAffinage::FillArrayOfPnt), nb::arg("SurfID"), nb::arg("isShiftFwd"), nb::arg("thePoints"), nb::arg("theUPars"), nb::arg("theVPars"), nb::arg("theDeflTol"), R"nbdoc(Fills the array of points for the surface taking into account the shift)nbdoc")
         .def("CommonBox", static_cast<void (IntPolyh_MaillageAffinage::*)()>(&IntPolyh_MaillageAffinage::CommonBox), R"nbdoc(Looks for the common box of the surfaces and marks the points
 of the surfaces inside that common box for possible intersection)nbdoc")

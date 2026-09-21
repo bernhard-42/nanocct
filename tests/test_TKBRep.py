@@ -160,8 +160,13 @@ def test_handle_out_parameters_are_returned():
     curve2d, surface, first, last = BRep.BRep_Tool.CurveOnSurface(e, loc)   # C, S (out), L (in place), First, Last (out)
     assert isinstance(curve2d, Geom2d.Geom2d_Line) and surface is plane
     assert (first, last) == (0.0, 2.0)
-    assert BRep.BRep_Tool.CurveOnSurface.__doc__.splitlines()[0].endswith(
-        "-> tuple[nanoocp.Geom2d.Geom2d_Curve, nanoocp.Geom.Geom_Surface, float, float]")
+    sigs = [l for l in BRep.BRep_Tool.CurveOnSurface.__doc__.splitlines() if l.startswith("CurveOnSurface(")]
+    assert len(sigs) == 4                                                    # all four C++ overloads, no collision
+    # the two with `bool* theIsStored = nullptr` are bound without that parameter (R-OPTIONAL-PTR)
+    assert sigs[0] == "CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]"
+    assert sigs[2].endswith("L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, nanoocp.Geom.Geom_Surface, float, float]")
+    c2, f0, l0 = BRep.BRep_Tool.CurveOnSurface(e, plane, TopLoc.TopLoc_Location())
+    assert isinstance(c2, Geom2d.Geom2d_Line) and (f0, l0) == (0.0, 2.0)
 
 
 def test_unscoped_enumerators_are_exported_to_the_enclosing_scope():

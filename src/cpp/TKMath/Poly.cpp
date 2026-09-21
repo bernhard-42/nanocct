@@ -895,6 +895,7 @@ objects)nbdoc")
         .def(nb::init<>())
         .def(nb::init<int, int>(), nb::arg("i0"), nb::arg("i1"));
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::TwoIntegers>(nb::borrow<nb::class_<Poly_CoherentTriangulation::TwoIntegers>>(m.attr("Poly_CoherentTriangulation").attr("TwoIntegers")));
+    nb::borrow<nb::class_<Poly_CoherentTriangulation::TwoIntegers>>(m.attr("Poly_CoherentTriangulation").attr("TwoIntegers")).def_prop_rw("myValue", [](const Poly_CoherentTriangulation::TwoIntegers &self) { std::array<int, 2> a; std::copy(std::begin(self.myValue), std::end(self.myValue), a.begin()); return a; }, [](Poly_CoherentTriangulation::TwoIntegers &self, const std::array<int, 2> &a) { std::copy(a.begin(), a.end(), std::begin(self.myValue)); });
     nanoocp_def_iter<Poly_Connect>(nb::borrow<nb::class_<Poly_Connect>>(m.attr("Poly_Connect")), [](Poly_Connect &self) { return self.Value(); });
     nb::borrow<nb::class_<Poly_Connect>>(m.attr("Poly_Connect"))
         .def(nb::init<>(), R"nbdoc(Constructs an uninitialized algorithm.)nbdoc")
@@ -1042,6 +1043,10 @@ merged).)nbdoc")
 @param[in] theTrsf transformation to apply
 @param[in] theToReverse reverse triangle nodes order)nbdoc")
         .def("Result", static_cast<occ::handle<Poly_Triangulation> (Poly_MergeNodesTool::*)()>(&Poly_MergeNodesTool::Result), R"nbdoc(Prepare and return result triangulation (temporary data will be truncated to result size).)nbdoc")
+        .def("AddTriangle", [](Poly_MergeNodesTool &self, const std::array<gp_XYZ, 3> &theElemNodes) { gp_XYZ theElemNodes_arr[3]; std::copy(theElemNodes.begin(), theElemNodes.end(), theElemNodes_arr); self.AddTriangle(theElemNodes_arr); }, nb::arg("theElemNodes"), R"nbdoc(Add new triangle.
+@param[in] theElemNodes 3 element nodes)nbdoc")
+        .def("AddQuad", [](Poly_MergeNodesTool &self, const std::array<gp_XYZ, 4> &theElemNodes) { gp_XYZ theElemNodes_arr[4]; std::copy(theElemNodes.begin(), theElemNodes.end(), theElemNodes_arr); self.AddQuad(theElemNodes_arr); }, nb::arg("theElemNodes"), R"nbdoc(Add new quad.
+@param[in] theElemNodes 4 element nodes)nbdoc")
         .def("AddElement", static_cast<void (Poly_MergeNodesTool::*)(const gp_XYZ *, int)>(&Poly_MergeNodesTool::AddElement), nb::arg("theElemNodes"), nb::arg("theNbNodes"), R"nbdoc(Add new triangle or quad.
 @param[in] theElemNodes element nodes
 @param[in] theNbNodes number of element nodes, should be 3 or 4)nbdoc")

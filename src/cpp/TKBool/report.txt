@@ -1,8 +1,8 @@
-# nanoOCP generator report for TKBool: 45 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKBool: 27 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # iterator: 6
 # overload-collision: 8
-# raw-pointer: 28
+# raw-pointer: 10
 # undefined: 3
 iterator	BRepAlgo	BRepAlgo_FaceRestrictor: __iter__ added (More/Next/Current)
 iterator	BRepProj	BRepProj_Projection: __iter__ added (More/Next/Current)
@@ -18,30 +18,12 @@ overload-collision	TopOpeBRepTool	FC2D_HasOldCurveOnSurface(const TopoDS_Edge &,
 overload-collision	TopOpeBRepTool	FC2D_HasOldCurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as FC2D_HasOldCurveOnSurface__Geom2d_Curve__float__float__float
 overload-collision	TopOpeBRepTool	FUN_tool_closedS(const TopoDS_Shape &, bool &, double &, bool &, double &): same Python signature as another overload after out-param removal -> bound as FUN_tool_closedS__bool__float__bool__float
 overload-collision	TopOpeBRepTool	FUN_tool_closedS(const TopoDS_Shape &, bool &, double &, double &): same Python signature as another overload after out-param removal -> bound as FUN_tool_closedS__bool__float__float
-raw-pointer	BRepFill	BRepFill_AdvancedEvolved::IsDone(): param 'theErrorCode': raw pointer to primitive
-raw-pointer	TopOpeBRep	TopOpeBRep_DSFiller::PShapeClassifier(): return: pointer to incomplete type
 raw-pointer	TopOpeBRep	TopOpeBRep_FFDumper::Init(): param 'PFF': reference to pointer
 raw-pointer	TopOpeBRep	TopOpeBRep_FFDumper::TopOpeBRep_FFDumper(): param 'PFF': reference to pointer
-raw-pointer	TopOpeBRep	TopOpeBRep_FacesFiller::PShapeClassifier(): return: pointer to incomplete type
 raw-pointer	TopOpeBRep	TopOpeBRep_FacesFiller::SetPShapeClassifier(): param 'PSC': reference to pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Area1dBuilder::ADD_LISTOFLoop_TO_LISTOFLoop(NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &): param 's': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Area1dBuilder::ADD_Loop_TO_LISTOFLoop(const occ::handle<TopOpeBRepBuild_Loop> &, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &): param 's': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Area1dBuilder::REM_Loop_FROM_LISTOFLoop(NCollection_TListIterator<opencascade::handle<TopOpeBRepBuild_Loop>> &, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &): param 's': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_AreaBuilder::ADD_LISTOFLoop_TO_LISTOFLoop(NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &): param 's': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_AreaBuilder::ADD_Loop_TO_LISTOFLoop(const occ::handle<TopOpeBRepBuild_Loop> &, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &): param 's': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_AreaBuilder::REM_Loop_FROM_LISTOFLoop(NCollection_TListIterator<opencascade::handle<TopOpeBRepBuild_Loop>> &, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &): param 's': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Builder::GdumpEDG(const TopoDS_Shape &): param 'str': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Builder::GdumpEDGVER(const TopoDS_Shape &, const TopoDS_Shape &): param 'str': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Builder::GdumpSAMDOM(const NCollection_List<TopoDS_Shape> &): param 'str': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Builder::GdumpSHA(const TopoDS_Shape &): param 'str': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Builder::GdumpSHAORI(const TopoDS_Shape &): param 'str': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_Builder::GdumpSHAORIGEO(const TopoDS_Shape &): param 'str': void pointer
 raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_BuilderON::Perform(): param 'PB': reference to pointer
 raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_BuilderON::Perform2d(): param 'PB': reference to pointer
 raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_BuilderON::TopOpeBRepBuild_BuilderON(): param 'PB': reference to pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_GTopo::Dump(Standard_OStream &): param 's': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_ShellFaceSet::TopOpeBRepBuild_ShellFaceSet(const TopoDS_Shape &): param 'Addr': void pointer
-raw-pointer	TopOpeBRepBuild	TopOpeBRepBuild_WireEdgeSet::TopOpeBRepBuild_WireEdgeSet(const TopoDS_Shape &): param 'Addr': void pointer
 raw-pointer	TopOpeBRepDS	FUN_ds_hasFEI(...): param 'pDS2d': reference to pointer
 raw-pointer	TopOpeBRepDS	TopOpeBRepDS_FaceInterferenceTool::TopOpeBRepDS_FaceInterferenceTool(): param 'P': reference to pointer
 raw-pointer	TopOpeBRepDS	TopOpeBRepDS_Filter::TopOpeBRepDS_Filter(const occ::handle<TopOpeBRepDS_HDataStructure> &): param 'pClassif': reference to pointer

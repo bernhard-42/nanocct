@@ -190,9 +190,71 @@ Makes 2d curve of the edge <theE> on the faces <theF1> and <theF2>.
 <theContext> - storage for caching the geometrical tools)nbdoc")
         .def_static("IsHole", static_cast<bool (*)(const TopoDS_Shape &, const TopoDS_Shape &)>(&BOPTools_AlgoTools::IsHole), nb::arg("theW"), nb::arg("theF"), R"nbdoc(@name Wire classification relatively face
 Checks if the wire is a hole for the face.)nbdoc")
+        .def_static("IsSplitToReverse", [](const TopoDS_Shape & theSplit, const TopoDS_Shape & theShape, const occ::handle<IntTools_Context> & theContext) { auto result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(@name Choosing correct orientation for the split shape
+Checks if the direction of the split shape is opposite to
+the direction of the original shape.
+The method is an overload for (Edge,Edge) and (Face,Face) corresponding
+methods and checks only these types of shapes.
+For faces the method checks if normal directions are opposite.
+For edges the method checks if tangent vectors are opposite.
+
+In case the directions do not coincide, it returns TRUE, meaning
+that split shape has to be reversed to match the direction of the
+original shape.
+
+If requested (<theError> is not null), the method returns the status of the operation:
+- 0 - no error;
+- Error from (Edge,Edge) or (Face,Face) corresponding method
+- 100 - bad types.
+In case of any error the method always returns FALSE.
+
+@param[in] theSplit  Split shape
+@param[in] theShape  Original shape
+@param[in] theContext  cached geometrical tools
+@param[out] theError  Error Status of the operation)nbdoc")
         .def_static("IsSplitToReverseWithWarn", static_cast<bool (*)(const TopoDS_Shape &, const TopoDS_Shape &, const occ::handle<IntTools_Context> &, const occ::handle<Message_Report> &)>(&BOPTools_AlgoTools::IsSplitToReverseWithWarn), nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), nb::arg("theReport").none() = static_cast<std::decay_t<const occ::handle<Message_Report> &>>(nullptr), R"nbdoc(Add-on for the *IsSplitToReverse()* to check for its errors
 and in case of any add the *BOPAlgo_AlertUnableToOrientTheShape*
 warning to the report.)nbdoc")
+        .def_static("IsSplitToReverse", [](const TopoDS_Face & theSplit, const TopoDS_Face & theShape, const occ::handle<IntTools_Context> & theContext) { auto result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(Checks if the normal direction of the split face is opposite to
+the normal direction of the original face.
+The normal directions for both faces are taken in the same point -
+point inside the split face is projected onto the original face.
+Returns TRUE if the normals do not coincide, meaning the necessity
+to revert the orientation of the split face to match the direction
+of the original face.
+
+If requested (<theError> is not null), the method returns the status of the operation:
+- 0 - no error;
+- 1 - unable to find the point inside split face;
+- 2 - unable to compute the normal for the split face;
+- 3 - unable to project the point inside the split face on the original face;
+- 4 - unable to compute the normal for the original face.
+In case of any error the method always returns FALSE.
+
+@param[in] theSplit  Split face
+@param[in] theShape  Original face
+@param[in] theContext  cached geometrical tools
+@param[out] theError  Error Status of the operation)nbdoc")
+        .def_static("IsSplitToReverse", [](const TopoDS_Edge & theSplit, const TopoDS_Edge & theShape, const occ::handle<IntTools_Context> & theContext) { auto result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(Checks if the tangent vector of the split edge is opposite to
+the tangent vector of the original edge.
+The tangent vectors for both edges are computed in the same point -
+point inside the split edge is projected onto the original edge.
+Returns TRUE if the tangent vectors do not coincide, meaning the necessity
+to revert the orientation of the split edge to match the direction
+of the original edge.
+
+If requested (<theError> is not null), the method returns the status of the operation:
+- 0 - no error;
+- 1 - degenerated edges are given;
+- 2 - unable to compute the tangent vector for the split edge;
+- 3 - unable to project the point inside the split edge on the original edge;
+- 4 - unable to compute the tangent vector for the original edge;
+In case of any error the method always returns FALSE.
+
+@param[in] theSplit  Split edge
+@param[in] theShape  Original edge
+@param[in] theContext  cached geometrical tools
+@param[out] theError  Error Status of the operation)nbdoc")
         .def_static("Sense", static_cast<int (*)(const TopoDS_Face &, const TopoDS_Face &, const occ::handle<IntTools_Context> &)>(&BOPTools_AlgoTools::Sense), nb::arg("theF1"), nb::arg("theF2"), nb::arg("theContext").none(), R"nbdoc(Checks if the normals direction of the given faces computed near
 the shared edge coincide.
 Returns the status of operation:

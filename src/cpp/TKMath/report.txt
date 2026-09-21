@@ -1,6 +1,6 @@
-# nanoOCP generator report for TKMath: 420 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 415 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# array: 7
+# array: 2
 # conversion: 18
 # field: 1
 # iterator: 7
@@ -16,13 +16,8 @@
 # template: 216
 # unbound-type: 4
 # undefined: 5
-array	Bnd	Bnd_OBB::GetVertex(): param 'theP': array
 array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
-array	MathPoly	Octic(...): param 'theCoeffs': array
 array	Poly	Poly_CoherentTriangulation::FindTriangle(const Poly_CoherentLink &): param 'pTri': array
-array	Poly	Poly_CoherentTriangulation::TwoIntegers::myValue: field array
-array	Poly	Poly_MergeNodesTool::AddQuad(): param 'theElemNodes': array
-array	Poly	Poly_MergeNodesTool::AddTriangle(): param 'theElemNodes': array
 conversion	BVH	NCollection_Vec2<double>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	BVH	NCollection_Vec2<double>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	BVH	NCollection_Vec2<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type

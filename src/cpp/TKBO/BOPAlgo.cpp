@@ -36,7 +36,9 @@
 #include <BOPAlgo_GlueEnum.hxx>
 #include <BOPAlgo_Splitter.hxx>
 #include <BOPAlgo_Alerts.hxx>
+#include <BOPDS_CommonBlock.hxx>
 #include <BOPDS_DS.hxx>
+#include <BOPDS_PDS.hxx>
 #include <BOPDS_PaveBlock.hxx>
 #include <BOPTools_ConnexityBlock.hxx>
 #include <BRepTools_History.hxx>
@@ -1147,6 +1149,7 @@ Allows disabling the history collection)nbdoc")
         .def(nb::init<const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theAllocator").none())
         .def("Clear", static_cast<void (BOPAlgo_Builder::*)()>(&BOPAlgo_Builder::Clear), R"nbdoc(Clears the content of the algorithm.)nbdoc")
         .def("PPaveFiller", static_cast<BOPAlgo_PPaveFiller (BOPAlgo_Builder::*)()>(&BOPAlgo_Builder::PPaveFiller), nb::rv_policy::reference, R"nbdoc(Returns the PaveFiller, algorithm for sub-shapes intersection.)nbdoc")
+        .def("PDS", static_cast<BOPDS_PDS (BOPAlgo_Builder::*)()>(&BOPAlgo_Builder::PDS), nb::rv_policy::reference, R"nbdoc(Returns the Data Structure, holder of intersection information.)nbdoc")
         .def("Context", static_cast<occ::handle<IntTools_Context> (BOPAlgo_Builder::*)() const>(&BOPAlgo_Builder::Context), R"nbdoc(Returns the Context, tool for cashing heavy algorithms.)nbdoc")
         .def("AddArgument", static_cast<void (BOPAlgo_Builder::*)(const TopoDS_Shape &)>(&BOPAlgo_Builder::AddArgument), nb::arg("theShape"), R"nbdoc(@name Arguments
 Adds the argument to the operation.)nbdoc")
@@ -1300,6 +1303,7 @@ for all created solids. This method returns the data map of solid - box pairs.)n
         .def(nb::init<>())
         .def(nb::init<const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theAllocator").none())
         .def("DS", static_cast<const BOPDS_DS & (BOPAlgo_PaveFiller::*)()>(&BOPAlgo_PaveFiller::DS))
+        .def("PDS", static_cast<BOPDS_PDS (BOPAlgo_PaveFiller::*)()>(&BOPAlgo_PaveFiller::PDS), nb::rv_policy::reference)
         .def("SetArguments", static_cast<void (BOPAlgo_PaveFiller::*)(const NCollection_List<TopoDS_Shape> &)>(&BOPAlgo_PaveFiller::SetArguments), nb::arg("theLS"), R"nbdoc(Sets the arguments for operation)nbdoc")
         .def("AddArgument", static_cast<void (BOPAlgo_PaveFiller::*)(const TopoDS_Shape &)>(&BOPAlgo_PaveFiller::AddArgument), nb::arg("theShape"), R"nbdoc(Adds the argument for operation)nbdoc")
         .def("Arguments", static_cast<const NCollection_List<TopoDS_Shape> & (BOPAlgo_PaveFiller::*)() const>(&BOPAlgo_PaveFiller::Arguments), R"nbdoc(Returns the list of arguments)nbdoc")
@@ -1483,6 +1487,10 @@ Converts the integer to ID of periodic direction)nbdoc");
         .def(nb::init<>())
         .def("Clear", static_cast<void (BOPAlgo_MakePeriodic::PeriodicityParams::*)()>(&BOPAlgo_MakePeriodic::PeriodicityParams::Clear), R"nbdoc(Returns all previously set parameters to default values)nbdoc");
     nanoocp_implicit_copy_ctor<BOPAlgo_MakePeriodic::PeriodicityParams>(nb::borrow<nb::class_<BOPAlgo_MakePeriodic::PeriodicityParams>>(m.attr("BOPAlgo_MakePeriodic").attr("PeriodicityParams")));
+    nb::borrow<nb::class_<BOPAlgo_MakePeriodic::PeriodicityParams>>(m.attr("BOPAlgo_MakePeriodic").attr("PeriodicityParams")).def_prop_rw("myPeriodic", [](const BOPAlgo_MakePeriodic::PeriodicityParams &self) { std::array<bool, 3> a; std::copy(std::begin(self.myPeriodic), std::end(self.myPeriodic), a.begin()); return a; }, [](BOPAlgo_MakePeriodic::PeriodicityParams &self, const std::array<bool, 3> &a) { std::copy(a.begin(), a.end(), std::begin(self.myPeriodic)); }, R"nbdoc(Array of flags defining whether the shape should be)nbdoc");
+    nb::borrow<nb::class_<BOPAlgo_MakePeriodic::PeriodicityParams>>(m.attr("BOPAlgo_MakePeriodic").attr("PeriodicityParams")).def_prop_rw("myPeriod", [](const BOPAlgo_MakePeriodic::PeriodicityParams &self) { std::array<double, 3> a; std::copy(std::begin(self.myPeriod), std::end(self.myPeriod), a.begin()); return a; }, [](BOPAlgo_MakePeriodic::PeriodicityParams &self, const std::array<double, 3> &a) { std::copy(a.begin(), a.end(), std::begin(self.myPeriod)); }, R"nbdoc(Array of XYZ period values. Defining the period for any)nbdoc");
+    nb::borrow<nb::class_<BOPAlgo_MakePeriodic::PeriodicityParams>>(m.attr("BOPAlgo_MakePeriodic").attr("PeriodicityParams")).def_prop_rw("myIsTrimmed", [](const BOPAlgo_MakePeriodic::PeriodicityParams &self) { std::array<bool, 3> a; std::copy(std::begin(self.myIsTrimmed), std::end(self.myIsTrimmed), a.begin()); return a; }, [](BOPAlgo_MakePeriodic::PeriodicityParams &self, const std::array<bool, 3> &a) { std::copy(a.begin(), a.end(), std::begin(self.myIsTrimmed)); }, R"nbdoc(Array of flags defining whether the input shape has to be)nbdoc");
+    nb::borrow<nb::class_<BOPAlgo_MakePeriodic::PeriodicityParams>>(m.attr("BOPAlgo_MakePeriodic").attr("PeriodicityParams")).def_prop_rw("myPeriodFirst", [](const BOPAlgo_MakePeriodic::PeriodicityParams &self) { std::array<double, 3> a; std::copy(std::begin(self.myPeriodFirst), std::end(self.myPeriodFirst), a.begin()); return a; }, [](BOPAlgo_MakePeriodic::PeriodicityParams &self, const std::array<double, 3> &a) { std::copy(a.begin(), a.end(), std::begin(self.myPeriodFirst)); }, R"nbdoc(Array of start parameters of the XYZ periods: required for trimming)nbdoc");
     nb::borrow<nb::class_<BOPAlgo_MakeConnected>>(m.attr("BOPAlgo_MakeConnected"))
         .def(nb::init<>(), R"nbdoc(@name Constructor
 Empty constructor)nbdoc")
@@ -1580,6 +1588,7 @@ allowing reusing it for following removals.)nbdoc");
     nanoocp_implicit_default_ctor<BOPAlgo_Tools>(nb::borrow<nb::class_<BOPAlgo_Tools>>(m.attr("BOPAlgo_Tools")));
     nb::borrow<nb::class_<BOPAlgo_Tools>>(m.attr("BOPAlgo_Tools"))
         .def_static("FillMap", static_cast<void (*)(const occ::handle<BOPDS_PaveBlock> &, const int, NCollection_IndexedDataMap<opencascade::handle<BOPDS_PaveBlock>, NCollection_List<int>, NCollection_DefaultHasher<opencascade::handle<BOPDS_PaveBlock>>> &, const occ::handle<NCollection_BaseAllocator> &)>(&BOPAlgo_Tools::FillMap), nb::arg("thePB1").none(), nb::arg("theF"), nb::arg("theMILI"), nb::arg("theAllocator").none())
+        .def_static("ComputeToleranceOfCB", static_cast<double (*)(const occ::handle<BOPDS_CommonBlock> &, const BOPDS_PDS, const occ::handle<IntTools_Context> &)>(&BOPAlgo_Tools::ComputeToleranceOfCB), nb::arg("theCB").none(), nb::arg("theDS"), nb::arg("theContext").none())
         .def_static("EdgesToWires", static_cast<int (*)(const TopoDS_Shape &, TopoDS_Shape &, const bool, const double)>(&BOPAlgo_Tools::EdgesToWires), nb::arg("theEdges"), nb::arg("theWires"), nb::arg("theShared") = static_cast<std::decay_t<const bool>>(false), nb::arg("theAngTol") = static_cast<std::decay_t<const double>>(1.e-8), R"nbdoc(Creates planar wires from the given edges.
 The input edges are expected to be planar. And for the performance
 sake the method does not check if the edges are really planar.

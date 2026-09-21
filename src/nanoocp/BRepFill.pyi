@@ -256,6 +256,8 @@ class BRepFill_AdvancedEvolved:
 
     def Perform(self, theSpine: nanoocp.TopoDS.TopoDS_Wire, theProfile: nanoocp.TopoDS.TopoDS_Wire, theTolerance: float, theSolidReq: bool = True) -> None: ...
 
+    def IsDone(self) -> bool: ...
+
     def Shape(self) -> nanoocp.TopoDS.TopoDS_Shape:
         """returns the resulting shape."""
 

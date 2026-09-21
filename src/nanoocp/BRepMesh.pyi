@@ -1,5 +1,6 @@
 """OCCT package BRepMesh (toolkit TKMesh)"""
 
+from collections.abc import Sequence
 import enum
 from typing import overload
 
@@ -170,7 +171,31 @@ class BRepMesh_Triangle:
         """Default constructor."""
 
     @overload
+    def __init__(self, theEdges: Sequence[int], theOrientations: Sequence[bool], theMovability: BRepMesh_DegreeOfFreedom) -> None:
+        """
+        Constructor.
+        @param theEdges array of edges of triangle.
+        @param theOrientations array of edge's orientations.
+        @param theMovability movability of triangle.
+        """
+
+    @overload
     def __init__(self, theOther: BRepMesh_Triangle) -> None: ...
+
+    def Initialize(self, theEdges: Sequence[int], theOrientations: Sequence[bool], theMovability: BRepMesh_DegreeOfFreedom) -> None:
+        """
+        Initializes the triangle by the given parameters.
+        @param theEdges array of edges of triangle.
+        @param theOrientations array of edge's orientations.
+        @param theMovability movability of triangle.
+        """
+
+    def Edges(self) -> tuple[list[int], list[bool]]:
+        """
+        Gets edges with orientations composing the triangle.
+        @param[out] theEdges array edges are stored to.
+        @param[out] theOrientations array orientations are stored to.
+        """
 
     def Movability(self) -> BRepMesh_DegreeOfFreedom:
         """Returns movability of the triangle."""
@@ -189,6 +214,18 @@ class BRepMesh_Triangle:
         """Alias for IsEqual."""
 
     def __hash__(self) -> int: ...
+
+    @property
+    def myEdges(self) -> list[int]: ...
+
+    @myEdges.setter
+    def myEdges(self, arg: Sequence[int], /) -> None: ...
+
+    @property
+    def myOrientations(self) -> list[bool]: ...
+
+    @myOrientations.setter
+    def myOrientations(self, arg: Sequence[bool], /) -> None: ...
 
     @property
     def myMovability(self) -> BRepMesh_DegreeOfFreedom: ...
@@ -1025,6 +1062,13 @@ class BRepMesh_DataStructureOfDelaun(nanoocp.Standard.Standard_Transient):
         @param theIndex index of element to be removed.
         """
 
+    def ElementNodes(self, theElement: BRepMesh_Triangle) -> list[int]:
+        """
+        Returns indices of nodes forming the given element.
+        @param theElement element which nodes should be retrieved.
+        @param[out] theNodes nodes of the given element.
+        """
+
     def Dump(self, theFileNameStr: str) -> None: ...
 
     def Allocator(self) -> nanoocp.NCollection.NCollection_IncAllocator:
@@ -1229,6 +1273,20 @@ class BRepMesh_GeomTool:
         @param[out] thePoint 3d point corresponding to the given parameters.
         @param[out] theNormal normal vector at the point specified by the parameters.
         @return FALSE if the normal can not be computed, TRUE elsewhere.
+        """
+
+    @staticmethod
+    def IntLinLin(theStartPnt1: nanoocp.gp.gp_XY, theEndPnt1: nanoocp.gp.gp_XY, theStartPnt2: nanoocp.gp.gp_XY, theEndPnt2: nanoocp.gp.gp_XY, theIntPnt: nanoocp.gp.gp_XY) -> tuple[BRepMesh_GeomTool.IntFlag, list[float]]:
+        """
+        Checks intersection between two lines defined by two points.
+        @param theStartPnt1 start point of first line.
+        @param theEndPnt1 end point of first line.
+        @param theStartPnt2 start point of second line.
+        @param theEndPnt2 end point of second line.
+        @param[out] theIntPnt point of intersection.
+        @param[out] theParamOnSegment parameters of intersection point
+        corresponding to first and second segment.
+        @return status of intersection check.
         """
 
     @staticmethod
@@ -1848,6 +1906,9 @@ class BRepMesh_MeshTool(nanoocp.Standard.Standard_Transient):
         Adds new triangle with specified nodes to mesh.
         Legalizes triangle in case if it violates circle criteria.
         """
+
+    def AddTriangle(self, thePoint1: int, thePoint2: int, thePoint3: int) -> list[int]:
+        """Adds new triangle with specified nodes to mesh."""
 
     def AddLink(self, theFirstNode: int, theLastNode: int) -> tuple[int, bool]:
         """

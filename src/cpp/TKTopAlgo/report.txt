@@ -1,18 +1,16 @@
-# nanoOCP generator report for TKTopAlgo: 50 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKTopAlgo: 49 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# array: 4
+# array: 3
 # iterator: 6
 # noncopyable: 3
 # overload-collision: 9
-# raw-pointer: 4
-# stream: 1
+# raw-pointer: 5
 # template: 4
 # unbound-type: 12
 # undefined: 7
 array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &): param 'theCoeff': array
 array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &, const double): param 'theCoeff': array
 array	BRepGProp	BRepGProp_Gauss::Compute(const BRepGProp_Face &, const gp_Pnt &): param 'theCoeff': array
-array	BRepGProp	BRepGProp_MeshProps::CalculateProps(const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const bool): param 'GProps': array
 iterator	BRepGProp	BRepGProp_Domain: __iter__ added (More/Next/Value)
 iterator	BRepMAT2d	BRepMAT2d_Explorer: __iter__ added (More/Next/Value)
 iterator	BRepMAT2d	BRepMAT2d_LinkTopoBilo: __iter__ added (More/Next/Value)
@@ -32,10 +30,10 @@ overload-collision	BRepGProp	BRepGProp_Face::GetUKnots(const double, const doubl
 overload-collision	BRepGProp	BRepGProp_MeshCinert::PreparePolygon(const TopoDS_Edge &, occ::handle<NCollection_HArray1<gp_Pnt>> &): same Python signature as another overload after out-param removal -> bound as PreparePolygon__NCollection_HArray1__gp_Pnt
 overload-collision	BRepLib	BRepLib::BuildPCurveForEdgeOnPlane(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, bool &): same Python signature as another overload after out-param removal -> bound as BuildPCurveForEdgeOnPlane__Geom2d_Curve__bool
 raw-pointer	BRepApprox	BRepApprox_TheMultiLineOfApprox::BRepApprox_TheMultiLineOfApprox(const occ::handle<BRepApprox_ApproxLine> &): param 'PtrSvSurfaces': void pointer
+raw-pointer	BRepGProp	BRepGProp_MeshProps::CalculateProps(const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const bool, double, const int): param 'GaussPnts': raw pointer to primitive
 raw-pointer	BRepGProp	BRepGProp_TFunction::BRepGProp_TFunction(const BRepGProp_Face &, const gp_Pnt &, const bool): param 'theCoeffs': raw pointer to primitive
 raw-pointer	BRepGProp	BRepGProp_UFunction::BRepGProp_UFunction(const BRepGProp_Face &, const gp_Pnt &, const bool): param 'theCoeffs': raw pointer to primitive
 raw-pointer	BRepTopAdaptor	BRepTopAdaptor_TopolTool::Edge(): return: void pointer
-stream	BRepBuilderAPI	BRepBuilderAPI_FastSewing::GetStatuses(): param 'theOS': iostream type
 template	BRepExtrema	BRepExtrema_OverlapTool: base class BVH_PairTraverse<double, 3> instantiated as BVH_PairTraverse<double, 3, void, double> (spelling mismatch) -> not bound
 template	BRepGProp	math_Vector = math_VectorBase<double>: class template math_VectorBase not found in the translation unit
 template	BRepGProp	math_VectorBase: template (not bound)

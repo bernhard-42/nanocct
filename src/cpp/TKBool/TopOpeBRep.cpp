@@ -76,6 +76,8 @@
 #include <TopOpeBRepDS_Point.hxx>
 #include <TopOpeBRepDS_Transition.hxx>
 #include <TopOpeBRepTool_BoxSort.hxx>
+#include <TopOpeBRepTool_PShapeClassifier.hxx>
+#include <TopOpeBRepTool_ShapeClassifier.hxx>
 #include <TopOpeBRepTool_ShapeExplorer.hxx>
 #include <TopTools_ShapeMapHasher.hxx>
 #include <TopoDS_Edge.hxx>
@@ -546,6 +548,7 @@ current intersection.)nbdoc")
         .def("Insert", static_cast<void (TopOpeBRep_FacesFiller::*)(const TopoDS_Shape &, const TopoDS_Shape &, TopOpeBRep_FacesIntersector &, const occ::handle<TopOpeBRepDS_HDataStructure> &)>(&TopOpeBRep_FacesFiller::Insert), nb::arg("F1"), nb::arg("F2"), nb::arg("FACINT"), nb::arg("HDS").none(), R"nbdoc(Stores in <DS> the intersections of <S1> and <S2>.)nbdoc")
         .def("ProcessSectionEdges", static_cast<void (TopOpeBRep_FacesFiller::*)()>(&TopOpeBRep_FacesFiller::ProcessSectionEdges))
         .def("ChangePointClassifier", static_cast<TopOpeBRep_PointClassifier & (TopOpeBRep_FacesFiller::*)()>(&TopOpeBRep_FacesFiller::ChangePointClassifier), nb::rv_policy::reference_internal)
+        .def("PShapeClassifier", static_cast<TopOpeBRepTool_PShapeClassifier (TopOpeBRep_FacesFiller::*)() const>(&TopOpeBRep_FacesFiller::PShapeClassifier), nb::rv_policy::reference, R"nbdoc(return field myPShapeClassifier.)nbdoc")
         .def("LoadLine", static_cast<void (TopOpeBRep_FacesFiller::*)(TopOpeBRep_LineInter &)>(&TopOpeBRep_FacesFiller::LoadLine), nb::arg("L"))
         .def("CheckLine", static_cast<bool (TopOpeBRep_FacesFiller::*)(TopOpeBRep_LineInter &) const>(&TopOpeBRep_FacesFiller::CheckLine), nb::arg("L"))
         .def("VP_Position", static_cast<void (TopOpeBRep_FacesFiller::*)(TopOpeBRep_FacesIntersector &)>(&TopOpeBRep_FacesFiller::VP_Position), nb::arg("FACINT"), R"nbdoc(compute position of VPoints of lines)nbdoc")
@@ -632,6 +635,8 @@ transition computed is OUT/IN.)nbdoc")
     nanoocp_implicit_copy_ctor<TopOpeBRep_FaceEdgeFiller>(nb::borrow<nb::class_<TopOpeBRep_FaceEdgeFiller>>(m.attr("TopOpeBRep_FaceEdgeFiller")));
     nb::borrow<nb::class_<TopOpeBRep_DSFiller>>(m.attr("TopOpeBRep_DSFiller"))
         .def(nb::init<>())
+        .def("PShapeClassifier", static_cast<TopOpeBRepTool_PShapeClassifier (TopOpeBRep_DSFiller::*)() const>(&TopOpeBRep_DSFiller::PShapeClassifier), nb::rv_policy::reference, R"nbdoc(return field myPShapeClassifier.
+set field myPShapeClassifier.)nbdoc")
         .def("Insert", static_cast<void (TopOpeBRep_DSFiller::*)(const TopoDS_Shape &, const TopoDS_Shape &, const occ::handle<TopOpeBRepDS_HDataStructure> &, const bool)>(&TopOpeBRep_DSFiller::Insert), nb::arg("S1"), nb::arg("S2"), nb::arg("HDS").none(), nb::arg("orientFORWARD") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Stores in <DS> the intersections of <S1> and <S2>.
 if orientFORWARD = True
 S FORWARD,REVERSED  --> FORWARD

@@ -35,6 +35,7 @@ _OVERRIDES = tomllib.loads((Path(__file__).parent / "overrides.toml").read_text(
 _INOUT = set(_OVERRIDES.get("inout", []))
 _SKIP_CLASSES = set(_OVERRIDES.get("skip", {}).get("classes", []))
 _SKIP_HEADERS = set(_OVERRIDES.get("skip", {}).get("headers", []))
+_INCLUDE_DIR: Path | None = None       # the OCCT include directory of the current parse (R-PTR-INCOMPLETE: is there a header for a forward-declared class?)
 _NONCOPYABLE = set(_OVERRIDES.get("skip", {}).get("noncopyable", []))
 _SKIP_NAMESPACES = set(_OVERRIDES.get("skip", {}).get("namespaces", []))
 _SKIP_METHODS = set(_OVERRIDES.get("skip", {}).get("methods", []))
@@ -469,7 +470,10 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
             d = pointee.get_declaration()
             # template instantiations (NCollection_Array1<double>*) have no definition cursor in the TU but are complete
             if d.kind == K.NO_DECL_FOUND or (d.get_definition() is None and pointee.get_canonical().get_num_template_arguments() <= 0):
-                return "pointer to incomplete type"
+                # R-PTR-INCOMPLETE: a class only forward-declared in this TU (BOPDS_DS* BOPAlgo_Builder::PDS()) is fine when OCCT
+                # installs its header -- the emitter includes <Class>.hxx (class_name -> _note_types) and binds the pointer
+                if d.kind == K.NO_DECL_FOUND or _INCLUDE_DIR is None or not (_INCLUDE_DIR / f"{d.spelling}.hxx").exists():
+                    return "pointer to incomplete type"
         if pk == TK.FUNCTIONPROTO or pk == TK.FUNCTIONNOPROTO:
             return "function pointer"
         if pk == TK.VOID:
@@ -564,6 +568,29 @@ def _stream_kind(t: cindex.Type) -> str:
     return ""
 
 
+_OPTIONAL_PTR_REASONS = ("raw pointer to primitive", "void pointer", "pointer to incomplete type", "function pointer", "reference to pointer", "iostream type")
+
+
+# Design.md 6 R-FIXED-ARRAY
+def _fixed_array(t: cindex.Type) -> tuple[str, int, bool] | None:
+    """(element type spelling, N, is_const) for a C array parameter or member of a primitive or class type -- gp_Pnt theP[8]
+    (Bnd_OBB::GetVertex), int (&theNodes)[3] (BRepMesh_Triangle), double myPeriod[3] -- else None (unknown size, arrays of
+    pointers/std types)."""
+    canon = t.get_canonical()
+    if canon.kind == TK.LVALUEREFERENCE:
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind != TK.CONSTANTARRAY:
+        return None
+    elem = canon.element_type
+    ek = elem.get_canonical().kind
+    if ek not in _PRIMITIVE_KINDS and ek != TK.RECORD:
+        return None
+    if _unsupported(elem, allow_out=False) is not None or _class_behind(elem) == "" and ek == TK.RECORD:
+        return None
+    const = elem.is_const_qualified() or canon.is_const_qualified() or "const" in _type_spelling(elem)   # libclang puts the const on either
+    return _type_spelling(elem).replace("const ", "").strip(), canon.element_count, const
+
+
 def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members: set[str] | None = None,
             allow_streams: bool = True) -> tuple[list[Param], str | None]:
     """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
@@ -584,11 +611,25 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             is_str = spelled.startswith("const ") and base in ("char", "char16_t", "Standard_Character", "Standard_ExtCharacter", "Standard_Utf8Char")
             if base in _PRIMITIVE_SPELLINGS and not is_str:
                 reason = "raw pointer to primitive (template argument)"
-        if reason is not None:
-            return params, f"param '{p.spelling}': {reason}"
         name = p.spelling
         if name == "":
             name = f"arg{i}"
+        if reason in _OPTIONAL_PTR_REASONS and p.type.get_canonical().kind == TK.POINTER and _default_expr(p, scope, members) in ("NULL", "nullptr", "0"):
+            # R-OPTIONAL-PTR: an optional output/context pointer (BRepFill_AdvancedEvolved::IsDone(unsigned* theErrorCode = 0),
+            # BRep_Tool::CurveOnSurface(..., bool* theIsStored = NULL)) is dropped; the callee gets nullptr
+            params.append(Param(name=name, type=_type_spelling(p.type), default=None, is_out=False, omitted=True))
+            continue
+        if reason == "array" and not _SUBST.active:
+            arr = _fixed_array(p.type)
+            if arr is not None:
+                elem, n, const = arr           # R-FIXED-ARRAY: const -> a sequence of N in; non-const -> N values returned
+                elem_t = p.type.get_canonical().get_pointee().get_canonical().element_type if p.type.get_canonical().kind == TK.LVALUEREFERENCE else p.type.get_canonical().element_type
+                _note_instance(elem_t)
+                params.append(Param(name=name, type=elem, default=None, is_out=not const, array_len=n, class_name=_class_behind(elem_t),
+                                    out_py="list" if not const else ""))
+                continue
+        if reason is not None:
+            return params, f"param '{p.spelling}': {reason}"
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
         params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=is_out, is_inout=is_out and inout,
@@ -679,6 +720,16 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
         rc0 = cursor.result_type.get_canonical()
+        if m.skip_reason == "reference to pointer" and rc0.get_pointee().get_canonical().get_pointee().get_canonical().kind == TK.RECORD:
+            # R-PTR-REF: BOPAlgo_Builder*& BRepAlgoAPI_BuilderAlgo::Builder() -> bound as the pointer (a lambda copies it out;
+            # rv_policy::reference for a class, a handle for a Transient)
+            ptr_t = rc0.get_pointee()
+            if _unsupported(ptr_t, allow_out=False) is None:
+                m.skip_reason = None
+                m.result = _type_spelling(ptr_t)
+                m.result_kind, m.result_class = _result_kind(ptr_t)
+                m.result_class_name = _class_behind(ptr_t)
+                m.force_lambda = True
         if m.skip_reason == "reference to primitive" and rc0.kind == TK.LVALUEREFERENCE and not cursor.is_const_method():
             # double& Value(i, j) (math_Matrix), double& ChangeCoord(i) (gp_XYZ): Python cannot hold the reference,
             # so the emitter binds a getter plus a Set<Name>/__setitem__ counterpart (Design.md 6, Python addition)
@@ -955,6 +1006,13 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             reason = _unsupported(ch.type, allow_out=False)
             if reason is None and ch.type.get_canonical().kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
                 reason = "array"
+            if reason == "array" and not _SUBST.active:
+                arr = _fixed_array(ch.type)
+                if arr is not None:            # R-FIXED-ARRAY: double myPeriod[3] (BOPAlgo_MakePeriodic::PeriodicityParams) -> a list property
+                    elem, n, const = arr
+                    _note_instance(ch.type.get_canonical().element_type)
+                    c.fields.append(Field(name=ch.spelling, type=elem, is_const=const, doc=_doc(ch), array_len=n))
+                    continue
             if reason is None and ch.type.get_canonical().kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
                 reason = "reference member (no pointer-to-member)"
             if reason is not None:
@@ -1248,6 +1306,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
         args = clang_args(tree)
     if known_elsewhere is None:
         known_elsewhere = set()
+    global _INCLUDE_DIR
+    _INCLUDE_DIR = tree.include_dir
     allowed = _INCLUDE_HEADERS.get(pkg.name)          # a partial package (the font slice of Visualization): allowlist
     if allowed is not None:
         for h in allowed:

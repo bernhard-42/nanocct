@@ -459,6 +459,7 @@ still has this callback registered.)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")), "Data1", &Standard_UUID::Data1);
     nanoocp_def_field(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")), "Data2", &Standard_UUID::Data2);
     nanoocp_def_field(nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")), "Data3", &Standard_UUID::Data3);
+    nb::borrow<nb::class_<Standard_UUID>>(m.attr("Standard_UUID")).def_prop_rw("Data4", [](const Standard_UUID &self) { std::array<unsigned char, 8> a; std::copy(std::begin(self.Data4), std::end(self.Data4), a.begin()); return a; }, [](Standard_UUID &self, const std::array<unsigned char, 8> &a) { std::copy(a.begin(), a.end(), std::begin(self.Data4)); });
     nb::borrow<nb::class_<Standard_GUID>>(m.attr("Standard_GUID"))
         .def(nb::init<>(), R"nbdoc(Creates a GUID with all zeros.)nbdoc")
         .def(nb::init<const char *const>(), nb::arg("aGuid"), R"nbdoc(build a GUID from an ascii string with the

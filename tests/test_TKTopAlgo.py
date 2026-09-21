@@ -87,6 +87,12 @@ def test_extrema_bounding_box_and_classifiers():
     BRepBndLib.BRepBndLib.Add(face, box)
     xmin, ymin, zmin, xmax, ymax, zmax = box.Get__float__float__float__float__float__float()     # R-COLLISION suffix
     assert xmin <= 0 < 10 <= xmax and ymin <= 0 < 5 <= ymax and zmin <= 0 <= zmax
+    # R-FIXED-ARRAY: Bnd_OBB::GetVertex(gp_Pnt theP[8]) returns the 8 corners as a list
+    obb = Bnd.Bnd_OBB()
+    BRepBndLib.BRepBndLib.AddOBB(face, obb)
+    ok, corners = obb.GetVertex()
+    assert ok and len(corners) == 8 and all(type(p) is gp.gp_Pnt for p in corners)
+    assert sorted({round(p.X(), 6) for p in corners}) == [0.0, 10.0] and sorted({round(p.Y(), 6) for p in corners}) == [0.0, 5.0]
     assert BRepClass.BRepClass_FaceClassifier(face, gp.gp_Pnt(5, 2.5, 0), 1e-7).State() == TopAbs.TopAbs_IN
     assert BRepClass.BRepClass_FaceClassifier(face, gp.gp_Pnt(50, 2.5, 0), 1e-7).State() == TopAbs.TopAbs_OUT
 

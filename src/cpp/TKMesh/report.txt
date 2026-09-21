@@ -1,23 +1,14 @@
-# nanoOCP generator report for TKMesh: 112 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMesh: 101 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# array: 8
 # inheritance: 3
 # noncopyable: 5
 # not-constructible: 5
 # overload-collision: 2
-# raw-pointer: 22
+# raw-pointer: 19
 # rvalue: 4
 # template: 50
 # unbound-type: 12
 # undefined: 1
-array	BRepMesh	BRepMesh_DataStructureOfDelaun::ElementNodes(const BRepMesh_Triangle &): param 'theNodes': array
-array	BRepMesh	BRepMesh_GeomTool::IntLinLin(const gp_XY &, const gp_XY &, const gp_XY &, const gp_XY &, gp_XY &): param 'theParamOnSegment': array
-array	BRepMesh	BRepMesh_MeshTool::AddTriangle(const int, const int, const int): param 'theEdges': array
-array	BRepMesh	BRepMesh_Triangle::BRepMesh_Triangle(): param 'theEdges': array
-array	BRepMesh	BRepMesh_Triangle::Edges(): param 'theEdges': array
-array	BRepMesh	BRepMesh_Triangle::Initialize(): param 'theEdges': array
-array	BRepMesh	BRepMesh_Triangle::myEdges: field array
-array	BRepMesh	BRepMesh_Triangle::myOrientations: field array
 inheritance	IMeshData	IMeshData_Edge: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)
 inheritance	IMeshData	IMeshData_Face: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)
 inheritance	IMeshData	IMeshData_Wire: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)
@@ -40,21 +31,18 @@ raw-pointer	BRepMeshData	BRepMeshData_Edge::GetPCurve(): param 'theDFace': refer
 raw-pointer	BRepMeshData	BRepMeshData_Edge::GetPCurves(): param 'theDFace': reference to pointer
 raw-pointer	BRepMeshData	BRepMeshData_PCurve::BRepMeshData_PCurve(): param 'theDFace': reference to pointer
 raw-pointer	BRepMeshData	BRepMeshData_Wire::AddEdge(): param 'theDEdge': reference to pointer
-raw-pointer	BRepMeshData	BRepMeshData_Wire::GetEdge(const int): return: reference to pointer
 raw-pointer	IMeshData	IMeshData_Edge::AddPCurve(): param 'theDFace': reference to pointer
 raw-pointer	IMeshData	IMeshData_Edge::GetPCurve(): param 'theDFace': reference to pointer
 raw-pointer	IMeshData	IMeshData_Edge::GetPCurves(): param 'theDFace': reference to pointer
-raw-pointer	IMeshData	IMeshData_PCurve::GetFace(): return: reference to pointer
 raw-pointer	IMeshData	IMeshData_Wire::AddEdge(): param 'theDEdge': reference to pointer
-raw-pointer	IMeshData	IMeshData_Wire::GetEdge(const int): return: reference to pointer
 raw-pointer	IMeshData	NCollection_OccAllocator<double>::address(NCollection_OccAllocator<double>::const_reference): return: dependent pointer/mutable reference result
-raw-pointer	IMeshData	NCollection_OccAllocator<double>::allocate(NCollection_OccAllocator<double>::size_type): param '': void pointer
+raw-pointer	IMeshData	NCollection_OccAllocator<double>::allocate(NCollection_OccAllocator<double>::size_type, const void *): return: dependent pointer/mutable reference result
 raw-pointer	IMeshData	NCollection_OccAllocator<gp_Pnt2d>::address(NCollection_OccAllocator<gp_Pnt2d>::const_reference): return: dependent pointer/mutable reference result
-raw-pointer	IMeshData	NCollection_OccAllocator<gp_Pnt2d>::allocate(NCollection_OccAllocator<gp_Pnt2d>::size_type): param '': void pointer
+raw-pointer	IMeshData	NCollection_OccAllocator<gp_Pnt2d>::allocate(NCollection_OccAllocator<gp_Pnt2d>::size_type, const void *): return: dependent pointer/mutable reference result
 raw-pointer	IMeshData	NCollection_OccAllocator<gp_Pnt>::address(NCollection_OccAllocator<gp_Pnt>::const_reference): return: dependent pointer/mutable reference result
-raw-pointer	IMeshData	NCollection_OccAllocator<gp_Pnt>::allocate(NCollection_OccAllocator<gp_Pnt>::size_type): param '': void pointer
+raw-pointer	IMeshData	NCollection_OccAllocator<gp_Pnt>::allocate(NCollection_OccAllocator<gp_Pnt>::size_type, const void *): return: dependent pointer/mutable reference result
 raw-pointer	IMeshData	NCollection_OccAllocator<int>::address(NCollection_OccAllocator<int>::const_reference): return: dependent pointer/mutable reference result
-raw-pointer	IMeshData	NCollection_OccAllocator<int>::allocate(NCollection_OccAllocator<int>::size_type): param '': void pointer
+raw-pointer	IMeshData	NCollection_OccAllocator<int>::allocate(NCollection_OccAllocator<int>::size_type, const void *): return: dependent pointer/mutable reference result
 rvalue	IMeshData	NCollection_OccAllocator<double>::NCollection_OccAllocator<double>(): param 'theAlloc': rvalue reference
 rvalue	IMeshData	NCollection_OccAllocator<gp_Pnt2d>::NCollection_OccAllocator<gp_Pnt2d>(): param 'theAlloc': rvalue reference
 rvalue	IMeshData	NCollection_OccAllocator<gp_Pnt>::NCollection_OccAllocator<gp_Pnt>(): param 'theAlloc': rvalue reference

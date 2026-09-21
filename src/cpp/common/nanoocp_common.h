@@ -17,6 +17,8 @@
 #include <nanobind/stl/unordered_set.h>
 #include <nanobind/stl/variant.h>
 #include <nanobind/stl/vector.h>
+#include <algorithm>
+#include <array>
 #include <tuple>
 #include <type_traits>
 

@@ -18,6 +18,7 @@
 #include <Adaptor3d_CurveOnSurface.hxx>
 #include <Adaptor3d_Surface.hxx>
 #include <AdvApprox_ApproxAFunction.hxx>
+#include <Geom2dAdaptor_Curve.hxx>
 #include <Geom2d_BSplineCurve.hxx>
 #include <Geom2d_Curve.hxx>
 #include <GeomAbs_Shape.hxx>
@@ -35,13 +36,16 @@
 #include <gp_Ax2.hxx>
 #include <gp_Dir.hxx>
 #include <gp_GTrsf2d.hxx>
+#include <gp_Lin2d.hxx>
 #include <gp_Pln.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Pnt2d.hxx>
 #include <gp_Vec.hxx>
+#include <gp_Vec2d.hxx>
 #include <math_FunctionSample.hxx>
 #include <math_FunctionWithDerivative.hxx>
 #include <math_Vector.hxx>
+#include <math_VectorBase.hxx>
 
 void nanoocp_declare_GeomLib(nb::module_ &m) {
     nb::enum_<GeomLib_InterpolationErrors>(m, "GeomLib_InterpolationErrors", R"nbdoc(in case the interpolation errors out, this
@@ -378,7 +382,42 @@ or at a distance less than the MaxDist value.)nbdoc")
         .def_static("Parameters", [](const occ::handle<Geom_Surface> & Surface, const gp_Pnt & Point, const double MaxDist) { double U{}; double V{}; auto result = GeomLib_Tool::Parameters(Surface, Point, MaxDist, U, V); return std::make_tuple(result, U, V); }, nb::arg("Surface").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a surface
 or at a distance less than the MaxDist value.)nbdoc")
         .def_static("Parameter", [](const occ::handle<Geom2d_Curve> & Curve, const gp_Pnt2d & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 2D point lying on a 2D curve
-or at a distance less than the MaxDist value.)nbdoc");
+or at a distance less than the MaxDist value.)nbdoc")
+        .def_static("ComputeDeviation", [](const Geom2dAdaptor_Curve & theCurve, const double theFPar, const double theLPar, const double theStartParameter, const int theNbIters, gp_Pnt2d *const thePtOnCurve, gp_Vec2d *const theVecCurvLine, gp_Lin2d *const theLine) { auto result = GeomLib_Tool::ComputeDeviation(theCurve, theFPar, theLPar, theStartParameter, theNbIters, nullptr, thePtOnCurve, theVecCurvLine, theLine); return result; }, nb::arg("theCurve"), nb::arg("theFPar"), nb::arg("theLPar"), nb::arg("theStartParameter"), nb::arg("theNbIters") = static_cast<std::decay_t<const int>>(100), nb::arg("thePtOnCurve") = static_cast<std::decay_t<gp_Pnt2d *const>>(nullptr), nb::arg("theVecCurvLine") = static_cast<std::decay_t<gp_Vec2d *const>>(nullptr), nb::arg("theLine") = static_cast<std::decay_t<gp_Lin2d *const>>(nullptr), R"nbdoc(Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
+between theCurve and the linear segment joining its points with
+the parameters theFPar and theLPar is obtained.
+Returns the (positive) value of deviation. Returns negative value if
+the deviation cannot be computed.
+The returned parameter (in case of successful) will always be in
+the range [theFPar, theLPar].
+Iterative method is used for computation. So, theStartParameter is
+needed to be set. Recommend value of theStartParameter can be found with
+the overloaded method.
+Additionally, following values can be returned (optionally):
+@param thePtOnCurve - the point on curve where maximal deviation is achieved;
+@param thePrmOnCurve - the parameter of thePtOnCurve;
+@param theVecCurvLine - the vector along which is computed (this vector is always
+perpendicular theLine);
+@param theLine - the linear segment joining the point of theCurve having parameters
+theFPar and theLPar.)nbdoc")
+        .def_static("ComputeDeviation", [](const Geom2dAdaptor_Curve & theCurve, const double theFPar, const double theLPar, const int theNbSubIntervals, const int theNbIters) { auto result = GeomLib_Tool::ComputeDeviation(theCurve, theFPar, theLPar, theNbSubIntervals, theNbIters, nullptr); return result; }, nb::arg("theCurve"), nb::arg("theFPar"), nb::arg("theLPar"), nb::arg("theNbSubIntervals"), nb::arg("theNbIters") = static_cast<std::decay_t<const int>>(10), R"nbdoc(Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
+between theCurve and the linear segment joining its points with
+the parameters theFPar and theLPar is obtained.
+Returns the (positive) value of deviation. Returns negative value if
+the deviation cannot be computed.
+The returned parameter (in case of successful) will always be in
+the range [theFPar, theLPar].
+theNbSubIntervals defines discretization of the given interval [theFPar, theLPar]
+to provide better search condition. This value should be chosen taking into
+account complexity of the curve in considered interval. E.g. if there are many
+oscillations of the curve in the interval then theNbSubIntervals mus be
+great number. However, the greater value of theNbSubIntervals the slower the
+algorithm will compute.
+theNbIters sets number of iterations.
+ATTENTION!!!
+This algorithm cannot compute deviation precisely (so, there is no point in
+setting big value of theNbIters). But it can give some start point for
+the overloaded method.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib_Tool>(nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool")));
     m.attr("Adaptor2d_Curve2d") = nb::module_::import_("nanoocp._TKG2d.Adaptor2d").attr("Adaptor2d_Curve2d");   // Adaptor2d_Curve2d = Adaptor2d_Curve2d
 }

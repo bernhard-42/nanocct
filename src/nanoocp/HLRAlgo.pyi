@@ -1,5 +1,6 @@
 """OCCT package HLRAlgo (toolkit TKHLR)"""
 
+from collections.abc import Sequence
 import enum
 from typing import overload
 
@@ -97,6 +98,18 @@ class HLRAlgo_EdgesBlock(nanoocp.Standard.Standard_Transient):
         def Minimize(self, theMinMaxIndices: HLRAlgo_EdgesBlock.MinMaxIndices) -> HLRAlgo_EdgesBlock.MinMaxIndices: ...
 
         def Maximize(self, theMinMaxIndices: HLRAlgo_EdgesBlock.MinMaxIndices) -> HLRAlgo_EdgesBlock.MinMaxIndices: ...
+
+        @property
+        def Min(self) -> list[int]: ...
+
+        @Min.setter
+        def Min(self, arg: Sequence[int], /) -> None: ...
+
+        @property
+        def Max(self) -> list[int]: ...
+
+        @Max.setter
+        def Max(self, arg: Sequence[int], /) -> None: ...
 
     def NbEdges(self) -> int: ...
 
@@ -214,6 +227,19 @@ class HLRAlgo:
 
     @overload
     def __init__(self, theOther: HLRAlgo) -> None: ...
+
+    @staticmethod
+    def UpdateMinMax(x: float, y: float, z: float) -> tuple[list[float], list[float]]:
+        """
+        Iterator on the visible or hidden parts of an
+        EdgeStatus.
+        """
+
+    @staticmethod
+    def EnlargeMinMax(tol: float) -> tuple[list[float], list[float]]: ...
+
+    @staticmethod
+    def InitMinMax(Big: float) -> tuple[list[float], list[float]]: ...
 
     @staticmethod
     def EncodeMinMax(Min: HLRAlgo_EdgesBlock.MinMaxIndices, Max: HLRAlgo_EdgesBlock.MinMaxIndices, MinMax: HLRAlgo_EdgesBlock.MinMaxIndices) -> None: ...

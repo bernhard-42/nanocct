@@ -5055,10 +5055,10 @@
 "by": "IMeshData"
 },
 "NCollection_DynamicArray<TopoDS_Shape>": {
-"toolkit": "TKTopAlgo",
+"toolkit": "TKBRep",
 "package": "NCollection",
 "name": "NCollection_DynamicArray__TopoDS_Shape",
-"by": "BRepExtrema"
+"by": "BRepGraphInc"
 },
 "NCollection_DynamicArray<bool>": {
 "toolkit": "TKMesh",

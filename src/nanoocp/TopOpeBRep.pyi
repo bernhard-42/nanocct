@@ -914,6 +914,9 @@ class TopOpeBRep_FacesFiller:
 
     def ChangePointClassifier(self) -> TopOpeBRep_PointClassifier: ...
 
+    def PShapeClassifier(self) -> nanoocp.TopOpeBRepTool.TopOpeBRepTool_ShapeClassifier:
+        """return field myPShapeClassifier."""
+
     def LoadLine(self, L: TopOpeBRep_LineInter) -> None: ...
 
     def CheckLine(self, L: TopOpeBRep_LineInter) -> bool: ...
@@ -1144,6 +1147,12 @@ class TopOpeBRep_DSFiller:
     """
 
     def __init__(self) -> None: ...
+
+    def PShapeClassifier(self) -> nanoocp.TopOpeBRepTool.TopOpeBRepTool_ShapeClassifier:
+        """
+        return field myPShapeClassifier.
+        set field myPShapeClassifier.
+        """
 
     def Insert(self, S1: nanoocp.TopoDS.TopoDS_Shape, S2: nanoocp.TopoDS.TopoDS_Shape, HDS: nanoocp.TopOpeBRepDS.TopOpeBRepDS_HDataStructure | None, orientFORWARD: bool = True) -> None:
         """

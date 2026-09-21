@@ -14,7 +14,9 @@
 #include <IntSurf_Situation.hxx>
 #include <IntSurf_Transition.hxx>
 #include <IntSurf_TypeTrans.hxx>
+#include <Adaptor3d_Surface.hxx>
 #include <GeomAbs_SurfaceType.hxx>
+#include <NCollection_BaseAllocator.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Cone.hxx>
@@ -95,7 +97,15 @@ TgSecond is the tangent vector of the second line.
 Normal is the direction used to orientate the cross
 product TgFirst^TgSecond.
 TFirst is the transition of the point on the first line.
-TSecond is the transition of the point on the second line.)nbdoc");
+TSecond is the transition of the point on the second line.)nbdoc")
+        .def_static("SetPeriod", [](const occ::handle<Adaptor3d_Surface> & theFirstSurf, const occ::handle<Adaptor3d_Surface> & theSecondSurf) { double theArrOfPeriod[4]{}; IntSurf::SetPeriod(theFirstSurf, theSecondSurf, theArrOfPeriod); std::array<double, 4> theArrOfPeriod_out; std::copy(std::begin(theArrOfPeriod), std::end(theArrOfPeriod), theArrOfPeriod_out.begin()); return theArrOfPeriod_out; }, nb::arg("theFirstSurf").none(), nb::arg("theSecondSurf").none(), R"nbdoc(Fills theArrOfPeriod array by the period values of theFirstSurf and theSecondSurf.
+[0] = U-period of theFirstSurf,
+[1] = V-period of theFirstSurf,
+[2] = U-period of theSecondSurf,
+[3] = V-period of theSecondSurf.
+
+If surface is not periodic in correspond direction then
+its period is considered to be equal to 0.)nbdoc");
     nanoocp_implicit_copy_ctor<IntSurf>(nb::borrow<nb::class_<IntSurf>>(m.attr("IntSurf")));
     nb::borrow<nb::class_<IntSurf_Couple>>(m.attr("IntSurf_Couple"))
         .def(nb::init<>())

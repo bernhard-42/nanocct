@@ -90,6 +90,18 @@ def test_general_fuse_splitter_and_bop():
     assert [e.name for e in BOPAlgo.BOPAlgo_Operation] == ["BOPAlgo_COMMON", "BOPAlgo_FUSE", "BOPAlgo_CUT", "BOPAlgo_CUT21", "BOPAlgo_SECTION", "BOPAlgo_UNKNOWN"]
 
 
+def test_general_fuse_internals_are_reachable():
+    # R-PTR-REF: Builder()/DSFiller() return BOPAlgo_Builder*& / BOPAlgo_PaveFiller*&; R-PTR-INCOMPLETE: PDS() returns BOPDS_DS*
+    # (forward-declared in BOPAlgo_Builder.hxx, header included by the generator)
+    a, b = _boxes()
+    fuse = BRepAlgoAPI.BRepAlgoAPI_Fuse(a, b)
+    builder, filler = fuse.Builder(), fuse.DSFiller()
+    assert type(builder) is BOPAlgo.BOPAlgo_BOP and type(filler) is BOPAlgo.BOPAlgo_PaveFiller
+    ds = builder.PDS()
+    assert type(ds) is BOPDS.BOPDS_DS and ds.NbSourceShapes() == 68 and ds.NbShapes() > ds.NbSourceShapes()
+    assert len(builder.Images()) > 0 and filler.PDS().NbShapes() == ds.NbShapes()
+
+
 def test_data_structures_hashes_and_report():
     assert BOPDS.BOPDS_DS().NbShapes() == 0
     assert type(IntTools.IntTools_Context()).__name__ == "IntTools_Context"

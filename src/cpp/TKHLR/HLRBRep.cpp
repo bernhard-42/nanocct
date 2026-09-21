@@ -664,6 +664,8 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
 parameter on the 3d curve.)nbdoc")
         .def("Parameter3d", static_cast<double (HLRBRep_Curve::*)(const double) const>(&HLRBRep_Curve::Parameter3d), nb::arg("P2d"), R"nbdoc(Returns the parameter on the 3d curve from the
 parameter on the 2d curve.)nbdoc")
+        .def("Update", [](HLRBRep_Curve &self) { double TotMin[16]{}; double TotMax[16]{}; auto result = self.Update(TotMin, TotMax); std::array<double, 16> TotMin_out; std::copy(std::begin(TotMin), std::end(TotMin), TotMin_out.begin()); std::array<double, 16> TotMax_out; std::copy(std::begin(TotMax), std::end(TotMax), TotMax_out.begin()); return std::make_tuple(result, TotMin_out, TotMax_out); }, R"nbdoc(Update the minmax and the internal data)nbdoc")
+        .def("UpdateMinMax", [](HLRBRep_Curve &self) { double TotMin[16]{}; double TotMax[16]{}; auto result = self.UpdateMinMax(TotMin, TotMax); std::array<double, 16> TotMin_out; std::copy(std::begin(TotMin), std::end(TotMin), TotMin_out.begin()); std::array<double, 16> TotMax_out; std::copy(std::begin(TotMax), std::end(TotMax), TotMax_out.begin()); return std::make_tuple(result, TotMin_out, TotMax_out); }, R"nbdoc(Update the minmax returns tol for enlarge;)nbdoc")
         .def("Z", static_cast<double (HLRBRep_Curve::*)(const double) const>(&HLRBRep_Curve::Z), nb::arg("U"), R"nbdoc(Computes the Z coordinate of the point of
 parameter U on the curve in the viewing coordinate system)nbdoc")
         .def("Value3D", static_cast<gp_Pnt (HLRBRep_Curve::*)(const double) const>(&HLRBRep_Curve::Value3D), nb::arg("U"), R"nbdoc(Computes the 3D point of parameter U on the
@@ -1377,6 +1379,7 @@ this case, the inner outlines of the torus seen on its side are hidden.)nbdoc");
         .def("Values", static_cast<bool (HLRBRep_TheCSFunctionOfInterCSurf::*)(const math_Vector &, math_Vector &, math_Matrix &)>(&HLRBRep_TheCSFunctionOfInterCSurf::Values), nb::arg("X"), nb::arg("F"), nb::arg("D"))
         .def("Point", static_cast<const gp_Pnt & (HLRBRep_TheCSFunctionOfInterCSurf::*)() const>(&HLRBRep_TheCSFunctionOfInterCSurf::Point))
         .def("Root", static_cast<double (HLRBRep_TheCSFunctionOfInterCSurf::*)() const>(&HLRBRep_TheCSFunctionOfInterCSurf::Root))
+        .def("AuxillarSurface", [](const HLRBRep_TheCSFunctionOfInterCSurf &self) { auto result = self.AuxillarSurface(); return result; }, nb::rv_policy::reference)
         .def("AuxillarCurve", static_cast<const gp_Lin & (HLRBRep_TheCSFunctionOfInterCSurf::*)() const>(&HLRBRep_TheCSFunctionOfInterCSurf::AuxillarCurve));
     nanoocp_implicit_copy_ctor<HLRBRep_TheCSFunctionOfInterCSurf>(nb::borrow<nb::class_<HLRBRep_TheCSFunctionOfInterCSurf>>(m.attr("HLRBRep_TheCSFunctionOfInterCSurf")));
     nb::borrow<nb::class_<HLRBRep_TheExactInterCSurf>>(m.attr("HLRBRep_TheExactInterCSurf"))

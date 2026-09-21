@@ -44,6 +44,8 @@ class Param:
     stream: StreamKind = StreamKind.NONE
     binary: bool = False    # the stream carries a binary format (overrides.toml [stream] binary_packages): bytes / typing.BinaryIO instead of str / typing.TextIO
     out_py: str = ""        # Python type name of a removed out-parameter (float, int, bool, str, an enum or class name): the R-COLLISION suffix
+    omitted: bool = False   # R-OPTIONAL-PTR: a pointer parameter with a null default, dropped from the signature; the callee gets nullptr
+    array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
 
 
 @dataclass
@@ -65,6 +67,7 @@ class Method:
     is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring
     suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
     via_using: str = ""               # R-USING: the base class whose member a `using Base::name;` re-exports on this class
+    force_lambda: bool = False        # bound through a lambda even without out-parameters (R-PTR-REF: a T*& result returned as T*)
 
 
 @dataclass
@@ -94,6 +97,7 @@ class Field:
     type: str
     is_const: bool
     doc: str
+    array_len: int = 0          # R-FIXED-ARRAY: a C array member T[N]; `type` is the element type; a list property
 
 
 @dataclass

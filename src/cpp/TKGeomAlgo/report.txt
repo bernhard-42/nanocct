@@ -1,16 +1,14 @@
-# nanoOCP generator report for TKGeomAlgo: 86 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomAlgo: 82 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# array: 3
+# array: 1
 # header: 1
 # overload-collision: 30
 # override: 3
-# raw-pointer: 4
+# raw-pointer: 2
 # template: 4
 # unbound-type: 5
 # undefined: 36
 array	IntImp	IntImp_ComputeTangence(...): param 'DPuv': array
-array	IntPatch	IntPatch_SpecialPoints::AdjustPointAndVertex(const IntSurf_PntOn2S &): param 'theArrPeriods': array
-array	IntSurf	IntSurf::SetPeriod(const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_Surface> &): param 'theArrOfPeriod': array
 header	IntWalk	IntWalk: headers not self-contained, parsed with <IntSurf_LineOn2S.hxx> included first
 overload-collision	GccEnt	GccEnt::PositionFromString(const char *, GccEnt_Position &): same Python signature as another overload after out-param removal -> bound as PositionFromString__GccEnt_Position
 overload-collision	Geom2dAPI	Geom2dAPI_ProjectPointOnCurve::Parameter(const int, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float
@@ -47,8 +45,6 @@ override	IntPolyh	IntPolyh_Array<IntPolyh_PointNormal>::Dump(): overrides.toml [
 override	IntPolyh	IntPolyh_Array<IntPolyh_Triangle>::Dump(): overrides.toml [skip] methods
 raw-pointer	GeomInt	GeomInt_TheMultiLineOfWLApprox::GeomInt_TheMultiLineOfWLApprox(const occ::handle<IntPatch_WLine> &): param 'PtrSvSurfaces': void pointer
 raw-pointer	IntPatch	IntPatch_WLineTool::ExtendTwoWLines(NCollection_Sequence<opencascade::handle<IntPatch_Line>> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_Surface> &, const double): param 'theArrPeriods': raw pointer to primitive
-raw-pointer	IntPolyh	IntPolyh_MaillageAffinage::FillArrayOfPnt(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &): param 'theDeflTol': raw pointer to primitive
-raw-pointer	IntPolyh	IntPolyh_MaillageAffinage::FillArrayOfPnt(const int, const bool, const NCollection_Array1<double> &, const NCollection_Array1<double> &): param 'theDeflTol': raw pointer to primitive
 template	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> instantiated as BVH_PairTraverse<double, 3, void, double> (spelling mismatch) -> not bound
 template	IntPatch	math_VectorBase: template (not bound)
 template	IntPatch	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)

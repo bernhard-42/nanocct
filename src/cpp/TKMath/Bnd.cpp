@@ -679,6 +679,17 @@ auto [aHX, aHY, aHZ] = anOBB.GetHalfSizes();
         .def("SetAABox", static_cast<void (Bnd_OBB::*)(const bool &)>(&Bnd_OBB::SetAABox), nb::arg("theFlag"), R"nbdoc(Sets the flag for axes aligned box)nbdoc")
         .def("IsAABox", static_cast<bool (Bnd_OBB::*)() const noexcept>(&Bnd_OBB::IsAABox), R"nbdoc(Returns TRUE if the box is axes aligned)nbdoc")
         .def("Enlarge", static_cast<void (Bnd_OBB::*)(const double)>(&Bnd_OBB::Enlarge), nb::arg("theGapAdd"), R"nbdoc(Enlarges the box with the given value)nbdoc")
+        .def("GetVertex", [](const Bnd_OBB &self) { gp_Pnt theP[8]{}; auto result = self.GetVertex(theP); std::array<gp_Pnt, 8> theP_out; std::copy(std::begin(theP), std::end(theP), theP_out.begin()); return std::make_tuple(result, theP_out); }, R"nbdoc(Returns the array of vertices in <this>.
+The local coordinate of the vertex depending on the
+index of the array are follow:
+Index == 0: (-XHSize(), -YHSize(), -ZHSize())
+Index == 1: ( XHSize(), -YHSize(), -ZHSize())
+Index == 2: (-XHSize(),  YHSize(), -ZHSize())
+Index == 3: ( XHSize(),  YHSize(), -ZHSize())
+Index == 4: (-XHSize(), -YHSize(),  ZHSize())
+Index == 5: ( XHSize(), -YHSize(),  ZHSize())
+Index == 6: (-XHSize(),  YHSize(),  ZHSize())
+Index == 7: ( XHSize(),  YHSize(),  ZHSize()).)nbdoc")
         .def("SquareExtent", static_cast<double (Bnd_OBB::*)() const noexcept>(&Bnd_OBB::SquareExtent), R"nbdoc(Returns square diagonal of this box)nbdoc")
         .def("IsOut", static_cast<bool (Bnd_OBB::*)(const Bnd_OBB &) const>(&Bnd_OBB::IsOut), nb::arg("theOther"), R"nbdoc(Check if the box do not interfere the other box.)nbdoc")
         .def("IsOut", static_cast<bool (Bnd_OBB::*)(const gp_Pnt &) const>(&Bnd_OBB::IsOut), nb::arg("theP"), R"nbdoc(Check if the point is inside of <this>.)nbdoc")

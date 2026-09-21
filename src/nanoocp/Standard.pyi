@@ -1,5 +1,6 @@
 """OCCT package Standard (toolkit TKernel)"""
 
+from collections.abc import Sequence
 import enum
 from typing import TextIO, TypeAlias, overload
 
@@ -594,6 +595,12 @@ class Standard_UUID:
 
     @Data3.setter
     def Data3(self, arg: int, /) -> None: ...
+
+    @property
+    def Data4(self) -> list[int]: ...
+
+    @Data4.setter
+    def Data4(self, arg: Sequence[int], /) -> None: ...
 
 class Standard_GUID:
     @overload

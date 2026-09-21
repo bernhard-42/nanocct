@@ -1,5 +1,6 @@
 """OCCT package BRepGraphInc (toolkit TKBRep)"""
 
+from collections.abc import Sequence
 import enum
 from typing import TypeAlias, overload
 
@@ -1650,6 +1651,12 @@ class BRepGraphInc_Reconstruct:
 
         @myTempAllocator.setter
         def myTempAllocator(self, arg: nanoocp.NCollection.NCollection_IncAllocator, /) -> None: ...
+
+        @property
+        def myKinds(self) -> list[nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]]: ...
+
+        @myKinds.setter
+        def myKinds(self, arg: Sequence[nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]], /) -> None: ...
 
         @property
         def myTempScopeDepth(self) -> int: ...

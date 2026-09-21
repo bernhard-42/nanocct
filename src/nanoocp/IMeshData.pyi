@@ -244,6 +244,9 @@ class IMeshData_PCurve(IMeshData_ParametersList):
     def GetOrientation(self) -> nanoocp.TopAbs.TopAbs_Orientation:
         """Returns orientation of the edge associated with current pcurve."""
 
+    def GetFace(self) -> IMeshData_Face:
+        """Returns discrete face pcurve is associated to."""
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -368,6 +371,9 @@ class IMeshData_Wire(IMeshData_TessellatedShape):
 
     def EdgesNb(self) -> int:
         """Returns number of edges."""
+
+    def GetEdge(self, theIndex: int) -> IMeshData_Edge:
+        """Returns discrete edge with the given index."""
 
     def GetEdgeOrientation(self, theIndex: int) -> nanoocp.TopAbs.TopAbs_Orientation:
         """

@@ -1,19 +1,11 @@
-# nanoOCP generator report for TKHLR: 126 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKHLR: 118 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# array: 7
 # header: 1
 # iterator: 1
 # overload-collision: 3
-# raw-pointer: 91
+# raw-pointer: 90
 # template: 20
 # undefined: 3
-array	HLRAlgo	HLRAlgo::EnlargeMinMax(const double): param 'Min': array
-array	HLRAlgo	HLRAlgo::InitMinMax(const double): param 'Min': array
-array	HLRAlgo	HLRAlgo::UpdateMinMax(const double, const double, const double): param 'Min': array
-array	HLRAlgo	HLRAlgo_EdgesBlock::MinMaxIndices::Max: field array
-array	HLRAlgo	HLRAlgo_EdgesBlock::MinMaxIndices::Min: field array
-array	HLRBRep	HLRBRep_Curve::Update(): param 'TotMin': array
-array	HLRBRep	HLRBRep_Curve::UpdateMinMax(): param 'TotMin': array
 header	HLRTopoBRep	HLRTopoBRep: extra headers not self-contained, Adaptor2d_Curve2d.hxx included first
 iterator	HLRBRep	HLRBRep_VertexList: __iter__ added (More/Next/Current)
 overload-collision	HLRBRep	HLRBRep_LineTool::SamplePars(const gp_Lin &, const double, const double, const double, const int, occ::handle<NCollection_HArray1<double>> &): same Python signature as another overload after out-param removal -> bound as SamplePars__NCollection_HArray1__double
@@ -86,7 +78,6 @@ raw-pointer	HLRBRep	HLRBRep_SLPropsATool::D1(): param 'A': void pointer
 raw-pointer	HLRBRep	HLRBRep_SLPropsATool::D2(): param 'A': void pointer
 raw-pointer	HLRBRep	HLRBRep_SLPropsATool::DN(): param 'A': void pointer
 raw-pointer	HLRBRep	HLRBRep_SLPropsATool::Value(): param 'A': void pointer
-raw-pointer	HLRBRep	HLRBRep_TheCSFunctionOfInterCSurf::AuxillarSurface(): return: reference to pointer
 raw-pointer	HLRBRep	HLRBRep_TheCSFunctionOfInterCSurf::HLRBRep_TheCSFunctionOfInterCSurf(): param 'S': reference to pointer
 raw-pointer	HLRBRep	HLRBRep_TheDistBetweenPCurvesOfTheIntPCurvePCurveOfCInter::HLRBRep_TheDistBetweenPCurvesOfTheIntPCurvePCurveOfCInter(): param 'curve1': reference to pointer
 raw-pointer	HLRBRep	HLRBRep_TheIntConicCurveOfCInter::HLRBRep_TheIntConicCurveOfCInter(const gp_Circ2d &, const IntRes2d_Domain &): param 'PCurve': reference to pointer

@@ -1177,6 +1177,27 @@ class IntPolyh_MaillageAffinage:
         """
 
     @overload
+    def FillArrayOfPnt(self, SurfID: int, Upars: nanoocp.NCollection.NCollection_Array1[float], Vpars: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Compute points on one surface and fill an array of points;
+        If given, <theDeflTol> is the deflection tolerance of the given sampling.
+        standard (default) method
+        """
+
+    @overload
+    def FillArrayOfPnt(self, SurfID: int, isShiftFwd: bool, Upars: nanoocp.NCollection.NCollection_Array1[float], Vpars: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        isShiftFwd flag is added. The purpose is to define shift
+        of points along normal to the surface in this point. The
+        shift length represents maximal deflection of triangulation.
+        The direction (forward or reversed regarding to normal
+        direction) is defined by isShiftFwd flag.
+        Compute points on one surface and fill an array of points;
+        If given, <theDeflTol> is the deflection tolerance of the given sampling.
+        advanced method
+        """
+
+    @overload
     def FillArrayOfPnt(self, SurfID: int, isShiftFwd: bool, thePoints: IntPolyh_ArrayOfPointNormal, theUPars: nanoocp.NCollection.NCollection_Array1[float], theVPars: nanoocp.NCollection.NCollection_Array1[float], theDeflTol: float) -> None:
         """
         Fills the array of points for the surface taking into account the shift

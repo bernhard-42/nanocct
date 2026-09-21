@@ -265,7 +265,7 @@ create more BaseAllocators, but it is injurious.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (NCollection_BaseAllocator::*)() const>(&NCollection_BaseAllocator::DynamicType));
     nanoocp_implicit_copy_ctor<NCollection_BaseAllocator>(nb::borrow<nb::class_<NCollection_BaseAllocator>>(m.attr("NCollection_BaseAllocator")));
     nb::borrow<nb::class_<NCollection_ListNode>>(m.attr("NCollection_ListNode"))
-        .def("Next", static_cast<NCollection_ListNode * (NCollection_ListNode::*)() const noexcept>(&NCollection_ListNode::Next), nb::rv_policy::reference, R"nbdoc(Next pointer const access)nbdoc");
+        .def("Next", [](NCollection_ListNode &self) { auto result = self.Next(); return result; }, nb::rv_policy::reference, R"nbdoc(Next pointer access)nbdoc");
     nb::borrow<nb::class_<NCollection_BaseMap>>(m.attr("NCollection_BaseMap"))
         .def("NbBuckets", static_cast<size_t (NCollection_BaseMap::*)() const noexcept>(&NCollection_BaseMap::NbBuckets), R"nbdoc(NbBuckets)nbdoc")
         .def("Extent", static_cast<int (NCollection_BaseMap::*)() const noexcept>(&NCollection_BaseMap::Extent), R"nbdoc(Extent (number of elements, legacy int-returning API).)nbdoc")
@@ -407,6 +407,11 @@ create more BaseAllocators, but it is injurious.)nbdoc")
     nanoocp_def_field(nb::borrow<nb::class_<NCollection_BaseList::Iterator>>(m.attr("NCollection_BaseList").attr("Iterator")), "myPrevious", &NCollection_BaseList::Iterator::myPrevious);
     nb::implicitly_convertible<std::decay_t<const NCollection_BaseList &>, NCollection_BaseList::Iterator>();
     nb::borrow<nb::class_<NCollection_Buffer>>(m.attr("NCollection_Buffer"))
+        .def(nb::new_([](const occ::handle<NCollection_BaseAllocator> & theAlloc, const size_t theSize) { return opencascade::handle<NCollection_Buffer>(new NCollection_Buffer(theAlloc, theSize, nullptr)); }), nb::arg("theAlloc").none(), nb::arg("theSize") = static_cast<std::decay_t<const size_t>>(0), R"nbdoc(Default constructor.
+When theData is NULL but theSize is not 0 than buffer of specified size will be allocated.
+@param theAlloc memory allocator
+@param theSize  buffer size
+@param theData  buffer data allocated by theAlloc)nbdoc")
         .def("IsEmpty", static_cast<bool (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::IsEmpty), R"nbdoc(@return true if buffer is not allocated)nbdoc")
         .def("Size", static_cast<size_t (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::Size), R"nbdoc(Return buffer length in bytes.)nbdoc")
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::Allocator), R"nbdoc(@return buffer allocator)nbdoc")

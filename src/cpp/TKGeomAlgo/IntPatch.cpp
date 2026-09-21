@@ -64,6 +64,7 @@
 #include <Intf_Interference.hxx>
 #include <Intf_Polygon2d.hxx>
 #include <NCollection_Array1.hxx>
+#include <NCollection_BaseAllocator.hxx>
 #include <NCollection_DynamicArray.hxx>
 #include <NCollection_HArray1.hxx>
 #include <NCollection_List.hxx>
@@ -1169,6 +1170,17 @@ ATTENTION!!!
 theVertex must be initialized before calling the method .)nbdoc")
         .def_static("ContinueAfterSpecialPoint", static_cast<bool (*)(const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_Surface> &, const IntSurf_PntOn2S &, const IntPatch_SpecPntType, const double, IntSurf_PntOn2S &, const bool)>(&IntPatch_SpecialPoints::ContinueAfterSpecialPoint), nb::arg("theQSurf").none(), nb::arg("thePSurf").none(), nb::arg("theRefPt"), nb::arg("theSPType"), nb::arg("theTol2D"), nb::arg("theNewPoint"), nb::arg("theIsReversed") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Special point has already been added in the line. Now, we need in correct
 prolongation of the line or in start new line. This function returns new point.
+
+ATTENTION!!!
+theNewPoint is not only Output parameter. It is Input/Output one. I.e.
+theNewPoint is reference point together with theRefPt.)nbdoc")
+        .def_static("AdjustPointAndVertex", [](const IntSurf_PntOn2S & theRefPoint, const std::array<double, 4> &theArrPeriods, IntSurf_PntOn2S & theNewPoint, IntPatch_Point *const theVertex) { double theArrPeriods_arr[4]; std::copy(theArrPeriods.begin(), theArrPeriods.end(), theArrPeriods_arr); IntPatch_SpecialPoints::AdjustPointAndVertex(theRefPoint, theArrPeriods_arr, theNewPoint, theVertex); }, nb::arg("theRefPoint"), nb::arg("theArrPeriods"), nb::arg("theNewPoint"), nb::arg("theVertex") = static_cast<std::decay_t<IntPatch_Point *const>>(nullptr), R"nbdoc(Sets theNewPoint parameters in 2D-space the closest to
+theRefPoint with help of adding/subtracting corresponding periods.
+theArrPeriods must be filled as follows:
+{<U-period of 1st surface>, <V-period of 1st surface>,
+<U-period of 2nd surface>, <V-period of 2nd surface>}.
+If theVertex != 0 then its parameters will be filled as
+corresponding parameters of theNewPoint.
 
 ATTENTION!!!
 theNewPoint is not only Output parameter. It is Input/Output one. I.e.

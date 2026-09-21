@@ -10,6 +10,7 @@
 #include <BRepAlgoAPI_Fuse.hxx>
 #include <BRepAlgoAPI_Section.hxx>
 #include <BRepAlgoAPI_Splitter.hxx>
+#include <BOPAlgo_Builder.hxx>
 #include <BOPAlgo_CheckResult.hxx>
 #include <BOPAlgo_GlueEnum.hxx>
 #include <BOPAlgo_Operation.hxx>
@@ -317,6 +318,9 @@ Allows disabling the history collection)nbdoc")
         .def("SectionEdges", static_cast<const NCollection_List<TopoDS_Shape> & (BRepAlgoAPI_BuilderAlgo::*)()>(&BRepAlgoAPI_BuilderAlgo::SectionEdges), R"nbdoc(@name Getting the section edges
 Returns a list of section edges.
 The edges represent the result of intersection between arguments of operation.)nbdoc")
+        .def("DSFiller", [](const BRepAlgoAPI_BuilderAlgo &self) { auto result = self.DSFiller(); return result; }, nb::rv_policy::reference, R"nbdoc(@name Getting tools performing the job
+Returns the Intersection tool)nbdoc")
+        .def("Builder", [](const BRepAlgoAPI_BuilderAlgo &self) { auto result = self.Builder(); return result; }, nb::rv_policy::reference, R"nbdoc(Returns the Building tool)nbdoc")
         .def("History", static_cast<occ::handle<BRepTools_History> (BRepAlgoAPI_BuilderAlgo::*)() const>(&BRepAlgoAPI_BuilderAlgo::History), R"nbdoc(History tool)nbdoc");
     nanoocp_implicit_copy_ctor<BRepAlgoAPI_BuilderAlgo>(nb::borrow<nb::class_<BRepAlgoAPI_BuilderAlgo>>(m.attr("BRepAlgoAPI_BuilderAlgo")));
     nb::implicitly_convertible<std::decay_t<const BOPAlgo_PaveFiller &>, BRepAlgoAPI_BuilderAlgo>();

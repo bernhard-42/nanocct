@@ -139,7 +139,6 @@ triangulation).)nbdoc");
 
 void nanoocp_templates_BRepExtrema(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DataMap<int, NCollection_PackedMap<int>>(home, "NCollection_DataMap__int__NCollection_PackedMap__int"); }
-    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<TopoDS_Shape>(home, "NCollection_DynamicArray__TopoDS_Shape"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<gp_XYZ>(home, "NCollection_DynamicArray__gp_XYZ"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<BRepExtrema_SolutionElem>(home, "NCollection_Sequence__BRepExtrema_SolutionElem"); }
 }

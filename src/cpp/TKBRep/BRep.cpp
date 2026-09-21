@@ -364,6 +364,20 @@ In <First> and <Last> the parameter range.
 It can be a copy if there is a Location.)nbdoc")
         .def_static("Polygon3D", static_cast<const occ::handle<Poly_Polygon3D> & (*)(const TopoDS_Edge &, TopLoc_Location &)>(&BRep_Tool::Polygon3D), nb::arg("E"), nb::arg("L"), R"nbdoc(Returns the 3D polygon of the edge. May be a Null
 handle. Returns in <L> the location for the polygon.)nbdoc")
+        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, const TopoDS_Face & F) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnSurface(E, F, First, Last, nullptr); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns the curve associated to the edge in the
+parametric space of the face. Returns a NULL
+handle if this curve does not exist. Returns in
+<First> and <Last> the parameter range.
+If the surface is a plane the curve can be not stored but created a new
+each time. The flag pointed by <theIsStored> serves to indicate storage status.
+It is valued if the pointer is non-null.)nbdoc")
+        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnSurface(E, S, L, First, Last, nullptr); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Returns the curve associated to the edge in the
+parametric space of the surface. Returns a NULL
+handle if this curve does not exist. Returns in
+<First> and <Last> the parameter range.
+If the surface is a plane the curve can be not stored but created a new
+each time. The flag pointed by <theIsStored> serves to indicate storage status.
+It is valued if the pointer is non-null.)nbdoc")
         .def_static("CurveOnPlane", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnPlane(E, S, L, First, Last); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(For the planar surface builds the 2d curve for the edge
 by projection of the edge on plane.
 Returns a NULL handle if the surface is not planar or

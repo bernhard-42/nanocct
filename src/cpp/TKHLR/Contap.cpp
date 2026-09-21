@@ -34,6 +34,7 @@
 #include <IntSurf_Transition.hxx>
 #include <IntSurf_TypeTrans.hxx>
 #include <NCollection_Array1.hxx>
+#include <NCollection_BaseAllocator.hxx>
 #include <NCollection_Sequence.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>

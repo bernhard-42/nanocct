@@ -565,6 +565,9 @@ class BRepBuilderAPI_FastSewing(nanoocp.Standard.Standard_Transient):
     def GetResult(self) -> nanoocp.TopoDS.TopoDS_Shape:
         """Returns resulted shape"""
 
+    def GetStatuses(self) -> int:
+        """Returns list of statuses. Print message if theOS != 0"""
+
     @staticmethod
     def get_type_name() -> str: ...
 

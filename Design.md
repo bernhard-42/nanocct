@@ -6,7 +6,7 @@ Living document. Every design decision goes here with its rationale and the evid
 
 How to read it:
 
-- Sections 1–2 say what is built and the conventions a *user* must know (2a names, 2b parameters, 2c Python additions) — README material.
+- Sections 1–2 say what is built and the conventions a *user* must know (2a names, 2b parameters, 2c Python additions, 2d what is not bound and the workaround) — README material.
 - Sections 3–5 describe the toolchain, the runtime model and the generator.
 - Section 6 is the rule book: every deviation from 1:1, one row per rule with an identifier (`R-…`) that the generator code cites.
 - Sections 7–8 cover build, packaging, coverage, the roadmap and the OCP porting table.
@@ -102,6 +102,9 @@ Overloads that Python cannot tell apart and that carry no new name (section 6 ha
 - **`std::ostream&` / `std::istream&`:**
     - an output stream parameter becomes a returned `str` (`bytes` in the binary packages, `BinTools`);
     - an input stream parameter takes a text (`io.StringIO`, an open file) or binary (`io.BytesIO`) file-like object — never a `str`, so the file-path overloads stay reachable.
+- **Optional pointers are dropped** (R-OPTIONAL-PTR): a pointer parameter with a null default (`bool* theIsStored = nullptr` in `BRep_Tool::CurveOnSurface`, `unsigned* theErrorCode = 0` in `BRepFill_AdvancedEvolved::IsDone`, `Standard_OStream* = nullptr` in `BRepBuilderAPI_FastSewing::GetStatuses`) is not in the Python signature; the callee always gets the null pointer.
+- **Fixed-size arrays are sequences** (R-FIXED-ARRAY): `const int (&theNodes)[3]` takes any sequence of 3 ints; a non-const `gp_Pnt theP[8]` is an out-parameter returned as a list of 8 (`ok, corners = obb.GetVertex()`); a `double myPeriod[3]` member is a list property.
+- **Pointer results** (R-RESULT, R-PTR-REF): a returned `T*` (also `T*&`) is the object itself, referencing the owner (`fuse.Builder()`, `builder.PDS()`); a returned `Transient*` is a handle.
 
 ## 2c. Python additions
 
@@ -145,6 +148,28 @@ Members that have no OCCT counterpart. Each one's docstring says "Python additio
     - the C++ range-for support (`begin()`/`end()`, `operator++`, `NCollection_ForwardRangeIterator`) stays out (R-ITERATOR)
 
 - **Docstrings**: OCCT's `//!` comments; a deprecated member's first line is `Deprecated in OCCT: <message>` (R-DEPRECATED), a suffixed overload's first line names its C++ signature (R-COLLISION).
+
+## 2d. What is not bound, and the workaround
+
+Members that nanoOCP cannot bind and that a user might look for, with the OCCT-level alternative. The complete list of omissions is `src/cpp/<TK>/report.txt` per toolkit (categories in 8a); everything internal to an algorithm is left out of this table on purpose. **Maintained per toolkit: every new toolkit's report is checked for user-facing omissions and this table extended (§9 development loop).**
+
+| Not bound | Why | Use instead |
+|---|---|---|
+| `gp_XYZ::GetData()/ChangeData()`, `NCollection_Vec2/3/4::GetData()`, `operator T*` | raw pointer into the object | `Coord()`, `X()/Y()/Z()`, `x()/y()/z()`, `SetCoord()` |
+| `BinTools::GetReal/GetInteger/…(istream&, …)`, `BinTools_IStream`/`BinTools_OStream`, `BinTools_CurveSet::ReadCurve(istream&)` | stream-holding objects and `istream&` results | `BinTools.Write(shape) -> bytes`, `BinTools.Read(shape, io.BytesIO(data))` (8b); `BinTools_ShapeSet` for the shape-set level |
+| `BRepMesh_IncrementalMesh::Discret(shape, deflection, angle, BRepMesh_DiscretRoot*&)` | reference to a pointer parameter | `BRepMesh_DiscretAlgoFactory.DefaultFactory().CreateAlgorithm(shape, deflection, angle)` or the `BRepMesh_IncrementalMesh` constructor |
+| `TCollection_AsciiString(const wchar_t*)`, `ExtendedString::ToUTF8CString(char*&)`, `AsciiString::Cat(const wchar_t*)` | wide-char pointers | the `str` constructors and `ToCString()`/`ToExtString()` (UTF-16 round-trips as `str`) |
+| `TCollection_*::Move(&&)`, `TCollection_H*String(&&)` | rvalue references | copy (`TCollection_AsciiString(other)`) |
+| `Standard_Failure::Raise(fmt, ...)` | variadic | `raise Standard_Failure("message")` |
+| `Standard::Allocate/Free`, atomics, hash functions | raw memory | not needed from Python |
+| `Adaptor3d_TopolTool::Edge()`, `BRepPrimAPI_MakeOneAxis::OneAxis()` | `void*` (`Standard_Address`) results | `BRepTopAdaptor_TopolTool::Edge()` is the same pointer; `MakeOneAxis` results come from `Shape()`/`Face()`/`Shell()`/`Solid()` |
+| `BRepBuilderAPI_FastSewing::GetStatuses(ostream*)` | the stream is optional | `GetStatuses()` returns the status flags; the text dump is not available |
+| `IMeshData_Edge/Face/Wire` members of the second base `IMeshData_StatusOwner` (`GetStatus`, `SetStatus`) | nanobind single inheritance (R-MI) | mesh-algorithm internals; `BRepMesh_IncrementalMesh.GetStatusFlags()` is the user-level status |
+| `XBRepMesh_Factory()` (constructing a second one) | undefined behaviour in OCCT itself (9) | `BRepMesh_DiscretAlgoFactory.FindFactory("XBRepMesh")` |
+| `BRepExtrema_TriangleSet.Size()/Box()/Center()` (second base `BVH_Set`) | R-MI | `BRepExtrema_ShapeProximity` needs none of them; `ElementSet1().Box()` from `BVH_Object` |
+| `ShapeProcess::Perform(context, std::bitset)`, `ShapeProcess_UOperator(function pointer)` | `std::bitset`, C function pointer | `ShapeProcessAPI_ApplySequence`, `ShapeProcess.Perform(context, sequence)` |
+| `MathUtils::Polynomial/Rational(std::initializer_list)` | initializer lists | the `NCollection_Array1[float]` constructors |
+| functor-template algorithms (`MathOpt::BFGS<F>`, `MathRoot::Newton<F>`, …) | need a C++ functor type (8.5) | the classic `math_BFGS`, `math_FunctionRoot`, … |
 
 ## 3. Toolchain and third-party dependencies
 
@@ -349,11 +374,15 @@ How arguments go in and results come out (the user-facing summary is 2b).
 | **R-OUT** free function with `double&`/`int&` out-parameters (`MathUtils::DepressCubic`) | out-params returned as a tuple, like methods | |
 | **R-INOUT** same, but the method reads the value too (`gp_Trsf::Transforms`) | parameter kept **and** returned | listed in `overrides.toml [inout]`; not derivable from syntax |
 | **R-REF-CLASS** non-const reference to a class (`gp_XYZ&`) | passed and **mutated in place** | nanobind by-reference semantics |
+| **R-OPTIONAL-PTR** pointer parameter with a null default (`bool* theIsStored = nullptr` in `BRep_Tool::CurveOnSurface`, `unsigned* theErrorCode = 0` in `BRepFill_AdvancedEvolved::IsDone`, `Standard_OStream* = nullptr` in `BRepBuilderAPI_FastSewing::GetStatuses`, `Standard_Address = NULL` in `TopOpeBRepBuild_WireEdgeSet`) | dropped from the signature; the lambda passes `nullptr` (constructors through a placement-new lambda / `nb::new_`) | the optional output/context is not expressible; 16 members were skipped entirely before 2026-09-21 (`AdvancedEvolved` had no `IsDone`) |
+| **R-FIXED-ARRAY** C array of a primitive or bound class with a known size, as parameter or member (`gp_Pnt theP[8]` in `Bnd_OBB::GetVertex`, `const int (&theEdges)[3]` in `BRepMesh_Triangle`, `double myPeriod[3]` in `BOPAlgo_MakePeriodic::PeriodicityParams`) | non-const → out-parameter returned as a list of N (suffix type `list`); const → any sequence of N (`std::array` caster, copied into a C array for the call); member → list property (`def_prop_rw`, read-only when const) | arrays of unknown size (`double theCoeff[]`), of pointers or of std types stay out (R-ARRAY) |
 | **R-OUT-HANDLE** non-const reference to a `handle<T>` (`BRep_Tool::CurveOnSurface(E, handle<Geom2d_Curve>& C, handle<Geom_Surface>& S, L, double& First, double& Last)`, `GeomTools::Read(handle<Geom_Surface>&, istream&)`) | an **out-parameter** like `double&`: dropped from the signature, returned (`C, S, First, Last = CurveOnSurface(E, L)`) | the caster hands the callee a *temporary* handle, so a handle assigned by the callee was lost silently before 2026-09-21 (35 sites in FoundationClasses/ModelingData, 50 more in ModelingAlgorithms). Methods that read the handle first are in/out via `overrides.toml [inout]` (`GeomLib::ExtendCurveToPoint(Curve, …)` keeps `Curve` and returns the extended curve; 7 entries, each checked against the `.cxx`). Overloads that differ only in the out-handle type are told apart by the R-COLLISION suffix (`GeomTools.Read__Geom_Curve`, `Read__Geom2d_Curve`, `Read__Geom_Surface`) |
 | **R-HANDLE** `handle<T>` return; `handle<T>` parameter | most-derived registered type; null → `None`; a parameter accepts `None` (`nb::arg(...).none()`, 4.2) | caster |
 | **R-NULL** OCCT undefined behaviour on null input (`BRep_Tool::Surface(aNullFace)` dereferences the null `TShape`, `BRep_Tool.cxx:125`; likewise `Curve`, `Pnt`, `Triangulation`) | **faithful**: the process crashes as it does in C++; no guards are inserted | decision 2026-09-21: guards would be a hand-maintained list that hides the OCCT contract; callers check `IsNull()` as in C++ (build123d does). Revisit if it bites in practice |
 | **R-RESULT** `T*` / `T&` return, T Transient | wrapped in `handle<T>` (same Python object as before) | never let nanobind own a Transient |
 | **R-RESULT** `T*` return, other class | `rv_policy::reference` | |
+| **R-PTR-REF** `T*&` return (`BOPAlgo_Builder*& BRepAlgoAPI_BuilderAlgo::Builder()`, `DSFiller()`) | the pointer, copied out by a lambda: `reference` for a class, a handle for a Transient | nanobind cannot return a reference to a pointer |
+| **R-PTR-INCOMPLETE** `T*` where `T` is only forward-declared in the package's translation unit (`BOPDS_DS* BOPAlgo_Builder::PDS()`) | bound when `T.hxx` exists in the OCCT install: the emitter includes it (the class behind every parameter/result type is an include candidate, 5.2) | `Standard_CLocaleSentry::GetCLocale()` (`locale_t`, no header) stays out |
 | **R-RESULT** `T&` (mutable) return, other class | `rv_policy::reference_internal` for methods; **copied** for free functions (`TopoDS::Vertex(TopoDS_Shape&)`) | in-place edits via `ChangeXxx()`; a free function has no `self` to tie the reference to, and the mutable `TopoDS::Xxx` overloads are unreachable anyway (the `const&` overload is registered first) |
 | **R-REF-PRIMITIVE** non-const method returning a mutable reference to a primitive (`double& math_Matrix::Value(i, j)`, `double& gp_XYZ::ChangeCoord(i)`, `bool& BRepTools_ReShape::ModeConsiderLocation()`) | getter under the C++ name (returns the value) plus a **Python addition** setter: `Set<Name>` with a `Change` prefix dropped (`SetValue(i, j, v)`, `SetModeConsiderLocation(b)`) unless OCCT already has a method of that name (`gp_XYZ::SetCoord`), and for `operator()`/`operator[]` `__setitem__` (+ `__getitem__`) with a tuple index for several arguments (`a[(2, 1)] = 7.0`) | Python cannot hold a reference to a `double`; the setter docstrings say "Python addition" |
 | **R-DEFAULT** default argument | cast to `std::decay_t<ParamType>` (a `char` default written as `0` becomes a 1-char `str`); unqualified static members/enumerators of the class are qualified (`NCollection_IncAllocator::THE_DEFAULT_BLOCK_SIZE`) | the expression is emitted outside the class scope |
@@ -411,7 +440,7 @@ The Python additions of 2c.
 | **R-PRELUDE** header that is not self-contained (`GeomGridEval_Line.hxx` calls `Geom_Line::Lin()` with `gp_Lin` only forward-declared; `IntWalk_PWalking.hxx` names `handle<IntSurf_LineOn2S>` and `ChFiKPart_ComputeData_ChPlnCon.hxx` `ChFiDS_ChamfMode` without any declaration) | the parser reads `incomplete type 'X'`, `use of undeclared identifier 'X'` or `unknown type name 'X'` from the diagnostics, includes `X.hxx` before the package headers and parses again; the generated `.cpp` includes it first too. The same loop runs on the **emitted include list** of every package (`parse.include_prelude`, one TU with bodies skipped): the identifier-based extra includes may pull in a header that is not self-contained (`HLRTopoBRep.cpp` includes `Contap_Contour.hxx`, whose `Contap_Line.hxx` names `handle<Adaptor2d_Curve2d>` undeclared) | reported. A survey of all 1 494 ModelingAlgorithms headers (2026-09-21) found only these two cases in umbrella order; the include-list check found the Contap case |
 | **R-SKIP-HEADER** public header including a private `.pxx` that is not installed (`GeomBndLib_Line.hxx`, `_Line2d`, and `GeomBndLib_Curve.hxx`/`_Curve2d.hxx` which include them; OCCT 8.0.1 packaging bug) | skipped via `overrides.toml [skip] headers` | `BndLib_Add3dCurve` and the per-type `GeomBndLib_Circle` … classes remain |
 | **R-TEMPLATE-SKIP** function/class templates in a namespace (`MathSys::Newton<FuncSetType>`), type aliases in a namespace | not bound, reported | need a concrete functor type; the classic `math_*` classes are the Python-facing API |
-| **R-ARRAY** array parameter (`const Poly_CoherentTriangle *pTri[2]`), array reference (`int (&theNodes)[3]`, `BRepMesh_Triangle::Initialize`) | skipped | |
+| **R-ARRAY** array parameter or member that R-FIXED-ARRAY cannot express: unknown size (`const double theCoeff[]`, `BRepGProp_Gauss`), pointers (`const Poly_CoherentTriangle *pTri[2]`), std types (`std::array<std::complex>`) | skipped | 7 lines |
 | deleted members, move constructors | skipped | reported |
 | **R-UNSUPPORTED** raw pointers to primitives (also when they appear as `T*` in a 6c instantiation — `NCollection_Mat4<float>::Map(float*)`, `math_VectorBase<double>(const double* theTab, …)` were bound until 2026-09-21 and would have taken a pointer to a temporary), references to pointers (`char*&`), pointers to incomplete types (`_xlocale*`), C-array fields, reference-typed fields, template members, nested class templates, non-public bases, `std::ostream&` *returns* and stream members (`BinTools_IStream`, `Message_PrinterOStream`) | skipped | reported |
 
@@ -672,7 +701,7 @@ uv run python -m generator.stubs                       # .pyi stubs (after the b
 uv run pytest tests -q
 ```
 
-Per new toolkit: generate (`--allow-rehoming` is legitimate for a *new* toolkit when the earlier ones are in their clean state — nothing before it can own the new instantiations), build, smoke test, `tests/test_<TK>.py`, watch `report.txt`, then a clean regeneration before the commit.
+Per new toolkit: generate (`--allow-rehoming` is legitimate for a *new* toolkit when the earlier ones are in their clean state — nothing before it can own the new instantiations), build, smoke test, `tests/test_<TK>.py`, watch `report.txt` — **sort its lines with the 2d criteria (internal only / no Python equivalent / workaround → add the row to 2d / undefined) and treat anything left as a gap to close** — then a clean regeneration before the commit.
 
 ### Canonical regeneration and the re-homing guard
 
@@ -761,4 +790,5 @@ Chronological; the test count of each entry is the tie-breaker within a day. Det
 - **2026-09-21** — `TKFillet` generated (9 packages, 354 tests): nothing new; the ChFiKPart prelude and the `Blend_FuncInv::Set` un-hiding (R-USING) arrived as predicted.
 - **2026-09-21** — `TKOffset` generated (4 packages, 360 tests): `NCollection_Handle<T>` members are pointer-like for R-INCOMPLETE (`ThruSections` was skipped).
 - **2026-09-21** — `TKFeat` generated (2 packages, 363 tests): nothing new.
+- **2026-09-21** — Gap review of Phase 1 with the user's criteria (internal only / no Python equivalent / workaround documented / undefined): 2d added (workarounds, maintained per toolkit); four rules close the rest — R-OPTIONAL-PTR, R-FIXED-ARRAY, R-PTR-REF, R-PTR-INCOMPLETE (2b, 6); `Bnd_OBB.GetVertex()`, `BRepAlgoAPI_BuilderAlgo.Builder()/DSFiller()`, `BOPAlgo_Builder.PDS()`, all four `BRep_Tool.CurveOnSurface` overloads, `BRepFill_AdvancedEvolved.IsDone()` reachable. The BVH chain is the remaining slice.
 - **2026-09-21** — `TKXMesh` generated (1 class, 364 tests): ModelingAlgorithms complete. Constructing a second `XBRepMesh_Factory` is undefined behaviour in OCCT itself (the constructor's temporary handle deletes the object; verified in C++): faithful, use the registry (R-NULL).

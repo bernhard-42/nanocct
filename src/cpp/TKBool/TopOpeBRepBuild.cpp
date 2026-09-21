@@ -52,6 +52,7 @@
 #include <NCollection_List.hxx>
 #include <NCollection_Map.hxx>
 #include <NCollection_Sequence.hxx>
+#include <NCollection_TListIterator.hxx>
 #include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
@@ -316,7 +317,10 @@ the shapes described by <LS> using the classifier <LC>.)nbdoc")
         .def("InitLoop", static_cast<int (TopOpeBRepBuild_AreaBuilder::*)()>(&TopOpeBRepBuild_AreaBuilder::InitLoop), R"nbdoc(Initialize iteration on loops of current Area.)nbdoc")
         .def("MoreLoop", static_cast<bool (TopOpeBRepBuild_AreaBuilder::*)() const>(&TopOpeBRepBuild_AreaBuilder::MoreLoop))
         .def("NextLoop", static_cast<void (TopOpeBRepBuild_AreaBuilder::*)()>(&TopOpeBRepBuild_AreaBuilder::NextLoop))
-        .def("Loop", static_cast<const occ::handle<TopOpeBRepBuild_Loop> & (TopOpeBRepBuild_AreaBuilder::*)() const>(&TopOpeBRepBuild_AreaBuilder::Loop), R"nbdoc(Returns the current Loop in the current area.)nbdoc");
+        .def("Loop", static_cast<const occ::handle<TopOpeBRepBuild_Loop> & (TopOpeBRepBuild_AreaBuilder::*)() const>(&TopOpeBRepBuild_AreaBuilder::Loop), R"nbdoc(Returns the current Loop in the current area.)nbdoc")
+        .def("ADD_Loop_TO_LISTOFLoop", [](const TopOpeBRepBuild_AreaBuilder &self, const occ::handle<TopOpeBRepBuild_Loop> & L, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL) { self.ADD_Loop_TO_LISTOFLoop(L, LOL, nullptr); }, nb::arg("L").none(), nb::arg("LOL"))
+        .def("REM_Loop_FROM_LISTOFLoop", [](const TopOpeBRepBuild_AreaBuilder &self, NCollection_TListIterator<opencascade::handle<TopOpeBRepBuild_Loop>> & ITLOL, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL) { self.REM_Loop_FROM_LISTOFLoop(ITLOL, LOL, nullptr); }, nb::arg("ITLOL"), nb::arg("LOL"))
+        .def("ADD_LISTOFLoop_TO_LISTOFLoop", [](const TopOpeBRepBuild_AreaBuilder &self, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL1, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL2) { self.ADD_LISTOFLoop_TO_LISTOFLoop(LOL1, LOL2, nullptr, nullptr, nullptr); }, nb::arg("LOL1"), nb::arg("LOL2"));
     nanoocp_implicit_copy_ctor<TopOpeBRepBuild_AreaBuilder>(nb::borrow<nb::class_<TopOpeBRepBuild_AreaBuilder>>(m.attr("TopOpeBRepBuild_AreaBuilder")));
     nb::borrow<nb::class_<TopOpeBRepBuild_Area1dBuilder>>(m.attr("TopOpeBRepBuild_Area1dBuilder"))
         .def(nb::init<>())
@@ -324,6 +328,9 @@ the shapes described by <LS> using the classifier <LC>.)nbdoc")
 the shapes described by <LS> using the classifier <LC>.)nbdoc")
         .def("InitAreaBuilder", static_cast<void (TopOpeBRepBuild_Area1dBuilder::*)(TopOpeBRepBuild_LoopSet &, TopOpeBRepBuild_LoopClassifier &, const bool)>(&TopOpeBRepBuild_Area1dBuilder::InitAreaBuilder), nb::arg("LS"), nb::arg("LC"), nb::arg("ForceClass") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Sets a Area1dBuilder to find the areas of
 the shapes described by <LS> using the classifier <LC>.)nbdoc")
+        .def("ADD_Loop_TO_LISTOFLoop", [](const TopOpeBRepBuild_Area1dBuilder &self, const occ::handle<TopOpeBRepBuild_Loop> & L, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL) { self.ADD_Loop_TO_LISTOFLoop(L, LOL, nullptr); }, nb::arg("L").none(), nb::arg("LOL"))
+        .def("REM_Loop_FROM_LISTOFLoop", [](const TopOpeBRepBuild_Area1dBuilder &self, NCollection_TListIterator<opencascade::handle<TopOpeBRepBuild_Loop>> & ITLOL, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL) { self.REM_Loop_FROM_LISTOFLoop(ITLOL, LOL, nullptr); }, nb::arg("ITLOL"), nb::arg("LOL"))
+        .def("ADD_LISTOFLoop_TO_LISTOFLoop", [](const TopOpeBRepBuild_Area1dBuilder &self, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL1, NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> & LOL2) { self.ADD_LISTOFLoop_TO_LISTOFLoop(LOL1, LOL2, nullptr, nullptr, nullptr); }, nb::arg("LOL1"), nb::arg("LOL2"))
         .def_static("DumpList", static_cast<void (*)(const NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>> &)>(&TopOpeBRepBuild_Area1dBuilder::DumpList), nb::arg("L"));
     nanoocp_implicit_copy_ctor<TopOpeBRepBuild_Area1dBuilder>(nb::borrow<nb::class_<TopOpeBRepBuild_Area1dBuilder>>(m.attr("TopOpeBRepBuild_Area1dBuilder")));
     nb::borrow<nb::class_<TopOpeBRepBuild_Area2dBuilder>>(m.attr("TopOpeBRepBuild_Area2dBuilder"))
@@ -541,9 +548,15 @@ Lou is not cleared. (S is a dummy trace argument))nbdoc")
         .def("GdumpLS", static_cast<void (TopOpeBRepBuild_Builder::*)(const NCollection_List<TopoDS_Shape> &) const>(&TopOpeBRepBuild_Builder::GdumpLS), nb::arg("L"))
         .def_static("GdumpPNT", static_cast<void (*)(const gp_Pnt &)>(&TopOpeBRepBuild_Builder::GdumpPNT), nb::arg("P"))
         .def_static("GdumpORIPARPNT", static_cast<void (*)(const TopAbs_Orientation, const double, const gp_Pnt &)>(&TopOpeBRepBuild_Builder::GdumpORIPARPNT), nb::arg("o"), nb::arg("p"), nb::arg("Pnt"))
+        .def("GdumpSHA", [](const TopOpeBRepBuild_Builder &self, const TopoDS_Shape & S) { self.GdumpSHA(S, nullptr); }, nb::arg("S"))
+        .def("GdumpSHAORI", [](const TopOpeBRepBuild_Builder &self, const TopoDS_Shape & S) { self.GdumpSHAORI(S, nullptr); }, nb::arg("S"))
+        .def("GdumpSHAORIGEO", [](const TopOpeBRepBuild_Builder &self, const TopoDS_Shape & S) { self.GdumpSHAORIGEO(S, nullptr); }, nb::arg("S"))
         .def("GdumpSHASTA", static_cast<void (TopOpeBRepBuild_Builder::*)(const int, const TopAbs_State, const TCollection_AsciiString &, const TCollection_AsciiString &) const>(&TopOpeBRepBuild_Builder::GdumpSHASTA), nb::arg("iS"), nb::arg("T"), nb::arg("a") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), nb::arg("b") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""))
         .def("GdumpSHASTA", static_cast<void (TopOpeBRepBuild_Builder::*)(const TopoDS_Shape &, const TopAbs_State, const TCollection_AsciiString &, const TCollection_AsciiString &) const>(&TopOpeBRepBuild_Builder::GdumpSHASTA), nb::arg("S"), nb::arg("T"), nb::arg("a") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), nb::arg("b") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""))
         .def("GdumpSHASTA", static_cast<void (TopOpeBRepBuild_Builder::*)(const int, const TopAbs_State, const TopOpeBRepBuild_ShapeSet &, const TCollection_AsciiString &, const TCollection_AsciiString &, const TCollection_AsciiString &) const>(&TopOpeBRepBuild_Builder::GdumpSHASTA), nb::arg("iS"), nb::arg("T"), nb::arg("SS"), nb::arg("a") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), nb::arg("b") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), nb::arg("c") = static_cast<std::decay_t<const TCollection_AsciiString &>>("\n"))
+        .def("GdumpEDG", [](const TopOpeBRepBuild_Builder &self, const TopoDS_Shape & S) { self.GdumpEDG(S, nullptr); }, nb::arg("S"))
+        .def("GdumpEDGVER", [](const TopOpeBRepBuild_Builder &self, const TopoDS_Shape & E, const TopoDS_Shape & V) { self.GdumpEDGVER(E, V, nullptr); }, nb::arg("E"), nb::arg("V"))
+        .def("GdumpSAMDOM", [](const TopOpeBRepBuild_Builder &self, const NCollection_List<TopoDS_Shape> & L) { self.GdumpSAMDOM(L, nullptr); }, nb::arg("L"))
         .def("GdumpEXP", static_cast<void (TopOpeBRepBuild_Builder::*)(const TopOpeBRepTool_ShapeExplorer &) const>(&TopOpeBRepBuild_Builder::GdumpEXP), nb::arg("E"))
         .def("GdumpSOBU", static_cast<void (TopOpeBRepBuild_Builder::*)(TopOpeBRepBuild_SolidBuilder &) const>(&TopOpeBRepBuild_Builder::GdumpSOBU), nb::arg("SB"))
         .def("GdumpFABU", static_cast<void (TopOpeBRepBuild_Builder::*)(TopOpeBRepBuild_FaceBuilder &) const>(&TopOpeBRepBuild_Builder::GdumpFABU), nb::arg("FB"))
@@ -672,6 +685,9 @@ Initialize myIncidentShapesIter on neighbour shapes.)nbdoc")
     nanoocp_implicit_copy_ctor<TopOpeBRepBuild_ShapeSet>(nb::borrow<nb::class_<TopOpeBRepBuild_ShapeSet>>(m.attr("TopOpeBRepBuild_ShapeSet")));
     nb::implicitly_convertible<std::decay_t<const TopAbs_ShapeEnum>, TopOpeBRepBuild_ShapeSet>();
     nb::borrow<nb::class_<TopOpeBRepBuild_WireEdgeSet>>(m.attr("TopOpeBRepBuild_WireEdgeSet"))
+        .def("__init__", [](TopOpeBRepBuild_WireEdgeSet *self, const TopoDS_Shape & F) { new (self) TopOpeBRepBuild_WireEdgeSet(F, nullptr); }, nb::arg("F"), R"nbdoc(Creates a WireEdgeSet to build edges connected by vertices
+on face F. Edges of the WireEdgeSet must have a representation
+on surface of face F.)nbdoc")
         .def("Face", static_cast<const TopoDS_Face & (TopOpeBRepBuild_WireEdgeSet::*)() const>(&TopOpeBRepBuild_WireEdgeSet::Face), R"nbdoc(value of field myFace)nbdoc")
         .def("AddShape", static_cast<void (TopOpeBRepBuild_WireEdgeSet::*)(const TopoDS_Shape &)>(&TopOpeBRepBuild_WireEdgeSet::AddShape), nb::arg("S"))
         .def("AddStartElement", static_cast<void (TopOpeBRepBuild_WireEdgeSet::*)(const TopoDS_Shape &)>(&TopOpeBRepBuild_WireEdgeSet::AddStartElement), nb::arg("S"))
@@ -689,6 +705,8 @@ Initialize iterator of neighbour edges to edge myCurrentShape)nbdoc")
     nanoocp_implicit_copy_ctor<TopOpeBRepBuild_WireEdgeSet>(nb::borrow<nb::class_<TopOpeBRepBuild_WireEdgeSet>>(m.attr("TopOpeBRepBuild_WireEdgeSet")));
     nb::borrow<nb::class_<TopOpeBRepBuild_ShellFaceSet>>(m.attr("TopOpeBRepBuild_ShellFaceSet"))
         .def(nb::init<>(), R"nbdoc(Creates a ShellFaceSet to build blocks of faces
+connected by edges.)nbdoc")
+        .def("__init__", [](TopOpeBRepBuild_ShellFaceSet *self, const TopoDS_Shape & S) { new (self) TopOpeBRepBuild_ShellFaceSet(S, nullptr); }, nb::arg("S"), R"nbdoc(Creates a ShellFaceSet to build blocks of faces
 connected by edges.)nbdoc")
         .def("Solid", static_cast<const TopoDS_Solid & (TopOpeBRepBuild_ShellFaceSet::*)() const>(&TopOpeBRepBuild_ShellFaceSet::Solid))
         .def("AddShape", static_cast<void (TopOpeBRepBuild_ShellFaceSet::*)(const TopoDS_Shape &)>(&TopOpeBRepBuild_ShellFaceSet::AddShape), nb::arg("S"))
@@ -721,6 +739,7 @@ connected by edges.)nbdoc")
         .def("DumpVal", [](const TopOpeBRepBuild_GTopo &self, const TopAbs_State s1, const TopAbs_State s2) { std::ostringstream OS_stream; self.DumpVal(OS_stream, s1, s2); return nanoocp_stream_text(OS_stream); }, nb::arg("s1"), nb::arg("s2"))
         .def("DumpType", [](const TopOpeBRepBuild_GTopo &self) { std::ostringstream OS_stream; self.DumpType(OS_stream); return nanoocp_stream_text(OS_stream); })
         .def_static("DumpSSB", [](const TopAbs_State s1, const TopAbs_State s2, const bool b) { std::ostringstream OS_stream; TopOpeBRepBuild_GTopo::DumpSSB(OS_stream, s1, s2, b); return nanoocp_stream_text(OS_stream); }, nb::arg("s1"), nb::arg("s2"), nb::arg("b"))
+        .def("Dump", [](const TopOpeBRepBuild_GTopo &self) { std::ostringstream OS_stream; self.Dump(OS_stream, nullptr); return nanoocp_stream_text(OS_stream); })
         .def("StatesON", [](const TopOpeBRepBuild_GTopo &self) { TopAbs_State s1{}; TopAbs_State s2{}; self.StatesON(s1, s2); return std::make_tuple(s1, s2); })
         .def("IsToReverse1", static_cast<bool (TopOpeBRepBuild_GTopo::*)() const>(&TopOpeBRepBuild_GTopo::IsToReverse1))
         .def("IsToReverse2", static_cast<bool (TopOpeBRepBuild_GTopo::*)() const>(&TopOpeBRepBuild_GTopo::IsToReverse2))

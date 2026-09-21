@@ -1010,6 +1010,12 @@ double(-1) means invalid (unavailable) value.)nbdoc")
         .def(nb::init<const OSD_Thread &>(), nb::arg("other"), R"nbdoc(Copy constructor)nbdoc")
         .def("Assign", static_cast<void (OSD_Thread::*)(const OSD_Thread &)>(&OSD_Thread::Assign), nb::arg("other"), R"nbdoc(Copy thread handle from other OSD_Thread object.)nbdoc")
         .def("SetPriority", static_cast<void (OSD_Thread::*)(const int)>(&OSD_Thread::SetPriority), nb::arg("thePriority"))
+        .def("Run", [](OSD_Thread &self, const int WNTStackSize) { auto result = self.Run(nullptr, WNTStackSize); return result; }, nb::arg("WNTStackSize") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Starts a thread with thread function given in constructor,
+passing the specified input data (as void *) to it.
+The parameter \a WNTStackSize (on Windows only)
+specifies size of the stack to be allocated for the thread
+(by default - the same as for the current executable).
+Returns True if thread started successfully)nbdoc")
         .def("Detach", static_cast<void (OSD_Thread::*)()>(&OSD_Thread::Detach), R"nbdoc(Detaches the execution thread from this Thread object,
 so that it cannot be waited.
 Note that mechanics of this operation is different on

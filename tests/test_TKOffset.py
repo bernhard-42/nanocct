@@ -61,3 +61,10 @@ def test_loft_pipe_and_wire_offset():
     assert sum(1 for _ in TopExp.TopExp_Explorer(offset.Shape(), TopAbs.TopAbs_EDGE)) == 8   # 4 lines + 4 arcs
     rows = read_report(REPORT)
     assert all(cat != "misc" for cat, _, _ in rows) and len(rows) == 2 and all(cat == "undefined" for cat, _, _ in rows)
+
+
+def test_optional_pointer_parameters_are_dropped():
+    # R-OPTIONAL-PTR: BRepFill_AdvancedEvolved::IsDone(unsigned int* theErrorCode = 0) had no binding at all before
+    from nanoocp import BRepFill
+    assert BRepFill.BRepFill_AdvancedEvolved().IsDone() is False
+    assert "IsDone(self) -> bool" in BRepFill.BRepFill_AdvancedEvolved.IsDone.__doc__

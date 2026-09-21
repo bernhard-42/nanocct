@@ -3,6 +3,7 @@
 import enum
 from typing import overload
 
+import nanoocp.Adaptor3d
 import nanoocp.GeomAbs
 import nanoocp.NCollection
 import nanoocp.Standard
@@ -63,6 +64,19 @@ class IntSurf:
         product TgFirst^TgSecond.
         TFirst is the transition of the point on the first line.
         TSecond is the transition of the point on the second line.
+        """
+
+    @staticmethod
+    def SetPeriod(theFirstSurf: nanoocp.Adaptor3d.Adaptor3d_Surface | None, theSecondSurf: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> list[float]:
+        """
+        Fills theArrOfPeriod array by the period values of theFirstSurf and theSecondSurf.
+        [0] = U-period of theFirstSurf,
+        [1] = V-period of theFirstSurf,
+        [2] = U-period of theSecondSurf,
+        [3] = V-period of theSecondSurf.
+
+        If surface is not periodic in correspond direction then
+        its period is considered to be equal to 0.
         """
 
 class IntSurf_Couple:

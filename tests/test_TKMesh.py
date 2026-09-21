@@ -70,7 +70,10 @@ def test_detected_noncopyable_and_hidden_placement_new():
     # (bases, handles) so nanobind's copy wrapper cannot compile: skipped. BRepMeshData_Model (DEFINE_STANDARD_ALLOC) stays
     assert not hasattr(BRepMeshData, "BRepMeshData_Curve") and hasattr(BRepMeshData, "BRepMeshData_Model")
     assert any(m.startswith("BRepMeshData_Face: operator new is not public (no placement form) and the class is not trivially copyable") for m in msgs)
-    # int (&)[3] parameters are arrays (R-ARRAY); std::pair<int, int>& is returned like a double& (R-OUT)
-    assert ("array", "BRepMesh", "BRepMesh_Triangle::Initialize(): param 'theEdges': array") in rows
+    # int (&)[3] parameters are fixed arrays (R-FIXED-ARRAY): a sequence of 3 in, a list of 3 out; std::pair<int, int>& is returned (R-OUT)
+    tri = BRepMesh.BRepMesh_Triangle([1, 2, 3], [True, False, True], BRepMesh.BRepMesh_Free)
+    assert tri.Edges() == ([1, 2, 3], [True, False, True]) and tri.myEdges == [1, 2, 3]
+    tri.myOrientations = [False, False, False]
+    assert tri.Edges()[1] == [False, False, False]
     doc = BRepMesh.BRepMesh_ConeRangeSplitter.GetSplitSteps.__doc__
     assert "GetSplitSteps(self, theParameters: nanoocp.IMeshTools.IMeshTools_Parameters) -> tuple[tuple[float, float], tuple[int, int]]" in doc

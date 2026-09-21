@@ -1,6 +1,5 @@
-# nanoOCP generator report for TKBRep: 433 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKBRep: 430 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# array: 1
 # conversion: 1
 # field: 1
 # incomplete: 1
@@ -8,11 +7,10 @@
 # operator: 104
 # overload-collision: 19
 # override: 7
-# raw-pointer: 21
+# raw-pointer: 19
 # stream: 13
 # template: 116
 # undefined: 1
-array	BRepGraphInc	BRepGraphInc_Reconstruct::Cache::myKinds: field array
 conversion	BRepGraphInc	BRepGraphInc::ParityOrientation::operator TopAbs_Orientation: conversion operator to an unsupported type
 field	BRepGraphInc	BRepGraphInc_Reconstruct::Cache::TempScope::myCache: field reference member (no pointer-to-member)
 incomplete	BRepGraph	BRepGraph_CacheMesh: member mySlots of incomplete type BRepGraph_CacheMesh::Slot -> class skipped
@@ -294,8 +292,6 @@ override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped 
 override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
 override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
 override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
-raw-pointer	BRep	BRep_Tool::CurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, double &, double &): param 'theIsStored': raw pointer to primitive
-raw-pointer	BRep	BRep_Tool::CurveOnSurface(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, double &, double &): param 'theIsStored': raw pointer to primitive
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ChildRef>::operator->(): return: dependent pointer/mutable reference result
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>::operator->(): return: dependent pointer/mutable reference result
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CompSolidDef>::operator->(): return: dependent pointer/mutable reference result

@@ -1,5 +1,6 @@
 """OCCT package IntPatch (toolkit TKGeomAlgo)"""
 
+from collections.abc import Sequence
 import enum
 from typing import overload
 
@@ -2359,6 +2360,22 @@ class IntPatch_SpecialPoints:
         """
         Special point has already been added in the line. Now, we need in correct
         prolongation of the line or in start new line. This function returns new point.
+
+        ATTENTION!!!
+        theNewPoint is not only Output parameter. It is Input/Output one. I.e.
+        theNewPoint is reference point together with theRefPt.
+        """
+
+    @staticmethod
+    def AdjustPointAndVertex(theRefPoint: nanoocp.IntSurf.IntSurf_PntOn2S, theArrPeriods: Sequence[float], theNewPoint: nanoocp.IntSurf.IntSurf_PntOn2S, theVertex: IntPatch_Point = None) -> None:
+        """
+        Sets theNewPoint parameters in 2D-space the closest to
+        theRefPoint with help of adding/subtracting corresponding periods.
+        theArrPeriods must be filled as follows:
+        {<U-period of 1st surface>, <V-period of 1st surface>,
+        <U-period of 2nd surface>, <V-period of 2nd surface>}.
+        If theVertex != 0 then its parameters will be filled as
+        corresponding parameters of theNewPoint.
 
         ATTENTION!!!
         theNewPoint is not only Output parameter. It is Input/Output one. I.e.

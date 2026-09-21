@@ -1,5 +1,6 @@
 """OCCT package BOPAlgo (toolkit TKBO)"""
 
+from collections.abc import Sequence
 import enum
 from typing import overload
 
@@ -610,6 +611,9 @@ class BOPAlgo_Builder(BOPAlgo_BuilderShape):
     def PPaveFiller(self) -> BOPAlgo_PaveFiller:
         """Returns the PaveFiller, algorithm for sub-shapes intersection."""
 
+    def PDS(self) -> nanoocp.BOPDS.BOPDS_DS:
+        """Returns the Data Structure, holder of intersection information."""
+
     def Context(self) -> nanoocp.IntTools.IntTools_Context:
         """Returns the Context, tool for cashing heavy algorithms."""
 
@@ -1076,6 +1080,8 @@ class BOPAlgo_PaveFiller(BOPAlgo_Algo):
 
     def DS(self) -> nanoocp.BOPDS.BOPDS_DS: ...
 
+    def PDS(self) -> nanoocp.BOPDS.BOPDS_DS: ...
+
     def SetArguments(self, theLS: nanoocp.NCollection.NCollection_List[nanoocp.TopoDS.TopoDS_Shape]) -> None:
         """Sets the arguments for operation"""
 
@@ -1275,6 +1281,34 @@ class BOPAlgo_MakePeriodic(BOPAlgo_Options):
 
         def Clear(self) -> None:
             """Returns all previously set parameters to default values"""
+
+        @property
+        def myPeriodic(self) -> list[bool]:
+            """Array of flags defining whether the shape should be"""
+
+        @myPeriodic.setter
+        def myPeriodic(self, arg: Sequence[bool], /) -> None: ...
+
+        @property
+        def myPeriod(self) -> list[float]:
+            """Array of XYZ period values. Defining the period for any"""
+
+        @myPeriod.setter
+        def myPeriod(self, arg: Sequence[float], /) -> None: ...
+
+        @property
+        def myIsTrimmed(self) -> list[bool]:
+            """Array of flags defining whether the input shape has to be"""
+
+        @myIsTrimmed.setter
+        def myIsTrimmed(self, arg: Sequence[bool], /) -> None: ...
+
+        @property
+        def myPeriodFirst(self) -> list[float]:
+            """Array of start parameters of the XYZ periods: required for trimming"""
+
+        @myPeriodFirst.setter
+        def myPeriodFirst(self, arg: Sequence[float], /) -> None: ...
 
     def SetShape(self, theShape: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """
@@ -2116,6 +2150,9 @@ class BOPAlgo_Tools:
 
     @staticmethod
     def FillMap(thePB1: nanoocp.BOPDS.BOPDS_PaveBlock | None, theF: int, theMILI: nanoocp.NCollection.NCollection_IndexedDataMap[nanoocp.BOPDS.BOPDS_PaveBlock, nanoocp.NCollection.NCollection_List[int]], theAllocator: nanoocp.NCollection.NCollection_BaseAllocator | None) -> None: ...
+
+    @staticmethod
+    def ComputeToleranceOfCB(theCB: nanoocp.BOPDS.BOPDS_CommonBlock | None, theDS: nanoocp.BOPDS.BOPDS_DS, theContext: nanoocp.IntTools.IntTools_Context | None) -> float: ...
 
     @staticmethod
     def EdgesToWires(theEdges: nanoocp.TopoDS.TopoDS_Shape, theWires: nanoocp.TopoDS.TopoDS_Shape, theShared: bool = False, theAngTol: float = 1e-08) -> int:

@@ -305,6 +305,86 @@ class BOPTools_AlgoTools:
         Checks if the wire is a hole for the face.
         """
 
+    @overload
+    @staticmethod
+    def IsSplitToReverse(theSplit: nanoocp.TopoDS.TopoDS_Shape, theShape: nanoocp.TopoDS.TopoDS_Shape, theContext: nanoocp.IntTools.IntTools_Context | None) -> bool:
+        """
+        @name Choosing correct orientation for the split shape
+        Checks if the direction of the split shape is opposite to
+        the direction of the original shape.
+        The method is an overload for (Edge,Edge) and (Face,Face) corresponding
+        methods and checks only these types of shapes.
+        For faces the method checks if normal directions are opposite.
+        For edges the method checks if tangent vectors are opposite.
+
+        In case the directions do not coincide, it returns TRUE, meaning
+        that split shape has to be reversed to match the direction of the
+        original shape.
+
+        If requested (<theError> is not null), the method returns the status of the operation:
+        - 0 - no error;
+        - Error from (Edge,Edge) or (Face,Face) corresponding method
+        - 100 - bad types.
+        In case of any error the method always returns FALSE.
+
+        @param[in] theSplit  Split shape
+        @param[in] theShape  Original shape
+        @param[in] theContext  cached geometrical tools
+        @param[out] theError  Error Status of the operation
+        """
+
+    @overload
+    @staticmethod
+    def IsSplitToReverse(theSplit: nanoocp.TopoDS.TopoDS_Face, theShape: nanoocp.TopoDS.TopoDS_Face, theContext: nanoocp.IntTools.IntTools_Context | None) -> bool:
+        """
+        Checks if the normal direction of the split face is opposite to
+        the normal direction of the original face.
+        The normal directions for both faces are taken in the same point -
+        point inside the split face is projected onto the original face.
+        Returns TRUE if the normals do not coincide, meaning the necessity
+        to revert the orientation of the split face to match the direction
+        of the original face.
+
+        If requested (<theError> is not null), the method returns the status of the operation:
+        - 0 - no error;
+        - 1 - unable to find the point inside split face;
+        - 2 - unable to compute the normal for the split face;
+        - 3 - unable to project the point inside the split face on the original face;
+        - 4 - unable to compute the normal for the original face.
+        In case of any error the method always returns FALSE.
+
+        @param[in] theSplit  Split face
+        @param[in] theShape  Original face
+        @param[in] theContext  cached geometrical tools
+        @param[out] theError  Error Status of the operation
+        """
+
+    @overload
+    @staticmethod
+    def IsSplitToReverse(theSplit: nanoocp.TopoDS.TopoDS_Edge, theShape: nanoocp.TopoDS.TopoDS_Edge, theContext: nanoocp.IntTools.IntTools_Context | None) -> bool:
+        """
+        Checks if the tangent vector of the split edge is opposite to
+        the tangent vector of the original edge.
+        The tangent vectors for both edges are computed in the same point -
+        point inside the split edge is projected onto the original edge.
+        Returns TRUE if the tangent vectors do not coincide, meaning the necessity
+        to revert the orientation of the split edge to match the direction
+        of the original edge.
+
+        If requested (<theError> is not null), the method returns the status of the operation:
+        - 0 - no error;
+        - 1 - degenerated edges are given;
+        - 2 - unable to compute the tangent vector for the split edge;
+        - 3 - unable to project the point inside the split edge on the original edge;
+        - 4 - unable to compute the tangent vector for the original edge;
+        In case of any error the method always returns FALSE.
+
+        @param[in] theSplit  Split edge
+        @param[in] theShape  Original edge
+        @param[in] theContext  cached geometrical tools
+        @param[out] theError  Error Status of the operation
+        """
+
     @staticmethod
     def IsSplitToReverseWithWarn(theSplit: nanoocp.TopoDS.TopoDS_Shape, theShape: nanoocp.TopoDS.TopoDS_Shape, theContext: nanoocp.IntTools.IntTools_Context | None, theReport: nanoocp.Message.Message_Report | None = None) -> bool:
         """

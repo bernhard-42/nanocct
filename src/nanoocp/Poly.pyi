@@ -1,5 +1,6 @@
 """OCCT package Poly (toolkit TKMath)"""
 
+from collections.abc import Sequence
 import enum
 from typing import TextIO, overload
 
@@ -1289,6 +1290,12 @@ class Poly_CoherentTriangulation(nanoocp.Standard.Standard_Transient):
         @overload
         def __init__(self, theOther: Poly_CoherentTriangulation.TwoIntegers) -> None: ...
 
+        @property
+        def myValue(self) -> list[int]: ...
+
+        @myValue.setter
+        def myValue(self, arg: Sequence[int], /) -> None: ...
+
     def GetTriangulation(self) -> Poly_Triangulation:
         """Create an instance of Poly_Triangulation from this object."""
 
@@ -2025,6 +2032,18 @@ class Poly_MergeNodesTool(nanoocp.Standard.Standard_Transient):
     def Result(self) -> Poly_Triangulation:
         """
         Prepare and return result triangulation (temporary data will be truncated to result size).
+        """
+
+    def AddTriangle(self, theElemNodes: Sequence[nanoocp.gp.gp_XYZ]) -> None:
+        """
+        Add new triangle.
+        @param[in] theElemNodes 3 element nodes
+        """
+
+    def AddQuad(self, theElemNodes: Sequence[nanoocp.gp.gp_XYZ]) -> None:
+        """
+        Add new quad.
+        @param[in] theElemNodes 4 element nodes
         """
 
     def AddElement(self, theElemNodes: nanoocp.gp.gp_XYZ, theNbNodes: int) -> None:

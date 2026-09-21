@@ -145,6 +145,12 @@ class TopOpeBRepBuild_AreaBuilder:
     def Loop(self) -> TopOpeBRepBuild_Loop:
         """Returns the current Loop in the current area."""
 
+    def ADD_Loop_TO_LISTOFLoop(self, L: TopOpeBRepBuild_Loop | None, LOL: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop]) -> None: ...
+
+    def REM_Loop_FROM_LISTOFLoop(self, ITLOL: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop].Iterator, LOL: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop]) -> None: ...
+
+    def ADD_LISTOFLoop_TO_LISTOFLoop(self, LOL1: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop], LOL2: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop]) -> None: ...
+
 class TopOpeBRepBuild_Area1dBuilder(TopOpeBRepBuild_AreaBuilder):
     @overload
     def __init__(self) -> None: ...
@@ -164,6 +170,12 @@ class TopOpeBRepBuild_Area1dBuilder(TopOpeBRepBuild_AreaBuilder):
         Sets a Area1dBuilder to find the areas of
         the shapes described by <LS> using the classifier <LC>.
         """
+
+    def ADD_Loop_TO_LISTOFLoop(self, L: TopOpeBRepBuild_Loop | None, LOL: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop]) -> None: ...
+
+    def REM_Loop_FROM_LISTOFLoop(self, ITLOL: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop].Iterator, LOL: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop]) -> None: ...
+
+    def ADD_LISTOFLoop_TO_LISTOFLoop(self, LOL1: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop], LOL2: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop]) -> None: ...
 
     @staticmethod
     def DumpList(L: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepBuild.TopOpeBRepBuild_Loop]) -> None: ...
@@ -729,6 +741,12 @@ class TopOpeBRepBuild_Builder:
     @staticmethod
     def GdumpORIPARPNT(o: nanoocp.TopAbs.TopAbs_Orientation, p: float, Pnt: nanoocp.gp.gp_Pnt) -> None: ...
 
+    def GdumpSHA(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None: ...
+
+    def GdumpSHAORI(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None: ...
+
+    def GdumpSHAORIGEO(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None: ...
+
     @overload
     def GdumpSHASTA(self, iS: int, T: nanoocp.TopAbs.TopAbs_State, a: nanoocp.TCollection.TCollection_AsciiString = ..., b: nanoocp.TCollection.TCollection_AsciiString = ...) -> None: ...
 
@@ -737,6 +755,12 @@ class TopOpeBRepBuild_Builder:
 
     @overload
     def GdumpSHASTA(self, iS: int, T: nanoocp.TopAbs.TopAbs_State, SS: TopOpeBRepBuild_ShapeSet, a: nanoocp.TCollection.TCollection_AsciiString = ..., b: nanoocp.TCollection.TCollection_AsciiString = ..., c: nanoocp.TCollection.TCollection_AsciiString = ...) -> None: ...
+
+    def GdumpEDG(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None: ...
+
+    def GdumpEDGVER(self, E: nanoocp.TopoDS.TopoDS_Shape, V: nanoocp.TopoDS.TopoDS_Shape) -> None: ...
+
+    def GdumpSAMDOM(self, L: nanoocp.NCollection.NCollection_List[nanoocp.TopoDS.TopoDS_Shape]) -> None: ...
 
     def GdumpEXP(self, E: nanoocp.TopOpeBRepTool.TopOpeBRepTool_ShapeExplorer) -> None: ...
 
@@ -1074,6 +1098,13 @@ class TopOpeBRepBuild_WireEdgeSet(TopOpeBRepBuild_ShapeSet):
     - a map of vertex giving the list of edge incident to a vertex.
     """
 
+    def __init__(self, F: nanoocp.TopoDS.TopoDS_Shape) -> None:
+        """
+        Creates a WireEdgeSet to build edges connected by vertices
+        on face F. Edges of the WireEdgeSet must have a representation
+        on surface of face F.
+        """
+
     def Face(self) -> nanoocp.TopoDS.TopoDS_Face:
         """value of field myFace"""
 
@@ -1119,7 +1150,11 @@ class TopOpeBRepBuild_ShellFaceSet(TopOpeBRepBuild_ShapeSet):
     - a map of edge giving the list of face incident to an edge.
     """
 
-    def __init__(self) -> None:
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """
         Creates a ShellFaceSet to build blocks of faces
         connected by edges.
@@ -1198,6 +1233,8 @@ class TopOpeBRepBuild_GTopo:
 
     @staticmethod
     def DumpSSB(s1: nanoocp.TopAbs.TopAbs_State, s2: nanoocp.TopAbs.TopAbs_State, b: bool) -> object: ...
+
+    def Dump(self) -> object: ...
 
     def StatesON(self) -> tuple[nanoocp.TopAbs.TopAbs_State, nanoocp.TopAbs.TopAbs_State]: ...
 

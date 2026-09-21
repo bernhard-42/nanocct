@@ -698,13 +698,30 @@ class BRep_Tool:
         handle. Returns in <L> the location for the polygon.
         """
 
+    @overload
     @staticmethod
-    def CurveOnPlane(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]:
+    def CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]:
         """
-        For the planar surface builds the 2d curve for the edge
-        by projection of the edge on plane.
-        Returns a NULL handle if the surface is not planar or
-        the projection failed.
+        Returns the curve associated to the edge in the
+        parametric space of the face. Returns a NULL
+        handle if this curve does not exist. Returns in
+        <First> and <Last> the parameter range.
+        If the surface is a plane the curve can be not stored but created a new
+        each time. The flag pointed by <theIsStored> serves to indicate storage status.
+        It is valued if the pointer is non-null.
+        """
+
+    @overload
+    @staticmethod
+    def CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]:
+        """
+        Returns the curve associated to the edge in the
+        parametric space of the surface. Returns a NULL
+        handle if this curve does not exist. Returns in
+        <First> and <Last> the parameter range.
+        If the surface is a plane the curve can be not stored but created a new
+        each time. The flag pointed by <theIsStored> serves to indicate storage status.
+        It is valued if the pointer is non-null.
         """
 
     @overload
@@ -725,6 +742,15 @@ class BRep_Tool:
         and the location for the edge <E> of rank <Index>.
         <C> and <S> are null if the index is out of range.
         Returns in <First> and <Last> the parameter range.
+        """
+
+    @staticmethod
+    def CurveOnPlane(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]:
+        """
+        For the planar surface builds the 2d curve for the edge
+        by projection of the edge on plane.
+        Returns a NULL handle if the surface is not planar or
+        the projection failed.
         """
 
     @overload

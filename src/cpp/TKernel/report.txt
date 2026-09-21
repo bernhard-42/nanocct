@@ -1,24 +1,23 @@
-# nanoOCP generator report for TKernel: 418 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 415 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# array: 2
+# array: 1
 # conversion: 7
 # inheritance: 1
 # iterator: 1
 # not-constructible: 3
 # operator: 34
-# overload-collision: 39
+# overload-collision: 40
 # override: 13
-# raw-pointer: 89
+# raw-pointer: 82
 # rvalue: 5
 # static-rename: 16
 # std: 4
-# stream: 28
+# stream: 32
 # template: 163
 # unbound-type: 7
 # undefined: 3
 # variadic: 3
 array	Standard	Standard_ErrorHandler::Label(): return: array
-array	Standard	Standard_UUID::Data4: field array
 conversion	Message	Message_Messenger::StreamBuffer::operator std::ostream &: conversion operator to an unsupported type
 conversion	Quantity	NCollection_Vec3<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	Quantity	NCollection_Vec3<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
@@ -69,6 +68,7 @@ overload-collision	FSD	FSD_BinaryFile::BeginWriteCommentSection(Standard_OStream
 overload-collision	FSD	FSD_BinaryFile::EndWriteCommentSection(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as EndWriteCommentSection__str
 overload-collision	FSD	FSD_BinaryFile::EndWriteInfoSection(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as EndWriteInfoSection__str
 overload-collision	Message	Message::MetricFromString(const char *const, Message_MetricType &): same Python signature as another overload after out-param removal -> bound as MetricFromString__Message_MetricType
+overload-collision	NCollection	NCollection_ListNode::Next() const: const twin of a less const overload -> not bound
 overload-collision	OSD	OSD_Chronometer::Show(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as Show__str
 overload-collision	OSD	OSD_Chronometer::Show(double &): same Python signature as another overload after out-param removal -> bound as Show__float
 overload-collision	OSD	OSD_Chronometer::Show(double &, double &): same Python signature as another overload after out-param removal -> bound as Show__float__float
@@ -132,7 +132,6 @@ raw-pointer	NCollection	NCollection_BaseAllocator::AllocateOptimal(const size_t)
 raw-pointer	NCollection	NCollection_BaseAllocator::Free(): param 'theAddress': void pointer
 raw-pointer	NCollection	NCollection_Buffer::ChangeData(): return: raw pointer to primitive
 raw-pointer	NCollection	NCollection_Buffer::Data(): return: raw pointer to primitive
-raw-pointer	NCollection	NCollection_Buffer::NCollection_Buffer(const occ::handle<NCollection_BaseAllocator> &, const size_t): param 'theData': raw pointer to primitive
 raw-pointer	NCollection	NCollection_HeapAllocator::Allocate(const size_t): return: void pointer
 raw-pointer	NCollection	NCollection_HeapAllocator::AllocateOptimal(const size_t): return: void pointer
 raw-pointer	NCollection	NCollection_HeapAllocator::Free(): param 'anAddress': void pointer
@@ -140,7 +139,6 @@ raw-pointer	NCollection	NCollection_IncAllocator::Allocate(const size_t): return
 raw-pointer	NCollection	NCollection_IncAllocator::AllocateOptimal(const size_t): return: void pointer
 raw-pointer	NCollection	NCollection_IncAllocator::Free(): param '': void pointer
 raw-pointer	NCollection	NCollection_IncAllocator::IBlock::NCollection_IncAllocator::IBlock(): param 'thePointer': void pointer
-raw-pointer	NCollection	NCollection_ListNode::Next(): return: reference to pointer
 raw-pointer	NCollection	NCollection_UtfString<char>::NCollection_UtfString<char>(): param 'theCopyUtf32': raw pointer to primitive
 raw-pointer	NCollection	NCollection_UtfString<char>::NCollection_UtfString<char>(): param 'theCopyUtfWide': raw pointer to primitive
 raw-pointer	NCollection	NCollection_UtfString<char>::ToLocale(): param 'theBuffer': raw pointer to primitive
@@ -148,15 +146,10 @@ raw-pointer	NCollection	NCollection_WinHeapAllocator::Allocate(const size_t): re
 raw-pointer	NCollection	NCollection_WinHeapAllocator::AllocateOptimal(const size_t): return: void pointer
 raw-pointer	NCollection	NCollection_WinHeapAllocator::Free(): param 'theAddress': void pointer
 raw-pointer	OSD	OSD::RealToCString(const double): param 'aString': reference to pointer
-raw-pointer	OSD	OSD_CachedFileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOutBufSize': raw pointer to primitive
 raw-pointer	OSD	OSD_File::Read(): param 'Buffer': void pointer
 raw-pointer	OSD	OSD_File::Write(): param 'theBuffer': void pointer
-raw-pointer	OSD	OSD_FileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOutBufSize': raw pointer to primitive
-raw-pointer	OSD	OSD_FileSystemSelector::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOutBufSize': raw pointer to primitive
-raw-pointer	OSD	OSD_LocalFileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOutBufSize': raw pointer to primitive
 raw-pointer	OSD	OSD_SharedLibrary::DlSymb(const char *const): return: function pointer
 raw-pointer	OSD	OSD_Thread::OSD_Thread(): param 'func': reference to pointer
-raw-pointer	OSD	OSD_Thread::Run(): param 'data': void pointer
 raw-pointer	OSD	OSD_Thread::SetFunction(): param 'func': reference to pointer
 raw-pointer	OSD	OSD_Thread::Wait(): param 'theResult': reference to pointer
 raw-pointer	OSD	OSD_Thread::Wait(const int): param 'theResult': reference to pointer
@@ -243,16 +236,20 @@ stream	OSD	OSD_CachedFileSystem::IsOpenIStream(): param 'theStream': iostream ty
 stream	OSD	OSD_CachedFileSystem::IsOpenOStream(): param 'theStream': iostream type
 stream	OSD	OSD_CachedFileSystem::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOldStream': iostream type
 stream	OSD	OSD_CachedFileSystem::OpenOStream(const TCollection_AsciiString &, const unsigned int): return: iostream type
+stream	OSD	OSD_CachedFileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t, int64_t *): return: iostream type
 stream	OSD	OSD_FileSystem::IsOpenIStream(): param 'theStream': iostream type
 stream	OSD	OSD_FileSystem::IsOpenOStream(): param 'theStream': iostream type
 stream	OSD	OSD_FileSystem::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOldStream': iostream type
 stream	OSD	OSD_FileSystem::OpenOStream(const TCollection_AsciiString &, const unsigned int): return: iostream type
+stream	OSD	OSD_FileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t, int64_t *): return: iostream type
 stream	OSD	OSD_FileSystemSelector::IsOpenIStream(): param 'theStream': iostream type
 stream	OSD	OSD_FileSystemSelector::IsOpenOStream(): param 'theStream': iostream type
 stream	OSD	OSD_FileSystemSelector::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOldStream': iostream type
 stream	OSD	OSD_FileSystemSelector::OpenOStream(const TCollection_AsciiString &, const unsigned int): return: iostream type
+stream	OSD	OSD_FileSystemSelector::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t, int64_t *): return: iostream type
 stream	OSD	OSD_LocalFileSystem::IsOpenIStream(): param 'theStream': iostream type
 stream	OSD	OSD_LocalFileSystem::IsOpenOStream(): param 'theStream': iostream type
+stream	OSD	OSD_LocalFileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t, int64_t *): return: iostream type
 stream	OSD	OSD_StreamBuffer<std::iostream>::OSD_StreamBuffer<std::iostream>(const std::string &): param 'theBuffer': iostream type
 stream	OSD	OSD_StreamBuffer<std::istream>::OSD_StreamBuffer<std::istream>(const std::string &): param 'theBuffer': iostream type
 stream	OSD	OSD_StreamBuffer<std::ostream>::OSD_StreamBuffer<std::ostream>(const std::string &): param 'theBuffer': iostream type

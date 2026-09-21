@@ -1838,6 +1838,16 @@ class OSD_Thread:
 
     def SetPriority(self, thePriority: int) -> None: ...
 
+    def Run(self, WNTStackSize: int = 0) -> bool:
+        """
+        Starts a thread with thread function given in constructor,
+        passing the specified input data (as void *) to it.
+        The parameter \\a WNTStackSize (on Windows only)
+        specifies size of the stack to be allocated for the thread
+        (by default - the same as for the current executable).
+        Returns True if thread started successfully
+        """
+
     def Detach(self) -> None:
         """
         Detaches the execution thread from this Thread object,

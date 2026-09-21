@@ -380,6 +380,17 @@ void nanoocp_define_BRepMesh(nb::module_ &m) {
     nanoocp_implicit_copy_ctor<BRepMesh_Circle>(nb::borrow<nb::class_<BRepMesh_Circle>>(m.attr("BRepMesh_Circle")));
     nb::borrow<nb::class_<BRepMesh_Triangle>>(m.attr("BRepMesh_Triangle"))
         .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
+        .def("__init__", [](BRepMesh_Triangle *self, const std::array<int, 3> &theEdges, const std::array<bool, 3> &theOrientations, const BRepMesh_DegreeOfFreedom theMovability) { int theEdges_arr[3]; std::copy(theEdges.begin(), theEdges.end(), theEdges_arr); bool theOrientations_arr[3]; std::copy(theOrientations.begin(), theOrientations.end(), theOrientations_arr);new (self) BRepMesh_Triangle(theEdges_arr, theOrientations_arr, theMovability); }, nb::arg("theEdges"), nb::arg("theOrientations"), nb::arg("theMovability"), R"nbdoc(Constructor.
+@param theEdges array of edges of triangle.
+@param theOrientations array of edge's orientations.
+@param theMovability movability of triangle.)nbdoc")
+        .def("Initialize", [](BRepMesh_Triangle &self, const std::array<int, 3> &theEdges, const std::array<bool, 3> &theOrientations, const BRepMesh_DegreeOfFreedom theMovability) { int theEdges_arr[3]; std::copy(theEdges.begin(), theEdges.end(), theEdges_arr); bool theOrientations_arr[3]; std::copy(theOrientations.begin(), theOrientations.end(), theOrientations_arr); self.Initialize(theEdges_arr, theOrientations_arr, theMovability); }, nb::arg("theEdges"), nb::arg("theOrientations"), nb::arg("theMovability"), R"nbdoc(Initializes the triangle by the given parameters.
+@param theEdges array of edges of triangle.
+@param theOrientations array of edge's orientations.
+@param theMovability movability of triangle.)nbdoc")
+        .def("Edges", [](const BRepMesh_Triangle &self) { int theEdges[3]{}; bool theOrientations[3]{}; self.Edges(theEdges, theOrientations); std::array<int, 3> theEdges_out; std::copy(std::begin(theEdges), std::end(theEdges), theEdges_out.begin()); std::array<bool, 3> theOrientations_out; std::copy(std::begin(theOrientations), std::end(theOrientations), theOrientations_out.begin()); return std::make_tuple(theEdges_out, theOrientations_out); }, R"nbdoc(Gets edges with orientations composing the triangle.
+@param[out] theEdges array edges are stored to.
+@param[out] theOrientations array orientations are stored to.)nbdoc")
         .def("Movability", static_cast<BRepMesh_DegreeOfFreedom (BRepMesh_Triangle::*)() const>(&BRepMesh_Triangle::Movability), R"nbdoc(Returns movability of the triangle.)nbdoc")
         .def("SetMovability", static_cast<void (BRepMesh_Triangle::*)(const BRepMesh_DegreeOfFreedom)>(&BRepMesh_Triangle::SetMovability), nb::arg("theMovability"), R"nbdoc(Sets movability of the triangle.)nbdoc")
         .def("IsEqual", static_cast<bool (BRepMesh_Triangle::*)(const BRepMesh_Triangle &) const>(&BRepMesh_Triangle::IsEqual), nb::arg("theOther"), R"nbdoc(Checks for equality with another triangle.
@@ -388,6 +399,8 @@ void nanoocp_define_BRepMesh(nb::module_ &m) {
         .def("__eq__", static_cast<bool (BRepMesh_Triangle::*)(const BRepMesh_Triangle &) const>(&BRepMesh_Triangle::operator==), nb::arg("theOther"), R"nbdoc(Alias for IsEqual.)nbdoc", nb::is_operator())
         .def("__hash__", [](const BRepMesh_Triangle &self) { return static_cast<Py_ssize_t>(std::hash<BRepMesh_Triangle>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepMesh_Triangle>(nb::borrow<nb::class_<BRepMesh_Triangle>>(m.attr("BRepMesh_Triangle")));
+    nb::borrow<nb::class_<BRepMesh_Triangle>>(m.attr("BRepMesh_Triangle")).def_prop_rw("myEdges", [](const BRepMesh_Triangle &self) { std::array<int, 3> a; std::copy(std::begin(self.myEdges), std::end(self.myEdges), a.begin()); return a; }, [](BRepMesh_Triangle &self, const std::array<int, 3> &a) { std::copy(a.begin(), a.end(), std::begin(self.myEdges)); });
+    nb::borrow<nb::class_<BRepMesh_Triangle>>(m.attr("BRepMesh_Triangle")).def_prop_rw("myOrientations", [](const BRepMesh_Triangle &self) { std::array<bool, 3> a; std::copy(std::begin(self.myOrientations), std::end(self.myOrientations), a.begin()); return a; }, [](BRepMesh_Triangle &self, const std::array<bool, 3> &a) { std::copy(a.begin(), a.end(), std::begin(self.myOrientations)); });
     nanoocp_def_field(nb::borrow<nb::class_<BRepMesh_Triangle>>(m.attr("BRepMesh_Triangle")), "myMovability", &BRepMesh_Triangle::myMovability);
     nb::borrow<nb::class_<BRepMesh_PairOfIndex>>(m.attr("BRepMesh_PairOfIndex"))
         .def(nb::init<>(), R"nbdoc(Default constructor)nbdoc")
@@ -692,6 +705,9 @@ Returns number of links.)nbdoc")
 @return FALSE in case if new element is already in the structure, TRUE elsewhere.)nbdoc")
         .def("RemoveElement", static_cast<void (BRepMesh_DataStructureOfDelaun::*)(const int)>(&BRepMesh_DataStructureOfDelaun::RemoveElement), nb::arg("theIndex"), R"nbdoc(Removes element from the mesh.
 @param theIndex index of element to be removed.)nbdoc")
+        .def("ElementNodes", [](BRepMesh_DataStructureOfDelaun &self, const BRepMesh_Triangle & theElement) { int theNodes[3]{}; self.ElementNodes(theElement, theNodes); std::array<int, 3> theNodes_out; std::copy(std::begin(theNodes), std::end(theNodes), theNodes_out.begin()); return theNodes_out; }, nb::arg("theElement"), R"nbdoc(Returns indices of nodes forming the given element.
+@param theElement element which nodes should be retrieved.
+@param[out] theNodes nodes of the given element.)nbdoc")
         .def("Dump", static_cast<void (BRepMesh_DataStructureOfDelaun::*)(const char *)>(&BRepMesh_DataStructureOfDelaun::Dump), nb::arg("theFileNameStr"))
         .def("Allocator", static_cast<const occ::handle<NCollection_IncAllocator> & (BRepMesh_DataStructureOfDelaun::*)() const>(&BRepMesh_DataStructureOfDelaun::Allocator), R"nbdoc(@name Auxiliary API
 Returns memory allocator used by the structure.)nbdoc")
@@ -778,6 +794,15 @@ position in parametric space.
 @param[out] thePoint 3d point corresponding to the given parameters.
 @param[out] theNormal normal vector at the point specified by the parameters.
 @return FALSE if the normal can not be computed, TRUE elsewhere.)nbdoc")
+        .def_static("IntLinLin", [](const gp_XY & theStartPnt1, const gp_XY & theEndPnt1, const gp_XY & theStartPnt2, const gp_XY & theEndPnt2, gp_XY & theIntPnt) { double theParamOnSegment[2]{}; auto result = BRepMesh_GeomTool::IntLinLin(theStartPnt1, theEndPnt1, theStartPnt2, theEndPnt2, theIntPnt, theParamOnSegment); std::array<double, 2> theParamOnSegment_out; std::copy(std::begin(theParamOnSegment), std::end(theParamOnSegment), theParamOnSegment_out.begin()); return std::make_tuple(result, theParamOnSegment_out); }, nb::arg("theStartPnt1"), nb::arg("theEndPnt1"), nb::arg("theStartPnt2"), nb::arg("theEndPnt2"), nb::arg("theIntPnt"), R"nbdoc(Checks intersection between two lines defined by two points.
+@param theStartPnt1 start point of first line.
+@param theEndPnt1 end point of first line.
+@param theStartPnt2 start point of second line.
+@param theEndPnt2 end point of second line.
+@param[out] theIntPnt point of intersection.
+@param[out] theParamOnSegment parameters of intersection point
+corresponding to first and second segment.
+@return status of intersection check.)nbdoc")
         .def_static("IntSegSeg", static_cast<BRepMesh_GeomTool::IntFlag (*)(const gp_XY &, const gp_XY &, const gp_XY &, const gp_XY &, const bool, const bool, gp_Pnt2d &)>(&BRepMesh_GeomTool::IntSegSeg), nb::arg("theStartPnt1"), nb::arg("theEndPnt1"), nb::arg("theStartPnt2"), nb::arg("theEndPnt2"), nb::arg("isConsiderEndPointTouch"), nb::arg("isConsiderPointOnSegment"), nb::arg("theIntPnt"), R"nbdoc(Checks intersection between the two segments.
 Checks that intersection point lies within ranges of both segments.
 @param theStartPnt1 start point of first segment.
@@ -982,6 +1007,7 @@ Initializes tool by the given data structure.)nbdoc")
         .def("DumpTriangles", static_cast<void (BRepMesh_MeshTool::*)(const char *const, IMeshData::MapOfInteger *)>(&BRepMesh_MeshTool::DumpTriangles), nb::arg("theFileName"), nb::arg("theTriangles"), R"nbdoc(Dumps triangles to specified file.)nbdoc")
         .def("AddAndLegalizeTriangle", static_cast<void (BRepMesh_MeshTool::*)(const int, const int, const int)>(&BRepMesh_MeshTool::AddAndLegalizeTriangle), nb::arg("thePoint1"), nb::arg("thePoint2"), nb::arg("thePoint3"), R"nbdoc(Adds new triangle with specified nodes to mesh.
 Legalizes triangle in case if it violates circle criteria.)nbdoc")
+        .def("AddTriangle", [](BRepMesh_MeshTool &self, const int thePoint1, const int thePoint2, const int thePoint3) { int theEdges[3]{}; self.AddTriangle(thePoint1, thePoint2, thePoint3, theEdges); std::array<int, 3> theEdges_out; std::copy(std::begin(theEdges), std::end(theEdges), theEdges_out.begin()); return theEdges_out; }, nb::arg("thePoint1"), nb::arg("thePoint2"), nb::arg("thePoint3"), R"nbdoc(Adds new triangle with specified nodes to mesh.)nbdoc")
         .def("AddLink", [](BRepMesh_MeshTool &self, const int theFirstNode, const int theLastNode) { int theLinkIndex{}; bool theLinkOri{}; self.AddLink(theFirstNode, theLastNode, theLinkIndex, theLinkOri); return std::make_tuple(theLinkIndex, theLinkOri); }, nb::arg("theFirstNode"), nb::arg("theLastNode"), R"nbdoc(Adds new link to mesh.
 Updates link index and link orientation parameters.)nbdoc")
         .def("Legalize", static_cast<void (BRepMesh_MeshTool::*)(const int)>(&BRepMesh_MeshTool::Legalize), nb::arg("theLinkIndex"), R"nbdoc(Performs legalization of triangles connected to the specified link.)nbdoc")

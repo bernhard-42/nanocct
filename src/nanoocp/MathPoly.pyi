@@ -131,3 +131,11 @@ def Quintic(theA: float, theB: float, theC: float, theD: float, theE: float, the
     @param theF constant term
     @return PolyResult containing real roots only
     """
+
+def Octic(theCoeffs: Sequence[float]) -> GeneralPolyResult:
+    """
+    Solve octic (degree 8) polynomial using Laguerre's method.
+    Useful for Circle-Ellipse extrema after Weierstrass substitution.
+    @param theCoeffs coefficients [a0, a1, ..., a8] where polynomial is a0 + a1*x + ... + a8*x^8
+    @return GeneralPolyResult containing all real roots
+    """

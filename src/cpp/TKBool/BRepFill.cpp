@@ -310,6 +310,7 @@ on the edge.)nbdoc")
     nb::borrow<nb::class_<BRepFill_AdvancedEvolved>>(m.attr("BRepFill_AdvancedEvolved"))
         .def(nb::init<>(), R"nbdoc(Constructor)nbdoc")
         .def("Perform", static_cast<void (BRepFill_AdvancedEvolved::*)(const TopoDS_Wire &, const TopoDS_Wire &, const double, const bool)>(&BRepFill_AdvancedEvolved::Perform), nb::arg("theSpine"), nb::arg("theProfile"), nb::arg("theTolerance"), nb::arg("theSolidReq") = static_cast<std::decay_t<const bool>>(true))
+        .def("IsDone", [](const BRepFill_AdvancedEvolved &self) { auto result = self.IsDone(nullptr); return result; })
         .def("Shape", static_cast<const TopoDS_Shape & (BRepFill_AdvancedEvolved::*)() const>(&BRepFill_AdvancedEvolved::Shape), R"nbdoc(returns the resulting shape.)nbdoc")
         .def("SetTemporaryDirectory", static_cast<void (BRepFill_AdvancedEvolved::*)(const char *const)>(&BRepFill_AdvancedEvolved::SetTemporaryDirectory), nb::arg("thePath"), R"nbdoc(Sets directory where the debug shapes will be saved)nbdoc")
         .def("SetParallelMode", static_cast<void (BRepFill_AdvancedEvolved::*)(const bool)>(&BRepFill_AdvancedEvolved::SetParallelMode), nb::arg("theVal"), R"nbdoc(Sets/Unsets computation in parallel mode)nbdoc");

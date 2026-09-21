@@ -9,6 +9,7 @@ import nanoocp.Adaptor3d
 import nanoocp.AdvApprox
 import nanoocp.Geom
 import nanoocp.Geom2d
+import nanoocp.Geom2dAdaptor
 import nanoocp.GeomAbs
 import nanoocp.NCollection
 import nanoocp.gp
@@ -644,4 +645,51 @@ class GeomLib_Tool:
         """
         Extracts the parameter of a 3D point lying on a surface
         or at a distance less than the MaxDist value.
+        """
+
+    @overload
+    @staticmethod
+    def ComputeDeviation(theCurve: nanoocp.Geom2dAdaptor.Geom2dAdaptor_Curve, theFPar: float, theLPar: float, theStartParameter: float, theNbIters: int = 100, thePtOnCurve: nanoocp.gp.gp_Pnt2d = None, theVecCurvLine: nanoocp.gp.gp_Vec2d = None, theLine: nanoocp.gp.gp_Lin2d = None) -> float:
+        """
+        Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
+        between theCurve and the linear segment joining its points with
+        the parameters theFPar and theLPar is obtained.
+        Returns the (positive) value of deviation. Returns negative value if
+        the deviation cannot be computed.
+        The returned parameter (in case of successful) will always be in
+        the range [theFPar, theLPar].
+        Iterative method is used for computation. So, theStartParameter is
+        needed to be set. Recommend value of theStartParameter can be found with
+        the overloaded method.
+        Additionally, following values can be returned (optionally):
+        @param thePtOnCurve - the point on curve where maximal deviation is achieved;
+        @param thePrmOnCurve - the parameter of thePtOnCurve;
+        @param theVecCurvLine - the vector along which is computed (this vector is always
+        perpendicular theLine);
+        @param theLine - the linear segment joining the point of theCurve having parameters
+        theFPar and theLPar.
+        """
+
+    @overload
+    @staticmethod
+    def ComputeDeviation(theCurve: nanoocp.Geom2dAdaptor.Geom2dAdaptor_Curve, theFPar: float, theLPar: float, theNbSubIntervals: int, theNbIters: int = 10) -> float:
+        """
+        Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
+        between theCurve and the linear segment joining its points with
+        the parameters theFPar and theLPar is obtained.
+        Returns the (positive) value of deviation. Returns negative value if
+        the deviation cannot be computed.
+        The returned parameter (in case of successful) will always be in
+        the range [theFPar, theLPar].
+        theNbSubIntervals defines discretization of the given interval [theFPar, theLPar]
+        to provide better search condition. This value should be chosen taking into
+        account complexity of the curve in considered interval. E.g. if there are many
+        oscillations of the curve in the interval then theNbSubIntervals mus be
+        great number. However, the greater value of theNbSubIntervals the slower the
+        algorithm will compute.
+        theNbIters sets number of iterations.
+        ATTENTION!!!
+        This algorithm cannot compute deviation precisely (so, there is no point in
+        setting big value of theNbIters). But it can give some start point for
+        the overloaded method.
         """

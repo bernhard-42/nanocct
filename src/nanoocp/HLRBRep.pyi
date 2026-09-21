@@ -828,6 +828,12 @@ class HLRBRep_Curve:
         parameter on the 2d curve.
         """
 
+    def Update(self) -> tuple[float, list[float], list[float]]:
+        """Update the minmax and the internal data"""
+
+    def UpdateMinMax(self) -> tuple[float, list[float], list[float]]:
+        """Update the minmax returns tol for enlarge;"""
+
     def Z(self, U: float) -> float:
         """
         Computes the Z coordinate of the point of
@@ -2805,6 +2811,8 @@ class HLRBRep_TheCSFunctionOfInterCSurf(nanoocp.math.math_FunctionSetWithDerivat
     def Point(self) -> nanoocp.gp.gp_Pnt: ...
 
     def Root(self) -> float: ...
+
+    def AuxillarSurface(self) -> HLRBRep_Surface: ...
 
     def AuxillarCurve(self) -> nanoocp.gp.gp_Lin: ...
 

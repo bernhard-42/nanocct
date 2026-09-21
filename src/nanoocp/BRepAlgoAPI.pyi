@@ -249,6 +249,15 @@ class BRepAlgoAPI_BuilderAlgo(BRepAlgoAPI_Algo):
         The edges represent the result of intersection between arguments of operation.
         """
 
+    def DSFiller(self) -> nanoocp.BOPAlgo.BOPAlgo_PaveFiller:
+        """
+        @name Getting tools performing the job
+        Returns the Intersection tool
+        """
+
+    def Builder(self) -> nanoocp.BOPAlgo.BOPAlgo_Builder:
+        """Returns the Building tool"""
+
     def History(self) -> nanoocp.BRepTools.BRepTools_History:
         """History tool"""
 

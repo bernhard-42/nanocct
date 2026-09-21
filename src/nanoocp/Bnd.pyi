@@ -1576,6 +1576,21 @@ class Bnd_OBB:
     def Enlarge(self, theGapAdd: float) -> None:
         """Enlarges the box with the given value"""
 
+    def GetVertex(self) -> tuple[bool, list[nanoocp.gp.gp_Pnt]]:
+        """
+        Returns the array of vertices in <this>.
+        The local coordinate of the vertex depending on the
+        index of the array are follow:
+        Index == 0: (-XHSize(), -YHSize(), -ZHSize())
+        Index == 1: ( XHSize(), -YHSize(), -ZHSize())
+        Index == 2: (-XHSize(),  YHSize(), -ZHSize())
+        Index == 3: ( XHSize(),  YHSize(), -ZHSize())
+        Index == 4: (-XHSize(), -YHSize(),  ZHSize())
+        Index == 5: ( XHSize(), -YHSize(),  ZHSize())
+        Index == 6: (-XHSize(),  YHSize(),  ZHSize())
+        Index == 7: ( XHSize(),  YHSize(),  ZHSize()).
+        """
+
     def SquareExtent(self) -> float:
         """Returns square diagonal of this box"""
 
