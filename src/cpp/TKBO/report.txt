@@ -1,0 +1,60 @@
+# nanoOCP generator report for TKBO: 49 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# array: 4
+# inheritance: 1
+# not-constructible: 1
+# overload-collision: 7
+# raw-pointer: 13
+# rvalue: 1
+# template: 9
+# unbound-type: 12
+# undefined: 1
+array	BOPAlgo	BOPAlgo_MakePeriodic::PeriodicityParams::myIsTrimmed: field array
+array	BOPAlgo	BOPAlgo_MakePeriodic::PeriodicityParams::myPeriod: field array
+array	BOPAlgo	BOPAlgo_MakePeriodic::PeriodicityParams::myPeriodFirst: field array
+array	BOPAlgo	BOPAlgo_MakePeriodic::PeriodicityParams::myPeriodic: field array
+inheritance	BRepAlgoAPI	BRepAlgoAPI_Algo: non-public base BOPAlgo_Options dropped; class not constructible
+not-constructible	BRepAlgoAPI	BRepAlgoAPI_Algo: operator new is not public -> no constructors
+overload-collision	BOPDS	BOPDS_Interf::HasIndexNew(int &): same Python signature as another overload after out-param removal -> bound as HasIndexNew__int
+overload-collision	BOPDS	BOPDS_PaveBlock::HasEdge(int &): same Python signature as another overload after out-param removal -> bound as HasEdge__int
+overload-collision	BOPDS	BOPDS_ShapeInfo::HasFlag(int &): same Python signature as another overload after out-param removal -> bound as HasFlag__int
+overload-collision	BOPTools	BOPTools_AlgoTools2D::CurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, double &, const occ::handle<IntTools_Context> &): same Python signature as another overload after out-param removal -> bound as CurveOnSurface__Geom2d_Curve__float
+overload-collision	BOPTools	BOPTools_AlgoTools2D::CurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, double &, double &, double &, const occ::handle<IntTools_Context> &): same Python signature as another overload after out-param removal -> bound as CurveOnSurface__Geom2d_Curve__float__float__float
+overload-collision	BOPTools	BOPTools_AlgoTools2D::HasCurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as HasCurveOnSurface__Geom2d_Curve__float__float__float
+overload-collision	IntTools	IntTools_CommonPrt::Range1(double &, double &): same Python signature as another overload after out-param removal -> bound as Range1__float__float
+raw-pointer	BOPAlgo	BOPAlgo_Builder::PDS(): return: pointer to incomplete type
+raw-pointer	BOPAlgo	BOPAlgo_PaveFiller::Iterator(): return: reference to pointer
+raw-pointer	BOPAlgo	BOPAlgo_PaveFiller::PDS(): return: pointer to incomplete type
+raw-pointer	BOPAlgo	BOPAlgo_Tools::ComputeToleranceOfCB(const occ::handle<BOPDS_CommonBlock> &): param 'theDS': pointer to incomplete type
+raw-pointer	BOPAlgo	BOPAlgo_Tools::PerformCommonBlocks(NCollection_IndexedDataMap<opencascade::handle<BOPDS_PaveBlock>, NCollection_List<opencascade::handle<BOPDS_PaveBlock>>, NCollection_DefaultHasher<opencascade::handle<BOPDS_PaveBlock>>> &, const occ::handle<NCollection_BaseAllocator> &): param 'theDS': reference to pointer
+raw-pointer	BOPAlgo	BOPAlgo_Tools::PerformCommonBlocks(const NCollection_IndexedDataMap<opencascade::handle<BOPDS_PaveBlock>, NCollection_List<int>, NCollection_DefaultHasher<opencascade::handle<BOPDS_PaveBlock>>> &, const occ::handle<NCollection_BaseAllocator> &): param 'pDS': reference to pointer
+raw-pointer	BOPDS	BOPDS_Iterator::SetDS(): param 'pDS': reference to pointer
+raw-pointer	BOPDS	BOPDS_SubIterator::SetDS(): param 'pDS': reference to pointer
+raw-pointer	BOPTools	BOPTools_AlgoTools::IsSplitToReverse(const TopoDS_Edge &, const TopoDS_Edge &, const occ::handle<IntTools_Context> &): param 'theError': raw pointer to primitive
+raw-pointer	BOPTools	BOPTools_AlgoTools::IsSplitToReverse(const TopoDS_Face &, const TopoDS_Face &, const occ::handle<IntTools_Context> &): param 'theError': raw pointer to primitive
+raw-pointer	BOPTools	BOPTools_AlgoTools::IsSplitToReverse(const TopoDS_Shape &, const TopoDS_Shape &, const occ::handle<IntTools_Context> &): param 'theError': raw pointer to primitive
+raw-pointer	BRepAlgoAPI	BRepAlgoAPI_BuilderAlgo::Builder(): return: reference to pointer
+raw-pointer	BRepAlgoAPI	BRepAlgoAPI_BuilderAlgo::DSFiller(): return: reference to pointer
+rvalue	BOPAlgo	BOPAlgo_PaveFiller::SetArguments(): param 'theLS': rvalue reference
+template	BOPAlgo	BOPAlgo_Tools::FillMap: template member
+template	BOPAlgo	BOPAlgo_Tools::MakeBlocks: template member
+template	BOPTools	BOPTools_BoxSelector: template (not bound)
+template	BOPTools	BOPTools_BoxSet: template (not bound)
+template	BOPTools	BOPTools_PairSelector: template (not bound)
+template	BOPTools	BOPTools_PairSelector::PairIDs: nested class of a class template (alias instantiation)
+template	BOPTools	BOPTools_PairSelector::PairIDs: nested class of a class template (alias instantiation)
+template	BOPTools	BOPTools_Parallel::Perform: template member
+template	BOPTools	BOPTools_Parallel::Perform: template member
+unbound-type	BOPTools	BOPTools_Box2dPairSelector = BOPTools_PairSelector<2>: type alias of a type that is not bound (skipped)
+unbound-type	BOPTools	BOPTools_Box2dTree = BOPTools_BoxSet<double, 2, int>: type alias of a type that is not bound (skipped)
+unbound-type	BOPTools	BOPTools_Box2dTreeSelector = BOPTools_BoxSelector<2>: type alias of a type that is not bound (skipped)
+unbound-type	BOPTools	BOPTools_BoxPairSelector = BOPTools_PairSelector<3>: type alias of a type that is not bound (skipped)
+unbound-type	BOPTools	BOPTools_BoxSelector<2>: base class BVH_Traverse<double, 2, BVH_BoxSet<double, 2, int>, bool> is not bound (package not generated) -> class skipped
+unbound-type	BOPTools	BOPTools_BoxSelector<3>: base class BVH_Traverse<double, 3, BVH_BoxSet<double, 3, int>, bool> is not bound (package not generated) -> class skipped
+unbound-type	BOPTools	BOPTools_BoxSet<double, 2, int>: base class BVH_BoxSet<double, 2, int> is not bound (package not generated) -> class skipped
+unbound-type	BOPTools	BOPTools_BoxSet<double, 3, int>: base class BVH_BoxSet<double, 3, int> is not bound (package not generated) -> class skipped
+unbound-type	BOPTools	BOPTools_BoxTree = BOPTools_BoxSet<double, 3, int>: type alias of a type that is not bound (skipped)
+unbound-type	BOPTools	BOPTools_BoxTreeSelector = BOPTools_BoxSelector<3>: type alias of a type that is not bound (skipped)
+unbound-type	BOPTools	BOPTools_PairSelector<2>: base class BVH_PairTraverse<double, 2, BVH_BoxSet<double, 2, int>> is not bound (package not generated) -> class skipped
+unbound-type	BOPTools	BOPTools_PairSelector<3>: base class BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3, int>> is not bound (package not generated) -> class skipped
+undefined	IntTools	IntTools_PntOnFace::IsValid(): declared in the header, no definition in libTKBO

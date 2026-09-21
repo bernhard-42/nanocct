@@ -758,6 +758,65 @@ def _conversion(cursor: cindex.Cursor) -> Conversion | None:
 
 
 # Design.md 6 R-NESTED, R-FIELD, R-INCOMPLETE, R-IMPLICIT-CONV, R-IMPLICIT-DEFAULT, R-MI, R-NONCOPYABLE
+def _members(cursor: cindex.Cursor) -> set[str]:
+    """Names usable unqualified inside a class body (for qualifying default arguments, R-DEFAULT)."""
+    members: set[str] = set()
+    for ch in cursor.get_children():
+        if ch.kind in (K.VAR_DECL, K.FIELD_DECL, K.ENUM_DECL, K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL):
+            members.add(ch.spelling)
+        if ch.kind == K.ENUM_DECL:
+            members.update(v.spelling for v in ch.get_children() if v.kind == K.ENUM_CONSTANT_DECL)
+    return members
+
+
+def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
+    params, reason = _params(ch, "", c.name, members, allow_streams=False)
+    required = [q for q in params if q.default is None]
+    implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
+                and not ch.is_copy_constructor() and not ch.is_move_constructor())
+    ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
+                       defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
+                       mangled=ch.mangled_name)
+    if ctor.skip_reason is not None:
+        c.skipped.append(f"{c.name}::{c.name}({', '.join(p.type for p in params)}): {ctor.skip_reason}")
+    return ctor
+
+
+# Design.md 6 R-USING
+def _using_methods(using: cindex.Cursor, c: Class) -> None:
+    """`using Base::name;` in a public section: the base's overloads of `name` become members of this class -- needed when
+    the base is non-public (BRepAlgoAPI_Algo : protected BOPAlgo_Options re-exports SetFuzzyValue, HasErrors, ...) and when the
+    class's own overloads would otherwise hide the base's in nanobind (Blend_FuncInv::Set). The emitter binds them through
+    lambdas on this class (a member pointer of the base would need the inaccessible upcast)."""
+    odr = next((k for k in using.get_children() if k.kind == K.OVERLOADED_DECL_REF), None)
+    if odr is None:
+        return                                     # `using Base::SomeType;`: nothing to bind
+    lib = cindex.conf.lib
+    for i in range(lib.clang_getNumOverloadedDecls(odr)):
+        d = lib.clang_getOverloadedDecl(odr, i)
+        if d.kind == K.CONSTRUCTOR:
+            # `using Base::Base;`: Derived(args) is valid for every base constructor except copy/move (BRepGraph_FacesOfEdge)
+            if d.is_copy_constructor() or d.is_move_constructor() or d.is_deleted_method() or d.access_specifier == Access.PRIVATE:
+                continue
+            ctor = _ctor(d, c, _members(d.semantic_parent))
+            ctor.defined_in_header = True          # the base's symbol; the base's own binding runs the nm check
+            c.ctors.append(ctor)                   # has_declared_ctor stays: inherited constructors do not suppress the implicit default one
+            continue
+        if d.kind != K.CXX_METHOD or d.access_specifier == Access.PRIVATE:
+            c.skipped.append(f"{c.name}: using {using.spelling}: {d.kind.name.lower()} (not bound)")
+            continue
+        base_cursor = d.semantic_parent
+        base = _type_spelling(base_cursor.type)
+        m = _method(d, base, _members(base_cursor))
+        if m is None:
+            continue
+        m.via_using = base
+        m.defined_in_header = True                 # its symbol lives in the base's library; the base's own binding runs the nm check
+        if m.skip_reason is not None:
+            c.skipped.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}) (using {base}::{m.name}): {m.skip_reason}")
+        c.methods.append(m)
+
+
 def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") -> Class:
     cpp_name = _type_spelling(cursor.type)          # 'NCollection_Lerp<gp_Trsf>' for a specialization
     if cpp_name == "":                              # a class template walked for an alias instantiation (6c)
@@ -770,12 +829,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
               is_transient=_derives_from(cursor, "Standard_Transient"),
               is_exception=_derives_from(cursor, "Standard_Failure"), is_abstract=cursor.is_abstract_record(),
               scope=tuple(path[:-1]), outer=outer, noncopyable=cpp_name in _NONCOPYABLE)
-    members: set[str] = set()      # names usable unqualified inside the class (for default arguments)
-    for ch in cursor.get_children():
-        if ch.kind in (K.VAR_DECL, K.FIELD_DECL, K.ENUM_DECL, K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL):
-            members.add(ch.spelling)
-        if ch.kind == K.ENUM_DECL:
-            members.update(v.spelling for v in ch.get_children() if v.kind == K.ENUM_CONSTANT_DECL)
+    members = _members(cursor)     # names usable unqualified inside the class (for default arguments)
     # a data member (any access) of a type that is only declared in the headers (BRepGraph_CacheMesh::Slot, defined in
     # the .cxx) makes the destructor uninstantiable -> nb::class_ cannot be formed
     for ch in cursor.get_children():
@@ -808,16 +862,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
         if ch.kind == K.CONSTRUCTOR:
             if ch.is_move_constructor() or ch.is_deleted_method():
                 continue
-            params, reason = _params(ch, "", c.name, members, allow_streams=False)
-            required = [q for q in params if q.default is None]
-            implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
-                        and not ch.is_copy_constructor() and not ch.is_move_constructor())
-            ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
-                               defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
-                               mangled=ch.mangled_name)
-            if ctor.skip_reason is not None:
-                c.skipped.append(f"{c.name}::{c.name}({', '.join(p.type for p in params)}): {ctor.skip_reason}")
-            c.ctors.append(ctor)
+            c.ctors.append(_ctor(ch, c, members))
         elif ch.kind == K.CXX_METHOD:
             m = _method(ch, c.name, members)
             if m is None:
@@ -844,6 +889,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.conversions.append(conv)
         elif ch.kind == K.ENUM_DECL and ch.is_definition():
             c.enums.append(_enum(ch, header, c.name))
+        elif ch.kind == K.USING_DECLARATION:
+            _using_methods(ch, c)
         elif ch.kind in (K.FUNCTION_TEMPLATE,):
             c.skipped.append(f"{c.name}::{ch.spelling}: template member")
         elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition():

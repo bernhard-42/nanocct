@@ -90,10 +90,125 @@
 "Approx_Status": "Approx",
 "Approx_SweepApproximation": "Approx",
 "Approx_SweepFunction": "Approx",
+"BOPAlgo_AlertAcquiredSelfIntersection": "BOPAlgo",
+"BOPAlgo_AlertBOPNotAllowed": "BOPAlgo",
+"BOPAlgo_AlertBOPNotSet": "BOPAlgo",
+"BOPAlgo_AlertBadPositioning": "BOPAlgo",
+"BOPAlgo_AlertBuilderFailed": "BOPAlgo",
+"BOPAlgo_AlertBuildingPCurveFailed": "BOPAlgo",
+"BOPAlgo_AlertEmptyShape": "BOPAlgo",
+"BOPAlgo_AlertFaceBuilderUnusedEdges": "BOPAlgo",
+"BOPAlgo_AlertIntersectionFailed": "BOPAlgo",
+"BOPAlgo_AlertIntersectionOfPairOfShapesFailed": "BOPAlgo",
+"BOPAlgo_AlertMultiDimensionalArguments": "BOPAlgo",
+"BOPAlgo_AlertMultipleArguments": "BOPAlgo",
+"BOPAlgo_AlertNoFacesToRemove": "BOPAlgo",
+"BOPAlgo_AlertNoFiller": "BOPAlgo",
+"BOPAlgo_AlertNoPeriodicityRequired": "BOPAlgo",
+"BOPAlgo_AlertNotSplittableEdge": "BOPAlgo",
+"BOPAlgo_AlertNullInputShapes": "BOPAlgo",
+"BOPAlgo_AlertPostTreatFF": "BOPAlgo",
+"BOPAlgo_AlertRemovalOfIBForEdgesFailed": "BOPAlgo",
+"BOPAlgo_AlertRemovalOfIBForFacesFailed": "BOPAlgo",
+"BOPAlgo_AlertRemovalOfIBForMDimShapes": "BOPAlgo",
+"BOPAlgo_AlertRemovalOfIBForSolidsFailed": "BOPAlgo",
+"BOPAlgo_AlertRemoveFeaturesFailed": "BOPAlgo",
+"BOPAlgo_AlertSelfInterferingShape": "BOPAlgo",
+"BOPAlgo_AlertShapeIsNotPeriodic": "BOPAlgo",
+"BOPAlgo_AlertShellSplitterFailed": "BOPAlgo",
+"BOPAlgo_AlertSolidBuilderFailed": "BOPAlgo",
+"BOPAlgo_AlertSolidBuilderUnusedFaces": "BOPAlgo",
+"BOPAlgo_AlertTooFewArguments": "BOPAlgo",
+"BOPAlgo_AlertTooSmallEdge": "BOPAlgo",
+"BOPAlgo_AlertUnableToGlue": "BOPAlgo",
+"BOPAlgo_AlertUnableToMakeClosedEdgeOnFace": "BOPAlgo",
+"BOPAlgo_AlertUnableToMakeIdentical": "BOPAlgo",
+"BOPAlgo_AlertUnableToMakePeriodic": "BOPAlgo",
+"BOPAlgo_AlertUnableToOrientTheShape": "BOPAlgo",
+"BOPAlgo_AlertUnableToRemoveTheFeature": "BOPAlgo",
+"BOPAlgo_AlertUnableToRepeat": "BOPAlgo",
+"BOPAlgo_AlertUnableToTrim": "BOPAlgo",
+"BOPAlgo_AlertUnknownShape": "BOPAlgo",
+"BOPAlgo_AlertUnsupportedType": "BOPAlgo",
+"BOPAlgo_AlertUserBreak": "BOPAlgo",
+"BOPAlgo_Algo": "BOPAlgo",
+"BOPAlgo_ArgumentAnalyzer": "BOPAlgo",
+"BOPAlgo_BOP": "BOPAlgo",
+"BOPAlgo_Builder": "BOPAlgo",
+"BOPAlgo_BuilderArea": "BOPAlgo",
+"BOPAlgo_BuilderFace": "BOPAlgo",
+"BOPAlgo_BuilderShape": "BOPAlgo",
+"BOPAlgo_BuilderSolid": "BOPAlgo",
+"BOPAlgo_CellsBuilder": "BOPAlgo",
+"BOPAlgo_CheckResult": "BOPAlgo",
+"BOPAlgo_CheckStatus": "BOPAlgo",
+"BOPAlgo_CheckerSI": "BOPAlgo",
+"BOPAlgo_GlueEnum": "BOPAlgo",
+"BOPAlgo_MakeConnected": "BOPAlgo",
+"BOPAlgo_MakePeriodic": "BOPAlgo",
+"BOPAlgo_MakePeriodic::PeriodicityParams": "BOPAlgo",
+"BOPAlgo_MakerVolume": "BOPAlgo",
+"BOPAlgo_Operation": "BOPAlgo",
+"BOPAlgo_Options": "BOPAlgo",
+"BOPAlgo_PISteps": "BOPAlgo",
+"BOPAlgo_ParallelAlgo": "BOPAlgo",
+"BOPAlgo_PaveFiller": "BOPAlgo",
+"BOPAlgo_RemoveFeatures": "BOPAlgo",
+"BOPAlgo_Section": "BOPAlgo",
+"BOPAlgo_SectionAttribute": "BOPAlgo",
+"BOPAlgo_ShellSplitter": "BOPAlgo",
+"BOPAlgo_Splitter": "BOPAlgo",
+"BOPAlgo_Tools": "BOPAlgo",
+"BOPAlgo_ToolsProvider": "BOPAlgo",
+"BOPAlgo_WireEdgeSet": "BOPAlgo",
+"BOPAlgo_WireSplitter": "BOPAlgo",
+"BOPDS_CommonBlock": "BOPDS",
+"BOPDS_CoupleOfPaveBlocks": "BOPDS",
+"BOPDS_Curve": "BOPDS",
+"BOPDS_DS": "BOPDS",
+"BOPDS_FaceInfo": "BOPDS",
+"BOPDS_IndexRange": "BOPDS",
+"BOPDS_Interf": "BOPDS",
+"BOPDS_InterfEE": "BOPDS",
+"BOPDS_InterfEF": "BOPDS",
+"BOPDS_InterfEZ": "BOPDS",
+"BOPDS_InterfFF": "BOPDS",
+"BOPDS_InterfFZ": "BOPDS",
+"BOPDS_InterfVE": "BOPDS",
+"BOPDS_InterfVF": "BOPDS",
+"BOPDS_InterfVV": "BOPDS",
+"BOPDS_InterfVZ": "BOPDS",
+"BOPDS_InterfZZ": "BOPDS",
+"BOPDS_Iterator": "BOPDS",
+"BOPDS_IteratorSI": "BOPDS",
+"BOPDS_Pair": "BOPDS",
+"BOPDS_Pave": "BOPDS",
+"BOPDS_PaveBlock": "BOPDS",
+"BOPDS_Point": "BOPDS",
+"BOPDS_ShapeInfo": "BOPDS",
+"BOPDS_SubIterator": "BOPDS",
+"BOPDS_Tools": "BOPDS",
+"BOPTools_AlgoTools": "BOPTools",
+"BOPTools_AlgoTools2D": "BOPTools",
+"BOPTools_AlgoTools3D": "BOPTools",
+"BOPTools_ConnexityBlock": "BOPTools",
+"BOPTools_CoupleOfShape": "BOPTools",
+"BOPTools_Parallel": "BOPTools",
+"BOPTools_Set": "BOPTools",
 "BRepAdaptor_CompCurve": "BRepAdaptor",
 "BRepAdaptor_Curve": "BRepAdaptor",
 "BRepAdaptor_Curve2d": "BRepAdaptor",
 "BRepAdaptor_Surface": "BRepAdaptor",
+"BRepAlgoAPI_Algo": "BRepAlgoAPI",
+"BRepAlgoAPI_BooleanOperation": "BRepAlgoAPI",
+"BRepAlgoAPI_BuilderAlgo": "BRepAlgoAPI",
+"BRepAlgoAPI_Check": "BRepAlgoAPI",
+"BRepAlgoAPI_Common": "BRepAlgoAPI",
+"BRepAlgoAPI_Cut": "BRepAlgoAPI",
+"BRepAlgoAPI_Defeaturing": "BRepAlgoAPI",
+"BRepAlgoAPI_Fuse": "BRepAlgoAPI",
+"BRepAlgoAPI_Section": "BRepAlgoAPI",
+"BRepAlgoAPI_Splitter": "BRepAlgoAPI",
 "BRepApprox_Approx": "BRepApprox",
 "BRepApprox_ApproxLine": "BRepApprox",
 "BRepApprox_BSpGradient_BFGSOfMyBSplGradientOfTheComputeLineOfApprox": "BRepApprox",
@@ -1510,6 +1625,29 @@
 "IntSurf_Situation": "IntSurf",
 "IntSurf_Transition": "IntSurf",
 "IntSurf_TypeTrans": "IntSurf",
+"IntTools": "IntTools",
+"IntTools_BaseRangeSample": "IntTools",
+"IntTools_BeanFaceIntersector": "IntTools",
+"IntTools_CommonPrt": "IntTools",
+"IntTools_Context": "IntTools",
+"IntTools_Curve": "IntTools",
+"IntTools_CurveRangeLocalizeData": "IntTools",
+"IntTools_CurveRangeSample": "IntTools",
+"IntTools_EdgeEdge": "IntTools",
+"IntTools_EdgeFace": "IntTools",
+"IntTools_FClass2d": "IntTools",
+"IntTools_FaceFace": "IntTools",
+"IntTools_MarkedRangeSet": "IntTools",
+"IntTools_PntOn2Faces": "IntTools",
+"IntTools_PntOnFace": "IntTools",
+"IntTools_Range": "IntTools",
+"IntTools_Root": "IntTools",
+"IntTools_ShrunkRange": "IntTools",
+"IntTools_SurfaceRangeLocalizeData": "IntTools",
+"IntTools_SurfaceRangeSample": "IntTools",
+"IntTools_Tools": "IntTools",
+"IntTools_TopolTool": "IntTools",
+"IntTools_WLineTool": "IntTools",
 "IntWalk_PWalking": "IntWalk",
 "IntWalk_StatusDeflection": "IntWalk",
 "IntWalk_TheFunctionOfTheInt2S": "IntWalk",
@@ -2279,6 +2417,48 @@
 "math_VectorBase<int>": "math"
 },
 "templates": {
+"BOPTools_BoxSelector<2>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "BOPTools",
+"skipped": true
+},
+"BOPTools_BoxSelector<3>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "BOPTools",
+"skipped": true
+},
+"BOPTools_BoxSet<double, 2, int>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "BOPTools",
+"skipped": true
+},
+"BOPTools_BoxSet<double, 3, int>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "BOPTools",
+"skipped": true
+},
+"BOPTools_PairSelector<2>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "BOPTools",
+"skipped": true
+},
+"BOPTools_PairSelector<3>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "BOPTools",
+"skipped": true
+},
 "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>": {
 "toolkit": "TKBRep",
 "package": "BRepGraphInc",
@@ -3873,6 +4053,12 @@
 "name": "NCollection_DataMap__TopoDS_Shape__BRepGraph_NodeId__TopTools_ShapeMapHasher",
 "by": "BRepGraph"
 },
+"NCollection_DataMap<TopoDS_Shape, Bnd_Box, TopTools_ShapeMapHasher>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DataMap__TopoDS_Shape__Bnd_Box__TopTools_ShapeMapHasher",
+"by": "BOPAlgo"
+},
 "NCollection_DataMap<TopoDS_Shape, NCollection_List<Message_Msg>, TopTools_ShapeMapHasher>": {
 "toolkit": "TKShHealing",
 "package": "NCollection",
@@ -3921,6 +4107,12 @@
 "name": "NCollection_DataMap__int__double",
 "by": "NCollection"
 },
+"NCollection_DataMap<int, int>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DataMap__int__int",
+"by": "BOPDS"
+},
 "NCollection_DataMap<int, opencascade::handle<MAT_BasicElt>>": {
 "toolkit": "TKTopAlgo",
 "package": "NCollection",
@@ -3963,6 +4155,84 @@
 "name": "NCollection_DoubleMap__int__TCollection_AsciiString",
 "by": "NCollection"
 },
+"NCollection_DynamicArray<BOPDS_Curve>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_Curve",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_FaceInfo>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_FaceInfo",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfEE>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfEE",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfEF>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfEF",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfEZ>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfEZ",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfFF>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfFF",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfFZ>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfFZ",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfVE>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfVE",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfVF>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfVF",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfVV>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfVV",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfVZ>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfVZ",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_InterfZZ>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_InterfZZ",
+"by": "BOPDS"
+},
+"NCollection_DynamicArray<BOPDS_Point>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BOPDS_Point",
+"by": "BOPDS"
+},
 "NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status>": {
 "toolkit": "",
 "package": "",
@@ -3988,6 +4258,12 @@
 "package": "NCollection",
 "name": "NCollection_DynamicArray__MathRoot_NullInterval",
 "by": "MathRoot"
+},
+"NCollection_DynamicArray<NCollection_List<opencascade::handle<BOPDS_PaveBlock>>>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__NCollection_List__Handle_BOPDS_PaveBlock",
+"by": "BOPDS"
 },
 "NCollection_DynamicArray<Poly_CoherentLink>": {
 "toolkit": "TKMath",
@@ -4361,6 +4637,24 @@
 "name": "NCollection_IndexedDataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher",
 "by": "TopExp"
 },
+"NCollection_IndexedDataMap<TopoDS_Shape, double, TopTools_ShapeMapHasher>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__TopoDS_Shape__double__TopTools_ShapeMapHasher",
+"by": "BOPAlgo"
+},
+"NCollection_IndexedDataMap<opencascade::handle<BOPDS_PaveBlock>, NCollection_List<int>>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__Handle_BOPDS_PaveBlock__NCollection_List__int",
+"by": "BOPAlgo"
+},
+"NCollection_IndexedDataMap<opencascade::handle<BOPDS_PaveBlock>, NCollection_List<opencascade::handle<BOPDS_PaveBlock>>>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__Handle_BOPDS_PaveBlock__NCollection_List__Handle_BOPDS_PaveBlock",
+"by": "BOPAlgo"
+},
 "NCollection_IndexedMap<Message_MetricType>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -4378,6 +4672,12 @@
 "package": "NCollection",
 "name": "NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher",
 "by": "TopExp"
+},
+"NCollection_IndexedMap<opencascade::handle<BOPDS_PaveBlock>>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__Handle_BOPDS_PaveBlock",
+"by": "BOPDS"
 },
 "NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>": {
 "toolkit": "TKMath",
@@ -4577,6 +4877,30 @@
 "name": "NCollection_LinearVector__unsigned_long_long",
 "by": "BRepGraph"
 },
+"NCollection_List<BOPAlgo_CheckResult>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__BOPAlgo_CheckResult",
+"by": "BOPAlgo"
+},
+"NCollection_List<BOPDS_Pave>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__BOPDS_Pave",
+"by": "BOPDS"
+},
+"NCollection_List<BOPTools_ConnexityBlock>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__BOPTools_ConnexityBlock",
+"by": "BOPTools"
+},
+"NCollection_List<BOPTools_CoupleOfShape>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__BOPTools_CoupleOfShape",
+"by": "BOPTools"
+},
 "NCollection_List<BRepCheck_Status>": {
 "toolkit": "TKTopAlgo",
 "package": "NCollection",
@@ -4601,11 +4925,29 @@
 "name": "NCollection_List__IntSurf_PntOn2S",
 "by": "IntPatch"
 },
+"NCollection_List<IntTools_CurveRangeSample>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__IntTools_CurveRangeSample",
+"by": "IntTools"
+},
+"NCollection_List<IntTools_SurfaceRangeSample>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__IntTools_SurfaceRangeSample",
+"by": "IntTools"
+},
 "NCollection_List<Message_Msg>": {
 "toolkit": "TKShHealing",
 "package": "NCollection",
 "name": "NCollection_List__Message_Msg",
 "by": "ShapeExtend"
+},
+"NCollection_List<NCollection_List<TopoDS_Shape>>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__NCollection_List__TopoDS_Shape",
+"by": "BOPAlgo"
 },
 "NCollection_List<Poly_CoherentTriangulation::TwoIntegers>": {
 "toolkit": "TKMath",
@@ -4643,6 +4985,12 @@
 "name": "NCollection_List__int",
 "by": "Standard"
 },
+"NCollection_List<opencascade::handle<BOPDS_PaveBlock>>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_List__Handle_BOPDS_PaveBlock",
+"by": "BOPAlgo"
+},
 "NCollection_List<opencascade::handle<BRep_CurveRepresentation>>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
@@ -4673,6 +5021,12 @@
 "name": "NCollection_List__Handle_Poly_Triangulation",
 "by": "Poly"
 },
+"NCollection_Map<BOPDS_Pair>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_Map__BOPDS_Pair",
+"by": "BOPDS"
+},
 "NCollection_Map<TopoDS_Shape, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
@@ -4684,6 +5038,12 @@
 "package": "NCollection",
 "name": "NCollection_Map__int",
 "by": "NCollection"
+},
+"NCollection_Map<opencascade::handle<BOPDS_PaveBlock>>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_Map__Handle_BOPDS_PaveBlock",
+"by": "BOPDS"
 },
 "NCollection_Mat4<double>": {
 "toolkit": "TKMath",
@@ -4762,6 +5122,36 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__IntSurf_PathPoint",
 "by": "IntPatch"
+},
+"NCollection_Sequence<IntTools_CommonPrt>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_Sequence__IntTools_CommonPrt",
+"by": "IntTools"
+},
+"NCollection_Sequence<IntTools_Curve>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_Sequence__IntTools_Curve",
+"by": "IntTools"
+},
+"NCollection_Sequence<IntTools_PntOn2Faces>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_Sequence__IntTools_PntOn2Faces",
+"by": "IntTools"
+},
+"NCollection_Sequence<IntTools_Range>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_Sequence__IntTools_Range",
+"by": "IntTools"
+},
+"NCollection_Sequence<IntTools_Root>": {
+"toolkit": "TKBO",
+"package": "NCollection",
+"name": "NCollection_Sequence__IntTools_Root",
+"by": "IntTools"
 },
 "NCollection_Sequence<NCollection_Sequence<opencascade::handle<AdvApp2Var_Iso>>>": {
 "toolkit": "TKGeomBase",
@@ -5108,8 +5498,12 @@
 "AppParCurves": "TKGeomBase",
 "Approx": "TKGeomBase",
 "ApproxInt": "TKGeomAlgo",
+"BOPAlgo": "TKBO",
+"BOPDS": "TKBO",
+"BOPTools": "TKBO",
 "BRep": "TKBRep",
 "BRepAdaptor": "TKBRep",
+"BRepAlgoAPI": "TKBO",
 "BRepApprox": "TKTopAlgo",
 "BRepBndLib": "TKTopAlgo",
 "BRepBuilderAPI": "TKTopAlgo",
@@ -5196,6 +5590,7 @@
 "IntRes2d": "TKGeomAlgo",
 "IntStart": "TKGeomAlgo",
 "IntSurf": "TKGeomAlgo",
+"IntTools": "TKBO",
 "IntWalk": "TKGeomAlgo",
 "Intf": "TKGeomAlgo",
 "LProp": "TKGeomBase",
@@ -5429,6 +5824,13 @@
 "ShapeProcess",
 "ShapeProcessAPI",
 "SHMessage"
+],
+"TKBO": [
+"IntTools",
+"BOPAlgo",
+"BRepAlgoAPI",
+"BOPDS",
+"BOPTools"
 ]
 },
 "namespaces": {
@@ -5442,8 +5844,12 @@
 "AppParCurves": [],
 "Approx": [],
 "ApproxInt": [],
+"BOPAlgo": [],
+"BOPDS": [],
+"BOPTools": [],
 "BRep": [],
 "BRepAdaptor": [],
+"BRepAlgoAPI": [],
 "BRepApprox": [],
 "BRepBndLib": [],
 "BRepBuilderAPI": [],
@@ -5559,6 +5965,7 @@
 "IntRes2d": [],
 "IntStart": [],
 "IntSurf": [],
+"IntTools": [],
 "IntWalk": [],
 "Intf": [],
 "LProp": [

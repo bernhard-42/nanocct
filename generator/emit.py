@@ -220,9 +220,11 @@ class Emitter:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
             return f'.def("{py}", {lam}, nb::rv_policy::reference{self._extras(doc, m.params, False, True)})'
-        if has_out or wrap:
+        if has_out or wrap or m.via_using != "":
+            # R-USING: a member re-exported by `using Base::name;` is called on the derived object (the base may be non-public)
             defn = "def_static" if m.is_static else "def"
-            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{self._extras(doc, m.params, True, m.is_operator)})'
+            ptr_policy = policy if m.result_kind == ResultKind.PTR_CLASS else ""     # a lambda copies class results (auto)
+            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:
             fn = f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})"

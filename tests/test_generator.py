@@ -121,6 +121,38 @@ typedef Rules_Unbound::Status Rules_Status;
 //! A signature naming the skipped class's enum through a container.
 inline int Rules_CountStatus(const NCollection_DynamicArray<Rules_Unbound::Status>& theS) { return theS.Length(); }
 
+//! A protected base whose members are re-exported with using-declarations (BRepAlgoAPI_Algo : protected BOPAlgo_Options).
+class Rules_Options
+{
+public:
+  void SetFuzzy(const double theV) { myFuzzy = theV; }
+  double Fuzzy() const { return myFuzzy; }
+  bool Flag() const { return true; }
+  bool Flag(const int theI) const { return theI > 0; }
+  void Dump(Standard_OStream& theS) const { theS << "opts"; }
+
+private:
+  double myFuzzy = 0.0;
+};
+
+//! R-USING: the base is inaccessible from outside, the using-declarations make the listed members public again.
+class Rules_Algo : protected Rules_Options
+{
+public:
+  Rules_Algo() {}
+  using Rules_Options::SetFuzzy;
+  using Rules_Options::Fuzzy;
+  using Rules_Options::Flag;
+  using Rules_Options::Dump;
+};
+
+//! R-USING: inherited constructors (using Base::Base) -- every base constructor except copy/move becomes one of the derived class.
+class Rules_Inherit : public Rules_Value
+{
+public:
+  using Rules_Value::Rules_Value;
+};
+
 //! More()/Next()/Value(): its own Python iterator (R-ITER).
 class Rules_Iter
 {
@@ -178,7 +210,8 @@ def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None
 
 def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
-    assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Iter"]
+    assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
+                     "Rules_Algo", "Rules_Inherit", "Rules_Iter"]
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -217,7 +250,7 @@ def test_header_allowlist_override(monkeypatch, tmp_path_factory):
     ir = parse.parse_package(OcctTree(src=real.src, install=inc.parents[1]), pkg, args=parse.clang_args(real) + [f"-I{inc}"])
     assert ir.headers == ["Rules.hxx"] and "Rules_Other" not in [c.name for c in ir.classes]
     assert "Rules_Other.hxx: not in the allowlist (overrides.toml [include] headers)" in ir.report
-    assert categorize(ir.report[-1]) == "override"
+    assert categorize("Rules_Other.hxx: not in the allowlist (overrides.toml [include] headers)") == "override"
     with pytest.raises(ValueError):                  # a name that is not a header of the package
         monkeypatch.setattr(parse, "_INCLUDE_HEADERS", {"Rules": ["Nope.hxx"]})
         parse.parse_package(OcctTree(src=real.src, install=inc.parents[1]), pkg, args=parse.clang_args(real) + [f"-I{inc}"])
@@ -298,7 +331,7 @@ def test_ir_records_mangled_names(rules_ir):
 
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
-    known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules"}
+    known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules"}
     em = Emitter(rules_ir, OCCT / "include" / "opencascade", known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
                  ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
@@ -320,6 +353,33 @@ def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     assert ("NCollection_DynamicArray<Rules_Unbound::Status>: element type Rules_Unbound::Status is not bound (its class is skipped) "
             "-> instantiation skipped") in em.report
     assert em.templates["NCollection_DynamicArray<Rules_Unbound::Status>"]["skipped"] is True
+
+
+def test_ir_and_emitter_using_declarations(rules_ir):
+    # R-USING: `using Rules_Options::X;` in a public section of Rules_Algo (protected base) re-exports the base's overloads
+    algo = next(c for c in rules_ir.classes if c.name == "Rules_Algo")
+    assert algo.bases == [] and algo.constructible is False        # the non-public base is dropped (R-MI) and reported
+    assert "Rules_Algo: non-public base Rules_Options dropped; class not constructible" in algo.skipped
+    via = sorted((m.name, len(m.params), m.via_using) for m in algo.methods)
+    assert via == [("Dump", 1, "Rules_Options"), ("Flag", 0, "Rules_Options"), ("Flag", 1, "Rules_Options"),
+                   ("Fuzzy", 0, "Rules_Options"), ("SetFuzzy", 1, "Rules_Options")]
+    assert all(m.defined_in_header for m in algo.methods)           # the symbol belongs to the base's library: no nm check here
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    start = cpp.index('m.attr("Rules_Algo"))')
+    block = cpp[start:cpp.index('m.attr("Rules_Iter"))', start)]          # the .def chain of Rules_Algo (lambda bodies contain ';')
+    # bound through lambdas on the derived class (a member pointer of Rules_Options would need the inaccessible upcast)
+    assert '.def("SetFuzzy", [](Rules_Algo &self, const double theV) { self.SetFuzzy(theV); }' in block
+    assert '.def("Fuzzy", [](const Rules_Algo &self) { auto result = self.Fuzzy(); return result; }' in block
+    assert block.count('.def("Flag"') == 2 and "&Rules_Options::" not in block
+    assert '.def("Dump", [](const Rules_Algo &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return nanoocp_stream_text(theS_stream); }' in block
+    # inherited constructors: Rules_Value(const gp_Pnt&) becomes Rules_Inherit's; the default and copy constructors are not inherited
+    # in C++ (the derived class gets its own implicit ones, R-IMPLICIT-DEFAULT/-COPY)
+    inherit = next(c for c in rules_ir.classes if c.name == "Rules_Inherit")
+    assert [[p.type for p in k.params] for k in inherit.ctors] == [["const gp_Pnt &"]] and not inherit.has_declared_ctor
+    tail = cpp[cpp.index('m.attr("Rules_Inherit"))'):]
+    assert "nanoocp_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::arg("thePnt")' in tail
 
 
 def test_resolve_ctor_arities():

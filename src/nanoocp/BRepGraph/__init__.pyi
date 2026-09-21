@@ -9875,6 +9875,16 @@ class BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFro
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_WiresOfEdge(BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFromEdgeCoEdgeTraits):
+    @overload
+    def __init__(self, theGraph: BRepGraph, theEdge: BRepGraph_EdgeId) -> None: ...
+
+    @overload
+    def __init__(self, theGraph: BRepGraph, theEdge: BRepGraph_EdgeId, theStartIndex: int) -> None:
+        """
+        Construct starting at a given coedge relation index (for resumable iteration).
+        """
+
+    @overload
     def __init__(self, theOther: BRepGraph_WiresOfEdge) -> None: ...
 
 class BRepGraph_CoEdgesOfEdge:
@@ -9969,6 +9979,16 @@ class BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFro
     def end(self) -> nanoocp.NCollection.NCollection_ForwardRangeSentinel: ...
 
 class BRepGraph_FacesOfEdge(BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFromEdgeCoEdgeTraits):
+    @overload
+    def __init__(self, theGraph: BRepGraph, theEdge: BRepGraph_EdgeId) -> None: ...
+
+    @overload
+    def __init__(self, theGraph: BRepGraph, theEdge: BRepGraph_EdgeId, theStartIndex: int) -> None:
+        """
+        Construct starting at a given coedge relation index (for resumable iteration).
+        """
+
+    @overload
     def __init__(self, theOther: BRepGraph_FacesOfEdge) -> None: ...
 
 class BRepGraph_FacesOfWire:

@@ -63,3 +63,8 @@ def test_tool_and_ref_iterators():
         refs += 1
         rit.Next()
     assert refs == 2
+    # R-USING: BRepGraph_FacesOfEdge inherits the constructors of its 6c base (`using EdgeParentsOf<...>::EdgeParentsOf;`)
+    faces = BRepGraph.BRepGraph_FacesOfEdge(g, eid)
+    assert faces.More() is False and list(faces) == []
+    sigs = [l for l in BRepGraph.BRepGraph_FacesOfEdge.__init__.__doc__.splitlines() if l.startswith("__init__")]
+    assert len(sigs) == 3 and "theStartIndex: int" in sigs[1]

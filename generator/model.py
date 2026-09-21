@@ -64,6 +64,7 @@ class Method:
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
     is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring
     suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
+    via_using: str = ""               # R-USING: the base class whose member a `using Base::name;` re-exports on this class
 
 
 @dataclass
