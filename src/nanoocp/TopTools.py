@@ -12,6 +12,7 @@ _ALIASES = {
     "TopTools_DataMapOfShapeBox": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__Bnd_Box__TopTools_ShapeMapHasher"),
     "TopTools_DataMapOfShapeInteger": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__int__TopTools_ShapeMapHasher"),
     "TopTools_DataMapOfShapeListOfShape": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher"),
+    "TopTools_DataMapOfShapeReal": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__double__TopTools_ShapeMapHasher"),
     "TopTools_DataMapOfShapeShape": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__TopoDS_Shape__TopTools_ShapeMapHasher"),
     "TopTools_HArray1OfShape": ("nanoocp.NCollection", "NCollection_HArray1__TopoDS_Shape"),
     "TopTools_HArray2OfShape": ("nanoocp.NCollection", "NCollection_HArray2__TopoDS_Shape"),

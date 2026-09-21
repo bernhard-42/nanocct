@@ -729,8 +729,8 @@ def _incomplete_in(t: cindex.Type) -> str | None:
     if canon.kind != TK.RECORD:
         return None
     decl = canon.get_declaration()
-    if decl.kind != K.NO_DECL_FOUND and decl.spelling in ("handle", "unique_ptr", "shared_ptr", "weak_ptr"):
-        return None                              # pointer-like: the pointee may stay incomplete in the header
+    if decl.kind != K.NO_DECL_FOUND and decl.spelling in ("handle", "NCollection_Handle", "unique_ptr", "shared_ptr", "weak_ptr"):
+        return None                              # pointer-like: the pointee may stay incomplete in the header (BRepOffsetAPI_ThruSections)
     if decl.kind != K.NO_DECL_FOUND and decl.get_definition() is None and canon.get_num_template_arguments() <= 0:
         return canon.spelling
     for i in range(canon.get_num_template_arguments()):

@@ -104,6 +104,7 @@
 #include <Standard_Type.hxx>
 #include <TCollection_AsciiString.hxx>
 #include <TopAbs_Orientation.hxx>
+#include <TopAbs_State.hxx>
 #include <TopLoc_Location.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
@@ -178,6 +179,9 @@ internal nodes for NURBS surface.)nbdoc");
     { nb::class_<BRepMesh_CircleInspector> cls(m, "BRepMesh_CircleInspector", R"nbdoc(Auxiliary class to find circles shot by the given point.)nbdoc");
     }
     { nb::class_<nanoocp_wrap_BRepMesh_CircleTool> cls(m, "BRepMesh_CircleTool", R"nbdoc(Create sort and destroy the circles used in triangulation.)nbdoc");
+    }
+    { nb::class_<BRepMesh_Classifier, Standard_Transient> cls(m, "BRepMesh_Classifier", R"nbdoc(Auxiliary class intended for classification of points
+regarding internals of discrete face.)nbdoc");
     }
     { nb::class_<BRepMesh_ConeRangeSplitter, BRepMesh_DefaultRangeSplitter> cls(m, "BRepMesh_ConeRangeSplitter", R"nbdoc(Auxiliary class extending default range splitter in
 order to generate internal nodes for conical surface.)nbdoc");
@@ -540,6 +544,23 @@ on the given points, TRUE elsewhere.)nbdoc")
 @param thePoint bullet point.)nbdoc");
     nanoocp_implicit_copy_ctor<nanoocp_wrap_BRepMesh_CircleTool>(nb::borrow<nb::class_<nanoocp_wrap_BRepMesh_CircleTool>>(m.attr("BRepMesh_CircleTool")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_IncAllocator> &>, nanoocp_wrap_BRepMesh_CircleTool>();
+    nb::borrow<nb::class_<BRepMesh_Classifier>>(m.attr("BRepMesh_Classifier"))
+        .def(nb::new_([]() { return opencascade::handle<BRepMesh_Classifier>(new BRepMesh_Classifier()); }), R"nbdoc(Constructor.)nbdoc")
+        .def("Perform", static_cast<TopAbs_State (BRepMesh_Classifier::*)(const gp_Pnt2d &) const>(&BRepMesh_Classifier::Perform), nb::arg("thePoint"), R"nbdoc(Performs classification of the given point regarding to face internals.
+@param thePoint Point in parametric space to be classified.
+@return TopAbs_IN if point lies within face boundaries and TopAbs_OUT elsewhere.)nbdoc")
+        .def("RegisterWire", static_cast<void (BRepMesh_Classifier::*)(const NCollection_Sequence<const gp_Pnt2d *> &, const std::pair<double, double> &, const std::pair<double, double> &, const std::pair<double, double> &)>(&BRepMesh_Classifier::RegisterWire), nb::arg("theWire"), nb::arg("theTolUV"), nb::arg("theRangeU"), nb::arg("theRangeV"), R"nbdoc(Registers wire specified by sequence of points for
+further classification of points.
+@param theWire Wire to be registered. Specified by sequence of points.
+@param theTolUV Tolerance to be used for calculations in parametric space.
+@param theUmin Lower U boundary of the face in parametric space.
+@param theUmax Upper U boundary of the face in parametric space.
+@param theVmin Lower V boundary of the face in parametric space.
+@param theVmax Upper V boundary of the face in parametric space.)nbdoc")
+        .def_static("get_type_name", static_cast<const char * (*)()>(&BRepMesh_Classifier::get_type_name))
+        .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRepMesh_Classifier::get_type_descriptor))
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRepMesh_Classifier::*)() const>(&BRepMesh_Classifier::DynamicType));
+    nanoocp_implicit_copy_ctor<BRepMesh_Classifier>(nb::borrow<nb::class_<BRepMesh_Classifier>>(m.attr("BRepMesh_Classifier")));
     nb::borrow<nb::class_<BRepMesh_ConeRangeSplitter>>(m.attr("BRepMesh_ConeRangeSplitter"))
         .def(nb::init<>(), R"nbdoc(Constructor.)nbdoc")
         .def("GetSplitSteps", [](const BRepMesh_ConeRangeSplitter &self, const IMeshTools_Parameters & theParameters) { std::pair<int, int> theStepsNb{}; auto result = self.GetSplitSteps(theParameters, theStepsNb); return std::make_tuple(result, theStepsNb); }, nb::arg("theParameters"), R"nbdoc(Returns split intervals along U and V direction.

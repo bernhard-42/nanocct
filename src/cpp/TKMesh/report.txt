@@ -1,7 +1,6 @@
-# nanoOCP generator report for TKMesh: 113 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMesh: 112 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 8
-# incomplete: 1
 # inheritance: 3
 # noncopyable: 5
 # not-constructible: 5
@@ -19,7 +18,6 @@ array	BRepMesh	BRepMesh_Triangle::Edges(): param 'theEdges': array
 array	BRepMesh	BRepMesh_Triangle::Initialize(): param 'theEdges': array
 array	BRepMesh	BRepMesh_Triangle::myEdges: field array
 array	BRepMesh	BRepMesh_Triangle::myOrientations: field array
-incomplete	BRepMesh	BRepMesh_Classifier: member myTabClass of incomplete type CSLib_Class2d -> class skipped
 inheritance	IMeshData	IMeshData_Edge: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)
 inheritance	IMeshData	IMeshData_Face: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)
 inheritance	IMeshData	IMeshData_Wire: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)

@@ -635,6 +635,46 @@ class BRepMesh_CircleTool:
         @param thePoint bullet point.
         """
 
+class BRepMesh_Classifier(nanoocp.Standard.Standard_Transient):
+    """
+    Auxiliary class intended for classification of points
+    regarding internals of discrete face.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Constructor."""
+
+    @overload
+    def __init__(self, theOther: BRepMesh_Classifier) -> None: ...
+
+    def Perform(self, thePoint: nanoocp.gp.gp_Pnt2d) -> nanoocp.TopAbs.TopAbs_State:
+        """
+        Performs classification of the given point regarding to face internals.
+        @param thePoint Point in parametric space to be classified.
+        @return TopAbs_IN if point lies within face boundaries and TopAbs_OUT elsewhere.
+        """
+
+    def RegisterWire(self, theWire: "NCollection_Sequence<gp_Pnt2d const*>", theTolUV: tuple[float, float], theRangeU: tuple[float, float], theRangeV: tuple[float, float]) -> None:
+        """
+        Registers wire specified by sequence of points for
+        further classification of points.
+        @param theWire Wire to be registered. Specified by sequence of points.
+        @param theTolUV Tolerance to be used for calculations in parametric space.
+        @param theUmin Lower U boundary of the face in parametric space.
+        @param theUmax Upper U boundary of the face in parametric space.
+        @param theVmin Lower V boundary of the face in parametric space.
+        @param theVmax Upper V boundary of the face in parametric space.
+        """
+
+    @staticmethod
+    def get_type_name() -> str: ...
+
+    @staticmethod
+    def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
+
+    def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
 class BRepMesh_ConeRangeSplitter(BRepMesh_DefaultRangeSplitter):
     """
     Auxiliary class extending default range splitter in
