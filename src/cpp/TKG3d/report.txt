@@ -1,10 +1,12 @@
-# nanoOCP generator report for TKG3d: 11 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKG3d: 12 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # header: 1
+# iterator: 1
 # overload-collision: 2
 # raw-pointer: 3
 # template: 5
 header	GeomGridEval	GeomGridEval: headers not self-contained, parsed with <gp_Lin.hxx> included first
+iterator	Adaptor3d	Adaptor3d_TopolTool: __iter__ added (More/Next/Value)
 overload-collision	TopAbs	TopAbs::ShapeOrientationFromString(const char *const, TopAbs_Orientation &): same Python signature as another overload after out-param removal -> bound as ShapeOrientationFromString__TopAbs_Orientation
 overload-collision	TopAbs	TopAbs::ShapeTypeFromString(const char *, TopAbs_ShapeEnum &): same Python signature as another overload after out-param removal -> bound as ShapeTypeFromString__TopAbs_ShapeEnum
 raw-pointer	Adaptor3d	Adaptor3d_TopolTool::Edge(): return: void pointer

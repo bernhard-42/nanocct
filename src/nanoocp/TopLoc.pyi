@@ -111,6 +111,14 @@ class TopLoc_SListOfItemLocation:
     def __init__(self, anItem: TopLoc_ItemLocation, aTail: TopLoc_SListOfItemLocation) -> None:
         """Creates a List with <anItem> as value and <aTail> as tail."""
 
+    def __iter__(self) -> TopLoc_SListOfItemLocation:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> TopLoc_ItemLocation:
+        """Python addition: see __iter__."""
+
     def Assign(self, Other: TopLoc_SListOfItemLocation) -> TopLoc_SListOfItemLocation:
         """
         Sets a list from an other one. The lists are

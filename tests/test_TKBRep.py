@@ -124,6 +124,18 @@ def test_unbindable_classes_are_reported_not_bound():
     assert all(cat != "misc" for cat, _, _ in rows)                 # every omission has a category (generator/report.py)
 
 
+def test_occt_iterators_are_python_iterators():
+    # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own iterator, like a file object
+    c, v, e = _compound()
+    ex = TopExp.TopExp_Explorer(c, TopAbs.TopAbs_ShapeEnum.TopAbs_VERTEX)
+    found = [s for s in ex]
+    assert len(found) == 1 and found[0].IsSame(v) and type(found[0]) is TopoDS.TopoDS_Shape
+    assert list(ex) == [] and ex.More() is False               # exhausted: iterating again yields nothing, as for a file
+    assert [s.ShapeType() for s in TopoDS.TopoDS_Iterator(c)] == [TopAbs.TopAbs_ShapeEnum.TopAbs_VERTEX, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE]
+    assert "Python addition" in TopExp.TopExp_Explorer.__iter__.__doc__
+    assert not hasattr(TopoDS.TopoDS_Shape, "__iter__")
+
+
 def test_handle_parameters_accept_none():
     # a handle<T> parameter is nb::arg(...).none(): None is the null handle (Design.md 4.2)
     tf = BRep.BRep_TFace()

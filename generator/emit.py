@@ -536,10 +536,26 @@ class Emitter:
         declare.append("    }")
         return True
 
+    def _iter_getter(self, c: Class) -> str | None:
+        """R-ITER: the name of the parameterless Value()/Current() when the class also has More() -> bool and
+        Next() (all bound, non-static); None otherwise. The element must be copied out (a value or const-reference
+        result, ResultKind.VALUE), because Next() is called right after reading it."""
+        live = {(m.name, len(m.params)): m for m in c.methods if m.skip_reason is None and not m.is_static}
+        more, nxt = live.get(("More", 0)), live.get(("Next", 0))
+        if more is None or nxt is None or _strip_ref(more.result) != "bool":
+            return None
+        for name in ("Value", "Current"):
+            get = live.get((name, 0))
+            if get is not None and get.result_kind == ResultKind.VALUE and get.result != "void":
+                return name
+        return None
+
     def _define_class(self, c: Class, free_ops: dict[str, list[str]], define: list[str]) -> None:
         """Define phase of one class: constructors, methods (collisions resolved), free operators, scalar conversion
-        dunders, __hash__, fields, implicit conversions."""
+        dunders, __hash__, fields, implicit conversions, __iter__."""
         body: list[str] = []
+        def cls_expr_of(cc: Class) -> str:
+            return f'nb::borrow<nb::class_<{cc.bound_type}>>({self._attr(cc.scope)}.attr("{cc.py_name}"))'
         implicit_default = False
         if not c.constructible:
             self.report.append(f"{c.name}: operator new is not public -> no constructors")
@@ -583,6 +599,10 @@ class Emitter:
             if s is not None:
                 body.append(s)
         body += free_ops.get(c.name, [])
+        getter = self._iter_getter(c)
+        if getter is not None:       # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own Python iterator
+            self.report.append(f"{c.name}: __iter__ added (More/Next/{getter})")
+            define.append(f'    nanoocp_def_iter<{c.bound_type}>({cls_expr_of(c)}, []({c.bound_type} &self) {{ return self.{getter}(); }});')
         for conv in c.conversions:          # operator bool/int/double() -> Python dunder; class targets: see _conversions
             dunder = {ConversionKind.BOOL: "__bool__", ConversionKind.INT: "__int__", ConversionKind.FLOAT: "__float__"}.get(conv.kind)
             if dunder is not None:
@@ -592,7 +612,7 @@ class Emitter:
         if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
             # R-HASH: std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__
             body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
-        cls_expr = f'nb::borrow<nb::class_<{c.bound_type}>>({self._attr(c.scope)}.attr("{c.py_name}"))'
+        cls_expr = cls_expr_of(c)
         if implicit_default:
             define.append(f'    nanoocp_implicit_default_ctor<{c.bound_type}>({cls_expr});')
         if len(body) > 0:

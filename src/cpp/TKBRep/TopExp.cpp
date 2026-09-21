@@ -151,6 +151,7 @@ shapes.)nbdoc")
 
 Warning: <V> has sense only if the value <True> is returned)nbdoc");
     nanoocp_implicit_copy_ctor<TopExp>(nb::borrow<nb::class_<TopExp>>(m.attr("TopExp")));
+    nanoocp_def_iter<TopExp_Explorer>(nb::borrow<nb::class_<TopExp_Explorer>>(m.attr("TopExp_Explorer")), [](TopExp_Explorer &self) { return self.Value(); });
     nb::borrow<nb::class_<TopExp_Explorer>>(m.attr("TopExp_Explorer"))
         .def(nb::init<>(), R"nbdoc(Creates an empty explorer, becomes useful after Init.)nbdoc")
         .def(nb::init<const TopoDS_Shape &, const TopAbs_ShapeEnum, const TopAbs_ShapeEnum>(), nb::arg("S"), nb::arg("ToFind"), nb::arg("ToAvoid") = static_cast<std::decay_t<const TopAbs_ShapeEnum>>(TopAbs_SHAPE), R"nbdoc(Creates an Explorer on the Shape <S>.

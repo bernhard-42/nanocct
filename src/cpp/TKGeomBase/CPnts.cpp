@@ -137,6 +137,7 @@ process (should be close to the final solution).)nbdoc")
         .def("Parameter", static_cast<double (CPnts_AbscissaPoint::*)() const>(&CPnts_AbscissaPoint::Parameter), R"nbdoc(Returns the parameter of the solution.)nbdoc")
         .def("SetParameter", static_cast<void (CPnts_AbscissaPoint::*)(const double)>(&CPnts_AbscissaPoint::SetParameter), nb::arg("P"), R"nbdoc(Enforce the solution, used by GCPnts.)nbdoc");
     nanoocp_implicit_copy_ctor<CPnts_AbscissaPoint>(nb::borrow<nb::class_<CPnts_AbscissaPoint>>(m.attr("CPnts_AbscissaPoint")));
+    nanoocp_def_iter<CPnts_UniformDeflection>(nb::borrow<nb::class_<CPnts_UniformDeflection>>(m.attr("CPnts_UniformDeflection")), [](CPnts_UniformDeflection &self) { return self.Value(); });
     nb::borrow<nb::class_<CPnts_UniformDeflection>>(m.attr("CPnts_UniformDeflection"))
         .def(nb::init<>(), R"nbdoc(creation of a indefinite UniformDeflection)nbdoc")
         .def(nb::init<const Adaptor3d_Curve &, const double, const double, const bool>(), nb::arg("C"), nb::arg("Deflection"), nb::arg("Resolution"), nb::arg("WithControl"), R"nbdoc(Computes a uniform deflection distribution of points

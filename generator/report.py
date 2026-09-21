@@ -17,7 +17,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("deprecated", r"\bdeprecated\b"),
     ("override", r"overrides\.toml"),
     ("undefined", r"no definition in lib"),
-    ("iterator", r"STL-style iterator"),
+    ("iterator", r"STL-style iterator|__iter__ added"),
     ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)"),
     ("stream", r"iostream type"),
     ("raw-pointer", r"raw pointer to primitive|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),

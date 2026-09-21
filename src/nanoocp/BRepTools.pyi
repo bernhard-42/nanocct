@@ -1598,6 +1598,14 @@ class BRepTools_WireExplorer:
     @overload
     def __init__(self, theOther: BRepTools_WireExplorer) -> None: ...
 
+    def __iter__(self) -> BRepTools_WireExplorer:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> nanoocp.TopoDS.TopoDS_Edge:
+        """Python addition: see __iter__."""
+
     @overload
     def Init(self, W: nanoocp.TopoDS.TopoDS_Wire) -> None:
         """Initializes an exploration of the wire <W>."""

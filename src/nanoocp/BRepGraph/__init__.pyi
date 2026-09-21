@@ -5664,6 +5664,14 @@ class BRepGraph_CacheIterator:
     @overload
     def __init__(self, theOther: BRepGraph_CacheIterator) -> None: ...
 
+    def __iter__(self) -> BRepGraph_CacheIterator:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_Cache:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool:
         """True if the iterator has a current element."""
 
@@ -6867,6 +6875,14 @@ class BRepGraph_ChildExplorer:
         @StartOri.setter
         def StartOri(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
 
+    def __iter__(self) -> BRepGraph_ChildExplorer:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
+        """Python addition: see __iter__."""
+
     def GetConfig(self) -> BRepGraph_ChildExplorer.Config:
         """
         Returns the traversal configuration this explorer was constructed with.
@@ -7739,6 +7755,14 @@ class BRepGraph_RootProductIterator:
     @overload
     def __init__(self, theOther: BRepGraph_RootProductIterator) -> None: ...
 
+    def __iter__(self) -> BRepGraph_RootProductIterator:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_ProductId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -7903,6 +7927,14 @@ class BRepGraph_ParentExplorer:
 
         @EmitAvoidKind.setter
         def EmitAvoidKind(self, arg: bool, /) -> None: ...
+
+    def __iter__(self) -> BRepGraph_ParentExplorer:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
+        """Python addition: see __iter__."""
 
     def GetConfig(self) -> BRepGraph_ParentExplorer.Config:
         """
@@ -8865,6 +8897,14 @@ class BRepGraph_LayerIterator:
     @overload
     def __init__(self, theOther: BRepGraph_LayerIterator) -> None: ...
 
+    def __iter__(self) -> BRepGraph_LayerIterator:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_Layer:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool:
         """True if the iterator has a current element."""
 
@@ -9729,6 +9769,14 @@ class BRepGraph_EdgesOfVertex:
     @overload
     def __init__(self, theOther: BRepGraph_EdgesOfVertex) -> None: ...
 
+    def __iter__(self) -> BRepGraph_EdgesOfVertex:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_EdgeId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -9765,6 +9813,14 @@ class BRepGraph_CompoundsOfVertex:
     @overload
     def __init__(self, theOther: BRepGraph_CompoundsOfVertex) -> None: ...
 
+    def __iter__(self) -> BRepGraph_CompoundsOfVertex:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_CompoundId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -9795,6 +9851,14 @@ class BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFro
 
     @overload
     def __init__(self, theOther: BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFromEdgeCoEdgeTraits) -> None: ...
+
+    def __iter__(self) -> BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_WireFromEdgeCoEdgeTraits:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_WireId:
+        """Python addition: see __iter__."""
 
     def More(self) -> bool: ...
 
@@ -9835,6 +9899,14 @@ class BRepGraph_CoEdgesOfEdge:
     @overload
     def __init__(self, theOther: BRepGraph_CoEdgesOfEdge) -> None: ...
 
+    def __iter__(self) -> BRepGraph_CoEdgesOfEdge:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_CoEdgeId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -9874,6 +9946,14 @@ class BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFro
     @overload
     def __init__(self, theOther: BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFromEdgeCoEdgeTraits) -> None: ...
 
+    def __iter__(self) -> BRepGraph_ReverseIterator_EdgeParentsOf__BRepGraph_ReverseIterator_FaceFromEdgeCoEdgeTraits:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_FaceId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -9900,6 +9980,14 @@ class BRepGraph_FacesOfWire:
 
     @overload
     def __init__(self, theOther: BRepGraph_FacesOfWire) -> None: ...
+
+    def __iter__(self) -> BRepGraph_FacesOfWire:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_FaceId:
+        """Python addition: see __iter__."""
 
     def More(self) -> bool: ...
 
@@ -9929,6 +10017,14 @@ class BRepGraph_ShellsOfFace:
     @overload
     def __init__(self, theOther: BRepGraph_ShellsOfFace) -> None: ...
 
+    def __iter__(self) -> BRepGraph_ShellsOfFace:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_ShellId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -9956,6 +10052,14 @@ class BRepGraph_SolidsOfShell:
 
     @overload
     def __init__(self, theOther: BRepGraph_SolidsOfShell) -> None: ...
+
+    def __iter__(self) -> BRepGraph_SolidsOfShell:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_SolidId:
+        """Python addition: see __iter__."""
 
     def More(self) -> bool: ...
 
@@ -9985,6 +10089,14 @@ class BRepGraph_CompSolidsOfSolid:
     @overload
     def __init__(self, theOther: BRepGraph_CompSolidsOfSolid) -> None: ...
 
+    def __iter__(self) -> BRepGraph_CompSolidsOfSolid:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_CompSolidId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -10013,6 +10125,14 @@ class BRepGraph_OccurrencesOfProduct:
     @overload
     def __init__(self, theOther: BRepGraph_OccurrencesOfProduct) -> None: ...
 
+    def __iter__(self) -> BRepGraph_OccurrencesOfProduct:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_OccurrenceId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -10040,6 +10160,14 @@ class BRepGraph_ProductsOfOccurrence:
 
     @overload
     def __init__(self, theOther: BRepGraph_ProductsOfOccurrence) -> None: ...
+
+    def __iter__(self) -> BRepGraph_ProductsOfOccurrence:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_ProductId:
+        """Python addition: see __iter__."""
 
     def More(self) -> bool: ...
 
@@ -10074,6 +10202,14 @@ class BRepGraph_RefsWiresOfCoEdge:
     @overload
     def __init__(self, theOther: BRepGraph_RefsWiresOfCoEdge) -> None: ...
 
+    def __iter__(self) -> BRepGraph_RefsWiresOfCoEdge:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> "BRepGraph_ReverseIterator::ParentRef<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)3>, BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)8>>":
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
@@ -10103,6 +10239,14 @@ class BRepGraph_RefsEdgesOfVertex:
 
     @overload
     def __init__(self, theOther: BRepGraph_RefsEdgesOfVertex) -> None: ...
+
+    def __iter__(self) -> BRepGraph_RefsEdgesOfVertex:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> "BRepGraph_ReverseIterator::ParentRef<BRepGraph_NodeId::Typed<(BRepGraph_NodeId::Kind)4>, BRepGraph_RefId::Typed<(BRepGraph_RefId::Kind)3>>":
+        """Python addition: see __iter__."""
 
     def More(self) -> bool: ...
 
@@ -10971,6 +11115,14 @@ class BRepGraph_RelatedIterator:
 
         Finished = 3
 
+    def __iter__(self) -> BRepGraph_RelatedIterator:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_NodeId:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool:
         """True if another related node is available."""
 
@@ -11005,6 +11157,14 @@ class BRepGraph_SupplementIterator:
 
     @overload
     def __init__(self, theOther: BRepGraph_SupplementIterator) -> None: ...
+
+    def __iter__(self) -> BRepGraph_SupplementIterator:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> BRepGraph_LayerTopoSupplement.Entry:
+        """Python addition: see __iter__."""
 
     def More(self) -> bool:
         """

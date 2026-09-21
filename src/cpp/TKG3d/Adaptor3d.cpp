@@ -467,6 +467,7 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
         .def("BSpline", static_cast<occ::handle<Geom_BSplineCurve> (Adaptor3d_IsoCurve::*)() const>(&Adaptor3d_IsoCurve::BSpline));
     nanoocp_implicit_copy_ctor<Adaptor3d_IsoCurve>(nb::borrow<nb::class_<Adaptor3d_IsoCurve>>(m.attr("Adaptor3d_IsoCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, Adaptor3d_IsoCurve>();
+    nanoocp_def_iter<Adaptor3d_TopolTool>(nb::borrow<nb::class_<Adaptor3d_TopolTool>>(m.attr("Adaptor3d_TopolTool")), [](Adaptor3d_TopolTool &self) { return self.Value(); });
     nb::borrow<nb::class_<Adaptor3d_TopolTool>>(m.attr("Adaptor3d_TopolTool"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor3d_TopolTool>(new Adaptor3d_TopolTool()); }))
         .def(nb::new_([](const occ::handle<Adaptor3d_Surface> & Surface) { return opencascade::handle<Adaptor3d_TopolTool>(new Adaptor3d_TopolTool(Surface)); }), nb::arg("Surface").none())

@@ -680,6 +680,7 @@ This class instance that should be removed from its list.
 @param theA
 Allocator where the current pointer instance was created.)nbdoc")
         .def_static("RemoveList", static_cast<void (*)(Poly_CoherentTriPtr *, const occ::handle<NCollection_BaseAllocator> &)>(&Poly_CoherentTriPtr::RemoveList), nb::arg("thePtr"), nb::arg("arg1").none(), R"nbdoc(Remove the list containing the given pointer to triangle.)nbdoc");
+    nanoocp_def_iter<Poly_CoherentTriPtr::Iterator>(nb::borrow<nb::class_<Poly_CoherentTriPtr::Iterator>>(m.attr("Poly_CoherentTriPtr").attr("Iterator")), [](Poly_CoherentTriPtr::Iterator &self) { return self.Value(); });
     nb::borrow<nb::class_<Poly_CoherentTriPtr::Iterator>>(m.attr("Poly_CoherentTriPtr").attr("Iterator"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")
         .def(nb::init<const Poly_CoherentTriPtr &>(), nb::arg("thePtr"), R"nbdoc(Constructor)nbdoc")
@@ -818,6 +819,7 @@ objects)nbdoc")
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation>(nb::borrow<nb::class_<Poly_CoherentTriangulation>>(m.attr("Poly_CoherentTriangulation")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, Poly_CoherentTriangulation>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_CoherentTriangulation>();
+    nanoocp_def_iter<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle")), [](NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> &self) { return self.Value(); });
     nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle"))
         .def(nb::init<>())
         .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> &>(), nb::arg("theOther"))
@@ -841,6 +843,7 @@ objects)nbdoc")
         .def("Next", static_cast<void (Poly_CoherentTriangulation::IteratorOfTriangle::*)() noexcept>(&Poly_CoherentTriangulation::IteratorOfTriangle::Next), R"nbdoc(Make step)nbdoc");
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::IteratorOfTriangle>(nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfTriangle>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfTriangle")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_CoherentTriangulation> &>, Poly_CoherentTriangulation::IteratorOfTriangle>();
+    nanoocp_def_iter<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode")), [](NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> &self) { return self.Value(); });
     nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode"))
         .def(nb::init<>())
         .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> &>(), nb::arg("theOther"))
@@ -864,6 +867,7 @@ objects)nbdoc")
         .def("Next", static_cast<void (Poly_CoherentTriangulation::IteratorOfNode::*)() noexcept>(&Poly_CoherentTriangulation::IteratorOfNode::Next), R"nbdoc(Make step)nbdoc");
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::IteratorOfNode>(nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfNode>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfNode")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_CoherentTriangulation> &>, Poly_CoherentTriangulation::IteratorOfNode>();
+    nanoocp_def_iter<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink")), [](NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> &self) { return self.Value(); });
     nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink"))
         .def(nb::init<>())
         .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> &>(), nb::arg("theOther"))
@@ -891,6 +895,7 @@ objects)nbdoc")
         .def(nb::init<>())
         .def(nb::init<int, int>(), nb::arg("i0"), nb::arg("i1"));
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::TwoIntegers>(nb::borrow<nb::class_<Poly_CoherentTriangulation::TwoIntegers>>(m.attr("Poly_CoherentTriangulation").attr("TwoIntegers")));
+    nanoocp_def_iter<Poly_Connect>(nb::borrow<nb::class_<Poly_Connect>>(m.attr("Poly_Connect")), [](Poly_Connect &self) { return self.Value(); });
     nb::borrow<nb::class_<Poly_Connect>>(m.attr("Poly_Connect"))
         .def(nb::init<>(), R"nbdoc(Constructs an uninitialized algorithm.)nbdoc")
         .def(nb::init<const occ::handle<Poly_Triangulation> &>(), nb::arg("theTriangulation").none(), R"nbdoc(Constructs an algorithm to explore the adjacency data of

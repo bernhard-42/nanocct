@@ -108,6 +108,21 @@ inline nb::object nanoocp_new_exception(nb::handle m, const char *name, const ch
     return type;
 }
 
+// R-ITER (Design.md 2c): a class with More()/Next() and a parameterless Value() or Current() is its own Python
+// iterator, like a file object: __iter__ returns self, __next__ yields the current element and advances. The element
+// is copied out before Next() (a const reference from Value() would dangle afterwards).
+template <typename T, typename Get> void nanoocp_def_iter(nb::class_<T> cls, Get get) {
+    cls.def("__iter__", [](T &self) -> T & { return self; }, nb::rv_policy::reference,
+            "Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.");
+    cls.def("__next__", [get](T &self) {
+        if (!self.More())
+            throw nb::stop_iteration();
+        auto value = get(self);
+        self.Next();
+        return value;
+    }, "Python addition: see __iter__.");
+}
+
 // The implicit default constructor of a class that declares none: bound only when it exists (a reference
 // member or a non-default-constructible member deletes it; the header does not say so).
 template <typename T> void nanoocp_implicit_default_ctor(nb::class_<T> cls) {

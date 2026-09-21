@@ -868,6 +868,14 @@ class TopoDS_Iterator:
     @overload
     def __init__(self, theOther: TopoDS_Iterator) -> None: ...
 
+    def __iter__(self) -> TopoDS_Iterator:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> TopoDS_Shape:
+        """Python addition: see __iter__."""
+
     def Initialize(self, S: TopoDS_Shape, cumOri: bool = True, cumLoc: bool = True) -> None:
         """
         Initializes this iterator with shape S.

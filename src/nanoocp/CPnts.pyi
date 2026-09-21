@@ -277,6 +277,14 @@ class CPnts_UniformDeflection:
     @overload
     def __init__(self, theOther: CPnts_UniformDeflection) -> None: ...
 
+    def __iter__(self) -> CPnts_UniformDeflection:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> float:
+        """Python addition: see __iter__."""
+
     @overload
     def Initialize(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, Deflection: float, Resolution: float, WithControl: bool) -> None: ...
 

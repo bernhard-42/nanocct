@@ -472,6 +472,7 @@ this shape. The TopoDS_Shape can be modified.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopoDS_HShape::*)() const>(&TopoDS_HShape::DynamicType));
     nanoocp_implicit_copy_ctor<TopoDS_HShape>(nb::borrow<nb::class_<TopoDS_HShape>>(m.attr("TopoDS_HShape")));
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, TopoDS_HShape>();
+    nanoocp_def_iter<TopoDS_Iterator>(nb::borrow<nb::class_<TopoDS_Iterator>>(m.attr("TopoDS_Iterator")), [](TopoDS_Iterator &self) { return self.Value(); });
     nb::borrow<nb::class_<TopoDS_Iterator>>(m.attr("TopoDS_Iterator"))
         .def(nb::init<>(), R"nbdoc(Creates an empty Iterator.)nbdoc")
         .def(nb::init<const TopoDS_Shape &, const bool, const bool>(), nb::arg("S"), nb::arg("cumOri") = static_cast<std::decay_t<const bool>>(true), nb::arg("cumLoc") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates an Iterator on <S> sub-shapes.

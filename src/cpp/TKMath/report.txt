@@ -1,9 +1,9 @@
-# nanoOCP generator report for TKMath: 412 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 418 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 7
 # conversion: 18
 # field: 1
-# iterator: 1
+# iterator: 7
 # not-constructible: 1
 # overload-collision: 70
 # override: 32
@@ -42,6 +42,12 @@ conversion	BVH	NCollection_Vec4<int>::operator const type-parameter-0-0 *: conve
 conversion	BVH	NCollection_Vec4<int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 field	MathRoot	MathRoot::MultipleGetValueFn::mySamples: field reference member (no pointer-to-member)
 iterator	BVH	BVH::RadixSorter::Sort(): param 'theStart': STL-style iterator
+iterator	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>: __iter__ added (More/Next/Value)
+iterator	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>: __iter__ added (More/Next/Value)
+iterator	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>: __iter__ added (More/Next/Value)
+iterator	Poly	Poly_CoherentTriPtr::Iterator: __iter__ added (More/Next/Value)
+iterator	Poly	Poly_Connect: __iter__ added (More/Next/Value)
+iterator	TopLoc	TopLoc_SListOfItemLocation: __iter__ added (More/Next/Value)
 not-constructible	Poly	Poly_CoherentTriPtr: operator new is not public -> no constructors
 overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &): same Python signature as another overload after out-param removal -> bound as Eval__int__float__float
 overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Eval__int__float__float__float__float

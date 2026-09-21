@@ -74,6 +74,7 @@ raised if the Trsf is not a rigid transformation.)nbdoc")
 Sets the exponent to <P>)nbdoc")
         .def("DumpJson", [](const TopLoc_ItemLocation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<TopLoc_ItemLocation>(nb::borrow<nb::class_<TopLoc_ItemLocation>>(m.attr("TopLoc_ItemLocation")));
+    nanoocp_def_iter<TopLoc_SListOfItemLocation>(nb::borrow<nb::class_<TopLoc_SListOfItemLocation>>(m.attr("TopLoc_SListOfItemLocation")), [](TopLoc_SListOfItemLocation &self) { return self.Value(); });
     nb::borrow<nb::class_<TopLoc_SListOfItemLocation>>(m.attr("TopLoc_SListOfItemLocation"))
         .def(nb::init<>(), R"nbdoc(Creates an empty List.)nbdoc")
         .def(nb::init<const TopLoc_SListOfItemLocation &>(), nb::arg("Other"), R"nbdoc(Creates a list from an other one. The lists are shared.)nbdoc")

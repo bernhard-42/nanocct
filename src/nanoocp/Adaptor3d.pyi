@@ -954,6 +954,14 @@ class Adaptor3d_TopolTool(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: Adaptor3d_TopolTool) -> None: ...
 
+    def __iter__(self) -> Adaptor3d_TopolTool:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> nanoocp.Adaptor2d.Adaptor2d_Curve2d:
+        """Python addition: see __iter__."""
+
     @overload
     def Initialize(self) -> None: ...
 

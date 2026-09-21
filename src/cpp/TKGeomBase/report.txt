@@ -1,5 +1,6 @@
-# nanoOCP generator report for TKGeomBase: 167 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomBase: 168 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# iterator: 1
 # namespace: 4
 # overload-collision: 5
 # override: 4
@@ -8,6 +9,7 @@
 # stream: 3
 # template: 58
 # undefined: 8
+iterator	CPnts	CPnts_UniformDeflection: __iter__ added (More/Next/Value)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ChangeIntervals: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_PointsInspector: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ProjPOnC: anonymous namespace (not bound)

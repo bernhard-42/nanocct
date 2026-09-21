@@ -916,6 +916,14 @@ class Poly_CoherentTriPtr:
         @overload
         def __init__(self, theOther: Poly_CoherentTriPtr.Iterator) -> None: ...
 
+        def __iter__(self) -> Poly_CoherentTriPtr.Iterator:
+            """
+            Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+            """
+
+        def __next__(self) -> Poly_CoherentTriangle:
+            """Python addition: see __iter__."""
+
         def First(self) -> Poly_CoherentTriangle:
             """Query the triangle that started the current iteration."""
 
@@ -1435,6 +1443,14 @@ class NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle:
     @overload
     def __init__(self, theList: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentTriangle], theOther: "NCollection_DynamicArray<Poly_CoherentTriangle>::DynamicIterator<false>") -> None: ...
 
+    def __iter__(self) -> NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> Poly_CoherentTriangle:
+        """Python addition: see __iter__."""
+
     def Init(self, theList: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentTriangle]) -> None: ...
 
     def More(self) -> bool: ...
@@ -1481,6 +1497,14 @@ class NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode:
     @overload
     def __init__(self, theList: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentNode], theOther: "NCollection_DynamicArray<Poly_CoherentNode>::DynamicIterator<false>") -> None: ...
 
+    def __iter__(self) -> NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> Poly_CoherentNode:
+        """Python addition: see __iter__."""
+
     def Init(self, theList: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentNode]) -> None: ...
 
     def More(self) -> bool: ...
@@ -1526,6 +1550,14 @@ class NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink:
 
     @overload
     def __init__(self, theList: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentLink], theOther: "NCollection_DynamicArray<Poly_CoherentLink>::DynamicIterator<false>") -> None: ...
+
+    def __iter__(self) -> NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> Poly_CoherentLink:
+        """Python addition: see __iter__."""
 
     def Init(self, theList: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.Poly.Poly_CoherentLink]) -> None: ...
 
@@ -1601,6 +1633,14 @@ class Poly_Connect:
 
     @overload
     def __init__(self, theOther: Poly_Connect) -> None: ...
+
+    def __iter__(self) -> Poly_Connect:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> int:
+        """Python addition: see __iter__."""
 
     def Load(self, theTriangulation: Poly_Triangulation | None) -> None:
         """

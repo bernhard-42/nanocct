@@ -112,6 +112,20 @@ public:
 class Rules_Unbound : public gp_Trsf {};
 class Rules_Orphan : public Rules_Unbound {};
 
+//! More()/Next()/Value(): its own Python iterator (R-ITER).
+class Rules_Iter
+{
+public:
+  Rules_Iter() {}
+  bool More() const { return myI < 3; }
+  void Next() { ++myI; }
+  const gp_Pnt& Value() const { return myP; }
+
+private:
+  int myI = 0;
+  gp_Pnt myP;
+};
+
 //! A namespace named like the package is the package module itself.
 namespace Rules
 {
@@ -155,7 +169,7 @@ def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None
 
 def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
-    assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan"]
+    assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Iter"]
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -260,6 +274,9 @@ def test_emitter_static_rename_and_collision(rules_ir):
     assert cpp.index('(Rules_Value::*)(const double) const') < cpp.index('(Rules_Value::*)(const float) const')
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
     assert "Rules_Value::Scale(const float): same Python signature as Scale(const double) -> registered after it (width preference)" in em.report
+    # R-ITER: More/Next/Value -> __iter__/__next__ through nanoocp_def_iter; Rules_Value (no More) gets none
+    assert cpp.count("nanoocp_def_iter<") == 1 and "nanoocp_def_iter<Rules_Iter>" in cpp
+    assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
     assert any("Rules_Value::Length: static overloads renamed to Length_s" in r for r in em.report)
 
 

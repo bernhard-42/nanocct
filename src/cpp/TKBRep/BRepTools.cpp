@@ -866,6 +866,7 @@ and <NewF2>.
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRepTools_TrsfModification::*)() const>(&BRepTools_TrsfModification::DynamicType));
     nanoocp_implicit_copy_ctor<BRepTools_TrsfModification>(nb::borrow<nb::class_<BRepTools_TrsfModification>>(m.attr("BRepTools_TrsfModification")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, BRepTools_TrsfModification>();
+    nanoocp_def_iter<BRepTools_WireExplorer>(nb::borrow<nb::class_<BRepTools_WireExplorer>>(m.attr("BRepTools_WireExplorer")), [](BRepTools_WireExplorer &self) { return self.Current(); });
     nb::borrow<nb::class_<BRepTools_WireExplorer>>(m.attr("BRepTools_WireExplorer"))
         .def(nb::init<>(), R"nbdoc(Constructs an empty explorer (which can be initialized using Init))nbdoc")
         .def(nb::init<const TopoDS_Wire &>(), nb::arg("W"), R"nbdoc(IInitializes an exploration of the wire <W>.)nbdoc")

@@ -201,6 +201,14 @@ class TopExp_Explorer:
         has no effect on the exploration.
         """
 
+    def __iter__(self) -> TopExp_Explorer:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> nanoocp.TopoDS.TopoDS_Shape:
+        """Python addition: see __iter__."""
+
     def Init(self, S: nanoocp.TopoDS.TopoDS_Shape, ToFind: nanoocp.TopAbs.TopAbs_ShapeEnum, ToAvoid: nanoocp.TopAbs.TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_SHAPE) -> None:
         """
         Resets this explorer on the shape S. It is initialized to

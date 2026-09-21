@@ -1,10 +1,10 @@
-# nanoOCP generator report for TKBRep: 409 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKBRep: 433 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 1
 # field: 1
 # incomplete: 1
-# iterator: 124
+# iterator: 148
 # operator: 104
 # overload-collision: 19
 # override: 7
@@ -16,7 +16,9 @@ array	BRepGraphInc	BRepGraphInc_Reconstruct::Cache::myKinds: field array
 conversion	BRepGraphInc	BRepGraphInc::ParityOrientation::operator TopAbs_Orientation: conversion operator to an unsupported type
 field	BRepGraphInc	BRepGraphInc_Reconstruct::Cache::TempScope::myCache: field reference member (no pointer-to-member)
 incomplete	BRepGraph	BRepGraph_CacheMesh: member mySlots of incomplete type BRepGraph_CacheMesh::Slot -> class skipped
+iterator	BRepGraph	BRepGraph_CacheIterator: __iter__ added (More/Next/Value)
 iterator	BRepGraph	BRepGraph_CacheIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ChildExplorer: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ChildExplorer::begin(): return: STL-style iterator
 iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ChildOfCompoundTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::CoEdgeOfWireTraits>::begin(): return: return: STL-style iterator
@@ -26,6 +28,7 @@ iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::
 iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ShellOfSolidTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::SolidOfCompSolidTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::WireOfFaceTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsVertexOfEdge: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_DefsIterator::DefsVertexOfEdge::begin(): return: STL-style iterator
 iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CoEdgeDef, true>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CoEdgeDef>::begin(): return: return: STL-style iterator
@@ -49,7 +52,9 @@ iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::VertexDef, true>::begin(): r
 iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::VertexDef>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::WireDef, true>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::WireDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_LayerIterator: __iter__ added (More/Next/Value)
 iterator	BRepGraph	BRepGraph_LayerIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ParentExplorer: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ParentExplorer::begin(): return: STL-style iterator
 iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef, true>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef>::begin(): return: return: STL-style iterator
@@ -73,11 +78,16 @@ iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::
 iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::SolidOfCompSolidTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::WireOfFaceTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_RefsIterator::RefsVertexOfEdge::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RelatedIterator: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_RelatedIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::FaceFromEdgeCoEdgeTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::FaceFromEdgeCoEdgeTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::WireFromEdgeCoEdgeTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::WireFromEdgeCoEdgeTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
@@ -89,21 +99,32 @@ iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterato
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>::begin(): return: return: STL-style iterator
 iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::EdgeOfVertexRefTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::EdgeOfVertexRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RootProductIterator: __iter__ added (More/Next/Current)
 iterator	BRepGraph	BRepGraph_RootProductIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_SupplementIterator: __iter__ added (More/Next/Value)
 iterator	BRepGraph	BRepGraph_SupplementIterator::begin(): return: STL-style iterator
 iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>::operator++(): return: return: STL-style iterator
 iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>::operator++(int): return: return: STL-style iterator
@@ -132,13 +153,16 @@ iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RootProductIterato
 iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>::operator++(): return: return: STL-style iterator
 iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>::operator++(int): return: return: STL-style iterator
 iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>::operator->(): return: return: STL-style iterator
+iterator	BRepTools	BRepTools_WireExplorer: __iter__ added (More/Next/Current)
 iterator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator++(): return: return: STL-style iterator
 iterator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator++(int): return: return: STL-style iterator
 iterator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator->(): return: return: STL-style iterator
+iterator	TopExp	TopExp_Explorer: __iter__ added (More/Next/Value)
 iterator	TopExp	TopExp_Explorer::begin(): return: STL-style iterator
 iterator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator++(): return: return: STL-style iterator
 iterator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator++(int): return: return: STL-style iterator
 iterator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator->(): return: return: STL-style iterator
+iterator	TopoDS	TopoDS_Iterator: __iter__ added (More/Next/Value)
 iterator	TopoDS	TopoDS_Iterator::begin(): return: STL-style iterator
 operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ChildRef>::operator*(): operator has no Python equivalent
 operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>::operator*(): operator has no Python equivalent

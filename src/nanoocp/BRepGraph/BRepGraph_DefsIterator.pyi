@@ -213,6 +213,14 @@ class DefsVertexOfEdge:
     @overload
     def __init__(self, theOther: DefsVertexOfEdge) -> None: ...
 
+    def __iter__(self) -> DefsVertexOfEdge:
+        """
+        Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+        """
+
+    def __next__(self) -> nanoocp.BRepGraphInc.VertexDef:
+        """Python addition: see __iter__."""
+
     def More(self) -> bool: ...
 
     def Next(self) -> None: ...
