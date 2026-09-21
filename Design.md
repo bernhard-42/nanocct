@@ -14,7 +14,10 @@ Living document. Every design decision goes here with its rationale and the evid
 
 ## 2. Scope
 
-Phase 1: `FoundationClasses`, `ModelingData`, `ModelingAlgorithms`. Phase 2: `ApplicationFramework` (only what `DataExchange` needs) and `DataExchange`. `Draw` is out. `Visualization` is out **except the font/text-to-BRep slice**, defined header by header (mechanism: `overrides.toml [include] packages` per toolkit and `[include] headers` per package, 5.2): toolkit `TKService` with the whole `Font` package (13 headers, `Font_FontMgr`, `Font_SystemFont`, `Font_FontAspect`, `Font_FTFont`, `Font_TextFormatter`, …) and two enum headers of `Graphic3d` (`Graphic3d_HorizontalTextAlignment.hxx`, `Graphic3d_VerticalTextAlignment.hxx`: `Font_FTFont` and `StdPrs_BRepTextBuilder::Perform` take them); toolkit `TKV3d` with `StdPrs_BRepFont.hxx` and `StdPrs_BRepTextBuilder.hxx` of `StdPrs` — `Font_BRepFont` and `Font_BRepTextBuilder` are typedefs of these (`Font_BRepFont.hxx:21`). Not in the slice: `Image_PixMap` (only `Font_FTFont::GlyphImage()` returns it; that member will be reported as unbound), `Aspect`, `Quantity` beyond what TKernel already binds. This is exactly what build123d imports (`composite.py`: `Font_SystemFont`, `Graphic3d_HTA_*`/`VTA_*`, `StdPrs_BRepFont`, `StdPrs_BRepTextBuilder`, `NCollection_String`).
+Phase 1: `FoundationClasses`, `ModelingData`, `ModelingAlgorithms`. 
+Phase 2: `ApplicationFramework` (only what `DataExchange` needs) and `DataExchange`. 
+
+`Draw` is out. `Visualization` is out **except the font/text-to-BRep slice**, defined header by header (mechanism: `overrides.toml [include] packages` per toolkit and `[include] headers` per package, 5.2): toolkit `TKService` with the whole `Font` package (13 headers, `Font_FontMgr`, `Font_SystemFont`, `Font_FontAspect`, `Font_FTFont`, `Font_TextFormatter`, …) and two enum headers of `Graphic3d` (`Graphic3d_HorizontalTextAlignment.hxx`, `Graphic3d_VerticalTextAlignment.hxx`: `Font_FTFont` and `StdPrs_BRepTextBuilder::Perform` take them); toolkit `TKV3d` with `StdPrs_BRepFont.hxx` and `StdPrs_BRepTextBuilder.hxx` of `StdPrs` — `Font_BRepFont` and `Font_BRepTextBuilder` are typedefs of these (`Font_BRepFont.hxx:21`). Not in the slice: `Image_PixMap` (only `Font_FTFont::GlyphImage()` returns it; that member will be reported as unbound), `Aspect`, `Quantity` beyond what TKernel already binds. This is exactly what build123d imports (`composite.py`: `Font_SystemFont`, `Graphic3d_HTA_*`/`VTA_*`, `StdPrs_BRepFont`, `StdPrs_BRepTextBuilder`, `NCollection_String`).
 
 Visualization toolkits must be *compiled* regardless, because `TKXCAF`, `TKVCAF`, `TKRWMesh`, `TKBinXCAF`, `TKXmlXCAF` and the `TKDE*` toolkits link `TKV3d`/`TKService` (their `EXTERNLIB.cmake`). `TKOpenGl` is not linked by anything in scope and is excluded (`USE_OPENGL=OFF`).
 
@@ -41,6 +44,45 @@ Overloads that Python cannot tell apart and that carry no new name (section 6 ha
 - **Strings:** `const char*`, `char` and `TCollection_AsciiString`/`ExtendedString` parameters all take a `str` (a `char` a one-character one) and behave alike; UTF-16 (`char16_t`) round-trips as `str`.
 - **Handles:** every `handle<T>` parameter accepts `None` (the null handle); a returned null handle is `None`.
 - **`std::ostream&` / `std::istream&`:** an output stream parameter becomes a returned `str` (`bytes` in the binary packages, `BinTools`), an input stream parameter takes a text (`io.StringIO`, an open file) or binary (`io.BytesIO`) file-like object — never a `str`, so the file-path overloads stay reachable.
+
+## 2c. Python additions
+
+Members that have no OCCT counterpart. Each one's docstring says "Python addition"; none replaces an OCCT member, and all of them derive mechanically from the C++ (sections 4.2, 6, 6a hold the rules):
+
+- **Containers** (`NCollection_*`, 6a): 
+    - `__len__` (= `Length`/`Extent`)
+    - `__iter__` (values for arrays, lists and sequences; keys for maps, in index order for the indexed kinds), 
+    - `__contains__` where the element type has `operator==`, 
+    - `__getitem__`/`__setitem__` with the **OCCT index** (`Array1` from `Lower()`, `Sequence` 1-based, `DynamicArray`/`LinearVector` 0-based, `DataMap` by key, the indexed maps by index, `Array2` with a `(row, col)` tuple), 
+    - `__delitem__` on `DataMap`, `items()` on the maps. 
+
+    `__call__` and `__getitem__` are OCCT's own `operator()`/`operator[]`. 
+    The generic accessor `NCollection_Array1[gp_Pnt]` is the primary spelling (2a).
+
+- **Mutable primitive references** (`double& Value(i, j)`, R-REF-PRIMITIVE): 
+    - the getter keeps the OCCT name 
+    - the setter `Set<Name>` is added 
+    
+    (`Change` prefix dropped: `ChangeValue` → `SetValue`) unless OCCT has one; for `operator()`/`operator[]` `__setitem__` (`m[(2, 1)] = 7.0`).
+- **Operators** (R-OPERATOR, R-IOP, R-FREE-OP): 
+    - C++ operators become the Python dunders (`__add__`, `__eq__`, `__call__`, `__getitem__`, `__neg__`, …)
+    - OCCT's `void operator+=` becomes `__iadd__` returning `self`
+    - a free `operator*(double, gp_Vec)` becomes `__rmul__`.
+
+- **Conversions** (R-CONV, R-CONV-SCALAR, R-IMPLICIT-CONV): 
+    - `operator bool/int/double()` → `__bool__`/`__int__`/`__float__`
+    - `operator T()` → a constructor `T(aFrom)` on the target plus an implicit conversion unless `explicit` (`TopoDS_Shape(aMakeShape)`); 
+    - non-`explicit` converting constructors convert implicitly as in C++ (`OSD_Path("/x")`)
+    - an implicit copy constructor is bound where C++ has one (`TopoDS_Shape(aVertex)` upcasts, R-IMPLICIT-COPY).
+
+- **`__hash__`** only where OCCT specialises `std::hash<T>` (`TopoDS_Shape`, `gp_Pnt`, `TopLoc_Location`, …), so value-equal shapes are one dict key; every other class keeps identity hashing (R-HASH).
+
+- **Enums** (R-ENUM): unscoped enumerators are attributes of the enclosing module/class as in C++ (`TopAbs.TopAbs_FACE`), `int(e)` works; `enum class` stays nested.
+
+- **Exceptions** (4.2): `Standard_Failure` and its descendants are Python exception classes with the C++ hierarchy, all deriving from `RuntimeError`; they can be raised from Python.
+
+- **Iteration over OCCT iterators** (R-ITER): every class with `More() -> bool`, `Next()` and a parameterless `Value()` or `Current()` gets `__iter__`, yielding `Value()`/`Current()` while `More()` (`for e in TopExp_Explorer(shape, TopAbs_EDGE):`); the C++ range-for support (`begin()`/`end()`, `operator++`, `NCollection_ForwardRangeIterator`) stays out (R-ITERATOR). Decision 2026-09-21.
+- **Docstrings**: OCCT's `//!` comments; a deprecated member's first line is `Deprecated in OCCT: <message>` (R-DEPRECATED), a suffixed overload's first line names its C++ signature (R-COLLISION).
 
 ## 3. Toolchain and third-party dependencies
 
@@ -245,7 +287,7 @@ Rule: a package-level `typedef`/`using` whose canonical type is an instantiation
 2. Generator on Linux and Windows (libclang selection, MSVC/libstdc++ header discovery, platform-dependent `#ifdef`s in OCCT headers such as `OSD_*`).
 3. Vendor RapidJSON; decide whether to vendor the ~23 clang builtin headers so the pip `libclang` fallback works without a host clang.
 4. Wheel bundling and CI matrix (the deployment target is set, 7).
-5. Python-side subclassing of OCCT classes (nanobind trampolines) — not planned for now.
+5. **Roadmap: Python-side subclassing of abstract OCCT interfaces (nanobind trampolines)** — `math_Function`/`math_MultipleVarFunction` (the classic `math_BFGS`, `math_NewtonMinimum`, `math_FunctionRoot` are bound but need a Python-defined function), `Adaptor3d_Curve`/`Adaptor3d_Surface`, `Message_Printer`. This is the answer to the 249 functor-template lines of the report (`MathOpt::BFGS<F>` & co. need a C++ functor type and stay out, decision 2026-09-21): one rule "an abstract class with public virtuals gets a trampoline" makes the classic algorithms usable from Python. A subsystem of its own (trampolines, GIL, lifetime of Python-held objects referenced from C++); not needed by build123d; after Phase 1.
 6. **Roadmap: an OCP compatibility shim.** A generated package that mimics cadquery-ocp's API on top of nanoOCP: `_s` aliases for every static method, `OCP.collections`-style container names, the `TopoDS` class-like object, flat exceptions — generated from the manifest, explicitly non-1:1, in its own distribution. Stretch goal: name the package `OCP` so that build123d's (and CadQuery's) own test suites run against nanoOCP **without any change** — the strongest possible integration test for nanoOCP, and a migration path for those projects. Not before Phase 1 and DataExchange are generated (the shim is only as complete as the bindings under it). The rename table in 8b is the specification's starting point.
 7. The four container instantiations build123d constructs directly (`NCollection_HSequence<TopoDS_Shape>`, `Sequence<TopoDS_Shape>`, `DataMap<TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher>`, `HArray1<bool>`) occur in 8 / 22 / 45 / 5 ModelingAlgorithms headers (grep 2026-09-21), so they should arrive with that module; verify then, and add `overrides.toml [instantiate]` entries for any that do not. `HArray1<bool>` arrived with TKGeomAlgo (`Law`), the other three are still open.
 8. ~~R-COLLISION losers that matter~~ — decided 2026-09-21: every colliding overload with out-parameters is bound under a typed suffix (6, R-COLLISION); nothing is unreachable any more.
