@@ -204,6 +204,10 @@ class Emitter:
             return None
         if m.is_static and m.name in mixed:
             py += "_s"          # Python cannot overload a static with an instance method of the same name
+        doc = m.doc
+        if m.suffix != "":      # R-COLLISION: the suffix names the returned out-parameters that distinguish the overload
+            py += m.suffix
+            doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).\n{m.doc}"
         self._note_types(m.result, *(p.type for p in m.params))
         T = cls.name                       # member pointers name the class itself ...
         B = cls.bound_type                 # ... lambdas take the bound type (a wrapper for non-copyable classes)
@@ -215,17 +219,17 @@ class Emitter:
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
-            return f'.def("{py}", {lam}, nb::rv_policy::reference{self._extras(m.doc, m.params, False, True)})'
+            return f'.def("{py}", {lam}, nb::rv_policy::reference{self._extras(doc, m.params, False, True)})'
         if has_out or wrap:
             defn = "def_static" if m.is_static else "def"
-            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{self._extras(m.doc, m.params, True, m.is_operator)})'
+            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:
             fn = f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})"
-            return f'.def_static("{py}", {fn}{policy}{self._extras(m.doc, m.params, False, False)})'
+            return f'.def_static("{py}", {fn}{policy}{self._extras(doc, m.params, False, False)})'
         const = " const" if m.is_const else ""
         fn = f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})"
-        return f'.def("{py}", {fn}{policy}{self._extras(m.doc, m.params, False, m.is_operator)})'
+        return f'.def("{py}", {fn}{policy}{self._extras(doc, m.params, False, m.is_operator)})'
 
     # Design.md 6 R-REF-PRIMITIVE
     def _ref_primitive(self, cls: Class, m: Method, py: str) -> str:
@@ -402,6 +406,9 @@ class Emitter:
         ir = self.ir
         skipped = self.skipped
         classes = [c for c in self._ordered_classes() if self._base_ok(c, skipped)]
+        for c in ir.classes:          # a skipped instantiation stays in the manifest as skipped: later runs know it is not new
+            if c.name in skipped and c.template_key != "":
+                self.templates[c.template_key] = {"toolkit": "", "package": "", "name": "", "by": ir.name, "skipped": True}
         instances = self._instances()   # registers this package's NCollection instantiations in self.templates (defaults may use them)
         free_ops, module_fns = self._functions()
         declare: list[str] = []
@@ -451,6 +458,8 @@ class Emitter:
         module attributes (with the out-param tuple rule of methods)."""
         free_ops: dict[str, list[str]] = {}
         module_fns: list[str] = []
+        for fn, suffix in resolve_overload_collisions([f for f in self.ir.functions if not f.is_operator]):
+            fn.suffix = suffix           # R-COLLISION applies to namespace functions too
         for fn in self.ir.functions:
             if fn.skip_reason is not None:
                 continue
@@ -475,12 +484,17 @@ class Emitter:
             # those functions are the reachable ones anyway (registered first)
             policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
             qualified = fn.qualified if fn.qualified != "" else fn.name
+            py, doc = py_safe(fn.name), fn.doc
+            if fn.suffix != "":
+                py += fn.suffix
+                doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).\n{fn.doc}"
+                self.report.append(f"{qualified}({self._sig(fn.params)}): same Python signature as another overload after out-param removal -> bound as {py}")
             if any(p.is_out or p.stream != StreamKind.NONE for p in fn.params):   # out-params/streams -> returned tuple, as for methods
                 as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
-                                   result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=fn.doc)
-                module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", {self._lambda_call(None, as_method)}{self._extras(fn.doc, fn.params, True, False)});')
+                                   result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=doc)
+                module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {self._lambda_call(None, as_method)}{self._extras(doc, fn.params, True, False)});')
                 continue
-            module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(fn.doc, fn.params, False, False)});')
+            module_fns.append(f'    {self._module(fn.scope)}.def("{py}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(doc, fn.params, False, False)});')
         return free_ops, module_fns
 
     def _declare_class(self, c: Class, declare: list[str], wrappers: list[str]) -> bool:
@@ -541,13 +555,15 @@ class Emitter:
                 body.append(self._ctor(c, k.params[:n], k.doc))
         bound = [m for m in c.methods if m.skip_reason is None]
         mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
-        ordered, unreachable = resolve_overload_collisions(c.methods)
-        for loser, winner in unreachable:
-            self.report.append(f"{c.name}::{loser.name}({self._sig(loser.params)}): same Python signature as "
-                               f"{loser.name}({self._sig(winner.params)}) after out-param removal -> unreachable")
+        resolved = resolve_overload_collisions(c.methods)
+        for m, suffix in resolved:
+            m.suffix = suffix
+            if suffix != "" and _py_name(m) is not None:      # operators without a Python spelling are reported as such
+                self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}): same Python signature as another overload "
+                                   f"after out-param removal -> bound as {_py_name(m)}{'_s' if m.is_static and m.name in mixed else ''}{suffix}")
         for name in sorted(mixed):
             self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s (instance method of same name exists)")
-        for m in ordered:
+        for m, _ in resolved:
             s = self._method(c, m, mixed)
             if s is not None:
                 body.append(s)
@@ -659,45 +675,38 @@ class Emitter:
 
 
 # Design.md 6 R-COLLISION
-def resolve_overload_collisions(methods: list[Method]) -> tuple[list[Method], list[tuple[Method, Method]]]:
-    """Overloads that become indistinguishable once out-params are dropped (nanobind would take the first registered).
-    An overload returning a scalar (double, bool, enum, str) without out-params is the direct C++ API and wins
-    (BRep_Tool::Parameter(V, E) -> double over Parameter(V, E, double&) -> bool; TopAbs::ShapeTypeFromString -> enum);
-    otherwise (void or a class result) the overload with the most out-params wins, as its values come back as a tuple
-    (gp_Pnt::Coord(x&, y&, z&) over Coord() -> gp_XYZ, Bnd_Box::Get(6 x double&) over Get() -> Limits,
-    OSD_Chronometer::Show(double&) over the printing Show()); a deprecated overload always loses. Design.md 6.
-    Returns the bound methods in emission order -- header order, except that a colliding group is emitted at its first
-    member, winner first -- and the (loser, winner) pairs; skipped methods are kept in the order (the caller ignores them)."""
-    def preference(m: Method) -> tuple[int, int, int]:
-        # a deprecated overload loses to its replacement (Convert_CompPolynomialToPoles::Knots() over the deprecated
-        # Knots(handle<HArray1<double>>&)); then the scalar-result rule, then the number of out-params
-        n_out = sum(1 for p in m.params if p.is_out and not p.is_inout)
-        deprecated = 1 if m.is_deprecated else 0
-        return (deprecated, 0, n_out) if m.result_scalar and n_out == 0 else (deprecated, 1, -n_out)
+def out_suffix(params: list[Param]) -> str:
+    """'__float_float' for the removed out-parameters of an overload (streams: str, or bytes in a binary package); '' when
+    the overload has none."""
+    parts = [("bytes" if p.binary else "str") if p.stream == StreamKind.OUT else p.out_py
+             for p in params if p.stream == StreamKind.OUT or p.is_out and not p.is_inout]
+    return "" if len(parts) == 0 else "__" + "_".join(parts)
 
-    def py_sig(m: Method) -> tuple:
-        return (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if (not p.is_out or p.is_inout) and p.stream != StreamKind.OUT))
 
-    groups: dict[tuple, list[Method]] = {}
-    for m in methods:
+def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
+    """Overloads that become indistinguishable once out-params are dropped (Python has no dispatch on results) are told
+    apart by a suffix naming the removed out-parameters' Python types: gp_Pnt::Coord(double&, double&, double&) is bound
+    as Coord__float_float_float, GeomAPI_IntCS::Parameters(int, double&, double&, double&) as Parameters__float_float_float
+    next to Parameters__float_float_float_float; an overload without out-parameters keeps the plain name (gp_Pnt::Coord()
+    -> gp_XYZ, as in C++). The suffix is unique within a group because C++ overloads cannot share a parameter list.
+    Takes Methods or Functions (name, params, skip_reason, optionally is_static). Returns (overload, suffix) for every
+    overload that is not skipped, in header order; the suffix is '' outside collision groups."""
+    def py_sig(m) -> tuple:
+        return (getattr(m, "qualified", "") or m.name, getattr(m, "is_static", False),
+                tuple(_strip_ref(p.type) for p in m.params if (not p.is_out or p.is_inout) and p.stream != StreamKind.OUT))
+
+    groups: dict[tuple, list] = {}
+    for m in overloads:
         if m.skip_reason is None:
             groups.setdefault(py_sig(m), []).append(m)
-    ordered: list[Method] = []
-    unreachable: list[tuple[Method, Method]] = []
-    emitted: set[int] = set()
-    for m in methods:
-        if id(m) in emitted:
+    result: list[tuple[object, str]] = []
+    for m in overloads:
+        if m.skip_reason is not None:
             continue
-        members = groups.get(py_sig(m), [m]) if m.skip_reason is None else [m]
-        if len(members) > 1 and any(p.is_out for mm in members for p in mm.params):
-            members = sorted(members, key=preference)
-            unreachable += [(loser, members[0]) for loser in members[1:]]
-        else:
-            members = [m]
-        for mm in members:
-            emitted.add(id(mm))
-            ordered.append(mm)
-    return ordered, unreachable
+        members = groups[py_sig(m)]
+        colliding = len(members) > 1 and any(p.is_out or p.stream == StreamKind.OUT for mm in members for p in mm.params)
+        result.append((m, out_suffix(m.params) if colliding else ""))
+    return result
 
 
 # Design.md 6 R-CTOR-AMBIGUOUS

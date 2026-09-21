@@ -403,43 +403,6 @@ class BSplCLib:
 
     @overload
     @staticmethod
-    def Eval(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float, float, float]:
-        """
-        Perform the De Boor algorithm to evaluate a point at
-        parameter <U>, with <Degree> and <Dimension>.
-        Evaluates by multiplying the Poles by the Weights and
-        gives the homogeneous result in PolesResult that is
-        the results of the evaluation of the numerator once it
-        has been multiplied by the weights and in
-        WeightsResult one has the result of the evaluation of
-        the denominator
-
-        Warning: <PolesResult> and <WeightsResult> must be
-        dimensioned properly.
-        """
-
-    @overload
-    @staticmethod
-    def Eval(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float]:
-        """
-        Perform the De Boor algorithm to evaluate a point at
-        parameter <U>, with <Degree> and <Dimension>.
-
-        Poles is an array of Reals of size
-
-        <Dimension> * <Degree>+1
-
-        Containing the poles. At the end <Poles> contains
-        the current point. Poles Contain all the poles of
-        the BsplineCurve, Knots also Contains all the knots
-        of the BsplineCurve. ExtrapMode has two slots [0] =
-        Degree used to extrapolate before the first knot [1]
-        = Degre used to extrapolate after the last knot has
-        to be between 1 and Degree
-        """
-
-    @overload
-    @staticmethod
     def Eval(U: float, PeriodicFlag: bool, HomogeneousFlag: bool, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Poles: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt], Weights: nanoocp.NCollection.NCollection_Array1[float], Point: nanoocp.gp.gp_Pnt) -> tuple[int, float]: ...
 
     @overload
@@ -1207,6 +1170,43 @@ class BSplCLib:
         """
 
     @staticmethod
+    def Eval__int_float_float(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float]:
+        """
+        Eval__int_float_float: the C++ overload Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Perform the De Boor algorithm to evaluate a point at
+        parameter <U>, with <Degree> and <Dimension>.
+
+        Poles is an array of Reals of size
+
+        <Dimension> * <Degree>+1
+
+        Containing the poles. At the end <Poles> contains
+        the current point. Poles Contain all the poles of
+        the BsplineCurve, Knots also Contains all the knots
+        of the BsplineCurve. ExtrapMode has two slots [0] =
+        Degree used to extrapolate before the first knot [1]
+        = Degre used to extrapolate after the last knot has
+        to be between 1 and Degree
+        """
+
+    @staticmethod
+    def Eval__int_float_float_float_float(U: float, PeriodicFlag: bool, DerivativeRequest: int, Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], ArrayDimension: int) -> tuple[int, float, float, float, float]:
+        """
+        Eval__int_float_float_float_float: the C++ overload Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Perform the De Boor algorithm to evaluate a point at
+        parameter <U>, with <Degree> and <Dimension>.
+        Evaluates by multiplying the Poles by the Weights and
+        gives the homogeneous result in PolesResult that is
+        the results of the evaluation of the numerator once it
+        has been multiplied by the weights and in
+        WeightsResult one has the result of the evaluation of
+        the denominator
+
+        Warning: <PolesResult> and <WeightsResult> must be
+        dimensioned properly.
+        """
+
+    @staticmethod
     def TangExtendToConstraint(FlatKnots: nanoocp.NCollection.NCollection_Array1[float], C1Coefficient: float, NumPoles: int, Dimension: int, Degree: int, ConstraintPoint: nanoocp.NCollection.NCollection_Array1[float], Continuity: int, After: bool) -> tuple[float, int, int, float, float]:
         """
         Extend a BSpline nD using the tangency map
@@ -1553,14 +1553,10 @@ class BSplCLib:
         no problem else it will give the i
         """
 
-    @overload
     @staticmethod
-    def Interpolate(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, float, int]: ...
-
-    @overload
-    @staticmethod
-    def Interpolate(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, int]:
+    def Interpolate__float_int(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, int]:
         """
+        Interpolate__float_int: the C++ overload Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Performs the interpolation of the data given in
         the Poles array according to the requests in
         ContactOrderArray that is: if
@@ -1583,6 +1579,12 @@ class BSplCLib:
         The InversionProblem will report 0 if there was no
         problem else it will give the index of the faulty
         pivot
+        """
+
+    @staticmethod
+    def Interpolate__float_float_int(Degree: int, FlatKnots: nanoocp.NCollection.NCollection_Array1[float], Parameters: nanoocp.NCollection.NCollection_Array1[float], ContactOrderArray: nanoocp.NCollection.NCollection_Array1[int], ArrayDimension: int) -> tuple[float, float, int]:
+        """
+        Interpolate__float_float_int: the C++ overload Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         """
 
     @overload

@@ -44,21 +44,21 @@ def test_gcpnts_and_lprops():
     assert ap.IsDone() and ap.Parameter() == pytest.approx(math.pi / 2)
     lp = GeomLProp.GeomLProp_CLProps(_circle(), 0.0, 2, 1e-9)         # alias of GeomLProp_CLPropsBase<...> (6c)
     assert lp.Curvature() == pytest.approx(1.0)
-    assert lp.Value().Coord() == (1.0, 0.0, 0.0)
+    assert lp.Value().Coord__float_float_float() == (1.0, 0.0, 0.0)
 
 
 def test_extrema_alias_instantiations():
     ext = Extrema.Extrema_ExtPC(gp.gp_Pnt(5.0, 0.0, 0.0), GeomAdaptor.GeomAdaptor_Curve(_circle()))   # Extrema_GGExtPC<Adaptor3d_Curve, ...>
     assert ext.IsDone() and ext.NbExt() == 2
     assert sorted(ext.SquareDistance(i) for i in (1, 2)) == [16.0, 36.0]
-    assert ext.Point(1).Value().Coord() == pytest.approx((1.0, 0.0, 0.0))
+    assert ext.Point(1).Value().Coord__float_float_float() == pytest.approx((1.0, 0.0, 0.0))
     line = Geom.Geom_Line(gp.gp_Pnt(0.0, 5.0, 0.0), gp.gp_Dir(1.0, 0.0, 0.0))
     ecc = Extrema.Extrema_ExtCC(GeomAdaptor.GeomAdaptor_Curve(_circle()), GeomAdaptor.GeomAdaptor_Curve(line))
     assert ecc.IsDone() and ecc.SquareDistance(1) == pytest.approx(16.0)
     p1, p2 = Extrema.Extrema_POnCurv(), Extrema.Extrema_POnCurv()     # class-typed out-params, mutated in place
     ecc.Points(1, p1, p2)
-    assert p1.Value().Coord() == pytest.approx((0.0, 1.0, 0.0))
-    assert p2.Value().Coord() == pytest.approx((0.0, 5.0, 0.0))
+    assert p1.Value().Coord__float_float_float() == pytest.approx((0.0, 1.0, 0.0))
+    assert p2.Value().Coord__float_float_float() == pytest.approx((0.0, 5.0, 0.0))
     assert ExtremaPC.THE_DEFAULT_TOLERANCE > 0.0                       # namespace ExtremaPC == package
     assert ExtremaPC.Config().Tolerance == ExtremaPC.THE_DEFAULT_TOLERANCE
 
@@ -66,13 +66,13 @@ def test_extrema_alias_instantiations():
 def test_bndlib_geomconvert_intana():
     box = Bnd.Bnd_Box()
     BndLib.BndLib_Add3dCurve.Add(GeomAdaptor.GeomAdaptor_Curve(_circle()), 1e-6, box)
-    assert box.Get() == pytest.approx((-1.0, -1.0, 0.0, 1.0, 1.0, 0.0), abs=1e-5)
+    assert box.Get__float_float_float_float_float_float() == pytest.approx((-1.0, -1.0, 0.0, 1.0, 1.0, 0.0), abs=1e-5)
     assert not hasattr(GeomBndLib, "GeomBndLib_Curve")                 # header skipped (uninstalled .pxx), see overrides.toml
     assert GeomBndLib.GeomBndLib_Circle.Box_s(gp.gp_Circ(gp.gp_Ax2(), 2.0), 1e-6).CornerMax().X() == pytest.approx(2.0, abs=1e-5)
     bs = GeomConvert.GeomConvert.CurveToBSplineCurve(_circle())
     assert type(bs) is Geom.Geom_BSplineCurve and bs.NbPoles() == 6
     ia = IntAna.IntAna_IntConicQuad(gp.gp_Lin(gp.gp_Pnt(0.0, 0.0, -5.0), gp.gp_Dir(0.0, 0.0, 1.0)), gp.gp_Pln(), 1e-9)
-    assert ia.IsDone() and ia.NbPoints() == 1 and ia.Point(1).Coord() == (0.0, 0.0, 0.0)
+    assert ia.IsDone() and ia.NbPoints() == 1 and ia.Point(1).Coord__float_float_float() == (0.0, 0.0, 0.0)
 
 
 def test_conversion_operators():
@@ -99,12 +99,17 @@ def test_handle_inout_parameters_keep_the_input_and_return_the_result():
 
 
 def test_handle_out_parameter_with_stream():
-    # GeomTools::Read(handle<Geom_Surface>& S, istream&): the surface comes back as the result (pure out-parameter)
+    # GeomTools::Read(handle<Geom_Surface>& S, istream&): the surface comes back as the result (pure out-parameter);
+    # the three Read overloads differ only in that out-parameter, so each is bound under its suffixed name (R-COLLISION)
     plane = Geom.Geom_Plane(gp.gp_Pnt(0.0, 0.0, 1.0), gp.gp_Dir(0.0, 0.0, 1.0))
     text = GeomTools.GeomTools.Write(plane)
-    back = GeomTools.GeomTools.Read(io.StringIO(text))
+    back = GeomTools.GeomTools.Read__Geom_Surface(io.StringIO(text))
     assert isinstance(back, Geom.Geom_Plane) and back.Location().Z() == 1.0
-    # the Geom_Curve / Geom2d_Curve overloads differ only in the out-parameter type -> unreachable, reported
+    line = Geom.Geom_Line(gp.gp_Pnt(), gp.gp_Dir(0.0, 1.0, 0.0))
+    back_line = GeomTools.GeomTools.Read__Geom_Curve(io.StringIO(GeomTools.GeomTools.Write(line)))
+    assert isinstance(back_line, Geom.Geom_Line) and back_line.Lin().Direction().Y() == 1.0
+    assert not hasattr(GeomTools.GeomTools, "Read")
+    assert "Read__Geom_Curve: the C++ overload Read(occ::handle<Geom_Curve> &, Standard_IStream &)" in GeomTools.GeomTools.Read__Geom_Curve.__doc__
     from generator.report import read_report
     rows = read_report(Path(__file__).parents[1] / "src" / "cpp" / "TKGeomBase" / "report.txt")
-    assert sum(1 for cat, pkg, msg in rows if cat == "overload-collision" and msg.startswith("GeomTools::Read(")) == 2
+    assert sum(1 for cat, pkg, msg in rows if cat == "overload-collision" and msg.startswith("GeomTools::Read(")) == 3

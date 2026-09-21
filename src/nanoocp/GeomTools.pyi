@@ -55,19 +55,26 @@ class GeomTools:
     def Write(C: nanoocp.Geom2d.Geom2d_Curve | None) -> object:
         """Writes the Curve on the stream."""
 
-    @overload
     @staticmethod
-    def Read(IS: TextIO) -> nanoocp.Geom.Geom_Surface:
-        """Reads the surface from the stream."""
+    def Read__Geom_Surface(IS: TextIO) -> nanoocp.Geom.Geom_Surface:
+        """
+        Read__Geom_Surface: the C++ overload Read(occ::handle<Geom_Surface> &, Standard_IStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Reads the surface from the stream.
+        """
 
-    @overload
     @staticmethod
-    def Read(IS: TextIO) -> nanoocp.Geom.Geom_Curve: ...
+    def Read__Geom_Curve(IS: TextIO) -> nanoocp.Geom.Geom_Curve:
+        """
+        Read__Geom_Curve: the C++ overload Read(occ::handle<Geom_Curve> &, Standard_IStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Reads the Curve from the stream.
+        """
 
-    @overload
     @staticmethod
-    def Read(IS: TextIO) -> nanoocp.Geom2d.Geom2d_Curve:
-        """Reads the Curve from the stream."""
+    def Read__Geom2d_Curve(IS: TextIO) -> nanoocp.Geom2d.Geom2d_Curve:
+        """
+        Read__Geom2d_Curve: the C++ overload Read(occ::handle<Geom2d_Curve> &, Standard_IStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Reads the Curve from the stream.
+        """
 
     @staticmethod
     def SetUndefinedTypeHandler(aHandler: GeomTools_UndefinedTypeHandler | None) -> None: ...

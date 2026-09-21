@@ -475,7 +475,6 @@ class Convert_CompPolynomialToPoles:
     def NbPoles(self) -> int:
         """Returns the number of poles of the n-dimensional BSpline."""
 
-    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array2[float]:
         """
         Returns the poles of the n-dimensional BSpline
@@ -483,9 +482,9 @@ class Convert_CompPolynomialToPoles:
         [1..NumPoles][1..Dimension]
         """
 
-    @overload
-    def Poles(self) -> nanoocp.NCollection.NCollection_HArray2[float]:
+    def Poles__NCollection_HArray2__double(self) -> nanoocp.NCollection.NCollection_HArray2[float]:
         """
+        Poles__NCollection_HArray2__double: the C++ overload Poles(occ::handle<NCollection_HArray2<double>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Deprecated in OCCT: Use Poles() returning const reference instead
 
         Returns the poles of the n-dimensional BSpline via output parameter.
@@ -497,25 +496,23 @@ class Convert_CompPolynomialToPoles:
     def NbKnots(self) -> int:
         """Returns the number of knots of the n-dimensional BSpline."""
 
-    @overload
     def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots of the n-dimensional BSpline."""
 
-    @overload
-    def Knots(self) -> nanoocp.NCollection.NCollection_HArray1[float]:
+    def Knots__NCollection_HArray1__double(self) -> nanoocp.NCollection.NCollection_HArray1[float]:
         """
+        Knots__NCollection_HArray1__double: the C++ overload Knots(occ::handle<NCollection_HArray1<double>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Deprecated in OCCT: Use Knots() returning const reference instead
 
         Returns the knots of the n-dimensional BSpline via output parameter.
         """
 
-    @overload
     def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the knots in the BSpline."""
 
-    @overload
-    def Multiplicities(self) -> nanoocp.NCollection.NCollection_HArray1[int]:
+    def Multiplicities__NCollection_HArray1__int(self) -> nanoocp.NCollection.NCollection_HArray1[int]:
         """
+        Multiplicities__NCollection_HArray1__int: the C++ overload Multiplicities(occ::handle<NCollection_HArray1<int>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Deprecated in OCCT: Use Multiplicities() returning const reference instead
 
         Returns the multiplicities of the knots via output parameter.

@@ -239,7 +239,10 @@ def test_emitter_static_rename_and_collision(rules_ir):
     assert '.def("SetValue"' in cpp                         # Python addition for double& Value(i)
     assert "    .export_values();" in cpp                   # Mode exported into the class, Kind not
     assert cpp.count(".export_values()") == 1
-    assert any("Parameter(const gp_Pnt &, double &): same Python signature as Parameter(const gp_Pnt &)" in r for r in em.report)
+    assert '.def("Parameter", static_cast<double (Rules_Value::*)(const gp_Pnt &) const' in cpp     # no out-params: plain name
+    assert '.def("Parameter__float"' in cpp                                                       # R-COLLISION suffix
+    assert any("Parameter(const gp_Pnt &, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float" in r for r in em.report)
+    assert [p.out_py for p in _method(rules_ir, "Rules_Value", "Coord").params] == ["float", "float"]
     assert any("Rules_Value::Length: static overloads renamed to Length_s" in r for r in em.report)
 
 
@@ -283,30 +286,33 @@ def test_resolve_ctor_arities():
     assert resolve_ctor_arities([skipped, a]) == [(a, 1)]              # skipped overloads do not count
 
 
-def test_resolve_overload_collisions_prefers_scalar_result():
-    def m(name, params, scalar, result="void"):
+def test_resolve_overload_collisions_suffixes_by_out_params():
+    def m(name, params, result="void"):
         return Method(name=name, params=params, result=result, result_kind=ResultKind.VALUE, result_class="", is_static=False,
-                      is_const=True, is_noexcept=False, doc="", result_scalar=scalar)
+                      is_const=True, is_noexcept=False, doc="")
     p = Param(name="v", type="const gp_Pnt &", default=None, is_out=False)
-    out = Param(name="u", type="double &", default=None, is_out=True)
-    direct = m("Parameter", [p], True, "double")
-    with_out = m("Parameter", [p, out], True, "bool")
-    ordered, unreachable = resolve_overload_collisions([with_out, direct])
-    assert ordered == [direct, with_out] and unreachable == [(with_out, direct)]
-    # void results: the overload with the most out-params wins
-    a = m("Coord", [], False, "gp_XYZ"); a.result_scalar = False
-    b = m("Coord", [out, Param(name="w", type="double &", default=None, is_out=True)], False)
-    ordered, unreachable = resolve_overload_collisions([a, b])
-    assert ordered == [b, a] and unreachable == [(a, b)]
-    # a deprecated overload loses even when the rule would prefer it
-    dep = m("Knots", [Param(name="k", type="occ::handle<NCollection_HArray1<double>> &", default=None, is_out=True, is_handle=True)], False)
-    dep.is_deprecated = True
-    keep = m("Knots", [], False, "const occ::handle<NCollection_HArray1<double>> &")
-    ordered, unreachable = resolve_overload_collisions([dep, keep])
-    assert ordered == [keep, dep] and unreachable == [(dep, keep)]
-    # distinct Python signatures: untouched, header order
-    ordered, unreachable = resolve_overload_collisions([m("X", [p], True), m("X", [], True)])
-    assert [len(x.params) for x in ordered] == [1, 0] and unreachable == []
+    out = Param(name="u", type="double &", default=None, is_out=True, out_py="float")
+    out_i = Param(name="n", type="int &", default=None, is_out=True, out_py="int")
+    direct = m("Parameter", [p], "double")
+    with_out = m("Parameter", [p, out], "bool")
+    assert resolve_overload_collisions([with_out, direct]) == [(with_out, "__float"), (direct, "")]     # header order kept
+    # both with out-params: both suffixed, no plain name
+    a = m("Parameters", [out, out, out]); b = m("Parameters", [out, out, out, out])
+    assert resolve_overload_collisions([a, b]) == [(a, "__float_float_float"), (b, "__float_float_float_float")]
+    # handle out-parameter: the class name; enum: its name; stream: str
+    h = Param(name="C", type="occ::handle<Geom_Curve> &", default=None, is_out=True, is_handle=True, out_py="Geom_Curve")
+    st = Param(name="os", type="Standard_OStream &", default=None, is_out=False, stream=StreamKind.OUT)
+    r1 = m("Read", [h]); r2 = m("Read", [Param(name="S", type="occ::handle<Geom_Surface> &", default=None, is_out=True, is_handle=True, out_py="Geom_Surface")])
+    assert resolve_overload_collisions([r1, r2]) == [(r1, "__Geom_Curve"), (r2, "__Geom_Surface")]
+    s0 = m("Show", []); s1 = m("Show", [st]); s2 = m("Show", [out, out_i])
+    assert resolve_overload_collisions([s0, s1, s2]) == [(s0, ""), (s1, "__str"), (s2, "__float_int")]
+    # an in/out parameter stays an input: no collision
+    io_ = Param(name="x", type="double &", default=None, is_out=True, is_inout=True, out_py="float")
+    assert [sfx for _, sfx in resolve_overload_collisions([m("T", [io_]), m("T", [])])] == ["", ""]
+    # distinct Python signatures: untouched; skipped overloads ignored
+    sk = m("X", [p]); sk.skip_reason = "x"
+    assert [sfx for _, sfx in resolve_overload_collisions([m("X", [p]), m("X", []), sk])] == ["", ""]
+    assert len(resolve_overload_collisions([sk])) == 0
 
 
 def test_report_categories_are_complete_for_the_checked_in_reports():

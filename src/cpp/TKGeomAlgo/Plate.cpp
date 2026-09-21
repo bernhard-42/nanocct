@@ -174,7 +174,8 @@ Row (respectively Column) length of coeff)nbdoc");
         .def("EvaluateDerivative", static_cast<gp_XYZ (Plate_Plate::*)(const gp_XY &, const int, const int) const>(&Plate_Plate::EvaluateDerivative), nb::arg("point2d"), nb::arg("iu"), nb::arg("iv"))
         .def("CoefPol", static_cast<occ::handle<NCollection_HArray2<gp_XYZ>> (Plate_Plate::*)() const>(&Plate_Plate::CoefPol), R"nbdoc(Returns the coefficients of the polynomial part of the Plate function.
 @return 2D array of polynomial coefficients as XYZ values)nbdoc")
-        .def("CoefPol", [](const Plate_Plate &self) { occ::handle<NCollection_HArray2<gp_XYZ>> Coefs{}; self.CoefPol(Coefs); return Coefs; }, R"nbdoc(Deprecated in OCCT: Use CoefPol() returning handle by value instead
+        .def("CoefPol__NCollection_HArray2__gp_XYZ", [](const Plate_Plate &self) { occ::handle<NCollection_HArray2<gp_XYZ>> Coefs{}; self.CoefPol(Coefs); return Coefs; }, R"nbdoc(CoefPol__NCollection_HArray2__gp_XYZ: the C++ overload CoefPol(occ::handle<NCollection_HArray2<gp_XYZ>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Deprecated in OCCT: Use CoefPol() returning handle by value instead
 
 @deprecated Use CoefPol() returning handle by value instead.)nbdoc")
         .def("SetPolynomialPartOnly", static_cast<void (Plate_Plate::*)(const bool)>(&Plate_Plate::SetPolynomialPartOnly), nb::arg("PPOnly") = static_cast<std::decay_t<const bool>>(true))

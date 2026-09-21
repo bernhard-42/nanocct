@@ -556,14 +556,11 @@ process (all threads, and completed children) is measured.)nbdoc")
         .def("Stop", static_cast<void (OSD_Chronometer::*)()>(&OSD_Chronometer::Stop), R"nbdoc(Stops the Chronometer.)nbdoc")
         .def("Start", static_cast<void (OSD_Chronometer::*)()>(&OSD_Chronometer::Start), R"nbdoc(Starts (after Create or Reset) or restarts (after Stop)
 the chronometer.)nbdoc")
-        .def("Show", [](const OSD_Chronometer &self) { double theUserSec{}; double theSystemSec{}; self.Show(theUserSec, theSystemSec); return std::make_tuple(theUserSec, theSystemSec); }, R"nbdoc(Returns the current CPU user and system time in variables.
-The chronometer can be running (laps Time) or stopped.)nbdoc")
-        .def("Show", [](const OSD_Chronometer &self) { double theUserSeconds{}; self.Show(theUserSeconds); return theUserSeconds; }, R"nbdoc(Returns the current CPU user time in a variable.
-The chronometer can be running (laps Time) or stopped.)nbdoc")
         .def("Show", static_cast<void (OSD_Chronometer::*)() const>(&OSD_Chronometer::Show), R"nbdoc(Shows the current CPU user and system time on the
 standard output stream <cout>.
 The chronometer can be running (laps Time) or stopped.)nbdoc")
-        .def("Show", [](const OSD_Chronometer &self) { std::ostringstream theOStream_stream; self.Show(theOStream_stream); return nanoocp_stream_text(theOStream_stream); }, R"nbdoc(Shows the current CPU user and system time on the output
+        .def("Show__str", [](const OSD_Chronometer &self) { std::ostringstream theOStream_stream; self.Show(theOStream_stream); return nanoocp_stream_text(theOStream_stream); }, R"nbdoc(Show__str: the C++ overload Show(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Shows the current CPU user and system time on the output
 stream <os>.
 The chronometer can be running (laps Time) or stopped.)nbdoc")
         .def("UserTimeCPU", static_cast<double (OSD_Chronometer::*)() const>(&OSD_Chronometer::UserTimeCPU), R"nbdoc(Returns the current CPU user time in seconds.
@@ -574,6 +571,12 @@ The chronometer can be running (laps Time) or stopped.)nbdoc")
 and FALSE to measure all threads CPU time; FALSE by default,)nbdoc")
         .def("SetThisThreadOnly", static_cast<void (OSD_Chronometer::*)(bool)>(&OSD_Chronometer::SetThisThreadOnly), nb::arg("theIsThreadOnly"), R"nbdoc(Set if current thread (TRUE) or all threads (FALSE) CPU time should be measured.
 Will raise exception if Timer is in started state.)nbdoc")
+        .def("Show__float", [](const OSD_Chronometer &self) { double theUserSeconds{}; self.Show(theUserSeconds); return theUserSeconds; }, R"nbdoc(Show__float: the C++ overload Show(double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the current CPU user time in a variable.
+The chronometer can be running (laps Time) or stopped.)nbdoc")
+        .def("Show__float_float", [](const OSD_Chronometer &self) { double theUserSec{}; double theSystemSec{}; self.Show(theUserSec, theSystemSec); return std::make_tuple(theUserSec, theSystemSec); }, R"nbdoc(Show__float_float: the C++ overload Show(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the current CPU user and system time in variables.
+The chronometer can be running (laps Time) or stopped.)nbdoc")
         .def_static("GetProcessCPU", []() { double UserSeconds{}; double SystemSeconds{}; OSD_Chronometer::GetProcessCPU(UserSeconds, SystemSeconds); return std::make_tuple(UserSeconds, SystemSeconds); }, R"nbdoc(Returns CPU time (user and system) consumed by the current
 process since its start, in seconds. The actual precision of
 the measurement depends on granularity provided by the system,
@@ -883,15 +886,8 @@ bytes actually read and placed in the Buffer. This number
 may be less than Nbyte if the number of bytes left in the file
 is less than Nbyte bytes. In this case only number of read
 bytes will be placed in the buffer.)nbdoc")
-        .def("ReadLine", static_cast<int (OSD_File::*)(TCollection_AsciiString &, const int)>(&OSD_File::ReadLine), nb::arg("Buffer"), nb::arg("NByte"), R"nbdoc(Reads bytes from the data pointed to by the object file
-into the buffer <Buffer>.
-Data is read until <NByte-1> bytes have been read,
-until	a newline character is read and transferred into
-<Buffer>, or until an EOF (End-of-File) condition is
-encountered.
-Upon successful completion, Read returns the number of
-bytes actually read and placed into the Buffer <Buffer>.)nbdoc")
-        .def("ReadLine", [](OSD_File &self, TCollection_AsciiString & Buffer, const int NByte) { int NbyteRead{}; self.ReadLine(Buffer, NByte, NbyteRead); return NbyteRead; }, nb::arg("Buffer"), nb::arg("NByte"), R"nbdoc(Reads bytes from the data pointed to by the object file
+        .def("ReadLine__int", [](OSD_File &self, TCollection_AsciiString & Buffer, const int NByte) { int NbyteRead{}; self.ReadLine(Buffer, NByte, NbyteRead); return NbyteRead; }, nb::arg("Buffer"), nb::arg("NByte"), R"nbdoc(ReadLine__int: the C++ overload ReadLine(TCollection_AsciiString &, const int, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Reads bytes from the data pointed to by the object file
 into the buffer <Buffer>.
 Data is read until <NByte-1> bytes have been read,
 until	a newline character is read and transferred into
@@ -900,6 +896,14 @@ encountered.
 Upon successful completion, Read returns the number of
 bytes actually read into <NByteRead> and placed into the
 Buffer <Buffer>.)nbdoc")
+        .def("ReadLine", static_cast<int (OSD_File::*)(TCollection_AsciiString &, const int)>(&OSD_File::ReadLine), nb::arg("Buffer"), nb::arg("NByte"), R"nbdoc(Reads bytes from the data pointed to by the object file
+into the buffer <Buffer>.
+Data is read until <NByte-1> bytes have been read,
+until	a newline character is read and transferred into
+<Buffer>, or until an EOF (End-of-File) condition is
+encountered.
+Upon successful completion, Read returns the number of
+bytes actually read and placed into the Buffer <Buffer>.)nbdoc")
         .def("Write", static_cast<void (OSD_File::*)(const TCollection_AsciiString &, const int)>(&OSD_File::Write), nb::arg("theBuffer"), nb::arg("theNbBytes"), R"nbdoc(Attempts to write theNbBytes bytes from the AsciiString to the file.)nbdoc")
         .def("Seek", static_cast<void (OSD_File::*)(const int, const OSD_FromWhere)>(&OSD_File::Seek), nb::arg("Offset"), nb::arg("Whence"), R"nbdoc(Sets the seek pointer associated with the open file)nbdoc")
         .def("Close", static_cast<void (OSD_File::*)()>(&OSD_File::Close), R"nbdoc(Closes the file (and deletes a descriptor))nbdoc")
@@ -1185,13 +1189,15 @@ gettimeofday().)nbdoc")
         .def("Reset", static_cast<void (OSD_Timer::*)(const double)>(&OSD_Timer::Reset), nb::arg("theTimeElapsedSec"), R"nbdoc(Stops and reinitializes the timer with specified elapsed time.)nbdoc")
         .def("Reset", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Reset), R"nbdoc(Stops and reinitializes the timer with zero elapsed time.)nbdoc")
         .def("Restart", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Restart), R"nbdoc(Restarts the Timer.)nbdoc")
-        .def("Show", [](const OSD_Timer &self) { double theSeconds{}; int theMinutes{}; int theHours{}; double theCPUtime{}; self.Show(theSeconds, theMinutes, theHours, theCPUtime); return std::make_tuple(theSeconds, theMinutes, theHours, theCPUtime); }, R"nbdoc(returns both the elapsed time(seconds,minutes,hours)
-and CPU time.)nbdoc")
         .def("Show", static_cast<void (OSD_Timer::*)() const>(&OSD_Timer::Show), R"nbdoc(Shows both the elapsed time and CPU time on the standard output
 stream <cout>.The chronometer can be running (Lap Time) or
 stopped.)nbdoc")
-        .def("Show", [](const OSD_Timer &self) { std::ostringstream os_stream; self.Show(os_stream); return nanoocp_stream_text(os_stream); }, R"nbdoc(Shows both the elapsed time and CPU time on the
+        .def("Show__str", [](const OSD_Timer &self) { std::ostringstream os_stream; self.Show(os_stream); return nanoocp_stream_text(os_stream); }, R"nbdoc(Show__str: the C++ overload Show(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Shows both the elapsed time and CPU time on the
 output stream <OS>.)nbdoc")
+        .def("Show__float_int_int_float", [](const OSD_Timer &self) { double theSeconds{}; int theMinutes{}; int theHours{}; double theCPUtime{}; self.Show(theSeconds, theMinutes, theHours, theCPUtime); return std::make_tuple(theSeconds, theMinutes, theHours, theCPUtime); }, R"nbdoc(Show__float_int_int_float: the C++ overload Show(double &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+returns both the elapsed time(seconds,minutes,hours)
+and CPU time.)nbdoc")
         .def("Stop", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Stop), R"nbdoc(Stops the Timer.)nbdoc")
         .def("Start", static_cast<void (OSD_Timer::*)()>(&OSD_Timer::Start), R"nbdoc(Starts (after Create or Reset) or restarts (after Stop)
 the Timer.)nbdoc")

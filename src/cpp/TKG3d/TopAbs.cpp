@@ -154,7 +154,8 @@ VERTEX, SHAPE)nbdoc")
         .def_static("ShapeTypeFromString", static_cast<TopAbs_ShapeEnum (*)(const char *)>(&TopAbs::ShapeTypeFromString), nb::arg("theTypeString"), R"nbdoc(Returns the shape type from the given string identifier (using case-insensitive comparison).
 @param theTypeString string identifier
 @return shape type or TopAbs_SHAPE if string identifier is invalid)nbdoc")
-        .def_static("ShapeTypeFromString", [](const char * theTypeString) { TopAbs_ShapeEnum theType{}; auto result = TopAbs::ShapeTypeFromString(theTypeString, theType); return std::make_tuple(result, theType); }, nb::arg("theTypeString"), R"nbdoc(Determines the shape type from the given string identifier (using case-insensitive
+        .def_static("ShapeTypeFromString__TopAbs_ShapeEnum", [](const char * theTypeString) { TopAbs_ShapeEnum theType{}; auto result = TopAbs::ShapeTypeFromString(theTypeString, theType); return std::make_tuple(result, theType); }, nb::arg("theTypeString"), R"nbdoc(ShapeTypeFromString__TopAbs_ShapeEnum: the C++ overload ShapeTypeFromString(const char *, TopAbs_ShapeEnum &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Determines the shape type from the given string identifier (using case-insensitive
 comparison).
 @param theTypeString string identifier
 @param theType detected shape type
@@ -166,7 +167,8 @@ comparison).
 comparison).
 @param theOrientationString string identifier
 @return shape orientation or TopAbs_FORWARD if string identifier is invalid)nbdoc")
-        .def_static("ShapeOrientationFromString", [](const char *const theOrientationString) { TopAbs_Orientation theOrientation{}; auto result = TopAbs::ShapeOrientationFromString(theOrientationString, theOrientation); return std::make_tuple(result, theOrientation); }, nb::arg("theOrientationString"), R"nbdoc(Determines the shape orientation from the given string identifier (using case-insensitive
+        .def_static("ShapeOrientationFromString__TopAbs_Orientation", [](const char *const theOrientationString) { TopAbs_Orientation theOrientation{}; auto result = TopAbs::ShapeOrientationFromString(theOrientationString, theOrientation); return std::make_tuple(result, theOrientation); }, nb::arg("theOrientationString"), R"nbdoc(ShapeOrientationFromString__TopAbs_Orientation: the C++ overload ShapeOrientationFromString(const char *const, TopAbs_Orientation &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Determines the shape orientation from the given string identifier (using case-insensitive
 comparison).
 @param theOrientationString string identifier
 @param theOrientation detected shape orientation

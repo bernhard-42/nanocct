@@ -349,7 +349,8 @@ computed projected point.
 Exceptions
 Standard_OutOfRange if Index is not in the range [ 1,NbPoints ], where
 NbPoints is the number of solution points.)nbdoc")
-        .def("Parameter", [](const Geom2dAPI_ProjectPointOnCurve &self, const int Index) { double U{}; self.Parameter(Index, U); return U; }, nb::arg("Index"), R"nbdoc(Returns the parameter on the curve
+        .def("Parameter__float", [](const Geom2dAPI_ProjectPointOnCurve &self, const int Index) { double U{}; self.Parameter(Index, U); return U; }, nb::arg("Index"), R"nbdoc(Parameter__float: the C++ overload Parameter(const int, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the parameter on the curve
 of a point which is the orthogonal projection. Index is a number of a
 computed projected point.
 Exceptions

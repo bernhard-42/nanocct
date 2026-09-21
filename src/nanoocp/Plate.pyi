@@ -297,16 +297,15 @@ class Plate_Plate:
 
     def EvaluateDerivative(self, point2d: nanoocp.gp.gp_XY, iu: int, iv: int) -> nanoocp.gp.gp_XYZ: ...
 
-    @overload
     def CoefPol(self) -> nanoocp.NCollection.NCollection_HArray2[nanoocp.gp.gp_XYZ]:
         """
         Returns the coefficients of the polynomial part of the Plate function.
         @return 2D array of polynomial coefficients as XYZ values
         """
 
-    @overload
-    def CoefPol(self) -> nanoocp.NCollection.NCollection_HArray2[nanoocp.gp.gp_XYZ]:
+    def CoefPol__NCollection_HArray2__gp_XYZ(self) -> nanoocp.NCollection.NCollection_HArray2[nanoocp.gp.gp_XYZ]:
         """
+        CoefPol__NCollection_HArray2__gp_XYZ: the C++ overload CoefPol(occ::handle<NCollection_HArray2<gp_XYZ>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Deprecated in OCCT: Use CoefPol() returning handle by value instead
 
         @deprecated Use CoefPol() returning handle by value instead.

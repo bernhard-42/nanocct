@@ -122,10 +122,12 @@ def test_curve_surface_intersection():
     assert ics.IsDone() and ics.NbPoints() == 1
     p = ics.Point(1)
     assert (p.X(), p.Y(), p.Z()) == pytest.approx((0.5, 0.5, 1.0))
-    # R-COLLISION: Parameters(Index, U1&, V1&, U2&, V2&) (segments, 4 out-params) wins over Parameters(Index, U&, V&, W&)
-    # (points, 3): the point overload is unreachable and reported; there is no segment here, so the call is out of range
-    assert "Parameters(self, Index: int) -> tuple[float, float, float, float]" in ics.Parameters.__doc__
+    # R-COLLISION: Parameters(Index, U&, V&, W&) (a point) and Parameters(Index, U1&, V1&, U2&, V2&) (a segment) have the
+    # same inputs; each is bound under the suffix naming its returned out-parameters, there is no plain Parameters
+    u, v, w = ics.Parameters__float_float_float(1)
+    assert (u, v, w) == pytest.approx((0.5, 0.5, 2.0))
     with pytest.raises(Standard.Standard_OutOfRange):
-        ics.Parameters(1)
-    assert any("GeomAPI_IntCS::Parameters(const int, double &, double &, double &): same Python signature as" in l
-               for l in REPORT.read_text().splitlines())
+        ics.Parameters__float_float_float_float(1)              # no segments
+    assert not hasattr(GeomAPI.GeomAPI_IntCS, "Parameters")
+    assert any("GeomAPI_IntCS::Parameters(const int, double &, double &, double &): same Python signature as another overload "
+               "after out-param removal -> bound as Parameters__float_float_float" in l for l in REPORT.read_text().splitlines())

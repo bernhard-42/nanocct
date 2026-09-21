@@ -422,17 +422,20 @@ Warning: The Length of Continuity have to be NumCurves-1)nbdoc")
         .def("Poles", static_cast<const NCollection_Array2<double> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Poles), R"nbdoc(Returns the poles of the n-dimensional BSpline
 in the following format:
 [1..NumPoles][1..Dimension])nbdoc")
-        .def("Poles", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray2<double>> thePoles{}; self.Poles(thePoles); return thePoles; }, R"nbdoc(Deprecated in OCCT: Use Poles() returning const reference instead
+        .def("Poles__NCollection_HArray2__double", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray2<double>> thePoles{}; self.Poles(thePoles); return thePoles; }, R"nbdoc(Poles__NCollection_HArray2__double: the C++ overload Poles(occ::handle<NCollection_HArray2<double>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Deprecated in OCCT: Use Poles() returning const reference instead
 
 Returns the poles of the n-dimensional BSpline via output parameter.)nbdoc")
         .def("Degree", static_cast<int (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Degree), R"nbdoc(Returns the degree of the n-dimensional BSpline.)nbdoc")
         .def("NbKnots", static_cast<int (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::NbKnots), R"nbdoc(Returns the number of knots of the n-dimensional BSpline.)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Knots), R"nbdoc(Returns the knots of the n-dimensional BSpline.)nbdoc")
-        .def("Knots", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray1<double>> theKnots{}; self.Knots(theKnots); return theKnots; }, R"nbdoc(Deprecated in OCCT: Use Knots() returning const reference instead
+        .def("Knots__NCollection_HArray1__double", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray1<double>> theKnots{}; self.Knots(theKnots); return theKnots; }, R"nbdoc(Knots__NCollection_HArray1__double: the C++ overload Knots(occ::handle<NCollection_HArray1<double>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Deprecated in OCCT: Use Knots() returning const reference instead
 
 Returns the knots of the n-dimensional BSpline via output parameter.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Multiplicities), R"nbdoc(Returns the multiplicities of the knots in the BSpline.)nbdoc")
-        .def("Multiplicities", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray1<int>> theMults{}; self.Multiplicities(theMults); return theMults; }, R"nbdoc(Deprecated in OCCT: Use Multiplicities() returning const reference instead
+        .def("Multiplicities__NCollection_HArray1__int", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray1<int>> theMults{}; self.Multiplicities(theMults); return theMults; }, R"nbdoc(Multiplicities__NCollection_HArray1__int: the C++ overload Multiplicities(occ::handle<NCollection_HArray1<int>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Deprecated in OCCT: Use Multiplicities() returning const reference instead
 
 Returns the multiplicities of the knots via output parameter.)nbdoc")
         .def("IsDone", static_cast<bool (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::IsDone), R"nbdoc(Returns true if the conversion was successful.)nbdoc");

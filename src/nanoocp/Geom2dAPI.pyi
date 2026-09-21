@@ -533,7 +533,6 @@ class Geom2dAPI_ProjectPointOnCurve:
         NbPoints is the number of solution points.
         """
 
-    @overload
     def Parameter(self, Index: int) -> float:
         """
         Returns the parameter on the curve
@@ -544,9 +543,9 @@ class Geom2dAPI_ProjectPointOnCurve:
         NbPoints is the number of solution points.
         """
 
-    @overload
-    def Parameter(self, Index: int) -> float:
+    def Parameter__float(self, Index: int) -> float:
         """
+        Parameter__float: the C++ overload Parameter(const int, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the parameter on the curve
         of a point which is the orthogonal projection. Index is a number of a
         computed projected point.

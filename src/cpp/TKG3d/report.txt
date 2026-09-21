@@ -5,8 +5,8 @@
 # raw-pointer: 3
 # template: 5
 header	GeomGridEval	GeomGridEval: headers not self-contained, parsed with <gp_Lin.hxx> included first
-overload-collision	TopAbs	TopAbs::ShapeOrientationFromString(const char *const, TopAbs_Orientation &): same Python signature as ShapeOrientationFromString(const char *const) after out-param removal -> unreachable
-overload-collision	TopAbs	TopAbs::ShapeTypeFromString(const char *, TopAbs_ShapeEnum &): same Python signature as ShapeTypeFromString(const char *) after out-param removal -> unreachable
+overload-collision	TopAbs	TopAbs::ShapeOrientationFromString(const char *const, TopAbs_Orientation &): same Python signature as another overload after out-param removal -> bound as ShapeOrientationFromString__TopAbs_Orientation
+overload-collision	TopAbs	TopAbs::ShapeTypeFromString(const char *, TopAbs_ShapeEnum &): same Python signature as another overload after out-param removal -> bound as ShapeTypeFromString__TopAbs_ShapeEnum
 raw-pointer	Adaptor3d	Adaptor3d_TopolTool::Edge(): return: void pointer
 raw-pointer	AdvApprox	AdvApprox_EvaluatorFunction::Evaluate(): param 'Dimension': raw pointer to primitive
 raw-pointer	AdvApprox	AdvApprox_EvaluatorFunction::operator()(): param 'Dimension': raw pointer to primitive

@@ -467,14 +467,8 @@ else NotDone is raised.)nbdoc")
 Raises NotDone if the computation has failed or if
 the computation has not been done
 raises OutOfRange if Index is not in the range <1..NbPoints>)nbdoc")
-        .def("Parameters", [](const GeomAPI_IntCS &self, const int Index) { double U1{}; double V1{}; double U2{}; double V2{}; self.Parameters(Index, U1, V1, U2, V2); return std::make_tuple(U1, V1, U2, V2); }, nb::arg("Index"), R"nbdoc(Returns the parameters of the first (U1,V1) and the last (U2,V2) points
-of curve's segment on the surface in case of tangential intersection.
-Index is the number of computed intersection segments.
-Exceptions
-StdFail_NotDone if intersection algorithm fails or is not initialized.
-Standard_OutOfRange if Index is not in the range [ 1,NbSegments ],
-where NbSegments is the number of computed intersection segments.)nbdoc")
-        .def("Parameters", [](const GeomAPI_IntCS &self, const int Index) { double U{}; double V{}; double W{}; self.Parameters(Index, U, V, W); return std::make_tuple(U, V, W); }, nb::arg("Index"), R"nbdoc(Returns parameter W on the curve
+        .def("Parameters__float_float_float", [](const GeomAPI_IntCS &self, const int Index) { double U{}; double V{}; double W{}; self.Parameters(Index, U, V, W); return std::make_tuple(U, V, W); }, nb::arg("Index"), R"nbdoc(Parameters__float_float_float: the C++ overload Parameters(const int, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns parameter W on the curve
 and (parameters U,V) on the surface of the computed intersection point
 of index Index in case of cross intersection.
 Exceptions
@@ -488,6 +482,14 @@ StdFail_NotDone if the intersection algorithm fails or is not initialized.)nbdoc
         .def("Segment", static_cast<occ::handle<Geom_Curve> (GeomAPI_IntCS::*)(const int) const>(&GeomAPI_IntCS::Segment), nb::arg("Index"), R"nbdoc(Returns the computed intersection
 segment of index Index in case of tangential intersection.
 Intersection segment is a portion of the initial curve tangent to surface.
+Exceptions
+StdFail_NotDone if intersection algorithm fails or is not initialized.
+Standard_OutOfRange if Index is not in the range [ 1,NbSegments ],
+where NbSegments is the number of computed intersection segments.)nbdoc")
+        .def("Parameters__float_float_float_float", [](const GeomAPI_IntCS &self, const int Index) { double U1{}; double V1{}; double U2{}; double V2{}; self.Parameters(Index, U1, V1, U2, V2); return std::make_tuple(U1, V1, U2, V2); }, nb::arg("Index"), R"nbdoc(Parameters__float_float_float_float: the C++ overload Parameters(const int, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the parameters of the first (U1,V1) and the last (U2,V2) points
+of curve's segment on the surface in case of tangential intersection.
+Index is the number of computed intersection segments.
 Exceptions
 StdFail_NotDone if intersection algorithm fails or is not initialized.
 Standard_OutOfRange if Index is not in the range [ 1,NbSegments ],
@@ -803,7 +805,8 @@ number of a computed point.
 Exceptions
 Standard_OutOfRange if Index is not in the range [ 1,NbPoints ], where
 NbPoints is the number of solution points.)nbdoc")
-        .def("Parameter", [](const GeomAPI_ProjectPointOnCurve &self, const int Index) { double U{}; self.Parameter(Index, U); return U; }, nb::arg("Index"), R"nbdoc(Returns the parameter on the curve
+        .def("Parameter__float", [](const GeomAPI_ProjectPointOnCurve &self, const int Index) { double U{}; self.Parameter(Index, U); return U; }, nb::arg("Index"), R"nbdoc(Parameter__float: the C++ overload Parameter(const int, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the parameter on the curve
 of the point, which is the orthogonal projection. Index is a
 number of a computed point.
 Exceptions

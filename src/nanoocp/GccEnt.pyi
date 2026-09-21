@@ -85,7 +85,6 @@ class GccEnt:
         @return string identifier from the list UNQUALIFIED ENCLOSING ENCLOSED OUTSIDE NOQUALIFIER
         """
 
-    @overload
     @staticmethod
     def PositionFromString(thePositionString: str) -> GccEnt_Position:
         """
@@ -94,10 +93,10 @@ class GccEnt:
         @return position or GccEnt_unqualified if string identifier is invalid
         """
 
-    @overload
     @staticmethod
-    def PositionFromString(thePositionString: str) -> tuple[bool, GccEnt_Position]:
+    def PositionFromString__GccEnt_Position(thePositionString: str) -> tuple[bool, GccEnt_Position]:
         """
+        PositionFromString__GccEnt_Position: the C++ overload PositionFromString(const char *, GccEnt_Position &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Determines the position from the given string identifier (using case-insensitive comparison).
         @param thePositionString string identifier
         @param thePosition detected shape type

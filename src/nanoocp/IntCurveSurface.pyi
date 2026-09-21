@@ -424,7 +424,6 @@ class IntCurveSurface_TheHCurveTool:
     @staticmethod
     def NbSamples(C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, U0: float, U1: float) -> int: ...
 
-    @overload
     @staticmethod
     def SamplePars(C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, U0: float, U1: float, Defl: float, NbMin: int) -> nanoocp.NCollection.NCollection_HArray1[float]:
         """
@@ -438,10 +437,10 @@ class IntCurveSurface_TheHCurveTool:
         @return array of sample parameter values
         """
 
-    @overload
     @staticmethod
-    def SamplePars(C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, U0: float, U1: float, Defl: float, NbMin: int) -> nanoocp.NCollection.NCollection_HArray1[float]:
+    def SamplePars__NCollection_HArray1__double(C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, U0: float, U1: float, Defl: float, NbMin: int) -> nanoocp.NCollection.NCollection_HArray1[float]:
         """
+        SamplePars__NCollection_HArray1__double: the C++ overload SamplePars(const occ::handle<Adaptor3d_Curve> &, const double, const double, const double, const int, occ::handle<NCollection_HArray1<double>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Deprecated in OCCT: Use SamplePars() returning handle by value instead
 
         @deprecated Use SamplePars() returning handle by value instead.
@@ -676,14 +675,17 @@ class IntCurveSurface_ThePolyhedronOfHInter:
         """
 
     @overload
-    def Point(self, Index: int) -> tuple[nanoocp.gp.gp_Pnt, float, float]: ...
-
-    @overload
     def Point(self, Index: int) -> nanoocp.gp.gp_Pnt: ...
 
     @overload
     def Point(self, Index: int, P: nanoocp.gp.gp_Pnt) -> None:
         """Give the point of index i in the MaTriangle."""
+
+    def Point__float_float(self, Index: int) -> tuple[nanoocp.gp.gp_Pnt, float, float]:
+        """
+        Point__float_float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Give the point of index i in the MaTriangle.
+        """
 
     def Bounding(self) -> nanoocp.Bnd.Bnd_Box:
         """Give the bounding box of the MaTriangle."""

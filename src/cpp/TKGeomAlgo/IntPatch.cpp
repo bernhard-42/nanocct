@@ -968,7 +968,8 @@ the free edge. Used to turn around a vertex.)nbdoc")
 triangles ((nbdu+1)*(nbdv+1)).)nbdoc")
         .def("Point", static_cast<void (IntPatch_Polyhedron::*)(const gp_Pnt &, const int, const int, const double, const double)>(&IntPatch_Polyhedron::Point), nb::arg("thePnt"), nb::arg("lig"), nb::arg("col"), nb::arg("U"), nb::arg("V"), R"nbdoc(Set the value of a field of the double array of
 points.)nbdoc")
-        .def("Point", [](const IntPatch_Polyhedron &self, const int Index) { double U{}; double V{}; auto result = self.Point(Index, U, V); return std::make_tuple(result, U, V); }, nb::arg("Index"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
+        .def("Point__float_float", [](const IntPatch_Polyhedron &self, const int Index) { double U{}; double V{}; auto result = self.Point(Index, U, V); return std::make_tuple(result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float_float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<const gp_Pnt & (IntPatch_Polyhedron::*)(const int) const>(&IntPatch_Polyhedron::Point), nb::arg("Index"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<void (IntPatch_Polyhedron::*)(const int, gp_Pnt &) const>(&IntPatch_Polyhedron::Point), nb::arg("Index"), nb::arg("P"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
         .def("Bounding", static_cast<const Bnd_Box & (IntPatch_Polyhedron::*)() const>(&IntPatch_Polyhedron::Bounding), R"nbdoc(Give the bounding box of the MaTriangle.)nbdoc")
@@ -1311,14 +1312,16 @@ Index <= 0 or Index > NbVertex.)nbdoc")
 This point is given by the method FirstPoint().)nbdoc")
         .def("HasLastPoint", static_cast<bool (IntPatch_WLine::*)() const>(&IntPatch_WLine::HasLastPoint), R"nbdoc(Returns True if the line has a known Last point.
 This point is given by the method LastPoint().)nbdoc")
-        .def("FirstPoint", [](const IntPatch_WLine &self) { int Indfirst{}; auto result = self.FirstPoint(Indfirst); return std::make_tuple(result, Indfirst); }, R"nbdoc(Returns the Point corresponding to the FirstPoint.
+        .def("FirstPoint", static_cast<const IntPatch_Point & (IntPatch_WLine::*)() const>(&IntPatch_WLine::FirstPoint), R"nbdoc(Returns the Point corresponding to the FirstPoint.)nbdoc")
+        .def("LastPoint", static_cast<const IntPatch_Point & (IntPatch_WLine::*)() const>(&IntPatch_WLine::LastPoint), R"nbdoc(Returns the Point corresponding to the LastPoint.)nbdoc")
+        .def("FirstPoint__int", [](const IntPatch_WLine &self) { int Indfirst{}; auto result = self.FirstPoint(Indfirst); return std::make_tuple(result, Indfirst); }, R"nbdoc(FirstPoint__int: the C++ overload FirstPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the Point corresponding to the FirstPoint.
 Indfirst is the index of the first in the list
 of vertices.)nbdoc")
-        .def("FirstPoint", static_cast<const IntPatch_Point & (IntPatch_WLine::*)() const>(&IntPatch_WLine::FirstPoint), R"nbdoc(Returns the Point corresponding to the FirstPoint.)nbdoc")
-        .def("LastPoint", [](const IntPatch_WLine &self) { int Indlast{}; auto result = self.LastPoint(Indlast); return std::make_tuple(result, Indlast); }, R"nbdoc(Returns the Point corresponding to the LastPoint.
+        .def("LastPoint__int", [](const IntPatch_WLine &self) { int Indlast{}; auto result = self.LastPoint(Indlast); return std::make_tuple(result, Indlast); }, R"nbdoc(LastPoint__int: the C++ overload LastPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the Point corresponding to the LastPoint.
 Indlast is the index of the last in the list
 of vertices.)nbdoc")
-        .def("LastPoint", static_cast<const IntPatch_Point & (IntPatch_WLine::*)() const>(&IntPatch_WLine::LastPoint), R"nbdoc(Returns the Point corresponding to the LastPoint.)nbdoc")
         .def("NbVertex", static_cast<int (IntPatch_WLine::*)() const>(&IntPatch_WLine::NbVertex), R"nbdoc(Returns number of vertices (IntPatch_Point) of the line)nbdoc")
         .def("Vertex", static_cast<const IntPatch_Point & (IntPatch_WLine::*)(const int) const>(&IntPatch_WLine::Vertex), nb::arg("Index"), R"nbdoc(Returns the vertex of range Index on the line.)nbdoc")
         .def("ChangeVertex", static_cast<IntPatch_Point & (IntPatch_WLine::*)(const int)>(&IntPatch_WLine::ChangeVertex), nb::rv_policy::reference_internal, nb::arg("Index"), R"nbdoc(Returns the vertex of range Index on the line.)nbdoc")

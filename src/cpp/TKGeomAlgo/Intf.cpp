@@ -90,10 +90,14 @@ second element.)nbdoc")
         .def("TypeOnFirst", static_cast<Intf_PIType (Intf_SectionPoint::*)() const>(&Intf_SectionPoint::TypeOnFirst), R"nbdoc(Returns the type of the section point on the first element.)nbdoc")
         .def("TypeOnSecond", static_cast<Intf_PIType (Intf_SectionPoint::*)() const>(&Intf_SectionPoint::TypeOnSecond), R"nbdoc(Returns the type of the section point on the second
 element.)nbdoc")
-        .def("InfoFirst", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Add1{}; int Add2{}; double Param{}; self.InfoFirst(Dim, Add1, Add2, Param); return std::make_tuple(Dim, Add1, Add2, Param); })
-        .def("InfoFirst", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Addr{}; double Param{}; self.InfoFirst(Dim, Addr, Param); return std::make_tuple(Dim, Addr, Param); }, R"nbdoc(Gives the data about the first argument of the Interference.)nbdoc")
-        .def("InfoSecond", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Add1{}; int Add2{}; double Param{}; self.InfoSecond(Dim, Add1, Add2, Param); return std::make_tuple(Dim, Add1, Add2, Param); })
-        .def("InfoSecond", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Addr{}; double Param{}; self.InfoSecond(Dim, Addr, Param); return std::make_tuple(Dim, Addr, Param); }, R"nbdoc(Gives the data about the second argument of the Interference.)nbdoc")
+        .def("InfoFirst__Intf_PIType_int_int_float", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Add1{}; int Add2{}; double Param{}; self.InfoFirst(Dim, Add1, Add2, Param); return std::make_tuple(Dim, Add1, Add2, Param); }, R"nbdoc(InfoFirst__Intf_PIType_int_int_float: the C++ overload InfoFirst(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+)nbdoc")
+        .def("InfoFirst__Intf_PIType_int_float", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Addr{}; double Param{}; self.InfoFirst(Dim, Addr, Param); return std::make_tuple(Dim, Addr, Param); }, R"nbdoc(InfoFirst__Intf_PIType_int_float: the C++ overload InfoFirst(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Gives the data about the first argument of the Interference.)nbdoc")
+        .def("InfoSecond__Intf_PIType_int_int_float", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Add1{}; int Add2{}; double Param{}; self.InfoSecond(Dim, Add1, Add2, Param); return std::make_tuple(Dim, Add1, Add2, Param); }, R"nbdoc(InfoSecond__Intf_PIType_int_int_float: the C++ overload InfoSecond(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+)nbdoc")
+        .def("InfoSecond__Intf_PIType_int_float", [](const Intf_SectionPoint &self) { Intf_PIType Dim{}; int Addr{}; double Param{}; self.InfoSecond(Dim, Addr, Param); return std::make_tuple(Dim, Addr, Param); }, R"nbdoc(InfoSecond__Intf_PIType_int_float: the C++ overload InfoSecond(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Gives the data about the second argument of the Interference.)nbdoc")
         .def("Incidence", static_cast<double (Intf_SectionPoint::*)() const>(&Intf_SectionPoint::Incidence), R"nbdoc(Gives the incidence at this section point. The incidence
 between the two triangles is given by the cosine. The best
 incidence is 0. (PI/2). The worst is 1. (null angle).)nbdoc")

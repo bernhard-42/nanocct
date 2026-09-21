@@ -875,23 +875,23 @@ class BRep_Tool:
     def Pnt(V: nanoocp.TopoDS.TopoDS_Vertex) -> nanoocp.gp.gp_Pnt:
         """Returns the 3d point."""
 
+    @staticmethod
+    def Parameter__float(theV: nanoocp.TopoDS.TopoDS_Vertex, theE: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, float]:
+        """
+        Parameter__float: the C++ overload Parameter(const TopoDS_Vertex &, const TopoDS_Edge &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Finds the parameter of <theV> on <theE>.
+        @param[in] theV  input vertex
+        @param[in] theE  input edge
+        @param[out] theParam   calculated parameter on the curve
+        @return TRUE if done
+        """
+
     @overload
     @staticmethod
     def Parameter(V: nanoocp.TopoDS.TopoDS_Vertex, E: nanoocp.TopoDS.TopoDS_Edge) -> float:
         """
         Returns the parameter of <V> on <E>.
         Throws Standard_NoSuchObject if no parameter on edge
-        """
-
-    @overload
-    @staticmethod
-    def Parameter(theV: nanoocp.TopoDS.TopoDS_Vertex, theE: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, float]:
-        """
-        Finds the parameter of <theV> on <theE>.
-        @param[in] theV  input vertex
-        @param[in] theE  input edge
-        @param[out] theParam   calculated parameter on the curve
-        @return TRUE if done
         """
 
     @overload

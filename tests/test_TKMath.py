@@ -25,14 +25,14 @@ def test_bnd_box():
     b = Bnd.Bnd_Box()
     b.Add(gp.gp_Pnt(0.0, 0.0, 0.0))
     b.Add(gp.gp_Pnt(1.0, 2.0, 3.0))
-    assert b.CornerMax().Coord() == (1.0, 2.0, 3.0)
-    assert b.Get() == (0.0, 0.0, 0.0, 1.0, 2.0, 3.0)                 # six double& out-params -> tuple
+    assert b.CornerMax().Coord__float_float_float() == (1.0, 2.0, 3.0)
+    assert b.Get__float_float_float_float_float_float() == (0.0, 0.0, 0.0, 1.0, 2.0, 3.0)                 # six double& out-params -> tuple
     assert b.IsOut(gp.gp_Pnt(5.0, 5.0, 5.0)) is True
 
 
 def test_elclib_static_only_class():
     c = gp.gp_Circ(gp.gp_Ax2(), 2.0)
-    assert ElCLib.ElCLib.Value(0.0, c).Coord() == (2.0, 0.0, 0.0)
+    assert ElCLib.ElCLib.Value(0.0, c).Coord__float_float_float() == (2.0, 0.0, 0.0)
     assert ElCLib.ElCLib.Parameter(c, gp.gp_Pnt(0.0, 2.0, 0.0)) == pytest.approx(1.5707963267948966)
 
 
@@ -46,7 +46,7 @@ def test_poly_triangulation_from_arrays():
     t = Poly.Poly_Triangulation(nodes, tris)                          # Transient, takes const NCollection_Array1<...>&
     assert (t.NbNodes(), t.NbTriangles()) == (3, 1)
     assert t.GetRefCount() == 1 and t.DynamicType().Name() == "Poly_Triangulation"
-    assert t.Node(2).Coord() == (1.0, 0.0, 0.0)
+    assert t.Node(2).Coord__float_float_float() == (1.0, 0.0, 0.0)
     assert t.Triangle(1).Get() == (1, 2, 3)
 
 

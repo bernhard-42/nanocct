@@ -99,7 +99,6 @@ class UnitsAPI:
         is millimeter.
         """
 
-    @overload
     @staticmethod
     def AnyToLS(aData: float, aUnit: str) -> float:
         """
@@ -107,15 +106,14 @@ class UnitsAPI:
         Example: AnyToLS(1.,"in.") returns 25.4 if the LocalSystem is MDTV.
         """
 
-    @overload
     @staticmethod
-    def AnyToLS(aData: float, aUnit: str) -> tuple[float, nanoocp.Units.Units_Dimensions]:
+    def AnyToLS__Units_Dimensions(aData: float, aUnit: str) -> tuple[float, nanoocp.Units.Units_Dimensions]:
         """
+        AnyToLS__Units_Dimensions: the C++ overload AnyToLS(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Converts the local unit value to the local system units value.
         and gives the associated dimension of the unit
         """
 
-    @overload
     @staticmethod
     def AnyToSI(aData: float, aUnit: str) -> float:
         """
@@ -123,10 +121,10 @@ class UnitsAPI:
         Example: AnyToSI(1.,"in.") returns 0.0254
         """
 
-    @overload
     @staticmethod
-    def AnyToSI(aData: float, aUnit: str) -> tuple[float, nanoocp.Units.Units_Dimensions]:
+    def AnyToSI__Units_Dimensions(aData: float, aUnit: str) -> tuple[float, nanoocp.Units.Units_Dimensions]:
         """
+        AnyToSI__Units_Dimensions: the C++ overload AnyToSI(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Converts the local unit value to the SI system units value.
         and gives the associated dimension of the unit
         """

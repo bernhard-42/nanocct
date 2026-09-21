@@ -27,7 +27,8 @@ an approximation. In this case, the reached
 tolerance is set in <Tolerance> as output.
 WARNING: if the projection has failed, this
 method returns a null Handle.)nbdoc")
-        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const double First, const double Last, const occ::handle<Geom_Surface> & S) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, First, Last, S, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C").none(), nb::arg("First"), nb::arg("Last"), nb::arg("S").none(), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d__float", [](const occ::handle<Geom_Curve> & C, const double First, const double Last, const occ::handle<Geom_Surface> & S) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, First, Last, S, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C").none(), nb::arg("First"), nb::arg("Last"), nb::arg("S").none(), R"nbdoc(Curve2d__float: the C++ overload Curve2d(const occ::handle<Geom_Curve> &, const double, const double, const occ::handle<Geom_Surface> &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 The 3dCurve is taken between the parametrization
 range [First, Last]
@@ -50,14 +51,15 @@ If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.)nbdoc")
-        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const occ::handle<Geom_Surface> & S, const double UDeb, const double UFin, const double VDeb, const double VFin) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, S, UDeb, UFin, VDeb, VFin, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C").none(), nb::arg("S").none(), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double)>(&GeomProjLib::Curve2d), nb::arg("C").none(), nb::arg("S").none(), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.
 can expand a little the bounds of surface)nbdoc")
-        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double)>(&GeomProjLib::Curve2d), nb::arg("C").none(), nb::arg("S").none(), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d__float", [](const occ::handle<Geom_Curve> & C, const occ::handle<Geom_Surface> & S, const double UDeb, const double UFin, const double VDeb, const double VFin) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, S, UDeb, UFin, VDeb, VFin, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C").none(), nb::arg("S").none(), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(Curve2d__float: the C++ overload Curve2d(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 If the projection needs an approximation,
 Precision::PApproximation() is used.

@@ -645,21 +645,6 @@ class OSD_Chronometer:
         the chronometer.
         """
 
-    @overload
-    def Show(self) -> tuple[float, float]:
-        """
-        Returns the current CPU user and system time in variables.
-        The chronometer can be running (laps Time) or stopped.
-        """
-
-    @overload
-    def Show(self) -> float:
-        """
-        Returns the current CPU user time in a variable.
-        The chronometer can be running (laps Time) or stopped.
-        """
-
-    @overload
     def Show(self) -> None:
         """
         Shows the current CPU user and system time on the
@@ -667,9 +652,9 @@ class OSD_Chronometer:
         The chronometer can be running (laps Time) or stopped.
         """
 
-    @overload
-    def Show(self) -> object:
+    def Show__str(self) -> object:
         """
+        Show__str: the C++ overload Show(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Shows the current CPU user and system time on the output
         stream <os>.
         The chronometer can be running (laps Time) or stopped.
@@ -697,6 +682,20 @@ class OSD_Chronometer:
         """
         Set if current thread (TRUE) or all threads (FALSE) CPU time should be measured.
         Will raise exception if Timer is in started state.
+        """
+
+    def Show__float(self) -> float:
+        """
+        Show__float: the C++ overload Show(double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Returns the current CPU user time in a variable.
+        The chronometer can be running (laps Time) or stopped.
+        """
+
+    def Show__float_float(self) -> tuple[float, float]:
+        """
+        Show__float_float: the C++ overload Show(double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Returns the current CPU user and system time in variables.
+        The chronometer can be running (laps Time) or stopped.
         """
 
     @staticmethod
@@ -1445,7 +1444,20 @@ class OSD_File(OSD_FileNode):
         bytes will be placed in the buffer.
         """
 
-    @overload
+    def ReadLine__int(self, Buffer: nanoocp.TCollection.TCollection_AsciiString, NByte: int) -> int:
+        """
+        ReadLine__int: the C++ overload ReadLine(TCollection_AsciiString &, const int, int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Reads bytes from the data pointed to by the object file
+        into the buffer <Buffer>.
+        Data is read until <NByte-1> bytes have been read,
+        until	a newline character is read and transferred into
+        <Buffer>, or until an EOF (End-of-File) condition is
+        encountered.
+        Upon successful completion, Read returns the number of
+        bytes actually read into <NByteRead> and placed into the
+        Buffer <Buffer>.
+        """
+
     def ReadLine(self, Buffer: nanoocp.TCollection.TCollection_AsciiString, NByte: int) -> int:
         """
         Reads bytes from the data pointed to by the object file
@@ -1456,20 +1468,6 @@ class OSD_File(OSD_FileNode):
         encountered.
         Upon successful completion, Read returns the number of
         bytes actually read and placed into the Buffer <Buffer>.
-        """
-
-    @overload
-    def ReadLine(self, Buffer: nanoocp.TCollection.TCollection_AsciiString, NByte: int) -> int:
-        """
-        Reads bytes from the data pointed to by the object file
-        into the buffer <Buffer>.
-        Data is read until <NByte-1> bytes have been read,
-        until	a newline character is read and transferred into
-        <Buffer>, or until an EOF (End-of-File) condition is
-        encountered.
-        Upon successful completion, Read returns the number of
-        bytes actually read into <NByteRead> and placed into the
-        Buffer <Buffer>.
         """
 
     def Write(self, theBuffer: nanoocp.TCollection.TCollection_AsciiString, theNbBytes: int) -> None:
@@ -2407,14 +2405,6 @@ class OSD_Timer(OSD_Chronometer):
     def Restart(self) -> None:
         """Restarts the Timer."""
 
-    @overload
-    def Show(self) -> tuple[float, int, int, float]:
-        """
-        returns both the elapsed time(seconds,minutes,hours)
-        and CPU time.
-        """
-
-    @overload
     def Show(self) -> None:
         """
         Shows both the elapsed time and CPU time on the standard output
@@ -2422,11 +2412,18 @@ class OSD_Timer(OSD_Chronometer):
         stopped.
         """
 
-    @overload
-    def Show(self) -> object:
+    def Show__str(self) -> object:
         """
+        Show__str: the C++ overload Show(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Shows both the elapsed time and CPU time on the
         output stream <OS>.
+        """
+
+    def Show__float_int_int_float(self) -> tuple[float, int, int, float]:
+        """
+        Show__float_int_int_float: the C++ overload Show(double &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        returns both the elapsed time(seconds,minutes,hours)
+        and CPU time.
         """
 
     def Stop(self) -> None:

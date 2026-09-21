@@ -801,16 +801,17 @@ Example:
 3. (0,  0,  4.5   ) returns "4.50s")nbdoc")
         .def_static("DefaultReport", static_cast<const occ::handle<Message_Report> & (*)(const bool)>(&Message::DefaultReport), nb::arg("theToCreate") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(returns the only one instance of Report
 When theToCreate is true - automatically creates message report when not exist.)nbdoc")
-        .def_static("MetricFromString", static_cast<Message_MetricType (*)(const char *const)>(&Message::MetricFromString), nb::arg("theString"), R"nbdoc(Returns the metric type from the given string identifier.
-@param theString string identifier
-@return metric type or Message_MetricType_None if string identifier is invalid)nbdoc")
-        .def_static("MetricFromString", [](const char *const theString) { Message_MetricType theType{}; auto result = Message::MetricFromString(theString, theType); return std::make_tuple(result, theType); }, nb::arg("theString"), R"nbdoc(Determines the metric from the given string identifier.
+        .def_static("MetricFromString__Message_MetricType", [](const char *const theString) { Message_MetricType theType{}; auto result = Message::MetricFromString(theString, theType); return std::make_tuple(result, theType); }, nb::arg("theString"), R"nbdoc(MetricFromString__Message_MetricType: the C++ overload MetricFromString(const char *const, Message_MetricType &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Determines the metric from the given string identifier.
 @param theString string identifier
 @param theType detected type of metric
 @return TRUE if string identifier is known)nbdoc")
         .def_static("MetricToString", static_cast<const char * (*)(const Message_MetricType)>(&Message::MetricToString), nb::arg("theType"), R"nbdoc(Returns the string name for a given metric type.
 @param theType metric type
 @return string identifier from the list of Message_MetricType)nbdoc")
+        .def_static("MetricFromString", static_cast<Message_MetricType (*)(const char *const)>(&Message::MetricFromString), nb::arg("theString"), R"nbdoc(Returns the metric type from the given string identifier.
+@param theString string identifier
+@return metric type or Message_MetricType_None if string identifier is invalid)nbdoc")
         .def_static("ToOSDMetric", [](const Message_MetricType theMetric) { OSD_MemInfo::Counter theMemInfo{}; auto result = Message::ToOSDMetric(theMetric, theMemInfo); return std::make_tuple(result, theMemInfo); }, nb::arg("theMetric"), R"nbdoc(Converts message metric to OSD memory info type.
 @param[in] theMetric  message metric
 @param[out] theMemInfo  filled memory info type

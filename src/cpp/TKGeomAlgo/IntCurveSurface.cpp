@@ -269,7 +269,8 @@ computed based on deflection and minimum number of points.
 @param[in] Defl deflection tolerance
 @param[in] NbMin minimum number of sample points
 @return array of sample parameter values)nbdoc")
-        .def_static("SamplePars", [](const occ::handle<Adaptor3d_Curve> & C, const double U0, const double U1, const double Defl, const int NbMin) { occ::handle<NCollection_HArray1<double>> Pars{}; IntCurveSurface_TheHCurveTool::SamplePars(C, U0, U1, Defl, NbMin, Pars); return Pars; }, nb::arg("C").none(), nb::arg("U0"), nb::arg("U1"), nb::arg("Defl"), nb::arg("NbMin"), R"nbdoc(Deprecated in OCCT: Use SamplePars() returning handle by value instead
+        .def_static("SamplePars__NCollection_HArray1__double", [](const occ::handle<Adaptor3d_Curve> & C, const double U0, const double U1, const double Defl, const int NbMin) { occ::handle<NCollection_HArray1<double>> Pars{}; IntCurveSurface_TheHCurveTool::SamplePars(C, U0, U1, Defl, NbMin, Pars); return Pars; }, nb::arg("C").none(), nb::arg("U0"), nb::arg("U1"), nb::arg("Defl"), nb::arg("NbMin"), R"nbdoc(SamplePars__NCollection_HArray1__double: the C++ overload SamplePars(const occ::handle<Adaptor3d_Curve> &, const double, const double, const double, const int, occ::handle<NCollection_HArray1<double>> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Deprecated in OCCT: Use SamplePars() returning handle by value instead
 
 @deprecated Use SamplePars() returning handle by value instead.)nbdoc");
     nanoocp_implicit_copy_ctor<IntCurveSurface_TheHCurveTool>(nb::borrow<nb::class_<IntCurveSurface_TheHCurveTool>>(m.attr("IntCurveSurface_TheHCurveTool")));
@@ -358,7 +359,8 @@ the free edge. Used to turn around a vertex.)nbdoc")
 triangles ((nbdu+1)*(nbdv+1)).)nbdoc")
         .def("Point", static_cast<void (IntCurveSurface_ThePolyhedronOfHInter::*)(const gp_Pnt &, const int, const int, const double, const double)>(&IntCurveSurface_ThePolyhedronOfHInter::Point), nb::arg("thePnt"), nb::arg("lig"), nb::arg("col"), nb::arg("U"), nb::arg("V"), R"nbdoc(Set the value of a field of the double array of
 points.)nbdoc")
-        .def("Point", [](const IntCurveSurface_ThePolyhedronOfHInter &self, const int Index) { double U{}; double V{}; auto result = self.Point(Index, U, V); return std::make_tuple(result, U, V); }, nb::arg("Index"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
+        .def("Point__float_float", [](const IntCurveSurface_ThePolyhedronOfHInter &self, const int Index) { double U{}; double V{}; auto result = self.Point(Index, U, V); return std::make_tuple(result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float_float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<const gp_Pnt & (IntCurveSurface_ThePolyhedronOfHInter::*)(const int) const>(&IntCurveSurface_ThePolyhedronOfHInter::Point), nb::arg("Index"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<void (IntCurveSurface_ThePolyhedronOfHInter::*)(const int, gp_Pnt &) const>(&IntCurveSurface_ThePolyhedronOfHInter::Point), nb::arg("Index"), nb::arg("P"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
         .def("Bounding", static_cast<const Bnd_Box & (IntCurveSurface_ThePolyhedronOfHInter::*)() const>(&IntCurveSurface_ThePolyhedronOfHInter::Bounding), R"nbdoc(Give the bounding box of the MaTriangle.)nbdoc")

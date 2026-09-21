@@ -211,6 +211,23 @@ def _scope_qualified(decl: cindex.Cursor, need_namespace: bool) -> str | None:
     return "::".join(reversed(parts))
 
 
+def _out_py_type(t: cindex.Type) -> str:
+    """Python type name of an out-parameter (double& -> float, int& -> int, bool& -> bool, char& -> str, an enum or the
+    class behind a handle<T>& -> its 6a/6c Python spelling): the R-COLLISION suffix component."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind in (TK.FLOAT, TK.DOUBLE, TK.LONGDOUBLE):
+        return "float"
+    if canon.kind == TK.BOOL:
+        return "bool"
+    if canon.kind in (TK.CHAR_S, TK.CHAR_U, TK.SCHAR, TK.UCHAR, TK.CHAR16, TK.CHAR32, TK.WCHAR):
+        return "str"
+    if canon.kind in (TK.INT, TK.UINT, TK.SHORT, TK.USHORT, TK.LONG, TK.ULONG, TK.LONGLONG, TK.ULONGLONG):
+        return "int"
+    return _py_identifier(_class_behind(t))        # enum/class name; a container instantiation by its 6a concrete name
+
+
 def _class_behind(t: cindex.Type) -> str:
     """Canonical name of the OCCT class or enum a parameter type refers to (through const/&/*), "" for anything
     else (scalars, std types, opencascade::handle -> the handle's pointee is what must be bound)."""
@@ -228,17 +245,6 @@ def _class_behind(t: cindex.Type) -> str:
     if parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")):
         return ""
     return _canonical_args(canon).replace("const ", "")
-
-
-def _is_scalar(t: cindex.Type) -> bool:
-    """Arithmetic, bool, enum, or a C string: what a method returns when it has no out-parameters."""
-    canon = t.get_canonical()
-    if canon.kind in _PRIMITIVE_KINDS:
-        return True
-    if canon.kind == TK.POINTER:
-        pk = canon.get_pointee().get_canonical().kind
-        return pk in (TK.CHAR_S, TK.CHAR_U, TK.CHAR16) and canon.get_pointee().is_const_qualified()
-    return False
 
 
 # Design.md 6 R-HANDLE (nb::arg(...).none() emitted in emit._args)
@@ -555,7 +561,8 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
         params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=is_out, is_inout=is_out and inout,
-                            class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type)))
+                            class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
+                            out_py=_out_py_type(p.type) if is_out else ""))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None
@@ -622,7 +629,7 @@ def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
                 is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("))
 
 
-# Design.md 6 R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind), R-COLLISION (result_scalar)
+# Design.md 6 R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind)
 def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method | None:
     name = cursor.spelling
     if name.startswith("operator") and name in ("operator=", "operator new", "operator delete", "operator new[]", "operator delete[]"):
@@ -634,8 +641,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_static=cursor.is_static_method(),
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
                is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
-               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
-               result_scalar=_is_scalar(cursor.result_type))
+               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type))
     returns_stream = _stream_kind(cursor.result_type) == StreamKind.OUT and any(p.stream == StreamKind.OUT for p in params)
     if m.skip_reason is None and returns_stream:
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""    # Standard_OStream& Print(x, Standard_OStream&): the stream itself, for chaining

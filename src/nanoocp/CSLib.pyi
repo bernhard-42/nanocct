@@ -108,10 +108,10 @@ class CSLib:
     @overload
     def __init__(self, theOther: CSLib) -> None: ...
 
-    @overload
     @staticmethod
-    def Normal(theD1U: nanoocp.gp.gp_Vec, theD1V: nanoocp.gp.gp_Vec, theSinTol: float, theNormal: nanoocp.gp.gp_Dir) -> CSLib_DerivativeStatus:
+    def Normal__CSLib_DerivativeStatus(theD1U: nanoocp.gp.gp_Vec, theD1V: nanoocp.gp.gp_Vec, theSinTol: float, theNormal: nanoocp.gp.gp_Dir) -> CSLib_DerivativeStatus:
         """
+        Normal__CSLib_DerivativeStatus: the C++ overload Normal(const gp_Vec &, const gp_Vec &, double, CSLib_DerivativeStatus &, gp_Dir &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Computes the normal direction of a surface as the cross product D1U ^ D1V.
 
         The normal is undefined if:
@@ -127,22 +127,6 @@ class CSLib:
         @param[in]  theSinTol Sine tolerance for parallelism check
         @param[out] theStatus Result status indicating success or failure reason
         @param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Done)
-        """
-
-    @overload
-    @staticmethod
-    def Normal(theD1U: nanoocp.gp.gp_Vec, theD1V: nanoocp.gp.gp_Vec, theMagTol: float, theNormal: nanoocp.gp.gp_Dir) -> CSLib_NormalStatus:
-        """
-        Computes the normal direction using magnitude tolerance.
-
-        A simpler version that checks if the cross product magnitude
-        and derivative magnitudes exceed the given tolerance.
-
-        @param[in]  theD1U    First derivative in U direction
-        @param[in]  theD1V    First derivative in V direction
-        @param[in]  theMagTol Magnitude tolerance for singularity detection
-        @param[out] theStatus Result status (CSLib_Defined or CSLib_Singular)
-        @param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Defined)
         """
 
     @overload
@@ -185,6 +169,22 @@ class CSLib:
         @param[out] theStatus   Result status
         @param[out] theNormal   Computed normal direction
         @param[out] theOrderU, theOrderV  Orders of the first non-null derivative used
+        """
+
+    @staticmethod
+    def Normal__CSLib_NormalStatus(theD1U: nanoocp.gp.gp_Vec, theD1V: nanoocp.gp.gp_Vec, theMagTol: float, theNormal: nanoocp.gp.gp_Dir) -> CSLib_NormalStatus:
+        """
+        Normal__CSLib_NormalStatus: the C++ overload Normal(const gp_Vec &, const gp_Vec &, double, CSLib_NormalStatus &, gp_Dir &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Computes the normal direction using magnitude tolerance.
+
+        A simpler version that checks if the cross product magnitude
+        and derivative magnitudes exceed the given tolerance.
+
+        @param[in]  theD1U    First derivative in U direction
+        @param[in]  theD1V    First derivative in V direction
+        @param[in]  theMagTol Magnitude tolerance for singularity detection
+        @param[out] theStatus Result status (CSLib_Defined or CSLib_Singular)
+        @param[out] theNormal Computed normal direction (valid only if theStatus == CSLib_Defined)
         """
 
     @overload

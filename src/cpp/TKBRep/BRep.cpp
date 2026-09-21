@@ -428,13 +428,14 @@ two faces.)nbdoc")
 if there are no such surfaces.)nbdoc")
         .def_static("Pnt", static_cast<gp_Pnt (*)(const TopoDS_Vertex &)>(&BRep_Tool::Pnt), nb::arg("V"), R"nbdoc(Returns the 3d point.)nbdoc")
         .def_static("Tolerance", static_cast<double (*)(const TopoDS_Vertex &)>(&BRep_Tool::Tolerance), nb::arg("V"), R"nbdoc(Returns the tolerance.)nbdoc")
-        .def_static("Parameter", static_cast<double (*)(const TopoDS_Vertex &, const TopoDS_Edge &)>(&BRep_Tool::Parameter), nb::arg("V"), nb::arg("E"), R"nbdoc(Returns the parameter of <V> on <E>.
-Throws Standard_NoSuchObject if no parameter on edge)nbdoc")
-        .def_static("Parameter", [](const TopoDS_Vertex & theV, const TopoDS_Edge & theE) { double theParam{}; auto result = BRep_Tool::Parameter(theV, theE, theParam); return std::make_tuple(result, theParam); }, nb::arg("theV"), nb::arg("theE"), R"nbdoc(Finds the parameter of <theV> on <theE>.
+        .def_static("Parameter__float", [](const TopoDS_Vertex & theV, const TopoDS_Edge & theE) { double theParam{}; auto result = BRep_Tool::Parameter(theV, theE, theParam); return std::make_tuple(result, theParam); }, nb::arg("theV"), nb::arg("theE"), R"nbdoc(Parameter__float: the C++ overload Parameter(const TopoDS_Vertex &, const TopoDS_Edge &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Finds the parameter of <theV> on <theE>.
 @param[in] theV  input vertex
 @param[in] theE  input edge
 @param[out] theParam   calculated parameter on the curve
 @return TRUE if done)nbdoc")
+        .def_static("Parameter", static_cast<double (*)(const TopoDS_Vertex &, const TopoDS_Edge &)>(&BRep_Tool::Parameter), nb::arg("V"), nb::arg("E"), R"nbdoc(Returns the parameter of <V> on <E>.
+Throws Standard_NoSuchObject if no parameter on edge)nbdoc")
         .def_static("Parameter", static_cast<double (*)(const TopoDS_Vertex &, const TopoDS_Edge &, const TopoDS_Face &)>(&BRep_Tool::Parameter), nb::arg("V"), nb::arg("E"), nb::arg("F"), R"nbdoc(Returns the parameters of the vertex on the
 pcurve of the edge on the face.)nbdoc")
         .def_static("Parameter", static_cast<double (*)(const TopoDS_Vertex &, const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&BRep_Tool::Parameter), nb::arg("V"), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Returns the parameters of the vertex on the

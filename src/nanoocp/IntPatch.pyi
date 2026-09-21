@@ -1893,14 +1893,17 @@ class IntPatch_Polyhedron:
         """
 
     @overload
-    def Point(self, Index: int) -> tuple[nanoocp.gp.gp_Pnt, float, float]: ...
-
-    @overload
     def Point(self, Index: int) -> nanoocp.gp.gp_Pnt: ...
 
     @overload
     def Point(self, Index: int, P: nanoocp.gp.gp_Pnt) -> None:
         """Give the point of index i in the MaTriangle."""
+
+    def Point__float_float(self, Index: int) -> tuple[nanoocp.gp.gp_Pnt, float, float]:
+        """
+        Point__float_float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Give the point of index i in the MaTriangle.
+        """
 
     def Bounding(self) -> nanoocp.Bnd.Bnd_Box:
         """Give the bounding box of the MaTriangle."""
@@ -2710,29 +2713,27 @@ class IntPatch_WLine(IntPatch_PointLine):
         This point is given by the method LastPoint().
         """
 
-    @overload
-    def FirstPoint(self) -> tuple[IntPatch_Point, int]:
+    def FirstPoint(self) -> IntPatch_Point:
+        """Returns the Point corresponding to the FirstPoint."""
+
+    def LastPoint(self) -> IntPatch_Point:
+        """Returns the Point corresponding to the LastPoint."""
+
+    def FirstPoint__int(self) -> tuple[IntPatch_Point, int]:
         """
+        FirstPoint__int: the C++ overload FirstPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the Point corresponding to the FirstPoint.
         Indfirst is the index of the first in the list
         of vertices.
         """
 
-    @overload
-    def FirstPoint(self) -> IntPatch_Point:
-        """Returns the Point corresponding to the FirstPoint."""
-
-    @overload
-    def LastPoint(self) -> tuple[IntPatch_Point, int]:
+    def LastPoint__int(self) -> tuple[IntPatch_Point, int]:
         """
+        LastPoint__int: the C++ overload LastPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the Point corresponding to the LastPoint.
         Indlast is the index of the last in the list
         of vertices.
         """
-
-    @overload
-    def LastPoint(self) -> IntPatch_Point:
-        """Returns the Point corresponding to the LastPoint."""
 
     def NbVertex(self) -> int:
         """Returns number of vertices (IntPatch_Point) of the line"""

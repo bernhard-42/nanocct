@@ -2754,11 +2754,32 @@
 "name": "BRepGraph_EdgesOfVertex",
 "by": "BRepGraph"
 },
+"BVH_Box<double, 2>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "Bnd",
+"skipped": true
+},
+"BVH_Box<double, 3>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "Bnd",
+"skipped": true
+},
 "BVH_Builder<double, 3>": {
 "toolkit": "TKMath",
 "package": "BVH",
 "name": "BVH_Builder3d",
 "by": "BVH"
+},
+"BVH_PrimitiveSet<double, 3>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "IntPatch",
+"skipped": true
 },
 "Bnd_B2<double>": {
 "toolkit": "TKMath",
@@ -4481,6 +4502,27 @@
 "package": "BVH",
 "name": "BVH_Vec4i",
 "by": "BVH"
+},
+"OSD_StreamBuffer<std::iostream>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "OSD",
+"skipped": true
+},
+"OSD_StreamBuffer<std::istream>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "OSD",
+"skipped": true
+},
+"OSD_StreamBuffer<std::ostream>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "OSD",
+"skipped": true
 },
 "math_VectorBase<double>": {
 "toolkit": "TKMath",

@@ -403,7 +403,8 @@ This means that the minimum values of its X, Y and Z
 intervals of definition, when they are finite, are reduced by
 the absolute value of Tol, while the maximum values are
 increased by the same amount.)nbdoc")
-        .def("Get", [](const Bnd_Box &self) { double theXmin{}; double theYmin{}; double theZmin{}; double theXmax{}; double theYmax{}; double theZmax{}; self.Get(theXmin, theYmin, theZmin, theXmax, theYmax, theZmax); return std::make_tuple(theXmin, theYmin, theZmin, theXmax, theYmax, theZmax); }, R"nbdoc(Returns the bounds of this bounding box. The gap is included.
+        .def("Get__float_float_float_float_float_float", [](const Bnd_Box &self) { double theXmin{}; double theYmin{}; double theZmin{}; double theXmax{}; double theYmax{}; double theZmax{}; self.Get(theXmin, theYmin, theZmin, theXmax, theYmax, theZmax); return std::make_tuple(theXmin, theYmin, theZmin, theXmax, theYmax, theZmax); }, R"nbdoc(Get__float_float_float_float_float_float: the C++ overload Get(double &, double &, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the bounds of this bounding box. The gap is included.
 If this bounding box is infinite (i.e. "open"), returned values
 may be equal to +/- Precision::Infinite().
 Standard_ConstructionError exception will be thrown if the box is void.
@@ -574,7 +575,8 @@ This means that the minimum values of its X and Y
 intervals of definition, when they are finite, are reduced by
 the absolute value of Tol, while the maximum values are
 increased by the same amount.)nbdoc")
-        .def("Get", [](const Bnd_Box2d &self) { double aXmin{}; double aYmin{}; double aXmax{}; double aYmax{}; self.Get(aXmin, aYmin, aXmax, aYmax); return std::make_tuple(aXmin, aYmin, aXmax, aYmax); }, R"nbdoc(Returns the bounds of this 2D bounding box.
+        .def("Get__float_float_float_float", [](const Bnd_Box2d &self) { double aXmin{}; double aYmin{}; double aXmax{}; double aYmax{}; self.Get(aXmin, aYmin, aXmax, aYmax); return std::make_tuple(aXmin, aYmin, aXmax, aYmax); }, R"nbdoc(Get__float_float_float_float: the C++ overload Get(double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Returns the bounds of this 2D bounding box.
 The gap is included. If this bounding box is infinite (i.e. "open"), returned values
 may be equal to +/- Precision::Infinite().
 if IsVoid())nbdoc")

@@ -139,9 +139,11 @@ completion of the Units_Lexicon.)nbdoc")
         .def_static("NullDimensions", static_cast<occ::handle<Units_Dimensions> (*)()>(&Units::NullDimensions), R"nbdoc(Returns always the same instance of Dimensions.)nbdoc")
         .def_static("Convert", static_cast<double (*)(const double, const char *const, const char *const)>(&Units::Convert), nb::arg("avalue"), nb::arg("afirstunit"), nb::arg("asecondunit"), R"nbdoc(Converts <avalue> expressed in <afirstunit> into the <asecondunit>.)nbdoc")
         .def_static("ToSI", static_cast<double (*)(const double, const char *const)>(&Units::ToSI), nb::arg("aData"), nb::arg("aUnit"))
-        .def_static("ToSI", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = Units::ToSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"))
+        .def_static("ToSI__Units_Dimensions", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = Units::ToSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(ToSI__Units_Dimensions: the C++ overload ToSI(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+)nbdoc")
         .def_static("FromSI", static_cast<double (*)(const double, const char *const)>(&Units::FromSI), nb::arg("aData"), nb::arg("aUnit"))
-        .def_static("FromSI", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = Units::FromSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"))
+        .def_static("FromSI__Units_Dimensions", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = Units::FromSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(FromSI__Units_Dimensions: the C++ overload FromSI(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+)nbdoc")
         .def_static("Dimensions", static_cast<occ::handle<Units_Dimensions> (*)(const char *const)>(&Units::Dimensions), nb::arg("aType"), R"nbdoc(return the dimension associated to the Type)nbdoc");
     nanoocp_implicit_copy_ctor<Units>(nb::borrow<nb::class_<Units>>(m.attr("Units")));
     nb::borrow<nb::class_<Units_Dimensions>>(m.attr("Units_Dimensions"))

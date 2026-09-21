@@ -73,21 +73,23 @@ class Units:
     def Convert(avalue: float, afirstunit: str, asecondunit: str) -> float:
         """Converts <avalue> expressed in <afirstunit> into the <asecondunit>."""
 
-    @overload
     @staticmethod
     def ToSI(aData: float, aUnit: str) -> float: ...
 
-    @overload
     @staticmethod
-    def ToSI(aData: float, aUnit: str) -> tuple[float, Units_Dimensions]: ...
+    def ToSI__Units_Dimensions(aData: float, aUnit: str) -> tuple[float, Units_Dimensions]:
+        """
+        ToSI__Units_Dimensions: the C++ overload ToSI(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        """
 
-    @overload
     @staticmethod
     def FromSI(aData: float, aUnit: str) -> float: ...
 
-    @overload
     @staticmethod
-    def FromSI(aData: float, aUnit: str) -> tuple[float, Units_Dimensions]: ...
+    def FromSI__Units_Dimensions(aData: float, aUnit: str) -> tuple[float, Units_Dimensions]:
+        """
+        FromSI__Units_Dimensions: the C++ overload FromSI(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        """
 
     @staticmethod
     def Dimensions(aType: str) -> Units_Dimensions:

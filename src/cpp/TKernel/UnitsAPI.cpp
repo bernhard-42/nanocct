@@ -67,11 +67,13 @@ Example: CurrentFromSI(0.001,"LENGTH") returns 1 if current length unit
 is millimeter.)nbdoc")
         .def_static("AnyToLS", static_cast<double (*)(const double, const char *const)>(&UnitsAPI::AnyToLS), nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the local system units value.
 Example: AnyToLS(1.,"in.") returns 25.4 if the LocalSystem is MDTV.)nbdoc")
-        .def_static("AnyToLS", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = UnitsAPI::AnyToLS(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the local system units value.
+        .def_static("AnyToLS__Units_Dimensions", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = UnitsAPI::AnyToLS(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(AnyToLS__Units_Dimensions: the C++ overload AnyToLS(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Converts the local unit value to the local system units value.
 and gives the associated dimension of the unit)nbdoc")
         .def_static("AnyToSI", static_cast<double (*)(const double, const char *const)>(&UnitsAPI::AnyToSI), nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the SI system units value.
 Example: AnyToSI(1.,"in.") returns 0.0254)nbdoc")
-        .def_static("AnyToSI", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = UnitsAPI::AnyToSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the SI system units value.
+        .def_static("AnyToSI__Units_Dimensions", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = UnitsAPI::AnyToSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(AnyToSI__Units_Dimensions: the C++ overload AnyToSI(const double, const char *const, occ::handle<Units_Dimensions> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+Converts the local unit value to the SI system units value.
 and gives the associated dimension of the unit)nbdoc")
         .def_static("AnyFromLS", static_cast<double (*)(const double, const char *const)>(&UnitsAPI::AnyFromLS), nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local system units value to the local unit value.
 Example: AnyFromLS(25.4,"in.") returns 1. if the LocalSystem is MDTV.

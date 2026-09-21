@@ -1,7 +1,7 @@
-# nanoOCP generator report for TKGeomBase: 165 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomBase: 166 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # namespace: 4
-# overload-collision: 4
+# overload-collision: 5
 # override: 4
 # raw-pointer: 77
 # static-rename: 8
@@ -12,10 +12,11 @@ namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ChangeIntervals: anon
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_PointsInspector: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ProjPOnC: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_comp: anonymous namespace (not bound)
-overload-collision	GeomProjLib	GeomProjLib::Curve2d(const occ::handle<Geom_Curve> &, const double, const double, const occ::handle<Geom_Surface> &): same Python signature as Curve2d(const occ::handle<Geom_Curve> &, const double, const double, const occ::handle<Geom_Surface> &, double &) after out-param removal -> unreachable
-overload-collision	GeomProjLib	GeomProjLib::Curve2d(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double): same Python signature as Curve2d(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double, double &) after out-param removal -> unreachable
-overload-collision	GeomTools	GeomTools::Read(occ::handle<Geom2d_Curve> &, Standard_IStream &): same Python signature as Read(occ::handle<Geom_Surface> &, Standard_IStream &) after out-param removal -> unreachable
-overload-collision	GeomTools	GeomTools::Read(occ::handle<Geom_Curve> &, Standard_IStream &): same Python signature as Read(occ::handle<Geom_Surface> &, Standard_IStream &) after out-param removal -> unreachable
+overload-collision	GeomProjLib	GeomProjLib::Curve2d(const occ::handle<Geom_Curve> &, const double, const double, const occ::handle<Geom_Surface> &, double &): same Python signature as another overload after out-param removal -> bound as Curve2d__float
+overload-collision	GeomProjLib	GeomProjLib::Curve2d(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double, double &): same Python signature as another overload after out-param removal -> bound as Curve2d__float
+overload-collision	GeomTools	GeomTools::Read(occ::handle<Geom2d_Curve> &, Standard_IStream &): same Python signature as another overload after out-param removal -> bound as Read__Geom2d_Curve
+overload-collision	GeomTools	GeomTools::Read(occ::handle<Geom_Curve> &, Standard_IStream &): same Python signature as another overload after out-param removal -> bound as Read__Geom_Curve
+overload-collision	GeomTools	GeomTools::Read(occ::handle<Geom_Surface> &, Standard_IStream &): same Python signature as another overload after out-param removal -> bound as Read__Geom_Surface
 override	GeomBndLib	GeomBndLib_Curve.hxx: skipped (overrides.toml [skip] headers)
 override	GeomBndLib	GeomBndLib_Curve2d.hxx: skipped (overrides.toml [skip] headers)
 override	GeomBndLib	GeomBndLib_Line.hxx: skipped (overrides.toml [skip] headers)

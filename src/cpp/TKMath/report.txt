@@ -1,11 +1,11 @@
-# nanoOCP generator report for TKMath: 346 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 349 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 7
 # conversion: 18
 # field: 1
 # iterator: 1
 # not-constructible: 1
-# overload-collision: 10
+# overload-collision: 13
 # override: 32
 # raw-pointer: 46
 # rvalue: 3
@@ -43,16 +43,19 @@ conversion	BVH	NCollection_Vec4<int>::operator type-parameter-0-0 *: conversion 
 field	MathRoot	MathRoot::MultipleGetValueFn::mySamples: field reference member (no pointer-to-member)
 iterator	BVH	BVH::RadixSorter::Sort(): param 'theStart': STL-style iterator
 not-constructible	Poly	Poly_CoherentTriPtr: operator new is not public -> no constructors
-overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &): same Python signature as Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &) after out-param removal -> unreachable
-overload-collision	BSplCLib	BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &): same Python signature as Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &) after out-param removal -> unreachable
-overload-collision	Bnd	Bnd_Box2d::Get(): same Python signature as Get(double &, double &, double &, double &) after out-param removal -> unreachable
-overload-collision	Bnd	Bnd_Box::Get(): same Python signature as Get(double &, double &, double &, double &, double &, double &) after out-param removal -> unreachable
-overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, CSLib_NormalStatus &, gp_Dir &): same Python signature as Normal(const gp_Vec &, const gp_Vec &, double, CSLib_DerivativeStatus &, gp_Dir &) after out-param removal -> unreachable
-overload-collision	Convert	Convert_CompPolynomialToPoles::Knots(occ::handle<NCollection_HArray1<double>> &): same Python signature as Knots() after out-param removal -> unreachable
-overload-collision	Convert	Convert_CompPolynomialToPoles::Multiplicities(occ::handle<NCollection_HArray1<int>> &): same Python signature as Multiplicities() after out-param removal -> unreachable
-overload-collision	Convert	Convert_CompPolynomialToPoles::Poles(occ::handle<NCollection_HArray2<double>> &): same Python signature as Poles() after out-param removal -> unreachable
-overload-collision	gp	gp_Pnt2d::Coord(): same Python signature as Coord(double &, double &) after out-param removal -> unreachable
-overload-collision	gp	gp_Pnt::Coord(): same Python signature as Coord(double &, double &, double &) after out-param removal -> unreachable
+overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &): same Python signature as another overload after out-param removal -> bound as Eval__int_float_float
+overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Eval__int_float_float_float_float
+overload-collision	BSplCLib	BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &): same Python signature as another overload after out-param removal -> bound as Interpolate__float_float_int
+overload-collision	BSplCLib	BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &): same Python signature as another overload after out-param removal -> bound as Interpolate__float_int
+overload-collision	Bnd	Bnd_Box2d::Get(double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Get__float_float_float_float
+overload-collision	Bnd	Bnd_Box::Get(double &, double &, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Get__float_float_float_float_float_float
+overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, CSLib_DerivativeStatus &, gp_Dir &): same Python signature as another overload after out-param removal -> bound as Normal__CSLib_DerivativeStatus
+overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, CSLib_NormalStatus &, gp_Dir &): same Python signature as another overload after out-param removal -> bound as Normal__CSLib_NormalStatus
+overload-collision	Convert	Convert_CompPolynomialToPoles::Knots(occ::handle<NCollection_HArray1<double>> &): same Python signature as another overload after out-param removal -> bound as Knots__NCollection_HArray1__double
+overload-collision	Convert	Convert_CompPolynomialToPoles::Multiplicities(occ::handle<NCollection_HArray1<int>> &): same Python signature as another overload after out-param removal -> bound as Multiplicities__NCollection_HArray1__int
+overload-collision	Convert	Convert_CompPolynomialToPoles::Poles(occ::handle<NCollection_HArray2<double>> &): same Python signature as another overload after out-param removal -> bound as Poles__NCollection_HArray2__double
+overload-collision	gp	gp_Pnt2d::Coord(double &, double &): same Python signature as another overload after out-param removal -> bound as Coord__float_float
+overload-collision	gp	gp_Pnt::Coord(double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Coord__float_float_float
 override	MathLin	MathLin::Internal::ComputeWilkinsonShift: namespace skipped (overrides.toml [skip] namespaces)
 override	MathLin	MathLin::Internal::FindSubmatrixEnd: namespace skipped (overrides.toml [skip] namespaces)
 override	MathLin	MathLin::Internal::Hypot: namespace skipped (overrides.toml [skip] namespaces)

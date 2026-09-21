@@ -243,7 +243,6 @@ class TopAbs:
         VERTEX, SHAPE
         """
 
-    @overload
     @staticmethod
     def ShapeTypeFromString(theTypeString: str) -> TopAbs_ShapeEnum:
         """
@@ -252,10 +251,10 @@ class TopAbs:
         @return shape type or TopAbs_SHAPE if string identifier is invalid
         """
 
-    @overload
     @staticmethod
-    def ShapeTypeFromString(theTypeString: str) -> tuple[bool, TopAbs_ShapeEnum]:
+    def ShapeTypeFromString__TopAbs_ShapeEnum(theTypeString: str) -> tuple[bool, TopAbs_ShapeEnum]:
         """
+        ShapeTypeFromString__TopAbs_ShapeEnum: the C++ overload ShapeTypeFromString(const char *, TopAbs_ShapeEnum &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Determines the shape type from the given string identifier (using case-insensitive
         comparison).
         @param theTypeString string identifier
@@ -271,7 +270,6 @@ class TopAbs:
         @return string identifier from the list FORWARD, REVERSED, INTERNAL, EXTERNAL
         """
 
-    @overload
     @staticmethod
     def ShapeOrientationFromString(theOrientationString: str) -> TopAbs_Orientation:
         """
@@ -281,10 +279,10 @@ class TopAbs:
         @return shape orientation or TopAbs_FORWARD if string identifier is invalid
         """
 
-    @overload
     @staticmethod
-    def ShapeOrientationFromString(theOrientationString: str) -> tuple[bool, TopAbs_Orientation]:
+    def ShapeOrientationFromString__TopAbs_Orientation(theOrientationString: str) -> tuple[bool, TopAbs_Orientation]:
         """
+        ShapeOrientationFromString__TopAbs_Orientation: the C++ overload ShapeOrientationFromString(const char *const, TopAbs_Orientation &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Determines the shape orientation from the given string identifier (using case-insensitive
         comparison).
         @param theOrientationString string identifier

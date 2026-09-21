@@ -143,11 +143,12 @@ class FSD_BinaryFile(nanoocp.Storage.Storage_BaseDriver):
 
     def WriteInfo(self, nbObj: int, dbVersion: nanoocp.TCollection.TCollection_AsciiString, date: nanoocp.TCollection.TCollection_AsciiString, schemaName: nanoocp.TCollection.TCollection_AsciiString, schemaVersion: nanoocp.TCollection.TCollection_AsciiString, appName: nanoocp.TCollection.TCollection_ExtendedString, appVersion: nanoocp.TCollection.TCollection_AsciiString, objectType: nanoocp.TCollection.TCollection_ExtendedString, userInfo: nanoocp.NCollection.NCollection_Sequence[nanoocp.TCollection.TCollection_AsciiString]) -> None: ...
 
-    @overload
     def EndWriteInfoSection(self) -> nanoocp.Storage.Storage_Error: ...
 
-    @overload
-    def EndWriteInfoSection(self) -> tuple[nanoocp.Storage.Storage_Error, object]: ...
+    def EndWriteInfoSection__str(self) -> tuple[nanoocp.Storage.Storage_Error, object]:
+        """
+        EndWriteInfoSection__str: the C++ overload EndWriteInfoSection(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        """
 
     def BeginReadInfoSection(self) -> nanoocp.Storage.Storage_Error: ...
 
@@ -157,22 +158,24 @@ class FSD_BinaryFile(nanoocp.Storage.Storage_BaseDriver):
 
     def EndReadInfoSection(self) -> nanoocp.Storage.Storage_Error: ...
 
-    @overload
     def BeginWriteCommentSection(self) -> nanoocp.Storage.Storage_Error: ...
 
-    @overload
-    def BeginWriteCommentSection(self) -> tuple[nanoocp.Storage.Storage_Error, object]: ...
+    def BeginWriteCommentSection__str(self) -> tuple[nanoocp.Storage.Storage_Error, object]:
+        """
+        BeginWriteCommentSection__str: the C++ overload BeginWriteCommentSection(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        """
 
     def WriteComment(self, userComments: nanoocp.NCollection.NCollection_Sequence[nanoocp.TCollection.TCollection_ExtendedString]) -> None: ...
 
     @staticmethod
     def WriteComment_s(theComments: nanoocp.NCollection.NCollection_Sequence[nanoocp.TCollection.TCollection_ExtendedString], theOnlyCount: bool = False) -> tuple[int, object]: ...
 
-    @overload
     def EndWriteCommentSection(self) -> nanoocp.Storage.Storage_Error: ...
 
-    @overload
-    def EndWriteCommentSection(self) -> tuple[nanoocp.Storage.Storage_Error, object]: ...
+    def EndWriteCommentSection__str(self) -> tuple[nanoocp.Storage.Storage_Error, object]:
+        """
+        EndWriteCommentSection__str: the C++ overload EndWriteCommentSection(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        """
 
     def BeginReadCommentSection(self) -> nanoocp.Storage.Storage_Error: ...
 

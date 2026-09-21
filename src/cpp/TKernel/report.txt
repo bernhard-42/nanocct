@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKernel: 392 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 391 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 7
@@ -6,7 +6,7 @@
 # iterator: 1
 # not-constructible: 3
 # operator: 34
-# overload-collision: 17
+# overload-collision: 16
 # override: 13
 # raw-pointer: 89
 # rvalue: 5
@@ -64,23 +64,22 @@ operator	Units	operator==(const occ::handle<Units_Unit> &, const char *const): f
 operator	Units	operator>(const occ::handle<Units_Token> &, const char *const): free operator not mapped
 operator	Units	operator>(const occ::handle<Units_Token> &, const occ::handle<Units_Token> &): free operator not mapped
 operator	Units	operator>=(const occ::handle<Units_Token> &, const occ::handle<Units_Token> &): free operator not mapped
-overload-collision	Message	Message::MetricFromString(const char *const, Message_MetricType &): same Python signature as MetricFromString(const char *const) after out-param removal -> unreachable
-overload-collision	OSD	OSD_Chronometer::Show(): same Python signature as Show(double &, double &) after out-param removal -> unreachable
-overload-collision	OSD	OSD_Chronometer::Show(Standard_OStream &): same Python signature as Show(double &, double &) after out-param removal -> unreachable
-overload-collision	OSD	OSD_Chronometer::Show(double &): same Python signature as Show(double &, double &) after out-param removal -> unreachable
-overload-collision	OSD	OSD_File::ReadLine(TCollection_AsciiString &, const int, int &): same Python signature as ReadLine(TCollection_AsciiString &, const int) after out-param removal -> unreachable
-overload-collision	OSD	OSD_Timer::Show(): same Python signature as Show(double &, int &, int &, double &) after out-param removal -> unreachable
-overload-collision	OSD	OSD_Timer::Show(Standard_OStream &): same Python signature as Show(double &, int &, int &, double &) after out-param removal -> unreachable
-overload-collision	Quantity	Quantity_Period::Values(int &, int &): same Python signature as Values(int &, int &, int &, int &, int &, int &) after out-param removal -> unreachable
-overload-collision	Storage	Storage_BaseDriver::operator>>(bool &): same Python signature as operator>>(char &) after out-param removal -> unreachable
-overload-collision	Storage	Storage_BaseDriver::operator>>(char16_t &): same Python signature as operator>>(char &) after out-param removal -> unreachable
-overload-collision	Storage	Storage_BaseDriver::operator>>(double &): same Python signature as operator>>(char &) after out-param removal -> unreachable
-overload-collision	Storage	Storage_BaseDriver::operator>>(float &): same Python signature as operator>>(char &) after out-param removal -> unreachable
-overload-collision	Storage	Storage_BaseDriver::operator>>(int &): same Python signature as operator>>(char &) after out-param removal -> unreachable
-overload-collision	Units	Units::FromSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as FromSI(const double, const char *const) after out-param removal -> unreachable
-overload-collision	Units	Units::ToSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as ToSI(const double, const char *const) after out-param removal -> unreachable
-overload-collision	UnitsAPI	UnitsAPI::AnyToLS(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as AnyToLS(const double, const char *const) after out-param removal -> unreachable
-overload-collision	UnitsAPI	UnitsAPI::AnyToSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as AnyToSI(const double, const char *const) after out-param removal -> unreachable
+overload-collision	FSD	FSD_BinaryFile::BeginWriteCommentSection(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as BeginWriteCommentSection__str
+overload-collision	FSD	FSD_BinaryFile::EndWriteCommentSection(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as EndWriteCommentSection__str
+overload-collision	FSD	FSD_BinaryFile::EndWriteInfoSection(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as EndWriteInfoSection__str
+overload-collision	Message	Message::MetricFromString(const char *const, Message_MetricType &): same Python signature as another overload after out-param removal -> bound as MetricFromString__Message_MetricType
+overload-collision	OSD	OSD_Chronometer::Show(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as Show__str
+overload-collision	OSD	OSD_Chronometer::Show(double &): same Python signature as another overload after out-param removal -> bound as Show__float
+overload-collision	OSD	OSD_Chronometer::Show(double &, double &): same Python signature as another overload after out-param removal -> bound as Show__float_float
+overload-collision	OSD	OSD_File::ReadLine(TCollection_AsciiString &, const int, int &): same Python signature as another overload after out-param removal -> bound as ReadLine__int
+overload-collision	OSD	OSD_Timer::Show(Standard_OStream &): same Python signature as another overload after out-param removal -> bound as Show__str
+overload-collision	OSD	OSD_Timer::Show(double &, int &, int &, double &): same Python signature as another overload after out-param removal -> bound as Show__float_int_int_float
+overload-collision	Quantity	Quantity_Period::Values(int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int_int
+overload-collision	Quantity	Quantity_Period::Values(int &, int &, int &, int &, int &, int &): same Python signature as another overload after out-param removal -> bound as Values__int_int_int_int_int_int
+overload-collision	Units	Units::FromSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as FromSI__Units_Dimensions
+overload-collision	Units	Units::ToSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as ToSI__Units_Dimensions
+overload-collision	UnitsAPI	UnitsAPI::AnyToLS(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as AnyToLS__Units_Dimensions
+overload-collision	UnitsAPI	UnitsAPI::AnyToSI(const double, const char *const, occ::handle<Units_Dimensions> &): same Python signature as another overload after out-param removal -> bound as AnyToSI__Units_Dimensions
 override	NCollection	std::tuple_element: namespace skipped (overrides.toml [skip] namespaces)
 override	NCollection	std::tuple_element: namespace skipped (overrides.toml [skip] namespaces)
 override	NCollection	std::tuple_element: namespace skipped (overrides.toml [skip] namespaces)

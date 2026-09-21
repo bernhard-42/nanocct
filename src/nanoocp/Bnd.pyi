@@ -801,9 +801,9 @@ class Bnd_Box:
         increased by the same amount.
         """
 
-    @overload
-    def Get(self) -> tuple[float, float, float, float, float, float]:
+    def Get__float_float_float_float_float_float(self) -> tuple[float, float, float, float, float, float]:
         """
+        Get__float_float_float_float_float_float: the C++ overload Get(double &, double &, double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the bounds of this bounding box. The gap is included.
         If this bounding box is infinite (i.e. "open"), returned values
         may be equal to +/- Precision::Infinite().
@@ -811,7 +811,6 @@ class Bnd_Box:
         if IsVoid()
         """
 
-    @overload
     def Get(self) -> Bnd_Box.Limits:
         """
         Returns the bounds of this bounding box as a Limits structure.
@@ -1281,16 +1280,15 @@ class Bnd_Box2d:
         increased by the same amount.
         """
 
-    @overload
-    def Get(self) -> tuple[float, float, float, float]:
+    def Get__float_float_float_float(self) -> tuple[float, float, float, float]:
         """
+        Get__float_float_float_float: the C++ overload Get(double &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Returns the bounds of this 2D bounding box.
         The gap is included. If this bounding box is infinite (i.e. "open"), returned values
         may be equal to +/- Precision::Infinite().
         if IsVoid()
         """
 
-    @overload
     def Get(self) -> Bnd_Box2d.Limits:
         """
         Returns the bounds of this 2D bounding box as a Limits structure.

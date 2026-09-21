@@ -110,19 +110,27 @@ class Intf_SectionPoint:
         element.
         """
 
-    @overload
-    def InfoFirst(self) -> tuple[Intf_PIType, int, int, float]: ...
+    def InfoFirst__Intf_PIType_int_int_float(self) -> tuple[Intf_PIType, int, int, float]:
+        """
+        InfoFirst__Intf_PIType_int_int_float: the C++ overload InfoFirst(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        """
 
-    @overload
-    def InfoFirst(self) -> tuple[Intf_PIType, int, float]:
-        """Gives the data about the first argument of the Interference."""
+    def InfoFirst__Intf_PIType_int_float(self) -> tuple[Intf_PIType, int, float]:
+        """
+        InfoFirst__Intf_PIType_int_float: the C++ overload InfoFirst(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Gives the data about the first argument of the Interference.
+        """
 
-    @overload
-    def InfoSecond(self) -> tuple[Intf_PIType, int, int, float]: ...
+    def InfoSecond__Intf_PIType_int_int_float(self) -> tuple[Intf_PIType, int, int, float]:
+        """
+        InfoSecond__Intf_PIType_int_int_float: the C++ overload InfoSecond(Intf_PIType &, int &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        """
 
-    @overload
-    def InfoSecond(self) -> tuple[Intf_PIType, int, float]:
-        """Gives the data about the second argument of the Interference."""
+    def InfoSecond__Intf_PIType_int_float(self) -> tuple[Intf_PIType, int, float]:
+        """
+        InfoSecond__Intf_PIType_int_float: the C++ overload InfoSecond(Intf_PIType &, int &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Gives the data about the second argument of the Interference.
+        """
 
     def Incidence(self) -> float:
         """

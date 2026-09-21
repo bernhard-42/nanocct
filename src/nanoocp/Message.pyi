@@ -1005,19 +1005,10 @@ class Message:
         When theToCreate is true - automatically creates message report when not exist.
         """
 
-    @overload
     @staticmethod
-    def MetricFromString(theString: str) -> Message_MetricType:
+    def MetricFromString__Message_MetricType(theString: str) -> tuple[bool, Message_MetricType]:
         """
-        Returns the metric type from the given string identifier.
-        @param theString string identifier
-        @return metric type or Message_MetricType_None if string identifier is invalid
-        """
-
-    @overload
-    @staticmethod
-    def MetricFromString(theString: str) -> tuple[bool, Message_MetricType]:
-        """
+        MetricFromString__Message_MetricType: the C++ overload MetricFromString(const char *const, Message_MetricType &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Determines the metric from the given string identifier.
         @param theString string identifier
         @param theType detected type of metric
@@ -1030,6 +1021,14 @@ class Message:
         Returns the string name for a given metric type.
         @param theType metric type
         @return string identifier from the list of Message_MetricType
+        """
+
+    @staticmethod
+    def MetricFromString(theString: str) -> Message_MetricType:
+        """
+        Returns the metric type from the given string identifier.
+        @param theString string identifier
+        @return metric type or Message_MetricType_None if string identifier is invalid
         """
 
     @staticmethod

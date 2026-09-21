@@ -390,13 +390,17 @@ class BinTools_IStream:
     def ReadShortReal(self) -> float:
         """Reads short real value from the stream."""
 
-    @overload
-    def ReadBools(self) -> tuple[bool, bool, bool, bool, bool, bool, bool]:
-        """Reads 7 boolean values from one byte"""
+    def ReadBools__bool_bool_bool(self) -> tuple[bool, bool, bool]:
+        """
+        ReadBools__bool_bool_bool: the C++ overload ReadBools(bool &, bool &, bool &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Reads 3 boolean values from one byte
+        """
 
-    @overload
-    def ReadBools(self) -> tuple[bool, bool, bool]:
-        """Reads 3 boolean values from one byte"""
+    def ReadBools__bool_bool_bool_bool_bool_bool_bool(self) -> tuple[bool, bool, bool, bool, bool, bool, bool]:
+        """
+        ReadBools__bool_bool_bool_bool_bool_bool_bool: the C++ overload ReadBools(bool &, bool &, bool &, bool &, bool &, bool &, bool &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        Reads 7 boolean values from one byte
+        """
 
     def __bool__(self) -> bool:
         """Returns false if stream reading is failed."""

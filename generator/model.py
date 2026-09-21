@@ -43,6 +43,7 @@ class Param:
     is_handle: bool = False # opencascade::handle<T> (by value or reference): nb::arg(...).none(), a null handle is None
     stream: StreamKind = StreamKind.NONE
     binary: bool = False    # the stream carries a binary format (overrides.toml [stream] binary_packages): bytes / typing.BinaryIO instead of str / typing.TextIO
+    out_py: str = ""        # Python type name of a removed out-parameter (float, int, bool, str, an enum or class name): the R-COLLISION suffix
 
 
 @dataclass
@@ -61,8 +62,8 @@ class Method:
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
     mangled: str = ""                # linker symbol (libclang mangling); R-UNDEFINED compares it with nm's list
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
-    result_scalar: bool = False       # result is arithmetic, bool, enum or a C string (the "direct" API when overloads collide)
-    is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring; loses an overload collision
+    is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring
+    suffix: str = ""                  # R-COLLISION: "__float_float" appended to the Python name when overloads collide after out-param removal
 
 
 @dataclass
@@ -152,6 +153,7 @@ class Function:
     skip_reason: str | None = None
     qualified: str = ""         # C++ name to call (Ns::Name for a function in a namespace); "" -> name
     scope: tuple[str, ...] = () # Python attribute path of the enclosing C++ namespace, relative to the package module
+    suffix: str = ""            # R-COLLISION, as for methods
 
 
 @dataclass
