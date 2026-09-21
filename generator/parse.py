@@ -41,6 +41,7 @@ _SKIP_METHODS = set(_OVERRIDES.get("skip", {}).get("methods", []))
 _EXTRA_INSTANCES = list(_OVERRIDES.get("instantiate", {}).get("extra", []))
 _INCLUDE_HEADERS: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("headers", {})   # package -> the only headers to bind
 INCLUDE_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("packages", {})   # toolkit -> the only packages to generate
+_BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
 
 _UNSUPPORTED_RE = re.compile(
     r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf|"
@@ -1217,6 +1218,11 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     # only instances referenced by members that are actually bound matter, but the over-approximation
     # (every signature seen) is harmless: an unused instantiation just costs compile time
     ir.instances = dict(_instances_seen)
+    if pkg.name in _BINARY_PACKAGES:            # R-STREAM-OUT/IN: binary formats -> bytes / typing.BinaryIO
+        for params in [m.params for c in ir.classes for m in c.methods] + [f.params for f in ir.functions]:
+            for prm in params:
+                if prm.stream != StreamKind.NONE:
+                    prm.binary = True
     if pkg.name == "NCollection":
         for spelled in _EXTRA_INSTANCES:
             m = re.match(r"(\w+)<(.+)>$", spelled)

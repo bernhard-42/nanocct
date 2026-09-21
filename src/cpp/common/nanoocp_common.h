@@ -185,11 +185,16 @@ inline void nanoocp_install_exception_translator(PyObject *fallback) {
 }
 
 // The text an OCCT method wrote to a std::ostream& parameter, as a str. OCCT streams are text (Dump, DumpJson, Print,
-// BRepTools::Write); the few binary ones (BinTools::Write) decode with surrogateescape, so the str is lossless and
-// text.encode("utf-8", "surrogateescape") gives the bytes back.
+// BRepTools::Write); decoded with surrogateescape so that a stray non-UTF-8 byte is lossless.
 inline nb::object nanoocp_stream_text(const std::ostringstream &stream) {
     const std::string text = stream.str();
     return nb::steal(PyUnicode_DecodeUTF8(text.data(), static_cast<Py_ssize_t>(text.size()), "surrogateescape"));
+}
+
+// The same for the binary formats (the BinTools package, overrides.toml [stream] binary_packages): bytes.
+inline nb::bytes nanoocp_stream_bytes(const std::ostringstream &stream) {
+    const std::string data = stream.str();
+    return nb::bytes(data.data(), data.size());
 }
 
 // A std::istream& / std::stringstream parameter (BRepTools::Read, InitFromJson): the text of a Python file-like object
@@ -198,6 +203,11 @@ inline nb::object nanoocp_stream_text(const std::ostringstream &stream) {
 namespace nanoocp {
 struct TextInput {
     std::string text;
+};
+// The binary counterpart (BinTools::Read): a binary file-like object (io.BytesIO, a file opened "rb"), whose read()
+// returns bytes. Typed typing.BinaryIO. A text file-like object falls through (read() returns str).
+struct BinaryInput {
+    std::string data;
 };
 }
 
@@ -223,6 +233,27 @@ template <> struct type_caster<nanoocp::TextInput> {
     }
 
     static handle from_cpp(const nanoocp::TextInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
+};
+
+template <> struct type_caster<nanoocp::BinaryInput> {
+    NB_TYPE_CASTER(nanoocp::BinaryInput, const_name("typing.BinaryIO"))
+
+    bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
+        if (!hasattr(src, "read"))
+            return false;
+        try {
+            object data = src.attr("read")();
+            if (!PyBytes_Check(data.ptr()))
+                return false;
+            bytes b = borrow<bytes>(data);
+            value.data.assign(b.c_str(), b.size());
+        } catch (...) {
+            return false;
+        }
+        return true;
+    }
+
+    static handle from_cpp(const nanoocp::BinaryInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
 };
 
 NAMESPACE_END(detail)

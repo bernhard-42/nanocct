@@ -96,3 +96,11 @@ extra = [
 [include]
 packages = {}
 headers = {}
+
+# Packages whose stream parameters carry a binary format: a std::ostream& result is returned as bytes and a
+# std::istream& parameter takes a binary file-like object (io.BytesIO), instead of str / typing.TextIO (Design.md 6,
+# R-STREAM-OUT/IN). Everything else OCCT streams is text (Dump, DumpJson, BRepTools::Write, ...).
+[stream]
+binary_packages = [
+    "BinTools",      # BinTools::Write/Read, BinTools_ShapeSet & co.: the binary BRep format (BinLDrivers etc. follow in Phase 2)
+]

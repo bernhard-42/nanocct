@@ -53,10 +53,19 @@ def test_geomtools_write():
     assert text.split()[0] == "2"                                      # curve type code of a circle in the BRep geometry format
 
 
-def test_binary_stream_is_a_lossless_str():
+def test_binary_stream_is_bytes(tmp_path):
+    # the BinTools package carries a binary format (overrides.toml [stream] binary_packages): bytes out, BinaryIO in
     from nanoocp import BinTools
-    data = BinTools.BinTools.Write(_edge())                            # a binary format: str via surrogateescape, never raises
-    assert isinstance(data, str) and len(data.encode("utf-8", "surrogateescape")) > len(data)
+    edge = _edge()
+    data = BinTools.BinTools.Write(edge)
+    assert isinstance(data, bytes) and data.startswith(b"\nOpen CASCADE Topology")
     back = TopoDS.TopoDS_Shape()
-    BinTools.BinTools.Read(back, io.StringIO(data))                    # the inverse encoding on the way in
+    BinTools.BinTools.Read(back, io.BytesIO(data))
     assert back.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE
+    with pytest.raises(TypeError):                                     # a text file-like object does not match
+        BinTools.BinTools.Read(back, io.StringIO("x"))
+    path = str(tmp_path / "e.bin")                                     # the bytes equal the file form
+    assert BinTools.BinTools.Write(edge, path) is True
+    assert (tmp_path / "e.bin").read_bytes() == data
+    assert BinTools.BinTools.Write.__doc__.splitlines()[0].endswith("-> bytes")
+    assert "theStream: typing.BinaryIO" in BinTools.BinTools.Read.__doc__

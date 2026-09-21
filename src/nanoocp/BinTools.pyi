@@ -1,7 +1,7 @@
 """OCCT package BinTools (toolkit TKBRep)"""
 
 import enum
-from typing import TextIO, overload
+from typing import BinaryIO, overload
 
 import nanoocp.Geom
 import nanoocp.Geom2d
@@ -144,23 +144,23 @@ class BinTools:
     def __init__(self, theOther: BinTools) -> None: ...
 
     @staticmethod
-    def PutReal(theValue: float) -> object: ...
+    def PutReal(theValue: float) -> bytes: ...
 
     @staticmethod
-    def PutShortReal(theValue: float) -> object: ...
+    def PutShortReal(theValue: float) -> bytes: ...
 
     @staticmethod
-    def PutInteger(theValue: int) -> object: ...
+    def PutInteger(theValue: int) -> bytes: ...
 
     @staticmethod
-    def PutBool(theValue: bool) -> object: ...
+    def PutBool(theValue: bool) -> bytes: ...
 
     @staticmethod
-    def PutExtChar(theValue: str) -> object: ...
+    def PutExtChar(theValue: str) -> bytes: ...
 
     @overload
     @staticmethod
-    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the shape to the stream in binary format BinTools_FormatVersion_CURRENT.
         This alias writes shape with triangulation data.
@@ -171,7 +171,7 @@ class BinTools:
 
     @overload
     @staticmethod
-    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theWithTriangles: bool, theWithNormals: bool, theVersion: BinTools_FormatVersion, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theWithTriangles: bool, theWithNormals: bool, theVersion: BinTools_FormatVersion, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the shape to the stream in binary format of specified version.
         @param[in] theShape          the shape to write
@@ -215,7 +215,7 @@ class BinTools:
 
     @overload
     @staticmethod
-    def Read(theShape: nanoocp.TopoDS.TopoDS_Shape, theStream: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def Read(theShape: nanoocp.TopoDS.TopoDS_Shape, theStream: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """Reads a shape from <theStream> and returns it in <theShape>."""
 
     @overload
@@ -275,13 +275,13 @@ class BinTools_Curve2dSet:
     def Index(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> int:
         """Returns the index of <L>."""
 
-    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
         """
 
-    def Read(self, IS: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def Read(self, IS: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the content of me from the stream <IS>. me
         is first cleared.
@@ -316,13 +316,13 @@ class BinTools_CurveSet:
     def Index(self, C: nanoocp.Geom.Geom_Curve | None) -> int:
         """Returns the index of <L>."""
 
-    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
         """
 
-    def Read(self, IS: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def Read(self, IS: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the content of me from the stream <IS>. me
         is first cleared.
@@ -436,13 +436,13 @@ class BinTools_LocationSet:
     def NbLocations(self) -> int:
         """Returns number of locations."""
 
-    def Write(self) -> object:
+    def Write(self) -> bytes:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
         """
 
-    def Read(self, IS: TextIO) -> None:
+    def Read(self, IS: BinaryIO) -> None:
         """
         Reads the content of me from the stream <IS>. me
         is first cleared.
@@ -486,7 +486,7 @@ class BinTools_ShapeSetBase:
         """Clears the content of the set."""
 
     @overload
-    def Write(self, arg1: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, arg1: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the content of me on the stream <OS> in binary
         format that can be read back by Read.
@@ -503,7 +503,7 @@ class BinTools_ShapeSetBase:
         """
 
     @overload
-    def Write(self, arg0: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def Write(self, arg0: nanoocp.TopoDS.TopoDS_Shape) -> bytes:
         """
         Writes on <OS> the shape <S>. Writes the
         orientation, the index of the TShape and the index
@@ -511,7 +511,7 @@ class BinTools_ShapeSetBase:
         """
 
     @overload
-    def Read(self, arg0: TextIO, arg1: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def Read(self, arg0: BinaryIO, arg1: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the content of me from the binary stream <IS>. me
         is first cleared.
@@ -528,7 +528,7 @@ class BinTools_ShapeSetBase:
         """
 
     @overload
-    def Read(self, arg0: TextIO, arg1: nanoocp.TopoDS.TopoDS_Shape) -> None:
+    def Read(self, arg0: BinaryIO, arg1: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """An empty virtual method for redefinition in shape-reader."""
 
 class BinTools_SurfaceSet:
@@ -556,13 +556,13 @@ class BinTools_SurfaceSet:
     def Index(self, S: nanoocp.Geom.Geom_Surface | None) -> int:
         """Returns the index of <L>."""
 
-    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the content of me on the stream <OS> in
         binary format that can be read back by Read.
         """
 
-    def Read(self, IS: TextIO, therange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def Read(self, IS: BinaryIO, therange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the content of me from the stream <IS>. me
         is first cleared.
@@ -611,7 +611,7 @@ class BinTools_ShapeSet(BinTools_ShapeSetBase):
         """Returns number of shapes read from file."""
 
     @overload
-    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the content of me on the stream <OS> in binary
         format that can be read back by Read.
@@ -628,7 +628,7 @@ class BinTools_ShapeSet(BinTools_ShapeSetBase):
         """
 
     @overload
-    def Write(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def Write(self, S: nanoocp.TopoDS.TopoDS_Shape) -> bytes:
         """
         Writes on <OS> the shape <S>. Writes the
         orientation, the index of the TShape and the index
@@ -636,7 +636,7 @@ class BinTools_ShapeSet(BinTools_ShapeSetBase):
         """
 
     @overload
-    def Read(self, IS: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def Read(self, IS: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the content of me from the binary stream <IS>. me
         is first cleared.
@@ -653,34 +653,34 @@ class BinTools_ShapeSet(BinTools_ShapeSetBase):
         """
 
     @overload
-    def Read(self, arg0: TextIO, arg1: nanoocp.TopoDS.TopoDS_Shape) -> None:
+    def Read(self, arg0: BinaryIO, arg1: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """An empty virtual method for redefinition in shape-reader."""
 
-    def WriteGeometry(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WriteGeometry(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the geometry of me on the stream <OS> in a
         binary format that can be read back by Read.
         """
 
-    def ReadGeometry(self, IS: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def ReadGeometry(self, IS: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """Reads the geometry of me from the stream <IS>."""
 
-    def ReadFlagsAndSubs(self, S: nanoocp.TopoDS.TopoDS_Shape, T: nanoocp.TopAbs.TopAbs_ShapeEnum, IS: TextIO, NbShapes: int) -> None:
+    def ReadFlagsAndSubs(self, S: nanoocp.TopoDS.TopoDS_Shape, T: nanoocp.TopAbs.TopAbs_ShapeEnum, IS: BinaryIO, NbShapes: int) -> None:
         """Reads from <IS> a shape flags and sub-shapes and modifies S."""
 
-    def ReadSubs(self, S: nanoocp.TopoDS.TopoDS_Shape, IS: TextIO, NbShapes: int) -> None:
+    def ReadSubs(self, S: nanoocp.TopoDS.TopoDS_Shape, IS: BinaryIO, NbShapes: int) -> None:
         """
         Reads from <IS> a shape and returns it in S.
         <NbShapes> is the number of tshapes in the set.
         """
 
-    def WriteShape(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def WriteShape(self, S: nanoocp.TopoDS.TopoDS_Shape) -> bytes:
         """
         Writes the shape <S> on the stream <OS> in a
         binary format that can be read back by Read.
         """
 
-    def ReadShape(self, T: nanoocp.TopAbs.TopAbs_ShapeEnum, IS: TextIO, S: nanoocp.TopoDS.TopoDS_Shape) -> None:
+    def ReadShape(self, T: nanoocp.TopAbs.TopAbs_ShapeEnum, IS: BinaryIO, S: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """Reads a shape of type <T> from the stream <IS> and returns it in <S>."""
 
     def AddShape(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None:
@@ -689,39 +689,39 @@ class BinTools_ShapeSet(BinTools_ShapeSetBase):
     def AddShapes(self, S1: nanoocp.TopoDS.TopoDS_Shape, S2: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """Inserts the shape <S2> in the shape <S1>."""
 
-    def ReadPolygon3D(self, IS: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def ReadPolygon3D(self, IS: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the 3d polygons of me
         from the stream <IS>.
         """
 
-    def WritePolygon3D(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WritePolygon3D(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the 3d polygons
         on the stream <OS> in a format that can
         be read back by Read.
         """
 
-    def ReadTriangulation(self, IS: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def ReadTriangulation(self, IS: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the triangulation of me
         from the stream <IS>.
         """
 
-    def WriteTriangulation(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WriteTriangulation(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the triangulation
         on the stream <OS> in a format that can
         be read back by Read.
         """
 
-    def ReadPolygonOnTriangulation(self, IS: TextIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def ReadPolygonOnTriangulation(self, IS: BinaryIO, theRange: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """
         Reads the polygons on triangulation of me
         from the stream <IS>.
         """
 
-    def WritePolygonOnTriangulation(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WritePolygonOnTriangulation(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
         """
         Writes the polygons on triangulation
         on the stream <OS> in a format that can
@@ -744,7 +744,7 @@ class BinTools_ShapeReader(BinTools_ShapeSetBase):
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Read(self, theStream: TextIO, theShape: nanoocp.TopoDS.TopoDS_Shape) -> None:
+    def Read(self, theStream: BinaryIO, theShape: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """
         Reads the shape from stream using previously restored shapes and objects by references.
         """
@@ -771,7 +771,7 @@ class BinTools_ShapeWriter(BinTools_ShapeSetBase):
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Write(self, theShape: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def Write(self, theShape: nanoocp.TopoDS.TopoDS_Shape) -> bytes:
         """
         Writes the shape to stream using previously stored shapes and objects to refer them.
         """

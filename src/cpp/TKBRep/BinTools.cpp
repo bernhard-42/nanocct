@@ -100,17 +100,17 @@ void nanoocp_templates_BinTools(nb::module_ &m) {
 void nanoocp_define_BinTools(nb::module_ &m) {
     nanoocp_implicit_default_ctor<BinTools>(nb::borrow<nb::class_<BinTools>>(m.attr("BinTools")));
     nb::borrow<nb::class_<BinTools>>(m.attr("BinTools"))
-        .def_static("PutReal", [](const double & theValue) { std::ostringstream OS_stream; BinTools::PutReal(OS_stream, theValue); return nanoocp_stream_text(OS_stream); }, nb::arg("theValue"))
-        .def_static("PutShortReal", [](const float & theValue) { std::ostringstream OS_stream; BinTools::PutShortReal(OS_stream, theValue); return nanoocp_stream_text(OS_stream); }, nb::arg("theValue"))
-        .def_static("PutInteger", [](const int theValue) { std::ostringstream OS_stream; BinTools::PutInteger(OS_stream, theValue); return nanoocp_stream_text(OS_stream); }, nb::arg("theValue"))
-        .def_static("PutBool", [](const bool theValue) { std::ostringstream OS_stream; BinTools::PutBool(OS_stream, theValue); return nanoocp_stream_text(OS_stream); }, nb::arg("theValue"))
-        .def_static("PutExtChar", [](const char16_t theValue) { std::ostringstream OS_stream; BinTools::PutExtChar(OS_stream, theValue); return nanoocp_stream_text(OS_stream); }, nb::arg("theValue"))
-        .def_static("Write", [](const TopoDS_Shape & theShape, const Message_ProgressRange & theRange) { std::ostringstream theStream_stream; BinTools::Write(theShape, theStream_stream, theRange); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the stream in binary format BinTools_FormatVersion_CURRENT.
+        .def_static("PutReal", [](const double & theValue) { std::ostringstream OS_stream; BinTools::PutReal(OS_stream, theValue); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theValue"))
+        .def_static("PutShortReal", [](const float & theValue) { std::ostringstream OS_stream; BinTools::PutShortReal(OS_stream, theValue); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theValue"))
+        .def_static("PutInteger", [](const int theValue) { std::ostringstream OS_stream; BinTools::PutInteger(OS_stream, theValue); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theValue"))
+        .def_static("PutBool", [](const bool theValue) { std::ostringstream OS_stream; BinTools::PutBool(OS_stream, theValue); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theValue"))
+        .def_static("PutExtChar", [](const char16_t theValue) { std::ostringstream OS_stream; BinTools::PutExtChar(OS_stream, theValue); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theValue"))
+        .def_static("Write", [](const TopoDS_Shape & theShape, const Message_ProgressRange & theRange) { std::ostringstream theStream_stream; BinTools::Write(theShape, theStream_stream, theRange); return nanoocp_stream_bytes(theStream_stream); }, nb::arg("theShape"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the stream in binary format BinTools_FormatVersion_CURRENT.
 This alias writes shape with triangulation data.
 @param[in] theShape        the shape to write
 @param[in][out] theStream  the stream to output shape into
 @param theRange            the range of progress indicator to fill in)nbdoc")
-        .def_static("Write", [](const TopoDS_Shape & theShape, const bool theWithTriangles, const bool theWithNormals, const BinTools_FormatVersion theVersion, const Message_ProgressRange & theRange) { std::ostringstream theStream_stream; BinTools::Write(theShape, theStream_stream, theWithTriangles, theWithNormals, theVersion, theRange); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theWithTriangles"), nb::arg("theWithNormals"), nb::arg("theVersion"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the stream in binary format of specified version.
+        .def_static("Write", [](const TopoDS_Shape & theShape, const bool theWithTriangles, const bool theWithNormals, const BinTools_FormatVersion theVersion, const Message_ProgressRange & theRange) { std::ostringstream theStream_stream; BinTools::Write(theShape, theStream_stream, theWithTriangles, theWithNormals, theVersion, theRange); return nanoocp_stream_bytes(theStream_stream); }, nb::arg("theShape"), nb::arg("theWithTriangles"), nb::arg("theWithNormals"), nb::arg("theVersion"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the stream in binary format of specified version.
 @param[in] theShape          the shape to write
 @param[in][out] theStream    the stream to output shape into
 @param[in] theWithTriangles  flag which specifies whether to save shape with (TRUE) or without
@@ -121,7 +121,7 @@ without (FALSE) normals;
 has no effect on triangulation-only geometry
 @param[in] theVersion        the BinTools format version
 @param theRange              the range of progress indicator to fill in)nbdoc")
-        .def_static("Read", [](TopoDS_Shape & theShape, const nanoocp::TextInput &theStream, const Message_ProgressRange & theRange) { std::stringstream theStream_stream(theStream.text); BinTools::Read(theShape, theStream_stream, theRange); }, nb::arg("theShape"), nb::arg("theStream"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a shape from <theStream> and returns it in <theShape>.)nbdoc")
+        .def_static("Read", [](TopoDS_Shape & theShape, const nanoocp::BinaryInput &theStream, const Message_ProgressRange & theRange) { std::stringstream theStream_stream(theStream.data); BinTools::Read(theShape, theStream_stream, theRange); }, nb::arg("theShape"), nb::arg("theStream"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a shape from <theStream> and returns it in <theShape>.)nbdoc")
         .def_static("Write", static_cast<bool (*)(const TopoDS_Shape &, const char *const, const Message_ProgressRange &)>(&BinTools::Write), nb::arg("theShape"), nb::arg("theFile"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the file in binary format BinTools_FormatVersion_CURRENT.
 @param[in] theShape  the shape to write
 @param[in] theFile   the path to file to output shape into
@@ -153,9 +153,9 @@ has no effect on triangulation-only geometry
 its index.)nbdoc")
         .def("Curve2d", static_cast<occ::handle<Geom2d_Curve> (BinTools_Curve2dSet::*)(const int) const>(&BinTools_Curve2dSet::Curve2d), nb::arg("I"), R"nbdoc(Returns the Curve of index <I>.)nbdoc")
         .def("Index", static_cast<int (BinTools_Curve2dSet::*)(const occ::handle<Geom2d_Curve> &) const>(&BinTools_Curve2dSet::Index), nb::arg("C").none(), R"nbdoc(Returns the index of <L>.)nbdoc")
-        .def("Write", [](const BinTools_Curve2dSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in a
+        .def("Write", [](const BinTools_Curve2dSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in a
 format that can be read back by Read.)nbdoc")
-        .def("Read", [](BinTools_Curve2dSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
+        .def("Read", [](BinTools_Curve2dSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.data); self.Read(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
 is first cleared.)nbdoc")
         .def_static("WriteCurve2d", static_cast<void (*)(const occ::handle<Geom2d_Curve> &, BinTools_OStream &)>(&BinTools_Curve2dSet::WriteCurve2d), nb::arg("C").none(), nb::arg("OS"), R"nbdoc(Dumps the curve on the binary stream, that can be read back.)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_Curve2dSet>(nb::borrow<nb::class_<BinTools_Curve2dSet>>(m.attr("BinTools_Curve2dSet")));
@@ -166,9 +166,9 @@ is first cleared.)nbdoc")
 its index.)nbdoc")
         .def("Curve", static_cast<occ::handle<Geom_Curve> (BinTools_CurveSet::*)(const int) const>(&BinTools_CurveSet::Curve), nb::arg("I"), R"nbdoc(Returns the Curve of index <I>.)nbdoc")
         .def("Index", static_cast<int (BinTools_CurveSet::*)(const occ::handle<Geom_Curve> &) const>(&BinTools_CurveSet::Index), nb::arg("C").none(), R"nbdoc(Returns the index of <L>.)nbdoc")
-        .def("Write", [](const BinTools_CurveSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in a
+        .def("Write", [](const BinTools_CurveSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in a
 format that can be read back by Read.)nbdoc")
-        .def("Read", [](BinTools_CurveSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
+        .def("Read", [](BinTools_CurveSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.data); self.Read(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
 is first cleared.)nbdoc")
         .def_static("WriteCurve", static_cast<void (*)(const occ::handle<Geom_Curve> &, BinTools_OStream &)>(&BinTools_CurveSet::WriteCurve), nb::arg("C").none(), nb::arg("OS"), R"nbdoc(Dumps the curve on the stream in binary format
 that can be read back.)nbdoc");
@@ -201,9 +201,9 @@ its index.)nbdoc")
         .def("Location", static_cast<const TopLoc_Location & (BinTools_LocationSet::*)(const int) const>(&BinTools_LocationSet::Location), nb::arg("I"), R"nbdoc(Returns the location of index <I>.)nbdoc")
         .def("Index", static_cast<int (BinTools_LocationSet::*)(const TopLoc_Location &) const>(&BinTools_LocationSet::Index), nb::arg("L"), R"nbdoc(Returns the index of <L>.)nbdoc")
         .def("NbLocations", static_cast<int (BinTools_LocationSet::*)() const>(&BinTools_LocationSet::NbLocations), R"nbdoc(Returns number of locations.)nbdoc")
-        .def("Write", [](const BinTools_LocationSet &self) { std::ostringstream OS_stream; self.Write(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Writes the content of me on the stream <OS> in a
+        .def("Write", [](const BinTools_LocationSet &self) { std::ostringstream OS_stream; self.Write(OS_stream); return nanoocp_stream_bytes(OS_stream); }, R"nbdoc(Writes the content of me on the stream <OS> in a
 format that can be read back by Read.)nbdoc")
-        .def("Read", [](BinTools_LocationSet &self, const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); self.Read(IS_stream); }, nb::arg("IS"), R"nbdoc(Reads the content of me from the stream <IS>. me
+        .def("Read", [](BinTools_LocationSet &self, const nanoocp::BinaryInput &IS) { std::stringstream IS_stream(IS.data); self.Read(IS_stream); }, nb::arg("IS"), R"nbdoc(Reads the content of me from the stream <IS>. me
 is first cleared.)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_LocationSet>(nb::borrow<nb::class_<BinTools_LocationSet>>(m.attr("BinTools_LocationSet")));
     nb::borrow<nb::class_<BinTools_ShapeSetBase>>(m.attr("BinTools_ShapeSetBase"))
@@ -217,7 +217,7 @@ Ignored (always written) if face defines only triangulation (no surface).)nbdoc"
         .def("SetFormatNb", static_cast<void (BinTools_ShapeSetBase::*)(const int)>(&BinTools_ShapeSetBase::SetFormatNb), nb::arg("theFormatNb"), R"nbdoc(Sets the BinTools_FormatVersion.)nbdoc")
         .def("FormatNb", static_cast<int (BinTools_ShapeSetBase::*)() const>(&BinTools_ShapeSetBase::FormatNb), R"nbdoc(Returns the BinTools_FormatVersion.)nbdoc")
         .def("Clear", static_cast<void (BinTools_ShapeSetBase::*)()>(&BinTools_ShapeSetBase::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
-        .def("Write", [](BinTools_ShapeSetBase &self, const Message_ProgressRange & arg1) { std::ostringstream arg0_stream; self.Write(arg0_stream, arg1); return nanoocp_stream_text(arg0_stream); }, nb::arg("arg1") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in binary
+        .def("Write", [](BinTools_ShapeSetBase &self, const Message_ProgressRange & arg1) { std::ostringstream arg0_stream; self.Write(arg0_stream, arg1); return nanoocp_stream_bytes(arg0_stream); }, nb::arg("arg1") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in binary
 format that can be read back by Read.
 
 Writes the locations.
@@ -229,7 +229,7 @@ For each shape:
 Write the type.
 calls WriteGeometry(S).
 Write the flags, the subshapes.)nbdoc")
-        .def("Read", [](BinTools_ShapeSetBase &self, const nanoocp::TextInput &arg0, const Message_ProgressRange & arg1) { std::stringstream arg0_stream(arg0.text); self.Read(arg0_stream, arg1); }, nb::arg("arg0"), nb::arg("arg1") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the binary stream <IS>. me
+        .def("Read", [](BinTools_ShapeSetBase &self, const nanoocp::BinaryInput &arg0, const Message_ProgressRange & arg1) { std::stringstream arg0_stream(arg0.data); self.Read(arg0_stream, arg1); }, nb::arg("arg0"), nb::arg("arg1") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the binary stream <IS>. me
 is first cleared.
 
 Reads the locations.
@@ -241,10 +241,10 @@ For each shape
 Reads the type.
 calls ReadGeometry(T,S).
 Reads the flag, the subshapes.)nbdoc")
-        .def("Write", [](BinTools_ShapeSetBase &self, const TopoDS_Shape & arg0) { std::ostringstream arg1_stream; self.Write(arg0, arg1_stream); return nanoocp_stream_text(arg1_stream); }, nb::arg("arg0"), R"nbdoc(Writes on <OS> the shape <S>. Writes the
+        .def("Write", [](BinTools_ShapeSetBase &self, const TopoDS_Shape & arg0) { std::ostringstream arg1_stream; self.Write(arg0, arg1_stream); return nanoocp_stream_bytes(arg1_stream); }, nb::arg("arg0"), R"nbdoc(Writes on <OS> the shape <S>. Writes the
 orientation, the index of the TShape and the index
 of the Location.)nbdoc")
-        .def("Read", [](BinTools_ShapeSetBase &self, const nanoocp::TextInput &arg0, TopoDS_Shape & arg1) { std::stringstream arg0_stream(arg0.text); self.Read(arg0_stream, arg1); }, nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(An empty virtual method for redefinition in shape-reader.)nbdoc");
+        .def("Read", [](BinTools_ShapeSetBase &self, const nanoocp::BinaryInput &arg0, TopoDS_Shape & arg1) { std::stringstream arg0_stream(arg0.data); self.Read(arg0_stream, arg1); }, nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(An empty virtual method for redefinition in shape-reader.)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_ShapeSetBase>(nb::borrow<nb::class_<BinTools_ShapeSetBase>>(m.attr("BinTools_ShapeSetBase")));
     nb::borrow<nb::class_<BinTools_SurfaceSet>>(m.attr("BinTools_SurfaceSet"))
         .def(nb::init<>(), R"nbdoc(Returns an empty set of Surfaces.)nbdoc")
@@ -253,9 +253,9 @@ of the Location.)nbdoc")
 its index.)nbdoc")
         .def("Surface", static_cast<occ::handle<Geom_Surface> (BinTools_SurfaceSet::*)(const int) const>(&BinTools_SurfaceSet::Surface), nb::arg("I"), R"nbdoc(Returns the Surface of index <I>.)nbdoc")
         .def("Index", static_cast<int (BinTools_SurfaceSet::*)(const occ::handle<Geom_Surface> &) const>(&BinTools_SurfaceSet::Index), nb::arg("S").none(), R"nbdoc(Returns the index of <L>.)nbdoc")
-        .def("Write", [](const BinTools_SurfaceSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in
+        .def("Write", [](const BinTools_SurfaceSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in
 binary format that can be read back by Read.)nbdoc")
-        .def("Read", [](BinTools_SurfaceSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & therange) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, therange); }, nb::arg("IS"), nb::arg("therange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
+        .def("Read", [](BinTools_SurfaceSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & therange) { std::stringstream IS_stream(IS.data); self.Read(IS_stream, therange); }, nb::arg("IS"), nb::arg("therange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
 is first cleared.)nbdoc")
         .def_static("WriteSurface", static_cast<void (*)(const occ::handle<Geom_Surface> &, BinTools_OStream &)>(&BinTools_SurfaceSet::WriteSurface), nb::arg("S").none(), nb::arg("OS"), R"nbdoc(Dumps the surface on the stream in binary
 format that can be read back.)nbdoc");
@@ -271,7 +271,7 @@ The method AddGeometry is called on each sub-shape.)nbdoc")
         .def("Locations", static_cast<const BinTools_LocationSet & (BinTools_ShapeSet::*)() const>(&BinTools_ShapeSet::Locations))
         .def("ChangeLocations", static_cast<BinTools_LocationSet & (BinTools_ShapeSet::*)()>(&BinTools_ShapeSet::ChangeLocations), nb::rv_policy::reference_internal)
         .def("NbShapes", static_cast<int (BinTools_ShapeSet::*)() const>(&BinTools_ShapeSet::NbShapes), R"nbdoc(Returns number of shapes read from file.)nbdoc")
-        .def("Write", [](BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in binary
+        .def("Write", [](BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.Write(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in binary
 format that can be read back by Read.
 
 Writes the locations.
@@ -283,7 +283,7 @@ For each shape:
 Write the type.
 calls WriteGeometry(S).
 Write the flags, the subshapes.)nbdoc")
-        .def("Read", [](BinTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the binary stream <IS>. me
+        .def("Read", [](BinTools_ShapeSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.data); self.Read(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the binary stream <IS>. me
 is first cleared.
 
 Reads the locations.
@@ -295,48 +295,48 @@ For each shape
 Reads the type.
 calls ReadGeometry(T,S).
 Reads the flag, the subshapes.)nbdoc")
-        .def("Write", [](BinTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.Write(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Writes on <OS> the shape <S>. Writes the
+        .def("Write", [](BinTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.Write(S, OS_stream); return nanoocp_stream_bytes(OS_stream); }, nb::arg("S"), R"nbdoc(Writes on <OS> the shape <S>. Writes the
 orientation, the index of the TShape and the index
 of the Location.)nbdoc")
-        .def("WriteGeometry", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WriteGeometry(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the geometry of me on the stream <OS> in a
+        .def("WriteGeometry", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WriteGeometry(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the geometry of me on the stream <OS> in a
 binary format that can be read back by Read.)nbdoc")
-        .def("ReadGeometry", [](BinTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.text); self.ReadGeometry(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the geometry of me from the stream <IS>.)nbdoc")
-        .def("ReadFlagsAndSubs", [](BinTools_ShapeSet &self, TopoDS_Shape & S, const TopAbs_ShapeEnum T, const nanoocp::TextInput &IS, const int NbShapes) { std::stringstream IS_stream(IS.text); self.ReadFlagsAndSubs(S, T, IS_stream, NbShapes); }, nb::arg("S"), nb::arg("T"), nb::arg("IS"), nb::arg("NbShapes"), R"nbdoc(Reads from <IS> a shape flags and sub-shapes and modifies S.)nbdoc")
-        .def("ReadSubs", [](BinTools_ShapeSet &self, TopoDS_Shape & S, const nanoocp::TextInput &IS, const int NbShapes) { std::stringstream IS_stream(IS.text); self.ReadSubs(S, IS_stream, NbShapes); }, nb::arg("S"), nb::arg("IS"), nb::arg("NbShapes"), R"nbdoc(Reads from <IS> a shape and returns it in S.
+        .def("ReadGeometry", [](BinTools_ShapeSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.data); self.ReadGeometry(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the geometry of me from the stream <IS>.)nbdoc")
+        .def("ReadFlagsAndSubs", [](BinTools_ShapeSet &self, TopoDS_Shape & S, const TopAbs_ShapeEnum T, const nanoocp::BinaryInput &IS, const int NbShapes) { std::stringstream IS_stream(IS.data); self.ReadFlagsAndSubs(S, T, IS_stream, NbShapes); }, nb::arg("S"), nb::arg("T"), nb::arg("IS"), nb::arg("NbShapes"), R"nbdoc(Reads from <IS> a shape flags and sub-shapes and modifies S.)nbdoc")
+        .def("ReadSubs", [](BinTools_ShapeSet &self, TopoDS_Shape & S, const nanoocp::BinaryInput &IS, const int NbShapes) { std::stringstream IS_stream(IS.data); self.ReadSubs(S, IS_stream, NbShapes); }, nb::arg("S"), nb::arg("IS"), nb::arg("NbShapes"), R"nbdoc(Reads from <IS> a shape and returns it in S.
 <NbShapes> is the number of tshapes in the set.)nbdoc")
-        .def("Read", [](BinTools_ShapeSet &self, const nanoocp::TextInput &arg0, TopoDS_Shape & arg1) { std::stringstream arg0_stream(arg0.text); self.Read(arg0_stream, arg1); }, nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(An empty virtual method for redefinition in shape-reader.)nbdoc")
-        .def("WriteShape", [](const BinTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.WriteShape(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Writes the shape <S> on the stream <OS> in a
+        .def("Read", [](BinTools_ShapeSet &self, const nanoocp::BinaryInput &arg0, TopoDS_Shape & arg1) { std::stringstream arg0_stream(arg0.data); self.Read(arg0_stream, arg1); }, nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(An empty virtual method for redefinition in shape-reader.)nbdoc")
+        .def("WriteShape", [](const BinTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.WriteShape(S, OS_stream); return nanoocp_stream_bytes(OS_stream); }, nb::arg("S"), R"nbdoc(Writes the shape <S> on the stream <OS> in a
 binary format that can be read back by Read.)nbdoc")
-        .def("ReadShape", [](BinTools_ShapeSet &self, const TopAbs_ShapeEnum T, const nanoocp::TextInput &IS, TopoDS_Shape & S) { std::stringstream IS_stream(IS.text); self.ReadShape(T, IS_stream, S); }, nb::arg("T"), nb::arg("IS"), nb::arg("S"), R"nbdoc(Reads a shape of type <T> from the stream <IS> and returns it in <S>.)nbdoc")
+        .def("ReadShape", [](BinTools_ShapeSet &self, const TopAbs_ShapeEnum T, const nanoocp::BinaryInput &IS, TopoDS_Shape & S) { std::stringstream IS_stream(IS.data); self.ReadShape(T, IS_stream, S); }, nb::arg("T"), nb::arg("IS"), nb::arg("S"), R"nbdoc(Reads a shape of type <T> from the stream <IS> and returns it in <S>.)nbdoc")
         .def("AddShape", static_cast<void (BinTools_ShapeSet::*)(const TopoDS_Shape &)>(&BinTools_ShapeSet::AddShape), nb::arg("S"), R"nbdoc(Stores the shape <S>.)nbdoc")
         .def("AddShapes", static_cast<void (BinTools_ShapeSet::*)(TopoDS_Shape &, const TopoDS_Shape &)>(&BinTools_ShapeSet::AddShapes), nb::arg("S1"), nb::arg("S2"), R"nbdoc(Inserts the shape <S2> in the shape <S1>.)nbdoc")
-        .def("ReadPolygon3D", [](BinTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.text); self.ReadPolygon3D(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the 3d polygons of me
+        .def("ReadPolygon3D", [](BinTools_ShapeSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.data); self.ReadPolygon3D(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the 3d polygons of me
 from the stream <IS>.)nbdoc")
-        .def("WritePolygon3D", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WritePolygon3D(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the 3d polygons
+        .def("WritePolygon3D", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WritePolygon3D(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the 3d polygons
 on the stream <OS> in a format that can
 be read back by Read.)nbdoc")
-        .def("ReadTriangulation", [](BinTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.text); self.ReadTriangulation(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the triangulation of me
+        .def("ReadTriangulation", [](BinTools_ShapeSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.data); self.ReadTriangulation(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the triangulation of me
 from the stream <IS>.)nbdoc")
-        .def("WriteTriangulation", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WriteTriangulation(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the triangulation
+        .def("WriteTriangulation", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WriteTriangulation(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the triangulation
 on the stream <OS> in a format that can
 be read back by Read.)nbdoc")
-        .def("ReadPolygonOnTriangulation", [](BinTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.text); self.ReadPolygonOnTriangulation(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the polygons on triangulation of me
+        .def("ReadPolygonOnTriangulation", [](BinTools_ShapeSet &self, const nanoocp::BinaryInput &IS, const Message_ProgressRange & theRange) { std::stringstream IS_stream(IS.data); self.ReadPolygonOnTriangulation(IS_stream, theRange); }, nb::arg("IS"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the polygons on triangulation of me
 from the stream <IS>.)nbdoc")
-        .def("WritePolygonOnTriangulation", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WritePolygonOnTriangulation(OS_stream, theRange); return nanoocp_stream_text(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the polygons on triangulation
+        .def("WritePolygonOnTriangulation", [](const BinTools_ShapeSet &self, const Message_ProgressRange & theRange) { std::ostringstream OS_stream; self.WritePolygonOnTriangulation(OS_stream, theRange); return nanoocp_stream_bytes(OS_stream); }, nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the polygons on triangulation
 on the stream <OS> in a format that can
 be read back by Read.)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_ShapeSet>(nb::borrow<nb::class_<BinTools_ShapeSet>>(m.attr("BinTools_ShapeSet")));
     nb::borrow<nb::class_<BinTools_ShapeReader>>(m.attr("BinTools_ShapeReader"))
         .def(nb::init<>(), R"nbdoc(Initializes a shape reader.)nbdoc")
         .def("Clear", static_cast<void (BinTools_ShapeReader::*)()>(&BinTools_ShapeReader::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
-        .def("Read", [](BinTools_ShapeReader &self, const nanoocp::TextInput &theStream, TopoDS_Shape & theShape) { std::stringstream theStream_stream(theStream.text); self.Read(theStream_stream, theShape); }, nb::arg("theStream"), nb::arg("theShape"), R"nbdoc(Reads the shape from stream using previously restored shapes and objects by references.)nbdoc")
+        .def("Read", [](BinTools_ShapeReader &self, const nanoocp::BinaryInput &theStream, TopoDS_Shape & theShape) { std::stringstream theStream_stream(theStream.data); self.Read(theStream_stream, theShape); }, nb::arg("theStream"), nb::arg("theShape"), R"nbdoc(Reads the shape from stream using previously restored shapes and objects by references.)nbdoc")
         .def("ReadLocation", static_cast<const TopLoc_Location * (BinTools_ShapeReader::*)(BinTools_IStream &)>(&BinTools_ShapeReader::ReadLocation), nb::rv_policy::reference, nb::arg("theStream"), R"nbdoc(Reads location from the stream.)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_ShapeReader>(nb::borrow<nb::class_<BinTools_ShapeReader>>(m.attr("BinTools_ShapeReader")));
     nb::borrow<nb::class_<BinTools_ShapeWriter>>(m.attr("BinTools_ShapeWriter"))
         .def(nb::init<>(), R"nbdoc(Builds an empty ShapeSet.
 Parameter <theWithTriangles> is added for XML Persistence)nbdoc")
         .def("Clear", static_cast<void (BinTools_ShapeWriter::*)()>(&BinTools_ShapeWriter::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
-        .def("Write", [](BinTools_ShapeWriter &self, const TopoDS_Shape & theShape) { std::ostringstream theStream_stream; self.Write(theShape, theStream_stream); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), R"nbdoc(Writes the shape to stream using previously stored shapes and objects to refer them.)nbdoc")
+        .def("Write", [](BinTools_ShapeWriter &self, const TopoDS_Shape & theShape) { std::ostringstream theStream_stream; self.Write(theShape, theStream_stream); return nanoocp_stream_bytes(theStream_stream); }, nb::arg("theShape"), R"nbdoc(Writes the shape to stream using previously stored shapes and objects to refer them.)nbdoc")
         .def("WriteLocation", static_cast<void (BinTools_ShapeWriter::*)(BinTools_OStream &, const TopLoc_Location &)>(&BinTools_ShapeWriter::WriteLocation), nb::arg("theStream"), nb::arg("theLocation"), R"nbdoc(Writes location to the stream (all the needed sub-information or reference if it is already
 used).)nbdoc");
     nanoocp_implicit_copy_ctor<BinTools_ShapeWriter>(nb::borrow<nb::class_<BinTools_ShapeWriter>>(m.attr("BinTools_ShapeWriter")));

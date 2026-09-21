@@ -42,6 +42,7 @@ class Param:
     class_name: str = ""    # canonical name of the class/enum type behind the parameter ("" for scalars, strings, std types)
     is_handle: bool = False # opencascade::handle<T> (by value or reference): nb::arg(...).none(), a null handle is None
     stream: StreamKind = StreamKind.NONE
+    binary: bool = False    # the stream carries a binary format (overrides.toml [stream] binary_packages): bytes / typing.BinaryIO instead of str / typing.TextIO
 
 
 @dataclass

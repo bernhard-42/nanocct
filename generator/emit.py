@@ -154,13 +154,14 @@ class Emitter:
         lam_params: list[str] = []
         if cls is not None and not m.is_static:
             lam_params.append(f"{'const ' if m.is_const else ''}{self_type if self_type is not None else cls} &self")
-        lam_params += [f"const nanoocp::TextInput &{p.name}" if p.stream == StreamKind.IN else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
+        lam_params += [f"const nanoocp::{'BinaryInput' if p.binary else 'TextInput'} &{p.name}" if p.stream == StreamKind.IN
+                       else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
         body: list[str] = [f"{_strip_ref(p.type)} {p.name}{{}};" for p in outs if not p.is_inout]
         # streams: an ostream& parameter becomes a returned str; an istream&/stringstream parameter takes a text file-like
         # object (nanoocp::TextInput caster in nanoocp_common.h: typing.TextIO, never a str -- that would collide with the
         # file-path overloads such as BRepTools::Read(shape, path, builder))
         body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == StreamKind.OUT]
-        body += [f"std::stringstream {p.name}_stream({p.name}.text);" for p in m.params if p.stream == StreamKind.IN]
+        body += [f"std::stringstream {p.name}_stream({p.name}.{'data' if p.binary else 'text'});" for p in m.params if p.stream == StreamKind.IN]
         call_args = ", ".join(f"{p.name}_stream" if p.stream != StreamKind.NONE else p.name for p in m.params)
         if cls is None:
             callee = f"{m.name}({call_args})"
@@ -181,7 +182,7 @@ class Emitter:
         else:
             body.append(f"{callee};")
         results += [p.name for p in outs]
-        results += [f"nanoocp_stream_text({p.name}_stream)" for p in m.params if p.stream == StreamKind.OUT]
+        results += [f"nanoocp_stream_{'bytes' if p.binary else 'text'}({p.name}_stream)" for p in m.params if p.stream == StreamKind.OUT]
         if len(results) == 1:
             body.append(f"return {results[0]};")
         elif len(results) > 1:

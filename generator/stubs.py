@@ -181,6 +181,9 @@ def main() -> int:
             f"import {mod}\n" for mod in modules) + "".join(
             f"{alias} = {mod}.{name}\n" for alias, (mod, name) in sorted(aliases.items()))
         text = out.read_text() if out.exists() else f'"""{shim.stem}: OCCT pre-8.0 typedef names."""\n'   # alias-only modules are never packages
+        marker = block.splitlines()[1]                       # an alias-only stub is not rewritten by stubgen: replace the old block
+        if marker in text:
+            text = text[:text.index(marker)]
         out.write_text(text.rstrip("\n") + "\n" + block)
 
     # NCollection: generic container classes + instantiations as their subclasses

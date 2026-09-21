@@ -281,3 +281,25 @@ def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
     assert cmp.diff_files == [], cmp.diff_files
     for shim in ("Geom2d.py", "Adaptor2d.py"):
         assert (tmp_path / "nanoocp" / shim).read_text() == (ROOT / "src" / "nanoocp" / shim).read_text()
+
+
+def test_incremental_run_refuses_to_rehome_an_instantiation(tmp_path):
+    """An incremental run that would bind an instantiation an earlier, not regenerated toolkit could own in a clean run
+    fails loudly (Design.md 9); --allow-rehoming overrides. Simulated by dropping NCollection_Array1<gp_Pnt2d> (owned by
+    TKMath/BSplCLib) from a copy of the manifest and regenerating TKG2d, which uses it."""
+    import json
+    (tmp_path / "cpp").mkdir()
+    manifest = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())
+    assert manifest["templates"]["NCollection_Array1<gp_Pnt2d>"]["toolkit"] == "TKMath"
+    del manifest["templates"]["NCollection_Array1<gp_Pnt2d>"]
+    (tmp_path / "cpp" / "manifest.json").write_text(json.dumps(manifest))
+    cmd = [sys.executable, "-m", "generator", "--toolkit", "TKG2d", "--out", str(tmp_path)]
+    proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+    assert proc.returncode == 1
+    assert "rehoming: NCollection_Array1<gp_Pnt2d> is newly bound by TKG2d/" in proc.stderr
+    assert "TKMath" in proc.stderr.split("rehoming:")[1].splitlines()[0]     # TKMath (gp_Pnt2d's toolkit) is a candidate owner
+    assert "TKernel" not in proc.stderr.split("rehoming:")[1].splitlines()[0]  # TKernel cannot own it: gp_Pnt2d is TKMath
+    assert not (tmp_path / "cpp" / "TKG2d").exists()                          # nothing was written
+    proc = subprocess.run(cmd + ["--allow-rehoming"], cwd=ROOT, capture_output=True, text=True)
+    assert proc.returncode == 0 and "rehoming: NCollection_Array1<gp_Pnt2d>" in proc.stderr
+    assert "NCollection_Array1<gp_Pnt2d>" in (tmp_path / "cpp" / "TKG2d" / "Geom2d.cpp").read_text()
