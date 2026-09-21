@@ -1,0 +1,12 @@
+# nanoOCP generator report for TKPrim: 8 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# iterator: 2
+# raw-pointer: 6
+iterator	BRepSweep	BRepSweep_Iterator: __iter__ added (More/Next/Value)
+iterator	Sweep	Sweep_NumShapeIterator: __iter__ added (More/Next/Value)
+raw-pointer	BRepPrimAPI	BRepPrimAPI_MakeCone::OneAxis(): return: void pointer
+raw-pointer	BRepPrimAPI	BRepPrimAPI_MakeCylinder::OneAxis(): return: void pointer
+raw-pointer	BRepPrimAPI	BRepPrimAPI_MakeOneAxis::OneAxis(): return: void pointer
+raw-pointer	BRepPrimAPI	BRepPrimAPI_MakeRevolution::OneAxis(): return: void pointer
+raw-pointer	BRepPrimAPI	BRepPrimAPI_MakeSphere::OneAxis(): return: void pointer
+raw-pointer	BRepPrimAPI	BRepPrimAPI_MakeTorus::OneAxis(): return: void pointer

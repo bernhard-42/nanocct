@@ -641,19 +641,20 @@ Pickling: nanoOCP objects are not picklable by themselves (like OCP's); build123
 
 Branch `main`, no remote; every item of the 2026-09-20 review is done or decided (see the decision log); the roadmap is in 8.
 
-- **Generated, built, stubbed:** FoundationClasses and ModelingData complete — `TKernel` (18 packages), `TKMath` (21), `TKG2d` (6), `TKG3d` (8), `TKGeomBase` (27), `TKBRep` (10, incl. `BRepGraph`/`BRepGraphInc` with their typed ids and iterators) — and the first two ModelingAlgorithms toolkits `TKGeomAlgo` (33 packages, 355 classes, 3 492 methods; 72 report lines) and `TKTopAlgo` (16 packages, 166 classes, 1 653 methods; 47 report lines: the `BRepBuilderAPI` makers with `TopoDS_Shape(aMaker)`, `BRepGProp`, `BRepCheck`, `BRepExtrema` minus the BVH-based proximity tools, `BRepBndLib`, the classifiers, `BRepLib`, the 2D medial axis).
-- **Tests:** 278 pass (`tests/`, incl. generator unit tests, a byte-for-byte regeneration test of `TKG2d`, the re-homing guard and the stub scan), mypy and ty included.
+- **Generated, built, stubbed:** FoundationClasses and ModelingData complete — `TKernel` (18 packages), `TKMath` (21), `TKG2d` (6), `TKG3d` (8), `TKGeomBase` (27), `TKBRep` (10, incl. `BRepGraph`/`BRepGraphInc` with their typed ids and iterators) — and the first two ModelingAlgorithms toolkits `TKGeomAlgo` (33 packages, 355 classes, 3 492 methods; 72 report lines) and `TKTopAlgo` (16 packages, 166 classes, 1 653 methods; 47 report lines: the `BRepBuilderAPI` makers with `TopoDS_Shape(aMaker)`, `BRepGProp`, `BRepCheck`, `BRepExtrema` minus the BVH-based proximity tools, `BRepBndLib`, the classifiers, `BRepLib`, the 2D medial axis), and `TKPrim` (5 packages, 35 classes, 301 methods; 8 report lines: `BRepPrimAPI_MakeBox/Cylinder/Sphere/Cone/Torus/Wedge/Prism/Revol`, `BRepPrim_*` builders, `TopoDS_Solid(aMakeBox)`/`TopoDS_Shell(…)`/`TopoDS_Face(aMakeOneAxis)` conversions; volumes verified analytically) — the `BRepPrimAPI_MakeBox` milestone.
+- **Tests:** 287 pass (`tests/`, incl. generator unit tests, a byte-for-byte regeneration test of `TKG2d`, the re-homing guard and the stub scan), mypy and ty included.
 - **Coverage:** every omission is tabulated in 8a and persisted in `src/cpp/<TK>/report.txt`.
 - **Rules in place:** 15 NCollection binder kinds (6a), class-template aliases and on-demand instantiations incl. nested/dependent templates (6c), C++ namespaces as (sub)modules, nested classes, typedef aliases, conversion operators, `__hash__` from `std::hash`, implicit copy constructors, overload collisions resolved by typed `__` suffixes (R-COLLISION), const twins skipped (R-CONST-TWIN), wider scalar overloads first (R-WIDTH), `__iter__` on `More/Next/Value` classes (R-ITER), mutable primitive references with `Set<Name>`/`__setitem__`, streams (`ostream&` → `str`, `istream&` ← `typing.TextIO`), `handle<T>&` out-parameters, `None` for every handle parameter, unscoped enumerators exported, deprecated members bound with OCCT's message, `char16_t` casters, non-copyable classes via a wrapper (4 classes), nested enums of a skipped class skipped with it (5.2). Every §6 rule has an identifier (`R-…`) cited at its code sites.
 - **The checked-in sources are the clean-regeneration state** (`rm src/cpp/manifest.json`, toolkits in order), which is reproducible byte for byte.
 
 ### ModelingAlgorithms: toolkit order and expectations
 
-- Dependency order from `EXTERNLIB.cmake` (it differs from `TOOLKITS.cmake`): TKGeomAlgo ✓ → TKTopAlgo ✓ → TKPrim → TKShHealing → TKBO → TKBool → {TKHLR, TKHelix, TKMesh, TKFillet} → TKOffset, TKFeat, TKXMesh.
+- Dependency order from `EXTERNLIB.cmake` (it differs from `TOOLKITS.cmake`): TKGeomAlgo ✓ → TKTopAlgo ✓ → TKPrim ✓ → TKShHealing → TKBO → TKBool → {TKHLR, TKHelix, TKMesh, TKFillet} → TKOffset, TKFeat, TKXMesh.
 - `TKExpress` links only TKernel and holds `Expr`/`ExprIntrp`, OCCT's symbolic expression parser — not used by STEP (`TKDESTEP` does not link it), nor by build123d/CadQuery: out of scope.
 - A parse survey of the whole module (scratch script, 18 s with bodies skipped) found only two non-self-contained headers (R-PRELUDE).
-- Expect: `BRepPrimAPI_MakeBox` & co. in `TKPrim` as the first user-facing milestone, `BOPDS_*`/`BOPTools_Set` `std::hash` specialisations, more `Detail`/`Internal` namespaces; the 4 multi-base `IMeshData_*` classes in `TKMesh`; `ChFiKPart_ComputeData_*` headers need `ChFiDS_ChamfMode.hxx` as prelude.
+- Expect: `BOPDS_*`/`BOPTools_Set` `std::hash` specialisations, more `Detail`/`Internal` namespaces; the 4 multi-base `IMeshData_*` classes in `TKMesh`; `ChFiKPart_ComputeData_*` headers need `ChFiDS_ChamfMode.hxx` as prelude.
 - Seen with TKTopAlgo: every BVH-based algorithm class stays out — `BRepExtrema_OverlapTool`, `_ProximityDistTool`, `_TriangleSet`, `BRepClass3d_BndBoxTreeSelector*`, `BRepBuilderAPI_BndBoxTreeSelector` derive from `BVH_PairTraverse`/`BVH_Traverse`/`BVH_PrimitiveSet3d`/`NCollection_UBTree<int, Bnd_Box>::Selector`, which are not bound (the BVH template chain of 6c "Left"; 12 `unbound-type` lines); a class that holds a non-copyable member by value needs its own `[skip] noncopyable` entry (R-NONCOPYABLE); `BRepTopAdaptor_FClass2d.Perform` classifies the centre of a 10 × 5 face as `ON` — OCP 7.9.3 gives the same, OCCT semantics; a header that forward-declares `math_VectorBase` and re-aliases `math_Vector` (`BRepGProp_Gauss.hxx`, `IntPatch_SpecialPoints.hxx`, `Extrema_FuncPSDist.hxx`) adds two harmless `template` lines to its package's report (`math_Vector` is bound by TKMath).
+- Seen with TKPrim: nothing new for the generator; OCCT semantics to know when testing — `BRepPrimAPI_MakeBox::Solid()` builds a fresh solid on every call and `Shell()` replaces the result of `Shape()` (`BRepPrimAPI_MakeBox.cxx:148,165`); `Shape()` returns the declared `TopoDS_Shape`, the typed accessors and conversions (`TopoDS_Solid(aMakeBox)`) give the sub-class. The `OneAxis()` accessors return `Standard_Address` (`void*`, not bound).
 
 ### Development loop
 
@@ -661,7 +662,7 @@ The venv is `.venv`, managed by `uv`; `deps/occt-8.0.1` and `deps/freetype` are 
 
 ```bash
 uv run python -m generator --toolkit TKernel          # regenerate one toolkit (all packages); --package X for one package
-rm src/cpp/manifest.json && uv run python -m generator --toolkit TKernel --toolkit TKMath --toolkit TKG2d --toolkit TKG3d --toolkit TKGeomBase --toolkit TKBRep --toolkit TKGeomAlgo --toolkit TKTopAlgo   # clean regeneration, 42 s (idempotent byte for byte, verified 2026-09-21)
+rm src/cpp/manifest.json && uv run python -m generator --toolkit TKernel --toolkit TKMath --toolkit TKG2d --toolkit TKG3d --toolkit TKGeomBase --toolkit TKBRep --toolkit TKGeomAlgo --toolkit TKTopAlgo --toolkit TKPrim   # clean regeneration, 45 s (idempotent byte for byte, verified 2026-09-21)
 uv sync --reinstall-package nanoocp                    # build + install (scikit-build-core, build dir build/{wheel_tag}), ~30 s wall
 uv run python -m generator.stubs                       # .pyi stubs (after the build; imports the extension)
 uv run pytest tests -q
@@ -699,7 +700,7 @@ See 8a (1 484 classes, 14 756 methods; every omission categorised).
 
 ### Next steps, in order
 
-1. ModelingAlgorithms, remaining toolkits in the order above (`TKPrim` next: `BRepPrimAPI_MakeBox`). Python subclassing of `Adaptor3d_Curve` remains on the roadmap (8.5), not in Phase 1.
+1. ModelingAlgorithms, remaining toolkits in the order above (`TKShHealing` next, then `TKBO`, `TKBool`). Python subclassing of `Adaptor3d_Curve` remains on the roadmap (8.5), not in Phase 1.
 2. Conversion operators whose target lives in a later toolkit (`Quantity_Color` → `NCollection_Vec3<float>`) could be emitted from the target's package via the manifest if wanted.
 3. Phase 2 (`ApplicationFramework` subset, `DataExchange`), plus the font slice of Visualization (`Font`, `StdPrs_BRepFont`, `StdPrs_BRepTextBuilder` — TKService/TKV3d must be added as toolkits).
 4. Linux/Windows runs of the generator and the wheel pipeline (bundle OCCT dylibs; the static FreeType is inside `libTKService`).
@@ -746,3 +747,4 @@ Chronological; the test count of each entry is the tie-breaker within a day. Det
 - **2026-09-21** — Silent collisions audited (144 groups in the stubs): R-CONST-TWIN and R-WIDTH (2b, 6); `str`-kind twins unchanged; stub scan as a regression test; dependent `T*` parameters of 6c instantiations now R-UNSUPPORTED (254 tests).
 - **2026-09-21** — R-ITER: `More/Next/Value` classes are their own Python iterator (2c, 6; 32 classes, 255 tests). Functor templates stay out, trampolines for abstract interfaces on the roadmap (8.5); raw pointers and stream operators stay out (8a).
 - **2026-09-21** — `TKTopAlgo` generated (16 packages, 278 tests): three more classes through the non-copyable wrapper (R-NONCOPYABLE, incl. one holding such a member by value); nested enums and classes of a skipped class leave the manifest with it — no alias, accessor entry or NCollection instantiation names them (5.2; the alias had aborted the import); aliases of skipped types reported (R-ALIAS); `DataMap<TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher>` arrived (8.7).
+- **2026-09-21** — `TKPrim` generated (5 packages, 287 tests): the `BRepPrimAPI_MakeBox` milestone, every primitive and sweep verified against analytic volumes; no new generator rule (9).

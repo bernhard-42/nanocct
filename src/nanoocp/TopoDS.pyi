@@ -5,6 +5,8 @@ from typing import overload
 
 import nanoocp.BRepBuilderAPI
 import nanoocp.BRepLib
+import nanoocp.BRepPrim
+import nanoocp.BRepPrimAPI
 import nanoocp.Message
 import nanoocp.NCollection
 import nanoocp.Standard
@@ -715,6 +717,15 @@ class TopoDS_Shell(TopoDS_Shape):
     @overload
     def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeShell) -> None: ...
 
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeBox) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeOneAxis) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeWedge) -> None: ...
+
     def __hash__(self) -> int: ...
 
 class TopoDS_Solid(TopoDS_Shape):
@@ -741,6 +752,18 @@ class TopoDS_Solid(TopoDS_Shape):
 
     @overload
     def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeSolid) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeBox) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeOneAxis) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeHalfSpace) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeWedge) -> None: ...
 
     def __hash__(self) -> int: ...
 
@@ -850,6 +873,12 @@ class TopoDS_Face(TopoDS_Shape):
 
     @overload
     def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeFace) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrim.BRepPrim_FaceBuilder) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.BRepPrimAPI.BRepPrimAPI_MakeOneAxis) -> None: ...
 
     def __hash__(self) -> int: ...
 
