@@ -191,8 +191,13 @@
 "BOPTools_AlgoTools": "BOPTools",
 "BOPTools_AlgoTools2D": "BOPTools",
 "BOPTools_AlgoTools3D": "BOPTools",
+"BOPTools_BoxSelector<2>": "BOPTools",
+"BOPTools_BoxSelector<3>": "BOPTools",
+"BOPTools_BoxSet<double, 2, int>": "BOPTools",
+"BOPTools_BoxSet<double, 3, int>": "BOPTools",
 "BOPTools_ConnexityBlock": "BOPTools",
 "BOPTools_CoupleOfShape": "BOPTools",
+"BOPTools_PairSelector<3>": "BOPTools",
 "BOPTools_Parallel": "BOPTools",
 "BOPTools_Set": "BOPTools",
 "BRepAdaptor_CompCurve": "BRepAdaptor",
@@ -268,6 +273,7 @@
 "BRepBlend_Walking": "BRepBlend",
 "BRepBndLib": "BRepBndLib",
 "BRepBuilderAPI": "BRepBuilderAPI",
+"BRepBuilderAPI_BndBoxTreeSelector": "BRepBuilderAPI",
 "BRepBuilderAPI_Collect": "BRepBuilderAPI",
 "BRepBuilderAPI_Command": "BRepBuilderAPI",
 "BRepBuilderAPI_Copy": "BRepBuilderAPI",
@@ -308,6 +314,10 @@
 "BRepCheck_Vertex": "BRepCheck",
 "BRepCheck_Wire": "BRepCheck",
 "BRepClass3d": "BRepClass3d",
+"BRepClass3d_BndBoxTreeSelectorLine": "BRepClass3d",
+"BRepClass3d_BndBoxTreeSelectorLine::EdgeParam": "BRepClass3d",
+"BRepClass3d_BndBoxTreeSelectorLine::VertParam": "BRepClass3d",
+"BRepClass3d_BndBoxTreeSelectorPoint": "BRepClass3d",
 "BRepClass3d_Intersector3d": "BRepClass3d",
 "BRepClass3d_SClassifier": "BRepClass3d",
 "BRepClass3d_SolidClassifier": "BRepClass3d",
@@ -329,12 +339,17 @@
 "BRepExtrema_ExtFF": "BRepExtrema",
 "BRepExtrema_ExtPC": "BRepExtrema",
 "BRepExtrema_ExtPF": "BRepExtrema",
+"BRepExtrema_OverlapTool": "BRepExtrema",
 "BRepExtrema_Poly": "BRepExtrema",
+"BRepExtrema_ProximityDistTool": "BRepExtrema",
+"BRepExtrema_ProximityDistTool::PrjState": "BRepExtrema",
+"BRepExtrema_ProximityDistTool::ProxPnt_Status": "BRepExtrema",
 "BRepExtrema_ProximityValueTool": "BRepExtrema",
 "BRepExtrema_SelfIntersection": "BRepExtrema",
 "BRepExtrema_ShapeProximity": "BRepExtrema",
 "BRepExtrema_SolutionElem": "BRepExtrema",
 "BRepExtrema_SupportType": "BRepExtrema",
+"BRepExtrema_TriangleSet": "BRepExtrema",
 "BRepExtrema_UnCompatibleShape": "BRepExtrema",
 "BRepExtrema_VertexInspector": "BRepExtrema",
 "BRepFeat": "BRepFeat",
@@ -988,15 +1003,33 @@
 "BVH::BitComparator": "BVH",
 "BVH::BitPredicate": "BVH",
 "BVH::RadixSorter": "BVH",
+"BVH_BaseTraverse<bool>": "BOPTools",
+"BVH_BaseTraverse<double>": "IntPatch",
 "BVH_BinaryTree": "BVH",
+"BVH_Box<double, 2>": "Bnd",
+"BVH_Box<double, 3>": "Bnd",
+"BVH_BoxSet<double, 2, int>": "BOPTools",
+"BVH_BoxSet<double, 3, int>": "BOPTools",
 "BVH_BuildQueue": "BVH",
 "BVH_BuildThread": "BVH",
 "BVH_BuildTool": "BVH",
 "BVH_Builder<double, 3>": "BVH",
 "BVH_BuilderTransient": "BVH",
+"BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>": "BRepExtrema",
+"BVH_Object<double, 2>": "BOPTools",
+"BVH_Object<double, 3>": "BVH",
 "BVH_ObjectTransient": "BVH",
+"BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>": "BOPTools",
+"BVH_PairTraverse<double, 3, void, double>": "BRepExtrema",
+"BVH_PrimitiveSet<double, 2>": "BOPTools",
+"BVH_PrimitiveSet<double, 3>": "BVH",
 "BVH_Properties": "BVH",
 "BVH_QuadTree": "BVH",
+"BVH_Set<double, 2>": "BOPTools",
+"BVH_Set<double, 3>": "BVH",
+"BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>": "BOPTools",
+"BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>": "BRepExtrema",
+"BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>": "BOPTools",
 "BVH_TreeBaseTransient": "BVH",
 "BiTgte_Blend": "BiTgte",
 "BiTgte_ContactType": "BiTgte",
@@ -1938,6 +1971,8 @@
 "IntPatch_ALine": "IntPatch",
 "IntPatch_ALineToWLine": "IntPatch",
 "IntPatch_ArcFunction": "IntPatch",
+"IntPatch_BVHTraversal": "IntPatch",
+"IntPatch_BVHTraversal::TrianglePair": "IntPatch",
 "IntPatch_CSFunction": "IntPatch",
 "IntPatch_CurvIntSurf": "IntPatch",
 "IntPatch_GLine": "IntPatch",
@@ -1957,6 +1992,7 @@
 "IntPatch_PolyLine": "IntPatch",
 "IntPatch_Polygo": "IntPatch",
 "IntPatch_Polyhedron": "IntPatch",
+"IntPatch_PolyhedronBVH": "IntPatch",
 "IntPatch_PolyhedronTool": "IntPatch",
 "IntPatch_PrmPrmIntersection": "IntPatch",
 "IntPatch_PrmPrmIntersection_T3Bits": "IntPatch",
@@ -2258,6 +2294,7 @@
 "NCollection_DefaultHasher<unsigned long>": "NCollection",
 "NCollection_DefaultHasher<unsigned short>": "NCollection",
 "NCollection_DefaultHasher<wchar_t>": "NCollection",
+"NCollection_EBTree<int, Bnd_Box2d>": "IMeshData",
 "NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>": "BRepGraph",
 "NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>": "BRepGraph",
 "NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>": "BRepGraph",
@@ -2289,6 +2326,7 @@
 "NCollection_SeqNode": "NCollection",
 "NCollection_SparseArrayBase": "NCollection",
 "NCollection_SparseArrayBase::Iterator": "NCollection",
+"NCollection_UBTree<int, Bnd_Box2d>": "IMeshData",
 "NCollection_UBTreeFiller<int, Bnd_Box2d>": "IMeshData",
 "NCollection_UtfString<char>": "NCollection",
 "NCollection_Vec2<double>": "BVH",
@@ -2456,6 +2494,7 @@
 "ShapeAlgo_AlgoContainer": "ShapeAlgo",
 "ShapeAlgo_ToolContainer": "ShapeAlgo",
 "ShapeAnalysis": "ShapeAnalysis",
+"ShapeAnalysis_BoxBndTreeSelector": "ShapeAnalysis",
 "ShapeAnalysis_CanonicalRecognition": "ShapeAnalysis",
 "ShapeAnalysis_CheckSmallFace": "ShapeAnalysis",
 "ShapeAnalysis_Curve": "ShapeAnalysis",
@@ -2977,51 +3016,39 @@
 "math_TrigonometricFunctionRoots": "math",
 "math_Uzawa": "math",
 "math_ValueAndWeight": "math",
-"math_VectorBase<double>": "IntPatch",
+"math_VectorBase<double>": "math",
 "math_VectorBase<int>": "math"
 },
 "templates": {
 "BOPTools_BoxSelector<2>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BOPTools",
-"skipped": true
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BOPTools_Box2dTreeSelector",
+"by": "BOPTools"
 },
 "BOPTools_BoxSelector<3>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BOPTools",
-"skipped": true
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BOPTools_BoxTreeSelector",
+"by": "BOPTools"
 },
 "BOPTools_BoxSet<double, 2, int>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BOPTools",
-"skipped": true
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BOPTools_Box2dTree",
+"by": "BOPTools"
 },
 "BOPTools_BoxSet<double, 3, int>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BOPTools",
-"skipped": true
-},
-"BOPTools_PairSelector<2>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BOPTools",
-"skipped": true
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BOPTools_BoxTree",
+"by": "BOPTools"
 },
 "BOPTools_PairSelector<3>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BOPTools",
-"skipped": true
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BOPTools_BoxPairSelector",
+"by": "BOPTools"
 },
 "BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>": {
 "toolkit": "TKBRep",
@@ -3821,19 +3848,41 @@
 "name": "BRepGraph_EdgesOfVertex",
 "by": "BRepGraph"
 },
+"BVH_BaseTraverse<bool>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_BaseTraverse__bool",
+"by": "BOPTools"
+},
+"BVH_BaseTraverse<double>": {
+"toolkit": "TKGeomAlgo",
+"package": "IntPatch",
+"name": "BVH_BaseTraverse__double",
+"by": "IntPatch"
+},
 "BVH_Box<double, 2>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "Bnd",
-"skipped": true
+"toolkit": "TKMath",
+"package": "Bnd",
+"name": "BVH_Box__double__2",
+"by": "Bnd"
 },
 "BVH_Box<double, 3>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "Bnd",
-"skipped": true
+"toolkit": "TKMath",
+"package": "Bnd",
+"name": "BVH_Box__double__3",
+"by": "Bnd"
+},
+"BVH_BoxSet<double, 2, int>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_BoxSet__double__2__int",
+"by": "BOPTools"
+},
+"BVH_BoxSet<double, 3, int>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_BoxSet__double__3__int",
+"by": "BOPTools"
 },
 "BVH_Builder<double, 3>": {
 "toolkit": "TKMath",
@@ -3842,18 +3891,76 @@
 "by": "BVH"
 },
 "BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BRepExtrema",
-"skipped": true
+"toolkit": "TKTopAlgo",
+"package": "BRepExtrema",
+"name": "BVH_Distance__double__3__NCollection_Vec3__double__BRepExtrema_TriangleSet",
+"by": "BRepExtrema"
+},
+"BVH_Object<double, 2>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_Object__double__2",
+"by": "BOPTools"
+},
+"BVH_Object<double, 3>": {
+"toolkit": "TKMath",
+"package": "BVH",
+"name": "BVH_Object__double__3",
+"by": "BVH"
+},
+"BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double",
+"by": "BOPTools"
+},
+"BVH_PairTraverse<double, 3, void, double>": {
+"toolkit": "TKGeomAlgo",
+"package": "IntPatch",
+"name": "BVH_PairTraverse__double__3__void__double",
+"by": "IntPatch"
+},
+"BVH_PrimitiveSet<double, 2>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_PrimitiveSet__double__2",
+"by": "BOPTools"
 },
 "BVH_PrimitiveSet<double, 3>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "IntPatch",
-"skipped": true
+"toolkit": "TKMath",
+"package": "BVH",
+"name": "BVH_PrimitiveSet3d",
+"by": "BVH"
+},
+"BVH_Set<double, 2>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_Set__double__2",
+"by": "BOPTools"
+},
+"BVH_Set<double, 3>": {
+"toolkit": "TKMath",
+"package": "BVH",
+"name": "BVH_Set__double__3",
+"by": "BVH"
+},
+"BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_Traverse__double__2__BVH_BoxSet__double__2__bool",
+"by": "BOPTools"
+},
+"BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>": {
+"toolkit": "TKTopAlgo",
+"package": "BRepExtrema",
+"name": "BVH_Traverse__double__3__BRepExtrema_TriangleSet__double",
+"by": "BRepExtrema"
+},
+"BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>": {
+"toolkit": "TKBO",
+"package": "BOPTools",
+"name": "BVH_Traverse__double__3__BVH_BoxSet__double__3__bool",
+"by": "BOPTools"
 },
 "Bnd_B2<double>": {
 "toolkit": "TKMath",
@@ -4974,11 +5081,10 @@
 "by": "BOPDS"
 },
 "NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "BRepExtrema",
-"skipped": true
+"toolkit": "TKTopAlgo",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__BRepExtrema_ProximityDistTool_ProxPnt_Status",
+"by": "BRepExtrema"
 },
 "NCollection_DynamicArray<BRepMesh_Circle>": {
 "toolkit": "TKMesh",
@@ -5012,11 +5118,10 @@
 "skipped": true
 },
 "NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "IntPatch",
-"skipped": true
+"toolkit": "TKGeomAlgo",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__IntPatch_BVHTraversal_TrianglePair",
+"by": "IntPatch"
 },
 "NCollection_DynamicArray<MathRoot::NullInterval>": {
 "toolkit": "TKMath",
@@ -5121,11 +5226,10 @@
 "by": "IMeshData"
 },
 "NCollection_EBTree<int, Bnd_Box2d>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "IMeshData",
-"skipped": true
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_EBTree__int__Bnd_Box2d",
+"by": "IMeshData"
 },
 "NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>": {
 "toolkit": "TKBRep",
@@ -6569,11 +6673,10 @@
 "by": "IMeshData"
 },
 "NCollection_Shared<NCollection_EBTree<int, Bnd_Box2d>>": {
-"toolkit": "",
-"package": "",
-"name": "",
-"by": "IMeshData",
-"skipped": true
+"toolkit": "TKMesh",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_EBTree__int__Bnd_Box2d",
+"by": "IMeshData"
 },
 "NCollection_Shared<NCollection_IndexedDataMap<BRepMesh_Edge, BRepMesh_PairOfIndex>>": {
 "toolkit": "TKMesh",
@@ -6673,6 +6776,12 @@
 "package": "NCollection",
 "name": "NCollection_Shared__Standard_Mutex",
 "by": "Standard"
+},
+"NCollection_UBTree<int, Bnd_Box2d>": {
+"toolkit": "TKMesh",
+"package": "IMeshData",
+"name": "NCollection_UBTree__int__Bnd_Box2d",
+"by": "IMeshData"
 },
 "NCollection_UBTreeFiller<int, Bnd_Box2d>": {
 "toolkit": "TKMesh",
@@ -7447,6 +7556,11 @@
 "math": []
 },
 "paths": {
+"BOPTools_BoxSelector<2>": "BOPTools_Box2dTreeSelector",
+"BOPTools_BoxSelector<3>": "BOPTools_BoxTreeSelector",
+"BOPTools_BoxSet<double, 2, int>": "BOPTools_Box2dTree",
+"BOPTools_BoxSet<double, 3, int>": "BOPTools_BoxTree",
+"BOPTools_PairSelector<3>": "BOPTools_BoxPairSelector",
 "BRepGraph::EditorView": "BRepGraph.EditorView",
 "BRepGraph::EditorView::BoundaryIssue": "BRepGraph.EditorView.BoundaryIssue",
 "BRepGraph::EditorView::CoEdgeOps": "BRepGraph.EditorView.CoEdgeOps",
@@ -7594,6 +7708,7 @@
 "BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>": "BRepGraph_CoEdgesOfEdge",
 "BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>": "BRepGraph_EdgesOfVertex",
 "BVH_Builder<double, 3>": "BVH_Builder3d",
+"BVH_PrimitiveSet<double, 3>": "BVH_PrimitiveSet3d",
 "Bnd_B2<double>": "Bnd_B2d",
 "Bnd_B2<float>": "Bnd_B2f",
 "Bnd_B3<double>": "Bnd_B3d",

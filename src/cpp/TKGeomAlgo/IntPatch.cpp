@@ -45,6 +45,9 @@
 #include <Adaptor3d_HVertex.hxx>
 #include <Adaptor3d_Surface.hxx>
 #include <Adaptor3d_TopolTool.hxx>
+#include <BVH_Box.hxx>
+#include <BVH_PrimitiveSet.hxx>
+#include <BVH_Tree.hxx>
 #include <Bnd_Box.hxx>
 #include <Bnd_Box2d.hxx>
 #include <Geom2d_BSplineCurve.hxx>
@@ -69,6 +72,7 @@
 #include <NCollection_HArray1.hxx>
 #include <NCollection_List.hxx>
 #include <NCollection_Sequence.hxx>
+#include <NCollection_Vec3.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <gp_Circ.hxx>
@@ -135,6 +139,31 @@ parametrized curve.)nbdoc");
     }
     { nb::class_<IntPatch_ArcFunction, math_FunctionWithDerivative> cls(m, "IntPatch_ArcFunction");
     }
+    { nb::class_<BVH_BaseTraverse<double>> cls(m, "BVH_BaseTraverse__double", R"nbdoc(Abstract class implementing the base Traverse interface
+required for selection of the elements from BVH tree.
+
+\tparam MetricType Type of metric to perform more optimal tree descend)nbdoc");
+    }
+    { nb::class_<BVH_PairTraverse<double, 3, void, double>, BVH_BaseTraverse<double>> cls(m, "BVH_PairTraverse__double__3__void__double", R"nbdoc(Abstract class implementing the parallel traverse of two binary trees.
+Selection of the data from the trees is performed by the
+rules defined in the Accept/Reject methods.
+See description of the required methods in the comments above.
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+index) \tparam MetricType Type of metric to perform more optimal tree descend)nbdoc");
+    }
+    { nb::class_<IntPatch_BVHTraversal, BVH_PairTraverse<double, 3, void, double>> cls(m, "IntPatch_BVHTraversal", R"nbdoc(Performs BVH tree traversal of two polyhedra to find candidate triangle pairs
+for intersection testing. This class implements the BVH_PairTraverse interface
+to efficiently find potentially intersecting triangles using bounding box tests.
+
+The traversal collects pairs of original (1-based) triangle indices that have
+overlapping bounding boxes, which should then be tested for actual geometric
+intersection using IntPatch_InterferencePolyhedron::Intersect().)nbdoc");
+    }
+    { nb::class_<IntPatch_BVHTraversal::TrianglePair> cls(m.attr("IntPatch_BVHTraversal"), "TrianglePair", R"nbdoc(Pair of triangle indices (both 1-based, original indices in polyhedra).)nbdoc");
+    }
     { nb::class_<IntPatch_CSFunction, math_FunctionSetWithDerivatives> cls(m, "IntPatch_CSFunction", R"nbdoc(this function is associated to the intersection between
 a curve on surface and a surface.)nbdoc");
     }
@@ -194,6 +223,13 @@ defined in the class WLine or RLine (Restriction line).)nbdoc");
     { nb::class_<IntPatch_Polyhedron> cls(m, "IntPatch_Polyhedron", R"nbdoc(This class provides a linear approximation of the PSurface.
 preview a constructor on a zone of a surface)nbdoc");
     }
+    { nb::class_<IntPatch_PolyhedronBVH, BVH_PrimitiveSet<double, 3>> cls(m, "IntPatch_PolyhedronBVH", R"nbdoc(Wraps IntPatch_Polyhedron as a BVH_PrimitiveSet for efficient spatial queries.
+This class provides a BVH (Bounding Volume Hierarchy) representation of a polyhedron's
+triangles, enabling O(log n) spatial queries instead of linear search.
+
+The class stores a reference to the polyhedron (no data copy) and maintains
+an index mapping to track triangle reordering during BVH construction.)nbdoc");
+    }
     { nb::class_<IntPatch_PolyhedronTool> cls(m, "IntPatch_PolyhedronTool", R"nbdoc(Describe the signature of a polyhedral surface with
 only triangular facets and the necessary information
 to compute the interferences.)nbdoc");
@@ -235,6 +271,7 @@ between 2 parametrised patches.)nbdoc");
 }
 
 void nanoocp_templates_IntPatch(nb::module_ &m) {
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair>(home, "NCollection_DynamicArray__IntPatch_BVHTraversal_TrianglePair"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<opencascade::handle<Adaptor3d_Surface>>(home, "NCollection_DynamicArray__Handle_Adaptor3d_Surface"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_List<IntSurf_PntOn2S>(home, "NCollection_List__IntSurf_PntOn2S"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<IntPatch_Point>(home, "NCollection_Sequence__IntPatch_Point"); }
@@ -473,6 +510,62 @@ Walking-lines and adds them in theLines.)nbdoc");
         .def("LastComputedPoint", static_cast<const gp_Pnt & (IntPatch_ArcFunction::*)() const>(&IntPatch_ArcFunction::LastComputedPoint), R"nbdoc(Returns the point, which has been computed
 while the last calling Value() method)nbdoc");
     nanoocp_implicit_copy_ctor<IntPatch_ArcFunction>(nb::borrow<nb::class_<IntPatch_ArcFunction>>(m.attr("IntPatch_ArcFunction")));
+    nb::borrow<nb::class_<BVH_BaseTraverse<double>>>(m.attr("BVH_BaseTraverse__double"))
+        .def("IsMetricBetter", static_cast<bool (BVH_BaseTraverse<double>::*)(const double &, const double &) const>(&BVH_BaseTraverse<double>::IsMetricBetter), nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(@name Metrics comparison for choosing the best branch
+Compares the two metrics and chooses the best one.
+Returns true if the first metric is better than the second,
+false otherwise.)nbdoc")
+        .def("RejectMetric", static_cast<bool (BVH_BaseTraverse<double>::*)(const double &) const>(&BVH_BaseTraverse<double>::RejectMetric), nb::arg("arg0"), R"nbdoc(@name Rejection of the node by metric
+Rejects the node by the metric)nbdoc")
+        .def("Stop", static_cast<bool (BVH_BaseTraverse<double>::*)() const>(&BVH_BaseTraverse<double>::Stop), R"nbdoc(@name Condition to stop the descend
+Returns the flag controlling the tree descend.
+Returns true if the tree descend should be stopped.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_BaseTraverse<double>>(nb::borrow<nb::class_<BVH_BaseTraverse<double>>>(m.attr("BVH_BaseTraverse__double")));
+    nanoocp_if_concrete<BVH_PairTraverse<double, 3, void, double>>(nb::borrow<nb::class_<BVH_PairTraverse<double, 3, void, double>>>(m.attr("BVH_PairTraverse__double__3__void__double")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Constructor)nbdoc"); });
+    nb::borrow<nb::class_<BVH_PairTraverse<double, 3, void, double>>>(m.attr("BVH_PairTraverse__double__3__void__double"))
+        .def("SetBVHSets", static_cast<void (BVH_PairTraverse<double, 3, void, double>::*)(void *, void *)>(&BVH_PairTraverse<double, 3, void, double>::SetBVHSets), nb::arg("theBVHSet1"), nb::arg("theBVHSet2"), R"nbdoc(@name Setting the sets to access the elements and BVH trees
+Sets the BVH Sets containing the BVH trees)nbdoc")
+        .def("RejectNode", static_cast<bool (BVH_PairTraverse<double, 3, void, double>::*)(const BVH_PairTraverse<double, 3, void, double>::BVH_VecNt &, const BVH_PairTraverse<double, 3, void, double>::BVH_VecNt &, const BVH_PairTraverse<double, 3, void, double>::BVH_VecNt &, const BVH_PairTraverse<double, 3, void, double>::BVH_VecNt &, double &) const>(&BVH_PairTraverse<double, 3, void, double>::RejectNode), nb::arg("theCornerMin1"), nb::arg("theCornerMax1"), nb::arg("theCornerMin2"), nb::arg("theCornerMax2"), nb::arg("theMetric"), R"nbdoc(@name Rules for Accept/Reject
+Rejection of the pair of nodes by bounding boxes.
+Metric is computed to choose the best branch.
+Returns true if the pair of nodes should be rejected, false otherwise.)nbdoc")
+        .def("Accept", static_cast<bool (BVH_PairTraverse<double, 3, void, double>::*)(const int, const int)>(&BVH_PairTraverse<double, 3, void, double>::Accept), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Leaf element acceptance.
+Returns true if the pair of elements is accepted, false otherwise.)nbdoc")
+        .def("Select", static_cast<int (BVH_PairTraverse<double, 3, void, double>::*)(const opencascade::handle<BVH_Tree<double, 3>> &, const opencascade::handle<BVH_Tree<double, 3>> &)>(&BVH_PairTraverse<double, 3, void, double>::Select), nb::arg("theBVH1").none(), nb::arg("theBVH2").none(), R"nbdoc(Performs selection of the elements from two BVH trees by the
+rules defined in Accept/Reject methods.
+Returns the number of accepted pairs of elements.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_PairTraverse<double, 3, void, double>>(nb::borrow<nb::class_<BVH_PairTraverse<double, 3, void, double>>>(m.attr("BVH_PairTraverse__double__3__void__double")));
+    nb::borrow<nb::class_<IntPatch_BVHTraversal>>(m.attr("IntPatch_BVHTraversal"))
+        .def(nb::init<>(), R"nbdoc(Creates an empty traversal object.)nbdoc")
+        .def("Perform", static_cast<int (IntPatch_BVHTraversal::*)(IntPatch_PolyhedronBVH &, IntPatch_PolyhedronBVH &, bool)>(&IntPatch_BVHTraversal::Perform), nb::arg("theSet1"), nb::arg("theSet2"), nb::arg("theSelfInterference") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Performs BVH traversal and collects candidate triangle pairs.
+@param[in] theSet1 BVH set for the first polyhedron
+@param[in] theSet2 BVH set for the second polyhedron
+@param[in] theSelfInterference if true, skip pairs where first index >= second index
+(used for self-intersection where we don't want to test same pair twice)
+@return number of collected pairs)nbdoc")
+        .def("Pairs", static_cast<const NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair> & (IntPatch_BVHTraversal::*)() const>(&IntPatch_BVHTraversal::Pairs), R"nbdoc(Returns the collected triangle pairs.)nbdoc")
+        .def("Clear", static_cast<void (IntPatch_BVHTraversal::*)()>(&IntPatch_BVHTraversal::Clear), R"nbdoc(Clears the collected pairs.)nbdoc")
+        .def("RejectNode", [](const IntPatch_BVHTraversal &self, const BVH_Vec3d & theCMin1, const BVH_Vec3d & theCMax1, const BVH_Vec3d & theCMin2, const BVH_Vec3d & theCMax2) { double theMetric{}; auto result = self.RejectNode(theCMin1, theCMax1, theCMin2, theCMax2, theMetric); return std::make_tuple(result, theMetric); }, nb::arg("theCMin1"), nb::arg("theCMax1"), nb::arg("theCMin2"), nb::arg("theCMax2"), R"nbdoc(@name BVH_PairTraverse interface implementation
+Rejects pair of nodes if their bounding boxes don't overlap.
+@param[in] theCMin1 minimum corner of the first node's bounding box
+@param[in] theCMax1 maximum corner of the first node's bounding box
+@param[in] theCMin2 minimum corner of the second node's bounding box
+@param[in] theCMax2 maximum corner of the second node's bounding box
+@param[out] theMetric unused metric parameter
+@return true if the pair should be rejected (no overlap), false otherwise)nbdoc")
+        .def("Accept", static_cast<bool (IntPatch_BVHTraversal::*)(const int, const int)>(&IntPatch_BVHTraversal::Accept), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Accepts a pair of leaf elements and stores their original indices.
+@param[in] theIndex1 0-based index in the first BVH set
+@param[in] theIndex2 0-based index in the second BVH set
+@return true (always accepts the pair))nbdoc");
+    nanoocp_implicit_copy_ctor<IntPatch_BVHTraversal>(nb::borrow<nb::class_<IntPatch_BVHTraversal>>(m.attr("IntPatch_BVHTraversal")));
+    nb::borrow<nb::class_<IntPatch_BVHTraversal::TrianglePair>>(m.attr("IntPatch_BVHTraversal").attr("TrianglePair"))
+        .def(nb::init<int, int>(), nb::arg("theFirst") = static_cast<std::decay_t<int>>(0), nb::arg("theSecond") = static_cast<std::decay_t<int>>(0));
+    nanoocp_implicit_copy_ctor<IntPatch_BVHTraversal::TrianglePair>(nb::borrow<nb::class_<IntPatch_BVHTraversal::TrianglePair>>(m.attr("IntPatch_BVHTraversal").attr("TrianglePair")));
+    nanoocp_def_field(nb::borrow<nb::class_<IntPatch_BVHTraversal::TrianglePair>>(m.attr("IntPatch_BVHTraversal").attr("TrianglePair")), "First", &IntPatch_BVHTraversal::TrianglePair::First, R"nbdoc(Triangle index in first polyhedron (1-based))nbdoc");
+    nanoocp_def_field(nb::borrow<nb::class_<IntPatch_BVHTraversal::TrianglePair>>(m.attr("IntPatch_BVHTraversal").attr("TrianglePair")), "Second", &IntPatch_BVHTraversal::TrianglePair::Second, R"nbdoc(Triangle index in second polyhedron (1-based))nbdoc");
+    nb::implicitly_convertible<std::decay_t<int>, IntPatch_BVHTraversal::TrianglePair>();
     nb::borrow<nb::class_<IntPatch_CSFunction>>(m.attr("IntPatch_CSFunction"))
         .def(nb::init<const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &>(), nb::arg("S1").none(), nb::arg("C").none(), nb::arg("S2").none(), R"nbdoc(S1 is the surface on which the intersection is searched.
 C is a curve on the surface S2.)nbdoc")
@@ -985,6 +1078,31 @@ to the triangle <n>.)nbdoc")
         .def("Dump", static_cast<void (IntPatch_Polyhedron::*)() const>(&IntPatch_Polyhedron::Dump));
     nanoocp_implicit_copy_ctor<IntPatch_Polyhedron>(nb::borrow<nb::class_<IntPatch_Polyhedron>>(m.attr("IntPatch_Polyhedron")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Surface> &>, IntPatch_Polyhedron>();
+    nb::borrow<nb::class_<IntPatch_PolyhedronBVH>>(m.attr("IntPatch_PolyhedronBVH"))
+        .def(nb::new_([]() { return opencascade::handle<IntPatch_PolyhedronBVH>(new IntPatch_PolyhedronBVH()); }), R"nbdoc(Creates an empty BVH set.)nbdoc")
+        .def(nb::new_([](const IntPatch_Polyhedron & thePoly) { return opencascade::handle<IntPatch_PolyhedronBVH>(new IntPatch_PolyhedronBVH(thePoly)); }), nb::arg("thePoly"), R"nbdoc(Creates BVH set from the given polyhedron.
+@param[in] thePoly the polyhedron to wrap (must remain valid during BVH lifetime))nbdoc")
+        .def("Init", static_cast<void (IntPatch_PolyhedronBVH::*)(const IntPatch_Polyhedron &)>(&IntPatch_PolyhedronBVH::Init), nb::arg("thePoly"), R"nbdoc(Initializes BVH set from the given polyhedron.
+@param[in] thePoly the polyhedron to wrap (must remain valid during BVH lifetime))nbdoc")
+        .def("Clear", static_cast<void (IntPatch_PolyhedronBVH::*)()>(&IntPatch_PolyhedronBVH::Clear), R"nbdoc(Clears the BVH set.)nbdoc")
+        .def("Box", [](const IntPatch_PolyhedronBVH &self) { auto result = self.Box(); return result; }, R"nbdoc(Returns AABB of primitive set.)nbdoc")
+        .def("Size", static_cast<int (IntPatch_PolyhedronBVH::*)() const>(&IntPatch_PolyhedronBVH::Size), R"nbdoc(Returns the total number of triangles.)nbdoc")
+        .def("Box", static_cast<BVH_Box<double, 3> (IntPatch_PolyhedronBVH::*)(const int) const>(&IntPatch_PolyhedronBVH::Box), nb::arg("theIndex"), R"nbdoc(Returns AABB of the triangle with the given index.
+@param[in] theIndex 0-based triangle index (after BVH reordering))nbdoc")
+        .def("Center", static_cast<double (IntPatch_PolyhedronBVH::*)(const int, const int) const>(&IntPatch_PolyhedronBVH::Center), nb::arg("theIndex"), nb::arg("theAxis"), R"nbdoc(Returns centroid coordinate of the triangle along the given axis.
+@param[in] theIndex 0-based triangle index (after BVH reordering)
+@param[in] theAxis axis index (0=X, 1=Y, 2=Z))nbdoc")
+        .def("Swap", static_cast<void (IntPatch_PolyhedronBVH::*)(const int, const int)>(&IntPatch_PolyhedronBVH::Swap), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Swaps two triangles in the set (used during BVH construction).
+@param[in] theIndex1 first triangle index
+@param[in] theIndex2 second triangle index)nbdoc")
+        .def("OriginalIndex", static_cast<int (IntPatch_PolyhedronBVH::*)(const int) const>(&IntPatch_PolyhedronBVH::OriginalIndex), nb::arg("theIndex"), R"nbdoc(@name Additional methods
+Returns the original (1-based) triangle index in the polyhedron
+for the given 0-based index after BVH reordering.
+@param[in] theIndex 0-based triangle index (after BVH reordering)
+@return 1-based original triangle index in the polyhedron)nbdoc")
+        .def("IsInitialized", static_cast<bool (IntPatch_PolyhedronBVH::*)() const>(&IntPatch_PolyhedronBVH::IsInitialized), R"nbdoc(Returns true if the BVH set is initialized.)nbdoc");
+    nanoocp_implicit_copy_ctor<IntPatch_PolyhedronBVH>(nb::borrow<nb::class_<IntPatch_PolyhedronBVH>>(m.attr("IntPatch_PolyhedronBVH")));
+    nb::implicitly_convertible<std::decay_t<const IntPatch_Polyhedron &>, IntPatch_PolyhedronBVH>();
     nanoocp_implicit_default_ctor<IntPatch_PolyhedronTool>(nb::borrow<nb::class_<IntPatch_PolyhedronTool>>(m.attr("IntPatch_PolyhedronTool")));
     nb::borrow<nb::class_<IntPatch_PolyhedronTool>>(m.attr("IntPatch_PolyhedronTool"))
         .def_static("Bounding", static_cast<const Bnd_Box & (*)(const IntPatch_Polyhedron &)>(&IntPatch_PolyhedronTool::Bounding), nb::arg("thePolyh"), R"nbdoc(Give the bounding box of the Polyhedron.)nbdoc")

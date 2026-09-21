@@ -3,6 +3,7 @@
 from typing import overload
 
 import nanoocp.BRepAdaptor
+import nanoocp.Bnd
 import nanoocp.IntCurveSurface
 import nanoocp.IntCurvesFace
 import nanoocp.NCollection
@@ -26,6 +27,81 @@ class BRepClass3d:
         shell if <S> has no outer shell.
         If <S> has only one shell, then it will return, without checking orientation.
         """
+
+class BRepClass3d_BndBoxTreeSelectorPoint:
+    def __init__(self, theMapOfShape: nanoocp.NCollection.NCollection_IndexedMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]) -> None: ...
+
+    def Reject(self, theBox: nanoocp.Bnd.Bnd_Box) -> bool: ...
+
+    def Accept(self, theObj: int) -> bool: ...
+
+    def SetCurrentPoint(self, theP: nanoocp.gp.gp_Pnt) -> None: ...
+
+class BRepClass3d_BndBoxTreeSelectorLine:
+    def __init__(self, theMapOfShape: nanoocp.NCollection.NCollection_IndexedMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]) -> None: ...
+
+    class EdgeParam:
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: BRepClass3d_BndBoxTreeSelectorLine.EdgeParam) -> None: ...
+
+        @property
+        def myE(self) -> nanoocp.TopoDS.TopoDS_Edge: ...
+
+        @myE.setter
+        def myE(self, arg: nanoocp.TopoDS.TopoDS_Edge, /) -> None: ...
+
+        @property
+        def myParam(self) -> float: ...
+
+        @myParam.setter
+        def myParam(self, arg: float, /) -> None: ...
+
+        @property
+        def myLParam(self) -> float: ...
+
+        @myLParam.setter
+        def myLParam(self, arg: float, /) -> None: ...
+
+    class VertParam:
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theOther: BRepClass3d_BndBoxTreeSelectorLine.VertParam) -> None: ...
+
+        @property
+        def myV(self) -> nanoocp.TopoDS.TopoDS_Vertex: ...
+
+        @myV.setter
+        def myV(self, arg: nanoocp.TopoDS.TopoDS_Vertex, /) -> None: ...
+
+        @property
+        def myLParam(self) -> float: ...
+
+        @myLParam.setter
+        def myLParam(self, arg: float, /) -> None: ...
+
+    def Reject(self, theBox: nanoocp.Bnd.Bnd_Box) -> bool: ...
+
+    def Accept(self, theObj: int) -> bool: ...
+
+    def SetCurrentLine(self, theL: nanoocp.gp.gp_Lin, theMaxParam: float) -> None: ...
+
+    def GetEdgeParam(self, i: int, theOutE: nanoocp.TopoDS.TopoDS_Edge) -> tuple[float, float]: ...
+
+    def GetVertParam(self, i: int, theOutV: nanoocp.TopoDS.TopoDS_Vertex) -> float: ...
+
+    def GetNbEdgeParam(self) -> int: ...
+
+    def GetNbVertParam(self) -> int: ...
+
+    def ClearResults(self) -> None: ...
+
+    def IsCorrect(self) -> bool:
+        """Returns TRUE if correct classification is possible"""
 
 class BRepClass3d_Intersector3d:
     @overload

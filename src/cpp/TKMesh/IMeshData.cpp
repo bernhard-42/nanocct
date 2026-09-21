@@ -30,6 +30,7 @@
 #include <NCollection_CellFilter.hxx>
 #include <NCollection_DataMap.hxx>
 #include <NCollection_DynamicArray.hxx>
+#include <NCollection_EBTree.hxx>
 #include <NCollection_IncAllocator.hxx>
 #include <NCollection_IndexedDataMap.hxx>
 #include <NCollection_IndexedMap.hxx>
@@ -39,6 +40,7 @@
 #include <NCollection_PackedMap.hxx>
 #include <NCollection_Sequence.hxx>
 #include <NCollection_Shared.hxx>
+#include <NCollection_UBTree.hxx>
 #include <NCollection_UBTreeFiller.hxx>
 #include <Standard_OStream.hxx>
 #include <Standard_Transient.hxx>
@@ -110,6 +112,54 @@ Wire should represent an ordered set of edges.)nbdoc");
     }
     { nb::class_<IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>, Standard_Transient> cls(m, "IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve", R"nbdoc(Auxiliary tool representing adaptor interface for child classes of
 IMeshData_ParametersList to be used in tools working on NCollection_Array structure.)nbdoc");
+    }
+    { nb::class_<NCollection_UBTree<int, Bnd_Box2d>> cls(m, "NCollection_UBTree__int__Bnd_Box2d", R"nbdoc(The algorithm of unbalanced binary tree of overlapped bounding boxes.
+
+Once the tree of boxes  of geometric objects is constructed, the algorithm
+is capable of fast geometric selection of objects.  The tree can be easily
+updated by adding to it a new object with bounding box.
+
+The time of adding to the tree  of one object is O(log(N)), where N is the
+total number of  objects, so the time  of building a tree of  N objects is
+O(N(log(N)). The search time of one object is O(log(N)).
+
+Defining  various classes  inheriting NCollection_UBTree::Selector  we can
+perform various kinds of selection over the same b-tree object
+
+The object  may be of any  type allowing copying. Among  the best suitable
+solutions there can  be a pointer to an object,  handled object or integer
+index of object inside some  collection.  The bounding object may have any
+dimension  and  geometry. The  minimal  interface  of TheBndType  (besides
+public empty and copy constructor and operator =) used in UBTree algorithm
+is as the following:
+@code
+class MyBndType
+{
+public:
+inline void                   Add (const MyBndType& other);
+// Updates me with other bounding
+
+inline bool       IsOut (const MyBndType& other) const;
+// Classifies other bounding relatively me
+
+inline double          SquareExtent() const;
+// Computes the squared maximal linear extent of me.
+// (For box it is the squared diagonal of box)
+};
+@endcode
+To select objects you need to define a class derived from UBTree::Selector
+that  should  redefine  the  necessary  virtual methods  to  maintain  the
+selection condition.  The object  of this class  is also used  to retrieve
+selected objects after search.)nbdoc");
+    }
+    { nb::class_<NCollection_EBTree<int, Bnd_Box2d>, NCollection_UBTree<int, Bnd_Box2d>> cls(m, "NCollection_EBTree__int__Bnd_Box2d", R"nbdoc(The algorithm of unbalanced binary  tree of overlapped bounding boxes with
+the possibility of deleting objects from the tree.
+
+In addition to  the requirements to the object type  defined in the parent
+class this  class requires that the  object can be hashed  and compared to
+another object (functions HashCode and  IsEqual are defined for it), since
+the class NCollection_DataMap  is used where the object  plays the role of
+the key.)nbdoc");
     }
     { nb::class_<NCollection_UBTreeFiller<int, Bnd_Box2d>> cls(m, "NCollection_UBTreeFiller__int__Bnd_Box2d", R"nbdoc(This class is used to fill an UBTree in a random order.
 The quality of a tree is much better (from the point of view of
@@ -366,6 +416,7 @@ void nanoocp_templates_IMeshData(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_Face>>>(home, "NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_Face"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_PCurve>>>(home, "NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_PCurve"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_Wire>>>(home, "NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_Wire"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<NCollection_EBTree<int, Bnd_Box2d>>(home, "NCollection_Shared__NCollection_EBTree__int__Bnd_Box2d"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<NCollection_IndexedDataMap<BRepMesh_Edge, BRepMesh_PairOfIndex>>(home, "NCollection_Shared__NCollection_IndexedDataMap__BRepMesh_Edge__BRepMesh_PairOfIndex"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<NCollection_IndexedMap<double>>(home, "NCollection_Shared__NCollection_IndexedMap__double"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Shared<NCollection_List<gp_Pnt2d>>(home, "NCollection_Shared__NCollection_List__gp_Pnt2d"); }
@@ -482,15 +533,61 @@ Returns number of edges in discrete model.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&IMeshData_Wire::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&IMeshData_Wire::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (IMeshData_Wire::*)() const>(&IMeshData_Wire::DynamicType));
+    nanoocp_if_concrete<IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>>(nb::borrow<nb::class_<IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>>>(m.attr("IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([](const opencascade::handle<IMeshData_Curve> & theParameters) { return opencascade::handle<nanoocp_T>(new nanoocp_T(theParameters)); }), nb::arg("theParameters").none(), R"nbdoc(Constructor. Initializes tool by the given parameters.)nbdoc"); });
     nb::borrow<nb::class_<IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>>>(m.attr("IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve"))
-        .def(nb::new_([](const opencascade::handle<IMeshData_Curve> & theParameters) { return opencascade::handle<IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>>(new IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>(theParameters)); }), nb::arg("theParameters"), R"nbdoc(Constructor. Initializes tool by the given parameters.)nbdoc")
         .def("Lower", static_cast<int (IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>::*)() const>(&IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>::Lower), R"nbdoc(Returns lower index in parameters array.)nbdoc")
         .def("Upper", static_cast<int (IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>::*)() const>(&IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>::Upper), R"nbdoc(Returns upper index in parameters array.)nbdoc")
         .def("Value", static_cast<double (IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>::*)(const int) const>(&IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>::Value), nb::arg("theIndex"), R"nbdoc(Returns value of the given index.)nbdoc");
     nanoocp_implicit_copy_ctor<IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>>(nb::borrow<nb::class_<IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>>>(m.attr("IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve")));
     nb::implicitly_convertible<std::decay_t<const opencascade::handle<IMeshData_Curve> &>, IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>>();
-    nb::borrow<nb::class_<NCollection_UBTreeFiller<int, Bnd_Box2d>>>(m.attr("NCollection_UBTreeFiller__int__Bnd_Box2d"))
-        .def(nb::init<NCollection_UBTreeFiller<int, Bnd_Box2d>::UBTree &, const occ::handle<NCollection_BaseAllocator> &, const bool>(), nb::arg("theTree"), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), nb::arg("isFullRandom") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructor.
+    nanoocp_if_concrete<NCollection_UBTree<int, Bnd_Box2d>>(nb::borrow<nb::class_<NCollection_UBTree<int, Bnd_Box2d>>>(m.attr("NCollection_UBTree__int__Bnd_Box2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const occ::handle<NCollection_BaseAllocator> & theAllocator) { new (self) nanoocp_T(theAllocator); }, nb::arg("theAllocator").none(), R"nbdoc(Constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_UBTree<int, Bnd_Box2d>>>(m.attr("NCollection_UBTree__int__Bnd_Box2d"))
+        .def("Add", static_cast<bool (NCollection_UBTree<int, Bnd_Box2d>::*)(const int &, const Bnd_Box2d &)>(&NCollection_UBTree<int, Bnd_Box2d>::Add), nb::arg("theObj"), nb::arg("theBnd"), R"nbdoc(Update the tree with a new object and its bounding box.
+@param theObj
+added object
+@param theBnd
+bounding box of the object.
+@return
+always True)nbdoc")
+        .def("Select", static_cast<int (NCollection_UBTree<int, Bnd_Box2d>::*)(NCollection_UBTree<int, Bnd_Box2d>::Selector &) const>(&NCollection_UBTree<int, Bnd_Box2d>::Select), nb::arg("theSelector"), R"nbdoc(Searches in the tree all objects conforming to the given selector.
+@return
+Number of objects accepted)nbdoc")
+        .def("Clear", static_cast<void (NCollection_UBTree<int, Bnd_Box2d>::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_UBTree<int, Bnd_Box2d>::Clear), nb::arg("aNewAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), R"nbdoc(Clears the contents of the tree.
+@param aNewAlloc
+Optional:   a new allocator that will be used when the tree is rebuilt
+anew. This makes sense if the memory allocator needs re-initialisation
+(like NCollection_IncAllocator).  By default the previous allocator is
+kept.)nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_UBTree<int, Bnd_Box2d>::*)() const noexcept>(&NCollection_UBTree<int, Bnd_Box2d>::IsEmpty))
+        .def("Root", static_cast<const NCollection_UBTree<int, Bnd_Box2d>::TreeNode & (NCollection_UBTree<int, Bnd_Box2d>::*)() const noexcept>(&NCollection_UBTree<int, Bnd_Box2d>::Root), R"nbdoc(@return
+the root node of the tree)nbdoc")
+        .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_UBTree<int, Bnd_Box2d>::*)() const noexcept>(&NCollection_UBTree<int, Bnd_Box2d>::Allocator), R"nbdoc(Recommended to be used only in sub-classes.
+@return
+Allocator object used in this instance of UBTree.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_UBTree<int, Bnd_Box2d>>(nb::borrow<nb::class_<NCollection_UBTree<int, Bnd_Box2d>>>(m.attr("NCollection_UBTree__int__Bnd_Box2d")));
+    nanoocp_if_concrete<NCollection_EBTree<int, Bnd_Box2d>>(nb::borrow<nb::class_<NCollection_EBTree<int, Bnd_Box2d>>>(m.attr("NCollection_EBTree__int__Bnd_Box2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const occ::handle<NCollection_BaseAllocator> & theAllocator) { new (self) nanoocp_T(theAllocator); }, nb::arg("theAllocator").none() = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), R"nbdoc(Constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_EBTree<int, Bnd_Box2d>>>(m.attr("NCollection_EBTree__int__Bnd_Box2d"))
+        .def("Add", static_cast<bool (NCollection_EBTree<int, Bnd_Box2d>::*)(const int &, const Bnd_Box2d &)>(&NCollection_EBTree<int, Bnd_Box2d>::Add), nb::arg("theObj"), nb::arg("theBnd"), R"nbdoc(Updates the tree with a new object and its bounding box.
+Extends the functionality of the parent method by maintaining
+the map myObjNodeMap. Redefined virtual method.
+@return
+False if the tree already contains theObj.)nbdoc")
+        .def("Remove", static_cast<bool (NCollection_EBTree<int, Bnd_Box2d>::*)(const int &)>(&NCollection_EBTree<int, Bnd_Box2d>::Remove), nb::arg("theObj"), R"nbdoc(Removes the given object and updates the tree.
+@return
+False if the tree does not contain theObj)nbdoc")
+        .def("Contains", static_cast<bool (NCollection_EBTree<int, Bnd_Box2d>::*)(const int &) const>(&NCollection_EBTree<int, Bnd_Box2d>::Contains), nb::arg("theObj"), R"nbdoc(@return
+True if the tree contains the object.)nbdoc")
+        .def("FindNode", static_cast<const NCollection_EBTree<int, Bnd_Box2d>::TreeNode & (NCollection_EBTree<int, Bnd_Box2d>::*)(const int &) const>(&NCollection_EBTree<int, Bnd_Box2d>::FindNode), nb::arg("theObj"), R"nbdoc(@return
+The leaf node containing the object.)nbdoc")
+        .def("Clear", static_cast<void (NCollection_EBTree<int, Bnd_Box2d>::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_EBTree<int, Bnd_Box2d>::Clear), nb::arg("aNewAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), R"nbdoc(Clears the contents of the tree. Redefined virtual method)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_EBTree<int, Bnd_Box2d>>(nb::borrow<nb::class_<NCollection_EBTree<int, Bnd_Box2d>>>(m.attr("NCollection_EBTree__int__Bnd_Box2d")));
+    nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, NCollection_EBTree<int, Bnd_Box2d>>();
+    nanoocp_if_concrete<NCollection_UBTreeFiller<int, Bnd_Box2d>>(nb::borrow<nb::class_<NCollection_UBTreeFiller<int, Bnd_Box2d>>>(m.attr("NCollection_UBTreeFiller__int__Bnd_Box2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, NCollection_UBTreeFiller<int, Bnd_Box2d>::UBTree & theTree, const occ::handle<NCollection_BaseAllocator> & theAlloc, const bool isFullRandom) { new (self) nanoocp_T(theTree, theAlloc, isFullRandom); }, nb::arg("theTree"), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), nb::arg("isFullRandom") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructor.
 @param theTree
 Tree instance that is to be filled.
 @param theAlloc
@@ -499,7 +596,8 @@ Allocator for the Filler data.
 Takes effect when the number of items is large (order of 50,000). When
 it is True, the code uses the maximal randomization allowing a better
 balanced tree. If False, the randomization/tree balance are worse but
-the tree filling is faster due to better utilisation of CPU L1/L2 cache.)nbdoc")
+the tree filling is faster due to better utilisation of CPU L1/L2 cache.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_UBTreeFiller<int, Bnd_Box2d>>>(m.attr("NCollection_UBTreeFiller__int__Bnd_Box2d"))
         .def("Add", static_cast<void (NCollection_UBTreeFiller<int, Bnd_Box2d>::*)(const int &, const Bnd_Box2d &)>(&NCollection_UBTreeFiller<int, Bnd_Box2d>::Add), nb::arg("theObj"), nb::arg("theBnd"), R"nbdoc(Adds a pair (theObj, theBnd) to my sequence)nbdoc")
         .def("Fill", static_cast<int (NCollection_UBTreeFiller<int, Bnd_Box2d>::*)()>(&NCollection_UBTreeFiller<int, Bnd_Box2d>::Fill), R"nbdoc(Fills the tree with the objects from my sequence. This method clears
 the internal buffer of added items making sure that no item would be added
@@ -514,12 +612,13 @@ outputting these results to std::ostream.
 the tree size (the same value is returned by method Fill()).)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_UBTreeFiller<int, Bnd_Box2d>>(nb::borrow<nb::class_<NCollection_UBTreeFiller<int, Bnd_Box2d>>>(m.attr("NCollection_UBTreeFiller__int__Bnd_Box2d")));
     nb::implicitly_convertible<std::decay_t<NCollection_UBTreeFiller<int, Bnd_Box2d>::UBTree &>, NCollection_UBTreeFiller<int, Bnd_Box2d>>();
-    nb::borrow<nb::class_<NCollection_OccAllocator<gp_Pnt>>>(m.attr("NCollection_OccAllocator__gp_Pnt"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<NCollection_OccAllocator<gp_Pnt>>(nb::borrow<nb::class_<NCollection_OccAllocator<gp_Pnt>>>(m.attr("NCollection_OccAllocator__gp_Pnt")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 Creates an object using the default Open CASCADE allocation mechanism, i.e., which uses
 Standard::Allocate() and Standard::Free() underneath.)nbdoc")
-        .def(nb::init<const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const NCollection_OccAllocator<gp_Pnt> &>(), nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const occ::handle<NCollection_BaseAllocator> & theAlloc) { new (self) nanoocp_T(theAlloc); }, nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_OccAllocator<gp_Pnt> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_OccAllocator<gp_Pnt>>>(m.attr("NCollection_OccAllocator__gp_Pnt"))
         .def("SetAllocator", static_cast<void (NCollection_OccAllocator<gp_Pnt>::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_OccAllocator<gp_Pnt>::SetAllocator), nb::arg("theAlloc").none())
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_OccAllocator<gp_Pnt>::*)() const noexcept>(&NCollection_OccAllocator<gp_Pnt>::Allocator))
         .def("deallocate", static_cast<void (NCollection_OccAllocator<gp_Pnt>::*)(NCollection_OccAllocator<gp_Pnt>::pointer, NCollection_OccAllocator<gp_Pnt>::size_type)>(&NCollection_OccAllocator<gp_Pnt>::deallocate), nb::arg("thePnt"), nb::arg("arg1"), R"nbdoc(Frees previously allocated memory.)nbdoc")
@@ -527,12 +626,13 @@ Standard::Allocate() and Standard::Free() underneath.)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_OccAllocator<gp_Pnt>::*)(const NCollection_OccAllocator<gp_Pnt> &) const noexcept>(&NCollection_OccAllocator<gp_Pnt>::operator==), nb::arg("theOther"), nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_OccAllocator<gp_Pnt>::*)(const NCollection_OccAllocator<gp_Pnt> &) const noexcept>(&NCollection_OccAllocator<gp_Pnt>::operator!=), nb::arg("theOther"), nb::is_operator());
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, NCollection_OccAllocator<gp_Pnt>>();
-    nb::borrow<nb::class_<NCollection_OccAllocator<gp_Pnt2d>>>(m.attr("NCollection_OccAllocator__gp_Pnt2d"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<NCollection_OccAllocator<gp_Pnt2d>>(nb::borrow<nb::class_<NCollection_OccAllocator<gp_Pnt2d>>>(m.attr("NCollection_OccAllocator__gp_Pnt2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 Creates an object using the default Open CASCADE allocation mechanism, i.e., which uses
 Standard::Allocate() and Standard::Free() underneath.)nbdoc")
-        .def(nb::init<const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const NCollection_OccAllocator<gp_Pnt2d> &>(), nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const occ::handle<NCollection_BaseAllocator> & theAlloc) { new (self) nanoocp_T(theAlloc); }, nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_OccAllocator<gp_Pnt2d> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_OccAllocator<gp_Pnt2d>>>(m.attr("NCollection_OccAllocator__gp_Pnt2d"))
         .def("SetAllocator", static_cast<void (NCollection_OccAllocator<gp_Pnt2d>::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_OccAllocator<gp_Pnt2d>::SetAllocator), nb::arg("theAlloc").none())
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_OccAllocator<gp_Pnt2d>::*)() const noexcept>(&NCollection_OccAllocator<gp_Pnt2d>::Allocator))
         .def("deallocate", static_cast<void (NCollection_OccAllocator<gp_Pnt2d>::*)(NCollection_OccAllocator<gp_Pnt2d>::pointer, NCollection_OccAllocator<gp_Pnt2d>::size_type)>(&NCollection_OccAllocator<gp_Pnt2d>::deallocate), nb::arg("thePnt"), nb::arg("arg1"), R"nbdoc(Frees previously allocated memory.)nbdoc")
@@ -540,12 +640,13 @@ Standard::Allocate() and Standard::Free() underneath.)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_OccAllocator<gp_Pnt2d>::*)(const NCollection_OccAllocator<gp_Pnt2d> &) const noexcept>(&NCollection_OccAllocator<gp_Pnt2d>::operator==), nb::arg("theOther"), nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_OccAllocator<gp_Pnt2d>::*)(const NCollection_OccAllocator<gp_Pnt2d> &) const noexcept>(&NCollection_OccAllocator<gp_Pnt2d>::operator!=), nb::arg("theOther"), nb::is_operator());
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, NCollection_OccAllocator<gp_Pnt2d>>();
-    nb::borrow<nb::class_<NCollection_OccAllocator<double>>>(m.attr("NCollection_OccAllocator__double"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<NCollection_OccAllocator<double>>(nb::borrow<nb::class_<NCollection_OccAllocator<double>>>(m.attr("NCollection_OccAllocator__double")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 Creates an object using the default Open CASCADE allocation mechanism, i.e., which uses
 Standard::Allocate() and Standard::Free() underneath.)nbdoc")
-        .def(nb::init<const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const NCollection_OccAllocator<double> &>(), nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const occ::handle<NCollection_BaseAllocator> & theAlloc) { new (self) nanoocp_T(theAlloc); }, nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_OccAllocator<double> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_OccAllocator<double>>>(m.attr("NCollection_OccAllocator__double"))
         .def("SetAllocator", static_cast<void (NCollection_OccAllocator<double>::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_OccAllocator<double>::SetAllocator), nb::arg("theAlloc").none())
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_OccAllocator<double>::*)() const noexcept>(&NCollection_OccAllocator<double>::Allocator))
         .def("deallocate", static_cast<void (NCollection_OccAllocator<double>::*)(NCollection_OccAllocator<double>::pointer, NCollection_OccAllocator<double>::size_type)>(&NCollection_OccAllocator<double>::deallocate), nb::arg("thePnt"), nb::arg("arg1"), R"nbdoc(Frees previously allocated memory.)nbdoc")
@@ -553,12 +654,13 @@ Standard::Allocate() and Standard::Free() underneath.)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_OccAllocator<double>::*)(const NCollection_OccAllocator<double> &) const noexcept>(&NCollection_OccAllocator<double>::operator==), nb::arg("theOther"), nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_OccAllocator<double>::*)(const NCollection_OccAllocator<double> &) const noexcept>(&NCollection_OccAllocator<double>::operator!=), nb::arg("theOther"), nb::is_operator());
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, NCollection_OccAllocator<double>>();
-    nb::borrow<nb::class_<NCollection_OccAllocator<int>>>(m.attr("NCollection_OccAllocator__int"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<NCollection_OccAllocator<int>>(nb::borrow<nb::class_<NCollection_OccAllocator<int>>>(m.attr("NCollection_OccAllocator__int")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 Creates an object using the default Open CASCADE allocation mechanism, i.e., which uses
 Standard::Allocate() and Standard::Free() underneath.)nbdoc")
-        .def(nb::init<const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const NCollection_OccAllocator<int> &>(), nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const occ::handle<NCollection_BaseAllocator> & theAlloc) { new (self) nanoocp_T(theAlloc); }, nb::arg("theAlloc").none(), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_OccAllocator<int> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_OccAllocator<int>>>(m.attr("NCollection_OccAllocator__int"))
         .def("SetAllocator", static_cast<void (NCollection_OccAllocator<int>::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_OccAllocator<int>::SetAllocator), nb::arg("theAlloc").none())
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_OccAllocator<int>::*)() const noexcept>(&NCollection_OccAllocator<int>::Allocator))
         .def("deallocate", static_cast<void (NCollection_OccAllocator<int>::*)(NCollection_OccAllocator<int>::pointer, NCollection_OccAllocator<int>::size_type)>(&NCollection_OccAllocator<int>::deallocate), nb::arg("thePnt"), nb::arg("arg1"), R"nbdoc(Frees previously allocated memory.)nbdoc")
@@ -566,9 +668,9 @@ Standard::Allocate() and Standard::Free() underneath.)nbdoc")
         .def("__eq__", static_cast<bool (NCollection_OccAllocator<int>::*)(const NCollection_OccAllocator<int> &) const noexcept>(&NCollection_OccAllocator<int>::operator==), nb::arg("theOther"), nb::is_operator())
         .def("__ne__", static_cast<bool (NCollection_OccAllocator<int>::*)(const NCollection_OccAllocator<int> &) const noexcept>(&NCollection_OccAllocator<int>::operator!=), nb::arg("theOther"), nb::is_operator());
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, NCollection_OccAllocator<int>>();
-    nb::borrow<nb::class_<nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>>(m.attr("NCollection_CellFilter__BRepMesh_CircleInspector"))
-        .def(nb::init<const double, const occ::handle<NCollection_IncAllocator> &>(), nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor when dimension count is known at compilation time.)nbdoc")
-        .def(nb::init<const int, const double, const occ::handle<NCollection_IncAllocator> &>(), nb::arg("theDim"), nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor; initialized by dimension count and cell size.
+    nanoocp_if_concrete<nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>(nb::borrow<nb::class_<nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>>(m.attr("NCollection_CellFilter__BRepMesh_CircleInspector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const double theCellSize, const occ::handle<NCollection_IncAllocator> & theAlloc) { new (self) nanoocp_T(theCellSize, theAlloc); }, nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor when dimension count is known at compilation time.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theDim, const double theCellSize, const occ::handle<NCollection_IncAllocator> & theAlloc) { new (self) nanoocp_T(theDim, theCellSize, theAlloc); }, nb::arg("theDim"), nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor; initialized by dimension count and cell size.
 
 Note: the cell size must be ensured to be greater than
 maximal coordinate of the involved points divided by INT_MAX,
@@ -577,7 +679,8 @@ in order to avoid integer overflow of cell index.
 By default cell size is 0, which is invalid; thus if default
 constructor is used, the tool must be initialized later with
 appropriate cell size by call to Reset()
-Constructor when dimension count is unknown at compilation time.)nbdoc")
+Constructor when dimension count is unknown at compilation time.)nbdoc"); });
+    nb::borrow<nb::class_<nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>>(m.attr("NCollection_CellFilter__BRepMesh_CircleInspector"))
         .def("Reset", static_cast<void (NCollection_CellFilter<BRepMesh_CircleInspector>::*)(double, const occ::handle<NCollection_IncAllocator> &)>(&NCollection_CellFilter<BRepMesh_CircleInspector>::Reset), nb::arg("theCellSize"), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Clear the data structures, set new cell size and allocator)nbdoc")
         .def("Reset", static_cast<void (NCollection_CellFilter<BRepMesh_CircleInspector>::*)(NCollection_Array1<double> &, const occ::handle<NCollection_IncAllocator> &)>(&NCollection_CellFilter<BRepMesh_CircleInspector>::Reset), nb::arg("theCellSize"), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Clear the data structures and set new cell sizes and allocator)nbdoc")
         .def("Add", static_cast<void (NCollection_CellFilter<BRepMesh_CircleInspector>::*)(const NCollection_CellFilter<BRepMesh_CircleInspector>::Target &, const NCollection_CellFilter<BRepMesh_CircleInspector>::Point &)>(&NCollection_CellFilter<BRepMesh_CircleInspector>::Add), nb::arg("theTarget"), nb::arg("thePnt"), R"nbdoc(Adds a target object for further search at a point (into only one cell))nbdoc")
@@ -598,9 +701,9 @@ less than the same coordinate of the second point))nbdoc");
     nanoocp_implicit_copy_ctor<nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>(nb::borrow<nb::class_<nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>>(m.attr("NCollection_CellFilter__BRepMesh_CircleInspector")));
     nb::implicitly_convertible<std::decay_t<const int>, nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>();
     nb::implicitly_convertible<std::decay_t<const double>, nanoocp_wrap_NCollection_CellFilter__BRepMesh_CircleInspector>();
-    nb::borrow<nb::class_<nanoocp_wrap_NCollection_CellFilter__BRepMesh_VertexInspector>>(m.attr("NCollection_CellFilter__BRepMesh_VertexInspector"))
-        .def(nb::init<const double, const occ::handle<NCollection_IncAllocator> &>(), nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor when dimension count is known at compilation time.)nbdoc")
-        .def(nb::init<const int, const double, const occ::handle<NCollection_IncAllocator> &>(), nb::arg("theDim"), nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor; initialized by dimension count and cell size.
+    nanoocp_if_concrete<nanoocp_wrap_NCollection_CellFilter__BRepMesh_VertexInspector>(nb::borrow<nb::class_<nanoocp_wrap_NCollection_CellFilter__BRepMesh_VertexInspector>>(m.attr("NCollection_CellFilter__BRepMesh_VertexInspector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const double theCellSize, const occ::handle<NCollection_IncAllocator> & theAlloc) { new (self) nanoocp_T(theCellSize, theAlloc); }, nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor when dimension count is known at compilation time.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theDim, const double theCellSize, const occ::handle<NCollection_IncAllocator> & theAlloc) { new (self) nanoocp_T(theDim, theCellSize, theAlloc); }, nb::arg("theDim"), nb::arg("theCellSize") = static_cast<std::decay_t<const double>>(0), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Constructor; initialized by dimension count and cell size.
 
 Note: the cell size must be ensured to be greater than
 maximal coordinate of the involved points divided by INT_MAX,
@@ -609,7 +712,8 @@ in order to avoid integer overflow of cell index.
 By default cell size is 0, which is invalid; thus if default
 constructor is used, the tool must be initialized later with
 appropriate cell size by call to Reset()
-Constructor when dimension count is unknown at compilation time.)nbdoc")
+Constructor when dimension count is unknown at compilation time.)nbdoc"); });
+    nb::borrow<nb::class_<nanoocp_wrap_NCollection_CellFilter__BRepMesh_VertexInspector>>(m.attr("NCollection_CellFilter__BRepMesh_VertexInspector"))
         .def("Reset", static_cast<void (NCollection_CellFilter<BRepMesh_VertexInspector>::*)(double, const occ::handle<NCollection_IncAllocator> &)>(&NCollection_CellFilter<BRepMesh_VertexInspector>::Reset), nb::arg("theCellSize"), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Clear the data structures, set new cell size and allocator)nbdoc")
         .def("Reset", static_cast<void (NCollection_CellFilter<BRepMesh_VertexInspector>::*)(NCollection_Array1<double> &, const occ::handle<NCollection_IncAllocator> &)>(&NCollection_CellFilter<BRepMesh_VertexInspector>::Reset), nb::arg("theCellSize"), nb::arg("theAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_IncAllocator> &>>(nullptr), R"nbdoc(Clear the data structures and set new cell sizes and allocator)nbdoc")
         .def("Add", static_cast<void (NCollection_CellFilter<BRepMesh_VertexInspector>::*)(const NCollection_CellFilter<BRepMesh_VertexInspector>::Target &, const NCollection_CellFilter<BRepMesh_VertexInspector>::Point &)>(&NCollection_CellFilter<BRepMesh_VertexInspector>::Add), nb::arg("theTarget"), nb::arg("thePnt"), R"nbdoc(Adds a target object for further search at a point (into only one cell))nbdoc")
@@ -631,6 +735,7 @@ less than the same coordinate of the second point))nbdoc");
     nb::implicitly_convertible<std::decay_t<const int>, nanoocp_wrap_NCollection_CellFilter__BRepMesh_VertexInspector>();
     nb::implicitly_convertible<std::decay_t<const double>, nanoocp_wrap_NCollection_CellFilter__BRepMesh_VertexInspector>();
     m.attr("ICurveArrayAdaptor") = nb::module_::import_("nanoocp._TKMesh.IMeshData").attr("IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve");   // ICurveArrayAdaptor = IMeshData_ParametersListArrayAdaptor<opencascade::handle<IMeshData_Curve>>
+    m.attr("BndBox2dTree") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_Shared__NCollection_EBTree__int__Bnd_Box2d");   // BndBox2dTree = NCollection_Shared<NCollection_EBTree<int, Bnd_Box2d>, void>
     m.attr("BndBox2dTreeFiller") = nb::module_::import_("nanoocp._TKMesh.IMeshData").attr("NCollection_UBTreeFiller__int__Bnd_Box2d");   // BndBox2dTreeFiller = NCollection_UBTreeFiller<int, Bnd_Box2d>
     m.attr("VectorOfIFaceHandles") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_Face");   // VectorOfIFaceHandles = NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_Face>>, void>
     m.attr("VectorOfIWireHandles") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_Shared__NCollection_DynamicArray__Handle_IMeshData_Wire");   // VectorOfIWireHandles = NCollection_Shared<NCollection_DynamicArray<opencascade::handle<IMeshData_Wire>>, void>

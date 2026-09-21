@@ -12,6 +12,14 @@
 #include <BOPTools_Parallel.hxx>
 #include <BOPTools_Set.hxx>
 #include <BRepAdaptor_Surface.hxx>
+#include <BVH_Box.hxx>
+#include <BVH_BoxSet.hxx>
+#include <BVH_Builder.hxx>
+#include <BVH_Object.hxx>
+#include <BVH_PrimitiveSet.hxx>
+#include <BVH_Set.hxx>
+#include <BVH_Traverse.hxx>
+#include <BVH_Tree.hxx>
 #include <Geom2d_Curve.hxx>
 #include <Geom_Curve.hxx>
 #include <Geom_Surface.hxx>
@@ -22,6 +30,7 @@
 #include <NCollection_BaseAllocator.hxx>
 #include <NCollection_IndexedDataMap.hxx>
 #include <NCollection_IndexedMap.hxx>
+#include <NCollection_LinearVector.hxx>
 #include <NCollection_List.hxx>
 #include <NCollection_Map.hxx>
 #include <Precision.hxx>
@@ -59,6 +68,95 @@ This is the copy of the BOPTools_AlgoTools2D.cdl)nbdoc");
     { nb::class_<BOPTools_AlgoTools3D> cls(m, "BOPTools_AlgoTools3D", R"nbdoc(The class contains handy static functions
 dealing with the topology
 This is the copy of BOPTools_AlgoTools3D.cdl file)nbdoc");
+    }
+    { nb::class_<BVH_Object<double, 2>, BVH_ObjectTransient> cls(m, "BVH_Object__double__2", R"nbdoc(Abstract geometric object bounded by BVH box.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
+    { nb::class_<BVH_Set<double, 2>> cls(m, "BVH_Set__double__2", R"nbdoc(Set of abstract entities (bounded by BVH boxes). This is
+the minimal geometry interface needed to construct BVH.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
+    { nb::class_<BVH_PrimitiveSet<double, 2>, BVH_Object<double, 2>> cls(m, "BVH_PrimitiveSet__double__2", R"nbdoc(Set of abstract geometric primitives organized with bounding
+volume hierarchy (BVH). Unlike an object set, this collection
+is designed for storing structural elements of a single object
+(such as triangles in the object triangulation). Because there
+may be a large number of such elements, the implementations of
+this interface should be sufficiently optimized.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
+    { nb::class_<BVH_BoxSet<double, 2, int>, BVH_PrimitiveSet<double, 2>> cls(m, "BVH_BoxSet__double__2__int", R"nbdoc(Implements easy to use interfaces for adding the elements into
+BVH tree and its following construction.
+To make it more effective it is better to set the number of elements
+that are going to be added into BVH tree.
+For better efficiency on heavy data types it is recommended to use
+either BHV_IndexedBoxSet which uses indirect indexing for accessing
+the elements and their boxes or set the element to be an index
+of the real element in the application's internal data structures.
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam DataType Type of elements on which the boxes are built)nbdoc");
+    }
+    { nb::class_<BOPTools_BoxSet<double, 2, int>, BVH_BoxSet<double, 2, int>> cls(m, "BOPTools_Box2dTree", R"nbdoc(Redefines BoxSet to use the Linear builder by default)nbdoc");
+    }
+    { nb::class_<BVH_BaseTraverse<bool>> cls(m, "BVH_BaseTraverse__bool", R"nbdoc(Abstract class implementing the base Traverse interface
+required for selection of the elements from BVH tree.
+
+\tparam MetricType Type of metric to perform more optimal tree descend)nbdoc");
+    }
+    { nb::class_<BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>, BVH_BaseTraverse<bool>> cls(m, "BVH_Traverse__double__2__BVH_BoxSet__double__2__bool", R"nbdoc(Abstract class implementing the traverse of the single binary tree.
+Selection of the data from the tree is performed by the
+rules defined in the Accept/Reject methods.
+See description of the required methods in the comments above.
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+index) \tparam MetricType Type of metric to perform more optimal tree descend)nbdoc");
+    }
+    { nb::class_<BOPTools_BoxSelector<2>, BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>> cls(m, "BOPTools_Box2dTreeSelector", R"nbdoc(Template Selector for elements selection from BVH tree.)nbdoc");
+    }
+    { nb::class_<BVH_BoxSet<double, 3, int>, BVH_PrimitiveSet<double, 3>> cls(m, "BVH_BoxSet__double__3__int", R"nbdoc(Implements easy to use interfaces for adding the elements into
+BVH tree and its following construction.
+To make it more effective it is better to set the number of elements
+that are going to be added into BVH tree.
+For better efficiency on heavy data types it is recommended to use
+either BHV_IndexedBoxSet which uses indirect indexing for accessing
+the elements and their boxes or set the element to be an index
+of the real element in the application's internal data structures.
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam DataType Type of elements on which the boxes are built)nbdoc");
+    }
+    { nb::class_<BOPTools_BoxSet<double, 3, int>, BVH_BoxSet<double, 3, int>> cls(m, "BOPTools_BoxTree", R"nbdoc(Redefines BoxSet to use the Linear builder by default)nbdoc");
+    }
+    { nb::class_<BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>, BVH_BaseTraverse<bool>> cls(m, "BVH_Traverse__double__3__BVH_BoxSet__double__3__bool", R"nbdoc(Abstract class implementing the traverse of the single binary tree.
+Selection of the data from the tree is performed by the
+rules defined in the Accept/Reject methods.
+See description of the required methods in the comments above.
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+index) \tparam MetricType Type of metric to perform more optimal tree descend)nbdoc");
+    }
+    { nb::class_<BOPTools_BoxSelector<3>, BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>> cls(m, "BOPTools_BoxTreeSelector", R"nbdoc(Template Selector for elements selection from BVH tree.)nbdoc");
+    }
+    { nb::class_<BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>, BVH_BaseTraverse<double>> cls(m, "BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double", R"nbdoc(Abstract class implementing the parallel traverse of two binary trees.
+Selection of the data from the trees is performed by the
+rules defined in the Accept/Reject methods.
+See description of the required methods in the comments above.
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+index) \tparam MetricType Type of metric to perform more optimal tree descend)nbdoc");
+    }
+    { nb::class_<BOPTools_PairSelector<3>, BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>> cls(m, "BOPTools_BoxPairSelector", R"nbdoc(Template Selector for selection of the elements from two BVH trees.)nbdoc");
     }
     { nb::class_<BOPTools_Parallel> cls(m, "BOPTools_Parallel", R"nbdoc(Implementation of Functors/Starters)nbdoc");
     }
@@ -521,6 +619,210 @@ using the line <theL> so that 2D point
 on the surface of <theF>, lies on that line.
 Returns 0 in case of success.)nbdoc");
     nanoocp_implicit_copy_ctor<BOPTools_AlgoTools3D>(nb::borrow<nb::class_<BOPTools_AlgoTools3D>>(m.attr("BOPTools_AlgoTools3D")));
+    nanoocp_if_concrete<BVH_Object<double, 2>>(nb::borrow<nb::class_<BVH_Object<double, 2>>>(m.attr("BVH_Object__double__2")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([]() { return opencascade::handle<nanoocp_T>(new nanoocp_T()); }), R"nbdoc(Creates new abstract geometric object.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Object<double, 2>>>(m.attr("BVH_Object__double__2"))
+        .def("Box", static_cast<BVH_Box<double, 2> (BVH_Object<double, 2>::*)() const>(&BVH_Object<double, 2>::Box), R"nbdoc(Returns AABB of the geometric object.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Object<double, 2>>(nb::borrow<nb::class_<BVH_Object<double, 2>>>(m.attr("BVH_Object__double__2")));
+    nanoocp_if_concrete<BVH_Set<double, 2>>(nb::borrow<nb::class_<BVH_Set<double, 2>>>(m.attr("BVH_Set__double__2")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Creates new abstract set of objects.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Set<double, 2>>>(m.attr("BVH_Set__double__2"))
+        .def("Box", static_cast<BVH_Box<double, 2> (BVH_Set<double, 2>::*)() const>(&BVH_Set<double, 2>::Box), R"nbdoc(Returns AABB of the entire set of objects.)nbdoc")
+        .def("Size", static_cast<int (BVH_Set<double, 2>::*)() const>(&BVH_Set<double, 2>::Size), R"nbdoc(Returns total number of objects.)nbdoc")
+        .def("Box", static_cast<BVH_Box<double, 2> (BVH_Set<double, 2>::*)(const int) const>(&BVH_Set<double, 2>::Box), nb::arg("theIndex"), R"nbdoc(Returns AABB of the given object.)nbdoc")
+        .def("Center", static_cast<double (BVH_Set<double, 2>::*)(const int, const int) const>(&BVH_Set<double, 2>::Center), nb::arg("theIndex"), nb::arg("theAxis"), R"nbdoc(Returns centroid position along the given axis.)nbdoc")
+        .def("Swap", static_cast<void (BVH_Set<double, 2>::*)(const int, const int)>(&BVH_Set<double, 2>::Swap), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Performs transposing the two given objects in the set.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Set<double, 2>>(nb::borrow<nb::class_<BVH_Set<double, 2>>>(m.attr("BVH_Set__double__2")));
+    nanoocp_if_concrete<BVH_PrimitiveSet<double, 2>>(nb::borrow<nb::class_<BVH_PrimitiveSet<double, 2>>>(m.attr("BVH_PrimitiveSet__double__2")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([]() { return opencascade::handle<nanoocp_T>(new nanoocp_T()); }), R"nbdoc(Creates set of abstract primitives.)nbdoc")
+        .def(nb::new_([](const opencascade::handle<BVH_Builder<double, 2>> & theBuilder) { return opencascade::handle<nanoocp_T>(new nanoocp_T(theBuilder)); }), nb::arg("theBuilder").none(), R"nbdoc(Creates set of abstract primitives.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_PrimitiveSet<double, 2>>>(m.attr("BVH_PrimitiveSet__double__2"))
+        .def("Box", static_cast<BVH_Box<double, 2> (BVH_PrimitiveSet<double, 2>::*)() const>(&BVH_PrimitiveSet<double, 2>::Box), R"nbdoc(Returns AABB of primitive set.)nbdoc")
+        .def("BVH", static_cast<const opencascade::handle<BVH_Tree<double, 2>> & (BVH_PrimitiveSet<double, 2>::*)()>(&BVH_PrimitiveSet<double, 2>::BVH), R"nbdoc(Returns BVH tree (and builds it if necessary).)nbdoc")
+        .def("Builder", static_cast<const opencascade::handle<BVH_Builder<double, 2>> & (BVH_PrimitiveSet<double, 2>::*)() const>(&BVH_PrimitiveSet<double, 2>::Builder), R"nbdoc(Returns the method (builder) used to construct BVH.)nbdoc")
+        .def("SetBuilder", static_cast<void (BVH_PrimitiveSet<double, 2>::*)(const opencascade::handle<BVH_Builder<double, 2>> &)>(&BVH_PrimitiveSet<double, 2>::SetBuilder), nb::arg("theBuilder").none(), R"nbdoc(Sets the method (builder) used to construct BVH.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_PrimitiveSet<double, 2>>(nb::borrow<nb::class_<BVH_PrimitiveSet<double, 2>>>(m.attr("BVH_PrimitiveSet__double__2")));
+    nb::implicitly_convertible<std::decay_t<const opencascade::handle<BVH_Builder<double, 2>> &>, BVH_PrimitiveSet<double, 2>>();
+    nanoocp_if_concrete<BVH_BoxSet<double, 2, int>>(nb::borrow<nb::class_<BVH_BoxSet<double, 2, int>>>(m.attr("BVH_BoxSet__double__2__int")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([]() { return opencascade::handle<nanoocp_T>(new nanoocp_T()); }), R"nbdoc(@name Constructors
+Empty constructor for use the default BVH_Builder)nbdoc")
+        .def(nb::new_([](const opencascade::handle<BVH_Builder<double, 2>> & theBuilder) { return opencascade::handle<nanoocp_T>(new nanoocp_T(theBuilder)); }), nb::arg("theBuilder").none(), R"nbdoc(Constructor for usage the custom BVH builder)nbdoc"); });
+    nb::borrow<nb::class_<BVH_BoxSet<double, 2, int>>>(m.attr("BVH_BoxSet__double__2__int"))
+        .def("SetSize", static_cast<void (BVH_BoxSet<double, 2, int>::*)(const size_t)>(&BVH_BoxSet<double, 2, int>::SetSize), nb::arg("theSize"), R"nbdoc(@name Setting expected size of the BVH
+Sets the expected size of BVH tree)nbdoc")
+        .def("Add", static_cast<void (BVH_BoxSet<double, 2, int>::*)(const int &, const BVH_Box<double, 2> &)>(&BVH_BoxSet<double, 2, int>::Add), nb::arg("theElement"), nb::arg("theBox"), R"nbdoc(@name Adding elements in BVH
+Adds the element into BVH)nbdoc")
+        .def("Build", static_cast<void (BVH_BoxSet<double, 2, int>::*)()>(&BVH_BoxSet<double, 2, int>::Build), R"nbdoc(@name BVH construction
+BVH construction)nbdoc")
+        .def("Clear", static_cast<void (BVH_BoxSet<double, 2, int>::*)()>(&BVH_BoxSet<double, 2, int>::Clear), R"nbdoc(@name Clearing the elements and boxes
+Clears the vectors of elements and boxes)nbdoc")
+        .def("Box", static_cast<BVH_Box<double, 2> (BVH_BoxSet<double, 2, int>::*)(const int) const>(&BVH_BoxSet<double, 2, int>::Box), nb::arg("theIndex"), R"nbdoc(Returns the bounding box with the given index.)nbdoc")
+        .def("Center", static_cast<double (BVH_BoxSet<double, 2, int>::*)(const int, const int) const>(&BVH_BoxSet<double, 2, int>::Center), nb::arg("theIndex"), nb::arg("theAxis"), R"nbdoc(Returns centroid position along specified axis.)nbdoc")
+        .def("Size", static_cast<int (BVH_BoxSet<double, 2, int>::*)() const>(&BVH_BoxSet<double, 2, int>::Size), R"nbdoc(Returns the number of boxes.)nbdoc")
+        .def("Swap", static_cast<void (BVH_BoxSet<double, 2, int>::*)(const int, const int)>(&BVH_BoxSet<double, 2, int>::Swap), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Swaps indices of two specified boxes.)nbdoc")
+        .def("Element", static_cast<int (BVH_BoxSet<double, 2, int>::*)(const int) const>(&BVH_BoxSet<double, 2, int>::Element), nb::arg("theIndex"), R"nbdoc(Returns the Element with the index theIndex.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_BoxSet<double, 2, int>>(nb::borrow<nb::class_<BVH_BoxSet<double, 2, int>>>(m.attr("BVH_BoxSet__double__2__int")));
+    nb::implicitly_convertible<std::decay_t<const opencascade::handle<BVH_Builder<double, 2>> &>, BVH_BoxSet<double, 2, int>>();
+    nanoocp_if_concrete<BOPTools_BoxSet<double, 2, int>>(nb::borrow<nb::class_<BOPTools_BoxSet<double, 2, int>>>(m.attr("BOPTools_Box2dTree")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([](const opencascade::handle<BVH_Builder<double, 2>> & theBuilder) { return opencascade::handle<nanoocp_T>(new nanoocp_T(theBuilder)); }), nb::arg("theBuilder").none() = static_cast<std::decay_t<const opencascade::handle<BVH_Builder<double, 2>> &>>(nullptr), R"nbdoc(@name Constructors
+Empty constructor for use the default BVH_Builder)nbdoc"); });
+    nanoocp_implicit_copy_ctor<BOPTools_BoxSet<double, 2, int>>(nb::borrow<nb::class_<BOPTools_BoxSet<double, 2, int>>>(m.attr("BOPTools_Box2dTree")));
+    nb::borrow<nb::class_<BVH_BaseTraverse<bool>>>(m.attr("BVH_BaseTraverse__bool"))
+        .def("IsMetricBetter", static_cast<bool (BVH_BaseTraverse<bool>::*)(const bool &, const bool &) const>(&BVH_BaseTraverse<bool>::IsMetricBetter), nb::arg("arg0"), nb::arg("arg1"), R"nbdoc(@name Metrics comparison for choosing the best branch
+Compares the two metrics and chooses the best one.
+Returns true if the first metric is better than the second,
+false otherwise.)nbdoc")
+        .def("RejectMetric", static_cast<bool (BVH_BaseTraverse<bool>::*)(const bool &) const>(&BVH_BaseTraverse<bool>::RejectMetric), nb::arg("arg0"), R"nbdoc(@name Rejection of the node by metric
+Rejects the node by the metric)nbdoc")
+        .def("Stop", static_cast<bool (BVH_BaseTraverse<bool>::*)() const>(&BVH_BaseTraverse<bool>::Stop), R"nbdoc(@name Condition to stop the descend
+Returns the flag controlling the tree descend.
+Returns true if the tree descend should be stopped.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_BaseTraverse<bool>>(nb::borrow<nb::class_<BVH_BaseTraverse<bool>>>(m.attr("BVH_BaseTraverse__bool")));
+    nanoocp_if_concrete<BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>>(nb::borrow<nb::class_<BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>>>(m.attr("BVH_Traverse__double__2__BVH_BoxSet__double__2__bool")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Constructor)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>>>(m.attr("BVH_Traverse__double__2__BVH_BoxSet__double__2__bool"))
+        .def("SetBVHSet", static_cast<void (BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::*)(BVH_BoxSet<double, 2> *)>(&BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::SetBVHSet), nb::arg("theBVHSet"), R"nbdoc(@name Setting the set to access the elements and BVH tree
+Sets the BVH Set containing the BVH tree)nbdoc")
+        .def("AcceptMetric", static_cast<bool (BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::*)(const bool &) const>(&BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::AcceptMetric), nb::arg("arg0"), R"nbdoc(@name Rules for Accept/Reject
+Basing on the given metric, checks if the whole branch may be
+accepted without any further checks.
+Returns true if the metric is accepted, false otherwise.)nbdoc")
+        .def("RejectNode", static_cast<bool (BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::*)(const BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::BVH_VecNt &, const BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::BVH_VecNt &, bool &) const>(&BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::RejectNode), nb::arg("theCornerMin"), nb::arg("theCornerMax"), nb::arg("theMetric"), R"nbdoc(Rejection of the node by bounding box.
+Metric is computed to choose the best branch.
+Returns true if the node should be rejected, false otherwise.)nbdoc")
+        .def("Accept", static_cast<bool (BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::*)(const int, const bool &)>(&BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::Accept), nb::arg("theIndex"), nb::arg("theMetric"), R"nbdoc(Leaf element acceptance.
+Metric of the parent leaf-node is passed to avoid the check on the
+element and accept it unconditionally.
+Returns true if the element has been accepted, false otherwise.)nbdoc")
+        .def("Select", static_cast<int (BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::*)()>(&BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::Select), R"nbdoc(@name Selection
+Selection of the elements from the BVH tree by the
+rules defined in Accept/Reject methods.
+The method requires the BVHSet containing BVH tree to be set.
+Returns the number of accepted elements.)nbdoc")
+        .def("Select", static_cast<int (BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::*)(const opencascade::handle<BVH_Tree<double, 2>> &)>(&BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>::Select), nb::arg("theBVH").none(), R"nbdoc(Performs selection of the elements from the BVH tree by the
+rules defined in Accept/Reject methods.
+Returns the number of accepted elements.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>>(nb::borrow<nb::class_<BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>>>(m.attr("BVH_Traverse__double__2__BVH_BoxSet__double__2__bool")));
+    nanoocp_if_concrete<BOPTools_BoxSelector<2>>(nb::borrow<nb::class_<BOPTools_BoxSelector<2>>>(m.attr("BOPTools_Box2dTreeSelector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Empty constructor)nbdoc"); });
+    nb::borrow<nb::class_<BOPTools_BoxSelector<2>>>(m.attr("BOPTools_Box2dTreeSelector"))
+        .def("Clear", static_cast<void (BOPTools_BoxSelector<2>::*)()>(&BOPTools_BoxSelector<2>::Clear), R"nbdoc(@name public interfaces
+Clears the indices)nbdoc")
+        .def("SetBox", static_cast<void (BOPTools_BoxSelector<2>::*)(const BVH_Box<double, 2> &)>(&BOPTools_BoxSelector<2>::SetBox), nb::arg("theBox"), R"nbdoc(Sets the box)nbdoc")
+        .def("Indices", static_cast<const NCollection_List<int> & (BOPTools_BoxSelector<2>::*)() const>(&BOPTools_BoxSelector<2>::Indices), R"nbdoc(Returns the list of accepted indices)nbdoc")
+        .def("RejectNode", [](const BOPTools_BoxSelector<2> &self, const BOPTools_BoxSelector<2>::BVH_VecNd & theCMin, const BOPTools_BoxSelector<2>::BVH_VecNd & theCMax) { bool theIsInside{}; auto result = self.RejectNode(theCMin, theCMax, theIsInside); return std::make_tuple(result, theIsInside); }, nb::arg("theCMin"), nb::arg("theCMax"), R"nbdoc(@name Rejection/Acceptance rules
+Checks if the box should be rejected)nbdoc")
+        .def("RejectElement", static_cast<bool (BOPTools_BoxSelector<2>::*)(const int)>(&BOPTools_BoxSelector<2>::RejectElement), nb::arg("theIndex"), R"nbdoc(Checks if the element should be rejected)nbdoc")
+        .def("AcceptMetric", static_cast<bool (BOPTools_BoxSelector<2>::*)(const bool &) const>(&BOPTools_BoxSelector<2>::AcceptMetric), nb::arg("theIsInside"), R"nbdoc(Checks if the metric of the node may be accepted)nbdoc")
+        .def("Accept", static_cast<bool (BOPTools_BoxSelector<2>::*)(const int, const bool &)>(&BOPTools_BoxSelector<2>::Accept), nb::arg("theIndex"), nb::arg("theIsInside"), R"nbdoc(Accepts the element with the index <theIndex> in BVH tree)nbdoc");
+    nanoocp_implicit_copy_ctor<BOPTools_BoxSelector<2>>(nb::borrow<nb::class_<BOPTools_BoxSelector<2>>>(m.attr("BOPTools_Box2dTreeSelector")));
+    nanoocp_if_concrete<BVH_BoxSet<double, 3, int>>(nb::borrow<nb::class_<BVH_BoxSet<double, 3, int>>>(m.attr("BVH_BoxSet__double__3__int")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([]() { return opencascade::handle<nanoocp_T>(new nanoocp_T()); }), R"nbdoc(@name Constructors
+Empty constructor for use the default BVH_Builder)nbdoc")
+        .def(nb::new_([](const opencascade::handle<BVH_Builder<double, 3>> & theBuilder) { return opencascade::handle<nanoocp_T>(new nanoocp_T(theBuilder)); }), nb::arg("theBuilder").none(), R"nbdoc(Constructor for usage the custom BVH builder)nbdoc"); });
+    nb::borrow<nb::class_<BVH_BoxSet<double, 3, int>>>(m.attr("BVH_BoxSet__double__3__int"))
+        .def("SetSize", static_cast<void (BVH_BoxSet<double, 3, int>::*)(const size_t)>(&BVH_BoxSet<double, 3, int>::SetSize), nb::arg("theSize"), R"nbdoc(@name Setting expected size of the BVH
+Sets the expected size of BVH tree)nbdoc")
+        .def("Add", static_cast<void (BVH_BoxSet<double, 3, int>::*)(const int &, const BVH_Box<double, 3> &)>(&BVH_BoxSet<double, 3, int>::Add), nb::arg("theElement"), nb::arg("theBox"), R"nbdoc(@name Adding elements in BVH
+Adds the element into BVH)nbdoc")
+        .def("Build", static_cast<void (BVH_BoxSet<double, 3, int>::*)()>(&BVH_BoxSet<double, 3, int>::Build), R"nbdoc(@name BVH construction
+BVH construction)nbdoc")
+        .def("Clear", static_cast<void (BVH_BoxSet<double, 3, int>::*)()>(&BVH_BoxSet<double, 3, int>::Clear), R"nbdoc(@name Clearing the elements and boxes
+Clears the vectors of elements and boxes)nbdoc")
+        .def("Box", static_cast<BVH_Box<double, 3> (BVH_BoxSet<double, 3, int>::*)(const int) const>(&BVH_BoxSet<double, 3, int>::Box), nb::arg("theIndex"), R"nbdoc(Returns the bounding box with the given index.)nbdoc")
+        .def("Center", static_cast<double (BVH_BoxSet<double, 3, int>::*)(const int, const int) const>(&BVH_BoxSet<double, 3, int>::Center), nb::arg("theIndex"), nb::arg("theAxis"), R"nbdoc(Returns centroid position along specified axis.)nbdoc")
+        .def("Size", static_cast<int (BVH_BoxSet<double, 3, int>::*)() const>(&BVH_BoxSet<double, 3, int>::Size), R"nbdoc(Returns the number of boxes.)nbdoc")
+        .def("Swap", static_cast<void (BVH_BoxSet<double, 3, int>::*)(const int, const int)>(&BVH_BoxSet<double, 3, int>::Swap), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Swaps indices of two specified boxes.)nbdoc")
+        .def("Element", static_cast<int (BVH_BoxSet<double, 3, int>::*)(const int) const>(&BVH_BoxSet<double, 3, int>::Element), nb::arg("theIndex"), R"nbdoc(Returns the Element with the index theIndex.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_BoxSet<double, 3, int>>(nb::borrow<nb::class_<BVH_BoxSet<double, 3, int>>>(m.attr("BVH_BoxSet__double__3__int")));
+    nb::implicitly_convertible<std::decay_t<const opencascade::handle<BVH_Builder<double, 3>> &>, BVH_BoxSet<double, 3, int>>();
+    nanoocp_if_concrete<BOPTools_BoxSet<double, 3, int>>(nb::borrow<nb::class_<BOPTools_BoxSet<double, 3, int>>>(m.attr("BOPTools_BoxTree")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([](const opencascade::handle<BVH_Builder<double, 3>> & theBuilder) { return opencascade::handle<nanoocp_T>(new nanoocp_T(theBuilder)); }), nb::arg("theBuilder").none() = static_cast<std::decay_t<const opencascade::handle<BVH_Builder<double, 3>> &>>(nullptr), R"nbdoc(@name Constructors
+Empty constructor for use the default BVH_Builder)nbdoc"); });
+    nanoocp_implicit_copy_ctor<BOPTools_BoxSet<double, 3, int>>(nb::borrow<nb::class_<BOPTools_BoxSet<double, 3, int>>>(m.attr("BOPTools_BoxTree")));
+    nanoocp_if_concrete<BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>>(nb::borrow<nb::class_<BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>>>(m.attr("BVH_Traverse__double__3__BVH_BoxSet__double__3__bool")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Constructor)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>>>(m.attr("BVH_Traverse__double__3__BVH_BoxSet__double__3__bool"))
+        .def("SetBVHSet", static_cast<void (BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::*)(BVH_BoxSet<double, 3> *)>(&BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::SetBVHSet), nb::arg("theBVHSet"), R"nbdoc(@name Setting the set to access the elements and BVH tree
+Sets the BVH Set containing the BVH tree)nbdoc")
+        .def("AcceptMetric", static_cast<bool (BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::*)(const bool &) const>(&BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::AcceptMetric), nb::arg("arg0"), R"nbdoc(@name Rules for Accept/Reject
+Basing on the given metric, checks if the whole branch may be
+accepted without any further checks.
+Returns true if the metric is accepted, false otherwise.)nbdoc")
+        .def("RejectNode", static_cast<bool (BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::*)(const BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::BVH_VecNt &, const BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::BVH_VecNt &, bool &) const>(&BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::RejectNode), nb::arg("theCornerMin"), nb::arg("theCornerMax"), nb::arg("theMetric"), R"nbdoc(Rejection of the node by bounding box.
+Metric is computed to choose the best branch.
+Returns true if the node should be rejected, false otherwise.)nbdoc")
+        .def("Accept", static_cast<bool (BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::*)(const int, const bool &)>(&BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::Accept), nb::arg("theIndex"), nb::arg("theMetric"), R"nbdoc(Leaf element acceptance.
+Metric of the parent leaf-node is passed to avoid the check on the
+element and accept it unconditionally.
+Returns true if the element has been accepted, false otherwise.)nbdoc")
+        .def("Select", static_cast<int (BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::*)()>(&BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::Select), R"nbdoc(@name Selection
+Selection of the elements from the BVH tree by the
+rules defined in Accept/Reject methods.
+The method requires the BVHSet containing BVH tree to be set.
+Returns the number of accepted elements.)nbdoc")
+        .def("Select", static_cast<int (BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::*)(const opencascade::handle<BVH_Tree<double, 3>> &)>(&BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>::Select), nb::arg("theBVH").none(), R"nbdoc(Performs selection of the elements from the BVH tree by the
+rules defined in Accept/Reject methods.
+Returns the number of accepted elements.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>>(nb::borrow<nb::class_<BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>>>(m.attr("BVH_Traverse__double__3__BVH_BoxSet__double__3__bool")));
+    nanoocp_if_concrete<BOPTools_BoxSelector<3>>(nb::borrow<nb::class_<BOPTools_BoxSelector<3>>>(m.attr("BOPTools_BoxTreeSelector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Empty constructor)nbdoc"); });
+    nb::borrow<nb::class_<BOPTools_BoxSelector<3>>>(m.attr("BOPTools_BoxTreeSelector"))
+        .def("Clear", static_cast<void (BOPTools_BoxSelector<3>::*)()>(&BOPTools_BoxSelector<3>::Clear), R"nbdoc(@name public interfaces
+Clears the indices)nbdoc")
+        .def("SetBox", static_cast<void (BOPTools_BoxSelector<3>::*)(const BVH_Box<double, 3> &)>(&BOPTools_BoxSelector<3>::SetBox), nb::arg("theBox"), R"nbdoc(Sets the box)nbdoc")
+        .def("Indices", static_cast<const NCollection_List<int> & (BOPTools_BoxSelector<3>::*)() const>(&BOPTools_BoxSelector<3>::Indices), R"nbdoc(Returns the list of accepted indices)nbdoc")
+        .def("RejectNode", [](const BOPTools_BoxSelector<3> &self, const BOPTools_BoxSelector<3>::BVH_VecNd & theCMin, const BOPTools_BoxSelector<3>::BVH_VecNd & theCMax) { bool theIsInside{}; auto result = self.RejectNode(theCMin, theCMax, theIsInside); return std::make_tuple(result, theIsInside); }, nb::arg("theCMin"), nb::arg("theCMax"), R"nbdoc(@name Rejection/Acceptance rules
+Checks if the box should be rejected)nbdoc")
+        .def("RejectElement", static_cast<bool (BOPTools_BoxSelector<3>::*)(const int)>(&BOPTools_BoxSelector<3>::RejectElement), nb::arg("theIndex"), R"nbdoc(Checks if the element should be rejected)nbdoc")
+        .def("AcceptMetric", static_cast<bool (BOPTools_BoxSelector<3>::*)(const bool &) const>(&BOPTools_BoxSelector<3>::AcceptMetric), nb::arg("theIsInside"), R"nbdoc(Checks if the metric of the node may be accepted)nbdoc")
+        .def("Accept", static_cast<bool (BOPTools_BoxSelector<3>::*)(const int, const bool &)>(&BOPTools_BoxSelector<3>::Accept), nb::arg("theIndex"), nb::arg("theIsInside"), R"nbdoc(Accepts the element with the index <theIndex> in BVH tree)nbdoc");
+    nanoocp_implicit_copy_ctor<BOPTools_BoxSelector<3>>(nb::borrow<nb::class_<BOPTools_BoxSelector<3>>>(m.attr("BOPTools_BoxTreeSelector")));
+    nanoocp_if_concrete<BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>>(nb::borrow<nb::class_<BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>>>(m.attr("BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Constructor)nbdoc"); });
+    nb::borrow<nb::class_<BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>>>(m.attr("BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double"))
+        .def("SetBVHSets", static_cast<void (BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::*)(BVH_BoxSet<double, 3> *, BVH_BoxSet<double, 3> *)>(&BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::SetBVHSets), nb::arg("theBVHSet1"), nb::arg("theBVHSet2"), R"nbdoc(@name Setting the sets to access the elements and BVH trees
+Sets the BVH Sets containing the BVH trees)nbdoc")
+        .def("RejectNode", static_cast<bool (BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::*)(const BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::BVH_VecNt &, const BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::BVH_VecNt &, const BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::BVH_VecNt &, const BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::BVH_VecNt &, double &) const>(&BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::RejectNode), nb::arg("theCornerMin1"), nb::arg("theCornerMax1"), nb::arg("theCornerMin2"), nb::arg("theCornerMax2"), nb::arg("theMetric"), R"nbdoc(@name Rules for Accept/Reject
+Rejection of the pair of nodes by bounding boxes.
+Metric is computed to choose the best branch.
+Returns true if the pair of nodes should be rejected, false otherwise.)nbdoc")
+        .def("Accept", static_cast<bool (BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::*)(const int, const int)>(&BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::Accept), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Leaf element acceptance.
+Returns true if the pair of elements is accepted, false otherwise.)nbdoc")
+        .def("Select", static_cast<int (BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::*)()>(&BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::Select), R"nbdoc(@name Selection
+Selection of the pairs of elements of two BVH trees by the
+rules defined in Accept/Reject methods.
+The method requires the BVHSets containing BVH trees to be set.
+Returns the number of accepted pairs of elements.)nbdoc")
+        .def("Select", static_cast<int (BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::*)(const opencascade::handle<BVH_Tree<double, 3>> &, const opencascade::handle<BVH_Tree<double, 3>> &)>(&BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>::Select), nb::arg("theBVH1").none(), nb::arg("theBVH2").none(), R"nbdoc(Performs selection of the elements from two BVH trees by the
+rules defined in Accept/Reject methods.
+Returns the number of accepted pairs of elements.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>>(nb::borrow<nb::class_<BVH_PairTraverse<double, 3, BVH_BoxSet<double, 3>, double>>>(m.attr("BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double")));
+    nanoocp_if_concrete<BOPTools_PairSelector<3>>(nb::borrow<nb::class_<BOPTools_PairSelector<3>>>(m.attr("BOPTools_BoxPairSelector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Empty constructor)nbdoc"); });
+    nb::borrow<nb::class_<BOPTools_PairSelector<3>>>(m.attr("BOPTools_BoxPairSelector"))
+        .def("Clear", static_cast<void (BOPTools_PairSelector<3>::*)()>(&BOPTools_PairSelector<3>::Clear), R"nbdoc(@name public interfaces
+Clears the indices)nbdoc")
+        .def("Sort", static_cast<void (BOPTools_PairSelector<3>::*)()>(&BOPTools_PairSelector<3>::Sort), R"nbdoc(Sorts the indices)nbdoc")
+        .def("SetSame", static_cast<void (BOPTools_PairSelector<3>::*)(const bool)>(&BOPTools_PairSelector<3>::SetSame), nb::arg("theIsSame"), R"nbdoc(Tells to selector that BVH trees are the same.
+If the flag is set to true the resulting vector will contain
+only unique pairs (mirrored pairs will be rejected,
+e.g. (1, 2) will be taken, (2, 1) will be rejected) and will
+not contain pairs in which IDs are the same (pair (1, 1) will be rejected).
+If it is required to have a full vector of pairs even
+for the same BVH trees, just keep the false value of this flag.)nbdoc")
+        .def("Pairs", static_cast<const NCollection_LinearVector<BOPTools_PairSelector<3>::PairIDs> & (BOPTools_PairSelector<3>::*)() const>(&BOPTools_PairSelector<3>::Pairs), R"nbdoc(Returns the list of accepted indices)nbdoc")
+        .def("RejectNode", [](const BOPTools_PairSelector<3> &self, const BOPTools_PairSelector<3>::BVH_VecNd & theCMin1, const BOPTools_PairSelector<3>::BVH_VecNd & theCMax1, const BOPTools_PairSelector<3>::BVH_VecNd & theCMin2, const BOPTools_PairSelector<3>::BVH_VecNd & theCMax2) { double arg4{}; auto result = self.RejectNode(theCMin1, theCMax1, theCMin2, theCMax2, arg4); return std::make_tuple(result, arg4); }, nb::arg("theCMin1"), nb::arg("theCMax1"), nb::arg("theCMin2"), nb::arg("theCMax2"), R"nbdoc(@name Rejection/Acceptance rules
+Basing on the bounding boxes of the nodes checks if the pair of nodes should be rejected.)nbdoc")
+        .def("RejectElement", static_cast<bool (BOPTools_PairSelector<3>::*)(const int, const int)>(&BOPTools_PairSelector<3>::RejectElement), nb::arg("theID1"), nb::arg("theID2"), R"nbdoc(Checks if the pair of elements should be rejected.)nbdoc")
+        .def("Accept", static_cast<bool (BOPTools_PairSelector<3>::*)(const int, const int)>(&BOPTools_PairSelector<3>::Accept), nb::arg("theID1"), nb::arg("theID2"), R"nbdoc(Checks and accepts the pair of elements.)nbdoc");
+    nanoocp_implicit_copy_ctor<BOPTools_PairSelector<3>>(nb::borrow<nb::class_<BOPTools_PairSelector<3>>>(m.attr("BOPTools_BoxPairSelector")));
     nanoocp_implicit_default_ctor<BOPTools_Parallel>(nb::borrow<nb::class_<BOPTools_Parallel>>(m.attr("BOPTools_Parallel")));
     nanoocp_implicit_copy_ctor<BOPTools_Parallel>(nb::borrow<nb::class_<BOPTools_Parallel>>(m.attr("BOPTools_Parallel")));
     nb::borrow<nb::class_<BOPTools_Set>>(m.attr("BOPTools_Set"))

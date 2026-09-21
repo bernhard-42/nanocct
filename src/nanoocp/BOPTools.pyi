@@ -3,8 +3,11 @@
 from typing import overload
 
 import nanoocp.BRepAdaptor
+import nanoocp.BVH
+import nanoocp.Bnd
 import nanoocp.Geom
 import nanoocp.Geom2d
+import nanoocp.IntPatch
 import nanoocp.IntTools
 import nanoocp.Message
 import nanoocp.NCollection
@@ -998,6 +1001,557 @@ class BOPTools_AlgoTools3D:
         on the surface of <theF>, lies on that line.
         Returns 0 in case of success.
         """
+
+class BVH_Object__double__2(nanoocp.BVH.BVH_ObjectTransient):
+    """
+    Abstract geometric object bounded by BVH box.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__2:
+        """Returns AABB of the geometric object."""
+
+class BVH_Set__double__2:
+    """
+    Set of abstract entities (bounded by BVH boxes). This is
+    the minimal geometry interface needed to construct BVH.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    @overload
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__2:
+        """Returns AABB of the entire set of objects."""
+
+    @overload
+    def Box(self, theIndex: int) -> nanoocp.Bnd.BVH_Box__double__2:
+        """Returns AABB of the given object."""
+
+    def Size(self) -> int:
+        """Returns total number of objects."""
+
+    def Center(self, theIndex: int, theAxis: int) -> float:
+        """Returns centroid position along the given axis."""
+
+    def Swap(self, theIndex1: int, theIndex2: int) -> None:
+        """Performs transposing the two given objects in the set."""
+
+class BVH_PrimitiveSet__double__2(BVH_Object__double__2):
+    """
+    Set of abstract geometric primitives organized with bounding
+    volume hierarchy (BVH). Unlike an object set, this collection
+    is designed for storing structural elements of a single object
+    (such as triangles in the object triangulation). Because there
+    may be a large number of such elements, the implementations of
+    this interface should be sufficiently optimized.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__2:
+        """Returns AABB of primitive set."""
+
+    def BVH(self) -> "BVH_Tree<double, 2, BVH_BinaryTree>":
+        """Returns BVH tree (and builds it if necessary)."""
+
+    def Builder(self) -> "BVH_Builder<double, 2>":
+        """Returns the method (builder) used to construct BVH."""
+
+    def SetBuilder(self, theBuilder: "BVH_Builder<double, 2>" | None) -> None:
+        """Sets the method (builder) used to construct BVH."""
+
+class BVH_BoxSet__double__2__int(BVH_PrimitiveSet__double__2):
+    """
+    Implements easy to use interfaces for adding the elements into
+    BVH tree and its following construction.
+    To make it more effective it is better to set the number of elements
+    that are going to be added into BVH tree.
+    For better efficiency on heavy data types it is recommended to use
+    either BHV_IndexedBoxSet which uses indirect indexing for accessing
+    the elements and their boxes or set the element to be an index
+    of the real element in the application's internal data structures.
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam DataType Type of elements on which the boxes are built
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """
+        @name Constructors
+        Empty constructor for use the default BVH_Builder
+        """
+
+    @overload
+    def __init__(self, theBuilder: "BVH_Builder<double, 2>" | None) -> None:
+        """Constructor for usage the custom BVH builder"""
+
+    @overload
+    def __init__(self, theOther: BVH_BoxSet__double__2__int) -> None: ...
+
+    def SetSize(self, theSize: int) -> None:
+        """
+        @name Setting expected size of the BVH
+        Sets the expected size of BVH tree
+        """
+
+    def Add(self, theElement: int, theBox: nanoocp.Bnd.BVH_Box__double__2) -> None:
+        """
+        @name Adding elements in BVH
+        Adds the element into BVH
+        """
+
+    def Build(self) -> None:
+        """
+        @name BVH construction
+        BVH construction
+        """
+
+    def Clear(self) -> None:
+        """
+        @name Clearing the elements and boxes
+        Clears the vectors of elements and boxes
+        """
+
+    def Box(self, theIndex: int) -> nanoocp.Bnd.BVH_Box__double__2:
+        """Returns the bounding box with the given index."""
+
+    def Center(self, theIndex: int, theAxis: int) -> float:
+        """Returns centroid position along specified axis."""
+
+    def Size(self) -> int:
+        """Returns the number of boxes."""
+
+    def Swap(self, theIndex1: int, theIndex2: int) -> None:
+        """Swaps indices of two specified boxes."""
+
+    def Element(self, theIndex: int) -> int:
+        """Returns the Element with the index theIndex."""
+
+class BOPTools_Box2dTree(BVH_BoxSet__double__2__int):
+    """Redefines BoxSet to use the Linear builder by default"""
+
+    @overload
+    def __init__(self, theBuilder: "BVH_Builder<double, 2>" | None = None) -> None:
+        """
+        @name Constructors
+        Empty constructor for use the default BVH_Builder
+        """
+
+    @overload
+    def __init__(self, theOther: BOPTools_Box2dTree) -> None: ...
+
+class BVH_BaseTraverse__bool:
+    """
+    Abstract class implementing the base Traverse interface
+    required for selection of the elements from BVH tree.
+
+    \\tparam MetricType Type of metric to perform more optimal tree descend
+    """
+
+    def IsMetricBetter(self, arg0: bool, arg1: bool) -> bool:
+        """
+        @name Metrics comparison for choosing the best branch
+        Compares the two metrics and chooses the best one.
+        Returns true if the first metric is better than the second,
+        false otherwise.
+        """
+
+    def RejectMetric(self, arg0: bool) -> bool:
+        """
+        @name Rejection of the node by metric
+        Rejects the node by the metric
+        """
+
+    def Stop(self) -> bool:
+        """
+        @name Condition to stop the descend
+        Returns the flag controlling the tree descend.
+        Returns true if the tree descend should be stopped.
+        """
+
+class BVH_Traverse__double__2__BVH_BoxSet__double__2__bool(BVH_BaseTraverse__bool):
+    """
+    Abstract class implementing the traverse of the single binary tree.
+    Selection of the data from the tree is performed by the
+    rules defined in the Accept/Reject methods.
+    See description of the required methods in the comments above.
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+    index) \\tparam MetricType Type of metric to perform more optimal tree descend
+    """
+
+    def SetBVHSet(self, theBVHSet: BVH_BoxSet__double__2__int) -> None:
+        """
+        @name Setting the set to access the elements and BVH tree
+        Sets the BVH Set containing the BVH tree
+        """
+
+    def AcceptMetric(self, arg0: bool) -> bool:
+        """
+        @name Rules for Accept/Reject
+        Basing on the given metric, checks if the whole branch may be
+        accepted without any further checks.
+        Returns true if the metric is accepted, false otherwise.
+        """
+
+    def RejectNode(self, theCornerMin: nanoocp.BVH.BVH_Vec2d, theCornerMax: nanoocp.BVH.BVH_Vec2d, theMetric: bool) -> bool:
+        """
+        Rejection of the node by bounding box.
+        Metric is computed to choose the best branch.
+        Returns true if the node should be rejected, false otherwise.
+        """
+
+    def Accept(self, theIndex: int, theMetric: bool) -> bool:
+        """
+        Leaf element acceptance.
+        Metric of the parent leaf-node is passed to avoid the check on the
+        element and accept it unconditionally.
+        Returns true if the element has been accepted, false otherwise.
+        """
+
+    @overload
+    def Select(self) -> int:
+        """
+        @name Selection
+        Selection of the elements from the BVH tree by the
+        rules defined in Accept/Reject methods.
+        The method requires the BVHSet containing BVH tree to be set.
+        Returns the number of accepted elements.
+        """
+
+    @overload
+    def Select(self, theBVH: "BVH_Tree<double, 2, BVH_BinaryTree>" | None) -> int:
+        """
+        Performs selection of the elements from the BVH tree by the
+        rules defined in Accept/Reject methods.
+        Returns the number of accepted elements.
+        """
+
+class BOPTools_Box2dTreeSelector(BVH_Traverse__double__2__BVH_BoxSet__double__2__bool):
+    """Template Selector for elements selection from BVH tree."""
+
+    @overload
+    def __init__(self) -> None:
+        """
+        @name Constructor
+        Empty constructor
+        """
+
+    @overload
+    def __init__(self, theOther: BOPTools_Box2dTreeSelector) -> None: ...
+
+    def Clear(self) -> None:
+        """
+        @name public interfaces
+        Clears the indices
+        """
+
+    def SetBox(self, theBox: nanoocp.Bnd.BVH_Box__double__2) -> None:
+        """Sets the box"""
+
+    def Indices(self) -> nanoocp.NCollection.NCollection_List[int]:
+        """Returns the list of accepted indices"""
+
+    def RejectNode(self, theCMin: nanoocp.BVH.BVH_Vec2d, theCMax: nanoocp.BVH.BVH_Vec2d) -> tuple[bool, bool]:
+        """
+        @name Rejection/Acceptance rules
+        Checks if the box should be rejected
+        """
+
+    def RejectElement(self, theIndex: int) -> bool:
+        """Checks if the element should be rejected"""
+
+    def AcceptMetric(self, theIsInside: bool) -> bool:
+        """Checks if the metric of the node may be accepted"""
+
+    def Accept(self, theIndex: int, theIsInside: bool) -> bool:
+        """Accepts the element with the index <theIndex> in BVH tree"""
+
+class BVH_BoxSet__double__3__int(nanoocp.BVH.BVH_PrimitiveSet3d):
+    """
+    Implements easy to use interfaces for adding the elements into
+    BVH tree and its following construction.
+    To make it more effective it is better to set the number of elements
+    that are going to be added into BVH tree.
+    For better efficiency on heavy data types it is recommended to use
+    either BHV_IndexedBoxSet which uses indirect indexing for accessing
+    the elements and their boxes or set the element to be an index
+    of the real element in the application's internal data structures.
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam DataType Type of elements on which the boxes are built
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """
+        @name Constructors
+        Empty constructor for use the default BVH_Builder
+        """
+
+    @overload
+    def __init__(self, theBuilder: nanoocp.BVH.BVH_Builder3d | None) -> None:
+        """Constructor for usage the custom BVH builder"""
+
+    @overload
+    def __init__(self, theOther: BVH_BoxSet__double__3__int) -> None: ...
+
+    def SetSize(self, theSize: int) -> None:
+        """
+        @name Setting expected size of the BVH
+        Sets the expected size of BVH tree
+        """
+
+    def Add(self, theElement: int, theBox: nanoocp.Bnd.BVH_Box__double__3) -> None:
+        """
+        @name Adding elements in BVH
+        Adds the element into BVH
+        """
+
+    def Build(self) -> None:
+        """
+        @name BVH construction
+        BVH construction
+        """
+
+    def Clear(self) -> None:
+        """
+        @name Clearing the elements and boxes
+        Clears the vectors of elements and boxes
+        """
+
+    def Box(self, theIndex: int) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns the bounding box with the given index."""
+
+    def Center(self, theIndex: int, theAxis: int) -> float:
+        """Returns centroid position along specified axis."""
+
+    def Size(self) -> int:
+        """Returns the number of boxes."""
+
+    def Swap(self, theIndex1: int, theIndex2: int) -> None:
+        """Swaps indices of two specified boxes."""
+
+    def Element(self, theIndex: int) -> int:
+        """Returns the Element with the index theIndex."""
+
+class BOPTools_BoxTree(BVH_BoxSet__double__3__int):
+    """Redefines BoxSet to use the Linear builder by default"""
+
+    @overload
+    def __init__(self, theBuilder: nanoocp.BVH.BVH_Builder3d | None = None) -> None:
+        """
+        @name Constructors
+        Empty constructor for use the default BVH_Builder
+        """
+
+    @overload
+    def __init__(self, theOther: BOPTools_BoxTree) -> None: ...
+
+class BVH_Traverse__double__3__BVH_BoxSet__double__3__bool(BVH_BaseTraverse__bool):
+    """
+    Abstract class implementing the traverse of the single binary tree.
+    Selection of the data from the tree is performed by the
+    rules defined in the Accept/Reject methods.
+    See description of the required methods in the comments above.
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+    index) \\tparam MetricType Type of metric to perform more optimal tree descend
+    """
+
+    def SetBVHSet(self, theBVHSet: BVH_BoxSet__double__3__int) -> None:
+        """
+        @name Setting the set to access the elements and BVH tree
+        Sets the BVH Set containing the BVH tree
+        """
+
+    def AcceptMetric(self, arg0: bool) -> bool:
+        """
+        @name Rules for Accept/Reject
+        Basing on the given metric, checks if the whole branch may be
+        accepted without any further checks.
+        Returns true if the metric is accepted, false otherwise.
+        """
+
+    def RejectNode(self, theCornerMin: nanoocp.BVH.BVH_Vec3d, theCornerMax: nanoocp.BVH.BVH_Vec3d, theMetric: bool) -> bool:
+        """
+        Rejection of the node by bounding box.
+        Metric is computed to choose the best branch.
+        Returns true if the node should be rejected, false otherwise.
+        """
+
+    def Accept(self, theIndex: int, theMetric: bool) -> bool:
+        """
+        Leaf element acceptance.
+        Metric of the parent leaf-node is passed to avoid the check on the
+        element and accept it unconditionally.
+        Returns true if the element has been accepted, false otherwise.
+        """
+
+    @overload
+    def Select(self) -> int:
+        """
+        @name Selection
+        Selection of the elements from the BVH tree by the
+        rules defined in Accept/Reject methods.
+        The method requires the BVHSet containing BVH tree to be set.
+        Returns the number of accepted elements.
+        """
+
+    @overload
+    def Select(self, theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+        """
+        Performs selection of the elements from the BVH tree by the
+        rules defined in Accept/Reject methods.
+        Returns the number of accepted elements.
+        """
+
+class BOPTools_BoxTreeSelector(BVH_Traverse__double__3__BVH_BoxSet__double__3__bool):
+    """Template Selector for elements selection from BVH tree."""
+
+    @overload
+    def __init__(self) -> None:
+        """
+        @name Constructor
+        Empty constructor
+        """
+
+    @overload
+    def __init__(self, theOther: BOPTools_BoxTreeSelector) -> None: ...
+
+    def Clear(self) -> None:
+        """
+        @name public interfaces
+        Clears the indices
+        """
+
+    def SetBox(self, theBox: nanoocp.Bnd.BVH_Box__double__3) -> None:
+        """Sets the box"""
+
+    def Indices(self) -> nanoocp.NCollection.NCollection_List[int]:
+        """Returns the list of accepted indices"""
+
+    def RejectNode(self, theCMin: nanoocp.BVH.BVH_Vec3d, theCMax: nanoocp.BVH.BVH_Vec3d) -> tuple[bool, bool]:
+        """
+        @name Rejection/Acceptance rules
+        Checks if the box should be rejected
+        """
+
+    def RejectElement(self, theIndex: int) -> bool:
+        """Checks if the element should be rejected"""
+
+    def AcceptMetric(self, theIsInside: bool) -> bool:
+        """Checks if the metric of the node may be accepted"""
+
+    def Accept(self, theIndex: int, theIsInside: bool) -> bool:
+        """Accepts the element with the index <theIndex> in BVH tree"""
+
+class BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double(nanoocp.IntPatch.BVH_BaseTraverse__double):
+    """
+    Abstract class implementing the parallel traverse of two binary trees.
+    Selection of the data from the trees is performed by the
+    rules defined in the Accept/Reject methods.
+    See description of the required methods in the comments above.
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+    index) \\tparam MetricType Type of metric to perform more optimal tree descend
+    """
+
+    def SetBVHSets(self, theBVHSet1: BVH_BoxSet__double__3__int, theBVHSet2: BVH_BoxSet__double__3__int) -> None:
+        """
+        @name Setting the sets to access the elements and BVH trees
+        Sets the BVH Sets containing the BVH trees
+        """
+
+    def RejectNode(self, theCornerMin1: nanoocp.BVH.BVH_Vec3d, theCornerMax1: nanoocp.BVH.BVH_Vec3d, theCornerMin2: nanoocp.BVH.BVH_Vec3d, theCornerMax2: nanoocp.BVH.BVH_Vec3d, theMetric: float) -> bool:
+        """
+        @name Rules for Accept/Reject
+        Rejection of the pair of nodes by bounding boxes.
+        Metric is computed to choose the best branch.
+        Returns true if the pair of nodes should be rejected, false otherwise.
+        """
+
+    def Accept(self, theIndex1: int, theIndex2: int) -> bool:
+        """
+        Leaf element acceptance.
+        Returns true if the pair of elements is accepted, false otherwise.
+        """
+
+    @overload
+    def Select(self) -> int:
+        """
+        @name Selection
+        Selection of the pairs of elements of two BVH trees by the
+        rules defined in Accept/Reject methods.
+        The method requires the BVHSets containing BVH trees to be set.
+        Returns the number of accepted pairs of elements.
+        """
+
+    @overload
+    def Select(self, theBVH1: "BVH_Tree<double, 3, BVH_BinaryTree>" | None, theBVH2: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+        """
+        Performs selection of the elements from two BVH trees by the
+        rules defined in Accept/Reject methods.
+        Returns the number of accepted pairs of elements.
+        """
+
+class BOPTools_BoxPairSelector(BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double):
+    """Template Selector for selection of the elements from two BVH trees."""
+
+    @overload
+    def __init__(self) -> None:
+        """
+        @name Constructor
+        Empty constructor
+        """
+
+    @overload
+    def __init__(self, theOther: BOPTools_BoxPairSelector) -> None: ...
+
+    def Clear(self) -> None:
+        """
+        @name public interfaces
+        Clears the indices
+        """
+
+    def Sort(self) -> None:
+        """Sorts the indices"""
+
+    def SetSame(self, theIsSame: bool) -> None:
+        """
+        Tells to selector that BVH trees are the same.
+        If the flag is set to true the resulting vector will contain
+        only unique pairs (mirrored pairs will be rejected,
+        e.g. (1, 2) will be taken, (2, 1) will be rejected) and will
+        not contain pairs in which IDs are the same (pair (1, 1) will be rejected).
+        If it is required to have a full vector of pairs even
+        for the same BVH trees, just keep the false value of this flag.
+        """
+
+    def Pairs(self) -> "NCollection_LinearVector<BOPTools_PairSelector<3>::PairIDs>":
+        """Returns the list of accepted indices"""
+
+    def RejectNode(self, theCMin1: nanoocp.BVH.BVH_Vec3d, theCMax1: nanoocp.BVH.BVH_Vec3d, theCMin2: nanoocp.BVH.BVH_Vec3d, theCMax2: nanoocp.BVH.BVH_Vec3d) -> tuple[bool, float]:
+        """
+        @name Rejection/Acceptance rules
+        Basing on the bounding boxes of the nodes checks if the pair of nodes should be rejected.
+        """
+
+    def RejectElement(self, theID1: int, theID2: int) -> bool:
+        """Checks if the pair of elements should be rejected."""
+
+    def Accept(self, theID1: int, theID2: int) -> bool:
+        """Checks and accepts the pair of elements."""
 
 class BOPTools_Parallel:
     """Implementation of Functors/Starters"""

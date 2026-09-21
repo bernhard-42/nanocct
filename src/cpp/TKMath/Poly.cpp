@@ -360,10 +360,11 @@ Raises OutOfRange if Index is not in 1,2,3)nbdoc")
         .def("__getitem__", [](Poly_Triangle &self, const int Index) -> int { return self.operator()(Index); }, "Python addition: alias to operator().")
         .def("__setitem__", [](Poly_Triangle &self, const int Index, int theValue) { self.operator()(Index) = theValue; }, "Python addition: sets the value operator()(Index) returns by reference in C++.");
     nanoocp_implicit_copy_ctor<Poly_Triangle>(nb::borrow<nb::class_<Poly_Triangle>>(m.attr("Poly_Triangle")));
+    nanoocp_if_concrete<NCollection_AliasedArray<>>(nb::borrow<nb::class_<NCollection_AliasedArray<>>>(m.attr("NCollection_AliasedArray__")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, int theStride) { new (self) nanoocp_T(theStride); }, nb::arg("theStride"), R"nbdoc(Empty constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_AliasedArray<16> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
+        .def("__init__", [](nanoocp_T *self, int theStride, int theLength) { new (self) nanoocp_T(theStride, theLength); }, nb::arg("theStride"), nb::arg("theLength"), R"nbdoc(Constructor)nbdoc"); });
     nb::borrow<nb::class_<NCollection_AliasedArray<>>>(m.attr("NCollection_AliasedArray__"))
-        .def(nb::init<int>(), nb::arg("theStride"), R"nbdoc(Empty constructor.)nbdoc")
-        .def(nb::init<const NCollection_AliasedArray<16> &>(), nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
-        .def(nb::init<int, int>(), nb::arg("theStride"), nb::arg("theLength"), R"nbdoc(Constructor)nbdoc")
         .def("Stride", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Stride), R"nbdoc(Returns an element size in bytes.)nbdoc")
         .def("Size", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Size), R"nbdoc(Size query)nbdoc")
         .def("Length", static_cast<int (NCollection_AliasedArray<>::*)() const>(&NCollection_AliasedArray<>::Length), R"nbdoc(Length query (the same as Size()))nbdoc")
@@ -820,11 +821,12 @@ objects)nbdoc")
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, Poly_CoherentTriangulation>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_Triangulation> &>, Poly_CoherentTriangulation>();
     nanoocp_def_iter<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle")), [](NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> &self) { return self.Value(); });
+    nanoocp_if_concrete<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); })
+        .def("__init__", [](nanoocp_T *self, const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"))
+        .def("__init__", [](nanoocp_T *self, const NCollection_DynamicArray<Poly_CoherentTriangle> & theList) { new (self) nanoocp_T(theList); }, nb::arg("theList"))
+        .def("__init__", [](nanoocp_T *self, const NCollection_DynamicArray<Poly_CoherentTriangle> & theList, const typename NCollection_DynamicArray<Poly_CoherentTriangle>::iterator & theOther) { new (self) nanoocp_T(theList, theOther); }, nb::arg("theList"), nb::arg("theOther")); });
     nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentTriangle"))
-        .def(nb::init<>())
-        .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>> &>(), nb::arg("theOther"))
-        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentTriangle> &>(), nb::arg("theList"))
-        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentTriangle> &, const typename NCollection_DynamicArray<Poly_CoherentTriangle>::iterator &>(), nb::arg("theList"), nb::arg("theOther"))
         .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(NCollection_DynamicArray<Poly_CoherentTriangle> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Init), nb::arg("theList"))
         .def("More", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::More))
         .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::*)(NCollection_DynamicArray<Poly_CoherentTriangle> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Initialize), nb::arg("theList"))
@@ -844,11 +846,12 @@ objects)nbdoc")
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::IteratorOfTriangle>(nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfTriangle>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfTriangle")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_CoherentTriangulation> &>, Poly_CoherentTriangulation::IteratorOfTriangle>();
     nanoocp_def_iter<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode")), [](NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> &self) { return self.Value(); });
+    nanoocp_if_concrete<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); })
+        .def("__init__", [](nanoocp_T *self, const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"))
+        .def("__init__", [](nanoocp_T *self, const NCollection_DynamicArray<Poly_CoherentNode> & theList) { new (self) nanoocp_T(theList); }, nb::arg("theList"))
+        .def("__init__", [](nanoocp_T *self, const NCollection_DynamicArray<Poly_CoherentNode> & theList, const typename NCollection_DynamicArray<Poly_CoherentNode>::iterator & theOther) { new (self) nanoocp_T(theList, theOther); }, nb::arg("theList"), nb::arg("theOther")); });
     nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentNode"))
-        .def(nb::init<>())
-        .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>> &>(), nb::arg("theOther"))
-        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentNode> &>(), nb::arg("theList"))
-        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentNode> &, const typename NCollection_DynamicArray<Poly_CoherentNode>::iterator &>(), nb::arg("theList"), nb::arg("theOther"))
         .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(NCollection_DynamicArray<Poly_CoherentNode> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Init), nb::arg("theList"))
         .def("More", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::More))
         .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::*)(NCollection_DynamicArray<Poly_CoherentNode> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Initialize), nb::arg("theList"))
@@ -868,11 +871,12 @@ objects)nbdoc")
     nanoocp_implicit_copy_ctor<Poly_CoherentTriangulation::IteratorOfNode>(nb::borrow<nb::class_<Poly_CoherentTriangulation::IteratorOfNode>>(m.attr("Poly_CoherentTriangulation").attr("IteratorOfNode")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Poly_CoherentTriangulation> &>, Poly_CoherentTriangulation::IteratorOfNode>();
     nanoocp_def_iter<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink")), [](NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> &self) { return self.Value(); });
+    nanoocp_if_concrete<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>(nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); })
+        .def("__init__", [](nanoocp_T *self, const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"))
+        .def("__init__", [](nanoocp_T *self, const NCollection_DynamicArray<Poly_CoherentLink> & theList) { new (self) nanoocp_T(theList); }, nb::arg("theList"))
+        .def("__init__", [](nanoocp_T *self, const NCollection_DynamicArray<Poly_CoherentLink> & theList, const typename NCollection_DynamicArray<Poly_CoherentLink>::iterator & theOther) { new (self) nanoocp_T(theList, theOther); }, nb::arg("theList"), nb::arg("theOther")); });
     nb::borrow<nb::class_<NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>>>(m.attr("NCollection_Iterator__NCollection_DynamicArray__Poly_CoherentLink"))
-        .def(nb::init<>())
-        .def(nb::init<const NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>> &>(), nb::arg("theOther"))
-        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentLink> &>(), nb::arg("theList"))
-        .def(nb::init<const NCollection_DynamicArray<Poly_CoherentLink> &, const typename NCollection_DynamicArray<Poly_CoherentLink>::iterator &>(), nb::arg("theList"), nb::arg("theOther"))
         .def("Init", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(NCollection_DynamicArray<Poly_CoherentLink> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Init), nb::arg("theList"))
         .def("More", static_cast<bool (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)() const noexcept>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::More))
         .def("Initialize", static_cast<void (NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::*)(NCollection_DynamicArray<Poly_CoherentLink> &)>(&NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::Initialize), nb::arg("theList"))

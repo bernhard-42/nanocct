@@ -70,7 +70,7 @@ class GeomLProp_CLProps:
         """
 
     @overload
-    def __init__(self, C: nanoocp.Geom.Geom_Curve, N: int, Resolution: float) -> None:
+    def __init__(self, C: nanoocp.Geom.Geom_Curve | None, N: int, Resolution: float) -> None:
         """
         Initializes the local properties of the curve <C>
         The current point and the derivatives are
@@ -84,7 +84,7 @@ class GeomLProp_CLProps:
         """
 
     @overload
-    def __init__(self, C: nanoocp.Geom.Geom_Curve, U: float, N: int, Resolution: float) -> None:
+    def __init__(self, C: nanoocp.Geom.Geom_Curve | None, U: float, N: int, Resolution: float) -> None:
         """
         Same as previous constructor but here the parameter is
         set to the value <U>.
@@ -100,7 +100,7 @@ class GeomLProp_CLProps:
         for the parameter value <U>.
         """
 
-    def SetCurve(self, C: nanoocp.Geom.Geom_Curve) -> None:
+    def SetCurve(self, C: nanoocp.Geom.Geom_Curve | None) -> None:
         """
         Initializes the local properties of the curve
         for the new curve.
@@ -171,7 +171,7 @@ class GeomLProp_CLProps2d:
         """
 
     @overload
-    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve, N: int, Resolution: float) -> None:
+    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve | None, N: int, Resolution: float) -> None:
         """
         Initializes the local properties of the curve <C>
         The current point and the derivatives are
@@ -185,7 +185,7 @@ class GeomLProp_CLProps2d:
         """
 
     @overload
-    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve, U: float, N: int, Resolution: float) -> None:
+    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve | None, U: float, N: int, Resolution: float) -> None:
         """
         Same as previous constructor but here the parameter is
         set to the value <U>.
@@ -201,7 +201,7 @@ class GeomLProp_CLProps2d:
         for the parameter value <U>.
         """
 
-    def SetCurve(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None:
+    def SetCurve(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None:
         """
         Initializes the local properties of the curve
         for the new curve.
@@ -318,14 +318,14 @@ class GeomLProp_SLProps:
         """
 
     @overload
-    def __init__(self, S: nanoocp.Geom.Geom_Surface, N: int, Resolution: float) -> None:
+    def __init__(self, S: nanoocp.Geom.Geom_Surface | None, N: int, Resolution: float) -> None:
         """
         idem as previous constructor but without setting the value
         of parameters <U> and <V>.
         """
 
     @overload
-    def __init__(self, S: nanoocp.Geom.Geom_Surface, U: float, V: float, N: int, Resolution: float) -> None:
+    def __init__(self, S: nanoocp.Geom.Geom_Surface | None, U: float, V: float, N: int, Resolution: float) -> None:
         """
         Initializes the local properties of the surface <S>
         for the parameter values (<U>, <V>).
@@ -342,7 +342,7 @@ class GeomLProp_SLProps:
     @overload
     def __init__(self, theOther: GeomLProp_SLProps) -> None: ...
 
-    def SetSurface(self, S: nanoocp.Geom.Geom_Surface) -> None:
+    def SetSurface(self, S: nanoocp.Geom.Geom_Surface | None) -> None:
         """
         Initializes the local properties of the surface S
         for the new surface.

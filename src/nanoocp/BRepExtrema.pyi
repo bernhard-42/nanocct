@@ -3,10 +3,16 @@
 import enum
 from typing import overload
 
+import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Extrema
+import nanoocp.IntPatch
+from nanoocp.IntPatch import (
+    BVH_PairTraverse__double__3__void__double as BVH_PairTraverse__double__3__void__double
+)
 import nanoocp.Message
 import nanoocp.NCollection
+import nanoocp.Poly
 import nanoocp.Standard
 import nanoocp.TopoDS
 import nanoocp.gp
@@ -549,6 +555,143 @@ class BRepExtrema_ExtPF:
 
     def SetAlgo(self, A: nanoocp.Extrema.Extrema_ExtAlgo) -> None: ...
 
+class BRepExtrema_TriangleSet(nanoocp.BVH.BVH_PrimitiveSet3d):
+    """Triangle set corresponding to specific face."""
+
+    @overload
+    def __init__(self) -> None:
+        """Creates empty triangle set."""
+
+    @overload
+    def __init__(self, theFaces: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]) -> None:
+        """Creates triangle set from the given face."""
+
+    @overload
+    def __init__(self, theOther: BRepExtrema_TriangleSet) -> None: ...
+
+    def Size(self) -> int:
+        """
+        @name methods implementing BVH set interface
+        Returns total number of triangles.
+        """
+
+    @overload
+    def Box(self, theIndex: int) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns AABB of the given triangle."""
+
+    @overload
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns AABB of primitive set."""
+
+    def Center(self, theIndex: int, theAxis: int) -> float:
+        """Returns centroid position along specified axis."""
+
+    def Swap(self, theIndex1: int, theIndex2: int) -> None:
+        """Swaps indices of two specified triangles."""
+
+    def Clear(self) -> None:
+        """Clears triangle set data."""
+
+    def Init(self, theShapes: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]) -> bool:
+        """Initializes triangle set."""
+
+    @overload
+    def GetVertices(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec3d]:
+        """Returns all vertices."""
+
+    @overload
+    def GetVertices(self, theIndex: int, theVertex1: nanoocp.BVH.BVH_Vec3d, theVertex2: nanoocp.BVH.BVH_Vec3d, theVertex3: nanoocp.BVH.BVH_Vec3d) -> None:
+        """Returns vertices of the given triangle."""
+
+    def GetVtxIndices(self, theIndex: int, theVtxIndices: nanoocp.NCollection.NCollection_Array1[int]) -> None:
+        """Returns vertex indices of the given triangle."""
+
+    def GetFaceID(self, theIndex: int) -> int:
+        """Returns face ID of the given triangle."""
+
+    def GetShapeIDOfVtx(self, theIndex: int) -> int:
+        """Returns shape ID of the given vertex index."""
+
+    def GetVtxIdxInShape(self, theIndex: int) -> int:
+        """
+        Returns vertex index in tringulation of the shape, which vertex belongs,
+        with the given vtx ID in whole set.
+        """
+
+    def GetTrgIdxInShape(self, theIndex: int) -> int:
+        """
+        Returns triangle index (before swapping) in tringulation of the shape, which triangle belongs,
+        with the given trg ID in whole set (after swapping).
+        """
+
+    @staticmethod
+    def get_type_name() -> str: ...
+
+    @staticmethod
+    def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
+
+    def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+class BRepExtrema_OverlapTool(nanoocp.IntPatch.BVH_PairTraverse__double__3__void__double):
+    """
+    Tool class for for detection of overlapping of two BVH primitive sets.
+    This tool is not intended to be used independently, and is integrated
+    in other classes, implementing algorithms based on shape tessellation
+    (BRepExtrema_ShapeProximity and BRepExtrema_SelfIntersection).
+
+    Note that input element sets may correspond to different shapes or to
+    the same shape. In first case, tessellations of two given shapes will
+    be tested for intersection (or overlapping, if tolerance is not zero).
+    In second case, tessellation of single shape will be tested for self-
+    intersections. Please note that algorithm results are approximate and
+    depend greatly on the quality of input tessellation(s).
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Creates new uninitialized overlap tool."""
+
+    @overload
+    def __init__(self, theSet1: BRepExtrema_TriangleSet | None, theSet2: BRepExtrema_TriangleSet | None) -> None:
+        """Creates new overlap tool for the given element sets."""
+
+    @overload
+    def __init__(self, theOther: BRepExtrema_OverlapTool) -> None: ...
+
+    def LoadTriangleSets(self, theSet1: BRepExtrema_TriangleSet | None, theSet2: BRepExtrema_TriangleSet | None) -> None:
+        """Loads the given element sets into the overlap tool."""
+
+    def Perform(self, theTolerance: float = 0.0) -> None:
+        """Performs searching of overlapped mesh elements."""
+
+    def IsDone(self) -> bool:
+        """Is overlap test completed?"""
+
+    def MarkDirty(self) -> None:
+        """Marks test results as outdated."""
+
+    def OverlapSubShapes1(self) -> nanoocp.NCollection.NCollection_DataMap[int, nanoocp.TColStd.TColStd_PackedMapOfInteger]:
+        """
+        Returns set of overlapped sub-shapes of 1st shape (currently only faces are detected).
+        """
+
+    def OverlapSubShapes2(self) -> nanoocp.NCollection.NCollection_DataMap[int, nanoocp.TColStd.TColStd_PackedMapOfInteger]:
+        """
+        Returns set of overlapped sub-shapes of 2nd shape (currently only faces are detected).
+        """
+
+    def SetElementFilter(self, theFilter: BRepExtrema_ElementFilter) -> None:
+        """Sets filtering tool for preliminary checking pairs of mesh elements."""
+
+    def RejectNode(self, theCornerMin1: nanoocp.BVH.BVH_Vec3d, theCornerMax1: nanoocp.BVH.BVH_Vec3d, theCornerMin2: nanoocp.BVH.BVH_Vec3d, theCornerMax2: nanoocp.BVH.BVH_Vec3d) -> tuple[bool, float]:
+        """
+        @name Reject/Accept implementations
+        Defines the rules for node rejection by bounding box
+        """
+
+    def Accept(self, theLeaf1: int, theLeaf2: int) -> bool:
+        """Defines the rules for leaf acceptance"""
+
 class BRepExtrema_Poly:
     @overload
     def __init__(self) -> None: ...
@@ -559,6 +702,216 @@ class BRepExtrema_Poly:
     @staticmethod
     def Distance(S1: nanoocp.TopoDS.TopoDS_Shape, S2: nanoocp.TopoDS.TopoDS_Shape, P1: nanoocp.gp.gp_Pnt, P2: nanoocp.gp.gp_Pnt) -> tuple[bool, float]:
         """returns true if OK."""
+
+class BVH_Traverse__double__3__BRepExtrema_TriangleSet__double(nanoocp.IntPatch.BVH_BaseTraverse__double):
+    """
+    Abstract class implementing the traverse of the single binary tree.
+    Selection of the data from the tree is performed by the
+    rules defined in the Accept/Reject methods.
+    See description of the required methods in the comments above.
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+    index) \\tparam MetricType Type of metric to perform more optimal tree descend
+    """
+
+    def SetBVHSet(self, theBVHSet: BRepExtrema_TriangleSet) -> None:
+        """
+        @name Setting the set to access the elements and BVH tree
+        Sets the BVH Set containing the BVH tree
+        """
+
+    def AcceptMetric(self, arg0: float) -> bool:
+        """
+        @name Rules for Accept/Reject
+        Basing on the given metric, checks if the whole branch may be
+        accepted without any further checks.
+        Returns true if the metric is accepted, false otherwise.
+        """
+
+    def RejectNode(self, theCornerMin: nanoocp.BVH.BVH_Vec3d, theCornerMax: nanoocp.BVH.BVH_Vec3d, theMetric: float) -> bool:
+        """
+        Rejection of the node by bounding box.
+        Metric is computed to choose the best branch.
+        Returns true if the node should be rejected, false otherwise.
+        """
+
+    def Accept(self, theIndex: int, theMetric: float) -> bool:
+        """
+        Leaf element acceptance.
+        Metric of the parent leaf-node is passed to avoid the check on the
+        element and accept it unconditionally.
+        Returns true if the element has been accepted, false otherwise.
+        """
+
+    @overload
+    def Select(self) -> int:
+        """
+        @name Selection
+        Selection of the elements from the BVH tree by the
+        rules defined in Accept/Reject methods.
+        The method requires the BVHSet containing BVH tree to be set.
+        Returns the number of accepted elements.
+        """
+
+    @overload
+    def Select(self, theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+        """
+        Performs selection of the elements from the BVH tree by the
+        rules defined in Accept/Reject methods.
+        Returns the number of accepted elements.
+        """
+
+class BVH_Distance__double__3__NCollection_Vec3__double__BRepExtrema_TriangleSet(BVH_Traverse__double__3__BRepExtrema_TriangleSet__double):
+    """
+    Abstract class for computation of the min distance between some
+    Object and elements of BVH tree.
+    To use this class it is required to define two methods:
+    - *RejectNode* to compute distance from the object to bounding box
+    - *Accept* to compute distance from the object to the element of tree
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam ObjectType Type of the object to which the distance is required
+    \\tparam BVHSetType Type of the set on which BVH is built
+    """
+
+    def SetObject(self, theObject: nanoocp.BVH.BVH_Vec3d) -> None:
+        """
+        @name Setting object for distance computation
+        Sets the object to which the distance is required
+        """
+
+    def ComputeDistance(self) -> float:
+        """
+        @name Compute the distance
+        Computes the distance between object and BVH tree
+        """
+
+    def IsDone(self) -> bool:
+        """
+        @name Accessing the results
+        Returns IsDone flag
+        """
+
+    def Distance(self) -> float:
+        """Returns the computed distance"""
+
+    def IsMetricBetter(self, theLeft: float, theRight: float) -> bool:
+        """
+        @name Definition of the rules for tree descend
+        Compares the two metrics and chooses the best one
+        """
+
+    def RejectMetric(self, theMetric: float) -> bool:
+        """Rejects the branch by the metric"""
+
+    def Stop(self) -> bool:
+        """Returns the flag controlling the tree descend"""
+
+class BRepExtrema_ProximityDistTool(BVH_Distance__double__3__NCollection_Vec3__double__BRepExtrema_TriangleSet):
+    """
+    Tool class for computation the proximity distance from first
+    primitive set to second one that is the maximal from minimum
+    perpendicular distances. If no perpendicular distance is found, the
+    minimum distance will be returned.
+    This tool is not intended to be used independently, and is integrated
+    in other classes, implementing algorithms based on shape tessellation
+    (BRepExtrema_ProximityValueTool).
+
+    Please note that algorithm results are approximate and depend greatly
+    on the quality of input tessellation(s).
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Creates new uninitialized tool."""
+
+    @overload
+    def __init__(self, theSet1: BRepExtrema_TriangleSet | None, theNbSamples1: int, theAddVertices1: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec3d], theAddStatus1: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.BRepExtrema.BRepExtrema_ProximityDistTool.ProxPnt_Status], theSet2: BRepExtrema_TriangleSet | None, theShapeList1: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape], theShapeList2: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]) -> None:
+        """Creates new tool for the given element sets."""
+
+    @overload
+    def __init__(self, theOther: BRepExtrema_ProximityDistTool) -> None: ...
+
+    class ProxPnt_Status(enum.IntEnum):
+        ProxPnt_Status_BORDER = 0
+
+        ProxPnt_Status_MIDDLE = 1
+
+        ProxPnt_Status_UNKNOWN = 2
+
+    ProxPnt_Status_BORDER: BRepExtrema_ProximityDistTool.ProxPnt_Status = ProxPnt_Status.ProxPnt_Status_BORDER
+
+    ProxPnt_Status_MIDDLE: BRepExtrema_ProximityDistTool.ProxPnt_Status = ProxPnt_Status.ProxPnt_Status_MIDDLE
+
+    ProxPnt_Status_UNKNOWN: BRepExtrema_ProximityDistTool.ProxPnt_Status = ProxPnt_Status.ProxPnt_Status_UNKNOWN
+
+    class PrjState:
+        """
+        Struct with information about projection point state from 2nd BVH,
+        providing proximity point of 2nd shape
+        """
+
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theTrgIdx: int, thePrjState: "BVH_Tools<double, 3>::BVH_PrjStateInTriangle", theNumberOfFirstNode: int, theNumberOfLastNode: int) -> None: ...
+
+        @overload
+        def __init__(self, theOther: BRepExtrema_ProximityDistTool.PrjState) -> None: ...
+
+        def GetTrgIdx(self) -> int: ...
+
+        def GetPrjState(self) -> "BVH_Tools<double, 3>::BVH_PrjStateInTriangle": ...
+
+        def GetNumberOfFirstNode(self) -> int: ...
+
+        def GetNumberOfLastNode(self) -> int: ...
+
+    def LoadTriangleSets(self, theSet1: BRepExtrema_TriangleSet | None, theSet2: BRepExtrema_TriangleSet | None) -> None:
+        """Loads the given element sets into the tool."""
+
+    def LoadShapeLists(self, theShapeList1: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape], theShapeList2: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]) -> None:
+        """Loads the given list of subshapes into the tool."""
+
+    def LoadAdditionalPointsFirstSet(self, theAddVertices1: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec3d], theAddStatus1: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.BRepExtrema.BRepExtrema_ProximityDistTool.ProxPnt_Status]) -> None:
+        """Loads given additional vertices and their statuses."""
+
+    def Perform(self) -> None:
+        """Performs searching of the proximity distance."""
+
+    def RejectNode(self, theCornerMin: nanoocp.BVH.BVH_Vec3d, theCornerMax: nanoocp.BVH.BVH_Vec3d) -> tuple[bool, float]:
+        """
+        @name Reject/Accept implementations
+        Defines the rules for node rejection by bounding box.
+        """
+
+    def Accept(self, theSgmIdx: int, arg1: float) -> bool:
+        """Defines the rules for leaf acceptance."""
+
+    @staticmethod
+    def IsNodeOnBorder(theNodeIdx: int, theTr: nanoocp.Poly.Poly_Triangulation | None) -> bool:
+        """Returns true if the node is on the boarder."""
+
+    @staticmethod
+    def IsEdgeOnBorder(theTrgIdx: int, theFirstEdgeNodeIdx: int, theSecondEdgeNodeIdx: int, theTr: nanoocp.Poly.Poly_Triangulation | None) -> bool:
+        """Returns true if the edge is on the boarder."""
+
+    def ProximityPoints(self, thePoint1: nanoocp.BVH.BVH_Vec3d, thePoint2: nanoocp.BVH.BVH_Vec3d) -> None:
+        """
+        Returns points on triangles sets, which provide the proximity distance.
+        """
+
+    def ProximityPointsStatus(self) -> tuple[BRepExtrema_ProximityDistTool.ProxPnt_Status, BRepExtrema_ProximityDistTool.ProxPnt_Status]:
+        """
+        Returns status of points on triangles sets, which provide the proximity distance.
+        """
+
+    def ProximityDistance(self) -> float:
+        """Returns the computed distance"""
 
 class BRepExtrema_VertexInspector:
     """
@@ -611,10 +964,10 @@ class BRepExtrema_ProximityValueTool:
         """Creates new uninitialized proximity tool."""
 
     @overload
-    def __init__(self, theSet1: "BRepExtrema_TriangleSet" | None, theSet2: "BRepExtrema_TriangleSet" | None, theShapeList1: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape], theShapeList2: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]) -> None:
+    def __init__(self, theSet1: BRepExtrema_TriangleSet | None, theSet2: BRepExtrema_TriangleSet | None, theShapeList1: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape], theShapeList2: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]) -> None:
         """Creates new proximity tool for the given element sets."""
 
-    def LoadTriangleSets(self, theSet1: "BRepExtrema_TriangleSet" | None, theSet2: "BRepExtrema_TriangleSet" | None) -> None:
+    def LoadTriangleSets(self, theSet1: BRepExtrema_TriangleSet | None, theSet2: BRepExtrema_TriangleSet | None) -> None:
         """Loads the given element sets into the proximity tool."""
 
     def LoadShapeLists(self, theShapeList1: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape], theShapeList2: nanoocp.NCollection.NCollection_DynamicArray[nanoocp.TopoDS.TopoDS_Shape]) -> None:
@@ -643,7 +996,7 @@ class BRepExtrema_ProximityValueTool:
         Returns points on triangles sets, which provide the proximity distance.
         """
 
-    def ProximityPointsStatus(self) -> tuple["BRepExtrema_ProximityDistTool::ProxPnt_Status", "BRepExtrema_ProximityDistTool::ProxPnt_Status"]:
+    def ProximityPointsStatus(self) -> tuple[BRepExtrema_ProximityDistTool.ProxPnt_Status, BRepExtrema_ProximityDistTool.ProxPnt_Status]:
         """
         Returns status of points on triangles sets, which provide the proximity distance.
         """
@@ -695,7 +1048,7 @@ class BRepExtrema_SelfIntersection(BRepExtrema_ElementFilter):
     def GetSubShape(self, theID: int) -> nanoocp.TopoDS.TopoDS_Face:
         """Returns sub-shape from the shape for the given index (started from 0)."""
 
-    def ElementSet(self) -> "BRepExtrema_TriangleSet":
+    def ElementSet(self) -> BRepExtrema_TriangleSet:
         """Returns set of all the face triangles of the shape."""
 
 class BRepExtrema_ShapeProximity:
@@ -780,10 +1133,10 @@ class BRepExtrema_ShapeProximity:
         Returns sub-shape from 1st shape with the given index (started from 0).
         """
 
-    def ElementSet1(self) -> "BRepExtrema_TriangleSet":
+    def ElementSet1(self) -> BRepExtrema_TriangleSet:
         """Returns set of all the face triangles of the 1st shape."""
 
-    def ElementSet2(self) -> "BRepExtrema_TriangleSet":
+    def ElementSet2(self) -> BRepExtrema_TriangleSet:
         """Returns set of all the face triangles of the 2nd shape."""
 
     def ProximityPoint1(self) -> nanoocp.gp.gp_Pnt:
@@ -798,13 +1151,13 @@ class BRepExtrema_ShapeProximity:
         for the value of the proximity.
         """
 
-    def ProxPntStatus1(self) -> "BRepExtrema_ProximityDistTool::ProxPnt_Status":
+    def ProxPntStatus1(self) -> BRepExtrema_ProximityDistTool.ProxPnt_Status:
         """
         Returns the status of point on the 1st shape, which could be used as a reference point
         for the value of the proximity.
         """
 
-    def ProxPntStatus2(self) -> "BRepExtrema_ProximityDistTool::ProxPnt_Status":
+    def ProxPntStatus2(self) -> BRepExtrema_ProximityDistTool.ProxPnt_Status:
         """
         Returns the status of point on the 2nd shape, which could be used as a reference point
         for the value of the proximity.
@@ -812,6 +1165,13 @@ class BRepExtrema_ShapeProximity:
 
 class BRepExtrema_UnCompatibleShape(nanoocp.Standard.Standard_DomainError):
     pass
+
+class ProxPnt_Status(enum.IntEnum):
+    ProxPnt_Status_BORDER = 0
+
+    ProxPnt_Status_MIDDLE = 1
+
+    ProxPnt_Status_UNKNOWN = 2
 
 # C++ typedef aliases
 VectorOfPoint = nanoocp.NCollection.NCollection_DynamicArray[nanoocp.gp.gp_XYZ]

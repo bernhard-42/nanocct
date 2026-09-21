@@ -32,6 +32,7 @@
 #include <BRepBuilderAPI_VertexInspector.hxx>
 #include <BRepBuilderAPI_WireError.hxx>
 #include <BRepTools_ReShape.hxx>
+#include <Bnd_Box.hxx>
 #include <Geom2d_Curve.hxx>
 #include <Geom_Curve.hxx>
 #include <Geom_Plane.hxx>
@@ -237,6 +238,12 @@ the error description can be asked to the command.
 In theory the commands can be called with any
 arguments, argument checking is performed by the
 command.)nbdoc");
+    }
+    { nb::class_<BRepBuilderAPI_BndBoxTreeSelector> cls(m, "BRepBuilderAPI_BndBoxTreeSelector", R"nbdoc(Class BRepBuilderAPI_BndBoxTreeSelector
+derived from UBTree::Selector
+This class is used to select overlapping boxes, stored in
+NCollection::UBTree; contains methods to maintain the selection
+condition and to retrieve selected objects after search.)nbdoc");
     }
     { nb::class_<BRepBuilderAPI_Collect> cls(m, "BRepBuilderAPI_Collect");
     }
@@ -582,6 +589,20 @@ void nanoocp_define_BRepBuilderAPI(nb::module_ &m) {
 is returned.)nbdoc")
         .def_static("Precision", static_cast<double (*)()>(&BRepBuilderAPI::Precision), R"nbdoc(Returns the default precision.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepBuilderAPI>(nb::borrow<nb::class_<BRepBuilderAPI>>(m.attr("BRepBuilderAPI")));
+    nb::borrow<nb::class_<BRepBuilderAPI_BndBoxTreeSelector>>(m.attr("BRepBuilderAPI_BndBoxTreeSelector"))
+        .def(nb::init<>(), R"nbdoc(Constructor; calls the base class constructor)nbdoc")
+        .def("Reject", static_cast<bool (BRepBuilderAPI_BndBoxTreeSelector::*)(const Bnd_Box &) const>(&BRepBuilderAPI_BndBoxTreeSelector::Reject), nb::arg("theBox"), R"nbdoc(Implementation of rejection method
+@return
+True if the bounding box does not intersect with the current)nbdoc")
+        .def("Accept", static_cast<bool (BRepBuilderAPI_BndBoxTreeSelector::*)(const int &)>(&BRepBuilderAPI_BndBoxTreeSelector::Accept), nb::arg("theObj"), R"nbdoc(Implementation of acceptance method
+This method is called when the bounding box intersect with the current.
+It stores the object - the index of box in the list of accepted objects.
+@return
+True, because the object is accepted)nbdoc")
+        .def("ClearResList", static_cast<void (BRepBuilderAPI_BndBoxTreeSelector::*)()>(&BRepBuilderAPI_BndBoxTreeSelector::ClearResList), R"nbdoc(Clear the list of intersecting boxes)nbdoc")
+        .def("SetCurrent", static_cast<void (BRepBuilderAPI_BndBoxTreeSelector::*)(const Bnd_Box &)>(&BRepBuilderAPI_BndBoxTreeSelector::SetCurrent), nb::arg("theBox"), R"nbdoc(Set current box to search for overlapping with him)nbdoc")
+        .def("ResInd", static_cast<const NCollection_List<int> & (BRepBuilderAPI_BndBoxTreeSelector::*)()>(&BRepBuilderAPI_BndBoxTreeSelector::ResInd), R"nbdoc(Get list of indexes of boxes intersecting with the current box)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepBuilderAPI_BndBoxTreeSelector>(nb::borrow<nb::class_<BRepBuilderAPI_BndBoxTreeSelector>>(m.attr("BRepBuilderAPI_BndBoxTreeSelector")));
     nb::borrow<nb::class_<BRepBuilderAPI_Collect>>(m.attr("BRepBuilderAPI_Collect"))
         .def(nb::init<>())
         .def("Add", static_cast<void (BRepBuilderAPI_Collect::*)(const TopoDS_Shape &, BRepBuilderAPI_MakeShape &)>(&BRepBuilderAPI_Collect::Add), nb::arg("SI"), nb::arg("MKS"))

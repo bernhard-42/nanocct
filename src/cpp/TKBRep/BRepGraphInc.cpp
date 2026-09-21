@@ -379,9 +379,10 @@ Newly added bits are initialized to false.)nbdoc")
     nanoocp_implicit_copy_ctor<BRepGraph_RepId>(nb::borrow<nb::class_<BRepGraph_RepId>>(m.attr("BRepGraph_RepId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId>>(m.attr("BRepGraph_RepId")), "RepKind", &BRepGraph_RepId::RepKind);
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId>>(m.attr("BRepGraph_RepId")), "Index", &BRepGraph_RepId::Index);
+    nanoocp_if_concrete<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>>>(m.attr("BRepGraph_EdgeCurve3DRepId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default: invalid.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const uint32_t theIdx) { new (self) nanoocp_T(theIdx); }, nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc"); });
     nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>>>(m.attr("BRepGraph_EdgeCurve3DRepId"))
-        .def(nb::init<>(), R"nbdoc(Default: invalid.)nbdoc")
-        .def(nb::init<const uint32_t>(), nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc")
         .def_static("Start", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>::Start), R"nbdoc(First valid id in a dense sequence.)nbdoc")
         .def_static("Invalid", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>::Invalid), R"nbdoc(Invalid sentinel id.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>::*)() const>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>::IsValid), R"nbdoc(True if this id points to an allocated slot.)nbdoc")
@@ -396,9 +397,10 @@ Newly added bits are initialized to false.)nbdoc")
         .def("__hash__", [](const BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>>>(m.attr("BRepGraph_EdgeCurve3DRepId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>>>(m.attr("BRepGraph_EdgeCurve3DRepId")), "Index", &BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>::Index);
+    nanoocp_if_concrete<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>>>(m.attr("BRepGraph_EdgePolygon3DRepId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default: invalid.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const uint32_t theIdx) { new (self) nanoocp_T(theIdx); }, nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc"); });
     nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>>>(m.attr("BRepGraph_EdgePolygon3DRepId"))
-        .def(nb::init<>(), R"nbdoc(Default: invalid.)nbdoc")
-        .def(nb::init<const uint32_t>(), nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc")
         .def_static("Start", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>::Start), R"nbdoc(First valid id in a dense sequence.)nbdoc")
         .def_static("Invalid", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>::Invalid), R"nbdoc(Invalid sentinel id.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>::*)() const>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>::IsValid), R"nbdoc(True if this id points to an allocated slot.)nbdoc")
@@ -413,9 +415,10 @@ Newly added bits are initialized to false.)nbdoc")
         .def("__hash__", [](const BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>>>(m.attr("BRepGraph_EdgePolygon3DRepId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>>>(m.attr("BRepGraph_EdgePolygon3DRepId")), "Index", &BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>::Index);
+    nanoocp_if_concrete<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>>>(m.attr("BRepGraph_CoEdgeCurve2DRepId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default: invalid.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const uint32_t theIdx) { new (self) nanoocp_T(theIdx); }, nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc"); });
     nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>>>(m.attr("BRepGraph_CoEdgeCurve2DRepId"))
-        .def(nb::init<>(), R"nbdoc(Default: invalid.)nbdoc")
-        .def(nb::init<const uint32_t>(), nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc")
         .def_static("Start", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>::Start), R"nbdoc(First valid id in a dense sequence.)nbdoc")
         .def_static("Invalid", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>::Invalid), R"nbdoc(Invalid sentinel id.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>::*)() const>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>::IsValid), R"nbdoc(True if this id points to an allocated slot.)nbdoc")
@@ -430,9 +433,10 @@ Newly added bits are initialized to false.)nbdoc")
         .def("__hash__", [](const BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>>>(m.attr("BRepGraph_CoEdgeCurve2DRepId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>>>(m.attr("BRepGraph_CoEdgeCurve2DRepId")), "Index", &BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>::Index);
+    nanoocp_if_concrete<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>>>(m.attr("BRepGraph_CoEdgePolygon2DRepId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default: invalid.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const uint32_t theIdx) { new (self) nanoocp_T(theIdx); }, nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc"); });
     nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>>>(m.attr("BRepGraph_CoEdgePolygon2DRepId"))
-        .def(nb::init<>(), R"nbdoc(Default: invalid.)nbdoc")
-        .def(nb::init<const uint32_t>(), nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc")
         .def_static("Start", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>::Start), R"nbdoc(First valid id in a dense sequence.)nbdoc")
         .def_static("Invalid", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>::Invalid), R"nbdoc(Invalid sentinel id.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>::*)() const>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>::IsValid), R"nbdoc(True if this id points to an allocated slot.)nbdoc")
@@ -447,9 +451,10 @@ Newly added bits are initialized to false.)nbdoc")
         .def("__hash__", [](const BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>>>(m.attr("BRepGraph_CoEdgePolygon2DRepId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>>>(m.attr("BRepGraph_CoEdgePolygon2DRepId")), "Index", &BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>::Index);
+    nanoocp_if_concrete<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>>>(m.attr("BRepGraph_CoEdgePolygonOnTriRepId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default: invalid.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const uint32_t theIdx) { new (self) nanoocp_T(theIdx); }, nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc"); });
     nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>>>(m.attr("BRepGraph_CoEdgePolygonOnTriRepId"))
-        .def(nb::init<>(), R"nbdoc(Default: invalid.)nbdoc")
-        .def(nb::init<const uint32_t>(), nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc")
         .def_static("Start", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>::Start), R"nbdoc(First valid id in a dense sequence.)nbdoc")
         .def_static("Invalid", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>::Invalid), R"nbdoc(Invalid sentinel id.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>::*)() const>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>::IsValid), R"nbdoc(True if this id points to an allocated slot.)nbdoc")
@@ -464,9 +469,10 @@ Newly added bits are initialized to false.)nbdoc")
         .def("__hash__", [](const BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>>>(m.attr("BRepGraph_CoEdgePolygonOnTriRepId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>>>(m.attr("BRepGraph_CoEdgePolygonOnTriRepId")), "Index", &BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>::Index);
+    nanoocp_if_concrete<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>>>(m.attr("BRepGraph_FaceSurfaceRepId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default: invalid.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const uint32_t theIdx) { new (self) nanoocp_T(theIdx); }, nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc"); });
     nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>>>(m.attr("BRepGraph_FaceSurfaceRepId"))
-        .def(nb::init<>(), R"nbdoc(Default: invalid.)nbdoc")
-        .def(nb::init<const uint32_t>(), nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc")
         .def_static("Start", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>::Start), R"nbdoc(First valid id in a dense sequence.)nbdoc")
         .def_static("Invalid", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>::Invalid), R"nbdoc(Invalid sentinel id.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>::*)() const>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>::IsValid), R"nbdoc(True if this id points to an allocated slot.)nbdoc")
@@ -481,9 +487,10 @@ Newly added bits are initialized to false.)nbdoc")
         .def("__hash__", [](const BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface> &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>>>(m.attr("BRepGraph_FaceSurfaceRepId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>>>(m.attr("BRepGraph_FaceSurfaceRepId")), "Index", &BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>::Index);
+    nanoocp_if_concrete<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>>(nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>>>(m.attr("BRepGraph_FaceTriangulationRepId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default: invalid.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const uint32_t theIdx) { new (self) nanoocp_T(theIdx); }, nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc"); });
     nb::borrow<nb::class_<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>>>(m.attr("BRepGraph_FaceTriangulationRepId"))
-        .def(nb::init<>(), R"nbdoc(Default: invalid.)nbdoc")
-        .def(nb::init<const uint32_t>(), nb::arg("theIdx"), R"nbdoc(Construct from index.)nbdoc")
         .def_static("Start", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>::Start), R"nbdoc(First valid id in a dense sequence.)nbdoc")
         .def_static("Invalid", static_cast<BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation> (*)()>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>::Invalid), R"nbdoc(Invalid sentinel id.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>::*)() const>(&BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>::IsValid), R"nbdoc(True if this id points to an allocated slot.)nbdoc")

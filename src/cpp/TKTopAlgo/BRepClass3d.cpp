@@ -16,16 +16,26 @@
 #include <TopAbs_Orientation.hxx>
 #include <TopAbs_State.hxx>
 #include <TopTools_ShapeMapHasher.hxx>
+#include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Shell.hxx>
 #include <TopoDS_Solid.hxx>
+#include <TopoDS_Vertex.hxx>
 #include <gp_Lin.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
 
 void nanoocp_declare_BRepClass3d(nb::module_ &m) {
     { nb::class_<BRepClass3d> cls(m, "BRepClass3d");
+    }
+    { nb::class_<BRepClass3d_BndBoxTreeSelectorPoint> cls(m, "BRepClass3d_BndBoxTreeSelectorPoint");
+    }
+    { nb::class_<BRepClass3d_BndBoxTreeSelectorLine> cls(m, "BRepClass3d_BndBoxTreeSelectorLine");
+    }
+    { nb::class_<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam> cls(m.attr("BRepClass3d_BndBoxTreeSelectorLine"), "EdgeParam");
+    }
+    { nb::class_<BRepClass3d_BndBoxTreeSelectorLine::VertParam> cls(m.attr("BRepClass3d_BndBoxTreeSelectorLine"), "VertParam");
     }
     { nb::class_<BRepClass3d_Intersector3d> cls(m, "BRepClass3d_Intersector3d");
     }
@@ -50,6 +60,35 @@ void nanoocp_define_BRepClass3d(nb::module_ &m) {
 shell if <S> has no outer shell.
 If <S> has only one shell, then it will return, without checking orientation.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepClass3d>(nb::borrow<nb::class_<BRepClass3d>>(m.attr("BRepClass3d")));
+    nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorPoint>>(m.attr("BRepClass3d_BndBoxTreeSelectorPoint"))
+        .def(nb::init<const NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher> &>(), nb::arg("theMapOfShape"))
+        .def("Reject", static_cast<bool (BRepClass3d_BndBoxTreeSelectorPoint::*)(const Bnd_Box &) const>(&BRepClass3d_BndBoxTreeSelectorPoint::Reject), nb::arg("theBox"))
+        .def("Accept", static_cast<bool (BRepClass3d_BndBoxTreeSelectorPoint::*)(const int &)>(&BRepClass3d_BndBoxTreeSelectorPoint::Accept), nb::arg("theObj"))
+        .def("SetCurrentPoint", static_cast<void (BRepClass3d_BndBoxTreeSelectorPoint::*)(const gp_Pnt &)>(&BRepClass3d_BndBoxTreeSelectorPoint::SetCurrentPoint), nb::arg("theP"));
+    nanoocp_implicit_copy_ctor<BRepClass3d_BndBoxTreeSelectorPoint>(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorPoint>>(m.attr("BRepClass3d_BndBoxTreeSelectorPoint")));
+    nb::implicitly_convertible<std::decay_t<const NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher> &>, BRepClass3d_BndBoxTreeSelectorPoint>();
+    nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine"))
+        .def(nb::init<const NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher> &>(), nb::arg("theMapOfShape"))
+        .def("Reject", static_cast<bool (BRepClass3d_BndBoxTreeSelectorLine::*)(const Bnd_Box &) const>(&BRepClass3d_BndBoxTreeSelectorLine::Reject), nb::arg("theBox"))
+        .def("Accept", static_cast<bool (BRepClass3d_BndBoxTreeSelectorLine::*)(const int &)>(&BRepClass3d_BndBoxTreeSelectorLine::Accept), nb::arg("theObj"))
+        .def("SetCurrentLine", static_cast<void (BRepClass3d_BndBoxTreeSelectorLine::*)(const gp_Lin &, const double)>(&BRepClass3d_BndBoxTreeSelectorLine::SetCurrentLine), nb::arg("theL"), nb::arg("theMaxParam"))
+        .def("GetEdgeParam", [](const BRepClass3d_BndBoxTreeSelectorLine &self, const int i, TopoDS_Edge & theOutE) { double theOutParam{}; double outLParam{}; self.GetEdgeParam(i, theOutE, theOutParam, outLParam); return std::make_tuple(theOutParam, outLParam); }, nb::arg("i"), nb::arg("theOutE"))
+        .def("GetVertParam", [](const BRepClass3d_BndBoxTreeSelectorLine &self, const int i, TopoDS_Vertex & theOutV) { double outLParam{}; self.GetVertParam(i, theOutV, outLParam); return outLParam; }, nb::arg("i"), nb::arg("theOutV"))
+        .def("GetNbEdgeParam", static_cast<int (BRepClass3d_BndBoxTreeSelectorLine::*)() const>(&BRepClass3d_BndBoxTreeSelectorLine::GetNbEdgeParam))
+        .def("GetNbVertParam", static_cast<int (BRepClass3d_BndBoxTreeSelectorLine::*)() const>(&BRepClass3d_BndBoxTreeSelectorLine::GetNbVertParam))
+        .def("ClearResults", static_cast<void (BRepClass3d_BndBoxTreeSelectorLine::*)()>(&BRepClass3d_BndBoxTreeSelectorLine::ClearResults))
+        .def("IsCorrect", static_cast<bool (BRepClass3d_BndBoxTreeSelectorLine::*)() const>(&BRepClass3d_BndBoxTreeSelectorLine::IsCorrect), R"nbdoc(Returns TRUE if correct classification is possible)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepClass3d_BndBoxTreeSelectorLine>(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine")));
+    nb::implicitly_convertible<std::decay_t<const NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher> &>, BRepClass3d_BndBoxTreeSelectorLine>();
+    nanoocp_implicit_default_ctor<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam>(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("EdgeParam")));
+    nanoocp_implicit_copy_ctor<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam>(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("EdgeParam")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("EdgeParam")), "myE", &BRepClass3d_BndBoxTreeSelectorLine::EdgeParam::myE);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("EdgeParam")), "myParam", &BRepClass3d_BndBoxTreeSelectorLine::EdgeParam::myParam);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::EdgeParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("EdgeParam")), "myLParam", &BRepClass3d_BndBoxTreeSelectorLine::EdgeParam::myLParam);
+    nanoocp_implicit_default_ctor<BRepClass3d_BndBoxTreeSelectorLine::VertParam>(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::VertParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("VertParam")));
+    nanoocp_implicit_copy_ctor<BRepClass3d_BndBoxTreeSelectorLine::VertParam>(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::VertParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("VertParam")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::VertParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("VertParam")), "myV", &BRepClass3d_BndBoxTreeSelectorLine::VertParam::myV);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepClass3d_BndBoxTreeSelectorLine::VertParam>>(m.attr("BRepClass3d_BndBoxTreeSelectorLine").attr("VertParam")), "myLParam", &BRepClass3d_BndBoxTreeSelectorLine::VertParam::myLParam);
     nb::borrow<nb::class_<BRepClass3d_Intersector3d>>(m.attr("BRepClass3d_Intersector3d"))
         .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
         .def("Perform", static_cast<void (BRepClass3d_Intersector3d::*)(const gp_Lin &, const double, const double, const TopoDS_Face &)>(&BRepClass3d_Intersector3d::Perform), nb::arg("L"), nb::arg("Prm"), nb::arg("Tol"), nb::arg("F"), R"nbdoc(Perform the intersection between the

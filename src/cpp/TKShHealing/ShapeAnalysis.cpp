@@ -30,6 +30,7 @@
 #include <IntRes2d_IntersectionPoint.hxx>
 #include <NCollection_Array1.hxx>
 #include <NCollection_DataMap.hxx>
+#include <NCollection_HArray1.hxx>
 #include <NCollection_HArray2.hxx>
 #include <NCollection_HSequence.hxx>
 #include <NCollection_IndexedMap.hxx>
@@ -78,6 +79,8 @@ checking face bounds orientation,
 checking small faces,
 analyzing shape tolerances,
 analyzing of free bounds of the shape.)nbdoc");
+    }
+    { nb::class_<ShapeAnalysis_BoxBndTreeSelector> cls(m, "ShapeAnalysis_BoxBndTreeSelector");
     }
     { nb::class_<ShapeAnalysis_CheckSmallFace> cls(m, "ShapeAnalysis_CheckSmallFace", R"nbdoc(Analysis of the face size)nbdoc");
     }
@@ -318,6 +321,21 @@ If wire contains no edges V1 and V2 are nullified
 If none of the above V1 and V2 are nullified)nbdoc")
         .def_static("GetFaceUVBounds", [](const TopoDS_Face & F) { double Umin{}; double Umax{}; double Vmin{}; double Vmax{}; ShapeAnalysis::GetFaceUVBounds(F, Umin, Umax, Vmin, Vmax); return std::make_tuple(Umin, Umax, Vmin, Vmax); }, nb::arg("F"), R"nbdoc(Computes exact UV bounds of all wires on the face)nbdoc");
     nanoocp_implicit_copy_ctor<ShapeAnalysis>(nb::borrow<nb::class_<ShapeAnalysis>>(m.attr("ShapeAnalysis")));
+    nb::borrow<nb::class_<ShapeAnalysis_BoxBndTreeSelector>>(m.attr("ShapeAnalysis_BoxBndTreeSelector"))
+        .def(nb::init<occ::handle<NCollection_HArray1<TopoDS_Shape>>, bool>(), nb::arg("theSeq").none(), nb::arg("theShared"))
+        .def("DefineBoxes", static_cast<void (ShapeAnalysis_BoxBndTreeSelector::*)(const Bnd_Box &, const Bnd_Box &)>(&ShapeAnalysis_BoxBndTreeSelector::DefineBoxes), nb::arg("theFBox"), nb::arg("theLBox"))
+        .def("DefineVertexes", static_cast<void (ShapeAnalysis_BoxBndTreeSelector::*)(TopoDS_Vertex, TopoDS_Vertex)>(&ShapeAnalysis_BoxBndTreeSelector::DefineVertexes), nb::arg("theVf"), nb::arg("theVl"))
+        .def("DefinePnt", static_cast<void (ShapeAnalysis_BoxBndTreeSelector::*)(const gp_Pnt &, const gp_Pnt &)>(&ShapeAnalysis_BoxBndTreeSelector::DefinePnt), nb::arg("theFPnt"), nb::arg("theLPnt"))
+        .def("GetNb", static_cast<int (ShapeAnalysis_BoxBndTreeSelector::*)()>(&ShapeAnalysis_BoxBndTreeSelector::GetNb))
+        .def("SetNb", static_cast<void (ShapeAnalysis_BoxBndTreeSelector::*)(int)>(&ShapeAnalysis_BoxBndTreeSelector::SetNb), nb::arg("theNb"))
+        .def("LoadList", static_cast<void (ShapeAnalysis_BoxBndTreeSelector::*)(int)>(&ShapeAnalysis_BoxBndTreeSelector::LoadList), nb::arg("elem"))
+        .def("SetStop", static_cast<void (ShapeAnalysis_BoxBndTreeSelector::*)()>(&ShapeAnalysis_BoxBndTreeSelector::SetStop))
+        .def("SetTolerance", static_cast<void (ShapeAnalysis_BoxBndTreeSelector::*)(double)>(&ShapeAnalysis_BoxBndTreeSelector::SetTolerance), nb::arg("theTol"))
+        .def("ContWire", static_cast<bool (ShapeAnalysis_BoxBndTreeSelector::*)(int)>(&ShapeAnalysis_BoxBndTreeSelector::ContWire), nb::arg("nbWire"))
+        .def("LastCheckStatus", static_cast<bool (ShapeAnalysis_BoxBndTreeSelector::*)(const ShapeExtend_Status) const>(&ShapeAnalysis_BoxBndTreeSelector::LastCheckStatus), nb::arg("theStatus"))
+        .def("Reject", static_cast<bool (ShapeAnalysis_BoxBndTreeSelector::*)(const Bnd_Box &) const>(&ShapeAnalysis_BoxBndTreeSelector::Reject), nb::arg("theBnd"))
+        .def("Accept", static_cast<bool (ShapeAnalysis_BoxBndTreeSelector::*)(const int &)>(&ShapeAnalysis_BoxBndTreeSelector::Accept), nb::arg("arg0"));
+    nanoocp_implicit_copy_ctor<ShapeAnalysis_BoxBndTreeSelector>(nb::borrow<nb::class_<ShapeAnalysis_BoxBndTreeSelector>>(m.attr("ShapeAnalysis_BoxBndTreeSelector")));
     nb::borrow<nb::class_<ShapeAnalysis_CheckSmallFace>>(m.attr("ShapeAnalysis_CheckSmallFace"))
         .def(nb::init<>(), R"nbdoc(Creates an empty tool
 Checks a Shape i.e. each of its faces, records checks as

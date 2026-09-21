@@ -6,8 +6,8 @@
 # overload-collision: 2
 # raw-pointer: 19
 # rvalue: 4
-# template: 50
-# unbound-type: 12
+# template: 52
+# unbound-type: 10
 # undefined: 1
 inheritance	IMeshData	IMeshData_Edge: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)
 inheritance	IMeshData	IMeshData_Face: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)
@@ -96,16 +96,16 @@ template	IMeshData	NCollection_OccAllocator<int>::operator!=: template member
 template	IMeshData	NCollection_OccAllocator<int>::operator=: template member
 template	IMeshData	NCollection_OccAllocator<int>::operator==: template member
 template	IMeshData	NCollection_OccAllocator<int>::rebind: nested class template
+template	IMeshData	NCollection_UBTree::Selector: nested class of a class template (alias instantiation)
+template	IMeshData	NCollection_UBTree::TreeNode: nested class of a class template (alias instantiation)
 template	IMeshData	NCollection_UBTreeFiller::ObjBnd: nested class of a class template (alias instantiation)
 unbound-type	IMeshData	Model::SequenceOfInteger = std::deque<int, NCollection_OccAllocator<int>>: type alias of an unbound type (not bound)
 unbound-type	IMeshData	Model::SequenceOfPnt = std::deque<gp_Pnt, NCollection_OccAllocator<gp_Pnt>>: type alias of an unbound type (not bound)
 unbound-type	IMeshData	Model::SequenceOfPnt2d = std::deque<gp_Pnt2d, NCollection_OccAllocator<gp_Pnt2d>>: type alias of an unbound type (not bound)
 unbound-type	IMeshData	Model::SequenceOfReal = std::deque<double, NCollection_OccAllocator<double>>: type alias of an unbound type (not bound)
-unbound-type	IMeshData	NCollection_EBTree<int, Bnd_Box2d>: base class NCollection_UBTree<int, Bnd_Box2d> is not bound (package not generated) -> class skipped
 unbound-type	IMeshData	NCollection_Shared<NCollection_DataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<int>>>>: wrapped type NCollection_DataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<int>>> is not bound -> instantiation skipped
 unbound-type	IMeshData	NCollection_Shared<NCollection_DataMap<IMeshData_Face *, opencascade::handle<NCollection_Shared<NCollection_Map<IMeshData_Edge *>>>>>: wrapped type NCollection_DataMap<IMeshData_Face *, opencascade::handle<NCollection_Shared<NCollection_Map<IMeshData_Edge *>>>> is not bound -> instantiation skipped
 unbound-type	IMeshData	NCollection_Shared<NCollection_DynamicArray<IMeshData_Edge *>>: wrapped type NCollection_DynamicArray<IMeshData_Edge *> is not bound -> instantiation skipped
-unbound-type	IMeshData	NCollection_Shared<NCollection_EBTree<int, Bnd_Box2d>>: element type NCollection_EBTree<int, Bnd_Box2d> is not bound (its class is skipped) -> instantiation skipped
 unbound-type	IMeshData	NCollection_Shared<NCollection_IndexedDataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<opencascade::handle<IMeshData_PCurve>>>>>: wrapped type NCollection_IndexedDataMap<IMeshData_Face *, NCollection_Shared<NCollection_List<opencascade::handle<IMeshData_PCurve>>>> is not bound -> instantiation skipped
 unbound-type	IMeshData	NCollection_Shared<NCollection_Map<IMeshData_Edge *>>: wrapped type NCollection_Map<IMeshData_Edge *> is not bound -> instantiation skipped
 unbound-type	IMeshData	NCollection_Shared<NCollection_Map<IMeshData_Face *>>: wrapped type NCollection_Map<IMeshData_Face *> is not bound -> instantiation skipped

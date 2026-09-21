@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanoocp import (BRepBuilderAPI, BRepCheck, BRepClass, BRepClass3d, BRepExtrema, BRepGProp, BRepLib, BRepMAT2d, BRepTopAdaptor,
+from nanoocp import (BRepBuilderAPI, BRepCheck, BRepClass, BRepClass3d, BRepExtrema, BRepGProp, BRepLib, BRepMAT2d, BRepPrimAPI, BRepTopAdaptor,
                      GProp, MAT, MAT2d, NCollection, Bnd, BRepBndLib, Standard, StdFail, TopAbs, TopExp, TopoDS, gp)
 
 PACKAGES = ["IntCurvesFace", "MAT", "MAT2d", "Bisector", "BRepMAT2d", "BRepCheck", "BRepBndLib", "BRepExtrema", "BRepClass",
@@ -112,26 +112,34 @@ def test_noncopyable_wrappers():
     assert type(BRepExtrema.BRepExtrema_ProximityValueTool()).__name__ == "BRepExtrema_ProximityValueTool"
 
 
-def test_nested_enum_of_a_skipped_class_is_skipped_with_it():
-    # BRepExtrema_ProximityDistTool is skipped (its BVH_Distance base is unbound); its nested enum ProxPnt_Status, the
-    # package-level typedef of it and the NCollection_DynamicArray<ProxPnt_Status> instantiation go with it. Before this
-    # rule the alias aborted the import of the toolkit and the accessor entry broke NCollection_DynamicArray[T] for every T.
-    assert not hasattr(BRepExtrema, "BRepExtrema_ProximityDistTool") and not hasattr(BRepExtrema, "ProxPnt_Status")
-    assert len(list(NCollection.NCollection_DynamicArray)) > 0                 # the accessor table resolves
-    assert not any("ProxPnt_Status" in n for n in NCollection.NCollection_DynamicArray.bound())
-    manifest = json.loads((REPORT.parents[1] / "manifest.json").read_text())
-    assert "BRepExtrema_ProximityDistTool::ProxPnt_Status" not in manifest["classes"]
-    assert manifest["templates"]["NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status>"]["skipped"] is True
+def test_mesh_proximity_through_the_bvh_chain():
+    # R-TEMPLATE-BASE: BRepExtrema_ProximityDistTool : BVH_Distance<...> : BVH_Traverse<...> : BVH_BaseTraverse<double>,
+    # BRepExtrema_TriangleSet : BVH_PrimitiveSet3d : BVH_Object<double, 3> (+ BVH_Set, second base dropped), OverlapTool :
+    # BVH_PairTraverse -- all instantiated from the templates; the nested enum ProxPnt_Status and its alias come with them
+    from nanoocp import Bnd, BRepMesh, Precision
+    a = BRepPrimAPI.BRepPrimAPI_MakeBox(1, 1, 1).Shape()
+    b = BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(3, 0, 0), gp.gp_Pnt(4, 1, 1)).Shape()
+    BRepMesh.BRepMesh_IncrementalMesh(a, 0.1)
+    BRepMesh.BRepMesh_IncrementalMesh(b, 0.1)
+    prox = BRepExtrema.BRepExtrema_ShapeProximity(a, b, Precision.Precision.Infinite())   # infinite tolerance: proximity-value mode
+    prox.Perform()
+    assert prox.IsDone() and prox.Proximity() == pytest.approx(3.0)                           # OCP 7.9.3 gives the same numbers
+    assert (prox.ProximityPoint1().X(), prox.ProximityPoint2().X()) == pytest.approx((1.0, 4.0))
+    assert prox.ProxPntStatus1() == BRepExtrema.ProxPnt_Status.ProxPnt_Status_BORDER == BRepExtrema.BRepExtrema_ProximityDistTool.ProxPnt_Status.ProxPnt_Status_BORDER
+    tri = prox.ElementSet1()
+    assert type(tri) is BRepExtrema.BRepExtrema_TriangleSet and tri.Size() == 12
+    assert [c.__name__ for c in type(tri).__mro__[:4]] == ["BRepExtrema_TriangleSet", "BVH_PrimitiveSet3d", "BVH_Object__double__3", "BVH_ObjectTransient"]
+    assert type(tri.Box()) is Bnd.BVH_Box__double__3 and tri.Box().CornerMax().x() == pytest.approx(1.0)   # BVH_Box<double, 3>, bound on demand by Bnd
+    c = BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(0.5, 0.5, 0.5), gp.gp_Pnt(2, 2, 2)).Shape()
+    BRepMesh.BRepMesh_IncrementalMesh(c, 0.1)
+    overlap = BRepExtrema.BRepExtrema_ShapeProximity(a, c, 0.0)                                   # tolerance 0: overlap mode
+    overlap.Perform()
+    assert overlap.IsDone() and len(overlap.OverlapSubShapes1()) == 3                          # three faces of the unit cube overlap
+    overlap_tool = BRepExtrema.BRepExtrema_OverlapTool(tri, prox.ElementSet2())
+    assert [c.__name__ for c in type(overlap_tool).__mro__[1:3]] == ["BVH_PairTraverse__double__3__void__double", "BVH_BaseTraverse__double"]   # bound on demand by IntPatch
     rows = read_report(REPORT)
-    msgs = [msg for _, pkg, msg in rows if pkg == "BRepExtrema"]
-    assert "ProxPnt_Status = BRepExtrema_ProximityDistTool::ProxPnt_Status: type alias of a type that is not bound (skipped)" in msgs
-    assert ("NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status>: element type "
-            "BRepExtrema_ProximityDistTool::ProxPnt_Status is not bound (its class is skipped) -> instantiation skipped") in msgs
     assert all(cat != "misc" for cat, _, _ in rows)
-    # members whose signature still names the enum are bound but not callable until the type exists (8a, usability)
-    sp = BRepExtrema.BRepExtrema_ShapeProximity()
-    with pytest.raises(TypeError, match="Unable to convert function return value"):
-        sp.ProxPntStatus1()
+    assert not any("ProxPnt_Status" in msg for _, _, msg in rows)
 
 
 def test_collision_suffixes_and_undefined_members():

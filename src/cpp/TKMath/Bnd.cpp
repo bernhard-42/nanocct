@@ -147,6 +147,14 @@ auto [aMin, aMax] = aRange.Get();
     }
     { nb::class_<Bnd_Tools> cls(m, "Bnd_Tools", R"nbdoc(Defines a set of static methods operating with bounding boxes)nbdoc");
     }
+    { nb::class_<BVH_Box<double, 2>> cls(m, "BVH_Box__double__2", R"nbdoc(Defines axis aligned bounding box (AABB) based on BVH vectors.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
+    { nb::class_<BVH_Box<double, 3>> cls(m, "BVH_Box__double__3", R"nbdoc(Defines axis aligned bounding box (AABB) based on BVH vectors.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
 }
 
 void nanoocp_templates_Bnd(nb::module_ &m) {
@@ -156,10 +164,11 @@ void nanoocp_templates_Bnd(nb::module_ &m) {
 }
 
 void nanoocp_define_Bnd(nb::module_ &m) {
+    nanoocp_if_concrete<Bnd_B2<double>>(nb::borrow<nb::class_<Bnd_B2<double>>>(m.attr("Bnd_B2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_XY & theCenter, const gp_XY & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const std::array<double, 2> & theCenter, const std::array<double, 2> & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc"); });
     nb::borrow<nb::class_<Bnd_B2<double>>>(m.attr("Bnd_B2d"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
-        .def(nb::init<const gp_XY &, const gp_XY &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const std::array<double, 2> &, const std::array<double, 2> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
         .def("IsVoid", static_cast<bool (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
         .def("Clear", static_cast<void (Bnd_B2<double>::*)() noexcept>(&Bnd_B2<double>::Clear), R"nbdoc(Reset the box data.)nbdoc")
         .def("Add", static_cast<void (Bnd_B2<double>::*)(const gp_XY &)>(&Bnd_B2<double>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
@@ -207,10 +216,11 @@ All components of theHSize must be non-negative.)nbdoc")
         .def("Center", static_cast<const std::array<double, 2> & (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::Center), R"nbdoc(Get the Center coordinates)nbdoc")
         .def("HSize", static_cast<const std::array<double, 2> & (Bnd_B2<double>::*)() const noexcept>(&Bnd_B2<double>::HSize), R"nbdoc(Get the HSize (half-diagonal) coordinates)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_B2<double>>(nb::borrow<nb::class_<Bnd_B2<double>>>(m.attr("Bnd_B2d")));
+    nanoocp_if_concrete<Bnd_B2<float>>(nb::borrow<nb::class_<Bnd_B2<float>>>(m.attr("Bnd_B2f")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_XY & theCenter, const gp_XY & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const std::array<float, 2> & theCenter, const std::array<float, 2> & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc"); });
     nb::borrow<nb::class_<Bnd_B2<float>>>(m.attr("Bnd_B2f"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
-        .def(nb::init<const gp_XY &, const gp_XY &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const std::array<float, 2> &, const std::array<float, 2> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
         .def("IsVoid", static_cast<bool (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
         .def("Clear", static_cast<void (Bnd_B2<float>::*)() noexcept>(&Bnd_B2<float>::Clear), R"nbdoc(Reset the box data.)nbdoc")
         .def("Add", static_cast<void (Bnd_B2<float>::*)(const gp_XY &)>(&Bnd_B2<float>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
@@ -258,10 +268,11 @@ All components of theHSize must be non-negative.)nbdoc")
         .def("Center", static_cast<const std::array<float, 2> & (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::Center), R"nbdoc(Get the Center coordinates)nbdoc")
         .def("HSize", static_cast<const std::array<float, 2> & (Bnd_B2<float>::*)() const noexcept>(&Bnd_B2<float>::HSize), R"nbdoc(Get the HSize (half-diagonal) coordinates)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_B2<float>>(nb::borrow<nb::class_<Bnd_B2<float>>>(m.attr("Bnd_B2f")));
+    nanoocp_if_concrete<Bnd_B3<double>>(nb::borrow<nb::class_<Bnd_B3<double>>>(m.attr("Bnd_B3d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_XYZ & theCenter, const gp_XYZ & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const std::array<double, 3> & theCenter, const std::array<double, 3> & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc"); });
     nb::borrow<nb::class_<Bnd_B3<double>>>(m.attr("Bnd_B3d"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
-        .def(nb::init<const gp_XYZ &, const gp_XYZ &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const std::array<double, 3> &, const std::array<double, 3> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
         .def("IsVoid", static_cast<bool (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
         .def("Clear", static_cast<void (Bnd_B3<double>::*)() noexcept>(&Bnd_B3<double>::Clear), R"nbdoc(Reset the box data.)nbdoc")
         .def("Add", static_cast<void (Bnd_B3<double>::*)(const gp_XYZ &)>(&Bnd_B3<double>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
@@ -315,10 +326,11 @@ All components of theHSize must be non-negative.)nbdoc")
         .def("Center", static_cast<const std::array<double, 3> & (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::Center), R"nbdoc(Get the Center coordinates)nbdoc")
         .def("HSize", static_cast<const std::array<double, 3> & (Bnd_B3<double>::*)() const noexcept>(&Bnd_B3<double>::HSize), R"nbdoc(Get the HSize (half-diagonal) coordinates)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_B3<double>>(nb::borrow<nb::class_<Bnd_B3<double>>>(m.attr("Bnd_B3d")));
+    nanoocp_if_concrete<Bnd_B3<float>>(nb::borrow<nb::class_<Bnd_B3<float>>>(m.attr("Bnd_B3f")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_XYZ & theCenter, const gp_XYZ & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const std::array<float, 3> & theCenter, const std::array<float, 3> & theHSize) { new (self) nanoocp_T(theCenter, theHSize); }, nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc"); });
     nb::borrow<nb::class_<Bnd_B3<float>>>(m.attr("Bnd_B3f"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc")
-        .def(nb::init<const gp_XYZ &, const gp_XYZ &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
-        .def(nb::init<const std::array<float, 3> &, const std::array<float, 3> &>(), nb::arg("theCenter"), nb::arg("theHSize"), R"nbdoc(Constructor.)nbdoc")
         .def("IsVoid", static_cast<bool (Bnd_B3<float>::*)() const noexcept>(&Bnd_B3<float>::IsVoid), R"nbdoc(Returns True if the box is void (non-initialized).)nbdoc")
         .def("Clear", static_cast<void (Bnd_B3<float>::*)() noexcept>(&Bnd_B3<float>::Clear), R"nbdoc(Reset the box data.)nbdoc")
         .def("Add", static_cast<void (Bnd_B3<float>::*)(const gp_XYZ &)>(&Bnd_B3<float>::Add), nb::arg("thePnt"), R"nbdoc(Update the box by a point.)nbdoc")
@@ -816,6 +828,56 @@ Returns true if success)nbdoc")
 Converts the given Bnd_Box2d to BVH_Box)nbdoc")
         .def_static("Bnd2BVH", static_cast<BVH_Box<double, 3> (*)(const Bnd_Box &)>(&Bnd_Tools::Bnd2BVH), nb::arg("theBox"), R"nbdoc(Converts the given Bnd_Box to BVH_Box)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_Tools>(nb::borrow<nb::class_<Bnd_Tools>>(m.attr("Bnd_Tools")));
+    nanoocp_if_concrete<BVH_Box<double, 2>>(nb::borrow<nb::class_<BVH_Box<double, 2>>>(m.attr("BVH_Box__double__2")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Creates uninitialized bounding box.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const BVH_Box<double, 2>::BVH_VecNt & thePoint) { new (self) nanoocp_T(thePoint); }, nb::arg("thePoint"), R"nbdoc(Creates bounding box of given point.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const BVH_Box<double, 2>::BVH_VecNt & theMinPoint, const BVH_Box<double, 2>::BVH_VecNt & theMaxPoint) { new (self) nanoocp_T(theMinPoint, theMaxPoint); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Creates bounding box from corner points.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Box<double, 2>>>(m.attr("BVH_Box__double__2"))
+        .def("Clear", static_cast<void (BVH_Box<double, 2>::*)() noexcept>(&BVH_Box<double, 2>::Clear), R"nbdoc(Clears bounding box.)nbdoc")
+        .def("IsValid", static_cast<bool (BVH_Box<double, 2>::*)() const noexcept>(&BVH_Box<double, 2>::IsValid), R"nbdoc(Is bounding box valid?)nbdoc")
+        .def("Add", static_cast<void (BVH_Box<double, 2>::*)(const BVH_Box<double, 2>::BVH_VecNt &)>(&BVH_Box<double, 2>::Add), nb::arg("thePoint"), R"nbdoc(Appends new point to the bounding box.)nbdoc")
+        .def("Combine", static_cast<void (BVH_Box<double, 2>::*)(const BVH_Box<double, 2> &)>(&BVH_Box<double, 2>::Combine), nb::arg("theBox"), R"nbdoc(Combines bounding box with another one.)nbdoc")
+        .def("CornerMin", static_cast<BVH_Box<double, 2>::BVH_VecNt & (BVH_Box<double, 2>::*)() noexcept>(&BVH_Box<double, 2>::CornerMin), nb::rv_policy::reference_internal, R"nbdoc(Returns minimum point of bounding box.)nbdoc")
+        .def("CornerMax", static_cast<BVH_Box<double, 2>::BVH_VecNt & (BVH_Box<double, 2>::*)() noexcept>(&BVH_Box<double, 2>::CornerMax), nb::rv_policy::reference_internal, R"nbdoc(Returns maximum point of bounding box.)nbdoc")
+        .def("Area", static_cast<double (BVH_Box<double, 2>::*)() const>(&BVH_Box<double, 2>::Area), R"nbdoc(Returns surface area of bounding box.
+If the box is degenerated into line, returns the perimeter instead.)nbdoc")
+        .def("Size", static_cast<BVH_Box<double, 2>::BVH_VecNt (BVH_Box<double, 2>::*)() const>(&BVH_Box<double, 2>::Size), R"nbdoc(Returns diagonal of bounding box.)nbdoc")
+        .def("Center", static_cast<BVH_Box<double, 2>::BVH_VecNt (BVH_Box<double, 2>::*)() const>(&BVH_Box<double, 2>::Center), R"nbdoc(Returns center of bounding box.)nbdoc")
+        .def("Center", static_cast<double (BVH_Box<double, 2>::*)(const int) const>(&BVH_Box<double, 2>::Center), nb::arg("theAxis"), R"nbdoc(Returns center of bounding box along the given axis.)nbdoc")
+        .def("DumpJson", [](const BVH_Box<double, 2> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](BVH_Box<double, 2> &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<double, 2>::*)(const BVH_Box<double, 2> &) const>(&BVH_Box<double, 2>::IsOut), nb::arg("theOther"), R"nbdoc(Checks if the Box is out of the other box.)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<double, 2>::*)(const BVH_Box<double, 2>::BVH_VecNt &, const BVH_Box<double, 2>::BVH_VecNt &) const>(&BVH_Box<double, 2>::IsOut), nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is out of the other box defined by two points.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 2> &self, const BVH_Box<double, 2> & theOther) { bool hasOverlap{}; auto result = self.Contains(theOther, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theOther"), R"nbdoc(Checks if the Box fully contains the other box.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 2> &self, const BVH_Box<double, 2>::BVH_VecNt & theMinPoint, const BVH_Box<double, 2>::BVH_VecNt & theMaxPoint) { bool hasOverlap{}; auto result = self.Contains(theMinPoint, theMaxPoint, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is fully contains the other box.)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<double, 2>::*)(const BVH_Box<double, 2>::BVH_VecNt &) const>(&BVH_Box<double, 2>::IsOut), nb::arg("thePoint"), R"nbdoc(Checks if the Point is out of the box.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Box<double, 2>>(nb::borrow<nb::class_<BVH_Box<double, 2>>>(m.attr("BVH_Box__double__2")));
+    nb::implicitly_convertible<std::decay_t<const BVH_Box<double, 2>::BVH_VecNt &>, BVH_Box<double, 2>>();
+    nanoocp_if_concrete<BVH_Box<double, 3>>(nb::borrow<nb::class_<BVH_Box<double, 3>>>(m.attr("BVH_Box__double__3")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Creates uninitialized bounding box.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const BVH_Box<double, 3>::BVH_VecNt & thePoint) { new (self) nanoocp_T(thePoint); }, nb::arg("thePoint"), R"nbdoc(Creates bounding box of given point.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const BVH_Box<double, 3>::BVH_VecNt & theMinPoint, const BVH_Box<double, 3>::BVH_VecNt & theMaxPoint) { new (self) nanoocp_T(theMinPoint, theMaxPoint); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Creates bounding box from corner points.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Box<double, 3>>>(m.attr("BVH_Box__double__3"))
+        .def("Clear", static_cast<void (BVH_Box<double, 3>::*)() noexcept>(&BVH_Box<double, 3>::Clear), R"nbdoc(Clears bounding box.)nbdoc")
+        .def("IsValid", static_cast<bool (BVH_Box<double, 3>::*)() const noexcept>(&BVH_Box<double, 3>::IsValid), R"nbdoc(Is bounding box valid?)nbdoc")
+        .def("Add", static_cast<void (BVH_Box<double, 3>::*)(const BVH_Box<double, 3>::BVH_VecNt &)>(&BVH_Box<double, 3>::Add), nb::arg("thePoint"), R"nbdoc(Appends new point to the bounding box.)nbdoc")
+        .def("Combine", static_cast<void (BVH_Box<double, 3>::*)(const BVH_Box<double, 3> &)>(&BVH_Box<double, 3>::Combine), nb::arg("theBox"), R"nbdoc(Combines bounding box with another one.)nbdoc")
+        .def("CornerMin", static_cast<BVH_Box<double, 3>::BVH_VecNt & (BVH_Box<double, 3>::*)() noexcept>(&BVH_Box<double, 3>::CornerMin), nb::rv_policy::reference_internal, R"nbdoc(Returns minimum point of bounding box.)nbdoc")
+        .def("CornerMax", static_cast<BVH_Box<double, 3>::BVH_VecNt & (BVH_Box<double, 3>::*)() noexcept>(&BVH_Box<double, 3>::CornerMax), nb::rv_policy::reference_internal, R"nbdoc(Returns maximum point of bounding box.)nbdoc")
+        .def("Area", static_cast<double (BVH_Box<double, 3>::*)() const>(&BVH_Box<double, 3>::Area), R"nbdoc(Returns surface area of bounding box.
+If the box is degenerated into line, returns the perimeter instead.)nbdoc")
+        .def("Size", static_cast<BVH_Box<double, 3>::BVH_VecNt (BVH_Box<double, 3>::*)() const>(&BVH_Box<double, 3>::Size), R"nbdoc(Returns diagonal of bounding box.)nbdoc")
+        .def("Center", static_cast<BVH_Box<double, 3>::BVH_VecNt (BVH_Box<double, 3>::*)() const>(&BVH_Box<double, 3>::Center), R"nbdoc(Returns center of bounding box.)nbdoc")
+        .def("Center", static_cast<double (BVH_Box<double, 3>::*)(const int) const>(&BVH_Box<double, 3>::Center), nb::arg("theAxis"), R"nbdoc(Returns center of bounding box along the given axis.)nbdoc")
+        .def("DumpJson", [](const BVH_Box<double, 3> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](BVH_Box<double, 3> &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<double, 3>::*)(const BVH_Box<double, 3> &) const>(&BVH_Box<double, 3>::IsOut), nb::arg("theOther"), R"nbdoc(Checks if the Box is out of the other box.)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<double, 3>::*)(const BVH_Box<double, 3>::BVH_VecNt &, const BVH_Box<double, 3>::BVH_VecNt &) const>(&BVH_Box<double, 3>::IsOut), nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is out of the other box defined by two points.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 3> &self, const BVH_Box<double, 3> & theOther) { bool hasOverlap{}; auto result = self.Contains(theOther, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theOther"), R"nbdoc(Checks if the Box fully contains the other box.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 3> &self, const BVH_Box<double, 3>::BVH_VecNt & theMinPoint, const BVH_Box<double, 3>::BVH_VecNt & theMaxPoint) { bool hasOverlap{}; auto result = self.Contains(theMinPoint, theMaxPoint, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is fully contains the other box.)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<double, 3>::*)(const BVH_Box<double, 3>::BVH_VecNt &) const>(&BVH_Box<double, 3>::IsOut), nb::arg("thePoint"), R"nbdoc(Checks if the Point is out of the box.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Box<double, 3>>(nb::borrow<nb::class_<BVH_Box<double, 3>>>(m.attr("BVH_Box__double__3")));
+    nb::implicitly_convertible<std::decay_t<const BVH_Box<double, 3>::BVH_VecNt &>, BVH_Box<double, 3>>();
 }
 
 void nanoocp_conversions_Bnd(nb::module_ &m) {

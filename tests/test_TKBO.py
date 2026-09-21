@@ -110,9 +110,11 @@ def test_data_structures_hashes_and_report():
     rows = read_report(REPORT)
     assert all(cat != "misc" for cat, _, _ in rows)
     msgs = [msg for _, _, msg in rows]
-    # BVH-based box trees (BOPTools_BoxSet/BoxSelector/PairSelector) stay out like the rest of the BVH chain
-    assert any(m.startswith("BOPTools_BoxTree = BOPTools_BoxSet<double, 3, int>: type alias of a type that is not bound") for m in msgs)
-    assert not hasattr(BOPTools, "BOPTools_BoxTree")
+    # the BVH-based box trees are bound through the template chain (R-TEMPLATE-BASE); the 2D pair selector is an OCCT bug
+    # (its RejectNode builds a 3D box from 2D vectors) and skipped by overrides.toml
+    assert hasattr(BOPTools, "BOPTools_BoxTree") and hasattr(BOPTools, "BOPTools_BoxPairSelector") and not hasattr(BOPTools, "BOPTools_Box2dPairSelector")
+    tree = BOPTools.BOPTools_BoxTree()
+    assert tree.Size() == 0 and any("BOPTools_PairSelector<2>: skipped (overrides.toml [skip] classes)" in m for m in msgs)
     # R-COLLISION on out-int overloads
     assert hasattr(BOPDS.BOPDS_PaveBlock, "HasEdge") and hasattr(BOPDS.BOPDS_PaveBlock, "HasEdge__int")
     # an rvalue-reference parameter is skipped (BOPAlgo_PaveFiller::SetArguments(List&&)); the const& overload remains

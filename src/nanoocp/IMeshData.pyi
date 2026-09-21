@@ -394,7 +394,7 @@ class IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve(nanoocp.Stand
     IMeshData_ParametersList to be used in tools working on NCollection_Array structure.
     """
 
-    def __init__(self, theParameters: IMeshData_Curve) -> None:
+    def __init__(self, theParameters: IMeshData_Curve | None) -> None:
         """Constructor. Initializes tool by the given parameters."""
 
     def Lower(self) -> int:
@@ -405,6 +405,145 @@ class IMeshData_ParametersListArrayAdaptor__Handle_IMeshData_Curve(nanoocp.Stand
 
     def Value(self, theIndex: int) -> float:
         """Returns value of the given index."""
+
+class NCollection_UBTree__int__Bnd_Box2d:
+    """
+    The algorithm of unbalanced binary tree of overlapped bounding boxes.
+
+    Once the tree of boxes  of geometric objects is constructed, the algorithm
+    is capable of fast geometric selection of objects.  The tree can be easily
+    updated by adding to it a new object with bounding box.
+
+    The time of adding to the tree  of one object is O(log(N)), where N is the
+    total number of  objects, so the time  of building a tree of  N objects is
+    O(N(log(N)). The search time of one object is O(log(N)).
+
+    Defining  various classes  inheriting NCollection_UBTree::Selector  we can
+    perform various kinds of selection over the same b-tree object
+
+    The object  may be of any  type allowing copying. Among  the best suitable
+    solutions there can  be a pointer to an object,  handled object or integer
+    index of object inside some  collection.  The bounding object may have any
+    dimension  and  geometry. The  minimal  interface  of TheBndType  (besides
+    public empty and copy constructor and operator =) used in UBTree algorithm
+    is as the following:
+    @code
+    class MyBndType
+    {
+    public:
+    inline void                   Add (const MyBndType& other);
+    // Updates me with other bounding
+
+    inline bool       IsOut (const MyBndType& other) const;
+    // Classifies other bounding relatively me
+
+    inline double          SquareExtent() const;
+    // Computes the squared maximal linear extent of me.
+    // (For box it is the squared diagonal of box)
+    };
+    @endcode
+    To select objects you need to define a class derived from UBTree::Selector
+    that  should  redefine  the  necessary  virtual methods  to  maintain  the
+    selection condition.  The object  of this class  is also used  to retrieve
+    selected objects after search.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theAllocator: nanoocp.NCollection.NCollection_BaseAllocator | None) -> None:
+        """Constructor."""
+
+    def Add(self, theObj: int, theBnd: nanoocp.Bnd.Bnd_Box2d) -> bool:
+        """
+        Update the tree with a new object and its bounding box.
+        @param theObj
+        added object
+        @param theBnd
+        bounding box of the object.
+        @return
+        always True
+        """
+
+    def Select(self, theSelector: "NCollection_UBTree<int, Bnd_Box2d>::Selector") -> int:
+        """
+        Searches in the tree all objects conforming to the given selector.
+        @return
+        Number of objects accepted
+        """
+
+    def Clear(self, aNewAlloc: nanoocp.NCollection.NCollection_BaseAllocator | None = None) -> None:
+        """
+        Clears the contents of the tree.
+        @param aNewAlloc
+        Optional:   a new allocator that will be used when the tree is rebuilt
+        anew. This makes sense if the memory allocator needs re-initialisation
+        (like NCollection_IncAllocator).  By default the previous allocator is
+        kept.
+        """
+
+    def IsEmpty(self) -> bool: ...
+
+    def Root(self) -> "NCollection_UBTree<int, Bnd_Box2d>::TreeNode":
+        """
+        @return
+        the root node of the tree
+        """
+
+    def Allocator(self) -> nanoocp.NCollection.NCollection_BaseAllocator:
+        """
+        Recommended to be used only in sub-classes.
+        @return
+        Allocator object used in this instance of UBTree.
+        """
+
+class NCollection_EBTree__int__Bnd_Box2d(NCollection_UBTree__int__Bnd_Box2d):
+    """
+    The algorithm of unbalanced binary  tree of overlapped bounding boxes with
+    the possibility of deleting objects from the tree.
+
+    In addition to  the requirements to the object type  defined in the parent
+    class this  class requires that the  object can be hashed  and compared to
+    another object (functions HashCode and  IsEqual are defined for it), since
+    the class NCollection_DataMap  is used where the object  plays the role of
+    the key.
+    """
+
+    def __init__(self, theAllocator: nanoocp.NCollection.NCollection_BaseAllocator | None = None) -> None:
+        """Constructor."""
+
+    def Add(self, theObj: int, theBnd: nanoocp.Bnd.Bnd_Box2d) -> bool:
+        """
+        Updates the tree with a new object and its bounding box.
+        Extends the functionality of the parent method by maintaining
+        the map myObjNodeMap. Redefined virtual method.
+        @return
+        False if the tree already contains theObj.
+        """
+
+    def Remove(self, theObj: int) -> bool:
+        """
+        Removes the given object and updates the tree.
+        @return
+        False if the tree does not contain theObj
+        """
+
+    def Contains(self, theObj: int) -> bool:
+        """
+        @return
+        True if the tree contains the object.
+        """
+
+    def FindNode(self, theObj: int) -> "NCollection_UBTree<int, Bnd_Box2d>::TreeNode":
+        """
+        @return
+        The leaf node containing the object.
+        """
+
+    def Clear(self, aNewAlloc: nanoocp.NCollection.NCollection_BaseAllocator | None = None) -> None:
+        """Clears the contents of the tree. Redefined virtual method"""
 
 class NCollection_UBTreeFiller__int__Bnd_Box2d:
     """
@@ -418,7 +557,7 @@ class NCollection_UBTreeFiller__int__Bnd_Box2d:
     """
 
     @overload
-    def __init__(self, theTree: "NCollection_UBTree<int, Bnd_Box2d>", theAlloc: nanoocp.NCollection.NCollection_BaseAllocator | None = None, isFullRandom: bool = True) -> None:
+    def __init__(self, theTree: NCollection_UBTree__int__Bnd_Box2d, theAlloc: nanoocp.NCollection.NCollection_BaseAllocator | None = None, isFullRandom: bool = True) -> None:
         """
         Constructor.
         @param theTree
@@ -952,6 +1091,7 @@ CircleCellFilter: TypeAlias = NCollection_CellFilter__BRepMesh_CircleInspector
 VertexCellFilter: TypeAlias = NCollection_CellFilter__BRepMesh_VertexInspector
 
 # C++ typedef aliases
+BndBox2dTree = nanoocp.NCollection.NCollection_Shared[nanoocp.IMeshData.NCollection_EBTree__int__Bnd_Box2d]
 VectorOfIFaceHandles = nanoocp.NCollection.NCollection_Shared[nanoocp.NCollection.NCollection_DynamicArray[nanoocp.IMeshData.IMeshData_Face]]
 VectorOfIWireHandles = nanoocp.NCollection.NCollection_Shared[nanoocp.NCollection.NCollection_DynamicArray[nanoocp.IMeshData.IMeshData_Wire]]
 VectorOfIEdgeHandles = nanoocp.NCollection.NCollection_Shared[nanoocp.NCollection.NCollection_DynamicArray[nanoocp.IMeshData.IMeshData_Edge]]

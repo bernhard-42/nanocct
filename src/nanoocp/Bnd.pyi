@@ -4,6 +4,7 @@ from collections.abc import Sequence
 import enum
 from typing import TextIO, overload
 
+import nanoocp.BVH
 import nanoocp.NCollection
 import nanoocp.gp
 
@@ -1932,7 +1933,7 @@ class Bnd_Tools:
 
     @overload
     @staticmethod
-    def Bnd2BVH(theBox: Bnd_Box2d) -> "BVH_Box<double, 2>":
+    def Bnd2BVH(theBox: Bnd_Box2d) -> BVH_Box__double__2:
         """
         @name Bnd_Box to BVH_Box conversion
         Converts the given Bnd_Box2d to BVH_Box
@@ -1940,8 +1941,174 @@ class Bnd_Tools:
 
     @overload
     @staticmethod
-    def Bnd2BVH(theBox: Bnd_Box) -> "BVH_Box<double, 3>":
+    def Bnd2BVH(theBox: Bnd_Box) -> BVH_Box__double__3:
         """Converts the given Bnd_Box to BVH_Box"""
+
+class BVH_Box__double__2:
+    """
+    Defines axis aligned bounding box (AABB) based on BVH vectors.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Creates uninitialized bounding box."""
+
+    @overload
+    def __init__(self, thePoint: nanoocp.BVH.BVH_Vec2d) -> None:
+        """Creates bounding box of given point."""
+
+    @overload
+    def __init__(self, theMinPoint: nanoocp.BVH.BVH_Vec2d, theMaxPoint: nanoocp.BVH.BVH_Vec2d) -> None:
+        """Creates bounding box from corner points."""
+
+    @overload
+    def __init__(self, theOther: BVH_Box__double__2) -> None: ...
+
+    def Clear(self) -> None:
+        """Clears bounding box."""
+
+    def IsValid(self) -> bool:
+        """Is bounding box valid?"""
+
+    def Add(self, thePoint: nanoocp.BVH.BVH_Vec2d) -> None:
+        """Appends new point to the bounding box."""
+
+    def Combine(self, theBox: BVH_Box__double__2) -> None:
+        """Combines bounding box with another one."""
+
+    def CornerMin(self) -> nanoocp.BVH.BVH_Vec2d:
+        """Returns minimum point of bounding box."""
+
+    def CornerMax(self) -> nanoocp.BVH.BVH_Vec2d:
+        """Returns maximum point of bounding box."""
+
+    def Area(self) -> float:
+        """
+        Returns surface area of bounding box.
+        If the box is degenerated into line, returns the perimeter instead.
+        """
+
+    def Size(self) -> nanoocp.BVH.BVH_Vec2d:
+        """Returns diagonal of bounding box."""
+
+    @overload
+    def Center(self) -> nanoocp.BVH.BVH_Vec2d:
+        """Returns center of bounding box."""
+
+    @overload
+    def Center(self, theAxis: int) -> float:
+        """Returns center of bounding box along the given axis."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+    def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
+        """Inits the content of me from the stream"""
+
+    @overload
+    def IsOut(self, theOther: BVH_Box__double__2) -> bool:
+        """Checks if the Box is out of the other box."""
+
+    @overload
+    def IsOut(self, theMinPoint: nanoocp.BVH.BVH_Vec2d, theMaxPoint: nanoocp.BVH.BVH_Vec2d) -> bool:
+        """Checks if the Box is out of the other box defined by two points."""
+
+    @overload
+    def IsOut(self, thePoint: nanoocp.BVH.BVH_Vec2d) -> bool:
+        """Checks if the Point is out of the box."""
+
+    @overload
+    def Contains(self, theOther: BVH_Box__double__2) -> tuple[bool, bool]:
+        """Checks if the Box fully contains the other box."""
+
+    @overload
+    def Contains(self, theMinPoint: nanoocp.BVH.BVH_Vec2d, theMaxPoint: nanoocp.BVH.BVH_Vec2d) -> tuple[bool, bool]:
+        """Checks if the Box is fully contains the other box."""
+
+class BVH_Box__double__3:
+    """
+    Defines axis aligned bounding box (AABB) based on BVH vectors.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Creates uninitialized bounding box."""
+
+    @overload
+    def __init__(self, thePoint: nanoocp.BVH.BVH_Vec3d) -> None:
+        """Creates bounding box of given point."""
+
+    @overload
+    def __init__(self, theMinPoint: nanoocp.BVH.BVH_Vec3d, theMaxPoint: nanoocp.BVH.BVH_Vec3d) -> None:
+        """Creates bounding box from corner points."""
+
+    @overload
+    def __init__(self, theOther: BVH_Box__double__3) -> None: ...
+
+    def Clear(self) -> None:
+        """Clears bounding box."""
+
+    def IsValid(self) -> bool:
+        """Is bounding box valid?"""
+
+    def Add(self, thePoint: nanoocp.BVH.BVH_Vec3d) -> None:
+        """Appends new point to the bounding box."""
+
+    def Combine(self, theBox: BVH_Box__double__3) -> None:
+        """Combines bounding box with another one."""
+
+    def CornerMin(self) -> nanoocp.BVH.BVH_Vec3d:
+        """Returns minimum point of bounding box."""
+
+    def CornerMax(self) -> nanoocp.BVH.BVH_Vec3d:
+        """Returns maximum point of bounding box."""
+
+    def Area(self) -> float:
+        """
+        Returns surface area of bounding box.
+        If the box is degenerated into line, returns the perimeter instead.
+        """
+
+    def Size(self) -> nanoocp.BVH.BVH_Vec3d:
+        """Returns diagonal of bounding box."""
+
+    @overload
+    def Center(self) -> nanoocp.BVH.BVH_Vec3d:
+        """Returns center of bounding box."""
+
+    @overload
+    def Center(self, theAxis: int) -> float:
+        """Returns center of bounding box along the given axis."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+    def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
+        """Inits the content of me from the stream"""
+
+    @overload
+    def IsOut(self, theOther: BVH_Box__double__3) -> bool:
+        """Checks if the Box is out of the other box."""
+
+    @overload
+    def IsOut(self, theMinPoint: nanoocp.BVH.BVH_Vec3d, theMaxPoint: nanoocp.BVH.BVH_Vec3d) -> bool:
+        """Checks if the Box is out of the other box defined by two points."""
+
+    @overload
+    def IsOut(self, thePoint: nanoocp.BVH.BVH_Vec3d) -> bool:
+        """Checks if the Point is out of the box."""
+
+    @overload
+    def Contains(self, theOther: BVH_Box__double__3) -> tuple[bool, bool]:
+        """Checks if the Box fully contains the other box."""
+
+    @overload
+    def Contains(self, theMinPoint: nanoocp.BVH.BVH_Vec3d, theMaxPoint: nanoocp.BVH.BVH_Vec3d) -> tuple[bool, bool]:
+        """Checks if the Box is fully contains the other box."""
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection

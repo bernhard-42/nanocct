@@ -18,7 +18,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("override", r"overrides\.toml"),
     ("undefined", r"no definition in lib"),
     ("iterator", r"STL-style iterator|__iter__ added"),
-    ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)"),
+    ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)|probe typedef did not compile"),
     ("stream", r"iostream type"),
     ("raw-pointer", r"raw pointer to primitive|is a raw pointer|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),
     ("operator", r"operator has no Python equivalent|free operator not mapped"),

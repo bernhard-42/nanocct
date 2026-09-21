@@ -1,12 +1,11 @@
-# nanoOCP generator report for TKGeomAlgo: 82 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomAlgo: 77 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # header: 1
 # overload-collision: 30
-# override: 3
+# override: 4
 # raw-pointer: 2
-# template: 4
-# unbound-type: 5
+# template: 3
 # undefined: 36
 array	IntImp	IntImp_ComputeTangence(...): param 'DPuv': array
 header	IntWalk	IntWalk: headers not self-contained, parsed with <IntSurf_LineOn2S.hxx> included first
@@ -40,20 +39,15 @@ overload-collision	Intf	Intf_SectionPoint::InfoFirst(Intf_PIType &, int &, int &
 overload-collision	Intf	Intf_SectionPoint::InfoSecond(Intf_PIType &, int &, double &): same Python signature as another overload after out-param removal -> bound as InfoSecond__Intf_PIType__int__float
 overload-collision	Intf	Intf_SectionPoint::InfoSecond(Intf_PIType &, int &, int &, double &): same Python signature as another overload after out-param removal -> bound as InfoSecond__Intf_PIType__int__int__float
 overload-collision	Plate	Plate_Plate::CoefPol(occ::handle<NCollection_HArray2<gp_XYZ>> &): same Python signature as another overload after out-param removal -> bound as CoefPol__NCollection_HArray2__gp_XYZ
+override	IntPatch	BVH_PairTraverse<double, 3, void, double>::Select(): overrides.toml [skip] methods
 override	IntPolyh	IntPolyh_Array<IntPolyh_Edge>::Dump(): overrides.toml [skip] methods
 override	IntPolyh	IntPolyh_Array<IntPolyh_PointNormal>::Dump(): overrides.toml [skip] methods
 override	IntPolyh	IntPolyh_Array<IntPolyh_Triangle>::Dump(): overrides.toml [skip] methods
 raw-pointer	GeomInt	GeomInt_TheMultiLineOfWLApprox::GeomInt_TheMultiLineOfWLApprox(const occ::handle<IntPatch_WLine> &): param 'PtrSvSurfaces': void pointer
 raw-pointer	IntPatch	IntPatch_WLineTool::ExtendTwoWLines(NCollection_Sequence<opencascade::handle<IntPatch_Line>> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_Surface> &, const double): param 'theArrPeriods': raw pointer to primitive
-template	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> instantiated as BVH_PairTraverse<double, 3, void, double> (spelling mismatch) -> not bound
 template	IntPatch	math_VectorBase: template (not bound)
 template	IntPatch	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)
 template	IntPolyh	IntPolyh_Array: template (not bound)
-unbound-type	IntPatch	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
-unbound-type	IntPatch	IntPatch_BVHTraversal: base class BVH_PairTraverse<double, 3> is not bound (package not generated) -> class skipped
-unbound-type	IntPatch	IntPatch_BVHTraversal::TrianglePair: outer class IntPatch_BVHTraversal is not bound -> nested class skipped
-unbound-type	IntPatch	IntPatch_PolyhedronBVH: base class BVH_PrimitiveSet<double, 3> is not bound (skipped) -> class skipped
-unbound-type	IntPatch	NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair>: element type IntPatch_BVHTraversal::TrianglePair is not bound (its class is skipped) -> instantiation skipped
 undefined	Geom2dAPI	Geom2dAPI_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo
 undefined	Geom2dGcc	Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const Geom2dAdaptor_Curve &, const gp_Pnt2d &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
 undefined	Geom2dGcc	Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const gp_Circ2d &, const Geom2dAdaptor_Curve &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo

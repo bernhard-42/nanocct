@@ -1,12 +1,12 @@
-# nanoOCP generator report for TKTopAlgo: 49 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKTopAlgo: 40 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 3
 # iterator: 6
 # noncopyable: 3
 # overload-collision: 9
+# override: 1
 # raw-pointer: 5
-# template: 4
-# unbound-type: 12
+# template: 6
 # undefined: 7
 array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &): param 'theCoeff': array
 array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &, const double): param 'theCoeff': array
@@ -29,27 +29,18 @@ overload-collision	BRepGProp	BRepGProp_Face::GetTKnots(const double, const doubl
 overload-collision	BRepGProp	BRepGProp_Face::GetUKnots(const double, const double, occ::handle<NCollection_HArray1<double>> &): same Python signature as another overload after out-param removal -> bound as GetUKnots__NCollection_HArray1__double
 overload-collision	BRepGProp	BRepGProp_MeshCinert::PreparePolygon(const TopoDS_Edge &, occ::handle<NCollection_HArray1<gp_Pnt>> &): same Python signature as another overload after out-param removal -> bound as PreparePolygon__NCollection_HArray1__gp_Pnt
 overload-collision	BRepLib	BRepLib::BuildPCurveForEdgeOnPlane(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, bool &): same Python signature as another overload after out-param removal -> bound as BuildPCurveForEdgeOnPlane__Geom2d_Curve__bool
+override	BRepExtrema	BVH_PairTraverse<double, 3, void, double>::Select(): overrides.toml [skip] methods
 raw-pointer	BRepApprox	BRepApprox_TheMultiLineOfApprox::BRepApprox_TheMultiLineOfApprox(const occ::handle<BRepApprox_ApproxLine> &): param 'PtrSvSurfaces': void pointer
 raw-pointer	BRepGProp	BRepGProp_MeshProps::CalculateProps(const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const gp_Pnt &, const bool, double, const int): param 'GaussPnts': raw pointer to primitive
 raw-pointer	BRepGProp	BRepGProp_TFunction::BRepGProp_TFunction(const BRepGProp_Face &, const gp_Pnt &, const bool): param 'theCoeffs': raw pointer to primitive
 raw-pointer	BRepGProp	BRepGProp_UFunction::BRepGProp_UFunction(const BRepGProp_Face &, const gp_Pnt &, const bool): param 'theCoeffs': raw pointer to primitive
 raw-pointer	BRepTopAdaptor	BRepTopAdaptor_TopolTool::Edge(): return: void pointer
-template	BRepExtrema	BRepExtrema_OverlapTool: base class BVH_PairTraverse<double, 3> instantiated as BVH_PairTraverse<double, 3, void, double> (spelling mismatch) -> not bound
+template	BRepBuilderAPI	BRepBuilderAPI_BndBoxTreeSelector: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
+template	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
+template	BRepClass3d	BRepClass3d_BndBoxTreeSelectorPoint: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 template	BRepGProp	math_Vector = math_VectorBase<double>: class template math_VectorBase not found in the translation unit
 template	BRepGProp	math_VectorBase: template (not bound)
 template	BRepLib	BRepLib::BuildPCurveForEdgesOnPlane: template member
-unbound-type	BRepBuilderAPI	BRepBuilderAPI_BndBoxTreeSelector: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
-unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
-unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine::EdgeParam: outer class BRepClass3d_BndBoxTreeSelectorLine is not bound -> nested class skipped
-unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine::VertParam: outer class BRepClass3d_BndBoxTreeSelectorLine is not bound -> nested class skipped
-unbound-type	BRepClass3d	BRepClass3d_BndBoxTreeSelectorPoint: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
-unbound-type	BRepExtrema	BRepExtrema_OverlapTool: base class BVH_PairTraverse<double, 3> is not bound (package not generated) -> class skipped
-unbound-type	BRepExtrema	BRepExtrema_ProximityDistTool: base class BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet> is not bound (skipped) -> class skipped
-unbound-type	BRepExtrema	BRepExtrema_ProximityDistTool::PrjState: outer class BRepExtrema_ProximityDistTool is not bound -> nested class skipped
-unbound-type	BRepExtrema	BRepExtrema_TriangleSet: base class BVH_PrimitiveSet3d is not bound (package not generated) -> class skipped
-unbound-type	BRepExtrema	BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>: base class BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double> is not bound (package not generated) -> class skipped
-unbound-type	BRepExtrema	NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status>: element type BRepExtrema_ProximityDistTool::ProxPnt_Status is not bound (its class is skipped) -> instantiation skipped
-unbound-type	BRepExtrema	ProxPnt_Status = BRepExtrema_ProximityDistTool::ProxPnt_Status: type alias of a type that is not bound (skipped)
 undefined	BRepApprox	BRepApprox_Approx::Perform(): declared in the header, no definition in libTKTopAlgo
 undefined	BRepApprox	BRepApprox_ResConstraintOfMyGradientOfTheComputeLineBezierOfApprox::Error(): declared in the header, no definition in libTKTopAlgo
 undefined	BRepApprox	BRepApprox_ResConstraintOfMyGradientbisOfTheComputeLineOfApprox::Error(): declared in the header, no definition in libTKTopAlgo

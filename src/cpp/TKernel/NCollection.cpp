@@ -471,20 +471,21 @@ for future allocations.)nbdoc")
         .def("Next", static_cast<void (NCollection_SparseArrayBase::Iterator::*)()>(&NCollection_SparseArrayBase::Iterator::Next), R"nbdoc(Advances to the next item)nbdoc")
         .def("Index", static_cast<size_t (NCollection_SparseArrayBase::Iterator::*)() const noexcept>(&NCollection_SparseArrayBase::Iterator::Index), R"nbdoc(Returns current index)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_SparseArrayBase::Iterator>(nb::borrow<nb::class_<NCollection_SparseArrayBase::Iterator>>(m.attr("NCollection_SparseArrayBase").attr("Iterator")));
-    nb::borrow<nb::class_<NCollection_UtfString<char>>>(m.attr("NCollection_String"))
-        .def(nb::init<>(), R"nbdoc(Initialize empty string.)nbdoc")
-        .def(nb::init<const NCollection_UtfString<char> &>(), nb::arg("theCopy"), R"nbdoc(Copy constructor.
+    nanoocp_if_concrete<NCollection_UtfString<char>>(nb::borrow<nb::class_<NCollection_UtfString<char>>>(m.attr("NCollection_String")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Initialize empty string.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_UtfString<char> & theCopy) { new (self) nanoocp_T(theCopy); }, nb::arg("theCopy"), R"nbdoc(Copy constructor.
 @param theCopy string to copy.)nbdoc")
-        .def(nb::init<const char *, const int>(), nb::arg("theCopyUtf8"), nb::arg("theLength") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Copy constructor from UTF-8 string.
+        .def("__init__", [](nanoocp_T *self, const char * theCopyUtf8, const int theLength) { new (self) nanoocp_T(theCopyUtf8, theLength); }, nb::arg("theCopyUtf8"), nb::arg("theLength") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Copy constructor from UTF-8 string.
 @param theCopyUtf8 UTF-8 string to copy
 @param theLength   optional length limit in Unicode symbols (NOT bytes!)
 The string is copied till NULL symbol or, if theLength >0,
 till either NULL or theLength-th symbol (which comes first).)nbdoc")
-        .def(nb::init<const char16_t *, const int>(), nb::arg("theCopyUtf16"), nb::arg("theLength") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Copy constructor from UTF-16 string.
+        .def("__init__", [](nanoocp_T *self, const char16_t * theCopyUtf16, const int theLength) { new (self) nanoocp_T(theCopyUtf16, theLength); }, nb::arg("theCopyUtf16"), nb::arg("theLength") = static_cast<std::decay_t<const int>>(- 1), R"nbdoc(Copy constructor from UTF-16 string.
 @param theCopyUtf16 UTF-16 string to copy
 @param theLength    the length limit in Unicode symbols (NOT bytes!)
 The string is copied till NULL symbol or, if theLength >0,
-till either NULL or theLength-th symbol (which comes first).)nbdoc")
+till either NULL or theLength-th symbol (which comes first).)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_UtfString<char>>>(m.attr("NCollection_String"))
         .def("Size", static_cast<int (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::Size), R"nbdoc(@return the size of the buffer in bytes, excluding NULL-termination symbol)nbdoc")
         .def("Length", static_cast<int (NCollection_UtfString<char>::*)() const noexcept>(&NCollection_UtfString<char>::Length), R"nbdoc(@return the length of the string in Unicode symbols)nbdoc")
         .def("GetChar", static_cast<char32_t (NCollection_UtfString<char>::*)(const int) const>(&NCollection_UtfString<char>::GetChar), nb::arg("theCharIndex"), R"nbdoc(Retrieve Unicode symbol at specified position.

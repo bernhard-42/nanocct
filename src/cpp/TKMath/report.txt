@@ -1,20 +1,20 @@
-# nanoOCP generator report for TKMath: 415 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 420 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 2
 # conversion: 18
 # field: 1
+# inheritance: 1
 # iterator: 7
 # noncopyable: 1
 # not-constructible: 1
-# overload-collision: 70
+# overload-collision: 74
 # override: 32
 # raw-pointer: 46
 # rvalue: 3
 # static-rename: 4
 # std: 2
 # stream: 3
-# template: 216
-# unbound-type: 4
+# template: 220
 # undefined: 5
 array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
 array	Poly	Poly_CoherentTriangulation::FindTriangle(const Poly_CoherentLink &): param 'pTri': array
@@ -37,6 +37,7 @@ conversion	BVH	NCollection_Vec4<float>::operator type-parameter-0-0 *: conversio
 conversion	BVH	NCollection_Vec4<int>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	BVH	NCollection_Vec4<int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 field	MathRoot	MathRoot::MultipleGetValueFn::mySamples: field reference member (no pointer-to-member)
+inheritance	BVH	BVH_PrimitiveSet<double, 3>: additional base BVH_Set<double, 3> not declared (nanobind: single inheritance, offset-0 base only)
 iterator	BVH	BVH::RadixSorter::Sort(): param 'theStart': STL-style iterator
 iterator	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>: __iter__ added (More/Next/Value)
 iterator	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>: __iter__ added (More/Next/Value)
@@ -86,6 +87,10 @@ overload-collision	BVH	NCollection_Vec4<int>::w() const: const twin of a less co
 overload-collision	BVH	NCollection_Vec4<int>::x() const: const twin of a less const overload -> not bound
 overload-collision	BVH	NCollection_Vec4<int>::y() const: const twin of a less const overload -> not bound
 overload-collision	BVH	NCollection_Vec4<int>::z() const: const twin of a less const overload -> not bound
+overload-collision	Bnd	BVH_Box<double, 2>::CornerMax() const: const twin of a less const overload -> not bound
+overload-collision	Bnd	BVH_Box<double, 2>::CornerMin() const: const twin of a less const overload -> not bound
+overload-collision	Bnd	BVH_Box<double, 3>::CornerMax() const: const twin of a less const overload -> not bound
+overload-collision	Bnd	BVH_Box<double, 3>::CornerMin() const: const twin of a less const overload -> not bound
 overload-collision	Bnd	Bnd_Box2d::Get(double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Get__float__float__float__float
 overload-collision	Bnd	Bnd_Box::Get(double &, double &, double &, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Get__float__float__float__float__float__float
 overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, CSLib_DerivativeStatus &, gp_Dir &): same Python signature as another overload after out-param removal -> bound as Normal__CSLib_DerivativeStatus
@@ -280,6 +285,10 @@ template	BVH	NCollection_Vec3<int>::NCollection_Vec3<Element_t>: template member
 template	BVH	NCollection_Vec4<double>::NCollection_Vec4<Element_t>: template member
 template	BVH	NCollection_Vec4<float>::NCollection_Vec4<Element_t>: template member
 template	BVH	NCollection_Vec4<int>::NCollection_Vec4<Element_t>: template member
+template	Bnd	BVH_Box<double, 2>: base class BVH_BaseBox<double, 2, BVH_Box<double, 2>>: the probe typedef did not compile
+template	Bnd	BVH_Box<double, 2>: template base BVH_BaseBox<double, 2, BVH_Box<double, 2>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
+template	Bnd	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>>: the probe typedef did not compile
+template	Bnd	BVH_Box<double, 3>: template base BVH_BaseBox<double, 3, BVH_Box<double, 3>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 template	Bnd	Bnd_B2: template (not bound)
 template	Bnd	Bnd_B3: template (not bound)
 template	Convert	Convert_CompBezierCurvesToBSplineCurveBase: template (not bound)
@@ -422,10 +431,6 @@ template	math	math_VectorBase: template (not bound)
 template	math	math_VectorBase: template (not bound)
 template	math	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)
 template	math	math_VectorBase<int>::math_VectorBase<int>(): param 'theTab': raw pointer to primitive (template argument)
-unbound-type	BVH	BVH_PrimitiveSet3d = BVH_PrimitiveSet<double, 3>: type alias of a type that is not bound (skipped)
-unbound-type	BVH	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
-unbound-type	Bnd	BVH_Box<double, 2>: base class BVH_BaseBox<double, 2, BVH_Box<double, 2>> is not bound (package not generated) -> class skipped
-unbound-type	Bnd	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>> is not bound (package not generated) -> class skipped
 undefined	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &): declared in the header, no definition in libTKMath
 undefined	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &): declared in the header, no definition in libTKMath
 undefined	Poly	Poly_MakeLoops::Poly_MakeLoops(const Poly_MakeLoops::Helper *, const occ::handle<NCollection_BaseAllocator> &): declared in the header, no definition in libTKMath

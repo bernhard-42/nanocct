@@ -25,10 +25,11 @@ void nanoocp_templates_TColStd(nb::module_ &m) {
 }
 
 void nanoocp_define_TColStd(nb::module_ &m) {
+    nanoocp_if_concrete<NCollection_PackedMap<int>>(nb::borrow<nb::class_<NCollection_PackedMap<int>>>(m.attr("TColStd_PackedMapOfInteger")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const size_t theNbBuckets) { new (self) nanoocp_T(theNbBuckets); }, nb::arg("theNbBuckets") = static_cast<std::decay_t<const size_t>>(1), R"nbdoc(Constructor)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theNbBuckets) { new (self) nanoocp_T(theNbBuckets); }, nb::arg("theNbBuckets"), R"nbdoc(Constructor (legacy int-taking).)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_PackedMap<int> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc"); });
     nb::borrow<nb::class_<NCollection_PackedMap<int>>>(m.attr("TColStd_PackedMapOfInteger"))
-        .def(nb::init<const size_t>(), nb::arg("theNbBuckets") = static_cast<std::decay_t<const size_t>>(1), R"nbdoc(Constructor)nbdoc")
-        .def(nb::init<const int>(), nb::arg("theNbBuckets"), R"nbdoc(Constructor (legacy int-taking).)nbdoc")
-        .def(nb::init<const NCollection_PackedMap<int> &>(), nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc")
         .def("Assign", static_cast<NCollection_PackedMap<int> & (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Assign), nb::rv_policy::reference_internal, nb::arg("theOther"), R"nbdoc(Assignment operator)nbdoc")
         .def("ReSize", static_cast<void (NCollection_PackedMap<int>::*)(const int)>(&NCollection_PackedMap<int>::ReSize), nb::arg("theNbBuckets"), R"nbdoc(Resize the map (legacy int-taking).)nbdoc")
         .def("ReSize", static_cast<void (NCollection_PackedMap<int>::*)(const size_t)>(&NCollection_PackedMap<int>::ReSize), nb::arg("theNbBuckets"), R"nbdoc(Resize the map)nbdoc")

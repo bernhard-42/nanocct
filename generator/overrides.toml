@@ -26,6 +26,8 @@ inout = [
 [skip]
 classes = [
     "Standard_Static_Assert<true>",     # the specialisation behind the STANDARD_STATIC_ASSERT macro; no API
+    "BOPTools_PairSelector<2>",         # OCCT bug: its virtual RejectNode builds a BVH_Box<double, 3> from 2D vectors, so the 2D
+                                        # instantiation (BOPTools_Box2dPairSelector) cannot be instantiated in C++ either (2026-09-21)
 ]
 # Classes that are copy/move constructible on paper but whose copy or move does not compile. nanobind instantiates its
 # copy/move wrappers from the type traits (std::is_move_constructible has no hook), so such a class is bound through a
@@ -63,6 +65,10 @@ methods = [
     "IntPolyh_Array<IntPolyh_Edge>::Dump",
     "IntPolyh_Array<IntPolyh_Triangle>::Dump",
     "IntPolyh_Array<IntPolyh_PointNormal>::Dump",
+    # BVH_PairTraverse<T, N> with the default BVHSetType = void: Select() dereferences the (void) set; the overload taking two
+    # BVH trees stays. The derived selectors (BRepExtrema_OverlapTool, IntPatch_BVHTraversal) call that one (2026-09-21).
+    "BVH_PairTraverse<double, 3, void, double>::Select()",
+    "BVH_PairTraverse<double, 2, void, double>::Select()",
 ]
 
 # NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical

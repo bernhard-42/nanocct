@@ -258,7 +258,8 @@ def _is_handle(t: cindex.Type) -> bool:
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
         canon = canon.get_pointee().get_canonical()
     if canon.kind != TK.RECORD:
-        return False
+        # inside a class template (6c walk) handle<BVH_Builder<NumType, Dimension>> is a dependent type without a declaration
+        return _SUBST.active and re.match(r"^(const )?(opencascade::|occ::)?handle<", _type_spelling(t)) is not None
     decl = canon.get_declaration()
     return decl.kind != K.NO_DECL_FOUND and decl.spelling == "handle" and canon.get_num_template_arguments() == 1
 
@@ -648,6 +649,23 @@ def _is_noexcept(cursor: cindex.Cursor) -> bool:
 _derives_cache: dict[tuple[str, str], bool] = {}
 _template_bases: list[tuple[str, cindex.Type, str]] = []   # (derived class, base type, header): bases that are template instantiations
 _template_uses: list[cindex.Type] = []                      # template instantiations seen in bound signatures (on-demand 6c)
+_dependent_bases: list[tuple[str, str, str]] = []           # (derived instantiation, substituted base spelling, header): template bases seen
+                                                            # inside a 6c walk (BVH_Box<double, 3> : BVH_BaseBox<double, 3, BVH_Box>), resolved
+                                                            # through a probe re-parse (R-TEMPLATE-BASE)
+
+
+def _instance_spelling(t: cindex.Type) -> str:
+    """The name _instantiate_template gives an instantiation of t's template: qualified template name + canonical arguments."""
+    canon = t.get_canonical()
+    decl = canon.get_declaration()
+    args = []
+    for i in range(canon.get_num_template_arguments()):
+        at = canon.get_template_argument_type(i)
+        args.append(_type_spelling_raw(at) if at.kind != TK.INVALID else None)
+    if any(a is None for a in args):            # non-type arguments: libclang cannot spell them here, keep the written form
+        written = _type_spelling(t.get_canonical()) if "<" in canon.spelling else _type_spelling(t)
+        return written
+    return f"{_qualified_template(decl)}<{', '.join(args)}>"
 
 
 def _is_plain_template_instance(t: cindex.Type) -> bool:
@@ -983,9 +1001,16 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.skipped.append(f"{c.name}: non-public base {_type_spelling(ch.type)} dropped; class not constructible")
                 c.constructible = False
                 continue
-            c.bases.append(_type_spelling(ch.type))
             if not _SUBST.active and _is_plain_template_instance(ch.type):
+                # a template base is named as its instantiation is (canonical arguments, defaults spelled out), also when the
+                # header writes a typedef (BRepExtrema_TriangleSet : BVH_PrimitiveSet3d = BVH_PrimitiveSet<double, 3>)
+                c.bases.append(_instance_spelling(ch.type))
                 _template_bases.append((c.name, ch.type, header))
+                continue
+            c.bases.append(_type_spelling(ch.type))
+            if _SUBST.active and "<" in c.bases[-1] and not c.bases[-1].startswith(("std::", "opencascade::handle<")) \
+                    and c.bases[-1].split("<")[0] not in BINDERS:
+                _dependent_bases.append((c.name, c.bases[-1], header))     # only spellable after substitution: needs its own Type
             continue
         if ch.kind == K.CONSTRUCTOR:
             c.has_declared_ctor = True
@@ -1208,6 +1233,9 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
                 return None
             args.append(default); spelled_args.append(""); keys.append("")
     full = f"{qualified}<{', '.join(a for a in spelled_args if a != '')}>"
+    if full in _SKIP_CLASSES:
+        report.append(f"{what}: {full}: skipped (overrides.toml [skip] classes)")
+        return None
     pointer_args = [a for a in args if a.endswith("*")]
     if len(pointer_args) > 0:
         # HLRBRep instantiates Extrema_GenLocateExtPC<void*, ...>, GeomLProp_CLPropsBase<..., const HLRBRep_Curve*, ...>: every
@@ -1324,6 +1352,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     _instances_seen.clear()
     _template_bases.clear()
     _template_uses.clear()
+    _dependent_bases.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
@@ -1450,18 +1479,62 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             else:
                 base_type, base_header, derived = _template_uses.pop(0), ir.headers[0], ""
                 what = "used in a signature:"
-            base_name = _type_spelling(base_type)
+            base_name = _instance_spelling(base_type) if derived != "" else _type_spelling(base_type)
             if base_name in seen_uses or any(c.name == base_name for c in ir.classes):
                 continue
             seen_uses.add(base_name)
-            if derived == "" and (base_name in known_elsewhere or base_name in _SKIP_CLASSES):
+            if base_name in known_elsewhere or base_name in _SKIP_CLASSES:
                 continue                              # bound by an earlier package/run (manifest) or skipped on purpose
             inst = _instantiate_template(tu, base_type, base_header, pkg.name, ir.report, f"{what} {base_name}", None)
             if inst is not None and inst.name != base_name:
-                ir.report.append(f"{what} {base_name} instantiated as {inst.name} (spelling mismatch) -> not bound")
-                inst = None
+                # defaulted arguments spelled out by the instantiation (BVH_PairTraverse<double, 3> -> <double, 3, void, double>):
+                # the derived classes name the base as instantiated
+                for c in ir.classes:
+                    c.bases = [inst.name if x == base_name else x for x in c.bases]
+                seen_uses.add(inst.name)
             if inst is not None:
                 add_class(inst)
+        # R-TEMPLATE-BASE: template bases of instantiations are spelled only after substitution (BVH_BaseBox<double, 3, BVH_Box>,
+        # BVH_BaseTraverse<double>): a probe typedef per spelling in a second parse gives them a libclang Type to instantiate from;
+        # what still cannot be instantiated is dropped from the derived class's bases (reported) instead of skipping the class
+        for _ in range(4):
+            todo = [(d, b, h) for d, b, h in _dependent_bases if b not in seen_uses and not any(c.name == b for c in ir.classes)
+                    and b not in (known_elsewhere or set())]
+            if len(todo) == 0:
+                break
+            spellings = sorted({b for _, b, _ in todo})
+            probe = Path(td) / f"{pkg.name}__probe.hxx"
+            probe.write_text(umbrella.read_text() + "".join(f"using nanoocp_probe_{i} = {b};\n" for i, b in enumerate(spellings)))
+            tu2 = index.parse(str(probe), args=args)
+            probes = {cur.spelling: cur for cur in tu2.cursor.get_children() if cur.kind == K.TYPE_ALIAS_DECL and cur.spelling.startswith("nanoocp_probe_")}
+            _dependent_bases.clear()
+            for i, b in enumerate(spellings):
+                seen_uses.add(b)
+                cur = probes.get(f"nanoocp_probe_{i}")
+                derived_names = [d for d, bb, _ in todo if bb == b]
+                inst = None
+                if cur is not None:
+                    inst = _instantiate_template(tu2, cur.underlying_typedef_type, ir.headers[0], pkg.name, ir.report, f"{derived_names[0]}: base class {b}", None)
+                else:
+                    ir.report.append(f"{derived_names[0]}: base class {b}: the probe typedef did not compile")
+                if inst is not None:
+                    if inst.name != b:            # defaulted arguments spelled out by the instantiation: the derived classes follow
+                        for c in ir.classes:
+                            c.bases = [inst.name if x == b else x for x in c.bases]
+                    add_class(inst)
+        # a template base that could not be instantiated is dropped from its derived classes (R-TEMPLATE-BASE): the class binds
+        # without the base's members. A Transient class whose only path to Standard_Transient is that base cannot be bound at all.
+        names = {c.name for c in ir.classes}
+        for c in ir.classes:
+            for b in list(c.bases):
+                if "<" in b and b not in names and not b.startswith(("std::", "opencascade::handle<")) and b not in (known_elsewhere or set()) \
+                        and b.split("<")[0] not in BINDERS:
+                    c.bases.remove(b)
+                    c.skipped.append(f"{c.name}: template base {b} cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)")
+            if c.is_transient and len(c.bases) == 0 and c.name != "Standard_Transient":
+                c.skipped.append(f"{c.name}: its path to Standard_Transient was a dropped template base -> class skipped")
+                c.unbindable = True
+        ir.classes = [c for c in ir.classes if not c.unbindable]
     for c in ir.classes:
         ir.report.extend(c.skipped)
     # every namespace with a bound member, outer ones first (the emitter creates the submodules in this order);

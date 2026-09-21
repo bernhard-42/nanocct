@@ -81,14 +81,14 @@ compare the derivative.)nbdoc")
         .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double, const double, const bool, const bool)>(&GeomLProp::Continuity), nb::arg("C1").none(), nb::arg("C2").none(), nb::arg("u1"), nb::arg("u2"), nb::arg("r1"), nb::arg("r2"), R"nbdoc(The same as preceding but using the standard
 tolerances from package Precision.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLProp>(nb::borrow<nb::class_<GeomLProp>>(m.attr("GeomLProp")));
-    nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps"))
-        .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
+    nanoocp_if_concrete<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const int N, const double Resolution) { new (self) nanoocp_T(N, Resolution); }, nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U> and the curve is set
 with SetCurve.
 the curve can have a empty constructor
 All the computations done will be related to <C> and <U>
 when the functions "set" will be done.)nbdoc")
-        .def(nb::init<const opencascade::handle<Geom_Curve> &, const int, const double>(), nb::arg("C"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the curve <C>
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Geom_Curve> & C, const int N, const double Resolution) { new (self) nanoocp_T(C, N, Resolution); }, nb::arg("C").none(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the curve <C>
 The current point and the derivatives are
 computed at the same time, which allows an
 optimization of the computation time.
@@ -97,12 +97,13 @@ be done (0, 1, 2 or 3). For example, to compute
 only the tangent, N should be equal to 1.
 <Resolution> is the linear tolerance (it is used to test
 if a vector is null).)nbdoc")
-        .def(nb::init<const opencascade::handle<Geom_Curve> &, const double, const int, const double>(), nb::arg("C"), nb::arg("U"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Geom_Curve> & C, const double U, const int N, const double Resolution) { new (self) nanoocp_T(C, U, N, Resolution); }, nb::arg("C").none(), nb::arg("U"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U>.
-All the computations done will be related to <C> and <U>.)nbdoc")
+All the computations done will be related to <C> and <U>.)nbdoc"); });
+    nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps"))
         .def("SetParameter", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)(const double)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::SetParameter), nb::arg("U"), R"nbdoc(Initializes the local properties of the curve
 for the parameter value <U>.)nbdoc")
-        .def("SetCurve", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)(const opencascade::handle<Geom_Curve> &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::SetCurve), nb::arg("C"), R"nbdoc(Initializes the local properties of the curve
+        .def("SetCurve", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)(const opencascade::handle<Geom_Curve> &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::SetCurve), nb::arg("C").none(), R"nbdoc(Initializes the local properties of the curve
 for the new curve.)nbdoc")
         .def("Value", static_cast<const gp_Pnt & (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)() const>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::Value), R"nbdoc(Returns the Point.)nbdoc")
         .def("D1", static_cast<const gp_Vec & (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)()>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::D1), R"nbdoc(Returns the first derivative.
@@ -119,14 +120,14 @@ three first derivatives are all null.)nbdoc")
         .def("Normal", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Dir &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::Normal), nb::arg("N"), R"nbdoc(Returns the normal direction <N>.)nbdoc")
         .def("CentreOfCurvature", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::*)(gp_Pnt &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>::CentreOfCurvature), nb::arg("P"), R"nbdoc(Returns the centre of curvature <P>.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps")));
-    nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps2d"))
-        .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
+    nanoocp_if_concrete<GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const int N, const double Resolution) { new (self) nanoocp_T(N, Resolution); }, nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U> and the curve is set
 with SetCurve.
 the curve can have a empty constructor
 All the computations done will be related to <C> and <U>
 when the functions "set" will be done.)nbdoc")
-        .def(nb::init<const opencascade::handle<Geom2d_Curve> &, const int, const double>(), nb::arg("C"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the curve <C>
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Geom2d_Curve> & C, const int N, const double Resolution) { new (self) nanoocp_T(C, N, Resolution); }, nb::arg("C").none(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the curve <C>
 The current point and the derivatives are
 computed at the same time, which allows an
 optimization of the computation time.
@@ -135,12 +136,13 @@ be done (0, 1, 2 or 3). For example, to compute
 only the tangent, N should be equal to 1.
 <Resolution> is the linear tolerance (it is used to test
 if a vector is null).)nbdoc")
-        .def(nb::init<const opencascade::handle<Geom2d_Curve> &, const double, const int, const double>(), nb::arg("C"), nb::arg("U"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Geom2d_Curve> & C, const double U, const int N, const double Resolution) { new (self) nanoocp_T(C, U, N, Resolution); }, nb::arg("C").none(), nb::arg("U"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U>.
-All the computations done will be related to <C> and <U>.)nbdoc")
+All the computations done will be related to <C> and <U>.)nbdoc"); });
+    nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps2d"))
         .def("SetParameter", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)(const double)>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::SetParameter), nb::arg("U"), R"nbdoc(Initializes the local properties of the curve
 for the parameter value <U>.)nbdoc")
-        .def("SetCurve", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)(const opencascade::handle<Geom2d_Curve> &)>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::SetCurve), nb::arg("C"), R"nbdoc(Initializes the local properties of the curve
+        .def("SetCurve", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)(const opencascade::handle<Geom2d_Curve> &)>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::SetCurve), nb::arg("C").none(), R"nbdoc(Initializes the local properties of the curve
 for the new curve.)nbdoc")
         .def("Value", static_cast<const gp_Pnt2d & (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)() const>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::Value), R"nbdoc(Returns the Point.)nbdoc")
         .def("D1", static_cast<const gp_Vec2d & (GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::*)()>(&GeomLProp_CLPropsBase<gp_Pnt2d, gp_Vec2d, gp_Dir2d, opencascade::handle<Geom2d_Curve>, LProp_CurveUtils::DirectAccess>::D1), R"nbdoc(Returns the first derivative.
@@ -181,13 +183,13 @@ results between each computation.)nbdoc")
     nanoocp_implicit_copy_ctor<GeomLProp_CurAndInf2d>(nb::borrow<nb::class_<GeomLProp_CurAndInf2d>>(m.attr("GeomLProp_CurAndInf2d")));
     nanoocp_implicit_default_ctor<LProp_SurfaceUtils::DirectAccess>(nb::borrow<nb::class_<LProp_SurfaceUtils::DirectAccess>>(m.attr("LProp_SurfaceUtils").attr("DirectAccess")));
     nanoocp_implicit_copy_ctor<LProp_SurfaceUtils::DirectAccess>(nb::borrow<nb::class_<LProp_SurfaceUtils::DirectAccess>>(m.attr("LProp_SurfaceUtils").attr("DirectAccess")));
-    nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("GeomLProp_SLProps"))
-        .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
+    nanoocp_if_concrete<GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("GeomLProp_SLProps")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const int N, const double Resolution) { new (self) nanoocp_T(N, Resolution); }, nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
 of parameters <U> and <V> and the surface.
 the surface can have an empty constructor.)nbdoc")
-        .def(nb::init<const opencascade::handle<Geom_Surface> &, const int, const double>(), nb::arg("S"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Geom_Surface> & S, const int N, const double Resolution) { new (self) nanoocp_T(S, N, Resolution); }, nb::arg("S").none(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
 of parameters <U> and <V>.)nbdoc")
-        .def(nb::init<const opencascade::handle<Geom_Surface> &, const double, const double, const int, const double>(), nb::arg("S"), nb::arg("U"), nb::arg("V"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the surface <S>
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Geom_Surface> & S, const double U, const double V, const int N, const double Resolution) { new (self) nanoocp_T(S, U, V, N, Resolution); }, nb::arg("S").none(), nb::arg("U"), nb::arg("V"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the surface <S>
 for the parameter values (<U>, <V>).
 The current point and the derivatives are
 computed at the same time, which allows an
@@ -196,8 +198,9 @@ optimization of the computation time.
 be done (0, 1, or 2). For example, to compute
 only the tangent, N should be equal to 1.
 <Resolution> is the linear tolerance (it is used to test
-if a vector is null).)nbdoc")
-        .def("SetSurface", static_cast<void (GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::*)(const opencascade::handle<Geom_Surface> &)>(&GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::SetSurface), nb::arg("S"), R"nbdoc(Initializes the local properties of the surface S
+if a vector is null).)nbdoc"); });
+    nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("GeomLProp_SLProps"))
+        .def("SetSurface", static_cast<void (GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::*)(const opencascade::handle<Geom_Surface> &)>(&GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::SetSurface), nb::arg("S").none(), R"nbdoc(Initializes the local properties of the surface S
 for the new surface.)nbdoc")
         .def("SetParameters", static_cast<void (GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::*)(const double, const double)>(&GeomLProp_SLPropsBase<opencascade::handle<Geom_Surface>, LProp_SurfaceUtils::DirectAccess>::SetParameters), nb::arg("U"), nb::arg("V"), R"nbdoc(Initializes the local properties of the surface S
 for the new parameter values (<U>, <V>).)nbdoc")

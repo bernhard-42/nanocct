@@ -262,11 +262,12 @@ on the parametrised curve.)nbdoc")
 parameter Param.)nbdoc")
         .def("Values", [](Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter &self, const double Param) { double F{}; double D{}; auto result = self.Values(Param, F, D); return std::make_tuple(result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter>(nb::borrow<nb::class_<Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter>>(m.attr("Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter")));
-    nb::borrow<nb::class_<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>(m.attr("Geom2dInt_PCLocFOfTheLocateExtPCOfTheProjPCurOfGInter"))
-        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
-        .def(nb::init<const gp_Pnt2d &, const Adaptor2d_Curve2d &>(), nb::arg("theP"), nb::arg("theC"), R"nbdoc(Constructor with point and curve initialization.
+    nanoocp_if_concrete<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>(nb::borrow<nb::class_<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>(m.attr("Geom2dInt_PCLocFOfTheLocateExtPCOfTheProjPCurOfGInter")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_Pnt2d & theP, const Adaptor2d_Curve2d & theC) { new (self) nanoocp_T(theP, theC); }, nb::arg("theP"), nb::arg("theC"), R"nbdoc(Constructor with point and curve initialization.
 @param theP Point to compute distance from
-@param theC Curve to compute distance to)nbdoc")
+@param theC Curve to compute distance to)nbdoc"); });
+    nb::borrow<nb::class_<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>(m.attr("Geom2dInt_PCLocFOfTheLocateExtPCOfTheProjPCurOfGInter"))
         .def("Initialize", static_cast<void (Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::*)(const Adaptor2d_Curve2d &)>(&Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::Initialize), nb::arg("theC"), R"nbdoc(Sets the curve field.
 @param theC Curve to set)nbdoc")
         .def("SetPoint", static_cast<void (Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::*)(const gp_Pnt2d &)>(&Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::SetPoint), nb::arg("theP"), R"nbdoc(Sets the point field.
@@ -299,9 +300,9 @@ parameter Param.)nbdoc")
         .def("SearchOfTolerance", static_cast<double (Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::*)()>(&Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::SearchOfTolerance), R"nbdoc(Computes a tolerance value. If 1st derivative of curve |D1| < Tol,
 it is considered D1=0.)nbdoc");
     nanoocp_implicit_copy_ctor<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>(nb::borrow<nb::class_<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>(m.attr("Geom2dInt_PCLocFOfTheLocateExtPCOfTheProjPCurOfGInter")));
-    nb::borrow<nb::class_<Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>>(m.attr("Geom2dInt_TheLocateExtPCOfTheProjPCurOfGInter"))
-        .def(nb::init<>(), R"nbdoc(Default constructor.)nbdoc")
-        .def(nb::init<const gp_Pnt2d &, const Adaptor2d_Curve2d &, const double, const double>(), nb::arg("theP"), nb::arg("theC"), nb::arg("theU0"), nb::arg("theTolU"), R"nbdoc(Calculates the distance with a close point.
+    nanoocp_if_concrete<Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>(nb::borrow<nb::class_<Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>>(m.attr("Geom2dInt_TheLocateExtPCOfTheProjPCurOfGInter")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_Pnt2d & theP, const Adaptor2d_Curve2d & theC, const double theU0, const double theTolU) { new (self) nanoocp_T(theP, theC, theU0, theTolU); }, nb::arg("theP"), nb::arg("theC"), nb::arg("theU0"), nb::arg("theTolU"), R"nbdoc(Calculates the distance with a close point.
 The close point is defined by the parameter value U0.
 The function F(u)=distance(P,C(u)) has an extremum
 when g(u)=dF/du=0. The algorithm searches a zero
@@ -309,7 +310,7 @@ near the close point.
 TolU is used to decide to stop the iterations.
 At the nth iteration, the criteria is:
 abs(Un - Un-1) < TolU.)nbdoc")
-        .def(nb::init<const gp_Pnt2d &, const Adaptor2d_Curve2d &, const double, const double, const double, const double>(), nb::arg("theP"), nb::arg("theC"), nb::arg("theU0"), nb::arg("theUmin"), nb::arg("theUsup"), nb::arg("theTolU"), R"nbdoc(Calculates the distance with a close point.
+        .def("__init__", [](nanoocp_T *self, const gp_Pnt2d & theP, const Adaptor2d_Curve2d & theC, const double theU0, const double theUmin, const double theUsup, const double theTolU) { new (self) nanoocp_T(theP, theC, theU0, theUmin, theUsup, theTolU); }, nb::arg("theP"), nb::arg("theC"), nb::arg("theU0"), nb::arg("theUmin"), nb::arg("theUsup"), nb::arg("theTolU"), R"nbdoc(Calculates the distance with a close point.
 The close point is defined by the parameter value U0.
 The function F(u)=distance(P,C(u)) has an extremum
 when g(u)=dF/du=0. The algorithm searches a zero
@@ -317,7 +318,8 @@ near the close point.
 Zeros are searched between Umin and Usup.
 TolU is used to decide to stop the iterations.
 At the nth iteration, the criteria is:
-abs(Un - Un-1) < TolU.)nbdoc")
+abs(Un - Un-1) < TolU.)nbdoc"); });
+    nb::borrow<nb::class_<Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>>(m.attr("Geom2dInt_TheLocateExtPCOfTheProjPCurOfGInter"))
         .def("Initialize", static_cast<void (Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>::*)(const Adaptor2d_Curve2d &, const double, const double, const double)>(&Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>::Initialize), nb::arg("theC"), nb::arg("theUmin"), nb::arg("theUsup"), nb::arg("theTolU"), R"nbdoc(Sets the fields of the algorithm.)nbdoc")
         .def("Perform", static_cast<void (Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>::*)(const gp_Pnt2d &, const double)>(&Extrema_GenLocateExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>::Perform), nb::arg("theP"), nb::arg("theU0"), R"nbdoc(The algorithm is done with the point P.
 An exception is raised if the fields have not been initialized.)nbdoc")

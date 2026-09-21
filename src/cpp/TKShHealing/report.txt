@@ -3,7 +3,7 @@
 # overload-collision: 8
 # raw-pointer: 1
 # std: 1
-# unbound-type: 1
+# template: 1
 # undefined: 1
 overload-collision	ShapeAnalysis	ShapeAnalysis_FreeBounds::ConnectEdgesToWires(const occ::handle<NCollection_HSequence<TopoDS_Shape>> &, const double, const bool, occ::handle<NCollection_HSequence<TopoDS_Shape>> &): same Python signature as another overload after out-param removal -> bound as ConnectEdgesToWires__NCollection_HSequence__TopoDS_Shape
 overload-collision	ShapeAnalysis	ShapeAnalysis_FreeBounds::ConnectWiresToWires(const occ::handle<NCollection_HSequence<TopoDS_Shape>> &, const double, const bool, occ::handle<NCollection_HSequence<TopoDS_Shape>> &): same Python signature as another overload after out-param removal -> bound as ConnectWiresToWires__NCollection_HSequence__TopoDS_Shape
@@ -15,5 +15,5 @@ overload-collision	ShapeProcess	ShapeProcess_ShapeContext::Messages() const: con
 overload-collision	ShapeUpgrade	ShapeUpgrade_UnifySameDomain::History() const: const twin of a less const overload -> not bound
 raw-pointer	ShapeProcess	ShapeProcess_UOperator::ShapeProcess_UOperator(): param 'func': function pointer
 std	ShapeProcess	ShapeProcess::Perform(const occ::handle<ShapeProcess_Context> &): param 'theOperations': std::bitset
-unbound-type	ShapeAnalysis	ShapeAnalysis_BoxBndTreeSelector: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
+template	ShapeAnalysis	ShapeAnalysis_BoxBndTreeSelector: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 undefined	ShapeFix	ShapeFix_WireSegment::ShapeFix_WireSegment(const TopoDS_Wire &, const TopAbs_Orientation): declared in the header, no definition in libTKShHealing

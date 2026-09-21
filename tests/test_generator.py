@@ -219,6 +219,34 @@ public:
   double Steps(const int theN, std::pair<int, int>& theSteps) const { theSteps = {theN, theN}; return 1.0; }
 };
 
+//! R-TEMPLATE-BASE: a template base of an alias instantiation is spelled only after substitution and instantiated through a
+//! probe typedef (BVH_PrimitiveSet<double, 3> : BVH_Object<double, 3>); a CRTP base with a template template parameter cannot
+//! be instantiated (BVH_Box<double, 3> : BVH_BaseBox<double, 3, BVH_Box>) and is dropped.
+template <class T>
+class Rules_TBase
+{
+public:
+  T BaseValue() const { return T(); }
+};
+template <class T>
+class Rules_TDerived : public Rules_TBase<T>
+{
+public:
+  T Value() const { return T(); }
+};
+typedef Rules_TDerived<double> Rules_TDouble;
+template <class T, template <class> class TheDerived>
+class Rules_CrtpBase
+{
+};
+template <class T>
+class Rules_Crtp : public Rules_CrtpBase<T, Rules_Crtp>
+{
+public:
+  T X() const { return T(); }
+};
+typedef Rules_Crtp<int> Rules_CrtpInt;
+
 //! More()/Next()/Value(): its own Python iterator (R-ITER).
 class Rules_Iter
 {
@@ -277,8 +305,9 @@ def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None
 
 def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
-    assert names == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
-                     "Rules_Algo", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2", "Rules_Alloc", "Rules_Arrays", "Rules_Iter"]
+    assert names[:14] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
+                          "Rules_Algo", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2", "Rules_Alloc", "Rules_Arrays"]
+    assert set(names[14:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter"}   # alias instantiations, probe bases
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -403,7 +432,8 @@ def test_ir_records_mangled_names(rules_ir):
 
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
-    known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules"}
+    known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
+             "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules"}
     em = Emitter(rules_ir, OCCT / "include" / "opencascade", known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
                  ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
@@ -495,6 +525,17 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     assert "const std::array<int, 3> &theNodes) { int theNodes_arr[3]; std::copy(theNodes.begin(), theNodes.end(), theNodes_arr);" in cpp
     assert '.def_prop_rw("myPeriod", [](const Rules_Value &self) { std::array<double, 3> a;' in cpp
     assert '.def("PtrRef", [](Rules_Value &self) { auto result = self.PtrRef(); return result; }, nb::rv_policy::reference' in cpp
+
+
+def test_ir_template_bases_of_instantiations(rules_ir):
+    by = {c.name: c for c in rules_ir.classes}
+    # the alias instantiation's template base was instantiated through the probe re-parse and names the derived's base
+    assert "Rules_TBase<double>" in by and [m.name for m in by["Rules_TBase<double>"].methods] == ["BaseValue"]
+    assert by["Rules_TDerived<double>"].py_name == "Rules_TDouble" and by["Rules_TDerived<double>"].bases == ["Rules_TBase<double>"]
+    # the CRTP base cannot be instantiated: dropped, the class binds without it
+    crtp = by["Rules_Crtp<int>"]
+    assert crtp.py_name == "Rules_CrtpInt" and crtp.bases == [] and [m.name for m in crtp.methods] == ["X"]
+    assert any(r.startswith("Rules_Crtp<int>: template base Rules_CrtpBase<int, Rules_Crtp<int>> cannot be instantiated -> dropped") for r in rules_ir.report)
 
 
 def test_resolve_ctor_arities():

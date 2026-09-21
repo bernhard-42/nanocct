@@ -276,19 +276,22 @@ class Emitter:
         self._note_types(m.result)
         return "\n        ".join(lines)
 
-    def _ctor(self, cls: Class, params: list[Param], doc: str) -> str:
+    def _ctor(self, cls: Class, params: list[Param], doc: str, type_name: str | None = None) -> str:
+        """type_name: a dependent alias of the bound type (inside nanoocp_if_concrete's generic lambda), so that `new T(...)` is
+        only instantiated when the class is concrete."""
         self._note_types(*(p.type for p in params))
         self._note_types(*(p.class_name for p in params))
+        T = type_name if type_name is not None else cls.bound_type
         special = any(p.omitted or p.array_len > 0 for p in params)     # R-OPTIONAL-PTR / R-FIXED-ARRAY: nb::init cannot drop or convert
         ins = [p for p in params if not p.omitted]
         lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0 else f"{p.type} {p.name}" for p in ins)
         pre = " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
         call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else p.name for p in params)
         if cls.is_transient:
-            fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{cls.bound_type}>(new {cls.bound_type}({call})); }})"
-        elif special:
-            self_param = f"{cls.bound_type} *self" + (", " if len(ins) > 0 else "")
-            fn = f'"__init__", []({self_param}{lam_params}) {{ {pre}new (self) {cls.bound_type}({call}); }}'
+            fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {T}({call})); }})"
+        elif special or type_name is not None:
+            self_param = f"{T} *self" + (", " if len(ins) > 0 else "")
+            fn = f'"__init__", []({self_param}{lam_params}) {{ {pre}new (self) {T}({call}); }}'
         else:
             fn = f"nb::init<{self._sig(params)}>()"
         return f".def({fn}{self._extras(doc, params, False, False)})"
@@ -595,6 +598,7 @@ class Emitter:
         """Define phase of one class: constructors, methods (collisions resolved), free operators, scalar conversion
         dunders, __hash__, fields, implicit conversions, __iter__."""
         body: list[str] = []
+        ctor_body: list[str] = []     # constructors of a 6c instantiation: guarded at compile time (abstractness is not visible in the template)
         def cls_expr_of(cc: Class) -> str:
             return f'nb::borrow<nb::class_<{cc.bound_type}>>({self._attr(cc.scope)}.attr("{cc.py_name}"))'
         implicit_default = False
@@ -619,7 +623,10 @@ class Emitter:
                     continue
                 if n < len(k.params):
                     self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first {n}")
-                body.append(self._ctor(c, k.params[:n], k.doc))
+                if c.template_key != "":
+                    ctor_body.append(self._ctor(c, k.params[:n], k.doc, type_name="nanoocp_T"))
+                else:
+                    body.append(self._ctor(c, k.params[:n], k.doc))
         bound = [m for m in c.methods if m.skip_reason is None]
         mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
         for m in skip_const_twins(c.methods):       # R-CONST-TWIN
@@ -656,6 +663,12 @@ class Emitter:
         cls_expr = cls_expr_of(c)
         if implicit_default:
             define.append(f'    nanoocp_implicit_default_ctor<{c.bound_type}>({cls_expr});')
+        if len(ctor_body) > 0:
+            # a template instantiation may be abstract through pure virtuals of its bases (BVH_PrimitiveSet<double, 3> via BVH_Set):
+            # libclang cannot tell inside the template, the compiler can (R-TEMPLATE-BASE)
+            define.append(f"    nanoocp_if_concrete<{c.bound_type}>({cls_expr}, [](auto &cls) {{ using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls")
+            define += ["        " + b for b in ctor_body]
+            define[-1] += "; });"
         if len(body) > 0:
             define.append(f'    {cls_expr}')
             define += ["        " + b for b in body]
@@ -737,6 +750,13 @@ class Emitter:
                 out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = nb::module_::import_("nanoocp._{self.toolkit_of[inst["package"]]}.{inst["package"]}").attr("{inst["name"]}");   // {td.py_name} = {td.written}')
                 continue
             pkg = self.known.get(td.target)
+            if pkg is not None and "<" in td.target and td.target not in self.skipped:
+                # alias of a 6c instantiation bound by an earlier package under its mangled name (BVH_Box3d = BVH_Box<double, 3>,
+                # bound on demand by Bnd before BVH's typedef): an attribute alias like any other (R-ALIAS)
+                attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
+                src = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+                out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
+                continue
             if pkg is None or "<" in td.target or td.target in self.skipped:
                 if td.target in self.skipped:
                     self.report.append(f"{td.py_name} = {td.written}: type alias of a type that is not bound (skipped)")

@@ -180,8 +180,8 @@ the shape to explore itself.)nbdoc")
         .def("Clear", static_cast<void (TopExp_Explorer::*)()>(&TopExp_Explorer::Clear), R"nbdoc(Clears the content of the explorer.)nbdoc")
         .def("end", static_cast<NCollection_ForwardRangeSentinel (TopExp_Explorer::*)() const>(&TopExp_Explorer::end), R"nbdoc(Returns a sentinel marking the end of iteration.)nbdoc");
     nanoocp_implicit_copy_ctor<TopExp_Explorer>(nb::borrow<nb::class_<TopExp_Explorer>>(m.attr("TopExp_Explorer")));
-    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopExp_Explorer>>>(m.attr("NCollection_ForwardRangeIterator__TopExp_Explorer"))
-        .def(nb::init<TopExp_Explorer *>(), nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc");
+    nanoocp_if_concrete<NCollection_ForwardRangeIterator<TopExp_Explorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopExp_Explorer>>>(m.attr("NCollection_ForwardRangeIterator__TopExp_Explorer")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, TopExp_Explorer * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<TopExp_Explorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopExp_Explorer>>>(m.attr("NCollection_ForwardRangeIterator__TopExp_Explorer")));
 }
 

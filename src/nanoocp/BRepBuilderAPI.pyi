@@ -4,6 +4,7 @@ import enum
 from typing import overload
 
 import nanoocp.BRepTools
+import nanoocp.Bnd
 import nanoocp.Geom
 import nanoocp.Geom2d
 import nanoocp.Message
@@ -323,6 +324,47 @@ class BRepBuilderAPI:
     @staticmethod
     def Precision() -> float:
         """Returns the default precision."""
+
+class BRepBuilderAPI_BndBoxTreeSelector:
+    """
+    Class BRepBuilderAPI_BndBoxTreeSelector
+    derived from UBTree::Selector
+    This class is used to select overlapping boxes, stored in
+    NCollection::UBTree; contains methods to maintain the selection
+    condition and to retrieve selected objects after search.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Constructor; calls the base class constructor"""
+
+    @overload
+    def __init__(self, theOther: BRepBuilderAPI_BndBoxTreeSelector) -> None: ...
+
+    def Reject(self, theBox: nanoocp.Bnd.Bnd_Box) -> bool:
+        """
+        Implementation of rejection method
+        @return
+        True if the bounding box does not intersect with the current
+        """
+
+    def Accept(self, theObj: int) -> bool:
+        """
+        Implementation of acceptance method
+        This method is called when the bounding box intersect with the current.
+        It stores the object - the index of box in the list of accepted objects.
+        @return
+        True, because the object is accepted
+        """
+
+    def ClearResList(self) -> None:
+        """Clear the list of intersecting boxes"""
+
+    def SetCurrent(self, theBox: nanoocp.Bnd.Bnd_Box) -> None:
+        """Set current box to search for overlapping with him"""
+
+    def ResInd(self) -> nanoocp.NCollection.NCollection_List[int]:
+        """Get list of indexes of boxes intersecting with the current box"""
 
 class BRepBuilderAPI_Collect:
     @overload

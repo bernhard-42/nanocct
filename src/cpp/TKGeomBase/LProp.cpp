@@ -64,14 +64,14 @@ void nanoocp_templates_LProp(nb::module_ &m) {
 void nanoocp_define_LProp(nb::module_ &m) {
     nanoocp_implicit_default_ctor<LProp_CurveUtils::DirectAccess>(nb::borrow<nb::class_<LProp_CurveUtils::DirectAccess>>(m.attr("LProp_CurveUtils").attr("DirectAccess")));
     nanoocp_implicit_copy_ctor<LProp_CurveUtils::DirectAccess>(nb::borrow<nb::class_<LProp_CurveUtils::DirectAccess>>(m.attr("LProp_CurveUtils").attr("DirectAccess")));
-    nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("LProp_CLProps3d"))
-        .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
+    nanoocp_if_concrete<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("LProp_CLProps3d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const int N, const double Resolution) { new (self) nanoocp_T(N, Resolution); }, nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U> and the curve is set
 with SetCurve.
 the curve can have a empty constructor
 All the computations done will be related to <C> and <U>
 when the functions "set" will be done.)nbdoc")
-        .def(nb::init<const opencascade::handle<Adaptor3d_Curve> &, const int, const double>(), nb::arg("C"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the curve <C>
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Adaptor3d_Curve> & C, const int N, const double Resolution) { new (self) nanoocp_T(C, N, Resolution); }, nb::arg("C").none(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the curve <C>
 The current point and the derivatives are
 computed at the same time, which allows an
 optimization of the computation time.
@@ -80,12 +80,13 @@ be done (0, 1, 2 or 3). For example, to compute
 only the tangent, N should be equal to 1.
 <Resolution> is the linear tolerance (it is used to test
 if a vector is null).)nbdoc")
-        .def(nb::init<const opencascade::handle<Adaptor3d_Curve> &, const double, const int, const double>(), nb::arg("C"), nb::arg("U"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Adaptor3d_Curve> & C, const double U, const int N, const double Resolution) { new (self) nanoocp_T(C, U, N, Resolution); }, nb::arg("C").none(), nb::arg("U"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Same as previous constructor but here the parameter is
 set to the value <U>.
-All the computations done will be related to <C> and <U>.)nbdoc")
+All the computations done will be related to <C> and <U>.)nbdoc"); });
+    nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("LProp_CLProps3d"))
         .def("SetParameter", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)(const double)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::SetParameter), nb::arg("U"), R"nbdoc(Initializes the local properties of the curve
 for the parameter value <U>.)nbdoc")
-        .def("SetCurve", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)(const opencascade::handle<Adaptor3d_Curve> &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::SetCurve), nb::arg("C"), R"nbdoc(Initializes the local properties of the curve
+        .def("SetCurve", static_cast<void (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)(const opencascade::handle<Adaptor3d_Curve> &)>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::SetCurve), nb::arg("C").none(), R"nbdoc(Initializes the local properties of the curve
 for the new curve.)nbdoc")
         .def("Value", static_cast<const gp_Pnt & (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)() const>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::Value), R"nbdoc(Returns the Point.)nbdoc")
         .def("D1", static_cast<const gp_Vec & (GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::*)()>(&GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Adaptor3d_Curve>, LProp_CurveUtils::DirectAccess>::D1), R"nbdoc(Returns the first derivative.
@@ -121,13 +122,13 @@ a maximum of the radius of curvature.
 a point of inflection.
 raises if N not in the range [1,NbPoints()])nbdoc");
     nanoocp_implicit_copy_ctor<LProp_CurAndInf>(nb::borrow<nb::class_<LProp_CurAndInf>>(m.attr("LProp_CurAndInf")));
-    nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("LProp_SLProps3d"))
-        .def(nb::init<const int, const double>(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
+    nanoocp_if_concrete<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>(nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("LProp_SLProps3d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const int N, const double Resolution) { new (self) nanoocp_T(N, Resolution); }, nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
 of parameters <U> and <V> and the surface.
 the surface can have an empty constructor.)nbdoc")
-        .def(nb::init<const opencascade::handle<Adaptor3d_Surface> &, const int, const double>(), nb::arg("S"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Adaptor3d_Surface> & S, const int N, const double Resolution) { new (self) nanoocp_T(S, N, Resolution); }, nb::arg("S").none(), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(idem as previous constructor but without setting the value
 of parameters <U> and <V>.)nbdoc")
-        .def(nb::init<const opencascade::handle<Adaptor3d_Surface> &, const double, const double, const int, const double>(), nb::arg("S"), nb::arg("U"), nb::arg("V"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the surface <S>
+        .def("__init__", [](nanoocp_T *self, const opencascade::handle<Adaptor3d_Surface> & S, const double U, const double V, const int N, const double Resolution) { new (self) nanoocp_T(S, U, V, N, Resolution); }, nb::arg("S").none(), nb::arg("U"), nb::arg("V"), nb::arg("N"), nb::arg("Resolution"), R"nbdoc(Initializes the local properties of the surface <S>
 for the parameter values (<U>, <V>).
 The current point and the derivatives are
 computed at the same time, which allows an
@@ -136,8 +137,9 @@ optimization of the computation time.
 be done (0, 1, or 2). For example, to compute
 only the tangent, N should be equal to 1.
 <Resolution> is the linear tolerance (it is used to test
-if a vector is null).)nbdoc")
-        .def("SetSurface", static_cast<void (GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::*)(const opencascade::handle<Adaptor3d_Surface> &)>(&GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::SetSurface), nb::arg("S"), R"nbdoc(Initializes the local properties of the surface S
+if a vector is null).)nbdoc"); });
+    nb::borrow<nb::class_<GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>>>(m.attr("LProp_SLProps3d"))
+        .def("SetSurface", static_cast<void (GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::*)(const opencascade::handle<Adaptor3d_Surface> &)>(&GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::SetSurface), nb::arg("S").none(), R"nbdoc(Initializes the local properties of the surface S
 for the new surface.)nbdoc")
         .def("SetParameters", static_cast<void (GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::*)(const double, const double)>(&GeomLProp_SLPropsBase<opencascade::handle<Adaptor3d_Surface>, LProp_SurfaceUtils::DirectAccess>::SetParameters), nb::arg("U"), nb::arg("V"), R"nbdoc(Initializes the local properties of the surface S
 for the new parameter values (<U>, <V>).)nbdoc")

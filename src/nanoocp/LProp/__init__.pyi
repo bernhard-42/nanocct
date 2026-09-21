@@ -77,7 +77,7 @@ class LProp_CLProps3d:
         """
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, N: int, Resolution: float) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, N: int, Resolution: float) -> None:
         """
         Initializes the local properties of the curve <C>
         The current point and the derivatives are
@@ -91,7 +91,7 @@ class LProp_CLProps3d:
         """
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, U: float, N: int, Resolution: float) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, U: float, N: int, Resolution: float) -> None:
         """
         Same as previous constructor but here the parameter is
         set to the value <U>.
@@ -107,7 +107,7 @@ class LProp_CLProps3d:
         for the parameter value <U>.
         """
 
-    def SetCurve(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def SetCurve(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """
         Initializes the local properties of the curve
         for the new curve.
@@ -216,14 +216,14 @@ class LProp_SLProps3d:
         """
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, N: int, Resolution: float) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, N: int, Resolution: float) -> None:
         """
         idem as previous constructor but without setting the value
         of parameters <U> and <V>.
         """
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, U: float, V: float, N: int, Resolution: float) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, U: float, V: float, N: int, Resolution: float) -> None:
         """
         Initializes the local properties of the surface <S>
         for the parameter values (<U>, <V>).
@@ -240,7 +240,7 @@ class LProp_SLProps3d:
     @overload
     def __init__(self, theOther: LProp_SLProps3d) -> None: ...
 
-    def SetSurface(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def SetSurface(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """
         Initializes the local properties of the surface S
         for the new surface.

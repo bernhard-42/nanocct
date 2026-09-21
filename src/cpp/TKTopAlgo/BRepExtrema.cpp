@@ -19,18 +19,29 @@
 #include <BRepExtrema_SupportType.hxx>
 #include <BRepExtrema_TriangleSet.hxx>
 #include <BRepExtrema_UnCompatibleShape.hxx>
+#include <BVH_Box.hxx>
+#include <BVH_Distance.hxx>
+#include <BVH_PrimitiveSet.hxx>
+#include <BVH_Tools.hxx>
+#include <BVH_Traverse.hxx>
+#include <BVH_Tree.hxx>
 #include <Bnd_Box.hxx>
 #include <Extrema_ExtAlgo.hxx>
 #include <Extrema_ExtFlag.hxx>
 #include <Message_ProgressRange.hxx>
+#include <NCollection_Array1.hxx>
 #include <NCollection_DataMap.hxx>
 #include <NCollection_DefaultHasher.hxx>
 #include <NCollection_DynamicArray.hxx>
+#include <NCollection_LinearVector.hxx>
 #include <NCollection_PackedMap.hxx>
 #include <NCollection_Sequence.hxx>
+#include <NCollection_Vec3.hxx>
+#include <Poly_Triangulation.hxx>
 #include <Precision.hxx>
 #include <Standard_DomainError.hxx>
 #include <Standard_OStream.hxx>
+#include <Standard_Type.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Shape.hxx>
@@ -85,7 +96,62 @@ should be tested for overlapping/intersection or not.)nbdoc");
     }
     { nb::class_<BRepExtrema_ExtPF> cls(m, "BRepExtrema_ExtPF");
     }
+    { nb::class_<BRepExtrema_TriangleSet, BVH_PrimitiveSet<double, 3>> cls(m, "BRepExtrema_TriangleSet", R"nbdoc(Triangle set corresponding to specific face.)nbdoc");
+    }
+    m.attr("BVH_PairTraverse__double__3__void__double") = nb::module_::import_("nanoocp._TKGeomAlgo.IntPatch").attr("BVH_PairTraverse__double__3__void__double");
+    { nb::class_<BRepExtrema_OverlapTool, BVH_PairTraverse<double, 3, void, double>> cls(m, "BRepExtrema_OverlapTool", R"nbdoc(Tool class for for detection of overlapping of two BVH primitive sets.
+This tool is not intended to be used independently, and is integrated
+in other classes, implementing algorithms based on shape tessellation
+(BRepExtrema_ShapeProximity and BRepExtrema_SelfIntersection).
+
+Note that input element sets may correspond to different shapes or to
+the same shape. In first case, tessellations of two given shapes will
+be tested for intersection (or overlapping, if tolerance is not zero).
+In second case, tessellation of single shape will be tested for self-
+intersections. Please note that algorithm results are approximate and
+depend greatly on the quality of input tessellation(s).)nbdoc");
+    }
     { nb::class_<BRepExtrema_Poly> cls(m, "BRepExtrema_Poly");
+    }
+    { nb::class_<BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>, BVH_BaseTraverse<double>> cls(m, "BVH_Traverse__double__3__BRepExtrema_TriangleSet__double", R"nbdoc(Abstract class implementing the traverse of the single binary tree.
+Selection of the data from the tree is performed by the
+rules defined in the Accept/Reject methods.
+See description of the required methods in the comments above.
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+index) \tparam MetricType Type of metric to perform more optimal tree descend)nbdoc");
+    }
+    { nb::class_<BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>, BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>> cls(m, "BVH_Distance__double__3__NCollection_Vec3__double__BRepExtrema_TriangleSet", R"nbdoc(Abstract class for computation of the min distance between some
+Object and elements of BVH tree.
+To use this class it is required to define two methods:
+- *RejectNode* to compute distance from the object to bounding box
+- *Accept* to compute distance from the object to the element of tree
+
+\tparam NumType Numeric data type
+\tparam Dimension Vector dimension
+\tparam ObjectType Type of the object to which the distance is required
+\tparam BVHSetType Type of the set on which BVH is built)nbdoc");
+    }
+    { nb::class_<BRepExtrema_ProximityDistTool, BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>> cls(m, "BRepExtrema_ProximityDistTool", R"nbdoc(Tool class for computation the proximity distance from first
+primitive set to second one that is the maximal from minimum
+perpendicular distances. If no perpendicular distance is found, the
+minimum distance will be returned.
+This tool is not intended to be used independently, and is integrated
+in other classes, implementing algorithms based on shape tessellation
+(BRepExtrema_ProximityValueTool).
+
+Please note that algorithm results are approximate and depend greatly
+on the quality of input tessellation(s).)nbdoc");
+      nb::enum_<BRepExtrema_ProximityDistTool::ProxPnt_Status>(cls, "ProxPnt_Status", nb::is_arithmetic())
+          .value("ProxPnt_Status_BORDER", BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER)
+          .value("ProxPnt_Status_MIDDLE", BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+          .value("ProxPnt_Status_UNKNOWN", BRepExtrema_ProximityDistTool::ProxPnt_Status_UNKNOWN)
+          .export_values();
+    }
+    { nb::class_<BRepExtrema_ProximityDistTool::PrjState> cls(m.attr("BRepExtrema_ProximityDistTool"), "PrjState", R"nbdoc(Struct with information about projection point state from 2nd BVH,
+providing proximity point of 2nd shape)nbdoc");
     }
     { nb::class_<BRepExtrema_VertexInspector> cls(m, "BRepExtrema_VertexInspector", R"nbdoc(Inspector for CellFilter algorithm working with gp_XYZ points in 3d space.
 Used in search of coincidence points with a certain tolerance.)nbdoc");
@@ -139,6 +205,7 @@ triangulation).)nbdoc");
 
 void nanoocp_templates_BRepExtrema(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DataMap<int, NCollection_PackedMap<int>>(home, "NCollection_DataMap__int__NCollection_PackedMap__int"); }
+    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status>(home, "NCollection_DynamicArray__BRepExtrema_ProximityDistTool_ProxPnt_Status"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_DynamicArray<gp_XYZ>(home, "NCollection_DynamicArray__gp_XYZ"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Sequence<BRepExtrema_SolutionElem>(home, "NCollection_Sequence__BRepExtrema_SolutionElem"); }
 }
@@ -347,10 +414,115 @@ Be careful: this method uses the Face only for classify not for the fields.)nbdo
         .def("SetFlag", static_cast<void (BRepExtrema_ExtPF::*)(const Extrema_ExtFlag)>(&BRepExtrema_ExtPF::SetFlag), nb::arg("F"))
         .def("SetAlgo", static_cast<void (BRepExtrema_ExtPF::*)(const Extrema_ExtAlgo)>(&BRepExtrema_ExtPF::SetAlgo), nb::arg("A"));
     nanoocp_implicit_copy_ctor<BRepExtrema_ExtPF>(nb::borrow<nb::class_<BRepExtrema_ExtPF>>(m.attr("BRepExtrema_ExtPF")));
+    nb::borrow<nb::class_<BRepExtrema_TriangleSet>>(m.attr("BRepExtrema_TriangleSet"))
+        .def(nb::init<>(), R"nbdoc(Creates empty triangle set.)nbdoc")
+        .def(nb::init<const NCollection_DynamicArray<TopoDS_Shape> &>(), nb::arg("theFaces"), R"nbdoc(Creates triangle set from the given face.)nbdoc")
+        .def("Size", static_cast<int (BRepExtrema_TriangleSet::*)() const>(&BRepExtrema_TriangleSet::Size), R"nbdoc(@name methods implementing BVH set interface
+Returns total number of triangles.)nbdoc")
+        .def("Box", static_cast<BVH_Box<double, 3> (BRepExtrema_TriangleSet::*)(const int) const>(&BRepExtrema_TriangleSet::Box), nb::arg("theIndex"), R"nbdoc(Returns AABB of the given triangle.)nbdoc")
+        .def("Box", [](const BRepExtrema_TriangleSet &self) { auto result = self.Box(); return result; }, R"nbdoc(Returns AABB of primitive set.)nbdoc")
+        .def("Center", static_cast<double (BRepExtrema_TriangleSet::*)(const int, const int) const>(&BRepExtrema_TriangleSet::Center), nb::arg("theIndex"), nb::arg("theAxis"), R"nbdoc(Returns centroid position along specified axis.)nbdoc")
+        .def("Swap", static_cast<void (BRepExtrema_TriangleSet::*)(const int, const int)>(&BRepExtrema_TriangleSet::Swap), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Swaps indices of two specified triangles.)nbdoc")
+        .def("Clear", static_cast<void (BRepExtrema_TriangleSet::*)()>(&BRepExtrema_TriangleSet::Clear), R"nbdoc(Clears triangle set data.)nbdoc")
+        .def("Init", static_cast<bool (BRepExtrema_TriangleSet::*)(const NCollection_DynamicArray<TopoDS_Shape> &)>(&BRepExtrema_TriangleSet::Init), nb::arg("theShapes"), R"nbdoc(Initializes triangle set.)nbdoc")
+        .def("GetVertices", static_cast<const BVH_Array3d & (BRepExtrema_TriangleSet::*)() const>(&BRepExtrema_TriangleSet::GetVertices), R"nbdoc(Returns all vertices.)nbdoc")
+        .def("GetVertices", static_cast<void (BRepExtrema_TriangleSet::*)(const int, BVH_Vec3d &, BVH_Vec3d &, BVH_Vec3d &) const>(&BRepExtrema_TriangleSet::GetVertices), nb::arg("theIndex"), nb::arg("theVertex1"), nb::arg("theVertex2"), nb::arg("theVertex3"), R"nbdoc(Returns vertices of the given triangle.)nbdoc")
+        .def("GetVtxIndices", static_cast<void (BRepExtrema_TriangleSet::*)(const int, NCollection_Array1<int> &) const>(&BRepExtrema_TriangleSet::GetVtxIndices), nb::arg("theIndex"), nb::arg("theVtxIndices"), R"nbdoc(Returns vertex indices of the given triangle.)nbdoc")
+        .def("GetFaceID", static_cast<int (BRepExtrema_TriangleSet::*)(const int) const>(&BRepExtrema_TriangleSet::GetFaceID), nb::arg("theIndex"), R"nbdoc(Returns face ID of the given triangle.)nbdoc")
+        .def("GetShapeIDOfVtx", static_cast<int (BRepExtrema_TriangleSet::*)(const int) const>(&BRepExtrema_TriangleSet::GetShapeIDOfVtx), nb::arg("theIndex"), R"nbdoc(Returns shape ID of the given vertex index.)nbdoc")
+        .def("GetVtxIdxInShape", static_cast<int (BRepExtrema_TriangleSet::*)(const int) const>(&BRepExtrema_TriangleSet::GetVtxIdxInShape), nb::arg("theIndex"), R"nbdoc(Returns vertex index in tringulation of the shape, which vertex belongs,
+with the given vtx ID in whole set.)nbdoc")
+        .def("GetTrgIdxInShape", static_cast<int (BRepExtrema_TriangleSet::*)(const int) const>(&BRepExtrema_TriangleSet::GetTrgIdxInShape), nb::arg("theIndex"), R"nbdoc(Returns triangle index (before swapping) in tringulation of the shape, which triangle belongs,
+with the given trg ID in whole set (after swapping).)nbdoc")
+        .def_static("get_type_name", static_cast<const char * (*)()>(&BRepExtrema_TriangleSet::get_type_name))
+        .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRepExtrema_TriangleSet::get_type_descriptor))
+        .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRepExtrema_TriangleSet::*)() const>(&BRepExtrema_TriangleSet::DynamicType));
+    nanoocp_implicit_copy_ctor<BRepExtrema_TriangleSet>(nb::borrow<nb::class_<BRepExtrema_TriangleSet>>(m.attr("BRepExtrema_TriangleSet")));
+    nb::implicitly_convertible<std::decay_t<const NCollection_DynamicArray<TopoDS_Shape> &>, BRepExtrema_TriangleSet>();
+    nb::borrow<nb::class_<BRepExtrema_OverlapTool>>(m.attr("BRepExtrema_OverlapTool"))
+        .def(nb::init<>(), R"nbdoc(Creates new uninitialized overlap tool.)nbdoc")
+        .def(nb::init<const occ::handle<BRepExtrema_TriangleSet> &, const occ::handle<BRepExtrema_TriangleSet> &>(), nb::arg("theSet1").none(), nb::arg("theSet2").none(), R"nbdoc(Creates new overlap tool for the given element sets.)nbdoc")
+        .def("LoadTriangleSets", static_cast<void (BRepExtrema_OverlapTool::*)(const occ::handle<BRepExtrema_TriangleSet> &, const occ::handle<BRepExtrema_TriangleSet> &)>(&BRepExtrema_OverlapTool::LoadTriangleSets), nb::arg("theSet1").none(), nb::arg("theSet2").none(), R"nbdoc(Loads the given element sets into the overlap tool.)nbdoc")
+        .def("Perform", static_cast<void (BRepExtrema_OverlapTool::*)(const double)>(&BRepExtrema_OverlapTool::Perform), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Performs searching of overlapped mesh elements.)nbdoc")
+        .def("IsDone", static_cast<bool (BRepExtrema_OverlapTool::*)() const>(&BRepExtrema_OverlapTool::IsDone), R"nbdoc(Is overlap test completed?)nbdoc")
+        .def("MarkDirty", static_cast<void (BRepExtrema_OverlapTool::*)()>(&BRepExtrema_OverlapTool::MarkDirty), R"nbdoc(Marks test results as outdated.)nbdoc")
+        .def("OverlapSubShapes1", static_cast<const NCollection_DataMap<int, NCollection_PackedMap<int>, NCollection_DefaultHasher<int>> & (BRepExtrema_OverlapTool::*)() const>(&BRepExtrema_OverlapTool::OverlapSubShapes1), R"nbdoc(Returns set of overlapped sub-shapes of 1st shape (currently only faces are detected).)nbdoc")
+        .def("OverlapSubShapes2", static_cast<const NCollection_DataMap<int, NCollection_PackedMap<int>, NCollection_DefaultHasher<int>> & (BRepExtrema_OverlapTool::*)() const>(&BRepExtrema_OverlapTool::OverlapSubShapes2), R"nbdoc(Returns set of overlapped sub-shapes of 2nd shape (currently only faces are detected).)nbdoc")
+        .def("SetElementFilter", static_cast<void (BRepExtrema_OverlapTool::*)(BRepExtrema_ElementFilter *)>(&BRepExtrema_OverlapTool::SetElementFilter), nb::arg("theFilter"), R"nbdoc(Sets filtering tool for preliminary checking pairs of mesh elements.)nbdoc")
+        .def("RejectNode", [](const BRepExtrema_OverlapTool &self, const BVH_Vec3d & theCornerMin1, const BVH_Vec3d & theCornerMax1, const BVH_Vec3d & theCornerMin2, const BVH_Vec3d & theCornerMax2) { double arg4{}; auto result = self.RejectNode(theCornerMin1, theCornerMax1, theCornerMin2, theCornerMax2, arg4); return std::make_tuple(result, arg4); }, nb::arg("theCornerMin1"), nb::arg("theCornerMax1"), nb::arg("theCornerMin2"), nb::arg("theCornerMax2"), R"nbdoc(@name Reject/Accept implementations
+Defines the rules for node rejection by bounding box)nbdoc")
+        .def("Accept", static_cast<bool (BRepExtrema_OverlapTool::*)(const int, const int)>(&BRepExtrema_OverlapTool::Accept), nb::arg("theLeaf1"), nb::arg("theLeaf2"), R"nbdoc(Defines the rules for leaf acceptance)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepExtrema_OverlapTool>(nb::borrow<nb::class_<BRepExtrema_OverlapTool>>(m.attr("BRepExtrema_OverlapTool")));
     nanoocp_implicit_default_ctor<BRepExtrema_Poly>(nb::borrow<nb::class_<BRepExtrema_Poly>>(m.attr("BRepExtrema_Poly")));
     nb::borrow<nb::class_<BRepExtrema_Poly>>(m.attr("BRepExtrema_Poly"))
         .def_static("Distance", [](const TopoDS_Shape & S1, const TopoDS_Shape & S2, gp_Pnt & P1, gp_Pnt & P2) { double dist{}; auto result = BRepExtrema_Poly::Distance(S1, S2, P1, P2, dist); return std::make_tuple(result, dist); }, nb::arg("S1"), nb::arg("S2"), nb::arg("P1"), nb::arg("P2"), R"nbdoc(returns true if OK.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepExtrema_Poly>(nb::borrow<nb::class_<BRepExtrema_Poly>>(m.attr("BRepExtrema_Poly")));
+    nanoocp_if_concrete<BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>>(nb::borrow<nb::class_<BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>>>(m.attr("BVH_Traverse__double__3__BRepExtrema_TriangleSet__double")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Constructor)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>>>(m.attr("BVH_Traverse__double__3__BRepExtrema_TriangleSet__double"))
+        .def("SetBVHSet", static_cast<void (BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::*)(BRepExtrema_TriangleSet *)>(&BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::SetBVHSet), nb::arg("theBVHSet"), R"nbdoc(@name Setting the set to access the elements and BVH tree
+Sets the BVH Set containing the BVH tree)nbdoc")
+        .def("AcceptMetric", static_cast<bool (BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::*)(const double &) const>(&BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::AcceptMetric), nb::arg("arg0"), R"nbdoc(@name Rules for Accept/Reject
+Basing on the given metric, checks if the whole branch may be
+accepted without any further checks.
+Returns true if the metric is accepted, false otherwise.)nbdoc")
+        .def("RejectNode", static_cast<bool (BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::*)(const BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::BVH_VecNt &, const BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::BVH_VecNt &, double &) const>(&BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::RejectNode), nb::arg("theCornerMin"), nb::arg("theCornerMax"), nb::arg("theMetric"), R"nbdoc(Rejection of the node by bounding box.
+Metric is computed to choose the best branch.
+Returns true if the node should be rejected, false otherwise.)nbdoc")
+        .def("Accept", static_cast<bool (BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::*)(const int, const double &)>(&BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::Accept), nb::arg("theIndex"), nb::arg("theMetric"), R"nbdoc(Leaf element acceptance.
+Metric of the parent leaf-node is passed to avoid the check on the
+element and accept it unconditionally.
+Returns true if the element has been accepted, false otherwise.)nbdoc")
+        .def("Select", static_cast<int (BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::*)()>(&BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::Select), R"nbdoc(@name Selection
+Selection of the elements from the BVH tree by the
+rules defined in Accept/Reject methods.
+The method requires the BVHSet containing BVH tree to be set.
+Returns the number of accepted elements.)nbdoc")
+        .def("Select", static_cast<int (BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::*)(const opencascade::handle<BVH_Tree<double, 3>> &)>(&BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>::Select), nb::arg("theBVH").none(), R"nbdoc(Performs selection of the elements from the BVH tree by the
+rules defined in Accept/Reject methods.
+Returns the number of accepted elements.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>>(nb::borrow<nb::class_<BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>>>(m.attr("BVH_Traverse__double__3__BRepExtrema_TriangleSet__double")));
+    nanoocp_if_concrete<BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>>(nb::borrow<nb::class_<BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>>>(m.attr("BVH_Distance__double__3__NCollection_Vec3__double__BRepExtrema_TriangleSet")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(@name Constructor
+Constructor)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>>>(m.attr("BVH_Distance__double__3__NCollection_Vec3__double__BRepExtrema_TriangleSet"))
+        .def("SetObject", static_cast<void (BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::*)(const NCollection_Vec3<double> &)>(&BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::SetObject), nb::arg("theObject"), R"nbdoc(@name Setting object for distance computation
+Sets the object to which the distance is required)nbdoc")
+        .def("ComputeDistance", static_cast<double (BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::*)()>(&BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::ComputeDistance), R"nbdoc(@name Compute the distance
+Computes the distance between object and BVH tree)nbdoc")
+        .def("IsDone", static_cast<bool (BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::*)() const>(&BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::IsDone), R"nbdoc(@name Accessing the results
+Returns IsDone flag)nbdoc")
+        .def("Distance", static_cast<double (BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::*)() const>(&BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::Distance), R"nbdoc(Returns the computed distance)nbdoc")
+        .def("IsMetricBetter", static_cast<bool (BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::*)(const double &, const double &) const>(&BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::IsMetricBetter), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(@name Definition of the rules for tree descend
+Compares the two metrics and chooses the best one)nbdoc")
+        .def("RejectMetric", static_cast<bool (BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::*)(const double &) const>(&BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::RejectMetric), nb::arg("theMetric"), R"nbdoc(Rejects the branch by the metric)nbdoc")
+        .def("Stop", static_cast<bool (BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::*)() const>(&BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>::Stop), R"nbdoc(Returns the flag controlling the tree descend)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>>(nb::borrow<nb::class_<BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>>>(m.attr("BVH_Distance__double__3__NCollection_Vec3__double__BRepExtrema_TriangleSet")));
+    nb::borrow<nb::class_<BRepExtrema_ProximityDistTool>>(m.attr("BRepExtrema_ProximityDistTool"))
+        .def(nb::init<>(), R"nbdoc(Creates new uninitialized tool.)nbdoc")
+        .def(nb::init<const occ::handle<BRepExtrema_TriangleSet> &, const int, const BVH_Array3d &, const NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status> &, const occ::handle<BRepExtrema_TriangleSet> &, const NCollection_DynamicArray<TopoDS_Shape> &, const NCollection_DynamicArray<TopoDS_Shape> &>(), nb::arg("theSet1").none(), nb::arg("theNbSamples1"), nb::arg("theAddVertices1"), nb::arg("theAddStatus1"), nb::arg("theSet2").none(), nb::arg("theShapeList1"), nb::arg("theShapeList2"), R"nbdoc(Creates new tool for the given element sets.)nbdoc")
+        .def("LoadTriangleSets", static_cast<void (BRepExtrema_ProximityDistTool::*)(const occ::handle<BRepExtrema_TriangleSet> &, const occ::handle<BRepExtrema_TriangleSet> &)>(&BRepExtrema_ProximityDistTool::LoadTriangleSets), nb::arg("theSet1").none(), nb::arg("theSet2").none(), R"nbdoc(Loads the given element sets into the tool.)nbdoc")
+        .def("LoadShapeLists", static_cast<void (BRepExtrema_ProximityDistTool::*)(const NCollection_DynamicArray<TopoDS_Shape> &, const NCollection_DynamicArray<TopoDS_Shape> &)>(&BRepExtrema_ProximityDistTool::LoadShapeLists), nb::arg("theShapeList1"), nb::arg("theShapeList2"), R"nbdoc(Loads the given list of subshapes into the tool.)nbdoc")
+        .def("LoadAdditionalPointsFirstSet", static_cast<void (BRepExtrema_ProximityDistTool::*)(const BVH_Array3d &, const NCollection_DynamicArray<BRepExtrema_ProximityDistTool::ProxPnt_Status> &)>(&BRepExtrema_ProximityDistTool::LoadAdditionalPointsFirstSet), nb::arg("theAddVertices1"), nb::arg("theAddStatus1"), R"nbdoc(Loads given additional vertices and their statuses.)nbdoc")
+        .def("Perform", static_cast<void (BRepExtrema_ProximityDistTool::*)()>(&BRepExtrema_ProximityDistTool::Perform), R"nbdoc(Performs searching of the proximity distance.)nbdoc")
+        .def("RejectNode", [](const BRepExtrema_ProximityDistTool &self, const BVH_Vec3d & theCornerMin, const BVH_Vec3d & theCornerMax) { double theMetric{}; auto result = self.RejectNode(theCornerMin, theCornerMax, theMetric); return std::make_tuple(result, theMetric); }, nb::arg("theCornerMin"), nb::arg("theCornerMax"), R"nbdoc(@name Reject/Accept implementations
+Defines the rules for node rejection by bounding box.)nbdoc")
+        .def("Accept", static_cast<bool (BRepExtrema_ProximityDistTool::*)(const int, const double &)>(&BRepExtrema_ProximityDistTool::Accept), nb::arg("theSgmIdx"), nb::arg("arg1"), R"nbdoc(Defines the rules for leaf acceptance.)nbdoc")
+        .def_static("IsNodeOnBorder", static_cast<bool (*)(const int, const occ::handle<Poly_Triangulation> &)>(&BRepExtrema_ProximityDistTool::IsNodeOnBorder), nb::arg("theNodeIdx"), nb::arg("theTr").none(), R"nbdoc(Returns true if the node is on the boarder.)nbdoc")
+        .def_static("IsEdgeOnBorder", static_cast<bool (*)(const int, const int, const int, const occ::handle<Poly_Triangulation> &)>(&BRepExtrema_ProximityDistTool::IsEdgeOnBorder), nb::arg("theTrgIdx"), nb::arg("theFirstEdgeNodeIdx"), nb::arg("theSecondEdgeNodeIdx"), nb::arg("theTr").none(), R"nbdoc(Returns true if the edge is on the boarder.)nbdoc")
+        .def("ProximityPoints", static_cast<void (BRepExtrema_ProximityDistTool::*)(BVH_Vec3d &, BVH_Vec3d &) const>(&BRepExtrema_ProximityDistTool::ProximityPoints), nb::arg("thePoint1"), nb::arg("thePoint2"), R"nbdoc(Returns points on triangles sets, which provide the proximity distance.)nbdoc")
+        .def("ProximityPointsStatus", [](const BRepExtrema_ProximityDistTool &self) { BRepExtrema_ProximityDistTool::ProxPnt_Status thePointStatus1{}; BRepExtrema_ProximityDistTool::ProxPnt_Status thePointStatus2{}; self.ProximityPointsStatus(thePointStatus1, thePointStatus2); return std::make_tuple(thePointStatus1, thePointStatus2); }, R"nbdoc(Returns status of points on triangles sets, which provide the proximity distance.)nbdoc")
+        .def("ProximityDistance", static_cast<double (BRepExtrema_ProximityDistTool::*)() const>(&BRepExtrema_ProximityDistTool::ProximityDistance), R"nbdoc(Returns the computed distance)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepExtrema_ProximityDistTool>(nb::borrow<nb::class_<BRepExtrema_ProximityDistTool>>(m.attr("BRepExtrema_ProximityDistTool")));
+    nb::borrow<nb::class_<BRepExtrema_ProximityDistTool::PrjState>>(m.attr("BRepExtrema_ProximityDistTool").attr("PrjState"))
+        .def(nb::init<>())
+        .def(nb::init<const int, const BVH_Tools<double, 3>::BVH_PrjStateInTriangle, const int, const int>(), nb::arg("theTrgIdx"), nb::arg("thePrjState"), nb::arg("theNumberOfFirstNode"), nb::arg("theNumberOfLastNode"))
+        .def("GetTrgIdx", static_cast<int (BRepExtrema_ProximityDistTool::PrjState::*)() const>(&BRepExtrema_ProximityDistTool::PrjState::GetTrgIdx))
+        .def("GetPrjState", static_cast<BVH_Tools<double, 3>::BVH_PrjStateInTriangle (BRepExtrema_ProximityDistTool::PrjState::*)() const>(&BRepExtrema_ProximityDistTool::PrjState::GetPrjState))
+        .def("GetNumberOfFirstNode", static_cast<int (BRepExtrema_ProximityDistTool::PrjState::*)() const>(&BRepExtrema_ProximityDistTool::PrjState::GetNumberOfFirstNode))
+        .def("GetNumberOfLastNode", static_cast<int (BRepExtrema_ProximityDistTool::PrjState::*)() const>(&BRepExtrema_ProximityDistTool::PrjState::GetNumberOfLastNode));
+    nanoocp_implicit_copy_ctor<BRepExtrema_ProximityDistTool::PrjState>(nb::borrow<nb::class_<BRepExtrema_ProximityDistTool::PrjState>>(m.attr("BRepExtrema_ProximityDistTool").attr("PrjState")));
     nb::borrow<nb::class_<BRepExtrema_VertexInspector>>(m.attr("BRepExtrema_VertexInspector"))
         .def(nb::init<>(), R"nbdoc(Constructor; remembers the tolerance)nbdoc")
         .def_static("Coord", static_cast<double (*)(int, const gp_XYZ &)>(&BRepExtrema_VertexInspector::Coord), nb::arg("i"), nb::arg("thePnt"))
@@ -420,6 +592,7 @@ for the value of the proximity.)nbdoc");
     nanoocp_implicit_copy_ctor<nanoocp_wrap_BRepExtrema_ShapeProximity>(nb::borrow<nb::class_<nanoocp_wrap_BRepExtrema_ShapeProximity>>(m.attr("BRepExtrema_ShapeProximity")));
     nb::implicitly_convertible<std::decay_t<const double>, nanoocp_wrap_BRepExtrema_ShapeProximity>();
     m.attr("VectorOfPoint") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_DynamicArray__gp_XYZ");   // VectorOfPoint = NCollection_DynamicArray<gp_XYZ>
+    m.attr("ProxPnt_Status") = m.attr("BRepExtrema_ProximityDistTool").attr("ProxPnt_Status");   // ProxPnt_Status = BRepExtrema_ProximityDistTool::ProxPnt_Status
 }
 
 void nanoocp_conversions_BRepExtrema(nb::module_ &m) {

@@ -113,6 +113,13 @@ inline nb::object nanoocp_new_exception(nb::handle m, const char *name, const ch
 // R-ITER (Design.md 2c): a class with More()/Next() and a parameterless Value() or Current() is its own Python
 // iterator, like a file object: __iter__ returns self, __next__ yields the current element and advances. The element
 // is copied out before Next() (a const reference from Value() would dangle afterwards).
+// Constructors of a class-template instantiation whose abstractness only the compiler can see (BVH_PrimitiveSet<double, 3>
+// through the pure virtuals of BVH_Set): the generic lambda's body is instantiated only when the class is concrete (R-TEMPLATE-BASE).
+template <typename T, typename F> void nanoocp_if_concrete(nb::class_<T> cls, F f) {
+    if constexpr (!std::is_abstract_v<T>)
+        f(cls);
+}
+
 template <typename T, typename Get> void nanoocp_def_iter(nb::class_<T> cls, Get get) {
     cls.def("__iter__", [](T &self) -> T & { return self; }, nb::rv_policy::reference,
             "Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.");

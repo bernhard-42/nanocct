@@ -879,11 +879,12 @@ With:
 0 <= mics)nbdoc");
     nanoocp_implicit_copy_ctor<Quantity_Period>(nb::borrow<nb::class_<Quantity_Period>>(m.attr("Quantity_Period")));
     nb::implicitly_convertible<std::decay_t<const int>, Quantity_Period>();
+    nanoocp_if_concrete<NCollection_Vec3<float>>(nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, float theValue) { new (self) nanoocp_T(theValue); }, nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec2<float> & theVec2, float theZ) { new (self) nanoocp_T(theVec2, theZ); }, nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<float>>(float(0)), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const float theX, const float theY, const float theZ) { new (self) nanoocp_T(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const NCollection_Vec2<float> &, float>(), nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<float>>(float(0)), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
-        .def(nb::init<const float, const float, const float>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec3<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec3<float>::*)(const float, const float, const float) noexcept>(&NCollection_Vec3<float>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec3<float>::*)(const NCollection_Vec2<float> &, float) noexcept>(&NCollection_Vec3<float>::SetValues), nb::arg("theVec2"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
@@ -945,12 +946,13 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
         .def("DumpJson", [](const NCollection_Vec3<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec3<float>>(nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float")));
+    nanoocp_if_concrete<NCollection_Vec4<float>>(nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const float theValue) { new (self) nanoocp_T(theValue); }, nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec2<float> & theVec2) { new (self) nanoocp_T(theVec2); }, nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec3<float> & theVec3, const float theW) { new (self) nanoocp_T(theVec3, theW); }, nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const float>>(float(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const float theX, const float theY, const float theZ, const float theW) { new (self) nanoocp_T(theX, theY, theZ, theW); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<const float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const NCollection_Vec2<float> &>(), nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
-        .def(nb::init<const NCollection_Vec3<float> &, const float>(), nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const float>>(float(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
-        .def(nb::init<const float, const float, const float, const float>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec4<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec4<float>::*)(const float, const float, const float, const float) noexcept>(&NCollection_Vec4<float>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec4<float>::*)(const NCollection_Vec3<float> &, const float) noexcept>(&NCollection_Vec4<float>::SetValues), nb::arg("theVec3"), nb::arg("theW"), R"nbdoc(Assign new values as 3-component vector and a 4-th value.)nbdoc")

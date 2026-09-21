@@ -2,6 +2,7 @@
 
 from typing import overload
 
+import nanoocp.Bnd
 import nanoocp.NCollection
 import nanoocp.Quantity
 import nanoocp.Standard
@@ -2443,7 +2444,7 @@ class BVH_Builder3d(BVH_BuilderTransient):
     \\tparam N Vector dimension
     """
 
-    def Build(self, theSet: "BVH_Set<double, 3>", theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>", theBox: "BVH_Box<double, 3>") -> None:
+    def Build(self, theSet: BVH_Set__double__3, theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>", theBox: nanoocp.Bnd.BVH_Box__double__3) -> None:
         """Builds BVH using specific algorithm."""
 
 class BitPredicate:
@@ -2490,6 +2491,65 @@ class RadixSorter:
 
     @overload
     def __init__(self, theOther: RadixSorter) -> None: ...
+
+class BVH_Object__double__3(BVH_ObjectTransient):
+    """
+    Abstract geometric object bounded by BVH box.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns AABB of the geometric object."""
+
+class BVH_Set__double__3:
+    """
+    Set of abstract entities (bounded by BVH boxes). This is
+    the minimal geometry interface needed to construct BVH.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    @overload
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns AABB of the entire set of objects."""
+
+    @overload
+    def Box(self, theIndex: int) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns AABB of the given object."""
+
+    def Size(self) -> int:
+        """Returns total number of objects."""
+
+    def Center(self, theIndex: int, theAxis: int) -> float:
+        """Returns centroid position along the given axis."""
+
+    def Swap(self, theIndex1: int, theIndex2: int) -> None:
+        """Performs transposing the two given objects in the set."""
+
+class BVH_PrimitiveSet3d(BVH_Object__double__3):
+    """
+    Set of abstract geometric primitives organized with bounding
+    volume hierarchy (BVH). Unlike an object set, this collection
+    is designed for storing structural elements of a single object
+    (such as triangles in the object triangulation). Because there
+    may be a large number of such elements, the implementations of
+    this interface should be sufficiently optimized.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns AABB of primitive set."""
+
+    def BVH(self) -> "BVH_Tree<double, 3, BVH_BinaryTree>":
+        """Returns BVH tree (and builds it if necessary)."""
+
+    def Builder(self) -> BVH_Builder3d:
+        """Returns the method (builder) used to construct BVH."""
+
+    def SetBuilder(self, theBuilder: BVH_Builder3d | None) -> None:
+        """Sets the method (builder) used to construct BVH."""
 
 def EncodeMortonCode(theVoxelX: int, theVoxelY: int, theVoxelZ: int) -> int:
     """

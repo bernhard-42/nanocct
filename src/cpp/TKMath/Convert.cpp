@@ -337,11 +337,12 @@ the same orientation as the circle C.
 Raised if U1 = U2 or U1 = U2 + 2.0 * Pi)nbdoc");
     nanoocp_implicit_copy_ctor<Convert_CircleToBSplineCurve>(nb::borrow<nb::class_<Convert_CircleToBSplineCurve>>(m.attr("Convert_CircleToBSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const gp_Circ2d &>, Convert_CircleToBSplineCurve>();
-    nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d"))
-        .def(nb::init<const double>(), nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
+    nanoocp_if_concrete<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>>(nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const double theAngularTolerance) { new (self) nanoocp_T(theAngularTolerance); }, nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
 adjacent non-rational Bezier curves into a BSpline curve.
 @param[in] theAngularTolerance angular tolerance in radians
-for checking tangent parallelism at junction points)nbdoc")
+for checking tangent parallelism at junction points)nbdoc"); });
+    nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt2d__gp_Vec2d"))
         .def("AddCurve", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::*)(const NCollection_Array1<gp_Pnt2d> &)>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt2d, gp_Vec2d>::AddCurve), nb::arg("thePoles"), R"nbdoc(Adds the Bezier curve defined by the table of poles to
 the sequence of adjacent Bezier curves to be converted.
 @param[in] thePoles poles of the Bezier curve to add)nbdoc")
@@ -364,11 +365,12 @@ adjacent non-rational Bezier curves into a BSpline curve.
 for checking tangent parallelism at junction points)nbdoc");
     nanoocp_implicit_copy_ctor<Convert_CompBezierCurves2dToBSplineCurve2d>(nb::borrow<nb::class_<Convert_CompBezierCurves2dToBSplineCurve2d>>(m.attr("Convert_CompBezierCurves2dToBSplineCurve2d")));
     nb::implicitly_convertible<std::decay_t<const double>, Convert_CompBezierCurves2dToBSplineCurve2d>();
-    nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec"))
-        .def(nb::init<const double>(), nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
+    nanoocp_if_concrete<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>>(nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const double theAngularTolerance) { new (self) nanoocp_T(theAngularTolerance); }, nb::arg("theAngularTolerance") = static_cast<std::decay_t<const double>>(1.0e-4), R"nbdoc(Constructs a framework for converting a sequence of
 adjacent non-rational Bezier curves into a BSpline curve.
 @param[in] theAngularTolerance angular tolerance in radians
-for checking tangent parallelism at junction points)nbdoc")
+for checking tangent parallelism at junction points)nbdoc"); });
+    nb::borrow<nb::class_<Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>>>(m.attr("Convert_CompBezierCurvesToBSplineCurveBase__gp_Pnt__gp_Vec"))
         .def("AddCurve", static_cast<void (Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::*)(const NCollection_Array1<gp_Pnt> &)>(&Convert_CompBezierCurvesToBSplineCurveBase<gp_Pnt, gp_Vec>::AddCurve), nb::arg("thePoles"), R"nbdoc(Adds the Bezier curve defined by the table of poles to
 the sequence of adjacent Bezier curves to be converted.
 @param[in] thePoles poles of the Bezier curve to add)nbdoc")

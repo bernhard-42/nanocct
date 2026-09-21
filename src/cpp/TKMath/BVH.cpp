@@ -127,6 +127,24 @@ boxes (AABBs) of abstract objects.
     }
     { nb::class_<BVH::RadixSorter> cls(m, "RadixSorter", R"nbdoc(Tool object for sorting link array using radix sort algorithm.)nbdoc");
     }
+    { nb::class_<BVH_Object<double, 3>, BVH_ObjectTransient> cls(m, "BVH_Object__double__3", R"nbdoc(Abstract geometric object bounded by BVH box.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
+    { nb::class_<BVH_Set<double, 3>> cls(m, "BVH_Set__double__3", R"nbdoc(Set of abstract entities (bounded by BVH boxes). This is
+the minimal geometry interface needed to construct BVH.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
+    { nb::class_<BVH_PrimitiveSet<double, 3>, BVH_Object<double, 3>> cls(m, "BVH_PrimitiveSet3d", R"nbdoc(Set of abstract geometric primitives organized with bounding
+volume hierarchy (BVH). Unlike an object set, this collection
+is designed for storing structural elements of a single object
+(such as triangles in the object triangulation). Because there
+may be a large number of such elements, the implementations of
+this interface should be sufficiently optimized.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
 }
 
 void nanoocp_templates_BVH(nb::module_ &m) {
@@ -150,10 +168,11 @@ void nanoocp_templates_BVH(nb::module_ &m) {
 }
 
 void nanoocp_define_BVH(nb::module_ &m) {
+    nanoocp_if_concrete<NCollection_Vec2<int>>(nb::borrow<nb::class_<NCollection_Vec2<int>>>(m.attr("BVH_Vec2i")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theXY) { new (self) nanoocp_T(theXY); }, nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theX, const int theY) { new (self) nanoocp_T(theX, theY); }, nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec2<int>>>(m.attr("BVH_Vec2i"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<const int>(), nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec2<int>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec2<int>::*)(const int, const int) noexcept>(&NCollection_Vec2<int>::SetValues), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("xy", static_cast<NCollection_Vec2<int> (NCollection_Vec2<int>::*)() const noexcept>(&NCollection_Vec2<int>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
@@ -189,11 +208,12 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def("DumpJson", [](const NCollection_Vec2<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec2<int>>(nb::borrow<nb::class_<NCollection_Vec2<int>>>(m.attr("BVH_Vec2i")));
+    nanoocp_if_concrete<NCollection_Vec3<int>>(nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, int theValue) { new (self) nanoocp_T(theValue); }, nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec2<int> & theVec2, int theZ) { new (self) nanoocp_T(theVec2, theZ); }, nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<int>>(int(0)), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theX, const int theY, const int theZ) { new (self) nanoocp_T(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<int>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const NCollection_Vec2<int> &, int>(), nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<int>>(int(0)), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
-        .def(nb::init<const int, const int, const int>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec3<int>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec3<int>::*)(const int, const int, const int) noexcept>(&NCollection_Vec3<int>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec3<int>::*)(const NCollection_Vec2<int> &, int) noexcept>(&NCollection_Vec3<int>::SetValues), nb::arg("theVec2"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
@@ -255,12 +275,13 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
         .def("DumpJson", [](const NCollection_Vec3<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec3<int>>(nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i")));
+    nanoocp_if_concrete<NCollection_Vec4<int>>(nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theValue) { new (self) nanoocp_T(theValue); }, nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec2<int> & theVec2) { new (self) nanoocp_T(theVec2); }, nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec3<int> & theVec3, const int theW) { new (self) nanoocp_T(theVec3, theW); }, nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const int>>(int(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theX, const int theY, const int theZ, const int theW) { new (self) nanoocp_T(theX, theY, theZ, theW); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<const int>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const NCollection_Vec2<int> &>(), nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
-        .def(nb::init<const NCollection_Vec3<int> &, const int>(), nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const int>>(int(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
-        .def(nb::init<const int, const int, const int, const int>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec4<int>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec4<int>::*)(const int, const int, const int, const int) noexcept>(&NCollection_Vec4<int>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec4<int>::*)(const NCollection_Vec3<int> &, const int) noexcept>(&NCollection_Vec4<int>::SetValues), nb::arg("theVec3"), nb::arg("theW"), R"nbdoc(Assign new values as 3-component vector and a 4-th value.)nbdoc")
@@ -344,10 +365,11 @@ This method may be used for performance tricks.)nbdoc")
         .def("__truediv__", static_cast<NCollection_Vec4<int> (NCollection_Vec4<int>::*)(const int) const>(&NCollection_Vec4<int>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("DumpJson", [](const NCollection_Vec4<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec4<int>>(nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i")));
+    nanoocp_if_concrete<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const float theXY) { new (self) nanoocp_T(theXY); }, nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const float theX, const float theY) { new (self) nanoocp_T(theX, theY); }, nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<const float>(), nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const float, const float>(), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec2<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec2<float>::*)(const float, const float) noexcept>(&NCollection_Vec2<float>::SetValues), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("xy", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
@@ -383,10 +405,11 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def("DumpJson", [](const NCollection_Vec2<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")));
+    nanoocp_if_concrete<NCollection_Vec2<double>>(nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const double theXY) { new (self) nanoocp_T(theXY); }, nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const double theX, const double theY) { new (self) nanoocp_T(theX, theY); }, nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<const double>(), nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const double, const double>(), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec2<double>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec2<double>::*)(const double, const double) noexcept>(&NCollection_Vec2<double>::SetValues), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("xy", static_cast<NCollection_Vec2<double> (NCollection_Vec2<double>::*)() const noexcept>(&NCollection_Vec2<double>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
@@ -422,11 +445,12 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def("DumpJson", [](const NCollection_Vec2<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec2<double>>(nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d")));
+    nanoocp_if_concrete<NCollection_Vec3<double>>(nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, double theValue) { new (self) nanoocp_T(theValue); }, nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec2<double> & theVec2, double theZ) { new (self) nanoocp_T(theVec2, theZ); }, nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<double>>(double(0)), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const double theX, const double theY, const double theZ) { new (self) nanoocp_T(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<double>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const NCollection_Vec2<double> &, double>(), nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<double>>(double(0)), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
-        .def(nb::init<const double, const double, const double>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec3<double>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec3<double>::*)(const double, const double, const double) noexcept>(&NCollection_Vec3<double>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec3<double>::*)(const NCollection_Vec2<double> &, double) noexcept>(&NCollection_Vec3<double>::SetValues), nb::arg("theVec2"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
@@ -488,12 +512,13 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
         .def("DumpJson", [](const NCollection_Vec3<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec3<double>>(nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d")));
+    nanoocp_if_concrete<NCollection_Vec4<double>>(nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const double theValue) { new (self) nanoocp_T(theValue); }, nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec2<double> & theVec2) { new (self) nanoocp_T(theVec2); }, nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec3<double> & theVec3, const double theW) { new (self) nanoocp_T(theVec3, theW); }, nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const double>>(double(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const double theX, const double theY, const double theZ, const double theW) { new (self) nanoocp_T(theX, theY, theZ, theW); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def(nb::init<const double>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const NCollection_Vec2<double> &>(), nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
-        .def(nb::init<const NCollection_Vec3<double> &, const double>(), nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const double>>(double(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
-        .def(nb::init<const double, const double, const double, const double>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec4<double>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec4<double>::*)(const double, const double, const double, const double) noexcept>(&NCollection_Vec4<double>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Assign new values to the vector.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec4<double>::*)(const NCollection_Vec3<double> &, const double) noexcept>(&NCollection_Vec4<double>::SetValues), nb::arg("theVec3"), nb::arg("theW"), R"nbdoc(Assign new values as 3-component vector and a 4-th value.)nbdoc")
@@ -577,9 +602,10 @@ This method may be used for performance tricks.)nbdoc")
         .def("__truediv__", static_cast<NCollection_Vec4<double> (NCollection_Vec4<double>::*)(const double) const>(&NCollection_Vec4<double>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("DumpJson", [](const NCollection_Vec4<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Vec4<double>>(nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d")));
+    nanoocp_if_concrete<NCollection_Mat4<float>>(nb::borrow<nb::class_<NCollection_Mat4<float>>>(m.attr("BVH_Mat4f")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.
+Construct the identity matrix.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Mat4<float>>>(m.attr("BVH_Mat4f"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor.
-Construct the identity matrix.)nbdoc")
         .def_static("Rows", static_cast<size_t (*)() noexcept>(&NCollection_Mat4<float>::Rows), R"nbdoc(Get number of rows.
 @return number of rows.)nbdoc")
         .def_static("Cols", static_cast<size_t (*)() noexcept>(&NCollection_Mat4<float>::Cols), R"nbdoc(Get number of columns.
@@ -691,9 +717,10 @@ Construct the identity matrix.)nbdoc")
         .def("Adjoint", static_cast<NCollection_Mat4<float> (NCollection_Mat4<float>::*)() const noexcept>(&NCollection_Mat4<float>::Adjoint), R"nbdoc(Return adjoint (adjugate matrix, e.g. conjugate transpose).)nbdoc")
         .def("DumpJson", [](const NCollection_Mat4<float> &self, int arg1) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, arg1); return nanoocp_stream_text(theOStream_stream); }, nb::arg("arg1"), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_Mat4<float>>(nb::borrow<nb::class_<NCollection_Mat4<float>>>(m.attr("BVH_Mat4f")));
+    nanoocp_if_concrete<NCollection_Mat4<double>>(nb::borrow<nb::class_<NCollection_Mat4<double>>>(m.attr("BVH_Mat4d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.
+Construct the identity matrix.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_Mat4<double>>>(m.attr("BVH_Mat4d"))
-        .def(nb::init<>(), R"nbdoc(Empty constructor.
-Construct the identity matrix.)nbdoc")
         .def_static("Rows", static_cast<size_t (*)() noexcept>(&NCollection_Mat4<double>::Rows), R"nbdoc(Get number of rows.
 @return number of rows.)nbdoc")
         .def_static("Cols", static_cast<size_t (*)() noexcept>(&NCollection_Mat4<double>::Cols), R"nbdoc(Get number of columns.
@@ -874,6 +901,30 @@ finding an empty queue to determine if they should exit or wait.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const int>, BVH::BitComparator>();
     nanoocp_implicit_default_ctor<BVH::RadixSorter>(nb::borrow<nb::class_<BVH::RadixSorter>>(m.attr("RadixSorter")));
     nanoocp_implicit_copy_ctor<BVH::RadixSorter>(nb::borrow<nb::class_<BVH::RadixSorter>>(m.attr("RadixSorter")));
+    nanoocp_if_concrete<BVH_Object<double, 3>>(nb::borrow<nb::class_<BVH_Object<double, 3>>>(m.attr("BVH_Object__double__3")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([]() { return opencascade::handle<nanoocp_T>(new nanoocp_T()); }), R"nbdoc(Creates new abstract geometric object.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Object<double, 3>>>(m.attr("BVH_Object__double__3"))
+        .def("Box", static_cast<BVH_Box<double, 3> (BVH_Object<double, 3>::*)() const>(&BVH_Object<double, 3>::Box), R"nbdoc(Returns AABB of the geometric object.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Object<double, 3>>(nb::borrow<nb::class_<BVH_Object<double, 3>>>(m.attr("BVH_Object__double__3")));
+    nanoocp_if_concrete<BVH_Set<double, 3>>(nb::borrow<nb::class_<BVH_Set<double, 3>>>(m.attr("BVH_Set__double__3")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Creates new abstract set of objects.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Set<double, 3>>>(m.attr("BVH_Set__double__3"))
+        .def("Box", static_cast<BVH_Box<double, 3> (BVH_Set<double, 3>::*)() const>(&BVH_Set<double, 3>::Box), R"nbdoc(Returns AABB of the entire set of objects.)nbdoc")
+        .def("Size", static_cast<int (BVH_Set<double, 3>::*)() const>(&BVH_Set<double, 3>::Size), R"nbdoc(Returns total number of objects.)nbdoc")
+        .def("Box", static_cast<BVH_Box<double, 3> (BVH_Set<double, 3>::*)(const int) const>(&BVH_Set<double, 3>::Box), nb::arg("theIndex"), R"nbdoc(Returns AABB of the given object.)nbdoc")
+        .def("Center", static_cast<double (BVH_Set<double, 3>::*)(const int, const int) const>(&BVH_Set<double, 3>::Center), nb::arg("theIndex"), nb::arg("theAxis"), R"nbdoc(Returns centroid position along the given axis.)nbdoc")
+        .def("Swap", static_cast<void (BVH_Set<double, 3>::*)(const int, const int)>(&BVH_Set<double, 3>::Swap), nb::arg("theIndex1"), nb::arg("theIndex2"), R"nbdoc(Performs transposing the two given objects in the set.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Set<double, 3>>(nb::borrow<nb::class_<BVH_Set<double, 3>>>(m.attr("BVH_Set__double__3")));
+    nanoocp_if_concrete<BVH_PrimitiveSet<double, 3>>(nb::borrow<nb::class_<BVH_PrimitiveSet<double, 3>>>(m.attr("BVH_PrimitiveSet3d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def(nb::new_([]() { return opencascade::handle<nanoocp_T>(new nanoocp_T()); }), R"nbdoc(Creates set of abstract primitives.)nbdoc")
+        .def(nb::new_([](const opencascade::handle<BVH_Builder<double, 3>> & theBuilder) { return opencascade::handle<nanoocp_T>(new nanoocp_T(theBuilder)); }), nb::arg("theBuilder").none(), R"nbdoc(Creates set of abstract primitives.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_PrimitiveSet<double, 3>>>(m.attr("BVH_PrimitiveSet3d"))
+        .def("Box", static_cast<BVH_Box<double, 3> (BVH_PrimitiveSet<double, 3>::*)() const>(&BVH_PrimitiveSet<double, 3>::Box), R"nbdoc(Returns AABB of primitive set.)nbdoc")
+        .def("BVH", static_cast<const opencascade::handle<BVH_Tree<double, 3>> & (BVH_PrimitiveSet<double, 3>::*)()>(&BVH_PrimitiveSet<double, 3>::BVH), R"nbdoc(Returns BVH tree (and builds it if necessary).)nbdoc")
+        .def("Builder", static_cast<const opencascade::handle<BVH_Builder<double, 3>> & (BVH_PrimitiveSet<double, 3>::*)() const>(&BVH_PrimitiveSet<double, 3>::Builder), R"nbdoc(Returns the method (builder) used to construct BVH.)nbdoc")
+        .def("SetBuilder", static_cast<void (BVH_PrimitiveSet<double, 3>::*)(const opencascade::handle<BVH_Builder<double, 3>> &)>(&BVH_PrimitiveSet<double, 3>::SetBuilder), nb::arg("theBuilder").none(), R"nbdoc(Sets the method (builder) used to construct BVH.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_PrimitiveSet<double, 3>>(nb::borrow<nb::class_<BVH_PrimitiveSet<double, 3>>>(m.attr("BVH_PrimitiveSet3d")));
+    nb::implicitly_convertible<std::decay_t<const opencascade::handle<BVH_Builder<double, 3>> &>, BVH_PrimitiveSet<double, 3>>();
     m.attr("BVH_Array2i") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_LinearVector__NCollection_Vec2__int");   // BVH_Array2i = NCollection_LinearVector<NCollection_Vec2<int>>
     m.attr("BVH_Array3i") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_LinearVector__NCollection_Vec3__int");   // BVH_Array3i = NCollection_LinearVector<NCollection_Vec3<int>>
     m.attr("BVH_Array4i") = nb::module_::import_("nanoocp._TKernel.NCollection").attr("NCollection_LinearVector__NCollection_Vec4__int");   // BVH_Array4i = NCollection_LinearVector<NCollection_Vec4<int>>

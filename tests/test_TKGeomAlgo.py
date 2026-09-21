@@ -106,13 +106,13 @@ def test_prelude_header_and_per_overload_undefined_members():
                "const occ::handle<Geom_Curve> &, const double): declared in the header" in l for l in lines)
 
 
-def test_skipped_base_chain_is_reported_and_absent():
-    # BVH_PrimitiveSet<double, 3> (base BVH_Object<double, 3> unbound) and IntPatch_PolyhedronBVH deriving from it
-    assert not hasattr(IntPatch, "IntPatch_PolyhedronBVH") and hasattr(IntPatch, "IntPatch_Polyhedron")
-    lines = REPORT.read_text().splitlines()
-    assert any(l.endswith("IntPatch_PolyhedronBVH: base class BVH_PrimitiveSet<double, 3> is not bound (skipped) -> class skipped") for l in lines)
+def test_bvh_polyhedron_binds_through_the_template_chain():
+    # IntPatch_PolyhedronBVH : BVH_PrimitiveSet<double, 3> : BVH_Object<double, 3> (+ BVH_Set): since R-TEMPLATE-BASE the chain
+    # is instantiated (it was the example of the skipped-base chain before)
+    assert hasattr(IntPatch, "IntPatch_PolyhedronBVH") and hasattr(IntPatch, "IntPatch_Polyhedron")
+    assert [c.__name__ for c in IntPatch.IntPatch_PolyhedronBVH.__mro__[1:4]] == ["BVH_PrimitiveSet3d", "BVH_Object__double__3", "BVH_ObjectTransient"]
     manifest = json.loads((REPORT.parents[1] / "manifest.json").read_text())
-    assert "BVH_PrimitiveSet<double, 3>" not in manifest["classes"] and "IntPatch_PolyhedronBVH" not in manifest["classes"]
+    assert manifest["classes"]["BVH_PrimitiveSet<double, 3>"] == "BVH" and "IntPatch_PolyhedronBVH" in manifest["classes"]
 
 
 def test_curve_surface_intersection():

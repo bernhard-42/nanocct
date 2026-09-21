@@ -2,10 +2,12 @@
 
 from collections.abc import Sequence
 import enum
+import types
 from typing import overload
 
 import nanoocp.Adaptor2d
 import nanoocp.Adaptor3d
+import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Geom2d
 import nanoocp.GeomAbs
@@ -622,6 +624,154 @@ class IntPatch_ArcFunction(nanoocp.math.math_FunctionWithDerivative):
         """
         Returns the point, which has been computed
         while the last calling Value() method
+        """
+
+class BVH_BaseTraverse__double:
+    """
+    Abstract class implementing the base Traverse interface
+    required for selection of the elements from BVH tree.
+
+    \\tparam MetricType Type of metric to perform more optimal tree descend
+    """
+
+    def IsMetricBetter(self, arg0: float, arg1: float) -> bool:
+        """
+        @name Metrics comparison for choosing the best branch
+        Compares the two metrics and chooses the best one.
+        Returns true if the first metric is better than the second,
+        false otherwise.
+        """
+
+    def RejectMetric(self, arg0: float) -> bool:
+        """
+        @name Rejection of the node by metric
+        Rejects the node by the metric
+        """
+
+    def Stop(self) -> bool:
+        """
+        @name Condition to stop the descend
+        Returns the flag controlling the tree descend.
+        Returns true if the tree descend should be stopped.
+        """
+
+class BVH_PairTraverse__double__3__void__double(BVH_BaseTraverse__double):
+    """
+    Abstract class implementing the parallel traverse of two binary trees.
+    Selection of the data from the trees is performed by the
+    rules defined in the Accept/Reject methods.
+    See description of the required methods in the comments above.
+
+    \\tparam NumType Numeric data type
+    \\tparam Dimension Vector dimension
+    \\tparam BVHSetType Type of set containing the BVH tree (required to access the elements by the
+    index) \\tparam MetricType Type of metric to perform more optimal tree descend
+    """
+
+    def SetBVHSets(self, theBVHSet1: types.CapsuleType, theBVHSet2: types.CapsuleType) -> None:
+        """
+        @name Setting the sets to access the elements and BVH trees
+        Sets the BVH Sets containing the BVH trees
+        """
+
+    def RejectNode(self, theCornerMin1: nanoocp.BVH.BVH_Vec3d, theCornerMax1: nanoocp.BVH.BVH_Vec3d, theCornerMin2: nanoocp.BVH.BVH_Vec3d, theCornerMax2: nanoocp.BVH.BVH_Vec3d, theMetric: float) -> bool:
+        """
+        @name Rules for Accept/Reject
+        Rejection of the pair of nodes by bounding boxes.
+        Metric is computed to choose the best branch.
+        Returns true if the pair of nodes should be rejected, false otherwise.
+        """
+
+    def Accept(self, theIndex1: int, theIndex2: int) -> bool:
+        """
+        Leaf element acceptance.
+        Returns true if the pair of elements is accepted, false otherwise.
+        """
+
+    def Select(self, theBVH1: "BVH_Tree<double, 3, BVH_BinaryTree>" | None, theBVH2: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+        """
+        Performs selection of the elements from two BVH trees by the
+        rules defined in Accept/Reject methods.
+        Returns the number of accepted pairs of elements.
+        """
+
+class IntPatch_BVHTraversal(BVH_PairTraverse__double__3__void__double):
+    """
+    Performs BVH tree traversal of two polyhedra to find candidate triangle pairs
+    for intersection testing. This class implements the BVH_PairTraverse interface
+    to efficiently find potentially intersecting triangles using bounding box tests.
+
+    The traversal collects pairs of original (1-based) triangle indices that have
+    overlapping bounding boxes, which should then be tested for actual geometric
+    intersection using IntPatch_InterferencePolyhedron::Intersect().
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Creates an empty traversal object."""
+
+    @overload
+    def __init__(self, theOther: IntPatch_BVHTraversal) -> None: ...
+
+    class TrianglePair:
+        """
+        Pair of triangle indices (both 1-based, original indices in polyhedra).
+        """
+
+        @overload
+        def __init__(self, theFirst: int = 0, theSecond: int = 0) -> None: ...
+
+        @overload
+        def __init__(self, theOther: IntPatch_BVHTraversal.TrianglePair) -> None: ...
+
+        @property
+        def First(self) -> int:
+            """Triangle index in first polyhedron (1-based)"""
+
+        @First.setter
+        def First(self, arg: int, /) -> None: ...
+
+        @property
+        def Second(self) -> int:
+            """Triangle index in second polyhedron (1-based)"""
+
+        @Second.setter
+        def Second(self, arg: int, /) -> None: ...
+
+    def Perform(self, theSet1: IntPatch_PolyhedronBVH, theSet2: IntPatch_PolyhedronBVH, theSelfInterference: bool = False) -> int:
+        """
+        Performs BVH traversal and collects candidate triangle pairs.
+        @param[in] theSet1 BVH set for the first polyhedron
+        @param[in] theSet2 BVH set for the second polyhedron
+        @param[in] theSelfInterference if true, skip pairs where first index >= second index
+        (used for self-intersection where we don't want to test same pair twice)
+        @return number of collected pairs
+        """
+
+    def Pairs(self) -> nanoocp.NCollection.NCollection_DynamicArray[nanoocp.IntPatch.IntPatch_BVHTraversal.TrianglePair]:
+        """Returns the collected triangle pairs."""
+
+    def Clear(self) -> None:
+        """Clears the collected pairs."""
+
+    def RejectNode(self, theCMin1: nanoocp.BVH.BVH_Vec3d, theCMax1: nanoocp.BVH.BVH_Vec3d, theCMin2: nanoocp.BVH.BVH_Vec3d, theCMax2: nanoocp.BVH.BVH_Vec3d) -> tuple[bool, float]:
+        """
+        @name BVH_PairTraverse interface implementation
+        Rejects pair of nodes if their bounding boxes don't overlap.
+        @param[in] theCMin1 minimum corner of the first node's bounding box
+        @param[in] theCMax1 maximum corner of the first node's bounding box
+        @param[in] theCMin2 minimum corner of the second node's bounding box
+        @param[in] theCMax2 maximum corner of the second node's bounding box
+        @param[out] theMetric unused metric parameter
+        @return true if the pair should be rejected (no overlap), false otherwise
+        """
+
+    def Accept(self, theIndex1: int, theIndex2: int) -> bool:
+        """
+        Accepts a pair of leaf elements and stores their original indices.
+        @param[in] theIndex1 0-based index in the first BVH set
+        @param[in] theIndex2 0-based index in the second BVH set
+        @return true (always accepts the pair)
         """
 
 class IntPatch_CSFunction(nanoocp.math.math_FunctionSetWithDerivatives):
@@ -1930,6 +2080,79 @@ class IntPatch_Polyhedron:
     def Parameters(self, Index: int) -> tuple[float, float]: ...
 
     def Dump(self) -> None: ...
+
+class IntPatch_PolyhedronBVH(nanoocp.BVH.BVH_PrimitiveSet3d):
+    """
+    Wraps IntPatch_Polyhedron as a BVH_PrimitiveSet for efficient spatial queries.
+    This class provides a BVH (Bounding Volume Hierarchy) representation of a polyhedron's
+    triangles, enabling O(log n) spatial queries instead of linear search.
+
+    The class stores a reference to the polyhedron (no data copy) and maintains
+    an index mapping to track triangle reordering during BVH construction.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Creates an empty BVH set."""
+
+    @overload
+    def __init__(self, thePoly: IntPatch_Polyhedron) -> None:
+        """
+        Creates BVH set from the given polyhedron.
+        @param[in] thePoly the polyhedron to wrap (must remain valid during BVH lifetime)
+        """
+
+    @overload
+    def __init__(self, theOther: IntPatch_PolyhedronBVH) -> None: ...
+
+    def Init(self, thePoly: IntPatch_Polyhedron) -> None:
+        """
+        Initializes BVH set from the given polyhedron.
+        @param[in] thePoly the polyhedron to wrap (must remain valid during BVH lifetime)
+        """
+
+    def Clear(self) -> None:
+        """Clears the BVH set."""
+
+    @overload
+    def Box(self) -> nanoocp.Bnd.BVH_Box__double__3:
+        """Returns AABB of primitive set."""
+
+    @overload
+    def Box(self, theIndex: int) -> nanoocp.Bnd.BVH_Box__double__3:
+        """
+        Returns AABB of the triangle with the given index.
+        @param[in] theIndex 0-based triangle index (after BVH reordering)
+        """
+
+    def Size(self) -> int:
+        """Returns the total number of triangles."""
+
+    def Center(self, theIndex: int, theAxis: int) -> float:
+        """
+        Returns centroid coordinate of the triangle along the given axis.
+        @param[in] theIndex 0-based triangle index (after BVH reordering)
+        @param[in] theAxis axis index (0=X, 1=Y, 2=Z)
+        """
+
+    def Swap(self, theIndex1: int, theIndex2: int) -> None:
+        """
+        Swaps two triangles in the set (used during BVH construction).
+        @param[in] theIndex1 first triangle index
+        @param[in] theIndex2 second triangle index
+        """
+
+    def OriginalIndex(self, theIndex: int) -> int:
+        """
+        @name Additional methods
+        Returns the original (1-based) triangle index in the polyhedron
+        for the given 0-based index after BVH reordering.
+        @param[in] theIndex 0-based triangle index (after BVH reordering)
+        @return 1-based original triangle index in the polyhedron
+        """
+
+    def IsInitialized(self) -> bool:
+        """Returns true if the BVH set is initialized."""
 
 class IntPatch_PolyhedronTool:
     """

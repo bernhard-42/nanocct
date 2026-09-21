@@ -47,6 +47,8 @@ def _generic_spelling(concrete: str, templates: dict[str, dict]) -> str:
     for key, inst in templates.items():
         if inst.get("name") == name:
             kind, args = re.match(r"([\w:]+)<(.*)>$", key).groups()
+            if kind not in BINDERS:            # a 6c instantiation (NCollection_EBTree<int, Bnd_Box2d>): no generic class, the concrete one is the type
+                return concrete
             return f"{kind}[{', '.join(_stub_arg(a, templates) for a in _split_args(args))}]"
     return concrete
 

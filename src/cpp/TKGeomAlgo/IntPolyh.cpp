@@ -268,15 +268,16 @@ void nanoocp_define_IntPolyh(nb::module_ &m) {
         .def("SetSecondTriangle", static_cast<void (IntPolyh_Edge::*)(const int)>(&IntPolyh_Edge::SetSecondTriangle), nb::arg("theTriangle"), R"nbdoc(Sets the second triangle)nbdoc")
         .def("Dump", static_cast<void (IntPolyh_Edge::*)(const int) const>(&IntPolyh_Edge::Dump), nb::arg("v"));
     nanoocp_implicit_copy_ctor<IntPolyh_Edge>(nb::borrow<nb::class_<IntPolyh_Edge>>(m.attr("IntPolyh_Edge")));
-    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Edge>>>(m.attr("IntPolyh_ArrayOfEdges"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<IntPolyh_Array<IntPolyh_Edge>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Edge>>>(m.attr("IntPolyh_ArrayOfEdges")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 @param aIncrement
 size of memory (in terms of Items) to expand the array)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
+        .def("__init__", [](nanoocp_T *self, const int aN, const int aIncrement) { new (self) nanoocp_T(aN, aIncrement); }, nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
 @param aN
 size of memory (in terms of Items) to allocate
 @param aIncrement
-size of memory (in terms of Items) to expand the array)nbdoc")
+size of memory (in terms of Items) to expand the array)nbdoc"); });
+    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Edge>>>(m.attr("IntPolyh_ArrayOfEdges"))
         .def("Copy", static_cast<IntPolyh_Array<IntPolyh_Edge> & (IntPolyh_Array<IntPolyh_Edge>::*)(const IntPolyh_Array<IntPolyh_Edge> &)>(&IntPolyh_Array<IntPolyh_Edge>::Copy), nb::rv_policy::reference_internal, nb::arg("aOther"), R"nbdoc(Copy
 @param
 aOther - the array to copy from
@@ -345,15 +346,16 @@ the item)nbdoc", nb::is_operator());
         .def("SetDegenerated", static_cast<void (IntPolyh_Point::*)(const bool)>(&IntPolyh_Point::SetDegenerated), nb::arg("theFlag"), R"nbdoc(Sets the degenerated flag)nbdoc")
         .def("Degenerated", static_cast<bool (IntPolyh_Point::*)() const>(&IntPolyh_Point::Degenerated), R"nbdoc(Returns the degenerated flag)nbdoc");
     nanoocp_implicit_copy_ctor<IntPolyh_Point>(nb::borrow<nb::class_<IntPolyh_Point>>(m.attr("IntPolyh_Point")));
-    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Point>>>(m.attr("IntPolyh_ArrayOfPoints"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<IntPolyh_Array<IntPolyh_Point>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Point>>>(m.attr("IntPolyh_ArrayOfPoints")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 @param aIncrement
 size of memory (in terms of Items) to expand the array)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
+        .def("__init__", [](nanoocp_T *self, const int aN, const int aIncrement) { new (self) nanoocp_T(aN, aIncrement); }, nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
 @param aN
 size of memory (in terms of Items) to allocate
 @param aIncrement
-size of memory (in terms of Items) to expand the array)nbdoc")
+size of memory (in terms of Items) to expand the array)nbdoc"); });
+    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Point>>>(m.attr("IntPolyh_ArrayOfPoints"))
         .def("Copy", static_cast<IntPolyh_Array<IntPolyh_Point> & (IntPolyh_Array<IntPolyh_Point>::*)(const IntPolyh_Array<IntPolyh_Point> &)>(&IntPolyh_Array<IntPolyh_Point>::Copy), nb::rv_policy::reference_internal, nb::arg("aOther"), R"nbdoc(Copy
 @param
 aOther - the array to copy from
@@ -393,15 +395,16 @@ the item)nbdoc", nb::is_operator())
     nanoocp_implicit_copy_ctor<IntPolyh_PointNormal>(nb::borrow<nb::class_<IntPolyh_PointNormal>>(m.attr("IntPolyh_PointNormal")));
     nanoocp_def_field(nb::borrow<nb::class_<IntPolyh_PointNormal>>(m.attr("IntPolyh_PointNormal")), "Point", &IntPolyh_PointNormal::Point);
     nanoocp_def_field(nb::borrow<nb::class_<IntPolyh_PointNormal>>(m.attr("IntPolyh_PointNormal")), "Normal", &IntPolyh_PointNormal::Normal);
-    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_PointNormal>>>(m.attr("IntPolyh_ArrayOfPointNormal"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<IntPolyh_Array<IntPolyh_PointNormal>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_PointNormal>>>(m.attr("IntPolyh_ArrayOfPointNormal")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 @param aIncrement
 size of memory (in terms of Items) to expand the array)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
+        .def("__init__", [](nanoocp_T *self, const int aN, const int aIncrement) { new (self) nanoocp_T(aN, aIncrement); }, nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
 @param aN
 size of memory (in terms of Items) to allocate
 @param aIncrement
-size of memory (in terms of Items) to expand the array)nbdoc")
+size of memory (in terms of Items) to expand the array)nbdoc"); });
+    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_PointNormal>>>(m.attr("IntPolyh_ArrayOfPointNormal"))
         .def("Copy", static_cast<IntPolyh_Array<IntPolyh_PointNormal> & (IntPolyh_Array<IntPolyh_PointNormal>::*)(const IntPolyh_Array<IntPolyh_PointNormal> &)>(&IntPolyh_Array<IntPolyh_PointNormal>::Copy), nb::rv_policy::reference_internal, nb::arg("aOther"), R"nbdoc(Copy
 @param
 aOther - the array to copy from
@@ -485,15 +488,16 @@ the item)nbdoc", nb::is_operator());
         .def("Dump", static_cast<void (IntPolyh_SectionLine::*)() const>(&IntPolyh_SectionLine::Dump))
         .def("Prepend", static_cast<void (IntPolyh_SectionLine::*)(const IntPolyh_StartPoint &)>(&IntPolyh_SectionLine::Prepend), nb::arg("SP"));
     nb::implicitly_convertible<std::decay_t<const int>, IntPolyh_SectionLine>();
-    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_SectionLine>>>(m.attr("IntPolyh_ArrayOfSectionLines"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<IntPolyh_Array<IntPolyh_SectionLine>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_SectionLine>>>(m.attr("IntPolyh_ArrayOfSectionLines")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 @param aIncrement
 size of memory (in terms of Items) to expand the array)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
+        .def("__init__", [](nanoocp_T *self, const int aN, const int aIncrement) { new (self) nanoocp_T(aN, aIncrement); }, nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
 @param aN
 size of memory (in terms of Items) to allocate
 @param aIncrement
-size of memory (in terms of Items) to expand the array)nbdoc")
+size of memory (in terms of Items) to expand the array)nbdoc"); });
+    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_SectionLine>>>(m.attr("IntPolyh_ArrayOfSectionLines"))
         .def("Copy", static_cast<IntPolyh_Array<IntPolyh_SectionLine> & (IntPolyh_Array<IntPolyh_SectionLine>::*)(const IntPolyh_Array<IntPolyh_SectionLine> &)>(&IntPolyh_Array<IntPolyh_SectionLine>::Copy), nb::rv_policy::reference_internal, nb::arg("aOther"), R"nbdoc(Copy
 @param
 aOther - the array to copy from
@@ -529,15 +533,16 @@ index
 the item)nbdoc", nb::is_operator())
         .def("Dump", static_cast<void (IntPolyh_Array<IntPolyh_SectionLine>::*)() const>(&IntPolyh_Array<IntPolyh_SectionLine>::Dump), R"nbdoc(dump the contents)nbdoc");
     nanoocp_implicit_copy_ctor<IntPolyh_Array<IntPolyh_SectionLine>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_SectionLine>>>(m.attr("IntPolyh_ArrayOfSectionLines")));
-    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_StartPoint>>>(m.attr("IntPolyh_ArrayOfTangentZones"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<IntPolyh_Array<IntPolyh_StartPoint>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_StartPoint>>>(m.attr("IntPolyh_ArrayOfTangentZones")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 @param aIncrement
 size of memory (in terms of Items) to expand the array)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
+        .def("__init__", [](nanoocp_T *self, const int aN, const int aIncrement) { new (self) nanoocp_T(aN, aIncrement); }, nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
 @param aN
 size of memory (in terms of Items) to allocate
 @param aIncrement
-size of memory (in terms of Items) to expand the array)nbdoc")
+size of memory (in terms of Items) to expand the array)nbdoc"); });
+    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_StartPoint>>>(m.attr("IntPolyh_ArrayOfTangentZones"))
         .def("Copy", static_cast<IntPolyh_Array<IntPolyh_StartPoint> & (IntPolyh_Array<IntPolyh_StartPoint>::*)(const IntPolyh_Array<IntPolyh_StartPoint> &)>(&IntPolyh_Array<IntPolyh_StartPoint>::Copy), nb::rv_policy::reference_internal, nb::arg("aOther"), R"nbdoc(Copy
 @param
 aOther - the array to copy from
@@ -573,15 +578,16 @@ index
 the item)nbdoc", nb::is_operator())
         .def("Dump", static_cast<void (IntPolyh_Array<IntPolyh_StartPoint>::*)() const>(&IntPolyh_Array<IntPolyh_StartPoint>::Dump), R"nbdoc(dump the contents)nbdoc");
     nanoocp_implicit_copy_ctor<IntPolyh_Array<IntPolyh_StartPoint>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_StartPoint>>>(m.attr("IntPolyh_ArrayOfTangentZones")));
-    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Triangle>>>(m.attr("IntPolyh_ArrayOfTriangles"))
-        .def(nb::init<>(), R"nbdoc(Constructor.
+    nanoocp_if_concrete<IntPolyh_Array<IntPolyh_Triangle>>(nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Triangle>>>(m.attr("IntPolyh_ArrayOfTriangles")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructor.
 @param aIncrement
 size of memory (in terms of Items) to expand the array)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
+        .def("__init__", [](nanoocp_T *self, const int aN, const int aIncrement) { new (self) nanoocp_T(aN, aIncrement); }, nb::arg("aN"), nb::arg("aIncrement") = static_cast<std::decay_t<const int>>(256), R"nbdoc(Constructor.
 @param aN
 size of memory (in terms of Items) to allocate
 @param aIncrement
-size of memory (in terms of Items) to expand the array)nbdoc")
+size of memory (in terms of Items) to expand the array)nbdoc"); });
+    nb::borrow<nb::class_<IntPolyh_Array<IntPolyh_Triangle>>>(m.attr("IntPolyh_ArrayOfTriangles"))
         .def("Copy", static_cast<IntPolyh_Array<IntPolyh_Triangle> & (IntPolyh_Array<IntPolyh_Triangle>::*)(const IntPolyh_Array<IntPolyh_Triangle> &)>(&IntPolyh_Array<IntPolyh_Triangle>::Copy), nb::rv_policy::reference_internal, nb::arg("aOther"), R"nbdoc(Copy
 @param
 aOther - the array to copy from

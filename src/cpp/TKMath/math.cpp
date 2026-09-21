@@ -660,15 +660,16 @@ An exception is raised if the dimensions are different.)nbdoc")
         .def("__neg__", static_cast<math_Matrix (math_Matrix::*)() const>(&math_Matrix::operator-), nb::is_operator())
         .def("Dump", [](const math_Matrix &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints information on the current state of the object.
 Is used to redefine the operator <<.)nbdoc");
-    nb::borrow<nb::class_<math_VectorBase<double>>>(m.attr("math_Vector"))
-        .def(nb::init<const gp_XY &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XY to math_VectorBase)nbdoc")
-        .def(nb::init<const gp_XYZ &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XYZ to math_VectorBase)nbdoc")
-        .def(nb::init<const math_VectorBase<double> &>(), nb::arg("theOther"), R"nbdoc(Constructs a copy for initialization.)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a non-initialized vector in the range [theLower..theUpper]
+    nanoocp_if_concrete<math_VectorBase<double>>(nb::borrow<nb::class_<math_VectorBase<double>>>(m.attr("math_Vector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const gp_XY & Other) { new (self) nanoocp_T(Other); }, nb::arg("Other"), R"nbdoc(Constructor for converting gp_XY to math_VectorBase)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_XYZ & Other) { new (self) nanoocp_T(Other); }, nb::arg("Other"), R"nbdoc(Constructor for converting gp_XYZ to math_VectorBase)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const math_VectorBase<double> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Constructs a copy for initialization.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theLower, const int theUpper) { new (self) nanoocp_T(theLower, theUpper); }, nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a non-initialized vector in the range [theLower..theUpper]
 "theLower" and "theUpper" are the indexes of the lower and upper bounds of the constructed
 vector.)nbdoc")
-        .def(nb::init<const int, const int, const double>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
-whose values are all initialized with the value "theInitialValue")nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theLower, const int theUpper, const double theInitialValue) { new (self) nanoocp_T(theLower, theUpper, theInitialValue); }, nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
+whose values are all initialized with the value "theInitialValue")nbdoc"); });
+    nb::borrow<nb::class_<math_VectorBase<double>>>(m.attr("math_Vector"))
         .def("Init", static_cast<void (math_VectorBase<double>::*)(const double)>(&math_VectorBase<double>::Init), nb::arg("theInitialValue"), R"nbdoc(Initialize all the elements of a vector with "theInitialValue".)nbdoc")
         .def("Length", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Length), R"nbdoc(Returns the length of a vector)nbdoc")
         .def("Lower", static_cast<int (math_VectorBase<double>::*)() const>(&math_VectorBase<double>::Lower), R"nbdoc(Returns the lower index of the vector)nbdoc")
@@ -1256,15 +1257,16 @@ algorithm: no state has been saved). It is the
 responsibility of the programmer to decide if he needs
 to save the current state of the function and to return
 an Integer that allows retrieval of the state.)nbdoc");
-    nb::borrow<nb::class_<math_VectorBase<int>>>(m.attr("math_IntegerVector"))
-        .def(nb::init<const gp_XY &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XY to math_VectorBase)nbdoc")
-        .def(nb::init<const gp_XYZ &>(), nb::arg("Other"), R"nbdoc(Constructor for converting gp_XYZ to math_VectorBase)nbdoc")
-        .def(nb::init<const math_VectorBase<int> &>(), nb::arg("theOther"), R"nbdoc(Constructs a copy for initialization.)nbdoc")
-        .def(nb::init<const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a non-initialized vector in the range [theLower..theUpper]
+    nanoocp_if_concrete<math_VectorBase<int>>(nb::borrow<nb::class_<math_VectorBase<int>>>(m.attr("math_IntegerVector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self, const gp_XY & Other) { new (self) nanoocp_T(Other); }, nb::arg("Other"), R"nbdoc(Constructor for converting gp_XY to math_VectorBase)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const gp_XYZ & Other) { new (self) nanoocp_T(Other); }, nb::arg("Other"), R"nbdoc(Constructor for converting gp_XYZ to math_VectorBase)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const math_VectorBase<int> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Constructs a copy for initialization.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theLower, const int theUpper) { new (self) nanoocp_T(theLower, theUpper); }, nb::arg("theLower"), nb::arg("theUpper"), R"nbdoc(Constructs a non-initialized vector in the range [theLower..theUpper]
 "theLower" and "theUpper" are the indexes of the lower and upper bounds of the constructed
 vector.)nbdoc")
-        .def(nb::init<const int, const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
-whose values are all initialized with the value "theInitialValue")nbdoc")
+        .def("__init__", [](nanoocp_T *self, const int theLower, const int theUpper, const int theInitialValue) { new (self) nanoocp_T(theLower, theUpper, theInitialValue); }, nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theInitialValue"), R"nbdoc(Constructs a vector in the range [theLower..theUpper]
+whose values are all initialized with the value "theInitialValue")nbdoc"); });
+    nb::borrow<nb::class_<math_VectorBase<int>>>(m.attr("math_IntegerVector"))
         .def("Init", static_cast<void (math_VectorBase<int>::*)(const int)>(&math_VectorBase<int>::Init), nb::arg("theInitialValue"), R"nbdoc(Initialize all the elements of a vector with "theInitialValue".)nbdoc")
         .def("Length", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Length), R"nbdoc(Returns the length of a vector)nbdoc")
         .def("Lower", static_cast<int (math_VectorBase<int>::*)() const>(&math_VectorBase<int>::Lower), R"nbdoc(Returns the lower index of the vector)nbdoc")
