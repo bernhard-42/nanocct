@@ -12,6 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from .binders import BINDERS
 from .parse import py_path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -187,7 +188,6 @@ def main() -> int:
     nc = toolkit_of["NCollection"][1]
     text = nc.read_text()
     generic_parts = []
-    from .ncollection import BINDERS
     kinds = sorted({re.match(r"([\w:]+)<", key).group(1) for key, inst in templates.items()
                     if not inst.get("skipped", False) and re.match(r"([\w:]+)<", key).group(1) in BINDERS})
     for kind in kinds:

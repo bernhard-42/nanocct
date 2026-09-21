@@ -287,10 +287,44 @@ data is computed in this framework.)nbdoc")
 data is computed in this framework.)nbdoc")
         .def("IsPeriodic", static_cast<bool (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::IsPeriodic), R"nbdoc(Returns true if the BSpline curve whose data is computed in
 this framework is periodic.)nbdoc")
+        .def("Pole", static_cast<gp_Pnt2d (Convert_ConicToBSplineCurve::*)(const int) const>(&Convert_ConicToBSplineCurve::Pole), nb::arg("theIndex"), R"nbdoc(Deprecated in OCCT: Use Poles() batch accessor instead
+
+Returns the pole of index Index to the poles table of the
+BSpline curve whose data is computed in this framework.
+@param[in] theIndex pole index (1-based)
+@return pole at the given index
+@throws Standard_OutOfRange if theIndex is out of bounds)nbdoc")
+        .def("Weight", static_cast<double (Convert_ConicToBSplineCurve::*)(const int) const>(&Convert_ConicToBSplineCurve::Weight), nb::arg("theIndex"), R"nbdoc(Deprecated in OCCT: Use Weights() batch accessor instead
+
+Returns the weight of the pole of index Index to the poles
+table of the BSpline curve whose data is computed in this framework.
+@param[in] theIndex weight index (1-based)
+@return weight at the given index
+@throws Standard_OutOfRange if theIndex is out of bounds)nbdoc")
+        .def("Knot", static_cast<double (Convert_ConicToBSplineCurve::*)(const int) const>(&Convert_ConicToBSplineCurve::Knot), nb::arg("theIndex"), R"nbdoc(Deprecated in OCCT: Use Knots() batch accessor instead
+
+Returns the knot of index Index to the knots table of the
+BSpline curve whose data is computed in this framework.
+@param[in] theIndex knot index (1-based)
+@return knot at the given index
+@throws Standard_OutOfRange if theIndex is out of bounds)nbdoc")
+        .def("Multiplicity", static_cast<int (Convert_ConicToBSplineCurve::*)(const int) const>(&Convert_ConicToBSplineCurve::Multiplicity), nb::arg("theIndex"), R"nbdoc(Deprecated in OCCT: Use Multiplicities() batch accessor instead
+
+Returns the multiplicity of the knot of index Index to the
+knots table of the BSpline curve whose data is computed in this framework.
+@param[in] theIndex multiplicity index (1-based)
+@return multiplicity at the given index
+@throws Standard_OutOfRange if theIndex is out of bounds)nbdoc")
         .def("Poles", static_cast<const NCollection_Array1<gp_Pnt2d> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Poles), R"nbdoc(Returns the poles of the BSpline curve.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array1<double> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Weights), R"nbdoc(Returns the weights of the BSpline curve.)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Knots), R"nbdoc(Returns the knots of the BSpline curve.)nbdoc")
-        .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Multiplicities), R"nbdoc(Returns the multiplicities of the BSpline curve.)nbdoc");
+        .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Convert_ConicToBSplineCurve::*)() const>(&Convert_ConicToBSplineCurve::Multiplicities), R"nbdoc(Returns the multiplicities of the BSpline curve.)nbdoc")
+        .def("BuildCosAndSin", [](const Convert_ConicToBSplineCurve &self, const Convert_ParameterisationType theParametrisation) { occ::handle<NCollection_HArray1<double>> theCosNumerator{}; occ::handle<NCollection_HArray1<double>> theSinNumerator{}; occ::handle<NCollection_HArray1<double>> theDenominator{}; int theDegree{}; occ::handle<NCollection_HArray1<double>> theKnots{}; occ::handle<NCollection_HArray1<int>> theMults{}; self.BuildCosAndSin(theParametrisation, theCosNumerator, theSinNumerator, theDenominator, theDegree, theKnots, theMults); return std::make_tuple(theCosNumerator, theSinNumerator, theDenominator, theDegree, theKnots, theMults); }, nb::arg("theParametrisation"), R"nbdoc(Deprecated in OCCT: Use array-based BuildCosAndSin() overload instead
+
+Legacy API returning handle arrays for compatibility.)nbdoc")
+        .def("BuildCosAndSin", [](const Convert_ConicToBSplineCurve &self, const Convert_ParameterisationType theParametrisation, const double theUFirst, const double theULast) { occ::handle<NCollection_HArray1<double>> theCosNumerator{}; occ::handle<NCollection_HArray1<double>> theSinNumerator{}; occ::handle<NCollection_HArray1<double>> theDenominator{}; int theDegree{}; occ::handle<NCollection_HArray1<double>> theKnots{}; occ::handle<NCollection_HArray1<int>> theMults{}; self.BuildCosAndSin(theParametrisation, theUFirst, theULast, theCosNumerator, theSinNumerator, theDenominator, theDegree, theKnots, theMults); return std::make_tuple(theCosNumerator, theSinNumerator, theDenominator, theDegree, theKnots, theMults); }, nb::arg("theParametrisation"), nb::arg("theUFirst"), nb::arg("theULast"), R"nbdoc(Deprecated in OCCT: Use array-based BuildCosAndSin() overload instead
+
+Legacy API returning handle arrays for compatibility.)nbdoc");
     nanoocp_implicit_copy_ctor<Convert_ConicToBSplineCurve>(nb::borrow<nb::class_<Convert_ConicToBSplineCurve>>(m.attr("Convert_ConicToBSplineCurve")));
     nb::borrow<nb::class_<Convert_CircleToBSplineCurve>>(m.attr("Convert_CircleToBSplineCurve"))
         .def(nb::init<const gp_Circ2d &, const Convert_ParameterisationType>(), nb::arg("C"), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(The equivalent B-spline curve has the same orientation
@@ -388,10 +422,19 @@ Warning: The Length of Continuity have to be NumCurves-1)nbdoc")
         .def("Poles", static_cast<const NCollection_Array2<double> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Poles), R"nbdoc(Returns the poles of the n-dimensional BSpline
 in the following format:
 [1..NumPoles][1..Dimension])nbdoc")
+        .def("Poles", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray2<double>> thePoles{}; self.Poles(thePoles); return thePoles; }, R"nbdoc(Deprecated in OCCT: Use Poles() returning const reference instead
+
+Returns the poles of the n-dimensional BSpline via output parameter.)nbdoc")
         .def("Degree", static_cast<int (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Degree), R"nbdoc(Returns the degree of the n-dimensional BSpline.)nbdoc")
         .def("NbKnots", static_cast<int (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::NbKnots), R"nbdoc(Returns the number of knots of the n-dimensional BSpline.)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Knots), R"nbdoc(Returns the knots of the n-dimensional BSpline.)nbdoc")
+        .def("Knots", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray1<double>> theKnots{}; self.Knots(theKnots); return theKnots; }, R"nbdoc(Deprecated in OCCT: Use Knots() returning const reference instead
+
+Returns the knots of the n-dimensional BSpline via output parameter.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::Multiplicities), R"nbdoc(Returns the multiplicities of the knots in the BSpline.)nbdoc")
+        .def("Multiplicities", [](const Convert_CompPolynomialToPoles &self) { occ::handle<NCollection_HArray1<int>> theMults{}; self.Multiplicities(theMults); return theMults; }, R"nbdoc(Deprecated in OCCT: Use Multiplicities() returning const reference instead
+
+Returns the multiplicities of the knots via output parameter.)nbdoc")
         .def("IsDone", static_cast<bool (Convert_CompPolynomialToPoles::*)() const>(&Convert_CompPolynomialToPoles::IsDone), R"nbdoc(Returns true if the conversion was successful.)nbdoc");
     nanoocp_implicit_copy_ctor<Convert_CompPolynomialToPoles>(nb::borrow<nb::class_<Convert_CompPolynomialToPoles>>(m.attr("Convert_CompPolynomialToPoles")));
     nb::borrow<nb::class_<Convert_ElementarySurfaceToBSplineSurface>>(m.attr("Convert_ElementarySurfaceToBSplineSurface"))
@@ -403,6 +446,30 @@ in the following format:
         .def("NbVKnots", static_cast<int (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::NbVKnots), R"nbdoc(Returns the number of knots in the V parametric direction.)nbdoc")
         .def("IsUPeriodic", static_cast<bool (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::IsUPeriodic), R"nbdoc(Returns true if the surface is periodic in the U parametric direction.)nbdoc")
         .def("IsVPeriodic", static_cast<bool (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::IsVPeriodic), R"nbdoc(Returns true if the surface is periodic in the V parametric direction.)nbdoc")
+        .def("Pole", static_cast<gp_Pnt (Convert_ElementarySurfaceToBSplineSurface::*)(const int, const int) const>(&Convert_ElementarySurfaceToBSplineSurface::Pole), nb::arg("UIndex"), nb::arg("VIndex"), R"nbdoc(Deprecated in OCCT: Use Poles() batch accessor instead
+
+Returns the pole of index (UIndex, VIndex).
+@throws Standard_OutOfRange if indices are out of bounds)nbdoc")
+        .def("Weight", static_cast<double (Convert_ElementarySurfaceToBSplineSurface::*)(const int, const int) const>(&Convert_ElementarySurfaceToBSplineSurface::Weight), nb::arg("UIndex"), nb::arg("VIndex"), R"nbdoc(Deprecated in OCCT: Use Weights() batch accessor instead
+
+Returns the weight of the pole of index (UIndex, VIndex).
+@throws Standard_OutOfRange if indices are out of bounds)nbdoc")
+        .def("UKnot", static_cast<double (Convert_ElementarySurfaceToBSplineSurface::*)(const int) const>(&Convert_ElementarySurfaceToBSplineSurface::UKnot), nb::arg("UIndex"), R"nbdoc(Deprecated in OCCT: Use UKnots() batch accessor instead
+
+Returns the U-knot of range UIndex.
+@throws Standard_OutOfRange if UIndex is out of bounds)nbdoc")
+        .def("VKnot", static_cast<double (Convert_ElementarySurfaceToBSplineSurface::*)(const int) const>(&Convert_ElementarySurfaceToBSplineSurface::VKnot), nb::arg("VIndex"), R"nbdoc(Deprecated in OCCT: Use VKnots() batch accessor instead
+
+Returns the V-knot of range VIndex.
+@throws Standard_OutOfRange if VIndex is out of bounds)nbdoc")
+        .def("UMultiplicity", static_cast<int (Convert_ElementarySurfaceToBSplineSurface::*)(const int) const>(&Convert_ElementarySurfaceToBSplineSurface::UMultiplicity), nb::arg("UIndex"), R"nbdoc(Deprecated in OCCT: Use UMultiplicities() batch accessor instead
+
+Returns the multiplicity of the U-knot of range UIndex.
+@throws Standard_OutOfRange if UIndex is out of bounds)nbdoc")
+        .def("VMultiplicity", static_cast<int (Convert_ElementarySurfaceToBSplineSurface::*)(const int) const>(&Convert_ElementarySurfaceToBSplineSurface::VMultiplicity), nb::arg("VIndex"), R"nbdoc(Deprecated in OCCT: Use VMultiplicities() batch accessor instead
+
+Returns the multiplicity of the V-knot of range VIndex.
+@throws Standard_OutOfRange if VIndex is out of bounds)nbdoc")
         .def("Poles", static_cast<const NCollection_Array2<gp_Pnt> & (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::Poles), R"nbdoc(Returns the poles of the BSpline surface.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array2<double> & (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::Weights), R"nbdoc(Returns the weights of the BSpline surface.)nbdoc")
         .def("UKnots", static_cast<const NCollection_Array1<double> & (Convert_ElementarySurfaceToBSplineSurface::*)() const>(&Convert_ElementarySurfaceToBSplineSurface::UKnots), R"nbdoc(Returns the U-knots of the BSpline surface.)nbdoc")

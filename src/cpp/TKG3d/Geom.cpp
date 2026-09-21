@@ -1586,9 +1586,19 @@ Bezier curve. This is 1.0, which gives the end point of this Bezier curve.)nbdoc
         .def("NbPoles", static_cast<int (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::NbPoles), R"nbdoc(Returns the number of poles of this Bezier curve.)nbdoc")
         .def("Pole", static_cast<const gp_Pnt & (Geom_BezierCurve::*)(const int) const>(&Geom_BezierCurve::Pole), nb::arg("Index"), R"nbdoc(Returns the pole of range Index.
 Raised if Index is not in the range [1, NbPoles])nbdoc")
+        .def("Poles", static_cast<void (Geom_BezierCurve::*)(NCollection_Array1<gp_Pnt> &) const>(&Geom_BezierCurve::Poles), nb::arg("P"), R"nbdoc(Deprecated in OCCT: use Poles() returning const reference instead
+
+Returns all the poles of the curve.
+
+Raised if the length of P is not equal to the number of poles.)nbdoc")
         .def("Poles", static_cast<const NCollection_Array1<gp_Pnt> & (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::Poles), R"nbdoc(Returns all the poles of the curve.)nbdoc")
         .def("Weight", static_cast<double (Geom_BezierCurve::*)(const int) const>(&Geom_BezierCurve::Weight), nb::arg("Index"), R"nbdoc(Returns the weight of range Index.
 Raised if Index is not in the range [1, NbPoles])nbdoc")
+        .def("Weights", static_cast<void (Geom_BezierCurve::*)(NCollection_Array1<double> &) const>(&Geom_BezierCurve::Weights), nb::arg("W"), R"nbdoc(Deprecated in OCCT: use Weights() returning const pointer instead
+
+Returns all the weights of the curve.
+
+Raised if the length of W is not equal to the number of poles.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array1<double> * (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::Weights), nb::rv_policy::reference, R"nbdoc(Returns all the weights of the curve.)nbdoc")
         .def("WeightsArray", static_cast<const NCollection_Array1<double> & (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::WeightsArray), R"nbdoc(Returns a const reference to the weights array.
 For rational curves: the internal owning weights array.
@@ -2047,6 +2057,12 @@ Standard_RangeError if:
         .def("Pole", static_cast<const gp_Pnt & (Geom_BezierSurface::*)(const int, const int) const>(&Geom_BezierSurface::Pole), nb::arg("UIndex"), nb::arg("VIndex"), R"nbdoc(Returns the pole of range UIndex, VIndex
 Raised if UIndex < 1 or UIndex > NbUPoles, or
 VIndex < 1 or VIndex > NbVPoles.)nbdoc")
+        .def("Poles", static_cast<void (Geom_BezierSurface::*)(NCollection_Array2<gp_Pnt> &) const>(&Geom_BezierSurface::Poles), nb::arg("P"), R"nbdoc(Deprecated in OCCT: use Poles() returning const reference instead
+
+Returns the poles of the Bezier surface.
+
+Raised if the length of P in the U an V direction is not equal to
+NbUPoles and NbVPoles.)nbdoc")
         .def("Poles", static_cast<const NCollection_Array2<gp_Pnt> & (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::Poles), R"nbdoc(Returns the poles of the Bezier surface.)nbdoc")
         .def("UDegree", static_cast<int (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::UDegree), R"nbdoc(Returns the degree of the surface in the U direction it is
 NbUPoles - 1)nbdoc")
@@ -2060,6 +2076,12 @@ VIso curve is a Bezier curve.)nbdoc")
 
 Raised if UIndex < 1 or UIndex > NbUPoles, or
 VIndex < 1 or VIndex > NbVPoles.)nbdoc")
+        .def("Weights", static_cast<void (Geom_BezierSurface::*)(NCollection_Array2<double> &) const>(&Geom_BezierSurface::Weights), nb::arg("W"), R"nbdoc(Deprecated in OCCT: use Weights() returning const pointer instead
+
+Returns the weights of the Bezier surface.
+
+Raised if the length of W in the U an V direction is not
+equal to NbUPoles and NbVPoles.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array2<double> * (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::Weights), nb::rv_policy::reference, R"nbdoc(Returns the weights of the Bezier surface.)nbdoc")
         .def("WeightsArray", static_cast<const NCollection_Array2<double> & (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::WeightsArray), R"nbdoc(Returns a const reference to the weights array.
 For rational surfaces: the internal owning weights array.
@@ -2464,11 +2486,76 @@ with a multiplicity greater than 1 the knot is not repeated.
 The method Multiplicity can be used to get the multiplicity
 of the Knot.
 Raised if Index < 1 or Index > NbKnots)nbdoc")
+        .def("Knots", static_cast<void (Geom_BSplineCurve::*)(NCollection_Array1<double> &) const>(&Geom_BSplineCurve::Knots), nb::arg("K"), R"nbdoc(Deprecated in OCCT: use Knots() returning const reference instead
+
+returns the knot values of the B-spline curve;
+Warning
+A knot with a multiplicity greater than 1 is not
+repeated in the knot table. The Multiplicity function
+can be used to obtain the multiplicity of each knot.
+
+Raised K.Lower() is less than number of first knot or
+K.Upper() is more than number of last knot.)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::Knots), R"nbdoc(returns the knot values of the B-spline curve;
 Warning
 A knot with a multiplicity greater than 1 is not
 repeated in the knot table. The Multiplicity function
 can be used to obtain the multiplicity of each knot.)nbdoc")
+        .def("KnotSequence", static_cast<void (Geom_BSplineCurve::*)(NCollection_Array1<double> &) const>(&Geom_BSplineCurve::KnotSequence), nb::arg("K"), R"nbdoc(Deprecated in OCCT: use KnotSequence() returning const reference instead
+
+Returns K, the knots sequence of this BSpline curve.
+In this sequence, knots with a multiplicity greater than 1 are repeated.
+In the case of a non-periodic curve the length of the
+sequence must be equal to the sum of the NbKnots
+multiplicities of the knots of the curve (where
+NbKnots is the number of knots of this BSpline
+curve). This sum is also equal to : NbPoles + Degree + 1
+where NbPoles is the number of poles and
+Degree the degree of this BSpline curve.
+In the case of a periodic curve, if there are k periodic
+knots, the period is Knot(k+1) - Knot(1).
+The initial sequence is built by writing knots 1 to k+1,
+which are repeated according to their corresponding multiplicities.
+If Degree is the degree of the curve, the degree of
+continuity of the curve at the knot of index 1 (or k+1)
+is equal to c = Degree + 1 - Mult(1). c
+knots are then inserted at the beginning and end of
+the initial sequence:
+- the c values of knots preceding the first item
+Knot(k+1) in the initial sequence are inserted
+at the beginning; the period is subtracted from these c values;
+- the c values of knots following the last item
+Knot(1) in the initial sequence are inserted at
+the end; the period is added to these c values.
+The length of the sequence must therefore be equal to:
+NbPoles + 2*Degree - Mult(1) + 2.
+Example
+For a non-periodic BSpline curve of degree 2 where:
+- the array of knots is: { k1 k2 k3 k4 },
+- with associated multiplicities: { 3 1 2 3 },
+the knot sequence is:
+K = { k1 k1 k1 k2 k3 k3 k4 k4 k4 }
+For a periodic BSpline curve of degree 4 , which is
+"C1" continuous at the first knot, and where :
+- the periodic knots are: { k1 k2 k3 (k4) }
+(3 periodic knots: the points of parameter k1 and k4
+are identical, the period is p = k4 - k1),
+- with associated multiplicities: { 3 1 2 (3) },
+the degree of continuity at knots k1 and k4 is:
+Degree + 1 - Mult(i) = 2.
+2 supplementary knots are added at the beginning
+and end of the sequence:
+- at the beginning: the 2 knots preceding k4 minus
+the period; in this example, this is k3 - p both times;
+- at the end: the 2 knots following k1 plus the period;
+in this example, this is k2 + p and k3 + p.
+The knot sequence is therefore:
+K = { k3-p k3-p k1 k1 k1 k2 k3 k3
+k4 k4 k4 k2+p k3+p }
+Exceptions
+Raised if K.Lower() is less than number of first knot
+in knot sequence with repetitions or K.Upper() is more
+than number of last knot in knot sequence with repetitions.)nbdoc")
         .def("KnotSequence", static_cast<const NCollection_Array1<double> & (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::KnotSequence), R"nbdoc(returns the knots of the B-spline curve.
 Knots with multiplicit greater than 1 are repeated)nbdoc")
         .def("KnotDistribution", static_cast<GeomAbs_BSplKnotDistribution (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::KnotDistribution), R"nbdoc(Returns NonUniform or Uniform or QuasiUniform or PiecewiseBezier.
@@ -2502,12 +2589,22 @@ ParametricTolerance is used).
 . if I2 > NbKnots => U > Knots (NbKnots) + std::abs(ParametricTolerance))nbdoc")
         .def("Multiplicity", static_cast<int (Geom_BSplineCurve::*)(const int) const>(&Geom_BSplineCurve::Multiplicity), nb::arg("Index"), R"nbdoc(Returns the multiplicity of the knots of range Index.
 Raised if Index < 1 or Index > NbKnots)nbdoc")
+        .def("Multiplicities", static_cast<void (Geom_BSplineCurve::*)(NCollection_Array1<int> &) const>(&Geom_BSplineCurve::Multiplicities), nb::arg("M"), R"nbdoc(Deprecated in OCCT: use Multiplicities() returning const reference instead
+
+Returns the multiplicity of the knots of the curve.
+
+Raised if the length of M is not equal to NbKnots.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::Multiplicities), R"nbdoc(returns the multiplicity of the knots of the curve.)nbdoc")
         .def("NbKnots", static_cast<int (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::NbKnots), R"nbdoc(Returns the number of knots. This method returns the number of
 knot without repetition of multiple knots.)nbdoc")
         .def("NbPoles", static_cast<int (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::NbPoles), R"nbdoc(Returns the number of poles)nbdoc")
         .def("Pole", static_cast<const gp_Pnt & (Geom_BSplineCurve::*)(const int) const>(&Geom_BSplineCurve::Pole), nb::arg("Index"), R"nbdoc(Returns the pole of range Index.
 Raised if Index < 1 or Index > NbPoles.)nbdoc")
+        .def("Poles", static_cast<void (Geom_BSplineCurve::*)(NCollection_Array1<gp_Pnt> &) const>(&Geom_BSplineCurve::Poles), nb::arg("P"), R"nbdoc(Deprecated in OCCT: use Poles() returning const reference instead
+
+Returns the poles of the B-spline curve;
+
+Raised if the length of P is not equal to the number of poles.)nbdoc")
         .def("Poles", static_cast<const NCollection_Array1<gp_Pnt> & (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::Poles), R"nbdoc(Returns the poles of the B-spline curve;)nbdoc")
         .def("StartPoint", static_cast<gp_Pnt (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::StartPoint), R"nbdoc(Returns the start point of the curve.
 Warnings :
@@ -2515,6 +2612,11 @@ This point is different from the first pole of the curve if the
 multiplicity of the first knot is lower than Degree.)nbdoc")
         .def("Weight", static_cast<double (Geom_BSplineCurve::*)(const int) const>(&Geom_BSplineCurve::Weight), nb::arg("Index"), R"nbdoc(Returns the weight of the pole of range Index .
 Raised if Index < 1 or Index > NbPoles.)nbdoc")
+        .def("Weights", static_cast<void (Geom_BSplineCurve::*)(NCollection_Array1<double> &) const>(&Geom_BSplineCurve::Weights), nb::arg("W"), R"nbdoc(Deprecated in OCCT: use Weights() returning const pointer instead
+
+Returns the weights of the B-spline curve;
+
+Raised if the length of W is not equal to NbPoles.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array1<double> * (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::Weights), nb::rv_policy::reference, R"nbdoc(Returns the weights of the B-spline curve;)nbdoc")
         .def("WeightsArray", static_cast<const NCollection_Array1<double> & (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::WeightsArray), R"nbdoc(Returns a const reference to the weights array.
 For rational curves: the internal owning weights array.
@@ -3113,6 +3215,12 @@ boundary curve of the surface.)nbdoc")
 
 Raised if UIndex < 1 or UIndex > NbUPoles or VIndex < 1 or
 VIndex > NbVPoles.)nbdoc")
+        .def("Poles", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array2<gp_Pnt> &) const>(&Geom_BSplineSurface::Poles), nb::arg("P"), R"nbdoc(Deprecated in OCCT: use Poles() returning const reference instead
+
+Returns the poles of the B-spline surface.
+
+Raised if the length of P in the U and V direction
+is not equal to NbUpoles and NbVPoles.)nbdoc")
         .def("Poles", static_cast<const NCollection_Array2<gp_Pnt> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::Poles), R"nbdoc(Returns the poles of the B-spline surface.)nbdoc")
         .def("UDegree", static_cast<int (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::UDegree), R"nbdoc(Returns the degree of the normalized B-splines Ni,n in the U
 direction.)nbdoc")
@@ -3131,7 +3239,22 @@ multiplicity Degree + 1 and if interior knots have
 multiplicity Degree
 otherwise the surface is non uniform in the U direction
 The tolerance criterion is Resolution from package gp.)nbdoc")
+        .def("UKnots", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array1<double> &) const>(&Geom_BSplineSurface::UKnots), nb::arg("Ku"), R"nbdoc(Deprecated in OCCT: use UKnots() returning const reference instead
+
+Returns the knots in the U direction.
+
+Raised if the length of Ku is not equal to the number of knots
+in the U direction.)nbdoc")
         .def("UKnots", static_cast<const NCollection_Array1<double> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::UKnots), R"nbdoc(Returns the knots in the U direction.)nbdoc")
+        .def("UKnotSequence", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array1<double> &) const>(&Geom_BSplineSurface::UKnotSequence), nb::arg("Ku"), R"nbdoc(Deprecated in OCCT: use UKnotSequence() returning const reference instead
+
+Returns the uknots sequence.
+In this sequence the knots with a multiplicity greater than 1
+are repeated.
+Example :
+Ku = {k1, k1, k1, k2, k3, k3, k4, k4, k4}
+
+Raised if the length of Ku is not equal to NbUPoles + UDegree + 1)nbdoc")
         .def("UKnotSequence", static_cast<const NCollection_Array1<double> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::UKnotSequence), R"nbdoc(Returns the uknots sequence.
 In this sequence the knots with a multiplicity greater than 1
 are repeated.
@@ -3140,6 +3263,12 @@ Ku = {k1, k1, k1, k2, k3, k3, k4, k4, k4})nbdoc")
         .def("UMultiplicity", static_cast<int (Geom_BSplineSurface::*)(const int) const>(&Geom_BSplineSurface::UMultiplicity), nb::arg("UIndex"), R"nbdoc(Returns the multiplicity value of knot of range UIndex in
 the u direction.
 Raised if UIndex < 1 or UIndex > NbUKnots.)nbdoc")
+        .def("UMultiplicities", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array1<int> &) const>(&Geom_BSplineSurface::UMultiplicities), nb::arg("Mu"), R"nbdoc(Deprecated in OCCT: use UMultiplicities() returning const reference instead
+
+Returns the multiplicities of the knots in the U direction.
+
+Raised if the length of Mu is not equal to the number of
+knots in the U direction.)nbdoc")
         .def("UMultiplicities", static_cast<const NCollection_Array1<int> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::UMultiplicities), R"nbdoc(Returns the multiplicities of the knots in the U direction.)nbdoc")
         .def("VDegree", static_cast<int (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::VDegree), R"nbdoc(Returns the degree of the normalized B-splines Ni,d in the
 V direction.)nbdoc")
@@ -3158,7 +3287,22 @@ multiplicity Degree + 1 and if interior knots have
 multiplicity Degree
 otherwise the surface is non uniform in the V direction.
 The tolerance criterion is Resolution from package gp.)nbdoc")
+        .def("VKnots", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array1<double> &) const>(&Geom_BSplineSurface::VKnots), nb::arg("Kv"), R"nbdoc(Deprecated in OCCT: use VKnots() returning const reference instead
+
+Returns the knots in the V direction.
+
+Raised if the length of Kv is not equal to the number of
+knots in the V direction.)nbdoc")
         .def("VKnots", static_cast<const NCollection_Array1<double> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::VKnots), R"nbdoc(Returns the knots in the V direction.)nbdoc")
+        .def("VKnotSequence", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array1<double> &) const>(&Geom_BSplineSurface::VKnotSequence), nb::arg("Kv"), R"nbdoc(Deprecated in OCCT: use VKnotSequence() returning const reference instead
+
+Returns the vknots sequence.
+In this sequence the knots with a multiplicity greater than 1
+are repeated.
+Example :
+Kv = {k1, k1, k1, k2, k3, k3, k4, k4, k4}
+
+Raised if the length of Kv is not equal to NbVPoles + VDegree + 1)nbdoc")
         .def("VKnotSequence", static_cast<const NCollection_Array1<double> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::VKnotSequence), R"nbdoc(Returns the vknots sequence.
 In this sequence the knots with a multiplicity greater than 1
 are repeated.
@@ -3167,11 +3311,23 @@ Ku = {k1, k1, k1, k2, k3, k3, k4, k4, k4})nbdoc")
         .def("VMultiplicity", static_cast<int (Geom_BSplineSurface::*)(const int) const>(&Geom_BSplineSurface::VMultiplicity), nb::arg("VIndex"), R"nbdoc(Returns the multiplicity value of knot of range VIndex in
 the v direction.
 Raised if VIndex < 1 or VIndex > NbVKnots)nbdoc")
+        .def("VMultiplicities", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array1<int> &) const>(&Geom_BSplineSurface::VMultiplicities), nb::arg("Mv"), R"nbdoc(Deprecated in OCCT: use VMultiplicities() returning const reference instead
+
+Returns the multiplicities of the knots in the V direction.
+
+Raised if the length of Mv is not equal to the number of
+knots in the V direction.)nbdoc")
         .def("VMultiplicities", static_cast<const NCollection_Array1<int> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::VMultiplicities), R"nbdoc(Returns the multiplicities of the knots in the V direction.)nbdoc")
         .def("Weight", static_cast<double (Geom_BSplineSurface::*)(const int, const int) const>(&Geom_BSplineSurface::Weight), nb::arg("UIndex"), nb::arg("VIndex"), R"nbdoc(Returns the weight value of range UIndex, VIndex.
 
 Raised if UIndex < 1 or UIndex > NbUPoles or VIndex < 1
 or VIndex > NbVPoles.)nbdoc")
+        .def("Weights", static_cast<void (Geom_BSplineSurface::*)(NCollection_Array2<double> &) const>(&Geom_BSplineSurface::Weights), nb::arg("W"), R"nbdoc(Deprecated in OCCT: use Weights() returning const pointer instead
+
+Returns the weights of the B-spline surface.
+
+Raised if the length of W in the U and V direction is
+not equal to NbUPoles and NbVPoles.)nbdoc")
         .def("WeightsArray", static_cast<const NCollection_Array2<double> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::WeightsArray), R"nbdoc(Returns a const reference to the weights array.
 For rational surfaces: the internal owning weights array.
 For non-rational surfaces: a non-owning view of unit weights from BSplSLib.

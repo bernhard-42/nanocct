@@ -129,6 +129,9 @@ has been done, 0 if no approximation))nbdoc")
 @param theFirst First parameter of resulting curve.
 @param theFirst Last parameter of resulting curve.
 @param theTol   Computation tolerance.)nbdoc")
+        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const double, const double, const GeomAbs_Shape, const int, const int, const bool, const bool>(), nb::arg("C2D").none(), nb::arg("Surf").none(), nb::arg("First"), nb::arg("Last"), nb::arg("Tol"), nb::arg("Continuity"), nb::arg("MaxDegree"), nb::arg("MaxSegments"), nb::arg("Only3d") = static_cast<std::decay_t<const bool>>(false), nb::arg("Only2d") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Deprecated in OCCT: This constructor is deprecated. Use other constructor and perform method instead.
+
+This constructor calls perform method. This constructor is deprecated.)nbdoc")
         .def("IsDone", static_cast<bool (Approx_CurveOnSurface::*)() const>(&Approx_CurveOnSurface::IsDone))
         .def("HasResult", static_cast<bool (Approx_CurveOnSurface::*)() const>(&Approx_CurveOnSurface::HasResult))
         .def("Curve3d", static_cast<occ::handle<Geom_BSplineCurve> (Approx_CurveOnSurface::*)() const>(&Approx_CurveOnSurface::Curve3d))

@@ -1,6 +1,7 @@
 """libclang front end: parse one OCCT package as a single translation unit and build the IR."""
 from __future__ import annotations
 
+import ctypes
 import keyword
 import platform
 import re
@@ -15,7 +16,9 @@ from clang.cindex import AccessSpecifier as Access
 from clang.cindex import CursorKind as K
 from clang.cindex import TypeKind as TK
 
-from .model import Class, Constant, Constructor, Conversion, Enum, Field, Function, Method, PackageIR, Param, TemplateInstance, TypeAlias
+from .binders import BINDERS, instance_args
+from .model import (Class, Constant, Constructor, Conversion, ConversionKind, Enum, Field, Function, Method, PackageIR, Param,
+                    ResultKind, StreamKind, TemplateInstance, TypeAlias)
 from .occt import OcctTree, Package
 
 _PRIMITIVE_KINDS = {
@@ -36,6 +39,8 @@ _NONCOPYABLE = set(_OVERRIDES.get("skip", {}).get("noncopyable", []))
 _SKIP_NAMESPACES = set(_OVERRIDES.get("skip", {}).get("namespaces", []))
 _SKIP_METHODS = set(_OVERRIDES.get("skip", {}).get("methods", []))
 _EXTRA_INSTANCES = list(_OVERRIDES.get("instantiate", {}).get("extra", []))
+_INCLUDE_HEADERS: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("headers", {})   # package -> the only headers to bind
+INCLUDE_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("packages", {})   # toolkit -> the only packages to generate
 
 _UNSUPPORTED_RE = re.compile(
     r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf|"
@@ -58,7 +63,10 @@ def _resource_dir() -> str | None:
 
 def configure_libclang() -> str:
     """Prefer the libclang shipped with the clang on PATH (same version as the SDK/stdlib it was
-    tested with); fall back to the pip 'libclang' wheel. Returns a description for logging."""
+    tested with); fall back to the pip 'libclang' wheel. Returns a description for logging. Idempotent: cindex
+    accepts the library file only before first use."""
+    if cindex.Config.loaded:
+        return "libclang already loaded"
     rd = _resource_dir()
     if rd is not None:
         # <prefix>/lib/clang/<ver> -> <prefix>/lib/libclang.*
@@ -106,6 +114,43 @@ def _doc(cursor: cindex.Cursor) -> str:
     return "\n".join(lines)
 
 
+# Design.md 6 R-DEPRECATED
+def _deprecation_message(cursor: cindex.Cursor) -> str | None:
+    """The message of Standard_DEPRECATED("...") / [[deprecated("...")]] on a declaration, "" when deprecated without a
+    message, None when not deprecated. cindex exposes only Cursor.availability, so clang_getCursorPlatformAvailability
+    is called through ctypes for the text."""
+    if cursor.availability != cindex.AvailabilityKind.DEPRECATED:
+        return None
+    lib = cindex.conf.lib
+    fn = lib.clang_getCursorPlatformAvailability
+    if fn.argtypes is None:
+        fn.argtypes = [cindex.Cursor, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(cindex._CXString), ctypes.POINTER(ctypes.c_int),
+                       ctypes.POINTER(cindex._CXString), ctypes.c_void_p, ctypes.c_int]
+        fn.restype = ctypes.c_int
+    always_deprecated = ctypes.c_int()
+    always_unavailable = ctypes.c_int()
+    deprecated_message = cindex._CXString()
+    unavailable_message = cindex._CXString()
+    fn(cursor, ctypes.byref(always_deprecated), ctypes.byref(deprecated_message), ctypes.byref(always_unavailable),
+       ctypes.byref(unavailable_message), None, 0)
+    message = lib.clang_getCString(deprecated_message)
+    if isinstance(message, bytes):
+        message = message.decode("utf-8", "replace")
+    return "" if message is None else message
+
+
+def _doc_with_deprecation(cursor: cindex.Cursor) -> str:
+    """The docstring of a member; a deprecated member (Standard_DEPRECATED) keeps its binding and gets OCCT's deprecation
+    message as the first line, so the OCCT documentation's advice reaches the Python user (Design.md 6)."""
+    doc = _doc(cursor)
+    message = _deprecation_message(cursor)
+    if message is None:
+        return doc
+    note = "Deprecated in OCCT" + (f": {message}" if message != "" else ".")
+    return note if doc == "" else f"{note}\n\n{doc}"
+
+
+# Design.md 6 R-DEFAULT, R-DEFAULT-QUAL
 def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | None:
     """Default value as written, with unqualified references to static members / enumerators of the
     enclosing class qualified (the expression is emitted outside the class scope)."""
@@ -135,7 +180,7 @@ def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | 
         for i, tok in enumerate(expr):
             if tok == target.spelling and (i == 0 or expr[i - 1] != "::"):
                 expr[i] = qualified
-    joined = _apply_subst(" ".join(expr))        # template parameters in defaults (Element_t(0)) while instantiating
+    joined = _SUBST.apply(" ".join(expr))        # template parameters in defaults (Element_t(0)) while instantiating
     # the tokens are joined with spaces; tidy the spelling (`Message_ProgressRange ( )` -> `Message_ProgressRange()`)
     return joined.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
 
@@ -195,6 +240,7 @@ def _is_scalar(t: cindex.Type) -> bool:
     return False
 
 
+# Design.md 6 R-HANDLE (nb::arg(...).none() emitted in emit._args)
 def _is_handle(t: cindex.Type) -> bool:
     """opencascade::handle<T>, possibly behind const/&."""
     canon = t.get_canonical()
@@ -206,6 +252,7 @@ def _is_handle(t: cindex.Type) -> bool:
     return decl.kind != K.NO_DECL_FOUND and decl.spelling == "handle" and canon.get_num_template_arguments() == 1
 
 
+# Design.md 6 R-OUT, R-OUT-HANDLE; R-INOUT is decided in _params from overrides.toml
 def _is_out_param(t: cindex.Type) -> bool:
     """Non-const lvalue reference to a primitive or to a handle<T>: the callee writes it, Python gets it back in the
     result tuple. A handle<T>& is an out-parameter because the caster hands the callee a temporary handle, so a
@@ -219,37 +266,60 @@ def _is_out_param(t: cindex.Type) -> bool:
     return pointee.get_canonical().kind in _PRIMITIVE_KINDS or _is_handle(pointee)
 
 
-_subst: dict[str, str] = {}          # template parameter -> argument while walking a class template (alias instantiation)
-_subst_self: tuple[str, str, str] | None = None   # (template leaf name, full instantiation, qualified template name) for the injected class name
-_subst_members: dict[str, str] = {}  # member types of the template (using IdType = ...) written unqualified inside it -> spelling
-_subst_scope: dict[str, str] = {}    # types/templates of the enclosing namespaces and classes -> qualified name (DefTraits<...>)
+class Substitution:
+    """The 6c walk (Design.md): while the definition of a class template is walked to bind one instantiation, every type
+    spelling and default expression is rewritten through this object. Inactive (no template parameters) outside the walk.
+    One module-level instance, set up and cleared by _instantiate_template, read by _type_spelling/_default_expr/_class."""
+
+    def __init__(self) -> None:
+        self.params: dict[str, str] = {}             # template parameter -> argument
+        self.self_: tuple[str, str, str] | None = None   # (template leaf name, full instantiation, qualified template name): the injected class name
+        self.members: dict[str, str] = {}            # member types of the template (using IdType = ...) written unqualified inside it -> spelling
+        self.scope: dict[str, str] = {}              # types/templates of the enclosing namespaces and classes -> qualified name (DefTraits<...>)
+
+    @property
+    def active(self) -> bool:
+        return len(self.params) > 0
+
+    @property
+    def leaf(self) -> str | None:
+        """The template's own (unqualified) name while walking, else None."""
+        return None if self.self_ is None else self.self_[0]
+
+    def clear(self) -> None:
+        self.params = {}
+        self.self_ = None
+        self.members = {}
+        self.scope = {}
+
+    def apply(self, spelling: str) -> str:
+        if not self.active:
+            return spelling
+        out = spelling
+        for param, arg in self.params.items():
+            out = re.sub(rf"(?<![:\w]){re.escape(param)}\b", arg, out)
+        if self.self_ is not None:
+            leaf, full, qualified = self.self_
+            for name, spelling in self.members.items():   # IdType -> Typed::IdType (the leaf becomes the full instantiation below)
+                out = re.sub(rf"(?<![:\w]){re.escape(name)}\b", spelling, out)
+            for name, qual in self.scope.items():    # DefTraits -> BRepGraph_ReverseIterator::DefTraits
+                out = re.sub(rf"(?<![:\w]){re.escape(name)}\b", qual, out)
+            # injected class name: math_VectorBase -> math_VectorBase<double>; written with its own arguments
+            # (Typed<TheKind> inside BRepGraph_NodeId::Typed) -> qualified template name, the arguments were substituted above.
+            # A qualified spelling of another template with the same leaf name (BRepGraph_RefId::Typed) is left alone.
+            out = re.sub(rf"(?<![:\w]){re.escape(leaf)}\b(?!\s*<)", full, out)
+            out = re.sub(rf"(?<![:\w]){re.escape(leaf)}\b(?=\s*<)", qualified, out)
+        return out
 
 
-def _apply_subst(spelling: str) -> str:
-    if len(_subst) == 0:
-        return spelling
-    out = spelling
-    for param, arg in _subst.items():
-        out = re.sub(rf"(?<![:\w]){re.escape(param)}\b", arg, out)
-    if _subst_self is not None:
-        leaf, full, qualified = _subst_self
-        for name, spelling in _subst_members.items():   # IdType -> Typed::IdType (the leaf becomes the full instantiation below)
-            out = re.sub(rf"(?<![:\w]){re.escape(name)}\b", spelling, out)
-        for name, qual in _subst_scope.items():    # DefTraits -> BRepGraph_ReverseIterator::DefTraits
-            out = re.sub(rf"(?<![:\w]){re.escape(name)}\b", qual, out)
-        # injected class name: math_VectorBase -> math_VectorBase<double>; written with its own arguments
-        # (Typed<TheKind> inside BRepGraph_NodeId::Typed) -> qualified template name, the arguments were substituted above.
-        # A qualified spelling of another template with the same leaf name (BRepGraph_RefId::Typed) is left alone.
-        out = re.sub(rf"(?<![:\w]){re.escape(leaf)}\b(?!\s*<)", full, out)
-        out = re.sub(rf"(?<![:\w]){re.escape(leaf)}\b(?=\s*<)", qualified, out)
-    return out
+_SUBST = Substitution()
 
 
 def _type_spelling(t: cindex.Type) -> str:
     """Type as written in the header (keeps portable typedef names such as Standard_Size), except that
     types nested in a class are spelled fully qualified (the header may say 'D' inside gp_Dir). While a
     class template is walked for an alias instantiation, template parameters are substituted."""
-    return _apply_subst(_type_spelling_raw(t))
+    return _SUBST.apply(_type_spelling_raw(t))
 
 
 def _in_user_namespace(decl: cindex.Cursor) -> bool:
@@ -268,14 +338,14 @@ def _type_spelling_raw(t: cindex.Type) -> str:
     decl = base.get_declaration()
     if decl.kind != K.NO_DECL_FOUND:
         parent = decl.semantic_parent
-        if _subst_self is not None and parent is not None and parent.kind == K.CLASS_TEMPLATE and parent.spelling == _subst_self[0] \
+        if _SUBST.leaf is not None and parent is not None and parent.kind == K.CLASS_TEMPLATE and parent.spelling == _SUBST.leaf \
                 and decl.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL):
             # member type of the class template being instantiated (using TypedId = typename NodeTraits<DefT>::TypedId;
             # CurrentId() returns TypedId): qualify with the injected class name, which becomes the full instantiation;
             # a non-public typedef (BRepGraph_MutGuard::TypeId) cannot be named from outside: spell its underlying type
             if decl.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL) and decl.access_specifier != Access.PUBLIC:
                 return ("const " if base.is_const_qualified() else "") + _type_spelling_raw(decl.underlying_typedef_type) + suffix
-            return ("const " if base.is_const_qualified() else "") + f"{_subst_self[0]}::{decl.spelling}" + suffix
+            return ("const " if base.is_const_qualified() else "") + f"{_SUBST.leaf}::{decl.spelling}" + suffix
         if parent is not None and parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
             return t.get_canonical().spelling
         # a plain class in an OCCT namespace may be written unqualified inside that namespace (class Full : public Base)
@@ -352,6 +422,7 @@ def _ast_py_path(cursor: cindex.Cursor, package: str) -> str:
     return ".".join(reversed(parts))
 
 
+# Design.md 6 R-UNSUPPORTED, R-ARRAY, R-ITERATOR, R-STL, R-CSTRING
 def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
     canon = t.get_canonical()
     cs = canon.spelling
@@ -424,28 +495,30 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
     return None
 
 
+# Design.md 6 R-RESULT
 def _result_kind(t: cindex.Type) -> tuple[str, str]:
     """How a returned pointer/reference must be treated (see Design.md section 6)."""
     canon = t.get_canonical()
     if canon.kind not in (TK.POINTER, TK.LVALUEREFERENCE):
-        return "value", ""
+        return ResultKind.VALUE, ""
     pointee = canon.get_pointee()
     decl = pointee.get_declaration()
     if decl.kind not in (K.CLASS_DECL, K.STRUCT_DECL):
-        return "other", ""
+        return ResultKind.OTHER, ""
     name = _type_spelling(pointee).replace("const ", "").strip()
     if _derives_from(decl, "Standard_Transient"):
-        return ("ptr_transient" if canon.kind == TK.POINTER else "ref_transient"), name
+        return (ResultKind.PTR_TRANSIENT if canon.kind == TK.POINTER else ResultKind.REF_TRANSIENT), name
     if canon.kind == TK.POINTER:
-        return "ptr_class", name
+        return ResultKind.PTR_CLASS, name
     if not pointee.is_const_qualified():
-        return "ref_mutable", name
-    return "value", name
+        return ResultKind.REF_MUTABLE, name
+    return ResultKind.VALUE, name
 
 
+# Design.md 6 R-STREAM-OUT, R-STREAM-IN
 def _stream_kind(t: cindex.Type) -> str:
     """'out' for a mutable std::ostream& (Dump, DumpJson, Print, Write: the text is returned as a str), 'in' for a
-    std::istream& or a std::stringstream (const or not: InitFromJson, Read: the text is passed as a str), else ''."""
+    std::istream& or a std::stringstream (const or not: InitFromJson, Read: a text file-like object is read into a stringstream, nanoocp::TextInput), else ''."""
     canon = t.get_canonical()
     if canon.kind != TK.LVALUEREFERENCE:
         return ""
@@ -457,9 +530,9 @@ def _stream_kind(t: cindex.Type) -> str:
     if parent is None or parent.kind != K.NAMESPACE or not (parent.spelling == "std" or parent.spelling.startswith("__")):
         return ""
     if decl.spelling == "basic_ostream" and not pointee.is_const_qualified():
-        return "out"
+        return StreamKind.OUT
     if decl.spelling in ("basic_istream", "basic_stringstream", "basic_istringstream"):
-        return "in"
+        return StreamKind.IN
     return ""
 
 
@@ -471,8 +544,8 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
     if members is None:
         members = set()
     for i, p in enumerate(cursor.get_arguments()):
-        stream = _stream_kind(p.type) if allow_streams else ""
-        reason = _unsupported(p.type, allow_out=True) if stream == "" else None
+        stream = _stream_kind(p.type) if allow_streams else StreamKind.NONE
+        reason = _unsupported(p.type, allow_out=True) if stream == StreamKind.NONE else None
         if reason is None and "type-parameter-" in _type_spelling(p.type):
             reason = "dependent type (unresolved template parameter)"
         if reason is not None:
@@ -501,7 +574,6 @@ _template_uses: list[cindex.Type] = []                      # template instantia
 
 def _is_plain_template_instance(t: cindex.Type) -> bool:
     """An instantiation of an OCCT class template that is not an NCollection binder kind, a handle or a std type."""
-    from .ncollection import BINDERS
     canon = t.get_canonical()
     if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0:
         return False
@@ -531,6 +603,7 @@ def _derives_from(cls: cindex.Cursor, root: str) -> bool:
     return result
 
 
+# Design.md 6 R-KEYWORD
 def py_safe(name: str) -> str:
     """Python name for a C++ identifier: keywords get a trailing underscore (GProp_PEquation::Type::None -> None_)."""
     if keyword.iskeyword(name):
@@ -538,6 +611,7 @@ def py_safe(name: str) -> str:
     return name
 
 
+# Design.md 6 R-ENUM, R-ANON-ENUM
 def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
     qual = f"{scope}::{cursor.spelling}" if scope is not None else cursor.spelling
     values: list[tuple[str, str]] = []
@@ -549,6 +623,7 @@ def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
                 is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("))
 
 
+# Design.md 6 R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind), R-COLLISION (result_scalar)
 def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method | None:
     name = cursor.spelling
     if name.startswith("operator") and name in ("operator=", "operator new", "operator delete", "operator new[]", "operator delete[]"):
@@ -558,12 +633,13 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     rk, rc = _result_kind(cursor.result_type)
     m = Method(name=name, params=params, result=_type_spelling(cursor.result_type), result_kind=rk, result_class=rc,
                is_static=cursor.is_static_method(),
-               is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc(cursor),
+               is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
+               is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
                is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
                result_scalar=_is_scalar(cursor.result_type))
-    returns_stream = _stream_kind(cursor.result_type) == "out" and any(p.stream == "out" for p in params)
+    returns_stream = _stream_kind(cursor.result_type) == StreamKind.OUT and any(p.stream == StreamKind.OUT for p in params)
     if m.skip_reason is None and returns_stream:
-        m.result, m.result_kind, m.result_class = "void", "value", ""    # Standard_OStream& Print(x, Standard_OStream&): the stream itself, for chaining
+        m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""    # Standard_OStream& Print(x, Standard_OStream&): the stream itself, for chaining
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
         rc0 = cursor.result_type.get_canonical()
@@ -571,7 +647,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
             # double& Value(i, j) (math_Matrix), double& ChangeCoord(i) (gp_XYZ): Python cannot hold the reference,
             # so the emitter binds a getter plus a Set<Name>/__setitem__ counterpart (Design.md 6, Python addition)
             m.skip_reason = None
-            m.result_kind, m.result = "ref_primitive", _type_spelling(rc0.get_pointee()).replace("const ", "")
+            m.result_kind, m.result = ResultKind.REF_PRIMITIVE, _type_spelling(rc0.get_pointee()).replace("const ", "")
         if m.skip_reason is None and re.match(r"(const )?(\w+)<", m.result) is not None \
                 and re.match(r"(const )?(\w+)<", m.result).group(2) in _STL_ITERATORS:
             m.skip_reason = "return: STL-style iterator"     # dependent spelling inside an instantiated template (begin()/end())
@@ -585,10 +661,10 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
             # an element -> skipped
             if rcanon.kind == TK.LVALUEREFERENCE and not rcanon.get_pointee().is_const_qualified() and m.result.endswith("&") \
                     and not m.result.startswith("const ") and m.result[:-1].strip() not in _PRIMITIVE_SPELLINGS:
-                m.result_kind, m.result_class = "ref_mutable", m.result[:-1].strip()
+                m.result_kind, m.result_class = ResultKind.REF_MUTABLE, m.result[:-1].strip()
             elif rcanon.kind == TK.LVALUEREFERENCE and not rcanon.get_pointee().is_const_qualified() and m.result.endswith("&") \
                     and not m.result.startswith("const ") and not cursor.is_const_method():
-                m.result_kind, m.result = "ref_primitive", m.result[:-1].strip()   # math_VectorBase<double>::Value(i) -> double&
+                m.result_kind, m.result = ResultKind.REF_PRIMITIVE, m.result[:-1].strip()   # math_VectorBase<double>::Value(i) -> double&
             elif rcanon.kind == TK.POINTER and re.fullmatch(r"const (char|Standard_Utf8Char|Standard_Character) \*", m.result) is not None:
                 pass                               # NCollection_UtfString<char>::ToCString(): const char* -> str
             elif rcanon.kind == TK.POINTER or rcanon.kind == TK.LVALUEREFERENCE and not rcanon.get_pointee().is_const_qualified():
@@ -604,8 +680,6 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         sig = f"{cls_name}::{name}({', '.join(p.type for p in params)})"
         if f"{cls_name}::{name}" in _SKIP_METHODS or sig in _SKIP_METHODS:
             m.skip_reason = "overrides.toml [skip] methods"
-    if m.skip_reason is None and cursor.availability == cindex.AvailabilityKind.DEPRECATED:
-        m.skip_reason = "deprecated"
     return m
 
 
@@ -635,6 +709,7 @@ def _incomplete_in(t: cindex.Type) -> str | None:
 _INT_KINDS = {TK.INT, TK.UINT, TK.LONG, TK.ULONG, TK.LONGLONG, TK.ULONGLONG, TK.SHORT, TK.USHORT}
 
 
+# Design.md 6 R-CONV, R-CONV-SCALAR
 def _conversion(cursor: cindex.Cursor) -> Conversion | None:
     """operator bool/int/double() -> __bool__/__int__/__float__; operator T()/operator handle<T>() for a class or
     enum T -> a constructor T(self) (plus an implicit conversion when not explicit)."""
@@ -645,11 +720,11 @@ def _conversion(cursor: cindex.Cursor) -> Conversion | None:
     doc = _doc(cursor)
     explicit = cursor.is_explicit_method()
     if canon.kind == TK.BOOL:
-        return Conversion("bool", "bool", "", explicit, doc)
+        return Conversion(ConversionKind.BOOL, "bool", "", explicit, doc)
     if canon.kind in _INT_KINDS:
-        return Conversion("int", _type_spelling(t), "", explicit, doc)
+        return Conversion(ConversionKind.INT, _type_spelling(t), "", explicit, doc)
     if canon.kind in (TK.DOUBLE, TK.FLOAT, TK.LONGDOUBLE):
-        return Conversion("float", _type_spelling(t), "", explicit, doc)
+        return Conversion(ConversionKind.FLOAT, _type_spelling(t), "", explicit, doc)
     if canon.kind == TK.ENUM:
         return None                              # no Python spelling for a conversion to an enum (BRepGraphInc_ParityOrientation)
     if canon.kind == TK.RECORD:
@@ -660,18 +735,19 @@ def _conversion(cursor: cindex.Cursor) -> Conversion | None:
             pointee = canon.get_template_argument_type(0)
             if pointee.get_declaration().kind == K.NO_DECL_FOUND:
                 return None
-            return Conversion("handle", _type_spelling(pointee), _class_behind(pointee), explicit, doc)
+            return Conversion(ConversionKind.HANDLE, _type_spelling(pointee), _class_behind(pointee), explicit, doc)
         parent = decl.semantic_parent
         if parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")):
             return None
-        return Conversion("class", _type_spelling(t).replace("const ", "").strip(), _class_behind(t), explicit, doc)
+        return Conversion(ConversionKind.CLASS, _type_spelling(t).replace("const ", "").strip(), _class_behind(t), explicit, doc)
     return None
 
 
+# Design.md 6 R-NESTED, R-FIELD, R-INCOMPLETE, R-IMPLICIT-CONV, R-IMPLICIT-DEFAULT, R-MI, R-NONCOPYABLE
 def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") -> Class:
     cpp_name = _type_spelling(cursor.type)          # 'NCollection_Lerp<gp_Trsf>' for a specialization
     if cpp_name == "":                              # a class template walked for an alias instantiation (6c)
-        cpp_name = _apply_subst(cursor.spelling)
+        cpp_name = _SUBST.apply(cursor.spelling)
     path = (py_path(cpp_name, package) if "<" in cpp_name else _ast_py_path(cursor, package)).split(".")
     parent = cursor.semantic_parent
     if outer == "" and "<" not in cpp_name and parent is not None and parent.kind in (K.CLASS_DECL, K.STRUCT_DECL):
@@ -708,7 +784,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.constructible = False
                 continue
             c.bases.append(_type_spelling(ch.type))
-            if len(_subst) == 0 and _is_plain_template_instance(ch.type):
+            if not _SUBST.active and _is_plain_template_instance(ch.type):
                 _template_bases.append((c.name, ch.type, header))
             continue
         if ch.kind == K.CONSTRUCTOR:
@@ -722,10 +798,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             required = [q for q in params if q.default is None]
             implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
                         and not ch.is_copy_constructor() and not ch.is_move_constructor())
-            ctor = Constructor(params=params, doc=_doc(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
-                               defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or len(_subst) > 0)
-            if ctor.skip_reason is None and ch.availability == cindex.AvailabilityKind.DEPRECATED:
-                ctor.skip_reason = "deprecated"
+            ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
+                               defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active)
             if ctor.skip_reason is not None:
                 c.skipped.append(f"{c.name}::{c.name}({', '.join(p.type for p in params)}): {ctor.skip_reason}")
             c.ctors.append(ctor)
@@ -760,7 +834,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
         elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition():
             if ch.spelling == "":
                 c.skipped.append(f"{c.name}: anonymous nested struct")
-            elif len(_subst) > 0:
+            elif _SUBST.active:
                 c.skipped.append(f"{cursor.spelling}::{ch.spelling}: nested class of a class template (alias instantiation)")
             else:
                 n = _class(ch, header, package, outer=c.name)
@@ -785,7 +859,6 @@ def _note_instance(t: cindex.Type) -> None:
     """If t (or its pointee) is an instantiation of an NCollection template we have a binder for, record it,
     including nested instantiations in its arguments. Any other OCCT class template instantiation in a signature
     (BRepGraph_MutGuard<...>, BVH_Box<double, 3>) is recorded for on-demand instantiation (6c)."""
-    from .ncollection import BINDERS
     canon = t.get_canonical()
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
         canon = canon.get_pointee().get_canonical()
@@ -796,20 +869,19 @@ def _note_instance(t: cindex.Type) -> None:
         _note_instance(canon.get_template_argument_type(0))
         return
     if decl.spelling not in BINDERS:
-        if len(_subst) == 0 and _is_plain_template_instance(t) and "type-parameter-" not in canon.spelling:
+        if not _SUBST.active and _is_plain_template_instance(t) and "type-parameter-" not in canon.spelling:
             _template_uses.append(t)
         for i in range(canon.get_num_template_arguments()):   # NCollection_Iterator<NCollection_DynamicArray<T>>: the argument
             arg = canon.get_template_argument_type(i)
             if arg.kind != TK.INVALID:
                 _note_instance(arg)
         return
-    from .ncollection import instance_args
     all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
     args = instance_args(decl.spelling, all_args)     # default hashers are not part of the key/name
     for i in range(len(args)):
         _note_instance(canon.get_template_argument_type(i))
     key = f"{decl.spelling}<{', '.join(args)}>"
-    _instances_seen.setdefault(key, TemplateInstance(template=decl.spelling, args=args, key=key, element=args[0]))
+    _instances_seen.setdefault(key, TemplateInstance(template=decl.spelling, args=args, key=key))
 
 
 def _split_top(text: str) -> list[str]:
@@ -869,13 +941,13 @@ def _template_default(param: cindex.Cursor) -> str | None:
     return " ".join(toks[toks.index("=") + 1:])
 
 
+# Design.md 6c (template aliases and on-demand instantiations), R-TEMPLATE-NAME
 def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: str, package: str, report: list[str],
                           what: str, py_name: str | None) -> Class | None:
     """The members of a class template instantiated for the arguments of t, walked from the template's definition
     with argument substitution (Design.md 6c). py_name: the alias name, or None for an instantiation that is only a
     base class (BRepGraph_WiresOfEdge : EdgeParentsOf<...>) -> the mangled name. NCollection containers (hand-written
     binders) and std types are not handled here. Returns None (with a report line) when it cannot be done."""
-    from .ncollection import BINDERS
     canon = t.get_canonical()
     if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0 or "<" not in t.spelling:
         return None
@@ -921,44 +993,38 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
                 report.append(f"{what}: non-type argument {i + 1} neither written nor defaulted")
                 return None
             args.append(default); spelled_args.append(""); keys.append("")
-    global _subst, _subst_self, _subst_members, _subst_scope
     full = f"{qualified}<{', '.join(a for a in spelled_args if a != '')}>"
-    _subst = {}
+    assert not _SUBST.active, "nested template walks are not supported"
     for names in param_lists:                      # every declaration's parameter names, position-wise
         for name, a in zip(names, args):
-            _subst.setdefault(name, a)
-    _subst_self = (tmpl_name, full, qualified)
+            _SUBST.params.setdefault(name, a)
+    _SUBST.self_ = (tmpl_name, full, qualified)
     type_kinds = (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL, K.CLASS_TEMPLATE)
-    _subst_members = {}
     for ch in tmpl.get_children():
-        if ch.kind not in type_kinds or ch.spelling == "" or ch.spelling in _subst:
+        if ch.kind not in type_kinds or ch.spelling == "" or ch.spelling in _SUBST.params:
             continue
         if ch.access_specifier == Access.PUBLIC or ch.kind not in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
-            _subst_members[ch.spelling] = f"{tmpl_name}::{ch.spelling}"
+            _SUBST.members[ch.spelling] = f"{tmpl_name}::{ch.spelling}"
         else:
             # a private member typedef used in a public signature (BRepGraph_MutGuard::TypeId) cannot be named from
             # outside: spell its underlying type, with the template parameters substituted
             underlying = _type_spelling_raw(ch.underlying_typedef_type)
-            for param, a in _subst.items():
+            for param, a in _SUBST.params.items():
                 underlying = re.sub(rf"(?<![:\w]){re.escape(param)}\b", a, underlying)
-            _subst_members[ch.spelling] = underlying
-    _subst_scope = {}
+            _SUBST.members[ch.spelling] = underlying
     ancestor = tmpl.semantic_parent
     while ancestor is not None and ancestor.kind in (K.NAMESPACE, K.CLASS_DECL, K.STRUCT_DECL) and ancestor.spelling != "":
         prefix = _qualified_template(ancestor)
         for sc in _scope_reopenings(tu, prefix):
             for ch in sc.get_children():
-                if ch.kind in type_kinds and ch.spelling != "" and ch.spelling != tmpl_name and ch.spelling not in _subst \
-                        and ch.spelling not in _subst_members:
-                    _subst_scope.setdefault(ch.spelling, f"{prefix}::{ch.spelling}")
+                if ch.kind in type_kinds and ch.spelling != "" and ch.spelling != tmpl_name and ch.spelling not in _SUBST.params \
+                        and ch.spelling not in _SUBST.members:
+                    _SUBST.scope.setdefault(ch.spelling, f"{prefix}::{ch.spelling}")
         ancestor = ancestor.semantic_parent
     try:
         c = _class(tmpl, header, package)
     finally:
-        _subst = {}
-        _subst_self = None
-        _subst_members = {}
-        _subst_scope = {}
+        _SUBST.clear()
     c.name = full
     c.py_name = py_name if py_name is not None else _py_identifier(full)
     c.template_key = f"{qualified}<{', '.join(k for k in keys if k != '')}>"
@@ -988,10 +1054,18 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
         args = clang_args(tree)
     if known_elsewhere is None:
         known_elsewhere = set()
-    ir = PackageIR(name=pkg.name, toolkit=pkg.toolkit, headers=[h for h in pkg.headers if h not in _SKIP_HEADERS])
+    allowed = _INCLUDE_HEADERS.get(pkg.name)          # a partial package (the font slice of Visualization): allowlist
+    if allowed is not None:
+        for h in allowed:
+            if h not in pkg.headers:
+                raise ValueError(f"overrides.toml [include] headers: {h} is not a header of package {pkg.name}")
+    ir = PackageIR(name=pkg.name, toolkit=pkg.toolkit,
+                   headers=[h for h in pkg.headers if h not in _SKIP_HEADERS and (allowed is None or h in allowed)])
     for h in pkg.headers:
         if h in _SKIP_HEADERS:
             ir.report.append(f"{h}: skipped (overrides.toml [skip] headers)")
+        elif allowed is not None and h not in allowed:
+            ir.report.append(f"{h}: not in the allowlist (overrides.toml [include] headers)")
     headers = set(ir.headers)
     _instances_seen.clear()
     _template_bases.clear()
@@ -1091,7 +1165,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 rk, rc = _result_kind(cur.result_type)
                 fn = Function(name=cur.spelling, params=params, result=_type_spelling(cur.result_type),
                               result_kind=rk, result_class=rc,
-                              is_noexcept=_is_noexcept(cur), doc=_doc(cur), header=header,
+                              is_noexcept=_is_noexcept(cur), doc=_doc_with_deprecation(cur), header=header,
                               is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
                               qualified=f"{ns}{cur.spelling}", scope=scope)
                 if fn.skip_reason is None:
@@ -1146,12 +1220,11 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     # (every signature seen) is harmless: an unused instantiation just costs compile time
     ir.instances = dict(_instances_seen)
     if pkg.name == "NCollection":
-        from .ncollection import BINDERS
         for spelled in _EXTRA_INSTANCES:
             m = re.match(r"(\w+)<(.+)>$", spelled)
             if m is None or m.group(1) not in BINDERS:
                 ir.report.append(f"overrides [instantiate]: cannot parse or no binder for {spelled}")
                 continue
             args = [a.strip() for a in m.group(2).split(",")]
-            ir.instances.setdefault(spelled, TemplateInstance(template=m.group(1), args=args, key=spelled, element=args[0]))
+            ir.instances.setdefault(spelled, TemplateInstance(template=m.group(1), args=args, key=spelled))
     return ir

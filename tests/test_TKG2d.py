@@ -63,8 +63,13 @@ def test_bezier_from_ncollection_array():
     bz = _bezier()
     assert (bz.Degree(), bz.NbPoles()) == (2, 3)
     assert bz.Value(0.5).Coord() == (1.0, 0.5)
-    assert bz.Poles().Length() == 3                                # const Array1& result, the deprecated overload is skipped
+    assert bz.Poles().Length() == 3                                # const Array1& result
     assert not hasattr(bz, "Poles_s")
+    # the deprecated out-into-array overload is bound too, with OCCT's message as the docstring's first line (Design.md 6 R-DEPRECATED)
+    poles = NCollection.NCollection_Array1[gp.gp_Pnt2d](1, 3)
+    bz.Poles(poles)
+    assert poles[3].Coord() == bz.Pole(3).Coord()
+    assert "Deprecated in OCCT: use Poles() returning const reference instead" in bz.Poles.__doc__
 
 
 def test_adaptor_and_abstract_base():

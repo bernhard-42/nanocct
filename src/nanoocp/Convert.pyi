@@ -144,6 +144,50 @@ class Convert_ConicToBSplineCurve:
         this framework is periodic.
         """
 
+    def Pole(self, theIndex: int) -> nanoocp.gp.gp_Pnt2d:
+        """
+        Deprecated in OCCT: Use Poles() batch accessor instead
+
+        Returns the pole of index Index to the poles table of the
+        BSpline curve whose data is computed in this framework.
+        @param[in] theIndex pole index (1-based)
+        @return pole at the given index
+        @throws Standard_OutOfRange if theIndex is out of bounds
+        """
+
+    def Weight(self, theIndex: int) -> float:
+        """
+        Deprecated in OCCT: Use Weights() batch accessor instead
+
+        Returns the weight of the pole of index Index to the poles
+        table of the BSpline curve whose data is computed in this framework.
+        @param[in] theIndex weight index (1-based)
+        @return weight at the given index
+        @throws Standard_OutOfRange if theIndex is out of bounds
+        """
+
+    def Knot(self, theIndex: int) -> float:
+        """
+        Deprecated in OCCT: Use Knots() batch accessor instead
+
+        Returns the knot of index Index to the knots table of the
+        BSpline curve whose data is computed in this framework.
+        @param[in] theIndex knot index (1-based)
+        @return knot at the given index
+        @throws Standard_OutOfRange if theIndex is out of bounds
+        """
+
+    def Multiplicity(self, theIndex: int) -> int:
+        """
+        Deprecated in OCCT: Use Multiplicities() batch accessor instead
+
+        Returns the multiplicity of the knot of index Index to the
+        knots table of the BSpline curve whose data is computed in this framework.
+        @param[in] theIndex multiplicity index (1-based)
+        @return multiplicity at the given index
+        @throws Standard_OutOfRange if theIndex is out of bounds
+        """
+
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the poles of the BSpline curve."""
 
@@ -155,6 +199,17 @@ class Convert_ConicToBSplineCurve:
 
     def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the BSpline curve."""
+
+    @overload
+    def BuildCosAndSin(self, theParametrisation: Convert_ParameterisationType) -> tuple[nanoocp.NCollection.NCollection_HArray1[float], nanoocp.NCollection.NCollection_HArray1[float], nanoocp.NCollection.NCollection_HArray1[float], int, nanoocp.NCollection.NCollection_HArray1[float], nanoocp.NCollection.NCollection_HArray1[int]]: ...
+
+    @overload
+    def BuildCosAndSin(self, theParametrisation: Convert_ParameterisationType, theUFirst: float, theULast: float) -> tuple[nanoocp.NCollection.NCollection_HArray1[float], nanoocp.NCollection.NCollection_HArray1[float], nanoocp.NCollection.NCollection_HArray1[float], int, nanoocp.NCollection.NCollection_HArray1[float], nanoocp.NCollection.NCollection_HArray1[int]]:
+        """
+        Deprecated in OCCT: Use array-based BuildCosAndSin() overload instead
+
+        Legacy API returning handle arrays for compatibility.
+        """
 
 class Convert_CircleToBSplineCurve(Convert_ConicToBSplineCurve):
     """
@@ -420,11 +475,20 @@ class Convert_CompPolynomialToPoles:
     def NbPoles(self) -> int:
         """Returns the number of poles of the n-dimensional BSpline."""
 
+    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array2[float]:
         """
         Returns the poles of the n-dimensional BSpline
         in the following format:
         [1..NumPoles][1..Dimension]
+        """
+
+    @overload
+    def Poles(self) -> nanoocp.NCollection.NCollection_HArray2[float]:
+        """
+        Deprecated in OCCT: Use Poles() returning const reference instead
+
+        Returns the poles of the n-dimensional BSpline via output parameter.
         """
 
     def Degree(self) -> int:
@@ -433,11 +497,29 @@ class Convert_CompPolynomialToPoles:
     def NbKnots(self) -> int:
         """Returns the number of knots of the n-dimensional BSpline."""
 
+    @overload
     def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots of the n-dimensional BSpline."""
 
+    @overload
+    def Knots(self) -> nanoocp.NCollection.NCollection_HArray1[float]:
+        """
+        Deprecated in OCCT: Use Knots() returning const reference instead
+
+        Returns the knots of the n-dimensional BSpline via output parameter.
+        """
+
+    @overload
     def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the knots in the BSpline."""
+
+    @overload
+    def Multiplicities(self) -> nanoocp.NCollection.NCollection_HArray1[int]:
+        """
+        Deprecated in OCCT: Use Multiplicities() returning const reference instead
+
+        Returns the multiplicities of the knots via output parameter.
+        """
 
     def IsDone(self) -> bool:
         """Returns true if the conversion was successful."""
@@ -477,6 +559,54 @@ class Convert_ElementarySurfaceToBSplineSurface:
 
     def IsVPeriodic(self) -> bool:
         """Returns true if the surface is periodic in the V parametric direction."""
+
+    def Pole(self, UIndex: int, VIndex: int) -> nanoocp.gp.gp_Pnt:
+        """
+        Deprecated in OCCT: Use Poles() batch accessor instead
+
+        Returns the pole of index (UIndex, VIndex).
+        @throws Standard_OutOfRange if indices are out of bounds
+        """
+
+    def Weight(self, UIndex: int, VIndex: int) -> float:
+        """
+        Deprecated in OCCT: Use Weights() batch accessor instead
+
+        Returns the weight of the pole of index (UIndex, VIndex).
+        @throws Standard_OutOfRange if indices are out of bounds
+        """
+
+    def UKnot(self, UIndex: int) -> float:
+        """
+        Deprecated in OCCT: Use UKnots() batch accessor instead
+
+        Returns the U-knot of range UIndex.
+        @throws Standard_OutOfRange if UIndex is out of bounds
+        """
+
+    def VKnot(self, VIndex: int) -> float:
+        """
+        Deprecated in OCCT: Use VKnots() batch accessor instead
+
+        Returns the V-knot of range VIndex.
+        @throws Standard_OutOfRange if VIndex is out of bounds
+        """
+
+    def UMultiplicity(self, UIndex: int) -> int:
+        """
+        Deprecated in OCCT: Use UMultiplicities() batch accessor instead
+
+        Returns the multiplicity of the U-knot of range UIndex.
+        @throws Standard_OutOfRange if UIndex is out of bounds
+        """
+
+    def VMultiplicity(self, VIndex: int) -> int:
+        """
+        Deprecated in OCCT: Use VMultiplicities() batch accessor instead
+
+        Returns the multiplicity of the V-knot of range VIndex.
+        @throws Standard_OutOfRange if VIndex is out of bounds
+        """
 
     def Poles(self) -> nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]:
         """Returns the poles of the BSpline surface."""

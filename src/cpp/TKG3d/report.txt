@@ -1,29 +1,9 @@
-# nanoOCP generator report for TKG3d: 30 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKG3d: 11 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# deprecated: 19
 # header: 1
 # overload-collision: 2
 # raw-pointer: 3
 # template: 5
-deprecated	Geom	Geom_BSplineCurve::KnotSequence(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BSplineCurve::Knots(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BSplineCurve::Multiplicities(NCollection_Array1<int> &): deprecated
-deprecated	Geom	Geom_BSplineCurve::Poles(NCollection_Array1<gp_Pnt> &): deprecated
-deprecated	Geom	Geom_BSplineCurve::Weights(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::Poles(NCollection_Array2<gp_Pnt> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::UKnotSequence(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::UKnots(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::UMultiplicities(NCollection_Array1<int> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::VKnotSequence(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::VKnots(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::VMultiplicities(NCollection_Array1<int> &): deprecated
-deprecated	Geom	Geom_BSplineSurface::Weights(NCollection_Array2<double> &): deprecated
-deprecated	Geom	Geom_BezierCurve::Poles(NCollection_Array1<gp_Pnt> &): deprecated
-deprecated	Geom	Geom_BezierCurve::Weights(NCollection_Array1<double> &): deprecated
-deprecated	Geom	Geom_BezierSurface::Poles(NCollection_Array2<gp_Pnt> &): deprecated
-deprecated	Geom	Geom_BezierSurface::Weights(NCollection_Array2<double> &): deprecated
-deprecated	GeomAdaptor	GeomAdaptor_TransformedSurface::GeomSurface(): deprecated
-deprecated	GeomAdaptor	GeomAdaptor_TransformedSurface::Surface(): deprecated
 header	GeomGridEval	GeomGridEval: headers not self-contained, parsed with <gp_Lin.hxx> included first
 overload-collision	TopAbs	TopAbs::ShapeOrientationFromString(const char *const, TopAbs_Orientation &): same Python signature as ShapeOrientationFromString(const char *const) after out-param removal -> unreachable
 overload-collision	TopAbs	TopAbs::ShapeTypeFromString(const char *, TopAbs_ShapeEnum &): same Python signature as ShapeTypeFromString(const char *) after out-param removal -> unreachable

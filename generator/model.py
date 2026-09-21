@@ -2,6 +2,34 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import StrEnum
+
+
+class ResultKind(StrEnum):
+    """How a method's result is handed to Python (parse._result_kind, emit._method); Design.md 4.2 and 6."""
+    VALUE = "value"                    # copied (nanobind default), also void
+    PTR_TRANSIENT = "ptr_transient"    # T* with T Transient: wrapped in a handle<T>, never owned by nanobind
+    REF_TRANSIENT = "ref_transient"    # T& with T Transient: same
+    PTR_CLASS = "ptr_class"            # T* other class: rv_policy::reference
+    REF_MUTABLE = "ref_mutable"        # T& (mutable) other class: rv_policy::reference_internal (ChangeXxx accessors)
+    REF_PRIMITIVE = "ref_primitive"    # double& Value(i): getter + Set<Name>/__setitem__ Python additions
+    OTHER = "other"
+
+
+class StreamKind(StrEnum):
+    """A std::ostream& / std::istream& parameter (Design.md 6)."""
+    NONE = ""
+    OUT = "out"      # std::ostream&: dropped from the signature, the written text is returned as a str
+    IN = "in"        # std::istream& / Standard_SStream&: a text file-like object (typing.TextIO, nanoocp::TextInput), never a str
+
+
+class ConversionKind(StrEnum):
+    """operator T() const (Design.md 6): a Python dunder for a scalar target, a constructor of T from this class otherwise."""
+    BOOL = "bool"
+    INT = "int"
+    FLOAT = "float"
+    CLASS = "class"
+    HANDLE = "handle"
 
 
 @dataclass
@@ -13,7 +41,7 @@ class Param:
     is_inout: bool = False  # ... and also taken as input (overrides.toml [inout])
     class_name: str = ""    # canonical name of the class/enum type behind the parameter ("" for scalars, strings, std types)
     is_handle: bool = False # opencascade::handle<T> (by value or reference): nb::arg(...).none(), a null handle is None
-    stream: str = ""        # "out": std::ostream& -> the text comes back as a str; "in": std::istream&/std::stringstream <- a str
+    stream: StreamKind = StreamKind.NONE
 
 
 @dataclass
@@ -21,7 +49,7 @@ class Method:
     name: str
     params: list[Param]
     result: str                 # C++ return type spelling, "void" if none
-    result_kind: str            # value | ptr_transient | ref_transient | ptr_class | ref_mutable | other (see parse._result_kind)
+    result_kind: ResultKind
     result_class: str           # for ptr_/ref_ kinds: the pointee class name
     is_static: bool
     is_const: bool
@@ -32,6 +60,7 @@ class Method:
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
     result_scalar: bool = False       # result is arithmetic, bool, enum or a C string (the "direct" API when overloads collide)
+    is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring; loses an overload collision
 
 
 @dataclass
@@ -46,8 +75,8 @@ class Constructor:
 
 @dataclass
 class Conversion:
-    """operator T() const: kind is bool | int | float (Python dunder) or class | handle (a constructor of T from this class)."""
-    kind: str
+    """operator T() const: a Python dunder for bool/int/float, a constructor of T from this class for class/handle."""
+    kind: ConversionKind
     target: str                 # C++ spelling of T (the pointee for handle)
     target_class: str           # canonical class/enum name of T, "" for scalars
     is_explicit: bool
@@ -111,7 +140,7 @@ class Function:
     name: str
     params: list[Param]
     result: str
-    result_kind: str
+    result_kind: ResultKind
     result_class: str
     is_noexcept: bool
     doc: str
@@ -143,7 +172,6 @@ class TemplateInstance:
     template: str         # NCollection_Array1
     args: list[str]       # canonical template arguments, e.g. ["gp_Pnt"]
     key: str              # canonical type spelling, e.g. NCollection_Array1<gp_Pnt>
-    element: str          # canonical spelling of the element type (first argument), for the home package
 
 
 @dataclass

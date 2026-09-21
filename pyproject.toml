@@ -16,6 +16,12 @@ wheel.py-api = "cp312"
 wheel.packages = ["src/nanoocp"]
 cmake.build-type = "Release"
 
+# macOS wheels are tagged macosx_11_0_arm64 like the OCCT build (deps/build-occt.sh sets 11.1); without this the
+# extension inherits the SDK's own minimum (measured: minos 26.0) and the wheel would not run on older systems.
+[[tool.scikit-build.overrides]]
+if.platform-system = "darwin"
+cmake.define.CMAKE_OSX_DEPLOYMENT_TARGET = "11.1"
+
 [tool.pytest.ini_options]
 pythonpath = ["."]          # tests import the generator package (report.txt reader, generator unit tests)
 

@@ -97,7 +97,7 @@ def test_topabs_static_class_and_enums():
     assert TopAbs.TopAbs.Compose(fwd, TopAbs.TopAbs_Orientation.TopAbs_REVERSED) == TopAbs.TopAbs_Orientation.TopAbs_REVERSED
     assert TopAbs.TopAbs.ShapeTypeToString(TopAbs.TopAbs_ShapeEnum.TopAbs_FACE) == "FACE"
     # ShapeTypeFromString(const char*) and (const char*, TopAbs_ShapeEnum&) collide after out-param removal: the
-    # first declared wins (reported by the generator), the bool/tuple variant is unreachable
+    # overload with the scalar (enum) result and no out-params wins (Design.md 6), the bool/tuple variant is unreachable (reported)
     assert TopAbs.TopAbs.ShapeTypeFromString("EDGE") == TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE
     assert TopAbs.TopAbs.ShapeTypeFromString("nonsense") == TopAbs.TopAbs_ShapeEnum.TopAbs_SHAPE
 

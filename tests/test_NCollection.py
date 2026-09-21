@@ -1,9 +1,9 @@
-"""Hand-written NCollection binders (Design.md 6a): Array1 / HArray1, instantiated by the generator."""
+"""Hand-written NCollection binders (Design.md 6a), all 15 kinds, instantiated by the generator."""
 import pytest
 
 from nanoocp import NCollection, Standard, TColStd
 
-A = NCollection.NCollection_Array1__double                         # home = element type's package (double -> Standard)
+A = NCollection.NCollection_Array1__double                         # every instantiation lives in nanoocp.NCollection (Design.md 6a)
 AH = NCollection.NCollection_Array1__Handle_Standard_Persistent
 H = NCollection.NCollection_HArray1__Handle_Standard_Persistent
 

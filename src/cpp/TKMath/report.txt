@@ -1,12 +1,11 @@
-# nanoOCP generator report for TKMath: 363 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 345 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 7
 # conversion: 18
-# deprecated: 21
 # field: 1
 # iterator: 1
 # not-constructible: 1
-# overload-collision: 7
+# overload-collision: 10
 # override: 34
 # raw-pointer: 46
 # rvalue: 3
@@ -41,27 +40,6 @@ conversion	BVH	NCollection_Vec4<float>::operator const type-parameter-0-0 *: con
 conversion	BVH	NCollection_Vec4<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	BVH	NCollection_Vec4<int>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	BVH	NCollection_Vec4<int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
-deprecated	Convert	Convert_CompPolynomialToPoles::Knots(occ::handle<NCollection_HArray1<double>> &): deprecated
-deprecated	Convert	Convert_CompPolynomialToPoles::Multiplicities(occ::handle<NCollection_HArray1<int>> &): deprecated
-deprecated	Convert	Convert_CompPolynomialToPoles::Poles(occ::handle<NCollection_HArray2<double>> &): deprecated
-deprecated	Convert	Convert_ConicToBSplineCurve::BuildCosAndSin(const Convert_ParameterisationType, const double, const double, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, int &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<int>> &): deprecated
-deprecated	Convert	Convert_ConicToBSplineCurve::BuildCosAndSin(const Convert_ParameterisationType, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, int &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<int>> &): deprecated
-deprecated	Convert	Convert_ConicToBSplineCurve::Knot(const int): deprecated
-deprecated	Convert	Convert_ConicToBSplineCurve::Multiplicity(const int): deprecated
-deprecated	Convert	Convert_ConicToBSplineCurve::Pole(const int): deprecated
-deprecated	Convert	Convert_ConicToBSplineCurve::Weight(const int): deprecated
-deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::Pole(const int, const int): deprecated
-deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::UKnot(const int): deprecated
-deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::UMultiplicity(const int): deprecated
-deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::VKnot(const int): deprecated
-deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::VMultiplicity(const int): deprecated
-deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::Weight(const int, const int): deprecated
-deprecated	Poly	Poly_PolygonOnTriangulation::ChangeNodes(): deprecated
-deprecated	Poly	Poly_PolygonOnTriangulation::ChangeParameters(): deprecated
-deprecated	Poly	Poly_Triangulation::ChangeTriangle(const int): deprecated
-deprecated	Poly	Poly_Triangulation::ChangeTriangles(): deprecated
-deprecated	Poly	Poly_Triangulation::SetNormals(const occ::handle<NCollection_HArray1<float>> &): deprecated
-deprecated	Poly	Poly_Triangulation::Triangles(): deprecated
 field	MathRoot	MathRoot::MultipleGetValueFn::mySamples: field reference member (no pointer-to-member)
 iterator	BVH	BVH::RadixSorter::Sort(): param 'theStart': STL-style iterator
 not-constructible	Poly	Poly_CoherentTriPtr: operator new is not public -> no constructors
@@ -70,6 +48,9 @@ overload-collision	BSplCLib	BSplCLib::Interpolate(const int, const NCollection_A
 overload-collision	Bnd	Bnd_Box2d::Get(): same Python signature as Get(double &, double &, double &, double &) after out-param removal -> unreachable
 overload-collision	Bnd	Bnd_Box::Get(): same Python signature as Get(double &, double &, double &, double &, double &, double &) after out-param removal -> unreachable
 overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, CSLib_NormalStatus &, gp_Dir &): same Python signature as Normal(const gp_Vec &, const gp_Vec &, double, CSLib_DerivativeStatus &, gp_Dir &) after out-param removal -> unreachable
+overload-collision	Convert	Convert_CompPolynomialToPoles::Knots(occ::handle<NCollection_HArray1<double>> &): same Python signature as Knots() after out-param removal -> unreachable
+overload-collision	Convert	Convert_CompPolynomialToPoles::Multiplicities(occ::handle<NCollection_HArray1<int>> &): same Python signature as Multiplicities() after out-param removal -> unreachable
+overload-collision	Convert	Convert_CompPolynomialToPoles::Poles(occ::handle<NCollection_HArray2<double>> &): same Python signature as Poles() after out-param removal -> unreachable
 overload-collision	gp	gp_Pnt2d::Coord(): same Python signature as Coord(double &, double &) after out-param removal -> unreachable
 overload-collision	gp	gp_Pnt::Coord(): same Python signature as Coord(double &, double &, double &) after out-param removal -> unreachable
 override	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &): overrides.toml [skip] methods

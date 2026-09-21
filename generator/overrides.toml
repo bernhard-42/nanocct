@@ -25,18 +25,23 @@ inout = [
 # Classes never bound (internal helpers that happen to be public in a header).
 [skip]
 classes = [
-    "Standard_Static_Assert<true>",
+    "Standard_Static_Assert<true>",     # the specialisation behind the STANDARD_STATIC_ASSERT macro; no API
 ]
 # Classes that are copy/move constructible on paper but whose copy or move does not compile (math_GlobOptMin: a
 # member NCollection_Map<NCollection_CellFilter<...>::Cell> has a deleted copy constructor). nanobind instantiates
 # its copy/move wrappers from the type traits (std::is_move_constructible has no hook), so the class is bound through
 # a generated wrapper struct with deleted copy and move constructors, under the original name.
 noncopyable = [
-    "math_GlobOptMin",
+    "math_GlobOptMin",                  # NCollection_Map<NCollection_CellFilter<...>::Cell> member (see above)
 ]
 # C++ namespaces never bound: std (OCCT only adds std::hash specialisations there) and the implementation-detail
 # namespaces OCCT keeps in headers for inline code (MathSys::detail, MathLin::Internal, BRepGraph_RefsIterator::Detail).
-namespaces = ["std", "detail", "Detail", "Internal"]
+namespaces = [
+    "std",          # only std::hash<T> specialisations (bound as __hash__ of T, not as a namespace)
+    "detail",       # MathSys::detail and friends: header-only implementation helpers
+    "Detail",       # BRepGraph_RefsIterator::Detail: same
+    "Internal",     # MathLin::Internal: same
+]
 # Headers not included in the package translation unit: platform-specific internals that OCCT
 # itself only includes from .cxx files under #ifdef.
 headers = [
@@ -53,7 +58,9 @@ headers = [
 # defined overload are detected automatically (generator/symbols.py, nm on the toolkit library); only
 # overload-specific cases need an entry here.
 methods = [
+    # TCollection_AsciiString.hxx:1415: the only static IsEqual without `inline`; nm libTKernel has no symbol for it (2026-09-21)
     "TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const)",
+    # BSplCLib.hxx declares 5 DN overloads, nm libTKMath defines 3 (the 10-argument ones); these two 6-argument ones are missing (2026-09-21)
     "BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &)",
     "BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &)",
 ]
@@ -61,6 +68,8 @@ methods = [
 # NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical
 # argument types). They are registered by the NCollection package (TKernel).
 [instantiate]
+# Each entry exercises a binder kind (or a combination) that the bound OCCT signatures of the current scope do not
+# reach yet, so tests/test_NCollection.py can cover it; they double as conveniences for users.
 extra = [
     "NCollection_Map<int>",
     "NCollection_DataMap<int, double>",
@@ -75,3 +84,15 @@ extra = [
     "NCollection_LinearVector<double>",
     "NCollection_LinearVector<int>",
 ]
+
+# Partial toolkits and packages, for the font/text-to-BRep slice of Visualization (Design.md 2). A whole toolkit and a
+# whole package are the default; an entry here is the exception. `packages`: toolkit -> the only packages generated
+# (the toolkit module is complete with respect to this list). `headers`: package -> the only headers parsed and bound,
+# every other header of the package is reported as "not in the allowlist". Names are validated against OCCT's
+# PACKAGES.cmake / FILES.cmake. Filled in when the slice is generated (Phase 2); the planned entries:
+#   packages = { TKService = ["Font", "Graphic3d"], TKV3d = ["StdPrs"] }
+#   headers = { Graphic3d = ["Graphic3d_HorizontalTextAlignment.hxx", "Graphic3d_VerticalTextAlignment.hxx"],
+#               StdPrs = ["StdPrs_BRepFont.hxx", "StdPrs_BRepTextBuilder.hxx"] }
+[include]
+packages = {}
+headers = {}

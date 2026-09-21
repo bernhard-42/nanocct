@@ -72,7 +72,11 @@ Returns false if the computation failed.)nbdoc")
         .def("Solution", static_cast<void (FEmTool_Assembly::*)(math_Vector &) const>(&FEmTool_Assembly::Solution), nb::arg("Solution"))
         .def("NbGlobVar", static_cast<int (FEmTool_Assembly::*)() const>(&FEmTool_Assembly::NbGlobVar))
         .def("AssemblyTable", static_cast<const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> & (FEmTool_Assembly::*)() const>(&FEmTool_Assembly::AssemblyTable), R"nbdoc(Returns the assembly table mapping element-local indices to global indices.
-@return const reference to the assembly table)nbdoc");
+@return const reference to the assembly table)nbdoc")
+        .def("GetAssemblyTable", [](const FEmTool_Assembly &self) { occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> AssTable{}; self.GetAssemblyTable(AssTable); return AssTable; }, R"nbdoc(Deprecated in OCCT: Use AssemblyTable() returning const reference instead
+
+Returns the assembly table via output parameter.
+@deprecated Use AssemblyTable() returning const reference instead.)nbdoc");
     nanoocp_implicit_copy_ctor<FEmTool_Assembly>(nb::borrow<nb::class_<FEmTool_Assembly>>(m.attr("FEmTool_Assembly")));
     nb::borrow<nb::class_<FEmTool_Curve>>(m.attr("FEmTool_Curve"))
         .def(nb::new_([](const int Dimension, const int NbElements, const PLib_HermitJacobi & TheBase, const double Tolerance) { return opencascade::handle<FEmTool_Curve>(new FEmTool_Curve(Dimension, NbElements, TheBase, Tolerance)); }), nb::arg("Dimension"), nb::arg("NbElements"), nb::arg("TheBase"), nb::arg("Tolerance"))

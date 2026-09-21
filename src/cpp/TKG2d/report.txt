@@ -1,10 +1,2 @@
-# nanoOCP generator report for TKG2d: 7 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKG2d: 0 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# deprecated: 7
-deprecated	Geom2d	Geom2d_BSplineCurve::KnotSequence(NCollection_Array1<double> &): deprecated
-deprecated	Geom2d	Geom2d_BSplineCurve::Knots(NCollection_Array1<double> &): deprecated
-deprecated	Geom2d	Geom2d_BSplineCurve::Multiplicities(NCollection_Array1<int> &): deprecated
-deprecated	Geom2d	Geom2d_BSplineCurve::Poles(NCollection_Array1<gp_Pnt2d> &): deprecated
-deprecated	Geom2d	Geom2d_BSplineCurve::Weights(NCollection_Array1<double> &): deprecated
-deprecated	Geom2d	Geom2d_BezierCurve::Poles(NCollection_Array1<gp_Pnt2d> &): deprecated
-deprecated	Geom2d	Geom2d_BezierCurve::Weights(NCollection_Array1<double> &): deprecated

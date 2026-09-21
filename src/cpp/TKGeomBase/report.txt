@@ -1,6 +1,5 @@
-# nanoOCP generator report for TKGeomBase: 166 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomBase: 164 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# deprecated: 2
 # namespace: 4
 # overload-collision: 4
 # override: 4
@@ -9,8 +8,6 @@
 # stream: 3
 # template: 57
 # undefined: 7
-deprecated	Approx	Approx_CurveOnSurface::Approx_CurveOnSurface(const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const double, const double, const GeomAbs_Shape, const int, const int, const bool, const bool): deprecated
-deprecated	FEmTool	FEmTool_Assembly::GetAssemblyTable(occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> &): deprecated
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ChangeIntervals: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_PointsInspector: anonymous namespace (not bound)
 namespace	Extrema	Extrema_GGenExtCC.hxx: Extrema_GGenExtCC_ProjPOnC: anonymous namespace (not bound)

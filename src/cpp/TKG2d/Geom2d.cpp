@@ -840,11 +840,21 @@ This is 1.0, which gives the end point of this Bezier curve.)nbdoc")
         .def("NbPoles", static_cast<int (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::NbPoles), R"nbdoc(Returns the number of poles for this Bezier curve.)nbdoc")
         .def("Pole", static_cast<const gp_Pnt2d & (Geom2d_BezierCurve::*)(const int) const>(&Geom2d_BezierCurve::Pole), nb::arg("Index"), R"nbdoc(Returns the pole of range Index.
 Raised if Index is not in the range [1, NbPoles])nbdoc")
+        .def("Poles", static_cast<void (Geom2d_BezierCurve::*)(NCollection_Array1<gp_Pnt2d> &) const>(&Geom2d_BezierCurve::Poles), nb::arg("P"), R"nbdoc(Deprecated in OCCT: use Poles() returning const reference instead
+
+Returns all the poles of the curve.
+
+Raised if the length of P is not equal to the number of poles.)nbdoc")
         .def("Poles", static_cast<const NCollection_Array1<gp_Pnt2d> & (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::Poles), R"nbdoc(Returns all the poles of the curve.)nbdoc")
         .def("StartPoint", static_cast<gp_Pnt2d (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::StartPoint), R"nbdoc(Returns Value (U=1), it is the first control point
 of the curve.)nbdoc")
         .def("Weight", static_cast<double (Geom2d_BezierCurve::*)(const int) const>(&Geom2d_BezierCurve::Weight), nb::arg("Index"), R"nbdoc(Returns the weight of range Index.
 Raised if Index is not in the range [1, NbPoles])nbdoc")
+        .def("Weights", static_cast<void (Geom2d_BezierCurve::*)(NCollection_Array1<double> &) const>(&Geom2d_BezierCurve::Weights), nb::arg("W"), R"nbdoc(Deprecated in OCCT: use Weights() returning const pointer instead
+
+Returns all the weights of the curve.
+
+Raised if the length of W is not equal to the number of poles.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array1<double> * (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::Weights), nb::rv_policy::reference, R"nbdoc(Returns all the weights of the curve.)nbdoc")
         .def("WeightsArray", static_cast<const NCollection_Array1<double> & (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::WeightsArray), R"nbdoc(Returns a const reference to the weights array.
 For rational curves: the internal owning weights array.
@@ -1295,7 +1305,24 @@ with a multiplicity greater than 1 the knot is not repeated.
 The method Multiplicity can be used to get the multiplicity
 of the Knot.
 Raised if Index < 1 or Index > NbKnots)nbdoc")
+        .def("Knots", static_cast<void (Geom2d_BSplineCurve::*)(NCollection_Array1<double> &) const>(&Geom2d_BSplineCurve::Knots), nb::arg("K"), R"nbdoc(Deprecated in OCCT: use Knots() returning const reference instead
+
+returns the knot values of the B-spline curve;
+
+Raised K.Lower() is less than number of first knot or
+K.Upper() is more than number of last knot.)nbdoc")
         .def("Knots", static_cast<const NCollection_Array1<double> & (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::Knots), R"nbdoc(returns the knot values of the B-spline curve;)nbdoc")
+        .def("KnotSequence", static_cast<void (Geom2d_BSplineCurve::*)(NCollection_Array1<double> &) const>(&Geom2d_BSplineCurve::KnotSequence), nb::arg("K"), R"nbdoc(Deprecated in OCCT: use KnotSequence() returning const reference instead
+
+Returns the knots sequence.
+In this sequence the knots with a multiplicity greater than 1
+are repeated.
+Example :
+K = {k1, k1, k1, k2, k3, k3, k4, k4, k4}
+
+Raised if K.Lower() is less than number of first knot
+in knot sequence with repetitions or K.Upper() is more
+than number of last knot in knot sequence with repetitions.)nbdoc")
         .def("KnotSequence", static_cast<const NCollection_Array1<double> & (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::KnotSequence), R"nbdoc(Returns the knots sequence.
 In this sequence the knots with a multiplicity greater than 1
 are repeated.
@@ -1332,12 +1359,22 @@ ParametricTolerance is used).
 . if I2 > NbKnots => U > Knots (NbKnots) + std::abs(ParametricTolerance))nbdoc")
         .def("Multiplicity", static_cast<int (Geom2d_BSplineCurve::*)(const int) const>(&Geom2d_BSplineCurve::Multiplicity), nb::arg("Index"), R"nbdoc(Returns the multiplicity of the knots of range Index.
 Raised if Index < 1 or Index > NbKnots)nbdoc")
+        .def("Multiplicities", static_cast<void (Geom2d_BSplineCurve::*)(NCollection_Array1<int> &) const>(&Geom2d_BSplineCurve::Multiplicities), nb::arg("M"), R"nbdoc(Deprecated in OCCT: use Multiplicities() returning const reference instead
+
+Returns the multiplicity of the knots of the curve.
+
+Raised if the length of M is not equal to NbKnots.)nbdoc")
         .def("Multiplicities", static_cast<const NCollection_Array1<int> & (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::Multiplicities), R"nbdoc(returns the multiplicity of the knots of the curve.)nbdoc")
         .def("NbKnots", static_cast<int (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::NbKnots), R"nbdoc(Returns the number of knots. This method returns the number of
 knot without repetition of multiple knots.)nbdoc")
         .def("NbPoles", static_cast<int (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::NbPoles), R"nbdoc(Returns the number of poles)nbdoc")
         .def("Pole", static_cast<const gp_Pnt2d & (Geom2d_BSplineCurve::*)(const int) const>(&Geom2d_BSplineCurve::Pole), nb::arg("Index"), R"nbdoc(Returns the pole of range Index.
 Raised if Index < 1 or Index > NbPoles.)nbdoc")
+        .def("Poles", static_cast<void (Geom2d_BSplineCurve::*)(NCollection_Array1<gp_Pnt2d> &) const>(&Geom2d_BSplineCurve::Poles), nb::arg("P"), R"nbdoc(Deprecated in OCCT: use Poles() returning const reference instead
+
+Returns the poles of the B-spline curve;
+
+Raised if the length of P is not equal to the number of poles.)nbdoc")
         .def("Poles", static_cast<const NCollection_Array1<gp_Pnt2d> & (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::Poles), R"nbdoc(Returns the poles of the B-spline curve;)nbdoc")
         .def("StartPoint", static_cast<gp_Pnt2d (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::StartPoint), R"nbdoc(Returns the start point of the curve.
 Warnings :
@@ -1345,6 +1382,11 @@ This point is different from the first pole of the curve if the
 multiplicity of the first knot is lower than Degree.)nbdoc")
         .def("Weight", static_cast<double (Geom2d_BSplineCurve::*)(const int) const>(&Geom2d_BSplineCurve::Weight), nb::arg("Index"), R"nbdoc(Returns the weight of the pole of range Index .
 Raised if Index < 1 or Index > NbPoles.)nbdoc")
+        .def("Weights", static_cast<void (Geom2d_BSplineCurve::*)(NCollection_Array1<double> &) const>(&Geom2d_BSplineCurve::Weights), nb::arg("W"), R"nbdoc(Deprecated in OCCT: use Weights() returning const pointer instead
+
+Returns the weights of the B-spline curve;
+
+Raised if the length of W is not equal to NbPoles.)nbdoc")
         .def("Weights", static_cast<const NCollection_Array1<double> * (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::Weights), nb::rv_policy::reference, R"nbdoc(Returns the weights of the B-spline curve;)nbdoc")
         .def("WeightsArray", static_cast<const NCollection_Array1<double> & (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::WeightsArray), R"nbdoc(Returns a const reference to the weights array.
 For rational curves: the internal owning weights array.

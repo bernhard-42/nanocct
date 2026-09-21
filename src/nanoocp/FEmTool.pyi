@@ -57,6 +57,14 @@ class FEmTool_Assembly:
         @return const reference to the assembly table
         """
 
+    def GetAssemblyTable(self) -> nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]]:
+        """
+        Deprecated in OCCT: Use AssemblyTable() returning const reference instead
+
+        Returns the assembly table via output parameter.
+        @deprecated Use AssemblyTable() returning const reference instead.
+        """
+
 class FEmTool_Curve(nanoocp.Standard.Standard_Transient):
     """Curve defined by Polynomial Elements."""
 

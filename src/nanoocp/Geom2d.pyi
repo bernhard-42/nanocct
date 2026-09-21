@@ -818,6 +818,17 @@ class Geom2d_BezierCurve(Geom2d_BoundedCurve):
         Raised if Index is not in the range [1, NbPoles]
         """
 
+    @overload
+    def Poles(self, P: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]) -> None:
+        """
+        Deprecated in OCCT: use Poles() returning const reference instead
+
+        Returns all the poles of the curve.
+
+        Raised if the length of P is not equal to the number of poles.
+        """
+
+    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns all the poles of the curve."""
 
@@ -833,6 +844,17 @@ class Geom2d_BezierCurve(Geom2d_BoundedCurve):
         Raised if Index is not in the range [1, NbPoles]
         """
 
+    @overload
+    def Weights(self, W: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use Weights() returning const pointer instead
+
+        Returns all the weights of the curve.
+
+        Raised if the length of W is not equal to the number of poles.
+        """
+
+    @overload
     def Weights(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns all the weights of the curve."""
 
@@ -1613,9 +1635,38 @@ class Geom2d_BSplineCurve(Geom2d_BoundedCurve):
         Raised if Index < 1 or Index > NbKnots
         """
 
+    @overload
+    def Knots(self, K: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use Knots() returning const reference instead
+
+        returns the knot values of the B-spline curve;
+
+        Raised K.Lower() is less than number of first knot or
+        K.Upper() is more than number of last knot.
+        """
+
+    @overload
     def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """returns the knot values of the B-spline curve;"""
 
+    @overload
+    def KnotSequence(self, K: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use KnotSequence() returning const reference instead
+
+        Returns the knots sequence.
+        In this sequence the knots with a multiplicity greater than 1
+        are repeated.
+        Example :
+        K = {k1, k1, k1, k2, k3, k3, k4, k4, k4}
+
+        Raised if K.Lower() is less than number of first knot
+        in knot sequence with repetitions or K.Upper() is more
+        than number of last knot in knot sequence with repetitions.
+        """
+
+    @overload
     def KnotSequence(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         Returns the knots sequence.
@@ -1676,6 +1727,17 @@ class Geom2d_BSplineCurve(Geom2d_BoundedCurve):
         Raised if Index < 1 or Index > NbKnots
         """
 
+    @overload
+    def Multiplicities(self, M: nanoocp.NCollection.NCollection_Array1[int]) -> None:
+        """
+        Deprecated in OCCT: use Multiplicities() returning const reference instead
+
+        Returns the multiplicity of the knots of the curve.
+
+        Raised if the length of M is not equal to NbKnots.
+        """
+
+    @overload
     def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """returns the multiplicity of the knots of the curve."""
 
@@ -1694,6 +1756,17 @@ class Geom2d_BSplineCurve(Geom2d_BoundedCurve):
         Raised if Index < 1 or Index > NbPoles.
         """
 
+    @overload
+    def Poles(self, P: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]) -> None:
+        """
+        Deprecated in OCCT: use Poles() returning const reference instead
+
+        Returns the poles of the B-spline curve;
+
+        Raised if the length of P is not equal to the number of poles.
+        """
+
+    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the poles of the B-spline curve;"""
 
@@ -1711,6 +1784,17 @@ class Geom2d_BSplineCurve(Geom2d_BoundedCurve):
         Raised if Index < 1 or Index > NbPoles.
         """
 
+    @overload
+    def Weights(self, W: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use Weights() returning const pointer instead
+
+        Returns the weights of the B-spline curve;
+
+        Raised if the length of W is not equal to NbPoles.
+        """
+
+    @overload
     def Weights(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the weights of the B-spline curve;"""
 

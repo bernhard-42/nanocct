@@ -628,6 +628,26 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         Normal()/SetNormal() should be used instead in portable code.
         """
 
+    def SetNormals(self, theNormals: nanoocp.NCollection.NCollection_HArray1__float | None) -> None:
+        """
+        Deprecated in OCCT: Deprecated method, SetNormal() should be used instead
+        """
+
+    def Triangles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.Poly.Poly_Triangle]:
+        """
+        Deprecated in OCCT: Deprecated method, Triangle() should be used instead
+        """
+
+    def ChangeTriangles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.Poly.Poly_Triangle]:
+        """
+        Deprecated in OCCT: Deprecated method, SetTriangle() should be used instead
+        """
+
+    def ChangeTriangle(self, theIndex: int) -> Poly_Triangle:
+        """
+        Deprecated in OCCT: Deprecated method, SetTriangle() should be used instead
+        """
+
     def NbDeferredNodes(self) -> int:
         """
         @name late-load deferred data interface
@@ -2329,6 +2349,16 @@ class Poly_PolygonOnTriangulation(nanoocp.Standard.Standard_Transient):
         Returns the table of the parameters associated with each node in this polygon.
         Warning! Use the function HasParameters to check if parameters are associated with the nodes
         in this polygon.
+        """
+
+    def ChangeNodes(self) -> nanoocp.NCollection.NCollection_Array1[int]:
+        """
+        Deprecated in OCCT: Deprecated method, SetNode() should be used instead
+        """
+
+    def ChangeParameters(self) -> nanoocp.NCollection.NCollection_Array1[float]:
+        """
+        Deprecated in OCCT: Deprecated method, SetParameter() should be used instead
         """
 
 class Poly_TriangulationParameters(nanoocp.Standard.Standard_Transient):

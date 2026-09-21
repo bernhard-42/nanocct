@@ -1265,6 +1265,13 @@ class GeomAdaptor_TransformedSurface(nanoocp.Adaptor3d.Adaptor3d_Surface):
     def Trsf(self) -> nanoocp.gp.gp_Trsf:
         """Returns the transformation."""
 
+    def Surface(self) -> GeomAdaptor_Surface:
+        """
+        Deprecated in OCCT: Use AdaptorSurfaceOriginal() instead to get the original surface without transformation
+
+        Returns the underlying GeomAdaptor_Surface.
+        """
+
     def AdaptorSurfaceOriginal(self) -> GeomAdaptor_Surface:
         """
         Returns the underlying original GeomAdaptor_Surface without transformation applied.
@@ -1283,6 +1290,13 @@ class GeomAdaptor_TransformedSurface(nanoocp.Adaptor3d.Adaptor3d_Surface):
 
     def GeomSurfaceTransformed(self) -> nanoocp.Geom.Geom_Surface:
         """Returns the transformed Geom_Surface cached for current state."""
+
+    def GeomSurface(self) -> nanoocp.Geom.Geom_Surface:
+        """
+        Deprecated in OCCT: Use GeomSurfaceOriginal() or GeomSurfaceTransformed() instead
+
+        Returns the underlying Geom_Surface.
+        """
 
     def FirstUParameter(self) -> float: ...
 

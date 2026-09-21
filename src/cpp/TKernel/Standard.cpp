@@ -579,9 +579,13 @@ Will become "1/2/3 4/5/6" when flag is TRUE, and "1/2/35/5/6" otherwise.)nbdoc")
 Equivalent to std::abs.)nbdoc");
     m.def("IsEven", static_cast<bool (*)(const int)>(&IsEven), nb::arg("theValue"), R"nbdoc(Returns true if @p theValue is even.)nbdoc");
     m.def("IsOdd", static_cast<bool (*)(const int)>(&IsOdd), nb::arg("theValue"), R"nbdoc(Returns true if @p theValue is odd.)nbdoc");
-    m.def("Max", static_cast<int (*)(const int, const int)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns the maximum value of two integers.
+    m.def("Max", static_cast<int (*)(const int, const int)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
+
+Returns the maximum value of two integers.
 Equivalent to std::max.)nbdoc");
-    m.def("Min", static_cast<int (*)(const int, const int)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns the minimum value of two integers.
+    m.def("Min", static_cast<int (*)(const int, const int)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
+
+Returns the minimum value of two integers.
 Equivalent to std::min.)nbdoc");
     m.def("Modulus", static_cast<int (*)(const int, const int)>(&Modulus), nb::arg("theValue"), nb::arg("theDivisor"), R"nbdoc(Returns the modulus of @p theValue by @p theDivisor.)nbdoc");
     m.def("Square", static_cast<int (*)(const int)>(&Square), nb::arg("theValue"), R"nbdoc(Returns the square of a int @p theValue.
@@ -589,25 +593,51 @@ Note that behavior is undefined in case of overflow.)nbdoc");
     m.def("IntegerFirst", static_cast<int (*)()>(&IntegerFirst), R"nbdoc(Returns the minimum value of an integer.)nbdoc");
     m.def("IntegerLast", static_cast<int (*)()>(&IntegerLast), R"nbdoc(Returns the maximum value of an integer.)nbdoc");
     m.def("IntegerSize", static_cast<int (*)()>(&IntegerSize), R"nbdoc(Returns the size in bits of an integer.)nbdoc");
-    m.def("ACos", static_cast<double (*)(const double)>(&ACos), nb::arg("theValue"), R"nbdoc(Returns the value of the arc cosine of a @p theValue.)nbdoc");
-    m.def("ACosApprox", static_cast<double (*)(const double)>(&ACosApprox), nb::arg("theValue"), R"nbdoc(Returns the approximate value of the arc cosine @p theValue.
+    m.def("ACos", static_cast<double (*)(const double)>(&ACos), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::acos and will be removed in future releases. Use std::acos instead.
+
+Returns the value of the arc cosine of a @p theValue.)nbdoc");
+    m.def("ACosApprox", static_cast<double (*)(const double)>(&ACosApprox), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: Deprecated, use std::acos instead
+
+Returns the approximate value of the arc cosine @p theValue.
 The max error is about 1 degree near Value=0.
 NOTE: Avoid using this function in new code, it presumably slower then std::acos.)nbdoc");
-    m.def("ASin", static_cast<double (*)(const double)>(&ASin), nb::arg("theValue"), R"nbdoc(Returns the value of the arc sine of a @p theValue.)nbdoc");
-    m.def("ATan2", static_cast<double (*)(const double, const double)>(&ATan2), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Computes the arc tangent of @p theX divided by @p theY using the signs of both
+    m.def("ASin", static_cast<double (*)(const double)>(&ASin), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::asin and will be removed in future releases. Use std::asin instead.
+
+Returns the value of the arc sine of a @p theValue.)nbdoc");
+    m.def("ATan2", static_cast<double (*)(const double, const double)>(&ATan2), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Deprecated in OCCT: This function duplicates std::atan2 and will be removed in future releases. Use std::atan2 instead.
+
+Computes the arc tangent of @p theX divided by @p theY using the signs of both
 arguments to determine the quadrant of the return value.)nbdoc");
-    m.def("ATanh", static_cast<double (*)(const double)>(&ATanh), nb::arg("theValue"), R"nbdoc(Returns the value of the hyperbolic arc tangent of @p theValue.)nbdoc");
-    m.def("ACosh", static_cast<double (*)(const double)>(&ACosh), nb::arg("theValue"), R"nbdoc(Returns the value of the hyperbolic arc cosine of @p theValue.)nbdoc");
-    m.def("Cosh", static_cast<double (*)(const double)>(&Cosh), nb::arg("theValue"), R"nbdoc(Returns the hyperbolic cosine of a double @p theValue.)nbdoc");
-    m.def("Sinh", static_cast<double (*)(const double)>(&Sinh), nb::arg("theValue"), R"nbdoc(Returns the hyperbolic sine of a double @p theValue.)nbdoc");
-    m.def("Log", static_cast<double (*)(const double)>(&Log), nb::arg("theValue"), R"nbdoc(Computes the natural (base-e) logarithm of number @p theValue.)nbdoc");
-    m.def("Sqrt", static_cast<double (*)(const double)>(&Sqrt), nb::arg("theValue"), R"nbdoc(Returns the square root of a double @p theValue.)nbdoc");
-    m.def("NextAfter", static_cast<double (*)(const double, const double)>(&NextAfter), nb::arg("theValue"), nb::arg("theDirection"), R"nbdoc(Returns the next representable value of a double @p theValue
+    m.def("ATanh", static_cast<double (*)(const double)>(&ATanh), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::atanh and will be removed in future releases. Use std::atanh instead.
+
+Returns the value of the hyperbolic arc tangent of @p theValue.)nbdoc");
+    m.def("ACosh", static_cast<double (*)(const double)>(&ACosh), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::acosh and will be removed in future releases. Use std::acosh instead.
+
+Returns the value of the hyperbolic arc cosine of @p theValue.)nbdoc");
+    m.def("Cosh", static_cast<double (*)(const double)>(&Cosh), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::cosh and will be removed in future releases. Use std::cosh instead.
+
+Returns the hyperbolic cosine of a double @p theValue.)nbdoc");
+    m.def("Sinh", static_cast<double (*)(const double)>(&Sinh), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::sinh and will be removed in future releases. Use std::sinh instead.
+
+Returns the hyperbolic sine of a double @p theValue.)nbdoc");
+    m.def("Log", static_cast<double (*)(const double)>(&Log), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::log and will be removed in future releases. Use std::log instead.
+
+Computes the natural (base-e) logarithm of number @p theValue.)nbdoc");
+    m.def("Sqrt", static_cast<double (*)(const double)>(&Sqrt), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::sqrt and will be removed in future releases. Use std::sqrt instead.
+
+Returns the square root of a double @p theValue.)nbdoc");
+    m.def("NextAfter", static_cast<double (*)(const double, const double)>(&NextAfter), nb::arg("theValue"), nb::arg("theDirection"), R"nbdoc(Deprecated in OCCT: This function duplicates std::nextafter and will be removed in future releases. Use std::nextafter instead.
+
+Returns the next representable value of a double @p theValue
 in the direction of @p theDirection. Equivalent to std::nextafter.)nbdoc");
-    m.def("Sign", static_cast<double (*)(const double, const double)>(&Sign), nb::arg("theMagnitude"), nb::arg("theSign"), R"nbdoc(Composes a floating point value with the magnitude of @p theMagnitude
+    m.def("Sign", static_cast<double (*)(const double, const double)>(&Sign), nb::arg("theMagnitude"), nb::arg("theSign"), R"nbdoc(Deprecated in OCCT: This function duplicates std::copysign and will be removed in future releases. Use std::copysign instead.
+
+Composes a floating point value with the magnitude of @p theMagnitude
 and the sign of @p theSign. Equivalent to std::copysign.)nbdoc");
     m.def("RealSmall", static_cast<double (*)()>(&RealSmall), R"nbdoc(Returns the minimum positive double value greater than zero.)nbdoc");
-    m.def("Abs", static_cast<double (*)(const double)>(&Abs), nb::arg("theValue"), R"nbdoc(Returns the absolute value of a double @p Value.
+    m.def("Abs", static_cast<double (*)(const double)>(&Abs), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::abs and will be removed in future releases. Use std::abs instead.
+
+Returns the absolute value of a double @p Value.
 Equivalent to std::abs.)nbdoc");
     m.def("IsEqual", static_cast<bool (*)(const double, const double)>(&IsEqual), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns Standard_True if two doubles are equal within the precision
 defined by RealSmall().)nbdoc");
@@ -622,26 +652,46 @@ defined by RealSmall().)nbdoc");
     m.def("RealRadix", static_cast<int (*)()>(&RealRadix), R"nbdoc(Returns the radix of a double.)nbdoc");
     m.def("RealSize", static_cast<int (*)()>(&RealSize), R"nbdoc(Returns the size in bits of a double.)nbdoc");
     m.def("IntToReal", static_cast<double (*)(const int)>(&IntToReal), nb::arg("theValue"), R"nbdoc(Converts a int @p theValue to a double.)nbdoc");
-    m.def("ATan", static_cast<double (*)(const double)>(&ATan), nb::arg("theValue"), R"nbdoc(Returns the value of the arc tangent of a double @p theValue.)nbdoc");
-    m.def("Ceiling", static_cast<double (*)(const double)>(&Ceiling), nb::arg("theValue"), R"nbdoc(Returns the next integer greater than or equal to a double @p theValue.)nbdoc");
-    m.def("Cos", static_cast<double (*)(const double)>(&Cos), nb::arg("theValue"), R"nbdoc(Returns the cosine of a double @p theValue.
+    m.def("ATan", static_cast<double (*)(const double)>(&ATan), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::atan and will be removed in future releases. Use std::atan instead.
+
+Returns the value of the arc tangent of a double @p theValue.)nbdoc");
+    m.def("Ceiling", static_cast<double (*)(const double)>(&Ceiling), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::ceil and will be removed in future releases. Use std::ceil instead.
+
+Returns the next integer greater than or equal to a double @p theValue.)nbdoc");
+    m.def("Cos", static_cast<double (*)(const double)>(&Cos), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::cos and will be removed in future releases. Use std::cos instead.
+
+Returns the cosine of a double @p theValue.
 Equivalent to std::cos.)nbdoc");
     m.def("Epsilon", static_cast<double (*)(const double)>(&Epsilon), nb::arg("theValue"), R"nbdoc(The function returns absolute value of difference between @p theValue and other nearest value of
 double type. Nearest value is chosen in direction of infinity the same sign as @p theValue.
 If @p theValue is 0 then returns minimal positive value of double type.)nbdoc");
-    m.def("Exp", static_cast<double (*)(const double)>(&Exp), nb::arg("theValue"), R"nbdoc(Returns the exponential of a double @p theValue.
+    m.def("Exp", static_cast<double (*)(const double)>(&Exp), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::exp and will be removed in future releases. Use std::exp instead.
+
+Returns the exponential of a double @p theValue.
 Equivalent to std::exp.)nbdoc");
-    m.def("Floor", static_cast<double (*)(const double)>(&Floor), nb::arg("theValue"), R"nbdoc(Returns the nearest integer less than or equal to a double @p theValue.
+    m.def("Floor", static_cast<double (*)(const double)>(&Floor), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::floor and will be removed in future releases. Use std::floor instead.
+
+Returns the nearest integer less than or equal to a double @p theValue.
 Equivalent to std::floor.)nbdoc");
-    m.def("IntegerPart", static_cast<double (*)(const double)>(&IntegerPart), nb::arg("theValue"), R"nbdoc(Returns the integer part of a double @p theValue.
+    m.def("IntegerPart", static_cast<double (*)(const double)>(&IntegerPart), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::trunc and will be removed in future releases. Use std::trunc instead.
+
+Returns the integer part of a double @p theValue.
 Equivalent to std::trunc.)nbdoc");
-    m.def("Log10", static_cast<double (*)(const double)>(&Log10), nb::arg("theValue"), R"nbdoc(Returns the logarithm to base 10 of a double @p theValue.
+    m.def("Log10", static_cast<double (*)(const double)>(&Log10), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::log10 and will be removed in future releases. Use std::log10 instead.
+
+Returns the logarithm to base 10 of a double @p theValue.
 Equivalent to std::log10.)nbdoc");
-    m.def("Max", static_cast<double (*)(const double, const double)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns the maximum value of two doubles.
+    m.def("Max", static_cast<double (*)(const double, const double)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
+
+Returns the maximum value of two doubles.
 Equivalent to std::max.)nbdoc");
-    m.def("Min", static_cast<double (*)(const double, const double)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns the minimum value of two doubles.
+    m.def("Min", static_cast<double (*)(const double, const double)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
+
+Returns the minimum value of two doubles.
 Equivalent to std::min.)nbdoc");
-    m.def("Pow", static_cast<double (*)(const double, const double)>(&Pow), nb::arg("theValue"), nb::arg("thePower"), R"nbdoc(Returns a double @p theValue raised to the power of @p thePower.)nbdoc");
+    m.def("Pow", static_cast<double (*)(const double, const double)>(&Pow), nb::arg("theValue"), nb::arg("thePower"), R"nbdoc(Deprecated in OCCT: This function duplicates std::pow and will be removed in future releases. Use std::pow instead.
+
+Returns a double @p theValue raised to the power of @p thePower.)nbdoc");
     m.def("RealPart", static_cast<double (*)(const double)>(&RealPart), nb::arg("theValue"), R"nbdoc(Returns the fractional part of a double @p theValue.
 Always non-negative.)nbdoc");
     m.def("RealToInt", static_cast<int (*)(const double)>(&RealToInt), nb::arg("theValue"), R"nbdoc(Converts a double @p theValue to the nearest valid int.
@@ -649,16 +699,26 @@ If input value is out of valid range for int, minimal or maximal possible int is
     m.def("RealToShortReal", static_cast<float (*)(const double)>(&RealToShortReal), nb::arg("theValue"), R"nbdoc(Converts a double @p theValue to the nearest valid float.
 If input value is out of valid range for float, minimal or maximal
 possible float is returned.)nbdoc");
-    m.def("Round", static_cast<double (*)(const double)>(&Round), nb::arg("theValue"), R"nbdoc(Returns the nearest integer of a double @p theValue.
+    m.def("Round", static_cast<double (*)(const double)>(&Round), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::round and will be removed in future releases. Use std::round instead.
+
+Returns the nearest integer of a double @p theValue.
 Equivalent to std::round.)nbdoc");
-    m.def("Sin", static_cast<double (*)(const double)>(&Sin), nb::arg("theValue"), R"nbdoc(Returns the sine of a double @p theValue.
+    m.def("Sin", static_cast<double (*)(const double)>(&Sin), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::sin and will be removed in future releases. Use std::sin instead.
+
+Returns the sine of a double @p theValue.
 Equivalent to std::sin.)nbdoc");
-    m.def("ASinh", static_cast<double (*)(const double)>(&ASinh), nb::arg("theValue"), R"nbdoc(Returns the hyperbolic arc sine of a double @p theValue.
+    m.def("ASinh", static_cast<double (*)(const double)>(&ASinh), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::asinh and will be removed in future releases. Use std::asinh instead.
+
+Returns the hyperbolic arc sine of a double @p theValue.
 Equivalent to std::asinh.)nbdoc");
     m.def("Square", static_cast<double (*)(const double)>(&Square), nb::arg("theValue"), R"nbdoc(Returns the square of a double @p theValue.)nbdoc");
-    m.def("Tan", static_cast<double (*)(const double)>(&Tan), nb::arg("theValue"), R"nbdoc(Returns the tangent of a double @p theValue.
+    m.def("Tan", static_cast<double (*)(const double)>(&Tan), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::tan and will be removed in future releases. Use std::tan instead.
+
+Returns the tangent of a double @p theValue.
 Equivalent to std::tan.)nbdoc");
-    m.def("Tanh", static_cast<double (*)(const double)>(&Tanh), nb::arg("theValue"), R"nbdoc(Returns the hyperbolic tangent of a double @p theValue.
+    m.def("Tanh", static_cast<double (*)(const double)>(&Tanh), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::tanh and will be removed in future releases. Use std::tanh instead.
+
+Returns the hyperbolic tangent of a double @p theValue.
 Equivalent to std::tanh.)nbdoc");
     m.def("IsEqual", static_cast<bool (*)(const char, const char)>(&IsEqual), nb::arg("One"), nb::arg("Two"));
     m.def("IsAlphabetic", static_cast<bool (*)(const char)>(&IsAlphabetic), nb::arg("me"));
@@ -727,7 +787,9 @@ If const_expression is false, a compiler error occurs.
 
 The macros are formed as functions and require semicolon at the end.)nbdoc");
     m.def("ShortRealSmall", static_cast<float (*)()>(&ShortRealSmall), R"nbdoc(Returns the minimum positive float value.)nbdoc");
-    m.def("Abs", static_cast<float (*)(const float)>(&Abs), nb::arg("theValue"), R"nbdoc(Returns the absolute value of a float @p Value.
+    m.def("Abs", static_cast<float (*)(const float)>(&Abs), nb::arg("theValue"), R"nbdoc(Deprecated in OCCT: This function duplicates std::abs and will be removed in future releases. Use std::abs instead.
+
+Returns the absolute value of a float @p Value.
 Equivalent to std::abs.)nbdoc");
     m.def("ShortRealDigits", static_cast<int (*)()>(&ShortRealDigits), R"nbdoc(Returns the number of digits of precision in a float.)nbdoc");
     m.def("ShortRealEpsilon", static_cast<float (*)()>(&ShortRealEpsilon), R"nbdoc(Returns the minimum positive float such that 1.0f + ShortRealEpsilon() != 1.0f.)nbdoc");
@@ -738,9 +800,13 @@ Equivalent to std::abs.)nbdoc");
     m.def("ShortRealMantissa", static_cast<int (*)()>(&ShortRealMantissa), R"nbdoc(Returns the mantissa (number of bits in the significand) of a float.)nbdoc");
     m.def("ShortRealRadix", static_cast<int (*)()>(&ShortRealRadix), R"nbdoc(Returns the radix (base) of a float.)nbdoc");
     m.def("ShortRealSize", static_cast<int (*)()>(&ShortRealSize), R"nbdoc(Returns the size in bits of a float.)nbdoc");
-    m.def("Max", static_cast<float (*)(const float, const float)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns the maximum value of two floats.
+    m.def("Max", static_cast<float (*)(const float, const float)>(&Max), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
+
+Returns the maximum value of two floats.
 Equivalent to std::max.)nbdoc");
-    m.def("Min", static_cast<float (*)(const float, const float)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Returns the minimum value of two floats.
+    m.def("Min", static_cast<float (*)(const float, const float)>(&Min), nb::arg("theValue1"), nb::arg("theValue2"), R"nbdoc(Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
+
+Returns the minimum value of two floats.
 Equivalent to std::min.)nbdoc");
 }
 

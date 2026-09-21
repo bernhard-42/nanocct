@@ -551,6 +551,10 @@ Node()/SetNode() should be used instead in portable code.)nbdoc")
 UBNode()/SetUVNode() should be used instead in portable code.)nbdoc")
         .def("InternalNormals", static_cast<NCollection_Array1<NCollection_Vec3<float>> & (Poly_Triangulation::*)()>(&Poly_Triangulation::InternalNormals), nb::rv_policy::reference_internal, R"nbdoc(Return an internal array of normals.
 Normal()/SetNormal() should be used instead in portable code.)nbdoc")
+        .def("SetNormals", static_cast<void (Poly_Triangulation::*)(const occ::handle<NCollection_HArray1<float>> &)>(&Poly_Triangulation::SetNormals), nb::arg("theNormals").none(), R"nbdoc(Deprecated in OCCT: Deprecated method, SetNormal() should be used instead)nbdoc")
+        .def("Triangles", static_cast<const NCollection_Array1<Poly_Triangle> & (Poly_Triangulation::*)() const>(&Poly_Triangulation::Triangles), R"nbdoc(Deprecated in OCCT: Deprecated method, Triangle() should be used instead)nbdoc")
+        .def("ChangeTriangles", static_cast<NCollection_Array1<Poly_Triangle> & (Poly_Triangulation::*)()>(&Poly_Triangulation::ChangeTriangles), nb::rv_policy::reference_internal, R"nbdoc(Deprecated in OCCT: Deprecated method, SetTriangle() should be used instead)nbdoc")
+        .def("ChangeTriangle", static_cast<Poly_Triangle & (Poly_Triangulation::*)(const int)>(&Poly_Triangulation::ChangeTriangle), nb::rv_policy::reference_internal, nb::arg("theIndex"), R"nbdoc(Deprecated in OCCT: Deprecated method, SetTriangle() should be used instead)nbdoc")
         .def("NbDeferredNodes", static_cast<int (Poly_Triangulation::*)() const>(&Poly_Triangulation::NbDeferredNodes), R"nbdoc(@name late-load deferred data interface
 Returns number of deferred nodes that can be loaded using LoadDeferredData().
 Note: this is estimated values, which might be different from actually loaded values.
@@ -1169,7 +1173,9 @@ A node value is an index in the table of nodes specific to an existing triangula
 shape.)nbdoc")
         .def("Parameters", static_cast<const occ::handle<NCollection_HArray1<double>> & (Poly_PolygonOnTriangulation::*)() const>(&Poly_PolygonOnTriangulation::Parameters), R"nbdoc(Returns the table of the parameters associated with each node in this polygon.
 Warning! Use the function HasParameters to check if parameters are associated with the nodes
-in this polygon.)nbdoc");
+in this polygon.)nbdoc")
+        .def("ChangeNodes", static_cast<NCollection_Array1<int> & (Poly_PolygonOnTriangulation::*)()>(&Poly_PolygonOnTriangulation::ChangeNodes), nb::rv_policy::reference_internal, R"nbdoc(Deprecated in OCCT: Deprecated method, SetNode() should be used instead)nbdoc")
+        .def("ChangeParameters", static_cast<NCollection_Array1<double> & (Poly_PolygonOnTriangulation::*)()>(&Poly_PolygonOnTriangulation::ChangeParameters), nb::rv_policy::reference_internal, R"nbdoc(Deprecated in OCCT: Deprecated method, SetParameter() should be used instead)nbdoc");
     nanoocp_implicit_copy_ctor<Poly_PolygonOnTriangulation>(nb::borrow<nb::class_<Poly_PolygonOnTriangulation>>(m.attr("Poly_PolygonOnTriangulation")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<int> &>, Poly_PolygonOnTriangulation>();
     nb::borrow<nb::class_<Poly_TriangulationParameters>>(m.attr("Poly_TriangulationParameters"))

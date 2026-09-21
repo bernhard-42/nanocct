@@ -50,11 +50,20 @@ class TColStd_PackedMapOfInteger:
         @return true if the key was added, false if it already existed
         """
 
+    @overload
     def Contains(self, theKey: int) -> bool:
         """
         Check if the map contains a key
         @param[in] theKey the key to check
         @return true if the key is in the map
+        """
+
+    @overload
+    def Contains(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Contains() instead
         """
 
     def Remove(self, theKey: int) -> bool:
@@ -84,6 +93,83 @@ class TColStd_PackedMapOfInteger:
 
     def GetMaximalMapped(self) -> int:
         """Query the maximal contained key value."""
+
+    def Union(self, theLeft: TColStd_PackedMapOfInteger, theRight: TColStd_PackedMapOfInteger) -> None:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Union() instead
+        """
+
+    def Unite(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Unite() instead
+        """
+
+    def Intersection(self, theLeft: TColStd_PackedMapOfInteger, theRight: TColStd_PackedMapOfInteger) -> None:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Intersection() instead
+        """
+
+    def Intersect(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Intersect() instead
+        """
+
+    def Subtraction(self, theLeft: TColStd_PackedMapOfInteger, theRight: TColStd_PackedMapOfInteger) -> None:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Subtraction() instead
+        """
+
+    def Subtract(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Subtract() instead
+        """
+
+    def Difference(self, theLeft: TColStd_PackedMapOfInteger, theRight: TColStd_PackedMapOfInteger) -> None:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Difference() instead
+        """
+
+    def Differ(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::Differ() instead
+        """
+
+    def IsEqual(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::IsEqual() instead
+        """
+
+    def IsSubset(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::IsSubset() instead
+        """
+
+    def HasIntersection(self, theOther: TColStd_PackedMapOfInteger) -> bool:
+        """
+        Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+        @deprecated Use NCollection_PackedMapAlgo::HasIntersection() instead
+        """
 
 class TColStd_HPackedMapOfInteger(nanoocp.Standard.Standard_Transient):
     """

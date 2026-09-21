@@ -948,6 +948,8 @@ def Abs(theValue: int) -> int:
 @overload
 def Abs(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::abs and will be removed in future releases. Use std::abs instead.
+
     Returns the absolute value of a double @p Value.
     Equivalent to std::abs.
     """
@@ -955,6 +957,8 @@ def Abs(theValue: float) -> float:
 @overload
 def Abs(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::abs and will be removed in future releases. Use std::abs instead.
+
     Returns the absolute value of a float @p Value.
     Equivalent to std::abs.
     """
@@ -968,6 +972,8 @@ def IsOdd(theValue: int) -> bool:
 @overload
 def Max(theValue1: int, theValue2: int) -> int:
     """
+    Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
+
     Returns the maximum value of two integers.
     Equivalent to std::max.
     """
@@ -975,6 +981,8 @@ def Max(theValue1: int, theValue2: int) -> int:
 @overload
 def Max(theValue1: float, theValue2: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
+
     Returns the maximum value of two doubles.
     Equivalent to std::max.
     """
@@ -982,6 +990,8 @@ def Max(theValue1: float, theValue2: float) -> float:
 @overload
 def Max(theValue1: float, theValue2: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::max and will be removed in future releases. Use std::max instead.
+
     Returns the maximum value of two floats.
     Equivalent to std::max.
     """
@@ -989,6 +999,8 @@ def Max(theValue1: float, theValue2: float) -> float:
 @overload
 def Min(theValue1: int, theValue2: int) -> int:
     """
+    Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
+
     Returns the minimum value of two integers.
     Equivalent to std::min.
     """
@@ -996,6 +1008,8 @@ def Min(theValue1: int, theValue2: int) -> int:
 @overload
 def Min(theValue1: float, theValue2: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
+
     Returns the minimum value of two doubles.
     Equivalent to std::min.
     """
@@ -1003,6 +1017,8 @@ def Min(theValue1: float, theValue2: float) -> float:
 @overload
 def Min(theValue1: float, theValue2: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::min and will be removed in future releases. Use std::min instead.
+
     Returns the minimum value of two floats.
     Equivalent to std::min.
     """
@@ -1031,50 +1047,90 @@ def IntegerSize() -> int:
     """Returns the size in bits of an integer."""
 
 def ACos(theValue: float) -> float:
-    """Returns the value of the arc cosine of a @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::acos and will be removed in future releases. Use std::acos instead.
+
+    Returns the value of the arc cosine of a @p theValue.
+    """
 
 def ACosApprox(theValue: float) -> float:
     """
+    Deprecated in OCCT: Deprecated, use std::acos instead
+
     Returns the approximate value of the arc cosine @p theValue.
     The max error is about 1 degree near Value=0.
     NOTE: Avoid using this function in new code, it presumably slower then std::acos.
     """
 
 def ASin(theValue: float) -> float:
-    """Returns the value of the arc sine of a @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::asin and will be removed in future releases. Use std::asin instead.
+
+    Returns the value of the arc sine of a @p theValue.
+    """
 
 def ATan2(theX: float, theY: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::atan2 and will be removed in future releases. Use std::atan2 instead.
+
     Computes the arc tangent of @p theX divided by @p theY using the signs of both
     arguments to determine the quadrant of the return value.
     """
 
 def ATanh(theValue: float) -> float:
-    """Returns the value of the hyperbolic arc tangent of @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::atanh and will be removed in future releases. Use std::atanh instead.
+
+    Returns the value of the hyperbolic arc tangent of @p theValue.
+    """
 
 def ACosh(theValue: float) -> float:
-    """Returns the value of the hyperbolic arc cosine of @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::acosh and will be removed in future releases. Use std::acosh instead.
+
+    Returns the value of the hyperbolic arc cosine of @p theValue.
+    """
 
 def Cosh(theValue: float) -> float:
-    """Returns the hyperbolic cosine of a double @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::cosh and will be removed in future releases. Use std::cosh instead.
+
+    Returns the hyperbolic cosine of a double @p theValue.
+    """
 
 def Sinh(theValue: float) -> float:
-    """Returns the hyperbolic sine of a double @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::sinh and will be removed in future releases. Use std::sinh instead.
+
+    Returns the hyperbolic sine of a double @p theValue.
+    """
 
 def Log(theValue: float) -> float:
-    """Computes the natural (base-e) logarithm of number @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::log and will be removed in future releases. Use std::log instead.
+
+    Computes the natural (base-e) logarithm of number @p theValue.
+    """
 
 def Sqrt(theValue: float) -> float:
-    """Returns the square root of a double @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::sqrt and will be removed in future releases. Use std::sqrt instead.
+
+    Returns the square root of a double @p theValue.
+    """
 
 def NextAfter(theValue: float, theDirection: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::nextafter and will be removed in future releases. Use std::nextafter instead.
+
     Returns the next representable value of a double @p theValue
     in the direction of @p theDirection. Equivalent to std::nextafter.
     """
 
 def Sign(theMagnitude: float, theSign: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::copysign and will be removed in future releases. Use std::copysign instead.
+
     Composes a floating point value with the magnitude of @p theMagnitude
     and the sign of @p theSign. Equivalent to std::copysign.
     """
@@ -1133,15 +1189,23 @@ def IntToReal(theValue: int) -> float:
     """Converts a int @p theValue to a double."""
 
 def ATan(theValue: float) -> float:
-    """Returns the value of the arc tangent of a double @p theValue."""
+    """
+    Deprecated in OCCT: This function duplicates std::atan and will be removed in future releases. Use std::atan instead.
+
+    Returns the value of the arc tangent of a double @p theValue.
+    """
 
 def Ceiling(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::ceil and will be removed in future releases. Use std::ceil instead.
+
     Returns the next integer greater than or equal to a double @p theValue.
     """
 
 def Cos(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::cos and will be removed in future releases. Use std::cos instead.
+
     Returns the cosine of a double @p theValue.
     Equivalent to std::cos.
     """
@@ -1155,30 +1219,42 @@ def Epsilon(theValue: float) -> float:
 
 def Exp(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::exp and will be removed in future releases. Use std::exp instead.
+
     Returns the exponential of a double @p theValue.
     Equivalent to std::exp.
     """
 
 def Floor(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::floor and will be removed in future releases. Use std::floor instead.
+
     Returns the nearest integer less than or equal to a double @p theValue.
     Equivalent to std::floor.
     """
 
 def IntegerPart(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::trunc and will be removed in future releases. Use std::trunc instead.
+
     Returns the integer part of a double @p theValue.
     Equivalent to std::trunc.
     """
 
 def Log10(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::log10 and will be removed in future releases. Use std::log10 instead.
+
     Returns the logarithm to base 10 of a double @p theValue.
     Equivalent to std::log10.
     """
 
 def Pow(theValue: float, thePower: float) -> float:
-    """Returns a double @p theValue raised to the power of @p thePower."""
+    """
+    Deprecated in OCCT: This function duplicates std::pow and will be removed in future releases. Use std::pow instead.
+
+    Returns a double @p theValue raised to the power of @p thePower.
+    """
 
 def RealPart(theValue: float) -> float:
     """
@@ -1201,30 +1277,40 @@ def RealToShortReal(theValue: float) -> float:
 
 def Round(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::round and will be removed in future releases. Use std::round instead.
+
     Returns the nearest integer of a double @p theValue.
     Equivalent to std::round.
     """
 
 def Sin(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::sin and will be removed in future releases. Use std::sin instead.
+
     Returns the sine of a double @p theValue.
     Equivalent to std::sin.
     """
 
 def ASinh(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::asinh and will be removed in future releases. Use std::asinh instead.
+
     Returns the hyperbolic arc sine of a double @p theValue.
     Equivalent to std::asinh.
     """
 
 def Tan(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::tan and will be removed in future releases. Use std::tan instead.
+
     Returns the tangent of a double @p theValue.
     Equivalent to std::tan.
     """
 
 def Tanh(theValue: float) -> float:
     """
+    Deprecated in OCCT: This function duplicates std::tanh and will be removed in future releases. Use std::tanh instead.
+
     Returns the hyperbolic tangent of a double @p theValue.
     Equivalent to std::tanh.
     """

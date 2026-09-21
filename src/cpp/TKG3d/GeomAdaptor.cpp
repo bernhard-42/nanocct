@@ -564,11 +564,17 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
 @param theTrsf transformation to apply)nbdoc")
         .def("HasTrsf", static_cast<bool (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::HasTrsf), R"nbdoc(Returns true if non-identity transformation is applied.)nbdoc")
         .def("Trsf", static_cast<const gp_Trsf & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::Trsf), R"nbdoc(Returns the transformation.)nbdoc")
+        .def("Surface", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> result(&(self.Surface())); return result; }, R"nbdoc(Deprecated in OCCT: Use AdaptorSurfaceOriginal() instead to get the original surface without transformation
+
+Returns the underlying GeomAdaptor_Surface.)nbdoc")
         .def("AdaptorSurfaceOriginal", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> result(&(self.AdaptorSurfaceOriginal())); return result; }, R"nbdoc(Returns the underlying original GeomAdaptor_Surface without transformation applied.)nbdoc")
         .def("AdaptorSurfaceTransformed", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> result(&(self.AdaptorSurfaceTransformed())); return result; }, R"nbdoc(Returns an adaptor for the transformed surface state.
 Uses the original adaptor for identity transformation to preserve existing trimming.)nbdoc")
         .def("GeomSurfaceOriginal", static_cast<const occ::handle<Geom_Surface> & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::GeomSurfaceOriginal), R"nbdoc(Returns the underlying original Geom_Surface without transformation applied.)nbdoc")
         .def("GeomSurfaceTransformed", static_cast<const occ::handle<Geom_Surface> & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::GeomSurfaceTransformed), R"nbdoc(Returns the transformed Geom_Surface cached for current state.)nbdoc")
+        .def("GeomSurface", static_cast<const occ::handle<Geom_Surface> & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::GeomSurface), R"nbdoc(Deprecated in OCCT: Use GeomSurfaceOriginal() or GeomSurfaceTransformed() instead
+
+Returns the underlying Geom_Surface.)nbdoc")
         .def("FirstUParameter", static_cast<double (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::FirstUParameter))
         .def("LastUParameter", static_cast<double (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::LastUParameter))
         .def("FirstVParameter", static_cast<double (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::FirstVParameter))

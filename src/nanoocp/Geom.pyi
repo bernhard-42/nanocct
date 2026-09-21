@@ -1035,6 +1035,17 @@ class Geom_BezierCurve(Geom_BoundedCurve):
         Raised if Index is not in the range [1, NbPoles]
         """
 
+    @overload
+    def Poles(self, P: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]) -> None:
+        """
+        Deprecated in OCCT: use Poles() returning const reference instead
+
+        Returns all the poles of the curve.
+
+        Raised if the length of P is not equal to the number of poles.
+        """
+
+    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]:
         """Returns all the poles of the curve."""
 
@@ -1044,6 +1055,17 @@ class Geom_BezierCurve(Geom_BoundedCurve):
         Raised if Index is not in the range [1, NbPoles]
         """
 
+    @overload
+    def Weights(self, W: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use Weights() returning const pointer instead
+
+        Returns all the weights of the curve.
+
+        Raised if the length of W is not equal to the number of poles.
+        """
+
+    @overload
     def Weights(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns all the weights of the curve."""
 
@@ -2077,6 +2099,18 @@ class Geom_BezierSurface(Geom_BoundedSurface):
         VIndex < 1 or VIndex > NbVPoles.
         """
 
+    @overload
+    def Poles(self, P: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]) -> None:
+        """
+        Deprecated in OCCT: use Poles() returning const reference instead
+
+        Returns the poles of the Bezier surface.
+
+        Raised if the length of P in the U an V direction is not equal to
+        NbUPoles and NbVPoles.
+        """
+
+    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]:
         """Returns the poles of the Bezier surface."""
 
@@ -2112,6 +2146,18 @@ class Geom_BezierSurface(Geom_BoundedSurface):
         VIndex < 1 or VIndex > NbVPoles.
         """
 
+    @overload
+    def Weights(self, W: nanoocp.NCollection.NCollection_Array2[float]) -> None:
+        """
+        Deprecated in OCCT: use Weights() returning const pointer instead
+
+        Returns the weights of the Bezier surface.
+
+        Raised if the length of W in the U an V direction is not
+        equal to NbUPoles and NbVPoles.
+        """
+
+    @overload
     def Weights(self) -> nanoocp.NCollection.NCollection_Array2[float]:
         """Returns the weights of the Bezier surface."""
 
@@ -2867,6 +2913,22 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
         Raised if Index < 1 or Index > NbKnots
         """
 
+    @overload
+    def Knots(self, K: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use Knots() returning const reference instead
+
+        returns the knot values of the B-spline curve;
+        Warning
+        A knot with a multiplicity greater than 1 is not
+        repeated in the knot table. The Multiplicity function
+        can be used to obtain the multiplicity of each knot.
+
+        Raised K.Lower() is less than number of first knot or
+        K.Upper() is more than number of last knot.
+        """
+
+    @overload
     def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         returns the knot values of the B-spline curve;
@@ -2876,6 +2938,67 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
         can be used to obtain the multiplicity of each knot.
         """
 
+    @overload
+    def KnotSequence(self, K: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use KnotSequence() returning const reference instead
+
+        Returns K, the knots sequence of this BSpline curve.
+        In this sequence, knots with a multiplicity greater than 1 are repeated.
+        In the case of a non-periodic curve the length of the
+        sequence must be equal to the sum of the NbKnots
+        multiplicities of the knots of the curve (where
+        NbKnots is the number of knots of this BSpline
+        curve). This sum is also equal to : NbPoles + Degree + 1
+        where NbPoles is the number of poles and
+        Degree the degree of this BSpline curve.
+        In the case of a periodic curve, if there are k periodic
+        knots, the period is Knot(k+1) - Knot(1).
+        The initial sequence is built by writing knots 1 to k+1,
+        which are repeated according to their corresponding multiplicities.
+        If Degree is the degree of the curve, the degree of
+        continuity of the curve at the knot of index 1 (or k+1)
+        is equal to c = Degree + 1 - Mult(1). c
+        knots are then inserted at the beginning and end of
+        the initial sequence:
+        - the c values of knots preceding the first item
+        Knot(k+1) in the initial sequence are inserted
+        at the beginning; the period is subtracted from these c values;
+        - the c values of knots following the last item
+        Knot(1) in the initial sequence are inserted at
+        the end; the period is added to these c values.
+        The length of the sequence must therefore be equal to:
+        NbPoles + 2*Degree - Mult(1) + 2.
+        Example
+        For a non-periodic BSpline curve of degree 2 where:
+        - the array of knots is: { k1 k2 k3 k4 },
+        - with associated multiplicities: { 3 1 2 3 },
+        the knot sequence is:
+        K = { k1 k1 k1 k2 k3 k3 k4 k4 k4 }
+        For a periodic BSpline curve of degree 4 , which is
+        "C1" continuous at the first knot, and where :
+        - the periodic knots are: { k1 k2 k3 (k4) }
+        (3 periodic knots: the points of parameter k1 and k4
+        are identical, the period is p = k4 - k1),
+        - with associated multiplicities: { 3 1 2 (3) },
+        the degree of continuity at knots k1 and k4 is:
+        Degree + 1 - Mult(i) = 2.
+        2 supplementary knots are added at the beginning
+        and end of the sequence:
+        - at the beginning: the 2 knots preceding k4 minus
+        the period; in this example, this is k3 - p both times;
+        - at the end: the 2 knots following k1 plus the period;
+        in this example, this is k2 + p and k3 + p.
+        The knot sequence is therefore:
+        K = { k3-p k3-p k1 k1 k1 k2 k3 k3
+        k4 k4 k4 k2+p k3+p }
+        Exceptions
+        Raised if K.Lower() is less than number of first knot
+        in knot sequence with repetitions or K.Upper() is more
+        than number of last knot in knot sequence with repetitions.
+        """
+
+    @overload
     def KnotSequence(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         returns the knots of the B-spline curve.
@@ -2933,6 +3056,17 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
         Raised if Index < 1 or Index > NbKnots
         """
 
+    @overload
+    def Multiplicities(self, M: nanoocp.NCollection.NCollection_Array1[int]) -> None:
+        """
+        Deprecated in OCCT: use Multiplicities() returning const reference instead
+
+        Returns the multiplicity of the knots of the curve.
+
+        Raised if the length of M is not equal to NbKnots.
+        """
+
+    @overload
     def Multiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """returns the multiplicity of the knots of the curve."""
 
@@ -2951,6 +3085,17 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
         Raised if Index < 1 or Index > NbPoles.
         """
 
+    @overload
+    def Poles(self, P: nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]) -> None:
+        """
+        Deprecated in OCCT: use Poles() returning const reference instead
+
+        Returns the poles of the B-spline curve;
+
+        Raised if the length of P is not equal to the number of poles.
+        """
+
+    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt]:
         """Returns the poles of the B-spline curve;"""
 
@@ -2968,6 +3113,17 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
         Raised if Index < 1 or Index > NbPoles.
         """
 
+    @overload
+    def Weights(self, W: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use Weights() returning const pointer instead
+
+        Returns the weights of the B-spline curve;
+
+        Raised if the length of W is not equal to NbPoles.
+        """
+
+    @overload
     def Weights(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the weights of the B-spline curve;"""
 
@@ -3997,6 +4153,18 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         VIndex > NbVPoles.
         """
 
+    @overload
+    def Poles(self, P: nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]) -> None:
+        """
+        Deprecated in OCCT: use Poles() returning const reference instead
+
+        Returns the poles of the B-spline surface.
+
+        Raised if the length of P in the U and V direction
+        is not equal to NbUpoles and NbVPoles.
+        """
+
+    @overload
     def Poles(self) -> nanoocp.NCollection.NCollection_Array2[nanoocp.gp.gp_Pnt]:
         """Returns the poles of the B-spline surface."""
 
@@ -4029,9 +4197,36 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         The tolerance criterion is Resolution from package gp.
         """
 
+    @overload
+    def UKnots(self, Ku: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use UKnots() returning const reference instead
+
+        Returns the knots in the U direction.
+
+        Raised if the length of Ku is not equal to the number of knots
+        in the U direction.
+        """
+
+    @overload
     def UKnots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots in the U direction."""
 
+    @overload
+    def UKnotSequence(self, Ku: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use UKnotSequence() returning const reference instead
+
+        Returns the uknots sequence.
+        In this sequence the knots with a multiplicity greater than 1
+        are repeated.
+        Example :
+        Ku = {k1, k1, k1, k2, k3, k3, k4, k4, k4}
+
+        Raised if the length of Ku is not equal to NbUPoles + UDegree + 1
+        """
+
+    @overload
     def UKnotSequence(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         Returns the uknots sequence.
@@ -4048,6 +4243,18 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         Raised if UIndex < 1 or UIndex > NbUKnots.
         """
 
+    @overload
+    def UMultiplicities(self, Mu: nanoocp.NCollection.NCollection_Array1[int]) -> None:
+        """
+        Deprecated in OCCT: use UMultiplicities() returning const reference instead
+
+        Returns the multiplicities of the knots in the U direction.
+
+        Raised if the length of Mu is not equal to the number of
+        knots in the U direction.
+        """
+
+    @overload
     def UMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the knots in the U direction."""
 
@@ -4080,9 +4287,36 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         The tolerance criterion is Resolution from package gp.
         """
 
+    @overload
+    def VKnots(self, Kv: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use VKnots() returning const reference instead
+
+        Returns the knots in the V direction.
+
+        Raised if the length of Kv is not equal to the number of
+        knots in the V direction.
+        """
+
+    @overload
     def VKnots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """Returns the knots in the V direction."""
 
+    @overload
+    def VKnotSequence(self, Kv: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+        """
+        Deprecated in OCCT: use VKnotSequence() returning const reference instead
+
+        Returns the vknots sequence.
+        In this sequence the knots with a multiplicity greater than 1
+        are repeated.
+        Example :
+        Kv = {k1, k1, k1, k2, k3, k3, k4, k4, k4}
+
+        Raised if the length of Kv is not equal to NbVPoles + VDegree + 1
+        """
+
+    @overload
     def VKnotSequence(self) -> nanoocp.NCollection.NCollection_Array1[float]:
         """
         Returns the vknots sequence.
@@ -4099,6 +4333,18 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         Raised if VIndex < 1 or VIndex > NbVKnots
         """
 
+    @overload
+    def VMultiplicities(self, Mv: nanoocp.NCollection.NCollection_Array1[int]) -> None:
+        """
+        Deprecated in OCCT: use VMultiplicities() returning const reference instead
+
+        Returns the multiplicities of the knots in the V direction.
+
+        Raised if the length of Mv is not equal to the number of
+        knots in the V direction.
+        """
+
+    @overload
     def VMultiplicities(self) -> nanoocp.NCollection.NCollection_Array1[int]:
         """Returns the multiplicities of the knots in the V direction."""
 
@@ -4110,6 +4356,24 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         or VIndex > NbVPoles.
         """
 
+    @overload
+    def Weights(self, W: nanoocp.NCollection.NCollection_Array2[float]) -> None:
+        """
+        Deprecated in OCCT: use Weights() returning const pointer instead
+
+        Returns the weights of the B-spline surface.
+
+        Raised if the length of W in the U and V direction is
+        not equal to NbUPoles and NbVPoles.
+        """
+
+    @overload
+    def Weights(self) -> nanoocp.NCollection.NCollection_Array2[float]:
+        """
+        Returns the weights of the B-spline surface.
+        value and derivatives computation
+        """
+
     def WeightsArray(self) -> nanoocp.NCollection.NCollection_Array2[float]:
         """
         Returns a const reference to the weights array.
@@ -4117,12 +4381,6 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         For non-rational surfaces: a non-owning view of unit weights from BSplSLib.
         The array is always sized to match NbUPoles() x NbVPoles().
         @warning Do NOT modify elements through the returned reference.
-        """
-
-    def Weights(self) -> nanoocp.NCollection.NCollection_Array2[float]:
-        """
-        Returns the weights of the B-spline surface.
-        value and derivatives computation
         """
 
     def EvalD0(self, U: float, V: float) -> nanoocp.gp.gp_Pnt:

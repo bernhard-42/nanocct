@@ -6,13 +6,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
+from .binders import BINDERS
 from .emit import Emitter, emit_toolkit_module, write_package_shims
 from .occt import load_tree
 from .ncollection import deprecated_aliases, template_docs
-from .parse import clang_args, configure_libclang, parse_package, py_path
+from .parse import INCLUDE_PACKAGES, clang_args, configure_libclang, parse_package, py_path
 from .report import write_report
 from .symbols import defined_methods
 
@@ -71,7 +73,6 @@ _SCALARS = {"double": ("builtins", "float"), "int": ("builtins", "int"), "bool":
 def _element_spec(arg: str, known: dict[str, str], templates: dict[str, dict]) -> tuple[str, str] | None:
     """Python type that stands for a C++ template argument in NCollection_Xxx[T]: float for double, the OCCT class
     for a class or handle<class>, the bound instantiation for a nested container; None -> no accessor entry."""
-    import re
     if arg in _SCALARS:
         return _SCALARS[arg]
     m = re.match(r"(?:opencascade::)?handle<(.+)>$", arg)
@@ -86,9 +87,7 @@ def _element_spec(arg: str, known: dict[str, str], templates: dict[str, dict]) -
 
 
 def _accessors(known: dict[str, str], templates: dict[str, dict]) -> dict[str, dict[tuple[tuple[str, str], ...], str]]:
-    import re
     out: dict[str, dict[tuple[tuple[str, str], ...], str]] = {}
-    from .ncollection import BINDERS
     for key, inst in templates.items():
         m = re.match(r"([\w:]+)<(.*)>$", key)
         if m is None or inst.get("skipped", False) or m.group(1) not in BINDERS:
@@ -147,6 +146,13 @@ def main(argv: list[str]) -> int:
     for tk_name in args.toolkit:
         tk = tree.toolkits[tk_name]
         pkgs = [p for p in tk.packages if args.package is None or p.name in args.package]
+        allowed = INCLUDE_PACKAGES.get(tk_name)          # a partial toolkit (the font slice: TKService -> Font, Graphic3d)
+        if allowed is not None:
+            missing = [n for n in allowed if n not in {p.name for p in tk.packages}]
+            if len(missing) > 0:
+                print(f"{tk_name}: overrides.toml [include] packages names unknown packages {missing}", file=sys.stderr)
+                return 1
+            pkgs = [p for p in pkgs if p.name in allowed]
         if len(pkgs) == 0:
             print(f"{tk_name}: no packages selected", file=sys.stderr)
             return 1
@@ -223,7 +229,8 @@ def main(argv: list[str]) -> int:
                 report_entries.append((pkg.name, line))
         if args.package is None:            # a partial run would write a report of the given packages only
             counts = write_report(tk_dir / "report.txt", tk_name, report_entries)
-            print(f"{tk_name}: report.txt written, " + ", ".join(f"{c} {n}" for c, n in counts.most_common()), file=sys.stderr)
+            summary = ", ".join(f"{c} {n}" for c, n in counts.most_common()) if len(counts) > 0 else "nothing unbound"
+            print(f"{tk_name}: report.txt written ({summary})", file=sys.stderr)
         depends = [d for d in tk.depends if d in generated_toolkits]
         namespaces = {p: [tuple(ns) for ns in manifest["namespaces"].get(p, [])] for p in order}
         (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends, namespaces))   # every package of the toolkit

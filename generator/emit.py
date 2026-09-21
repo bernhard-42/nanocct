@@ -5,7 +5,7 @@ import re
 import shutil
 from pathlib import Path
 
-from .model import Class, Enum, Function, Method, PackageIR, Param, TemplateInstance
+from .model import Class, ConversionKind, Enum, Function, Method, PackageIR, Param, ResultKind, StreamKind, TemplateInstance
 from .ncollection import BINDERS
 from .parse import _py_identifier, py_path, py_safe
 
@@ -52,6 +52,7 @@ def _strip_ref(t: str) -> str:
     return s
 
 
+# Design.md 6 R-OPERATOR, R-IOP
 def _py_name(m: Method) -> str | None:
     """Python attribute name for a method; None when the operator has no Python counterpart."""
     if not m.is_operator:
@@ -102,6 +103,7 @@ class Emitter:
             for ident in _IDENT_RE.findall(t):
                 self._idents.add(ident)
 
+    # Design.md 6 R-DEFAULT-UNBOUND
     def _unbound_default(self, params: list[Param]) -> str | None:
         """The type of a defaulted parameter that no binding knows: nanobind converts defaults to Python objects at
         .def time, so such a member would abort the module import (nb::cast -> std::bad_cast)."""
@@ -116,7 +118,7 @@ class Emitter:
     def _args(self, params: list[Param], skip_out: bool) -> str:
         parts: list[str] = []
         for p in params:
-            if skip_out and (p.is_out and not p.is_inout or p.stream == "out"):
+            if skip_out and (p.is_out and not p.is_inout or p.stream == StreamKind.OUT):
                 continue
             # a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
             # the caster runs (Design.md 4.2)
@@ -143,22 +145,23 @@ class Emitter:
         return ", ".join(p.type for p in params)
 
     # ---- members -------------------------------------------------------------------------------
+    # Design.md 6 R-OUT, R-OUT-HANDLE, R-INOUT, R-STREAM-OUT, R-STREAM-IN, R-RESULT
     def _lambda_call(self, cls: str | None, m: Method, self_type: str | None = None) -> str:
         """Lambda that maps out-params to a returned tuple (also handles static methods). self_type: the bound
         type when it differs from cls (non-copyable wrapper)."""
-        ins = [p for p in m.params if (not p.is_out or p.is_inout) and p.stream != "out"]
+        ins = [p for p in m.params if (not p.is_out or p.is_inout) and p.stream != StreamKind.OUT]
         outs = [p for p in m.params if p.is_out]
         lam_params: list[str] = []
         if cls is not None and not m.is_static:
             lam_params.append(f"{'const ' if m.is_const else ''}{self_type if self_type is not None else cls} &self")
-        lam_params += [f"const nanoocp::TextInput &{p.name}" if p.stream == "in" else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
+        lam_params += [f"const nanoocp::TextInput &{p.name}" if p.stream == StreamKind.IN else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
         body: list[str] = [f"{_strip_ref(p.type)} {p.name}{{}};" for p in outs if not p.is_inout]
         # streams: an ostream& parameter becomes a returned str; an istream&/stringstream parameter takes a text file-like
         # object (nanoocp::TextInput caster in nanoocp_common.h: typing.TextIO, never a str -- that would collide with the
         # file-path overloads such as BRepTools::Read(shape, path, builder))
-        body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == "out"]
-        body += [f"std::stringstream {p.name}_stream({p.name}.text);" for p in m.params if p.stream == "in"]
-        call_args = ", ".join(f"{p.name}_stream" if p.stream != "" else p.name for p in m.params)
+        body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == StreamKind.OUT]
+        body += [f"std::stringstream {p.name}_stream({p.name}.text);" for p in m.params if p.stream == StreamKind.IN]
+        call_args = ", ".join(f"{p.name}_stream" if p.stream != StreamKind.NONE else p.name for p in m.params)
         if cls is None:
             callee = f"{m.name}({call_args})"
         elif m.is_static:
@@ -166,10 +169,10 @@ class Emitter:
         else:
             callee = f"self.{m.name}({call_args})"
         results: list[str] = []
-        if m.result_kind == "ptr_transient":
+        if m.result_kind == ResultKind.PTR_TRANSIENT:
             body.append(f"opencascade::handle<{m.result_class}> result({callee});")
             results.append("result")
-        elif m.result_kind == "ref_transient":
+        elif m.result_kind == ResultKind.REF_TRANSIENT:
             body.append(f"opencascade::handle<{m.result_class}> result(&({callee}));")
             results.append("result")
         elif m.result != "void":
@@ -178,13 +181,14 @@ class Emitter:
         else:
             body.append(f"{callee};")
         results += [p.name for p in outs]
-        results += [f"nanoocp_stream_text({p.name}_stream)" for p in m.params if p.stream == "out"]
+        results += [f"nanoocp_stream_text({p.name}_stream)" for p in m.params if p.stream == StreamKind.OUT]
         if len(results) == 1:
             body.append(f"return {results[0]};")
         elif len(results) > 1:
             body.append(f"return std::make_tuple({', '.join(results)});")
         return f"[]({', '.join(lam_params)}) {{ {' '.join(body)} }}"
 
+    # Design.md 6 R-STATIC-S, R-RESULT, R-REF-PRIMITIVE
     def _method(self, cls: Class, m: Method, mixed: set[str]) -> str | None:
         if m.skip_reason is not None:
             return None
@@ -201,11 +205,11 @@ class Emitter:
         self._note_types(m.result, *(p.type for p in m.params))
         T = cls.name                       # member pointers name the class itself ...
         B = cls.bound_type                 # ... lambdas take the bound type (a wrapper for non-copyable classes)
-        if m.result_kind == "ref_primitive":
+        if m.result_kind == ResultKind.REF_PRIMITIVE:
             return self._ref_primitive(cls, m, py)
-        has_out = any(p.is_out or p.stream != "" for p in m.params)
-        wrap = m.result_kind in ("ptr_transient", "ref_transient")   # never let nanobind own a Transient
-        policy = {"ptr_class": ", nb::rv_policy::reference", "ref_mutable": ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
+        has_out = any(p.is_out or p.stream != StreamKind.NONE for p in m.params)
+        wrap = m.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT)   # never let nanobind own a Transient
+        policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
@@ -221,6 +225,7 @@ class Emitter:
         fn = f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})"
         return f'.def("{py}", {fn}{policy}{self._extras(m.doc, m.params, False, m.is_operator)})'
 
+    # Design.md 6 R-REF-PRIMITIVE
     def _ref_primitive(self, cls: Class, m: Method, py: str) -> str:
         """double& Value(i, j): a getter under the C++ name (returns the value) and, as a Python addition, a setter:
         Set<Name> with the Change prefix dropped (ChangeValue -> SetValue, Value -> SetValue, IsCopyMesh -> SetIsCopyMesh)
@@ -258,6 +263,7 @@ class Emitter:
             fn = f"nb::init<{self._sig(params)}>()"
         return f".def({fn}{self._extras(doc, params, False, False)})"
 
+    # Design.md 6 R-FREE-OP
     def _free_operator(self, fn: Function) -> tuple[str, str] | None:
         """Bind a free binary operator as a (reflected) method on the class of its class-typed operand."""
         entry = _BINARY_OPS.get(fn.name)
@@ -276,6 +282,7 @@ class Emitter:
             return tb, f'.def("{reflected}", {lam}, nb::is_operator()) /* free {fn.name} */'
         return None
 
+    # Design.md 6 R-ENUM, R-ANON-ENUM
     def _enum(self, e: Enum, scope: str) -> list[str]:
         if e.is_anonymous:      # C++ integer constants: enum { X = 1 };  -> scope.X = 1
             return [f'{scope}.attr("{py}") = nb::int_(static_cast<long long>({cpp}));' for py, cpp in e.values]
@@ -388,40 +395,13 @@ class Emitter:
         return f'    nanoocp_register_exception<{c.name}>(nanoocp_new_exception({self._attr(c.scope)}, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
 
     def emit(self) -> str:
+        """The package's .cpp: declare (classes, enums, constants, submodules), templates (NCollection instantiations),
+        define (members, free functions, aliases), conversions (operator T() targets) -- one function per phase."""
         ir = self.ir
         skipped: set[str] = set()
         classes = [c for c in self._ordered_classes() if self._base_ok(c, skipped)]
         instances = self._instances()   # registers this package's NCollection instantiations in self.templates (defaults may use them)
-        free_ops: dict[str, list[str]] = {}
-        module_fns: list[str] = []
-        for fn in ir.functions:
-            if fn.skip_reason is not None:
-                continue
-            if fn.is_operator:
-                r = self._free_operator(fn)
-                if r is None:
-                    self.report.append(f"{fn.name}({self._sig(fn.params)}): free operator not mapped")
-                else:
-                    free_ops.setdefault(r[0], []).append(r[1])
-            else:
-                unbound = self._unbound_default(fn.params)
-                if unbound is not None:
-                    self.report.append(f"{fn.name}({self._sig(fn.params)}): default argument of unbound type {unbound} -> function skipped")
-                    continue
-                self._note_types(fn.result, *(p.type for p in fn.params))
-                ne = " noexcept" if fn.is_noexcept else ""
-                if fn.result_kind in ("ptr_transient", "ref_transient"):
-                    self.report.append(f"{fn.name}({self._sig(fn.params)}): free function returning Transient pointer/reference not supported yet")
-                    continue
-                policy = {"ptr_class": ", nb::rv_policy::reference", "ref_mutable": ", nb::rv_policy::reference"}.get(fn.result_kind, "")
-                qualified = fn.qualified if fn.qualified != "" else fn.name
-                if any(p.is_out or p.stream != "" for p in fn.params):   # out-params/streams -> returned tuple, as for methods
-                    as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
-                                       result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=fn.doc)
-                    module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", {self._lambda_call(None, as_method)}{self._extras(fn.doc, fn.params, True, False)});')
-                    continue
-                module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(fn.doc, fn.params, False, False)});')
-
+        free_ops, module_fns = self._functions()
         declare: list[str] = []
         define: list[str] = []
         wrappers: list[str] = []      # file-scope wrapper structs for non-copyable classes
@@ -432,189 +412,15 @@ class Emitter:
             self._note_types(k.cpp)
         for e in ir.enums:
             declare += ["    " + l for l in self._enum(e, self._attr(e.scope))]
-        aliased: set[str] = set()      # instantiations already bound by another package: alias only
         for c in classes:
-            self._note_types(*c.bases)
-            if c.template_key != "":
-                found = self.templates.get(c.template_key)
-                if found is not None and found.get("by") != self.ir.name and not found.get("skipped", False):
-                    declare.append(f'    m.attr("{c.py_name}") = nb::module_::import_("nanoocp._{found["toolkit"]}.{found["package"]}").attr("{found["name"]}");')
-                    aliased.add(c.name)
-                    continue
-                self.templates[c.template_key] = {"toolkit": self.toolkit_of[self.ir.name], "package": self.ir.name, "name": c.py_name, "by": self.ir.name}
-            if c.is_exception:
-                declare.append(self._exception(c))
-                continue
-            # nanobind takes one base and reuses the derived pointer for it, so only the first (offset-0) base
-            # can be declared; further bases are reported (their members are not inherited in Python)
-            for extra in c.bases[1:]:
-                self.report.append(f"{c.name}: additional base {extra} not declared (nanobind: single inheritance, offset-0 base only)")
-            bases = "".join(f", {b}" for b in c.bases[:1])
-            d = _cpp_doc(c.doc)
-            doc_arg = f", {d}" if d is not None else ""
-            if c.noncopyable:
-                wrappers.append(f"// {c.name}: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):\n"
-                                f"// bound through a wrapper with deleted copy and move, under the original name\n"
-                                f"struct {c.bound_type} : {c.name} {{\n    using {c.name}::{c.name};\n"
-                                f"    {c.bound_type}(const {c.bound_type} &) = delete;\n    {c.bound_type}({c.bound_type} &&) = delete;\n}};")
-            declare.append(f'    {{ nb::class_<{c.bound_type}{bases}> cls({self._attr(c.scope)}, "{c.py_name}"{doc_arg});')
-            for e in c.enums:
-                declare += ["      " + l for l in self._enum(e, "cls")]
-            declare.append("    }")
-
-            body: list[str] = []
-            implicit_default = False
-            if c.is_exception or c.name in aliased:
-                continue
-            if not c.constructible:
-                self.report.append(f"{c.name}: operator new is not public -> no constructors")
-            if not c.is_abstract and c.constructible:
-                declared = [k for k in c.ctors if k.skip_reason is None]
-                # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count
-                declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
-                implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
-                for k in declared:
-                    unbound = self._unbound_default(k.params)
-                    if unbound is not None:
-                        self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): default argument of unbound type {unbound} -> constructor skipped")
-                        continue
-                    body.append(self._ctor(c, k.params, k.doc))
-            bound = [m for m in c.methods if m.skip_reason is None]
-            mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
-            # overloads that become indistinguishable once out-params are dropped: nanobind takes the first registered.
-            # An overload returning a scalar (double, bool, enum, str) without out-params is the direct C++ API and wins
-            # (BRep_Tool::Parameter(V, E) -> double over Parameter(V, E, double&) -> bool; TopAbs::ShapeTypeFromString
-            # -> enum); otherwise (void or a class result) the overload with the most out-params wins, as its values come
-            # back as a tuple (gp_Pnt::Coord(x&, y&, z&) over Coord() -> gp_XYZ, Bnd_Box::Get(6 x double&) over Get() ->
-            # Limits, OSD_Chronometer::Show(double&) over the printing Show()). The other overload is unreachable, reported.
-            def preference(m: Method) -> tuple[int, int]:
-                n_out = sum(1 for p in m.params if p.is_out and not p.is_inout)
-                return (0, n_out) if m.result_scalar and n_out == 0 else (1, -n_out)
-            def py_sig(m: Method) -> tuple:
-                return (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if (not p.is_out or p.is_inout) and p.stream != "out"))
-            groups: dict[tuple, list[Method]] = {}
-            for m in bound:
-                groups.setdefault(py_sig(m), []).append(m)
-            ordered: list[Method] = []           # header order, except that a colliding group is emitted at its first member, winner first
-            emitted: set[int] = set()
-            for m in c.methods:
-                if id(m) in emitted:
-                    continue
-                members = groups.get(py_sig(m), [m]) if m.skip_reason is None else [m]
-                if len(members) > 1 and any(p.is_out for mm in members for p in mm.params):
-                    members = sorted(members, key=preference)
-                    for loser in members[1:]:
-                        self.report.append(f"{c.name}::{loser.name}({self._sig(loser.params)}): same Python signature as "
-                                           f"{loser.name}({self._sig(members[0].params)}) after out-param removal -> unreachable")
-                else:
-                    members = [m]
-                for mm in members:
-                    emitted.add(id(mm))
-                    ordered.append(mm)
-            for name in sorted(mixed):
-                self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s (instance method of same name exists)")
-            for m in ordered:
-                s = self._method(c, m, mixed)
-                if s is not None:
-                    body.append(s)
-            body += free_ops.get(c.name, [])
-            for conv in c.conversions:          # operator bool/int/double() -> Python dunder; class targets: see conversions below
-                dunder = {"bool": "__bool__", "int": "__int__", "float": "__float__"}.get(conv.kind)
-                if dunder is not None:
-                    self._note_types(conv.target)
-                    body.append(f'.def("{dunder}", [](const {c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
-            if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
-                # std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__
-                body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
-            cls_expr = f'nb::borrow<nb::class_<{c.bound_type}>>({self._attr(c.scope)}.attr("{c.py_name}"))'
-            if implicit_default:
-                define.append(f'    nanoocp_implicit_default_ctor<{c.bound_type}>({cls_expr});')
-            if len(body) > 0:
-                define.append(f'    {cls_expr}')
-                define += ["        " + b for b in body]
-                define[-1] += ";"
-            # the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
-            # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
-            if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
-                define.append(f'    nanoocp_implicit_copy_ctor<{c.bound_type}>({cls_expr});')
-            for f in c.fields:                 # read/write when the field type is copy-assignable (decided at compile time), else read-only
-                self._note_types(f.type)
-                dd = _cpp_doc(f.doc)
-                define.append(f'    nanoocp_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
-            if len(body) == 0 and len(c.fields) == 0:
-                continue
-            # C++ implicit conversions (non-explicit converting constructors) apply in Python too
-            if not c.is_abstract and c.constructible:
-                seen: set[str] = set()
-                for k in c.ctors:
-                    if k.skip_reason is None and k.is_implicit:
-                        src = k.params[0].type
-                        if src not in seen:
-                            seen.add(src)
-                            define.append(f"    nb::implicitly_convertible<std::decay_t<{src}>, {c.bound_type}>();")
-
-        # operator T() const with a bound class T: T gets a constructor from this class, plus the implicit conversion when
-        # the operator is not explicit (TopoDS_Shape s = aMakeShape; BRepGraph_NodeId(anEdgeId)). Emitted in a phase of its
-        # own (after every definition of the toolkit: nanobind wants a class's zero-argument __new__ before other overloads)
-        conversions: list[str] = []
-        for c in classes:
-            for conv in c.conversions:
-                if conv.kind not in ("class", "handle"):
-                    continue
-                inst = self.templates.get(conv.target_class)
-                if inst is not None and not inst.get("skipped", False):
-                    pkg, path = inst["package"], inst["name"]         # an instantiation bound under an alias (BVH_Vec3f)
-                else:
-                    pkg = self.known.get(conv.target_class)
-                    path = py_path(conv.target_class, pkg, self.paths) if pkg is not None else ""
-                if pkg is None or pkg == "":
-                    self.report.append(f"{c.name}::operator {conv.target}(): target type is not bound -> conversion skipped")
-                    continue
-                order = self.toolkit_order
-                if self.toolkit_of[pkg] in order and self.toolkit_of[self.ir.name] in order \
-                        and order.index(self.toolkit_of[pkg]) > order.index(self.toolkit_of[self.ir.name]):
-                    self.report.append(f"{c.name}::operator {conv.target}(): target lives in a later toolkit ({self.toolkit_of[pkg]}) -> conversion skipped")
-                    continue
-                attrs = "".join(f'.attr("{a}")' for a in path.split("."))
-                target = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
-                helper = "nanoocp_conversion_handle" if conv.kind == "handle" else "nanoocp_conversion"
-                conversions.append(f'    {helper}<{c.name}, {conv.target}>({target}, {"false" if conv.is_explicit else "true"});')
-                self._note_types(conv.target)
-
-        # typedefs of bound classes (using CurveD1 = Geom_Curve::ResD1 in namespace GeomGridEval) -> Python aliases;
-        # scalar typedefs (Standard_Real) and the rest are not exposed
-        seen_aliases: set[tuple[tuple[str, ...], str]] = set()
-        for td in ir.typedefs:
-            key = (td.scope, td.py_name)
-            if key in seen_aliases or any(c.py_name == td.py_name and c.scope == td.scope for c in classes):
-                continue                           # a 6c alias instantiation is a class of its own
-            seen_aliases.add(key)
-            inst = self.templates.get(td.target)
-            if inst is not None and not inst.get("skipped", False) and inst["package"] != "":
-                # alias of a bound NCollection instantiation (BVH_Array3d = NCollection_LinearVector<NCollection_Vec3<double>>)
-                define.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = nb::module_::import_("nanoocp._{self.toolkit_of[inst["package"]]}.{inst["package"]}").attr("{inst["name"]}");   // {td.py_name} = {td.written}')
-                continue
-            pkg = self.known.get(td.target)
-            if pkg is None or "<" in td.target:
-                if td.scope != ():
-                    self.report.append(f"{'::'.join(td.scope)}::{td.py_name} = {td.written}: type alias of an unbound type (not bound)")
-                continue
-            attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
-            src = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
-            define.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
-
-        includes = [f"#include <{h}>" for h in ir.prelude + ir.headers]
-        if len(instances) > 0:
-            includes.insert(0, '#include "nanoocp_ncollection.h"')
-        for ident in sorted(self._idents):
-            hdr = f"{ident}.hxx"
-            if hdr not in ir.headers and (self.include_dir / hdr).exists():
-                includes.append(f"#include <{hdr}>")
-
+            if self._declare_class(c, declare, wrappers):
+                self._define_class(c, free_ops, define)
+        conversions = self._conversions(classes)
+        define += self._aliases(classes)
         out = [
             f"// Generated by the nanoOCP generator from OCCT package {ir.name} (toolkit {ir.toolkit}). Do not edit.",
             '#include "nanoocp_common.h"',
-            *includes,
+            *self._includes(len(instances) > 0),
             "",
             *(wrappers + [""] if len(wrappers) > 0 else []),
 
@@ -637,6 +443,248 @@ class Emitter:
             "",
         ]
         return "\n".join(out)
+
+    def _functions(self) -> tuple[dict[str, list[str]], list[str]]:
+        """Free functions: operators become members of their class operand (free_ops, by class name); the rest are
+        module attributes (with the out-param tuple rule of methods)."""
+        free_ops: dict[str, list[str]] = {}
+        module_fns: list[str] = []
+        for fn in self.ir.functions:
+            if fn.skip_reason is not None:
+                continue
+            if fn.is_operator:
+                r = self._free_operator(fn)
+                if r is None:
+                    self.report.append(f"{fn.name}({self._sig(fn.params)}): free operator not mapped")
+                else:
+                    free_ops.setdefault(r[0], []).append(r[1])
+                continue
+            unbound = self._unbound_default(fn.params)
+            if unbound is not None:
+                self.report.append(f"{fn.name}({self._sig(fn.params)}): default argument of unbound type {unbound} -> function skipped")
+                continue
+            self._note_types(fn.result, *(p.type for p in fn.params))
+            ne = " noexcept" if fn.is_noexcept else ""
+            if fn.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT):
+                self.report.append(f"{fn.name}({self._sig(fn.params)}): free function returning Transient pointer/reference not supported yet")
+                continue
+            policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference"}.get(fn.result_kind, "")
+            qualified = fn.qualified if fn.qualified != "" else fn.name
+            if any(p.is_out or p.stream != StreamKind.NONE for p in fn.params):   # out-params/streams -> returned tuple, as for methods
+                as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
+                                   result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=fn.doc)
+                module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", {self._lambda_call(None, as_method)}{self._extras(fn.doc, fn.params, True, False)});')
+                continue
+            module_fns.append(f'    {self._module(fn.scope)}.def("{py_safe(fn.name)}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(fn.doc, fn.params, False, False)});')
+        return free_ops, module_fns
+
+    def _declare_class(self, c: Class, declare: list[str], wrappers: list[str]) -> bool:
+        """Declare phase of one class: nb::class_ with its offset-0 base and nested enums, or an alias when another
+        package already bound the instantiation, or the exception type. Returns whether the define phase applies."""
+        self._note_types(*c.bases)
+        if c.template_key != "":
+            found = self.templates.get(c.template_key)
+            if found is not None and found.get("by") != self.ir.name and not found.get("skipped", False):
+                declare.append(f'    m.attr("{c.py_name}") = nb::module_::import_("nanoocp._{found["toolkit"]}.{found["package"]}").attr("{found["name"]}");')
+                return False
+            self.templates[c.template_key] = {"toolkit": self.toolkit_of[self.ir.name], "package": self.ir.name, "name": c.py_name, "by": self.ir.name}
+        if c.is_exception:
+            declare.append(self._exception(c))
+            return False
+        # nanobind takes one base and reuses the derived pointer for it, so only the first (offset-0) base
+        # can be declared; further bases are reported (their members are not inherited in Python)
+        for extra in c.bases[1:]:
+            self.report.append(f"{c.name}: additional base {extra} not declared (nanobind: single inheritance, offset-0 base only)")
+        bases = "".join(f", {b}" for b in c.bases[:1])
+        d = _cpp_doc(c.doc)
+        doc_arg = f", {d}" if d is not None else ""
+        if c.noncopyable:
+            wrappers.append(f"// {c.name}: its copy/move constructors do not compile although declared (overrides.toml [skip] noncopyable):\n"
+                            f"// bound through a wrapper with deleted copy and move, under the original name\n"
+                            f"struct {c.bound_type} : {c.name} {{\n    using {c.name}::{c.name};\n"
+                            f"    {c.bound_type}(const {c.bound_type} &) = delete;\n    {c.bound_type}({c.bound_type} &&) = delete;\n}};")
+        declare.append(f'    {{ nb::class_<{c.bound_type}{bases}> cls({self._attr(c.scope)}, "{c.py_name}"{doc_arg});')
+        for e in c.enums:
+            declare += ["      " + l for l in self._enum(e, "cls")]
+        declare.append("    }")
+        return True
+
+    def _define_class(self, c: Class, free_ops: dict[str, list[str]], define: list[str]) -> None:
+        """Define phase of one class: constructors, methods (collisions resolved), free operators, scalar conversion
+        dunders, __hash__, fields, implicit conversions."""
+        body: list[str] = []
+        implicit_default = False
+        if not c.constructible:
+            self.report.append(f"{c.name}: operator new is not public -> no constructors")
+        if not c.is_abstract and c.constructible:
+            declared = [k for k in c.ctors if k.skip_reason is None]
+            # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count
+            declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
+            implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
+            for k in declared:
+                unbound = self._unbound_default(k.params)
+                if unbound is not None:
+                    self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): default argument of unbound type {unbound} -> constructor skipped")
+                    continue
+                body.append(self._ctor(c, k.params, k.doc))
+        bound = [m for m in c.methods if m.skip_reason is None]
+        mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
+        ordered, unreachable = resolve_overload_collisions(c.methods)
+        for loser, winner in unreachable:
+            self.report.append(f"{c.name}::{loser.name}({self._sig(loser.params)}): same Python signature as "
+                               f"{loser.name}({self._sig(winner.params)}) after out-param removal -> unreachable")
+        for name in sorted(mixed):
+            self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s (instance method of same name exists)")
+        for m in ordered:
+            s = self._method(c, m, mixed)
+            if s is not None:
+                body.append(s)
+        body += free_ops.get(c.name, [])
+        for conv in c.conversions:          # operator bool/int/double() -> Python dunder; class targets: see _conversions
+            dunder = {ConversionKind.BOOL: "__bool__", ConversionKind.INT: "__int__", ConversionKind.FLOAT: "__float__"}.get(conv.kind)
+            if dunder is not None:
+                self._note_types(conv.target)
+                body.append(f'.def("{dunder}", [](const {c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
+        ir = self.ir
+        if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
+            # R-HASH: std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__
+            body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
+        cls_expr = f'nb::borrow<nb::class_<{c.bound_type}>>({self._attr(c.scope)}.attr("{c.py_name}"))'
+        if implicit_default:
+            define.append(f'    nanoocp_implicit_default_ctor<{c.bound_type}>({cls_expr});')
+        if len(body) > 0:
+            define.append(f'    {cls_expr}')
+            define += ["        " + b for b in body]
+            define[-1] += ";"
+        # R-IMPLICIT-COPY: the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
+        # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
+        if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
+            define.append(f'    nanoocp_implicit_copy_ctor<{c.bound_type}>({cls_expr});')
+        for f in c.fields:                 # R-FIELD: read/write when the field type is copy-assignable (decided at compile time), else read-only
+            self._note_types(f.type)
+            dd = _cpp_doc(f.doc)
+            define.append(f'    nanoocp_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
+        if len(body) == 0 and len(c.fields) == 0:
+            return
+        # R-IMPLICIT-CONV: C++ implicit conversions (non-explicit converting constructors) apply in Python too
+        if not c.is_abstract and c.constructible:
+            seen: set[str] = set()
+            for k in c.ctors:
+                if k.skip_reason is None and k.is_implicit:
+                    src = k.params[0].type
+                    if src not in seen:
+                        seen.add(src)
+                        define.append(f"    nb::implicitly_convertible<std::decay_t<{src}>, {c.bound_type}>();")
+
+    # Design.md 6 R-CONV
+    def _conversions(self, classes: list[Class]) -> list[str]:
+        """operator T() const with a bound class T: T gets a constructor from this class, plus the implicit conversion when
+        the operator is not explicit (TopoDS_Shape s = aMakeShape; BRepGraph_NodeId(anEdgeId)). Emitted in a phase of its
+        own (after every definition of the toolkit: nanobind wants a class's zero-argument __new__ before other overloads)."""
+        conversions: list[str] = []
+        for c in classes:
+            for conv in c.conversions:
+                if conv.kind not in (ConversionKind.CLASS, ConversionKind.HANDLE):
+                    continue
+                inst = self.templates.get(conv.target_class)
+                if inst is not None and not inst.get("skipped", False):
+                    pkg, path = inst["package"], inst["name"]         # an instantiation bound under an alias (BVH_Vec3f)
+                else:
+                    pkg = self.known.get(conv.target_class)
+                    path = py_path(conv.target_class, pkg, self.paths) if pkg is not None else ""
+                if pkg is None or pkg == "":
+                    self.report.append(f"{c.name}::operator {conv.target}(): target type is not bound -> conversion skipped")
+                    continue
+                order = self.toolkit_order
+                if self.toolkit_of[pkg] in order and self.toolkit_of[self.ir.name] in order \
+                        and order.index(self.toolkit_of[pkg]) > order.index(self.toolkit_of[self.ir.name]):
+                    self.report.append(f"{c.name}::operator {conv.target}(): target lives in a later toolkit ({self.toolkit_of[pkg]}) -> conversion skipped")
+                    continue
+                attrs = "".join(f'.attr("{a}")' for a in path.split("."))
+                target = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+                helper = "nanoocp_conversion_handle" if conv.kind == ConversionKind.HANDLE else "nanoocp_conversion"
+                conversions.append(f'    {helper}<{c.name}, {conv.target}>({target}, {"false" if conv.is_explicit else "true"});')
+                self._note_types(conv.target)
+        return conversions
+
+    def _aliases(self, classes: list[Class]) -> list[str]:
+        """R-ALIAS: typedefs of bound classes (using CurveD1 = Geom_Curve::ResD1 in namespace GeomGridEval) -> Python aliases;
+        scalar typedefs (Standard_Real) and the rest are not exposed."""
+        out: list[str] = []
+        seen_aliases: set[tuple[tuple[str, ...], str]] = set()
+        for td in self.ir.typedefs:
+            key = (td.scope, td.py_name)
+            if key in seen_aliases or any(c.py_name == td.py_name and c.scope == td.scope for c in classes):
+                continue                           # a 6c alias instantiation is a class of its own
+            seen_aliases.add(key)
+            inst = self.templates.get(td.target)
+            if inst is not None and not inst.get("skipped", False) and inst["package"] != "":
+                # alias of a bound NCollection instantiation (BVH_Array3d = NCollection_LinearVector<NCollection_Vec3<double>>)
+                out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = nb::module_::import_("nanoocp._{self.toolkit_of[inst["package"]]}.{inst["package"]}").attr("{inst["name"]}");   // {td.py_name} = {td.written}')
+                continue
+            pkg = self.known.get(td.target)
+            if pkg is None or "<" in td.target:
+                if td.scope != ():
+                    self.report.append(f"{'::'.join(td.scope)}::{td.py_name} = {td.written}: type alias of an unbound type (not bound)")
+                continue
+            attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
+            src = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+            out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
+        return out
+
+    def _includes(self, with_ncollection: bool) -> list[str]:
+        """The package headers (prelude first), plus every OCCT header named by an identifier the emitted code mentions."""
+        ir = self.ir
+        includes = [f"#include <{h}>" for h in ir.prelude + ir.headers]
+        if with_ncollection:
+            includes.insert(0, '#include "nanoocp_ncollection.h"')
+        for ident in sorted(self._idents):
+            hdr = f"{ident}.hxx"
+            if hdr not in ir.headers and (self.include_dir / hdr).exists():
+                includes.append(f"#include <{hdr}>")
+        return includes
+
+
+# Design.md 6 R-COLLISION
+def resolve_overload_collisions(methods: list[Method]) -> tuple[list[Method], list[tuple[Method, Method]]]:
+    """Overloads that become indistinguishable once out-params are dropped (nanobind would take the first registered).
+    An overload returning a scalar (double, bool, enum, str) without out-params is the direct C++ API and wins
+    (BRep_Tool::Parameter(V, E) -> double over Parameter(V, E, double&) -> bool; TopAbs::ShapeTypeFromString -> enum);
+    otherwise (void or a class result) the overload with the most out-params wins, as its values come back as a tuple
+    (gp_Pnt::Coord(x&, y&, z&) over Coord() -> gp_XYZ, Bnd_Box::Get(6 x double&) over Get() -> Limits,
+    OSD_Chronometer::Show(double&) over the printing Show()); a deprecated overload always loses. Design.md 6.
+    Returns the bound methods in emission order -- header order, except that a colliding group is emitted at its first
+    member, winner first -- and the (loser, winner) pairs; skipped methods are kept in the order (the caller ignores them)."""
+    def preference(m: Method) -> tuple[int, int, int]:
+        # a deprecated overload loses to its replacement (Convert_CompPolynomialToPoles::Knots() over the deprecated
+        # Knots(handle<HArray1<double>>&)); then the scalar-result rule, then the number of out-params
+        n_out = sum(1 for p in m.params if p.is_out and not p.is_inout)
+        deprecated = 1 if m.is_deprecated else 0
+        return (deprecated, 0, n_out) if m.result_scalar and n_out == 0 else (deprecated, 1, -n_out)
+
+    def py_sig(m: Method) -> tuple:
+        return (m.name, m.is_static, tuple(_strip_ref(p.type) for p in m.params if (not p.is_out or p.is_inout) and p.stream != StreamKind.OUT))
+
+    groups: dict[tuple, list[Method]] = {}
+    for m in methods:
+        if m.skip_reason is None:
+            groups.setdefault(py_sig(m), []).append(m)
+    ordered: list[Method] = []
+    unreachable: list[tuple[Method, Method]] = []
+    emitted: set[int] = set()
+    for m in methods:
+        if id(m) in emitted:
+            continue
+        members = groups.get(py_sig(m), [m]) if m.skip_reason is None else [m]
+        if len(members) > 1 and any(p.is_out for mm in members for p in mm.params):
+            members = sorted(members, key=preference)
+            unreachable += [(loser, members[0]) for loser in members[1:]]
+        else:
+            members = [m]
+        for mm in members:
+            emitted.add(id(mm))
+            ordered.append(mm)
+    return ordered, unreachable
 
 
 def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str], namespaces: dict[str, list[tuple[str, ...]]]) -> str:

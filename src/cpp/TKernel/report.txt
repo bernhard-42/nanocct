@@ -1,8 +1,7 @@
-# nanoOCP generator report for TKernel: 404 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 391 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 7
-# deprecated: 13
 # inheritance: 1
 # iterator: 1
 # not-constructible: 3
@@ -26,19 +25,6 @@ conversion	Quantity	NCollection_Vec4<float>::operator const type-parameter-0-0 *
 conversion	Quantity	NCollection_Vec4<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	TCollection	TCollection_AsciiString::operator basic_string_view: conversion operator to an unsupported type
 conversion	TCollection	TCollection_ExtendedString::operator basic_string_view: conversion operator to an unsupported type
-deprecated	Standard	Standard_Failure::GetMessageString(): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Contains(const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Differ(const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Difference(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::HasIntersection(const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Intersect(const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Intersection(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::IsEqual(const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::IsSubset(const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Subtract(const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Subtraction(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Union(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &): deprecated
-deprecated	TColStd	NCollection_PackedMap<int>::Unite(const NCollection_PackedMap<int> &): deprecated
 inheritance	Message	Message_LazyProgressScope: non-public base Message_ProgressScope dropped; class not constructible
 iterator	NCollection	NCollection_UtfString<char>::Iterator(): return: return: STL-style iterator
 not-constructible	Message	Message_LazyProgressScope: operator new is not public -> no constructors

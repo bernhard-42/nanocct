@@ -48,7 +48,43 @@ void nanoocp_define_TColStd(nb::module_ &m) {
         .def("Size", static_cast<size_t (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::Size), R"nbdoc(Returns map extent.)nbdoc")
         .def("IsEmpty", static_cast<bool (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::IsEmpty), R"nbdoc(Returns TRUE if map is empty.)nbdoc")
         .def("GetMinimalMapped", static_cast<int (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::GetMinimalMapped), R"nbdoc(Query the minimal contained key value.)nbdoc")
-        .def("GetMaximalMapped", static_cast<int (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::GetMaximalMapped), R"nbdoc(Query the maximal contained key value.)nbdoc");
+        .def("GetMaximalMapped", static_cast<int (NCollection_PackedMap<int>::*)() const>(&NCollection_PackedMap<int>::GetMaximalMapped), R"nbdoc(Query the maximal contained key value.)nbdoc")
+        .def("Union", static_cast<void (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Union), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Union() instead)nbdoc")
+        .def("Unite", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Unite), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Unite() instead)nbdoc")
+        .def("Intersection", static_cast<void (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Intersection), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Intersection() instead)nbdoc")
+        .def("Intersect", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Intersect), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Intersect() instead)nbdoc")
+        .def("Subtraction", static_cast<void (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Subtraction), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Subtraction() instead)nbdoc")
+        .def("Subtract", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Subtract), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Subtract() instead)nbdoc")
+        .def("Difference", static_cast<void (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &, const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Difference), nb::arg("theLeft"), nb::arg("theRight"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Difference() instead)nbdoc")
+        .def("Differ", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &)>(&NCollection_PackedMap<int>::Differ), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Differ() instead)nbdoc")
+        .def("IsEqual", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &) const>(&NCollection_PackedMap<int>::IsEqual), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::IsEqual() instead)nbdoc")
+        .def("IsSubset", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &) const>(&NCollection_PackedMap<int>::IsSubset), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::IsSubset() instead)nbdoc")
+        .def("HasIntersection", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &) const>(&NCollection_PackedMap<int>::HasIntersection), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::HasIntersection() instead)nbdoc")
+        .def("Contains", static_cast<bool (NCollection_PackedMap<int>::*)(const NCollection_PackedMap<int> &) const>(&NCollection_PackedMap<int>::Contains), nb::arg("theOther"), R"nbdoc(Deprecated in OCCT: This method will be removed after OCCT 7.9 release. Use methods from NCollection_PackedMapAlgo.hxx instead.
+
+@deprecated Use NCollection_PackedMapAlgo::Contains() instead)nbdoc");
     nb::implicitly_convertible<std::decay_t<const size_t>, NCollection_PackedMap<int>>();
     nb::implicitly_convertible<std::decay_t<const int>, NCollection_PackedMap<int>>();
     nb::borrow<nb::class_<TColStd_HPackedMapOfInteger>>(m.attr("TColStd_HPackedMapOfInteger"))

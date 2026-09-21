@@ -112,6 +112,14 @@ class Approx_CurveOnSurface:
         """
 
     @overload
+    def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, Surf: nanoocp.Adaptor3d.Adaptor3d_Surface | None, First: float, Last: float, Tol: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int, Only3d: bool = False, Only2d: bool = False) -> None:
+        """
+        Deprecated in OCCT: This constructor is deprecated. Use other constructor and perform method instead.
+
+        This constructor calls perform method. This constructor is deprecated.
+        """
+
+    @overload
     def __init__(self, theOther: Approx_CurveOnSurface) -> None: ...
 
     def IsDone(self) -> bool: ...
