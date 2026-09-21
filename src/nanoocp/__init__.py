@@ -10,3 +10,4 @@ import nanoocp._TKBRep  # noqa: F401
 import nanoocp._TKGeomAlgo  # noqa: F401
 import nanoocp._TKTopAlgo  # noqa: F401
 import nanoocp._TKPrim  # noqa: F401
+import nanoocp._TKShHealing  # noqa: F401

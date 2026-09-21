@@ -1,0 +1,19 @@
+# nanoOCP generator report for TKShHealing: 12 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# overload-collision: 8
+# raw-pointer: 1
+# std: 1
+# unbound-type: 1
+# undefined: 1
+overload-collision	ShapeAnalysis	ShapeAnalysis_FreeBounds::ConnectEdgesToWires(const occ::handle<NCollection_HSequence<TopoDS_Shape>> &, const double, const bool, occ::handle<NCollection_HSequence<TopoDS_Shape>> &): same Python signature as another overload after out-param removal -> bound as ConnectEdgesToWires__NCollection_HSequence__TopoDS_Shape
+overload-collision	ShapeAnalysis	ShapeAnalysis_FreeBounds::ConnectWiresToWires(const occ::handle<NCollection_HSequence<TopoDS_Shape>> &, const double, const bool, occ::handle<NCollection_HSequence<TopoDS_Shape>> &): same Python signature as another overload after out-param removal -> bound as ConnectWiresToWires__NCollection_HSequence__TopoDS_Shape
+overload-collision	ShapeAnalysis	ShapeAnalysis_FreeBounds::ConnectWiresToWires(const occ::handle<NCollection_HSequence<TopoDS_Shape>> &, const double, const bool, occ::handle<NCollection_HSequence<TopoDS_Shape>> &, NCollection_DataMap<TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher> &): same Python signature as another overload after out-param removal -> bound as ConnectWiresToWires__NCollection_HSequence__TopoDS_Shape
+overload-collision	ShapeAnalysis	ShapeAnalysis_FreeBoundsProperties::CheckNotches(occ::handle<ShapeAnalysis_FreeBoundData> &, const double): same Python signature as another overload after out-param removal -> bound as CheckNotches__ShapeAnalysis_FreeBoundData
+overload-collision	ShapeAnalysis	ShapeAnalysis_Wire::CheckSeam(const int, occ::handle<Geom2d_Curve> &, occ::handle<Geom2d_Curve> &, double &, double &): same Python signature as another overload after out-param removal -> bound as CheckSeam__Geom2d_Curve__Geom2d_Curve__float__float
+overload-collision	ShapeAnalysis	ShapeAnalysis_Wire::CheckShapeConnect(double &, double &, double &, double &, const TopoDS_Shape &, const double): same Python signature as another overload after out-param removal -> bound as CheckShapeConnect__float__float__float__float
+overload-collision	ShapeProcess	ShapeProcess_ShapeContext::Messages() const: const twin of a less const overload -> not bound
+overload-collision	ShapeUpgrade	ShapeUpgrade_UnifySameDomain::History() const: const twin of a less const overload -> not bound
+raw-pointer	ShapeProcess	ShapeProcess_UOperator::ShapeProcess_UOperator(): param 'func': function pointer
+std	ShapeProcess	ShapeProcess::Perform(const occ::handle<ShapeProcess_Context> &): param 'theOperations': std::bitset
+unbound-type	ShapeAnalysis	ShapeAnalysis_BoxBndTreeSelector: base class NCollection_UBTree<int, Bnd_Box>::Selector is not bound (package not generated) -> class skipped
+undefined	ShapeFix	ShapeFix_WireSegment::ShapeFix_WireSegment(const TopoDS_Wire &, const TopAbs_Orientation): declared in the header, no definition in libTKShHealing

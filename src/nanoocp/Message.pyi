@@ -2680,4 +2680,5 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
 import nanoocp.NCollection
 import nanoocp.Message
 Message_ListOfAlert = nanoocp.NCollection.NCollection_List[nanoocp.Message.Message_Alert]
+Message_ListOfMsg = nanoocp.NCollection.NCollection_List[nanoocp.Message.Message_Msg]
 Message_SequenceOfPrinters = nanoocp.NCollection.NCollection_Sequence[nanoocp.Message.Message_Printer]

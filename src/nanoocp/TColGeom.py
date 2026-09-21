@@ -7,8 +7,14 @@ _ALIASES = {
     "TColGeom_Array1OfBSplineCurve": ("nanoocp.NCollection", "NCollection_Array1__Handle_Geom_BSplineCurve"),
     "TColGeom_Array1OfBezierCurve": ("nanoocp.NCollection", "NCollection_Array1__Handle_Geom_BezierCurve"),
     "TColGeom_Array1OfCurve": ("nanoocp.NCollection", "NCollection_Array1__Handle_Geom_Curve"),
+    "TColGeom_Array1OfSurface": ("nanoocp.NCollection", "NCollection_Array1__Handle_Geom_Surface"),
     "TColGeom_Array2OfBezierSurface": ("nanoocp.NCollection", "NCollection_Array2__Handle_Geom_BezierSurface"),
+    "TColGeom_Array2OfSurface": ("nanoocp.NCollection", "NCollection_Array2__Handle_Geom_Surface"),
     "TColGeom_HArray1OfBSplineCurve": ("nanoocp.NCollection", "NCollection_HArray1__Handle_Geom_BSplineCurve"),
+    "TColGeom_HArray1OfCurve": ("nanoocp.NCollection", "NCollection_HArray1__Handle_Geom_Curve"),
+    "TColGeom_HArray2OfSurface": ("nanoocp.NCollection", "NCollection_HArray2__Handle_Geom_Surface"),
+    "TColGeom_HSequenceOfBoundedCurve": ("nanoocp.NCollection", "NCollection_HSequence__Handle_Geom_BoundedCurve"),
+    "TColGeom_SequenceOfBoundedCurve": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Geom_BoundedCurve"),
     "TColGeom_SequenceOfCurve": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Geom_Curve"),
 }
 

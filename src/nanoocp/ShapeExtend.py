@@ -1,13 +1,13 @@
-"""OCCT package IntRes2d (toolkit TKGeomAlgo)."""
+"""OCCT package ShapeExtend (toolkit TKShHealing)."""
 import importlib as _importlib
 
-from nanoocp._TKGeomAlgo import IntRes2d as _ext
-from nanoocp._TKGeomAlgo.IntRes2d import *  # noqa: F401,F403
+from nanoocp._TKShHealing import ShapeExtend as _ext
+from nanoocp._TKShHealing.ShapeExtend import *  # noqa: F401,F403
 
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
-    "IntRes2d_SequenceOfIntersectionPoint": ("nanoocp.NCollection", "NCollection_Sequence__IntRes2d_IntersectionPoint"),
+    "ShapeExtend_DataMapOfShapeListOfMsg": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__NCollection_List__Message_Msg__TopTools_ShapeMapHasher"),
 }
 
 

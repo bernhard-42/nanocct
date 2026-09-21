@@ -1892,6 +1892,119 @@
 "Resource_Manager": "Resource",
 "Resource_NoSuchResource": "Resource",
 "Resource_Unicode": "Resource",
+"ShapeAlgo": "ShapeAlgo",
+"ShapeAlgo_AlgoContainer": "ShapeAlgo",
+"ShapeAlgo_ToolContainer": "ShapeAlgo",
+"ShapeAnalysis": "ShapeAnalysis",
+"ShapeAnalysis_CanonicalRecognition": "ShapeAnalysis",
+"ShapeAnalysis_CheckSmallFace": "ShapeAnalysis",
+"ShapeAnalysis_Curve": "ShapeAnalysis",
+"ShapeAnalysis_Edge": "ShapeAnalysis",
+"ShapeAnalysis_FreeBoundData": "ShapeAnalysis",
+"ShapeAnalysis_FreeBounds": "ShapeAnalysis",
+"ShapeAnalysis_FreeBoundsProperties": "ShapeAnalysis",
+"ShapeAnalysis_Geom": "ShapeAnalysis",
+"ShapeAnalysis_ShapeContents": "ShapeAnalysis",
+"ShapeAnalysis_ShapeTolerance": "ShapeAnalysis",
+"ShapeAnalysis_Shell": "ShapeAnalysis",
+"ShapeAnalysis_Surface": "ShapeAnalysis",
+"ShapeAnalysis_TransferParameters": "ShapeAnalysis",
+"ShapeAnalysis_TransferParametersProj": "ShapeAnalysis",
+"ShapeAnalysis_Wire": "ShapeAnalysis",
+"ShapeAnalysis_WireOrder": "ShapeAnalysis",
+"ShapeAnalysis_WireVertex": "ShapeAnalysis",
+"ShapeBuild": "ShapeBuild",
+"ShapeBuild_Edge": "ShapeBuild",
+"ShapeBuild_ReShape": "ShapeBuild",
+"ShapeBuild_Vertex": "ShapeBuild",
+"ShapeConstruct": "ShapeConstruct",
+"ShapeConstruct_Curve": "ShapeConstruct",
+"ShapeConstruct_MakeTriangulation": "ShapeConstruct",
+"ShapeConstruct_ProjectCurveOnSurface": "ShapeConstruct",
+"ShapeCustom": "ShapeCustom",
+"ShapeCustom_BSplineRestriction": "ShapeCustom",
+"ShapeCustom_ConvertToBSpline": "ShapeCustom",
+"ShapeCustom_ConvertToRevolution": "ShapeCustom",
+"ShapeCustom_Curve": "ShapeCustom",
+"ShapeCustom_Curve2d": "ShapeCustom",
+"ShapeCustom_DirectModification": "ShapeCustom",
+"ShapeCustom_Modification": "ShapeCustom",
+"ShapeCustom_RestrictionParameters": "ShapeCustom",
+"ShapeCustom_Surface": "ShapeCustom",
+"ShapeCustom_SweptToElementary": "ShapeCustom",
+"ShapeCustom_TrsfModification": "ShapeCustom",
+"ShapeExtend": "ShapeExtend",
+"ShapeExtend_BasicMsgRegistrator": "ShapeExtend",
+"ShapeExtend_ComplexCurve": "ShapeExtend",
+"ShapeExtend_CompositeSurface": "ShapeExtend",
+"ShapeExtend_Explorer": "ShapeExtend",
+"ShapeExtend_MsgRegistrator": "ShapeExtend",
+"ShapeExtend_Parametrisation": "ShapeExtend",
+"ShapeExtend_Status": "ShapeExtend",
+"ShapeExtend_WireData": "ShapeExtend",
+"ShapeFix": "ShapeFix",
+"ShapeFix_ComposeShell": "ShapeFix",
+"ShapeFix_Edge": "ShapeFix",
+"ShapeFix_EdgeConnect": "ShapeFix",
+"ShapeFix_EdgeProjAux": "ShapeFix",
+"ShapeFix_Face": "ShapeFix",
+"ShapeFix_FaceConnect": "ShapeFix",
+"ShapeFix_FixSmallFace": "ShapeFix",
+"ShapeFix_FixSmallSolid": "ShapeFix",
+"ShapeFix_FreeBounds": "ShapeFix",
+"ShapeFix_IntersectionTool": "ShapeFix",
+"ShapeFix_Root": "ShapeFix",
+"ShapeFix_Shape": "ShapeFix",
+"ShapeFix_ShapeTolerance": "ShapeFix",
+"ShapeFix_Shell": "ShapeFix",
+"ShapeFix_Solid": "ShapeFix",
+"ShapeFix_SplitCommonVertex": "ShapeFix",
+"ShapeFix_SplitTool": "ShapeFix",
+"ShapeFix_Wire": "ShapeFix",
+"ShapeFix_WireSegment": "ShapeFix",
+"ShapeFix_WireVertex": "ShapeFix",
+"ShapeFix_Wireframe": "ShapeFix",
+"ShapeProcess": "ShapeProcess",
+"ShapeProcess::Operation": "ShapeProcess",
+"ShapeProcessAPI_ApplySequence": "ShapeProcessAPI",
+"ShapeProcess_Context": "ShapeProcess",
+"ShapeProcess_OperLibrary": "ShapeProcess",
+"ShapeProcess_Operator": "ShapeProcess",
+"ShapeProcess_ShapeContext": "ShapeProcess",
+"ShapeProcess_UOperator": "ShapeProcess",
+"ShapeUpgrade": "ShapeUpgrade",
+"ShapeUpgrade_ClosedEdgeDivide": "ShapeUpgrade",
+"ShapeUpgrade_ClosedFaceDivide": "ShapeUpgrade",
+"ShapeUpgrade_ConvertCurve2dToBezier": "ShapeUpgrade",
+"ShapeUpgrade_ConvertCurve3dToBezier": "ShapeUpgrade",
+"ShapeUpgrade_ConvertSurfaceToBezierBasis": "ShapeUpgrade",
+"ShapeUpgrade_EdgeDivide": "ShapeUpgrade",
+"ShapeUpgrade_FaceDivide": "ShapeUpgrade",
+"ShapeUpgrade_FaceDivideArea": "ShapeUpgrade",
+"ShapeUpgrade_FixSmallBezierCurves": "ShapeUpgrade",
+"ShapeUpgrade_FixSmallCurves": "ShapeUpgrade",
+"ShapeUpgrade_RemoveInternalWires": "ShapeUpgrade",
+"ShapeUpgrade_RemoveLocations": "ShapeUpgrade",
+"ShapeUpgrade_ShapeConvertToBezier": "ShapeUpgrade",
+"ShapeUpgrade_ShapeDivide": "ShapeUpgrade",
+"ShapeUpgrade_ShapeDivideAngle": "ShapeUpgrade",
+"ShapeUpgrade_ShapeDivideArea": "ShapeUpgrade",
+"ShapeUpgrade_ShapeDivideClosed": "ShapeUpgrade",
+"ShapeUpgrade_ShapeDivideClosedEdges": "ShapeUpgrade",
+"ShapeUpgrade_ShapeDivideContinuity": "ShapeUpgrade",
+"ShapeUpgrade_ShellSewing": "ShapeUpgrade",
+"ShapeUpgrade_SplitCurve": "ShapeUpgrade",
+"ShapeUpgrade_SplitCurve2d": "ShapeUpgrade",
+"ShapeUpgrade_SplitCurve2dContinuity": "ShapeUpgrade",
+"ShapeUpgrade_SplitCurve3d": "ShapeUpgrade",
+"ShapeUpgrade_SplitCurve3dContinuity": "ShapeUpgrade",
+"ShapeUpgrade_SplitSurface": "ShapeUpgrade",
+"ShapeUpgrade_SplitSurfaceAngle": "ShapeUpgrade",
+"ShapeUpgrade_SplitSurfaceArea": "ShapeUpgrade",
+"ShapeUpgrade_SplitSurfaceContinuity": "ShapeUpgrade",
+"ShapeUpgrade_Tool": "ShapeUpgrade",
+"ShapeUpgrade_UnifySameDomain": "ShapeUpgrade",
+"ShapeUpgrade_WireDivide": "ShapeUpgrade",
 "Standard": "Standard",
 "Standard::AllocatorType": "Standard",
 "Standard_AbortiveTransaction": "Standard",
@@ -3508,6 +3621,12 @@
 "name": "NCollection_Array1__TopLoc_Location",
 "by": "BRepGraph"
 },
+"NCollection_Array1<TopoDS_Shape>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Array1__TopoDS_Shape",
+"by": "ShapeAnalysis"
+},
 "NCollection_Array1<bool>": {
 "toolkit": "TKGeomAlgo",
 "package": "NCollection",
@@ -3616,6 +3735,12 @@
 "name": "NCollection_Array1__Handle_Geom_Curve",
 "by": "GeomFill"
 },
+"NCollection_Array1<opencascade::handle<Geom_Surface>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Array1__Handle_Geom_Surface",
+"by": "ShapeExtend"
+},
 "NCollection_Array1<opencascade::handle<NCollection_HArray1<int>>>": {
 "toolkit": "TKGeomBase",
 "package": "NCollection",
@@ -3700,6 +3825,12 @@
 "name": "NCollection_Array2__Handle_Geom_BezierSurface",
 "by": "GeomConvert"
 },
+"NCollection_Array2<opencascade::handle<Geom_Surface>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Array2__Handle_Geom_Surface",
+"by": "ShapeExtend"
+},
 "NCollection_Array2<opencascade::handle<NCollection_HArray1<int>>>": {
 "toolkit": "TKGeomBase",
 "package": "NCollection",
@@ -3742,11 +3873,23 @@
 "name": "NCollection_DataMap__TopoDS_Shape__BRepGraph_NodeId__TopTools_ShapeMapHasher",
 "by": "BRepGraph"
 },
+"NCollection_DataMap<TopoDS_Shape, NCollection_List<Message_Msg>, TopTools_ShapeMapHasher>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_DataMap__TopoDS_Shape__NCollection_List__Message_Msg__TopTools_ShapeMapHasher",
+"by": "ShapeExtend"
+},
 "NCollection_DataMap<TopoDS_Shape, NCollection_List<TopoDS_Shape>, TopTools_ShapeMapHasher>": {
 "toolkit": "TKTopAlgo",
 "package": "NCollection",
 "name": "NCollection_DataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher",
 "by": "BRepBuilderAPI"
+},
+"NCollection_DataMap<TopoDS_Shape, NCollection_List<double>, TopTools_ShapeMapHasher>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_DataMap__TopoDS_Shape__NCollection_List__double__TopTools_ShapeMapHasher",
+"by": "ShapeAnalysis"
 },
 "NCollection_DataMap<TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher>": {
 "toolkit": "TKTopAlgo",
@@ -3783,6 +3926,12 @@
 "package": "NCollection",
 "name": "NCollection_DataMap__int__Handle_MAT_BasicElt",
 "by": "MAT"
+},
+"NCollection_DataMap<opencascade::handle<Standard_Transient>, NCollection_List<Message_Msg>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_DataMap__Handle_Standard_Transient__NCollection_List__Message_Msg",
+"by": "ShapeExtend"
 },
 "NCollection_DefaultHasher<BRepGraph_ItemId>": {
 "toolkit": "TKBRep",
@@ -3978,6 +4127,12 @@
 "name": "NCollection_HArray1__Poly_Triangle",
 "by": "Poly"
 },
+"NCollection_HArray1<TopoDS_Shape>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HArray1__TopoDS_Shape",
+"by": "ShapeAnalysis"
+},
 "NCollection_HArray1<bool>": {
 "toolkit": "TKGeomAlgo",
 "package": "NCollection",
@@ -4044,6 +4199,12 @@
 "name": "NCollection_HArray1__Handle_Geom_BSplineCurve",
 "by": "GeomConvert"
 },
+"NCollection_HArray1<opencascade::handle<Geom_Curve>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HArray1__Handle_Geom_Curve",
+"by": "ShapeUpgrade"
+},
 "NCollection_HArray1<opencascade::handle<Standard_Persistent>>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -4080,6 +4241,12 @@
 "name": "NCollection_HArray2__int",
 "by": "Convert"
 },
+"NCollection_HArray2<opencascade::handle<Geom_Surface>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HArray2__Handle_Geom_Surface",
+"by": "ShapeExtend"
+},
 "NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>": {
 "toolkit": "TKGeomBase",
 "package": "NCollection",
@@ -4091,6 +4258,18 @@
 "package": "NCollection",
 "name": "NCollection_HSequence__TCollection_AsciiString",
 "by": "Storage"
+},
+"NCollection_HSequence<TopoDS_Shape>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HSequence__TopoDS_Shape",
+"by": "ShapeExtend"
+},
+"NCollection_HSequence<double>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HSequence__double",
+"by": "ShapeAnalysis"
 },
 "NCollection_HSequence<gp_Pnt>": {
 "toolkit": "TKGeomBase",
@@ -4104,11 +4283,29 @@
 "name": "NCollection_HSequence__int",
 "by": "Units"
 },
+"NCollection_HSequence<opencascade::handle<Geom2d_BoundedCurve>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_Geom2d_BoundedCurve",
+"by": "ShapeUpgrade"
+},
+"NCollection_HSequence<opencascade::handle<Geom_BoundedCurve>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_Geom_BoundedCurve",
+"by": "ShapeUpgrade"
+},
 "NCollection_HSequence<opencascade::handle<NCollection_HSequence<gp_Pnt>>>": {
 "toolkit": "TKGeomBase",
 "package": "NCollection",
 "name": "NCollection_HSequence__opencascade_handle__NCollection_HSequence__gp_Pnt",
 "by": "ProjLib"
+},
+"NCollection_HSequence<opencascade::handle<ShapeAnalysis_FreeBoundData>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_ShapeAnalysis_FreeBoundData",
+"by": "ShapeAnalysis"
 },
 "NCollection_HSequence<opencascade::handle<Storage_Root>>": {
 "toolkit": "TKernel",
@@ -4404,6 +4601,12 @@
 "name": "NCollection_List__IntSurf_PntOn2S",
 "by": "IntPatch"
 },
+"NCollection_List<Message_Msg>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_List__Message_Msg",
+"by": "ShapeExtend"
+},
 "NCollection_List<Poly_CoherentTriangulation::TwoIntegers>": {
 "toolkit": "TKMath",
 "package": "NCollection",
@@ -4542,6 +4745,12 @@
 "name": "NCollection_Sequence__IntPatch_Point",
 "by": "IntPatch"
 },
+"NCollection_Sequence<IntRes2d_IntersectionPoint>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Sequence__IntRes2d_IntersectionPoint",
+"by": "ShapeAnalysis"
+},
 "NCollection_Sequence<IntSurf_InteriorPoint>": {
 "toolkit": "TKGeomAlgo",
 "package": "NCollection",
@@ -4572,6 +4781,12 @@
 "name": "NCollection_Sequence__Plate_PinpointConstraint",
 "by": "Plate"
 },
+"NCollection_Sequence<ShapeFix_WireSegment>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Sequence__ShapeFix_WireSegment",
+"by": "ShapeFix"
+},
 "NCollection_Sequence<TCollection_AsciiString>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -4583,6 +4798,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__TCollection_ExtendedString",
 "by": "Storage"
+},
+"NCollection_Sequence<TopoDS_Shape>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Sequence__TopoDS_Shape",
+"by": "ShapeExtend"
 },
 "NCollection_Sequence<bool>": {
 "toolkit": "TKTopAlgo",
@@ -4656,6 +4877,12 @@
 "name": "NCollection_Sequence__Handle_AdvApp2Var_Patch",
 "by": "AdvApp2Var"
 },
+"NCollection_Sequence<opencascade::handle<Geom2d_BoundedCurve>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Geom2d_BoundedCurve",
+"by": "ShapeUpgrade"
+},
 "NCollection_Sequence<opencascade::handle<Geom2d_Curve>>": {
 "toolkit": "TKGeomBase",
 "package": "NCollection",
@@ -4667,6 +4894,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__Handle_Geom2d_Geometry",
 "by": "MAT2d"
+},
+"NCollection_Sequence<opencascade::handle<Geom_BoundedCurve>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Geom_BoundedCurve",
+"by": "ShapeUpgrade"
 },
 "NCollection_Sequence<opencascade::handle<Geom_Curve>>": {
 "toolkit": "TKGeomAlgo",
@@ -4709,6 +4942,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__opencascade_handle__NCollection_HSequence__gp_Pnt",
 "by": "ProjLib"
+},
+"NCollection_Sequence<opencascade::handle<ShapeAnalysis_FreeBoundData>>": {
+"toolkit": "TKShHealing",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_ShapeAnalysis_FreeBoundData",
+"by": "ShapeAnalysis"
 },
 "NCollection_Sequence<opencascade::handle<Standard_Transient>>": {
 "toolkit": "TKernel",
@@ -4983,6 +5222,17 @@
 "ProjLib": "TKGeomBase",
 "Quantity": "TKernel",
 "Resource": "TKernel",
+"SHMessage": "TKShHealing",
+"ShapeAlgo": "TKShHealing",
+"ShapeAnalysis": "TKShHealing",
+"ShapeBuild": "TKShHealing",
+"ShapeConstruct": "TKShHealing",
+"ShapeCustom": "TKShHealing",
+"ShapeExtend": "TKShHealing",
+"ShapeFix": "TKShHealing",
+"ShapeProcess": "TKShHealing",
+"ShapeProcessAPI": "TKShHealing",
+"ShapeUpgrade": "TKShHealing",
 "Standard": "TKernel",
 "StdFail": "TKernel",
 "Storage": "TKernel",
@@ -5166,6 +5416,19 @@
 "Sweep",
 "BRepPrimAPI",
 "BRepPreviewAPI"
+],
+"TKShHealing": [
+"ShapeBuild",
+"ShapeExtend",
+"ShapeConstruct",
+"ShapeCustom",
+"ShapeAnalysis",
+"ShapeFix",
+"ShapeUpgrade",
+"ShapeAlgo",
+"ShapeProcess",
+"ShapeProcessAPI",
+"SHMessage"
 ]
 },
 "namespaces": {
@@ -5330,6 +5593,17 @@
 "ProjLib": [],
 "Quantity": [],
 "Resource": [],
+"SHMessage": [],
+"ShapeAlgo": [],
+"ShapeAnalysis": [],
+"ShapeBuild": [],
+"ShapeConstruct": [],
+"ShapeCustom": [],
+"ShapeExtend": [],
+"ShapeFix": [],
+"ShapeProcess": [],
+"ShapeProcessAPI": [],
+"ShapeUpgrade": [],
 "Standard": [],
 "StdFail": [],
 "Storage": [],

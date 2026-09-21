@@ -429,3 +429,8 @@ class IntRes2d_Intersection:
         """
 
     def SetReversedParameters(self, Reverseflag: bool) -> None: ...
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+import nanoocp.IntRes2d
+IntRes2d_SequenceOfIntersectionPoint = nanoocp.NCollection.NCollection_Sequence[nanoocp.IntRes2d.IntRes2d_IntersectionPoint]

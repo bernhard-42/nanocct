@@ -8,6 +8,7 @@ from nanoocp._TKernel.Message import *  # noqa: F401,F403
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
     "Message_ListOfAlert": ("nanoocp.NCollection", "NCollection_List__Handle_Message_Alert"),
+    "Message_ListOfMsg": ("nanoocp.NCollection", "NCollection_List__Message_Msg"),
     "Message_SequenceOfPrinters": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Message_Printer"),
 }
 
