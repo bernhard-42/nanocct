@@ -1260,7 +1260,7 @@ Raises ConstructionError only for an axis placement two axis if V and the
 previous "XDirection" are parallel because it is not possible
 to calculate the new "XDirection" and the new "YDirection".)nbdoc")
         .def("SetLocation", static_cast<void (Geom_AxisPlacement::*)(const gp_Pnt &)>(&Geom_AxisPlacement::SetLocation), nb::arg("P"), R"nbdoc(Assigns the point P as the origin of this positioning system.)nbdoc")
-        .def("Angle", static_cast<double (Geom_AxisPlacement::*)(const occ::handle<Geom_AxisPlacement> &) const>(&Geom_AxisPlacement::Angle), nb::arg("Other"), R"nbdoc(Computes the angular value, in radians, between the
+        .def("Angle", static_cast<double (Geom_AxisPlacement::*)(const occ::handle<Geom_AxisPlacement> &) const>(&Geom_AxisPlacement::Angle), nb::arg("Other").none(), R"nbdoc(Computes the angular value, in radians, between the
 "main Direction" of this positioning system and that
 of positioning system Other. The result is a value between 0 and Pi.)nbdoc")
         .def("Axis", static_cast<const gp_Ax1 & (Geom_AxisPlacement::*)() const>(&Geom_AxisPlacement::Axis), R"nbdoc(Returns the main axis of the axis placement.
@@ -1472,7 +1472,7 @@ than 2 or CurvePoles and CurveWeights have not the same length
 or one weight value is lower or equal to Resolution from package gp.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepCurveDesc::Base> & (Geom_BezierCurve::*)() const>(&Geom_BezierCurve::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_BezierCurve::*)(const occ::handle<GeomEval_RepCurveDesc::Base> &)>(&Geom_BezierCurve::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_BezierCurve::*)(const occ::handle<GeomEval_RepCurveDesc::Base> &)>(&Geom_BezierCurve::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_BezierCurve::*)()>(&Geom_BezierCurve::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("Increase", static_cast<void (Geom_BezierCurve::*)(const int)>(&Geom_BezierCurve::Increase), nb::arg("Degree"), R"nbdoc(Increases the degree of a bezier curve. Degree is the new
@@ -1811,7 +1811,7 @@ Raised if the number of poles of the surface is lower than 2
 or greater than MaxDegree + 1 in one of the two directions U or V.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepSurfaceDesc::Base> & (Geom_BezierSurface::*)() const>(&Geom_BezierSurface::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_BezierSurface::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_BezierSurface::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_BezierSurface::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_BezierSurface::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_BezierSurface::*)()>(&Geom_BezierSurface::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("ExchangeUV", static_cast<void (Geom_BezierSurface::*)()>(&Geom_BezierSurface::ExchangeUV), R"nbdoc(Exchanges the direction U and V on a Bezier surface
@@ -2147,7 +2147,7 @@ on periodic curves
 Poles.Length() == Sum(Mults(i)) except the first or last)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepCurveDesc::Base> & (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_BSplineCurve::*)(const occ::handle<GeomEval_RepCurveDesc::Base> &)>(&Geom_BSplineCurve::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_BSplineCurve::*)(const occ::handle<GeomEval_RepCurveDesc::Base> &)>(&Geom_BSplineCurve::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_BSplineCurve::*)()>(&Geom_BSplineCurve::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("IncreaseDegree", static_cast<void (Geom_BSplineCurve::*)(const int)>(&Geom_BSplineCurve::IncreaseDegree), nb::arg("Degree"), R"nbdoc(Increases the degree of this BSpline curve to
@@ -2242,7 +2242,7 @@ of the reversed curve.)nbdoc")
 the point of parameter U on <me>.
 
 returns UFirst + ULast - U)nbdoc")
-        .def("Segment", static_cast<void (Geom_BSplineCurve::*)(const double, const double, const double)>(&Geom_BSplineCurve::Segment), nb::arg("U1"), nb::arg("U2"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Modifies this BSpline curve by segmenting it between
+        .def("Segment", static_cast<void (Geom_BSplineCurve::*)(const double, const double, const double)>(&Geom_BSplineCurve::Segment), nb::arg("U1"), nb::arg("U2"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), R"nbdoc(Modifies this BSpline curve by segmenting it between
 U1 and U2. Either of these values can be outside the
 bounds of the curve, but U2 must be greater than U1.
 All data structure tables of this BSpline curve are
@@ -2531,7 +2531,7 @@ UTolerance ensures that:
 | t1 - t0| < Utolerance ===>
 |f(t1) - f(t0)| < Tolerance3D)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_BSplineCurve::*)() const>(&Geom_BSplineCurve::Copy), R"nbdoc(Creates a new object which is a copy of this BSpline curve.)nbdoc")
-        .def("IsEqual", static_cast<bool (Geom_BSplineCurve::*)(const occ::handle<Geom_BSplineCurve> &, const double) const>(&Geom_BSplineCurve::IsEqual), nb::arg("theOther"), nb::arg("thePreci"), R"nbdoc(Compare two Bspline curve on identity;)nbdoc")
+        .def("IsEqual", static_cast<bool (Geom_BSplineCurve::*)(const occ::handle<Geom_BSplineCurve> &, const double) const>(&Geom_BSplineCurve::IsEqual), nb::arg("theOther").none(), nb::arg("thePreci"), R"nbdoc(Compare two Bspline curve on identity;)nbdoc")
         .def("DumpJson", [](const Geom_BSplineCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_BSplineCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_BSplineCurve::get_type_descriptor))
@@ -2590,7 +2590,7 @@ The previous conditions for U holds also for V, with the
 RowLength of the poles.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepSurfaceDesc::Base> & (Geom_BSplineSurface::*)() const>(&Geom_BSplineSurface::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_BSplineSurface::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_BSplineSurface::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_BSplineSurface::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_BSplineSurface::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_BSplineSurface::*)()>(&Geom_BSplineSurface::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("ExchangeUV", static_cast<void (Geom_BSplineSurface::*)()>(&Geom_BSplineSurface::ExchangeUV), R"nbdoc(Exchanges the u and v parametric directions on
@@ -2855,7 +2855,7 @@ from package gp.
 raises if V is out of the Bounds [V1, V2] given by the methods
 Bounds, the criterion ParametricTolerance is used.
 raises if M is not in the range [1, VDegree].)nbdoc")
-        .def("Segment", static_cast<void (Geom_BSplineSurface::*)(const double, const double, const double, const double, const double, const double)>(&Geom_BSplineSurface::Segment), nb::arg("U1"), nb::arg("U2"), nb::arg("V1"), nb::arg("V2"), nb::arg("theUTolerance") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), nb::arg("theVTolerance") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Segments the surface between U1 and U2 in the U-Direction.
+        .def("Segment", static_cast<void (Geom_BSplineSurface::*)(const double, const double, const double, const double, const double, const double)>(&Geom_BSplineSurface::Segment), nb::arg("U1"), nb::arg("U2"), nb::arg("V1"), nb::arg("V2"), nb::arg("theUTolerance") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), nb::arg("theVTolerance") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), R"nbdoc(Segments the surface between U1 and U2 in the U-Direction.
 between V1 and V2 in the V-Direction.
 The control points are modified, the first and the last point
 are not the same.
@@ -2872,7 +2872,7 @@ Standard_DomainError if U2 - U1 exceeds the uperiod for uperiodic surfaces.
 i.e. ((U2 - U1) - UPeriod) > Precision::PConfusion().
 Standard_DomainError if V2 - V1 exceeds the vperiod for vperiodic surfaces.
 i.e. ((V2 - V1) - VPeriod) > Precision::PConfusion()).)nbdoc")
-        .def("CheckAndSegment", static_cast<void (Geom_BSplineSurface::*)(const double, const double, const double, const double, const double, const double)>(&Geom_BSplineSurface::CheckAndSegment), nb::arg("U1"), nb::arg("U2"), nb::arg("V1"), nb::arg("V2"), nb::arg("theUTolerance") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), nb::arg("theVTolerance") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Segments the surface between U1 and U2 in the U-Direction.
+        .def("CheckAndSegment", static_cast<void (Geom_BSplineSurface::*)(const double, const double, const double, const double, const double, const double)>(&Geom_BSplineSurface::CheckAndSegment), nb::arg("U1"), nb::arg("U2"), nb::arg("V1"), nb::arg("V2"), nb::arg("theUTolerance") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), nb::arg("theVTolerance") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), R"nbdoc(Segments the surface between U1 and U2 in the U-Direction.
 between V1 and V2 in the V-Direction.
 
 same as Segment but do nothing if U1 and U2 (resp. V1 and V2) are
@@ -3263,8 +3263,8 @@ UTolerance and VTolerance guarantee that :
         .def("X", static_cast<double (Geom_Point::*)() const>(&Geom_Point::X), R"nbdoc(returns the X coordinate of <me>.)nbdoc")
         .def("Y", static_cast<double (Geom_Point::*)() const>(&Geom_Point::Y), R"nbdoc(returns the Y coordinate of <me>.)nbdoc")
         .def("Z", static_cast<double (Geom_Point::*)() const>(&Geom_Point::Z), R"nbdoc(returns the Z coordinate of <me>.)nbdoc")
-        .def("Distance", static_cast<double (Geom_Point::*)(const occ::handle<Geom_Point> &) const>(&Geom_Point::Distance), nb::arg("Other"), R"nbdoc(Computes the distance between <me> and <Other>.)nbdoc")
-        .def("SquareDistance", static_cast<double (Geom_Point::*)(const occ::handle<Geom_Point> &) const>(&Geom_Point::SquareDistance), nb::arg("Other"), R"nbdoc(Computes the square distance between <me> and <Other>.)nbdoc")
+        .def("Distance", static_cast<double (Geom_Point::*)(const occ::handle<Geom_Point> &) const>(&Geom_Point::Distance), nb::arg("Other").none(), R"nbdoc(Computes the distance between <me> and <Other>.)nbdoc")
+        .def("SquareDistance", static_cast<double (Geom_Point::*)(const occ::handle<Geom_Point> &) const>(&Geom_Point::SquareDistance), nb::arg("Other").none(), R"nbdoc(Computes the square distance between <me> and <Other>.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Point::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Point::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_Point::*)() const>(&Geom_Point::DynamicType));
@@ -3644,7 +3644,7 @@ Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
     nb::borrow<nb::class_<Geom_Vector>>(m.attr("Geom_Vector"))
         .def("Reverse", static_cast<void (Geom_Vector::*)()>(&Geom_Vector::Reverse), R"nbdoc(Reverses the vector <me>.)nbdoc")
         .def("Reversed", static_cast<occ::handle<Geom_Vector> (Geom_Vector::*)() const>(&Geom_Vector::Reversed), R"nbdoc(Returns a copy of <me> reversed.)nbdoc")
-        .def("Angle", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Vector::Angle), nb::arg("Other"), R"nbdoc(Computes the angular value, in radians, between this
+        .def("Angle", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Vector::Angle), nb::arg("Other").none(), R"nbdoc(Computes the angular value, in radians, between this
 vector and vector Other. The result is a value between 0 and Pi.
 Exceptions
 gp_VectorWithNullMagnitude if:
@@ -3652,7 +3652,7 @@ gp_VectorWithNullMagnitude if:
 gp::Resolution(), or
 - the magnitude of vector Other is less than or equal
 to gp::Resolution().)nbdoc")
-        .def("AngleWithRef", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Vector::AngleWithRef), nb::arg("Other"), nb::arg("VRef"), R"nbdoc(Computes the angular value, in radians, between this
+        .def("AngleWithRef", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Vector::AngleWithRef), nb::arg("Other").none(), nb::arg("VRef").none(), R"nbdoc(Computes the angular value, in radians, between this
 vector and vector Other. The result is a value
 between -Pi and Pi. The vector VRef defines the
 positive sense of rotation: the angular value is positive
@@ -3672,27 +3672,27 @@ or equal to gp::Resolution().)nbdoc")
         .def("X", static_cast<double (Geom_Vector::*)() const>(&Geom_Vector::X), R"nbdoc(Returns the X coordinate of <me>.)nbdoc")
         .def("Y", static_cast<double (Geom_Vector::*)() const>(&Geom_Vector::Y), R"nbdoc(Returns the Y coordinate of <me>.)nbdoc")
         .def("Z", static_cast<double (Geom_Vector::*)() const>(&Geom_Vector::Z), R"nbdoc(Returns the Z coordinate of <me>.)nbdoc")
-        .def("Cross", static_cast<void (Geom_Vector::*)(const occ::handle<Geom_Vector> &)>(&Geom_Vector::Cross), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and <Other>.
+        .def("Cross", static_cast<void (Geom_Vector::*)(const occ::handle<Geom_Vector> &)>(&Geom_Vector::Cross), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and <Other>.
 
 Raised if <me> is a "Direction" and if <me> and <Other>
 are parallel because it is not possible to build a
 "Direction" with null length.)nbdoc")
-        .def("Crossed", static_cast<occ::handle<Geom_Vector> (Geom_Vector::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Vector::Crossed), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and <Other>.
+        .def("Crossed", static_cast<occ::handle<Geom_Vector> (Geom_Vector::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Vector::Crossed), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and <Other>.
 A new direction is returned.
 
 Raised if <me> is a "Direction" and if the two vectors
 are parallel because it is not possible to create a
 "Direction" with null length.)nbdoc")
-        .def("CrossCross", static_cast<void (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &)>(&Geom_Vector::CrossCross), nb::arg("V1"), nb::arg("V2"), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
+        .def("CrossCross", static_cast<void (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &)>(&Geom_Vector::CrossCross), nb::arg("V1").none(), nb::arg("V2").none(), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
 
 Raised if <me> is a "Direction" and if V1 and V2 are parallel
 or <me> and (V1 ^ V2) are parallel)nbdoc")
-        .def("CrossCrossed", static_cast<occ::handle<Geom_Vector> (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Vector::CrossCrossed), nb::arg("V1"), nb::arg("V2"), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
+        .def("CrossCrossed", static_cast<occ::handle<Geom_Vector> (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Vector::CrossCrossed), nb::arg("V1").none(), nb::arg("V2").none(), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
 
 Raised if <me> is a direction and if V1 and V2 are
 parallel or <me> and (V1 ^ V2) are parallel)nbdoc")
-        .def("Dot", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Vector::Dot), nb::arg("Other"), R"nbdoc(Computes the scalar product of this vector and vector Other.)nbdoc")
-        .def("DotCross", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Vector::DotCross), nb::arg("V1"), nb::arg("V2"), R"nbdoc(Computes the triple scalar product. Returns me . (V1 ^ V2))nbdoc")
+        .def("Dot", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Vector::Dot), nb::arg("Other").none(), R"nbdoc(Computes the scalar product of this vector and vector Other.)nbdoc")
+        .def("DotCross", static_cast<double (Geom_Vector::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Vector::DotCross), nb::arg("V1").none(), nb::arg("V2").none(), R"nbdoc(Computes the triple scalar product. Returns me . (V1 ^ V2))nbdoc")
         .def("Vec", static_cast<const gp_Vec & (Geom_Vector::*)() const>(&Geom_Vector::Vec), R"nbdoc(Converts this vector into a gp_Vec vector.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_Vector::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_Vector::get_type_descriptor))
@@ -3719,20 +3719,20 @@ Raised if std::sqrt( X*X + Y*Y + Z*Z) <= Resolution from gp.)nbdoc")
 coordinates as <me>.)nbdoc")
         .def("Magnitude", static_cast<double (Geom_Direction::*)() const>(&Geom_Direction::Magnitude), R"nbdoc(returns 1.0 which is the magnitude of any unit vector.)nbdoc")
         .def("SquareMagnitude", static_cast<double (Geom_Direction::*)() const>(&Geom_Direction::SquareMagnitude), R"nbdoc(returns 1.0 which is the square magnitude of any unit vector.)nbdoc")
-        .def("Cross", static_cast<void (Geom_Direction::*)(const occ::handle<Geom_Vector> &)>(&Geom_Direction::Cross), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and <Other>.
+        .def("Cross", static_cast<void (Geom_Direction::*)(const occ::handle<Geom_Vector> &)>(&Geom_Direction::Cross), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and <Other>.
 
 Raised if the two vectors are parallel because it is
 not possible to have a direction with null length.)nbdoc")
-        .def("CrossCross", static_cast<void (Geom_Direction::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &)>(&Geom_Direction::CrossCross), nb::arg("V1"), nb::arg("V2"), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
+        .def("CrossCross", static_cast<void (Geom_Direction::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &)>(&Geom_Direction::CrossCross), nb::arg("V1").none(), nb::arg("V2").none(), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
 
 Raised if V1 and V2 are parallel or <me> and (V1 ^ V2) are
 parallel)nbdoc")
-        .def("Crossed", static_cast<occ::handle<Geom_Vector> (Geom_Direction::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Direction::Crossed), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and <Other>.
+        .def("Crossed", static_cast<occ::handle<Geom_Vector> (Geom_Direction::*)(const occ::handle<Geom_Vector> &) const>(&Geom_Direction::Crossed), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and <Other>.
 A new direction is returned.
 
 Raised if the two vectors are parallel because it is
 not possible to have a direction with null length.)nbdoc")
-        .def("CrossCrossed", static_cast<occ::handle<Geom_Vector> (Geom_Direction::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Direction::CrossCrossed), nb::arg("V1"), nb::arg("V2"), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
+        .def("CrossCrossed", static_cast<occ::handle<Geom_Vector> (Geom_Direction::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_Direction::CrossCrossed), nb::arg("V1").none(), nb::arg("V2").none(), R"nbdoc(Computes the triple vector product <me> ^(V1 ^ V2).
 
 Raised if V1 and V2 are parallel or <me> and (V1 ^ V2) are
 parallel)nbdoc")
@@ -4014,7 +4014,7 @@ This methods returns T.ScaleFactor())nbdoc")
     nb::borrow<nb::class_<Geom_OffsetCurve>>(m.attr("Geom_OffsetCurve"))
         .def(nb::new_([](const Geom_OffsetCurve & theOther) { return opencascade::handle<Geom_OffsetCurve>(new Geom_OffsetCurve(theOther)); }), nb::arg("theOther"), R"nbdoc(Copy constructor for optimized copying without validation.
 @param[in] theOther the offset curve to copy from)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const double Offset, const gp_Dir & V, const bool isNotCheckC0) { return opencascade::handle<Geom_OffsetCurve>(new Geom_OffsetCurve(C, Offset, V, isNotCheckC0)); }), nb::arg("C"), nb::arg("Offset"), nb::arg("V"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(C is the basis curve, Offset is the distance between <me> and
+        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const double Offset, const gp_Dir & V, const bool isNotCheckC0) { return opencascade::handle<Geom_OffsetCurve>(new Geom_OffsetCurve(C, Offset, V, isNotCheckC0)); }), nb::arg("C").none(), nb::arg("Offset"), nb::arg("V"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(C is the basis curve, Offset is the distance between <me> and
 the basis curve at any point. V defines the fixed reference
 direction (offset direction). If P is a point on the basis
 curve and T the first derivative with non zero length
@@ -4033,7 +4033,7 @@ Warnings :
 No check is done to know if ||V^T|| != 0.0 at any point.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_OffsetCurve::*)() const>(&Geom_OffsetCurve::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepCurveDesc::Base> & (Geom_OffsetCurve::*)() const>(&Geom_OffsetCurve::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_OffsetCurve::*)(const occ::handle<GeomEval_RepCurveDesc::Base> &)>(&Geom_OffsetCurve::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_OffsetCurve::*)(const occ::handle<GeomEval_RepCurveDesc::Base> &)>(&Geom_OffsetCurve::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_OffsetCurve::*)()>(&Geom_OffsetCurve::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("Reverse", static_cast<void (Geom_OffsetCurve::*)()>(&Geom_OffsetCurve::Reverse), R"nbdoc(Changes the orientation of this offset curve.
@@ -4046,7 +4046,7 @@ start point of the reversed curve, and
 - the first and last parameters are recomputed.)nbdoc")
         .def("ReversedParameter", static_cast<double (Geom_OffsetCurve::*)(const double) const>(&Geom_OffsetCurve::ReversedParameter), nb::arg("U"), R"nbdoc(Computes the parameter on the reversed curve for
 the point of parameter U on this offset curve.)nbdoc")
-        .def("SetBasisCurve", static_cast<void (Geom_OffsetCurve::*)(const occ::handle<Geom_Curve> &, const bool)>(&Geom_OffsetCurve::SetBasisCurve), nb::arg("C"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Changes this offset curve by assigning C
+        .def("SetBasisCurve", static_cast<void (Geom_OffsetCurve::*)(const occ::handle<Geom_Curve> &, const bool)>(&Geom_OffsetCurve::SetBasisCurve), nb::arg("C").none(), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Changes this offset curve by assigning C
 as the basis curve from which it is built.
 If isNotCheckC0 = TRUE checking if basis curve
 has C0-continuity is not made.
@@ -4162,7 +4162,7 @@ This methods calls the basis curve method.)nbdoc")
     nb::borrow<nb::class_<Geom_OffsetSurface>>(m.attr("Geom_OffsetSurface"))
         .def(nb::new_([](const Geom_OffsetSurface & theOther) { return opencascade::handle<Geom_OffsetSurface>(new Geom_OffsetSurface(theOther)); }), nb::arg("theOther"), R"nbdoc(Copy constructor for optimized copying without validation.
 @param[in] theOther the offset surface to copy from)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom_Surface> & S, const double Offset, const bool isNotCheckC0) { return opencascade::handle<Geom_OffsetSurface>(new Geom_OffsetSurface(S, Offset, isNotCheckC0)); }), nb::arg("S"), nb::arg("Offset"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Constructs a surface offset from the basis surface
+        .def(nb::new_([](const occ::handle<Geom_Surface> & S, const double Offset, const bool isNotCheckC0) { return opencascade::handle<Geom_OffsetSurface>(new Geom_OffsetSurface(S, Offset, isNotCheckC0)); }), nb::arg("S").none(), nb::arg("Offset"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Constructs a surface offset from the basis surface
 S, where Offset is the distance between the offset
 surface and the basis surface at any point.
 A point on the offset surface is built by measuring
@@ -4188,10 +4188,10 @@ No check is done to verify that a unique normal direction is
 defined at any point of the basis surface S.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_OffsetSurface::*)() const>(&Geom_OffsetSurface::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepSurfaceDesc::Base> & (Geom_OffsetSurface::*)() const>(&Geom_OffsetSurface::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_OffsetSurface::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_OffsetSurface::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_OffsetSurface::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_OffsetSurface::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_OffsetSurface::*)()>(&Geom_OffsetSurface::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
-        .def("SetBasisSurface", static_cast<void (Geom_OffsetSurface::*)(const occ::handle<Geom_Surface> &, const bool)>(&Geom_OffsetSurface::SetBasisSurface), nb::arg("S"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Raised if S is not at least C1.
+        .def("SetBasisSurface", static_cast<void (Geom_OffsetSurface::*)(const occ::handle<Geom_Surface> &, const bool)>(&Geom_OffsetSurface::SetBasisSurface), nb::arg("S").none(), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Raised if S is not at least C1.
 Warnings :
 No check is done to verify that a unique normal direction is
 defined at any point of the basis surface S.
@@ -4357,11 +4357,11 @@ This method calls the basis surface method.)nbdoc")
 when the basis surface is a canonic surface or a
 rectangular limited surface on canonic surface or if
 the offset is null.)nbdoc")
-        .def("UOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V, occ::handle<Geom_BSplineSurface> & UOsculSurf) { bool IsOpposite{}; auto result = self.UOsculatingSurface(U, V, IsOpposite, UOsculSurf); return std::make_tuple(result, IsOpposite); }, nb::arg("U"), nb::arg("V"), nb::arg("UOsculSurf"), R"nbdoc(if true, L is the local osculating surface
+        .def("UOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V) { bool IsOpposite{}; occ::handle<Geom_BSplineSurface> UOsculSurf{}; auto result = self.UOsculatingSurface(U, V, IsOpposite, UOsculSurf); return std::make_tuple(result, IsOpposite, UOsculSurf); }, nb::arg("U"), nb::arg("V"), R"nbdoc(if true, L is the local osculating surface
 along U at the point U,V. It means that DL/DU is
 collinear to DS/DU. If IsOpposite == true
 these vectors have opposite direction.)nbdoc")
-        .def("VOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V, occ::handle<Geom_BSplineSurface> & VOsculSurf) { bool IsOpposite{}; auto result = self.VOsculatingSurface(U, V, IsOpposite, VOsculSurf); return std::make_tuple(result, IsOpposite); }, nb::arg("U"), nb::arg("V"), nb::arg("VOsculSurf"), R"nbdoc(if true, L is the local osculating surface
+        .def("VOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V) { bool IsOpposite{}; occ::handle<Geom_BSplineSurface> VOsculSurf{}; auto result = self.VOsculatingSurface(U, V, IsOpposite, VOsculSurf); return std::make_tuple(result, IsOpposite, VOsculSurf); }, nb::arg("U"), nb::arg("V"), R"nbdoc(if true, L is the local osculating surface
 along V at the point U,V.
 It means that DL/DV is collinear to DS/DV.
 If IsOpposite == true
@@ -4566,7 +4566,7 @@ Raised if Nu + Nv < 1 or Nu < 0 or Nv < 0.)nbdoc")
     nb::implicitly_convertible<std::decay_t<const gp_Ax3 &>, Geom_Plane>();
     nb::implicitly_convertible<std::decay_t<const gp_Pln &>, Geom_Plane>();
     nb::borrow<nb::class_<Geom_RectangularTrimmedSurface>>(m.attr("Geom_RectangularTrimmedSurface"))
-        .def(nb::new_([](const occ::handle<Geom_Surface> & S, const double Param1, const double Param2, const bool UTrim, const bool Sense) { return opencascade::handle<Geom_RectangularTrimmedSurface>(new Geom_RectangularTrimmedSurface(S, Param1, Param2, UTrim, Sense)); }), nb::arg("S"), nb::arg("Param1"), nb::arg("Param2"), nb::arg("UTrim"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The basis surface S is only trim in one parametric direction.
+        .def(nb::new_([](const occ::handle<Geom_Surface> & S, const double Param1, const double Param2, const bool UTrim, const bool Sense) { return opencascade::handle<Geom_RectangularTrimmedSurface>(new Geom_RectangularTrimmedSurface(S, Param1, Param2, UTrim, Sense)); }), nb::arg("S").none(), nb::arg("Param1"), nb::arg("Param2"), nb::arg("UTrim"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The basis surface S is only trim in one parametric direction.
 If UTrim = True the surface is trimmed in the U parametric
 direction else the surface is trimmed in the V parametric
 direction.
@@ -4587,7 +4587,7 @@ Raised if
 S is not periodic in the considered parametric direction and
 Param1 or Param2 are out of the bounds of S.
 Param1 = Param2)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom_Surface> & S, const double U1, const double U2, const double V1, const double V2, const bool USense, const bool VSense) { return opencascade::handle<Geom_RectangularTrimmedSurface>(new Geom_RectangularTrimmedSurface(S, U1, U2, V1, V2, USense, VSense)); }), nb::arg("S"), nb::arg("U1"), nb::arg("U2"), nb::arg("V1"), nb::arg("V2"), nb::arg("USense") = static_cast<std::decay_t<const bool>>(true), nb::arg("VSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The U parametric direction of the surface is oriented from U1
+        .def(nb::new_([](const occ::handle<Geom_Surface> & S, const double U1, const double U2, const double V1, const double V2, const bool USense, const bool VSense) { return opencascade::handle<Geom_RectangularTrimmedSurface>(new Geom_RectangularTrimmedSurface(S, U1, U2, V1, V2, USense, VSense)); }), nb::arg("S").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("V1"), nb::arg("V2"), nb::arg("USense") = static_cast<std::decay_t<const bool>>(true), nb::arg("VSense") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The U parametric direction of the surface is oriented from U1
 to U2. The V parametric direction of the surface is oriented
 from V1 to V2.
 These two directions define the orientation of the surface
@@ -4858,7 +4858,7 @@ for a surface of linear extrusion it is the extruded curve.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom_SweptSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SweptSurface::*)() const>(&Geom_SweptSurface::DynamicType));
     nb::borrow<nb::class_<Geom_SurfaceOfLinearExtrusion>>(m.attr("Geom_SurfaceOfLinearExtrusion"))
-        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const gp_Dir & V) { return opencascade::handle<Geom_SurfaceOfLinearExtrusion>(new Geom_SurfaceOfLinearExtrusion(C, V)); }), nb::arg("C"), nb::arg("V"), R"nbdoc(V is the direction of extrusion.
+        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const gp_Dir & V) { return opencascade::handle<Geom_SurfaceOfLinearExtrusion>(new Geom_SurfaceOfLinearExtrusion(C, V)); }), nb::arg("C").none(), nb::arg("V"), R"nbdoc(V is the direction of extrusion.
 C is the extruded curve.
 The form of a SurfaceOfLinearExtrusion can be :
 . ruled surface (RuledForm),
@@ -4871,12 +4871,12 @@ curve C is a line and V is parallel to the direction of this
 line.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_SurfaceOfLinearExtrusion::*)() const>(&Geom_SurfaceOfLinearExtrusion::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepSurfaceDesc::Base> & (Geom_SurfaceOfLinearExtrusion::*)() const>(&Geom_SurfaceOfLinearExtrusion::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_SurfaceOfLinearExtrusion::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_SurfaceOfLinearExtrusion::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_SurfaceOfLinearExtrusion::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_SurfaceOfLinearExtrusion::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_SurfaceOfLinearExtrusion::*)()>(&Geom_SurfaceOfLinearExtrusion::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("SetDirection", static_cast<void (Geom_SurfaceOfLinearExtrusion::*)(const gp_Dir &)>(&Geom_SurfaceOfLinearExtrusion::SetDirection), nb::arg("V"), R"nbdoc(Assigns V as the "direction of extrusion" for this
 surface of linear extrusion.)nbdoc")
-        .def("SetBasisCurve", static_cast<void (Geom_SurfaceOfLinearExtrusion::*)(const occ::handle<Geom_Curve> &)>(&Geom_SurfaceOfLinearExtrusion::SetBasisCurve), nb::arg("C"), R"nbdoc(Modifies this surface of linear extrusion by redefining
+        .def("SetBasisCurve", static_cast<void (Geom_SurfaceOfLinearExtrusion::*)(const occ::handle<Geom_Curve> &)>(&Geom_SurfaceOfLinearExtrusion::SetBasisCurve), nb::arg("C").none(), R"nbdoc(Modifies this surface of linear extrusion by redefining
 its "basis curve" (the "extruded curve").)nbdoc")
         .def("UReverse", static_cast<void (Geom_SurfaceOfLinearExtrusion::*)()>(&Geom_SurfaceOfLinearExtrusion::UReverse), R"nbdoc(Changes the orientation of this surface of linear
 extrusion in the u parametric direction. The
@@ -4985,7 +4985,7 @@ V by T.ScaleFactor())nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Geom_SurfaceOfLinearExtrusion::*)() const>(&Geom_SurfaceOfLinearExtrusion::DynamicType));
     nanoocp_implicit_copy_ctor<Geom_SurfaceOfLinearExtrusion>(nb::borrow<nb::class_<Geom_SurfaceOfLinearExtrusion>>(m.attr("Geom_SurfaceOfLinearExtrusion")));
     nb::borrow<nb::class_<Geom_SurfaceOfRevolution>>(m.attr("Geom_SurfaceOfRevolution"))
-        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const gp_Ax1 & A1) { return opencascade::handle<Geom_SurfaceOfRevolution>(new Geom_SurfaceOfRevolution(C, A1)); }), nb::arg("C"), nb::arg("A1"), R"nbdoc(C : is the meridian or the referenced curve.
+        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const gp_Ax1 & A1) { return opencascade::handle<Geom_SurfaceOfRevolution>(new Geom_SurfaceOfRevolution(C, A1)); }), nb::arg("C").none(), nb::arg("A1"), R"nbdoc(C : is the meridian or the referenced curve.
 A1 is the axis of revolution.
 The form of a SurfaceOfRevolution can be :
 . a general revolution surface (RevolutionForm),
@@ -5005,7 +5005,7 @@ It is not checked that the revolved curve C doesn't
 self-intersects.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom_SurfaceOfRevolution::*)() const>(&Geom_SurfaceOfRevolution::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<GeomEval_RepSurfaceDesc::Base> & (Geom_SurfaceOfRevolution::*)() const>(&Geom_SurfaceOfRevolution::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom_SurfaceOfRevolution::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_SurfaceOfRevolution::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom_SurfaceOfRevolution::*)(const occ::handle<GeomEval_RepSurfaceDesc::Base> &)>(&Geom_SurfaceOfRevolution::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom_SurfaceOfRevolution::*)()>(&Geom_SurfaceOfRevolution::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("SetAxis", static_cast<void (Geom_SurfaceOfRevolution::*)(const gp_Ax1 &)>(&Geom_SurfaceOfRevolution::SetAxis), nb::arg("A1"), R"nbdoc(Changes the axis of revolution.
@@ -5016,7 +5016,7 @@ revolved curve.)nbdoc")
 Warnings :
 It is not checked that the axis is in the plane of the
 revolved curve.)nbdoc")
-        .def("SetBasisCurve", static_cast<void (Geom_SurfaceOfRevolution::*)(const occ::handle<Geom_Curve> &)>(&Geom_SurfaceOfRevolution::SetBasisCurve), nb::arg("C"), R"nbdoc(Changes the revolved curve of the surface.
+        .def("SetBasisCurve", static_cast<void (Geom_SurfaceOfRevolution::*)(const occ::handle<Geom_Curve> &)>(&Geom_SurfaceOfRevolution::SetBasisCurve), nb::arg("C").none(), R"nbdoc(Changes the revolved curve of the surface.
 Warnings :
 It is not checked that the curve C is planar and that the
 surface axis is in the plane of the curve.
@@ -5299,10 +5299,10 @@ package gp.)nbdoc")
         .def("Inverted", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)() const>(&Geom_Transformation::Inverted), R"nbdoc(Raised if the transformation is singular. This means that
 the ScaleFactor is lower or equal to Resolution from
 package gp.)nbdoc")
-        .def("Multiplied", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)(const occ::handle<Geom_Transformation> &) const>(&Geom_Transformation::Multiplied), nb::arg("Other"), R"nbdoc(Computes the transformation composed with Other and <me>.
+        .def("Multiplied", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)(const occ::handle<Geom_Transformation> &) const>(&Geom_Transformation::Multiplied), nb::arg("Other").none(), R"nbdoc(Computes the transformation composed with Other and <me>.
 <me> * Other.
 Returns a new transformation)nbdoc")
-        .def("Multiply", static_cast<void (Geom_Transformation::*)(const occ::handle<Geom_Transformation> &)>(&Geom_Transformation::Multiply), nb::arg("theOther"), R"nbdoc(Computes the transformation composed with Other and <me> .
+        .def("Multiply", static_cast<void (Geom_Transformation::*)(const occ::handle<Geom_Transformation> &)>(&Geom_Transformation::Multiply), nb::arg("theOther").none(), R"nbdoc(Computes the transformation composed with Other and <me> .
 <me> = <me> * Other.)nbdoc")
         .def("Power", static_cast<void (Geom_Transformation::*)(const int)>(&Geom_Transformation::Power), nb::arg("N"), R"nbdoc(Computes the following composition of transformations
 if N > 0  <me> * <me> * .......* <me>.
@@ -5311,7 +5311,7 @@ if N < 0  <me>.Invert() * .........* <me>.Invert()
 
 Raised if N < 0 and if the transformation is not inversible)nbdoc")
         .def("Powered", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)(const int) const>(&Geom_Transformation::Powered), nb::arg("N"), R"nbdoc(Raised if N < 0 and if the transformation is not inversible)nbdoc")
-        .def("PreMultiply", static_cast<void (Geom_Transformation::*)(const occ::handle<Geom_Transformation> &)>(&Geom_Transformation::PreMultiply), nb::arg("Other"), R"nbdoc(Computes the matrix of the transformation composed with
+        .def("PreMultiply", static_cast<void (Geom_Transformation::*)(const occ::handle<Geom_Transformation> &)>(&Geom_Transformation::PreMultiply), nb::arg("Other").none(), R"nbdoc(Computes the matrix of the transformation composed with
 <me> and Other. <me> = Other * <me>)nbdoc")
         .def("Transforms", [](const Geom_Transformation &self) { double theX{}; double theY{}; double theZ{}; self.Transforms(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, R"nbdoc(Applies the transformation <me> to the triplet {X, Y, Z}.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Transformation> (Geom_Transformation::*)() const>(&Geom_Transformation::Copy), R"nbdoc(Creates a new object which is a copy of this transformation.)nbdoc")
@@ -5319,7 +5319,7 @@ Raised if N < 0 and if the transformation is not inversible)nbdoc")
     nanoocp_implicit_copy_ctor<Geom_Transformation>(nb::borrow<nb::class_<Geom_Transformation>>(m.attr("Geom_Transformation")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, Geom_Transformation>();
     nb::borrow<nb::class_<Geom_TrimmedCurve>>(m.attr("Geom_TrimmedCurve"))
-        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const double U1, const double U2, const bool Sense, const bool theAdjustPeriodic) { return opencascade::handle<Geom_TrimmedCurve>(new Geom_TrimmedCurve(C, U1, U2, Sense, theAdjustPeriodic)); }), nb::arg("C"), nb::arg("U1"), nb::arg("U2"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), nb::arg("theAdjustPeriodic") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs a trimmed curve from the basis curve C
+        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const double U1, const double U2, const bool Sense, const bool theAdjustPeriodic) { return opencascade::handle<Geom_TrimmedCurve>(new Geom_TrimmedCurve(C, U1, U2, Sense, theAdjustPeriodic)); }), nb::arg("C").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), nb::arg("theAdjustPeriodic") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructs a trimmed curve from the basis curve C
 which is limited between parameter values U1 and U2.
 Note: - U1 can be greater or less than U2; in both cases,
 the returned curve is oriented from U1 to U2.
@@ -5484,14 +5484,14 @@ The magnitude of the vector is the distance between P1 and P2)nbdoc")
         .def("SetZ", static_cast<void (Geom_VectorWithMagnitude::*)(const double)>(&Geom_VectorWithMagnitude::SetZ), nb::arg("Z"), R"nbdoc(Changes the Z coordinate of <me>.)nbdoc")
         .def("Magnitude", static_cast<double (Geom_VectorWithMagnitude::*)() const>(&Geom_VectorWithMagnitude::Magnitude), R"nbdoc(Returns the magnitude of <me>.)nbdoc")
         .def("SquareMagnitude", static_cast<double (Geom_VectorWithMagnitude::*)() const>(&Geom_VectorWithMagnitude::SquareMagnitude), R"nbdoc(Returns the square magnitude of <me>.)nbdoc")
-        .def("Add", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::Add), nb::arg("Other"), R"nbdoc(Adds the Vector Other to <me>.)nbdoc")
-        .def("Added", static_cast<occ::handle<Geom_VectorWithMagnitude> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::Added), nb::arg("Other"), R"nbdoc(Adds the vector Other to <me>.)nbdoc")
-        .def("Cross", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::Cross), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and Other
+        .def("Add", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::Add), nb::arg("Other").none(), R"nbdoc(Adds the Vector Other to <me>.)nbdoc")
+        .def("Added", static_cast<occ::handle<Geom_VectorWithMagnitude> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::Added), nb::arg("Other").none(), R"nbdoc(Adds the vector Other to <me>.)nbdoc")
+        .def("Cross", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::Cross), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and Other
 <me> ^ Other.)nbdoc")
-        .def("Crossed", static_cast<occ::handle<Geom_Vector> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::Crossed), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and Other
+        .def("Crossed", static_cast<occ::handle<Geom_Vector> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::Crossed), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and Other
 <me> ^ Other. A new vector is returned.)nbdoc")
-        .def("CrossCross", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::CrossCross), nb::arg("V1"), nb::arg("V2"), R"nbdoc(Computes the triple vector product <me> ^ (V1 ^ V2).)nbdoc")
-        .def("CrossCrossed", static_cast<occ::handle<Geom_Vector> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::CrossCrossed), nb::arg("V1"), nb::arg("V2"), R"nbdoc(Computes the triple vector product <me> ^ (V1 ^ V2).
+        .def("CrossCross", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::CrossCross), nb::arg("V1").none(), nb::arg("V2").none(), R"nbdoc(Computes the triple vector product <me> ^ (V1 ^ V2).)nbdoc")
+        .def("CrossCrossed", static_cast<occ::handle<Geom_Vector> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &, const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::CrossCrossed), nb::arg("V1").none(), nb::arg("V2").none(), R"nbdoc(Computes the triple vector product <me> ^ (V1 ^ V2).
 A new vector is returned.)nbdoc")
         .def("Divide", static_cast<void (Geom_VectorWithMagnitude::*)(const double)>(&Geom_VectorWithMagnitude::Divide), nb::arg("Scalar"), R"nbdoc(Divides <me> by a scalar.)nbdoc")
         .def("Divided", static_cast<occ::handle<Geom_VectorWithMagnitude> (Geom_VectorWithMagnitude::*)(const double) const>(&Geom_VectorWithMagnitude::Divided), nb::arg("Scalar"), R"nbdoc(Divides <me> by a scalar. A new vector is returned.)nbdoc")
@@ -5506,8 +5506,8 @@ Resolution from package gp.)nbdoc")
 
 Raised if the magnitude of the vector is lower or equal to
 Resolution from package gp.)nbdoc")
-        .def("Subtract", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::Subtract), nb::arg("Other"), R"nbdoc(Subtracts the Vector Other to <me>.)nbdoc")
-        .def("Subtracted", static_cast<occ::handle<Geom_VectorWithMagnitude> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::Subtracted), nb::arg("Other"), R"nbdoc(Subtracts the vector Other to <me>. A new vector is returned.)nbdoc")
+        .def("Subtract", static_cast<void (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &)>(&Geom_VectorWithMagnitude::Subtract), nb::arg("Other").none(), R"nbdoc(Subtracts the Vector Other to <me>.)nbdoc")
+        .def("Subtracted", static_cast<occ::handle<Geom_VectorWithMagnitude> (Geom_VectorWithMagnitude::*)(const occ::handle<Geom_Vector> &) const>(&Geom_VectorWithMagnitude::Subtracted), nb::arg("Other").none(), R"nbdoc(Subtracts the vector Other to <me>. A new vector is returned.)nbdoc")
         .def("Transform", static_cast<void (Geom_VectorWithMagnitude::*)(const gp_Trsf &)>(&Geom_VectorWithMagnitude::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this vector.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom_Geometry> (Geom_VectorWithMagnitude::*)() const>(&Geom_VectorWithMagnitude::Copy), R"nbdoc(Creates a new object which is a copy of this vector.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom_VectorWithMagnitude::get_type_name))

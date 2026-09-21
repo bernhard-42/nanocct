@@ -637,7 +637,7 @@ In local coordinates the equation is: X^2/A^2 - Y^2/B^2 - Z = 0.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomEval_HypParaboloidSurface::*)() const>(&GeomEval_HypParaboloidSurface::DynamicType));
     nanoocp_implicit_copy_ctor<GeomEval_HypParaboloidSurface>(nb::borrow<nb::class_<GeomEval_HypParaboloidSurface>>(m.attr("GeomEval_HypParaboloidSurface")));
     nb::borrow<nb::class_<GeomEval_HyperboloidSurface>>(m.attr("GeomEval_HyperboloidSurface"))
-        .def(nb::new_([](const gp_Ax3 & thePosition, double theR1, double theR2, GeomEval_HyperboloidSurface::SheetMode theMode) { return opencascade::handle<GeomEval_HyperboloidSurface>(new GeomEval_HyperboloidSurface(thePosition, theR1, theR2, theMode)); }), nb::arg("thePosition"), nb::arg("theR1"), nb::arg("theR2"), nb::arg("theMode") = static_cast<std::decay_t<GeomEval_HyperboloidSurface::SheetMode>>(GeomEval_HyperboloidSurface::SheetMode :: OneSheet), R"nbdoc(Creates a hyperboloid surface with the given local coordinate system,
+        .def(nb::new_([](const gp_Ax3 & thePosition, double theR1, double theR2, GeomEval_HyperboloidSurface::SheetMode theMode) { return opencascade::handle<GeomEval_HyperboloidSurface>(new GeomEval_HyperboloidSurface(thePosition, theR1, theR2, theMode)); }), nb::arg("thePosition"), nb::arg("theR1"), nb::arg("theR2"), nb::arg("theMode") = static_cast<std::decay_t<GeomEval_HyperboloidSurface::SheetMode>>(GeomEval_HyperboloidSurface::SheetMode::OneSheet), R"nbdoc(Creates a hyperboloid surface with the given local coordinate system,
 semi-axis radii, and sheet mode.
 @param[in] thePosition local coordinate system
 @param[in] theR1 first semi-axis radius (must be > 0)

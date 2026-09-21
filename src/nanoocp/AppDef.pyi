@@ -573,7 +573,7 @@ class AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute:
 
 class AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute(nanoocp.math.math_MultipleVarFunctionWithGradient):
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], NbPol: int) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], NbPol: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has <NbPol> control points.
@@ -655,9 +655,9 @@ class AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute(nanoocp.math.math_Mu
         to Index(ieme point) + degree +1.
         """
 
-    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
-    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
     def SetFirstLambda(self, l1: float) -> None: ...
 
@@ -770,9 +770,9 @@ class AppDef_Gradient_BFGSOfTheGradient(nanoocp.math.math_BFGS):
 class AppDef_SmoothCriterion(nanoocp.Standard.Standard_Transient):
     """defined criterion to smooth points in curve"""
 
-    def SetParameters(self, Parameters: nanoocp.NCollection.NCollection_HArray1[float]) -> None: ...
+    def SetParameters(self, Parameters: nanoocp.NCollection.NCollection_HArray1[float] | None) -> None: ...
 
-    def SetCurve(self, C: nanoocp.FEmTool.FEmTool_Curve) -> None: ...
+    def SetCurve(self, C: nanoocp.FEmTool.FEmTool_Curve | None) -> None: ...
 
     def Curve(self) -> nanoocp.FEmTool.FEmTool_Curve:
         """
@@ -780,7 +780,7 @@ class AppDef_SmoothCriterion(nanoocp.Standard.Standard_Transient):
         @return handle to the FEmTool curve
         """
 
-    def GetCurve(self, C: nanoocp.FEmTool.FEmTool_Curve) -> None: ...
+    def GetCurve(self) -> nanoocp.FEmTool.FEmTool_Curve: ...
 
     def SetEstimation(self, E1: float, E2: float, E3: float) -> None: ...
 
@@ -805,7 +805,7 @@ class AppDef_SmoothCriterion(nanoocp.Standard.Standard_Transient):
 
     def Gradient(self, Element: int, Dimension: int, G: nanoocp.math.math_Vector) -> None: ...
 
-    def InputVector(self, X: nanoocp.math.math_Vector, AssTable: nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]]) -> None:
+    def InputVector(self, X: nanoocp.math.math_Vector, AssTable: nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]] | None) -> None:
         """Convert the assembly Vector in an Curve;"""
 
     @overload
@@ -836,11 +836,11 @@ class AppDef_LinearCriteria(AppDef_SmoothCriterion):
     @overload
     def __init__(self, theOther: AppDef_LinearCriteria) -> None: ...
 
-    def SetParameters(self, Parameters: nanoocp.NCollection.NCollection_HArray1[float]) -> None: ...
+    def SetParameters(self, Parameters: nanoocp.NCollection.NCollection_HArray1[float] | None) -> None: ...
 
-    def SetCurve(self, C: nanoocp.FEmTool.FEmTool_Curve) -> None: ...
+    def SetCurve(self, C: nanoocp.FEmTool.FEmTool_Curve | None) -> None: ...
 
-    def GetCurve(self, C: nanoocp.FEmTool.FEmTool_Curve) -> None: ...
+    def GetCurve(self) -> nanoocp.FEmTool.FEmTool_Curve: ...
 
     def SetEstimation(self, E1: float, E2: float, E3: float) -> None: ...
 
@@ -865,7 +865,7 @@ class AppDef_LinearCriteria(AppDef_SmoothCriterion):
 
     def Gradient(self, Element: int, Dimension: int, G: nanoocp.math.math_Vector) -> None: ...
 
-    def InputVector(self, X: nanoocp.math.math_Vector, AssTable: nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]]) -> None:
+    def InputVector(self, X: nanoocp.math.math_Vector, AssTable: nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]] | None) -> None:
         """Convert the assembly Vector in an Curve;"""
 
     @overload
@@ -886,10 +886,10 @@ class AppDef_LinearCriteria(AppDef_SmoothCriterion):
 
 class AppDef_MyBSplGradientOfBSplineCompute:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 1) -> None: ...
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 1) -> None: ...
 
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], Deg: int, Tol3d: float, Tol2d: float, NbIterations: int, lambda1: float, lambda2: float) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Knots: nanoocp.NCollection.NCollection_Array1[float], Mults: nanoocp.NCollection.NCollection_Array1[int], Deg: int, Tol3d: float, Tol2d: float, NbIterations: int, lambda1: float, lambda2: float) -> None:
         """
         Tries to minimize the sum (square(||Qui - Bi*Pi||))
         where Pui describe the approximating BSpline curves'Poles
@@ -939,7 +939,7 @@ class AppDef_MyBSplGradientOfBSplineCompute:
 
 class AppDef_MyGradientbisOfBSplineCompute:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
         """
         Tries to minimize the sum (square(||Qui - Bi*Pi||))
         where Pui describe the approximating Bezier curves'Poles
@@ -989,7 +989,7 @@ class AppDef_MyGradientbisOfBSplineCompute:
 
 class AppDef_MyGradientOfCompute:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
         """
         Tries to minimize the sum (square(||Qui - Bi*Pi||))
         where Pui describe the approximating Bezier curves'Poles
@@ -1314,7 +1314,7 @@ class AppDef_ParLeastSquareOfMyGradientbisOfBSplineCompute:
 
 class AppDef_ParFunctionOfMyGradientbisOfBSplineCompute(nanoocp.math.math_MultipleVarFunctionWithGradient):
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
@@ -1376,9 +1376,9 @@ class AppDef_ParFunctionOfMyGradientbisOfBSplineCompute(nanoocp.math.math_Multip
         and the MultiCurve.
         """
 
-    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
-    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
 class AppDef_ParLeastSquareOfMyGradientOfCompute:
     @overload
@@ -1539,7 +1539,7 @@ class AppDef_ParLeastSquareOfMyGradientOfCompute:
 
 class AppDef_ParFunctionOfMyGradientOfCompute(nanoocp.math.math_MultipleVarFunctionWithGradient):
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
@@ -1601,9 +1601,9 @@ class AppDef_ParFunctionOfMyGradientOfCompute(nanoocp.math.math_MultipleVarFunct
         and the MultiCurve.
         """
 
-    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
-    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
 class AppDef_ParLeastSquareOfTheGradient:
     @overload
@@ -1764,7 +1764,7 @@ class AppDef_ParLeastSquareOfTheGradient:
 
 class AppDef_ParFunctionOfTheGradient(nanoocp.math.math_MultipleVarFunctionWithGradient):
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
@@ -1826,13 +1826,13 @@ class AppDef_ParFunctionOfTheGradient(nanoocp.math.math_MultipleVarFunctionWithG
         and the MultiCurve.
         """
 
-    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
-    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
 class AppDef_ResConstraintOfMyGradientbisOfBSplineCompute:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
         algorithm finds the best curve solution to approximate it.
@@ -1868,7 +1868,7 @@ class AppDef_ResConstraintOfMyGradientbisOfBSplineCompute:
 
 class AppDef_ResConstraintOfMyGradientOfCompute:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
         algorithm finds the best curve solution to approximate it.
@@ -1904,7 +1904,7 @@ class AppDef_ResConstraintOfMyGradientOfCompute:
 
 class AppDef_ResConstraintOfTheGradient:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
         algorithm finds the best curve solution to approximate it.
@@ -2097,7 +2097,7 @@ class AppDef_TheLeastSquares:
 
 class AppDef_TheFunction(nanoocp.math.math_MultipleVarFunctionWithGradient):
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Deg: int) -> None:
         """
         initializes the fields of the function. The approximating
         curve has the desired degree Deg.
@@ -2159,13 +2159,13 @@ class AppDef_TheFunction(nanoocp.math.math_MultipleVarFunctionWithGradient):
         and the MultiCurve.
         """
 
-    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def FirstConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, FirstPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
-    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
+    def LastConstraint(self, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, LastPoint: int) -> nanoocp.AppParCurves.AppParCurves_Constraint: ...
 
 class AppDef_TheGradient:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Parameters: nanoocp.math.math_Vector, Deg: int, Tol3d: float, Tol2d: float, NbIterations: int = 200) -> None:
         """
         Tries to minimize the sum (square(||Qui - Bi*Pi||))
         where Pui describe the approximating Bezier curves'Poles
@@ -2215,7 +2215,7 @@ class AppDef_TheGradient:
 
 class AppDef_TheResol:
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, SCurv: nanoocp.AppParCurves.AppParCurves_MultiCurve, FirstPoint: int, LastPoint: int, Constraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, Bern: nanoocp.math.math_Matrix, DerivativeBern: nanoocp.math.math_Matrix, Tolerance: float = 1e-10) -> None:
         """
         Given a MultiLine SSP with constraints points, this
         algorithm finds the best curve solution to approximate it.
@@ -2259,7 +2259,7 @@ class AppDef_Variational:
     """
 
     @overload
-    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple], MaxDegree: int = 14, MaxSegment: int = 100, Continuity: nanoocp.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2, WithMinMax: bool = False, WithCutting: bool = True, Tolerance: float = 1.0, NbIterations: int = 2) -> None:
+    def __init__(self, SSP: AppDef_MultiLine, FirstPoint: int, LastPoint: int, TheConstraints: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None, MaxDegree: int = 14, MaxSegment: int = 100, Continuity: nanoocp.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2, WithMinMax: bool = False, WithCutting: bool = True, Tolerance: float = 1.0, NbIterations: int = 2) -> None:
         """
         Constructor.
         Initialization of the fields.
@@ -2381,17 +2381,17 @@ class AppDef_Variational:
         Distances,Degre,Nombre de poles, parametres, noeuds
         """
 
-    def SetConstraints(self, aConstrainst: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple]) -> bool:
+    def SetConstraints(self, aConstrainst: nanoocp.NCollection.NCollection_HArray1[nanoocp.AppParCurves.AppParCurves_ConstraintCouple] | None) -> bool:
         """
         Define the constraints to approximate
         If this value is incompatible with the others fields
         this method modify nothing and returns false
         """
 
-    def SetParameters(self, param: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
+    def SetParameters(self, param: nanoocp.NCollection.NCollection_HArray1[float] | None) -> None:
         """Defines the parameters used by the approximations."""
 
-    def SetKnots(self, knots: nanoocp.NCollection.NCollection_HArray1[float]) -> bool:
+    def SetKnots(self, knots: nanoocp.NCollection.NCollection_HArray1[float] | None) -> bool:
         """
         Defines the knots used by the approximations
         If this value is incompatible with the others fields

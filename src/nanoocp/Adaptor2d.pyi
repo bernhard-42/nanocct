@@ -294,18 +294,18 @@ class Adaptor2d_OffsetCurve(Adaptor2d_Curve2d):
         """The Offset is set to 0."""
 
     @overload
-    def __init__(self, C: Adaptor2d_Curve2d) -> None:
+    def __init__(self, C: Adaptor2d_Curve2d | None) -> None:
         """The curve is loaded. The Offset is set to 0."""
 
     @overload
-    def __init__(self, C: Adaptor2d_Curve2d, Offset: float) -> None:
+    def __init__(self, C: Adaptor2d_Curve2d | None, Offset: float) -> None:
         """
         Creates an OffsetCurve curve.
         The Offset is set to Offset.
         """
 
     @overload
-    def __init__(self, C: Adaptor2d_Curve2d, Offset: float, WFirst: float, WLast: float) -> None:
+    def __init__(self, C: Adaptor2d_Curve2d | None, Offset: float, WFirst: float, WLast: float) -> None:
         """
         Create an Offset curve.
         WFirst,WLast define the bounds of the Offset curve.
@@ -326,7 +326,7 @@ class Adaptor2d_OffsetCurve(Adaptor2d_Curve2d):
         """Shallow copy of adaptor."""
 
     @overload
-    def Load(self, S: Adaptor2d_Curve2d) -> None:
+    def Load(self, S: Adaptor2d_Curve2d | None) -> None:
         """Changes the curve. The Offset is reset to 0."""
 
     @overload

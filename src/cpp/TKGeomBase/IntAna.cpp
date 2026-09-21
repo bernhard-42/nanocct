@@ -35,7 +35,8 @@ void nanoocp_declare_IntAna(nb::module_ &m) {
         .value("IntAna_Hyperbola", IntAna_Hyperbola)
         .value("IntAna_Empty", IntAna_Empty)
         .value("IntAna_Same", IntAna_Same)
-        .value("IntAna_NoGeometricSolution", IntAna_NoGeometricSolution);
+        .value("IntAna_NoGeometricSolution", IntAna_NoGeometricSolution)
+        .export_values();
     { nb::class_<IntAna_Curve> cls(m, "IntAna_Curve", R"nbdoc(Definition of a parametric Curve which is the result
 of the intersection between two quadrics.)nbdoc");
     }

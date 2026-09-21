@@ -57,7 +57,8 @@ void nanoocp_declare_gp(nb::module_ &m) {
         .value("gp_Ax2Mirror", gp_Ax2Mirror)
         .value("gp_Scale", gp_Scale)
         .value("gp_CompoundTrsf", gp_CompoundTrsf)
-        .value("gp_Other", gp_Other);
+        .value("gp_Other", gp_Other)
+        .export_values();
     nb::enum_<gp_EulerSequence>(m, "gp_EulerSequence", R"nbdoc(Enumerates all 24 possible variants of generalized
 Euler angles, defining general 3d rotation by three
 rotations around main axes of coordinate system,
@@ -99,7 +100,8 @@ yaw-pitch-roll (intrinsic ZYX).)nbdoc", nb::is_arithmetic())
         .value("gp_Intrinsic_YZY", gp_Intrinsic_YZY)
         .value("gp_Intrinsic_YXY", gp_Intrinsic_YXY)
         .value("gp_Intrinsic_ZXZ", gp_Intrinsic_ZXZ)
-        .value("gp_Intrinsic_ZYZ", gp_Intrinsic_ZYZ);
+        .value("gp_Intrinsic_ZYZ", gp_Intrinsic_ZYZ)
+        .export_values();
     { nb::class_<gp> cls(m, "gp", R"nbdoc(The geometric processor package, called gp, provides an
 implementation of entities used:
 . for algebraic calculation such as "XYZ" coordinates, "Mat"

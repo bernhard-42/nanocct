@@ -59,10 +59,10 @@ class GeomAdaptor_Curve(nanoocp.Adaptor3d.Adaptor3d_Curve):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve) -> None: ...
+    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
     @overload
-    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve, theUFirst: float, theULast: float) -> None:
+    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve | None, theUFirst: float, theULast: float) -> None:
         """
         Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion()
         """
@@ -182,10 +182,10 @@ class GeomAdaptor_Curve(nanoocp.Adaptor3d.Adaptor3d_Curve):
         """Reset currently loaded curve (undone Load())."""
 
     @overload
-    def Load(self, theCurve: nanoocp.Geom.Geom_Curve) -> None: ...
+    def Load(self, theCurve: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
     @overload
-    def Load(self, theCurve: nanoocp.Geom.Geom_Curve, theUFirst: float, theULast: float) -> None:
+    def Load(self, theCurve: nanoocp.Geom.Geom_Curve | None, theUFirst: float, theULast: float) -> None:
         """
         Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion()
         """
@@ -325,10 +325,10 @@ class GeomAdaptor_Surface(nanoocp.Adaptor3d.Adaptor3d_Surface):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, theSurf: nanoocp.Geom.Geom_Surface) -> None: ...
+    def __init__(self, theSurf: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
     @overload
-    def __init__(self, theSurf: nanoocp.Geom.Geom_Surface, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
+    def __init__(self, theSurf: nanoocp.Geom.Geom_Surface | None, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
         """Standard_ConstructionError is raised if UFirst>ULast or VFirst>VLast"""
 
     @overload
@@ -510,10 +510,10 @@ class GeomAdaptor_Surface(nanoocp.Adaptor3d.Adaptor3d_Surface):
         """Shallow copy of adaptor"""
 
     @overload
-    def Load(self, theSurf: nanoocp.Geom.Geom_Surface) -> None: ...
+    def Load(self, theSurf: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
     @overload
-    def Load(self, theSurf: nanoocp.Geom.Geom_Surface, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
+    def Load(self, theSurf: nanoocp.Geom.Geom_Surface | None, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
         """
         Standard_ConstructionError is raised if theUFirst>theULast or theVFirst>theVLast
         """
@@ -703,11 +703,11 @@ class GeomAdaptor_SurfaceOfLinearExtrusion(GeomAdaptor_Surface):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """The Curve is loaded."""
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, V: nanoocp.gp.gp_Dir) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, V: nanoocp.gp.gp_Dir) -> None:
         """Thew Curve and the Direction are loaded."""
 
     @overload
@@ -725,7 +725,7 @@ class GeomAdaptor_SurfaceOfLinearExtrusion(GeomAdaptor_Surface):
         """Shallow copy of adaptor"""
 
     @overload
-    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """Changes the Curve"""
 
     @overload
@@ -870,11 +870,11 @@ class GeomAdaptor_SurfaceOfRevolution(GeomAdaptor_Surface):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """The Curve is loaded."""
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, V: nanoocp.gp.gp_Ax1) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, V: nanoocp.gp.gp_Ax1) -> None:
         """The Curve and the Direction are loaded."""
 
     @overload
@@ -892,7 +892,7 @@ class GeomAdaptor_SurfaceOfRevolution(GeomAdaptor_Surface):
         """Shallow copy of adaptor"""
 
     @overload
-    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """Changes the Curve"""
 
     @overload
@@ -1037,7 +1037,7 @@ class GeomAdaptor_TransformedCurve(nanoocp.Adaptor3d.Adaptor3d_Curve):
         """Creates an undefined curve with identity transformation."""
 
     @overload
-    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve, theTrsf: nanoocp.gp.gp_Trsf) -> None:
+    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve | None, theTrsf: nanoocp.gp.gp_Trsf) -> None:
         """
         Creates a curve adaptor with transformation.
         @param theCurve underlying geometry
@@ -1045,7 +1045,7 @@ class GeomAdaptor_TransformedCurve(nanoocp.Adaptor3d.Adaptor3d_Curve):
         """
 
     @overload
-    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve, theFirst: float, theLast: float, theTrsf: nanoocp.gp.gp_Trsf) -> None:
+    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve | None, theFirst: float, theLast: float, theTrsf: nanoocp.gp.gp_Trsf) -> None:
         """
         Creates a curve adaptor with transformation and parameter bounds.
         @param theCurve underlying geometry
@@ -1069,14 +1069,14 @@ class GeomAdaptor_TransformedCurve(nanoocp.Adaptor3d.Adaptor3d_Curve):
         """Shallow copy of adaptor."""
 
     @overload
-    def Load(self, theCurve: nanoocp.Geom.Geom_Curve) -> None:
+    def Load(self, theCurve: nanoocp.Geom.Geom_Curve | None) -> None:
         """
         Loads the curve geometry.
         @param theCurve underlying geometry
         """
 
     @overload
-    def Load(self, theCurve: nanoocp.Geom.Geom_Curve, theFirst: float, theLast: float) -> None:
+    def Load(self, theCurve: nanoocp.Geom.Geom_Curve | None, theFirst: float, theLast: float) -> None:
         """
         Loads the curve geometry with parameter bounds.
         @param theCurve underlying geometry
@@ -1084,7 +1084,7 @@ class GeomAdaptor_TransformedCurve(nanoocp.Adaptor3d.Adaptor3d_Curve):
         @param theLast maximum parameter
         """
 
-    def LoadCurveOnSurface(self, theConSurf: nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface) -> None:
+    def LoadCurveOnSurface(self, theConSurf: nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface | None) -> None:
         """
         Sets the curve on surface adaptor.
         @param theConSurf curve on surface adaptor
@@ -1196,7 +1196,7 @@ class GeomAdaptor_TransformedSurface(nanoocp.Adaptor3d.Adaptor3d_Surface):
         """Creates an undefined surface with identity transformation."""
 
     @overload
-    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface, theTrsf: nanoocp.gp.gp_Trsf) -> None:
+    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface | None, theTrsf: nanoocp.gp.gp_Trsf) -> None:
         """
         Creates a surface adaptor with transformation.
         @param theSurface underlying geometry
@@ -1204,7 +1204,7 @@ class GeomAdaptor_TransformedSurface(nanoocp.Adaptor3d.Adaptor3d_Surface):
         """
 
     @overload
-    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTrsf: nanoocp.gp.gp_Trsf, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
+    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface | None, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTrsf: nanoocp.gp.gp_Trsf, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
         """
         Creates a surface adaptor with transformation and parameter bounds.
         @param theSurface underlying geometry
@@ -1232,7 +1232,7 @@ class GeomAdaptor_TransformedSurface(nanoocp.Adaptor3d.Adaptor3d_Surface):
         """Shallow copy of adaptor."""
 
     @overload
-    def Load(self, theSurface: nanoocp.Geom.Geom_Surface, theTrsf: nanoocp.gp.gp_Trsf) -> None:
+    def Load(self, theSurface: nanoocp.Geom.Geom_Surface | None, theTrsf: nanoocp.gp.gp_Trsf) -> None:
         """
         Loads the surface geometry.
         @param theSurface underlying geometry
@@ -1240,7 +1240,7 @@ class GeomAdaptor_TransformedSurface(nanoocp.Adaptor3d.Adaptor3d_Surface):
         """
 
     @overload
-    def Load(self, theSurface: nanoocp.Geom.Geom_Surface, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTrsf: nanoocp.gp.gp_Trsf, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
+    def Load(self, theSurface: nanoocp.Geom.Geom_Surface | None, theUFirst: float, theULast: float, theVFirst: float, theVLast: float, theTrsf: nanoocp.gp.gp_Trsf, theTolU: float = 0.0, theTolV: float = 0.0) -> None:
         """
         Loads the surface geometry with parameter bounds.
         @param theSurface underlying geometry

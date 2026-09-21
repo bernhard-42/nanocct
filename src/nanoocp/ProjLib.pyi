@@ -111,11 +111,11 @@ class ProjLib:
     def Project(To: nanoocp.gp.gp_Torus, Ci: nanoocp.gp.gp_Circ) -> nanoocp.gp.gp_Lin2d: ...
 
     @staticmethod
-    def MakePCurveOfType(PC: ProjLib_ProjectedCurve, aC: nanoocp.Geom2d.Geom2d_Curve) -> None:
+    def MakePCurveOfType(PC: ProjLib_ProjectedCurve) -> nanoocp.Geom2d.Geom2d_Curve:
         """Make empty P-Curve <aC> of relevant to <PC> type"""
 
     @staticmethod
-    def IsAnaSurf(theAS: nanoocp.Adaptor3d.Adaptor3d_Surface) -> bool:
+    def IsAnaSurf(theAS: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> bool:
         """
         Returns "true" if surface is analytical, that is it can be
         Plane, Cylinder, Cone, Sphere, Torus.
@@ -139,9 +139,9 @@ class ProjLib_Projector:
 
     def GetType(self) -> nanoocp.GeomAbs.GeomAbs_CurveType: ...
 
-    def SetBSpline(self, C: nanoocp.Geom2d.Geom2d_BSplineCurve) -> None: ...
+    def SetBSpline(self, C: nanoocp.Geom2d.Geom2d_BSplineCurve | None) -> None: ...
 
-    def SetBezier(self, C: nanoocp.Geom2d.Geom2d_BezierCurve) -> None: ...
+    def SetBezier(self, C: nanoocp.Geom2d.Geom2d_BezierCurve | None) -> None: ...
 
     def SetType(self, Type: nanoocp.GeomAbs.GeomAbs_CurveType) -> None: ...
 
@@ -197,7 +197,7 @@ class ProjLib_CompProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, Tol3d: float, S: nanoocp.Adaptor3d.Adaptor3d_Surface, C: nanoocp.Adaptor3d.Adaptor3d_Curve, MaxDist: float = -1.0) -> None:
+    def __init__(self, Tol3d: float, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, MaxDist: float = -1.0) -> None:
         """
         this constructor tries to optimize the search using the
         assumption that maximum distance between surface and curve less or
@@ -207,11 +207,11 @@ class ProjLib_CompProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         """
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, C: nanoocp.Adaptor3d.Adaptor3d_Curve, TolU: float, TolV: float) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, TolU: float, TolV: float) -> None:
         """try to find all solutions"""
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, C: nanoocp.Adaptor3d.Adaptor3d_Curve, TolU: float, TolV: float, MaxDist: float) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, TolU: float, TolV: float, MaxDist: float) -> None:
         """
         this constructor tries to optimize the search using the
         assumption that maximum distance between surface and curve less or
@@ -279,11 +279,11 @@ class ProjLib_CompProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         """Set the parameter, which defines necessity of 3d results."""
 
     @overload
-    def Load(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def Load(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """Changes the surface."""
 
     @overload
-    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """Changes the curve."""
 
     def GetSurface(self) -> nanoocp.Adaptor3d.Adaptor3d_Surface: ...
@@ -472,7 +472,7 @@ class ProjLib_ComputeApprox:
         """Empty constructor, it only sets some initial values for class fields."""
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float) -> None:
         """
         <Tol> is the tolerance with which the approximation is performed.
         Other parameters for approximation have default values.
@@ -481,7 +481,7 @@ class ProjLib_ComputeApprox:
     @overload
     def __init__(self, theOther: ProjLib_ComputeApprox) -> None: ...
 
-    def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """
         Performs projecting.
         In case of approximation current values of parameters are used:
@@ -543,18 +543,18 @@ class ProjLib_ComputeApproxOnPolarSurface:
         """Empty constructor, it only sets some initial values for class fields."""
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float = 0.0001) -> None:
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float = 0.0001) -> None:
         """Constructor, which performs projecting."""
 
     @overload
-    def __init__(self, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None:
+    def __init__(self, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float) -> None:
         """
         Constructor, which performs projecting, using initial curve 2d InitCurve2d, which is any rough
         approximation of result curve. Parameter Tol is 3d tolerance of approximation.
         """
 
     @overload
-    def __init__(self, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d, InitCurve2dBis: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None:
+    def __init__(self, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, InitCurve2dBis: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float) -> None:
         """
         Constructor, which performs projecting, using two initial curves 2d: InitCurve2d and
         InitCurve2dBis that are any rough approximations of result curves. This constructor is used to
@@ -600,27 +600,27 @@ class ProjLib_ComputeApproxOnPolarSurface:
         """
 
     @overload
-    def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """
         Method, which performs projecting, using default values of parameters or
         they must be set by corresponding methods before using.
         """
 
     @overload
-    def Perform(self, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
+    def Perform(self, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
         """
         Method, which performs projecting, using default values of parameters or
         they must be set by corresponding methods before using.
         Parameter InitCurve2d is any rough estimation of 2d result curve.
         """
 
-    def BuildInitialCurve2d(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> nanoocp.Adaptor2d.Adaptor2d_Curve2d:
+    def BuildInitialCurve2d(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> nanoocp.Adaptor2d.Adaptor2d_Curve2d:
         """
         Builds initial 2d curve as BSpline with degree = 1 using Extrema algorithm.
         Method is used in method Perform(...).
         """
 
-    def ProjectUsingInitialCurve2d(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
+    def ProjectUsingInitialCurve2d(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, InitCurve2d: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
         """
         Method, which performs projecting.
         Method is used in method Perform(...).
@@ -737,11 +737,11 @@ class ProjLib_ProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         """Empty constructor, it only sets some initial values for class fields."""
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """Constructor with initialisation field mySurface"""
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """
         Constructor, which performs projecting.
         If projecting uses approximation, default parameters are used, in particular, 3d tolerance of
@@ -749,7 +749,7 @@ class ProjLib_ProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         """
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface, C: nanoocp.Adaptor3d.Adaptor3d_Curve, Tol: float) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, Tol: float) -> None:
         """
         Constructor, which performs projecting.
         If projecting uses approximation, 3d tolerance is Tol, default parameters are used,
@@ -777,10 +777,10 @@ class ProjLib_ProjectedCurve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         """
 
     @overload
-    def Load(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def Load(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """Changes the Surface."""
 
-    def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve) -> None:
+    def Perform(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None) -> None:
         """
         Performs projecting for given curve.
         If projecting uses approximation,
@@ -1097,7 +1097,7 @@ class ProjLib_ProjectOnPlane(nanoocp.Adaptor3d.Adaptor3d_Curve):
     def ShallowCopy(self) -> nanoocp.Adaptor3d.Adaptor3d_Curve:
         """Shallow copy of adaptor"""
 
-    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, Tolerance: float, KeepParametrization: bool = True) -> None:
+    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, Tolerance: float, KeepParametrization: bool = True) -> None:
         """
         Sets the Curve and perform the projection.
         if <KeepParametrization> is true, the parametrization
@@ -1238,21 +1238,21 @@ class ProjLib_ProjectOnSurface:
         """Create an empty projector."""
 
     @overload
-    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def __init__(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """Create a projector normally to the surface <S>."""
 
     @overload
     def __init__(self, theOther: ProjLib_ProjectOnSurface) -> None: ...
 
     @overload
-    def Load(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface) -> None:
+    def Load(self, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None) -> None:
         """
         Set the Surface to <S>.
         To compute the projection, you have to Load the Curve.
         """
 
     @overload
-    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, Tolerance: float) -> None:
+    def Load(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, Tolerance: float) -> None:
         """Compute the projection of the curve <C> on the Surface."""
 
     def IsDone(self) -> bool: ...

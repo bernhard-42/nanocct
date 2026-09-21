@@ -77,7 +77,8 @@ void nanoocp_declare_math(nb::module_ &m) {
         .value("math_TooManyIterations", math_TooManyIterations)
         .value("math_FunctionError", math_FunctionError)
         .value("math_DirectionSearchError", math_DirectionSearchError)
-        .value("math_NotBracketed", math_NotBracketed);
+        .value("math_NotBracketed", math_NotBracketed)
+        .export_values();
     { nb::class_<math_DoubleTab> cls(m, "math_DoubleTab");
     }
     { nb::class_<math_Matrix> cls(m, "math_Matrix", R"nbdoc(This class implements the real matrix abstract data type.
@@ -1468,7 +1469,7 @@ function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc");
     nb::borrow<nb::class_<math_Gauss>>(m.attr("math_Gauss"))
-        .def(nb::init<const math_Matrix &, const double, const Message_ProgressRange &>(), nb::arg("A"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Given an input n X n matrix A this constructor performs its LU
+        .def(nb::init<const math_Matrix &, const double, const Message_ProgressRange &>(), nb::arg("A"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Given an input n X n matrix A this constructor performs its LU
 decomposition with partial pivoting (interchange of rows).
 This LU decomposition is stored internally and may be used to
 do subsequent calculation.
@@ -1805,7 +1806,7 @@ Exception NotDone is raised if the root was not found.)nbdoc")
 Is used to redefine the operator <<.)nbdoc");
     nanoocp_implicit_copy_ctor<math_NewtonFunctionSetRoot>(nb::borrow<nb::class_<math_NewtonFunctionSetRoot>>(m.attr("math_NewtonFunctionSetRoot")));
     nb::borrow<nb::class_<math_NewtonMinimum>>(m.attr("math_NewtonMinimum"))
-        .def(nb::init<const math_MultipleVarFunctionWithHessian &, const double, const int, const double, const bool>(), nb::arg("theFunction"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision :: Confusion ( )), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(40), nb::arg("theConvexity") = static_cast<std::decay_t<const double>>(1.0e-6), nb::arg("theWithSingularity") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The tolerance required on the solution is given by Tolerance.
+        .def(nb::init<const math_MultipleVarFunctionWithHessian &, const double, const int, const double, const bool>(), nb::arg("theFunction"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision::Confusion()), nb::arg("theNbIterations") = static_cast<std::decay_t<const int>>(40), nb::arg("theConvexity") = static_cast<std::decay_t<const double>>(1.0e-6), nb::arg("theWithSingularity") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(The tolerance required on the solution is given by Tolerance.
 Iteration are stopped if (!WithSingularity) and H(F(Xi)) is not definite
 positive (if the smaller eigenvalue of H < Convexity)
 or IsConverged() returns True for 2 successives Iterations.
@@ -1991,8 +1992,8 @@ when approximating a curve.)nbdoc")
         .def("Weight", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Weight))
         .def("__lt__", [](const math_ValueAndWeight & theLeft, const math_ValueAndWeight & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */;
     nanoocp_implicit_copy_ctor<math_ValueAndWeight>(nb::borrow<nb::class_<math_ValueAndWeight>>(m.attr("math_ValueAndWeight")));
-    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
-    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, math_Vector & vv, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, vv, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )));
+    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
+    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, math_Vector & vv, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, vv, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
     m.def("LU_Solve", static_cast<void (*)(const math_Matrix &, const math_IntegerVector &, math_Vector &)>(&LU_Solve), nb::arg("a"), nb::arg("indx"), nb::arg("b"));
     m.def("LU_Invert", static_cast<int (*)(math_Matrix &)>(&LU_Invert), nb::arg("a"));
     m.def("SVD_Decompose", static_cast<int (*)(math_Matrix &, math_Vector &, math_Matrix &)>(&SVD_Decompose), nb::arg("a"), nb::arg("w"), nb::arg("v"));

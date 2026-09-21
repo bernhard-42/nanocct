@@ -204,14 +204,14 @@ Standard_Failure if the curve is built from:
 -   a Geom_Hyperbola,
 and P1 and P2 are either two negative infinite real
 numbers, or two positive infinite real numbers.)nbdoc")
-        .def_static("Add", static_cast<void (*)(const occ::handle<Geom2d_Curve> &, const double, Bnd_Box2d &)>(&BndLib_Add2dCurve::Add), nb::arg("C"), nb::arg("Tol"), nb::arg("Box"), R"nbdoc(Adds to the bounding box B the curve C
+        .def_static("Add", static_cast<void (*)(const occ::handle<Geom2d_Curve> &, const double, Bnd_Box2d &)>(&BndLib_Add2dCurve::Add), nb::arg("C").none(), nb::arg("Tol"), nb::arg("Box"), R"nbdoc(Adds to the bounding box B the curve C
 B is then enlarged by the tolerance value Tol.
 Note: depending on the type of curve, one of the following
 representations of the curve C is used to include it in the bounding box B:
 -   an exact representation if C is built from a line, a circle or a conic curve,
 -   the poles of the curve if C is built from a Bezier curve or a BSpline curve,
 -   if not, the points of an approximation of the curve C.)nbdoc")
-        .def_static("Add", static_cast<void (*)(const occ::handle<Geom2d_Curve> &, const double, const double, const double, Bnd_Box2d &)>(&BndLib_Add2dCurve::Add), nb::arg("C"), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds to the bounding box B the part of curve C
+        .def_static("Add", static_cast<void (*)(const occ::handle<Geom2d_Curve> &, const double, const double, const double, Bnd_Box2d &)>(&BndLib_Add2dCurve::Add), nb::arg("C").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds to the bounding box B the part of curve C
 B is then enlarged by the tolerance value Tol.
 U1, U2 - the parametric range to compute the bounding box;
 Note: depending on the type of curve, one of the following
@@ -219,7 +219,7 @@ representations of the curve C is used to include it in the bounding box B:
 -   an exact representation if C is built from a line, a circle or a conic curve,
 -   the poles of the curve if C is built from a Bezier curve or a BSpline curve,
 -   if not, the points of an approximation of the curve C.)nbdoc")
-        .def_static("AddOptimal", static_cast<void (*)(const occ::handle<Geom2d_Curve> &, const double, const double, const double, Bnd_Box2d &)>(&BndLib_Add2dCurve::AddOptimal), nb::arg("C"), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds to the bounding box B the part of curve C
+        .def_static("AddOptimal", static_cast<void (*)(const occ::handle<Geom2d_Curve> &, const double, const double, const double, Bnd_Box2d &)>(&BndLib_Add2dCurve::AddOptimal), nb::arg("C").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), nb::arg("B"), R"nbdoc(Adds to the bounding box B the part of curve C
 B is then enlarged by the tolerance value Tol.
 U1, U2 - the parametric range to compute the bounding box;
 Note: depending on the type of curve, one of the following

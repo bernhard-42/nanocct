@@ -14,7 +14,8 @@ BSplineSurface to describe the repartition of set of knots.
         .value("GeomAbs_NonUniform", GeomAbs_NonUniform)
         .value("GeomAbs_Uniform", GeomAbs_Uniform)
         .value("GeomAbs_QuasiUniform", GeomAbs_QuasiUniform)
-        .value("GeomAbs_PiecewiseBezier", GeomAbs_PiecewiseBezier);
+        .value("GeomAbs_PiecewiseBezier", GeomAbs_PiecewiseBezier)
+        .export_values();
     nb::enum_<GeomAbs_CurveType>(m, "GeomAbs_CurveType", R"nbdoc(Identifies the type of a curve.)nbdoc", nb::is_arithmetic())
         .value("GeomAbs_Line", GeomAbs_Line)
         .value("GeomAbs_Circle", GeomAbs_Circle)
@@ -24,18 +25,21 @@ BSplineSurface to describe the repartition of set of knots.
         .value("GeomAbs_BezierCurve", GeomAbs_BezierCurve)
         .value("GeomAbs_BSplineCurve", GeomAbs_BSplineCurve)
         .value("GeomAbs_OffsetCurve", GeomAbs_OffsetCurve)
-        .value("GeomAbs_OtherCurve", GeomAbs_OtherCurve);
+        .value("GeomAbs_OtherCurve", GeomAbs_OtherCurve)
+        .export_values();
     nb::enum_<GeomAbs_IsoType>(m, "GeomAbs_IsoType", R"nbdoc(this enumeration describes if a curve is an U isoparaetric
 or V isoparametric)nbdoc", nb::is_arithmetic())
         .value("GeomAbs_IsoU", GeomAbs_IsoU)
         .value("GeomAbs_IsoV", GeomAbs_IsoV)
-        .value("GeomAbs_NoneIso", GeomAbs_NoneIso);
+        .value("GeomAbs_NoneIso", GeomAbs_NoneIso)
+        .export_values();
     nb::enum_<GeomAbs_JoinType>(m, "GeomAbs_JoinType", R"nbdoc(Characterizes the type of a join, built by an algorithm for
 constructing parallel curves, between two consecutive
 arcs of a contour parallel to a given contour.)nbdoc", nb::is_arithmetic())
         .value("GeomAbs_Arc", GeomAbs_Arc)
         .value("GeomAbs_Tangent", GeomAbs_Tangent)
-        .value("GeomAbs_Intersection", GeomAbs_Intersection);
+        .value("GeomAbs_Intersection", GeomAbs_Intersection)
+        .export_values();
     nb::enum_<GeomAbs_Shape>(m, "GeomAbs_Shape", R"nbdoc(Provides information about the continuity of a curve:
 -   C0: only geometric continuity.
 -   G1: for each point on the curve, the tangent vectors
@@ -69,7 +73,8 @@ i in the u parametric direction, and j in the v parametric direction.)nbdoc", nb
         .value("GeomAbs_G2", GeomAbs_G2)
         .value("GeomAbs_C2", GeomAbs_C2)
         .value("GeomAbs_C3", GeomAbs_C3)
-        .value("GeomAbs_CN", GeomAbs_CN);
+        .value("GeomAbs_CN", GeomAbs_CN)
+        .export_values();
     nb::enum_<GeomAbs_SurfaceType>(m, "GeomAbs_SurfaceType", nb::is_arithmetic())
         .value("GeomAbs_Plane", GeomAbs_Plane)
         .value("GeomAbs_Cylinder", GeomAbs_Cylinder)
@@ -81,7 +86,8 @@ i in the u parametric direction, and j in the v parametric direction.)nbdoc", nb
         .value("GeomAbs_SurfaceOfRevolution", GeomAbs_SurfaceOfRevolution)
         .value("GeomAbs_SurfaceOfExtrusion", GeomAbs_SurfaceOfExtrusion)
         .value("GeomAbs_OffsetSurface", GeomAbs_OffsetSurface)
-        .value("GeomAbs_OtherSurface", GeomAbs_OtherSurface);
+        .value("GeomAbs_OtherSurface", GeomAbs_OtherSurface)
+        .export_values();
 }
 
 void nanoocp_templates_GeomAbs(nb::module_ &m) {

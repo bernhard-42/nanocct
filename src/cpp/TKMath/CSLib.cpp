@@ -26,7 +26,8 @@ from the first derivatives D1U and D1V at a point on a surface.)nbdoc", nb::is_a
         .value("CSLib_D1IsNull", CSLib_D1IsNull)
         .value("CSLib_D1uD1vRatioIsNull", CSLib_D1uD1vRatioIsNull)
         .value("CSLib_D1vD1uRatioIsNull", CSLib_D1vD1uRatioIsNull)
-        .value("CSLib_D1uIsParallelD1v", CSLib_D1uIsParallelD1v);
+        .value("CSLib_D1uIsParallelD1v", CSLib_D1uIsParallelD1v)
+        .export_values();
     nb::enum_<CSLib_NormalStatus>(m, "CSLib_NormalStatus", R"nbdoc(Status of surface normal computation.
 
 Describes the result of attempting to compute the normal N to a surface,
@@ -39,7 +40,8 @@ including cases involving derivatives of the normal (DN/du, DN/dv).)nbdoc", nb::
         .value("CSLib_D1NIsNull", CSLib_D1NIsNull)
         .value("CSLib_D1NuNvRatioIsNull", CSLib_D1NuNvRatioIsNull)
         .value("CSLib_D1NvNuRatioIsNull", CSLib_D1NvNuRatioIsNull)
-        .value("CSLib_D1NuIsParallelD1Nv", CSLib_D1NuIsParallelD1Nv);
+        .value("CSLib_D1NuIsParallelD1Nv", CSLib_D1NuIsParallelD1Nv)
+        .export_values();
     { nb::class_<CSLib> cls(m, "CSLib", R"nbdoc(Provides functions for basic geometric computation on curves and surfaces.
 
 This package implements functions for computing surface normals
@@ -64,7 +66,8 @@ The polygon is internally normalized to [0,1] x [0,1] domain for numerical stabi
       nb::enum_<CSLib_Class2d::Result>(cls, "Result", R"nbdoc(Classification result for point-in-polygon tests.)nbdoc", nb::is_arithmetic())
           .value("Result_Inside", CSLib_Class2d::Result_Inside)
           .value("Result_Outside", CSLib_Class2d::Result_Outside)
-          .value("Result_Uncertain", CSLib_Class2d::Result_Uncertain);
+          .value("Result_Uncertain", CSLib_Class2d::Result_Uncertain)
+          .export_values();
     }
     { nb::class_<CSLib_NormalPolyDef, math_FunctionWithDerivative> cls(m, "CSLib_NormalPolyDef", R"nbdoc(Polynomial definition for surface normal computation at singular points.
 

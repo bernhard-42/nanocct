@@ -396,7 +396,7 @@ void nanoocp_templates_GeomGridEval(nb::module_ &m) {
 
 void nanoocp_define_GeomGridEval(nb::module_ &m) {
     nb::borrow<nb::class_<GeomGridEval_Line>>(m.attr("GeomGridEval_Line"))
-        .def(nb::init<const occ::handle<Geom_Line> &>(), nb::arg("theLine"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_Line> &>(), nb::arg("theLine").none(), R"nbdoc(Constructor with geometry.
 @param theLine the line geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_Line> & (GeomGridEval_Line::*)() const>(&GeomGridEval_Line::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_Line::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_Line::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -427,7 +427,7 @@ or empty array if geometry is null or no parameters)nbdoc");
     nanoocp_implicit_copy_ctor<GeomGridEval_Line>(nb::borrow<nb::class_<GeomGridEval_Line>>(m.attr("GeomGridEval_Line")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Line> &>, GeomGridEval_Line>();
     nb::borrow<nb::class_<GeomGridEval_Circle>>(m.attr("GeomGridEval_Circle"))
-        .def(nb::init<const occ::handle<Geom_Circle> &>(), nb::arg("theCircle"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_Circle> &>(), nb::arg("theCircle").none(), R"nbdoc(Constructor with geometry.
 @param theCircle the circle geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_Circle> & (GeomGridEval_Circle::*)() const>(&GeomGridEval_Circle::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_Circle::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_Circle::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -462,7 +462,7 @@ or empty array if geometry is null or no parameters)nbdoc");
     nanoocp_implicit_copy_ctor<GeomGridEval_Circle>(nb::borrow<nb::class_<GeomGridEval_Circle>>(m.attr("GeomGridEval_Circle")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Circle> &>, GeomGridEval_Circle>();
     nb::borrow<nb::class_<GeomGridEval_Ellipse>>(m.attr("GeomGridEval_Ellipse"))
-        .def(nb::init<const occ::handle<Geom_Ellipse> &>(), nb::arg("theEllipse"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_Ellipse> &>(), nb::arg("theEllipse").none(), R"nbdoc(Constructor with geometry.
 @param theEllipse the ellipse geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_Ellipse> & (GeomGridEval_Ellipse::*)() const>(&GeomGridEval_Ellipse::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_Ellipse::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_Ellipse::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -490,7 +490,7 @@ D4 = MajR * cos(u) * X + MinR * sin(u) * Y = D0, then repeats
     nanoocp_implicit_copy_ctor<GeomGridEval_Ellipse>(nb::borrow<nb::class_<GeomGridEval_Ellipse>>(m.attr("GeomGridEval_Ellipse")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Ellipse> &>, GeomGridEval_Ellipse>();
     nb::borrow<nb::class_<GeomGridEval_Hyperbola>>(m.attr("GeomGridEval_Hyperbola"))
-        .def(nb::init<const occ::handle<Geom_Hyperbola> &>(), nb::arg("theHyperbola"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_Hyperbola> &>(), nb::arg("theHyperbola").none(), R"nbdoc(Constructor with geometry.
 @param theHyperbola the hyperbola geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_Hyperbola> & (GeomGridEval_Hyperbola::*)() const>(&GeomGridEval_Hyperbola::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_Hyperbola::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_Hyperbola::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -517,7 +517,7 @@ D3 = D1, D4 = D0, etc.
     nanoocp_implicit_copy_ctor<GeomGridEval_Hyperbola>(nb::borrow<nb::class_<GeomGridEval_Hyperbola>>(m.attr("GeomGridEval_Hyperbola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Hyperbola> &>, GeomGridEval_Hyperbola>();
     nb::borrow<nb::class_<GeomGridEval_Parabola>>(m.attr("GeomGridEval_Parabola"))
-        .def(nb::init<const occ::handle<Geom_Parabola> &>(), nb::arg("theParabola"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_Parabola> &>(), nb::arg("theParabola").none(), R"nbdoc(Constructor with geometry.
 @param theParabola the parabola geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_Parabola> & (GeomGridEval_Parabola::*)() const>(&GeomGridEval_Parabola::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_Parabola::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_Parabola::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -544,7 +544,7 @@ DN = 0 for N >= 3
     nanoocp_implicit_copy_ctor<GeomGridEval_Parabola>(nb::borrow<nb::class_<GeomGridEval_Parabola>>(m.attr("GeomGridEval_Parabola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Parabola> &>, GeomGridEval_Parabola>();
     nb::borrow<nb::class_<GeomGridEval_BezierCurve>>(m.attr("GeomGridEval_BezierCurve"))
-        .def(nb::init<const occ::handle<Geom_BezierCurve> &>(), nb::arg("theBezier"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_BezierCurve> &>(), nb::arg("theBezier").none(), R"nbdoc(Constructor with geometry.
 @param theBezier the bezier curve geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_BezierCurve> & (GeomGridEval_BezierCurve::*)() const>(&GeomGridEval_BezierCurve::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_BezierCurve::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_BezierCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -569,7 +569,7 @@ For orders > 3, uses BSplCLib::DN.
     nanoocp_implicit_copy_ctor<GeomGridEval_BezierCurve>(nb::borrow<nb::class_<GeomGridEval_BezierCurve>>(m.attr("GeomGridEval_BezierCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BezierCurve> &>, GeomGridEval_BezierCurve>();
     nb::borrow<nb::class_<GeomGridEval_BSplineCurve>>(m.attr("GeomGridEval_BSplineCurve"))
-        .def(nb::init<const occ::handle<Geom_BSplineCurve> &>(), nb::arg("theCurve"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_BSplineCurve> &>(), nb::arg("theCurve").none(), R"nbdoc(Constructor with geometry.
 @param theCurve the B-spline curve to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_BSplineCurve> & (GeomGridEval_BSplineCurve::*)() const>(&GeomGridEval_BSplineCurve::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_BSplineCurve::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_BSplineCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -626,7 +626,7 @@ For orders > 3, uses adaptor DN method.
     nanoocp_implicit_copy_ctor<GeomGridEval_OtherCurve>(nb::borrow<nb::class_<GeomGridEval_OtherCurve>>(m.attr("GeomGridEval_OtherCurve")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Curve &>, GeomGridEval_OtherCurve>();
     nb::borrow<nb::class_<GeomGridEval_OffsetCurve>>(m.attr("GeomGridEval_OffsetCurve"))
-        .def(nb::init<const occ::handle<Geom_OffsetCurve> &>(), nb::arg("theOffset"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_OffsetCurve> &>(), nb::arg("theOffset").none(), R"nbdoc(Constructor with geometry.
 @param theOffset the offset curve geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_OffsetCurve> & (GeomGridEval_OffsetCurve::*)() const>(&GeomGridEval_OffsetCurve::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_OffsetCurve::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_OffsetCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -661,7 +661,7 @@ For other adaptors, stores reference for fallback evaluation.
 @note The curve adaptor reference must remain valid during the lifetime
 of this evaluator when using fallback evaluation.
 @param[in] theCurve curve adaptor reference to evaluate)nbdoc")
-        .def(nb::init<const occ::handle<Geom_Curve> &>(), nb::arg("theCurve"), R"nbdoc(Construct from geometry handle (auto-detects curve type).
+        .def(nb::init<const occ::handle<Geom_Curve> &>(), nb::arg("theCurve").none(), R"nbdoc(Construct from geometry handle (auto-detects curve type).
 @param[in] theCurve geometry to evaluate)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_Curve::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_Curve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate grid points at all parameters.
 @param theParams array of parameter values
@@ -684,7 +684,7 @@ of this evaluator when using fallback evaluation.
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Curve &>, GeomGridEval_Curve>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Curve> &>, GeomGridEval_Curve>();
     nb::borrow<nb::class_<GeomGridEval_Plane>>(m.attr("GeomGridEval_Plane"))
-        .def(nb::init<const occ::handle<Geom_Plane> &>(), nb::arg("thePlane"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_Plane> &>(), nb::arg("thePlane").none(), R"nbdoc(Constructor with geometry.
 @param thePlane the plane geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_Plane> & (GeomGridEval_Plane::*)() const>(&GeomGridEval_Plane::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_Plane::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_Plane::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at Cartesian product of U and V parameters.
@@ -712,7 +712,7 @@ of this evaluator when using fallback evaluation.
     nanoocp_implicit_copy_ctor<GeomGridEval_Plane>(nb::borrow<nb::class_<GeomGridEval_Plane>>(m.attr("GeomGridEval_Plane")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Plane> &>, GeomGridEval_Plane>();
     nb::borrow<nb::class_<GeomGridEval_Cylinder>>(m.attr("GeomGridEval_Cylinder"))
-        .def(nb::init<const occ::handle<Geom_CylindricalSurface> &>(), nb::arg("theCylinder"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_CylindricalSurface> &>(), nb::arg("theCylinder").none(), R"nbdoc(Constructor with geometry.
 @param theCylinder the cylindrical surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_CylindricalSurface> & (GeomGridEval_Cylinder::*)() const>(&GeomGridEval_Cylinder::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_Cylinder::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_Cylinder::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at Cartesian product of U and V parameters.
@@ -744,7 +744,7 @@ For a cylinder:
     nanoocp_implicit_copy_ctor<GeomGridEval_Cylinder>(nb::borrow<nb::class_<GeomGridEval_Cylinder>>(m.attr("GeomGridEval_Cylinder")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_CylindricalSurface> &>, GeomGridEval_Cylinder>();
     nb::borrow<nb::class_<GeomGridEval_Sphere>>(m.attr("GeomGridEval_Sphere"))
-        .def(nb::init<const occ::handle<Geom_SphericalSurface> &>(), nb::arg("theSphere"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_SphericalSurface> &>(), nb::arg("theSphere").none(), R"nbdoc(Constructor with geometry.
 @param theSphere the spherical surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_SphericalSurface> & (GeomGridEval_Sphere::*)() const>(&GeomGridEval_Sphere::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_Sphere::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_Sphere::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at Cartesian product of U and V parameters.
@@ -774,7 +774,7 @@ For orders > 3, uses geometry DN method.
     nanoocp_implicit_copy_ctor<GeomGridEval_Sphere>(nb::borrow<nb::class_<GeomGridEval_Sphere>>(m.attr("GeomGridEval_Sphere")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SphericalSurface> &>, GeomGridEval_Sphere>();
     nb::borrow<nb::class_<GeomGridEval_Cone>>(m.attr("GeomGridEval_Cone"))
-        .def(nb::init<const occ::handle<Geom_ConicalSurface> &>(), nb::arg("theCone"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_ConicalSurface> &>(), nb::arg("theCone").none(), R"nbdoc(Constructor with geometry.
 @param theCone the conical surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_ConicalSurface> & (GeomGridEval_Cone::*)() const>(&GeomGridEval_Cone::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_Cone::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_Cone::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at Cartesian product of U and V parameters.
@@ -804,7 +804,7 @@ For orders > 3, uses geometry DN method.
     nanoocp_implicit_copy_ctor<GeomGridEval_Cone>(nb::borrow<nb::class_<GeomGridEval_Cone>>(m.attr("GeomGridEval_Cone")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_ConicalSurface> &>, GeomGridEval_Cone>();
     nb::borrow<nb::class_<GeomGridEval_Torus>>(m.attr("GeomGridEval_Torus"))
-        .def(nb::init<const occ::handle<Geom_ToroidalSurface> &>(), nb::arg("theTorus"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_ToroidalSurface> &>(), nb::arg("theTorus").none(), R"nbdoc(Constructor with geometry.
 @param theTorus the toroidal surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_ToroidalSurface> & (GeomGridEval_Torus::*)() const>(&GeomGridEval_Torus::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_Torus::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_Torus::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at Cartesian product of U and V parameters.
@@ -834,7 +834,7 @@ For orders > 3, uses geometry DN method.
     nanoocp_implicit_copy_ctor<GeomGridEval_Torus>(nb::borrow<nb::class_<GeomGridEval_Torus>>(m.attr("GeomGridEval_Torus")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_ToroidalSurface> &>, GeomGridEval_Torus>();
     nb::borrow<nb::class_<GeomGridEval_BezierSurface>>(m.attr("GeomGridEval_BezierSurface"))
-        .def(nb::init<const occ::handle<Geom_BezierSurface> &>(), nb::arg("theBezier"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_BezierSurface> &>(), nb::arg("theBezier").none(), R"nbdoc(Constructor with geometry.
 @param theBezier the bezier surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_BezierSurface> & (GeomGridEval_BezierSurface::*)() const>(&GeomGridEval_BezierSurface::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_BezierSurface::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_BezierSurface::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate all grid points.
@@ -869,7 +869,7 @@ For orders > 3, uses geometry DN method.
     nanoocp_implicit_copy_ctor<GeomGridEval_BezierSurface>(nb::borrow<nb::class_<GeomGridEval_BezierSurface>>(m.attr("GeomGridEval_BezierSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_BezierSurface> &>, GeomGridEval_BezierSurface>();
     nb::borrow<nb::class_<GeomGridEval_OffsetSurface>>(m.attr("GeomGridEval_OffsetSurface"))
-        .def(nb::init<const occ::handle<Geom_OffsetSurface> &>(), nb::arg("theOffset"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_OffsetSurface> &>(), nb::arg("theOffset").none(), R"nbdoc(Constructor with geometry.
 @param theOffset the offset surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_OffsetSurface> & (GeomGridEval_OffsetSurface::*)() const>(&GeomGridEval_OffsetSurface::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_OffsetSurface::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_OffsetSurface::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate all grid points.
@@ -903,7 +903,7 @@ Uses geometry DN method.
     nanoocp_implicit_copy_ctor<GeomGridEval_OffsetSurface>(nb::borrow<nb::class_<GeomGridEval_OffsetSurface>>(m.attr("GeomGridEval_OffsetSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_OffsetSurface> &>, GeomGridEval_OffsetSurface>();
     nb::borrow<nb::class_<GeomGridEval_BSplineSurface>>(m.attr("GeomGridEval_BSplineSurface"))
-        .def(nb::init<const occ::handle<Geom_BSplineSurface> &>(), nb::arg("theSurface"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_BSplineSurface> &>(), nb::arg("theSurface").none(), R"nbdoc(Constructor with geometry.
 @param theSurface the B-spline surface to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_BSplineSurface> & (GeomGridEval_BSplineSurface::*)() const>(&GeomGridEval_BSplineSurface::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_BSplineSurface::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_BSplineSurface::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at Cartesian product of U and V parameters.
@@ -941,7 +941,7 @@ Uses direct geometry DN method.
     nb::borrow<nb::class_<GeomGridEval_OtherSurface>>(m.attr("GeomGridEval_OtherSurface"))
         .def(nb::init<const Adaptor3d_Surface *>(), nb::arg("theSurface"), R"nbdoc(Constructor with surface adaptor pointer.
 @param theSurface pointer to surface adaptor (must remain valid))nbdoc")
-        .def(nb::init<const occ::handle<Geom_Surface> &>(), nb::arg("theSurface"), R"nbdoc(Constructor with geometry handle.
+        .def(nb::init<const occ::handle<Geom_Surface> &>(), nb::arg("theSurface").none(), R"nbdoc(Constructor with geometry handle.
 @param theSurface handle to Geom_Surface)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_OtherSurface::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_OtherSurface::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at Cartesian product of U and V parameters.
 @param theUParams array of U parameter values
@@ -969,7 +969,7 @@ Uses direct geometry DN method.
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Surface *>, GeomGridEval_OtherSurface>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, GeomGridEval_OtherSurface>();
     nb::borrow<nb::class_<GeomGridEval_SurfaceOfRevolution>>(m.attr("GeomGridEval_SurfaceOfRevolution"))
-        .def(nb::init<const occ::handle<Geom_SurfaceOfRevolution> &>(), nb::arg("theRevolution"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_SurfaceOfRevolution> &>(), nb::arg("theRevolution").none(), R"nbdoc(Constructor with geometry.
 @param theRevolution the revolution surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_SurfaceOfRevolution> & (GeomGridEval_SurfaceOfRevolution::*)() const>(&GeomGridEval_SurfaceOfRevolution::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_SurfaceOfRevolution::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_SurfaceOfRevolution::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate all grid points.
@@ -1001,7 +1001,7 @@ or empty array if geometry is null or no parameters set)nbdoc")
     nanoocp_implicit_copy_ctor<GeomGridEval_SurfaceOfRevolution>(nb::borrow<nb::class_<GeomGridEval_SurfaceOfRevolution>>(m.attr("GeomGridEval_SurfaceOfRevolution")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_SurfaceOfRevolution> &>, GeomGridEval_SurfaceOfRevolution>();
     nb::borrow<nb::class_<GeomGridEval_SurfaceOfExtrusion>>(m.attr("GeomGridEval_SurfaceOfExtrusion"))
-        .def(nb::init<const occ::handle<Geom_SurfaceOfLinearExtrusion> &>(), nb::arg("theExtrusion"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom_SurfaceOfLinearExtrusion> &>(), nb::arg("theExtrusion").none(), R"nbdoc(Constructor with geometry.
 @param theExtrusion the extrusion surface geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom_SurfaceOfLinearExtrusion> & (GeomGridEval_SurfaceOfExtrusion::*)() const>(&GeomGridEval_SurfaceOfExtrusion::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_SurfaceOfExtrusion::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_SurfaceOfExtrusion::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate all grid points.
@@ -1039,7 +1039,7 @@ For other adaptors, stores reference for fallback evaluation.
 @note The surface adaptor reference must remain valid during the lifetime
 of this evaluator when using fallback evaluation.
 @param[in] theSurface surface adaptor reference to evaluate)nbdoc")
-        .def(nb::init<const occ::handle<Geom_Surface> &>(), nb::arg("theSurface"), R"nbdoc(Construct from geometry handle (auto-detects surface type).
+        .def(nb::init<const occ::handle<Geom_Surface> &>(), nb::arg("theSurface").none(), R"nbdoc(Construct from geometry handle (auto-detects surface type).
 @param[in] theSurface geometry to evaluate)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array2<gp_Pnt> (GeomGridEval_Surface::*)(const NCollection_Array1<double> &, const NCollection_Array1<double> &) const>(&GeomGridEval_Surface::EvaluateGrid), nb::arg("theUParams"), nb::arg("theVParams"), R"nbdoc(Evaluate grid points at all specified parameters.
 @param[in] theUParams array of U parameter values

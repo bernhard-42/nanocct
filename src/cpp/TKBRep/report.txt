@@ -1,0 +1,410 @@
+# nanoOCP generator report for TKBRep: 396 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# array: 1
+# conversion: 1
+# field: 1
+# incomplete: 1
+# iterator: 124
+# operator: 104
+# overload-collision: 6
+# override: 7
+# raw-pointer: 21
+# stream: 13
+# template: 116
+# undefined: 1
+array	BRepGraphInc	BRepGraphInc_Reconstruct::Cache::myKinds: field array
+conversion	BRepGraphInc	BRepGraphInc::ParityOrientation::operator TopAbs_Orientation: conversion operator to an unsupported type
+field	BRepGraphInc	BRepGraphInc_Reconstruct::Cache::TempScope::myCache: field reference member (no pointer-to-member)
+incomplete	BRepGraph	BRepGraph_CacheMesh: member mySlots of incomplete type BRepGraph_CacheMesh::Slot -> class skipped
+iterator	BRepGraph	BRepGraph_CacheIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ChildExplorer::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ChildOfCompoundTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::CoEdgeOfWireTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::EdgeOfWireTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::FaceOfShellTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::OccurrenceOfProductTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::ShellOfSolidTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::SolidOfCompSolidTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsOfParent<BRepGraph_DefsIterator::WireOfFaceTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_DefsIterator::DefsVertexOfEdge::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CoEdgeDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CoEdgeDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CompSolidDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CompSolidDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CompoundDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::CompoundDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::EdgeDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::EdgeDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::FaceDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::FaceDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::OccurrenceDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::OccurrenceDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::ProductDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::ProductDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::ShellDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::ShellDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::SolidDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::SolidDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::VertexDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::VertexDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::WireDef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_Iterator<BRepGraphInc::WireDef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_LayerIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ParentExplorer::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ChildRef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::FaceRef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::OccurrenceRef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::ShellRef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::SolidRef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::VertexRef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef, true>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefIterator<BRepGraphInc::WireRef>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ChildOfCompoundTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::CoEdgeOfWireTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::FaceOfShellTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::OccurrenceOfProductTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::ShellOfSolidTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::SolidOfCompSolidTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsOfParent<BRepGraph_RefsIterator::WireOfFaceTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RefsIterator::RefsVertexOfEdge::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RelatedIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::FaceFromEdgeCoEdgeTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::EdgeParentsOf<BRepGraph_ReverseIterator::WireFromEdgeCoEdgeTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompSolidFromSolidRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::CompoundFromChildRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::FaceFromWireRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::OccurrenceFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ProductFromOccurrenceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::ShellFromFaceRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs<BRepGraph_ReverseIterator::SolidFromShellRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::EdgeOfVertexRefTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>::begin(): return: return: STL-style iterator
+iterator	BRepGraph	BRepGraph_RootProductIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	BRepGraph_SupplementIterator::begin(): return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>::operator->(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>::operator++(): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>::operator++(int): return: return: STL-style iterator
+iterator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>::operator->(): return: return: STL-style iterator
+iterator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator++(): return: return: STL-style iterator
+iterator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator++(int): return: return: STL-style iterator
+iterator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator->(): return: return: STL-style iterator
+iterator	TopExp	TopExp_Explorer::begin(): return: STL-style iterator
+iterator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator++(): return: return: STL-style iterator
+iterator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator++(int): return: return: STL-style iterator
+iterator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator->(): return: return: STL-style iterator
+iterator	TopoDS	TopoDS_Iterator::begin(): return: STL-style iterator
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ChildRef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CompSolidDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CompoundDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::EdgeDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::FaceDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::FaceRef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::OccurrenceDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::OccurrenceRef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ProductDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ShellDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ShellRef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::SolidDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::SolidRef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::VertexDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::VertexRef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireDef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireRef>::operator*(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_NodeId::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>::operator++(int): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::operator++(): operator has no Python equivalent
+operator	BRepGraph	BRepGraph_RefId::operator++(int): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>::operator*(): operator has no Python equivalent
+operator	BRepGraph	NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>::operator*(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>::operator++(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgeCurve2D>::operator++(int): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>::operator++(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygon2D>::operator++(int): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>::operator++(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::CoEdgePolygonOnTri>::operator++(int): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>::operator++(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgeCurve3D>::operator++(int): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>::operator++(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::EdgePolygon3D>::operator++(int): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>::operator++(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceSurface>::operator++(int): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>::operator++(): operator has no Python equivalent
+operator	BRepGraphInc	BRepGraph_RepId::Typed<BRepGraph_RepId::Kind::FaceTriangulation>::operator++(int): operator has no Python equivalent
+operator	BinTools	BinTools_IStream::operator>>(bool &): operator has no Python equivalent
+operator	BinTools	BinTools_IStream::operator>>(double &): operator has no Python equivalent
+operator	BinTools	BinTools_IStream::operator>>(float &): operator has no Python equivalent
+operator	BinTools	BinTools_IStream::operator>>(gp_Pnt &): operator has no Python equivalent
+operator	BinTools	BinTools_IStream::operator>>(gp_Trsf &): operator has no Python equivalent
+operator	BinTools	BinTools_IStream::operator>>(int &): operator has no Python equivalent
+operator	BinTools	BinTools_IStream::operator>>(uint8_t &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const BinTools_ObjectType &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const NCollection_Vec3<float> &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const Poly_Triangle &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const bool &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const char16_t &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const double &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const gp_Dir &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const gp_Dir2d &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const gp_Pnt &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const gp_Pnt2d &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const gp_Trsf &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const int &): operator has no Python equivalent
+operator	BinTools	BinTools_OStream::operator<<(const uint8_t &): operator has no Python equivalent
+operator	TopExp	NCollection_ForwardRangeIterator<TopExp_Explorer>::operator*(): operator has no Python equivalent
+operator	TopoDS	NCollection_ForwardRangeIterator<TopoDS_Iterator>::operator*(): operator has no Python equivalent
+operator	TopoDS	operator<<(const occ::handle<Message_Messenger> &, const TopoDS_Shape &): free operator not mapped
+overload-collision	BRep	BRep_Tool::Parameter(const TopoDS_Vertex &, const TopoDS_Edge &, double &): same Python signature as Parameter(const TopoDS_Vertex &, const TopoDS_Edge &) after out-param removal -> unreachable
+overload-collision	BinTools	BinTools_IStream::ReadBools(bool &, bool &, bool &): same Python signature as ReadBools(bool &, bool &, bool &, bool &, bool &, bool &, bool &) after out-param removal -> unreachable
+overload-collision	BinTools	BinTools_IStream::operator>>(bool &): same Python signature as operator>>(double &) after out-param removal -> unreachable
+overload-collision	BinTools	BinTools_IStream::operator>>(float &): same Python signature as operator>>(double &) after out-param removal -> unreachable
+overload-collision	BinTools	BinTools_IStream::operator>>(int &): same Python signature as operator>>(double &) after out-param removal -> unreachable
+overload-collision	BinTools	BinTools_IStream::operator>>(uint8_t &): same Python signature as operator>>(double &) after out-param removal -> unreachable
+override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
+override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
+override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
+override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
+override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
+override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
+override	BRepGraph	BRepGraph_RefsIterator::Detail::RefTraits: namespace skipped (overrides.toml [skip] namespaces)
+raw-pointer	BRep	BRep_Tool::CurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, double &, double &): param 'theIsStored': raw pointer to primitive
+raw-pointer	BRep	BRep_Tool::CurveOnSurface(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, double &, double &): param 'theIsStored': raw pointer to primitive
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ChildRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CompSolidDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::CompoundDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::EdgeDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::FaceDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::FaceRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::OccurrenceDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::OccurrenceRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ProductDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ShellDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::ShellRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::SolidDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::SolidRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::VertexDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::VertexRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireDef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraphInc	BRepGraphInc_BitFlags::Blocks(): return: raw pointer to primitive
+stream	BinTools	BinTools::GetBool(Standard_IStream &, bool &): return: iostream type
+stream	BinTools	BinTools::GetExtChar(Standard_IStream &, char16_t &): return: iostream type
+stream	BinTools	BinTools::GetInteger(Standard_IStream &, int &): return: iostream type
+stream	BinTools	BinTools::GetReal(Standard_IStream &, double &): return: iostream type
+stream	BinTools	BinTools::GetShortReal(Standard_IStream &, float &): return: iostream type
+stream	BinTools	BinTools_Curve2dSet::ReadCurve2d(Standard_IStream &, occ::handle<Geom2d_Curve> &): return: iostream type
+stream	BinTools	BinTools_CurveSet::ReadCurve(Standard_IStream &, occ::handle<Geom_Curve> &): return: iostream type
+stream	BinTools	BinTools_IStream::BinTools_IStream(): param 'theStream': iostream type
+stream	BinTools	BinTools_IStream::Stream(): return: iostream type
+stream	BinTools	BinTools_OStream::BinTools_OStream(): param 'theStream': iostream type
+stream	BinTools	BinTools_SurfaceSet::ReadSurface(Standard_IStream &, occ::handle<Geom_Surface> &): return: iostream type
+stream	BinTools	operator<<(...): iostream type
+stream	BinTools	operator<<(...): iostream type
+template	BRepGraph	BRepGraph::EditorView::GenOps::ApplyModification: template member
+template	BRepGraph	BRepGraph_CacheRegistry::Ensure: template member
+template	BRepGraph	BRepGraph_CacheRegistry::Find: template member
+template	BRepGraph	BRepGraph_CacheRegistry::FindCache: template member
+template	BRepGraph	BRepGraph_ChildExplorer::BRepGraph_ChildExplorer: template member
+template	BRepGraph	BRepGraph_ChildExplorer::BRepGraph_ChildExplorer: template member
+template	BRepGraph	BRepGraph_ChildExplorer::BRepGraph_ChildExplorer: template member
+template	BRepGraph	BRepGraph_DefsIterator::BaseTraits: template in namespace (not bound)
+template	BRepGraph	BRepGraph_DefsIterator::DefsOfParent: template in namespace (not bound)
+template	BRepGraph	BRepGraph_Iterator: template (not bound)
+template	BRepGraph	BRepGraph_IteratorDetail::NodeTraits: template in namespace (not bound)
+template	BRepGraph	BRepGraph_LayerDeferred::ForEachDeferred: template member
+template	BRepGraph	BRepGraph_LayerDeferred::ForEachDeferred: template member
+template	BRepGraph	BRepGraph_LayerRegistry::Ensure: template member
+template	BRepGraph	BRepGraph_LayerRegistry::Find: template member
+template	BRepGraph	BRepGraph_LayerRegistry::FindLayer: template member
+template	BRepGraph	BRepGraph_MutGuard: template (not bound)
+template	BRepGraph	BRepGraph_MutGuard: template (not bound)
+template	BRepGraph	BRepGraph_NodeId::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed: nested class template
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>::IsValidIn: template member
+template	BRepGraph	BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_NodeId::Visit: template member
+template	BRepGraph	BRepGraph_RefId::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed: nested class template
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>::IsValidIn: template member
+template	BRepGraph	BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire>::Typed<TheKind>: template member
+template	BRepGraph	BRepGraph_RefId::Visit: template member
+template	BRepGraph	BRepGraph_RefsIterator::BaseTraits: template in namespace (not bound)
+template	BRepGraph	BRepGraph_RefsIterator::RefIterator: template in namespace (not bound)
+template	BRepGraph	BRepGraph_RefsIterator::RefsOfParent: template in namespace (not bound)
+template	BRepGraph	BRepGraph_ReverseIterator::DefTraits: template in namespace (not bound)
+template	BRepGraph	BRepGraph_ReverseIterator::EdgeParentsOf: template in namespace (not bound)
+template	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs: template in namespace (not bound)
+template	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf: template in namespace (not bound)
+template	BRepGraph	BRepGraph_ReverseIterator::ParentRef: template in namespace (not bound)
+template	BRepGraph	BRepGraph_ReverseIterator::ParentsOf: template in namespace (not bound)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	BRepGraphInc	BRepGraphInc::Instance: template in namespace (not bound)
+template	BRepGraphInc	BRepGraphInc_Storage::ClearGuarded: template member
+template	BRepGraphInc	BRepGraphInc_Storage::ForEachOriginalBinding: template member
+template	BRepGraphInc	BRepGraphInc_Storage::ForEachShapeBinding: template member
+template	BRepGraphInc	BRepGraphInc_Storage::IsGuarded: template member
+template	BRepGraphInc	BRepGraphInc_Storage::IsOwned: template member
+template	BRepGraphInc	BRepGraphInc_Storage::IsRemoved: template member
+template	BRepGraphInc	BRepGraphInc_Storage::SetGuarded: template member
+template	BRepGraphInc	BRepGraphInc_Storage::SetOwned: template member
+template	BRepGraphInc	BRepGraphInc_Storage::SetRemoved: template member
+template	BRepGraphInc	BRepGraph_RepId::Typed: nested class template
+template	BRepTools	BRepTools_History::BRepTools_History: template member
+template	BRepTools	BRepTools_History::Merge: template member
+template	BRepTools	BRepTools_ReShape::Merge: template member
+template	TopExp	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	TopoDS	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
+template	TopoDS	TopoDS_Shape::TopoDS_Shape: template member
+template	TopoDS	TopoDS_Shape::operator=: template member
+undefined	BinTools	BinTools_Curve2dSet::Dump: declared in the header, no definition in libTKBRep

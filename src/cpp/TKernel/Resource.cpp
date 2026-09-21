@@ -50,7 +50,8 @@ from one of these non ASCII format to Unicode, and vice versa.)nbdoc", nb::is_ar
         .value("Resource_SJIS", Resource_SJIS)
         .value("Resource_EUC", Resource_EUC)
         .value("Resource_ANSI", Resource_ANSI)
-        .value("Resource_GB", Resource_GB);
+        .value("Resource_GB", Resource_GB)
+        .export_values();
     { nb::class_<Resource_LexicalCompare> cls(m, "Resource_LexicalCompare");
     }
     { nb::class_<Resource_Manager, Standard_Transient> cls(m, "Resource_Manager", R"nbdoc(Defines a resource structure and its management methods.)nbdoc");

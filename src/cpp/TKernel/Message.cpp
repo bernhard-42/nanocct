@@ -57,7 +57,8 @@ void nanoocp_declare_Message(nb::module_ &m) {
         .value("Message_Info", Message_Info)
         .value("Message_Warning", Message_Warning)
         .value("Message_Alarm", Message_Alarm)
-        .value("Message_Fail", Message_Fail);
+        .value("Message_Fail", Message_Fail)
+        .export_values();
     nb::enum_<Message_MetricType>(m, "Message_MetricType", R"nbdoc(Specifies kind of report information to collect)nbdoc", nb::is_arithmetic())
         .value("Message_MetricType_None", Message_MetricType_None)
         .value("Message_MetricType_ThreadCPUUserTime", Message_MetricType_ThreadCPUUserTime)
@@ -71,13 +72,15 @@ void nanoocp_declare_Message(nb::module_ &m) {
         .value("Message_MetricType_MemWorkingSetPeak", Message_MetricType_MemWorkingSetPeak)
         .value("Message_MetricType_MemSwapUsage", Message_MetricType_MemSwapUsage)
         .value("Message_MetricType_MemSwapUsagePeak", Message_MetricType_MemSwapUsagePeak)
-        .value("Message_MetricType_MemHeapUsage", Message_MetricType_MemHeapUsage);
+        .value("Message_MetricType_MemHeapUsage", Message_MetricType_MemHeapUsage)
+        .export_values();
     nb::enum_<Message_StatusType>(m, "Message_StatusType", R"nbdoc(Definition of types of execution status supported by
 the class Message_ExecStatus)nbdoc", nb::is_arithmetic())
         .value("Message_DONE", Message_DONE)
         .value("Message_WARN", Message_WARN)
         .value("Message_ALARM", Message_ALARM)
-        .value("Message_FAIL", Message_FAIL);
+        .value("Message_FAIL", Message_FAIL)
+        .export_values();
     nb::enum_<Message_Status>(m, "Message_Status", R"nbdoc(Enumeration covering all execution statuses supported by the class
 Message_ExecStatus: 32 statuses per each of 4 types (DONE, WARN, ALARM, FAIL))nbdoc", nb::is_arithmetic())
         .value("Message_None", Message_None)
@@ -208,7 +211,8 @@ Message_ExecStatus: 32 statuses per each of 4 types (DONE, WARN, ALARM, FAIL))nb
         .value("Message_Fail29", Message_Fail29)
         .value("Message_Fail30", Message_Fail30)
         .value("Message_Fail31", Message_Fail31)
-        .value("Message_Fail32", Message_Fail32);
+        .value("Message_Fail32", Message_Fail32)
+        .export_values();
     nb::enum_<Message_ConsoleColor>(m, "Message_ConsoleColor", R"nbdoc(Color definition for console/terminal output (limited palette).)nbdoc", nb::is_arithmetic())
         .value("Message_ConsoleColor_Default", Message_ConsoleColor_Default)
         .value("Message_ConsoleColor_Black", Message_ConsoleColor_Black)
@@ -218,7 +222,8 @@ Message_ExecStatus: 32 statuses per each of 4 types (DONE, WARN, ALARM, FAIL))nb
         .value("Message_ConsoleColor_Green", Message_ConsoleColor_Green)
         .value("Message_ConsoleColor_Yellow", Message_ConsoleColor_Yellow)
         .value("Message_ConsoleColor_Cyan", Message_ConsoleColor_Cyan)
-        .value("Message_ConsoleColor_Magenta", Message_ConsoleColor_Magenta);
+        .value("Message_ConsoleColor_Magenta", Message_ConsoleColor_Magenta)
+        .export_values();
     { nb::class_<Message_Printer, Standard_Transient> cls(m, "Message_Printer", R"nbdoc(Abstract interface class defining printer as output context for text messages
 
 The message, besides being text string, has associated gravity
@@ -291,7 +296,8 @@ user data, while not breaking algorithm execution
           .value("FirstStatus", Message_ExecStatus::FirstStatus)
           .value("StatusesPerType", Message_ExecStatus::StatusesPerType)
           .value("NbStatuses", Message_ExecStatus::NbStatuses)
-          .value("LastStatus", Message_ExecStatus::LastStatus);
+          .value("LastStatus", Message_ExecStatus::LastStatus)
+          .export_values();
     }
     { nb::class_<Message_Msg> cls(m, "Message_Msg", R"nbdoc(This class provides a tool for constructing the parametrized message
 basing on resources loaded by Message_MsgFile tool.
@@ -704,7 +710,7 @@ Default implementation redirects to send().)nbdoc")
         .def("SendStringStream", [](const Message_Printer &self, const nanoocp::TextInput &theStream, const Message_Gravity theGravity) { std::stringstream theStream_stream(theStream.text); self.SendStringStream(theStream_stream, theGravity); }, nb::arg("theStream"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
 Stream is converted to string value.
 Default implementation calls first method Send().)nbdoc")
-        .def("SendObject", static_cast<void (Message_Printer::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_Printer::SendObject), nb::arg("theObject"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
+        .def("SendObject", static_cast<void (Message_Printer::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_Printer::SendObject), nb::arg("theObject").none(), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
 The object is converted to string in format: <object kind> : <object pointer>.
 Default implementation calls first method Send().)nbdoc");
     nb::borrow<nb::class_<Message_Messenger>>(m.attr("Message_Messenger"))
@@ -712,17 +718,17 @@ Default implementation calls first method Send().)nbdoc");
 Note: the default messenger is not empty but directed to cout
 in order to protect against possibility to forget defining printers.
 If printing to cout is not needed, clear messenger by GetPrinters().Clear())nbdoc")
-        .def(nb::new_([](const occ::handle<Message_Printer> & thePrinter) { return opencascade::handle<Message_Messenger>(new Message_Messenger(thePrinter)); }), nb::arg("thePrinter"), R"nbdoc(Create messenger with single printer)nbdoc")
+        .def(nb::new_([](const occ::handle<Message_Printer> & thePrinter) { return opencascade::handle<Message_Messenger>(new Message_Messenger(thePrinter)); }), nb::arg("thePrinter").none(), R"nbdoc(Create messenger with single printer)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Messenger::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Messenger::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Messenger::*)() const>(&Message_Messenger::DynamicType))
-        .def("AddPrinter", static_cast<bool (Message_Messenger::*)(const occ::handle<Message_Printer> &)>(&Message_Messenger::AddPrinter), nb::arg("thePrinter"), R"nbdoc(Add a printer to the messenger.
+        .def("AddPrinter", static_cast<bool (Message_Messenger::*)(const occ::handle<Message_Printer> &)>(&Message_Messenger::AddPrinter), nb::arg("thePrinter").none(), R"nbdoc(Add a printer to the messenger.
 The printer will be added only if it is not yet in the list.
 Returns True if printer has been added.)nbdoc")
-        .def("RemovePrinter", static_cast<bool (Message_Messenger::*)(const occ::handle<Message_Printer> &)>(&Message_Messenger::RemovePrinter), nb::arg("thePrinter"), R"nbdoc(Removes specified printer from the messenger.
+        .def("RemovePrinter", static_cast<bool (Message_Messenger::*)(const occ::handle<Message_Printer> &)>(&Message_Messenger::RemovePrinter), nb::arg("thePrinter").none(), R"nbdoc(Removes specified printer from the messenger.
 Returns True if this printer has been found in the list
 and removed.)nbdoc")
-        .def("RemovePrinters", static_cast<int (Message_Messenger::*)(const occ::handle<Standard_Type> &)>(&Message_Messenger::RemovePrinters), nb::arg("theType"), R"nbdoc(Removes printers of specified type (including derived classes)
+        .def("RemovePrinters", static_cast<int (Message_Messenger::*)(const occ::handle<Standard_Type> &)>(&Message_Messenger::RemovePrinters), nb::arg("theType").none(), R"nbdoc(Removes printers of specified type (including derived classes)
 from the messenger.
 Returns number of removed printers.)nbdoc")
         .def("Printers", static_cast<const NCollection_Sequence<opencascade::handle<Message_Printer>> & (Message_Messenger::*)() const>(&Message_Messenger::Printers), R"nbdoc(Returns current sequence of printers)nbdoc")
@@ -735,7 +741,7 @@ convenience, by default all are converted to ExtendedString.)nbdoc")
         .def("Send", static_cast<void (Message_Messenger::*)(const TCollection_AsciiString &, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theString"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(See above)nbdoc")
         .def("Send", static_cast<void (Message_Messenger::*)(const TCollection_ExtendedString &, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theString"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(See above)nbdoc")
         .def("Send", static_cast<Message_Messenger::StreamBuffer (Message_Messenger::*)(Message_Gravity)>(&Message_Messenger::Send), nb::arg("theGravity"), R"nbdoc(Create string buffer for message of specified type)nbdoc")
-        .def("Send", static_cast<void (Message_Messenger::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theObject"), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(See above)nbdoc")
+        .def("Send", static_cast<void (Message_Messenger::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_Messenger::Send), nb::arg("theObject").none(), nb::arg("theGravity") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), R"nbdoc(See above)nbdoc")
         .def("SendFail", static_cast<Message_Messenger::StreamBuffer (Message_Messenger::*)()>(&Message_Messenger::SendFail), R"nbdoc(Create string buffer for sending Fail message)nbdoc")
         .def("SendAlarm", static_cast<Message_Messenger::StreamBuffer (Message_Messenger::*)()>(&Message_Messenger::SendAlarm), R"nbdoc(Create string buffer for sending Alarm message)nbdoc")
         .def("SendWarning", static_cast<Message_Messenger::StreamBuffer (Message_Messenger::*)()>(&Message_Messenger::SendWarning), R"nbdoc(Create string buffer for sending Warning message)nbdoc")
@@ -824,7 +830,7 @@ Base implementation returns dynamic type name of the instance.)nbdoc")
         .def("SupportsMerge", static_cast<bool (Message_Alert::*)() const>(&Message_Alert::SupportsMerge), R"nbdoc(Return true if this type of alert can be merged with other
 of the same type to avoid duplication.
 Basis implementation returns true.)nbdoc")
-        .def("Merge", static_cast<bool (Message_Alert::*)(const occ::handle<Message_Alert> &)>(&Message_Alert::Merge), nb::arg("theTarget"), R"nbdoc(If possible, merge data contained in this alert to theTarget.
+        .def("Merge", static_cast<bool (Message_Alert::*)(const occ::handle<Message_Alert> &)>(&Message_Alert::Merge), nb::arg("theTarget").none(), R"nbdoc(If possible, merge data contained in this alert to theTarget.
 @return True if merged.
 Base implementation always returns true.)nbdoc")
         .def("DumpJson", [](const Message_Alert &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
@@ -834,7 +840,7 @@ Base implementation always returns true.)nbdoc")
     nanoocp_implicit_copy_ctor<Message_Alert>(nb::borrow<nb::class_<Message_Alert>>(m.attr("Message_Alert")));
     nb::borrow<nb::class_<Message_AlertExtended>>(m.attr("Message_AlertExtended"))
         .def(nb::new_([]() { return opencascade::handle<Message_AlertExtended>(new Message_AlertExtended()); }), R"nbdoc(Empty constructor)nbdoc")
-        .def_static("AddAlert", static_cast<occ::handle<Message_Alert> (*)(const occ::handle<Message_Report> &, const occ::handle<Message_Attribute> &, const Message_Gravity)>(&Message_AlertExtended::AddAlert), nb::arg("theReport"), nb::arg("theAttribute"), nb::arg("theGravity"), R"nbdoc(Creates new instance of the alert and put it into report with Message_Info gravity.
+        .def_static("AddAlert", static_cast<occ::handle<Message_Alert> (*)(const occ::handle<Message_Report> &, const occ::handle<Message_Attribute> &, const Message_Gravity)>(&Message_AlertExtended::AddAlert), nb::arg("theReport").none(), nb::arg("theAttribute").none(), nb::arg("theGravity"), R"nbdoc(Creates new instance of the alert and put it into report with Message_Info gravity.
 It does nothing if such kind of gravity is not active in the report
 @param theReport the message report where new alert is placed
 @param theAttribute container of additional values of the alert
@@ -843,7 +849,7 @@ It does nothing if such kind of gravity is not active in the report
 The messages are generated with help of Message_Msg class, in Message_Report::Dump().
 Base implementation returns dynamic type name of the instance.)nbdoc")
         .def("Attribute", static_cast<const occ::handle<Message_Attribute> & (Message_AlertExtended::*)() const>(&Message_AlertExtended::Attribute), R"nbdoc(Returns container of the alert attributes)nbdoc")
-        .def("SetAttribute", static_cast<void (Message_AlertExtended::*)(const occ::handle<Message_Attribute> &)>(&Message_AlertExtended::SetAttribute), nb::arg("theAttribute"), R"nbdoc(Sets container of the alert attributes
+        .def("SetAttribute", static_cast<void (Message_AlertExtended::*)(const occ::handle<Message_Attribute> &)>(&Message_AlertExtended::SetAttribute), nb::arg("theAttribute").none(), R"nbdoc(Sets container of the alert attributes
 @param theAttributes an attribute values)nbdoc")
         .def("CompositeAlerts", static_cast<occ::handle<Message_CompositeAlerts> (Message_AlertExtended::*)(const bool)>(&Message_AlertExtended::CompositeAlerts), nb::arg("theToCreate") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Returns class provided hierarchy of alerts if created or create if the parameter is true
 @param theToCreate if composite alert has not been created for this alert, it should be
@@ -853,7 +859,7 @@ created
 of the same type to avoid duplication.
 Hierarchical alerts can not be merged
 Basis implementation returns true.)nbdoc")
-        .def("Merge", static_cast<bool (Message_AlertExtended::*)(const occ::handle<Message_Alert> &)>(&Message_AlertExtended::Merge), nb::arg("theTarget"), R"nbdoc(If possible, merge data contained in this alert to theTarget.
+        .def("Merge", static_cast<bool (Message_AlertExtended::*)(const occ::handle<Message_Alert> &)>(&Message_AlertExtended::Merge), nb::arg("theTarget").none(), R"nbdoc(If possible, merge data contained in this alert to theTarget.
 Base implementation always returns false.
 @return True if merged)nbdoc")
         .def("DumpJson", [](const Message_AlertExtended &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
@@ -902,9 +908,9 @@ using messages from resource file)nbdoc")
 using messages from resource file)nbdoc")
         .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const char *const)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theString"), R"nbdoc(Set a value for %..s conversion)nbdoc")
         .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const TCollection_AsciiString &)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theString"), R"nbdoc(Set a value for %..s conversion)nbdoc")
-        .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const occ::handle<TCollection_HAsciiString> &)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theString"), R"nbdoc(Set a value for %..s conversion)nbdoc")
+        .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const occ::handle<TCollection_HAsciiString> &)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theString").none(), R"nbdoc(Set a value for %..s conversion)nbdoc")
         .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const TCollection_ExtendedString &)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theString"), R"nbdoc(Set a value for %..s conversion)nbdoc")
-        .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const occ::handle<TCollection_HExtendedString> &)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theString"), R"nbdoc(Set a value for %..s conversion)nbdoc")
+        .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const occ::handle<TCollection_HExtendedString> &)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theString").none(), R"nbdoc(Set a value for %..s conversion)nbdoc")
         .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const int)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theInt"), R"nbdoc(Set a value for %..d, %..i, %..o, %..u, %..x or %..X conversion)nbdoc")
         .def("Arg", static_cast<Message_Msg & (Message_Msg::*)(const double)>(&Message_Msg::Arg), nb::rv_policy::reference_internal, nb::arg("theReal"), R"nbdoc(Set a value for %..f, %..e, %..E, %..g or %..G conversion)nbdoc")
         .def("Original", static_cast<const TCollection_ExtendedString & (Message_Msg::*)() const>(&Message_Msg::Original), R"nbdoc(Returns the original message text)nbdoc")
@@ -927,13 +933,13 @@ if it has not been yet recorded for the same status flag)nbdoc")
         .def("SetStatus", static_cast<void (Message_Algorithm::*)(const Message_Status &, const TCollection_AsciiString &, const bool)>(&Message_Algorithm::SetStatus), nb::arg("theStat"), nb::arg("theStr"), nb::arg("noRepetitions") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets status with string parameter
 If noRepetitions is True, the parameter will be added only
 if it has not been yet recorded for the same status flag)nbdoc")
-        .def("SetStatus", static_cast<void (Message_Algorithm::*)(const Message_Status &, const occ::handle<TCollection_HAsciiString> &, const bool)>(&Message_Algorithm::SetStatus), nb::arg("theStat"), nb::arg("theStr"), nb::arg("noRepetitions") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets status with string parameter
+        .def("SetStatus", static_cast<void (Message_Algorithm::*)(const Message_Status &, const occ::handle<TCollection_HAsciiString> &, const bool)>(&Message_Algorithm::SetStatus), nb::arg("theStat"), nb::arg("theStr").none(), nb::arg("noRepetitions") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets status with string parameter
 If noRepetitions is True, the parameter will be added only
 if it has not been yet recorded for the same status flag)nbdoc")
         .def("SetStatus", static_cast<void (Message_Algorithm::*)(const Message_Status &, const TCollection_ExtendedString &, const bool)>(&Message_Algorithm::SetStatus), nb::arg("theStat"), nb::arg("theStr"), nb::arg("noRepetitions") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets status with string parameter
 If noRepetitions is True, the parameter will be added only
 if it has not been yet recorded for the same status flag)nbdoc")
-        .def("SetStatus", static_cast<void (Message_Algorithm::*)(const Message_Status &, const occ::handle<TCollection_HExtendedString> &, const bool)>(&Message_Algorithm::SetStatus), nb::arg("theStat"), nb::arg("theStr"), nb::arg("noRepetitions") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets status with string parameter
+        .def("SetStatus", static_cast<void (Message_Algorithm::*)(const Message_Status &, const occ::handle<TCollection_HExtendedString> &, const bool)>(&Message_Algorithm::SetStatus), nb::arg("theStat"), nb::arg("theStr").none(), nb::arg("noRepetitions") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets status with string parameter
 If noRepetitions is True, the parameter will be added only
 if it has not been yet recorded for the same status flag)nbdoc")
         .def("SetStatus", static_cast<void (Message_Algorithm::*)(const Message_Status &, const Message_Msg &)>(&Message_Algorithm::SetStatus), nb::arg("theStat"), nb::arg("theMsg"), R"nbdoc(Sets status with preformatted message. This message will be
@@ -942,7 +948,7 @@ status messages will be disabled for it.)nbdoc")
         .def("GetStatus", static_cast<const Message_ExecStatus & (Message_Algorithm::*)() const>(&Message_Algorithm::GetStatus), R"nbdoc(Returns copy of exec status of algorithm)nbdoc")
         .def("ChangeStatus", static_cast<Message_ExecStatus & (Message_Algorithm::*)()>(&Message_Algorithm::ChangeStatus), nb::rv_policy::reference_internal, R"nbdoc(Returns exec status of algorithm)nbdoc")
         .def("ClearStatus", static_cast<void (Message_Algorithm::*)()>(&Message_Algorithm::ClearStatus), R"nbdoc(Clear exec status of algorithm)nbdoc")
-        .def("SetMessenger", static_cast<void (Message_Algorithm::*)(const occ::handle<Message_Messenger> &)>(&Message_Algorithm::SetMessenger), nb::arg("theMsgr"), R"nbdoc(Sets messenger to algorithm)nbdoc")
+        .def("SetMessenger", static_cast<void (Message_Algorithm::*)(const occ::handle<Message_Messenger> &)>(&Message_Algorithm::SetMessenger), nb::arg("theMsgr").none(), R"nbdoc(Sets messenger to algorithm)nbdoc")
         .def("GetMessenger", static_cast<occ::handle<Message_Messenger> (Message_Algorithm::*)() const>(&Message_Algorithm::GetMessenger), R"nbdoc(Returns messenger of algorithm.
 The returned handle is always non-null and can
 be used for sending messages.)nbdoc")
@@ -966,16 +972,16 @@ messages from other sub-algorithms))nbdoc")
         .def("SendMessages", static_cast<void (Message_Algorithm::*)(const Message_Gravity, const int) const>(&Message_Algorithm::SendMessages), nb::arg("theTraceLevel") = static_cast<std::decay_t<const Message_Gravity>>(Message_Warning), nb::arg("theMaxCount") = static_cast<std::decay_t<const int>>(20), R"nbdoc(Convenient variant of SendStatusMessages() with theFilter
 having defined all WARN, ALARM, and FAIL (but not DONE)
 status flags)nbdoc")
-        .def("AddStatus", static_cast<void (Message_Algorithm::*)(const occ::handle<Message_Algorithm> &)>(&Message_Algorithm::AddStatus), nb::arg("theOther"), R"nbdoc(Add statuses to this algorithm from other algorithm
+        .def("AddStatus", static_cast<void (Message_Algorithm::*)(const occ::handle<Message_Algorithm> &)>(&Message_Algorithm::AddStatus), nb::arg("theOther").none(), R"nbdoc(Add statuses to this algorithm from other algorithm
 (including messages))nbdoc")
-        .def("AddStatus", static_cast<void (Message_Algorithm::*)(const Message_ExecStatus &, const occ::handle<Message_Algorithm> &)>(&Message_Algorithm::AddStatus), nb::arg("theStatus"), nb::arg("theOther"), R"nbdoc(Add statuses to this algorithm from other algorithm, but
+        .def("AddStatus", static_cast<void (Message_Algorithm::*)(const Message_ExecStatus &, const occ::handle<Message_Algorithm> &)>(&Message_Algorithm::AddStatus), nb::arg("theStatus"), nb::arg("theOther").none(), R"nbdoc(Add statuses to this algorithm from other algorithm, but
 only those items are moved that correspond to statuses
 set in theStatus)nbdoc")
         .def("GetMessageNumbers", static_cast<occ::handle<TColStd_HPackedMapOfInteger> (Message_Algorithm::*)(const Message_Status &) const>(&Message_Algorithm::GetMessageNumbers), nb::arg("theStatus"), R"nbdoc(Return the numbers associated with the indicated status;
 Null handle if no such status or no numbers associated with it)nbdoc")
         .def("GetMessageStrings", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<TCollection_HExtendedString>>> (Message_Algorithm::*)(const Message_Status &) const>(&Message_Algorithm::GetMessageStrings), nb::arg("theStatus"), R"nbdoc(Return the strings associated with the indicated status;
 Null handle if no such status or no strings associated with it)nbdoc")
-        .def_static("PrepareReport", static_cast<TCollection_ExtendedString (*)(const occ::handle<TColStd_HPackedMapOfInteger> &, const int)>(&Message_Algorithm::PrepareReport), nb::arg("theError"), nb::arg("theMaxCount"), R"nbdoc(Prepares a string containing a list of integers contained
+        .def_static("PrepareReport", static_cast<TCollection_ExtendedString (*)(const occ::handle<TColStd_HPackedMapOfInteger> &, const int)>(&Message_Algorithm::PrepareReport), nb::arg("theError").none(), nb::arg("theMaxCount"), R"nbdoc(Prepares a string containing a list of integers contained
 in theError map, but not more than theMaxCount)nbdoc")
         .def_static("PrepareReport", static_cast<TCollection_ExtendedString (*)(const NCollection_Sequence<opencascade::handle<TCollection_HExtendedString>> &, const int)>(&Message_Algorithm::PrepareReport), nb::arg("theReportSeq"), nb::arg("theMaxCount"), R"nbdoc(Prepares a string containing a list of names contained
 in theReportSeq sequence, but not more than theMaxCount)nbdoc")
@@ -984,7 +990,7 @@ in theReportSeq sequence, but not more than theMaxCount)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Algorithm::*)() const>(&Message_Algorithm::DynamicType));
     nanoocp_implicit_copy_ctor<Message_Algorithm>(nb::borrow<nb::class_<Message_Algorithm>>(m.attr("Message_Algorithm")));
     nb::borrow<nb::class_<Message_Attribute>>(m.attr("Message_Attribute"))
-        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_Attribute>(new Message_Attribute(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Empty constructor)nbdoc")
+        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_Attribute>(new Message_Attribute(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Empty constructor)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Attribute::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Attribute::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_Attribute::*)() const>(&Message_Attribute::DynamicType))
@@ -999,7 +1005,7 @@ Base implementation returns dynamic type name of the instance.)nbdoc")
     nanoocp_implicit_copy_ctor<Message_Attribute>(nb::borrow<nb::class_<Message_Attribute>>(m.attr("Message_Attribute")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_Attribute>();
     nb::borrow<nb::class_<Message_AttributeMeter>>(m.attr("Message_AttributeMeter"))
-        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeMeter>(new Message_AttributeMeter(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor with string argument)nbdoc")
+        .def(nb::new_([](const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeMeter>(new Message_AttributeMeter(theName)); }), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Constructor with string argument)nbdoc")
         .def_static("UndefinedMetricValue", static_cast<double (*)()>(&Message_AttributeMeter::UndefinedMetricValue), R"nbdoc(Returns default value of the metric when it is not defined
 @return undefined value)nbdoc")
         .def("HasMetric", static_cast<bool (Message_AttributeMeter::*)(const Message_MetricType &) const>(&Message_AttributeMeter::HasMetric), nb::arg("theMetric"), R"nbdoc(Checks whether the attribute has values for the metric
@@ -1018,11 +1024,11 @@ Base implementation returns dynamic type name of the instance.)nbdoc")
 @return real value)nbdoc")
         .def("SetStopValue", static_cast<void (Message_AttributeMeter::*)(const Message_MetricType &, const double)>(&Message_AttributeMeter::SetStopValue), nb::arg("theMetric"), nb::arg("theValue"), R"nbdoc(Sets stop values for the metric
 @param[in] theMetric  metric type)nbdoc")
-        .def_static("StartAlert", static_cast<void (*)(const occ::handle<Message_AlertExtended> &)>(&Message_AttributeMeter::StartAlert), nb::arg("theAlert"), R"nbdoc(Sets start values of default report metrics into the alert
+        .def_static("StartAlert", static_cast<void (*)(const occ::handle<Message_AlertExtended> &)>(&Message_AttributeMeter::StartAlert), nb::arg("theAlert").none(), R"nbdoc(Sets start values of default report metrics into the alert
 @param theAlert an alert)nbdoc")
-        .def_static("StopAlert", static_cast<void (*)(const occ::handle<Message_AlertExtended> &)>(&Message_AttributeMeter::StopAlert), nb::arg("theAlert"), R"nbdoc(Sets stop values of default report metrics into the alert
+        .def_static("StopAlert", static_cast<void (*)(const occ::handle<Message_AlertExtended> &)>(&Message_AttributeMeter::StopAlert), nb::arg("theAlert").none(), R"nbdoc(Sets stop values of default report metrics into the alert
 @param theAlert an alert)nbdoc")
-        .def_static("SetAlertMetrics", static_cast<void (*)(const occ::handle<Message_AlertExtended> &, const bool)>(&Message_AttributeMeter::SetAlertMetrics), nb::arg("theAlert"), nb::arg("theStartValue"), R"nbdoc(Sets current values of default report metrics into the alert.
+        .def_static("SetAlertMetrics", static_cast<void (*)(const occ::handle<Message_AlertExtended> &, const bool)>(&Message_AttributeMeter::SetAlertMetrics), nb::arg("theAlert").none(), nb::arg("theStartValue"), R"nbdoc(Sets current values of default report metrics into the alert.
 Processed only alert with Message_AttributeMeter attribute
 @param theAlert an alert
 @param theStartValue flag, if true, the start value is collected otherwise stop)nbdoc")
@@ -1033,13 +1039,13 @@ Processed only alert with Message_AttributeMeter attribute
     nanoocp_implicit_copy_ctor<Message_AttributeMeter>(nb::borrow<nb::class_<Message_AttributeMeter>>(m.attr("Message_AttributeMeter")));
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, Message_AttributeMeter>();
     nb::borrow<nb::class_<Message_AttributeObject>>(m.attr("Message_AttributeObject"))
-        .def(nb::new_([](const occ::handle<Standard_Transient> & theObject, const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeObject>(new Message_AttributeObject(theObject, theName)); }), nb::arg("theObject"), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor with string argument)nbdoc")
+        .def(nb::new_([](const occ::handle<Standard_Transient> & theObject, const TCollection_AsciiString & theName) { return opencascade::handle<Message_AttributeObject>(new Message_AttributeObject(theObject, theName)); }), nb::arg("theObject").none(), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Constructor with string argument)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_AttributeObject::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_AttributeObject::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_AttributeObject::*)() const>(&Message_AttributeObject::DynamicType))
         .def("Object", static_cast<const occ::handle<Standard_Transient> & (Message_AttributeObject::*)() const>(&Message_AttributeObject::Object), R"nbdoc(Returns object
 @return the object instance)nbdoc")
-        .def("SetObject", static_cast<void (Message_AttributeObject::*)(const occ::handle<Standard_Transient> &)>(&Message_AttributeObject::SetObject), nb::arg("theObject"), R"nbdoc(Sets the object
+        .def("SetObject", static_cast<void (Message_AttributeObject::*)(const occ::handle<Standard_Transient> &)>(&Message_AttributeObject::SetObject), nb::arg("theObject").none(), R"nbdoc(Sets the object
 @param theObject an instance)nbdoc")
         .def("DumpJson", [](const Message_AttributeObject &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Message_AttributeObject>(nb::borrow<nb::class_<Message_AttributeObject>>(m.attr("Message_AttributeObject")));
@@ -1057,25 +1063,25 @@ Processed only alert with Message_AttributeMeter attribute
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_CompositeAlerts::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_CompositeAlerts::*)() const>(&Message_CompositeAlerts::DynamicType))
         .def("Alerts", static_cast<const NCollection_List<opencascade::handle<Message_Alert>> & (Message_CompositeAlerts::*)(const Message_Gravity) const>(&Message_CompositeAlerts::Alerts), nb::arg("theGravity"), R"nbdoc(Returns list of collected alerts with specified gravity)nbdoc")
-        .def("AddAlert", static_cast<bool (Message_CompositeAlerts::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_CompositeAlerts::AddAlert), nb::arg("theGravity"), nb::arg("theAlert"), R"nbdoc(Add alert with specified gravity. If the alert supports merge it will be merged.
+        .def("AddAlert", static_cast<bool (Message_CompositeAlerts::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_CompositeAlerts::AddAlert), nb::arg("theGravity"), nb::arg("theAlert").none(), R"nbdoc(Add alert with specified gravity. If the alert supports merge it will be merged.
 @param theGravity an alert gravity
 @param theAlert an alert to be added as a child alert
 @return true if the alert is added or merged)nbdoc")
-        .def("RemoveAlert", static_cast<bool (Message_CompositeAlerts::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_CompositeAlerts::RemoveAlert), nb::arg("theGravity"), nb::arg("theAlert"), R"nbdoc(Removes alert with specified gravity.
+        .def("RemoveAlert", static_cast<bool (Message_CompositeAlerts::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_CompositeAlerts::RemoveAlert), nb::arg("theGravity"), nb::arg("theAlert").none(), R"nbdoc(Removes alert with specified gravity.
 @param theGravity an alert gravity
 @param theAlert an alert to be removed from the children
 @return true if the alert is removed)nbdoc")
-        .def("HasAlert", static_cast<bool (Message_CompositeAlerts::*)(const occ::handle<Message_Alert> &)>(&Message_CompositeAlerts::HasAlert), nb::arg("theAlert"), R"nbdoc(Returns true if the alert belong the list of the child alerts.
+        .def("HasAlert", static_cast<bool (Message_CompositeAlerts::*)(const occ::handle<Message_Alert> &)>(&Message_CompositeAlerts::HasAlert), nb::arg("theAlert").none(), R"nbdoc(Returns true if the alert belong the list of the child alerts.
 @param theAlert an alert to be checked as a child alert
 @return true if the alert is found in a container of children)nbdoc")
-        .def("HasAlert", static_cast<bool (Message_CompositeAlerts::*)(const occ::handle<Standard_Type> &, Message_Gravity)>(&Message_CompositeAlerts::HasAlert), nb::arg("theType"), nb::arg("theGravity"), R"nbdoc(Returns true if specific type of alert is recorded with specified gravity
+        .def("HasAlert", static_cast<bool (Message_CompositeAlerts::*)(const occ::handle<Standard_Type> &, Message_Gravity)>(&Message_CompositeAlerts::HasAlert), nb::arg("theType").none(), nb::arg("theGravity"), R"nbdoc(Returns true if specific type of alert is recorded with specified gravity
 @param theType an alert type
 @param theGravity an alert gravity
 @return true if the alert is found in a container of children)nbdoc")
         .def("Clear", static_cast<void (Message_CompositeAlerts::*)()>(&Message_CompositeAlerts::Clear), R"nbdoc(Clears all collected alerts)nbdoc")
         .def("Clear", static_cast<void (Message_CompositeAlerts::*)(Message_Gravity)>(&Message_CompositeAlerts::Clear), nb::arg("theGravity"), R"nbdoc(Clears collected alerts with specified gravity
 @param theGravity an alert gravity)nbdoc")
-        .def("Clear", static_cast<void (Message_CompositeAlerts::*)(const occ::handle<Standard_Type> &)>(&Message_CompositeAlerts::Clear), nb::arg("theType"), R"nbdoc(Clears collected alerts with specified type
+        .def("Clear", static_cast<void (Message_CompositeAlerts::*)(const occ::handle<Standard_Type> &)>(&Message_CompositeAlerts::Clear), nb::arg("theType").none(), R"nbdoc(Clears collected alerts with specified type
 @param theType an alert type)nbdoc")
         .def("DumpJson", [](const Message_CompositeAlerts &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Message_CompositeAlerts>(nb::borrow<nb::class_<Message_CompositeAlerts>>(m.attr("Message_CompositeAlerts")));
@@ -1140,7 +1146,7 @@ Closed scope should not be used.)nbdoc");
 This range refers to the scope that has no name and is initialized
 with max value 1 and step 1.
 Use this method to get the top level range for progress indication.)nbdoc")
-        .def_static("Start_s", static_cast<Message_ProgressRange (*)(const occ::handle<Message_ProgressIndicator> &)>(&Message_ProgressIndicator::Start), nb::arg("theProgress"), R"nbdoc(If argument is non-null handle, returns theProgress->Start().
+        .def_static("Start_s", static_cast<Message_ProgressRange (*)(const occ::handle<Message_ProgressIndicator> &)>(&Message_ProgressIndicator::Start), nb::arg("theProgress").none(), R"nbdoc(If argument is non-null handle, returns theProgress->Start().
 Otherwise, returns dummy range that can be safely used in the algorithms
 but not bound to progress indicator.)nbdoc")
         .def("GetPosition", static_cast<double (Message_ProgressIndicator::*)() const>(&Message_ProgressIndicator::GetPosition), R"nbdoc(Returns total progress position ranged from 0 to 1.
@@ -1151,14 +1157,14 @@ except from implementation of method Show().)nbdoc");
         .def("More", static_cast<bool (Message_LazyProgressScope::*)() const>(&Message_LazyProgressScope::More), R"nbdoc(Return TRUE if progress has been aborted - return the cached state lazily updated.)nbdoc")
         .def("IsAborted", static_cast<bool (Message_LazyProgressScope::*)()>(&Message_LazyProgressScope::IsAborted), R"nbdoc(Return TRUE if progress has been aborted - fetches actual value from the Progress.)nbdoc");
     nb::borrow<nb::class_<Message_Level>>(m.attr("Message_Level"))
-        .def(nb::init<const TCollection_AsciiString &>(), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor.
+        .def(nb::init<const TCollection_AsciiString &>(), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Constructor.
 One string key is used for all alert meters.
 The perf meter is not started automatically, it will be done in AddAlert() method)nbdoc")
         .def("RootAlert", static_cast<const occ::handle<Message_AlertExtended> & (Message_Level::*)() const>(&Message_Level::RootAlert), R"nbdoc(Returns root alert of the level
 @return alert instance or NULL)nbdoc")
-        .def("SetRootAlert", static_cast<void (Message_Level::*)(const occ::handle<Message_AlertExtended> &, const bool)>(&Message_Level::SetRootAlert), nb::arg("theAlert"), nb::arg("isRequiredToStart"), R"nbdoc(Sets the root alert. Starts collects alert metrics if active.
+        .def("SetRootAlert", static_cast<void (Message_Level::*)(const occ::handle<Message_AlertExtended> &, const bool)>(&Message_Level::SetRootAlert), nb::arg("theAlert").none(), nb::arg("isRequiredToStart"), R"nbdoc(Sets the root alert. Starts collects alert metrics if active.
 @param theAlert an alert)nbdoc")
-        .def("AddAlert", static_cast<bool (Message_Level::*)(const Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_Level::AddAlert), nb::arg("theGravity"), nb::arg("theAlert"), R"nbdoc(Adds new alert on the level. Stops the last alert metric, appends the alert and starts the
+        .def("AddAlert", static_cast<bool (Message_Level::*)(const Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_Level::AddAlert), nb::arg("theGravity"), nb::arg("theAlert").none(), R"nbdoc(Adds new alert on the level. Stops the last alert metric, appends the alert and starts the
 alert metrics collecting. Sets root alert beforehand this method using, if the root is NULL,
 it does nothing.
 @param theGravity an alert gravity
@@ -1227,12 +1233,12 @@ TRUE by default.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_PrinterToReport::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Message_PrinterToReport::*)() const>(&Message_PrinterToReport::DynamicType))
         .def("Report", static_cast<const occ::handle<Message_Report> & (Message_PrinterToReport::*)() const>(&Message_PrinterToReport::Report), R"nbdoc(Returns the current or default report)nbdoc")
-        .def("SetReport", static_cast<void (Message_PrinterToReport::*)(const occ::handle<Message_Report> &)>(&Message_PrinterToReport::SetReport), nb::arg("theReport"), R"nbdoc(Sets the printer report
+        .def("SetReport", static_cast<void (Message_PrinterToReport::*)(const occ::handle<Message_Report> &)>(&Message_PrinterToReport::SetReport), nb::arg("theReport").none(), R"nbdoc(Sets the printer report
 @param theReport report for messages processing, if NULL, the default report is used)nbdoc")
         .def("SendStringStream", [](const Message_PrinterToReport &self, const nanoocp::TextInput &theStream, const Message_Gravity theGravity) { std::stringstream theStream_stream(theStream.text); self.SendStringStream(theStream_stream, theGravity); }, nb::arg("theStream"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
 Stream is converted to string value.
 Default implementation calls first method Send().)nbdoc")
-        .def("SendObject", static_cast<void (Message_PrinterToReport::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_PrinterToReport::SendObject), nb::arg("theObject"), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
+        .def("SendObject", static_cast<void (Message_PrinterToReport::*)(const occ::handle<Standard_Transient> &, const Message_Gravity) const>(&Message_PrinterToReport::SendObject), nb::arg("theObject").none(), nb::arg("theGravity"), R"nbdoc(Send a string message with specified trace level.
 The object is converted to string in format: <object kind> : <object pointer>.
 The parameter theToPutEol specified whether end-of-line should be added to the end of the
 message. Default implementation calls first method Send().)nbdoc");
@@ -1243,18 +1249,18 @@ message. Default implementation calls first method Send().)nbdoc");
     nanoocp_implicit_copy_ctor<Message_ProgressSentry>(nb::borrow<nb::class_<Message_ProgressSentry>>(m.attr("Message_ProgressSentry")));
     nb::borrow<nb::class_<Message_Report>>(m.attr("Message_Report"))
         .def(nb::new_([]() { return opencascade::handle<Message_Report>(new Message_Report()); }), R"nbdoc(Empty constructor)nbdoc")
-        .def("AddAlert", static_cast<void (Message_Report::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_Report::AddAlert), nb::arg("theGravity"), nb::arg("theAlert"), R"nbdoc(Add alert with specified gravity.
+        .def("AddAlert", static_cast<void (Message_Report::*)(Message_Gravity, const occ::handle<Message_Alert> &)>(&Message_Report::AddAlert), nb::arg("theGravity"), nb::arg("theAlert").none(), R"nbdoc(Add alert with specified gravity.
 This method is thread-safe, i.e. alerts can be added from parallel threads safely.)nbdoc")
         .def("GetAlerts", static_cast<const NCollection_List<opencascade::handle<Message_Alert>> & (Message_Report::*)(Message_Gravity) const>(&Message_Report::GetAlerts), nb::arg("theGravity"), R"nbdoc(Returns list of collected alerts with specified gravity)nbdoc")
-        .def("HasAlert", static_cast<bool (Message_Report::*)(const occ::handle<Standard_Type> &)>(&Message_Report::HasAlert), nb::arg("theType"), R"nbdoc(Returns true if specific type of alert is recorded)nbdoc")
-        .def("HasAlert", static_cast<bool (Message_Report::*)(const occ::handle<Standard_Type> &, Message_Gravity)>(&Message_Report::HasAlert), nb::arg("theType"), nb::arg("theGravity"), R"nbdoc(Returns true if specific type of alert is recorded with specified gravity)nbdoc")
-        .def("IsActiveInMessenger", static_cast<bool (Message_Report::*)(const occ::handle<Message_Messenger> &) const>(&Message_Report::IsActiveInMessenger), nb::arg("theMessenger") = static_cast<std::decay_t<const occ::handle<Message_Messenger> &>>(nullptr), R"nbdoc(Returns true if a report printer for the current report is registered in the messenger
+        .def("HasAlert", static_cast<bool (Message_Report::*)(const occ::handle<Standard_Type> &)>(&Message_Report::HasAlert), nb::arg("theType").none(), R"nbdoc(Returns true if specific type of alert is recorded)nbdoc")
+        .def("HasAlert", static_cast<bool (Message_Report::*)(const occ::handle<Standard_Type> &, Message_Gravity)>(&Message_Report::HasAlert), nb::arg("theType").none(), nb::arg("theGravity"), R"nbdoc(Returns true if specific type of alert is recorded with specified gravity)nbdoc")
+        .def("IsActiveInMessenger", static_cast<bool (Message_Report::*)(const occ::handle<Message_Messenger> &) const>(&Message_Report::IsActiveInMessenger), nb::arg("theMessenger").none() = static_cast<std::decay_t<const occ::handle<Message_Messenger> &>>(nullptr), R"nbdoc(Returns true if a report printer for the current report is registered in the messenger
 @param theMessenger the messenger. If it's NULL, the default messenger is used)nbdoc")
-        .def("ActivateInMessenger", static_cast<void (Message_Report::*)(const bool, const occ::handle<Message_Messenger> &)>(&Message_Report::ActivateInMessenger), nb::arg("toActivate"), nb::arg("theMessenger") = static_cast<std::decay_t<const occ::handle<Message_Messenger> &>>(nullptr), R"nbdoc(Creates an instance of Message_PrinterToReport with the current report and register it in
+        .def("ActivateInMessenger", static_cast<void (Message_Report::*)(const bool, const occ::handle<Message_Messenger> &)>(&Message_Report::ActivateInMessenger), nb::arg("toActivate"), nb::arg("theMessenger").none() = static_cast<std::decay_t<const occ::handle<Message_Messenger> &>>(nullptr), R"nbdoc(Creates an instance of Message_PrinterToReport with the current report and register it in
 messenger
 @param toActivate if true, activated else deactivated
 @param theMessenger the messenger. If it's NULL, the default messenger is used)nbdoc")
-        .def("UpdateActiveInMessenger", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &)>(&Message_Report::UpdateActiveInMessenger), nb::arg("theMessenger") = static_cast<std::decay_t<const occ::handle<Message_Messenger> &>>(nullptr), R"nbdoc(Updates internal flag IsActiveInMessenger.
+        .def("UpdateActiveInMessenger", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &)>(&Message_Report::UpdateActiveInMessenger), nb::arg("theMessenger").none() = static_cast<std::decay_t<const occ::handle<Message_Messenger> &>>(nullptr), R"nbdoc(Updates internal flag IsActiveInMessenger.
 It becomes true if messenger contains at least one instance of Message_PrinterToReport.
 @param theMessenger the messenger. If it's NULL, the default messenger is used)nbdoc")
         .def("AddLevel", static_cast<void (Message_Report::*)(Message_Level *, const TCollection_AsciiString &)>(&Message_Report::AddLevel), nb::arg("theLevel"), nb::arg("theName"), R"nbdoc(Add new level of alerts
@@ -1262,7 +1268,7 @@ It becomes true if messenger contains at least one instance of Message_PrinterTo
         .def("RemoveLevel", static_cast<void (Message_Report::*)(Message_Level *)>(&Message_Report::RemoveLevel), nb::arg("theLevel"), R"nbdoc(Remove level of alerts)nbdoc")
         .def("Clear", static_cast<void (Message_Report::*)()>(&Message_Report::Clear), R"nbdoc(Clears all collected alerts)nbdoc")
         .def("Clear", static_cast<void (Message_Report::*)(Message_Gravity)>(&Message_Report::Clear), nb::arg("theGravity"), R"nbdoc(Clears collected alerts with specified gravity)nbdoc")
-        .def("Clear", static_cast<void (Message_Report::*)(const occ::handle<Standard_Type> &)>(&Message_Report::Clear), nb::arg("theType"), R"nbdoc(Clears collected alerts with specified type)nbdoc")
+        .def("Clear", static_cast<void (Message_Report::*)(const occ::handle<Standard_Type> &)>(&Message_Report::Clear), nb::arg("theType").none(), R"nbdoc(Clears collected alerts with specified type)nbdoc")
         .def("ActiveMetrics", static_cast<const NCollection_IndexedMap<Message_MetricType, NCollection_DefaultHasher<Message_MetricType>> & (Message_Report::*)() const>(&Message_Report::ActiveMetrics), R"nbdoc(Returns computed metrics when alerts are performed)nbdoc")
         .def("SetActiveMetric", static_cast<void (Message_Report::*)(const Message_MetricType, const bool)>(&Message_Report::SetActiveMetric), nb::arg("theMetricType"), nb::arg("theActivate"), R"nbdoc(Sets metrics to compute when alerts are performed
 @param theMetrics container of metrics)nbdoc")
@@ -1274,12 +1280,12 @@ first alert is removed, the new alert is added in the container.
 @param theLimit limit value)nbdoc")
         .def("Dump", [](Message_Report &self) { std::ostringstream theOS_stream; self.Dump(theOS_stream); return nanoocp_stream_text(theOS_stream); }, R"nbdoc(Dumps all collected alerts to stream)nbdoc")
         .def("Dump", [](Message_Report &self, Message_Gravity theGravity) { std::ostringstream theOS_stream; self.Dump(theOS_stream, theGravity); return nanoocp_stream_text(theOS_stream); }, nb::arg("theGravity"), R"nbdoc(Dumps collected alerts with specified gravity to stream)nbdoc")
-        .def("SendMessages", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &)>(&Message_Report::SendMessages), nb::arg("theMessenger"), R"nbdoc(Sends all collected alerts to messenger.)nbdoc")
-        .def("SendMessages", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &, Message_Gravity)>(&Message_Report::SendMessages), nb::arg("theMessenger"), nb::arg("theGravity"), R"nbdoc(Dumps collected alerts with specified gravity to messenger.
+        .def("SendMessages", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &)>(&Message_Report::SendMessages), nb::arg("theMessenger").none(), R"nbdoc(Sends all collected alerts to messenger.)nbdoc")
+        .def("SendMessages", static_cast<void (Message_Report::*)(const occ::handle<Message_Messenger> &, Message_Gravity)>(&Message_Report::SendMessages), nb::arg("theMessenger").none(), nb::arg("theGravity"), R"nbdoc(Dumps collected alerts with specified gravity to messenger.
 Default implementation creates Message_Msg object with a message
 key returned by alert, and sends it in the messenger.)nbdoc")
-        .def("Merge", static_cast<void (Message_Report::*)(const occ::handle<Message_Report> &)>(&Message_Report::Merge), nb::arg("theOther"), R"nbdoc(Merges data from theOther report into this)nbdoc")
-        .def("Merge", static_cast<void (Message_Report::*)(const occ::handle<Message_Report> &, Message_Gravity)>(&Message_Report::Merge), nb::arg("theOther"), nb::arg("theGravity"), R"nbdoc(Merges alerts with specified gravity from theOther report into this)nbdoc")
+        .def("Merge", static_cast<void (Message_Report::*)(const occ::handle<Message_Report> &)>(&Message_Report::Merge), nb::arg("theOther").none(), R"nbdoc(Merges data from theOther report into this)nbdoc")
+        .def("Merge", static_cast<void (Message_Report::*)(const occ::handle<Message_Report> &, Message_Gravity)>(&Message_Report::Merge), nb::arg("theOther").none(), nb::arg("theGravity"), R"nbdoc(Merges alerts with specified gravity from theOther report into this)nbdoc")
         .def("DumpJson", [](const Message_Report &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Message_Report::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Message_Report::get_type_descriptor))

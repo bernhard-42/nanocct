@@ -163,16 +163,16 @@ If <First> >= <Last>)nbdoc")
     nanoocp_implicit_copy_ctor<Adaptor2d_Line2d>(nb::borrow<nb::class_<Adaptor2d_Line2d>>(m.attr("Adaptor2d_Line2d")));
     nb::borrow<nb::class_<Adaptor2d_OffsetCurve>>(m.attr("Adaptor2d_OffsetCurve"))
         .def(nb::new_([]() { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve()); }), R"nbdoc(The Offset is set to 0.)nbdoc")
-        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C) { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve(C)); }), nb::arg("C"), R"nbdoc(The curve is loaded. The Offset is set to 0.)nbdoc")
-        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C, const double Offset) { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve(C, Offset)); }), nb::arg("C"), nb::arg("Offset"), R"nbdoc(Creates an OffsetCurve curve.
+        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C) { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve(C)); }), nb::arg("C").none(), R"nbdoc(The curve is loaded. The Offset is set to 0.)nbdoc")
+        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C, const double Offset) { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve(C, Offset)); }), nb::arg("C").none(), nb::arg("Offset"), R"nbdoc(Creates an OffsetCurve curve.
 The Offset is set to Offset.)nbdoc")
-        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C, const double Offset, const double WFirst, const double WLast) { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve(C, Offset, WFirst, WLast)); }), nb::arg("C"), nb::arg("Offset"), nb::arg("WFirst"), nb::arg("WLast"), R"nbdoc(Create an Offset curve.
+        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C, const double Offset, const double WFirst, const double WLast) { return opencascade::handle<Adaptor2d_OffsetCurve>(new Adaptor2d_OffsetCurve(C, Offset, WFirst, WLast)); }), nb::arg("C").none(), nb::arg("Offset"), nb::arg("WFirst"), nb::arg("WLast"), R"nbdoc(Create an Offset curve.
 WFirst,WLast define the bounds of the Offset curve.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Adaptor2d_OffsetCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Adaptor2d_OffsetCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Adaptor2d_OffsetCurve::*)() const>(&Adaptor2d_OffsetCurve::DynamicType))
         .def("ShallowCopy", static_cast<occ::handle<Adaptor2d_Curve2d> (Adaptor2d_OffsetCurve::*)() const>(&Adaptor2d_OffsetCurve::ShallowCopy), R"nbdoc(Shallow copy of adaptor.)nbdoc")
-        .def("Load", static_cast<void (Adaptor2d_OffsetCurve::*)(const occ::handle<Adaptor2d_Curve2d> &)>(&Adaptor2d_OffsetCurve::Load), nb::arg("S"), R"nbdoc(Changes the curve. The Offset is reset to 0.)nbdoc")
+        .def("Load", static_cast<void (Adaptor2d_OffsetCurve::*)(const occ::handle<Adaptor2d_Curve2d> &)>(&Adaptor2d_OffsetCurve::Load), nb::arg("S").none(), R"nbdoc(Changes the curve. The Offset is reset to 0.)nbdoc")
         .def("Load", static_cast<void (Adaptor2d_OffsetCurve::*)(const double)>(&Adaptor2d_OffsetCurve::Load), nb::arg("Offset"), R"nbdoc(Changes the Offset on the current Curve.)nbdoc")
         .def("Load", static_cast<void (Adaptor2d_OffsetCurve::*)(const double, const double, const double)>(&Adaptor2d_OffsetCurve::Load), nb::arg("Offset"), nb::arg("WFirst"), nb::arg("WLast"), R"nbdoc(Changes the Offset Curve on the current Curve.)nbdoc")
         .def("Curve", static_cast<const occ::handle<Adaptor2d_Curve2d> & (Adaptor2d_OffsetCurve::*)() const>(&Adaptor2d_OffsetCurve::Curve))

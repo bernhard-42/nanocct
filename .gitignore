@@ -15,3 +15,6 @@ deps/freetype-2.14.3.tar.xz
 poc/build/
 .mypy_cache/
 .ruff_cache/
+
+# review reports (local, not published)
+reviews/

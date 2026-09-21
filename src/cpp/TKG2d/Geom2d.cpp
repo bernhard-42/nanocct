@@ -595,7 +595,7 @@ Note:
         .def("SetAxis", static_cast<void (Geom2d_AxisPlacement::*)(const gp_Ax2d &)>(&Geom2d_AxisPlacement::SetAxis), nb::arg("A"), R"nbdoc(Changes the complete definition of the axis placement.)nbdoc")
         .def("SetDirection", static_cast<void (Geom2d_AxisPlacement::*)(const gp_Dir2d &)>(&Geom2d_AxisPlacement::SetDirection), nb::arg("V"), R"nbdoc(Changes the "Direction" of the axis placement.)nbdoc")
         .def("SetLocation", static_cast<void (Geom2d_AxisPlacement::*)(const gp_Pnt2d &)>(&Geom2d_AxisPlacement::SetLocation), nb::arg("P"), R"nbdoc(Changes the "Location" point (origin) of the axis placement.)nbdoc")
-        .def("Angle", static_cast<double (Geom2d_AxisPlacement::*)(const occ::handle<Geom2d_AxisPlacement> &) const>(&Geom2d_AxisPlacement::Angle), nb::arg("Other"), R"nbdoc(Computes the angle between the "Direction" of
+        .def("Angle", static_cast<double (Geom2d_AxisPlacement::*)(const occ::handle<Geom2d_AxisPlacement> &) const>(&Geom2d_AxisPlacement::Angle), nb::arg("Other").none(), R"nbdoc(Computes the angle between the "Direction" of
 two axis placement in radians.
 The result is comprised between -Pi and Pi.)nbdoc")
         .def("Ax2d", static_cast<gp_Ax2d (Geom2d_AxisPlacement::*)() const>(&Geom2d_AxisPlacement::Ax2d), R"nbdoc(Converts this axis into a gp_Ax2d axis.)nbdoc")
@@ -749,7 +749,7 @@ or one weight value is lower or equal to Resolution from
 package gp.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<Geom2dEval_RepCurveDesc::Base> & (Geom2d_BezierCurve::*)() const>(&Geom2d_BezierCurve::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom2d_BezierCurve::*)(const occ::handle<Geom2dEval_RepCurveDesc::Base> &)>(&Geom2d_BezierCurve::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom2d_BezierCurve::*)(const occ::handle<Geom2dEval_RepCurveDesc::Base> &)>(&Geom2d_BezierCurve::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom2d_BezierCurve::*)()>(&Geom2d_BezierCurve::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("Increase", static_cast<void (Geom2d_BezierCurve::*)(const int)>(&Geom2d_BezierCurve::Increase), nb::arg("Degree"), R"nbdoc(Increases the degree of a bezier curve. Degree is the new
@@ -924,7 +924,7 @@ on periodic curves
 Poles.Length() == Sum(Mults(i)) except the first or last)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<Geom2dEval_RepCurveDesc::Base> & (Geom2d_BSplineCurve::*)() const>(&Geom2d_BSplineCurve::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom2d_BSplineCurve::*)(const occ::handle<Geom2dEval_RepCurveDesc::Base> &)>(&Geom2d_BSplineCurve::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom2d_BSplineCurve::*)(const occ::handle<Geom2dEval_RepCurveDesc::Base> &)>(&Geom2d_BSplineCurve::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom2d_BSplineCurve::*)()>(&Geom2d_BSplineCurve::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("IncreaseDegree", static_cast<void (Geom2d_BSplineCurve::*)(const int)>(&Geom2d_BSplineCurve::IncreaseDegree), nb::arg("Degree"), R"nbdoc(Increases the degree of this BSpline curve to
@@ -1052,7 +1052,7 @@ the point of parameter U on this BSpline curve.
 The returned value is: UFirst + ULast - U,
 where UFirst and ULast are the values of the
 first and last parameters of this BSpline curve.)nbdoc")
-        .def("Segment", static_cast<void (Geom2d_BSplineCurve::*)(const double, const double, const double)>(&Geom2d_BSplineCurve::Segment), nb::arg("U1"), nb::arg("U2"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Modifies this BSpline curve by segmenting it
+        .def("Segment", static_cast<void (Geom2d_BSplineCurve::*)(const double, const double, const double)>(&Geom2d_BSplineCurve::Segment), nb::arg("U1"), nb::arg("U2"), nb::arg("theTolerance") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), R"nbdoc(Modifies this BSpline curve by segmenting it
 between U1 and U2. Either of these values can be
 outside the bounds of the curve, but U2 must be greater than U1.
 All data structure tables of this BSpline curve are
@@ -1371,8 +1371,8 @@ UTolerance ensures that:
         .def("Pnt2d", static_cast<gp_Pnt2d (Geom2d_Point::*)() const>(&Geom2d_Point::Pnt2d), R"nbdoc(returns a non persistent copy of <me>)nbdoc")
         .def("X", static_cast<double (Geom2d_Point::*)() const>(&Geom2d_Point::X), R"nbdoc(returns the X coordinate of <me>.)nbdoc")
         .def("Y", static_cast<double (Geom2d_Point::*)() const>(&Geom2d_Point::Y), R"nbdoc(returns the Y coordinate of <me>.)nbdoc")
-        .def("Distance", static_cast<double (Geom2d_Point::*)(const occ::handle<Geom2d_Point> &) const>(&Geom2d_Point::Distance), nb::arg("Other"), R"nbdoc(computes the distance between <me> and <Other>.)nbdoc")
-        .def("SquareDistance", static_cast<double (Geom2d_Point::*)(const occ::handle<Geom2d_Point> &) const>(&Geom2d_Point::SquareDistance), nb::arg("Other"), R"nbdoc(computes the square distance between <me> and <Other>.)nbdoc")
+        .def("Distance", static_cast<double (Geom2d_Point::*)(const occ::handle<Geom2d_Point> &) const>(&Geom2d_Point::Distance), nb::arg("Other").none(), R"nbdoc(computes the distance between <me> and <Other>.)nbdoc")
+        .def("SquareDistance", static_cast<double (Geom2d_Point::*)(const occ::handle<Geom2d_Point> &) const>(&Geom2d_Point::SquareDistance), nb::arg("Other").none(), R"nbdoc(computes the square distance between <me> and <Other>.)nbdoc")
         .def("DumpJson", [](const Geom2d_Point &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Point::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Point::get_type_descriptor))
@@ -1491,7 +1491,7 @@ Exceptions: Standard_RangeError if N is less than 1.)nbdoc")
     nb::borrow<nb::class_<Geom2d_Vector>>(m.attr("Geom2d_Vector"))
         .def("Reverse", static_cast<void (Geom2d_Vector::*)()>(&Geom2d_Vector::Reverse), R"nbdoc(Reverses the vector <me>.)nbdoc")
         .def("Reversed", static_cast<occ::handle<Geom2d_Vector> (Geom2d_Vector::*)() const>(&Geom2d_Vector::Reversed), R"nbdoc(Returns a copy of <me> reversed.)nbdoc")
-        .def("Angle", static_cast<double (Geom2d_Vector::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Vector::Angle), nb::arg("Other"), R"nbdoc(Computes the angular value, in radians, between this
+        .def("Angle", static_cast<double (Geom2d_Vector::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Vector::Angle), nb::arg("Other").none(), R"nbdoc(Computes the angular value, in radians, between this
 vector and vector Other. The result is a value
 between -Pi and Pi. The orientation is from this
 vector to vector Other.
@@ -1502,8 +1502,8 @@ null magnitude because the angular value is indefinite.)nbdoc")
         .def("SquareMagnitude", static_cast<double (Geom2d_Vector::*)() const>(&Geom2d_Vector::SquareMagnitude), R"nbdoc(Returns the square magnitude of <me>.)nbdoc")
         .def("X", static_cast<double (Geom2d_Vector::*)() const>(&Geom2d_Vector::X), R"nbdoc(Returns the X coordinate of <me>.)nbdoc")
         .def("Y", static_cast<double (Geom2d_Vector::*)() const>(&Geom2d_Vector::Y), R"nbdoc(Returns the Y coordinate of <me>.)nbdoc")
-        .def("Crossed", static_cast<double (Geom2d_Vector::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Vector::Crossed), nb::arg("Other"), R"nbdoc(Cross product of <me> with the vector <Other>.)nbdoc")
-        .def("Dot", static_cast<double (Geom2d_Vector::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Vector::Dot), nb::arg("Other"), R"nbdoc(Returns the scalar product of 2 Vectors.)nbdoc")
+        .def("Crossed", static_cast<double (Geom2d_Vector::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Vector::Crossed), nb::arg("Other").none(), R"nbdoc(Cross product of <me> with the vector <Other>.)nbdoc")
+        .def("Dot", static_cast<double (Geom2d_Vector::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Vector::Dot), nb::arg("Other").none(), R"nbdoc(Returns the scalar product of 2 Vectors.)nbdoc")
         .def("Vec2d", static_cast<gp_Vec2d (Geom2d_Vector::*)() const>(&Geom2d_Vector::Vec2d), R"nbdoc(Returns a non persistent copy of <me>.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Vector::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Geom2d_Vector::get_type_descriptor))
@@ -1531,8 +1531,8 @@ than or equal to gp::Resolution().)nbdoc")
         .def("Dir2d", static_cast<gp_Dir2d (Geom2d_Direction::*)() const>(&Geom2d_Direction::Dir2d), R"nbdoc(Converts this unit vector into a gp_Dir2d unit vector.)nbdoc")
         .def("Magnitude", static_cast<double (Geom2d_Direction::*)() const>(&Geom2d_Direction::Magnitude), R"nbdoc(returns 1.0)nbdoc")
         .def("SquareMagnitude", static_cast<double (Geom2d_Direction::*)() const>(&Geom2d_Direction::SquareMagnitude), R"nbdoc(returns 1.0)nbdoc")
-        .def("Crossed", static_cast<double (Geom2d_Direction::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Direction::Crossed), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and <Other>.)nbdoc")
-        .def("__xor__", static_cast<double (Geom2d_Direction::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Direction::operator^), nb::arg("Other"), nb::is_operator())
+        .def("Crossed", static_cast<double (Geom2d_Direction::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Direction::Crossed), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and <Other>.)nbdoc")
+        .def("__xor__", static_cast<double (Geom2d_Direction::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_Direction::operator^), nb::arg("Other").none(), nb::is_operator())
         .def("Transform", static_cast<void (Geom2d_Direction::*)(const gp_Trsf2d &)>(&Geom2d_Direction::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this unit vector, then normalizes it.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_Direction::*)() const>(&Geom2d_Direction::Copy), R"nbdoc(Creates a new object which is a copy of this unit vector.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_Direction::get_type_name))
@@ -1840,7 +1840,7 @@ For a line, the returned value is the scale factor of the transformation T.)nbdo
     nb::implicitly_convertible<std::decay_t<const gp_Lin2d &>, Geom2d_Line>();
     nb::borrow<nb::class_<Geom2d_OffsetCurve>>(m.attr("Geom2d_OffsetCurve"))
         .def(nb::new_([](const Geom2d_OffsetCurve & theOther) { return opencascade::handle<Geom2d_OffsetCurve>(new Geom2d_OffsetCurve(theOther)); }), nb::arg("theOther"), R"nbdoc(Copy constructor for optimized copying without validation.)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom2d_Curve> & C, const double Offset, const bool isNotCheckC0) { return opencascade::handle<Geom2d_OffsetCurve>(new Geom2d_OffsetCurve(C, Offset, isNotCheckC0)); }), nb::arg("C"), nb::arg("Offset"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Constructs a curve offset from the basis curve C,
+        .def(nb::new_([](const occ::handle<Geom2d_Curve> & C, const double Offset, const bool isNotCheckC0) { return opencascade::handle<Geom2d_OffsetCurve>(new Geom2d_OffsetCurve(C, Offset, isNotCheckC0)); }), nb::arg("C").none(), nb::arg("Offset"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Constructs a curve offset from the basis curve C,
 where Offset is the distance between the offset
 curve and the basis curve at any point.
 A point on the offset curve is built by measuring the
@@ -1862,7 +1862,7 @@ ConstructionError raised if the basis curve C is not at least C1.
 No check is done to know if ||V^Z|| != 0.0 at any point.)nbdoc")
         .def("HasEvalRepresentation", static_cast<bool (Geom2d_OffsetCurve::*)() const>(&Geom2d_OffsetCurve::HasEvalRepresentation), R"nbdoc(Returns true if an evaluation representation is attached.)nbdoc")
         .def("EvalRepresentation", static_cast<const occ::handle<Geom2dEval_RepCurveDesc::Base> & (Geom2d_OffsetCurve::*)() const>(&Geom2d_OffsetCurve::EvalRepresentation), R"nbdoc(Returns the current evaluation representation descriptor (may be null).)nbdoc")
-        .def("SetEvalRepresentation", static_cast<void (Geom2d_OffsetCurve::*)(const occ::handle<Geom2dEval_RepCurveDesc::Base> &)>(&Geom2d_OffsetCurve::SetEvalRepresentation), nb::arg("theDesc"), R"nbdoc(Sets a new evaluation representation.
+        .def("SetEvalRepresentation", static_cast<void (Geom2d_OffsetCurve::*)(const occ::handle<Geom2dEval_RepCurveDesc::Base> &)>(&Geom2d_OffsetCurve::SetEvalRepresentation), nb::arg("theDesc").none(), R"nbdoc(Sets a new evaluation representation.
 Validates descriptor data and ensures no circular references.)nbdoc")
         .def("ClearEvalRepresentation", static_cast<void (Geom2d_OffsetCurve::*)()>(&Geom2d_OffsetCurve::ClearEvalRepresentation), R"nbdoc(Removes the evaluation representation.)nbdoc")
         .def("Reverse", static_cast<void (Geom2d_OffsetCurve::*)()>(&Geom2d_OffsetCurve::Reverse), R"nbdoc(Changes the direction of parametrization of <me>.
@@ -1875,7 +1875,7 @@ point of the reversed curve, and
 - the first and last parameters are recomputed.)nbdoc")
         .def("ReversedParameter", static_cast<double (Geom2d_OffsetCurve::*)(const double) const>(&Geom2d_OffsetCurve::ReversedParameter), nb::arg("U"), R"nbdoc(Computes the parameter on the reversed curve for
 the point of parameter U on this offset curve.)nbdoc")
-        .def("SetBasisCurve", static_cast<void (Geom2d_OffsetCurve::*)(const occ::handle<Geom2d_Curve> &, const bool)>(&Geom2d_OffsetCurve::SetBasisCurve), nb::arg("C"), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Changes this offset curve by assigning C as the
+        .def("SetBasisCurve", static_cast<void (Geom2d_OffsetCurve::*)(const occ::handle<Geom2d_Curve> &, const bool)>(&Geom2d_OffsetCurve::SetBasisCurve), nb::arg("C").none(), nb::arg("isNotCheckC0") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Changes this offset curve by assigning C as the
 basis curve from which it is built.
 If isNotCheckC0 = TRUE checking if basis curve has C0-continuity
 is not made.
@@ -2133,21 +2133,21 @@ package gp.)nbdoc")
         .def("Inverted", static_cast<occ::handle<Geom2d_Transformation> (Geom2d_Transformation::*)() const>(&Geom2d_Transformation::Inverted), R"nbdoc(Computes the inverse of this transformation and creates a new one.
 Raises ConstructionError if the transformation is singular. This means that
 the ScaleFactor is lower or equal to Resolution from package gp.)nbdoc")
-        .def("Multiplied", static_cast<occ::handle<Geom2d_Transformation> (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &) const>(&Geom2d_Transformation::Multiplied), nb::arg("Other"), R"nbdoc(Computes the transformation composed with Other and <me>.
+        .def("Multiplied", static_cast<occ::handle<Geom2d_Transformation> (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &) const>(&Geom2d_Transformation::Multiplied), nb::arg("Other").none(), R"nbdoc(Computes the transformation composed with Other and <me>.
 <me> * Other.
 Returns a new transformation)nbdoc")
-        .def("__mul__", static_cast<occ::handle<Geom2d_Transformation> (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &) const>(&Geom2d_Transformation::operator*), nb::arg("Other"), nb::is_operator())
-        .def("Multiply", static_cast<void (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &)>(&Geom2d_Transformation::Multiply), nb::arg("Other"), R"nbdoc(Computes the transformation composed with Other and <me> .
+        .def("__mul__", static_cast<occ::handle<Geom2d_Transformation> (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &) const>(&Geom2d_Transformation::operator*), nb::arg("Other").none(), nb::is_operator())
+        .def("Multiply", static_cast<void (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &)>(&Geom2d_Transformation::Multiply), nb::arg("Other").none(), R"nbdoc(Computes the transformation composed with Other and <me> .
 <me> = <me> * Other.
 
 Computes the following composition of transformations
 if N > 0  <me> * <me> * .......* <me>.
 if N = 0  Identity
 if N < 0  <me>.Invert() * .........* <me>.Invert())nbdoc")
-        .def("__imul__", [](Geom2d_Transformation &self, const occ::handle<Geom2d_Transformation> & Other) -> Geom2d_Transformation & { self.operator*=(Other); return self; }, nb::rv_policy::reference, nb::arg("Other"), nb::is_operator())
+        .def("__imul__", [](Geom2d_Transformation &self, const occ::handle<Geom2d_Transformation> & Other) -> Geom2d_Transformation & { self.operator*=(Other); return self; }, nb::rv_policy::reference, nb::arg("Other").none(), nb::is_operator())
         .def("Power", static_cast<void (Geom2d_Transformation::*)(const int)>(&Geom2d_Transformation::Power), nb::arg("N"), R"nbdoc(Raised if N < 0 and if the transformation is not inversible)nbdoc")
         .def("Powered", static_cast<occ::handle<Geom2d_Transformation> (Geom2d_Transformation::*)(const int) const>(&Geom2d_Transformation::Powered), nb::arg("N"), R"nbdoc(Raised if N < 0 and if the transformation is not inversible)nbdoc")
-        .def("PreMultiply", static_cast<void (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &)>(&Geom2d_Transformation::PreMultiply), nb::arg("Other"), R"nbdoc(Computes the matrix of the transformation composed with
+        .def("PreMultiply", static_cast<void (Geom2d_Transformation::*)(const occ::handle<Geom2d_Transformation> &)>(&Geom2d_Transformation::PreMultiply), nb::arg("Other").none(), R"nbdoc(Computes the matrix of the transformation composed with
 <me> and Other. <me> = Other * <me>)nbdoc")
         .def("Transforms", [](const Geom2d_Transformation &self) { double X{}; double Y{}; self.Transforms(X, Y); return std::make_tuple(X, Y); }, R"nbdoc(Applies the transformation <me> to the triplet {X, Y}.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Transformation> (Geom2d_Transformation::*)() const>(&Geom2d_Transformation::Copy), R"nbdoc(Creates a new object, which is a copy of this transformation.)nbdoc")
@@ -2157,7 +2157,7 @@ if N < 0  <me>.Invert() * .........* <me>.Invert())nbdoc")
     nanoocp_implicit_copy_ctor<Geom2d_Transformation>(nb::borrow<nb::class_<Geom2d_Transformation>>(m.attr("Geom2d_Transformation")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf2d &>, Geom2d_Transformation>();
     nb::borrow<nb::class_<Geom2d_TrimmedCurve>>(m.attr("Geom2d_TrimmedCurve"))
-        .def(nb::new_([](const occ::handle<Geom2d_Curve> & C, const double U1, const double U2, const bool Sense, const bool theAdjustPeriodic) { return opencascade::handle<Geom2d_TrimmedCurve>(new Geom2d_TrimmedCurve(C, U1, U2, Sense, theAdjustPeriodic)); }), nb::arg("C"), nb::arg("U1"), nb::arg("U2"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), nb::arg("theAdjustPeriodic") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates a trimmed curve from the basis curve C limited between
+        .def(nb::new_([](const occ::handle<Geom2d_Curve> & C, const double U1, const double U2, const bool Sense, const bool theAdjustPeriodic) { return opencascade::handle<Geom2d_TrimmedCurve>(new Geom2d_TrimmedCurve(C, U1, U2, Sense, theAdjustPeriodic)); }), nb::arg("C").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("Sense") = static_cast<std::decay_t<const bool>>(true), nb::arg("theAdjustPeriodic") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Creates a trimmed curve from the basis curve C limited between
 U1 and U2.
 
 . U1 can be greater or lower than U2.
@@ -2320,13 +2320,13 @@ The magnitude of the vector is the distance between P1 and P2)nbdoc")
         .def("SetY", static_cast<void (Geom2d_VectorWithMagnitude::*)(const double)>(&Geom2d_VectorWithMagnitude::SetY), nb::arg("Y"), R"nbdoc(Changes the Y coordinate of <me>)nbdoc")
         .def("Magnitude", static_cast<double (Geom2d_VectorWithMagnitude::*)() const>(&Geom2d_VectorWithMagnitude::Magnitude), R"nbdoc(Returns the magnitude of <me>.)nbdoc")
         .def("SquareMagnitude", static_cast<double (Geom2d_VectorWithMagnitude::*)() const>(&Geom2d_VectorWithMagnitude::SquareMagnitude), R"nbdoc(Returns the square magnitude of <me>.)nbdoc")
-        .def("Add", static_cast<void (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &)>(&Geom2d_VectorWithMagnitude::Add), nb::arg("Other"), R"nbdoc(Adds the Vector Other to <me>.)nbdoc")
-        .def("__iadd__", [](Geom2d_VectorWithMagnitude &self, const occ::handle<Geom2d_Vector> & Other) -> Geom2d_VectorWithMagnitude & { self.operator+=(Other); return self; }, nb::rv_policy::reference, nb::arg("Other"), nb::is_operator())
-        .def("Added", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::Added), nb::arg("Other"), R"nbdoc(Adds the vector Other to <me>.)nbdoc")
-        .def("__add__", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::operator+), nb::arg("Other"), nb::is_operator())
-        .def("Crossed", static_cast<double (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::Crossed), nb::arg("Other"), R"nbdoc(Computes the cross product between <me> and Other
+        .def("Add", static_cast<void (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &)>(&Geom2d_VectorWithMagnitude::Add), nb::arg("Other").none(), R"nbdoc(Adds the Vector Other to <me>.)nbdoc")
+        .def("__iadd__", [](Geom2d_VectorWithMagnitude &self, const occ::handle<Geom2d_Vector> & Other) -> Geom2d_VectorWithMagnitude & { self.operator+=(Other); return self; }, nb::rv_policy::reference, nb::arg("Other").none(), nb::is_operator())
+        .def("Added", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::Added), nb::arg("Other").none(), R"nbdoc(Adds the vector Other to <me>.)nbdoc")
+        .def("__add__", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::operator+), nb::arg("Other").none(), nb::is_operator())
+        .def("Crossed", static_cast<double (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::Crossed), nb::arg("Other").none(), R"nbdoc(Computes the cross product between <me> and Other
 <me> ^ Other. A new vector is returned.)nbdoc")
-        .def("__xor__", static_cast<double (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::operator^), nb::arg("Other"), nb::is_operator())
+        .def("__xor__", static_cast<double (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::operator^), nb::arg("Other").none(), nb::is_operator())
         .def("Divide", static_cast<void (Geom2d_VectorWithMagnitude::*)(const double)>(&Geom2d_VectorWithMagnitude::Divide), nb::arg("Scalar"), R"nbdoc(Divides <me> by a scalar.)nbdoc")
         .def("__itruediv__", [](Geom2d_VectorWithMagnitude &self, const double Scalar) -> Geom2d_VectorWithMagnitude & { self.operator/=(Scalar); return self; }, nb::rv_policy::reference, nb::arg("Scalar"), nb::is_operator())
         .def("Divided", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const double) const>(&Geom2d_VectorWithMagnitude::Divided), nb::arg("Scalar"), R"nbdoc(Divides <me> by a scalar. A new vector is returned.)nbdoc")
@@ -2346,10 +2346,10 @@ Resolution from package gp.)nbdoc")
 
 Raised if the magnitude of the vector is lower or equal to
 Resolution from package gp.)nbdoc")
-        .def("Subtract", static_cast<void (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &)>(&Geom2d_VectorWithMagnitude::Subtract), nb::arg("Other"), R"nbdoc(Subtracts the Vector Other to <me>.)nbdoc")
-        .def("__isub__", [](Geom2d_VectorWithMagnitude &self, const occ::handle<Geom2d_Vector> & Other) -> Geom2d_VectorWithMagnitude & { self.operator-=(Other); return self; }, nb::rv_policy::reference, nb::arg("Other"), nb::is_operator())
-        .def("Subtracted", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::Subtracted), nb::arg("Other"), R"nbdoc(Subtracts the vector Other to <me>. A new vector is returned.)nbdoc")
-        .def("__sub__", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::operator-), nb::arg("Other"), nb::is_operator())
+        .def("Subtract", static_cast<void (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &)>(&Geom2d_VectorWithMagnitude::Subtract), nb::arg("Other").none(), R"nbdoc(Subtracts the Vector Other to <me>.)nbdoc")
+        .def("__isub__", [](Geom2d_VectorWithMagnitude &self, const occ::handle<Geom2d_Vector> & Other) -> Geom2d_VectorWithMagnitude & { self.operator-=(Other); return self; }, nb::rv_policy::reference, nb::arg("Other").none(), nb::is_operator())
+        .def("Subtracted", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::Subtracted), nb::arg("Other").none(), R"nbdoc(Subtracts the vector Other to <me>. A new vector is returned.)nbdoc")
+        .def("__sub__", static_cast<occ::handle<Geom2d_VectorWithMagnitude> (Geom2d_VectorWithMagnitude::*)(const occ::handle<Geom2d_Vector> &) const>(&Geom2d_VectorWithMagnitude::operator-), nb::arg("Other").none(), nb::is_operator())
         .def("Transform", static_cast<void (Geom2d_VectorWithMagnitude::*)(const gp_Trsf2d &)>(&Geom2d_VectorWithMagnitude::Transform), nb::arg("T"), R"nbdoc(Applies the transformation T to this vector.)nbdoc")
         .def("Copy", static_cast<occ::handle<Geom2d_Geometry> (Geom2d_VectorWithMagnitude::*)() const>(&Geom2d_VectorWithMagnitude::Copy), R"nbdoc(Creates a new object which is a copy of this vector.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Geom2d_VectorWithMagnitude::get_type_name))

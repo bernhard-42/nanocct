@@ -139,9 +139,9 @@ completion of the Units_Lexicon.)nbdoc")
         .def_static("NullDimensions", static_cast<occ::handle<Units_Dimensions> (*)()>(&Units::NullDimensions), R"nbdoc(Returns always the same instance of Dimensions.)nbdoc")
         .def_static("Convert", static_cast<double (*)(const double, const char *const, const char *const)>(&Units::Convert), nb::arg("avalue"), nb::arg("afirstunit"), nb::arg("asecondunit"), R"nbdoc(Converts <avalue> expressed in <afirstunit> into the <asecondunit>.)nbdoc")
         .def_static("ToSI", static_cast<double (*)(const double, const char *const)>(&Units::ToSI), nb::arg("aData"), nb::arg("aUnit"))
-        .def_static("ToSI", static_cast<double (*)(const double, const char *const, occ::handle<Units_Dimensions> &)>(&Units::ToSI), nb::arg("aData"), nb::arg("aUnit"), nb::arg("aDim"))
+        .def_static("ToSI", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = Units::ToSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"))
         .def_static("FromSI", static_cast<double (*)(const double, const char *const)>(&Units::FromSI), nb::arg("aData"), nb::arg("aUnit"))
-        .def_static("FromSI", static_cast<double (*)(const double, const char *const, occ::handle<Units_Dimensions> &)>(&Units::FromSI), nb::arg("aData"), nb::arg("aUnit"), nb::arg("aDim"))
+        .def_static("FromSI", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = Units::FromSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"))
         .def_static("Dimensions", static_cast<occ::handle<Units_Dimensions> (*)(const char *const)>(&Units::Dimensions), nb::arg("aType"), R"nbdoc(return the dimension associated to the Type)nbdoc");
     nanoocp_implicit_copy_ctor<Units>(nb::borrow<nb::class_<Units>>(m.attr("Units")));
     nb::borrow<nb::class_<Units_Dimensions>>(m.attr("Units_Dimensions"))
@@ -169,16 +169,16 @@ dimensions.)nbdoc")
         .def("SolidAngle", static_cast<double (Units_Dimensions::*)() const>(&Units_Dimensions::SolidAngle), R"nbdoc(Returns the power of solid angle stored in the
 dimensions.)nbdoc")
         .def("Quantity", static_cast<const char * (Units_Dimensions::*)() const>(&Units_Dimensions::Quantity), R"nbdoc(Returns the quantity string of the dimension)nbdoc")
-        .def("Multiply", static_cast<occ::handle<Units_Dimensions> (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::Multiply), nb::arg("adimensions"), R"nbdoc(Creates and returns a new Dimensions object which is
+        .def("Multiply", static_cast<occ::handle<Units_Dimensions> (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::Multiply), nb::arg("adimensions").none(), R"nbdoc(Creates and returns a new Dimensions object which is
 the result of the multiplication of <me> and
 <adimensions>.)nbdoc")
-        .def("Divide", static_cast<occ::handle<Units_Dimensions> (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::Divide), nb::arg("adimensions"), R"nbdoc(Creates and returns a new Dimensions object which is
+        .def("Divide", static_cast<occ::handle<Units_Dimensions> (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::Divide), nb::arg("adimensions").none(), R"nbdoc(Creates and returns a new Dimensions object which is
 the result of the division of <me> by <adimensions>.)nbdoc")
         .def("Power", static_cast<occ::handle<Units_Dimensions> (Units_Dimensions::*)(const double) const>(&Units_Dimensions::Power), nb::arg("anexponent"), R"nbdoc(Creates and returns a new Dimensions object which is
 the result of the power of <me> and <anexponent>.)nbdoc")
-        .def("IsEqual", static_cast<bool (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::IsEqual), nb::arg("adimensions"), R"nbdoc(Returns true if <me> and <adimensions> have the same
+        .def("IsEqual", static_cast<bool (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::IsEqual), nb::arg("adimensions").none(), R"nbdoc(Returns true if <me> and <adimensions> have the same
 dimensions, false otherwise.)nbdoc")
-        .def("IsNotEqual", static_cast<bool (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::IsNotEqual), nb::arg("adimensions"), R"nbdoc(Returns false if <me> and <adimensions> have the same
+        .def("IsNotEqual", static_cast<bool (Units_Dimensions::*)(const occ::handle<Units_Dimensions> &) const>(&Units_Dimensions::IsNotEqual), nb::arg("adimensions").none(), R"nbdoc(Returns false if <me> and <adimensions> have the same
 dimensions, true otherwise.)nbdoc")
         .def("Dump", static_cast<void (Units_Dimensions::*)(const int) const>(&Units_Dimensions::Dump), nb::arg("ashift"), R"nbdoc(Useful for degugging.)nbdoc")
         .def_static("ALess", static_cast<occ::handle<Units_Dimensions> (*)()>(&Units_Dimensions::ALess))
@@ -201,7 +201,7 @@ the unit.)nbdoc")
         .def(nb::new_([](const char *const aname, const char *const asymbol) { return opencascade::handle<Units_Unit>(new Units_Unit(aname, asymbol)); }), nb::arg("aname"), nb::arg("asymbol"), R"nbdoc(Creates and returns a unit. <aname> is the name of
 the unit, <asymbol> is the usual abbreviation of the
 unit.)nbdoc")
-        .def(nb::new_([](const char *const aname, const char *const asymbol, const double avalue, const occ::handle<Units_Quantity> & aquantity) { return opencascade::handle<Units_Unit>(new Units_Unit(aname, asymbol, avalue, aquantity)); }), nb::arg("aname"), nb::arg("asymbol"), nb::arg("avalue"), nb::arg("aquantity"), R"nbdoc(Creates and returns a unit. <aname> is the name of
+        .def(nb::new_([](const char *const aname, const char *const asymbol, const double avalue, const occ::handle<Units_Quantity> & aquantity) { return opencascade::handle<Units_Unit>(new Units_Unit(aname, asymbol, avalue, aquantity)); }), nb::arg("aname"), nb::arg("asymbol"), nb::arg("avalue"), nb::arg("aquantity").none(), R"nbdoc(Creates and returns a unit. <aname> is the name of
 the unit, <asymbol> is the usual abbreviation of the
 unit, and <avalue> is the value in relation to the
 International System of Units.)nbdoc")
@@ -212,7 +212,7 @@ System of Units.)nbdoc")
         .def("Quantity", static_cast<occ::handle<Units_Quantity> (Units_Unit::*)() const>(&Units_Unit::Quantity), R"nbdoc(Returns <thequantity> contained in <me>.)nbdoc")
         .def("SymbolsSequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<TCollection_HAsciiString>>> (Units_Unit::*)() const>(&Units_Unit::SymbolsSequence), R"nbdoc(Returns the sequence of symbols <thesymbolssequence>)nbdoc")
         .def("Value", static_cast<void (Units_Unit::*)(const double)>(&Units_Unit::Value), nb::arg("avalue"), R"nbdoc(Sets the value <avalue> to <me>.)nbdoc")
-        .def("Quantity", static_cast<void (Units_Unit::*)(const occ::handle<Units_Quantity> &)>(&Units_Unit::Quantity), nb::arg("aquantity"), R"nbdoc(Sets the physical Quantity <aquantity> to <me>.)nbdoc")
+        .def("Quantity", static_cast<void (Units_Unit::*)(const occ::handle<Units_Quantity> &)>(&Units_Unit::Quantity), nb::arg("aquantity").none(), R"nbdoc(Sets the physical Quantity <aquantity> to <me>.)nbdoc")
         .def("Token", static_cast<occ::handle<Units_Token> (Units_Unit::*)() const>(&Units_Unit::Token), R"nbdoc(Starting with <me>, returns a new Token object.)nbdoc")
         .def("IsEqual", static_cast<bool (Units_Unit::*)(const char *const) const>(&Units_Unit::IsEqual), nb::arg("astring"), R"nbdoc(Compares all the symbols linked within <me> with the
 name of <atoken>, and returns True if there is one
@@ -224,7 +224,7 @@ symbol equal to the name, False otherwise.)nbdoc")
     nanoocp_implicit_copy_ctor<Units_Unit>(nb::borrow<nb::class_<Units_Unit>>(m.attr("Units_Unit")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_Unit>();
     nb::borrow<nb::class_<Units_Quantity>>(m.attr("Units_Quantity"))
-        .def(nb::new_([](const char *const aname, const occ::handle<Units_Dimensions> & adimensions, const occ::handle<NCollection_HSequence<opencascade::handle<Units_Unit>>> & aunitssequence) { return opencascade::handle<Units_Quantity>(new Units_Quantity(aname, adimensions, aunitssequence)); }), nb::arg("aname"), nb::arg("adimensions"), nb::arg("aunitssequence"), R"nbdoc(Creates a new Quantity object with <aname> which is
+        .def(nb::new_([](const char *const aname, const occ::handle<Units_Dimensions> & adimensions, const occ::handle<NCollection_HSequence<opencascade::handle<Units_Unit>>> & aunitssequence) { return opencascade::handle<Units_Quantity>(new Units_Quantity(aname, adimensions, aunitssequence)); }), nb::arg("aname"), nb::arg("adimensions").none(), nb::arg("aunitssequence").none(), R"nbdoc(Creates a new Quantity object with <aname> which is
 the name of the physical quantity, <adimensions> which
 is the physical dimensions, and <aunitssequence> which
 describes all the units known for this quantity.)nbdoc")
@@ -241,24 +241,24 @@ to <astring>, False otherwise.)nbdoc")
     nanoocp_implicit_copy_ctor<Units_Quantity>(nb::borrow<nb::class_<Units_Quantity>>(m.attr("Units_Quantity")));
     nb::borrow<nb::class_<Units_Explorer>>(m.attr("Units_Explorer"))
         .def(nb::init<>(), R"nbdoc(Empty constructor of the class.)nbdoc")
-        .def(nb::init<const occ::handle<Units_UnitsSystem> &>(), nb::arg("aunitssystem"), R"nbdoc(Creates a new instance of the class, initialized with
+        .def(nb::init<const occ::handle<Units_UnitsSystem> &>(), nb::arg("aunitssystem").none(), R"nbdoc(Creates a new instance of the class, initialized with
 the UnitsSystem <aunitssystem>.)nbdoc")
-        .def(nb::init<const occ::handle<Units_UnitsDictionary> &>(), nb::arg("aunitsdictionary"), R"nbdoc(Creates a new instance of the class, initialized with
+        .def(nb::init<const occ::handle<Units_UnitsDictionary> &>(), nb::arg("aunitsdictionary").none(), R"nbdoc(Creates a new instance of the class, initialized with
 the UnitsDictionary <aunitsdictionary>.)nbdoc")
-        .def(nb::init<const occ::handle<Units_UnitsSystem> &, const char *const>(), nb::arg("aunitssystem"), nb::arg("aquantity"), R"nbdoc(Creates a new instance of the class, initialized with
+        .def(nb::init<const occ::handle<Units_UnitsSystem> &, const char *const>(), nb::arg("aunitssystem").none(), nb::arg("aquantity"), R"nbdoc(Creates a new instance of the class, initialized with
 the UnitsSystem <aunitssystem> and positioned at the
 quantity <aquantity>.)nbdoc")
-        .def(nb::init<const occ::handle<Units_UnitsDictionary> &, const char *const>(), nb::arg("aunitsdictionary"), nb::arg("aquantity"), R"nbdoc(Creates a new instance of the class, initialized with
+        .def(nb::init<const occ::handle<Units_UnitsDictionary> &, const char *const>(), nb::arg("aunitsdictionary").none(), nb::arg("aquantity"), R"nbdoc(Creates a new instance of the class, initialized with
 the UnitsDictionary <aunitsdictionary> and positioned
 at the quantity <aquantity>.)nbdoc")
-        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsSystem> &)>(&Units_Explorer::Init), nb::arg("aunitssystem"), R"nbdoc(Initializes the instance of the class with the
+        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsSystem> &)>(&Units_Explorer::Init), nb::arg("aunitssystem").none(), R"nbdoc(Initializes the instance of the class with the
 UnitsSystem <aunitssystem>.)nbdoc")
-        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsDictionary> &)>(&Units_Explorer::Init), nb::arg("aunitsdictionary"), R"nbdoc(Initializes the instance of the class with the
+        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsDictionary> &)>(&Units_Explorer::Init), nb::arg("aunitsdictionary").none(), R"nbdoc(Initializes the instance of the class with the
 UnitsDictionary <aunitsdictionary>.)nbdoc")
-        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsSystem> &, const char *const)>(&Units_Explorer::Init), nb::arg("aunitssystem"), nb::arg("aquantity"), R"nbdoc(Initializes the instance of the class with the
+        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsSystem> &, const char *const)>(&Units_Explorer::Init), nb::arg("aunitssystem").none(), nb::arg("aquantity"), R"nbdoc(Initializes the instance of the class with the
 UnitsSystem <aunitssystem> and positioned at the
 quantity <aquantity>.)nbdoc")
-        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsDictionary> &, const char *const)>(&Units_Explorer::Init), nb::arg("aunitsdictionary"), nb::arg("aquantity"), R"nbdoc(Initializes the instance of the class with the
+        .def("Init", static_cast<void (Units_Explorer::*)(const occ::handle<Units_UnitsDictionary> &, const char *const)>(&Units_Explorer::Init), nb::arg("aunitsdictionary").none(), nb::arg("aquantity"), R"nbdoc(Initializes the instance of the class with the
 UnitsDictionary <aunitsdictionary> and positioned at
 the quantity <aquantity>.)nbdoc")
         .def("MoreQuantity", static_cast<bool (Units_Explorer::*)() const>(&Units_Explorer::MoreQuantity), R"nbdoc(Returns True if there is another Quantity to explore,
@@ -283,7 +283,7 @@ S.I. unit.)nbdoc");
         .def(nb::new_([]() { return opencascade::handle<Units_Token>(new Units_Token()); }), R"nbdoc(Creates and returns a empty token.)nbdoc")
         .def(nb::new_([](const char *const aword) { return opencascade::handle<Units_Token>(new Units_Token(aword)); }), nb::arg("aword"), R"nbdoc(Creates and returns a token. <aword> is a string
 containing the available word.)nbdoc")
-        .def(nb::new_([](const occ::handle<Units_Token> & atoken) { return opencascade::handle<Units_Token>(new Units_Token(atoken)); }), nb::arg("atoken"), R"nbdoc(Creates and returns a token. <atoken> is copied in
+        .def(nb::new_([](const occ::handle<Units_Token> & atoken) { return opencascade::handle<Units_Token>(new Units_Token(atoken)); }), nb::arg("atoken").none(), R"nbdoc(Creates and returns a token. <atoken> is copied in
 the returned token.)nbdoc")
         .def(nb::new_([](const char *const aword, const char *const amean) { return opencascade::handle<Units_Token>(new Units_Token(aword, amean)); }), nb::arg("aword"), nb::arg("amean"), R"nbdoc(Creates and returns a token. <aword> is a string
 containing the available word and <amean> gives the
@@ -292,7 +292,7 @@ signification of the token.)nbdoc")
 containing the available word, <amean> gives the
 signification of the token and <avalue> is the numeric
 value of the dimension.)nbdoc")
-        .def(nb::new_([](const char *const aword, const char *const amean, const double avalue, const occ::handle<Units_Dimensions> & adimension) { return opencascade::handle<Units_Token>(new Units_Token(aword, amean, avalue, adimension)); }), nb::arg("aword"), nb::arg("amean"), nb::arg("avalue"), nb::arg("adimension"), R"nbdoc(Creates and returns a token. <aword> is a string
+        .def(nb::new_([](const char *const aword, const char *const amean, const double avalue, const occ::handle<Units_Dimensions> & adimension) { return opencascade::handle<Units_Token>(new Units_Token(aword, amean, avalue, adimension)); }), nb::arg("aword"), nb::arg("amean"), nb::arg("avalue"), nb::arg("adimension").none(), R"nbdoc(Creates and returns a token. <aword> is a string
 containing the available word, <amean> gives the
 signification of the token, <avalue> is the numeric
 value of the dimension, and <adimensions> is the
@@ -307,41 +307,41 @@ is in the field <themean>.)nbdoc")
         .def("Value", static_cast<double (Units_Token::*)() const>(&Units_Token::Value), R"nbdoc(Returns the value stored in the field <thevalue>.)nbdoc")
         .def("Value", static_cast<void (Units_Token::*)(const double)>(&Units_Token::Value), nb::arg("avalue"), R"nbdoc(Sets the field <thevalue> to <avalue>.)nbdoc")
         .def("Dimensions", static_cast<occ::handle<Units_Dimensions> (Units_Token::*)() const>(&Units_Token::Dimensions), R"nbdoc(Returns the dimensions of the token <thedimensions>.)nbdoc")
-        .def("Dimensions", static_cast<void (Units_Token::*)(const occ::handle<Units_Dimensions> &)>(&Units_Token::Dimensions), nb::arg("adimensions"), R"nbdoc(Sets the field <thedimensions> to <adimensions>.)nbdoc")
+        .def("Dimensions", static_cast<void (Units_Token::*)(const occ::handle<Units_Dimensions> &)>(&Units_Token::Dimensions), nb::arg("adimensions").none(), R"nbdoc(Sets the field <thedimensions> to <adimensions>.)nbdoc")
         .def("Update", static_cast<void (Units_Token::*)(const char *const)>(&Units_Token::Update), nb::arg("amean"), R"nbdoc(Updates the token <me> with the additional
 signification <amean> by concatenation of the two
 strings <themean> and <amean>. If the two
 significations are the same, an information message
 is written in the output device.)nbdoc")
         .def("Add", static_cast<occ::handle<Units_Token> (Units_Token::*)(const int) const>(&Units_Token::Add), nb::arg("aninteger"))
-        .def("Add", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Add), nb::arg("atoken"), R"nbdoc(Returns a token which is the addition of <me> and
+        .def("Add", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Add), nb::arg("atoken").none(), R"nbdoc(Returns a token which is the addition of <me> and
 another token <atoken>. The addition is possible if
 and only if the dimensions are the same.)nbdoc")
-        .def("Subtract", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Subtract), nb::arg("atoken"), R"nbdoc(Returns a token which is the subtraction of <me> and
+        .def("Subtract", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Subtract), nb::arg("atoken").none(), R"nbdoc(Returns a token which is the subtraction of <me> and
 another token <atoken>. The subtraction is possible if
 and only if the dimensions are the same.)nbdoc")
-        .def("Multiply", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Multiply), nb::arg("atoken"), R"nbdoc(Returns a token which is the product of <me> and
+        .def("Multiply", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Multiply), nb::arg("atoken").none(), R"nbdoc(Returns a token which is the product of <me> and
 another token <atoken>.)nbdoc")
         .def("Multiplied", static_cast<double (Units_Token::*)(const double) const>(&Units_Token::Multiplied), nb::arg("avalue"), R"nbdoc(This virtual method is called by the Measurement
 methods, to compute the measurement during a
 conversion.)nbdoc")
-        .def("Divide", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Divide), nb::arg("atoken"), R"nbdoc(Returns a token which is the division of <me> by another
+        .def("Divide", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Divide), nb::arg("atoken").none(), R"nbdoc(Returns a token which is the division of <me> by another
 token <atoken>.)nbdoc")
         .def("Divided", static_cast<double (Units_Token::*)(const double) const>(&Units_Token::Divided), nb::arg("avalue"), R"nbdoc(This virtual method is called by the Measurement
 methods, to compute the measurement during a
 conversion.)nbdoc")
-        .def("Power", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Power), nb::arg("atoken"), R"nbdoc(Returns a token which is <me> to the power of another
+        .def("Power", static_cast<occ::handle<Units_Token> (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::Power), nb::arg("atoken").none(), R"nbdoc(Returns a token which is <me> to the power of another
 token <atoken>. The computation is possible only if
 <atoken> is a dimensionless constant.)nbdoc")
         .def("Power", static_cast<occ::handle<Units_Token> (Units_Token::*)(const double) const>(&Units_Token::Power), nb::arg("anexponent"), R"nbdoc(Returns a token which is <me> to the power of <anexponent>.)nbdoc")
         .def("IsEqual", static_cast<bool (Units_Token::*)(const char *const) const>(&Units_Token::IsEqual), nb::arg("astring"), R"nbdoc(Returns true if the field <theword> and the string
 <astring> are the same, false otherwise.)nbdoc")
-        .def("IsEqual", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsEqual), nb::arg("atoken"), R"nbdoc(Returns true if the field <theword> and the string
+        .def("IsEqual", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsEqual), nb::arg("atoken").none(), R"nbdoc(Returns true if the field <theword> and the string
 <theword> contained in the token <atoken> are the
 same, false otherwise.)nbdoc")
         .def("IsNotEqual", static_cast<bool (Units_Token::*)(const char *const) const>(&Units_Token::IsNotEqual), nb::arg("astring"), R"nbdoc(Returns false if the field <theword> and the string
 <astring> are the same, true otherwise.)nbdoc")
-        .def("IsNotEqual", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsNotEqual), nb::arg("atoken"), R"nbdoc(Returns false if the field <theword> and the string
+        .def("IsNotEqual", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsNotEqual), nb::arg("atoken").none(), R"nbdoc(Returns false if the field <theword> and the string
 <theword> contained in the token <atoken> are the
 same, true otherwise.)nbdoc")
         .def("IsLessOrEqual", static_cast<bool (Units_Token::*)(const char *const) const>(&Units_Token::IsLessOrEqual), nb::arg("astring"), R"nbdoc(Returns true if the field <theword> is strictly
@@ -350,10 +350,10 @@ false otherwise.)nbdoc")
         .def("IsGreater", static_cast<bool (Units_Token::*)(const char *const) const>(&Units_Token::IsGreater), nb::arg("astring"), R"nbdoc(Returns false if the field <theword> is strictly
 contained at the beginning of the string <astring>,
 true otherwise.)nbdoc")
-        .def("IsGreater", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsGreater), nb::arg("atoken"), R"nbdoc(Returns false if the field <theword> is strictly
+        .def("IsGreater", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsGreater), nb::arg("atoken").none(), R"nbdoc(Returns false if the field <theword> is strictly
 contained at the beginning of the string <astring>,
 true otherwise.)nbdoc")
-        .def("IsGreaterOrEqual", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsGreaterOrEqual), nb::arg("atoken"), R"nbdoc(Returns true if the string <astring> is strictly
+        .def("IsGreaterOrEqual", static_cast<bool (Units_Token::*)(const occ::handle<Units_Token> &) const>(&Units_Token::IsGreaterOrEqual), nb::arg("atoken").none(), R"nbdoc(Returns true if the string <astring> is strictly
 contained at the beginning of the field <theword>
 false otherwise.)nbdoc")
         .def("Dump", static_cast<void (Units_Token::*)(const int, const int) const>(&Units_Token::Dump), nb::arg("ashift"), nb::arg("alevel"), R"nbdoc(Useful for debugging)nbdoc")
@@ -378,11 +378,11 @@ existing token is updated.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_Lexicon::*)() const>(&Units_Lexicon::DynamicType));
     nanoocp_implicit_copy_ctor<Units_Lexicon>(nb::borrow<nb::class_<Units_Lexicon>>(m.attr("Units_Lexicon")));
     nb::borrow<nb::class_<Units_Sentence>>(m.attr("Units_Sentence"))
-        .def(nb::init<const occ::handle<Units_Lexicon> &, const char *const>(), nb::arg("alexicon"), nb::arg("astring"), R"nbdoc(Createsand returns a Sentence, by analyzing the
+        .def(nb::init<const occ::handle<Units_Lexicon> &, const char *const>(), nb::arg("alexicon").none(), nb::arg("astring"), R"nbdoc(Createsand returns a Sentence, by analyzing the
 string <astring> with the lexicon <alexicon>.)nbdoc")
         .def("SetConstants", static_cast<void (Units_Sentence::*)()>(&Units_Sentence::SetConstants), R"nbdoc(For each constant encountered, sets the value.)nbdoc")
         .def("Sequence", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Units_Token>>> (Units_Sentence::*)() const>(&Units_Sentence::Sequence), R"nbdoc(Returns <thesequenceoftokens>.)nbdoc")
-        .def("Sequence", static_cast<void (Units_Sentence::*)(const occ::handle<NCollection_HSequence<opencascade::handle<Units_Token>>> &)>(&Units_Sentence::Sequence), nb::arg("asequenceoftokens"), R"nbdoc(Sets the field <thesequenceoftokens> to <asequenceoftokens>.)nbdoc")
+        .def("Sequence", static_cast<void (Units_Sentence::*)(const occ::handle<NCollection_HSequence<opencascade::handle<Units_Token>>> &)>(&Units_Sentence::Sequence), nb::arg("asequenceoftokens").none(), R"nbdoc(Sets the field <thesequenceoftokens> to <asequenceoftokens>.)nbdoc")
         .def("Evaluate", static_cast<occ::handle<Units_Token> (Units_Sentence::*)()>(&Units_Sentence::Evaluate), R"nbdoc(Computes and returns in a token the result of the
 expression.)nbdoc")
         .def("IsDone", static_cast<bool (Units_Sentence::*)() const>(&Units_Sentence::IsDone), R"nbdoc(Return True if number of created tokens > 0
@@ -397,7 +397,7 @@ language.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_MathSentence>();
     nb::borrow<nb::class_<Units_Measurement>>(m.attr("Units_Measurement"))
         .def(nb::init<>(), R"nbdoc(It is the empty constructor of the class.)nbdoc")
-        .def(nb::init<const double, const occ::handle<Units_Token> &>(), nb::arg("avalue"), nb::arg("atoken"), R"nbdoc(Returns an instance of this class. <avalue> defines
+        .def(nb::init<const double, const occ::handle<Units_Token> &>(), nb::arg("avalue"), nb::arg("atoken").none(), R"nbdoc(Returns an instance of this class. <avalue> defines
 the measurement, and <atoken> the token which defines
 the unit used.)nbdoc")
         .def(nb::init<const double, const char *const>(), nb::arg("avalue"), nb::arg("aunit"), R"nbdoc(Returns an instance of this class. <avalue> defines
@@ -439,7 +439,7 @@ the constant <avalue>.)nbdoc")
         .def("Dump", static_cast<void (Units_Measurement::*)() const>(&Units_Measurement::Dump), R"nbdoc(Useful for debugging.)nbdoc");
     nanoocp_implicit_copy_ctor<Units_Measurement>(nb::borrow<nb::class_<Units_Measurement>>(m.attr("Units_Measurement")));
     nb::borrow<nb::class_<Units_ShiftedToken>>(m.attr("Units_ShiftedToken"))
-        .def(nb::new_([](const char *const aword, const char *const amean, const double avalue, const double amove, const occ::handle<Units_Dimensions> & adimensions) { return opencascade::handle<Units_ShiftedToken>(new Units_ShiftedToken(aword, amean, avalue, amove, adimensions)); }), nb::arg("aword"), nb::arg("amean"), nb::arg("avalue"), nb::arg("amove"), nb::arg("adimensions"), R"nbdoc(Creates and returns a shifted token. <aword> is a
+        .def(nb::new_([](const char *const aword, const char *const amean, const double avalue, const double amove, const occ::handle<Units_Dimensions> & adimensions) { return opencascade::handle<Units_ShiftedToken>(new Units_ShiftedToken(aword, amean, avalue, amove, adimensions)); }), nb::arg("aword"), nb::arg("amean"), nb::arg("avalue"), nb::arg("amove"), nb::arg("adimensions").none(), R"nbdoc(Creates and returns a shifted token. <aword> is a
 string containing the available word, <amean> gives
 the signification of the token, <avalue> is the
 numeric value of the dimension, <amove> is the gap,
@@ -464,7 +464,7 @@ the unit.)nbdoc")
         .def(nb::new_([](const char *const aname, const char *const asymbol) { return opencascade::handle<Units_ShiftedUnit>(new Units_ShiftedUnit(aname, asymbol)); }), nb::arg("aname"), nb::arg("asymbol"), R"nbdoc(Creates and returns a unit. <aname> is the name of
 the unit, <asymbol> is the usual abbreviation of the
 unit.)nbdoc")
-        .def(nb::new_([](const char *const aname, const char *const asymbol, const double avalue, const double amove, const occ::handle<Units_Quantity> & aquantity) { return opencascade::handle<Units_ShiftedUnit>(new Units_ShiftedUnit(aname, asymbol, avalue, amove, aquantity)); }), nb::arg("aname"), nb::arg("asymbol"), nb::arg("avalue"), nb::arg("amove"), nb::arg("aquantity"), R"nbdoc(Creates and returns a shifted unit. <aname> is the
+        .def(nb::new_([](const char *const aname, const char *const asymbol, const double avalue, const double amove, const occ::handle<Units_Quantity> & aquantity) { return opencascade::handle<Units_ShiftedUnit>(new Units_ShiftedUnit(aname, asymbol, avalue, amove, aquantity)); }), nb::arg("aname"), nb::arg("asymbol"), nb::arg("avalue"), nb::arg("amove"), nb::arg("aquantity").none(), R"nbdoc(Creates and returns a shifted unit. <aname> is the
 name of the unit, <asymbol> is the usual abbreviation
 of the unit, <avalue> is the value in relation to the
 International System of Units, and <amove> is the gap
@@ -494,7 +494,7 @@ quantities.)nbdoc")
 units if <alevel> is equal to zero, and for each
 quantity all the units stored if <alevel> is equal to
 one.)nbdoc")
-        .def("Dump", static_cast<void (Units_UnitsDictionary::*)(const occ::handle<Units_Dimensions> &) const>(&Units_UnitsDictionary::Dump), nb::arg("adimensions"), R"nbdoc(Dumps for a designated physical dimensions
+        .def("Dump", static_cast<void (Units_UnitsDictionary::*)(const occ::handle<Units_Dimensions> &) const>(&Units_UnitsDictionary::Dump), nb::arg("adimensions").none(), R"nbdoc(Dumps for a designated physical dimensions
 <adimensions> all the previously stored units.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Units_UnitsDictionary::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Units_UnitsDictionary::get_type_descriptor))
@@ -504,7 +504,7 @@ one.)nbdoc")
         .def(nb::init<const char *const>(), nb::arg("astring"), R"nbdoc(Creates and returns a UnitSentence. The string
 <astring> describes in natural language the unit or
 the composed unit to be analysed.)nbdoc")
-        .def(nb::init<const char *const, const occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> &>(), nb::arg("astring"), nb::arg("aquantitiessequence"), R"nbdoc(Creates and returns a UnitSentence. The string
+        .def(nb::init<const char *const, const occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> &>(), nb::arg("astring"), nb::arg("aquantitiessequence").none(), R"nbdoc(Creates and returns a UnitSentence. The string
 <astring> describes in natural language the unit to be
 analysed. The sequence of physical quantities
 <asequenceofquantities> describes the available
@@ -512,7 +512,7 @@ dictionary of units you want to use.)nbdoc")
         .def("Analyse", static_cast<void (Units_UnitSentence::*)()>(&Units_UnitSentence::Analyse), R"nbdoc(Analyzes the sequence of tokens created by the
 constructor to find the true significance of each
 token.)nbdoc")
-        .def("SetUnits", static_cast<void (Units_UnitSentence::*)(const occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> &)>(&Units_UnitSentence::SetUnits), nb::arg("aquantitiessequence"), R"nbdoc(For each token which represents a unit, finds in the
+        .def("SetUnits", static_cast<void (Units_UnitSentence::*)(const occ::handle<NCollection_HSequence<opencascade::handle<Units_Quantity>>> &)>(&Units_UnitSentence::SetUnits), nb::arg("aquantitiessequence").none(), R"nbdoc(For each token which represents a unit, finds in the
 sequence of physical quantities all the
 characteristics of the unit found.)nbdoc");
     nanoocp_implicit_copy_ctor<Units_UnitSentence>(nb::borrow<nb::class_<Units_UnitSentence>>(m.attr("Units_UnitSentence")));
@@ -565,9 +565,9 @@ the physical dimensions of the measurement.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Units_UnitsSystem::*)() const>(&Units_UnitsSystem::DynamicType));
     nanoocp_implicit_copy_ctor<Units_UnitsSystem>(nb::borrow<nb::class_<Units_UnitsSystem>>(m.attr("Units_UnitsSystem")));
     nb::implicitly_convertible<std::decay_t<const char *const>, Units_UnitsSystem>();
-    m.def("pow", static_cast<occ::handle<Units_Dimensions> (*)(const occ::handle<Units_Dimensions> &, const double)>(&pow), nb::arg("arg0"), nb::arg("arg1"));
-    m.def("pow", static_cast<occ::handle<Units_Token> (*)(const occ::handle<Units_Token> &, const occ::handle<Units_Token> &)>(&pow), nb::arg("arg0"), nb::arg("arg1"));
-    m.def("pow", static_cast<occ::handle<Units_Token> (*)(const occ::handle<Units_Token> &, const double)>(&pow), nb::arg("arg0"), nb::arg("arg1"));
+    m.def("pow", static_cast<occ::handle<Units_Dimensions> (*)(const occ::handle<Units_Dimensions> &, const double)>(&pow), nb::arg("arg0").none(), nb::arg("arg1"));
+    m.def("pow", static_cast<occ::handle<Units_Token> (*)(const occ::handle<Units_Token> &, const occ::handle<Units_Token> &)>(&pow), nb::arg("arg0").none(), nb::arg("arg1").none());
+    m.def("pow", static_cast<occ::handle<Units_Token> (*)(const occ::handle<Units_Token> &, const double)>(&pow), nb::arg("arg0").none(), nb::arg("arg1"));
 }
 
 void nanoocp_conversions_Units(nb::module_ &m) {

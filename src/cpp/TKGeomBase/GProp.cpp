@@ -37,7 +37,8 @@ void nanoocp_declare_GProp(nb::module_ &m) {
         .value("GProp_InertiaXY", GProp_InertiaXY)
         .value("GProp_InertiaXZ", GProp_InertiaXZ)
         .value("GProp_InertiaYZ", GProp_InertiaYZ)
-        .value("GProp_Unknown", GProp_Unknown);
+        .value("GProp_Unknown", GProp_Unknown)
+        .export_values();
     { nb::class_<GProp> cls(m, "GProp", R"nbdoc(This package defines algorithms to compute the global properties
 of a set of points, a curve, a surface, a solid (non infinite
 region of space delimited with geometric entities), a compound

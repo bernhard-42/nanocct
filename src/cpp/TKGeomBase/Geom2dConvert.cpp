@@ -49,7 +49,8 @@ CAGD 1 1984)nbdoc");
       nb::enum_<Geom2dConvert_ApproxArcsSegments::Status>(cls, "Status", nb::is_arithmetic())
           .value("StatusOK", Geom2dConvert_ApproxArcsSegments::StatusOK)
           .value("StatusNotDone", Geom2dConvert_ApproxArcsSegments::StatusNotDone)
-          .value("StatusError", Geom2dConvert_ApproxArcsSegments::StatusError);
+          .value("StatusError", Geom2dConvert_ApproxArcsSegments::StatusError)
+          .export_values();
     }
     { nb::class_<Geom2dConvert_ApproxCurve> cls(m, "Geom2dConvert_ApproxCurve", R"nbdoc(A framework to convert a 2D curve to a BSpline.
 This is done by approximation within a given tolerance.)nbdoc");
@@ -98,7 +99,7 @@ void nanoocp_templates_Geom2dConvert(nb::module_ &m) {
 void nanoocp_define_Geom2dConvert(nb::module_ &m) {
     nanoocp_implicit_default_ctor<Geom2dConvert>(nb::borrow<nb::class_<Geom2dConvert>>(m.attr("Geom2dConvert")));
     nb::borrow<nb::class_<Geom2dConvert>>(m.attr("Geom2dConvert"))
-        .def_static("SplitBSplineCurve", static_cast<occ::handle<Geom2d_BSplineCurve> (*)(const occ::handle<Geom2d_BSplineCurve> &, const int, const int, const bool)>(&Geom2dConvert::SplitBSplineCurve), nb::arg("C"), nb::arg("FromK1"), nb::arg("ToK2"), nb::arg("SameOrientation") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Convert a curve to BSpline by Approximation
+        .def_static("SplitBSplineCurve", static_cast<occ::handle<Geom2d_BSplineCurve> (*)(const occ::handle<Geom2d_BSplineCurve> &, const int, const int, const bool)>(&Geom2dConvert::SplitBSplineCurve), nb::arg("C").none(), nb::arg("FromK1"), nb::arg("ToK2"), nb::arg("SameOrientation") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Convert a curve to BSpline by Approximation
 
 This method computes the arc of B-spline curve between the two
 knots FromK1 and ToK2. If C is periodic the arc has the same
@@ -116,7 +117,7 @@ repetition of multiple knots in their definition.
 Raised if FromK1 or ToK2 are out of the bounds
 [FirstUKnotIndex, LastUKnotIndex]
 Raised if FromK1 = ToK2)nbdoc")
-        .def_static("SplitBSplineCurve", static_cast<occ::handle<Geom2d_BSplineCurve> (*)(const occ::handle<Geom2d_BSplineCurve> &, const double, const double, const double, const bool)>(&Geom2dConvert::SplitBSplineCurve), nb::arg("C"), nb::arg("FromU1"), nb::arg("ToU2"), nb::arg("ParametricTolerance"), nb::arg("SameOrientation") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(This function computes the segment of B-spline curve between the
+        .def_static("SplitBSplineCurve", static_cast<occ::handle<Geom2d_BSplineCurve> (*)(const occ::handle<Geom2d_BSplineCurve> &, const double, const double, const double, const bool)>(&Geom2dConvert::SplitBSplineCurve), nb::arg("C").none(), nb::arg("FromU1"), nb::arg("ToU2"), nb::arg("ParametricTolerance"), nb::arg("SameOrientation") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(This function computes the segment of B-spline curve between the
 parametric values FromU1, ToU2.
 If C is periodic the arc has the same orientation as C if
 SameOrientation = True.
@@ -131,7 +132,7 @@ Raised if FromU1 or ToU2 are out of the parametric bounds of the
 curve (The tolerance criterion is ParametricTolerance).
 Raised if Abs (FromU1 - ToU2) <= ParametricTolerance
 Raised if ParametricTolerance < Resolution from gp.)nbdoc")
-        .def_static("CurveToBSplineCurve", static_cast<occ::handle<Geom2d_BSplineCurve> (*)(const occ::handle<Geom2d_Curve> &, const Convert_ParameterisationType)>(&Geom2dConvert::CurveToBSplineCurve), nb::arg("C"), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(This function converts a non infinite curve from
+        .def_static("CurveToBSplineCurve", static_cast<occ::handle<Geom2d_BSplineCurve> (*)(const occ::handle<Geom2d_Curve> &, const Convert_ParameterisationType)>(&Geom2dConvert::CurveToBSplineCurve), nb::arg("C").none(), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(This function converts a non infinite curve from
 Geom into a B-spline curve. C must be an ellipse or a
 circle or a trimmed conic or a trimmed line or a Bezier
 curve or a trimmed Bezier curve or a BSpline curve or a
@@ -195,7 +196,7 @@ Convert_TgtThetaOver2_2 and U2 - U1 >
 respectively the first and the last parameters of the
 trimmed curve (this method of parameterization
 cannot be used to convert a quasi-complete circle or ellipse).)nbdoc")
-        .def_static("ConcatG1", [](NCollection_Array1<opencascade::handle<Geom2d_BSplineCurve>> & ArrayOfCurves, const NCollection_Array1<double> & ArrayOfToler, occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> & ArrayOfConcatenated, const double ClosedTolerance) { bool ClosedFlag{}; Geom2dConvert::ConcatG1(ArrayOfCurves, ArrayOfToler, ArrayOfConcatenated, ClosedFlag, ClosedTolerance); return ClosedFlag; }, nb::arg("ArrayOfCurves"), nb::arg("ArrayOfToler"), nb::arg("ArrayOfConcatenated"), nb::arg("ClosedTolerance"), R"nbdoc(This Method concatenates G1 the ArrayOfCurves as far
+        .def_static("ConcatG1", [](NCollection_Array1<opencascade::handle<Geom2d_BSplineCurve>> & ArrayOfCurves, const NCollection_Array1<double> & ArrayOfToler, const double ClosedTolerance) { occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> ArrayOfConcatenated{}; bool ClosedFlag{}; Geom2dConvert::ConcatG1(ArrayOfCurves, ArrayOfToler, ArrayOfConcatenated, ClosedFlag, ClosedTolerance); return std::make_tuple(ArrayOfConcatenated, ClosedFlag); }, nb::arg("ArrayOfCurves"), nb::arg("ArrayOfToler"), nb::arg("ClosedTolerance"), R"nbdoc(This Method concatenates G1 the ArrayOfCurves as far
 as it is possible.
 ArrayOfCurves[0..N-1]
 ArrayOfToler contains the biggest tolerance of the two
@@ -207,7 +208,7 @@ of the two points which are at the closure.
 Otherwise its value is 0.0
 ClosedFlag becomes False on the output
 if it is impossible to build closed curve.)nbdoc")
-        .def_static("ConcatC1", [](NCollection_Array1<opencascade::handle<Geom2d_BSplineCurve>> & ArrayOfCurves, const NCollection_Array1<double> & ArrayOfToler, occ::handle<NCollection_HArray1<int>> & ArrayOfIndices, occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> & ArrayOfConcatenated, const double ClosedTolerance) { bool ClosedFlag{}; Geom2dConvert::ConcatC1(ArrayOfCurves, ArrayOfToler, ArrayOfIndices, ArrayOfConcatenated, ClosedFlag, ClosedTolerance); return ClosedFlag; }, nb::arg("ArrayOfCurves"), nb::arg("ArrayOfToler"), nb::arg("ArrayOfIndices"), nb::arg("ArrayOfConcatenated"), nb::arg("ClosedTolerance"), R"nbdoc(This Method concatenates C1 the ArrayOfCurves as far
+        .def_static("ConcatC1", [](NCollection_Array1<opencascade::handle<Geom2d_BSplineCurve>> & ArrayOfCurves, const NCollection_Array1<double> & ArrayOfToler, const double ClosedTolerance) { occ::handle<NCollection_HArray1<int>> ArrayOfIndices{}; occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> ArrayOfConcatenated{}; bool ClosedFlag{}; Geom2dConvert::ConcatC1(ArrayOfCurves, ArrayOfToler, ArrayOfIndices, ArrayOfConcatenated, ClosedFlag, ClosedTolerance); return std::make_tuple(ArrayOfIndices, ArrayOfConcatenated, ClosedFlag); }, nb::arg("ArrayOfCurves"), nb::arg("ArrayOfToler"), nb::arg("ClosedTolerance"), R"nbdoc(This Method concatenates C1 the ArrayOfCurves as far
 as it is possible.
 ArrayOfCurves[0..N-1]
 ArrayOfToler contains the biggest tolerance of the two
@@ -219,7 +220,7 @@ of the two points which are at the closure.
 Otherwise its value is 0.0
 ClosedFlag becomes False on the output
 if it is impossible to build closed curve.)nbdoc")
-        .def_static("ConcatC1", [](NCollection_Array1<opencascade::handle<Geom2d_BSplineCurve>> & ArrayOfCurves, const NCollection_Array1<double> & ArrayOfToler, occ::handle<NCollection_HArray1<int>> & ArrayOfIndices, occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> & ArrayOfConcatenated, const double ClosedTolerance, const double AngularTolerance) { bool ClosedFlag{}; Geom2dConvert::ConcatC1(ArrayOfCurves, ArrayOfToler, ArrayOfIndices, ArrayOfConcatenated, ClosedFlag, ClosedTolerance, AngularTolerance); return ClosedFlag; }, nb::arg("ArrayOfCurves"), nb::arg("ArrayOfToler"), nb::arg("ArrayOfIndices"), nb::arg("ArrayOfConcatenated"), nb::arg("ClosedTolerance"), nb::arg("AngularTolerance"), R"nbdoc(This Method concatenates C1 the ArrayOfCurves as far
+        .def_static("ConcatC1", [](NCollection_Array1<opencascade::handle<Geom2d_BSplineCurve>> & ArrayOfCurves, const NCollection_Array1<double> & ArrayOfToler, const double ClosedTolerance, const double AngularTolerance) { occ::handle<NCollection_HArray1<int>> ArrayOfIndices{}; occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> ArrayOfConcatenated{}; bool ClosedFlag{}; Geom2dConvert::ConcatC1(ArrayOfCurves, ArrayOfToler, ArrayOfIndices, ArrayOfConcatenated, ClosedFlag, ClosedTolerance, AngularTolerance); return std::make_tuple(ArrayOfIndices, ArrayOfConcatenated, ClosedFlag); }, nb::arg("ArrayOfCurves"), nb::arg("ArrayOfToler"), nb::arg("ClosedTolerance"), nb::arg("AngularTolerance"), R"nbdoc(This Method concatenates C1 the ArrayOfCurves as far
 as it is possible.
 ArrayOfCurves[0..N-1]
 ArrayOfToler contains the biggest tolerance of the two
@@ -231,15 +232,15 @@ of the two points which are at the closure.
 Otherwise its value is 0.0
 ClosedFlag becomes False on the output
 if it is impossible to build closed curve.)nbdoc")
-        .def_static("C0BSplineToC1BSplineCurve", static_cast<void (*)(occ::handle<Geom2d_BSplineCurve> &, const double)>(&Geom2dConvert::C0BSplineToC1BSplineCurve), nb::arg("BS"), nb::arg("Tolerance"), R"nbdoc(This Method reduces as far as it is possible the
+        .def_static("C0BSplineToC1BSplineCurve", [](occ::handle<Geom2d_BSplineCurve> BS, const double Tolerance) { Geom2dConvert::C0BSplineToC1BSplineCurve(BS, Tolerance); return BS; }, nb::arg("BS").none(), nb::arg("Tolerance"), R"nbdoc(This Method reduces as far as it is possible the
 multiplicities of the knots of the BSpline BS.(keeping the geometry).
 It returns a new BSpline which could still be C0.
 tolerance is a geometrical tolerance)nbdoc")
-        .def_static("C0BSplineToArrayOfC1BSplineCurve", static_cast<void (*)(const occ::handle<Geom2d_BSplineCurve> &, occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> &, const double)>(&Geom2dConvert::C0BSplineToArrayOfC1BSplineCurve), nb::arg("BS"), nb::arg("tabBS"), nb::arg("Tolerance"), R"nbdoc(This Method reduces as far as it is possible the
+        .def_static("C0BSplineToArrayOfC1BSplineCurve", [](const occ::handle<Geom2d_BSplineCurve> & BS, const double Tolerance) { occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> tabBS{}; Geom2dConvert::C0BSplineToArrayOfC1BSplineCurve(BS, tabBS, Tolerance); return tabBS; }, nb::arg("BS").none(), nb::arg("Tolerance"), R"nbdoc(This Method reduces as far as it is possible the
 multiplicities of the knots of the BSpline BS.(keeping the geometry).
 It returns an array of BSpline C1.
 Tolerance is a geometrical tolerance)nbdoc")
-        .def_static("C0BSplineToArrayOfC1BSplineCurve", static_cast<void (*)(const occ::handle<Geom2d_BSplineCurve> &, occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> &, const double, const double)>(&Geom2dConvert::C0BSplineToArrayOfC1BSplineCurve), nb::arg("BS"), nb::arg("tabBS"), nb::arg("AngularTolerance"), nb::arg("Tolerance"), R"nbdoc(This Method reduces as far as it is possible the
+        .def_static("C0BSplineToArrayOfC1BSplineCurve", [](const occ::handle<Geom2d_BSplineCurve> & BS, const double AngularTolerance, const double Tolerance) { occ::handle<NCollection_HArray1<opencascade::handle<Geom2d_BSplineCurve>>> tabBS{}; Geom2dConvert::C0BSplineToArrayOfC1BSplineCurve(BS, tabBS, AngularTolerance, Tolerance); return tabBS; }, nb::arg("BS").none(), nb::arg("AngularTolerance"), nb::arg("Tolerance"), R"nbdoc(This Method reduces as far as it is possible the
 multiplicities of the knots of the BSpline BS.(keeping the geometry).
 It returns an array of BSpline C1.
 tolerance is a geometrical tolerance)nbdoc");
@@ -261,14 +262,14 @@ tolerance is a geometrical tolerance)nbdoc");
         .def("GetResult", static_cast<const NCollection_Sequence<opencascade::handle<Geom2d_Curve>> & (Geom2dConvert_ApproxArcsSegments::*)() const>(&Geom2dConvert_ApproxArcsSegments::GetResult), R"nbdoc(Get the result curve after approximation.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dConvert_ApproxArcsSegments>(nb::borrow<nb::class_<Geom2dConvert_ApproxArcsSegments>>(m.attr("Geom2dConvert_ApproxArcsSegments")));
     nb::borrow<nb::class_<Geom2dConvert_ApproxCurve>>(m.attr("Geom2dConvert_ApproxCurve"))
-        .def(nb::init<const occ::handle<Geom2d_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve"), nb::arg("Tol2d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Constructs an approximation framework defined by
+        .def(nb::init<const occ::handle<Geom2d_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve").none(), nb::arg("Tol2d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Constructs an approximation framework defined by
 -   the 2D conic Curve
 -   the tolerance value Tol2d
 -   the degree of continuity Order
 -   the maximum number of segments allowed MaxSegments
 -   the highest degree MaxDegree which the
 polynomial defining the BSpline is allowed to have.)nbdoc")
-        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve"), nb::arg("Tol2d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Constructs an approximation framework defined by
+        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve").none(), nb::arg("Tol2d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Constructs an approximation framework defined by
 -   the 2D conic Curve
 -   the tolerance value Tol2d
 -   the degree of continuity Order
@@ -288,7 +289,7 @@ has been done, 0 if no approximation))nbdoc")
         .def("Dump", [](const Geom2dConvert_ApproxCurve &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Print on the stream o information about the object)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dConvert_ApproxCurve>(nb::borrow<nb::class_<Geom2dConvert_ApproxCurve>>(m.attr("Geom2dConvert_ApproxCurve")));
     nb::borrow<nb::class_<Geom2dConvert_BSplineCurveKnotSplitting>>(m.attr("Geom2dConvert_BSplineCurveKnotSplitting"))
-        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const int>(), nb::arg("BasisCurve"), nb::arg("ContinuityRange"), R"nbdoc(Determines points at which the BSpline curve
+        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const int>(), nb::arg("BasisCurve").none(), nb::arg("ContinuityRange"), R"nbdoc(Determines points at which the BSpline curve
 BasisCurve should be split in order to obtain arcs
 with a degree of continuity equal to ContinuityRange.
 These points are knot values of BasisCurve. They
@@ -336,7 +337,7 @@ Standard_RangeError if Index is less than 1 or
 greater than the number of split knots computed in this framework.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dConvert_BSplineCurveKnotSplitting>(nb::borrow<nb::class_<Geom2dConvert_BSplineCurveKnotSplitting>>(m.attr("Geom2dConvert_BSplineCurveKnotSplitting")));
     nb::borrow<nb::class_<Geom2dConvert_BSplineCurveToBezierCurve>>(m.attr("Geom2dConvert_BSplineCurveToBezierCurve"))
-        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &>(), nb::arg("BasisCurve"), R"nbdoc(Computes all the data needed to convert
+        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &>(), nb::arg("BasisCurve").none(), R"nbdoc(Computes all the data needed to convert
 -   the BSpline curve BasisCurve, into a series of adjacent Bezier arcs.
 The result consists of a series of BasisCurve arcs
 limited by points corresponding to knot values of the curve.
@@ -344,7 +345,7 @@ Use the available interrogation functions to ascertain
 the number of computed Bezier arcs, and then to
 construct each individual Bezier curve (or all Bezier curves).
 Note: ParametricTolerance is not used.)nbdoc")
-        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const double, const double, const double>(), nb::arg("BasisCurve"), nb::arg("U1"), nb::arg("U2"), nb::arg("ParametricTolerance"), R"nbdoc(Computes all the data needed to convert
+        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const double, const double, const double>(), nb::arg("BasisCurve").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("ParametricTolerance"), R"nbdoc(Computes all the data needed to convert
 the portion of the BSpline curve BasisCurve
 limited by the two parameter values U1 and U2
 for Example if there is a Knot Uk and
@@ -397,9 +398,9 @@ one.)nbdoc");
     nb::borrow<nb::class_<Geom2dConvert_CompCurveToBSplineCurve>>(m.attr("Geom2dConvert_CompCurveToBSplineCurve"))
         .def(nb::init<const Convert_ParameterisationType>(), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(Initialize the algorithm
 - Parameterisation is used to convert)nbdoc")
-        .def(nb::init<const occ::handle<Geom2d_BoundedCurve> &, const Convert_ParameterisationType>(), nb::arg("BasisCurve"), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(Initialize the algorithm with one curve
+        .def(nb::init<const occ::handle<Geom2d_BoundedCurve> &, const Convert_ParameterisationType>(), nb::arg("BasisCurve").none(), nb::arg("Parameterisation") = static_cast<std::decay_t<const Convert_ParameterisationType>>(Convert_TgtThetaOver2), R"nbdoc(Initialize the algorithm with one curve
 - Parameterisation is used to convert)nbdoc")
-        .def("Add", static_cast<bool (Geom2dConvert_CompCurveToBSplineCurve::*)(const occ::handle<Geom2d_BoundedCurve> &, const double, const bool)>(&Geom2dConvert_CompCurveToBSplineCurve::Add), nb::arg("NewCurve"), nb::arg("Tolerance"), nb::arg("After") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Append a curve in the BSpline
+        .def("Add", static_cast<bool (Geom2dConvert_CompCurveToBSplineCurve::*)(const occ::handle<Geom2d_BoundedCurve> &, const double, const bool)>(&Geom2dConvert_CompCurveToBSplineCurve::Add), nb::arg("NewCurve").none(), nb::arg("Tolerance"), nb::arg("After") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Append a curve in the BSpline
 Return False if the curve is not G0 with the BSplineCurve.
 Tolerance is used to check continuity and decrease
 Multiplicity at the common Knot

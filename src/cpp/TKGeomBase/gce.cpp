@@ -82,7 +82,8 @@ void nanoocp_declare_gce(nb::module_ &m) {
         .value("gce_InvertRadius", gce_InvertRadius)
         .value("gce_NullFocusLength", gce_NullFocusLength)
         .value("gce_NullVector", gce_NullVector)
-        .value("gce_BadEquation", gce_BadEquation);
+        .value("gce_BadEquation", gce_BadEquation)
+        .export_values();
     { nb::class_<gce_Root> cls(m, "gce_Root", R"nbdoc(Provides common status services for all `gce` construction classes.)nbdoc");
     }
     { nb::class_<gce_MakeCirc, gce_Root> cls(m, "gce_MakeCirc", R"nbdoc(This class implements construction algorithms for `gp_Circ`.

@@ -2261,7 +2261,7 @@ class BRepGraph:
 
             def __init__(self, theOther: BRepGraph.EditorView.EdgeOps) -> None: ...
 
-            def Add(self, theStartVtx: BRepGraph_VertexId, theEndVtx: BRepGraph_VertexId, theCurve: nanoocp.Geom.Geom_Curve, theFirst: float, theLast: float, theTolerance: float) -> BRepGraph_EdgeId:
+            def Add(self, theStartVtx: BRepGraph_VertexId, theEndVtx: BRepGraph_VertexId, theCurve: nanoocp.Geom.Geom_Curve | None, theFirst: float, theLast: float, theTolerance: float) -> BRepGraph_EdgeId:
                 """
                 Add an edge definition to the graph.
                 @param[in] theStartVtx  typed start vertex definition identifier
@@ -2345,7 +2345,7 @@ class BRepGraph:
             @overload
             def SetParamRange(self, theMut: BRepGraph_MutGuard__BRepGraphInc_EdgeDef, theFirst: float, theLast: float) -> None: ...
 
-            def SetCurve(self, theEdge: BRepGraph_EdgeId, theCurve: nanoocp.Geom.Geom_Curve, theFirst: float, theLast: float) -> None:
+            def SetCurve(self, theEdge: BRepGraph_EdgeId, theCurve: nanoocp.Geom.Geom_Curve | None, theFirst: float, theLast: float) -> None:
                 """
                 Set the 3D curve on an edge. Creates an owned EdgeCurve3DRep record
                 and an associated Curve3DRep for edge geometry access.
@@ -2361,7 +2361,7 @@ class BRepGraph:
                 @param[in] theEdge edge definition identifier
                 """
 
-            def SetPersistentPolygon3D(self, theEdge: BRepGraph_EdgeId, thePolygon: nanoocp.Poly.Poly_Polygon3D) -> None:
+            def SetPersistentPolygon3D(self, theEdge: BRepGraph_EdgeId, thePolygon: nanoocp.Poly.Poly_Polygon3D | None) -> None:
                 """
                 Set the persistent 3D polygon on an edge. Creates an owned EdgePolygon3DRep record.
                 @param[in] theEdge    edge definition identifier
@@ -2394,7 +2394,7 @@ class BRepGraph:
             def __init__(self, theOther: BRepGraph.EditorView.CoEdgeOps) -> None: ...
 
             @overload
-            def SetPCurve(self, theCoEdge: BRepGraph_CoEdgeId, theCurve2d: nanoocp.Geom2d.Geom2d_Curve) -> None:
+            def SetPCurve(self, theCoEdge: BRepGraph_CoEdgeId, theCurve2d: nanoocp.Geom2d.Geom2d_Curve | None) -> None:
                 """
                 Assign or clear the PCurve bound to an existing coedge.
                 Creates a new Curve2DRep for non-null curves and stores its id on the coedge.
@@ -2404,7 +2404,7 @@ class BRepGraph:
                 """
 
             @overload
-            def SetPCurve(self, theCoEdge: BRepGraph_CoEdgeId, theCurve2d: nanoocp.Geom2d.Geom2d_Curve, theFirst: float, theLast: float) -> None:
+            def SetPCurve(self, theCoEdge: BRepGraph_CoEdgeId, theCurve2d: nanoocp.Geom2d.Geom2d_Curve | None, theFirst: float, theLast: float) -> None:
                 """
                 Set the PCurve on a coedge. Creates an owned CoEdgeCurve2DRep record.
                 @param[in] theCoEdge  coedge definition identifier
@@ -2425,7 +2425,7 @@ class BRepGraph:
                 """
 
             @overload
-            def Add(self, theEdgeEntity: BRepGraph_EdgeId, theFaceEntity: BRepGraph_FaceId, theCurve2d: nanoocp.Geom2d.Geom2d_Curve, theFirst: float, theLast: float, theEdgeOrientation: nanoocp.BRepGraphInc.ParityOrientation = ...) -> BRepGraph_CoEdgeId:
+            def Add(self, theEdgeEntity: BRepGraph_EdgeId, theFaceEntity: BRepGraph_FaceId, theCurve2d: nanoocp.Geom2d.Geom2d_Curve | None, theFirst: float, theLast: float, theEdgeOrientation: nanoocp.BRepGraphInc.ParityOrientation = ...) -> BRepGraph_CoEdgeId:
                 """
                 Create a new CoEdge entity with a PCurve for a given edge-face pair.
                 Creates a new CoEdge entity with Curve2DRep and updates relation tables.
@@ -2477,14 +2477,14 @@ class BRepGraph:
                 @param[in] theCoEdge coedge definition identifier
                 """
 
-            def SetPersistentPolygon2D(self, theCoEdge: BRepGraph_CoEdgeId, thePolygon: nanoocp.Poly.Poly_Polygon2D) -> None:
+            def SetPersistentPolygon2D(self, theCoEdge: BRepGraph_CoEdgeId, thePolygon: nanoocp.Poly.Poly_Polygon2D | None) -> None:
                 """
                 Set the persistent 2D polygon on a coedge.
                 @param[in] theCoEdge  coedge definition identifier
                 @param[in] thePolygon 2D polygon (must not be null)
                 """
 
-            def SetPersistentPolygonOnTri(self, theCoEdge: BRepGraph_CoEdgeId, thePolygon: nanoocp.Poly.Poly_PolygonOnTriangulation) -> None:
+            def SetPersistentPolygonOnTri(self, theCoEdge: BRepGraph_CoEdgeId, thePolygon: nanoocp.Poly.Poly_PolygonOnTriangulation | None) -> None:
                 """
                 Set the persistent polygon-on-triangulation on a coedge.
                 The triangulation is resolved via CoEdgeDef.FaceId -> FaceDef.TriangulationRepId.
@@ -2680,7 +2680,7 @@ class BRepGraph:
 
             def __init__(self, theOther: BRepGraph.EditorView.FaceOps) -> None: ...
 
-            def Add(self, theSurface: nanoocp.Geom.Geom_Surface, theOuterWire: BRepGraph_WireId, theInnerWires: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_WireId], theTolerance: float) -> BRepGraph_FaceId:
+            def Add(self, theSurface: nanoocp.Geom.Geom_Surface | None, theOuterWire: BRepGraph_WireId, theInnerWires: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_WireId], theTolerance: float) -> BRepGraph_FaceId:
                 """
                 Add a face definition to the graph.
                 @param[in] theSurface    surface geometry
@@ -2735,7 +2735,7 @@ class BRepGraph:
                 @param[in] theTolerance new tolerance value
                 """
 
-            def SetSurface(self, theFace: BRepGraph_FaceId, theSurface: nanoocp.Geom.Geom_Surface) -> None:
+            def SetSurface(self, theFace: BRepGraph_FaceId, theSurface: nanoocp.Geom.Geom_Surface | None) -> None:
                 """
                 Set the surface on a face. Creates an owned FaceSurfaceRep record
                 and an associated SurfaceRep for face geometry access.
@@ -2749,7 +2749,7 @@ class BRepGraph:
                 @param[in] theFace face definition identifier
                 """
 
-            def SetPersistentTriangulation(self, theFace: BRepGraph_FaceId, theTriangulation: nanoocp.Poly.Poly_Triangulation) -> None:
+            def SetPersistentTriangulation(self, theFace: BRepGraph_FaceId, theTriangulation: nanoocp.Poly.Poly_Triangulation | None) -> None:
                 """
                 Set the persistent triangulation on a face. Creates an owned FaceTriangulationRep record.
                 Also creates a TriangulationRep for backward compatibility.
@@ -4654,7 +4654,7 @@ class BRepGraph:
             class FaceOps:
                 def __init__(self, theOther: BRepGraph.MeshView.EditorView.FaceOps) -> None: ...
 
-                def SetCachedTriangulation(self, theFace: BRepGraph_FaceId, theTriangulation: nanoocp.Poly.Poly_Triangulation) -> None:
+                def SetCachedTriangulation(self, theFace: BRepGraph_FaceId, theTriangulation: nanoocp.Poly.Poly_Triangulation | None) -> None:
                     """
                     Set the cached triangulation for a face.
                     @param[in] theFace         typed face definition identifier
@@ -4670,7 +4670,7 @@ class BRepGraph:
             class EdgeOps:
                 def __init__(self, theOther: BRepGraph.MeshView.EditorView.EdgeOps) -> None: ...
 
-                def SetCachedPolygon3D(self, theEdge: BRepGraph_EdgeId, thePolygon3D: nanoocp.Poly.Poly_Polygon3D) -> None:
+                def SetCachedPolygon3D(self, theEdge: BRepGraph_EdgeId, thePolygon3D: nanoocp.Poly.Poly_Polygon3D | None) -> None:
                     """
                     Bind a Polygon3D to the edge's cached entry.
                     @param[in] theEdge     typed edge definition identifier
@@ -4686,14 +4686,14 @@ class BRepGraph:
             class CoEdgeOps:
                 def __init__(self, theOther: BRepGraph.MeshView.EditorView.CoEdgeOps) -> None: ...
 
-                def AppendCachedPolygonOnTri(self, theCoEdge: BRepGraph_CoEdgeId, thePolygonOnTri: nanoocp.Poly.Poly_PolygonOnTriangulation) -> None:
+                def AppendCachedPolygonOnTri(self, theCoEdge: BRepGraph_CoEdgeId, thePolygonOnTri: nanoocp.Poly.Poly_PolygonOnTriangulation | None) -> None:
                     """
                     Append a polygon-on-triangulation to the coedge's cached list.
                     @param[in] theCoEdge    typed coedge definition identifier
                     @param[in] thePolygonOnTri polygon-on-tri to append
                     """
 
-                def SetCachedPolygon2D(self, theCoEdge: BRepGraph_CoEdgeId, thePolygon2D: nanoocp.Poly.Poly_Polygon2D) -> None:
+                def SetCachedPolygon2D(self, theCoEdge: BRepGraph_CoEdgeId, thePolygon2D: nanoocp.Poly.Poly_Polygon2D | None) -> None:
                     """
                     Bind a polygon-2D to the coedge's cached entry.
                     @param[in] theCoEdge   typed coedge definition identifier
@@ -4952,26 +4952,26 @@ class BRepGraph:
             """
 
         @overload
-        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theHistory: nanoocp.BRepTools.BRepTools_History, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> BRepGraph.ShapesView.Result:
+        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theHistory: nanoocp.BRepTools.BRepTools_History | None, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> BRepGraph.ShapesView.Result:
             """
             Add an OCCT algorithm result and absorb BRepTools_History into the
             registered BRepGraph_LayerHistory layer using explicit input shape mapping.
             """
 
         @overload
-        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theHistory: nanoocp.BRepTools.BRepTools_History, theOpLabel: nanoocp.TCollection.TCollection_AsciiString, theOptions: BRepGraph.ShapesView.Options) -> BRepGraph.ShapesView.Result:
+        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theHistory: nanoocp.BRepTools.BRepTools_History | None, theOpLabel: nanoocp.TCollection.TCollection_AsciiString, theOptions: BRepGraph.ShapesView.Options) -> BRepGraph.ShapesView.Result:
             """
             Add an OCCT algorithm result and absorb BRepTools_History with explicit options.
             """
 
         @overload
-        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputRoots: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_NodeId], theHistory: nanoocp.BRepTools.BRepTools_History, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> BRepGraph.ShapesView.Result:
+        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputRoots: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_NodeId], theHistory: nanoocp.BRepTools.BRepTools_History | None, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> BRepGraph.ShapesView.Result:
             """
             Convenience overload that collects the history input map from selected roots.
             """
 
         @overload
-        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputRoots: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_NodeId], theHistory: nanoocp.BRepTools.BRepTools_History, theOpLabel: nanoocp.TCollection.TCollection_AsciiString, theOptions: BRepGraph.ShapesView.Options) -> BRepGraph.ShapesView.Result:
+        def AddWithHistory(self, theResultShape: nanoocp.TopoDS.TopoDS_Shape, theInputRoots: nanoocp.NCollection.NCollection_Array1[nanoocp.BRepGraph.BRepGraph_NodeId], theHistory: nanoocp.BRepTools.BRepTools_History | None, theOpLabel: nanoocp.TCollection.TCollection_AsciiString, theOptions: BRepGraph.ShapesView.Options) -> BRepGraph.ShapesView.Result:
             """
             Convenience overload that collects the history input map from selected roots
             and uses explicit options.
@@ -5617,14 +5617,14 @@ class BRepGraph_CacheRegistry:
 
     def __init__(self) -> None: ...
 
-    def RegisterCache(self, theCache: BRepGraph_Cache) -> int:
+    def RegisterCache(self, theCache: BRepGraph_Cache | None) -> int:
         """
         Register a cache service. Replaces an existing cache with the same GUID.
         @param[in] theCache cache service
         @return graph-local slot index
         """
 
-    def Register(self, theCache: BRepGraph_Cache) -> int:
+    def Register(self, theCache: BRepGraph_Cache | None) -> int:
         """
         Register a cache service. Short form used by graph-local cache operations.
         @param[in] theCache cache service
@@ -5654,7 +5654,7 @@ class BRepGraph_CacheRegistry:
         """
 
     @overload
-    def FindSlot(self, theCache: BRepGraph_Cache) -> tuple[bool, int]:
+    def FindSlot(self, theCache: BRepGraph_Cache | None) -> tuple[bool, int]:
         """
         Return current graph-local slot for a cache service.
         @param[in] theCache cache service
@@ -8005,7 +8005,7 @@ class BRepGraph_LayerRegistry:
 
     def __init__(self) -> None: ...
 
-    def RegisterLayer(self, theLayer: BRepGraph_Layer) -> int:
+    def RegisterLayer(self, theLayer: BRepGraph_Layer | None) -> int:
         """
         Register a layer. Replaces an existing layer with the same GUID.
         @return slot index in the internal dense vector.
@@ -8342,7 +8342,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """Record ItemUID-keyed deletions."""
 
     @overload
-    def Absorb(self, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theOutputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theSource: nanoocp.BRepTools.BRepTools_History, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> None:
+    def Absorb(self, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theOutputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theSource: nanoocp.BRepTools.BRepTools_History | None, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """
         Import a BRepTools_History into this graph-native history log.
 
@@ -8375,7 +8375,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """
 
     @overload
-    def Absorb(self, theInputGraph: BRepGraph, theOutputGraph: BRepGraph, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theOutputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theSource: nanoocp.BRepTools.BRepTools_History, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> None:
+    def Absorb(self, theInputGraph: BRepGraph, theOutputGraph: BRepGraph, theInputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theOutputs: nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.BRepGraph.BRepGraph_NodeId, nanoocp.TopTools.TopTools_ShapeMapHasher], theSource: nanoocp.BRepTools.BRepTools_History | None, theOpLabel: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """
         Import a BRepTools_History using persistent UIDs from source/result graphs.
 

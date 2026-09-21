@@ -35,18 +35,18 @@ class Hermit:
 
     @overload
     @staticmethod
-    def Solution(BS: nanoocp.Geom.Geom_BSplineCurve, TolPoles: float = 1e-06, TolKnots: float = 1e-06) -> nanoocp.Geom2d.Geom2d_BSplineCurve: ...
+    def Solution(BS: nanoocp.Geom.Geom_BSplineCurve | None, TolPoles: float = 1e-06, TolKnots: float = 1e-06) -> nanoocp.Geom2d.Geom2d_BSplineCurve: ...
 
     @overload
     @staticmethod
-    def Solution(BS: nanoocp.Geom2d.Geom2d_BSplineCurve, TolPoles: float = 1e-06, TolKnots: float = 1e-06) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
+    def Solution(BS: nanoocp.Geom2d.Geom2d_BSplineCurve | None, TolPoles: float = 1e-06, TolKnots: float = 1e-06) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
         """
         returns the correct spline a(u) which will
         be multiplicated with BS later.
         """
 
     @staticmethod
-    def Solutionbis(BS: nanoocp.Geom.Geom_BSplineCurve, TolPoles: float = 1e-06, TolKnots: float = 1e-06) -> tuple[float, float]:
+    def Solutionbis(BS: nanoocp.Geom.Geom_BSplineCurve | None, TolPoles: float = 1e-06, TolKnots: float = 1e-06) -> tuple[float, float]:
         """
         returns the knots to insert to a(u) to
         stay with a constant sign and in the

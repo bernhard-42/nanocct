@@ -33,6 +33,28 @@ class GProp_ValueType(enum.IntEnum):
 
     GProp_Unknown = 10
 
+GProp_Mass: GProp_ValueType = GProp_ValueType.GProp_Mass
+
+GProp_CenterMassX: GProp_ValueType = GProp_ValueType.GProp_CenterMassX
+
+GProp_CenterMassY: GProp_ValueType = GProp_ValueType.GProp_CenterMassY
+
+GProp_CenterMassZ: GProp_ValueType = GProp_ValueType.GProp_CenterMassZ
+
+GProp_InertiaXX: GProp_ValueType = GProp_ValueType.GProp_InertiaXX
+
+GProp_InertiaYY: GProp_ValueType = GProp_ValueType.GProp_InertiaYY
+
+GProp_InertiaZZ: GProp_ValueType = GProp_ValueType.GProp_InertiaZZ
+
+GProp_InertiaXY: GProp_ValueType = GProp_ValueType.GProp_InertiaXY
+
+GProp_InertiaXZ: GProp_ValueType = GProp_ValueType.GProp_InertiaXZ
+
+GProp_InertiaYZ: GProp_ValueType = GProp_ValueType.GProp_InertiaYZ
+
+GProp_Unknown: GProp_ValueType = GProp_ValueType.GProp_Unknown
+
 class GProp:
     """
     This package defines algorithms to compute the global properties

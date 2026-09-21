@@ -26,6 +26,14 @@ class Storage_OpenMode(enum.IntEnum):
 
     Storage_VSReadWrite = 3
 
+Storage_VSNone: Storage_OpenMode = Storage_OpenMode.Storage_VSNone
+
+Storage_VSRead: Storage_OpenMode = Storage_OpenMode.Storage_VSRead
+
+Storage_VSWrite: Storage_OpenMode = Storage_OpenMode.Storage_VSWrite
+
+Storage_VSReadWrite: Storage_OpenMode = Storage_OpenMode.Storage_VSReadWrite
+
 class Storage_Error(enum.IntEnum):
     """
     Error codes returned by the ErrorStatus
@@ -79,12 +87,46 @@ class Storage_Error(enum.IntEnum):
 
     Storage_VSWrongFileDriver = 13
 
+Storage_VSOk: Storage_Error = Storage_Error.Storage_VSOk
+
+Storage_VSOpenError: Storage_Error = Storage_Error.Storage_VSOpenError
+
+Storage_VSModeError: Storage_Error = Storage_Error.Storage_VSModeError
+
+Storage_VSCloseError: Storage_Error = Storage_Error.Storage_VSCloseError
+
+Storage_VSAlreadyOpen: Storage_Error = Storage_Error.Storage_VSAlreadyOpen
+
+Storage_VSNotOpen: Storage_Error = Storage_Error.Storage_VSNotOpen
+
+Storage_VSSectionNotFound: Storage_Error = Storage_Error.Storage_VSSectionNotFound
+
+Storage_VSWriteError: Storage_Error = Storage_Error.Storage_VSWriteError
+
+Storage_VSFormatError: Storage_Error = Storage_Error.Storage_VSFormatError
+
+Storage_VSUnknownType: Storage_Error = Storage_Error.Storage_VSUnknownType
+
+Storage_VSTypeMismatch: Storage_Error = Storage_Error.Storage_VSTypeMismatch
+
+Storage_VSInternalError: Storage_Error = Storage_Error.Storage_VSInternalError
+
+Storage_VSExtCharParityError: Storage_Error = Storage_Error.Storage_VSExtCharParityError
+
+Storage_VSWrongFileDriver: Storage_Error = Storage_Error.Storage_VSWrongFileDriver
+
 class Storage_SolveMode(enum.IntEnum):
     Storage_AddSolve = 0
 
     Storage_WriteSolve = 1
 
     Storage_ReadSolve = 2
+
+Storage_AddSolve: Storage_SolveMode = Storage_SolveMode.Storage_AddSolve
+
+Storage_WriteSolve: Storage_SolveMode = Storage_SolveMode.Storage_WriteSolve
+
+Storage_ReadSolve: Storage_SolveMode = Storage_SolveMode.Storage_ReadSolve
 
 class Storage:
     """
@@ -140,7 +182,7 @@ class Storage_Root(nanoocp.Standard.Standard_Transient):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, theName: nanoocp.TCollection.TCollection_AsciiString, theObject: nanoocp.Standard.Standard_Persistent) -> None: ...
+    def __init__(self, theName: nanoocp.TCollection.TCollection_AsciiString, theObject: nanoocp.Standard.Standard_Persistent | None) -> None: ...
 
     @overload
     def __init__(self, theName: nanoocp.TCollection.TCollection_AsciiString, theRef: int, theType: nanoocp.TCollection.TCollection_AsciiString) -> None: ...
@@ -168,7 +210,7 @@ class Storage_Root(nanoocp.Standard.Standard_Transient):
         into the container.
         """
 
-    def SetObject(self, anObject: nanoocp.Standard.Standard_Persistent) -> None: ...
+    def SetObject(self, anObject: nanoocp.Standard.Standard_Persistent | None) -> None: ...
 
     def Object(self) -> nanoocp.Standard.Standard_Persistent:
         """Returns the persistent object encapsulated by this root."""
@@ -329,14 +371,14 @@ class Storage_Data(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def AddRoot(self, anObject: nanoocp.Standard.Standard_Persistent) -> None:
+    def AddRoot(self, anObject: nanoocp.Standard.Standard_Persistent | None) -> None:
         """
         add a persistent root to write. the name of the root
         is a driver reference number.
         """
 
     @overload
-    def AddRoot(self, aName: nanoocp.TCollection.TCollection_AsciiString, anObject: nanoocp.Standard.Standard_Persistent) -> None:
+    def AddRoot(self, aName: nanoocp.TCollection.TCollection_AsciiString, anObject: nanoocp.Standard.Standard_Persistent | None) -> None:
         """
         Adds the root anObject to this set of data.
         The name of the root is aName if given; if not, it
@@ -457,7 +499,7 @@ class Storage_BaseDriver(nanoocp.Standard.Standard_Transient):
 
     def ReadInfo(self, dbVersion: nanoocp.TCollection.TCollection_AsciiString, date: nanoocp.TCollection.TCollection_AsciiString, schemaName: nanoocp.TCollection.TCollection_AsciiString, schemaVersion: nanoocp.TCollection.TCollection_AsciiString, appName: nanoocp.TCollection.TCollection_ExtendedString, appVersion: nanoocp.TCollection.TCollection_AsciiString, objectType: nanoocp.TCollection.TCollection_ExtendedString, userInfo: nanoocp.NCollection.NCollection_Sequence[nanoocp.TCollection.TCollection_AsciiString]) -> int: ...
 
-    def ReadCompleteInfo(self, theIStream: TextIO, theData: Storage_Data) -> None: ...
+    def ReadCompleteInfo(self, theIStream: TextIO, theData: Storage_Data | None) -> Storage_Data: ...
 
     def EndReadInfoSection(self) -> Storage_Error: ...
 
@@ -604,7 +646,7 @@ class Storage_BucketOfPersistent:
 
     def Length(self) -> int: ...
 
-    def Append(self, sp: nanoocp.Standard.Standard_Persistent) -> None: ...
+    def Append(self, sp: nanoocp.Standard.Standard_Persistent | None) -> None: ...
 
     def Value(self, theIndex: int) -> nanoocp.Standard.Standard_Persistent: ...
 
@@ -630,11 +672,11 @@ class Storage_BucketIterator:
 class Storage_CallBack(nanoocp.Standard.Standard_Transient):
     def New(self) -> nanoocp.Standard.Standard_Persistent: ...
 
-    def Add(self, aPers: nanoocp.Standard.Standard_Persistent, aSchema: Storage_Schema) -> None: ...
+    def Add(self, aPers: nanoocp.Standard.Standard_Persistent | None, aSchema: Storage_Schema | None) -> None: ...
 
-    def Write(self, aPers: nanoocp.Standard.Standard_Persistent, aDriver: Storage_BaseDriver, aSchema: Storage_Schema) -> None: ...
+    def Write(self, aPers: nanoocp.Standard.Standard_Persistent | None, aDriver: Storage_BaseDriver | None, aSchema: Storage_Schema | None) -> None: ...
 
-    def Read(self, aPers: nanoocp.Standard.Standard_Persistent, aDriver: Storage_BaseDriver, aSchema: Storage_Schema) -> None: ...
+    def Read(self, aPers: nanoocp.Standard.Standard_Persistent | None, aDriver: Storage_BaseDriver | None, aSchema: Storage_Schema | None) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -653,11 +695,11 @@ class Storage_DefaultCallBack(Storage_CallBack):
 
     def New(self) -> nanoocp.Standard.Standard_Persistent: ...
 
-    def Add(self, thePers: nanoocp.Standard.Standard_Persistent, theSchema: Storage_Schema) -> None: ...
+    def Add(self, thePers: nanoocp.Standard.Standard_Persistent | None, theSchema: Storage_Schema | None) -> None: ...
 
-    def Write(self, thePers: nanoocp.Standard.Standard_Persistent, theDriver: Storage_BaseDriver, theSchema: Storage_Schema) -> None: ...
+    def Write(self, thePers: nanoocp.Standard.Standard_Persistent | None, theDriver: Storage_BaseDriver | None, theSchema: Storage_Schema | None) -> None: ...
 
-    def Read(self, thePers: nanoocp.Standard.Standard_Persistent, theDriver: Storage_BaseDriver, theSchema: Storage_Schema) -> None: ...
+    def Read(self, thePers: nanoocp.Standard.Standard_Persistent | None, theDriver: Storage_BaseDriver | None, theSchema: Storage_Schema | None) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -674,7 +716,7 @@ class Storage_HeaderData(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: Storage_HeaderData) -> None: ...
 
-    def Read(self, theDriver: Storage_BaseDriver) -> bool: ...
+    def Read(self, theDriver: Storage_BaseDriver | None) -> bool: ...
 
     def CreationDate(self) -> nanoocp.TCollection.TCollection_AsciiString:
         """return the creation date"""
@@ -758,7 +800,7 @@ class Storage_TypedCallBack(nanoocp.Standard.Standard_Transient):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, aTypeName: nanoocp.TCollection.TCollection_AsciiString, aCallBack: Storage_CallBack) -> None: ...
+    def __init__(self, aTypeName: nanoocp.TCollection.TCollection_AsciiString, aCallBack: Storage_CallBack | None) -> None: ...
 
     @overload
     def __init__(self, theOther: Storage_TypedCallBack) -> None: ...
@@ -767,7 +809,7 @@ class Storage_TypedCallBack(nanoocp.Standard.Standard_Transient):
 
     def Type(self) -> nanoocp.TCollection.TCollection_AsciiString: ...
 
-    def SetCallBack(self, aCallBack: Storage_CallBack) -> None: ...
+    def SetCallBack(self, aCallBack: Storage_CallBack | None) -> None: ...
 
     def CallBack(self) -> Storage_CallBack: ...
 
@@ -809,12 +851,12 @@ class Storage_RootData(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: Storage_RootData) -> None: ...
 
-    def Read(self, theDriver: Storage_BaseDriver) -> bool: ...
+    def Read(self, theDriver: Storage_BaseDriver | None) -> bool: ...
 
     def NumberOfRoots(self) -> int:
         """returns the number of roots."""
 
-    def AddRoot(self, aRoot: Storage_Root) -> None:
+    def AddRoot(self, aRoot: Storage_Root | None) -> None:
         """
         add a root to <me>. If a root with same name is present, it
         will be replaced by <aRoot>.
@@ -837,7 +879,7 @@ class Storage_RootData(nanoocp.Standard.Standard_Transient):
 
     def ClearErrorStatus(self) -> None: ...
 
-    def UpdateRoot(self, aName: nanoocp.TCollection.TCollection_AsciiString, aPers: nanoocp.Standard.Standard_Persistent) -> None: ...
+    def UpdateRoot(self, aName: nanoocp.TCollection.TCollection_AsciiString, aPers: nanoocp.Standard.Standard_Persistent | None) -> None: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -906,7 +948,7 @@ class Storage_Schema(nanoocp.Standard.Standard_Transient):
     def Name(self) -> nanoocp.TCollection.TCollection_AsciiString:
         """returns the schema's name"""
 
-    def Write(self, s: Storage_BaseDriver, aData: Storage_Data) -> None:
+    def Write(self, s: Storage_BaseDriver | None, aData: Storage_Data | None) -> None:
         """
         Writes the data aggregated in aData into the
         container defined by the driver <s>. The storage
@@ -936,7 +978,7 @@ class Storage_Schema(nanoocp.Standard.Standard_Transient):
         type.
         """
 
-    def AddReadUnknownTypeCallBack(self, aTypeName: nanoocp.TCollection.TCollection_AsciiString, aCallBack: Storage_CallBack) -> None:
+    def AddReadUnknownTypeCallBack(self, aTypeName: nanoocp.TCollection.TCollection_AsciiString, aCallBack: Storage_CallBack | None) -> None:
         """add two functions to the callback list"""
 
     def RemoveReadUnknownTypeCallBack(self, aTypeName: nanoocp.TCollection.TCollection_AsciiString) -> None:
@@ -964,7 +1006,7 @@ class Storage_Schema(nanoocp.Standard.Standard_Transient):
     def IsUsingDefaultCallBack(self) -> bool:
         """ask if the schema is using the default callback."""
 
-    def SetDefaultCallBack(self, f: Storage_CallBack) -> None:
+    def SetDefaultCallBack(self, f: Storage_CallBack | None) -> None:
         """
         overload the default function for build. (use to
         set an error message or skip an object while
@@ -983,13 +1025,13 @@ class Storage_Schema(nanoocp.Standard.Standard_Transient):
         UseDefaultCallBack() is set.
         """
 
-    def WritePersistentObjectHeader(self, sp: nanoocp.Standard.Standard_Persistent, theDriver: Storage_BaseDriver) -> None: ...
+    def WritePersistentObjectHeader(self, sp: nanoocp.Standard.Standard_Persistent | None, theDriver: Storage_BaseDriver | None) -> None: ...
 
-    def WritePersistentReference(self, sp: nanoocp.Standard.Standard_Persistent, theDriver: Storage_BaseDriver) -> None: ...
+    def WritePersistentReference(self, sp: nanoocp.Standard.Standard_Persistent | None, theDriver: Storage_BaseDriver | None) -> None: ...
 
-    def AddPersistent(self, sp: nanoocp.Standard.Standard_Persistent, tName: str) -> bool: ...
+    def AddPersistent(self, sp: nanoocp.Standard.Standard_Persistent | None, tName: str) -> bool: ...
 
-    def PersistentToAdd(self, sp: nanoocp.Standard.Standard_Persistent) -> bool: ...
+    def PersistentToAdd(self, sp: nanoocp.Standard.Standard_Persistent | None) -> bool: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -1027,7 +1069,7 @@ class Storage_TypeData(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: Storage_TypeData) -> None: ...
 
-    def Read(self, theDriver: Storage_BaseDriver) -> bool: ...
+    def Read(self, theDriver: Storage_BaseDriver | None) -> bool: ...
 
     def NumberOfTypes(self) -> int: ...
 

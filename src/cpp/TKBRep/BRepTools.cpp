@@ -156,7 +156,8 @@ Tj <= M12(Si), Qk <= M23(Tj) ==> Qk <= M13(Si);)nbdoc");
       nb::enum_<BRepTools_History::TRelationType>(cls, "TRelationType", R"nbdoc(The types of the historical relations.)nbdoc", nb::is_arithmetic())
           .value("TRelationType_Removed", BRepTools_History::TRelationType_Removed)
           .value("TRelationType_Generated", BRepTools_History::TRelationType_Generated)
-          .value("TRelationType_Modified", BRepTools_History::TRelationType_Modified);
+          .value("TRelationType_Modified", BRepTools_History::TRelationType_Modified)
+          .export_values();
     }
     { nb::class_<BRepTools_Modifier> cls(m, "BRepTools_Modifier", R"nbdoc(Performs geometric modifications on a shape.)nbdoc");
     }
@@ -286,7 +287,7 @@ equal to specified one and the Edges a discretization on this triangulation.
 or that triangulation has worse (greater) deflection than specified one,
 or Edges in Shape lack polygons on triangulation
 or free Edges in Shape lack 3D polygons)nbdoc")
-        .def_static("LoadTriangulation", static_cast<bool (*)(const TopoDS_Shape &, const int, const bool, const occ::handle<OSD_FileSystem> &)>(&BRepTools::LoadTriangulation), nb::arg("theShape"), nb::arg("theTriangulationIdx") = static_cast<std::decay_t<const int>>(- 1), nb::arg("theToSetAsActive") = static_cast<std::decay_t<const bool>>(false), nb::arg("theFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ :: handle < OSD_FileSystem > ( )), R"nbdoc(Loads triangulation data for each face of the shape
+        .def_static("LoadTriangulation", static_cast<bool (*)(const TopoDS_Shape &, const int, const bool, const occ::handle<OSD_FileSystem> &)>(&BRepTools::LoadTriangulation), nb::arg("theShape"), nb::arg("theTriangulationIdx") = static_cast<std::decay_t<const int>>(- 1), nb::arg("theToSetAsActive") = static_cast<std::decay_t<const bool>>(false), nb::arg("theFileSystem").none() = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ::handle < OSD_FileSystem >()), R"nbdoc(Loads triangulation data for each face of the shape
 from some deferred storage using specified shared input file system
 @param[in] theShape             shape to load triangulations
 @param[in] theTriangulationIdx  index defining what triangulation should be loaded. Starts
@@ -318,7 +319,7 @@ In TRUE case if some face doesn't contain triangulation with this index, active
 triangulation will not be changed for it. Else the last available triangulation will be
 activated.
 @return TRUE if at least one active triangulation was changed.)nbdoc")
-        .def_static("LoadAllTriangulations", static_cast<bool (*)(const TopoDS_Shape &, const occ::handle<OSD_FileSystem> &)>(&BRepTools::LoadAllTriangulations), nb::arg("theShape"), nb::arg("theFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ :: handle < OSD_FileSystem > ( )), R"nbdoc(Loads all available triangulations for each face of the shape
+        .def_static("LoadAllTriangulations", static_cast<bool (*)(const TopoDS_Shape &, const occ::handle<OSD_FileSystem> &)>(&BRepTools::LoadAllTriangulations), nb::arg("theShape"), nb::arg("theFileSystem").none() = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ::handle < OSD_FileSystem >()), R"nbdoc(Loads all available triangulations for each face of the shape
 from some deferred storage using specified shared input file system
 @param[in] theShape       shape to load triangulations
 @param[in] theFileSystem  shared file system
@@ -340,12 +341,12 @@ the face <F> before calling BRep_Tool::IsClosed.)nbdoc")
         .def_static("DetectClosedness", [](const TopoDS_Face & theFace) { bool theUclosed{}; bool theVclosed{}; BRepTools::DetectClosedness(theFace, theUclosed, theVclosed); return std::make_tuple(theUclosed, theVclosed); }, nb::arg("theFace"), R"nbdoc(Detect closedness of face in U and V directions)nbdoc")
         .def_static("Dump", [](const TopoDS_Shape & Sh) { std::ostringstream S_stream; BRepTools::Dump(Sh, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("Sh"), R"nbdoc(Dumps the topological structure and the geometry
 of <Sh> on the stream <S>.)nbdoc")
-        .def_static("Write", [](const TopoDS_Shape & theShape, const Message_ProgressRange & theProgress) { std::ostringstream theStream_stream; BRepTools::Write(theShape, theStream_stream, theProgress); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the shape to the stream in an ASCII format TopTools_FormatVersion_VERSION_1.
+        .def_static("Write", [](const TopoDS_Shape & theShape, const Message_ProgressRange & theProgress) { std::ostringstream theStream_stream; BRepTools::Write(theShape, theStream_stream, theProgress); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the stream in an ASCII format TopTools_FormatVersion_VERSION_1.
 This alias writes shape with triangulation data.
 @param[in] theShape        the shape to write
 @param[in][out] theStream  the stream to output shape into
 @param theRange            the range of progress indicator to fill in)nbdoc")
-        .def_static("Write", [](const TopoDS_Shape & theShape, const bool theWithTriangles, const bool theWithNormals, const TopTools_FormatVersion theVersion, const Message_ProgressRange & theProgress) { std::ostringstream theStream_stream; BRepTools::Write(theShape, theStream_stream, theWithTriangles, theWithNormals, theVersion, theProgress); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theWithTriangles"), nb::arg("theWithNormals"), nb::arg("theVersion"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the shape to the stream in an ASCII format of specified version.
+        .def_static("Write", [](const TopoDS_Shape & theShape, const bool theWithTriangles, const bool theWithNormals, const TopTools_FormatVersion theVersion, const Message_ProgressRange & theProgress) { std::ostringstream theStream_stream; BRepTools::Write(theShape, theStream_stream, theWithTriangles, theWithNormals, theVersion, theProgress); return nanoocp_stream_text(theStream_stream); }, nb::arg("theShape"), nb::arg("theWithTriangles"), nb::arg("theWithNormals"), nb::arg("theVersion"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the stream in an ASCII format of specified version.
 @param[in] theShape          the shape to write
 @param[in][out] theStream    the stream to output shape into
 @param[in] theWithTriangles  flag which specifies whether to save shape with (TRUE) or without
@@ -356,14 +357,14 @@ without (FALSE) normals;
 has no effect on triangulation-only geometry
 @param[in] theVersion        the TopTools format version
 @param theProgress the range of progress indicator to fill in)nbdoc")
-        .def_static("Read", [](TopoDS_Shape & Sh, const nanoocp::TextInput &S, const BRep_Builder & B, const Message_ProgressRange & theProgress) { std::stringstream S_stream(S.text); BRepTools::Read(Sh, S_stream, B, theProgress); }, nb::arg("Sh"), nb::arg("S"), nb::arg("B"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads a Shape from <S> in returns it in <Sh>.
+        .def_static("Read", [](TopoDS_Shape & Sh, const nanoocp::TextInput &S, const BRep_Builder & B, const Message_ProgressRange & theProgress) { std::stringstream S_stream(S.text); BRepTools::Read(Sh, S_stream, B, theProgress); }, nb::arg("Sh"), nb::arg("S"), nb::arg("B"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a Shape from <S> in returns it in <Sh>.
 <B> is used to build the shape.)nbdoc")
-        .def_static("Write", static_cast<bool (*)(const TopoDS_Shape &, const char *const, const Message_ProgressRange &)>(&BRepTools::Write), nb::arg("theShape"), nb::arg("theFile"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the shape to the file in an ASCII format TopTools_FormatVersion_VERSION_1.
+        .def_static("Write", static_cast<bool (*)(const TopoDS_Shape &, const char *const, const Message_ProgressRange &)>(&BRepTools::Write), nb::arg("theShape"), nb::arg("theFile"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the file in an ASCII format TopTools_FormatVersion_VERSION_1.
 This alias writes shape with triangulation data.
 @param[in] theShape  the shape to write
 @param[in] theFile   the path to file to output shape into
 @param theProgress the range of progress indicator to fill in)nbdoc")
-        .def_static("Write", static_cast<bool (*)(const TopoDS_Shape &, const char *const, const bool, const bool, const TopTools_FormatVersion, const Message_ProgressRange &)>(&BRepTools::Write), nb::arg("theShape"), nb::arg("theFile"), nb::arg("theWithTriangles"), nb::arg("theWithNormals"), nb::arg("theVersion"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the shape to the file in an ASCII format of specified version.
+        .def_static("Write", static_cast<bool (*)(const TopoDS_Shape &, const char *const, const bool, const bool, const TopTools_FormatVersion, const Message_ProgressRange &)>(&BRepTools::Write), nb::arg("theShape"), nb::arg("theFile"), nb::arg("theWithTriangles"), nb::arg("theWithNormals"), nb::arg("theVersion"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the shape to the file in an ASCII format of specified version.
 @param[in] theShape          the shape to write
 @param[in] theFile           the path to file to output shape into
 @param[in] theWithTriangles  flag which specifies whether to save shape with (TRUE) or without
@@ -374,9 +375,9 @@ without (FALSE) normals;
 has no effect on triangulation-only geometry
 @param[in] theVersion        the TopTools format version
 @param theProgress the range of progress indicator to fill in)nbdoc")
-        .def_static("Read", static_cast<bool (*)(TopoDS_Shape &, const char *const, const BRep_Builder &, const Message_ProgressRange &)>(&BRepTools::Read), nb::arg("Sh"), nb::arg("File"), nb::arg("B"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads a Shape from <File>, returns it in <Sh>.
+        .def_static("Read", static_cast<bool (*)(TopoDS_Shape &, const char *const, const BRep_Builder &, const Message_ProgressRange &)>(&BRepTools::Read), nb::arg("Sh"), nb::arg("File"), nb::arg("B"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a Shape from <File>, returns it in <Sh>.
 <B> is used to build the shape.)nbdoc")
-        .def_static("EvalAndUpdateTol", static_cast<double (*)(const TopoDS_Edge &, const occ::handle<Geom_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const double, const double)>(&BRepTools::EvalAndUpdateTol), nb::arg("theE"), nb::arg("theC3d"), nb::arg("theC2d"), nb::arg("theS"), nb::arg("theF"), nb::arg("theL"), R"nbdoc(Evals real tolerance of edge <theE>.
+        .def_static("EvalAndUpdateTol", static_cast<double (*)(const TopoDS_Edge &, const occ::handle<Geom_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const double, const double)>(&BRepTools::EvalAndUpdateTol), nb::arg("theE"), nb::arg("theC3d").none(), nb::arg("theC2d").none(), nb::arg("theS").none(), nb::arg("theF"), nb::arg("theL"), R"nbdoc(Evals real tolerance of edge <theE>.
 <theC3d>, <theC2d>, <theS>, <theF>, <theL> are
 correspondently 3d curve of edge, 2d curve on surface <theS> and
 rang of edge
@@ -397,7 +398,7 @@ TopLoc_Location::ScalePrec()) All sub-shapes having such locations are put in li
 theProblemShapes)nbdoc");
     nanoocp_implicit_copy_ctor<BRepTools>(nb::borrow<nb::class_<BRepTools>>(m.attr("BRepTools")));
     nb::borrow<nb::class_<BRepTools_Modification>>(m.attr("BRepTools_Modification"))
-        .def("NewSurface", [](BRepTools_Modification &self, const TopoDS_Face & F, occ::handle<Geom_Surface> & S, TopLoc_Location & L) { double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns true if the face, F, has been modified.
+        .def("NewSurface", [](BRepTools_Modification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face, F, has been modified.
 If the face has been modified:
 - S is the new geometry of the face,
 - L is its new location, and
@@ -410,20 +411,20 @@ the modified face changes in the shells which contain it.
 If the face has not been modified this function returns
 false, and the values of S, L, Tol, RevWires and
 RevFace are not significant.)nbdoc")
-        .def("NewTriangulation", static_cast<bool (BRepTools_Modification::*)(const TopoDS_Face &, occ::handle<Poly_Triangulation> &)>(&BRepTools_Modification::NewTriangulation), nb::arg("F"), nb::arg("T"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_Modification &self, const TopoDS_Face & F) { occ::handle<Poly_Triangulation> T{}; auto result = self.NewTriangulation(F, T); return std::make_tuple(result, T); }, nb::arg("F"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - T is a new triangulation on the face)nbdoc")
-        .def("NewCurve", [](BRepTools_Modification &self, const TopoDS_Edge & E, occ::handle<Geom_Curve> & C, TopLoc_Location & L) { double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("C"), nb::arg("L"), R"nbdoc(Returns true if the edge, E, has been modified.
+        .def("NewCurve", [](BRepTools_Modification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge, E, has been modified.
 If the edge has been modified:
 - C is the new geometry associated with the edge,
 - L is its new location, and
 - Tol is the new tolerance.
 If the edge has not been modified, this function
 returns false, and the values of C, L and Tol are not significant.)nbdoc")
-        .def("NewPolygon", static_cast<bool (BRepTools_Modification::*)(const TopoDS_Edge &, occ::handle<Poly_Polygon3D> &)>(&BRepTools_Modification::NewPolygon), nb::arg("E"), nb::arg("P"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_Modification &self, const TopoDS_Edge & E) { occ::handle<Poly_Polygon3D> P{}; auto result = self.NewPolygon(E, P); return std::make_tuple(result, P); }, nb::arg("E"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - P is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", static_cast<bool (BRepTools_Modification::*)(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepTools_Modification::NewPolygonOnTriangulation), nb::arg("E"), nb::arg("F"), nb::arg("P"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F) { occ::handle<Poly_PolygonOnTriangulation> P{}; auto result = self.NewPolygonOnTriangulation(E, F, P); return std::make_tuple(result, P); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - P is a new polygon on triangulation)nbdoc")
         .def("NewPoint", [](BRepTools_Modification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex V has been modified.
@@ -432,7 +433,7 @@ If V has been modified:
 - Tol is the new tolerance.
 If the vertex has not been modified this function
 returns false, and the values of P and Tol are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF, occ::handle<Geom2d_Curve> & C) { double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), nb::arg("C"), R"nbdoc(Returns true if the edge, E, has a new curve on
+        .def("NewCurve2d", [](BRepTools_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge, E, has a new curve on
 surface on the face, F.
 If a new curve exists:
 - C is the new geometry of the edge,
@@ -460,13 +461,13 @@ and <NewF2>.
         .def(nb::new_([](const bool theCopyGeom, const bool theCopyMesh) { return opencascade::handle<BRepTools_CopyModification>(new BRepTools_CopyModification(theCopyGeom, theCopyMesh)); }), nb::arg("theCopyGeom") = static_cast<std::decay_t<const bool>>(true), nb::arg("theCopyMesh") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructor.
 \param[in] theCopyGeom  indicates that the geometry (surfaces and curves) should be copied
 \param[in] theCopyMesh  indicates that the triangulation should be copied)nbdoc")
-        .def("NewSurface", [](BRepTools_CopyModification &self, const TopoDS_Face & theFace, occ::handle<Geom_Surface> & theSurf, TopLoc_Location & theLoc) { double theTol{}; bool theRevWires{}; bool theRevFace{}; auto result = self.NewSurface(theFace, theSurf, theLoc, theTol, theRevWires, theRevFace); return std::make_tuple(result, theTol, theRevWires, theRevFace); }, nb::arg("theFace"), nb::arg("theSurf"), nb::arg("theLoc"), R"nbdoc(Returns true if theFace has been modified.
+        .def("NewSurface", [](BRepTools_CopyModification &self, const TopoDS_Face & theFace, TopLoc_Location & theLoc) { occ::handle<Geom_Surface> theSurf{}; double theTol{}; bool theRevWires{}; bool theRevFace{}; auto result = self.NewSurface(theFace, theSurf, theLoc, theTol, theRevWires, theRevFace); return std::make_tuple(result, theSurf, theTol, theRevWires, theRevFace); }, nb::arg("theFace"), nb::arg("theLoc"), R"nbdoc(Returns true if theFace has been modified.
 If the face has been modified:
 - theSurf is the new geometry of the face,
 - theLoc is its new location, and
 - theTol is the new tolerance.
 theRevWires, theRevFace are always set to false, because the orientation is not changed.)nbdoc")
-        .def("NewCurve", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, occ::handle<Geom_Curve> & theCurve, TopLoc_Location & theLoc) { double theTol{}; auto result = self.NewCurve(theEdge, theCurve, theLoc, theTol); return std::make_tuple(result, theTol); }, nb::arg("theEdge"), nb::arg("theCurve"), nb::arg("theLoc"), R"nbdoc(Returns true if theEdge has been modified.
+        .def("NewCurve", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, TopLoc_Location & theLoc) { occ::handle<Geom_Curve> theCurve{}; double theTol{}; auto result = self.NewCurve(theEdge, theCurve, theLoc, theTol); return std::make_tuple(result, theCurve, theTol); }, nb::arg("theEdge"), nb::arg("theLoc"), R"nbdoc(Returns true if theEdge has been modified.
 If the edge has been modified:
 - theCurve is the new geometric support of the edge,
 - theLoc is the new location, and
@@ -479,7 +480,7 @@ If the vertex has been modified:
 - theTol is the new tolerance.
 If the vertex has not been modified this function
 returns false, and the values of thePnt and theTol are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const TopoDS_Edge & theNewEdge, const TopoDS_Face & theNewFace, occ::handle<Geom2d_Curve> & theCurve) { double theTol{}; auto result = self.NewCurve2d(theEdge, theFace, theNewEdge, theNewFace, theCurve, theTol); return std::make_tuple(result, theTol); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("theNewEdge"), nb::arg("theNewFace"), nb::arg("theCurve"), R"nbdoc(Returns true if theEdge has a new curve on surface on theFace.
+        .def("NewCurve2d", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const TopoDS_Edge & theNewEdge, const TopoDS_Face & theNewFace) { occ::handle<Geom2d_Curve> theCurve{}; double theTol{}; auto result = self.NewCurve2d(theEdge, theFace, theNewEdge, theNewFace, theCurve, theTol); return std::make_tuple(result, theCurve, theTol); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("theNewEdge"), nb::arg("theNewFace"), R"nbdoc(Returns true if theEdge has a new curve on surface on theFace.
 If a new curve exists:
 - theCurve is the new geometric support of the edge,
 - theTol the new tolerance.
@@ -495,13 +496,13 @@ and the values of thePnt and theTol are not significant.)nbdoc")
 
 theNewEdge is the new edge created from theEdge. theNewFace1
 (resp. theNewFace2) is the new face created from theFace1 (resp. theFace2).)nbdoc")
-        .def("NewTriangulation", static_cast<bool (BRepTools_CopyModification::*)(const TopoDS_Face &, occ::handle<Poly_Triangulation> &)>(&BRepTools_CopyModification::NewTriangulation), nb::arg("theFace"), nb::arg("theTri"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_CopyModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto result = self.NewTriangulation(theFace, theTri); return std::make_tuple(result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - theTri is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", static_cast<bool (BRepTools_CopyModification::*)(const TopoDS_Edge &, occ::handle<Poly_Polygon3D> &)>(&BRepTools_CopyModification::NewPolygon), nb::arg("theEdge"), nb::arg("thePoly"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - thePoly is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", static_cast<bool (BRepTools_CopyModification::*)(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepTools_CopyModification::NewPolygonOnTriangulation), nb::arg("theEdge"), nb::arg("theFace"), nb::arg("thePoly"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - thePoly is a new polygon on triangulation)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepTools_CopyModification::get_type_name))
@@ -511,7 +512,7 @@ If the edge has been modified:
     nb::borrow<nb::class_<BRepTools_GTrsfModification>>(m.attr("BRepTools_GTrsfModification"))
         .def(nb::new_([](const gp_GTrsf & T) { return opencascade::handle<BRepTools_GTrsfModification>(new BRepTools_GTrsfModification(T)); }), nb::arg("T"))
         .def("GTrsf", static_cast<gp_GTrsf & (BRepTools_GTrsfModification::*)()>(&BRepTools_GTrsfModification::GTrsf), nb::rv_policy::reference_internal, R"nbdoc(Gives an access on the GTrsf.)nbdoc")
-        .def("NewSurface", [](BRepTools_GTrsfModification &self, const TopoDS_Face & F, occ::handle<Geom_Surface> & S, TopLoc_Location & L) { double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](BRepTools_GTrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location,<Tol>
 the new tolerance.<RevWires> has to be set to
@@ -522,7 +523,7 @@ true if the orientation of the modified
 face changes in the shells which contain it.
 Here, <RevFace> will return true if the
 - gp_Trsf is negative.)nbdoc")
-        .def("NewCurve", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, occ::handle<Geom_Curve> & C, TopLoc_Location & L) { double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("C"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
@@ -533,7 +534,7 @@ modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF, occ::handle<Geom2d_Curve> & C) { double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), nb::arg("C"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
@@ -550,13 +551,13 @@ and <NewF2>.
 <NewE> is the new edge created from <E>. <NewF1>
 (resp. <NewF2>) is the new face created from <F1>
 (resp. <F2>).)nbdoc")
-        .def("NewTriangulation", static_cast<bool (BRepTools_GTrsfModification::*)(const TopoDS_Face &, occ::handle<Poly_Triangulation> &)>(&BRepTools_GTrsfModification::NewTriangulation), nb::arg("theFace"), nb::arg("theTri"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_GTrsfModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto result = self.NewTriangulation(theFace, theTri); return std::make_tuple(result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - theTri is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", static_cast<bool (BRepTools_GTrsfModification::*)(const TopoDS_Edge &, occ::handle<Poly_Polygon3D> &)>(&BRepTools_GTrsfModification::NewPolygon), nb::arg("theEdge"), nb::arg("thePoly"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - thePoly is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", static_cast<bool (BRepTools_GTrsfModification::*)(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepTools_GTrsfModification::NewPolygonOnTriangulation), nb::arg("theEdge"), nb::arg("theFace"), nb::arg("thePoly"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - thePoly is a new polygon on triangulation)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepTools_GTrsfModification::get_type_name))
@@ -582,7 +583,7 @@ Returns all shapes generated from the shape.)nbdoc")
         .def("HasGenerated", static_cast<bool (BRepTools_History::*)() const>(&BRepTools_History::HasGenerated), R"nbdoc(Returns 'true' if there any shapes with Generated elements present)nbdoc")
         .def("HasModified", static_cast<bool (BRepTools_History::*)() const>(&BRepTools_History::HasModified), R"nbdoc(Returns 'true' if there any Modified shapes present)nbdoc")
         .def("HasRemoved", static_cast<bool (BRepTools_History::*)() const>(&BRepTools_History::HasRemoved), R"nbdoc(Returns 'true' if there any removed shapes present)nbdoc")
-        .def("Merge", static_cast<void (BRepTools_History::*)(const occ::handle<BRepTools_History> &)>(&BRepTools_History::Merge), nb::arg("theHistory23"), R"nbdoc(A method to merge a next history to this history.
+        .def("Merge", static_cast<void (BRepTools_History::*)(const occ::handle<BRepTools_History> &)>(&BRepTools_History::Merge), nb::arg("theHistory23").none(), R"nbdoc(A method to merge a next history to this history.
 Merges the next history to this history.)nbdoc")
         .def("Merge", static_cast<void (BRepTools_History::*)(const BRepTools_History &)>(&BRepTools_History::Merge), nb::arg("theHistory23"), R"nbdoc(Merges the next history to this history.)nbdoc")
         .def("Dump", [](BRepTools_History &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return nanoocp_stream_text(theS_stream); }, R"nbdoc(A method to dump a history
@@ -594,10 +595,10 @@ Prints the brief description of the history into a stream)nbdoc")
     nb::borrow<nb::class_<BRepTools_Modifier>>(m.attr("BRepTools_Modifier"))
         .def(nb::init<bool>(), nb::arg("theMutableInput") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Creates an empty Modifier.)nbdoc")
         .def(nb::init<const TopoDS_Shape &>(), nb::arg("S"), R"nbdoc(Creates a modifier on the shape <S>.)nbdoc")
-        .def(nb::init<const TopoDS_Shape &, const occ::handle<BRepTools_Modification> &>(), nb::arg("S"), nb::arg("M"), R"nbdoc(Creates a modifier on the shape <S>, and performs
+        .def(nb::init<const TopoDS_Shape &, const occ::handle<BRepTools_Modification> &>(), nb::arg("S"), nb::arg("M").none(), R"nbdoc(Creates a modifier on the shape <S>, and performs
 the modifications described by <M>.)nbdoc")
         .def("Init", static_cast<void (BRepTools_Modifier::*)(const TopoDS_Shape &)>(&BRepTools_Modifier::Init), nb::arg("S"), R"nbdoc(Initializes the modifier with the shape <S>.)nbdoc")
-        .def("Perform", static_cast<void (BRepTools_Modifier::*)(const occ::handle<BRepTools_Modification> &, const Message_ProgressRange &)>(&BRepTools_Modifier::Perform), nb::arg("M"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Performs the modifications described by <M>.)nbdoc")
+        .def("Perform", static_cast<void (BRepTools_Modifier::*)(const occ::handle<BRepTools_Modification> &, const Message_ProgressRange &)>(&BRepTools_Modifier::Perform), nb::arg("M").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Performs the modifications described by <M>.)nbdoc")
         .def("IsDone", static_cast<bool (BRepTools_Modifier::*)() const>(&BRepTools_Modifier::IsDone), R"nbdoc(Returns true if the modification has
 been computed successfully.)nbdoc")
         .def("IsMutableInput", static_cast<bool (BRepTools_Modifier::*)() const>(&BRepTools_Modifier::IsMutableInput), R"nbdoc(Returns the current mutable input state)nbdoc")
@@ -610,7 +611,7 @@ during modification process)nbdoc")
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, BRepTools_Modifier>();
     nb::borrow<nb::class_<BRepTools_NurbsConvertModification>>(m.attr("BRepTools_NurbsConvertModification"))
         .def(nb::new_([]() { return opencascade::handle<BRepTools_NurbsConvertModification>(new BRepTools_NurbsConvertModification()); }))
-        .def("NewSurface", [](BRepTools_NurbsConvertModification &self, const TopoDS_Face & F, occ::handle<Geom_Surface> & S, TopLoc_Location & L) { double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](BRepTools_NurbsConvertModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location,<Tol>
 the new tolerance.<RevWires> has to be set to
@@ -621,7 +622,7 @@ true if the orientation of the modified
 face changes in the shells which contain it.
 Here, <RevFace> will return true if the
 - gp_Trsf is negative.)nbdoc")
-        .def("NewCurve", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, occ::handle<Geom_Curve> & C, TopLoc_Location & L) { double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("C"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
@@ -632,7 +633,7 @@ modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF, occ::handle<Geom2d_Curve> & C) { double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), nb::arg("C"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
@@ -649,13 +650,13 @@ and <NewF2>.
 <NewE> is the new edge created from <E>. <NewF1>
 (resp. <NewF2>) is the new face created from <F1>
 (resp. <F2>).)nbdoc")
-        .def("NewTriangulation", static_cast<bool (BRepTools_NurbsConvertModification::*)(const TopoDS_Face &, occ::handle<Poly_Triangulation> &)>(&BRepTools_NurbsConvertModification::NewTriangulation), nb::arg("theFace"), nb::arg("theTri"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_NurbsConvertModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto result = self.NewTriangulation(theFace, theTri); return std::make_tuple(result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - theTri is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", static_cast<bool (BRepTools_NurbsConvertModification::*)(const TopoDS_Edge &, occ::handle<Poly_Polygon3D> &)>(&BRepTools_NurbsConvertModification::NewPolygon), nb::arg("theEdge"), nb::arg("thePoly"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - thePoly is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", static_cast<bool (BRepTools_NurbsConvertModification::*)(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepTools_NurbsConvertModification::NewPolygonOnTriangulation), nb::arg("theEdge"), nb::arg("theFace"), nb::arg("thePoly"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - thePoly is a new polygon on triangulation)nbdoc")
         .def("GetUpdatedEdges", static_cast<const NCollection_List<TopoDS_Shape> & (BRepTools_NurbsConvertModification::*)() const>(&BRepTools_NurbsConvertModification::GetUpdatedEdges))
@@ -751,9 +752,9 @@ Ignored (always written) if face defines only triangulation (no surface).)nbdoc"
         .def("Clear", static_cast<void (BRepTools_ShapeSet::*)()>(&BRepTools_ShapeSet::Clear), R"nbdoc(Clears the content of the set.)nbdoc")
         .def("AddGeometry", static_cast<void (BRepTools_ShapeSet::*)(const TopoDS_Shape &)>(&BRepTools_ShapeSet::AddGeometry), nb::arg("S"), R"nbdoc(Stores the geometry of <S>.)nbdoc")
         .def("DumpGeometry", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpGeometry(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the geometry of me on the stream <OS>.)nbdoc")
-        .def("WriteGeometry", [](BRepTools_ShapeSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteGeometry(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the geometry of me on the stream <OS> in a
+        .def("WriteGeometry", [](BRepTools_ShapeSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteGeometry(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the geometry of me on the stream <OS> in a
 format that can be read back by Read.)nbdoc")
-        .def("ReadGeometry", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadGeometry(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the geometry of me from the stream <IS>.)nbdoc")
+        .def("ReadGeometry", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadGeometry(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the geometry of me from the stream <IS>.)nbdoc")
         .def("DumpGeometry", [](const BRepTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.DumpGeometry(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Dumps the geometry of <S> on the stream <OS>.)nbdoc")
         .def("WriteGeometry", [](const BRepTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.WriteGeometry(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Writes the geometry of <S> on the stream <OS> in a
 format that can be read back by Read.)nbdoc")
@@ -763,23 +764,23 @@ stream <IS> and returns it in <S>.)nbdoc")
 method must be redefined to use the correct
 builder.)nbdoc")
         .def("Check", static_cast<void (BRepTools_ShapeSet::*)(const TopAbs_ShapeEnum, TopoDS_Shape &)>(&BRepTools_ShapeSet::Check), nb::arg("T"), nb::arg("S"))
-        .def("ReadPolygon3D", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadPolygon3D(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the 3d polygons of me
+        .def("ReadPolygon3D", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadPolygon3D(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the 3d polygons of me
 from the stream <IS>.)nbdoc")
-        .def("WritePolygon3D", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WritePolygon3D(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the 3d polygons
+        .def("WritePolygon3D", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WritePolygon3D(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the 3d polygons
 on the stream <OS> in a format that can
 be read back by Read.)nbdoc")
         .def("DumpPolygon3D", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpPolygon3D(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the 3d polygons
 on the stream <OS>.)nbdoc")
-        .def("ReadTriangulation", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadTriangulation(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the triangulation of me
+        .def("ReadTriangulation", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadTriangulation(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the triangulation of me
 from the stream <IS>.)nbdoc")
-        .def("WriteTriangulation", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteTriangulation(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the triangulation
+        .def("WriteTriangulation", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteTriangulation(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the triangulation
 on the stream <OS> in a format that can
 be read back by Read.)nbdoc")
         .def("DumpTriangulation", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpTriangulation(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the triangulation
 on the stream <OS>.)nbdoc")
-        .def("ReadPolygonOnTriangulation", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadPolygonOnTriangulation(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the polygons on triangulation of me
+        .def("ReadPolygonOnTriangulation", [](BRepTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadPolygonOnTriangulation(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the polygons on triangulation of me
 from the stream <IS>.)nbdoc")
-        .def("WritePolygonOnTriangulation", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WritePolygonOnTriangulation(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the polygons on triangulation
+        .def("WritePolygonOnTriangulation", [](const BRepTools_ShapeSet &self, const bool Compact, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WritePolygonOnTriangulation(OS_stream, Compact, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("Compact") = static_cast<std::decay_t<const bool>>(true), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the polygons on triangulation
 on the stream <OS> in a format that can
 be read back by Read.)nbdoc")
         .def("DumpPolygonOnTriangulation", [](const BRepTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpPolygonOnTriangulation(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the polygons on triangulation
@@ -811,7 +812,7 @@ the resul of <Build>)nbdoc")
 modification. The transformation can be changed.)nbdoc")
         .def("IsCopyMesh", [](BRepTools_TrsfModification &self) -> bool { return self.IsCopyMesh(); }, R"nbdoc(Sets a flag to indicate the need to copy mesh.)nbdoc")
         .def("SetIsCopyMesh", [](BRepTools_TrsfModification &self, bool theValue) { self.IsCopyMesh() = theValue; }, nb::arg("theValue"), "Python addition: sets the value IsCopyMesh() returns by reference in C++.")
-        .def("NewSurface", [](BRepTools_TrsfModification &self, const TopoDS_Face & F, occ::handle<Geom_Surface> & S, TopLoc_Location & L) { double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns true if the face F has been modified.
+        .def("NewSurface", [](BRepTools_TrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face F has been modified.
 If the face has been modified:
 - S is the new geometry of the face,
 - L is its new location, and
@@ -822,16 +823,16 @@ RevFace is set to true if the orientation of the
 modified face changes in the shells which contain it.
 For this class, RevFace returns true if the gp_Trsf
 associated with this modification is negative.)nbdoc")
-        .def("NewTriangulation", static_cast<bool (BRepTools_TrsfModification::*)(const TopoDS_Face &, occ::handle<Poly_Triangulation> &)>(&BRepTools_TrsfModification::NewTriangulation), nb::arg("F"), nb::arg("T"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_TrsfModification &self, const TopoDS_Face & F) { occ::handle<Poly_Triangulation> T{}; auto result = self.NewTriangulation(F, T); return std::make_tuple(result, T); }, nb::arg("F"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - T is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", static_cast<bool (BRepTools_TrsfModification::*)(const TopoDS_Edge &, occ::handle<Poly_Polygon3D> &)>(&BRepTools_TrsfModification::NewPolygon), nb::arg("E"), nb::arg("P"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E) { occ::handle<Poly_Polygon3D> P{}; auto result = self.NewPolygon(E, P); return std::make_tuple(result, P); }, nb::arg("E"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - P is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", static_cast<bool (BRepTools_TrsfModification::*)(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepTools_TrsfModification::NewPolygonOnTriangulation), nb::arg("E"), nb::arg("F"), nb::arg("P"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F) { occ::handle<Poly_PolygonOnTriangulation> P{}; auto result = self.NewPolygonOnTriangulation(E, F, P); return std::make_tuple(result, P); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - P is a new polygon on triangulation)nbdoc")
-        .def("NewCurve", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, occ::handle<Geom_Curve> & C, TopLoc_Location & L) { double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("C"), nb::arg("L"), R"nbdoc(Always returns true indicating that the edge E is always modified.
+        .def("NewCurve", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Always returns true indicating that the edge E is always modified.
 - C is the new geometric support of the edge,
 - L is the new location, and
 - Tol is the new tolerance.)nbdoc")
@@ -841,7 +842,7 @@ If the vertex has been modified:
 - Tol is the new tolerance.
 If the vertex has not been modified this function
 returns false, and the values of P and Tol are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF, occ::handle<Geom2d_Curve> & C) { double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), nb::arg("C"), R"nbdoc(Returns true if the edge E has a new curve on surface on the face F.
+        .def("NewCurve2d", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge E has a new curve on surface on the face F.
 If a new curve exists:
 - C is the new geometric support of the edge,
 - L is the new location, and

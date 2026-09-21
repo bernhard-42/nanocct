@@ -19,6 +19,14 @@ class OSD_SignalMode(enum.IntEnum):
 
     OSD_SignalMode_Unset = 3
 
+OSD_SignalMode_AsIs: OSD_SignalMode = OSD_SignalMode.OSD_SignalMode_AsIs
+
+OSD_SignalMode_Set: OSD_SignalMode = OSD_SignalMode.OSD_SignalMode_Set
+
+OSD_SignalMode_SetUnhandled: OSD_SignalMode = OSD_SignalMode.OSD_SignalMode_SetUnhandled
+
+OSD_SignalMode_Unset: OSD_SignalMode = OSD_SignalMode.OSD_SignalMode_Unset
+
 class OSD_SysType(enum.IntEnum):
     """
     Thisd is a set of possible system types.
@@ -53,6 +61,30 @@ class OSD_SysType(enum.IntEnum):
     OSD_LinuxREDHAT = 10
 
     OSD_Aix = 11
+
+OSD_Unknown: OSD_SysType = OSD_SysType.OSD_Unknown
+
+OSD_Default: OSD_SysType = OSD_SysType.OSD_Default
+
+OSD_UnixBSD: OSD_SysType = OSD_SysType.OSD_UnixBSD
+
+OSD_UnixSystemV: OSD_SysType = OSD_SysType.OSD_UnixSystemV
+
+OSD_VMS: OSD_SysType = OSD_SysType.OSD_VMS
+
+OSD_OS2: OSD_SysType = OSD_SysType.OSD_OS2
+
+OSD_OSF: OSD_SysType = OSD_SysType.OSD_OSF
+
+OSD_MacOs: OSD_SysType = OSD_SysType.OSD_MacOs
+
+OSD_Taligent: OSD_SysType = OSD_SysType.OSD_Taligent
+
+OSD_WindowsNT: OSD_SysType = OSD_SysType.OSD_WindowsNT
+
+OSD_LinuxREDHAT: OSD_SysType = OSD_SysType.OSD_LinuxREDHAT
+
+OSD_Aix: OSD_SysType = OSD_SysType.OSD_Aix
 
 class OSD_WhoAmI(enum.IntEnum):
     """
@@ -90,6 +122,36 @@ class OSD_WhoAmI(enum.IntEnum):
 
     OSD_WEnvironmentIterator = 14
 
+OSD_WDirectory: OSD_WhoAmI = OSD_WhoAmI.OSD_WDirectory
+
+OSD_WDirectoryIterator: OSD_WhoAmI = OSD_WhoAmI.OSD_WDirectoryIterator
+
+OSD_WEnvironment: OSD_WhoAmI = OSD_WhoAmI.OSD_WEnvironment
+
+OSD_WFile: OSD_WhoAmI = OSD_WhoAmI.OSD_WFile
+
+OSD_WFileNode: OSD_WhoAmI = OSD_WhoAmI.OSD_WFileNode
+
+OSD_WFileIterator: OSD_WhoAmI = OSD_WhoAmI.OSD_WFileIterator
+
+OSD_WPath: OSD_WhoAmI = OSD_WhoAmI.OSD_WPath
+
+OSD_WProcess: OSD_WhoAmI = OSD_WhoAmI.OSD_WProcess
+
+OSD_WProtection: OSD_WhoAmI = OSD_WhoAmI.OSD_WProtection
+
+OSD_WHost: OSD_WhoAmI = OSD_WhoAmI.OSD_WHost
+
+OSD_WDisk: OSD_WhoAmI = OSD_WhoAmI.OSD_WDisk
+
+OSD_WChronometer: OSD_WhoAmI = OSD_WhoAmI.OSD_WChronometer
+
+OSD_WTimer: OSD_WhoAmI = OSD_WhoAmI.OSD_WTimer
+
+OSD_WPackage: OSD_WhoAmI = OSD_WhoAmI.OSD_WPackage
+
+OSD_WEnvironmentIterator: OSD_WhoAmI = OSD_WhoAmI.OSD_WEnvironmentIterator
+
 class OSD_FromWhere(enum.IntEnum):
     """Used by OSD_File in the method Seek."""
 
@@ -98,6 +160,12 @@ class OSD_FromWhere(enum.IntEnum):
     OSD_FromHere = 1
 
     OSD_FromEnd = 2
+
+OSD_FromBeginning: OSD_FromWhere = OSD_FromWhere.OSD_FromBeginning
+
+OSD_FromHere: OSD_FromWhere = OSD_FromWhere.OSD_FromHere
+
+OSD_FromEnd: OSD_FromWhere = OSD_FromWhere.OSD_FromEnd
 
 class OSD_KindFile(enum.IntEnum):
     """Specifies the type of files."""
@@ -111,6 +179,16 @@ class OSD_KindFile(enum.IntEnum):
     OSD_SOCKET = 3
 
     OSD_UNKNOWN = 4
+
+OSD_FILE: OSD_KindFile = OSD_KindFile.OSD_FILE
+
+OSD_DIRECTORY: OSD_KindFile = OSD_KindFile.OSD_DIRECTORY
+
+OSD_LINK: OSD_KindFile = OSD_KindFile.OSD_LINK
+
+OSD_SOCKET: OSD_KindFile = OSD_KindFile.OSD_SOCKET
+
+OSD_UNKNOWN: OSD_KindFile = OSD_KindFile.OSD_UNKNOWN
 
 class OSD_LockType(enum.IntEnum):
     """
@@ -136,6 +214,14 @@ class OSD_LockType(enum.IntEnum):
 
     OSD_ExclusiveLock = 3
 
+OSD_NoLock: OSD_LockType = OSD_LockType.OSD_NoLock
+
+OSD_ReadLock: OSD_LockType = OSD_LockType.OSD_ReadLock
+
+OSD_WriteLock: OSD_LockType = OSD_LockType.OSD_WriteLock
+
+OSD_ExclusiveLock: OSD_LockType = OSD_LockType.OSD_ExclusiveLock
+
 class OSD_OpenMode(enum.IntEnum):
     """Specifies the file open mode."""
 
@@ -144,6 +230,12 @@ class OSD_OpenMode(enum.IntEnum):
     OSD_WriteOnly = 1
 
     OSD_ReadWrite = 2
+
+OSD_ReadOnly: OSD_OpenMode = OSD_OpenMode.OSD_ReadOnly
+
+OSD_WriteOnly: OSD_OpenMode = OSD_OpenMode.OSD_WriteOnly
+
+OSD_ReadWrite: OSD_OpenMode = OSD_OpenMode.OSD_ReadWrite
 
 class OSD_OEMType(enum.IntEnum):
     """
@@ -175,12 +267,40 @@ class OSD_OEMType(enum.IntEnum):
 
     OSD_AIX = 11
 
+OSD_Unavailable: OSD_OEMType = OSD_OEMType.OSD_Unavailable
+
+OSD_SUN: OSD_OEMType = OSD_OEMType.OSD_SUN
+
+OSD_DEC: OSD_OEMType = OSD_OEMType.OSD_DEC
+
+OSD_SGI: OSD_OEMType = OSD_OEMType.OSD_SGI
+
+OSD_NEC: OSD_OEMType = OSD_OEMType.OSD_NEC
+
+OSD_MAC: OSD_OEMType = OSD_OEMType.OSD_MAC
+
+OSD_PC: OSD_OEMType = OSD_OEMType.OSD_PC
+
+OSD_HP: OSD_OEMType = OSD_OEMType.OSD_HP
+
+OSD_IBM: OSD_OEMType = OSD_OEMType.OSD_IBM
+
+OSD_VAX: OSD_OEMType = OSD_OEMType.OSD_VAX
+
+OSD_LIN: OSD_OEMType = OSD_OEMType.OSD_LIN
+
+OSD_AIX: OSD_OEMType = OSD_OEMType.OSD_AIX
+
 class OSD_LoadMode(enum.IntEnum):
     """This enumeration is used to load shareable libraries."""
 
     OSD_RTLD_LAZY = 0
 
     OSD_RTLD_NOW = 1
+
+OSD_RTLD_LAZY: OSD_LoadMode = OSD_LoadMode.OSD_RTLD_LAZY
+
+OSD_RTLD_NOW: OSD_LoadMode = OSD_LoadMode.OSD_RTLD_NOW
 
 class OSD_SingleProtection(enum.IntEnum):
     """
@@ -222,6 +342,38 @@ class OSD_SingleProtection(enum.IntEnum):
     OSD_WXD = 14
 
     OSD_RWXD = 15
+
+OSD_None: OSD_SingleProtection = OSD_SingleProtection.OSD_None
+
+OSD_R: OSD_SingleProtection = OSD_SingleProtection.OSD_R
+
+OSD_W: OSD_SingleProtection = OSD_SingleProtection.OSD_W
+
+OSD_RW: OSD_SingleProtection = OSD_SingleProtection.OSD_RW
+
+OSD_X: OSD_SingleProtection = OSD_SingleProtection.OSD_X
+
+OSD_RX: OSD_SingleProtection = OSD_SingleProtection.OSD_RX
+
+OSD_WX: OSD_SingleProtection = OSD_SingleProtection.OSD_WX
+
+OSD_RWX: OSD_SingleProtection = OSD_SingleProtection.OSD_RWX
+
+OSD_D: OSD_SingleProtection = OSD_SingleProtection.OSD_D
+
+OSD_RD: OSD_SingleProtection = OSD_SingleProtection.OSD_RD
+
+OSD_WD: OSD_SingleProtection = OSD_SingleProtection.OSD_WD
+
+OSD_RWD: OSD_SingleProtection = OSD_SingleProtection.OSD_RWD
+
+OSD_XD: OSD_SingleProtection = OSD_SingleProtection.OSD_XD
+
+OSD_RXD: OSD_SingleProtection = OSD_SingleProtection.OSD_RXD
+
+OSD_WXD: OSD_SingleProtection = OSD_SingleProtection.OSD_WXD
+
+OSD_RWXD: OSD_SingleProtection = OSD_SingleProtection.OSD_RWXD
 
 class OSD:
     """Set of Operating System Dependent (OSD) tools."""
@@ -394,7 +546,7 @@ class OSD_FileSystem(nanoocp.Standard.Standard_Transient):
         """
 
     @staticmethod
-    def AddDefaultProtocol(theFileSystem: OSD_FileSystem, theIsPreferred: bool = False) -> None:
+    def AddDefaultProtocol(theFileSystem: OSD_FileSystem | None, theIsPreferred: bool = False) -> None:
         """
         Registers file system within the global file system selector returned by
         OSD_FileSystem::DefaultFileSystem(). Note that registering protocols is not thread-safe
@@ -405,7 +557,7 @@ class OSD_FileSystem(nanoocp.Standard.Standard_Transient):
         """
 
     @staticmethod
-    def RemoveDefaultProtocol(theFileSystem: OSD_FileSystem) -> None:
+    def RemoveDefaultProtocol(theFileSystem: OSD_FileSystem | None) -> None:
         """
         Unregisters file system within the global file system selector returned by
         OSD_FileSystem::DefaultFileSystem().
@@ -425,7 +577,7 @@ class OSD_CachedFileSystem(OSD_FileSystem):
     """
 
     @overload
-    def __init__(self, theLinkedFileSystem: OSD_FileSystem = None) -> None:
+    def __init__(self, theLinkedFileSystem: OSD_FileSystem | None = None) -> None:
         """Constructor."""
 
     @overload
@@ -444,7 +596,7 @@ class OSD_CachedFileSystem(OSD_FileSystem):
         Return linked file system; initialized with OSD_FileSystem::DefaultFileSystem() by default.
         """
 
-    def SetLinkedFileSystem(self, theLinkedFileSystem: OSD_FileSystem) -> None:
+    def SetLinkedFileSystem(self, theLinkedFileSystem: OSD_FileSystem | None) -> None:
         """Sets linked file system."""
 
     def IsSupportedPath(self, theUrl: nanoocp.TCollection.TCollection_AsciiString) -> bool:
@@ -1464,7 +1616,7 @@ class OSD_FileSystemSelector(OSD_FileSystem):
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
-    def AddProtocol(self, theFileSystem: OSD_FileSystem, theIsPreferred: bool = False) -> None:
+    def AddProtocol(self, theFileSystem: OSD_FileSystem | None, theIsPreferred: bool = False) -> None:
         """
         Registers file system within this selector.
         @param[in] theFileSystem   file system to register
@@ -1472,7 +1624,7 @@ class OSD_FileSystemSelector(OSD_FileSystem):
         otherwise
         """
 
-    def RemoveProtocol(self, theFileSystem: OSD_FileSystem) -> None:
+    def RemoveProtocol(self, theFileSystem: OSD_FileSystem | None) -> None:
         """Unregisters file system within this selector."""
 
     def IsSupportedPath(self, theUrl: nanoocp.TCollection.TCollection_AsciiString) -> bool:
@@ -1597,6 +1749,22 @@ class OSD_MemInfo:
         MemHeapUsage = 6
 
         MemCounter_NB = 7
+
+    MemPrivate: OSD_MemInfo.Counter = Counter.MemPrivate
+
+    MemVirtual: OSD_MemInfo.Counter = Counter.MemVirtual
+
+    MemWorkingSet: OSD_MemInfo.Counter = Counter.MemWorkingSet
+
+    MemWorkingSetPeak: OSD_MemInfo.Counter = Counter.MemWorkingSetPeak
+
+    MemSwapUsage: OSD_MemInfo.Counter = Counter.MemSwapUsage
+
+    MemSwapUsagePeak: OSD_MemInfo.Counter = Counter.MemSwapUsagePeak
+
+    MemHeapUsage: OSD_MemInfo.Counter = Counter.MemHeapUsage
+
+    MemCounter_NB: OSD_MemInfo.Counter = Counter.MemCounter_NB
 
     def IsActive(self, theCounter: OSD_MemInfo.Counter) -> bool:
         """Return true if the counter is active"""

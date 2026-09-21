@@ -28,6 +28,26 @@ class IntAna_ResultType(enum.IntEnum):
 
     IntAna_NoGeometricSolution = 9
 
+IntAna_Point: IntAna_ResultType = IntAna_ResultType.IntAna_Point
+
+IntAna_Line: IntAna_ResultType = IntAna_ResultType.IntAna_Line
+
+IntAna_Circle: IntAna_ResultType = IntAna_ResultType.IntAna_Circle
+
+IntAna_PointAndCircle: IntAna_ResultType = IntAna_ResultType.IntAna_PointAndCircle
+
+IntAna_Ellipse: IntAna_ResultType = IntAna_ResultType.IntAna_Ellipse
+
+IntAna_Parabola: IntAna_ResultType = IntAna_ResultType.IntAna_Parabola
+
+IntAna_Hyperbola: IntAna_ResultType = IntAna_ResultType.IntAna_Hyperbola
+
+IntAna_Empty: IntAna_ResultType = IntAna_ResultType.IntAna_Empty
+
+IntAna_Same: IntAna_ResultType = IntAna_ResultType.IntAna_Same
+
+IntAna_NoGeometricSolution: IntAna_ResultType = IntAna_ResultType.IntAna_NoGeometricSolution
+
 class IntAna_Curve:
     """
     Definition of a parametric Curve which is the result

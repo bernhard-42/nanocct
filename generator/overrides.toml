@@ -1,16 +1,25 @@
 # Hand-maintained exceptions to the generator's generic rules. Keep this file small; every entry
 # is a documented deviation from the "derive everything from the headers" principle.
 
-# Methods whose non-const reference parameters of primitive type are in/out: the value is read
-# AND written (e.g. transform coordinates in place). The default rule treats such parameters as
-# pure outputs (dropped from the Python signature, returned in a tuple). Listed methods keep them
-# as inputs and still return the updated values.
+# Methods whose non-const reference parameters of primitive or handle<T> type are in/out: the value is
+# read AND written (e.g. transform coordinates in place, replace a curve by its extended version). The
+# default rule treats such parameters as pure outputs (dropped from the Python signature, returned in a
+# tuple). Listed methods keep them as inputs and still return the updated values. Each entry was checked
+# against the .cxx body (the parameter is read before it is assigned).
 inout = [
     "gp_Trsf::Transforms",
     "gp_Trsf2d::Transforms",
     "gp_GTrsf::Transforms",
     "gp_GTrsf2d::Transforms",
     "*::InitFromJson",      # int& theStreamPos: the position to start reading at (1), advanced by the call (every class with DumpJson)
+    # handle<T>& parameters that are read and replaced (GeomLib.cxx, GeomConvert.cxx, Geom2dConvert.cxx, 2026-09-21)
+    "GeomLib::AdjustExtremity",            # Curve: converted to a BSpline, adjusted, assigned back
+    "GeomLib::ExtendCurveToPoint",         # Curve: extended in place
+    "GeomLib::ExtendSurfByLength",         # Surf: extended in place
+    "GeomLib::CancelDenominatorDerivative",# BSurf: modified in place (ExchangeUV)
+    "GeomConvert::C0BSplineToC1BSplineCurve",   # BS: split and re-concatenated, assigned back
+    "Geom2dConvert::C0BSplineToC1BSplineCurve", # BS: same
+    "*::ReadCompleteInfo",                 # handle<Storage_Data>& theData: used when non-null, created otherwise (Storage_BaseDriver, FSD_File, FSD_BinaryFile)
 ]
 
 # Classes never bound (internal helpers that happen to be public in a header).

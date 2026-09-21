@@ -191,7 +191,7 @@ void nanoocp_define_Geom2dGridEval(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")), "D2", &Geom2dGridEval::CurveD3::D2);
     nanoocp_def_field(nb::borrow<nb::class_<Geom2dGridEval::CurveD3>>(m.attr("CurveD3")), "D3", &Geom2dGridEval::CurveD3::D3);
     nb::borrow<nb::class_<Geom2dGridEval_BezierCurve>>(m.attr("Geom2dGridEval_BezierCurve"))
-        .def(nb::init<const occ::handle<Geom2d_BezierCurve> &>(), nb::arg("theBezier"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_BezierCurve> &>(), nb::arg("theBezier").none(), R"nbdoc(Constructor with geometry.
 @param theBezier the 2D bezier curve geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_BezierCurve> & (Geom2dGridEval_BezierCurve::*)() const>(&Geom2dGridEval_BezierCurve::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_BezierCurve::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_BezierCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -216,7 +216,7 @@ For orders > 3, uses BSplCLib::DN.
     nanoocp_implicit_copy_ctor<Geom2dGridEval_BezierCurve>(nb::borrow<nb::class_<Geom2dGridEval_BezierCurve>>(m.attr("Geom2dGridEval_BezierCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BezierCurve> &>, Geom2dGridEval_BezierCurve>();
     nb::borrow<nb::class_<Geom2dGridEval_BSplineCurve>>(m.attr("Geom2dGridEval_BSplineCurve"))
-        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &>(), nb::arg("theCurve"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &>(), nb::arg("theCurve").none(), R"nbdoc(Constructor with geometry.
 @param theCurve the 2D B-spline curve to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_BSplineCurve> & (Geom2dGridEval_BSplineCurve::*)() const>(&Geom2dGridEval_BSplineCurve::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_BSplineCurve::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_BSplineCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -245,7 +245,7 @@ For orders > 3, uses BSplCLib::DN.
     nanoocp_implicit_copy_ctor<Geom2dGridEval_BSplineCurve>(nb::borrow<nb::class_<Geom2dGridEval_BSplineCurve>>(m.attr("Geom2dGridEval_BSplineCurve")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_BSplineCurve> &>, Geom2dGridEval_BSplineCurve>();
     nb::borrow<nb::class_<Geom2dGridEval_Circle>>(m.attr("Geom2dGridEval_Circle"))
-        .def(nb::init<const occ::handle<Geom2d_Circle> &>(), nb::arg("theCircle"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_Circle> &>(), nb::arg("theCircle").none(), R"nbdoc(Constructor with geometry.
 @param theCircle the 2D circle geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_Circle> & (Geom2dGridEval_Circle::*)() const>(&Geom2dGridEval_Circle::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_Circle::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_Circle::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -280,7 +280,7 @@ or empty array if geometry is null or no parameters)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dGridEval_Circle>(nb::borrow<nb::class_<Geom2dGridEval_Circle>>(m.attr("Geom2dGridEval_Circle")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Circle> &>, Geom2dGridEval_Circle>();
     nb::borrow<nb::class_<Geom2dGridEval_Ellipse>>(m.attr("Geom2dGridEval_Ellipse"))
-        .def(nb::init<const occ::handle<Geom2d_Ellipse> &>(), nb::arg("theEllipse"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_Ellipse> &>(), nb::arg("theEllipse").none(), R"nbdoc(Constructor with geometry.
 @param theEllipse the 2D ellipse geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_Ellipse> & (Geom2dGridEval_Ellipse::*)() const>(&Geom2dGridEval_Ellipse::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_Ellipse::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_Ellipse::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -312,7 +312,7 @@ or empty array if geometry is null or no parameters)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dGridEval_Ellipse>(nb::borrow<nb::class_<Geom2dGridEval_Ellipse>>(m.attr("Geom2dGridEval_Ellipse")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Ellipse> &>, Geom2dGridEval_Ellipse>();
     nb::borrow<nb::class_<Geom2dGridEval_Hyperbola>>(m.attr("Geom2dGridEval_Hyperbola"))
-        .def(nb::init<const occ::handle<Geom2d_Hyperbola> &>(), nb::arg("theHyperbola"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_Hyperbola> &>(), nb::arg("theHyperbola").none(), R"nbdoc(Constructor with geometry.
 @param theHyperbola the 2D hyperbola geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_Hyperbola> & (Geom2dGridEval_Hyperbola::*)() const>(&Geom2dGridEval_Hyperbola::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_Hyperbola::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_Hyperbola::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -339,7 +339,7 @@ D3 = D1, D4 = D0, etc.
     nanoocp_implicit_copy_ctor<Geom2dGridEval_Hyperbola>(nb::borrow<nb::class_<Geom2dGridEval_Hyperbola>>(m.attr("Geom2dGridEval_Hyperbola")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Hyperbola> &>, Geom2dGridEval_Hyperbola>();
     nb::borrow<nb::class_<Geom2dGridEval_Line>>(m.attr("Geom2dGridEval_Line"))
-        .def(nb::init<const occ::handle<Geom2d_Line> &>(), nb::arg("theLine"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_Line> &>(), nb::arg("theLine").none(), R"nbdoc(Constructor with geometry.
 @param theLine the 2D line geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_Line> & (Geom2dGridEval_Line::*)() const>(&Geom2dGridEval_Line::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_Line::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_Line::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -370,7 +370,7 @@ or empty array if geometry is null or no parameters)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dGridEval_Line>(nb::borrow<nb::class_<Geom2dGridEval_Line>>(m.attr("Geom2dGridEval_Line")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom2d_Line> &>, Geom2dGridEval_Line>();
     nb::borrow<nb::class_<Geom2dGridEval_OffsetCurve>>(m.attr("Geom2dGridEval_OffsetCurve"))
-        .def(nb::init<const occ::handle<Geom2d_OffsetCurve> &>(), nb::arg("theOffset"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_OffsetCurve> &>(), nb::arg("theOffset").none(), R"nbdoc(Constructor with geometry.
 @param theOffset the 2D offset curve geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_OffsetCurve> & (Geom2dGridEval_OffsetCurve::*)() const>(&Geom2dGridEval_OffsetCurve::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_OffsetCurve::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_OffsetCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -426,7 +426,7 @@ For orders > 3, uses adaptor DN method.
     nanoocp_implicit_copy_ctor<Geom2dGridEval_OtherCurve>(nb::borrow<nb::class_<Geom2dGridEval_OtherCurve>>(m.attr("Geom2dGridEval_OtherCurve")));
     nb::implicitly_convertible<std::decay_t<const Adaptor2d_Curve2d &>, Geom2dGridEval_OtherCurve>();
     nb::borrow<nb::class_<Geom2dGridEval_Parabola>>(m.attr("Geom2dGridEval_Parabola"))
-        .def(nb::init<const occ::handle<Geom2d_Parabola> &>(), nb::arg("theParabola"), R"nbdoc(Constructor with geometry.
+        .def(nb::init<const occ::handle<Geom2d_Parabola> &>(), nb::arg("theParabola").none(), R"nbdoc(Constructor with geometry.
 @param theParabola the 2D parabola geometry to evaluate)nbdoc")
         .def("Geometry", static_cast<const occ::handle<Geom2d_Parabola> & (Geom2dGridEval_Parabola::*)() const>(&Geom2dGridEval_Parabola::Geometry), R"nbdoc(Returns the geometry handle.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_Parabola::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_Parabola::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
@@ -459,7 +459,7 @@ For other adaptors, stores reference for fallback evaluation.
 @note The curve adaptor reference must remain valid during the lifetime
 of this evaluator when using fallback evaluation.
 @param[in] theCurve 2D curve adaptor reference to evaluate)nbdoc")
-        .def(nb::init<const occ::handle<Geom2d_Curve> &>(), nb::arg("theCurve"), R"nbdoc(Construct from geometry handle (auto-detects curve type).
+        .def(nb::init<const occ::handle<Geom2d_Curve> &>(), nb::arg("theCurve").none(), R"nbdoc(Construct from geometry handle (auto-detects curve type).
 @param[in] theCurve 2D geometry to evaluate)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_Curve::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_Curve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate grid points at all parameters.
 @param theParams array of parameter values

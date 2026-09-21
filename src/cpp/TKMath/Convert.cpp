@@ -103,7 +103,8 @@ of parameter t on the BSpline curve does not give an exact point on the circle o
         .value("Convert_TgtThetaOver2_4", Convert_TgtThetaOver2_4)
         .value("Convert_QuasiAngular", Convert_QuasiAngular)
         .value("Convert_RationalC1", Convert_RationalC1)
-        .value("Convert_Polynomial", Convert_Polynomial);
+        .value("Convert_Polynomial", Convert_Polynomial)
+        .export_values();
     { nb::class_<Convert_ConicToBSplineCurve> cls(m, "Convert_ConicToBSplineCurve", R"nbdoc(Root class for algorithms which convert a conic curve into
 a BSpline curve (CircleToBSplineCurve, EllipseToBSplineCurve,
 HyperbolaToBSplineCurve, ParabolaToBSplineCurve).
@@ -358,7 +359,7 @@ for checking tangent parallelism at junction points)nbdoc");
     nb::implicitly_convertible<std::decay_t<const double>, Convert_CompBezierCurvesToBSplineCurve>();
     nb::borrow<nb::class_<Convert_CompPolynomialToPoles>>(m.attr("Convert_CompPolynomialToPoles"))
         .def(nb::init<const int, const int, const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &>(), nb::arg("Dimension"), nb::arg("MaxDegree"), nb::arg("Degree"), nb::arg("Coefficients"), nb::arg("PolynomialIntervals"), nb::arg("TrueIntervals"), R"nbdoc(To Convert only one span.)nbdoc")
-        .def(nb::init<const int, const int, const int, const int, const occ::handle<NCollection_HArray1<int>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray2<double>> &, const occ::handle<NCollection_HArray1<double>> &>(), nb::arg("NumCurves"), nb::arg("Continuity"), nb::arg("Dimension"), nb::arg("MaxDegree"), nb::arg("NumCoeffPerCurve"), nb::arg("Coefficients"), nb::arg("PolynomialIntervals"), nb::arg("TrueIntervals"), R"nbdoc(Warning!
+        .def(nb::init<const int, const int, const int, const int, const occ::handle<NCollection_HArray1<int>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray2<double>> &, const occ::handle<NCollection_HArray1<double>> &>(), nb::arg("NumCurves"), nb::arg("Continuity"), nb::arg("Dimension"), nb::arg("MaxDegree"), nb::arg("NumCoeffPerCurve").none(), nb::arg("Coefficients").none(), nb::arg("PolynomialIntervals").none(), nb::arg("TrueIntervals").none(), R"nbdoc(Warning!
 Continuity can be at MOST the maximum degree of
 the polynomial functions
 TrueIntervals :
@@ -450,7 +451,7 @@ This values defined the parametric domain of the Polynomial Equation.
 Coefficients:
 The <Coefficients> have to be formatted than an "C array"
 [MaxUDegree+1] [MaxVDegree+1] [3])nbdoc")
-        .def(nb::init<const int, const int, const occ::handle<NCollection_HArray1<int>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &>(), nb::arg("theMaxUDegree"), nb::arg("theMaxVDegree"), nb::arg("theNumCoeff"), nb::arg("theCoefficients"), nb::arg("thePolynomialUIntervals"), nb::arg("thePolynomialVIntervals"), R"nbdoc(Handle-based overload (delegates to the array-based constructor).
+        .def(nb::init<const int, const int, const occ::handle<NCollection_HArray1<int>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &>(), nb::arg("theMaxUDegree"), nb::arg("theMaxVDegree"), nb::arg("theNumCoeff").none(), nb::arg("theCoefficients").none(), nb::arg("thePolynomialUIntervals").none(), nb::arg("thePolynomialVIntervals").none(), R"nbdoc(Handle-based overload (delegates to the array-based constructor).
 Provided for backward compatibility; new code should prefer the
 @c NCollection_Array1 form which avoids unnecessary heap allocation.)nbdoc")
         .def(nb::init<const int, const int, const int, const int, const int, const int, const NCollection_Array2<int> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<double> &>(), nb::arg("theNbUSurfaces"), nb::arg("theNbVSurfaces"), nb::arg("theUContinuity"), nb::arg("theVContinuity"), nb::arg("theMaxUDegree"), nb::arg("theMaxVDegree"), nb::arg("theNumCoeffPerSurface"), nb::arg("theCoefficients"), nb::arg("thePolynomialUIntervals"), nb::arg("thePolynomialVIntervals"), nb::arg("theTrueUIntervals"), nb::arg("theTrueVIntervals"), R"nbdoc(To one grid of polynomial Surface.
@@ -467,7 +468,7 @@ The Coefficients have to be formatted than an "C array"
 raises DomainError if <NumCoeffPerSurface> is not a
 [1, NbVSurfaces*NbUSurfaces, 1,2] array.
 if <Coefficients> is not a)nbdoc")
-        .def(nb::init<const int, const int, const int, const int, const int, const int, const occ::handle<NCollection_HArray2<int>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &>(), nb::arg("theNbUSurfaces"), nb::arg("theNbVSurfaces"), nb::arg("theUContinuity"), nb::arg("theVContinuity"), nb::arg("theMaxUDegree"), nb::arg("theMaxVDegree"), nb::arg("theNumCoeffPerSurface"), nb::arg("theCoefficients"), nb::arg("thePolynomialUIntervals"), nb::arg("thePolynomialVIntervals"), nb::arg("theTrueUIntervals"), nb::arg("theTrueVIntervals"), R"nbdoc(Handle-based overload (delegates to the array-based constructor).)nbdoc")
+        .def(nb::init<const int, const int, const int, const int, const int, const int, const occ::handle<NCollection_HArray2<int>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &, const occ::handle<NCollection_HArray1<double>> &>(), nb::arg("theNbUSurfaces"), nb::arg("theNbVSurfaces"), nb::arg("theUContinuity"), nb::arg("theVContinuity"), nb::arg("theMaxUDegree"), nb::arg("theMaxVDegree"), nb::arg("theNumCoeffPerSurface").none(), nb::arg("theCoefficients").none(), nb::arg("thePolynomialUIntervals").none(), nb::arg("thePolynomialVIntervals").none(), nb::arg("theTrueUIntervals").none(), nb::arg("theTrueVIntervals").none(), R"nbdoc(Handle-based overload (delegates to the array-based constructor).)nbdoc")
         .def("NbUPoles", static_cast<int (Convert_GridPolynomialToPoles::*)() const>(&Convert_GridPolynomialToPoles::NbUPoles), R"nbdoc(Returns the number of poles in the U parametric direction.)nbdoc")
         .def("NbVPoles", static_cast<int (Convert_GridPolynomialToPoles::*)() const>(&Convert_GridPolynomialToPoles::NbVPoles), R"nbdoc(Returns the number of poles in the V parametric direction.)nbdoc")
         .def("Poles", static_cast<const NCollection_Array2<gp_Pnt> & (Convert_GridPolynomialToPoles::*)() const>(&Convert_GridPolynomialToPoles::Poles), R"nbdoc(Returns the poles of the BSpline Surface.)nbdoc")

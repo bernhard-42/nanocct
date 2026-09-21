@@ -18,7 +18,7 @@ class AdvApprox_ApproxAFunction:
     """this approximate a given function"""
 
     @overload
-    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float], TwoDTol: nanoocp.NCollection.NCollection_HArray1[float], ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float], First: float, Last: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDeg: int, MaxSeg: int, Func: AdvApprox_EvaluatorFunction) -> None:
+    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, TwoDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, First: float, Last: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDeg: int, MaxSeg: int, Func: AdvApprox_EvaluatorFunction) -> None:
         """
         Constructs approximator tool.
 
@@ -42,7 +42,7 @@ class AdvApprox_ApproxAFunction:
         """
 
     @overload
-    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float], TwoDTol: nanoocp.NCollection.NCollection_HArray1[float], ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float], First: float, Last: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDeg: int, MaxSeg: int, Func: AdvApprox_EvaluatorFunction, CutTool: AdvApprox_Cutting) -> None:
+    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, TwoDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, First: float, Last: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDeg: int, MaxSeg: int, Func: AdvApprox_EvaluatorFunction, CutTool: AdvApprox_Cutting) -> None:
         """Approximation with user method of cutting"""
 
     @overload

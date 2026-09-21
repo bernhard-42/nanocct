@@ -122,14 +122,17 @@ void nanoocp_declare_Extrema(nb::module_ &m) {
         .value("Extrema_Node", Extrema_Node)
         .value("Extrema_UIsoEdge", Extrema_UIsoEdge)
         .value("Extrema_VIsoEdge", Extrema_VIsoEdge)
-        .value("Extrema_Face", Extrema_Face);
+        .value("Extrema_Face", Extrema_Face)
+        .export_values();
     nb::enum_<Extrema_ExtAlgo>(m, "Extrema_ExtAlgo", nb::is_arithmetic())
         .value("Extrema_ExtAlgo_Grad", Extrema_ExtAlgo_Grad)
-        .value("Extrema_ExtAlgo_Tree", Extrema_ExtAlgo_Tree);
+        .value("Extrema_ExtAlgo_Tree", Extrema_ExtAlgo_Tree)
+        .export_values();
     nb::enum_<Extrema_ExtFlag>(m, "Extrema_ExtFlag", nb::is_arithmetic())
         .value("Extrema_ExtFlag_MIN", Extrema_ExtFlag_MIN)
         .value("Extrema_ExtFlag_MAX", Extrema_ExtFlag_MAX)
-        .value("Extrema_ExtFlag_MINMAX", Extrema_ExtFlag_MINMAX);
+        .value("Extrema_ExtFlag_MINMAX", Extrema_ExtFlag_MINMAX)
+        .export_values();
     { nb::class_<Extrema_CurveTool> cls(m, "Extrema_CurveTool");
     }
     { nb::class_<Extrema_POnCurv> cls(m, "Extrema_POnCurv", R"nbdoc(Definition of a point on curve.)nbdoc");
@@ -1314,11 +1317,11 @@ been initialized.)nbdoc")
     nanoocp_implicit_copy_ctor<Extrema_GenExtPS>(nb::borrow<nb::class_<Extrema_GenExtPS>>(m.attr("Extrema_GenExtPS")));
     nb::borrow<nb::class_<Extrema_ExtPExtS>>(m.attr("Extrema_ExtPExtS"))
         .def(nb::new_([]() { return opencascade::handle<Extrema_ExtPExtS>(new Extrema_ExtPExtS()); }))
-        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfLinearExtrusion> & S, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPExtS>(new Extrema_ExtPExtS(P, S, TolU, TolV)); }), nb::arg("P"), nb::arg("S"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
+        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfLinearExtrusion> & S, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPExtS>(new Extrema_ExtPExtS(P, S, TolU, TolV)); }), nb::arg("P"), nb::arg("S").none(), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
 from gp and a Surface.)nbdoc")
-        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfLinearExtrusion> & S, const double Umin, const double Usup, const double Vmin, const double Vsup, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPExtS>(new Extrema_ExtPExtS(P, S, Umin, Usup, Vmin, Vsup, TolU, TolV)); }), nb::arg("P"), nb::arg("S"), nb::arg("Umin"), nb::arg("Usup"), nb::arg("Vmin"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
+        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfLinearExtrusion> & S, const double Umin, const double Usup, const double Vmin, const double Vsup, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPExtS>(new Extrema_ExtPExtS(P, S, Umin, Usup, Vmin, Vsup, TolU, TolV)); }), nb::arg("P"), nb::arg("S").none(), nb::arg("Umin"), nb::arg("Usup"), nb::arg("Vmin"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
 from gp and a Surface.)nbdoc")
-        .def("Initialize", static_cast<void (Extrema_ExtPExtS::*)(const occ::handle<GeomAdaptor_SurfaceOfLinearExtrusion> &, const double, const double, const double, const double, const double, const double)>(&Extrema_ExtPExtS::Initialize), nb::arg("S"), nb::arg("Uinf"), nb::arg("Usup"), nb::arg("Vinf"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(Initializes the fields of the algorithm.)nbdoc")
+        .def("Initialize", static_cast<void (Extrema_ExtPExtS::*)(const occ::handle<GeomAdaptor_SurfaceOfLinearExtrusion> &, const double, const double, const double, const double, const double, const double)>(&Extrema_ExtPExtS::Initialize), nb::arg("S").none(), nb::arg("Uinf"), nb::arg("Usup"), nb::arg("Vinf"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(Initializes the fields of the algorithm.)nbdoc")
         .def("Perform", static_cast<void (Extrema_ExtPExtS::*)(const gp_Pnt &)>(&Extrema_ExtPExtS::Perform), nb::arg("P"))
         .def("IsDone", static_cast<bool (Extrema_ExtPExtS::*)() const>(&Extrema_ExtPExtS::IsDone), R"nbdoc(Returns True if the distances are found.)nbdoc")
         .def("NbExt", static_cast<int (Extrema_ExtPExtS::*)() const>(&Extrema_ExtPExtS::NbExt), R"nbdoc(Returns the number of extremum distances.)nbdoc")
@@ -1330,11 +1333,11 @@ from gp and a Surface.)nbdoc")
     nanoocp_implicit_copy_ctor<Extrema_ExtPExtS>(nb::borrow<nb::class_<Extrema_ExtPExtS>>(m.attr("Extrema_ExtPExtS")));
     nb::borrow<nb::class_<Extrema_ExtPRevS>>(m.attr("Extrema_ExtPRevS"))
         .def(nb::new_([]() { return opencascade::handle<Extrema_ExtPRevS>(new Extrema_ExtPRevS()); }))
-        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfRevolution> & S, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPRevS>(new Extrema_ExtPRevS(P, S, TolU, TolV)); }), nb::arg("P"), nb::arg("S"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
+        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfRevolution> & S, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPRevS>(new Extrema_ExtPRevS(P, S, TolU, TolV)); }), nb::arg("P"), nb::arg("S").none(), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
 from gp and a SurfacePtr from Adaptor3d.)nbdoc")
-        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfRevolution> & S, const double Umin, const double Usup, const double Vmin, const double Vsup, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPRevS>(new Extrema_ExtPRevS(P, S, Umin, Usup, Vmin, Vsup, TolU, TolV)); }), nb::arg("P"), nb::arg("S"), nb::arg("Umin"), nb::arg("Usup"), nb::arg("Vmin"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
+        .def(nb::new_([](const gp_Pnt & P, const occ::handle<GeomAdaptor_SurfaceOfRevolution> & S, const double Umin, const double Usup, const double Vmin, const double Vsup, const double TolU, const double TolV) { return opencascade::handle<Extrema_ExtPRevS>(new Extrema_ExtPRevS(P, S, Umin, Usup, Vmin, Vsup, TolU, TolV)); }), nb::arg("P"), nb::arg("S").none(), nb::arg("Umin"), nb::arg("Usup"), nb::arg("Vmin"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"), R"nbdoc(It calculates all the distances between a point
 from gp and a SurfacePtr from Adaptor3d.)nbdoc")
-        .def("Initialize", static_cast<void (Extrema_ExtPRevS::*)(const occ::handle<GeomAdaptor_SurfaceOfRevolution> &, const double, const double, const double, const double, const double, const double)>(&Extrema_ExtPRevS::Initialize), nb::arg("S"), nb::arg("Umin"), nb::arg("Usup"), nb::arg("Vmin"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"))
+        .def("Initialize", static_cast<void (Extrema_ExtPRevS::*)(const occ::handle<GeomAdaptor_SurfaceOfRevolution> &, const double, const double, const double, const double, const double, const double)>(&Extrema_ExtPRevS::Initialize), nb::arg("S").none(), nb::arg("Umin"), nb::arg("Usup"), nb::arg("Vmin"), nb::arg("Vsup"), nb::arg("TolU"), nb::arg("TolV"))
         .def("Perform", static_cast<void (Extrema_ExtPRevS::*)(const gp_Pnt &)>(&Extrema_ExtPRevS::Perform), nb::arg("P"))
         .def("IsDone", static_cast<bool (Extrema_ExtPRevS::*)() const>(&Extrema_ExtPRevS::IsDone), R"nbdoc(Returns True if the distances are found.)nbdoc")
         .def("NbExt", static_cast<int (Extrema_ExtPRevS::*)() const>(&Extrema_ExtPRevS::NbExt), R"nbdoc(Returns the number of extremum distances.)nbdoc")
@@ -1511,7 +1514,7 @@ a zero near the close points.)nbdoc")
         .def("PointOnSurface", static_cast<const Extrema_POnSurf & (Extrema_GenLocateExtCS::*)() const>(&Extrema_GenLocateExtCS::PointOnSurface), R"nbdoc(Returns the point of the extremum distance on S.)nbdoc");
     nanoocp_implicit_copy_ctor<Extrema_GenLocateExtCS>(nb::borrow<nb::class_<Extrema_GenLocateExtCS>>(m.attr("Extrema_GenLocateExtCS")));
     nb::borrow<nb::class_<Extrema_GenLocateExtPS>>(m.attr("Extrema_GenLocateExtPS"))
-        .def(nb::init<const Adaptor3d_Surface &, const double, const double>(), nb::arg("theS"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Constructor.)nbdoc")
+        .def(nb::init<const Adaptor3d_Surface &, const double, const double>(), nb::arg("theS"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), R"nbdoc(Constructor.)nbdoc")
         .def("Perform", static_cast<void (Extrema_GenLocateExtPS::*)(const gp_Pnt &, const double, const double, const bool)>(&Extrema_GenLocateExtPS::Perform), nb::arg("theP"), nb::arg("theU0"), nb::arg("theV0"), nb::arg("isDistanceCriteria") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Calculates the extrema between the point and the surface using a close point.
 The close point is defined by the parameter values theU0 and theV0.
 Type of the algorithm depends on the isDistanceCriteria flag.

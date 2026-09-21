@@ -13,7 +13,7 @@ class FEmTool_Assembly:
     """Assemble and solve system from (one dimensional) Finite Elements"""
 
     @overload
-    def __init__(self, Dependence: nanoocp.NCollection.NCollection_Array2[int], Table: nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]]) -> None: ...
+    def __init__(self, Dependence: nanoocp.NCollection.NCollection_Array2[int], Table: nanoocp.NCollection.NCollection_HArray2[nanoocp.NCollection.NCollection_HArray1[int]] | None) -> None: ...
 
     @overload
     def __init__(self, theOther: FEmTool_Assembly) -> None: ...
@@ -107,7 +107,7 @@ class FEmTool_ElementaryCriterion(nanoocp.Standard.Standard_Transient):
     """defined J Criteria to used in minimisation"""
 
     @overload
-    def Set(self, Coeff: nanoocp.NCollection.NCollection_HArray2[float]) -> None:
+    def Set(self, Coeff: nanoocp.NCollection.NCollection_HArray2[float] | None) -> None:
         """Set the coefficient of the Element (the Curve)"""
 
     @overload

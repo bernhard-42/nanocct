@@ -24,6 +24,14 @@ class AppParCurves_Constraint(enum.IntEnum):
 
     AppParCurves_CurvaturePoint = 3
 
+AppParCurves_NoConstraint: AppParCurves_Constraint = AppParCurves_Constraint.AppParCurves_NoConstraint
+
+AppParCurves_PassPoint: AppParCurves_Constraint = AppParCurves_Constraint.AppParCurves_PassPoint
+
+AppParCurves_TangencyPoint: AppParCurves_Constraint = ...
+
+AppParCurves_CurvaturePoint: AppParCurves_Constraint = ...
+
 class AppParCurves:
     """
     Parallel Approximation in n curves.

@@ -21,6 +21,12 @@ class TopTools_FormatVersion(enum.IntEnum):
 
     TopTools_FormatVersion_CURRENT = 3
 
+TopTools_FormatVersion_VERSION_1: TopTools_FormatVersion = ...
+
+TopTools_FormatVersion_VERSION_2: TopTools_FormatVersion = ...
+
+TopTools_FormatVersion_VERSION_3: TopTools_FormatVersion = ...
+
 TopTools_FormatVersion_LOWER: int = 1
 
 TopTools_FormatVersion_UPPER: int = 3

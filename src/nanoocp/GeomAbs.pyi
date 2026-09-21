@@ -18,6 +18,14 @@ class GeomAbs_BSplKnotDistribution(enum.IntEnum):
 
     GeomAbs_PiecewiseBezier = 3
 
+GeomAbs_NonUniform: GeomAbs_BSplKnotDistribution = GeomAbs_BSplKnotDistribution.GeomAbs_NonUniform
+
+GeomAbs_Uniform: GeomAbs_BSplKnotDistribution = GeomAbs_BSplKnotDistribution.GeomAbs_Uniform
+
+GeomAbs_QuasiUniform: GeomAbs_BSplKnotDistribution = GeomAbs_BSplKnotDistribution.GeomAbs_QuasiUniform
+
+GeomAbs_PiecewiseBezier: GeomAbs_BSplKnotDistribution = ...
+
 class GeomAbs_CurveType(enum.IntEnum):
     """Identifies the type of a curve."""
 
@@ -39,6 +47,24 @@ class GeomAbs_CurveType(enum.IntEnum):
 
     GeomAbs_OtherCurve = 8
 
+GeomAbs_Line: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_Line
+
+GeomAbs_Circle: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_Circle
+
+GeomAbs_Ellipse: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_Ellipse
+
+GeomAbs_Hyperbola: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_Hyperbola
+
+GeomAbs_Parabola: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_Parabola
+
+GeomAbs_BezierCurve: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_BezierCurve
+
+GeomAbs_BSplineCurve: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_BSplineCurve
+
+GeomAbs_OffsetCurve: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_OffsetCurve
+
+GeomAbs_OtherCurve: GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_OtherCurve
+
 class GeomAbs_IsoType(enum.IntEnum):
     """
     this enumeration describes if a curve is an U isoparaetric
@@ -50,6 +76,12 @@ class GeomAbs_IsoType(enum.IntEnum):
     GeomAbs_IsoV = 1
 
     GeomAbs_NoneIso = 2
+
+GeomAbs_IsoU: GeomAbs_IsoType = GeomAbs_IsoType.GeomAbs_IsoU
+
+GeomAbs_IsoV: GeomAbs_IsoType = GeomAbs_IsoType.GeomAbs_IsoV
+
+GeomAbs_NoneIso: GeomAbs_IsoType = GeomAbs_IsoType.GeomAbs_NoneIso
 
 class GeomAbs_JoinType(enum.IntEnum):
     """
@@ -63,6 +95,12 @@ class GeomAbs_JoinType(enum.IntEnum):
     GeomAbs_Tangent = 1
 
     GeomAbs_Intersection = 2
+
+GeomAbs_Arc: GeomAbs_JoinType = GeomAbs_JoinType.GeomAbs_Arc
+
+GeomAbs_Tangent: GeomAbs_JoinType = GeomAbs_JoinType.GeomAbs_Tangent
+
+GeomAbs_Intersection: GeomAbs_JoinType = GeomAbs_JoinType.GeomAbs_Intersection
 
 class GeomAbs_Shape(enum.IntEnum):
     """
@@ -109,6 +147,20 @@ class GeomAbs_Shape(enum.IntEnum):
 
     GeomAbs_CN = 6
 
+GeomAbs_C0: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C0
+
+GeomAbs_G1: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_G1
+
+GeomAbs_C1: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C1
+
+GeomAbs_G2: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_G2
+
+GeomAbs_C2: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2
+
+GeomAbs_C3: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C3
+
+GeomAbs_CN: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_CN
+
 class GeomAbs_SurfaceType(enum.IntEnum):
     GeomAbs_Plane = 0
 
@@ -131,3 +183,25 @@ class GeomAbs_SurfaceType(enum.IntEnum):
     GeomAbs_OffsetSurface = 9
 
     GeomAbs_OtherSurface = 10
+
+GeomAbs_Plane: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_Plane
+
+GeomAbs_Cylinder: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_Cylinder
+
+GeomAbs_Cone: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_Cone
+
+GeomAbs_Sphere: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_Sphere
+
+GeomAbs_Torus: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_Torus
+
+GeomAbs_BezierSurface: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_BezierSurface
+
+GeomAbs_BSplineSurface: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_BSplineSurface
+
+GeomAbs_SurfaceOfRevolution: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_SurfaceOfRevolution
+
+GeomAbs_SurfaceOfExtrusion: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_SurfaceOfExtrusion
+
+GeomAbs_OffsetSurface: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_OffsetSurface
+
+GeomAbs_OtherSurface: GeomAbs_SurfaceType = GeomAbs_SurfaceType.GeomAbs_OtherSurface

@@ -108,7 +108,7 @@ class Geom2dGridEval_BezierCurve:
     @endcode
     """
 
-    def __init__(self, theBezier: nanoocp.Geom2d.Geom2d_BezierCurve) -> None:
+    def __init__(self, theBezier: nanoocp.Geom2d.Geom2d_BezierCurve | None) -> None:
         """
         Constructor with geometry.
         @param theBezier the 2D bezier curve geometry to evaluate
@@ -173,7 +173,7 @@ class Geom2dGridEval_BSplineCurve:
     @endcode
     """
 
-    def __init__(self, theCurve: nanoocp.Geom2d.Geom2d_BSplineCurve) -> None:
+    def __init__(self, theCurve: nanoocp.Geom2d.Geom2d_BSplineCurve | None) -> None:
         """
         Constructor with geometry.
         @param theCurve the 2D B-spline curve to evaluate
@@ -238,7 +238,7 @@ class Geom2dGridEval_Circle:
     @endcode
     """
 
-    def __init__(self, theCircle: nanoocp.Geom2d.Geom2d_Circle) -> None:
+    def __init__(self, theCircle: nanoocp.Geom2d.Geom2d_Circle | None) -> None:
         """
         Constructor with geometry.
         @param theCircle the 2D circle geometry to evaluate
@@ -310,7 +310,7 @@ class Geom2dGridEval_Ellipse:
     @endcode
     """
 
-    def __init__(self, theEllipse: nanoocp.Geom2d.Geom2d_Ellipse) -> None:
+    def __init__(self, theEllipse: nanoocp.Geom2d.Geom2d_Ellipse | None) -> None:
         """
         Constructor with geometry.
         @param theEllipse the 2D ellipse geometry to evaluate
@@ -379,7 +379,7 @@ class Geom2dGridEval_Hyperbola:
     @endcode
     """
 
-    def __init__(self, theHyperbola: nanoocp.Geom2d.Geom2d_Hyperbola) -> None:
+    def __init__(self, theHyperbola: nanoocp.Geom2d.Geom2d_Hyperbola | None) -> None:
         """
         Constructor with geometry.
         @param theHyperbola the 2D hyperbola geometry to evaluate
@@ -442,7 +442,7 @@ class Geom2dGridEval_Line:
     @endcode
     """
 
-    def __init__(self, theLine: nanoocp.Geom2d.Geom2d_Line) -> None:
+    def __init__(self, theLine: nanoocp.Geom2d.Geom2d_Line | None) -> None:
         """
         Constructor with geometry.
         @param theLine the 2D line geometry to evaluate
@@ -514,7 +514,7 @@ class Geom2dGridEval_OffsetCurve:
     @endcode
     """
 
-    def __init__(self, theOffset: nanoocp.Geom2d.Geom2d_OffsetCurve) -> None:
+    def __init__(self, theOffset: nanoocp.Geom2d.Geom2d_OffsetCurve | None) -> None:
         """
         Constructor with geometry.
         @param theOffset the 2D offset curve geometry to evaluate
@@ -647,7 +647,7 @@ class Geom2dGridEval_Parabola:
     @endcode
     """
 
-    def __init__(self, theParabola: nanoocp.Geom2d.Geom2d_Parabola) -> None:
+    def __init__(self, theParabola: nanoocp.Geom2d.Geom2d_Parabola | None) -> None:
         """
         Constructor with geometry.
         @param theParabola the 2D parabola geometry to evaluate
@@ -737,7 +737,7 @@ class Geom2dGridEval_Curve:
         """
 
     @overload
-    def __init__(self, theCurve: nanoocp.Geom2d.Geom2d_Curve) -> None:
+    def __init__(self, theCurve: nanoocp.Geom2d.Geom2d_Curve | None) -> None:
         """
         Construct from geometry handle (auto-detects curve type).
         @param[in] theCurve 2D geometry to evaluate

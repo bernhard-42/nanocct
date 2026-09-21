@@ -25,7 +25,8 @@ void nanoocp_declare_AppParCurves(nb::module_ &m) {
         .value("AppParCurves_NoConstraint", AppParCurves_NoConstraint)
         .value("AppParCurves_PassPoint", AppParCurves_PassPoint)
         .value("AppParCurves_TangencyPoint", AppParCurves_TangencyPoint)
-        .value("AppParCurves_CurvaturePoint", AppParCurves_CurvaturePoint);
+        .value("AppParCurves_CurvaturePoint", AppParCurves_CurvaturePoint)
+        .export_values();
     { nb::class_<AppParCurves> cls(m, "AppParCurves", R"nbdoc(Parallel Approximation in n curves.
 This package gives all the algorithms used to approximate a MultiLine
 described by the tool MLineTool.

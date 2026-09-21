@@ -26,7 +26,7 @@ class GeomTools:
 
     @overload
     @staticmethod
-    def Dump(S: nanoocp.Geom.Geom_Surface) -> object:
+    def Dump(S: nanoocp.Geom.Geom_Surface | None) -> object:
         """
         A set of Curves from Geom2d.
         Dumps the surface on the stream.
@@ -34,43 +34,43 @@ class GeomTools:
 
     @overload
     @staticmethod
-    def Dump(C: nanoocp.Geom.Geom_Curve) -> object: ...
+    def Dump(C: nanoocp.Geom.Geom_Curve | None) -> object: ...
 
     @overload
     @staticmethod
-    def Dump(C: nanoocp.Geom2d.Geom2d_Curve) -> object:
+    def Dump(C: nanoocp.Geom2d.Geom2d_Curve | None) -> object:
         """Dumps the Curve on the stream."""
 
     @overload
     @staticmethod
-    def Write(S: nanoocp.Geom.Geom_Surface) -> object:
+    def Write(S: nanoocp.Geom.Geom_Surface | None) -> object:
         """Writes the surface on the stream."""
 
     @overload
     @staticmethod
-    def Write(C: nanoocp.Geom.Geom_Curve) -> object: ...
+    def Write(C: nanoocp.Geom.Geom_Curve | None) -> object: ...
 
     @overload
     @staticmethod
-    def Write(C: nanoocp.Geom2d.Geom2d_Curve) -> object:
+    def Write(C: nanoocp.Geom2d.Geom2d_Curve | None) -> object:
         """Writes the Curve on the stream."""
 
     @overload
     @staticmethod
-    def Read(S: nanoocp.Geom.Geom_Surface, IS: TextIO) -> None:
+    def Read(IS: TextIO) -> nanoocp.Geom.Geom_Surface:
         """Reads the surface from the stream."""
 
     @overload
     @staticmethod
-    def Read(C: nanoocp.Geom.Geom_Curve, IS: TextIO) -> None: ...
+    def Read(IS: TextIO) -> nanoocp.Geom.Geom_Curve: ...
 
     @overload
     @staticmethod
-    def Read(C: nanoocp.Geom2d.Geom2d_Curve, IS: TextIO) -> None:
+    def Read(IS: TextIO) -> nanoocp.Geom2d.Geom2d_Curve:
         """Reads the Curve from the stream."""
 
     @staticmethod
-    def SetUndefinedTypeHandler(aHandler: GeomTools_UndefinedTypeHandler) -> None: ...
+    def SetUndefinedTypeHandler(aHandler: GeomTools_UndefinedTypeHandler | None) -> None: ...
 
     @staticmethod
     def GetUndefinedTypeHandler() -> GeomTools_UndefinedTypeHandler: ...
@@ -95,7 +95,7 @@ class GeomTools_Curve2dSet:
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Add(self, C: nanoocp.Geom2d.Geom2d_Curve) -> int:
+    def Add(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> int:
         """
         Incorporate a new Curve in the set and returns
         its index.
@@ -104,7 +104,7 @@ class GeomTools_Curve2dSet:
     def Curve2d(self, I: int) -> nanoocp.Geom2d.Geom2d_Curve:
         """Returns the Curve of index <I>."""
 
-    def Index(self, C: nanoocp.Geom2d.Geom2d_Curve) -> int:
+    def Index(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> int:
         """Returns the index of <L>."""
 
     def Dump(self) -> object:
@@ -123,7 +123,7 @@ class GeomTools_Curve2dSet:
         """
 
     @staticmethod
-    def PrintCurve2d(C: nanoocp.Geom2d.Geom2d_Curve, compact: bool = False) -> object:
+    def PrintCurve2d(C: nanoocp.Geom2d.Geom2d_Curve | None, compact: bool = False) -> object:
         """
         Dumps the curve on the stream, if compact is True
         use the compact format that can be read back.
@@ -150,7 +150,7 @@ class GeomTools_CurveSet:
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Add(self, C: nanoocp.Geom.Geom_Curve) -> int:
+    def Add(self, C: nanoocp.Geom.Geom_Curve | None) -> int:
         """
         Incorporate a new Curve in the set and returns
         its index.
@@ -159,7 +159,7 @@ class GeomTools_CurveSet:
     def Curve(self, I: int) -> nanoocp.Geom.Geom_Curve:
         """Returns the Curve of index <I>."""
 
-    def Index(self, C: nanoocp.Geom.Geom_Curve) -> int:
+    def Index(self, C: nanoocp.Geom.Geom_Curve | None) -> int:
         """Returns the index of <L>."""
 
     def Dump(self) -> object:
@@ -178,7 +178,7 @@ class GeomTools_CurveSet:
         """
 
     @staticmethod
-    def PrintCurve(C: nanoocp.Geom.Geom_Curve, compact: bool = False) -> object:
+    def PrintCurve(C: nanoocp.Geom.Geom_Curve | None, compact: bool = False) -> object:
         """
         Dumps the curve on the stream, if compact is True
         use the compact format that can be read back.
@@ -205,7 +205,7 @@ class GeomTools_SurfaceSet:
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Add(self, S: nanoocp.Geom.Geom_Surface) -> int:
+    def Add(self, S: nanoocp.Geom.Geom_Surface | None) -> int:
         """
         Incorporate a new Surface in the set and returns
         its index.
@@ -214,7 +214,7 @@ class GeomTools_SurfaceSet:
     def Surface(self, I: int) -> nanoocp.Geom.Geom_Surface:
         """Returns the Surface of index <I>."""
 
-    def Index(self, S: nanoocp.Geom.Geom_Surface) -> int:
+    def Index(self, S: nanoocp.Geom.Geom_Surface | None) -> int:
         """Returns the index of <L>."""
 
     def Dump(self) -> object:
@@ -233,7 +233,7 @@ class GeomTools_SurfaceSet:
         """
 
     @staticmethod
-    def PrintSurface(S: nanoocp.Geom.Geom_Surface, compact: bool = False) -> object:
+    def PrintSurface(S: nanoocp.Geom.Geom_Surface | None, compact: bool = False) -> object:
         """
         Dumps the surface on the stream, if compact is True
         use the compact format that can be read back.
@@ -254,11 +254,11 @@ class GeomTools_UndefinedTypeHandler(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: GeomTools_UndefinedTypeHandler) -> None: ...
 
-    def PrintCurve(self, C: nanoocp.Geom.Geom_Curve, compact: bool = False) -> object: ...
+    def PrintCurve(self, C: nanoocp.Geom.Geom_Curve | None, compact: bool = False) -> object: ...
 
-    def PrintCurve2d(self, C: nanoocp.Geom2d.Geom2d_Curve, compact: bool = False) -> object: ...
+    def PrintCurve2d(self, C: nanoocp.Geom2d.Geom2d_Curve | None, compact: bool = False) -> object: ...
 
-    def PrintSurface(self, S: nanoocp.Geom.Geom_Surface, compact: bool = False) -> object: ...
+    def PrintSurface(self, S: nanoocp.Geom.Geom_Surface | None, compact: bool = False) -> object: ...
 
     @staticmethod
     def get_type_name() -> str: ...

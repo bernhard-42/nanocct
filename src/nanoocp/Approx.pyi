@@ -22,6 +22,12 @@ class Approx_ParametrizationType(enum.IntEnum):
 
     Approx_IsoParametric = 2
 
+Approx_ChordLength: Approx_ParametrizationType = Approx_ParametrizationType.Approx_ChordLength
+
+Approx_Centripetal: Approx_ParametrizationType = Approx_ParametrizationType.Approx_Centripetal
+
+Approx_IsoParametric: Approx_ParametrizationType = Approx_ParametrizationType.Approx_IsoParametric
+
 class Approx_Status(enum.IntEnum):
     """It is an auxiliary flag being used in inner computations"""
 
@@ -31,11 +37,17 @@ class Approx_Status(enum.IntEnum):
 
     Approx_NoApproximation = 2
 
+Approx_PointsAdded: Approx_Status = Approx_Status.Approx_PointsAdded
+
+Approx_NoPointsAdded: Approx_Status = Approx_Status.Approx_NoPointsAdded
+
+Approx_NoApproximation: Approx_Status = Approx_Status.Approx_NoApproximation
+
 class Approx_Curve2d:
     """Makes an approximation for HCurve2d from Adaptor3d"""
 
     @overload
-    def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, First: float, Last: float, TolU: float, TolV: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None: ...
+    def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, First: float, Last: float, TolU: float, TolV: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None: ...
 
     @overload
     def __init__(self, theOther: Approx_Curve2d) -> None: ...
@@ -52,7 +64,7 @@ class Approx_Curve2d:
 
 class Approx_Curve3d:
     @overload
-    def __init__(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve, Tol3d: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxSegments: int, MaxDegree: int) -> None:
+    def __init__(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve | None, Tol3d: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxSegments: int, MaxDegree: int) -> None:
         """
         Approximation of a curve with respect of the
         required tolerance Tol3D.
@@ -89,7 +101,7 @@ class Approx_CurveOnSurface:
     """Approximation of curve on surface"""
 
     @overload
-    def __init__(self, theC2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theSurf: nanoocp.Adaptor3d.Adaptor3d_Surface, theFirst: float, theLast: float, theTol: float) -> None:
+    def __init__(self, theC2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, theSurf: nanoocp.Adaptor3d.Adaptor3d_Surface | None, theFirst: float, theLast: float, theTol: float) -> None:
         """
         This constructor does not call perform method.
         @param theC2D   2D Curve to be approximated in 3D.
@@ -147,15 +159,15 @@ class Approx_CurvilinearParameter:
     """
 
     @overload
-    def __init__(self, C3D: nanoocp.Adaptor3d.Adaptor3d_Curve, Tol: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None:
+    def __init__(self, C3D: nanoocp.Adaptor3d.Adaptor3d_Curve | None, Tol: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None:
         """case of a free 3D curve"""
 
     @overload
-    def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, Surf: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None:
+    def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, Surf: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None:
         """case of a curve on one surface"""
 
     @overload
-    def __init__(self, C2D1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, Surf1: nanoocp.Adaptor3d.Adaptor3d_Surface, C2D2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, Surf2: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None:
+    def __init__(self, C2D1: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, Surf1: nanoocp.Adaptor3d.Adaptor3d_Surface | None, C2D2: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, Surf2: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegree: int, MaxSegments: int) -> None:
         """case of a curve on two surfaces"""
 
     @overload
@@ -199,13 +211,13 @@ class Approx_CurvlinFunc(nanoocp.Standard.Standard_Transient):
     """
 
     @overload
-    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve, Tol: float) -> None: ...
+    def __init__(self, C: nanoocp.Adaptor3d.Adaptor3d_Curve | None, Tol: float) -> None: ...
 
     @overload
-    def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None: ...
+    def __init__(self, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float) -> None: ...
 
     @overload
-    def __init__(self, C2D1: nanoocp.Adaptor2d.Adaptor2d_Curve2d, C2D2: nanoocp.Adaptor2d.Adaptor2d_Curve2d, S1: nanoocp.Adaptor3d.Adaptor3d_Surface, S2: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None: ...
+    def __init__(self, C2D1: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, C2D2: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, S1: nanoocp.Adaptor3d.Adaptor3d_Surface | None, S2: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float) -> None: ...
 
     @overload
     def __init__(self, theOther: Approx_CurvlinFunc) -> None: ...
@@ -447,13 +459,13 @@ class Approx_SameParameter:
     """
 
     @overload
-    def __init__(self, C3D: nanoocp.Geom.Geom_Curve, C2D: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, Tol: float) -> None: ...
+    def __init__(self, C3D: nanoocp.Geom.Geom_Curve | None, C2D: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, Tol: float) -> None: ...
 
     @overload
-    def __init__(self, C3D: nanoocp.Adaptor3d.Adaptor3d_Curve, C2D: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None: ...
+    def __init__(self, C3D: nanoocp.Adaptor3d.Adaptor3d_Curve | None, C2D: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float) -> None: ...
 
     @overload
-    def __init__(self, C3D: nanoocp.Adaptor3d.Adaptor3d_Curve, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, S: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol: float) -> None:
+    def __init__(self, C3D: nanoocp.Adaptor3d.Adaptor3d_Curve | None, C2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, S: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol: float) -> None:
         """Warning: the C3D and C2D must have the same parametric domain."""
 
     def IsDone(self) -> bool:
@@ -509,7 +521,7 @@ class Approx_SweepApproximation:
     """
 
     @overload
-    def __init__(self, Func: Approx_SweepFunction) -> None: ...
+    def __init__(self, Func: Approx_SweepFunction | None) -> None: ...
 
     @overload
     def __init__(self, theOther: Approx_SweepApproximation) -> None: ...

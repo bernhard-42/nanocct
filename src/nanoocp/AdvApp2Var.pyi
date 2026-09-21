@@ -24,6 +24,10 @@ class AdvApp2Var_CriterionType(enum.IntEnum):
 
     AdvApp2Var_Relative = 1
 
+AdvApp2Var_Absolute: AdvApp2Var_CriterionType = AdvApp2Var_CriterionType.AdvApp2Var_Absolute
+
+AdvApp2Var_Relative: AdvApp2Var_CriterionType = AdvApp2Var_CriterionType.AdvApp2Var_Relative
+
 class AdvApp2Var_CriterionRepartition(enum.IntEnum):
     """
     way of cutting process//! all new cutting points at each step of cutting
@@ -37,6 +41,10 @@ class AdvApp2Var_CriterionRepartition(enum.IntEnum):
 
     AdvApp2Var_Incremental = 1
 
+AdvApp2Var_Regular: AdvApp2Var_CriterionRepartition = ...
+
+AdvApp2Var_Incremental: AdvApp2Var_CriterionRepartition = ...
+
 class AdvApp2Var_Context:
     """
     contains all the parameters for approximation
@@ -47,7 +55,7 @@ class AdvApp2Var_Context:
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, ifav: int, iu: int, iv: int, nlimu: int, nlimv: int, iprecis: int, nb1Dss: int, nb2Dss: int, nb3Dss: int, tol1D: nanoocp.NCollection.NCollection_HArray1[float], tol2D: nanoocp.NCollection.NCollection_HArray1[float], tol3D: nanoocp.NCollection.NCollection_HArray1[float], tof1D: nanoocp.NCollection.NCollection_HArray2[float], tof2D: nanoocp.NCollection.NCollection_HArray2[float], tof3D: nanoocp.NCollection.NCollection_HArray2[float]) -> None: ...
+    def __init__(self, ifav: int, iu: int, iv: int, nlimu: int, nlimv: int, iprecis: int, nb1Dss: int, nb2Dss: int, nb3Dss: int, tol1D: nanoocp.NCollection.NCollection_HArray1[float] | None, tol2D: nanoocp.NCollection.NCollection_HArray1[float] | None, tol3D: nanoocp.NCollection.NCollection_HArray1[float] | None, tof1D: nanoocp.NCollection.NCollection_HArray2[float] | None, tof2D: nanoocp.NCollection.NCollection_HArray2[float] | None, tof3D: nanoocp.NCollection.NCollection_HArray2[float] | None) -> None: ...
 
     @overload
     def __init__(self, theOther: AdvApp2Var_Context) -> None: ...
@@ -346,7 +354,7 @@ class AdvApp2Var_Framework:
 
     def LastNode(self, Type: nanoocp.GeomAbs.GeomAbs_IsoType, IndexIso: int, IndexStrip: int) -> int: ...
 
-    def ChangeIso(self, IndexIso: int, IndexStrip: int, anIso: AdvApp2Var_Iso) -> None: ...
+    def ChangeIso(self, IndexIso: int, IndexStrip: int, anIso: AdvApp2Var_Iso | None) -> None: ...
 
     @overload
     def Node(self, IndexNode: int) -> AdvApp2Var_Node: ...
@@ -417,10 +425,10 @@ class AdvApp2Var_ApproxAFunc2Var:
     """
 
     @overload
-    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float], TwoDTol: nanoocp.NCollection.NCollection_HArray1[float], ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float], OneDTolFr: nanoocp.NCollection.NCollection_HArray2[float], TwoDTolFr: nanoocp.NCollection.NCollection_HArray2[float], ThreeDTolFr: nanoocp.NCollection.NCollection_HArray2[float], FirstInU: float, LastInU: float, FirstInV: float, LastInV: float, FavorIso: nanoocp.GeomAbs.GeomAbs_IsoType, ContInU: nanoocp.GeomAbs.GeomAbs_Shape, ContInV: nanoocp.GeomAbs.GeomAbs_Shape, PrecisCode: int, MaxDegInU: int, MaxDegInV: int, MaxPatch: int, Func: AdvApp2Var_EvaluatorFunc2Var, UChoice: nanoocp.AdvApprox.AdvApprox_Cutting, VChoice: nanoocp.AdvApprox.AdvApprox_Cutting) -> None: ...
+    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, TwoDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, OneDTolFr: nanoocp.NCollection.NCollection_HArray2[float] | None, TwoDTolFr: nanoocp.NCollection.NCollection_HArray2[float] | None, ThreeDTolFr: nanoocp.NCollection.NCollection_HArray2[float] | None, FirstInU: float, LastInU: float, FirstInV: float, LastInV: float, FavorIso: nanoocp.GeomAbs.GeomAbs_IsoType, ContInU: nanoocp.GeomAbs.GeomAbs_Shape, ContInV: nanoocp.GeomAbs.GeomAbs_Shape, PrecisCode: int, MaxDegInU: int, MaxDegInV: int, MaxPatch: int, Func: AdvApp2Var_EvaluatorFunc2Var, UChoice: nanoocp.AdvApprox.AdvApprox_Cutting, VChoice: nanoocp.AdvApprox.AdvApprox_Cutting) -> None: ...
 
     @overload
-    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float], TwoDTol: nanoocp.NCollection.NCollection_HArray1[float], ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float], OneDTolFr: nanoocp.NCollection.NCollection_HArray2[float], TwoDTolFr: nanoocp.NCollection.NCollection_HArray2[float], ThreeDTolFr: nanoocp.NCollection.NCollection_HArray2[float], FirstInU: float, LastInU: float, FirstInV: float, LastInV: float, FavorIso: nanoocp.GeomAbs.GeomAbs_IsoType, ContInU: nanoocp.GeomAbs.GeomAbs_Shape, ContInV: nanoocp.GeomAbs.GeomAbs_Shape, PrecisCode: int, MaxDegInU: int, MaxDegInV: int, MaxPatch: int, Func: AdvApp2Var_EvaluatorFunc2Var, Crit: AdvApp2Var_Criterion, UChoice: nanoocp.AdvApprox.AdvApprox_Cutting, VChoice: nanoocp.AdvApprox.AdvApprox_Cutting) -> None: ...
+    def __init__(self, Num1DSS: int, Num2DSS: int, Num3DSS: int, OneDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, TwoDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, ThreeDTol: nanoocp.NCollection.NCollection_HArray1[float] | None, OneDTolFr: nanoocp.NCollection.NCollection_HArray2[float] | None, TwoDTolFr: nanoocp.NCollection.NCollection_HArray2[float] | None, ThreeDTolFr: nanoocp.NCollection.NCollection_HArray2[float] | None, FirstInU: float, LastInU: float, FirstInV: float, LastInV: float, FavorIso: nanoocp.GeomAbs.GeomAbs_IsoType, ContInU: nanoocp.GeomAbs.GeomAbs_Shape, ContInV: nanoocp.GeomAbs.GeomAbs_Shape, PrecisCode: int, MaxDegInU: int, MaxDegInV: int, MaxPatch: int, Func: AdvApp2Var_EvaluatorFunc2Var, Crit: AdvApp2Var_Criterion, UChoice: nanoocp.AdvApprox.AdvApprox_Cutting, VChoice: nanoocp.AdvApprox.AdvApprox_Cutting) -> None: ...
 
     @overload
     def __init__(self, theOther: AdvApp2Var_ApproxAFunc2Var) -> None: ...

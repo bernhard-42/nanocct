@@ -1383,15 +1383,15 @@ otherwise checks if string starts with a real value
         .def(nb::new_([](const int value) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(value)); }), nb::arg("value"), R"nbdoc(Initializes a HAsciiString with an integer value)nbdoc")
         .def(nb::new_([](const double value) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(value)); }), nb::arg("value"), R"nbdoc(Initializes a HAsciiString with a real value)nbdoc")
         .def(nb::new_([](const TCollection_AsciiString & aString) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(aString)); }), nb::arg("aString"), R"nbdoc(Initializes a HAsciiString with a AsciiString.)nbdoc")
-        .def(nb::new_([](const occ::handle<TCollection_HAsciiString> & aString) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(aString)); }), nb::arg("aString"), R"nbdoc(Initializes a HAsciiString with a HAsciiString.)nbdoc")
+        .def(nb::new_([](const occ::handle<TCollection_HAsciiString> & aString) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(aString)); }), nb::arg("aString").none(), R"nbdoc(Initializes a HAsciiString with a HAsciiString.)nbdoc")
         .def(nb::new_([](const int length, const char filler) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(length, filler)); }), nb::arg("length"), nb::arg("filler"), R"nbdoc(Initializes a HAsciiString with <length> space allocated.
 and filled with <filler>.This is useful for buffers.)nbdoc")
-        .def(nb::new_([](const occ::handle<TCollection_HExtendedString> & aString, const char replaceNonAscii) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(aString, replaceNonAscii)); }), nb::arg("aString"), nb::arg("replaceNonAscii"), R"nbdoc(Initializes a HAsciiString with a HExtendedString.
+        .def(nb::new_([](const occ::handle<TCollection_HExtendedString> & aString, const char replaceNonAscii) { return opencascade::handle<TCollection_HAsciiString>(new TCollection_HAsciiString(aString, replaceNonAscii)); }), nb::arg("aString").none(), nb::arg("replaceNonAscii"), R"nbdoc(Initializes a HAsciiString with a HExtendedString.
 If replaceNonAscii is non-null character, it will be used
 in place of any non-ascii character found in the source string.
 Otherwise, creates UTF-8 unicode string.)nbdoc")
         .def("AssignCat", static_cast<void (TCollection_HAsciiString::*)(const char *const)>(&TCollection_HAsciiString::AssignCat), nb::arg("other"), R"nbdoc(Appends <other> to me.)nbdoc")
-        .def("AssignCat", static_cast<void (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::AssignCat), nb::arg("other"), R"nbdoc(Appends <other> to me.
+        .def("AssignCat", static_cast<void (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::AssignCat), nb::arg("other").none(), R"nbdoc(Appends <other> to me.
 Example: aString = aString + anotherString)nbdoc")
         .def("Capitalize", static_cast<void (TCollection_HAsciiString::*)()>(&TCollection_HAsciiString::Capitalize), R"nbdoc(Converts the first character into its corresponding
 upper-case character and the other characters into lowercase.
@@ -1412,7 +1412,7 @@ Warning: To catenate more than one CString, you must put a String before.
 So the following example is WRONG !
 aString = "Hello " + "Dolly"  THIS IS NOT ALLOWED
 This rule is applicable to AssignCat (operator +=) too.)nbdoc")
-        .def("Cat", static_cast<occ::handle<TCollection_HAsciiString> (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::Cat), nb::arg("other"), R"nbdoc(Creates a new string by concatenation of this
+        .def("Cat", static_cast<occ::handle<TCollection_HAsciiString> (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::Cat), nb::arg("other").none(), R"nbdoc(Creates a new string by concatenation of this
 ASCII string and the other ASCII string.
 Example: aString = aString + anotherString)nbdoc")
         .def("Center", static_cast<void (TCollection_HAsciiString::*)(const int, const char)>(&TCollection_HAsciiString::Center), nb::arg("Width"), nb::arg("Filler"), R"nbdoc(Modifies this ASCII string so that its length
@@ -1446,7 +1446,7 @@ myMistake->ToCString(),
 "Father") );)nbdoc")
         .def("Clear", static_cast<void (TCollection_HAsciiString::*)()>(&TCollection_HAsciiString::Clear), R"nbdoc(Removes all characters contained in <me>.
 This produces an empty HAsciiString.)nbdoc")
-        .def("FirstLocationInSet", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const int, const int) const>(&TCollection_HAsciiString::FirstLocationInSet), nb::arg("Set"), nb::arg("FromIndex"), nb::arg("ToIndex"), R"nbdoc(Returns the index of the first character of <me> that is
+        .def("FirstLocationInSet", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const int, const int) const>(&TCollection_HAsciiString::FirstLocationInSet), nb::arg("Set").none(), nb::arg("FromIndex"), nb::arg("ToIndex"), R"nbdoc(Returns the index of the first character of <me> that is
 present in <Set>.
 The search begins to the index FromIndex and ends to the
 the index ToIndex.
@@ -1459,7 +1459,7 @@ after
 me = "aabAcAa"
 returns
 1)nbdoc")
-        .def("FirstLocationNotInSet", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const int, const int) const>(&TCollection_HAsciiString::FirstLocationNotInSet), nb::arg("Set"), nb::arg("FromIndex"), nb::arg("ToIndex"), R"nbdoc(Returns the index of the first character of <me>
+        .def("FirstLocationNotInSet", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const int, const int) const>(&TCollection_HAsciiString::FirstLocationNotInSet), nb::arg("Set").none(), nb::arg("FromIndex"), nb::arg("ToIndex"), R"nbdoc(Returns the index of the first character of <me>
 that is not present in the set <Set>.
 The search begins to the index FromIndex and ends to the
 the index ToIndex in <me>.
@@ -1481,14 +1481,14 @@ aString.Insert(3,'y'); gives "Why"
 aString contains "Way"
 aString.Insert(2,'h'); gives "Why")nbdoc")
         .def("Insert", static_cast<void (TCollection_HAsciiString::*)(const int, const char *const)>(&TCollection_HAsciiString::Insert), nb::arg("where"), nb::arg("what"), R"nbdoc(Insert a HAsciiString at position <where>.)nbdoc")
-        .def("Insert", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::Insert), nb::arg("where"), nb::arg("what"), R"nbdoc(Insert a HAsciiString at position <where>.)nbdoc")
-        .def("InsertAfter", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::InsertAfter), nb::arg("Index"), nb::arg("other"), R"nbdoc(Inserts the other ASCII string a after a specific index in the string <me>
+        .def("Insert", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::Insert), nb::arg("where"), nb::arg("what").none(), R"nbdoc(Insert a HAsciiString at position <where>.)nbdoc")
+        .def("InsertAfter", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::InsertAfter), nb::arg("Index"), nb::arg("other").none(), R"nbdoc(Inserts the other ASCII string a after a specific index in the string <me>
 Example:
 before
 me = "cde" , Index = 0 , other = "ab"
 after
 me = "abcde" , other = "ab")nbdoc")
-        .def("InsertBefore", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::InsertBefore), nb::arg("Index"), nb::arg("other"), R"nbdoc(Inserts the other ASCII string a before a specific index in the string <me>
+        .def("InsertBefore", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::InsertBefore), nb::arg("Index"), nb::arg("other").none(), R"nbdoc(Inserts the other ASCII string a before a specific index in the string <me>
 Raises an exception if Index is out of bounds
 Example:
 before
@@ -1496,8 +1496,8 @@ me = "cde" , Index = 1 , other = "ab"
 after
 me = "abcde" , other = "ab")nbdoc")
         .def("IsEmpty", static_cast<bool (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::IsEmpty), R"nbdoc(Returns True if the string <me> contains zero character)nbdoc")
-        .def("IsLess", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsLess), nb::arg("other"), R"nbdoc(Returns TRUE if <me> is 'ASCII' less than <other>.)nbdoc")
-        .def("IsGreater", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsGreater), nb::arg("other"), R"nbdoc(Returns TRUE if <me> is 'ASCII' greater than <other>.)nbdoc")
+        .def("IsLess", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsLess), nb::arg("other").none(), R"nbdoc(Returns TRUE if <me> is 'ASCII' less than <other>.)nbdoc")
+        .def("IsGreater", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsGreater), nb::arg("other").none(), R"nbdoc(Returns TRUE if <me> is 'ASCII' greater than <other>.)nbdoc")
         .def("IntegerValue", static_cast<int (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::IntegerValue), R"nbdoc(Converts a HAsciiString containing a numeric expression to
 an Integer.
 Example: "215" returns 215.)nbdoc")
@@ -1506,11 +1506,11 @@ Example: "215" returns 215.)nbdoc")
         .def("IsAscii", static_cast<bool (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::IsAscii), R"nbdoc(Returns True if the string contains only ASCII characters
 between ' ' and '~'.
 This means no control character and no extended ASCII code.)nbdoc")
-        .def("IsDifferent", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsDifferent), nb::arg("S"), R"nbdoc(Returns True if the string S not contains same characters than
+        .def("IsDifferent", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsDifferent), nb::arg("S").none(), R"nbdoc(Returns True if the string S not contains same characters than
 the string <me>.)nbdoc")
-        .def("IsSameString", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsSameString), nb::arg("S"), R"nbdoc(Returns True if the string S contains same characters than the
+        .def("IsSameString", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsSameString), nb::arg("S").none(), R"nbdoc(Returns True if the string S contains same characters than the
 string <me>.)nbdoc")
-        .def("IsSameString", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const bool) const>(&TCollection_HAsciiString::IsSameString), nb::arg("S"), nb::arg("CaseSensitive"), R"nbdoc(Returns True if the string S contains same characters than the
+        .def("IsSameString", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const bool) const>(&TCollection_HAsciiString::IsSameString), nb::arg("S").none(), nb::arg("CaseSensitive"), R"nbdoc(Returns True if the string S contains same characters than the
 string <me>.)nbdoc")
         .def("LeftAdjust", static_cast<void (TCollection_HAsciiString::*)()>(&TCollection_HAsciiString::LeftAdjust), R"nbdoc(Removes all space characters in the beginning of the string)nbdoc")
         .def("LeftJustify", static_cast<void (TCollection_HAsciiString::*)(const int, const char)>(&TCollection_HAsciiString::LeftJustify), nb::arg("Width"), nb::arg("Filler"), R"nbdoc(Left justify.
@@ -1525,7 +1525,7 @@ after
 me = "abcdef   ")nbdoc")
         .def("Length", static_cast<int (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::Length), R"nbdoc(Returns number of characters in <me>.
 This is the same functionality as 'strlen' in C.)nbdoc")
-        .def("Location", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const int, const int) const>(&TCollection_HAsciiString::Location), nb::arg("other"), nb::arg("FromIndex"), nb::arg("ToIndex"), R"nbdoc(returns an index in the string <me> of the first occurrence
+        .def("Location", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &, const int, const int) const>(&TCollection_HAsciiString::Location), nb::arg("other").none(), nb::arg("FromIndex"), nb::arg("ToIndex"), R"nbdoc(returns an index in the string <me> of the first occurrence
 of the string S in the string <me> from the starting index
 FromIndex to the ending index ToIndex
 returns zero if failure
@@ -1549,7 +1549,7 @@ after
 me = "aabAa"
 returns 5)nbdoc")
         .def("LowerCase", static_cast<void (TCollection_HAsciiString::*)()>(&TCollection_HAsciiString::LowerCase), R"nbdoc(Converts <me> to its lower-case equivalent.)nbdoc")
-        .def("Prepend", static_cast<void (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::Prepend), nb::arg("other"), R"nbdoc(Inserts the other string at the beginning of the string <me>
+        .def("Prepend", static_cast<void (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::Prepend), nb::arg("other").none(), R"nbdoc(Inserts the other string at the beginning of the string <me>
 Example:
 before
 me = "cde" , S = "ab"
@@ -1590,7 +1590,7 @@ It returns -1 if not found.
 Example:
 aString contains "Sample single test"
 aString.Search("le") returns 5)nbdoc")
-        .def("Search", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::Search), nb::arg("what"), R"nbdoc(Searches a String in <me> from the beginning
+        .def("Search", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::Search), nb::arg("what").none(), R"nbdoc(Searches a String in <me> from the beginning
 and returns position of first item <what> matching.
 it returns -1 if not found.)nbdoc")
         .def("SearchFromEnd", static_cast<int (TCollection_HAsciiString::*)(const char *const) const>(&TCollection_HAsciiString::SearchFromEnd), nb::arg("what"), R"nbdoc(Searches a CString in a String from the end
@@ -1599,7 +1599,7 @@ It returns -1 if not found.
 Example:
 aString contains "Sample single test"
 aString.SearchFromEnd("le") returns 12)nbdoc")
-        .def("SearchFromEnd", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::SearchFromEnd), nb::arg("what"), R"nbdoc(Searches a HAsciiString in another HAsciiString from the end
+        .def("SearchFromEnd", static_cast<int (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::SearchFromEnd), nb::arg("what").none(), R"nbdoc(Searches a HAsciiString in another HAsciiString from the end
 and returns position of first item <what> matching.
 It returns -1 if not found.)nbdoc")
         .def("SetValue", static_cast<void (TCollection_HAsciiString::*)(const int, const char)>(&TCollection_HAsciiString::SetValue), nb::arg("where"), nb::arg("what"), R"nbdoc(Replaces one character in the string at position <where>.
@@ -1614,7 +1614,7 @@ an exception is raised.
 Example:
 aString contains "Garbake"
 astring.Replace(6,'g')  gives <me> = "Garbage")nbdoc")
-        .def("SetValue", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::SetValue), nb::arg("where"), nb::arg("what"), R"nbdoc(Replaces a part of <me> by another string.)nbdoc")
+        .def("SetValue", static_cast<void (TCollection_HAsciiString::*)(const int, const occ::handle<TCollection_HAsciiString> &)>(&TCollection_HAsciiString::SetValue), nb::arg("where"), nb::arg("what").none(), R"nbdoc(Replaces a part of <me> by another string.)nbdoc")
         .def("Split", static_cast<occ::handle<TCollection_HAsciiString> (TCollection_HAsciiString::*)(const int)>(&TCollection_HAsciiString::Split), nb::arg("where"), R"nbdoc(Splits a HAsciiString into two sub-strings.
 Example:
 aString contains "abcdefg"
@@ -1661,7 +1661,7 @@ Example:
 aString contains "Hello"
 aString.Value(2) returns 'e')nbdoc")
         .def("String", static_cast<const TCollection_AsciiString & (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::String), R"nbdoc(Returns the field myString.)nbdoc")
-        .def("IsSameState", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsSameState), nb::arg("other"))
+        .def("IsSameState", static_cast<bool (TCollection_HAsciiString::*)(const occ::handle<TCollection_HAsciiString> &) const>(&TCollection_HAsciiString::IsSameState), nb::arg("other").none())
         .def_static("get_type_name", static_cast<const char * (*)()>(&TCollection_HAsciiString::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TCollection_HAsciiString::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TCollection_HAsciiString::*)() const>(&TCollection_HAsciiString::DynamicType));
@@ -1678,12 +1678,12 @@ aString.Value(2) returns 'e')nbdoc")
         .def(nb::new_([](const char16_t *const message) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(message)); }), nb::arg("message"), R"nbdoc(Initializes a HExtendedString with an ExtString.)nbdoc")
         .def(nb::new_([](const char16_t aChar) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aChar)); }), nb::arg("aChar"), R"nbdoc(Initializes a HExtendedString with a single character.)nbdoc")
         .def(nb::new_([](const TCollection_ExtendedString & aString) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aString)); }), nb::arg("aString"), R"nbdoc(Initializes a HExtendedString with a ExtendedString.)nbdoc")
-        .def(nb::new_([](const occ::handle<TCollection_HAsciiString> & aString) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aString)); }), nb::arg("aString"), R"nbdoc(Initializes a HExtendedString with an HAsciiString.)nbdoc")
-        .def(nb::new_([](const occ::handle<TCollection_HExtendedString> & aString) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aString)); }), nb::arg("aString"), R"nbdoc(Initializes a HExtendedString with a HExtendedString.)nbdoc")
+        .def(nb::new_([](const occ::handle<TCollection_HAsciiString> & aString) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aString)); }), nb::arg("aString").none(), R"nbdoc(Initializes a HExtendedString with an HAsciiString.)nbdoc")
+        .def(nb::new_([](const occ::handle<TCollection_HExtendedString> & aString) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(aString)); }), nb::arg("aString").none(), R"nbdoc(Initializes a HExtendedString with a HExtendedString.)nbdoc")
         .def(nb::new_([](const int length, const char16_t filler) { return opencascade::handle<TCollection_HExtendedString>(new TCollection_HExtendedString(length, filler)); }), nb::arg("length"), nb::arg("filler"), R"nbdoc(Initializes a HExtendedString with <length> space allocated.
 and filled with <filler>. This is useful for buffers.)nbdoc")
-        .def("AssignCat", static_cast<void (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &)>(&TCollection_HExtendedString::AssignCat), nb::arg("other"), R"nbdoc(Appends <other> to me.)nbdoc")
-        .def("Cat", static_cast<occ::handle<TCollection_HExtendedString> (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::Cat), nb::arg("other"), R"nbdoc(Returns a string appending <other> to me.)nbdoc")
+        .def("AssignCat", static_cast<void (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &)>(&TCollection_HExtendedString::AssignCat), nb::arg("other").none(), R"nbdoc(Appends <other> to me.)nbdoc")
+        .def("Cat", static_cast<occ::handle<TCollection_HExtendedString> (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::Cat), nb::arg("other").none(), R"nbdoc(Returns a string appending <other> to me.)nbdoc")
         .def("ChangeAll", static_cast<void (TCollection_HExtendedString::*)(const char16_t, const char16_t)>(&TCollection_HExtendedString::ChangeAll), nb::arg("aChar"), nb::arg("NewChar"), R"nbdoc(Substitutes all the characters equal to aChar by NewChar
 in the string <me>.)nbdoc")
         .def("Clear", static_cast<void (TCollection_HExtendedString::*)()>(&TCollection_HExtendedString::Clear), R"nbdoc(Removes all characters contained in <me>.
@@ -1697,9 +1697,9 @@ aString contains "Wh"
 aString.Insert(3,'y'); gives "Why"
 aString contains "Way"
 aString.Insert(2,'h'); gives "Why")nbdoc")
-        .def("Insert", static_cast<void (TCollection_HExtendedString::*)(const int, const occ::handle<TCollection_HExtendedString> &)>(&TCollection_HExtendedString::Insert), nb::arg("where"), nb::arg("what"), R"nbdoc(Insert a HExtendedString at position <where>.)nbdoc")
-        .def("IsLess", static_cast<bool (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::IsLess), nb::arg("other"), R"nbdoc(Returns TRUE if <me> is less than <other>.)nbdoc")
-        .def("IsGreater", static_cast<bool (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::IsGreater), nb::arg("other"), R"nbdoc(Returns TRUE if <me> is greater than <other>.)nbdoc")
+        .def("Insert", static_cast<void (TCollection_HExtendedString::*)(const int, const occ::handle<TCollection_HExtendedString> &)>(&TCollection_HExtendedString::Insert), nb::arg("where"), nb::arg("what").none(), R"nbdoc(Insert a HExtendedString at position <where>.)nbdoc")
+        .def("IsLess", static_cast<bool (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::IsLess), nb::arg("other").none(), R"nbdoc(Returns TRUE if <me> is less than <other>.)nbdoc")
+        .def("IsGreater", static_cast<bool (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::IsGreater), nb::arg("other").none(), R"nbdoc(Returns TRUE if <me> is greater than <other>.)nbdoc")
         .def("IsAscii", static_cast<bool (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::IsAscii), R"nbdoc(Returns True if the string contains only "Ascii Range" characters)nbdoc")
         .def("Length", static_cast<int (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::Length), R"nbdoc(Returns number of characters in <me>.
 This is the same functionality as 'strlen' in C.)nbdoc")
@@ -1716,15 +1716,15 @@ an exception is raised.
 Example:
 aString contains "Garbake"
 astring.Replace(6,'g') gives <me> = "Garbage")nbdoc")
-        .def("SetValue", static_cast<void (TCollection_HExtendedString::*)(const int, const occ::handle<TCollection_HExtendedString> &)>(&TCollection_HExtendedString::SetValue), nb::arg("where"), nb::arg("what"), R"nbdoc(Replaces a part of <me> by another string.)nbdoc")
+        .def("SetValue", static_cast<void (TCollection_HExtendedString::*)(const int, const occ::handle<TCollection_HExtendedString> &)>(&TCollection_HExtendedString::SetValue), nb::arg("where"), nb::arg("what").none(), R"nbdoc(Replaces a part of <me> by another string.)nbdoc")
         .def("Split", static_cast<occ::handle<TCollection_HExtendedString> (TCollection_HExtendedString::*)(const int)>(&TCollection_HExtendedString::Split), nb::arg("where"), R"nbdoc(Splits a ExtendedString into two sub-strings.
 Example:
 aString contains "abcdefg"
 aString.Split(3) gives <me> = "abc" and returns "defg")nbdoc")
-        .def("Search", static_cast<int (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::Search), nb::arg("what"), R"nbdoc(Searches a String in <me> from the beginning
+        .def("Search", static_cast<int (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::Search), nb::arg("what").none(), R"nbdoc(Searches a String in <me> from the beginning
 and returns position of first item <what> matching.
 It returns -1 if not found.)nbdoc")
-        .def("SearchFromEnd", static_cast<int (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::SearchFromEnd), nb::arg("what"), R"nbdoc(Searches a ExtendedString in another ExtendedString from the end
+        .def("SearchFromEnd", static_cast<int (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::SearchFromEnd), nb::arg("what").none(), R"nbdoc(Searches a ExtendedString in another ExtendedString from the end
 and returns position of first item <what> matching.
 It returns -1 if not found.)nbdoc")
         .def("ToExtString", static_cast<const char16_t * (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::ToExtString), R"nbdoc(Returns pointer to ExtString)nbdoc")
@@ -1753,7 +1753,7 @@ aString contains "Hello"
 aString.Value(2) returns 'e')nbdoc")
         .def("String", static_cast<const TCollection_ExtendedString & (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::String), R"nbdoc(Returns the field myString)nbdoc")
         .def("Print", [](const TCollection_HExtendedString &self) { std::ostringstream astream_stream; self.Print(astream_stream); return nanoocp_stream_text(astream_stream); }, R"nbdoc(Displays <me>.)nbdoc")
-        .def("IsSameState", static_cast<bool (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::IsSameState), nb::arg("other"))
+        .def("IsSameState", static_cast<bool (TCollection_HExtendedString::*)(const occ::handle<TCollection_HExtendedString> &) const>(&TCollection_HExtendedString::IsSameState), nb::arg("other").none())
         .def_static("get_type_name", static_cast<const char * (*)()>(&TCollection_HExtendedString::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TCollection_HExtendedString::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TCollection_HExtendedString::*)() const>(&TCollection_HExtendedString::DynamicType));

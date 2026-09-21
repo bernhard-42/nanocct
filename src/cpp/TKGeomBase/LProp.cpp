@@ -23,12 +23,14 @@ void nanoocp_declare_LProp(nb::module_ &m) {
 - LProp_MaxCur: a maximum of curvature.)nbdoc", nb::is_arithmetic())
         .value("LProp_Inflection", LProp_Inflection)
         .value("LProp_MinCur", LProp_MinCur)
-        .value("LProp_MaxCur", LProp_MaxCur);
+        .value("LProp_MaxCur", LProp_MaxCur)
+        .export_values();
     nb::enum_<LProp_Status>(m, "LProp_Status", nb::is_arithmetic())
         .value("LProp_Undecided", LProp_Undecided)
         .value("LProp_Undefined", LProp_Undefined)
         .value("LProp_Defined", LProp_Defined)
-        .value("LProp_Computed", LProp_Computed);
+        .value("LProp_Computed", LProp_Computed)
+        .export_values();
     nanoocp_register_exception<LProp_BadContinuity>(nanoocp_new_exception(m, "LProp_BadContinuity", nullptr, nb::module_::import_("nanoocp._TKernel.Standard").attr("Standard_Failure").ptr()));
     nanoocp_register_exception<LProp_NotDefined>(nanoocp_new_exception(m, "LProp_NotDefined", nullptr, nb::module_::import_("nanoocp._TKernel.Standard").attr("Standard_Failure").ptr()));
     { nb::class_<LProp_CurveUtils::DirectAccess> cls(m.attr("LProp_CurveUtils"), "DirectAccess", R"nbdoc(Direct access policy: calls D0/D1/D2/D3 methods on the curve object.

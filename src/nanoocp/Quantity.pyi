@@ -1056,6 +1056,1024 @@ class Quantity_NameOfColor(enum.IntEnum):
 
     Quantity_NOC_WHITE = 508
 
+Quantity_NOC_BLACK: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLACK
+
+Quantity_NOC_MATRABLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MATRABLUE
+
+Quantity_NOC_MATRAGRAY: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MATRAGRAY
+
+Quantity_NOC_ALICEBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ALICEBLUE
+
+Quantity_NOC_ANTIQUEWHITE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ANTIQUEWHITE
+
+Quantity_NOC_ANTIQUEWHITE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ANTIQUEWHITE1
+
+Quantity_NOC_ANTIQUEWHITE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ANTIQUEWHITE2
+
+Quantity_NOC_ANTIQUEWHITE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ANTIQUEWHITE3
+
+Quantity_NOC_ANTIQUEWHITE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ANTIQUEWHITE4
+
+Quantity_NOC_AQUAMARINE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_AQUAMARINE1
+
+Quantity_NOC_AQUAMARINE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_AQUAMARINE2
+
+Quantity_NOC_AQUAMARINE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_AQUAMARINE4
+
+Quantity_NOC_AZURE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_AZURE
+
+Quantity_NOC_AZURE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_AZURE2
+
+Quantity_NOC_AZURE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_AZURE3
+
+Quantity_NOC_AZURE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_AZURE4
+
+Quantity_NOC_BEIGE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BEIGE
+
+Quantity_NOC_BISQUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BISQUE
+
+Quantity_NOC_BISQUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BISQUE2
+
+Quantity_NOC_BISQUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BISQUE3
+
+Quantity_NOC_BISQUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BISQUE4
+
+Quantity_NOC_BLANCHEDALMOND: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLANCHEDALMOND
+
+Quantity_NOC_BLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLUE
+
+Quantity_NOC_BLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLUE2
+
+Quantity_NOC_BLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLUE3
+
+Quantity_NOC_BLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLUE4
+
+Quantity_NOC_BLUEVIOLET: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLUEVIOLET
+
+Quantity_NOC_BROWN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BROWN
+
+Quantity_NOC_BROWN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BROWN1
+
+Quantity_NOC_BROWN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BROWN2
+
+Quantity_NOC_BROWN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BROWN3
+
+Quantity_NOC_BROWN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BROWN4
+
+Quantity_NOC_BURLYWOOD: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BURLYWOOD
+
+Quantity_NOC_BURLYWOOD1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BURLYWOOD1
+
+Quantity_NOC_BURLYWOOD2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BURLYWOOD2
+
+Quantity_NOC_BURLYWOOD3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BURLYWOOD3
+
+Quantity_NOC_BURLYWOOD4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BURLYWOOD4
+
+Quantity_NOC_CADETBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CADETBLUE
+
+Quantity_NOC_CADETBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CADETBLUE1
+
+Quantity_NOC_CADETBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CADETBLUE2
+
+Quantity_NOC_CADETBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CADETBLUE3
+
+Quantity_NOC_CADETBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CADETBLUE4
+
+Quantity_NOC_CHARTREUSE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHARTREUSE
+
+Quantity_NOC_CHARTREUSE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHARTREUSE2
+
+Quantity_NOC_CHARTREUSE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHARTREUSE3
+
+Quantity_NOC_CHARTREUSE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHARTREUSE4
+
+Quantity_NOC_CHOCOLATE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHOCOLATE
+
+Quantity_NOC_CHOCOLATE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHOCOLATE1
+
+Quantity_NOC_CHOCOLATE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHOCOLATE2
+
+Quantity_NOC_CHOCOLATE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHOCOLATE3
+
+Quantity_NOC_CHOCOLATE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHOCOLATE4
+
+Quantity_NOC_CORAL: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORAL
+
+Quantity_NOC_CORAL1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORAL1
+
+Quantity_NOC_CORAL2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORAL2
+
+Quantity_NOC_CORAL3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORAL3
+
+Quantity_NOC_CORAL4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORAL4
+
+Quantity_NOC_CORNFLOWERBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORNFLOWERBLUE
+
+Quantity_NOC_CORNSILK1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORNSILK1
+
+Quantity_NOC_CORNSILK2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORNSILK2
+
+Quantity_NOC_CORNSILK3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORNSILK3
+
+Quantity_NOC_CORNSILK4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CORNSILK4
+
+Quantity_NOC_CYAN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CYAN
+
+Quantity_NOC_CYAN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CYAN2
+
+Quantity_NOC_CYAN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CYAN3
+
+Quantity_NOC_CYAN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CYAN4
+
+Quantity_NOC_DARKGOLDENROD: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKGOLDENROD
+
+Quantity_NOC_DARKGOLDENROD1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKGOLDENROD1
+
+Quantity_NOC_DARKGOLDENROD2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKGOLDENROD2
+
+Quantity_NOC_DARKGOLDENROD3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKGOLDENROD3
+
+Quantity_NOC_DARKGOLDENROD4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKGOLDENROD4
+
+Quantity_NOC_DARKGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKGREEN
+
+Quantity_NOC_DARKKHAKI: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKKHAKI
+
+Quantity_NOC_DARKOLIVEGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKOLIVEGREEN
+
+Quantity_NOC_DARKOLIVEGREEN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKOLIVEGREEN1
+
+Quantity_NOC_DARKOLIVEGREEN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKOLIVEGREEN2
+
+Quantity_NOC_DARKOLIVEGREEN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKOLIVEGREEN3
+
+Quantity_NOC_DARKOLIVEGREEN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKOLIVEGREEN4
+
+Quantity_NOC_DARKORANGE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORANGE
+
+Quantity_NOC_DARKORANGE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORANGE1
+
+Quantity_NOC_DARKORANGE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORANGE2
+
+Quantity_NOC_DARKORANGE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORANGE3
+
+Quantity_NOC_DARKORANGE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORANGE4
+
+Quantity_NOC_DARKORCHID: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORCHID
+
+Quantity_NOC_DARKORCHID1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORCHID1
+
+Quantity_NOC_DARKORCHID2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORCHID2
+
+Quantity_NOC_DARKORCHID3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORCHID3
+
+Quantity_NOC_DARKORCHID4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKORCHID4
+
+Quantity_NOC_DARKSALMON: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSALMON
+
+Quantity_NOC_DARKSEAGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSEAGREEN
+
+Quantity_NOC_DARKSEAGREEN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSEAGREEN1
+
+Quantity_NOC_DARKSEAGREEN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSEAGREEN2
+
+Quantity_NOC_DARKSEAGREEN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSEAGREEN3
+
+Quantity_NOC_DARKSEAGREEN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSEAGREEN4
+
+Quantity_NOC_DARKSLATEBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSLATEBLUE
+
+Quantity_NOC_DARKSLATEGRAY1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSLATEGRAY1
+
+Quantity_NOC_DARKSLATEGRAY2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSLATEGRAY2
+
+Quantity_NOC_DARKSLATEGRAY3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSLATEGRAY3
+
+Quantity_NOC_DARKSLATEGRAY4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSLATEGRAY4
+
+Quantity_NOC_DARKSLATEGRAY: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKSLATEGRAY
+
+Quantity_NOC_DARKTURQUOISE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKTURQUOISE
+
+Quantity_NOC_DARKVIOLET: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DARKVIOLET
+
+Quantity_NOC_DEEPPINK: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPPINK
+
+Quantity_NOC_DEEPPINK2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPPINK2
+
+Quantity_NOC_DEEPPINK3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPPINK3
+
+Quantity_NOC_DEEPPINK4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPPINK4
+
+Quantity_NOC_DEEPSKYBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPSKYBLUE1
+
+Quantity_NOC_DEEPSKYBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPSKYBLUE2
+
+Quantity_NOC_DEEPSKYBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPSKYBLUE3
+
+Quantity_NOC_DEEPSKYBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DEEPSKYBLUE4
+
+Quantity_NOC_DODGERBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DODGERBLUE1
+
+Quantity_NOC_DODGERBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DODGERBLUE2
+
+Quantity_NOC_DODGERBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DODGERBLUE3
+
+Quantity_NOC_DODGERBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_DODGERBLUE4
+
+Quantity_NOC_FIREBRICK: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_FIREBRICK
+
+Quantity_NOC_FIREBRICK1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_FIREBRICK1
+
+Quantity_NOC_FIREBRICK2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_FIREBRICK2
+
+Quantity_NOC_FIREBRICK3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_FIREBRICK3
+
+Quantity_NOC_FIREBRICK4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_FIREBRICK4
+
+Quantity_NOC_FLORALWHITE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_FLORALWHITE
+
+Quantity_NOC_FORESTGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_FORESTGREEN
+
+Quantity_NOC_GAINSBORO: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GAINSBORO
+
+Quantity_NOC_GHOSTWHITE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GHOSTWHITE
+
+Quantity_NOC_GOLD: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLD
+
+Quantity_NOC_GOLD2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLD2
+
+Quantity_NOC_GOLD3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLD3
+
+Quantity_NOC_GOLD4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLD4
+
+Quantity_NOC_GOLDENROD: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLDENROD
+
+Quantity_NOC_GOLDENROD1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLDENROD1
+
+Quantity_NOC_GOLDENROD2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLDENROD2
+
+Quantity_NOC_GOLDENROD3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLDENROD3
+
+Quantity_NOC_GOLDENROD4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLDENROD4
+
+Quantity_NOC_GRAY: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY
+
+Quantity_NOC_GRAY0: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY0
+
+Quantity_NOC_GRAY1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY1
+
+Quantity_NOC_GRAY2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY2
+
+Quantity_NOC_GRAY3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY3
+
+Quantity_NOC_GRAY4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY4
+
+Quantity_NOC_GRAY5: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY5
+
+Quantity_NOC_GRAY6: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY6
+
+Quantity_NOC_GRAY7: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY7
+
+Quantity_NOC_GRAY8: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY8
+
+Quantity_NOC_GRAY9: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY9
+
+Quantity_NOC_GRAY10: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY10
+
+Quantity_NOC_GRAY11: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY11
+
+Quantity_NOC_GRAY12: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY12
+
+Quantity_NOC_GRAY13: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY13
+
+Quantity_NOC_GRAY14: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY14
+
+Quantity_NOC_GRAY15: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY15
+
+Quantity_NOC_GRAY16: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY16
+
+Quantity_NOC_GRAY17: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY17
+
+Quantity_NOC_GRAY18: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY18
+
+Quantity_NOC_GRAY19: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY19
+
+Quantity_NOC_GRAY20: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY20
+
+Quantity_NOC_GRAY21: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY21
+
+Quantity_NOC_GRAY22: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY22
+
+Quantity_NOC_GRAY23: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY23
+
+Quantity_NOC_GRAY24: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY24
+
+Quantity_NOC_GRAY25: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY25
+
+Quantity_NOC_GRAY26: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY26
+
+Quantity_NOC_GRAY27: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY27
+
+Quantity_NOC_GRAY28: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY28
+
+Quantity_NOC_GRAY29: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY29
+
+Quantity_NOC_GRAY30: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY30
+
+Quantity_NOC_GRAY31: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY31
+
+Quantity_NOC_GRAY32: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY32
+
+Quantity_NOC_GRAY33: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY33
+
+Quantity_NOC_GRAY34: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY34
+
+Quantity_NOC_GRAY35: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY35
+
+Quantity_NOC_GRAY36: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY36
+
+Quantity_NOC_GRAY37: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY37
+
+Quantity_NOC_GRAY38: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY38
+
+Quantity_NOC_GRAY39: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY39
+
+Quantity_NOC_GRAY40: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY40
+
+Quantity_NOC_GRAY41: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY41
+
+Quantity_NOC_GRAY42: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY42
+
+Quantity_NOC_GRAY43: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY43
+
+Quantity_NOC_GRAY44: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY44
+
+Quantity_NOC_GRAY45: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY45
+
+Quantity_NOC_GRAY46: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY46
+
+Quantity_NOC_GRAY47: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY47
+
+Quantity_NOC_GRAY48: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY48
+
+Quantity_NOC_GRAY49: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY49
+
+Quantity_NOC_GRAY50: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY50
+
+Quantity_NOC_GRAY51: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY51
+
+Quantity_NOC_GRAY52: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY52
+
+Quantity_NOC_GRAY53: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY53
+
+Quantity_NOC_GRAY54: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY54
+
+Quantity_NOC_GRAY55: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY55
+
+Quantity_NOC_GRAY56: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY56
+
+Quantity_NOC_GRAY57: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY57
+
+Quantity_NOC_GRAY58: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY58
+
+Quantity_NOC_GRAY59: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY59
+
+Quantity_NOC_GRAY60: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY60
+
+Quantity_NOC_GRAY61: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY61
+
+Quantity_NOC_GRAY62: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY62
+
+Quantity_NOC_GRAY63: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY63
+
+Quantity_NOC_GRAY64: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY64
+
+Quantity_NOC_GRAY65: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY65
+
+Quantity_NOC_GRAY66: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY66
+
+Quantity_NOC_GRAY67: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY67
+
+Quantity_NOC_GRAY68: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY68
+
+Quantity_NOC_GRAY69: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY69
+
+Quantity_NOC_GRAY70: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY70
+
+Quantity_NOC_GRAY71: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY71
+
+Quantity_NOC_GRAY72: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY72
+
+Quantity_NOC_GRAY73: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY73
+
+Quantity_NOC_GRAY74: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY74
+
+Quantity_NOC_GRAY75: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY75
+
+Quantity_NOC_GRAY76: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY76
+
+Quantity_NOC_GRAY77: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY77
+
+Quantity_NOC_GRAY78: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY78
+
+Quantity_NOC_GRAY79: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY79
+
+Quantity_NOC_GRAY80: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY80
+
+Quantity_NOC_GRAY81: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY81
+
+Quantity_NOC_GRAY82: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY82
+
+Quantity_NOC_GRAY83: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY83
+
+Quantity_NOC_GRAY85: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY85
+
+Quantity_NOC_GRAY86: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY86
+
+Quantity_NOC_GRAY87: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY87
+
+Quantity_NOC_GRAY88: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY88
+
+Quantity_NOC_GRAY89: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY89
+
+Quantity_NOC_GRAY90: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY90
+
+Quantity_NOC_GRAY91: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY91
+
+Quantity_NOC_GRAY92: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY92
+
+Quantity_NOC_GRAY93: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY93
+
+Quantity_NOC_GRAY94: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY94
+
+Quantity_NOC_GRAY95: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY95
+
+Quantity_NOC_GRAY97: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY97
+
+Quantity_NOC_GRAY98: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY98
+
+Quantity_NOC_GRAY99: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GRAY99
+
+Quantity_NOC_GREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GREEN
+
+Quantity_NOC_GREEN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GREEN2
+
+Quantity_NOC_GREEN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GREEN3
+
+Quantity_NOC_GREEN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GREEN4
+
+Quantity_NOC_GREENYELLOW: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GREENYELLOW
+
+Quantity_NOC_HONEYDEW: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HONEYDEW
+
+Quantity_NOC_HONEYDEW2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HONEYDEW2
+
+Quantity_NOC_HONEYDEW3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HONEYDEW3
+
+Quantity_NOC_HONEYDEW4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HONEYDEW4
+
+Quantity_NOC_HOTPINK: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HOTPINK
+
+Quantity_NOC_HOTPINK1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HOTPINK1
+
+Quantity_NOC_HOTPINK2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HOTPINK2
+
+Quantity_NOC_HOTPINK3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HOTPINK3
+
+Quantity_NOC_HOTPINK4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_HOTPINK4
+
+Quantity_NOC_INDIANRED: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_INDIANRED
+
+Quantity_NOC_INDIANRED1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_INDIANRED1
+
+Quantity_NOC_INDIANRED2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_INDIANRED2
+
+Quantity_NOC_INDIANRED3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_INDIANRED3
+
+Quantity_NOC_INDIANRED4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_INDIANRED4
+
+Quantity_NOC_IVORY: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_IVORY
+
+Quantity_NOC_IVORY2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_IVORY2
+
+Quantity_NOC_IVORY3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_IVORY3
+
+Quantity_NOC_IVORY4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_IVORY4
+
+Quantity_NOC_KHAKI: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_KHAKI
+
+Quantity_NOC_KHAKI1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_KHAKI1
+
+Quantity_NOC_KHAKI2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_KHAKI2
+
+Quantity_NOC_KHAKI3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_KHAKI3
+
+Quantity_NOC_KHAKI4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_KHAKI4
+
+Quantity_NOC_LAVENDER: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LAVENDER
+
+Quantity_NOC_LAVENDERBLUSH1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LAVENDERBLUSH1
+
+Quantity_NOC_LAVENDERBLUSH2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LAVENDERBLUSH2
+
+Quantity_NOC_LAVENDERBLUSH3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LAVENDERBLUSH3
+
+Quantity_NOC_LAVENDERBLUSH4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LAVENDERBLUSH4
+
+Quantity_NOC_LAWNGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LAWNGREEN
+
+Quantity_NOC_LEMONCHIFFON1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LEMONCHIFFON1
+
+Quantity_NOC_LEMONCHIFFON2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LEMONCHIFFON2
+
+Quantity_NOC_LEMONCHIFFON3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LEMONCHIFFON3
+
+Quantity_NOC_LEMONCHIFFON4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LEMONCHIFFON4
+
+Quantity_NOC_LIGHTBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTBLUE
+
+Quantity_NOC_LIGHTBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTBLUE1
+
+Quantity_NOC_LIGHTBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTBLUE2
+
+Quantity_NOC_LIGHTBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTBLUE3
+
+Quantity_NOC_LIGHTBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTBLUE4
+
+Quantity_NOC_LIGHTCORAL: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTCORAL
+
+Quantity_NOC_LIGHTCYAN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTCYAN
+
+Quantity_NOC_LIGHTCYAN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTCYAN2
+
+Quantity_NOC_LIGHTCYAN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTCYAN3
+
+Quantity_NOC_LIGHTCYAN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTCYAN4
+
+Quantity_NOC_LIGHTGOLDENROD: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTGOLDENROD
+
+Quantity_NOC_LIGHTGOLDENROD1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTGOLDENROD1
+
+Quantity_NOC_LIGHTGOLDENROD2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTGOLDENROD2
+
+Quantity_NOC_LIGHTGOLDENROD3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTGOLDENROD3
+
+Quantity_NOC_LIGHTGOLDENROD4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTGOLDENROD4
+
+Quantity_NOC_LIGHTGOLDENRODYELLOW: Quantity_NameOfColor = ...
+
+Quantity_NOC_LIGHTGRAY: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTGRAY
+
+Quantity_NOC_LIGHTPINK: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTPINK
+
+Quantity_NOC_LIGHTPINK1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTPINK1
+
+Quantity_NOC_LIGHTPINK2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTPINK2
+
+Quantity_NOC_LIGHTPINK3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTPINK3
+
+Quantity_NOC_LIGHTPINK4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTPINK4
+
+Quantity_NOC_LIGHTSALMON1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSALMON1
+
+Quantity_NOC_LIGHTSALMON2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSALMON2
+
+Quantity_NOC_LIGHTSALMON3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSALMON3
+
+Quantity_NOC_LIGHTSALMON4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSALMON4
+
+Quantity_NOC_LIGHTSEAGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSEAGREEN
+
+Quantity_NOC_LIGHTSKYBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSKYBLUE
+
+Quantity_NOC_LIGHTSKYBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSKYBLUE1
+
+Quantity_NOC_LIGHTSKYBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSKYBLUE2
+
+Quantity_NOC_LIGHTSKYBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSKYBLUE3
+
+Quantity_NOC_LIGHTSKYBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSKYBLUE4
+
+Quantity_NOC_LIGHTSLATEBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSLATEBLUE
+
+Quantity_NOC_LIGHTSLATEGRAY: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSLATEGRAY
+
+Quantity_NOC_LIGHTSTEELBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSTEELBLUE
+
+Quantity_NOC_LIGHTSTEELBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSTEELBLUE1
+
+Quantity_NOC_LIGHTSTEELBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSTEELBLUE2
+
+Quantity_NOC_LIGHTSTEELBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSTEELBLUE3
+
+Quantity_NOC_LIGHTSTEELBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTSTEELBLUE4
+
+Quantity_NOC_LIGHTYELLOW: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTYELLOW
+
+Quantity_NOC_LIGHTYELLOW2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTYELLOW2
+
+Quantity_NOC_LIGHTYELLOW3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTYELLOW3
+
+Quantity_NOC_LIGHTYELLOW4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTYELLOW4
+
+Quantity_NOC_LIMEGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIMEGREEN
+
+Quantity_NOC_LINEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LINEN
+
+Quantity_NOC_MAGENTA: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAGENTA
+
+Quantity_NOC_MAGENTA2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAGENTA2
+
+Quantity_NOC_MAGENTA3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAGENTA3
+
+Quantity_NOC_MAGENTA4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAGENTA4
+
+Quantity_NOC_MAROON: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAROON
+
+Quantity_NOC_MAROON1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAROON1
+
+Quantity_NOC_MAROON2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAROON2
+
+Quantity_NOC_MAROON3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAROON3
+
+Quantity_NOC_MAROON4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAROON4
+
+Quantity_NOC_MEDIUMAQUAMARINE: Quantity_NameOfColor = ...
+
+Quantity_NOC_MEDIUMORCHID: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMORCHID
+
+Quantity_NOC_MEDIUMORCHID1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMORCHID1
+
+Quantity_NOC_MEDIUMORCHID2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMORCHID2
+
+Quantity_NOC_MEDIUMORCHID3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMORCHID3
+
+Quantity_NOC_MEDIUMORCHID4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMORCHID4
+
+Quantity_NOC_MEDIUMPURPLE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMPURPLE
+
+Quantity_NOC_MEDIUMPURPLE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMPURPLE1
+
+Quantity_NOC_MEDIUMPURPLE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMPURPLE2
+
+Quantity_NOC_MEDIUMPURPLE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMPURPLE3
+
+Quantity_NOC_MEDIUMPURPLE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMPURPLE4
+
+Quantity_NOC_MEDIUMSEAGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMSEAGREEN
+
+Quantity_NOC_MEDIUMSLATEBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMSLATEBLUE
+
+Quantity_NOC_MEDIUMSPRINGGREEN: Quantity_NameOfColor = ...
+
+Quantity_NOC_MEDIUMTURQUOISE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMTURQUOISE
+
+Quantity_NOC_MEDIUMVIOLETRED: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MEDIUMVIOLETRED
+
+Quantity_NOC_MIDNIGHTBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MIDNIGHTBLUE
+
+Quantity_NOC_MINTCREAM: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MINTCREAM
+
+Quantity_NOC_MISTYROSE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MISTYROSE
+
+Quantity_NOC_MISTYROSE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MISTYROSE2
+
+Quantity_NOC_MISTYROSE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MISTYROSE3
+
+Quantity_NOC_MISTYROSE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MISTYROSE4
+
+Quantity_NOC_MOCCASIN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MOCCASIN
+
+Quantity_NOC_NAVAJOWHITE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_NAVAJOWHITE1
+
+Quantity_NOC_NAVAJOWHITE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_NAVAJOWHITE2
+
+Quantity_NOC_NAVAJOWHITE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_NAVAJOWHITE3
+
+Quantity_NOC_NAVAJOWHITE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_NAVAJOWHITE4
+
+Quantity_NOC_NAVYBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_NAVYBLUE
+
+Quantity_NOC_OLDLACE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_OLDLACE
+
+Quantity_NOC_OLIVEDRAB: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_OLIVEDRAB
+
+Quantity_NOC_OLIVEDRAB1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_OLIVEDRAB1
+
+Quantity_NOC_OLIVEDRAB2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_OLIVEDRAB2
+
+Quantity_NOC_OLIVEDRAB3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_OLIVEDRAB3
+
+Quantity_NOC_OLIVEDRAB4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_OLIVEDRAB4
+
+Quantity_NOC_ORANGE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGE
+
+Quantity_NOC_ORANGE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGE2
+
+Quantity_NOC_ORANGE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGE3
+
+Quantity_NOC_ORANGE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGE4
+
+Quantity_NOC_ORANGERED: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGERED
+
+Quantity_NOC_ORANGERED2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGERED2
+
+Quantity_NOC_ORANGERED3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGERED3
+
+Quantity_NOC_ORANGERED4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGERED4
+
+Quantity_NOC_ORCHID: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORCHID
+
+Quantity_NOC_ORCHID1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORCHID1
+
+Quantity_NOC_ORCHID2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORCHID2
+
+Quantity_NOC_ORCHID3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORCHID3
+
+Quantity_NOC_ORCHID4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORCHID4
+
+Quantity_NOC_PALEGOLDENROD: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEGOLDENROD
+
+Quantity_NOC_PALEGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEGREEN
+
+Quantity_NOC_PALEGREEN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEGREEN1
+
+Quantity_NOC_PALEGREEN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEGREEN2
+
+Quantity_NOC_PALEGREEN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEGREEN3
+
+Quantity_NOC_PALEGREEN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEGREEN4
+
+Quantity_NOC_PALETURQUOISE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALETURQUOISE
+
+Quantity_NOC_PALETURQUOISE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALETURQUOISE1
+
+Quantity_NOC_PALETURQUOISE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALETURQUOISE2
+
+Quantity_NOC_PALETURQUOISE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALETURQUOISE3
+
+Quantity_NOC_PALETURQUOISE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALETURQUOISE4
+
+Quantity_NOC_PALEVIOLETRED: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEVIOLETRED
+
+Quantity_NOC_PALEVIOLETRED1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEVIOLETRED1
+
+Quantity_NOC_PALEVIOLETRED2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEVIOLETRED2
+
+Quantity_NOC_PALEVIOLETRED3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEVIOLETRED3
+
+Quantity_NOC_PALEVIOLETRED4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PALEVIOLETRED4
+
+Quantity_NOC_PAPAYAWHIP: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PAPAYAWHIP
+
+Quantity_NOC_PEACHPUFF: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PEACHPUFF
+
+Quantity_NOC_PEACHPUFF2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PEACHPUFF2
+
+Quantity_NOC_PEACHPUFF3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PEACHPUFF3
+
+Quantity_NOC_PEACHPUFF4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PEACHPUFF4
+
+Quantity_NOC_PERU: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PERU
+
+Quantity_NOC_PINK: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PINK
+
+Quantity_NOC_PINK1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PINK1
+
+Quantity_NOC_PINK2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PINK2
+
+Quantity_NOC_PINK3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PINK3
+
+Quantity_NOC_PINK4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PINK4
+
+Quantity_NOC_PLUM: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PLUM
+
+Quantity_NOC_PLUM1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PLUM1
+
+Quantity_NOC_PLUM2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PLUM2
+
+Quantity_NOC_PLUM3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PLUM3
+
+Quantity_NOC_PLUM4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PLUM4
+
+Quantity_NOC_POWDERBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_POWDERBLUE
+
+Quantity_NOC_PURPLE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PURPLE
+
+Quantity_NOC_PURPLE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PURPLE1
+
+Quantity_NOC_PURPLE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PURPLE2
+
+Quantity_NOC_PURPLE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PURPLE3
+
+Quantity_NOC_PURPLE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_PURPLE4
+
+Quantity_NOC_RED: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_RED
+
+Quantity_NOC_RED2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_RED2
+
+Quantity_NOC_RED3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_RED3
+
+Quantity_NOC_RED4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_RED4
+
+Quantity_NOC_ROSYBROWN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROSYBROWN
+
+Quantity_NOC_ROSYBROWN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROSYBROWN1
+
+Quantity_NOC_ROSYBROWN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROSYBROWN2
+
+Quantity_NOC_ROSYBROWN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROSYBROWN3
+
+Quantity_NOC_ROSYBROWN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROSYBROWN4
+
+Quantity_NOC_ROYALBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROYALBLUE
+
+Quantity_NOC_ROYALBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROYALBLUE1
+
+Quantity_NOC_ROYALBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROYALBLUE2
+
+Quantity_NOC_ROYALBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROYALBLUE3
+
+Quantity_NOC_ROYALBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ROYALBLUE4
+
+Quantity_NOC_SADDLEBROWN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SADDLEBROWN
+
+Quantity_NOC_SALMON: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SALMON
+
+Quantity_NOC_SALMON1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SALMON1
+
+Quantity_NOC_SALMON2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SALMON2
+
+Quantity_NOC_SALMON3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SALMON3
+
+Quantity_NOC_SALMON4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SALMON4
+
+Quantity_NOC_SANDYBROWN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SANDYBROWN
+
+Quantity_NOC_SEAGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEAGREEN
+
+Quantity_NOC_SEAGREEN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEAGREEN1
+
+Quantity_NOC_SEAGREEN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEAGREEN2
+
+Quantity_NOC_SEAGREEN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEAGREEN3
+
+Quantity_NOC_SEAGREEN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEAGREEN4
+
+Quantity_NOC_SEASHELL: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEASHELL
+
+Quantity_NOC_SEASHELL2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEASHELL2
+
+Quantity_NOC_SEASHELL3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEASHELL3
+
+Quantity_NOC_SEASHELL4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SEASHELL4
+
+Quantity_NOC_BEET: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BEET
+
+Quantity_NOC_TEAL: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TEAL
+
+Quantity_NOC_SIENNA: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SIENNA
+
+Quantity_NOC_SIENNA1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SIENNA1
+
+Quantity_NOC_SIENNA2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SIENNA2
+
+Quantity_NOC_SIENNA3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SIENNA3
+
+Quantity_NOC_SIENNA4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SIENNA4
+
+Quantity_NOC_SKYBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SKYBLUE
+
+Quantity_NOC_SKYBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SKYBLUE1
+
+Quantity_NOC_SKYBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SKYBLUE2
+
+Quantity_NOC_SKYBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SKYBLUE3
+
+Quantity_NOC_SKYBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SKYBLUE4
+
+Quantity_NOC_SLATEBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEBLUE
+
+Quantity_NOC_SLATEBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEBLUE1
+
+Quantity_NOC_SLATEBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEBLUE2
+
+Quantity_NOC_SLATEBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEBLUE3
+
+Quantity_NOC_SLATEBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEBLUE4
+
+Quantity_NOC_SLATEGRAY1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEGRAY1
+
+Quantity_NOC_SLATEGRAY2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEGRAY2
+
+Quantity_NOC_SLATEGRAY3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEGRAY3
+
+Quantity_NOC_SLATEGRAY4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEGRAY4
+
+Quantity_NOC_SLATEGRAY: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SLATEGRAY
+
+Quantity_NOC_SNOW: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SNOW
+
+Quantity_NOC_SNOW2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SNOW2
+
+Quantity_NOC_SNOW3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SNOW3
+
+Quantity_NOC_SNOW4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SNOW4
+
+Quantity_NOC_SPRINGGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SPRINGGREEN
+
+Quantity_NOC_SPRINGGREEN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SPRINGGREEN2
+
+Quantity_NOC_SPRINGGREEN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SPRINGGREEN3
+
+Quantity_NOC_SPRINGGREEN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_SPRINGGREEN4
+
+Quantity_NOC_STEELBLUE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_STEELBLUE
+
+Quantity_NOC_STEELBLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_STEELBLUE1
+
+Quantity_NOC_STEELBLUE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_STEELBLUE2
+
+Quantity_NOC_STEELBLUE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_STEELBLUE3
+
+Quantity_NOC_STEELBLUE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_STEELBLUE4
+
+Quantity_NOC_TAN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TAN
+
+Quantity_NOC_TAN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TAN1
+
+Quantity_NOC_TAN2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TAN2
+
+Quantity_NOC_TAN3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TAN3
+
+Quantity_NOC_TAN4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TAN4
+
+Quantity_NOC_THISTLE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_THISTLE
+
+Quantity_NOC_THISTLE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_THISTLE1
+
+Quantity_NOC_THISTLE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_THISTLE2
+
+Quantity_NOC_THISTLE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_THISTLE3
+
+Quantity_NOC_THISTLE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_THISTLE4
+
+Quantity_NOC_TOMATO: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TOMATO
+
+Quantity_NOC_TOMATO2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TOMATO2
+
+Quantity_NOC_TOMATO3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TOMATO3
+
+Quantity_NOC_TOMATO4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TOMATO4
+
+Quantity_NOC_TURQUOISE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TURQUOISE
+
+Quantity_NOC_TURQUOISE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TURQUOISE1
+
+Quantity_NOC_TURQUOISE2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TURQUOISE2
+
+Quantity_NOC_TURQUOISE3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TURQUOISE3
+
+Quantity_NOC_TURQUOISE4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TURQUOISE4
+
+Quantity_NOC_VIOLET: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_VIOLET
+
+Quantity_NOC_VIOLETRED: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_VIOLETRED
+
+Quantity_NOC_VIOLETRED1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_VIOLETRED1
+
+Quantity_NOC_VIOLETRED2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_VIOLETRED2
+
+Quantity_NOC_VIOLETRED3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_VIOLETRED3
+
+Quantity_NOC_VIOLETRED4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_VIOLETRED4
+
+Quantity_NOC_WHEAT: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHEAT
+
+Quantity_NOC_WHEAT1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHEAT1
+
+Quantity_NOC_WHEAT2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHEAT2
+
+Quantity_NOC_WHEAT3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHEAT3
+
+Quantity_NOC_WHEAT4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHEAT4
+
+Quantity_NOC_WHITESMOKE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHITESMOKE
+
+Quantity_NOC_YELLOW: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_YELLOW
+
+Quantity_NOC_YELLOW2: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_YELLOW2
+
+Quantity_NOC_YELLOW3: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_YELLOW3
+
+Quantity_NOC_YELLOW4: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_YELLOW4
+
+Quantity_NOC_YELLOWGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_YELLOWGREEN
+
+Quantity_NOC_WHITE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHITE
+
 class Quantity_TypeOfColor(enum.IntEnum):
     """Identifies color definition systems."""
 
@@ -1068,6 +2086,16 @@ class Quantity_TypeOfColor(enum.IntEnum):
     Quantity_TOC_CIELab = 3
 
     Quantity_TOC_CIELch = 4
+
+Quantity_TOC_RGB: Quantity_TypeOfColor = Quantity_TypeOfColor.Quantity_TOC_RGB
+
+Quantity_TOC_sRGB: Quantity_TypeOfColor = Quantity_TypeOfColor.Quantity_TOC_sRGB
+
+Quantity_TOC_HLS: Quantity_TypeOfColor = Quantity_TypeOfColor.Quantity_TOC_HLS
+
+Quantity_TOC_CIELab: Quantity_TypeOfColor = Quantity_TypeOfColor.Quantity_TOC_CIELab
+
+Quantity_TOC_CIELch: Quantity_TypeOfColor = Quantity_TypeOfColor.Quantity_TOC_CIELch
 
 class Quantity_Color:
     """
@@ -1090,7 +2118,7 @@ class Quantity_Color:
         """Creates the color from enumeration value."""
 
     @overload
-    def __init__(self, theRgb: nanoocp.BVH.BVH_Vec3f) -> None:
+    def __init__(self, theRgb: NCollection_Vec3__float) -> None:
         """Define color from linear RGB values."""
 
     @overload
@@ -1119,7 +2147,7 @@ class Quantity_Color:
         Throws exception if values are out of range.
         """
 
-    def Rgb(self) -> nanoocp.BVH.BVH_Vec3f:
+    def Rgb(self) -> NCollection_Vec3__float:
         """Return the color as vector of 3 float elements."""
 
     def Values(self, theType: Quantity_TypeOfColor) -> tuple[float, float, float]:
@@ -1264,38 +2292,38 @@ class Quantity_Color:
         """Returns hex sRGB string in format "#FFAAFF"."""
 
     @staticmethod
-    def Convert_sRGB_To_HLS(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_sRGB_To_HLS(theRgb: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Converts sRGB components into HLS ones."""
 
     @staticmethod
-    def Convert_HLS_To_sRGB(theHls: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_HLS_To_sRGB(theHls: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Converts HLS components into RGB ones."""
 
     @staticmethod
-    def Convert_LinearRGB_To_HLS(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_LinearRGB_To_HLS(theRgb: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Converts Linear RGB components into HLS ones."""
 
     @staticmethod
-    def Convert_HLS_To_LinearRGB(theHls: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_HLS_To_LinearRGB(theHls: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Converts HLS components into linear RGB ones."""
 
     @staticmethod
-    def Convert_LinearRGB_To_Lab(theRgb: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_LinearRGB_To_Lab(theRgb: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Converts linear RGB components into CIE Lab ones."""
 
     @staticmethod
-    def Convert_Lab_To_Lch(theLab: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_Lab_To_Lch(theLab: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Converts CIE Lab components into CIE Lch ones."""
 
     @staticmethod
-    def Convert_Lab_To_LinearRGB(theLab: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_Lab_To_LinearRGB(theLab: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """
         Converts CIE Lab components into linear RGB ones.
         Note that the resulting values may be out of the valid range for RGB.
         """
 
     @staticmethod
-    def Convert_Lch_To_Lab(theLch: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_Lch_To_Lab(theLch: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Converts CIE Lch components into CIE Lab ones."""
 
     @staticmethod
@@ -1358,7 +2386,7 @@ class Quantity_Color:
 
     @overload
     @staticmethod
-    def Convert_LinearRGB_To_sRGB_approx22(theRGB: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_LinearRGB_To_sRGB_approx22(theRGB: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """
         Convert linear RGB components into sRGB using approximated uniform gamma coefficient 2.2
         """
@@ -1372,7 +2400,7 @@ class Quantity_Color:
 
     @overload
     @staticmethod
-    def Convert_sRGB_To_LinearRGB_approx22(theRGB: nanoocp.BVH.BVH_Vec3f) -> nanoocp.BVH.BVH_Vec3f:
+    def Convert_sRGB_To_LinearRGB_approx22(theRGB: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """
         Convert sRGB components into linear RGB using approximated uniform gamma coefficient 2.2
         """
@@ -1417,7 +2445,7 @@ class Quantity_ColorRGBA:
         """Creates the color with specified RGB value."""
 
     @overload
-    def __init__(self, theRgba: nanoocp.BVH.BVH_Vec4f) -> None:
+    def __init__(self, theRgba: NCollection_Vec4__float) -> None:
         """Creates the color from RGBA vector."""
 
     @overload
@@ -1494,11 +2522,11 @@ class Quantity_ColorRGBA:
         """Returns hex sRGBA string in format "#RRGGBBAA"."""
 
     @staticmethod
-    def Convert_LinearRGB_To_sRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
+    def Convert_LinearRGB_To_sRGB(theRGB: NCollection_Vec4__float) -> NCollection_Vec4__float:
         """Convert linear RGB components into sRGB using OpenGL specs formula."""
 
     @staticmethod
-    def Convert_sRGB_To_LinearRGB(theRGB: nanoocp.BVH.BVH_Vec4f) -> nanoocp.BVH.BVH_Vec4f:
+    def Convert_sRGB_To_LinearRGB(theRGB: NCollection_Vec4__float) -> NCollection_Vec4__float:
         """Convert sRGB components into linear RGB using OpenGL specs formula."""
 
     def DumpJson(self, theDepth: int = -1) -> object:
@@ -1809,3 +2837,648 @@ class Quantity_Period:
 
 class Quantity_PeriodDefinitionError(nanoocp.Standard.Standard_DomainError):
     pass
+
+class NCollection_Vec3__float:
+    """
+    Generic 3-components vector.
+    To be used as RGB color pixel or XYZ 3D-point.
+    The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor. Construct the zero vector."""
+
+    @overload
+    def __init__(self, theValue: float) -> None:
+        """Initialize ALL components of vector within specified value."""
+
+    @overload
+    def __init__(self, theVec2: nanoocp.BVH.BVH_Vec2f, theZ: float = 0.0) -> None:
+        """Constructor from 2-components vector + optional 3rd value."""
+
+    @overload
+    def __init__(self, theX: float, theY: float, theZ: float) -> None:
+        """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Vec3__float) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: Quantity_Color) -> None: ...
+
+    @staticmethod
+    def Length() -> int:
+        """Returns the number of components."""
+
+    @overload
+    def SetValues(self, theX: float, theY: float, theZ: float) -> None: ...
+
+    @overload
+    def SetValues(self, theVec2: nanoocp.BVH.BVH_Vec2f, theZ: float) -> None:
+        """Assign new values to the vector."""
+
+    @overload
+    def x(self) -> float: ...
+
+    @overload
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XYZ."""
+
+    @overload
+    def r(self) -> float: ...
+
+    @overload
+    def r(self) -> float:
+        """Alias to 1st component as RED channel in RGB."""
+
+    @overload
+    def y(self) -> float: ...
+
+    @overload
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XYZ."""
+
+    @overload
+    def g(self) -> float: ...
+
+    @overload
+    def g(self) -> float:
+        """Alias to 2nd component as GREEN channel in RGB."""
+
+    @overload
+    def z(self) -> float: ...
+
+    @overload
+    def z(self) -> float:
+        """Alias to 3rd component as Z coordinate in XYZ."""
+
+    @overload
+    def b(self) -> float: ...
+
+    @overload
+    def b(self) -> float:
+        """Alias to 3rd component as BLUE channel in RGB."""
+
+    def xy(self) -> nanoocp.BVH.BVH_Vec2f:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def yx(self) -> nanoocp.BVH.BVH_Vec2f:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def xz(self) -> nanoocp.BVH.BVH_Vec2f:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def zx(self) -> nanoocp.BVH.BVH_Vec2f:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def yz(self) -> nanoocp.BVH.BVH_Vec2f:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def zy(self) -> nanoocp.BVH.BVH_Vec2f:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def xyz(self) -> NCollection_Vec3__float:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def xzy(self) -> NCollection_Vec3__float:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def yxz(self) -> NCollection_Vec3__float:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def yzx(self) -> NCollection_Vec3__float:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def zyx(self) -> NCollection_Vec3__float:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def zxy(self) -> NCollection_Vec3__float:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def Setx(self, theValue: float) -> None:
+        """Python addition: sets the value x() returns by reference in C++."""
+
+    def Setr(self, theValue: float) -> None:
+        """Python addition: sets the value r() returns by reference in C++."""
+
+    def Sety(self, theValue: float) -> None:
+        """Python addition: sets the value y() returns by reference in C++."""
+
+    def Setg(self, theValue: float) -> None:
+        """Python addition: sets the value g() returns by reference in C++."""
+
+    def Setz(self, theValue: float) -> None:
+        """Python addition: sets the value z() returns by reference in C++."""
+
+    def Setb(self, theValue: float) -> None:
+        """Python addition: sets the value b() returns by reference in C++."""
+
+    def IsEqual(self, theOther: NCollection_Vec3__float) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __eq__(self, theOther: NCollection_Vec3__float) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __ne__(self, theOther: NCollection_Vec3__float) -> bool:
+        """
+        Check this vector with another vector for non-equality (without tolerance!).
+        """
+
+    def __iadd__(self, theAdd: NCollection_Vec3__float) -> NCollection_Vec3__float:
+        """Compute per-component summary."""
+
+    def __neg__(self) -> NCollection_Vec3__float:
+        """Unary -."""
+
+    def __isub__(self, theDec: NCollection_Vec3__float) -> NCollection_Vec3__float:
+        """Compute per-component subtraction."""
+
+    def Multiply(self, theFactor: float) -> None:
+        """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __imul__(self, theRight: NCollection_Vec3__float) -> NCollection_Vec3__float:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __imul__(self, theFactor: float) -> NCollection_Vec3__float:
+        """Compute per-component multiplication by scale factor."""
+
+    def __mul__(self, theFactor: float) -> NCollection_Vec3__float:
+        """Compute per-component multiplication by scale factor."""
+
+    def Multiplied(self, theFactor: float) -> NCollection_Vec3__float:
+        """Compute per-component multiplication by scale factor."""
+
+    def cwiseMin(self, theVec: NCollection_Vec3__float) -> NCollection_Vec3__float:
+        """Compute component-wise minimum of two vectors."""
+
+    def cwiseMax(self, theVec: NCollection_Vec3__float) -> NCollection_Vec3__float:
+        """Compute component-wise maximum of two vectors."""
+
+    def cwiseAbs(self) -> NCollection_Vec3__float:
+        """Compute component-wise modulus of the vector."""
+
+    def maxComp(self) -> float:
+        """Compute maximum component of the vector."""
+
+    def minComp(self) -> float:
+        """Compute minimum component of the vector."""
+
+    @overload
+    def __itruediv__(self, theInvFactor: float) -> NCollection_Vec3__float:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __itruediv__(self, theRight: NCollection_Vec3__float) -> NCollection_Vec3__float:
+        """Compute per-component division."""
+
+    def __truediv__(self, theInvFactor: float) -> NCollection_Vec3__float:
+        """Compute per-component division by scale factor."""
+
+    def Dot(self, theOther: NCollection_Vec3__float) -> float:
+        """Computes the dot product."""
+
+    def Modulus(self) -> float:
+        """Computes the vector modulus (magnitude, length)."""
+
+    def SquareModulus(self) -> float:
+        """
+        Computes the square of vector modulus (magnitude, length).
+        This method may be used for performance tricks.
+        """
+
+    def Normalize(self) -> None:
+        """Normalize the vector."""
+
+    def Normalized(self) -> NCollection_Vec3__float:
+        """Normalize the vector."""
+
+    @staticmethod
+    def Cross(theVec1: NCollection_Vec3__float, theVec2: NCollection_Vec3__float) -> NCollection_Vec3__float:
+        """Computes the cross product."""
+
+    @staticmethod
+    def GetLERP(theFrom: NCollection_Vec3__float, theTo: NCollection_Vec3__float, theT: float) -> NCollection_Vec3__float:
+        """
+        Compute linear interpolation between to vectors.
+        @param theT - interpolation coefficient 0..1;
+        @return interpolation result.
+        """
+
+    @staticmethod
+    def DX() -> NCollection_Vec3__float:
+        """Construct DX unit vector."""
+
+    @staticmethod
+    def DY() -> NCollection_Vec3__float:
+        """Construct DY unit vector."""
+
+    @staticmethod
+    def DZ() -> NCollection_Vec3__float:
+        """Construct DZ unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""
+
+class NCollection_Vec4__float:
+    """
+    Generic 4-components vector.
+    To be used as RGBA color vector or XYZW 3D-point with special W-component
+    for operations with projection / model view matrices.
+    Use this class for 3D-points carefully because declared W-component may
+    results in incorrect results if used without matrices.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor. Construct the zero vector."""
+
+    @overload
+    def __init__(self, theValue: float) -> None:
+        """Initialize ALL components of vector within specified value."""
+
+    @overload
+    def __init__(self, theVec2: nanoocp.BVH.BVH_Vec2f) -> None:
+        """Constructor from 2-components vector."""
+
+    @overload
+    def __init__(self, theVec3: NCollection_Vec3__float, theW: float = 0.0) -> None:
+        """Constructor from 3-components vector + optional 4th value."""
+
+    @overload
+    def __init__(self, theX: float, theY: float, theZ: float, theW: float) -> None:
+        """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Vec4__float) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: Quantity_ColorRGBA) -> None: ...
+
+    @staticmethod
+    def Length() -> int:
+        """Returns the number of components."""
+
+    @overload
+    def SetValues(self, theX: float, theY: float, theZ: float, theW: float) -> None:
+        """Assign new values to the vector."""
+
+    @overload
+    def SetValues(self, theVec3: NCollection_Vec3__float, theW: float) -> None:
+        """Assign new values as 3-component vector and a 4-th value."""
+
+    @overload
+    def x(self) -> float: ...
+
+    @overload
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XYZW."""
+
+    @overload
+    def r(self) -> float: ...
+
+    @overload
+    def r(self) -> float:
+        """Alias to 1st component as RED channel in RGBA."""
+
+    @overload
+    def y(self) -> float: ...
+
+    @overload
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XYZW."""
+
+    @overload
+    def g(self) -> float: ...
+
+    @overload
+    def g(self) -> float:
+        """Alias to 2nd component as GREEN channel in RGBA."""
+
+    @overload
+    def z(self) -> float: ...
+
+    @overload
+    def z(self) -> float:
+        """Alias to 3rd component as Z coordinate in XYZW."""
+
+    @overload
+    def b(self) -> float: ...
+
+    @overload
+    def b(self) -> float:
+        """Alias to 3rd component as BLUE channel in RGBA."""
+
+    @overload
+    def w(self) -> float: ...
+
+    @overload
+    def w(self) -> float:
+        """Alias to 4th component as W coordinate in XYZW."""
+
+    @overload
+    def a(self) -> float: ...
+
+    @overload
+    def a(self) -> float:
+        """Alias to 4th component as ALPHA channel in RGBA."""
+
+    def xy(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yx(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xz(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zx(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xw(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wx(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yz(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zy(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yw(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wy(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zw(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wz(self) -> nanoocp.BVH.BVH_Vec2f:
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xyz(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xzy(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yxz(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yzx(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zyx(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zxy(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xyw(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xwy(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yxw(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def ywx(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wyx(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wxy(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xzw(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xwz(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zxw(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zwx(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wzx(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wxz(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yzw(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def ywz(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zyw(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zwy(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wzy(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wyz(self) -> NCollection_Vec3__float:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def rgb(self) -> NCollection_Vec3__float:
+        """@return RGB components as vector"""
+
+    def rbg(self) -> NCollection_Vec3__float:
+        """@return RGB components as vector"""
+
+    def grb(self) -> NCollection_Vec3__float:
+        """@return RGB components as vector"""
+
+    def gbr(self) -> NCollection_Vec3__float:
+        """@return RGB components as vector"""
+
+    def bgr(self) -> NCollection_Vec3__float:
+        """@return RGB components as vector"""
+
+    def brg(self) -> NCollection_Vec3__float:
+        """@return RGB components as vector"""
+
+    def Setx(self, theValue: float) -> None:
+        """Python addition: sets the value x() returns by reference in C++."""
+
+    def Setr(self, theValue: float) -> None:
+        """Python addition: sets the value r() returns by reference in C++."""
+
+    def Sety(self, theValue: float) -> None:
+        """Python addition: sets the value y() returns by reference in C++."""
+
+    def Setg(self, theValue: float) -> None:
+        """Python addition: sets the value g() returns by reference in C++."""
+
+    def Setz(self, theValue: float) -> None:
+        """Python addition: sets the value z() returns by reference in C++."""
+
+    def Setb(self, theValue: float) -> None:
+        """Python addition: sets the value b() returns by reference in C++."""
+
+    def Setw(self, theValue: float) -> None:
+        """Python addition: sets the value w() returns by reference in C++."""
+
+    def Seta(self, theValue: float) -> None:
+        """Python addition: sets the value a() returns by reference in C++."""
+
+    def IsEqual(self, theOther: NCollection_Vec4__float) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __eq__(self, theOther: NCollection_Vec4__float) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __ne__(self, theOther: NCollection_Vec4__float) -> bool:
+        """
+        Check this vector with another vector for non-equality (without tolerance!).
+        """
+
+    def __iadd__(self, theAdd: NCollection_Vec4__float) -> NCollection_Vec4__float:
+        """Compute per-component summary."""
+
+    def __neg__(self) -> NCollection_Vec4__float:
+        """Unary -."""
+
+    def __isub__(self, theDec: NCollection_Vec4__float) -> NCollection_Vec4__float:
+        """Compute per-component subtraction."""
+
+    @overload
+    def __imul__(self, theRight: NCollection_Vec4__float) -> NCollection_Vec4__float: ...
+
+    @overload
+    def __imul__(self, theFactor: float) -> NCollection_Vec4__float:
+        """Compute per-component multiplication."""
+
+    def Multiply(self, theFactor: float) -> None:
+        """Compute per-component multiplication."""
+
+    def __mul__(self, theFactor: float) -> NCollection_Vec4__float:
+        """Compute per-component multiplication."""
+
+    def Multiplied(self, theFactor: float) -> NCollection_Vec4__float:
+        """Compute per-component multiplication."""
+
+    def cwiseMin(self, theVec: NCollection_Vec4__float) -> NCollection_Vec4__float:
+        """Compute component-wise minimum of two vectors."""
+
+    def cwiseMax(self, theVec: NCollection_Vec4__float) -> NCollection_Vec4__float:
+        """Compute component-wise maximum of two vectors."""
+
+    def cwiseAbs(self) -> NCollection_Vec4__float:
+        """Compute component-wise modulus of the vector."""
+
+    def maxComp(self) -> float:
+        """Compute maximum component of the vector."""
+
+    def minComp(self) -> float:
+        """Compute minimum component of the vector."""
+
+    def Dot(self, theOther: NCollection_Vec4__float) -> float:
+        """Computes the dot product."""
+
+    @overload
+    def __itruediv__(self, theInvFactor: float) -> NCollection_Vec4__float:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __itruediv__(self, theRight: NCollection_Vec4__float) -> NCollection_Vec4__float:
+        """Compute per-component division."""
+
+    def __truediv__(self, theInvFactor: float) -> NCollection_Vec4__float:
+        """Compute per-component division by scale factor."""
+
+    def DumpJson(self, theDepth: int = -1) -> object:
+        """Dumps the content of me into the stream"""

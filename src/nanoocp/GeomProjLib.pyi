@@ -18,11 +18,11 @@ class GeomProjLib:
 
     @overload
     @staticmethod
-    def Curve2d(C: nanoocp.Geom.Geom_Curve, First: float, Last: float, S: nanoocp.Geom.Geom_Surface, UFirst: float, ULast: float, VFirst: float, VLast: float) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float]: ...
+    def Curve2d(C: nanoocp.Geom.Geom_Curve | None, First: float, Last: float, S: nanoocp.Geom.Geom_Surface | None, UFirst: float, ULast: float, VFirst: float, VLast: float) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float]: ...
 
     @overload
     @staticmethod
-    def Curve2d(C: nanoocp.Geom.Geom_Curve, First: float, Last: float, S: nanoocp.Geom.Geom_Surface) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float]:
+    def Curve2d(C: nanoocp.Geom.Geom_Curve | None, First: float, Last: float, S: nanoocp.Geom.Geom_Surface | None) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float]:
         """
         gives the 2d-curve of a 3d-curve lying on a
         surface (uses GeomProjLib_ProjectedCurve)
@@ -37,7 +37,7 @@ class GeomProjLib:
 
     @overload
     @staticmethod
-    def Curve2d(C: nanoocp.Geom.Geom_Curve, First: float, Last: float, S: nanoocp.Geom.Geom_Surface) -> nanoocp.Geom2d.Geom2d_Curve:
+    def Curve2d(C: nanoocp.Geom.Geom_Curve | None, First: float, Last: float, S: nanoocp.Geom.Geom_Surface | None) -> nanoocp.Geom2d.Geom2d_Curve:
         """
         gives the 2d-curve of a 3d-curve lying on a
         surface (uses GeomProjLib_ProjectedCurve)
@@ -51,7 +51,7 @@ class GeomProjLib:
 
     @overload
     @staticmethod
-    def Curve2d(C: nanoocp.Geom.Geom_Curve, S: nanoocp.Geom.Geom_Surface) -> nanoocp.Geom2d.Geom2d_Curve:
+    def Curve2d(C: nanoocp.Geom.Geom_Curve | None, S: nanoocp.Geom.Geom_Surface | None) -> nanoocp.Geom2d.Geom2d_Curve:
         """
         gives the 2d-curve of a 3d-curve lying on a
         surface (uses GeomProjLib_ProjectedCurve)
@@ -63,11 +63,11 @@ class GeomProjLib:
 
     @overload
     @staticmethod
-    def Curve2d(C: nanoocp.Geom.Geom_Curve, S: nanoocp.Geom.Geom_Surface, UDeb: float, UFin: float, VDeb: float, VFin: float) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float]: ...
+    def Curve2d(C: nanoocp.Geom.Geom_Curve | None, S: nanoocp.Geom.Geom_Surface | None, UDeb: float, UFin: float, VDeb: float, VFin: float) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float]: ...
 
     @overload
     @staticmethod
-    def Curve2d(C: nanoocp.Geom.Geom_Curve, S: nanoocp.Geom.Geom_Surface, UDeb: float, UFin: float, VDeb: float, VFin: float) -> nanoocp.Geom2d.Geom2d_Curve:
+    def Curve2d(C: nanoocp.Geom.Geom_Curve | None, S: nanoocp.Geom.Geom_Surface | None, UDeb: float, UFin: float, VDeb: float, VFin: float) -> nanoocp.Geom2d.Geom2d_Curve:
         """
         gives the 2d-curve of a 3d-curve lying on a
         surface (uses GeomProjLib_ProjectedCurve)
@@ -79,7 +79,7 @@ class GeomProjLib:
         """
 
     @staticmethod
-    def Project(C: nanoocp.Geom.Geom_Curve, S: nanoocp.Geom.Geom_Surface) -> nanoocp.Geom.Geom_Curve:
+    def Project(C: nanoocp.Geom.Geom_Curve | None, S: nanoocp.Geom.Geom_Surface | None) -> nanoocp.Geom.Geom_Curve:
         """
         Constructs the 3d-curve from the normal
         projection of the Curve <C> on the surface <S>.
@@ -88,7 +88,7 @@ class GeomProjLib:
         """
 
     @staticmethod
-    def ProjectOnPlane(Curve: nanoocp.Geom.Geom_Curve, Plane: nanoocp.Geom.Geom_Plane, Dir: nanoocp.gp.gp_Dir, KeepParametrization: bool) -> nanoocp.Geom.Geom_Curve:
+    def ProjectOnPlane(Curve: nanoocp.Geom.Geom_Curve | None, Plane: nanoocp.Geom.Geom_Plane | None, Dir: nanoocp.gp.gp_Dir, KeepParametrization: bool) -> nanoocp.Geom.Geom_Curve:
         """
         Constructs the 3d-curves from the projection
         of the curve <Curve> on the plane <Plane> along

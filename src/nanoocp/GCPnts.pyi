@@ -17,6 +17,12 @@ class GCPnts_AbscissaType(enum.IntEnum):
 
     GCPnts_AbsComposite = 2
 
+GCPnts_LengthParametrized: GCPnts_AbscissaType = GCPnts_AbscissaType.GCPnts_LengthParametrized
+
+GCPnts_Parametrized: GCPnts_AbscissaType = GCPnts_AbscissaType.GCPnts_Parametrized
+
+GCPnts_AbsComposite: GCPnts_AbscissaType = GCPnts_AbscissaType.GCPnts_AbsComposite
+
 class GCPnts_DeflectionType(enum.IntEnum):
     GCPnts_Linear = 0
 
@@ -25,6 +31,14 @@ class GCPnts_DeflectionType(enum.IntEnum):
     GCPnts_Curved = 2
 
     GCPnts_DefComposite = 3
+
+GCPnts_Linear: GCPnts_DeflectionType = GCPnts_DeflectionType.GCPnts_Linear
+
+GCPnts_Circular: GCPnts_DeflectionType = GCPnts_DeflectionType.GCPnts_Circular
+
+GCPnts_Curved: GCPnts_DeflectionType = GCPnts_DeflectionType.GCPnts_Curved
+
+GCPnts_DefComposite: GCPnts_DeflectionType = GCPnts_DeflectionType.GCPnts_DefComposite
 
 class GCPnts_AbscissaPoint:
     """

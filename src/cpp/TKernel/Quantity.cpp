@@ -539,13 +539,15 @@ The names come (mostly) from the X11 specification.)nbdoc", nb::is_arithmetic())
         .value("Quantity_NOC_YELLOW3", Quantity_NOC_YELLOW3)
         .value("Quantity_NOC_YELLOW4", Quantity_NOC_YELLOW4)
         .value("Quantity_NOC_YELLOWGREEN", Quantity_NOC_YELLOWGREEN)
-        .value("Quantity_NOC_WHITE", Quantity_NOC_WHITE);
+        .value("Quantity_NOC_WHITE", Quantity_NOC_WHITE)
+        .export_values();
     nb::enum_<Quantity_TypeOfColor>(m, "Quantity_TypeOfColor", R"nbdoc(Identifies color definition systems.)nbdoc", nb::is_arithmetic())
         .value("Quantity_TOC_RGB", Quantity_TOC_RGB)
         .value("Quantity_TOC_sRGB", Quantity_TOC_sRGB)
         .value("Quantity_TOC_HLS", Quantity_TOC_HLS)
         .value("Quantity_TOC_CIELab", Quantity_TOC_CIELab)
-        .value("Quantity_TOC_CIELch", Quantity_TOC_CIELch);
+        .value("Quantity_TOC_CIELch", Quantity_TOC_CIELch)
+        .export_values();
     { nb::class_<Quantity_Color> cls(m, "Quantity_Color", R"nbdoc(This class allows the definition of an RGB color as triplet of 3 normalized floating point
 values (red, green, blue).
 
@@ -878,7 +880,7 @@ With:
     nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float"))
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def(nb::init<const NCollection_Vec2<float> &, float>(), nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<float>>(float ( 0 )), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
+        .def(nb::init<const NCollection_Vec2<float> &, float>(), nb::arg("theVec2"), nb::arg("theZ") = static_cast<std::decay_t<float>>(float(0)), R"nbdoc(Constructor from 2-components vector + optional 3rd value.)nbdoc")
         .def(nb::init<const float, const float, const float>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec3<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec3<float>::*)(const float, const float, const float) noexcept>(&NCollection_Vec3<float>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Assign new values to the vector.)nbdoc")
@@ -951,7 +953,7 @@ This method may be used for performance tricks.)nbdoc")
         .def(nb::init<>(), R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def(nb::init<const float>(), nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
         .def(nb::init<const NCollection_Vec2<float> &>(), nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
-        .def(nb::init<const NCollection_Vec3<float> &, const float>(), nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const float>>(float ( 0 )), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
+        .def(nb::init<const NCollection_Vec3<float> &, const float>(), nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const float>>(float(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
         .def(nb::init<const float, const float, const float, const float>(), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc")
         .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec4<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
         .def("SetValues", static_cast<void (NCollection_Vec4<float>::*)(const float, const float, const float, const float) noexcept>(&NCollection_Vec4<float>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Assign new values to the vector.)nbdoc")

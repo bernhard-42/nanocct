@@ -79,7 +79,7 @@ class Units:
 
     @overload
     @staticmethod
-    def ToSI(aData: float, aUnit: str, aDim: Units_Dimensions) -> float: ...
+    def ToSI(aData: float, aUnit: str) -> tuple[float, Units_Dimensions]: ...
 
     @overload
     @staticmethod
@@ -87,7 +87,7 @@ class Units:
 
     @overload
     @staticmethod
-    def FromSI(aData: float, aUnit: str, aDim: Units_Dimensions) -> float: ...
+    def FromSI(aData: float, aUnit: str) -> tuple[float, Units_Dimensions]: ...
 
     @staticmethod
     def Dimensions(aType: str) -> Units_Dimensions:
@@ -164,14 +164,14 @@ class Units_Dimensions(nanoocp.Standard.Standard_Transient):
     def Quantity(self) -> str:
         """Returns the quantity string of the dimension"""
 
-    def Multiply(self, adimensions: Units_Dimensions) -> Units_Dimensions:
+    def Multiply(self, adimensions: Units_Dimensions | None) -> Units_Dimensions:
         """
         Creates and returns a new Dimensions object which is
         the result of the multiplication of <me> and
         <adimensions>.
         """
 
-    def Divide(self, adimensions: Units_Dimensions) -> Units_Dimensions:
+    def Divide(self, adimensions: Units_Dimensions | None) -> Units_Dimensions:
         """
         Creates and returns a new Dimensions object which is
         the result of the division of <me> by <adimensions>.
@@ -183,13 +183,13 @@ class Units_Dimensions(nanoocp.Standard.Standard_Transient):
         the result of the power of <me> and <anexponent>.
         """
 
-    def IsEqual(self, adimensions: Units_Dimensions) -> bool:
+    def IsEqual(self, adimensions: Units_Dimensions | None) -> bool:
         """
         Returns true if <me> and <adimensions> have the same
         dimensions, false otherwise.
         """
 
-    def IsNotEqual(self, adimensions: Units_Dimensions) -> bool:
+    def IsNotEqual(self, adimensions: Units_Dimensions | None) -> bool:
         """
         Returns false if <me> and <adimensions> have the same
         dimensions, true otherwise.
@@ -259,7 +259,7 @@ class Units_Unit(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def __init__(self, aname: str, asymbol: str, avalue: float, aquantity: Units_Quantity) -> None:
+    def __init__(self, aname: str, asymbol: str, avalue: float, aquantity: Units_Quantity | None) -> None:
         """
         Creates and returns a unit. <aname> is the name of
         the unit, <asymbol> is the usual abbreviation of the
@@ -292,7 +292,7 @@ class Units_Unit(nanoocp.Standard.Standard_Transient):
         """Returns <thequantity> contained in <me>."""
 
     @overload
-    def Quantity(self, aquantity: Units_Quantity) -> None:
+    def Quantity(self, aquantity: Units_Quantity | None) -> None:
         """Sets the physical Quantity <aquantity> to <me>."""
 
     def SymbolsSequence(self) -> nanoocp.NCollection.NCollection_HSequence[nanoocp.TCollection.TCollection_HAsciiString]:
@@ -328,7 +328,7 @@ class Units_Quantity(nanoocp.Standard.Standard_Transient):
     """
 
     @overload
-    def __init__(self, aname: str, adimensions: Units_Dimensions, aunitssequence: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Unit]) -> None:
+    def __init__(self, aname: str, adimensions: Units_Dimensions | None, aunitssequence: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Unit] | None) -> None:
         """
         Creates a new Quantity object with <aname> which is
         the name of the physical quantity, <adimensions> which
@@ -379,21 +379,21 @@ class Units_Explorer:
         """Empty constructor of the class."""
 
     @overload
-    def __init__(self, aunitssystem: Units_UnitsSystem) -> None:
+    def __init__(self, aunitssystem: Units_UnitsSystem | None) -> None:
         """
         Creates a new instance of the class, initialized with
         the UnitsSystem <aunitssystem>.
         """
 
     @overload
-    def __init__(self, aunitsdictionary: Units_UnitsDictionary) -> None:
+    def __init__(self, aunitsdictionary: Units_UnitsDictionary | None) -> None:
         """
         Creates a new instance of the class, initialized with
         the UnitsDictionary <aunitsdictionary>.
         """
 
     @overload
-    def __init__(self, aunitssystem: Units_UnitsSystem, aquantity: str) -> None:
+    def __init__(self, aunitssystem: Units_UnitsSystem | None, aquantity: str) -> None:
         """
         Creates a new instance of the class, initialized with
         the UnitsSystem <aunitssystem> and positioned at the
@@ -401,7 +401,7 @@ class Units_Explorer:
         """
 
     @overload
-    def __init__(self, aunitsdictionary: Units_UnitsDictionary, aquantity: str) -> None:
+    def __init__(self, aunitsdictionary: Units_UnitsDictionary | None, aquantity: str) -> None:
         """
         Creates a new instance of the class, initialized with
         the UnitsDictionary <aunitsdictionary> and positioned
@@ -412,21 +412,21 @@ class Units_Explorer:
     def __init__(self, theOther: Units_Explorer) -> None: ...
 
     @overload
-    def Init(self, aunitssystem: Units_UnitsSystem) -> None:
+    def Init(self, aunitssystem: Units_UnitsSystem | None) -> None:
         """
         Initializes the instance of the class with the
         UnitsSystem <aunitssystem>.
         """
 
     @overload
-    def Init(self, aunitsdictionary: Units_UnitsDictionary) -> None:
+    def Init(self, aunitsdictionary: Units_UnitsDictionary | None) -> None:
         """
         Initializes the instance of the class with the
         UnitsDictionary <aunitsdictionary>.
         """
 
     @overload
-    def Init(self, aunitssystem: Units_UnitsSystem, aquantity: str) -> None:
+    def Init(self, aunitssystem: Units_UnitsSystem | None, aquantity: str) -> None:
         """
         Initializes the instance of the class with the
         UnitsSystem <aunitssystem> and positioned at the
@@ -434,7 +434,7 @@ class Units_Explorer:
         """
 
     @overload
-    def Init(self, aunitsdictionary: Units_UnitsDictionary, aquantity: str) -> None:
+    def Init(self, aunitsdictionary: Units_UnitsDictionary | None, aquantity: str) -> None:
         """
         Initializes the instance of the class with the
         UnitsDictionary <aunitsdictionary> and positioned at
@@ -494,7 +494,7 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def __init__(self, atoken: Units_Token) -> None:
+    def __init__(self, atoken: Units_Token | None) -> None:
         """
         Creates and returns a token. <atoken> is copied in
         the returned token.
@@ -518,7 +518,7 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def __init__(self, aword: str, amean: str, avalue: float, adimension: Units_Dimensions) -> None:
+    def __init__(self, aword: str, amean: str, avalue: float, adimension: Units_Dimensions | None) -> None:
         """
         Creates and returns a token. <aword> is a string
         containing the available word, <amean> gives the
@@ -568,7 +568,7 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         """Returns the dimensions of the token <thedimensions>."""
 
     @overload
-    def Dimensions(self, adimensions: Units_Dimensions) -> None:
+    def Dimensions(self, adimensions: Units_Dimensions | None) -> None:
         """Sets the field <thedimensions> to <adimensions>."""
 
     def Update(self, amean: str) -> None:
@@ -584,21 +584,21 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
     def Add(self, aninteger: int) -> Units_Token: ...
 
     @overload
-    def Add(self, atoken: Units_Token) -> Units_Token:
+    def Add(self, atoken: Units_Token | None) -> Units_Token:
         """
         Returns a token which is the addition of <me> and
         another token <atoken>. The addition is possible if
         and only if the dimensions are the same.
         """
 
-    def Subtract(self, atoken: Units_Token) -> Units_Token:
+    def Subtract(self, atoken: Units_Token | None) -> Units_Token:
         """
         Returns a token which is the subtraction of <me> and
         another token <atoken>. The subtraction is possible if
         and only if the dimensions are the same.
         """
 
-    def Multiply(self, atoken: Units_Token) -> Units_Token:
+    def Multiply(self, atoken: Units_Token | None) -> Units_Token:
         """
         Returns a token which is the product of <me> and
         another token <atoken>.
@@ -611,7 +611,7 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         conversion.
         """
 
-    def Divide(self, atoken: Units_Token) -> Units_Token:
+    def Divide(self, atoken: Units_Token | None) -> Units_Token:
         """
         Returns a token which is the division of <me> by another
         token <atoken>.
@@ -625,7 +625,7 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Power(self, atoken: Units_Token) -> Units_Token:
+    def Power(self, atoken: Units_Token | None) -> Units_Token:
         """
         Returns a token which is <me> to the power of another
         token <atoken>. The computation is possible only if
@@ -644,7 +644,7 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def IsEqual(self, atoken: Units_Token) -> bool:
+    def IsEqual(self, atoken: Units_Token | None) -> bool:
         """
         Returns true if the field <theword> and the string
         <theword> contained in the token <atoken> are the
@@ -659,7 +659,7 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def IsNotEqual(self, atoken: Units_Token) -> bool:
+    def IsNotEqual(self, atoken: Units_Token | None) -> bool:
         """
         Returns false if the field <theword> and the string
         <theword> contained in the token <atoken> are the
@@ -677,14 +677,14 @@ class Units_Token(nanoocp.Standard.Standard_Transient):
     def IsGreater(self, astring: str) -> bool: ...
 
     @overload
-    def IsGreater(self, atoken: Units_Token) -> bool:
+    def IsGreater(self, atoken: Units_Token | None) -> bool:
         """
         Returns false if the field <theword> is strictly
         contained at the beginning of the string <astring>,
         true otherwise.
         """
 
-    def IsGreaterOrEqual(self, atoken: Units_Token) -> bool:
+    def IsGreaterOrEqual(self, atoken: Units_Token | None) -> bool:
         """
         Returns true if the string <astring> is strictly
         contained at the beginning of the field <theword>
@@ -752,7 +752,7 @@ class Units_Sentence:
     """
 
     @overload
-    def __init__(self, alexicon: Units_Lexicon, astring: str) -> None:
+    def __init__(self, alexicon: Units_Lexicon | None, astring: str) -> None:
         """
         Createsand returns a Sentence, by analyzing the
         string <astring> with the lexicon <alexicon>.
@@ -769,7 +769,7 @@ class Units_Sentence:
         """Returns <thesequenceoftokens>."""
 
     @overload
-    def Sequence(self, asequenceoftokens: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Token]) -> None:
+    def Sequence(self, asequenceoftokens: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Token] | None) -> None:
         """Sets the field <thesequenceoftokens> to <asequenceoftokens>."""
 
     def Evaluate(self) -> Units_Token:
@@ -815,7 +815,7 @@ class Units_Measurement:
         """It is the empty constructor of the class."""
 
     @overload
-    def __init__(self, avalue: float, atoken: Units_Token) -> None:
+    def __init__(self, avalue: float, atoken: Units_Token | None) -> None:
         """
         Returns an instance of this class. <avalue> defines
         the measurement, and <atoken> the token which defines
@@ -953,7 +953,7 @@ class Units_ShiftedToken(Units_Token):
     """
 
     @overload
-    def __init__(self, aword: str, amean: str, avalue: float, amove: float, adimensions: Units_Dimensions) -> None:
+    def __init__(self, aword: str, amean: str, avalue: float, amove: float, adimensions: Units_Dimensions | None) -> None:
         """
         Creates and returns a shifted token. <aword> is a
         string containing the available word, <amean> gives
@@ -1021,7 +1021,7 @@ class Units_ShiftedUnit(Units_Unit):
         """
 
     @overload
-    def __init__(self, aname: str, asymbol: str, avalue: float, amove: float, aquantity: Units_Quantity) -> None:
+    def __init__(self, aname: str, asymbol: str, avalue: float, amove: float, aquantity: Units_Quantity | None) -> None:
         """
         Creates and returns a shifted unit. <aname> is the
         name of the unit, <asymbol> is the usual abbreviation
@@ -1097,7 +1097,7 @@ class Units_UnitsDictionary(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Dump(self, adimensions: Units_Dimensions) -> None:
+    def Dump(self, adimensions: Units_Dimensions | None) -> None:
         """
         Dumps for a designated physical dimensions
         <adimensions> all the previously stored units.
@@ -1127,7 +1127,7 @@ class Units_UnitSentence(Units_Sentence):
         """
 
     @overload
-    def __init__(self, astring: str, aquantitiessequence: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Quantity]) -> None:
+    def __init__(self, astring: str, aquantitiessequence: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Quantity] | None) -> None:
         """
         Creates and returns a UnitSentence. The string
         <astring> describes in natural language the unit to be
@@ -1146,7 +1146,7 @@ class Units_UnitSentence(Units_Sentence):
         token.
         """
 
-    def SetUnits(self, aquantitiessequence: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Quantity]) -> None:
+    def SetUnits(self, aquantitiessequence: nanoocp.NCollection.NCollection_HSequence[nanoocp.Units.Units_Quantity] | None) -> None:
         """
         For each token which represents a unit, finds in the
         sequence of physical quantities all the
@@ -1277,13 +1277,13 @@ class Units_UnitsSystem(nanoocp.Standard.Standard_Transient):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
 @overload
-def pow(arg0: Units_Dimensions, arg1: float) -> Units_Dimensions: ...
+def pow(arg0: Units_Dimensions | None, arg1: float) -> Units_Dimensions: ...
 
 @overload
-def pow(arg0: Units_Token, arg1: Units_Token) -> Units_Token: ...
+def pow(arg0: Units_Token | None, arg1: Units_Token | None) -> Units_Token: ...
 
 @overload
-def pow(arg0: Units_Token, arg1: float) -> Units_Token: ...
+def pow(arg0: Units_Token | None, arg1: float) -> Units_Token: ...
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection

@@ -17,7 +17,8 @@ Use the function SetLocalSystem to set up one
 of these unit systems as working environment.)nbdoc", nb::is_arithmetic())
         .value("UnitsAPI_DEFAULT", UnitsAPI_DEFAULT)
         .value("UnitsAPI_SI", UnitsAPI_SI)
-        .value("UnitsAPI_MDTV", UnitsAPI_MDTV);
+        .value("UnitsAPI_MDTV", UnitsAPI_MDTV)
+        .export_values();
     { nb::class_<UnitsAPI> cls(m, "UnitsAPI", R"nbdoc(The UnitsAPI global functions are used to
 convert a value from any unit into another unit.
 Principles
@@ -66,11 +67,11 @@ Example: CurrentFromSI(0.001,"LENGTH") returns 1 if current length unit
 is millimeter.)nbdoc")
         .def_static("AnyToLS", static_cast<double (*)(const double, const char *const)>(&UnitsAPI::AnyToLS), nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the local system units value.
 Example: AnyToLS(1.,"in.") returns 25.4 if the LocalSystem is MDTV.)nbdoc")
-        .def_static("AnyToLS", static_cast<double (*)(const double, const char *const, occ::handle<Units_Dimensions> &)>(&UnitsAPI::AnyToLS), nb::arg("aData"), nb::arg("aUnit"), nb::arg("aDim"), R"nbdoc(Converts the local unit value to the local system units value.
+        .def_static("AnyToLS", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = UnitsAPI::AnyToLS(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the local system units value.
 and gives the associated dimension of the unit)nbdoc")
         .def_static("AnyToSI", static_cast<double (*)(const double, const char *const)>(&UnitsAPI::AnyToSI), nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the SI system units value.
 Example: AnyToSI(1.,"in.") returns 0.0254)nbdoc")
-        .def_static("AnyToSI", static_cast<double (*)(const double, const char *const, occ::handle<Units_Dimensions> &)>(&UnitsAPI::AnyToSI), nb::arg("aData"), nb::arg("aUnit"), nb::arg("aDim"), R"nbdoc(Converts the local unit value to the SI system units value.
+        .def_static("AnyToSI", [](const double aData, const char *const aUnit) { occ::handle<Units_Dimensions> aDim{}; auto result = UnitsAPI::AnyToSI(aData, aUnit, aDim); return std::make_tuple(result, aDim); }, nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local unit value to the SI system units value.
 and gives the associated dimension of the unit)nbdoc")
         .def_static("AnyFromLS", static_cast<double (*)(const double, const char *const)>(&UnitsAPI::AnyFromLS), nb::arg("aData"), nb::arg("aUnit"), R"nbdoc(Converts the local system units value to the local unit value.
 Example: AnyFromLS(25.4,"in.") returns 1. if the LocalSystem is MDTV.

@@ -49,7 +49,8 @@ tells what happened)nbdoc", nb::is_arithmetic())
         .value("GeomLib_NoError", GeomLib_NoError)
         .value("GeomLib_NotEnoughtPoints", GeomLib_NotEnoughtPoints)
         .value("GeomLib_DegreeSmallerThan3", GeomLib_DegreeSmallerThan3)
-        .value("GeomLib_InversionProblem", GeomLib_InversionProblem);
+        .value("GeomLib_InversionProblem", GeomLib_InversionProblem)
+        .export_values();
     { nb::class_<GeomLib> cls(m, "GeomLib", R"nbdoc(Geom Library. This package provides an
 implementation of functions for basic computation
 on geometric entity from packages Geom and Geom2d.)nbdoc");
@@ -103,11 +104,11 @@ void nanoocp_templates_GeomLib(nb::module_ &m) {
 void nanoocp_define_GeomLib(nb::module_ &m) {
     nanoocp_implicit_default_ctor<GeomLib>(nb::borrow<nb::class_<GeomLib>>(m.attr("GeomLib")));
     nb::borrow<nb::class_<GeomLib>>(m.attr("GeomLib"))
-        .def_static("To3d", static_cast<occ::handle<Geom_Curve> (*)(const gp_Ax2 &, const occ::handle<Geom2d_Curve> &)>(&GeomLib::To3d), nb::arg("Position"), nb::arg("Curve2d"), R"nbdoc(Computes the curve 3d from package Geom
+        .def_static("To3d", static_cast<occ::handle<Geom_Curve> (*)(const gp_Ax2 &, const occ::handle<Geom2d_Curve> &)>(&GeomLib::To3d), nb::arg("Position"), nb::arg("Curve2d").none(), R"nbdoc(Computes the curve 3d from package Geom
 corresponding to curve 2d from package Geom2d, on
 the plan defined with the local coordinate system
 Position.)nbdoc")
-        .def_static("GTransform", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom2d_Curve> &, const gp_GTrsf2d &)>(&GeomLib::GTransform), nb::arg("Curve"), nb::arg("GTrsf"), R"nbdoc(Computes the curve 3d from package Geom
+        .def_static("GTransform", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom2d_Curve> &, const gp_GTrsf2d &)>(&GeomLib::GTransform), nb::arg("Curve").none(), nb::arg("GTrsf"), R"nbdoc(Computes the curve 3d from package Geom
 corresponding to the curve 3d from package Geom,
 transformed with the transformation <GTrsf>
 WARNING : this method may return a null Handle if
@@ -115,15 +116,15 @@ it's impossible to compute the transformation of
 a curve. It's not implemented when :
 1) the curve is an infinite parabola or hyperbola
 2) the curve is an offsetcurve)nbdoc")
-        .def_static("SameRange", static_cast<void (*)(const double, const occ::handle<Geom2d_Curve> &, const double, const double, const double, const double, occ::handle<Geom2d_Curve> &)>(&GeomLib::SameRange), nb::arg("Tolerance"), nb::arg("Curve2dPtr"), nb::arg("First"), nb::arg("Last"), nb::arg("RequestedFirst"), nb::arg("RequestedLast"), nb::arg("NewCurve2dPtr"), R"nbdoc(Make the curve Curve2dPtr have the imposed
+        .def_static("SameRange", [](const double Tolerance, const occ::handle<Geom2d_Curve> & Curve2dPtr, const double First, const double Last, const double RequestedFirst, const double RequestedLast) { occ::handle<Geom2d_Curve> NewCurve2dPtr{}; GeomLib::SameRange(Tolerance, Curve2dPtr, First, Last, RequestedFirst, RequestedLast, NewCurve2dPtr); return NewCurve2dPtr; }, nb::arg("Tolerance"), nb::arg("Curve2dPtr").none(), nb::arg("First"), nb::arg("Last"), nb::arg("RequestedFirst"), nb::arg("RequestedLast"), R"nbdoc(Make the curve Curve2dPtr have the imposed
 range First to List the most economic way,
 that is if it can change the range without
 changing the nature of the curve it will try
 to do that. Otherwise it will produce a Bspline
 curve that has the required range)nbdoc")
-        .def_static("BuildCurve3d", [](const double Tolerance, Adaptor3d_CurveOnSurface & CurvePtr, const double FirstParameter, const double LastParameter, occ::handle<Geom_Curve> & NewCurvePtr, const GeomAbs_Shape Continuity, const int MaxDegree, const int MaxSegment) { double MaxDeviation{}; double AverageDeviation{}; GeomLib::BuildCurve3d(Tolerance, CurvePtr, FirstParameter, LastParameter, NewCurvePtr, MaxDeviation, AverageDeviation, Continuity, MaxDegree, MaxSegment); return std::make_tuple(MaxDeviation, AverageDeviation); }, nb::arg("Tolerance"), nb::arg("CurvePtr"), nb::arg("FirstParameter"), nb::arg("LastParameter"), nb::arg("NewCurvePtr"), nb::arg("Continuity") = static_cast<std::decay_t<const GeomAbs_Shape>>(GeomAbs_C1), nb::arg("MaxDegree") = static_cast<std::decay_t<const int>>(14), nb::arg("MaxSegment") = static_cast<std::decay_t<const int>>(30))
-        .def_static("AdjustExtremity", static_cast<void (*)(occ::handle<Geom_BoundedCurve> &, const gp_Pnt &, const gp_Pnt &, const gp_Vec &, const gp_Vec &)>(&GeomLib::AdjustExtremity), nb::arg("Curve"), nb::arg("P1"), nb::arg("P2"), nb::arg("T1"), nb::arg("T2"))
-        .def_static("ExtendCurveToPoint", static_cast<void (*)(occ::handle<Geom_BoundedCurve> &, const gp_Pnt &, const int, const bool)>(&GeomLib::ExtendCurveToPoint), nb::arg("Curve"), nb::arg("Point"), nb::arg("Cont"), nb::arg("After"), R"nbdoc(Extends the bounded curve Curve to the point Point.
+        .def_static("BuildCurve3d", [](const double Tolerance, Adaptor3d_CurveOnSurface & CurvePtr, const double FirstParameter, const double LastParameter, const GeomAbs_Shape Continuity, const int MaxDegree, const int MaxSegment) { occ::handle<Geom_Curve> NewCurvePtr{}; double MaxDeviation{}; double AverageDeviation{}; GeomLib::BuildCurve3d(Tolerance, CurvePtr, FirstParameter, LastParameter, NewCurvePtr, MaxDeviation, AverageDeviation, Continuity, MaxDegree, MaxSegment); return std::make_tuple(NewCurvePtr, MaxDeviation, AverageDeviation); }, nb::arg("Tolerance"), nb::arg("CurvePtr"), nb::arg("FirstParameter"), nb::arg("LastParameter"), nb::arg("Continuity") = static_cast<std::decay_t<const GeomAbs_Shape>>(GeomAbs_C1), nb::arg("MaxDegree") = static_cast<std::decay_t<const int>>(14), nb::arg("MaxSegment") = static_cast<std::decay_t<const int>>(30))
+        .def_static("AdjustExtremity", [](occ::handle<Geom_BoundedCurve> Curve, const gp_Pnt & P1, const gp_Pnt & P2, const gp_Vec & T1, const gp_Vec & T2) { GeomLib::AdjustExtremity(Curve, P1, P2, T1, T2); return Curve; }, nb::arg("Curve").none(), nb::arg("P1"), nb::arg("P2"), nb::arg("T1"), nb::arg("T2"))
+        .def_static("ExtendCurveToPoint", [](occ::handle<Geom_BoundedCurve> Curve, const gp_Pnt & Point, const int Cont, const bool After) { GeomLib::ExtendCurveToPoint(Curve, Point, Cont, After); return Curve; }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("Cont"), nb::arg("After"), R"nbdoc(Extends the bounded curve Curve to the point Point.
 The extension is built:
 -      at the end of the curve if After equals true, or
 -      at the beginning of the curve if After equals false.
@@ -137,7 +138,7 @@ not equal to 1, 2 or 3.
 too large with respect to the size of the bounded
 curve Curve: Point must not be located too far from
 one of the extremities of Curve.)nbdoc")
-        .def_static("ExtendSurfByLength", static_cast<void (*)(occ::handle<Geom_BoundedSurface> &, const double, const int, const bool, const bool)>(&GeomLib::ExtendSurfByLength), nb::arg("Surf"), nb::arg("Length"), nb::arg("Cont"), nb::arg("InU"), nb::arg("After"), R"nbdoc(Extends the bounded surface Surf along one of its
+        .def_static("ExtendSurfByLength", [](occ::handle<Geom_BoundedSurface> Surf, const double Length, const int Cont, const bool InU, const bool After) { GeomLib::ExtendSurfByLength(Surf, Length, Cont, InU, After); return Surf; }, nb::arg("Surf").none(), nb::arg("Length"), nb::arg("Cont"), nb::arg("InU"), nb::arg("After"), R"nbdoc(Extends the bounded surface Surf along one of its
 boundaries. The chord length of the extension is equal to Length.
 The direction of the extension is given as:
 -   the u parametric direction of Surf, if InU equals true, or
@@ -164,7 +165,7 @@ IsSingular is True if points are on line
 Tol is used to determine singular cases.)nbdoc")
         .def_static("Inertia", [](const NCollection_Array1<gp_Pnt> & Points, gp_Pnt & Bary, gp_Dir & XDir, gp_Dir & YDir) { double Xgap{}; double YGap{}; double ZGap{}; GeomLib::Inertia(Points, Bary, XDir, YDir, Xgap, YGap, ZGap); return std::make_tuple(Xgap, YGap, ZGap); }, nb::arg("Points"), nb::arg("Bary"), nb::arg("XDir"), nb::arg("YDir"), R"nbdoc(Compute principale axes of inertia, and dispersion
 value of some points.)nbdoc")
-        .def_static("RemovePointsFromArray", static_cast<void (*)(const int, const NCollection_Array1<double> &, occ::handle<NCollection_HArray1<double>> &)>(&GeomLib::RemovePointsFromArray), nb::arg("NumPoints"), nb::arg("InParameters"), nb::arg("OutParameters"), R"nbdoc(Warning! This assume that the InParameter is an increasing sequence
+        .def_static("RemovePointsFromArray", [](const int NumPoints, const NCollection_Array1<double> & InParameters) { occ::handle<NCollection_HArray1<double>> OutParameters{}; GeomLib::RemovePointsFromArray(NumPoints, InParameters, OutParameters); return OutParameters; }, nb::arg("NumPoints"), nb::arg("InParameters"), R"nbdoc(Warning! This assume that the InParameter is an increasing sequence
 of real number and it will not check for that : Unpredictable
 result can happen if this is not satisfied. It is the caller
 responsibility to check for that property.
@@ -180,7 +181,7 @@ the midpoint of the segment and to fall before the
 midpoint of the next segment
 There will be at the end at most NumPoints + 1
 if NumPoints > 2 in the OutParameters Array)nbdoc")
-        .def_static("DensifyArray1OfReal", static_cast<void (*)(const int, const NCollection_Array1<double> &, occ::handle<NCollection_HArray1<double>> &)>(&GeomLib::DensifyArray1OfReal), nb::arg("MinNumPoints"), nb::arg("InParameters"), nb::arg("OutParameters"), R"nbdoc(this makes sure that there is at least MinNumPoints
+        .def_static("DensifyArray1OfReal", [](const int MinNumPoints, const NCollection_Array1<double> & InParameters) { occ::handle<NCollection_HArray1<double>> OutParameters{}; GeomLib::DensifyArray1OfReal(MinNumPoints, InParameters, OutParameters); return OutParameters; }, nb::arg("MinNumPoints"), nb::arg("InParameters"), R"nbdoc(this makes sure that there is at least MinNumPoints
 in OutParameters taking into account the parameters in
 the InParameters array provided those are in order,
 that is the sequence of real in the InParameter is strictly
@@ -201,9 +202,9 @@ the maximum of the evaluated distance)nbdoc")
 given in the Parameters array by projecting from the Curve
 to the reference curve and taking the minimum distance
 Than the maximum will be taken on those minimas.)nbdoc")
-        .def_static("CancelDenominatorDerivative", static_cast<void (*)(occ::handle<Geom_BSplineSurface> &, const bool, const bool)>(&GeomLib::CancelDenominatorDerivative), nb::arg("BSurf"), nb::arg("UDirection"), nb::arg("VDirection"), R"nbdoc(Cancel,on the boundaries,the denominator first derivative
+        .def_static("CancelDenominatorDerivative", [](occ::handle<Geom_BSplineSurface> BSurf, const bool UDirection, const bool VDirection) { GeomLib::CancelDenominatorDerivative(BSurf, UDirection, VDirection); return BSurf; }, nb::arg("BSurf").none(), nb::arg("UDirection"), nb::arg("VDirection"), R"nbdoc(Cancel,on the boundaries,the denominator first derivative
 in the directions wished by the user and set its value to 1.)nbdoc")
-        .def_static("NormEstim", static_cast<int (*)(const occ::handle<Geom_Surface> &, const gp_Pnt2d &, const double, gp_Dir &)>(&GeomLib::NormEstim), nb::arg("theSurf"), nb::arg("theUV"), nb::arg("theTol"), nb::arg("theNorm"), R"nbdoc(Estimate surface normal at the given (U, V) point.
+        .def_static("NormEstim", static_cast<int (*)(const occ::handle<Geom_Surface> &, const gp_Pnt2d &, const double, gp_Dir &)>(&GeomLib::NormEstim), nb::arg("theSurf").none(), nb::arg("theUV"), nb::arg("theTol"), nb::arg("theNorm"), R"nbdoc(Estimate surface normal at the given (U, V) point.
 @param[in]  theSurf input surface
 @param[in]  theUV   (U, V) point coordinates on the surface
 @param[in]  theTol  estimation tolerance
@@ -211,26 +212,26 @@ in the directions wished by the user and set its value to 1.)nbdoc")
 @return 0 if normal estimated from D1,
 1 if estimated from D2 (quasysingular),
 >=2 in case of failure (undefined or infinite solutions))nbdoc")
-        .def_static("IsClosed", [](const occ::handle<Geom_Surface> & S, const double Tol) { bool isUClosed{}; bool isVClosed{}; GeomLib::IsClosed(S, Tol, isUClosed, isVClosed); return std::make_tuple(isUClosed, isVClosed); }, nb::arg("S"), nb::arg("Tol"), R"nbdoc(This method defines if opposite boundaries of surface
+        .def_static("IsClosed", [](const occ::handle<Geom_Surface> & S, const double Tol) { bool isUClosed{}; bool isVClosed{}; GeomLib::IsClosed(S, Tol, isUClosed, isVClosed); return std::make_tuple(isUClosed, isVClosed); }, nb::arg("S").none(), nb::arg("Tol"), R"nbdoc(This method defines if opposite boundaries of surface
 coincide with given tolerance)nbdoc")
-        .def_static("IsBSplUClosed", static_cast<bool (*)(const occ::handle<Geom_BSplineSurface> &, const double, const double, const double)>(&GeomLib::IsBSplUClosed), nb::arg("S"), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of U1 isoline and the poles of
+        .def_static("IsBSplUClosed", static_cast<bool (*)(const occ::handle<Geom_BSplineSurface> &, const double, const double, const double)>(&GeomLib::IsBSplUClosed), nb::arg("S").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of U1 isoline and the poles of
 U2 isoline of surface are identical according to tolerance criterion.
 For rational surfaces Weights(i)*Poles(i) are checked.)nbdoc")
-        .def_static("IsBSplVClosed", static_cast<bool (*)(const occ::handle<Geom_BSplineSurface> &, const double, const double, const double)>(&GeomLib::IsBSplVClosed), nb::arg("S"), nb::arg("V1"), nb::arg("V2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of V1 isoline and the poles of
+        .def_static("IsBSplVClosed", static_cast<bool (*)(const occ::handle<Geom_BSplineSurface> &, const double, const double, const double)>(&GeomLib::IsBSplVClosed), nb::arg("S").none(), nb::arg("V1"), nb::arg("V2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of V1 isoline and the poles of
 V2 isoline of surface are identical according to tolerance criterion.
 For rational surfaces Weights(i)*Poles(i) are checked.)nbdoc")
-        .def_static("IsBzUClosed", static_cast<bool (*)(const occ::handle<Geom_BezierSurface> &, const double, const double, const double)>(&GeomLib::IsBzUClosed), nb::arg("S"), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of U1 isoline and the poles of
+        .def_static("IsBzUClosed", static_cast<bool (*)(const occ::handle<Geom_BezierSurface> &, const double, const double, const double)>(&GeomLib::IsBzUClosed), nb::arg("S").none(), nb::arg("U1"), nb::arg("U2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of U1 isoline and the poles of
 U2 isoline of surface are identical according to tolerance criterion.)nbdoc")
-        .def_static("IsBzVClosed", static_cast<bool (*)(const occ::handle<Geom_BezierSurface> &, const double, const double, const double)>(&GeomLib::IsBzVClosed), nb::arg("S"), nb::arg("V1"), nb::arg("V2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of V1 isoline and the poles of
+        .def_static("IsBzVClosed", static_cast<bool (*)(const occ::handle<Geom_BezierSurface> &, const double, const double, const double)>(&GeomLib::IsBzVClosed), nb::arg("S").none(), nb::arg("V1"), nb::arg("V2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of V1 isoline and the poles of
 V2 isoline of surface are identical according to tolerance criterion.)nbdoc")
-        .def_static("isIsoLine", [](const occ::handle<Adaptor2d_Curve2d> & theC2D) { bool theIsU{}; double theParam{}; bool theIsForward{}; auto result = GeomLib::isIsoLine(theC2D, theIsU, theParam, theIsForward); return std::make_tuple(result, theIsU, theParam, theIsForward); }, nb::arg("theC2D"), R"nbdoc(Checks whether the 2d curve is a isoline. It can be represented by b-spline, bezier,
+        .def_static("isIsoLine", [](const occ::handle<Adaptor2d_Curve2d> & theC2D) { bool theIsU{}; double theParam{}; bool theIsForward{}; auto result = GeomLib::isIsoLine(theC2D, theIsU, theParam, theIsForward); return std::make_tuple(result, theIsU, theParam, theIsForward); }, nb::arg("theC2D").none(), R"nbdoc(Checks whether the 2d curve is a isoline. It can be represented by b-spline, bezier,
 or geometric line. This line should have natural parameterization.
 @param theC2D       Trimmed curve to be checked.
 @param theIsU       Flag indicating that line is u const.
 @param theParam     Line parameter.
 @param theIsForward Flag indicating forward parameterization on a isoline.
 @return true when 2d curve is a line and false otherwise.)nbdoc")
-        .def_static("buildC3dOnIsoLine", static_cast<occ::handle<Geom_Curve> (*)(const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const double, const double, const bool, const double, const bool)>(&GeomLib::buildC3dOnIsoLine), nb::arg("theC2D"), nb::arg("theSurf"), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolerance"), nb::arg("theIsU"), nb::arg("theParam"), nb::arg("theIsForward"), R"nbdoc(Builds 3D curve for a isoline. This method takes corresponding isoline from
+        .def_static("buildC3dOnIsoLine", static_cast<occ::handle<Geom_Curve> (*)(const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const double, const double, const bool, const double, const bool)>(&GeomLib::buildC3dOnIsoLine), nb::arg("theC2D").none(), nb::arg("theSurf").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolerance"), nb::arg("theIsU"), nb::arg("theParam"), nb::arg("theIsForward"), R"nbdoc(Builds 3D curve for a isoline. This method takes corresponding isoline from
 the input surface.
 @param theC2D   Trimmed curve to be approximated.
 @param theIsU   Flag indicating that line is u const.
@@ -239,7 +240,7 @@ the input surface.
 @return true when 3d curve is built and false otherwise.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib>(nb::borrow<nb::class_<GeomLib>>(m.attr("GeomLib")));
     nb::borrow<nb::class_<GeomLib_Check2dBSplineCurve>>(m.attr("GeomLib_Check2dBSplineCurve"))
-        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const double, const double>(), nb::arg("Curve"), nb::arg("Tolerance"), nb::arg("AngularTolerance"))
+        .def(nb::init<const occ::handle<Geom2d_BSplineCurve> &, const double, const double>(), nb::arg("Curve").none(), nb::arg("Tolerance"), nb::arg("AngularTolerance"))
         .def("IsDone", static_cast<bool (GeomLib_Check2dBSplineCurve::*)() const>(&GeomLib_Check2dBSplineCurve::IsDone))
         .def("NeedTangentFix", [](const GeomLib_Check2dBSplineCurve &self) { bool FirstFlag{}; bool SecondFlag{}; self.NeedTangentFix(FirstFlag, SecondFlag); return std::make_tuple(FirstFlag, SecondFlag); })
         .def("FixTangent", static_cast<void (GeomLib_Check2dBSplineCurve::*)(const bool, const bool)>(&GeomLib_Check2dBSplineCurve::FixTangent), nb::arg("FirstFlag"), nb::arg("LastFlag"))
@@ -251,10 +252,10 @@ if the Approx is not Done)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib_Check2dBSplineCurve>(nb::borrow<nb::class_<GeomLib_Check2dBSplineCurve>>(m.attr("GeomLib_Check2dBSplineCurve")));
     nb::borrow<nb::class_<GeomLib_CheckCurveOnSurface>>(m.attr("GeomLib_CheckCurveOnSurface"))
         .def(nb::init<>(), R"nbdoc(Default constructor)nbdoc")
-        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const double>(), nb::arg("theCurve"), nb::arg("theTolRange") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Constructor)nbdoc")
-        .def("Init", static_cast<void (GeomLib_CheckCurveOnSurface::*)(const occ::handle<Adaptor3d_Curve> &, const double)>(&GeomLib_CheckCurveOnSurface::Init), nb::arg("theCurve"), nb::arg("theTolRange") = static_cast<std::decay_t<const double>>(Precision :: PConfusion ( )), R"nbdoc(Sets the data for the algorithm)nbdoc")
+        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const double>(), nb::arg("theCurve").none(), nb::arg("theTolRange") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), R"nbdoc(Constructor)nbdoc")
+        .def("Init", static_cast<void (GeomLib_CheckCurveOnSurface::*)(const occ::handle<Adaptor3d_Curve> &, const double)>(&GeomLib_CheckCurveOnSurface::Init), nb::arg("theCurve").none(), nb::arg("theTolRange") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), R"nbdoc(Sets the data for the algorithm)nbdoc")
         .def("Init", static_cast<void (GeomLib_CheckCurveOnSurface::*)()>(&GeomLib_CheckCurveOnSurface::Init), R"nbdoc(Initializes all members by default values)nbdoc")
-        .def("Perform", static_cast<void (GeomLib_CheckCurveOnSurface::*)(const occ::handle<Adaptor3d_CurveOnSurface> &)>(&GeomLib_CheckCurveOnSurface::Perform), nb::arg("theCurveOnSurface"), R"nbdoc(Computes the max distance for the 3d curve <myCurve>
+        .def("Perform", static_cast<void (GeomLib_CheckCurveOnSurface::*)(const occ::handle<Adaptor3d_CurveOnSurface> &)>(&GeomLib_CheckCurveOnSurface::Perform), nb::arg("theCurveOnSurface").none(), R"nbdoc(Computes the max distance for the 3d curve <myCurve>
 and 2d curve <theCurveOnSurface>
 If isMultiThread == true then computation will be performed in parallel.)nbdoc")
         .def("SetParallel", static_cast<void (GeomLib_CheckCurveOnSurface::*)(const bool)>(&GeomLib_CheckCurveOnSurface::SetParallel), nb::arg("theIsParallel"), R"nbdoc(Sets parallel flag)nbdoc")
@@ -271,7 +272,7 @@ The possible values are:
     nanoocp_implicit_copy_ctor<GeomLib_CheckCurveOnSurface>(nb::borrow<nb::class_<GeomLib_CheckCurveOnSurface>>(m.attr("GeomLib_CheckCurveOnSurface")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Curve> &>, GeomLib_CheckCurveOnSurface>();
     nb::borrow<nb::class_<GeomLib_CheckBSplineCurve>>(m.attr("GeomLib_CheckBSplineCurve"))
-        .def(nb::init<const occ::handle<Geom_BSplineCurve> &, const double, const double>(), nb::arg("Curve"), nb::arg("Tolerance"), nb::arg("AngularTolerance"))
+        .def(nb::init<const occ::handle<Geom_BSplineCurve> &, const double, const double>(), nb::arg("Curve").none(), nb::arg("Tolerance"), nb::arg("AngularTolerance"))
         .def("IsDone", static_cast<bool (GeomLib_CheckBSplineCurve::*)() const>(&GeomLib_CheckBSplineCurve::IsDone))
         .def("NeedTangentFix", [](const GeomLib_CheckBSplineCurve &self) { bool FirstFlag{}; bool SecondFlag{}; self.NeedTangentFix(FirstFlag, SecondFlag); return std::make_tuple(FirstFlag, SecondFlag); })
         .def("FixTangent", static_cast<void (GeomLib_CheckBSplineCurve::*)(const bool, const bool)>(&GeomLib_CheckBSplineCurve::FixTangent), nb::arg("FirstFlag"), nb::arg("LastFlag"))
@@ -282,7 +283,7 @@ if Index3D not in the Range [1,Nb3dSpaces]
 if the Approx is not Done)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib_CheckBSplineCurve>(nb::borrow<nb::class_<GeomLib_CheckBSplineCurve>>(m.attr("GeomLib_CheckBSplineCurve")));
     nb::borrow<nb::class_<GeomLib_DenominatorMultiplier>>(m.attr("GeomLib_DenominatorMultiplier"))
-        .def(nb::init<const occ::handle<Geom_BSplineSurface> &, const NCollection_Array1<double> &>(), nb::arg("Surface"), nb::arg("KnotVector"), R"nbdoc(if the surface is rational this will define the evaluator
+        .def(nb::init<const occ::handle<Geom_BSplineSurface> &, const NCollection_Array1<double> &>(), nb::arg("Surface").none(), nb::arg("KnotVector"), R"nbdoc(if the surface is rational this will define the evaluator
 of a real function of 2 variables a(u,v) such that
 if we define a new surface by :
 a(u,v) * N(u,v)
@@ -310,7 +311,7 @@ D U)nbdoc");
         .def("Curve", static_cast<occ::handle<Geom_BSplineCurve> (GeomLib_Interpolate::*)() const>(&GeomLib_Interpolate::Curve), R"nbdoc(returns the interpolated curve of the requested degree)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib_Interpolate>(nb::borrow<nb::class_<GeomLib_Interpolate>>(m.attr("GeomLib_Interpolate")));
     nb::borrow<nb::class_<GeomLib_IsPlanarSurface>>(m.attr("GeomLib_IsPlanarSurface"))
-        .def(nb::init<const occ::handle<Geom_Surface> &, const double>(), nb::arg("S"), nb::arg("Tol") = static_cast<std::decay_t<const double>>(1.0e-7))
+        .def(nb::init<const occ::handle<Geom_Surface> &, const double>(), nb::arg("S").none(), nb::arg("Tol") = static_cast<std::decay_t<const double>>(1.0e-7))
         .def("IsPlanar", static_cast<bool (GeomLib_IsPlanarSurface::*)() const>(&GeomLib_IsPlanarSurface::IsPlanar), R"nbdoc(Return if the Surface is a plan)nbdoc")
         .def("Plan", static_cast<const gp_Pln & (GeomLib_IsPlanarSurface::*)() const>(&GeomLib_IsPlanarSurface::Plan), R"nbdoc(Return the plan definition)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib_IsPlanarSurface>(nb::borrow<nb::class_<GeomLib_IsPlanarSurface>>(m.attr("GeomLib_IsPlanarSurface")));
@@ -372,11 +373,11 @@ False otherwise.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const math_Vector &>, GeomLib_PolyFunc>();
     nanoocp_implicit_default_ctor<GeomLib_Tool>(nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool")));
     nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool"))
-        .def_static("Parameter", [](const occ::handle<Geom_Curve> & Curve, const gp_Pnt & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve"), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a 3D curve
+        .def_static("Parameter", [](const occ::handle<Geom_Curve> & Curve, const gp_Pnt & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a 3D curve
 or at a distance less than the MaxDist value.)nbdoc")
-        .def_static("Parameters", [](const occ::handle<Geom_Surface> & Surface, const gp_Pnt & Point, const double MaxDist) { double U{}; double V{}; auto result = GeomLib_Tool::Parameters(Surface, Point, MaxDist, U, V); return std::make_tuple(result, U, V); }, nb::arg("Surface"), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a surface
+        .def_static("Parameters", [](const occ::handle<Geom_Surface> & Surface, const gp_Pnt & Point, const double MaxDist) { double U{}; double V{}; auto result = GeomLib_Tool::Parameters(Surface, Point, MaxDist, U, V); return std::make_tuple(result, U, V); }, nb::arg("Surface").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a surface
 or at a distance less than the MaxDist value.)nbdoc")
-        .def_static("Parameter", [](const occ::handle<Geom2d_Curve> & Curve, const gp_Pnt2d & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve"), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 2D point lying on a 2D curve
+        .def_static("Parameter", [](const occ::handle<Geom2d_Curve> & Curve, const gp_Pnt2d & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 2D point lying on a 2D curve
 or at a distance less than the MaxDist value.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLib_Tool>(nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool")));
     m.attr("Adaptor2d_Curve2d") = nb::module_::import_("nanoocp._TKG2d.Adaptor2d").attr("Adaptor2d_Curve2d");   // Adaptor2d_Curve2d = Adaptor2d_Curve2d

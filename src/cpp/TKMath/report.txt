@@ -1,0 +1,381 @@
+# nanoOCP generator report for TKMath: 363 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# array: 7
+# conversion: 18
+# deprecated: 21
+# field: 1
+# iterator: 1
+# not-constructible: 1
+# overload-collision: 7
+# override: 34
+# raw-pointer: 46
+# rvalue: 3
+# static-rename: 4
+# std: 2
+# stream: 3
+# template: 210
+# unbound-type: 3
+# undefined: 2
+array	Bnd	Bnd_OBB::GetVertex(): param 'theP': array
+array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
+array	MathPoly	Octic(...): param 'theCoeffs': array
+array	Poly	Poly_CoherentTriangulation::FindTriangle(const Poly_CoherentLink &): param 'pTri': array
+array	Poly	Poly_CoherentTriangulation::TwoIntegers::myValue: field array
+array	Poly	Poly_MergeNodesTool::AddQuad(): param 'theElemNodes': array
+array	Poly	Poly_MergeNodesTool::AddTriangle(): param 'theElemNodes': array
+conversion	BVH	NCollection_Vec2<double>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec2<double>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec2<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec2<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec2<int>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec2<int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec3<double>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec3<double>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec3<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec3<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec3<int>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec3<int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec4<double>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec4<double>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec4<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec4<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec4<int>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	BVH	NCollection_Vec4<int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+deprecated	Convert	Convert_CompPolynomialToPoles::Knots(occ::handle<NCollection_HArray1<double>> &): deprecated
+deprecated	Convert	Convert_CompPolynomialToPoles::Multiplicities(occ::handle<NCollection_HArray1<int>> &): deprecated
+deprecated	Convert	Convert_CompPolynomialToPoles::Poles(occ::handle<NCollection_HArray2<double>> &): deprecated
+deprecated	Convert	Convert_ConicToBSplineCurve::BuildCosAndSin(const Convert_ParameterisationType, const double, const double, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, int &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<int>> &): deprecated
+deprecated	Convert	Convert_ConicToBSplineCurve::BuildCosAndSin(const Convert_ParameterisationType, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<double>> &, int &, occ::handle<NCollection_HArray1<double>> &, occ::handle<NCollection_HArray1<int>> &): deprecated
+deprecated	Convert	Convert_ConicToBSplineCurve::Knot(const int): deprecated
+deprecated	Convert	Convert_ConicToBSplineCurve::Multiplicity(const int): deprecated
+deprecated	Convert	Convert_ConicToBSplineCurve::Pole(const int): deprecated
+deprecated	Convert	Convert_ConicToBSplineCurve::Weight(const int): deprecated
+deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::Pole(const int, const int): deprecated
+deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::UKnot(const int): deprecated
+deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::UMultiplicity(const int): deprecated
+deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::VKnot(const int): deprecated
+deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::VMultiplicity(const int): deprecated
+deprecated	Convert	Convert_ElementarySurfaceToBSplineSurface::Weight(const int, const int): deprecated
+deprecated	Poly	Poly_PolygonOnTriangulation::ChangeNodes(): deprecated
+deprecated	Poly	Poly_PolygonOnTriangulation::ChangeParameters(): deprecated
+deprecated	Poly	Poly_Triangulation::ChangeTriangle(const int): deprecated
+deprecated	Poly	Poly_Triangulation::ChangeTriangles(): deprecated
+deprecated	Poly	Poly_Triangulation::SetNormals(const occ::handle<NCollection_HArray1<float>> &): deprecated
+deprecated	Poly	Poly_Triangulation::Triangles(): deprecated
+field	MathRoot	MathRoot::MultipleGetValueFn::mySamples: field reference member (no pointer-to-member)
+iterator	BVH	BVH::RadixSorter::Sort(): param 'theStart': STL-style iterator
+not-constructible	Poly	Poly_CoherentTriPtr: operator new is not public -> no constructors
+overload-collision	BSplCLib	BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &): same Python signature as Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &) after out-param removal -> unreachable
+overload-collision	BSplCLib	BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &): same Python signature as Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &) after out-param removal -> unreachable
+overload-collision	Bnd	Bnd_Box2d::Get(): same Python signature as Get(double &, double &, double &, double &) after out-param removal -> unreachable
+overload-collision	Bnd	Bnd_Box::Get(): same Python signature as Get(double &, double &, double &, double &, double &, double &) after out-param removal -> unreachable
+overload-collision	CSLib	CSLib::Normal(const gp_Vec &, const gp_Vec &, double, CSLib_NormalStatus &, gp_Dir &): same Python signature as Normal(const gp_Vec &, const gp_Vec &, double, CSLib_DerivativeStatus &, gp_Dir &) after out-param removal -> unreachable
+overload-collision	gp	gp_Pnt2d::Coord(): same Python signature as Coord(double &, double &) after out-param removal -> unreachable
+overload-collision	gp	gp_Pnt::Coord(): same Python signature as Coord(double &, double &, double &) after out-param removal -> unreachable
+override	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &): overrides.toml [skip] methods
+override	BSplCLib	BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &): overrides.toml [skip] methods
+override	MathLin	MathLin::Internal::ComputeWilkinsonShift: namespace skipped (overrides.toml [skip] namespaces)
+override	MathLin	MathLin::Internal::FindSubmatrixEnd: namespace skipped (overrides.toml [skip] namespaces)
+override	MathLin	MathLin::Internal::Hypot: namespace skipped (overrides.toml [skip] namespaces)
+override	MathLin	MathLin::Internal::PerformQLStep: namespace skipped (overrides.toml [skip] namespaces)
+override	MathPoly	MathPoly::detail::DeflateComplex: namespace skipped (overrides.toml [skip] namespaces)
+override	MathPoly	MathPoly::detail::DeflateReal: namespace skipped (overrides.toml [skip] namespaces)
+override	MathPoly	MathPoly::detail::EvaluatePolynomialWithDerivatives: namespace skipped (overrides.toml [skip] namespaces)
+override	MathPoly	MathPoly::detail::LaguerreIteration: namespace skipped (overrides.toml [skip] namespaces)
+override	MathPoly	MathPoly::detail::RefineRealRoot: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::Clamp2D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::Clamp3D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::Clamp4D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::IsBoundsValid2D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::IsBoundsValid3D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::IsBoundsValid4D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::IsOptionsValid3D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::IsOptionsValid4D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::IsOptionsValid: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::MaxDomainSize2D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::MaxDomainSize3D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::MaxDomainSize4D: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::Solve3x3: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::Solve4x4: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::SolveSymmetric2x2SVD: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::THE_ARMIJO_C1: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::THE_CRITICAL_GRAD_SQ: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::THE_LINE_SEARCH_MAX: namespace skipped (overrides.toml [skip] namespaces)
+override	MathSys	MathSys::detail::THE_SINGULAR_DET_TOL: namespace skipped (overrides.toml [skip] namespaces)
+override	MathUtils	MathUtils::detail::LimitAndMayBeSwap: namespace skipped (overrides.toml [skip] namespaces)
+override	MathUtils	MathUtils::detail::Limited: namespace skipped (overrides.toml [skip] namespaces)
+override	Poly	std::equal_to: namespace skipped (overrides.toml [skip] namespaces)
+override	gp	std::equal_to: namespace skipped (overrides.toml [skip] namespaces)
+raw-pointer	BSplCLib	BSplCLib::UnitWeightsData(): return: raw pointer to primitive
+raw-pointer	BSplCLib	BSplCLib_EvaluatorFunction::Evaluate(const int): param 'theStartEnd': raw pointer to primitive
+raw-pointer	BSplCLib	BSplCLib_EvaluatorFunction::operator()(const int): param 'theStartEnd': raw pointer to primitive
+raw-pointer	BVH	NCollection_Mat4<double>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Mat4<double>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Mat4<float>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Mat4<float>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec2<double>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec2<double>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec2<float>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec2<float>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec2<int>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec2<int>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec3<double>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec3<double>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec3<float>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec3<float>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec3<int>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec3<int>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec4<double>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec4<double>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec4<float>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec4<float>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec4<int>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	BVH	NCollection_Vec4<int>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	MathPoly	Laguerre(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathPoly	LaguerreN(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathUtils	ComputeScaleFactor(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathUtils	EvalPoly(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathUtils	EvalPolyDeriv(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathUtils	EvalPolyDesc(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathUtils	RefinePolyRoot(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathUtils	RefinePolyRootDesc(...): param 'theCoeffs': raw pointer to primitive
+raw-pointer	MathUtils	RemoveDuplicateRoots(...): param 'theRoots': raw pointer to primitive
+raw-pointer	MathUtils	SortRoots(...): param 'theRoots': raw pointer to primitive
+raw-pointer	Poly	NCollection_AliasedArray<>::changeValue(int): return: raw pointer to primitive
+raw-pointer	Poly	NCollection_AliasedArray<>::value(int): return: raw pointer to primitive
+raw-pointer	Poly	Poly_CoherentLink::GetAttribute(): return: void pointer
+raw-pointer	Poly	Poly_CoherentLink::SetAttribute(): param 'theAtt': void pointer
+raw-pointer	gp	gp_XYZ::ChangeData(): return: raw pointer to primitive
+raw-pointer	gp	gp_XYZ::GetData(): return: raw pointer to primitive
+raw-pointer	math	PSO_Particle::BestPosition: field raw pointer to primitive
+raw-pointer	math	PSO_Particle::Position: field raw pointer to primitive
+raw-pointer	math	PSO_Particle::Velocity: field raw pointer to primitive
+raw-pointer	math	math_DoubleTab::math_DoubleTab(): param 'theTab': void pointer
+raw-pointer	math	math_Matrix::math_Matrix(): param 'Tab': void pointer
+rvalue	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>::NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentLink>>(const NCollection_DynamicArray<Poly_CoherentLink> &): param 'theOther': rvalue reference
+rvalue	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>(const NCollection_DynamicArray<Poly_CoherentNode> &): param 'theOther': rvalue reference
+rvalue	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>(const NCollection_DynamicArray<Poly_CoherentTriangle> &): param 'theOther': rvalue reference
+static-rename	BVH	NCollection_Mat4<double>::Multiply: static overloads renamed to Multiply_s (instance method of same name exists)
+static-rename	BVH	NCollection_Mat4<float>::Multiply: static overloads renamed to Multiply_s (instance method of same name exists)
+static-rename	gp	gp_QuaternionNLerp::Interpolate: static overloads renamed to Interpolate_s (instance method of same name exists)
+static-rename	gp	gp_QuaternionSLerp::Interpolate: static overloads renamed to Interpolate_s (instance method of same name exists)
+std	MathUtils	MathUtils::Polynomial::MathUtils::Polynomial(): param 'theCoeffs': std::initializer_list
+std	MathUtils	MathUtils::Rational::MathUtils::Rational(): param 'theNum': std::initializer_list
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+template	BVH	BVH::Array: template in namespace (not bound)
+template	BVH	BVH::ArrayType: template in namespace (not bound)
+template	BVH	BVH::BVH_AxisSelector: template in namespace (not bound)
+template	BVH	BVH::BoundData: template in namespace (not bound)
+template	BVH	BVH::BoxMinMax: template in namespace (not bound)
+template	BVH	BVH::CenterAxis: template in namespace (not bound)
+template	BVH	BVH::EstimateSAH: template in namespace (not bound)
+template	BVH	BVH::IntFloor: template in namespace (not bound)
+template	BVH	BVH::MatrixOp: template in namespace (not bound)
+template	BVH	BVH::MatrixType: template in namespace (not bound)
+template	BVH	BVH::SplitPrimitives: template in namespace (not bound)
+template	BVH	BVH::SurfaceCalculator: template in namespace (not bound)
+template	BVH	BVH::ToBndBox: template in namespace (not bound)
+template	BVH	BVH::ToBndBox: template in namespace (not bound)
+template	BVH	BVH::ToBndBox: template in namespace (not bound)
+template	BVH	BVH::ToBndBox: template in namespace (not bound)
+template	BVH	BVH::UnitVector: template in namespace (not bound)
+template	BVH	BVH::UpdateBoundTask: template in namespace (not bound)
+template	BVH	BVH::UpdateBounds: template in namespace (not bound)
+template	BVH	BVH::VecComp: template in namespace (not bound)
+template	BVH	BVH::VectorType: template in namespace (not bound)
+template	BVH	BVH_BaseBox: template (not bound)
+template	BVH	BVH_BaseTraverse: template (not bound)
+template	BVH	BVH_Bin: template (not bound)
+template	BVH	BVH_BinnedBuilder: template (not bound)
+template	BVH	BVH_Box: template (not bound)
+template	BVH	BVH_Box: template (not bound)
+template	BVH	BVH_BoxSet: template (not bound)
+template	BVH	BVH_Builder: template (not bound)
+template	BVH	BVH_Builder: template (not bound)
+template	BVH	BVH_Distance: template (not bound)
+template	BVH	BVH_DistanceField: template (not bound)
+template	BVH	BVH_Geometry: template (not bound)
+template	BVH	BVH_IndexedBoxSet: template (not bound)
+template	BVH	BVH_LinearBuilder: template (not bound)
+template	BVH	BVH_Object: template (not bound)
+template	BVH	BVH_ObjectSet: template (not bound)
+template	BVH	BVH_PairDistance: template (not bound)
+template	BVH	BVH_PairTraverse: template (not bound)
+template	BVH	BVH_ParallelDistanceFieldBuilder: template (not bound)
+template	BVH	BVH_PrimitiveSet: template (not bound)
+template	BVH	BVH_QueueBuilder: template (not bound)
+template	BVH	BVH_QuickSorter: template (not bound)
+template	BVH	BVH_RadixSorter: template (not bound)
+template	BVH	BVH_Ray: template (not bound)
+template	BVH	BVH_Set: template (not bound)
+template	BVH	BVH_Sorter: template (not bound)
+template	BVH	BVH_SpatialMedianBuilder: template (not bound)
+template	BVH	BVH_SweepPlaneBuilder: template (not bound)
+template	BVH	BVH_Tools: template (not bound)
+template	BVH	BVH_Transform: template (not bound)
+template	BVH	BVH_Traverse: template (not bound)
+template	BVH	BVH_Tree: template (not bound)
+template	BVH	BVH_TreeBase: template (not bound)
+template	BVH	BVH_Triangulation: template (not bound)
+template	BVH	NCollection_Mat4<double>::Convert: template member
+template	BVH	NCollection_Mat4<double>::ConvertFrom: template member
+template	BVH	NCollection_Mat4<double>::NCollection_Mat4<Element_t>: template member
+template	BVH	NCollection_Mat4<float>::Convert: template member
+template	BVH	NCollection_Mat4<float>::ConvertFrom: template member
+template	BVH	NCollection_Mat4<float>::NCollection_Mat4<Element_t>: template member
+template	BVH	NCollection_Vec2<double>::NCollection_Vec2<Element_t>: template member
+template	BVH	NCollection_Vec2<float>::NCollection_Vec2<Element_t>: template member
+template	BVH	NCollection_Vec2<int>::NCollection_Vec2<Element_t>: template member
+template	BVH	NCollection_Vec3<double>::NCollection_Vec3<Element_t>: template member
+template	BVH	NCollection_Vec3<float>::NCollection_Vec3<Element_t>: template member
+template	BVH	NCollection_Vec3<int>::NCollection_Vec3<Element_t>: template member
+template	BVH	NCollection_Vec4<double>::NCollection_Vec4<Element_t>: template member
+template	BVH	NCollection_Vec4<float>::NCollection_Vec4<Element_t>: template member
+template	BVH	NCollection_Vec4<int>::NCollection_Vec4<Element_t>: template member
+template	Bnd	Bnd_B2: template (not bound)
+template	Bnd	Bnd_B3: template (not bound)
+template	Convert	Convert_CompBezierCurvesToBSplineCurveBase: template (not bound)
+template	MathInteg	MathInteg::DoubleExponential: template in namespace (not bound)
+template	MathInteg	MathInteg::ExpSinh: template in namespace (not bound)
+template	MathInteg	MathInteg::Gauss: template in namespace (not bound)
+template	MathInteg	MathInteg::GaussAdaptive: template in namespace (not bound)
+template	MathInteg	MathInteg::GaussComposite: template in namespace (not bound)
+template	MathInteg	MathInteg::GaussMultiple: template in namespace (not bound)
+template	MathInteg	MathInteg::GaussMultipleUniform: template in namespace (not bound)
+template	MathInteg	MathInteg::GaussSet: template in namespace (not bound)
+template	MathInteg	MathInteg::GaussSet: template in namespace (not bound)
+template	MathInteg	MathInteg::Kronrod: template in namespace (not bound)
+template	MathInteg	MathInteg::KronrodAuto: template in namespace (not bound)
+template	MathInteg	MathInteg::KronrodInfinite: template in namespace (not bound)
+template	MathInteg	MathInteg::KronrodRule: template in namespace (not bound)
+template	MathInteg	MathInteg::KronrodSemiInfinite: template in namespace (not bound)
+template	MathInteg	MathInteg::SinhSinh: template in namespace (not bound)
+template	MathInteg	MathInteg::TanhSinh: template in namespace (not bound)
+template	MathInteg	MathInteg::TanhSinhSingular: template in namespace (not bound)
+template	MathInteg	MathInteg::TanhSinhWithSingularity: template in namespace (not bound)
+template	MathOpt	MathOpt::BFGS: template in namespace (not bound)
+template	MathOpt	MathOpt::BFGSBounded: template in namespace (not bound)
+template	MathOpt	MathOpt::BFGSNumerical: template in namespace (not bound)
+template	MathOpt	MathOpt::Brent: template in namespace (not bound)
+template	MathOpt	MathOpt::BrentWithBracket: template in namespace (not bound)
+template	MathOpt	MathOpt::DifferentialEvolution: template in namespace (not bound)
+template	MathOpt	MathOpt::FRPR: template in namespace (not bound)
+template	MathOpt	MathOpt::FRPRNumerical: template in namespace (not bound)
+template	MathOpt	MathOpt::GlobalMinimum: template in namespace (not bound)
+template	MathOpt	MathOpt::GlobalMinimum: template in namespace (not bound)
+template	MathOpt	MathOpt::Golden: template in namespace (not bound)
+template	MathOpt	MathOpt::LBFGS: template in namespace (not bound)
+template	MathOpt	MathOpt::MultiStart: template in namespace (not bound)
+template	MathOpt	MathOpt::Newton: template in namespace (not bound)
+template	MathOpt	MathOpt::NewtonBounded: template in namespace (not bound)
+template	MathOpt	MathOpt::NewtonModified: template in namespace (not bound)
+template	MathOpt	MathOpt::NewtonNumerical: template in namespace (not bound)
+template	MathOpt	MathOpt::NewtonNumericalHessian: template in namespace (not bound)
+template	MathOpt	MathOpt::PSO: template in namespace (not bound)
+template	MathOpt	MathOpt::PSO: template in namespace (not bound)
+template	MathOpt	MathOpt::PolishCoordinateWise: template in namespace (not bound)
+template	MathOpt	MathOpt::Powell: template in namespace (not bound)
+template	MathOpt	MathOpt::PowellWithDirections: template in namespace (not bound)
+template	MathRoot	MathRoot::Bisection: template in namespace (not bound)
+template	MathRoot	MathRoot::BisectionNewton: template in namespace (not bound)
+template	MathRoot	MathRoot::Brent: template in namespace (not bound)
+template	MathRoot	MathRoot::EvaluateShiftedValue: template in namespace (not bound)
+template	MathRoot	MathRoot::EvaluateShiftedValues: template in namespace (not bound)
+template	MathRoot	MathRoot::EvaluateValue: template in namespace (not bound)
+template	MathRoot	MathRoot::FindAllRoots: template in namespace (not bound)
+template	MathRoot	MathRoot::FindAllRoots: template in namespace (not bound)
+template	MathRoot	MathRoot::FindAllRootsImpl: template in namespace (not bound)
+template	MathRoot	MathRoot::FindAllRootsWithDerivative: template in namespace (not bound)
+template	MathRoot	MathRoot::FindAllRootsWithDerivativeImpl: template in namespace (not bound)
+template	MathRoot	MathRoot::FindAllRootsWithIntervals: template in namespace (not bound)
+template	MathRoot	MathRoot::FindAllRootsWithIntervals: template in namespace (not bound)
+template	MathRoot	MathRoot::FindMultipleRoots: template in namespace (not bound)
+template	MathRoot	MathRoot::MultipleBrentValueWrapper: template in namespace (not bound)
+template	MathRoot	MathRoot::MultipleDerivativeValueWrapper: template in namespace (not bound)
+template	MathRoot	MathRoot::MultipleGetRootValueFn: template in namespace (not bound)
+template	MathRoot	MathRoot::MultipleSampleValueFn: template in namespace (not bound)
+template	MathRoot	MathRoot::Newton: template in namespace (not bound)
+template	MathRoot	MathRoot::NewtonBounded: template in namespace (not bound)
+template	MathRoot	MathRoot::RefineBracketedRoot: template in namespace (not bound)
+template	MathRoot	MathRoot::Secant: template in namespace (not bound)
+template	MathRoot	MathRoot::SecantAuto: template in namespace (not bound)
+template	MathSys	MathSys::LevenbergMarquardt: template in namespace (not bound)
+template	MathSys	MathSys::LevenbergMarquardtBounded: template in namespace (not bound)
+template	MathSys	MathSys::Newton: template in namespace (not bound)
+template	MathSys	MathSys::Newton: template in namespace (not bound)
+template	MathSys	MathSys::NewtonBounded: template in namespace (not bound)
+template	MathSys	MathSys::NewtonBoundsN: template in namespace (not bound)
+template	MathSys	MathSys::NewtonResultN: template in namespace (not bound)
+template	MathSys	MathSys::Solve2D: template in namespace (not bound)
+template	MathSys	MathSys::Solve2DSymmetric: template in namespace (not bound)
+template	MathSys	MathSys::Solve3D: template in namespace (not bound)
+template	MathSys	MathSys::Solve4D: template in namespace (not bound)
+template	MathSys	MathSys::SolveCurveSurfaceExtrema3D: template in namespace (not bound)
+template	MathSys	MathSys::SolveSurfaceSurfaceExtrema4D: template in namespace (not bound)
+template	MathUtils	MathUtils::ArmijoBacktrack: template in namespace (not bound)
+template	MathUtils	MathUtils::BracketMinimum: template in namespace (not bound)
+template	MathUtils	MathUtils::BracketMinimum: template in namespace (not bound)
+template	MathUtils	MathUtils::BracketRoot: template in namespace (not bound)
+template	MathUtils	MathUtils::BrentAlongCoordinate: template in namespace (not bound)
+template	MathUtils	MathUtils::CentralDifference: template in namespace (not bound)
+template	MathUtils	MathUtils::Composite: template in namespace (not bound)
+template	MathUtils	MathUtils::Difference: template in namespace (not bound)
+template	MathUtils	MathUtils::ExactLineSearch: template in namespace (not bound)
+template	MathUtils	MathUtils::ForwardDifference: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeComposite: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeDifference: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeNegated: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeProduct: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeQuotient: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeScalar: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeScalarWithDerivative: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeScaled: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeShifted: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeSum: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeSystem: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeVector: template in namespace (not bound)
+template	MathUtils	MathUtils::MakeVectorWithGradient: template in namespace (not bound)
+template	MathUtils	MathUtils::Negated: template in namespace (not bound)
+template	MathUtils	MathUtils::NumericalGradient: template in namespace (not bound)
+template	MathUtils	MathUtils::NumericalGradientAdaptive: template in namespace (not bound)
+template	MathUtils	MathUtils::NumericalHessian: template in namespace (not bound)
+template	MathUtils	MathUtils::NumericalJacobian: template in namespace (not bound)
+template	MathUtils	MathUtils::Product: template in namespace (not bound)
+template	MathUtils	MathUtils::Quotient: template in namespace (not bound)
+template	MathUtils	MathUtils::ScalarLambda: template in namespace (not bound)
+template	MathUtils	MathUtils::ScalarLambdaWithDerivative: template in namespace (not bound)
+template	MathUtils	MathUtils::Scaled: template in namespace (not bound)
+template	MathUtils	MathUtils::SecondDerivative: template in namespace (not bound)
+template	MathUtils	MathUtils::Shifted: template in namespace (not bound)
+template	MathUtils	MathUtils::Sum: template in namespace (not bound)
+template	MathUtils	MathUtils::SystemLambda: template in namespace (not bound)
+template	MathUtils	MathUtils::VectorLambda: template in namespace (not bound)
+template	MathUtils	MathUtils::VectorLambdaWithGradient: template in namespace (not bound)
+template	MathUtils	MathUtils::WolfeSearch: template in namespace (not bound)
+template	Poly	NCollection_AliasedArray<>::ChangeFirst: template member
+template	Poly	NCollection_AliasedArray<>::ChangeLast: template member
+template	Poly	NCollection_AliasedArray<>::ChangeValue2: template member
+template	Poly	NCollection_AliasedArray<>::ChangeValue: template member
+template	Poly	NCollection_AliasedArray<>::First: template member
+template	Poly	NCollection_AliasedArray<>::Init: template member
+template	Poly	NCollection_AliasedArray<>::Last: template member
+template	Poly	NCollection_AliasedArray<>::NCollection_AliasedArray<MyAlignSize>: template member
+template	Poly	NCollection_AliasedArray<>::Value2: template member
+template	Poly	NCollection_AliasedArray<>::Value2: template member
+template	Poly	NCollection_AliasedArray<>::Value: template member
+template	Poly	NCollection_AliasedArray<>::Value: template member
+template	Poly	NCollection_List: template (not bound)
+template	Poly	Poly::PolygonProperties: template member
+template	gp	gp_GTrsf::GetMat4: template member
+template	gp	gp_GTrsf::SetMat4: template member
+template	gp	gp_Trsf::GetMat4: template member
+template	math	math_VectorBase: template (not bound)
+template	math	math_VectorBase: template (not bound)
+template	math	math_VectorBase: template (not bound)
+unbound-type	BVH	BVH_PrimitiveSet<double, 3>: base class BVH_Object<double, 3> is not bound (package not generated) -> class skipped
+unbound-type	Bnd	BVH_Box<double, 2>: base class BVH_BaseBox<double, 2, BVH_Box<double, 2>> is not bound (package not generated) -> class skipped
+unbound-type	Bnd	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>> is not bound (package not generated) -> class skipped
+undefined	math	math_NewtonFunctionSetRoot::StateNumber: declared in the header, no definition in libTKMath
+undefined	math	math_NewtonMinimum::IsConvex: declared in the header, no definition in libTKMath

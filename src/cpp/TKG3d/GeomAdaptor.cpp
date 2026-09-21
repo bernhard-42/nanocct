@@ -144,15 +144,15 @@ Curve from Adaptor3d)nbdoc")
     nanoocp_implicit_copy_ctor<GeomAdaptor>(nb::borrow<nb::class_<GeomAdaptor>>(m.attr("GeomAdaptor")));
     nb::borrow<nb::class_<GeomAdaptor_Curve>>(m.attr("GeomAdaptor_Curve"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_Curve>(new GeomAdaptor_Curve()); }))
-        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve) { return opencascade::handle<GeomAdaptor_Curve>(new GeomAdaptor_Curve(theCurve)); }), nb::arg("theCurve"))
-        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve, const double theUFirst, const double theULast) { return opencascade::handle<GeomAdaptor_Curve>(new GeomAdaptor_Curve(theCurve, theUFirst, theULast)); }), nb::arg("theCurve"), nb::arg("theUFirst"), nb::arg("theULast"), R"nbdoc(Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion())nbdoc")
+        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve) { return opencascade::handle<GeomAdaptor_Curve>(new GeomAdaptor_Curve(theCurve)); }), nb::arg("theCurve").none())
+        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve, const double theUFirst, const double theULast) { return opencascade::handle<GeomAdaptor_Curve>(new GeomAdaptor_Curve(theCurve, theUFirst, theULast)); }), nb::arg("theCurve").none(), nb::arg("theUFirst"), nb::arg("theULast"), R"nbdoc(Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion())nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomAdaptor_Curve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomAdaptor_Curve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomAdaptor_Curve::*)() const>(&GeomAdaptor_Curve::DynamicType))
         .def("ShallowCopy", static_cast<occ::handle<Adaptor3d_Curve> (GeomAdaptor_Curve::*)() const>(&GeomAdaptor_Curve::ShallowCopy), R"nbdoc(Shallow copy of adaptor)nbdoc")
         .def("Reset", static_cast<void (GeomAdaptor_Curve::*)()>(&GeomAdaptor_Curve::Reset), R"nbdoc(Reset currently loaded curve (undone Load()).)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_Curve::*)(const occ::handle<Geom_Curve> &)>(&GeomAdaptor_Curve::Load), nb::arg("theCurve"))
-        .def("Load", static_cast<void (GeomAdaptor_Curve::*)(const occ::handle<Geom_Curve> &, const double, const double)>(&GeomAdaptor_Curve::Load), nb::arg("theCurve"), nb::arg("theUFirst"), nb::arg("theULast"), R"nbdoc(Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion())nbdoc")
+        .def("Load", static_cast<void (GeomAdaptor_Curve::*)(const occ::handle<Geom_Curve> &)>(&GeomAdaptor_Curve::Load), nb::arg("theCurve").none())
+        .def("Load", static_cast<void (GeomAdaptor_Curve::*)(const occ::handle<Geom_Curve> &, const double, const double)>(&GeomAdaptor_Curve::Load), nb::arg("theCurve").none(), nb::arg("theUFirst"), nb::arg("theULast"), R"nbdoc(Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion())nbdoc")
         .def("Curve", static_cast<const occ::handle<Geom_Curve> & (GeomAdaptor_Curve::*)() const>(&GeomAdaptor_Curve::Curve), R"nbdoc(Provides a curve inherited from Hcurve from Adaptor.
 This is inherited to provide easy to use constructors.)nbdoc")
         .def("FirstParameter", static_cast<double (GeomAdaptor_Curve::*)() const>(&GeomAdaptor_Curve::FirstParameter))
@@ -227,14 +227,14 @@ myFirst/Last.)nbdoc")
     nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Curve::BSplineData>>(m.attr("GeomAdaptor_Curve").attr("BSplineData")), "EvalRep", &GeomAdaptor_Curve::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nb::borrow<nb::class_<GeomAdaptor_Surface>>(m.attr("GeomAdaptor_Surface"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_Surface>(new GeomAdaptor_Surface()); }))
-        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurf) { return opencascade::handle<GeomAdaptor_Surface>(new GeomAdaptor_Surface(theSurf)); }), nb::arg("theSurf"))
-        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurf, const double theUFirst, const double theULast, const double theVFirst, const double theVLast, const double theTolU, const double theTolV) { return opencascade::handle<GeomAdaptor_Surface>(new GeomAdaptor_Surface(theSurf, theUFirst, theULast, theVFirst, theVLast, theTolU, theTolV)); }), nb::arg("theSurf"), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Standard_ConstructionError is raised if UFirst>ULast or VFirst>VLast)nbdoc")
+        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurf) { return opencascade::handle<GeomAdaptor_Surface>(new GeomAdaptor_Surface(theSurf)); }), nb::arg("theSurf").none())
+        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurf, const double theUFirst, const double theULast, const double theVFirst, const double theVLast, const double theTolU, const double theTolV) { return opencascade::handle<GeomAdaptor_Surface>(new GeomAdaptor_Surface(theSurf, theUFirst, theULast, theVFirst, theVLast, theTolU, theTolV)); }), nb::arg("theSurf").none(), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Standard_ConstructionError is raised if UFirst>ULast or VFirst>VLast)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomAdaptor_Surface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomAdaptor_Surface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::DynamicType))
         .def("ShallowCopy", static_cast<occ::handle<Adaptor3d_Surface> (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::ShallowCopy), R"nbdoc(Shallow copy of adaptor)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_Surface::*)(const occ::handle<Geom_Surface> &)>(&GeomAdaptor_Surface::Load), nb::arg("theSurf"))
-        .def("Load", static_cast<void (GeomAdaptor_Surface::*)(const occ::handle<Geom_Surface> &, const double, const double, const double, const double, const double, const double)>(&GeomAdaptor_Surface::Load), nb::arg("theSurf"), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Standard_ConstructionError is raised if theUFirst>theULast or theVFirst>theVLast)nbdoc")
+        .def("Load", static_cast<void (GeomAdaptor_Surface::*)(const occ::handle<Geom_Surface> &)>(&GeomAdaptor_Surface::Load), nb::arg("theSurf").none())
+        .def("Load", static_cast<void (GeomAdaptor_Surface::*)(const occ::handle<Geom_Surface> &, const double, const double, const double, const double, const double, const double)>(&GeomAdaptor_Surface::Load), nb::arg("theSurf").none(), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Standard_ConstructionError is raised if theUFirst>theULast or theVFirst>theVLast)nbdoc")
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::Surface))
         .def("FirstUParameter", static_cast<double (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::FirstUParameter))
         .def("LastUParameter", static_cast<double (GeomAdaptor_Surface::*)() const>(&GeomAdaptor_Surface::LastUParameter))
@@ -344,13 +344,13 @@ myU/VFirst/Last.)nbdoc")
     nanoocp_def_field(nb::borrow<nb::class_<GeomAdaptor_Surface::BSplineData>>(m.attr("GeomAdaptor_Surface").attr("BSplineData")), "EvalRep", &GeomAdaptor_Surface::BSplineData::EvalRep, R"nbdoc(Eval representation descriptor)nbdoc");
     nb::borrow<nb::class_<GeomAdaptor_SurfaceOfLinearExtrusion>>(m.attr("GeomAdaptor_SurfaceOfLinearExtrusion"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_SurfaceOfLinearExtrusion>(new GeomAdaptor_SurfaceOfLinearExtrusion()); }))
-        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C) { return opencascade::handle<GeomAdaptor_SurfaceOfLinearExtrusion>(new GeomAdaptor_SurfaceOfLinearExtrusion(C)); }), nb::arg("C"), R"nbdoc(The Curve is loaded.)nbdoc")
-        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C, const gp_Dir & V) { return opencascade::handle<GeomAdaptor_SurfaceOfLinearExtrusion>(new GeomAdaptor_SurfaceOfLinearExtrusion(C, V)); }), nb::arg("C"), nb::arg("V"), R"nbdoc(Thew Curve and the Direction are loaded.)nbdoc")
+        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C) { return opencascade::handle<GeomAdaptor_SurfaceOfLinearExtrusion>(new GeomAdaptor_SurfaceOfLinearExtrusion(C)); }), nb::arg("C").none(), R"nbdoc(The Curve is loaded.)nbdoc")
+        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C, const gp_Dir & V) { return opencascade::handle<GeomAdaptor_SurfaceOfLinearExtrusion>(new GeomAdaptor_SurfaceOfLinearExtrusion(C, V)); }), nb::arg("C").none(), nb::arg("V"), R"nbdoc(Thew Curve and the Direction are loaded.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomAdaptor_SurfaceOfLinearExtrusion::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomAdaptor_SurfaceOfLinearExtrusion::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomAdaptor_SurfaceOfLinearExtrusion::*)() const>(&GeomAdaptor_SurfaceOfLinearExtrusion::DynamicType))
         .def("ShallowCopy", static_cast<occ::handle<Adaptor3d_Surface> (GeomAdaptor_SurfaceOfLinearExtrusion::*)() const>(&GeomAdaptor_SurfaceOfLinearExtrusion::ShallowCopy), R"nbdoc(Shallow copy of adaptor)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_SurfaceOfLinearExtrusion::*)(const occ::handle<Adaptor3d_Curve> &)>(&GeomAdaptor_SurfaceOfLinearExtrusion::Load), nb::arg("C"), R"nbdoc(Changes the Curve)nbdoc")
+        .def("Load", static_cast<void (GeomAdaptor_SurfaceOfLinearExtrusion::*)(const occ::handle<Adaptor3d_Curve> &)>(&GeomAdaptor_SurfaceOfLinearExtrusion::Load), nb::arg("C").none(), R"nbdoc(Changes the Curve)nbdoc")
         .def("Load", static_cast<void (GeomAdaptor_SurfaceOfLinearExtrusion::*)(const gp_Dir &)>(&GeomAdaptor_SurfaceOfLinearExtrusion::Load), nb::arg("V"), R"nbdoc(Changes the Direction)nbdoc")
         .def("FirstUParameter", static_cast<double (GeomAdaptor_SurfaceOfLinearExtrusion::*)() const>(&GeomAdaptor_SurfaceOfLinearExtrusion::FirstUParameter))
         .def("LastUParameter", static_cast<double (GeomAdaptor_SurfaceOfLinearExtrusion::*)() const>(&GeomAdaptor_SurfaceOfLinearExtrusion::LastUParameter))
@@ -407,13 +407,13 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Curve> &>, GeomAdaptor_SurfaceOfLinearExtrusion>();
     nb::borrow<nb::class_<GeomAdaptor_SurfaceOfRevolution>>(m.attr("GeomAdaptor_SurfaceOfRevolution"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_SurfaceOfRevolution>(new GeomAdaptor_SurfaceOfRevolution()); }))
-        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C) { return opencascade::handle<GeomAdaptor_SurfaceOfRevolution>(new GeomAdaptor_SurfaceOfRevolution(C)); }), nb::arg("C"), R"nbdoc(The Curve is loaded.)nbdoc")
-        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C, const gp_Ax1 & V) { return opencascade::handle<GeomAdaptor_SurfaceOfRevolution>(new GeomAdaptor_SurfaceOfRevolution(C, V)); }), nb::arg("C"), nb::arg("V"), R"nbdoc(The Curve and the Direction are loaded.)nbdoc")
+        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C) { return opencascade::handle<GeomAdaptor_SurfaceOfRevolution>(new GeomAdaptor_SurfaceOfRevolution(C)); }), nb::arg("C").none(), R"nbdoc(The Curve is loaded.)nbdoc")
+        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C, const gp_Ax1 & V) { return opencascade::handle<GeomAdaptor_SurfaceOfRevolution>(new GeomAdaptor_SurfaceOfRevolution(C, V)); }), nb::arg("C").none(), nb::arg("V"), R"nbdoc(The Curve and the Direction are loaded.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomAdaptor_SurfaceOfRevolution::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomAdaptor_SurfaceOfRevolution::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomAdaptor_SurfaceOfRevolution::*)() const>(&GeomAdaptor_SurfaceOfRevolution::DynamicType))
         .def("ShallowCopy", static_cast<occ::handle<Adaptor3d_Surface> (GeomAdaptor_SurfaceOfRevolution::*)() const>(&GeomAdaptor_SurfaceOfRevolution::ShallowCopy), R"nbdoc(Shallow copy of adaptor)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_SurfaceOfRevolution::*)(const occ::handle<Adaptor3d_Curve> &)>(&GeomAdaptor_SurfaceOfRevolution::Load), nb::arg("C"), R"nbdoc(Changes the Curve)nbdoc")
+        .def("Load", static_cast<void (GeomAdaptor_SurfaceOfRevolution::*)(const occ::handle<Adaptor3d_Curve> &)>(&GeomAdaptor_SurfaceOfRevolution::Load), nb::arg("C").none(), R"nbdoc(Changes the Curve)nbdoc")
         .def("Load", static_cast<void (GeomAdaptor_SurfaceOfRevolution::*)(const gp_Ax1 &)>(&GeomAdaptor_SurfaceOfRevolution::Load), nb::arg("V"), R"nbdoc(Changes the Direction)nbdoc")
         .def("AxeOfRevolution", static_cast<gp_Ax1 (GeomAdaptor_SurfaceOfRevolution::*)() const>(&GeomAdaptor_SurfaceOfRevolution::AxeOfRevolution))
         .def("FirstUParameter", static_cast<double (GeomAdaptor_SurfaceOfRevolution::*)() const>(&GeomAdaptor_SurfaceOfRevolution::FirstUParameter))
@@ -472,10 +472,10 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
     nb::implicitly_convertible<std::decay_t<const occ::handle<Adaptor3d_Curve> &>, GeomAdaptor_SurfaceOfRevolution>();
     nb::borrow<nb::class_<GeomAdaptor_TransformedCurve>>(m.attr("GeomAdaptor_TransformedCurve"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_TransformedCurve>(new GeomAdaptor_TransformedCurve()); }), R"nbdoc(Creates an undefined curve with identity transformation.)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve, const gp_Trsf & theTrsf) { return opencascade::handle<GeomAdaptor_TransformedCurve>(new GeomAdaptor_TransformedCurve(theCurve, theTrsf)); }), nb::arg("theCurve"), nb::arg("theTrsf"), R"nbdoc(Creates a curve adaptor with transformation.
+        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve, const gp_Trsf & theTrsf) { return opencascade::handle<GeomAdaptor_TransformedCurve>(new GeomAdaptor_TransformedCurve(theCurve, theTrsf)); }), nb::arg("theCurve").none(), nb::arg("theTrsf"), R"nbdoc(Creates a curve adaptor with transformation.
 @param theCurve underlying geometry
 @param theTrsf transformation to apply)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve, const double theFirst, const double theLast, const gp_Trsf & theTrsf) { return opencascade::handle<GeomAdaptor_TransformedCurve>(new GeomAdaptor_TransformedCurve(theCurve, theFirst, theLast, theTrsf)); }), nb::arg("theCurve"), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTrsf"), R"nbdoc(Creates a curve adaptor with transformation and parameter bounds.
+        .def(nb::new_([](const occ::handle<Geom_Curve> & theCurve, const double theFirst, const double theLast, const gp_Trsf & theTrsf) { return opencascade::handle<GeomAdaptor_TransformedCurve>(new GeomAdaptor_TransformedCurve(theCurve, theFirst, theLast, theTrsf)); }), nb::arg("theCurve").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTrsf"), R"nbdoc(Creates a curve adaptor with transformation and parameter bounds.
 @param theCurve underlying geometry
 @param theFirst minimum parameter
 @param theLast maximum parameter
@@ -484,13 +484,13 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomAdaptor_TransformedCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::DynamicType))
         .def("ShallowCopy", static_cast<occ::handle<Adaptor3d_Curve> (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::ShallowCopy), R"nbdoc(Shallow copy of adaptor.)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_TransformedCurve::*)(const occ::handle<Geom_Curve> &)>(&GeomAdaptor_TransformedCurve::Load), nb::arg("theCurve"), R"nbdoc(Loads the curve geometry.
+        .def("Load", static_cast<void (GeomAdaptor_TransformedCurve::*)(const occ::handle<Geom_Curve> &)>(&GeomAdaptor_TransformedCurve::Load), nb::arg("theCurve").none(), R"nbdoc(Loads the curve geometry.
 @param theCurve underlying geometry)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_TransformedCurve::*)(const occ::handle<Geom_Curve> &, const double, const double)>(&GeomAdaptor_TransformedCurve::Load), nb::arg("theCurve"), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Loads the curve geometry with parameter bounds.
+        .def("Load", static_cast<void (GeomAdaptor_TransformedCurve::*)(const occ::handle<Geom_Curve> &, const double, const double)>(&GeomAdaptor_TransformedCurve::Load), nb::arg("theCurve").none(), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Loads the curve geometry with parameter bounds.
 @param theCurve underlying geometry
 @param theFirst minimum parameter
 @param theLast maximum parameter)nbdoc")
-        .def("LoadCurveOnSurface", static_cast<void (GeomAdaptor_TransformedCurve::*)(const occ::handle<Adaptor3d_CurveOnSurface> &)>(&GeomAdaptor_TransformedCurve::LoadCurveOnSurface), nb::arg("theConSurf"), R"nbdoc(Sets the curve on surface adaptor.
+        .def("LoadCurveOnSurface", static_cast<void (GeomAdaptor_TransformedCurve::*)(const occ::handle<Adaptor3d_CurveOnSurface> &)>(&GeomAdaptor_TransformedCurve::LoadCurveOnSurface), nb::arg("theConSurf").none(), R"nbdoc(Sets the curve on surface adaptor.
 @param theConSurf curve on surface adaptor)nbdoc")
         .def("SetTrsf", static_cast<void (GeomAdaptor_TransformedCurve::*)(const gp_Trsf &)>(&GeomAdaptor_TransformedCurve::SetTrsf), nb::arg("theTrsf"), R"nbdoc(Sets the transformation.
 @param theTrsf transformation to apply)nbdoc")
@@ -532,10 +532,10 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
     nanoocp_implicit_copy_ctor<GeomAdaptor_TransformedCurve>(nb::borrow<nb::class_<GeomAdaptor_TransformedCurve>>(m.attr("GeomAdaptor_TransformedCurve")));
     nb::borrow<nb::class_<GeomAdaptor_TransformedSurface>>(m.attr("GeomAdaptor_TransformedSurface"))
         .def(nb::new_([]() { return opencascade::handle<GeomAdaptor_TransformedSurface>(new GeomAdaptor_TransformedSurface()); }), R"nbdoc(Creates an undefined surface with identity transformation.)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurface, const gp_Trsf & theTrsf) { return opencascade::handle<GeomAdaptor_TransformedSurface>(new GeomAdaptor_TransformedSurface(theSurface, theTrsf)); }), nb::arg("theSurface"), nb::arg("theTrsf"), R"nbdoc(Creates a surface adaptor with transformation.
+        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurface, const gp_Trsf & theTrsf) { return opencascade::handle<GeomAdaptor_TransformedSurface>(new GeomAdaptor_TransformedSurface(theSurface, theTrsf)); }), nb::arg("theSurface").none(), nb::arg("theTrsf"), R"nbdoc(Creates a surface adaptor with transformation.
 @param theSurface underlying geometry
 @param theTrsf transformation to apply)nbdoc")
-        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurface, const double theUFirst, const double theULast, const double theVFirst, const double theVLast, const gp_Trsf & theTrsf, const double theTolU, const double theTolV) { return opencascade::handle<GeomAdaptor_TransformedSurface>(new GeomAdaptor_TransformedSurface(theSurface, theUFirst, theULast, theVFirst, theVLast, theTrsf, theTolU, theTolV)); }), nb::arg("theSurface"), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTrsf"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Creates a surface adaptor with transformation and parameter bounds.
+        .def(nb::new_([](const occ::handle<Geom_Surface> & theSurface, const double theUFirst, const double theULast, const double theVFirst, const double theVLast, const gp_Trsf & theTrsf, const double theTolU, const double theTolV) { return opencascade::handle<GeomAdaptor_TransformedSurface>(new GeomAdaptor_TransformedSurface(theSurface, theUFirst, theULast, theVFirst, theVLast, theTrsf, theTolU, theTolV)); }), nb::arg("theSurface").none(), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTrsf"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Creates a surface adaptor with transformation and parameter bounds.
 @param theSurface underlying geometry
 @param theUFirst minimum U parameter
 @param theULast maximum U parameter
@@ -548,10 +548,10 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomAdaptor_TransformedSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::DynamicType))
         .def("ShallowCopy", static_cast<occ::handle<Adaptor3d_Surface> (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::ShallowCopy), R"nbdoc(Shallow copy of adaptor.)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_TransformedSurface::*)(const occ::handle<Geom_Surface> &, const gp_Trsf &)>(&GeomAdaptor_TransformedSurface::Load), nb::arg("theSurface"), nb::arg("theTrsf"), R"nbdoc(Loads the surface geometry.
+        .def("Load", static_cast<void (GeomAdaptor_TransformedSurface::*)(const occ::handle<Geom_Surface> &, const gp_Trsf &)>(&GeomAdaptor_TransformedSurface::Load), nb::arg("theSurface").none(), nb::arg("theTrsf"), R"nbdoc(Loads the surface geometry.
 @param theSurface underlying geometry
 @param theTrsf transformation to apply)nbdoc")
-        .def("Load", static_cast<void (GeomAdaptor_TransformedSurface::*)(const occ::handle<Geom_Surface> &, const double, const double, const double, const double, const gp_Trsf &, const double, const double)>(&GeomAdaptor_TransformedSurface::Load), nb::arg("theSurface"), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTrsf"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Loads the surface geometry with parameter bounds.
+        .def("Load", static_cast<void (GeomAdaptor_TransformedSurface::*)(const occ::handle<Geom_Surface> &, const double, const double, const double, const double, const gp_Trsf &, const double, const double)>(&GeomAdaptor_TransformedSurface::Load), nb::arg("theSurface").none(), nb::arg("theUFirst"), nb::arg("theULast"), nb::arg("theVFirst"), nb::arg("theVLast"), nb::arg("theTrsf"), nb::arg("theTolU") = static_cast<std::decay_t<const double>>(0.0), nb::arg("theTolV") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Loads the surface geometry with parameter bounds.
 @param theSurface underlying geometry
 @param theUFirst minimum U parameter
 @param theULast maximum U parameter

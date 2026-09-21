@@ -22,12 +22,14 @@ void nanoocp_declare_GCPnts(nb::module_ &m) {
     nb::enum_<GCPnts_AbscissaType>(m, "GCPnts_AbscissaType", nb::is_arithmetic())
         .value("GCPnts_LengthParametrized", GCPnts_LengthParametrized)
         .value("GCPnts_Parametrized", GCPnts_Parametrized)
-        .value("GCPnts_AbsComposite", GCPnts_AbsComposite);
+        .value("GCPnts_AbsComposite", GCPnts_AbsComposite)
+        .export_values();
     nb::enum_<GCPnts_DeflectionType>(m, "GCPnts_DeflectionType", nb::is_arithmetic())
         .value("GCPnts_Linear", GCPnts_Linear)
         .value("GCPnts_Circular", GCPnts_Circular)
         .value("GCPnts_Curved", GCPnts_Curved)
-        .value("GCPnts_DefComposite", GCPnts_DefComposite);
+        .value("GCPnts_DefComposite", GCPnts_DefComposite)
+        .export_values();
     { nb::class_<GCPnts_AbscissaPoint> cls(m, "GCPnts_AbscissaPoint", R"nbdoc(Provides an algorithm to compute a point on a curve
 situated at a given distance from another point on the curve,
 the distance being measured along the curve (curvilinear abscissa on the curve).

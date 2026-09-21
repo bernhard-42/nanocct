@@ -136,7 +136,7 @@ void nanoocp_define_MathOpt(nb::module_ &m) {
     nanoocp_def_field(nb::borrow<nb::class_<MathOpt::UzawaConfig>>(m.attr("UzawaConfig")), "EpsLix", &MathOpt::UzawaConfig::EpsLix, R"nbdoc(Tolerance for X convergence)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathOpt::UzawaConfig>>(m.attr("UzawaConfig")), "EpsLic", &MathOpt::UzawaConfig::EpsLic, R"nbdoc(Tolerance for dual variable convergence)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<MathOpt::UzawaConfig>>(m.attr("UzawaConfig")), "MaxIterations", &MathOpt::UzawaConfig::MaxIterations, R"nbdoc(Maximum iterations)nbdoc");
-    m.def("Uzawa", static_cast<MathOpt::UzawaResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, int, int, const MathOpt::UzawaConfig &)>(&MathOpt::Uzawa), nb::arg("theCont"), nb::arg("theSecont"), nb::arg("theStartingPoint"), nb::arg("theNce"), nb::arg("theNci"), nb::arg("theConfig") = static_cast<std::decay_t<const MathOpt::UzawaConfig &>>(MathOpt::UzawaConfig ( )), R"nbdoc(Solve constrained least squares using Uzawa algorithm.
+    m.def("Uzawa", static_cast<MathOpt::UzawaResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, int, int, const MathOpt::UzawaConfig &)>(&MathOpt::Uzawa), nb::arg("theCont"), nb::arg("theSecont"), nb::arg("theStartingPoint"), nb::arg("theNce"), nb::arg("theNci"), nb::arg("theConfig") = static_cast<std::decay_t<const MathOpt::UzawaConfig &>>(MathOpt::UzawaConfig()), R"nbdoc(Solve constrained least squares using Uzawa algorithm.
 
 Solves: min ||X - X0||^2 subject to C*X = S
 
@@ -154,7 +154,7 @@ The Uzawa algorithm is a dual decomposition method that:
 @param theNci number of inequality constraints (last rows, C*X <= S)
 @param theConfig algorithm configuration
 @return UzawaResult with solution and auxiliary data)nbdoc");
-    m.def("UzawaEquality", static_cast<MathOpt::UzawaResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, const MathOpt::UzawaConfig &)>(&MathOpt::UzawaEquality), nb::arg("theCont"), nb::arg("theSecont"), nb::arg("theStartingPoint"), nb::arg("theConfig") = static_cast<std::decay_t<const MathOpt::UzawaConfig &>>(MathOpt::UzawaConfig ( )), R"nbdoc(Solve constrained least squares with equality constraints only.
+    m.def("UzawaEquality", static_cast<MathOpt::UzawaResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, const MathOpt::UzawaConfig &)>(&MathOpt::UzawaEquality), nb::arg("theCont"), nb::arg("theSecont"), nb::arg("theStartingPoint"), nb::arg("theConfig") = static_cast<std::decay_t<const MathOpt::UzawaConfig &>>(MathOpt::UzawaConfig()), R"nbdoc(Solve constrained least squares with equality constraints only.
 
 Convenience function for C*X = S with min ||X - X0||.
 

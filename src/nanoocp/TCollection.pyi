@@ -2559,7 +2559,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """Initializes a HAsciiString with a AsciiString."""
 
     @overload
-    def __init__(self, aString: TCollection_HAsciiString) -> None:
+    def __init__(self, aString: TCollection_HAsciiString | None) -> None:
         """Initializes a HAsciiString with a HAsciiString."""
 
     @overload
@@ -2570,7 +2570,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def __init__(self, aString: TCollection_HExtendedString, replaceNonAscii: str) -> None:
+    def __init__(self, aString: TCollection_HExtendedString | None, replaceNonAscii: str) -> None:
         """
         Initializes a HAsciiString with a HExtendedString.
         If replaceNonAscii is non-null character, it will be used
@@ -2586,7 +2586,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """Appends <other> to me."""
 
     @overload
-    def AssignCat(self, other: TCollection_HAsciiString) -> None:
+    def AssignCat(self, other: TCollection_HAsciiString | None) -> None:
         """
         Appends <other> to me.
         Example: aString = aString + anotherString
@@ -2621,7 +2621,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Cat(self, other: TCollection_HAsciiString) -> TCollection_HAsciiString:
+    def Cat(self, other: TCollection_HAsciiString | None) -> TCollection_HAsciiString:
         """
         Creates a new string by concatenation of this
         ASCII string and the other ASCII string.
@@ -2671,7 +2671,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         This produces an empty HAsciiString.
         """
 
-    def FirstLocationInSet(self, Set: TCollection_HAsciiString, FromIndex: int, ToIndex: int) -> int:
+    def FirstLocationInSet(self, Set: TCollection_HAsciiString | None, FromIndex: int, ToIndex: int) -> int:
         """
         Returns the index of the first character of <me> that is
         present in <Set>.
@@ -2688,7 +2688,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         1
         """
 
-    def FirstLocationNotInSet(self, Set: TCollection_HAsciiString, FromIndex: int, ToIndex: int) -> int:
+    def FirstLocationNotInSet(self, Set: TCollection_HAsciiString | None, FromIndex: int, ToIndex: int) -> int:
         """
         Returns the index of the first character of <me>
         that is not present in the set <Set>.
@@ -2722,10 +2722,10 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
     def Insert(self, where: int, what: str) -> None: ...
 
     @overload
-    def Insert(self, where: int, what: TCollection_HAsciiString) -> None:
+    def Insert(self, where: int, what: TCollection_HAsciiString | None) -> None:
         """Insert a HAsciiString at position <where>."""
 
-    def InsertAfter(self, Index: int, other: TCollection_HAsciiString) -> None:
+    def InsertAfter(self, Index: int, other: TCollection_HAsciiString | None) -> None:
         """
         Inserts the other ASCII string a after a specific index in the string <me>
         Example:
@@ -2735,7 +2735,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         me = "abcde" , other = "ab\"
         """
 
-    def InsertBefore(self, Index: int, other: TCollection_HAsciiString) -> None:
+    def InsertBefore(self, Index: int, other: TCollection_HAsciiString | None) -> None:
         """
         Inserts the other ASCII string a before a specific index in the string <me>
         Raises an exception if Index is out of bounds
@@ -2749,10 +2749,10 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
     def IsEmpty(self) -> bool:
         """Returns True if the string <me> contains zero character"""
 
-    def IsLess(self, other: TCollection_HAsciiString) -> bool:
+    def IsLess(self, other: TCollection_HAsciiString | None) -> bool:
         """Returns TRUE if <me> is 'ASCII' less than <other>."""
 
-    def IsGreater(self, other: TCollection_HAsciiString) -> bool:
+    def IsGreater(self, other: TCollection_HAsciiString | None) -> bool:
         """Returns TRUE if <me> is 'ASCII' greater than <other>."""
 
     def IntegerValue(self) -> int:
@@ -2775,17 +2775,17 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         This means no control character and no extended ASCII code.
         """
 
-    def IsDifferent(self, S: TCollection_HAsciiString) -> bool:
+    def IsDifferent(self, S: TCollection_HAsciiString | None) -> bool:
         """
         Returns True if the string S not contains same characters than
         the string <me>.
         """
 
     @overload
-    def IsSameString(self, S: TCollection_HAsciiString) -> bool: ...
+    def IsSameString(self, S: TCollection_HAsciiString | None) -> bool: ...
 
     @overload
-    def IsSameString(self, S: TCollection_HAsciiString, CaseSensitive: bool) -> bool:
+    def IsSameString(self, S: TCollection_HAsciiString | None, CaseSensitive: bool) -> bool:
         """
         Returns True if the string S contains same characters than the
         string <me>.
@@ -2815,7 +2815,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Location(self, other: TCollection_HAsciiString, FromIndex: int, ToIndex: int) -> int:
+    def Location(self, other: TCollection_HAsciiString | None, FromIndex: int, ToIndex: int) -> int:
         """
         returns an index in the string <me> of the first occurrence
         of the string S in the string <me> from the starting index
@@ -2850,7 +2850,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
     def LowerCase(self) -> None:
         """Converts <me> to its lower-case equivalent."""
 
-    def Prepend(self, other: TCollection_HAsciiString) -> None:
+    def Prepend(self, other: TCollection_HAsciiString | None) -> None:
         """
         Inserts the other string at the beginning of the string <me>
         Example:
@@ -2925,7 +2925,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Search(self, what: TCollection_HAsciiString) -> int:
+    def Search(self, what: TCollection_HAsciiString | None) -> int:
         """
         Searches a String in <me> from the beginning
         and returns position of first item <what> matching.
@@ -2944,7 +2944,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def SearchFromEnd(self, what: TCollection_HAsciiString) -> int:
+    def SearchFromEnd(self, what: TCollection_HAsciiString | None) -> int:
         """
         Searches a HAsciiString in another HAsciiString from the end
         and returns position of first item <what> matching.
@@ -2974,7 +2974,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def SetValue(self, where: int, what: TCollection_HAsciiString) -> None:
+    def SetValue(self, where: int, what: TCollection_HAsciiString | None) -> None:
         """Replaces a part of <me> by another string."""
 
     def Split(self, where: int) -> TCollection_HAsciiString:
@@ -3055,7 +3055,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
     def String(self) -> TCollection_AsciiString:
         """Returns the field myString."""
 
-    def IsSameState(self, other: TCollection_HAsciiString) -> bool: ...
+    def IsSameState(self, other: TCollection_HAsciiString | None) -> bool: ...
 
     @staticmethod
     def get_type_name() -> str: ...
@@ -3101,11 +3101,11 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         """Initializes a HExtendedString with a ExtendedString."""
 
     @overload
-    def __init__(self, aString: TCollection_HAsciiString) -> None:
+    def __init__(self, aString: TCollection_HAsciiString | None) -> None:
         """Initializes a HExtendedString with an HAsciiString."""
 
     @overload
-    def __init__(self, aString: TCollection_HExtendedString) -> None:
+    def __init__(self, aString: TCollection_HExtendedString | None) -> None:
         """Initializes a HExtendedString with a HExtendedString."""
 
     @overload
@@ -3118,10 +3118,10 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: TCollection_HExtendedString) -> None: ...
 
-    def AssignCat(self, other: TCollection_HExtendedString) -> None:
+    def AssignCat(self, other: TCollection_HExtendedString | None) -> None:
         """Appends <other> to me."""
 
-    def Cat(self, other: TCollection_HExtendedString) -> TCollection_HExtendedString:
+    def Cat(self, other: TCollection_HExtendedString | None) -> TCollection_HExtendedString:
         """Returns a string appending <other> to me."""
 
     def ChangeAll(self, aChar: str, NewChar: str) -> None:
@@ -3153,13 +3153,13 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Insert(self, where: int, what: TCollection_HExtendedString) -> None:
+    def Insert(self, where: int, what: TCollection_HExtendedString | None) -> None:
         """Insert a HExtendedString at position <where>."""
 
-    def IsLess(self, other: TCollection_HExtendedString) -> bool:
+    def IsLess(self, other: TCollection_HExtendedString | None) -> bool:
         """Returns TRUE if <me> is less than <other>."""
 
-    def IsGreater(self, other: TCollection_HExtendedString) -> bool:
+    def IsGreater(self, other: TCollection_HExtendedString | None) -> bool:
         """Returns TRUE if <me> is greater than <other>."""
 
     def IsAscii(self) -> bool:
@@ -3196,7 +3196,7 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def SetValue(self, where: int, what: TCollection_HExtendedString) -> None:
+    def SetValue(self, where: int, what: TCollection_HExtendedString | None) -> None:
         """Replaces a part of <me> by another string."""
 
     def Split(self, where: int) -> TCollection_HExtendedString:
@@ -3207,14 +3207,14 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
         aString.Split(3) gives <me> = "abc" and returns "defg\"
         """
 
-    def Search(self, what: TCollection_HExtendedString) -> int:
+    def Search(self, what: TCollection_HExtendedString | None) -> int:
         """
         Searches a String in <me> from the beginning
         and returns position of first item <what> matching.
         It returns -1 if not found.
         """
 
-    def SearchFromEnd(self, what: TCollection_HExtendedString) -> int:
+    def SearchFromEnd(self, what: TCollection_HExtendedString | None) -> int:
         """
         Searches a ExtendedString in another ExtendedString from the end
         and returns position of first item <what> matching.
@@ -3265,7 +3265,7 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
     def Print(self) -> object:
         """Displays <me>."""
 
-    def IsSameState(self, other: TCollection_HExtendedString) -> bool: ...
+    def IsSameState(self, other: TCollection_HExtendedString | None) -> bool: ...
 
     @staticmethod
     def get_type_name() -> str: ...

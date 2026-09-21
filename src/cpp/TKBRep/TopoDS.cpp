@@ -80,7 +80,8 @@ Bits 12-15 are reserved for future use.)nbdoc", nb::is_arithmetic())
           .value("Bit_Infinite", TopoDS_TShape::Bit_Infinite)
           .value("Bit_Convex", TopoDS_TShape::Bit_Convex)
           .value("Bit_Locked", TopoDS_TShape::Bit_Locked)
-          .value("Bits_Reserved", TopoDS_TShape::Bits_Reserved);
+          .value("Bits_Reserved", TopoDS_TShape::Bits_Reserved)
+          .export_values();
     }
     { nb::class_<TopoDS_Shape> cls(m, "TopoDS_Shape", R"nbdoc(Describes a shape which
 - references an underlying shape with the potential
@@ -363,17 +364,17 @@ same geometry and no sub-shapes.)nbdoc")
         .def("EmptyCopied", static_cast<TopoDS_Shape (TopoDS_Shape::*)() const>(&TopoDS_Shape::EmptyCopied), R"nbdoc(Returns a new Shape with the same Orientation and
 Location and a new TShape with the same geometry
 and no sub-shapes.)nbdoc")
-        .def("TShape", static_cast<void (TopoDS_Shape::*)(const occ::handle<TopoDS_TShape> &)>(&TopoDS_Shape::TShape), nb::arg("theTShape"))
+        .def("TShape", static_cast<void (TopoDS_Shape::*)(const occ::handle<TopoDS_TShape> &)>(&TopoDS_Shape::TShape), nb::arg("theTShape").none())
         .def("DumpJson", [](const TopoDS_Shape &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("__hash__", [](const TopoDS_Shape &self) { return static_cast<Py_ssize_t>(std::hash<TopoDS_Shape>{}(self)); });
     nanoocp_implicit_copy_ctor<TopoDS_Shape>(nb::borrow<nb::class_<TopoDS_Shape>>(m.attr("TopoDS_Shape")));
     nb::borrow<nb::class_<TopoDS_AlertAttribute>>(m.attr("TopoDS_AlertAttribute"))
-        .def(nb::new_([](const TopoDS_Shape & theShape, const TCollection_AsciiString & theName) { return opencascade::handle<TopoDS_AlertAttribute>(new TopoDS_AlertAttribute(theShape, theName)); }), nb::arg("theShape"), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString :: EmptyString ( )), R"nbdoc(Constructor with shape argument)nbdoc")
+        .def(nb::new_([](const TopoDS_Shape & theShape, const TCollection_AsciiString & theName) { return opencascade::handle<TopoDS_AlertAttribute>(new TopoDS_AlertAttribute(theShape, theName)); }), nb::arg("theShape"), nb::arg("theName") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString::EmptyString()), R"nbdoc(Constructor with shape argument)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TopoDS_AlertAttribute::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopoDS_AlertAttribute::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopoDS_AlertAttribute::*)() const>(&TopoDS_AlertAttribute::DynamicType))
         .def("GetShape", static_cast<const TopoDS_Shape & (TopoDS_AlertAttribute::*)() const>(&TopoDS_AlertAttribute::GetShape), R"nbdoc(Returns contained shape)nbdoc")
-        .def_static("Send", static_cast<void (*)(const occ::handle<Message_Messenger> &, const TopoDS_Shape &)>(&TopoDS_AlertAttribute::Send), nb::arg("theMessenger"), nb::arg("theShape"), R"nbdoc(Push shape information into messenger)nbdoc")
+        .def_static("Send", static_cast<void (*)(const occ::handle<Message_Messenger> &, const TopoDS_Shape &)>(&TopoDS_AlertAttribute::Send), nb::arg("theMessenger").none(), nb::arg("theShape"), R"nbdoc(Push shape information into messenger)nbdoc")
         .def("DumpJson", [](const TopoDS_AlertAttribute &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<TopoDS_AlertAttribute>(nb::borrow<nb::class_<TopoDS_AlertAttribute>>(m.attr("TopoDS_AlertAttribute")));
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, TopoDS_AlertAttribute>();
@@ -526,7 +527,7 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
         .def("GetShape", static_cast<const TopoDS_Shape & (TopoDS_AlertWithShape::*)() const>(&TopoDS_AlertWithShape::GetShape), R"nbdoc(Returns contained shape)nbdoc")
         .def("SetShape", static_cast<void (TopoDS_AlertWithShape::*)(const TopoDS_Shape &)>(&TopoDS_AlertWithShape::SetShape), nb::arg("theShape"), R"nbdoc(Sets the shape)nbdoc")
         .def("SupportsMerge", static_cast<bool (TopoDS_AlertWithShape::*)() const>(&TopoDS_AlertWithShape::SupportsMerge), R"nbdoc(Returns false.)nbdoc")
-        .def("Merge", static_cast<bool (TopoDS_AlertWithShape::*)(const occ::handle<Message_Alert> &)>(&TopoDS_AlertWithShape::Merge), nb::arg("theTarget"), R"nbdoc(Returns false.)nbdoc")
+        .def("Merge", static_cast<bool (TopoDS_AlertWithShape::*)(const occ::handle<Message_Alert> &)>(&TopoDS_AlertWithShape::Merge), nb::arg("theTarget").none(), R"nbdoc(Returns false.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TopoDS_AlertWithShape::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopoDS_AlertWithShape::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopoDS_AlertWithShape::*)() const>(&TopoDS_AlertWithShape::DynamicType));

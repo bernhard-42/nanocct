@@ -20,6 +20,12 @@ class GeomConvert_ConvType(enum.IntEnum):
 
     GeomConvert_MinGap = 2
 
+GeomConvert_Target: GeomConvert_ConvType = GeomConvert_ConvType.GeomConvert_Target
+
+GeomConvert_Simplest: GeomConvert_ConvType = GeomConvert_ConvType.GeomConvert_Simplest
+
+GeomConvert_MinGap: GeomConvert_ConvType = GeomConvert_ConvType.GeomConvert_MinGap
+
 class GeomConvert:
     """
     The GeomConvert package provides some global functions as follows
@@ -57,7 +63,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def SplitBSplineCurve(C: nanoocp.Geom.Geom_BSplineCurve, FromK1: int, ToK2: int, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineCurve:
+    def SplitBSplineCurve(C: nanoocp.Geom.Geom_BSplineCurve | None, FromK1: int, ToK2: int, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineCurve:
         """
         Convert a curve from Geom by an approximation method
 
@@ -79,7 +85,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def SplitBSplineCurve(C: nanoocp.Geom.Geom_BSplineCurve, FromU1: float, ToU2: float, ParametricTolerance: float, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineCurve:
+    def SplitBSplineCurve(C: nanoocp.Geom.Geom_BSplineCurve | None, FromU1: float, ToU2: float, ParametricTolerance: float, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineCurve:
         """
         This function computes the segment of B-spline curve between the
         parametric values FromU1, ToU2.
@@ -100,7 +106,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface, FromUK1: int, ToUK2: int, FromVK1: int, ToVK2: int, SameUOrientation: bool = True, SameVOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
+    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface | None, FromUK1: int, ToUK2: int, FromVK1: int, ToVK2: int, SameUOrientation: bool = True, SameVOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
         """
         Computes the B-spline surface patche between the knots values
         FromUK1, ToUK2, FromVK1, ToVK2.
@@ -120,7 +126,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface, FromK1: int, ToK2: int, USplit: bool, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
+    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface | None, FromK1: int, ToK2: int, USplit: bool, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
         """
         This method splits a B-spline surface patche between the
         knots values FromK1, ToK2 in one direction.
@@ -138,7 +144,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface, FromU1: float, ToU2: float, FromV1: float, ToV2: float, ParametricTolerance: float, SameUOrientation: bool = True, SameVOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
+    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface | None, FromU1: float, ToU2: float, FromV1: float, ToV2: float, ParametricTolerance: float, SameUOrientation: bool = True, SameVOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
         """
         This method computes the B-spline surface patche between the
         parametric values FromU1, ToU2, FromV1, ToV2.
@@ -162,7 +168,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface, FromParam1: float, ToParam2: float, USplit: bool, ParametricTolerance: float, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
+    def SplitBSplineSurface(S: nanoocp.Geom.Geom_BSplineSurface | None, FromParam1: float, ToParam2: float, USplit: bool, ParametricTolerance: float, SameOrientation: bool = True) -> nanoocp.Geom.Geom_BSplineSurface:
         """
         This method splits the B-spline surface S in one direction
         between the parametric values FromParam1, ToParam2.
@@ -184,7 +190,7 @@ class GeomConvert:
         """
 
     @staticmethod
-    def CurveToBSplineCurve(C: nanoocp.Geom.Geom_Curve, Parameterisation: nanoocp.Convert.Convert_ParameterisationType = ...) -> nanoocp.Geom.Geom_BSplineCurve:
+    def CurveToBSplineCurve(C: nanoocp.Geom.Geom_Curve | None, Parameterisation: nanoocp.Convert.Convert_ParameterisationType = ...) -> nanoocp.Geom.Geom_BSplineCurve:
         """
         This function converts a non infinite curve from
         Geom into a B-spline curve. C must be an ellipse or a
@@ -254,7 +260,7 @@ class GeomConvert:
         """
 
     @staticmethod
-    def SurfaceToBSplineSurface(S: nanoocp.Geom.Geom_Surface) -> nanoocp.Geom.Geom_BSplineSurface:
+    def SurfaceToBSplineSurface(S: nanoocp.Geom.Geom_Surface | None) -> nanoocp.Geom.Geom_BSplineSurface:
         """
         This algorithm converts a non infinite surface from Geom
         into a B-spline surface.
@@ -267,7 +273,7 @@ class GeomConvert:
         """
 
     @staticmethod
-    def ConcatG1(ArrayOfCurves: nanoocp.NCollection.NCollection_Array1[nanoocp.Geom.Geom_BSplineCurve], ArrayOfToler: nanoocp.NCollection.NCollection_Array1[float], ArrayOfConcatenated: nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], ClosedTolerance: float) -> bool:
+    def ConcatG1(ArrayOfCurves: nanoocp.NCollection.NCollection_Array1[nanoocp.Geom.Geom_BSplineCurve], ArrayOfToler: nanoocp.NCollection.NCollection_Array1[float], ClosedTolerance: float) -> tuple[nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], bool]:
         """
         This Method concatenates G1 the ArrayOfCurves as far
         as it is possible.
@@ -285,11 +291,11 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def ConcatC1(ArrayOfCurves: nanoocp.NCollection.NCollection_Array1[nanoocp.Geom.Geom_BSplineCurve], ArrayOfToler: nanoocp.NCollection.NCollection_Array1[float], ArrayOfIndices: nanoocp.NCollection.NCollection_HArray1[int], ArrayOfConcatenated: nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], ClosedTolerance: float) -> bool: ...
+    def ConcatC1(ArrayOfCurves: nanoocp.NCollection.NCollection_Array1[nanoocp.Geom.Geom_BSplineCurve], ArrayOfToler: nanoocp.NCollection.NCollection_Array1[float], ClosedTolerance: float) -> tuple[nanoocp.NCollection.NCollection_HArray1[int], nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], bool]: ...
 
     @overload
     @staticmethod
-    def ConcatC1(ArrayOfCurves: nanoocp.NCollection.NCollection_Array1[nanoocp.Geom.Geom_BSplineCurve], ArrayOfToler: nanoocp.NCollection.NCollection_Array1[float], ArrayOfIndices: nanoocp.NCollection.NCollection_HArray1[int], ArrayOfConcatenated: nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], ClosedTolerance: float, AngularTolerance: float) -> bool:
+    def ConcatC1(ArrayOfCurves: nanoocp.NCollection.NCollection_Array1[nanoocp.Geom.Geom_BSplineCurve], ArrayOfToler: nanoocp.NCollection.NCollection_Array1[float], ClosedTolerance: float, AngularTolerance: float) -> tuple[nanoocp.NCollection.NCollection_HArray1[int], nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], bool]:
         """
         This Method concatenates C1 the ArrayOfCurves as far
         as it is possible.
@@ -306,7 +312,7 @@ class GeomConvert:
         """
 
     @staticmethod
-    def C0BSplineToC1BSplineCurve(BS: nanoocp.Geom.Geom_BSplineCurve, tolerance: float, AngularTolerance: float = 1e-07) -> None:
+    def C0BSplineToC1BSplineCurve(BS: nanoocp.Geom.Geom_BSplineCurve | None, tolerance: float, AngularTolerance: float = 1e-07) -> nanoocp.Geom.Geom_BSplineCurve:
         """
         This Method reduces as far as it is possible the
         multiplicities of the knots of the BSpline BS.(keeping the
@@ -319,7 +325,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def C0BSplineToArrayOfC1BSplineCurve(BS: nanoocp.Geom.Geom_BSplineCurve, tabBS: nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], tolerance: float) -> None:
+    def C0BSplineToArrayOfC1BSplineCurve(BS: nanoocp.Geom.Geom_BSplineCurve | None, tolerance: float) -> nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve]:
         """
         This Method reduces as far as it is possible the
         multiplicities of the knots of the BSpline BS.(keeping the geometry).
@@ -328,7 +334,7 @@ class GeomConvert:
 
     @overload
     @staticmethod
-    def C0BSplineToArrayOfC1BSplineCurve(BS: nanoocp.Geom.Geom_BSplineCurve, tabBS: nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve], AngularTolerance: float, tolerance: float) -> None:
+    def C0BSplineToArrayOfC1BSplineCurve(BS: nanoocp.Geom.Geom_BSplineCurve | None, AngularTolerance: float, tolerance: float) -> nanoocp.NCollection.NCollection_HArray1[nanoocp.Geom.Geom_BSplineCurve]:
         """
         This Method reduces as far as it is possible the
         multiplicities of the knots of the BSpline BS.(keeping the
@@ -346,7 +352,7 @@ class GeomConvert_ApproxCurve:
     """
 
     @overload
-    def __init__(self, Curve: nanoocp.Geom.Geom_Curve, Tol3d: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxSegments: int, MaxDegree: int) -> None:
+    def __init__(self, Curve: nanoocp.Geom.Geom_Curve | None, Tol3d: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxSegments: int, MaxDegree: int) -> None:
         """
         Constructs a curve approximation framework defined by -
         -      the conic Curve,
@@ -359,7 +365,7 @@ class GeomConvert_ApproxCurve:
         """
 
     @overload
-    def __init__(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve, Tol3d: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxSegments: int, MaxDegree: int) -> None:
+    def __init__(self, Curve: nanoocp.Adaptor3d.Adaptor3d_Curve | None, Tol3d: float, Order: nanoocp.GeomAbs.GeomAbs_Shape, MaxSegments: int, MaxDegree: int) -> None:
         """
         Constructs a curve approximation framework defined by -
         -      the Curve,
@@ -408,7 +414,7 @@ class GeomConvert_ApproxSurface:
     """
 
     @overload
-    def __init__(self, Surf: nanoocp.Geom.Geom_Surface, Tol3d: float, UContinuity: nanoocp.GeomAbs.GeomAbs_Shape, VContinuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegU: int, MaxDegV: int, MaxSegments: int, PrecisCode: int) -> None:
+    def __init__(self, Surf: nanoocp.Geom.Geom_Surface | None, Tol3d: float, UContinuity: nanoocp.GeomAbs.GeomAbs_Shape, VContinuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegU: int, MaxDegV: int, MaxSegments: int, PrecisCode: int) -> None:
         """
         Constructs a surface approximation framework defined by
         -   the conic Surf
@@ -424,7 +430,7 @@ class GeomConvert_ApproxSurface:
         """
 
     @overload
-    def __init__(self, Surf: nanoocp.Adaptor3d.Adaptor3d_Surface, Tol3d: float, UContinuity: nanoocp.GeomAbs.GeomAbs_Shape, VContinuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegU: int, MaxDegV: int, MaxSegments: int, PrecisCode: int) -> None:
+    def __init__(self, Surf: nanoocp.Adaptor3d.Adaptor3d_Surface | None, Tol3d: float, UContinuity: nanoocp.GeomAbs.GeomAbs_Shape, VContinuity: nanoocp.GeomAbs.GeomAbs_Shape, MaxDegU: int, MaxDegV: int, MaxSegments: int, PrecisCode: int) -> None:
         """
         Constructs a surface approximation framework defined by
         -   the Surf
@@ -493,7 +499,7 @@ class GeomConvert_BSplineCurveKnotSplitting:
     """
 
     @overload
-    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BSplineCurve, ContinuityRange: int) -> None:
+    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BSplineCurve | None, ContinuityRange: int) -> None:
         """
         Determines points at which the BSpline curve
         BasisCurve should be split in order to obtain arcs
@@ -571,14 +577,14 @@ class GeomConvert_BSplineCurveToBezierCurve:
     """
 
     @overload
-    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BSplineCurve) -> None:
+    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BSplineCurve | None) -> None:
         """
         Computes all the data needed to convert the
         BSpline curve BasisCurve into a series of adjacent Bezier arcs.
         """
 
     @overload
-    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BSplineCurve, U1: float, U2: float, ParametricTolerance: float) -> None:
+    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BSplineCurve | None, U1: float, U2: float, ParametricTolerance: float) -> None:
         """
         Computes all the data needed to convert
         the portion of the BSpline curve BasisCurve
@@ -672,7 +678,7 @@ class GeomConvert_BSplineSurfaceKnotSplitting:
     """
 
     @overload
-    def __init__(self, BasisSurface: nanoocp.Geom.Geom_BSplineSurface, UContinuityRange: int, VContinuityRange: int) -> None:
+    def __init__(self, BasisSurface: nanoocp.Geom.Geom_BSplineSurface | None, UContinuityRange: int, VContinuityRange: int) -> None:
         """
         Determines the u- and v-isoparametric curves
         along which the BSpline surface BasisSurface
@@ -797,7 +803,7 @@ class GeomConvert_BSplineSurfaceToBezierSurface:
     """
 
     @overload
-    def __init__(self, BasisSurface: nanoocp.Geom.Geom_BSplineSurface) -> None:
+    def __init__(self, BasisSurface: nanoocp.Geom.Geom_BSplineSurface | None) -> None:
         """
         Computes all the data needed to convert
         -   the BSpline surface BasisSurface into a series of adjacent Bezier surfaces.
@@ -816,7 +822,7 @@ class GeomConvert_BSplineSurfaceToBezierSurface:
         """
 
     @overload
-    def __init__(self, BasisSurface: nanoocp.Geom.Geom_BSplineSurface, U1: float, U2: float, V1: float, V2: float, ParametricTolerance: float) -> None:
+    def __init__(self, BasisSurface: nanoocp.Geom.Geom_BSplineSurface | None, U1: float, U2: float, V1: float, V2: float, ParametricTolerance: float) -> None:
         """
         Computes all the data needed to convert
         the patch of the BSpline surface BasisSurface
@@ -1224,7 +1230,7 @@ class GeomConvert_CompCurveToBSplineCurve:
         """
 
     @overload
-    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BoundedCurve, Parameterisation: nanoocp.Convert.Convert_ParameterisationType = ...) -> None:
+    def __init__(self, BasisCurve: nanoocp.Geom.Geom_BoundedCurve | None, Parameterisation: nanoocp.Convert.Convert_ParameterisationType = ...) -> None:
         """
         Initialize the algorithm with one curve
         - Parameterisation is used to convert
@@ -1233,7 +1239,7 @@ class GeomConvert_CompCurveToBSplineCurve:
     @overload
     def __init__(self, theOther: GeomConvert_CompCurveToBSplineCurve) -> None: ...
 
-    def Add(self, NewCurve: nanoocp.Geom.Geom_BoundedCurve, Tolerance: float, After: bool = False, WithRatio: bool = True, MinM: int = 0) -> bool:
+    def Add(self, NewCurve: nanoocp.Geom.Geom_BoundedCurve | None, Tolerance: float, After: bool = False, WithRatio: bool = True, MinM: int = 0) -> bool:
         """
         Append a curve in the BSpline Return False if the
         curve is not G0 with the BSplineCurve. Tolerance
@@ -1262,15 +1268,15 @@ class GeomConvert_Units:
     def __init__(self, theOther: GeomConvert_Units) -> None: ...
 
     @staticmethod
-    def RadianToDegree(theCurve: nanoocp.Geom2d.Geom2d_Curve, theSurface: nanoocp.Geom.Geom_Surface, theLengthFactor: float, theFactorRadianDegree: float) -> nanoocp.Geom2d.Geom2d_Curve:
+    def RadianToDegree(theCurve: nanoocp.Geom2d.Geom2d_Curve | None, theSurface: nanoocp.Geom.Geom_Surface | None, theLengthFactor: float, theFactorRadianDegree: float) -> nanoocp.Geom2d.Geom2d_Curve:
         """Convert 2d curve for change angle unit from radian to degree"""
 
     @staticmethod
-    def DegreeToRadian(theCurve: nanoocp.Geom2d.Geom2d_Curve, theSurface: nanoocp.Geom.Geom_Surface, theLengthFactor: float, theFactorRadianDegree: float) -> nanoocp.Geom2d.Geom2d_Curve:
+    def DegreeToRadian(theCurve: nanoocp.Geom2d.Geom2d_Curve | None, theSurface: nanoocp.Geom.Geom_Surface | None, theLengthFactor: float, theFactorRadianDegree: float) -> nanoocp.Geom2d.Geom2d_Curve:
         """Convert 2d curve for change angle unit from degree to radian"""
 
     @staticmethod
-    def MirrorPCurve(theCurve: nanoocp.Geom2d.Geom2d_Curve) -> nanoocp.Geom2d.Geom2d_Curve:
+    def MirrorPCurve(theCurve: nanoocp.Geom2d.Geom2d_Curve | None) -> nanoocp.Geom2d.Geom2d_Curve:
         """return 2d curve as 'mirror' for given"""
 
 class GeomConvert_CurveToAnaCurve:
@@ -1278,14 +1284,14 @@ class GeomConvert_CurveToAnaCurve:
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
+    def __init__(self, C: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomConvert_CurveToAnaCurve) -> None: ...
 
-    def Init(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
+    def Init(self, C: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
-    def ConvertToAnalytical(self, theTol: float, theResultCurve: nanoocp.Geom.Geom_Curve, F: float, L: float) -> tuple[bool, float, float]:
+    def ConvertToAnalytical(self, theTol: float, F: float, L: float) -> tuple[bool, nanoocp.Geom.Geom_Curve, float, float]:
         """
         Converts me to analytical if possible with given
         tolerance. The new first and last parameters are
@@ -1293,10 +1299,10 @@ class GeomConvert_CurveToAnaCurve:
         """
 
     @staticmethod
-    def ComputeCurve(curve: nanoocp.Geom.Geom_Curve, tolerance: float, c1: float, c2: float, theCurvType: GeomConvert_ConvType = GeomConvert_ConvType.GeomConvert_MinGap, theTarget: nanoocp.GeomAbs.GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_Line) -> tuple[nanoocp.Geom.Geom_Curve, float, float, float]: ...
+    def ComputeCurve(curve: nanoocp.Geom.Geom_Curve | None, tolerance: float, c1: float, c2: float, theCurvType: GeomConvert_ConvType = GeomConvert_ConvType.GeomConvert_MinGap, theTarget: nanoocp.GeomAbs.GeomAbs_CurveType = GeomAbs_CurveType.GeomAbs_Line) -> tuple[nanoocp.Geom.Geom_Curve, float, float, float]: ...
 
     @staticmethod
-    def ComputeCircle(curve: nanoocp.Geom.Geom_Curve, tolerance: float, c1: float, c2: float) -> tuple[nanoocp.Geom.Geom_Curve, float, float, float]:
+    def ComputeCircle(curve: nanoocp.Geom.Geom_Curve | None, tolerance: float, c1: float, c2: float) -> tuple[nanoocp.Geom.Geom_Curve, float, float, float]:
         """
         Tries to convert the given curve to circle with given
         tolerance. Returns NULL curve if conversion is
@@ -1304,7 +1310,7 @@ class GeomConvert_CurveToAnaCurve:
         """
 
     @staticmethod
-    def ComputeEllipse(curve: nanoocp.Geom.Geom_Curve, tolerance: float, c1: float, c2: float) -> tuple[nanoocp.Geom.Geom_Curve, float, float, float]:
+    def ComputeEllipse(curve: nanoocp.Geom.Geom_Curve | None, tolerance: float, c1: float, c2: float) -> tuple[nanoocp.Geom.Geom_Curve, float, float, float]:
         """
         Tries to convert the given curve to ellipse with given
         tolerance. Returns NULL curve if conversion is
@@ -1312,7 +1318,7 @@ class GeomConvert_CurveToAnaCurve:
         """
 
     @staticmethod
-    def ComputeLine(curve: nanoocp.Geom.Geom_Curve, tolerance: float, c1: float, c2: float) -> tuple[nanoocp.Geom.Geom_Line, float, float, float]:
+    def ComputeLine(curve: nanoocp.Geom.Geom_Curve | None, tolerance: float, c1: float, c2: float) -> tuple[nanoocp.Geom.Geom_Line, float, float, float]:
         """
         Tries to convert the given curve to line with given
         tolerance. Returns NULL curve if conversion is
@@ -1367,12 +1373,12 @@ class GeomConvert_SurfToAnaSurf:
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, S: nanoocp.Geom.Geom_Surface) -> None: ...
+    def __init__(self, S: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomConvert_SurfToAnaSurf) -> None: ...
 
-    def Init(self, S: nanoocp.Geom.Geom_Surface) -> None: ...
+    def Init(self, S: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
     def SetConvType(self, theConvType: GeomConvert_ConvType = GeomConvert_ConvType.GeomConvert_Simplest) -> None: ...
 
@@ -1396,11 +1402,11 @@ class GeomConvert_SurfToAnaSurf:
     def ConvertToAnalytical(self, InitialToler: float, Umin: float, Umax: float, Vmin: float, Vmax: float) -> nanoocp.Geom.Geom_Surface: ...
 
     @staticmethod
-    def IsSame(S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, tol: float) -> bool:
+    def IsSame(S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, tol: float) -> bool:
         """Returns true if surfaces is same with the given tolerance"""
 
     @staticmethod
-    def IsCanonical(S: nanoocp.Geom.Geom_Surface) -> bool:
+    def IsCanonical(S: nanoocp.Geom.Geom_Surface | None) -> bool:
         """Returns true, if surface is canonical"""
 
 class GeomConvert_FuncSphereLSDist(nanoocp.math.math_MultipleVarFunctionWithGradient):
@@ -1429,12 +1435,12 @@ class GeomConvert_FuncSphereLSDist(nanoocp.math.math_MultipleVarFunctionWithGrad
         """Constructor."""
 
     @overload
-    def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
+    def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ] | None) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomConvert_FuncSphereLSDist) -> None: ...
 
-    def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
+    def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ] | None) -> None: ...
 
     def NbVariables(self) -> int:
         """Number of variables."""
@@ -1488,12 +1494,12 @@ class GeomConvert_FuncCylinderLSDist(nanoocp.math.math_MultipleVarFunctionWithGr
         """Constructor."""
 
     @overload
-    def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ], theDir: nanoocp.gp.gp_Dir) -> None: ...
+    def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ] | None, theDir: nanoocp.gp.gp_Dir) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomConvert_FuncCylinderLSDist) -> None: ...
 
-    def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
+    def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ] | None) -> None: ...
 
     def SetDir(self, theDir: nanoocp.gp.gp_Dir) -> None: ...
 
@@ -1521,12 +1527,12 @@ class GeomConvert_FuncConeLSDist(nanoocp.math.math_MultipleVarFunction):
         """Constructor."""
 
     @overload
-    def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ], theDir: nanoocp.gp.gp_Dir) -> None: ...
+    def __init__(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ] | None, theDir: nanoocp.gp.gp_Dir) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomConvert_FuncConeLSDist) -> None: ...
 
-    def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ]) -> None: ...
+    def SetPoints(self, thePoints: nanoocp.NCollection.NCollection_HArray1[nanoocp.gp.gp_XYZ] | None) -> None: ...
 
     def SetDir(self, theDir: nanoocp.gp.gp_Dir) -> None: ...
 

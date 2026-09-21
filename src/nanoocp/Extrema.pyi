@@ -25,10 +25,22 @@ class Extrema_ElementType(enum.IntEnum):
 
     Extrema_Face = 3
 
+Extrema_Node: Extrema_ElementType = Extrema_ElementType.Extrema_Node
+
+Extrema_UIsoEdge: Extrema_ElementType = Extrema_ElementType.Extrema_UIsoEdge
+
+Extrema_VIsoEdge: Extrema_ElementType = Extrema_ElementType.Extrema_VIsoEdge
+
+Extrema_Face: Extrema_ElementType = Extrema_ElementType.Extrema_Face
+
 class Extrema_ExtAlgo(enum.IntEnum):
     Extrema_ExtAlgo_Grad = 0
 
     Extrema_ExtAlgo_Tree = 1
+
+Extrema_ExtAlgo_Grad: Extrema_ExtAlgo = Extrema_ExtAlgo.Extrema_ExtAlgo_Grad
+
+Extrema_ExtAlgo_Tree: Extrema_ExtAlgo = Extrema_ExtAlgo.Extrema_ExtAlgo_Tree
 
 class Extrema_ExtFlag(enum.IntEnum):
     Extrema_ExtFlag_MIN = 0
@@ -36,6 +48,12 @@ class Extrema_ExtFlag(enum.IntEnum):
     Extrema_ExtFlag_MAX = 1
 
     Extrema_ExtFlag_MINMAX = 2
+
+Extrema_ExtFlag_MIN: Extrema_ExtFlag = Extrema_ExtFlag.Extrema_ExtFlag_MIN
+
+Extrema_ExtFlag_MAX: Extrema_ExtFlag = Extrema_ExtFlag.Extrema_ExtFlag_MAX
+
+Extrema_ExtFlag_MINMAX: Extrema_ExtFlag = Extrema_ExtFlag.Extrema_ExtFlag_MINMAX
 
 class Extrema_CurveTool:
     @overload
@@ -2392,16 +2410,16 @@ class Extrema_ExtPExtS(nanoocp.Standard.Standard_Transient):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfLinearExtrusion, TolU: float, TolV: float) -> None: ...
+    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfLinearExtrusion | None, TolU: float, TolV: float) -> None: ...
 
     @overload
-    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfLinearExtrusion, Umin: float, Usup: float, Vmin: float, Vsup: float, TolU: float, TolV: float) -> None:
+    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfLinearExtrusion | None, Umin: float, Usup: float, Vmin: float, Vsup: float, TolU: float, TolV: float) -> None:
         """
         It calculates all the distances between a point
         from gp and a Surface.
         """
 
-    def Initialize(self, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfLinearExtrusion, Uinf: float, Usup: float, Vinf: float, Vsup: float, TolU: float, TolV: float) -> None:
+    def Initialize(self, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfLinearExtrusion | None, Uinf: float, Usup: float, Vinf: float, Vsup: float, TolU: float, TolV: float) -> None:
         """Initializes the fields of the algorithm."""
 
     def Perform(self, P: nanoocp.gp.gp_Pnt) -> None: ...
@@ -2437,16 +2455,16 @@ class Extrema_ExtPRevS(nanoocp.Standard.Standard_Transient):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfRevolution, TolU: float, TolV: float) -> None: ...
+    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfRevolution | None, TolU: float, TolV: float) -> None: ...
 
     @overload
-    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfRevolution, Umin: float, Usup: float, Vmin: float, Vsup: float, TolU: float, TolV: float) -> None:
+    def __init__(self, P: nanoocp.gp.gp_Pnt, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfRevolution | None, Umin: float, Usup: float, Vmin: float, Vsup: float, TolU: float, TolV: float) -> None:
         """
         It calculates all the distances between a point
         from gp and a SurfacePtr from Adaptor3d.
         """
 
-    def Initialize(self, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfRevolution, Umin: float, Usup: float, Vmin: float, Vsup: float, TolU: float, TolV: float) -> None: ...
+    def Initialize(self, S: nanoocp.GeomAdaptor.GeomAdaptor_SurfaceOfRevolution | None, Umin: float, Usup: float, Vmin: float, Vsup: float, TolU: float, TolV: float) -> None: ...
 
     def Perform(self, P: nanoocp.gp.gp_Pnt) -> None: ...
 

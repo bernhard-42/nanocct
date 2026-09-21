@@ -30,6 +30,16 @@ class Message_Gravity(enum.IntEnum):
 
     Message_Fail = 4
 
+Message_Trace: Message_Gravity = Message_Gravity.Message_Trace
+
+Message_Info: Message_Gravity = Message_Gravity.Message_Info
+
+Message_Warning: Message_Gravity = Message_Gravity.Message_Warning
+
+Message_Alarm: Message_Gravity = Message_Gravity.Message_Alarm
+
+Message_Fail: Message_Gravity = Message_Gravity.Message_Fail
+
 class Message_MetricType(enum.IntEnum):
     """Specifies kind of report information to collect"""
 
@@ -59,6 +69,32 @@ class Message_MetricType(enum.IntEnum):
 
     Message_MetricType_MemHeapUsage = 12
 
+Message_MetricType_None: Message_MetricType = Message_MetricType.Message_MetricType_None
+
+Message_MetricType_ThreadCPUUserTime: Message_MetricType = ...
+
+Message_MetricType_ThreadCPUSystemTime: Message_MetricType = ...
+
+Message_MetricType_ProcessCPUUserTime: Message_MetricType = ...
+
+Message_MetricType_ProcessCPUSystemTime: Message_MetricType = ...
+
+Message_MetricType_WallClock: Message_MetricType = Message_MetricType.Message_MetricType_WallClock
+
+Message_MetricType_MemPrivate: Message_MetricType = Message_MetricType.Message_MetricType_MemPrivate
+
+Message_MetricType_MemVirtual: Message_MetricType = Message_MetricType.Message_MetricType_MemVirtual
+
+Message_MetricType_MemWorkingSet: Message_MetricType = ...
+
+Message_MetricType_MemWorkingSetPeak: Message_MetricType = ...
+
+Message_MetricType_MemSwapUsage: Message_MetricType = ...
+
+Message_MetricType_MemSwapUsagePeak: Message_MetricType = ...
+
+Message_MetricType_MemHeapUsage: Message_MetricType = ...
+
 class Message_StatusType(enum.IntEnum):
     """
     Definition of types of execution status supported by
@@ -72,6 +108,14 @@ class Message_StatusType(enum.IntEnum):
     Message_ALARM = 1024
 
     Message_FAIL = 2048
+
+Message_DONE: Message_StatusType = Message_StatusType.Message_DONE
+
+Message_WARN: Message_StatusType = Message_StatusType.Message_WARN
+
+Message_ALARM: Message_StatusType = Message_StatusType.Message_ALARM
+
+Message_FAIL: Message_StatusType = Message_StatusType.Message_FAIL
 
 class Message_Status(enum.IntEnum):
     """
@@ -337,6 +381,264 @@ class Message_Status(enum.IntEnum):
 
     Message_Fail32 = 2079
 
+Message_None: Message_Status = Message_Status.Message_None
+
+Message_Done1: Message_Status = Message_Status.Message_Done1
+
+Message_Done2: Message_Status = Message_Status.Message_Done2
+
+Message_Done3: Message_Status = Message_Status.Message_Done3
+
+Message_Done4: Message_Status = Message_Status.Message_Done4
+
+Message_Done5: Message_Status = Message_Status.Message_Done5
+
+Message_Done6: Message_Status = Message_Status.Message_Done6
+
+Message_Done7: Message_Status = Message_Status.Message_Done7
+
+Message_Done8: Message_Status = Message_Status.Message_Done8
+
+Message_Done9: Message_Status = Message_Status.Message_Done9
+
+Message_Done10: Message_Status = Message_Status.Message_Done10
+
+Message_Done11: Message_Status = Message_Status.Message_Done11
+
+Message_Done12: Message_Status = Message_Status.Message_Done12
+
+Message_Done13: Message_Status = Message_Status.Message_Done13
+
+Message_Done14: Message_Status = Message_Status.Message_Done14
+
+Message_Done15: Message_Status = Message_Status.Message_Done15
+
+Message_Done16: Message_Status = Message_Status.Message_Done16
+
+Message_Done17: Message_Status = Message_Status.Message_Done17
+
+Message_Done18: Message_Status = Message_Status.Message_Done18
+
+Message_Done19: Message_Status = Message_Status.Message_Done19
+
+Message_Done20: Message_Status = Message_Status.Message_Done20
+
+Message_Done21: Message_Status = Message_Status.Message_Done21
+
+Message_Done22: Message_Status = Message_Status.Message_Done22
+
+Message_Done23: Message_Status = Message_Status.Message_Done23
+
+Message_Done24: Message_Status = Message_Status.Message_Done24
+
+Message_Done25: Message_Status = Message_Status.Message_Done25
+
+Message_Done26: Message_Status = Message_Status.Message_Done26
+
+Message_Done27: Message_Status = Message_Status.Message_Done27
+
+Message_Done28: Message_Status = Message_Status.Message_Done28
+
+Message_Done29: Message_Status = Message_Status.Message_Done29
+
+Message_Done30: Message_Status = Message_Status.Message_Done30
+
+Message_Done31: Message_Status = Message_Status.Message_Done31
+
+Message_Done32: Message_Status = Message_Status.Message_Done32
+
+Message_Warn1: Message_Status = Message_Status.Message_Warn1
+
+Message_Warn2: Message_Status = Message_Status.Message_Warn2
+
+Message_Warn3: Message_Status = Message_Status.Message_Warn3
+
+Message_Warn4: Message_Status = Message_Status.Message_Warn4
+
+Message_Warn5: Message_Status = Message_Status.Message_Warn5
+
+Message_Warn6: Message_Status = Message_Status.Message_Warn6
+
+Message_Warn7: Message_Status = Message_Status.Message_Warn7
+
+Message_Warn8: Message_Status = Message_Status.Message_Warn8
+
+Message_Warn9: Message_Status = Message_Status.Message_Warn9
+
+Message_Warn10: Message_Status = Message_Status.Message_Warn10
+
+Message_Warn11: Message_Status = Message_Status.Message_Warn11
+
+Message_Warn12: Message_Status = Message_Status.Message_Warn12
+
+Message_Warn13: Message_Status = Message_Status.Message_Warn13
+
+Message_Warn14: Message_Status = Message_Status.Message_Warn14
+
+Message_Warn15: Message_Status = Message_Status.Message_Warn15
+
+Message_Warn16: Message_Status = Message_Status.Message_Warn16
+
+Message_Warn17: Message_Status = Message_Status.Message_Warn17
+
+Message_Warn18: Message_Status = Message_Status.Message_Warn18
+
+Message_Warn19: Message_Status = Message_Status.Message_Warn19
+
+Message_Warn20: Message_Status = Message_Status.Message_Warn20
+
+Message_Warn21: Message_Status = Message_Status.Message_Warn21
+
+Message_Warn22: Message_Status = Message_Status.Message_Warn22
+
+Message_Warn23: Message_Status = Message_Status.Message_Warn23
+
+Message_Warn24: Message_Status = Message_Status.Message_Warn24
+
+Message_Warn25: Message_Status = Message_Status.Message_Warn25
+
+Message_Warn26: Message_Status = Message_Status.Message_Warn26
+
+Message_Warn27: Message_Status = Message_Status.Message_Warn27
+
+Message_Warn28: Message_Status = Message_Status.Message_Warn28
+
+Message_Warn29: Message_Status = Message_Status.Message_Warn29
+
+Message_Warn30: Message_Status = Message_Status.Message_Warn30
+
+Message_Warn31: Message_Status = Message_Status.Message_Warn31
+
+Message_Warn32: Message_Status = Message_Status.Message_Warn32
+
+Message_Alarm1: Message_Status = Message_Status.Message_Alarm1
+
+Message_Alarm2: Message_Status = Message_Status.Message_Alarm2
+
+Message_Alarm3: Message_Status = Message_Status.Message_Alarm3
+
+Message_Alarm4: Message_Status = Message_Status.Message_Alarm4
+
+Message_Alarm5: Message_Status = Message_Status.Message_Alarm5
+
+Message_Alarm6: Message_Status = Message_Status.Message_Alarm6
+
+Message_Alarm7: Message_Status = Message_Status.Message_Alarm7
+
+Message_Alarm8: Message_Status = Message_Status.Message_Alarm8
+
+Message_Alarm9: Message_Status = Message_Status.Message_Alarm9
+
+Message_Alarm10: Message_Status = Message_Status.Message_Alarm10
+
+Message_Alarm11: Message_Status = Message_Status.Message_Alarm11
+
+Message_Alarm12: Message_Status = Message_Status.Message_Alarm12
+
+Message_Alarm13: Message_Status = Message_Status.Message_Alarm13
+
+Message_Alarm14: Message_Status = Message_Status.Message_Alarm14
+
+Message_Alarm15: Message_Status = Message_Status.Message_Alarm15
+
+Message_Alarm16: Message_Status = Message_Status.Message_Alarm16
+
+Message_Alarm17: Message_Status = Message_Status.Message_Alarm17
+
+Message_Alarm18: Message_Status = Message_Status.Message_Alarm18
+
+Message_Alarm19: Message_Status = Message_Status.Message_Alarm19
+
+Message_Alarm20: Message_Status = Message_Status.Message_Alarm20
+
+Message_Alarm21: Message_Status = Message_Status.Message_Alarm21
+
+Message_Alarm22: Message_Status = Message_Status.Message_Alarm22
+
+Message_Alarm23: Message_Status = Message_Status.Message_Alarm23
+
+Message_Alarm24: Message_Status = Message_Status.Message_Alarm24
+
+Message_Alarm25: Message_Status = Message_Status.Message_Alarm25
+
+Message_Alarm26: Message_Status = Message_Status.Message_Alarm26
+
+Message_Alarm27: Message_Status = Message_Status.Message_Alarm27
+
+Message_Alarm28: Message_Status = Message_Status.Message_Alarm28
+
+Message_Alarm29: Message_Status = Message_Status.Message_Alarm29
+
+Message_Alarm30: Message_Status = Message_Status.Message_Alarm30
+
+Message_Alarm31: Message_Status = Message_Status.Message_Alarm31
+
+Message_Alarm32: Message_Status = Message_Status.Message_Alarm32
+
+Message_Fail1: Message_Status = Message_Status.Message_Fail1
+
+Message_Fail2: Message_Status = Message_Status.Message_Fail2
+
+Message_Fail3: Message_Status = Message_Status.Message_Fail3
+
+Message_Fail4: Message_Status = Message_Status.Message_Fail4
+
+Message_Fail5: Message_Status = Message_Status.Message_Fail5
+
+Message_Fail6: Message_Status = Message_Status.Message_Fail6
+
+Message_Fail7: Message_Status = Message_Status.Message_Fail7
+
+Message_Fail8: Message_Status = Message_Status.Message_Fail8
+
+Message_Fail9: Message_Status = Message_Status.Message_Fail9
+
+Message_Fail10: Message_Status = Message_Status.Message_Fail10
+
+Message_Fail11: Message_Status = Message_Status.Message_Fail11
+
+Message_Fail12: Message_Status = Message_Status.Message_Fail12
+
+Message_Fail13: Message_Status = Message_Status.Message_Fail13
+
+Message_Fail14: Message_Status = Message_Status.Message_Fail14
+
+Message_Fail15: Message_Status = Message_Status.Message_Fail15
+
+Message_Fail16: Message_Status = Message_Status.Message_Fail16
+
+Message_Fail17: Message_Status = Message_Status.Message_Fail17
+
+Message_Fail18: Message_Status = Message_Status.Message_Fail18
+
+Message_Fail19: Message_Status = Message_Status.Message_Fail19
+
+Message_Fail20: Message_Status = Message_Status.Message_Fail20
+
+Message_Fail21: Message_Status = Message_Status.Message_Fail21
+
+Message_Fail22: Message_Status = Message_Status.Message_Fail22
+
+Message_Fail23: Message_Status = Message_Status.Message_Fail23
+
+Message_Fail24: Message_Status = Message_Status.Message_Fail24
+
+Message_Fail25: Message_Status = Message_Status.Message_Fail25
+
+Message_Fail26: Message_Status = Message_Status.Message_Fail26
+
+Message_Fail27: Message_Status = Message_Status.Message_Fail27
+
+Message_Fail28: Message_Status = Message_Status.Message_Fail28
+
+Message_Fail29: Message_Status = Message_Status.Message_Fail29
+
+Message_Fail30: Message_Status = Message_Status.Message_Fail30
+
+Message_Fail31: Message_Status = Message_Status.Message_Fail31
+
+Message_Fail32: Message_Status = Message_Status.Message_Fail32
+
 class Message_ConsoleColor(enum.IntEnum):
     """Color definition for console/terminal output (limited palette)."""
 
@@ -357,6 +659,24 @@ class Message_ConsoleColor(enum.IntEnum):
     Message_ConsoleColor_Cyan = 7
 
     Message_ConsoleColor_Magenta = 8
+
+Message_ConsoleColor_Default: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Default
+
+Message_ConsoleColor_Black: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Black
+
+Message_ConsoleColor_White: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_White
+
+Message_ConsoleColor_Red: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Red
+
+Message_ConsoleColor_Blue: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Blue
+
+Message_ConsoleColor_Green: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Green
+
+Message_ConsoleColor_Yellow: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Yellow
+
+Message_ConsoleColor_Cyan: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Cyan
+
+Message_ConsoleColor_Magenta: Message_ConsoleColor = Message_ConsoleColor.Message_ConsoleColor_Magenta
 
 class Message_Printer(nanoocp.Standard.Standard_Transient):
     """
@@ -407,7 +727,7 @@ class Message_Printer(nanoocp.Standard.Standard_Transient):
         Default implementation calls first method Send().
         """
 
-    def SendObject(self, theObject: nanoocp.Standard.Standard_Transient, theGravity: Message_Gravity) -> None:
+    def SendObject(self, theObject: nanoocp.Standard.Standard_Transient | None, theGravity: Message_Gravity) -> None:
         """
         Send a string message with specified trace level.
         The object is converted to string in format: <object kind> : <object pointer>.
@@ -447,7 +767,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def __init__(self, thePrinter: Message_Printer) -> None:
+    def __init__(self, thePrinter: Message_Printer | None) -> None:
         """Create messenger with single printer"""
 
     @overload
@@ -491,21 +811,21 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
-    def AddPrinter(self, thePrinter: Message_Printer) -> bool:
+    def AddPrinter(self, thePrinter: Message_Printer | None) -> bool:
         """
         Add a printer to the messenger.
         The printer will be added only if it is not yet in the list.
         Returns True if printer has been added.
         """
 
-    def RemovePrinter(self, thePrinter: Message_Printer) -> bool:
+    def RemovePrinter(self, thePrinter: Message_Printer | None) -> bool:
         """
         Removes specified printer from the messenger.
         Returns True if this printer has been found in the list
         and removed.
         """
 
-    def RemovePrinters(self, theType: nanoocp.Standard.Standard_Type) -> int:
+    def RemovePrinters(self, theType: nanoocp.Standard.Standard_Type | None) -> int:
         """
         Removes printers of specified type (including derived classes)
         from the messenger.
@@ -543,7 +863,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
         """Create string buffer for message of specified type"""
 
     @overload
-    def Send(self, theObject: nanoocp.Standard.Standard_Transient, theGravity: Message_Gravity = Message_Gravity.Message_Warning) -> None:
+    def Send(self, theObject: nanoocp.Standard.Standard_Transient | None, theGravity: Message_Gravity = Message_Gravity.Message_Warning) -> None:
         """See above"""
 
     @overload
@@ -767,7 +1087,7 @@ class Message_Alert(nanoocp.Standard.Standard_Transient):
         Basis implementation returns true.
         """
 
-    def Merge(self, theTarget: Message_Alert) -> bool:
+    def Merge(self, theTarget: Message_Alert | None) -> bool:
         """
         If possible, merge data contained in this alert to theTarget.
         @return True if merged.
@@ -801,7 +1121,7 @@ class Message_AlertExtended(Message_Alert):
     def __init__(self, theOther: Message_AlertExtended) -> None: ...
 
     @staticmethod
-    def AddAlert(theReport: Message_Report, theAttribute: Message_Attribute, theGravity: Message_Gravity) -> Message_Alert:
+    def AddAlert(theReport: Message_Report | None, theAttribute: Message_Attribute | None, theGravity: Message_Gravity) -> Message_Alert:
         """
         Creates new instance of the alert and put it into report with Message_Info gravity.
         It does nothing if such kind of gravity is not active in the report
@@ -820,7 +1140,7 @@ class Message_AlertExtended(Message_Alert):
     def Attribute(self) -> Message_Attribute:
         """Returns container of the alert attributes"""
 
-    def SetAttribute(self, theAttribute: Message_Attribute) -> None:
+    def SetAttribute(self, theAttribute: Message_Attribute | None) -> None:
         """
         Sets container of the alert attributes
         @param theAttributes an attribute values
@@ -842,7 +1162,7 @@ class Message_AlertExtended(Message_Alert):
         Basis implementation returns true.
         """
 
-    def Merge(self, theTarget: Message_Alert) -> bool:
+    def Merge(self, theTarget: Message_Alert | None) -> bool:
         """
         If possible, merge data contained in this alert to theTarget.
         Base implementation always returns false.
@@ -900,6 +1220,14 @@ class Message_ExecStatus:
         NbStatuses = 128
 
         LastStatus = 129
+
+    FirstStatus: Message_ExecStatus.StatusRange = StatusRange.FirstStatus
+
+    StatusesPerType: Message_ExecStatus.StatusRange = StatusRange.StatusesPerType
+
+    NbStatuses: Message_ExecStatus.StatusRange = StatusRange.NbStatuses
+
+    LastStatus: Message_ExecStatus.StatusRange = StatusRange.LastStatus
 
     def Set(self, theStatus: Message_Status) -> None:
         """Sets a status flag"""
@@ -1029,13 +1357,13 @@ class Message_Msg:
     def Arg(self, theString: nanoocp.TCollection.TCollection_AsciiString) -> Message_Msg: ...
 
     @overload
-    def Arg(self, theString: nanoocp.TCollection.TCollection_HAsciiString) -> Message_Msg: ...
+    def Arg(self, theString: nanoocp.TCollection.TCollection_HAsciiString | None) -> Message_Msg: ...
 
     @overload
     def Arg(self, theString: nanoocp.TCollection.TCollection_ExtendedString) -> Message_Msg: ...
 
     @overload
-    def Arg(self, theString: nanoocp.TCollection.TCollection_HExtendedString) -> Message_Msg:
+    def Arg(self, theString: nanoocp.TCollection.TCollection_HExtendedString | None) -> Message_Msg:
         """Set a value for %..s conversion"""
 
     @overload
@@ -1138,13 +1466,13 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
     def SetStatus(self, theStat: Message_Status, theStr: nanoocp.TCollection.TCollection_AsciiString, noRepetitions: bool = True) -> None: ...
 
     @overload
-    def SetStatus(self, theStat: Message_Status, theStr: nanoocp.TCollection.TCollection_HAsciiString, noRepetitions: bool = True) -> None: ...
+    def SetStatus(self, theStat: Message_Status, theStr: nanoocp.TCollection.TCollection_HAsciiString | None, noRepetitions: bool = True) -> None: ...
 
     @overload
     def SetStatus(self, theStat: Message_Status, theStr: nanoocp.TCollection.TCollection_ExtendedString, noRepetitions: bool = True) -> None: ...
 
     @overload
-    def SetStatus(self, theStat: Message_Status, theStr: nanoocp.TCollection.TCollection_HExtendedString, noRepetitions: bool = True) -> None:
+    def SetStatus(self, theStat: Message_Status, theStr: nanoocp.TCollection.TCollection_HExtendedString | None, noRepetitions: bool = True) -> None:
         """
         Sets status with string parameter
         If noRepetitions is True, the parameter will be added only
@@ -1168,7 +1496,7 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
     def ClearStatus(self) -> None:
         """Clear exec status of algorithm"""
 
-    def SetMessenger(self, theMsgr: Message_Messenger) -> None:
+    def SetMessenger(self, theMsgr: Message_Messenger | None) -> None:
         """Sets messenger to algorithm"""
 
     def GetMessenger(self) -> Message_Messenger:
@@ -1207,14 +1535,14 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def AddStatus(self, theOther: Message_Algorithm) -> None:
+    def AddStatus(self, theOther: Message_Algorithm | None) -> None:
         """
         Add statuses to this algorithm from other algorithm
         (including messages)
         """
 
     @overload
-    def AddStatus(self, theStatus: Message_ExecStatus, theOther: Message_Algorithm) -> None:
+    def AddStatus(self, theStatus: Message_ExecStatus, theOther: Message_Algorithm | None) -> None:
         """
         Add statuses to this algorithm from other algorithm, but
         only those items are moved that correspond to statuses
@@ -1235,7 +1563,7 @@ class Message_Algorithm(nanoocp.Standard.Standard_Transient):
 
     @overload
     @staticmethod
-    def PrepareReport(theError: nanoocp.TColStd.TColStd_HPackedMapOfInteger, theMaxCount: int) -> nanoocp.TCollection.TCollection_ExtendedString:
+    def PrepareReport(theError: nanoocp.TColStd.TColStd_HPackedMapOfInteger | None, theMaxCount: int) -> nanoocp.TCollection.TCollection_ExtendedString:
         """
         Prepares a string containing a list of integers contained
         in theError map, but not more than theMaxCount
@@ -1361,21 +1689,21 @@ class Message_AttributeMeter(Message_Attribute):
         """
 
     @staticmethod
-    def StartAlert(theAlert: Message_AlertExtended) -> None:
+    def StartAlert(theAlert: Message_AlertExtended | None) -> None:
         """
         Sets start values of default report metrics into the alert
         @param theAlert an alert
         """
 
     @staticmethod
-    def StopAlert(theAlert: Message_AlertExtended) -> None:
+    def StopAlert(theAlert: Message_AlertExtended | None) -> None:
         """
         Sets stop values of default report metrics into the alert
         @param theAlert an alert
         """
 
     @staticmethod
-    def SetAlertMetrics(theAlert: Message_AlertExtended, theStartValue: bool) -> None:
+    def SetAlertMetrics(theAlert: Message_AlertExtended | None, theStartValue: bool) -> None:
         """
         Sets current values of default report metrics into the alert.
         Processed only alert with Message_AttributeMeter attribute
@@ -1398,7 +1726,7 @@ class Message_AttributeObject(Message_Attribute):
     """Alert object storing a transient object"""
 
     @overload
-    def __init__(self, theObject: nanoocp.Standard.Standard_Transient, theName: nanoocp.TCollection.TCollection_AsciiString = ...) -> None:
+    def __init__(self, theObject: nanoocp.Standard.Standard_Transient | None, theName: nanoocp.TCollection.TCollection_AsciiString = ...) -> None:
         """Constructor with string argument"""
 
     @overload
@@ -1418,7 +1746,7 @@ class Message_AttributeObject(Message_Attribute):
         @return the object instance
         """
 
-    def SetObject(self, theObject: nanoocp.Standard.Standard_Transient) -> None:
+    def SetObject(self, theObject: nanoocp.Standard.Standard_Transient | None) -> None:
         """
         Sets the object
         @param theObject an instance
@@ -1465,7 +1793,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
     def Alerts(self, theGravity: Message_Gravity) -> nanoocp.NCollection.NCollection_List[nanoocp.Message.Message_Alert]:
         """Returns list of collected alerts with specified gravity"""
 
-    def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert) -> bool:
+    def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert | None) -> bool:
         """
         Add alert with specified gravity. If the alert supports merge it will be merged.
         @param theGravity an alert gravity
@@ -1473,7 +1801,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
         @return true if the alert is added or merged
         """
 
-    def RemoveAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert) -> bool:
+    def RemoveAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert | None) -> bool:
         """
         Removes alert with specified gravity.
         @param theGravity an alert gravity
@@ -1482,7 +1810,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def HasAlert(self, theAlert: Message_Alert) -> bool:
+    def HasAlert(self, theAlert: Message_Alert | None) -> bool:
         """
         Returns true if the alert belong the list of the child alerts.
         @param theAlert an alert to be checked as a child alert
@@ -1490,7 +1818,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def HasAlert(self, theType: nanoocp.Standard.Standard_Type, theGravity: Message_Gravity) -> bool:
+    def HasAlert(self, theType: nanoocp.Standard.Standard_Type | None, theGravity: Message_Gravity) -> bool:
         """
         Returns true if specific type of alert is recorded with specified gravity
         @param theType an alert type
@@ -1510,7 +1838,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Clear(self, theType: nanoocp.Standard.Standard_Type) -> None:
+    def Clear(self, theType: nanoocp.Standard.Standard_Type | None) -> None:
         """
         Clears collected alerts with specified type
         @param theType an alert type
@@ -1871,7 +2199,7 @@ class Message_ProgressIndicator(nanoocp.Standard.Standard_Transient):
         """
 
     @staticmethod
-    def Start_s(theProgress: Message_ProgressIndicator) -> Message_ProgressRange:
+    def Start_s(theProgress: Message_ProgressIndicator | None) -> Message_ProgressRange:
         """
         If argument is non-null handle, returns theProgress->Start().
         Otherwise, returns dummy range that can be safely used in the algorithms
@@ -1944,13 +2272,13 @@ class Message_Level:
         @return alert instance or NULL
         """
 
-    def SetRootAlert(self, theAlert: Message_AlertExtended, isRequiredToStart: bool) -> None:
+    def SetRootAlert(self, theAlert: Message_AlertExtended | None, isRequiredToStart: bool) -> None:
         """
         Sets the root alert. Starts collects alert metrics if active.
         @param theAlert an alert
         """
 
-    def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert) -> bool:
+    def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert | None) -> bool:
         """
         Adds new alert on the level. Stops the last alert metric, appends the alert and starts the
         alert metrics collecting. Sets root alert beforehand this method using, if the root is NULL,
@@ -2158,7 +2486,7 @@ class Message_PrinterToReport(Message_Printer):
     def Report(self) -> Message_Report:
         """Returns the current or default report"""
 
-    def SetReport(self, theReport: Message_Report) -> None:
+    def SetReport(self, theReport: Message_Report | None) -> None:
         """
         Sets the printer report
         @param theReport report for messages processing, if NULL, the default report is used
@@ -2171,7 +2499,7 @@ class Message_PrinterToReport(Message_Printer):
         Default implementation calls first method Send().
         """
 
-    def SendObject(self, theObject: nanoocp.Standard.Standard_Transient, theGravity: Message_Gravity) -> None:
+    def SendObject(self, theObject: nanoocp.Standard.Standard_Transient | None, theGravity: Message_Gravity) -> None:
         """
         Send a string message with specified trace level.
         The object is converted to string in format: <object kind> : <object pointer>.
@@ -2224,7 +2552,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
     def __init__(self) -> None:
         """Empty constructor"""
 
-    def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert) -> None:
+    def AddAlert(self, theGravity: Message_Gravity, theAlert: Message_Alert | None) -> None:
         """
         Add alert with specified gravity.
         This method is thread-safe, i.e. alerts can be added from parallel threads safely.
@@ -2234,22 +2562,22 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         """Returns list of collected alerts with specified gravity"""
 
     @overload
-    def HasAlert(self, theType: nanoocp.Standard.Standard_Type) -> bool:
+    def HasAlert(self, theType: nanoocp.Standard.Standard_Type | None) -> bool:
         """Returns true if specific type of alert is recorded"""
 
     @overload
-    def HasAlert(self, theType: nanoocp.Standard.Standard_Type, theGravity: Message_Gravity) -> bool:
+    def HasAlert(self, theType: nanoocp.Standard.Standard_Type | None, theGravity: Message_Gravity) -> bool:
         """
         Returns true if specific type of alert is recorded with specified gravity
         """
 
-    def IsActiveInMessenger(self, theMessenger: Message_Messenger = None) -> bool:
+    def IsActiveInMessenger(self, theMessenger: Message_Messenger | None = None) -> bool:
         """
         Returns true if a report printer for the current report is registered in the messenger
         @param theMessenger the messenger. If it's NULL, the default messenger is used
         """
 
-    def ActivateInMessenger(self, toActivate: bool, theMessenger: Message_Messenger = None) -> None:
+    def ActivateInMessenger(self, toActivate: bool, theMessenger: Message_Messenger | None = None) -> None:
         """
         Creates an instance of Message_PrinterToReport with the current report and register it in
         messenger
@@ -2257,7 +2585,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         @param theMessenger the messenger. If it's NULL, the default messenger is used
         """
 
-    def UpdateActiveInMessenger(self, theMessenger: Message_Messenger = None) -> None:
+    def UpdateActiveInMessenger(self, theMessenger: Message_Messenger | None = None) -> None:
         """
         Updates internal flag IsActiveInMessenger.
         It becomes true if messenger contains at least one instance of Message_PrinterToReport.
@@ -2282,7 +2610,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         """Clears collected alerts with specified gravity"""
 
     @overload
-    def Clear(self, theType: nanoocp.Standard.Standard_Type) -> None:
+    def Clear(self, theType: nanoocp.Standard.Standard_Type | None) -> None:
         """Clears collected alerts with specified type"""
 
     def ActiveMetrics(self) -> nanoocp.NCollection.NCollection_IndexedMap[nanoocp.Message.Message_MetricType]:
@@ -2319,11 +2647,11 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         """Dumps collected alerts with specified gravity to stream"""
 
     @overload
-    def SendMessages(self, theMessenger: Message_Messenger) -> None:
+    def SendMessages(self, theMessenger: Message_Messenger | None) -> None:
         """Sends all collected alerts to messenger."""
 
     @overload
-    def SendMessages(self, theMessenger: Message_Messenger, theGravity: Message_Gravity) -> None:
+    def SendMessages(self, theMessenger: Message_Messenger | None, theGravity: Message_Gravity) -> None:
         """
         Dumps collected alerts with specified gravity to messenger.
         Default implementation creates Message_Msg object with a message
@@ -2331,11 +2659,11 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Merge(self, theOther: Message_Report) -> None:
+    def Merge(self, theOther: Message_Report | None) -> None:
         """Merges data from theOther report into this"""
 
     @overload
-    def Merge(self, theOther: Message_Report, theGravity: Message_Gravity) -> None:
+    def Merge(self, theOther: Message_Report | None, theGravity: Message_Gravity) -> None:
         """Merges alerts with specified gravity from theOther report into this"""
 
     def DumpJson(self, theDepth: int = -1) -> object:

@@ -22,7 +22,7 @@ class GeomGridEval_Line:
     @endcode
     """
 
-    def __init__(self, theLine: nanoocp.Geom.Geom_Line) -> None:
+    def __init__(self, theLine: nanoocp.Geom.Geom_Line | None) -> None:
         """
         Constructor with geometry.
         @param theLine the line geometry to evaluate
@@ -89,7 +89,7 @@ class GeomGridEval_Circle:
     @endcode
     """
 
-    def __init__(self, theCircle: nanoocp.Geom.Geom_Circle) -> None:
+    def __init__(self, theCircle: nanoocp.Geom.Geom_Circle | None) -> None:
         """
         Constructor with geometry.
         @param theCircle the circle geometry to evaluate
@@ -161,7 +161,7 @@ class GeomGridEval_Ellipse:
     @endcode
     """
 
-    def __init__(self, theEllipse: nanoocp.Geom.Geom_Ellipse) -> None:
+    def __init__(self, theEllipse: nanoocp.Geom.Geom_Ellipse | None) -> None:
         """
         Constructor with geometry.
         @param theEllipse the ellipse geometry to evaluate
@@ -226,7 +226,7 @@ class GeomGridEval_Hyperbola:
     @endcode
     """
 
-    def __init__(self, theHyperbola: nanoocp.Geom.Geom_Hyperbola) -> None:
+    def __init__(self, theHyperbola: nanoocp.Geom.Geom_Hyperbola | None) -> None:
         """
         Constructor with geometry.
         @param theHyperbola the hyperbola geometry to evaluate
@@ -290,7 +290,7 @@ class GeomGridEval_Parabola:
     @endcode
     """
 
-    def __init__(self, theParabola: nanoocp.Geom.Geom_Parabola) -> None:
+    def __init__(self, theParabola: nanoocp.Geom.Geom_Parabola | None) -> None:
         """
         Constructor with geometry.
         @param theParabola the parabola geometry to evaluate
@@ -353,7 +353,7 @@ class GeomGridEval_BezierCurve:
     @endcode
     """
 
-    def __init__(self, theBezier: nanoocp.Geom.Geom_BezierCurve) -> None:
+    def __init__(self, theBezier: nanoocp.Geom.Geom_BezierCurve | None) -> None:
         """
         Constructor with geometry.
         @param theBezier the bezier curve geometry to evaluate
@@ -418,7 +418,7 @@ class GeomGridEval_BSplineCurve:
     @endcode
     """
 
-    def __init__(self, theCurve: nanoocp.Geom.Geom_BSplineCurve) -> None:
+    def __init__(self, theCurve: nanoocp.Geom.Geom_BSplineCurve | None) -> None:
         """
         Constructor with geometry.
         @param theCurve the B-spline curve to evaluate
@@ -555,7 +555,7 @@ class GeomGridEval_OffsetCurve:
     @endcode
     """
 
-    def __init__(self, theOffset: nanoocp.Geom.Geom_OffsetCurve) -> None:
+    def __init__(self, theOffset: nanoocp.Geom.Geom_OffsetCurve | None) -> None:
         """
         Constructor with geometry.
         @param theOffset the offset curve geometry to evaluate
@@ -646,7 +646,7 @@ class GeomGridEval_Curve:
         """
 
     @overload
-    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve) -> None:
+    def __init__(self, theCurve: nanoocp.Geom.Geom_Curve | None) -> None:
         """
         Construct from geometry handle (auto-detects curve type).
         @param[in] theCurve geometry to evaluate
@@ -705,7 +705,7 @@ class GeomGridEval_Plane:
     @endcode
     """
 
-    def __init__(self, thePlane: nanoocp.Geom.Geom_Plane) -> None:
+    def __init__(self, thePlane: nanoocp.Geom.Geom_Plane | None) -> None:
         """
         Constructor with geometry.
         @param thePlane the plane geometry to evaluate
@@ -772,7 +772,7 @@ class GeomGridEval_Cylinder:
     @endcode
     """
 
-    def __init__(self, theCylinder: nanoocp.Geom.Geom_CylindricalSurface) -> None:
+    def __init__(self, theCylinder: nanoocp.Geom.Geom_CylindricalSurface | None) -> None:
         """
         Constructor with geometry.
         @param theCylinder the cylindrical surface geometry to evaluate
@@ -843,7 +843,7 @@ class GeomGridEval_Sphere:
     @endcode
     """
 
-    def __init__(self, theSphere: nanoocp.Geom.Geom_SphericalSurface) -> None:
+    def __init__(self, theSphere: nanoocp.Geom.Geom_SphericalSurface | None) -> None:
         """
         Constructor with geometry.
         @param theSphere the spherical surface geometry to evaluate
@@ -913,7 +913,7 @@ class GeomGridEval_Cone:
     @endcode
     """
 
-    def __init__(self, theCone: nanoocp.Geom.Geom_ConicalSurface) -> None:
+    def __init__(self, theCone: nanoocp.Geom.Geom_ConicalSurface | None) -> None:
         """
         Constructor with geometry.
         @param theCone the conical surface geometry to evaluate
@@ -983,7 +983,7 @@ class GeomGridEval_Torus:
     @endcode
     """
 
-    def __init__(self, theTorus: nanoocp.Geom.Geom_ToroidalSurface) -> None:
+    def __init__(self, theTorus: nanoocp.Geom.Geom_ToroidalSurface | None) -> None:
         """
         Constructor with geometry.
         @param theTorus the toroidal surface geometry to evaluate
@@ -1050,7 +1050,7 @@ class GeomGridEval_BezierSurface:
     @endcode
     """
 
-    def __init__(self, theBezier: nanoocp.Geom.Geom_BezierSurface) -> None:
+    def __init__(self, theBezier: nanoocp.Geom.Geom_BezierSurface | None) -> None:
         """
         Constructor with geometry.
         @param theBezier the bezier surface geometry to evaluate
@@ -1125,7 +1125,7 @@ class GeomGridEval_OffsetSurface:
     @endcode
     """
 
-    def __init__(self, theOffset: nanoocp.Geom.Geom_OffsetSurface) -> None:
+    def __init__(self, theOffset: nanoocp.Geom.Geom_OffsetSurface | None) -> None:
         """
         Constructor with geometry.
         @param theOffset the offset surface geometry to evaluate
@@ -1201,7 +1201,7 @@ class GeomGridEval_BSplineSurface:
     @endcode
     """
 
-    def __init__(self, theSurface: nanoocp.Geom.Geom_BSplineSurface) -> None:
+    def __init__(self, theSurface: nanoocp.Geom.Geom_BSplineSurface | None) -> None:
         """
         Constructor with geometry.
         @param theSurface the B-spline surface to evaluate
@@ -1286,7 +1286,7 @@ class GeomGridEval_OtherSurface:
         """
 
     @overload
-    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface) -> None:
+    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface | None) -> None:
         """
         Constructor with geometry handle.
         @param theSurface handle to Geom_Surface
@@ -1363,7 +1363,7 @@ class GeomGridEval_SurfaceOfRevolution:
     @endcode
     """
 
-    def __init__(self, theRevolution: nanoocp.Geom.Geom_SurfaceOfRevolution) -> None:
+    def __init__(self, theRevolution: nanoocp.Geom.Geom_SurfaceOfRevolution | None) -> None:
         """
         Constructor with geometry.
         @param theRevolution the revolution surface geometry to evaluate
@@ -1441,7 +1441,7 @@ class GeomGridEval_SurfaceOfExtrusion:
     @endcode
     """
 
-    def __init__(self, theExtrusion: nanoocp.Geom.Geom_SurfaceOfLinearExtrusion) -> None:
+    def __init__(self, theExtrusion: nanoocp.Geom.Geom_SurfaceOfLinearExtrusion | None) -> None:
         """
         Constructor with geometry.
         @param theExtrusion the extrusion surface geometry to evaluate
@@ -1539,7 +1539,7 @@ class GeomGridEval_Surface:
         """
 
     @overload
-    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface) -> None:
+    def __init__(self, theSurface: nanoocp.Geom.Geom_Surface | None) -> None:
         """
         Construct from geometry handle (auto-detects surface type).
         @param[in] theSurface geometry to evaluate

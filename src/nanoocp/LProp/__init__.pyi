@@ -23,6 +23,12 @@ class LProp_CIType(enum.IntEnum):
 
     LProp_MaxCur = 2
 
+LProp_Inflection: LProp_CIType = LProp_CIType.LProp_Inflection
+
+LProp_MinCur: LProp_CIType = LProp_CIType.LProp_MinCur
+
+LProp_MaxCur: LProp_CIType = LProp_CIType.LProp_MaxCur
+
 class LProp_Status(enum.IntEnum):
     LProp_Undecided = 0
 
@@ -31,6 +37,14 @@ class LProp_Status(enum.IntEnum):
     LProp_Defined = 2
 
     LProp_Computed = 3
+
+LProp_Undecided: LProp_Status = LProp_Status.LProp_Undecided
+
+LProp_Undefined: LProp_Status = LProp_Status.LProp_Undefined
+
+LProp_Defined: LProp_Status = LProp_Status.LProp_Defined
+
+LProp_Computed: LProp_Status = LProp_Status.LProp_Computed
 
 class LProp_BadContinuity(nanoocp.Standard.Standard_Failure):
     pass

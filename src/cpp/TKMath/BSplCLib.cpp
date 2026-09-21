@@ -26,7 +26,8 @@ same positive constant from the preceding knot the
 "KnotDistribution" is <Uniform> else it is
 <NonUniform>)nbdoc", nb::is_arithmetic())
         .value("BSplCLib_NonUniform", BSplCLib_NonUniform)
-        .value("BSplCLib_Uniform", BSplCLib_Uniform);
+        .value("BSplCLib_Uniform", BSplCLib_Uniform)
+        .export_values();
     nb::enum_<BSplCLib_MultDistribution>(m, "BSplCLib_MultDistribution", R"nbdoc(This enumeration describes the form of the
 sequence of multiplicities. MultDistribution is:
 
@@ -40,7 +41,8 @@ have a different multiplicity.
 NonConstant in other cases.)nbdoc", nb::is_arithmetic())
         .value("BSplCLib_NonConstant", BSplCLib_NonConstant)
         .value("BSplCLib_Constant", BSplCLib_Constant)
-        .value("BSplCLib_QuasiConstant", BSplCLib_QuasiConstant);
+        .value("BSplCLib_QuasiConstant", BSplCLib_QuasiConstant)
+        .export_values();
     { nb::class_<BSplCLib_EvaluatorFunction> cls(m, "BSplCLib_EvaluatorFunction");
     }
     { nb::class_<BSplCLib> cls(m, "BSplCLib", R"nbdoc(BSplCLib B-spline curve Library.
@@ -638,7 +640,7 @@ the Poles and Weights are treated homogeneously
 that is that those are interpolated as they
 are and result is returned without division
 by the interpolated weights.)nbdoc")
-        .def_static("MergeBSplineKnots", [](const double Tolerance, const double StartValue, const double EndValue, const int Degree1, const NCollection_Array1<double> & Knots1, const NCollection_Array1<int> & Mults1, const int Degree2, const NCollection_Array1<double> & Knots2, const NCollection_Array1<int> & Mults2, occ::handle<NCollection_HArray1<double>> & NewKnots, occ::handle<NCollection_HArray1<int>> & NewMults) { int NumPoles{}; BSplCLib::MergeBSplineKnots(Tolerance, StartValue, EndValue, Degree1, Knots1, Mults1, Degree2, Knots2, Mults2, NumPoles, NewKnots, NewMults); return NumPoles; }, nb::arg("Tolerance"), nb::arg("StartValue"), nb::arg("EndValue"), nb::arg("Degree1"), nb::arg("Knots1"), nb::arg("Mults1"), nb::arg("Degree2"), nb::arg("Knots2"), nb::arg("Mults2"), nb::arg("NewKnots"), nb::arg("NewMults"), R"nbdoc(Merges two knot vector by setting the starting and
+        .def_static("MergeBSplineKnots", [](const double Tolerance, const double StartValue, const double EndValue, const int Degree1, const NCollection_Array1<double> & Knots1, const NCollection_Array1<int> & Mults1, const int Degree2, const NCollection_Array1<double> & Knots2, const NCollection_Array1<int> & Mults2) { int NumPoles{}; occ::handle<NCollection_HArray1<double>> NewKnots{}; occ::handle<NCollection_HArray1<int>> NewMults{}; BSplCLib::MergeBSplineKnots(Tolerance, StartValue, EndValue, Degree1, Knots1, Mults1, Degree2, Knots2, Mults2, NumPoles, NewKnots, NewMults); return std::make_tuple(NumPoles, NewKnots, NewMults); }, nb::arg("Tolerance"), nb::arg("StartValue"), nb::arg("EndValue"), nb::arg("Degree1"), nb::arg("Knots1"), nb::arg("Mults1"), nb::arg("Degree2"), nb::arg("Knots2"), nb::arg("Mults2"), R"nbdoc(Merges two knot vector by setting the starting and
 ending values to StartValue and EndValue)nbdoc")
         .def_static("FunctionReparameterise", [](const BSplCLib_EvaluatorFunction & Function, const int BSplineDegree, const NCollection_Array1<double> & BSplineFlatKnots, const int PolesDimension, const NCollection_Array1<double> & FlatKnots, const int NewDegree) { double Poles{}; double NewPoles{}; int theStatus{}; BSplCLib::FunctionReparameterise(Function, BSplineDegree, BSplineFlatKnots, PolesDimension, Poles, FlatKnots, NewDegree, NewPoles, theStatus); return std::make_tuple(Poles, NewPoles, theStatus); }, nb::arg("Function"), nb::arg("BSplineDegree"), nb::arg("BSplineFlatKnots"), nb::arg("PolesDimension"), nb::arg("FlatKnots"), nb::arg("NewDegree"), R"nbdoc(This function will compose a given Vectorial BSpline F(t)
 defined by its BSplineDegree and BSplineFlatKnotsl,

@@ -16,6 +16,9 @@ wheel.py-api = "cp312"
 wheel.packages = ["src/nanoocp"]
 cmake.build-type = "Release"
 
+[tool.pytest.ini_options]
+pythonpath = ["."]          # tests import the generator package (report.txt reader, generator unit tests)
+
 [dependency-groups]
 dev = [
     "libclang>=18.1.1",

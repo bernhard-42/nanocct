@@ -20,6 +20,16 @@ class math_Status(enum.IntEnum):
 
     math_NotBracketed = 4
 
+math_OK: math_Status = math_Status.math_OK
+
+math_TooManyIterations: math_Status = math_Status.math_TooManyIterations
+
+math_FunctionError: math_Status = math_Status.math_FunctionError
+
+math_DirectionSearchError: math_Status = math_Status.math_DirectionSearchError
+
+math_NotBracketed: math_Status = math_Status.math_NotBracketed
+
 class math_DoubleTab:
     @overload
     def __init__(self, theOther: math_DoubleTab) -> None:

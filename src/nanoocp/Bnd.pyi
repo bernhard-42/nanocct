@@ -1088,14 +1088,14 @@ class Bnd_BoundSortBox:
     def __init__(self, theOther: Bnd_BoundSortBox) -> None: ...
 
     @overload
-    def Initialize(self, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box]) -> None:
+    def Initialize(self, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box] | None) -> None:
         """
         Initializes this comparison algorithm with the set of boxes.
         @param theSetOfBoxes The set of bounding boxes to be used by this algorithm.
         """
 
     @overload
-    def Initialize(self, theEnclosingBox: Bnd_Box, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box]) -> None:
+    def Initialize(self, theEnclosingBox: Bnd_Box, theSetOfBoxes: nanoocp.NCollection.NCollection_HArray1[nanoocp.Bnd.Bnd_Box] | None) -> None:
         """
         Initializes this comparison algorithm with the set of boxes and the bounding box
         that encloses all those boxes. This version of initialization can be used if complete
@@ -1644,6 +1644,12 @@ class Bnd_Range:
         IntersectStatus_In = 1
 
         IntersectStatus_Boundary = 2
+
+    IntersectStatus_Out: Bnd_Range.IntersectStatus = IntersectStatus.IntersectStatus_Out
+
+    IntersectStatus_In: Bnd_Range.IntersectStatus = IntersectStatus.IntersectStatus_In
+
+    IntersectStatus_Boundary: Bnd_Range.IntersectStatus = IntersectStatus.IntersectStatus_Boundary
 
     class Bounds:
         """

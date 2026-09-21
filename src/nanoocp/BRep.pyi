@@ -45,22 +45,22 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """Makes an undefined Face."""
 
     @overload
-    def MakeFace(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, Tol: float) -> None:
+    def MakeFace(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface | None, Tol: float) -> None:
         """Makes a Face with a surface."""
 
     @overload
-    def MakeFace(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
+    def MakeFace(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
         """Makes a Face with a surface and a location."""
 
     @overload
-    def MakeFace(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTriangulation: nanoocp.Poly.Poly_Triangulation) -> None:
+    def MakeFace(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTriangulation: nanoocp.Poly.Poly_Triangulation | None) -> None:
         """
         Makes a theFace with a single triangulation. The triangulation
         is in the same reference system than the TFace.
         """
 
     @overload
-    def MakeFace(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTriangulations: nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_Triangulation], theActiveTriangulation: nanoocp.Poly.Poly_Triangulation = None) -> None:
+    def MakeFace(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTriangulations: nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_Triangulation], theActiveTriangulation: nanoocp.Poly.Poly_Triangulation | None = None) -> None:
         """
         Makes a Face with a list of triangulations and active one.
         Use NULL active triangulation to set the first triangulation in list as active.
@@ -68,14 +68,14 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """
 
     @overload
-    def UpdateFace(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
+    def UpdateFace(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
         """
         Updates the face F using the tolerance value Tol,
         surface S and location Location.
         """
 
     @overload
-    def UpdateFace(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTriangulation: nanoocp.Poly.Poly_Triangulation, theToReset: bool = True) -> None:
+    def UpdateFace(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTriangulation: nanoocp.Poly.Poly_Triangulation | None, theToReset: bool = True) -> None:
         """
         Changes a face triangulation.
         A NULL theTriangulation removes face triangulations.
@@ -97,39 +97,39 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """Makes an undefined Edge (no geometry)."""
 
     @overload
-    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, Tol: float) -> None:
+    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve | None, Tol: float) -> None:
         """Makes an Edge with a curve."""
 
     @overload
-    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
+    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
         """Makes an Edge with a curve and a location."""
 
     @overload
-    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D) -> None:
+    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D | None) -> None:
         """Makes an Edge with a polygon 3d."""
 
     @overload
-    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation) -> None: ...
+    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation | None, T: nanoocp.Poly.Poly_Triangulation | None) -> None: ...
 
     @overload
-    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> None:
+    def MakeEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation | None, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> None:
         """makes an Edge polygon on Triangulation."""
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, Tol: float) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve | None, Tol: float) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
         """
         Sets a 3D curve for the edge.
         If <C> is a null handle, remove any existing 3d curve.
         """
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve, F: nanoocp.TopoDS.TopoDS_Face, Tol: float) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve | None, F: nanoocp.TopoDS.TopoDS_Face, Tol: float) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C1: nanoocp.Geom2d.Geom2d_Curve, C2: nanoocp.Geom2d.Geom2d_Curve, F: nanoocp.TopoDS.TopoDS_Face, Tol: float) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C1: nanoocp.Geom2d.Geom2d_Curve | None, C2: nanoocp.Geom2d.Geom2d_Curve | None, F: nanoocp.TopoDS.TopoDS_Face, Tol: float) -> None:
         """
         Sets pcurves for the edge on the closed face. If
         <C1> or <C2> is a null handle, remove any existing
@@ -137,14 +137,14 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
         """
         Sets a pcurve for the edge on the face.
         If <C> is a null handle, remove any existing pcurve.
         """
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Tol: float, Pf: nanoocp.gp.gp_Pnt2d, Pl: nanoocp.gp.gp_Pnt2d) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float, Pf: nanoocp.gp.gp_Pnt2d, Pl: nanoocp.gp.gp_Pnt2d) -> None:
         """
         Sets a pcurve for the edge on the face.
         If <C> is a null handle, remove any existing pcurve.
@@ -152,7 +152,7 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C1: nanoocp.Geom2d.Geom2d_Curve, C2: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C1: nanoocp.Geom2d.Geom2d_Curve | None, C2: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
         """
         Sets pcurves for the edge on the closed surface.
         <C1> or <C2> is a null handle, remove any existing
@@ -160,7 +160,7 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C1: nanoocp.Geom2d.Geom2d_Curve, C2: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Tol: float, Pf: nanoocp.gp.gp_Pnt2d, Pl: nanoocp.gp.gp_Pnt2d) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, C1: nanoocp.Geom2d.Geom2d_Curve | None, C2: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float, Pf: nanoocp.gp.gp_Pnt2d, Pl: nanoocp.gp.gp_Pnt2d) -> None:
         """
         Sets pcurves for the edge on the closed surface.
         <C1> or <C2> is a null handle, remove any existing
@@ -169,40 +169,40 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D | None) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D, L: nanoocp.TopLoc.TopLoc_Location) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D | None, L: nanoocp.TopLoc.TopLoc_Location) -> None:
         """
         Changes an Edge 3D polygon.
         A null Polygon removes the 3d Polygon.
         """
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation | None, T: nanoocp.Poly.Poly_Triangulation | None) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N: nanoocp.Poly.Poly_PolygonOnTriangulation | None, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N1: nanoocp.Poly.Poly_PolygonOnTriangulation, N2: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N1: nanoocp.Poly.Poly_PolygonOnTriangulation | None, N2: nanoocp.Poly.Poly_PolygonOnTriangulation | None, T: nanoocp.Poly.Poly_Triangulation | None) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N1: nanoocp.Poly.Poly_PolygonOnTriangulation, N2: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, N1: nanoocp.Poly.Poly_PolygonOnTriangulation | None, N2: nanoocp.Poly.Poly_PolygonOnTriangulation | None, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> None:
         """Changes an Edge polygon on Triangulation."""
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.TopoDS.TopoDS_Face) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon2D | None, S: nanoocp.TopoDS.TopoDS_Face) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.Geom.Geom_Surface, T: nanoocp.TopLoc.TopLoc_Location) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon2D | None, S: nanoocp.Geom.Geom_Surface | None, T: nanoocp.TopLoc.TopLoc_Location) -> None:
         """Changes Edge polygon on a face."""
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P1: nanoocp.Poly.Poly_Polygon2D, P2: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.TopoDS.TopoDS_Face) -> None: ...
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P1: nanoocp.Poly.Poly_Polygon2D | None, P2: nanoocp.Poly.Poly_Polygon2D | None, S: nanoocp.TopoDS.TopoDS_Face) -> None: ...
 
     @overload
-    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P1: nanoocp.Poly.Poly_Polygon2D, P2: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> None:
+    def UpdateEdge(self, E: nanoocp.TopoDS.TopoDS_Edge, P1: nanoocp.Poly.Poly_Polygon2D | None, P2: nanoocp.Poly.Poly_Polygon2D | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> None:
         """
         Changes Edge polygons on a face.
 
@@ -217,7 +217,7 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
     def Continuity(self, E: nanoocp.TopoDS.TopoDS_Edge, F1: nanoocp.TopoDS.TopoDS_Face, F2: nanoocp.TopoDS.TopoDS_Face, C: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
 
     @overload
-    def Continuity(self, E: nanoocp.TopoDS.TopoDS_Edge, S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location, C: nanoocp.GeomAbs.GeomAbs_Shape) -> None:
+    def Continuity(self, E: nanoocp.TopoDS.TopoDS_Edge, S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location, C: nanoocp.GeomAbs.GeomAbs_Shape) -> None:
         """Sets the geometric continuity on the edge."""
 
     def SameParameter(self, E: nanoocp.TopoDS.TopoDS_Edge, S: bool) -> None:
@@ -237,7 +237,7 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """
 
     @overload
-    def Range(self, E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, First: float, Last: float) -> None:
+    def Range(self, E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, First: float, Last: float) -> None:
         """
         Sets the range of the edge on the pcurve on the
         surface.
@@ -282,7 +282,7 @@ class BRep_Builder(nanoocp.TopoDS.TopoDS_Builder):
         """
 
     @overload
-    def UpdateVertex(self, V: nanoocp.TopoDS.TopoDS_Vertex, P: float, E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
+    def UpdateVertex(self, V: nanoocp.TopoDS.TopoDS_Vertex, P: float, E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, Tol: float) -> None:
         """
         Sets the parameter for the vertex on the edge
         pcurve on the surface.
@@ -334,7 +334,7 @@ class BRep_TFace(nanoocp.TopoDS.TopoDS_TFace):
         """Returns face surface."""
 
     @overload
-    def Surface(self, theSurface: nanoocp.Geom.Geom_Surface) -> None:
+    def Surface(self, theSurface: nanoocp.Geom.Geom_Surface | None) -> None:
         """Sets surface for this face."""
 
     @overload
@@ -378,7 +378,7 @@ class BRep_TFace(nanoocp.TopoDS.TopoDS_TFace):
         """
 
     @overload
-    def Triangulation(self, theTriangulation: nanoocp.Poly.Poly_Triangulation, theToReset: bool = True) -> None:
+    def Triangulation(self, theTriangulation: nanoocp.Poly.Poly_Triangulation | None, theToReset: bool = True) -> None:
         """
         Sets input triangulation for this face.
         @param[in] theTriangulation  triangulation to be set
@@ -404,7 +404,7 @@ class BRep_TFace(nanoocp.TopoDS.TopoDS_TFace):
         """Returns the list of available face triangulations."""
 
     @overload
-    def Triangulations(self, theTriangulations: nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_Triangulation], theActiveTriangulation: nanoocp.Poly.Poly_Triangulation) -> None:
+    def Triangulations(self, theTriangulations: nanoocp.NCollection.NCollection_List[nanoocp.Poly.Poly_Triangulation], theActiveTriangulation: nanoocp.Poly.Poly_Triangulation | None) -> None:
         """
         Sets input list of triangulations and currently active triangulation for this face.
         If list is empty internal list of triangulations will be cleared and active triangulation will
@@ -441,7 +441,7 @@ class BRep_PointRepresentation(nanoocp.Standard.Standard_Transient):
         """A point on a 3d curve."""
 
     @overload
-    def IsPointOnCurve(self, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsPointOnCurve(self, C: nanoocp.Geom.Geom_Curve | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """A point on the curve <C>."""
 
     @overload
@@ -449,7 +449,7 @@ class BRep_PointRepresentation(nanoocp.Standard.Standard_Transient):
         """A point on a 2d curve on a surface."""
 
     @overload
-    def IsPointOnCurveOnSurface(self, PC: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsPointOnCurveOnSurface(self, PC: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """A point on the 2d curve <PC> on the surface <S>."""
 
     @overload
@@ -457,7 +457,7 @@ class BRep_PointRepresentation(nanoocp.Standard.Standard_Transient):
         """A point on a surface."""
 
     @overload
-    def IsPointOnSurface(self, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsPointOnSurface(self, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """A point on the surface <S>."""
 
     @overload
@@ -482,19 +482,19 @@ class BRep_PointRepresentation(nanoocp.Standard.Standard_Transient):
     def Curve(self) -> nanoocp.Geom.Geom_Curve: ...
 
     @overload
-    def Curve(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
+    def Curve(self, C: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
     @overload
     def PCurve(self) -> nanoocp.Geom2d.Geom2d_Curve: ...
 
     @overload
-    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     @overload
     def Surface(self) -> nanoocp.Geom.Geom_Surface: ...
 
     @overload
-    def Surface(self, S: nanoocp.Geom.Geom_Surface) -> None: ...
+    def Surface(self, S: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
@@ -591,7 +591,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def IsClosed(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsClosed(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         Returns True if <E> has two PCurves in the
         parametric space of <S>. i.e. <S> is a closed
@@ -600,7 +600,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def IsClosed(E: nanoocp.TopoDS.TopoDS_Edge, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsClosed(E: nanoocp.TopoDS.TopoDS_Edge, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         Returns True if <E> has two arrays of indices in
         the triangulation <T>.
@@ -699,7 +699,7 @@ class BRep_Tool:
         """
 
     @staticmethod
-    def CurveOnPlane(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]:
+    def CurveOnPlane(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]:
         """
         For the planar surface builds the 2d curve for the edge
         by projection of the edge on plane.
@@ -709,7 +709,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[float, float]:
+    def CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, nanoocp.Geom.Geom_Surface, float, float]:
         """
         Returns in <C>, <S>, <L> a 2d curve, a surface and
         a location for the edge <E>. <C> and <S> are null
@@ -719,7 +719,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Index: int) -> tuple[float, float]:
+    def CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location, Index: int) -> tuple[nanoocp.Geom2d.Geom2d_Curve, nanoocp.Geom.Geom_Surface, float, float]:
         """
         Returns in <C>, <S>, <L> the 2d curve, the surface
         and the location for the edge <E> of rank <Index>.
@@ -738,7 +738,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def PolygonOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> nanoocp.Poly.Poly_Polygon2D:
+    def PolygonOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> nanoocp.Poly.Poly_Polygon2D:
         """
         Returns the polygon associated to the edge in the
         parametric space of the surface. Returns a NULL
@@ -747,7 +747,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def PolygonOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> None:
+    def PolygonOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Poly.Poly_Polygon2D, nanoocp.Geom.Geom_Surface]:
         """
         Returns in <C>, <S>, <L> a 2d curve, a surface and
         a location for the edge <E>. <C> and <S> are null
@@ -756,7 +756,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def PolygonOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, Index: int) -> None:
+    def PolygonOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location, Index: int) -> tuple[nanoocp.Poly.Poly_Polygon2D, nanoocp.Geom.Geom_Surface]:
         """
         Returns in <C>, <S>, <L> the 2d curve, the surface
         and the location for the edge <E> of rank <Index>.
@@ -765,7 +765,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def PolygonOnTriangulation(E: nanoocp.TopoDS.TopoDS_Edge, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> nanoocp.Poly.Poly_PolygonOnTriangulation:
+    def PolygonOnTriangulation(E: nanoocp.TopoDS.TopoDS_Edge, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> nanoocp.Poly.Poly_PolygonOnTriangulation:
         """
         Returns the polygon associated to the edge in the
         parametric space of the face. Returns a NULL
@@ -774,7 +774,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def PolygonOnTriangulation(E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> None:
+    def PolygonOnTriangulation(E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Poly.Poly_PolygonOnTriangulation, nanoocp.Poly.Poly_Triangulation]:
         """
         Returns in <P>, <T>, <L> a polygon on triangulation, a
         triangulation and a location for the edge <E>.
@@ -784,7 +784,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def PolygonOnTriangulation(E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location, Index: int) -> None:
+    def PolygonOnTriangulation(E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location, Index: int) -> tuple[nanoocp.Poly.Poly_PolygonOnTriangulation, nanoocp.Poly.Poly_Triangulation]:
         """
         Returns in <P>, <T>, <L> a polygon on
         triangulation, a triangulation and a location for
@@ -811,7 +811,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def Range(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[float, float]:
+    def Range(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[float, float]:
         """Gets the range of the edge on the pcurve on the surface."""
 
     @overload
@@ -821,7 +821,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def UVPoints(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, PFirst: nanoocp.gp.gp_Pnt2d, PLast: nanoocp.gp.gp_Pnt2d) -> None: ...
+    def UVPoints(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, PFirst: nanoocp.gp.gp_Pnt2d, PLast: nanoocp.gp.gp_Pnt2d) -> None: ...
 
     @overload
     @staticmethod
@@ -830,7 +830,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def SetUVPoints(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, PFirst: nanoocp.gp.gp_Pnt2d, PLast: nanoocp.gp.gp_Pnt2d) -> None: ...
+    def SetUVPoints(E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, PFirst: nanoocp.gp.gp_Pnt2d, PLast: nanoocp.gp.gp_Pnt2d) -> None: ...
 
     @overload
     @staticmethod
@@ -847,7 +847,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def HasContinuity(E: nanoocp.TopoDS.TopoDS_Edge, S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def HasContinuity(E: nanoocp.TopoDS.TopoDS_Edge, S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """Returns True if the edge is on the surfaces."""
 
     @overload
@@ -861,7 +861,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def Continuity(E: nanoocp.TopoDS.TopoDS_Edge, S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> nanoocp.GeomAbs.GeomAbs_Shape:
+    def Continuity(E: nanoocp.TopoDS.TopoDS_Edge, S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> nanoocp.GeomAbs.GeomAbs_Shape:
         """Returns the continuity."""
 
     @staticmethod
@@ -904,7 +904,7 @@ class BRep_Tool:
 
     @overload
     @staticmethod
-    def Parameter(V: nanoocp.TopoDS.TopoDS_Vertex, E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> float:
+    def Parameter(V: nanoocp.TopoDS.TopoDS_Vertex, E: nanoocp.TopoDS.TopoDS_Edge, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> float:
         """
         Returns the parameters of the vertex on the
         pcurve of the edge on the surface.
@@ -931,7 +931,7 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
         """A curve in the parametric space of a surface."""
 
     @overload
-    def IsCurveOnSurface(self, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsCurveOnSurface(self, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         Is it a curve in the parametric space of <S> with
         location <L>.
@@ -942,7 +942,7 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
         """A continuity between two surfaces."""
 
     @overload
-    def IsRegularity(self, S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsRegularity(self, S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         Is it a regularity between <S1> and <S2> with
         location <L1> and <L2>.
@@ -965,7 +965,7 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def IsPolygonOnTriangulation(self, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsPolygonOnTriangulation(self, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         Is it a polygon in the definition of <T> with
         location <L>.
@@ -982,7 +982,7 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
         """A polygon in the parametric space of a surface."""
 
     @overload
-    def IsPolygonOnSurface(self, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsPolygonOnSurface(self, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         Is it a polygon in the parametric space of <S> with
         location <L>.
@@ -1004,7 +1004,7 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
     def Curve3D(self) -> nanoocp.Geom.Geom_Curve: ...
 
     @overload
-    def Curve3D(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
+    def Curve3D(self, C: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
     def Surface(self) -> nanoocp.Geom.Geom_Surface: ...
 
@@ -1012,31 +1012,31 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
     def PCurve(self) -> nanoocp.Geom2d.Geom2d_Curve: ...
 
     @overload
-    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     @overload
     def PCurve2(self) -> nanoocp.Geom2d.Geom2d_Curve: ...
 
     @overload
-    def PCurve2(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def PCurve2(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     @overload
     def Polygon3D(self) -> nanoocp.Poly.Poly_Polygon3D: ...
 
     @overload
-    def Polygon3D(self, P: nanoocp.Poly.Poly_Polygon3D) -> None: ...
+    def Polygon3D(self, P: nanoocp.Poly.Poly_Polygon3D | None) -> None: ...
 
     @overload
     def Polygon(self) -> nanoocp.Poly.Poly_Polygon2D: ...
 
     @overload
-    def Polygon(self, P: nanoocp.Poly.Poly_Polygon2D) -> None: ...
+    def Polygon(self, P: nanoocp.Poly.Poly_Polygon2D | None) -> None: ...
 
     @overload
     def Polygon2(self) -> nanoocp.Poly.Poly_Polygon2D: ...
 
     @overload
-    def Polygon2(self, P: nanoocp.Poly.Poly_Polygon2D) -> None: ...
+    def Polygon2(self, P: nanoocp.Poly.Poly_Polygon2D | None) -> None: ...
 
     def Triangulation(self) -> nanoocp.Poly.Poly_Triangulation: ...
 
@@ -1044,13 +1044,13 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
     def PolygonOnTriangulation(self) -> nanoocp.Poly.Poly_PolygonOnTriangulation: ...
 
     @overload
-    def PolygonOnTriangulation(self, P: nanoocp.Poly.Poly_PolygonOnTriangulation) -> None: ...
+    def PolygonOnTriangulation(self, P: nanoocp.Poly.Poly_PolygonOnTriangulation | None) -> None: ...
 
     @overload
     def PolygonOnTriangulation2(self) -> nanoocp.Poly.Poly_PolygonOnTriangulation: ...
 
     @overload
-    def PolygonOnTriangulation2(self, P2: nanoocp.Poly.Poly_PolygonOnTriangulation) -> None: ...
+    def PolygonOnTriangulation2(self, P2: nanoocp.Poly.Poly_PolygonOnTriangulation | None) -> None: ...
 
     def Surface2(self) -> nanoocp.Geom.Geom_Surface: ...
 
@@ -1123,7 +1123,7 @@ class BRep_Curve3D(BRep_GCurve):
     """Representation of a curve by a 3D curve."""
 
     @overload
-    def __init__(self, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, C: nanoocp.Geom.Geom_Curve | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_Curve3D) -> None: ...
@@ -1138,7 +1138,7 @@ class BRep_Curve3D(BRep_GCurve):
     def Curve3D(self) -> nanoocp.Geom.Geom_Curve: ...
 
     @overload
-    def Curve3D(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
+    def Curve3D(self, C: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
@@ -1158,7 +1158,7 @@ class BRep_CurveOn2Surfaces(BRep_CurveRepresentation):
     """Defines a continuity between two surfaces."""
 
     @overload
-    def __init__(self, S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location, C: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
+    def __init__(self, S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location, C: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_CurveOn2Surfaces) -> None: ...
@@ -1168,7 +1168,7 @@ class BRep_CurveOn2Surfaces(BRep_CurveRepresentation):
         """Returns True."""
 
     @overload
-    def IsRegularity(self, S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsRegularity(self, S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """A curve on two surfaces (continuity)."""
 
     def D0(self, U: float, P: nanoocp.gp.gp_Pnt) -> None:
@@ -1207,7 +1207,7 @@ class BRep_CurveOnSurface(BRep_GCurve):
     """
 
     @overload
-    def __init__(self, PC: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, PC: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_CurveOnSurface) -> None: ...
@@ -1224,7 +1224,7 @@ class BRep_CurveOnSurface(BRep_GCurve):
         """Returns True."""
 
     @overload
-    def IsCurveOnSurface(self, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsCurveOnSurface(self, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """A curve in the parametric space of a surface."""
 
     def Surface(self) -> nanoocp.Geom.Geom_Surface: ...
@@ -1233,7 +1233,7 @@ class BRep_CurveOnSurface(BRep_GCurve):
     def PCurve(self) -> nanoocp.Geom2d.Geom2d_Curve: ...
 
     @overload
-    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
@@ -1262,7 +1262,7 @@ class BRep_CurveOnClosedSurface(BRep_CurveOnSurface):
     """
 
     @overload
-    def __init__(self, PC1: nanoocp.Geom2d.Geom2d_Curve, PC2: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location, C: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
+    def __init__(self, PC1: nanoocp.Geom2d.Geom2d_Curve | None, PC2: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location, C: nanoocp.GeomAbs.GeomAbs_Shape) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_CurveOnClosedSurface) -> None: ...
@@ -1279,14 +1279,14 @@ class BRep_CurveOnClosedSurface(BRep_CurveOnSurface):
         """Returns True"""
 
     @overload
-    def IsRegularity(self, S1: nanoocp.Geom.Geom_Surface, S2: nanoocp.Geom.Geom_Surface, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsRegularity(self, S1: nanoocp.Geom.Geom_Surface | None, S2: nanoocp.Geom.Geom_Surface | None, L1: nanoocp.TopLoc.TopLoc_Location, L2: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """A curve on two surfaces (continuity)."""
 
     @overload
     def PCurve2(self) -> nanoocp.Geom2d.Geom2d_Curve: ...
 
     @overload
-    def PCurve2(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def PCurve2(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     def Surface2(self) -> nanoocp.Geom.Geom_Surface:
         """Returns Surface()"""
@@ -1324,7 +1324,7 @@ class BRep_PointOnCurve(BRep_PointRepresentation):
     """Representation by a parameter on a 3D curve."""
 
     @overload
-    def __init__(self, P: float, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P: float, C: nanoocp.Geom.Geom_Curve | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_PointOnCurve) -> None: ...
@@ -1334,13 +1334,13 @@ class BRep_PointOnCurve(BRep_PointRepresentation):
         """Returns True"""
 
     @overload
-    def IsPointOnCurve(self, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> bool: ...
+    def IsPointOnCurve(self, C: nanoocp.Geom.Geom_Curve | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool: ...
 
     @overload
     def Curve(self) -> nanoocp.Geom.Geom_Curve: ...
 
     @overload
-    def Curve(self, C: nanoocp.Geom.Geom_Curve) -> None: ...
+    def Curve(self, C: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
@@ -1362,7 +1362,7 @@ class BRep_PointsOnSurface(BRep_PointRepresentation):
     def Surface(self) -> nanoocp.Geom.Geom_Surface: ...
 
     @overload
-    def Surface(self, S: nanoocp.Geom.Geom_Surface) -> None: ...
+    def Surface(self, S: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
@@ -1382,7 +1382,7 @@ class BRep_PointOnCurveOnSurface(BRep_PointsOnSurface):
     """
 
     @overload
-    def __init__(self, P: float, C: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P: float, C: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_PointOnCurveOnSurface) -> None: ...
@@ -1392,13 +1392,13 @@ class BRep_PointOnCurveOnSurface(BRep_PointsOnSurface):
         """Returns True"""
 
     @overload
-    def IsPointOnCurveOnSurface(self, PC: nanoocp.Geom2d.Geom2d_Curve, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool: ...
+    def IsPointOnCurveOnSurface(self, PC: nanoocp.Geom2d.Geom2d_Curve | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool: ...
 
     @overload
     def PCurve(self) -> nanoocp.Geom2d.Geom2d_Curve: ...
 
     @overload
-    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
@@ -1415,7 +1415,7 @@ class BRep_PointOnSurface(BRep_PointsOnSurface):
     """Representation by two parameters on a surface."""
 
     @overload
-    def __init__(self, P1: float, P2: float, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P1: float, P2: float, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_PointOnSurface) -> None: ...
@@ -1424,7 +1424,7 @@ class BRep_PointOnSurface(BRep_PointsOnSurface):
     def IsPointOnSurface(self) -> bool: ...
 
     @overload
-    def IsPointOnSurface(self, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool: ...
+    def IsPointOnSurface(self, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool: ...
 
     @overload
     def Parameter2(self) -> float: ...
@@ -1444,7 +1444,7 @@ class BRep_Polygon3D(BRep_CurveRepresentation):
     """Representation by a 3D polygon."""
 
     @overload
-    def __init__(self, P: nanoocp.Poly.Poly_Polygon3D, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P: nanoocp.Poly.Poly_Polygon3D | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_Polygon3D) -> None: ...
@@ -1456,7 +1456,7 @@ class BRep_Polygon3D(BRep_CurveRepresentation):
     def Polygon3D(self) -> nanoocp.Poly.Poly_Polygon3D: ...
 
     @overload
-    def Polygon3D(self, P: nanoocp.Poly.Poly_Polygon3D) -> None: ...
+    def Polygon3D(self, P: nanoocp.Poly.Poly_Polygon3D | None) -> None: ...
 
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
@@ -1479,7 +1479,7 @@ class BRep_PolygonOnSurface(BRep_CurveRepresentation):
     """
 
     @overload
-    def __init__(self, P: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P: nanoocp.Poly.Poly_Polygon2D | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_PolygonOnSurface) -> None: ...
@@ -1488,7 +1488,7 @@ class BRep_PolygonOnSurface(BRep_CurveRepresentation):
     def IsPolygonOnSurface(self) -> bool: ...
 
     @overload
-    def IsPolygonOnSurface(self, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsPolygonOnSurface(self, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         A 2D polygon representation in the parametric
         space of a surface.
@@ -1500,7 +1500,7 @@ class BRep_PolygonOnSurface(BRep_CurveRepresentation):
     def Polygon(self) -> nanoocp.Poly.Poly_Polygon2D: ...
 
     @overload
-    def Polygon(self, P: nanoocp.Poly.Poly_Polygon2D) -> None: ...
+    def Polygon(self, P: nanoocp.Poly.Poly_Polygon2D | None) -> None: ...
 
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
@@ -1523,7 +1523,7 @@ class BRep_PolygonOnClosedSurface(BRep_PolygonOnSurface):
     """
 
     @overload
-    def __init__(self, P1: nanoocp.Poly.Poly_Polygon2D, P2: nanoocp.Poly.Poly_Polygon2D, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P1: nanoocp.Poly.Poly_Polygon2D | None, P2: nanoocp.Poly.Poly_Polygon2D | None, S: nanoocp.Geom.Geom_Surface | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_PolygonOnClosedSurface) -> None: ...
@@ -1535,7 +1535,7 @@ class BRep_PolygonOnClosedSurface(BRep_PolygonOnSurface):
     def Polygon2(self) -> nanoocp.Poly.Poly_Polygon2D: ...
 
     @overload
-    def Polygon2(self, P: nanoocp.Poly.Poly_Polygon2D) -> None: ...
+    def Polygon2(self, P: nanoocp.Poly.Poly_Polygon2D | None) -> None: ...
 
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
@@ -1558,7 +1558,7 @@ class BRep_PolygonOnTriangulation(BRep_CurveRepresentation):
     """
 
     @overload
-    def __init__(self, P: nanoocp.Poly.Poly_PolygonOnTriangulation, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P: nanoocp.Poly.Poly_PolygonOnTriangulation | None, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_PolygonOnTriangulation) -> None: ...
@@ -1568,14 +1568,14 @@ class BRep_PolygonOnTriangulation(BRep_CurveRepresentation):
         """returns True."""
 
     @overload
-    def IsPolygonOnTriangulation(self, T: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
+    def IsPolygonOnTriangulation(self, T: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> bool:
         """
         Is it a polygon in the definition of <T> with
         location <L>.
         """
 
     @overload
-    def PolygonOnTriangulation(self, P: nanoocp.Poly.Poly_PolygonOnTriangulation) -> None:
+    def PolygonOnTriangulation(self, P: nanoocp.Poly.Poly_PolygonOnTriangulation | None) -> None:
         """returns True."""
 
     @overload
@@ -1604,7 +1604,7 @@ class BRep_PolygonOnClosedTriangulation(BRep_PolygonOnTriangulation):
     """
 
     @overload
-    def __init__(self, P1: nanoocp.Poly.Poly_PolygonOnTriangulation, P2: nanoocp.Poly.Poly_PolygonOnTriangulation, Tr: nanoocp.Poly.Poly_Triangulation, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
+    def __init__(self, P1: nanoocp.Poly.Poly_PolygonOnTriangulation | None, P2: nanoocp.Poly.Poly_PolygonOnTriangulation | None, Tr: nanoocp.Poly.Poly_Triangulation | None, L: nanoocp.TopLoc.TopLoc_Location) -> None: ...
 
     @overload
     def __init__(self, theOther: BRep_PolygonOnClosedTriangulation) -> None: ...
@@ -1613,7 +1613,7 @@ class BRep_PolygonOnClosedTriangulation(BRep_PolygonOnTriangulation):
         """Returns True."""
 
     @overload
-    def PolygonOnTriangulation2(self, P2: nanoocp.Poly.Poly_PolygonOnTriangulation) -> None: ...
+    def PolygonOnTriangulation2(self, P2: nanoocp.Poly.Poly_PolygonOnTriangulation | None) -> None: ...
 
     @overload
     def PolygonOnTriangulation2(self) -> nanoocp.Poly.Poly_PolygonOnTriangulation: ...

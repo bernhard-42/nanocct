@@ -43,11 +43,13 @@ void nanoocp_declare_Approx(nb::module_ &m) {
     nb::enum_<Approx_ParametrizationType>(m, "Approx_ParametrizationType", nb::is_arithmetic())
         .value("Approx_ChordLength", Approx_ChordLength)
         .value("Approx_Centripetal", Approx_Centripetal)
-        .value("Approx_IsoParametric", Approx_IsoParametric);
+        .value("Approx_IsoParametric", Approx_IsoParametric)
+        .export_values();
     nb::enum_<Approx_Status>(m, "Approx_Status", R"nbdoc(It is an auxiliary flag being used in inner computations)nbdoc", nb::is_arithmetic())
         .value("Approx_PointsAdded", Approx_PointsAdded)
         .value("Approx_NoPointsAdded", Approx_NoPointsAdded)
-        .value("Approx_NoApproximation", Approx_NoApproximation);
+        .value("Approx_NoApproximation", Approx_NoApproximation)
+        .export_values();
     { nb::class_<Approx_Curve2d> cls(m, "Approx_Curve2d", R"nbdoc(Makes an approximation for HCurve2d from Adaptor3d)nbdoc");
     }
     { nb::class_<Approx_Curve3d> cls(m, "Approx_Curve3d");
@@ -100,7 +102,7 @@ void nanoocp_templates_Approx(nb::module_ &m) {
 
 void nanoocp_define_Approx(nb::module_ &m) {
     nb::borrow<nb::class_<Approx_Curve2d>>(m.attr("Approx_Curve2d"))
-        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const double, const double, const double, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C2D"), nb::arg("First"), nb::arg("Last"), nb::arg("TolU"), nb::arg("TolV"), nb::arg("Continuity"), nb::arg("MaxDegree"), nb::arg("MaxSegments"))
+        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const double, const double, const double, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C2D").none(), nb::arg("First"), nb::arg("Last"), nb::arg("TolU"), nb::arg("TolV"), nb::arg("Continuity"), nb::arg("MaxDegree"), nb::arg("MaxSegments"))
         .def("IsDone", static_cast<bool (Approx_Curve2d::*)() const>(&Approx_Curve2d::IsDone))
         .def("HasResult", static_cast<bool (Approx_Curve2d::*)() const>(&Approx_Curve2d::HasResult))
         .def("Curve", static_cast<occ::handle<Geom2d_BSplineCurve> (Approx_Curve2d::*)() const>(&Approx_Curve2d::Curve))
@@ -108,7 +110,7 @@ void nanoocp_define_Approx(nb::module_ &m) {
         .def("MaxError2dV", static_cast<double (Approx_Curve2d::*)() const>(&Approx_Curve2d::MaxError2dV));
     nanoocp_implicit_copy_ctor<Approx_Curve2d>(nb::borrow<nb::class_<Approx_Curve2d>>(m.attr("Approx_Curve2d")));
     nb::borrow<nb::class_<Approx_Curve3d>>(m.attr("Approx_Curve3d"))
-        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve"), nb::arg("Tol3d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Approximation of a curve with respect of the
+        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("Curve").none(), nb::arg("Tol3d"), nb::arg("Order"), nb::arg("MaxSegments"), nb::arg("MaxDegree"), R"nbdoc(Approximation of a curve with respect of the
 required tolerance Tol3D.)nbdoc")
         .def("Curve", static_cast<occ::handle<Geom_BSplineCurve> (Approx_Curve3d::*)() const>(&Approx_Curve3d::Curve))
         .def("IsDone", static_cast<bool (Approx_Curve3d::*)() const>(&Approx_Curve3d::IsDone), R"nbdoc(returns true if the approximation has
@@ -121,7 +123,7 @@ has been done, 0 if no approximation))nbdoc")
         .def("Dump", [](const Approx_Curve3d &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Print on the stream 'o' information about the object)nbdoc");
     nanoocp_implicit_copy_ctor<Approx_Curve3d>(nb::borrow<nb::class_<Approx_Curve3d>>(m.attr("Approx_Curve3d")));
     nb::borrow<nb::class_<Approx_CurveOnSurface>>(m.attr("Approx_CurveOnSurface"))
-        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const double, const double>(), nb::arg("theC2D"), nb::arg("theSurf"), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTol"), R"nbdoc(This constructor does not call perform method.
+        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const double, const double>(), nb::arg("theC2D").none(), nb::arg("theSurf").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTol"), R"nbdoc(This constructor does not call perform method.
 @param theC2D   2D Curve to be approximated in 3D.
 @param theSurf  Surface where 2D curve is located.
 @param theFirst First parameter of resulting curve.
@@ -144,9 +146,9 @@ U-isoline or V-isoline.
 @param theOnly2d      Determines building only 2D curve.)nbdoc");
     nanoocp_implicit_copy_ctor<Approx_CurveOnSurface>(nb::borrow<nb::class_<Approx_CurveOnSurface>>(m.attr("Approx_CurveOnSurface")));
     nb::borrow<nb::class_<Approx_CurvilinearParameter>>(m.attr("Approx_CurvilinearParameter"))
-        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C3D"), nb::arg("Tol"), nb::arg("Order"), nb::arg("MaxDegree"), nb::arg("MaxSegments"), R"nbdoc(case of a free 3D curve)nbdoc")
-        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C2D"), nb::arg("Surf"), nb::arg("Tol"), nb::arg("Order"), nb::arg("MaxDegree"), nb::arg("MaxSegments"), R"nbdoc(case of a curve on one surface)nbdoc")
-        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C2D1"), nb::arg("Surf1"), nb::arg("C2D2"), nb::arg("Surf2"), nb::arg("Tol"), nb::arg("Order"), nb::arg("MaxDegree"), nb::arg("MaxSegments"), R"nbdoc(case of a curve on two surfaces)nbdoc")
+        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C3D").none(), nb::arg("Tol"), nb::arg("Order"), nb::arg("MaxDegree"), nb::arg("MaxSegments"), R"nbdoc(case of a free 3D curve)nbdoc")
+        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C2D").none(), nb::arg("Surf").none(), nb::arg("Tol"), nb::arg("Order"), nb::arg("MaxDegree"), nb::arg("MaxSegments"), R"nbdoc(case of a curve on one surface)nbdoc")
+        .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double, const GeomAbs_Shape, const int, const int>(), nb::arg("C2D1").none(), nb::arg("Surf1").none(), nb::arg("C2D2").none(), nb::arg("Surf2").none(), nb::arg("Tol"), nb::arg("Order"), nb::arg("MaxDegree"), nb::arg("MaxSegments"), R"nbdoc(case of a curve on two surfaces)nbdoc")
         .def("IsDone", static_cast<bool (Approx_CurvilinearParameter::*)() const>(&Approx_CurvilinearParameter::IsDone))
         .def("HasResult", static_cast<bool (Approx_CurvilinearParameter::*)() const>(&Approx_CurvilinearParameter::HasResult))
         .def("Curve3d", static_cast<occ::handle<Geom_BSplineCurve> (Approx_CurvilinearParameter::*)() const>(&Approx_CurvilinearParameter::Curve3d), R"nbdoc(returns the Bspline curve corresponding to the reparametrized 3D curve)nbdoc")
@@ -160,9 +162,9 @@ second surface (case of a curve on two surfaces))nbdoc")
         .def("Dump", [](const Approx_CurvilinearParameter &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(print the maximum errors(s))nbdoc");
     nanoocp_implicit_copy_ctor<Approx_CurvilinearParameter>(nb::borrow<nb::class_<Approx_CurvilinearParameter>>(m.attr("Approx_CurvilinearParameter")));
     nb::borrow<nb::class_<Approx_CurvlinFunc>>(m.attr("Approx_CurvlinFunc"))
-        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C, const double Tol) { return opencascade::handle<Approx_CurvlinFunc>(new Approx_CurvlinFunc(C, Tol)); }), nb::arg("C"), nb::arg("Tol"))
-        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C2D, const occ::handle<Adaptor3d_Surface> & S, const double Tol) { return opencascade::handle<Approx_CurvlinFunc>(new Approx_CurvlinFunc(C2D, S, Tol)); }), nb::arg("C2D"), nb::arg("S"), nb::arg("Tol"))
-        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C2D1, const occ::handle<Adaptor2d_Curve2d> & C2D2, const occ::handle<Adaptor3d_Surface> & S1, const occ::handle<Adaptor3d_Surface> & S2, const double Tol) { return opencascade::handle<Approx_CurvlinFunc>(new Approx_CurvlinFunc(C2D1, C2D2, S1, S2, Tol)); }), nb::arg("C2D1"), nb::arg("C2D2"), nb::arg("S1"), nb::arg("S2"), nb::arg("Tol"))
+        .def(nb::new_([](const occ::handle<Adaptor3d_Curve> & C, const double Tol) { return opencascade::handle<Approx_CurvlinFunc>(new Approx_CurvlinFunc(C, Tol)); }), nb::arg("C").none(), nb::arg("Tol"))
+        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C2D, const occ::handle<Adaptor3d_Surface> & S, const double Tol) { return opencascade::handle<Approx_CurvlinFunc>(new Approx_CurvlinFunc(C2D, S, Tol)); }), nb::arg("C2D").none(), nb::arg("S").none(), nb::arg("Tol"))
+        .def(nb::new_([](const occ::handle<Adaptor2d_Curve2d> & C2D1, const occ::handle<Adaptor2d_Curve2d> & C2D2, const occ::handle<Adaptor3d_Surface> & S1, const occ::handle<Adaptor3d_Surface> & S2, const double Tol) { return opencascade::handle<Approx_CurvlinFunc>(new Approx_CurvlinFunc(C2D1, C2D2, S1, S2, Tol)); }), nb::arg("C2D1").none(), nb::arg("C2D2").none(), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("Tol"))
         .def("SetTol", static_cast<void (Approx_CurvlinFunc::*)(const double)>(&Approx_CurvlinFunc::SetTol), nb::arg("Tol"), R"nbdoc(---Purpose Update the tolerance to used)nbdoc")
         .def("FirstParameter", static_cast<double (Approx_CurvlinFunc::*)() const>(&Approx_CurvlinFunc::FirstParameter))
         .def("LastParameter", static_cast<double (Approx_CurvlinFunc::*)() const>(&Approx_CurvlinFunc::LastParameter))
@@ -260,9 +262,9 @@ of the MultiLine.)nbdoc")
         .def("ChangeValue", static_cast<const AppParCurves_MultiBSpCurve & (Approx_MCurvesToBSpCurve::*)()>(&Approx_MCurvesToBSpCurve::ChangeValue), R"nbdoc(return the composite MultiCurves as a MultiBSpCurve.)nbdoc");
     nanoocp_implicit_copy_ctor<Approx_MCurvesToBSpCurve>(nb::borrow<nb::class_<Approx_MCurvesToBSpCurve>>(m.attr("Approx_MCurvesToBSpCurve")));
     nb::borrow<nb::class_<Approx_SameParameter>>(m.attr("Approx_SameParameter"))
-        .def(nb::init<const occ::handle<Geom_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const double>(), nb::arg("C3D"), nb::arg("C2D"), nb::arg("S"), nb::arg("Tol"), R"nbdoc(Warning: the C3D and C2D must have the same parametric domain.)nbdoc")
-        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Adaptor3d_Surface> &, const double>(), nb::arg("C3D"), nb::arg("C2D"), nb::arg("S"), nb::arg("Tol"), R"nbdoc(Warning: the C3D and C2D must have the same parametric domain.)nbdoc")
-        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double>(), nb::arg("C3D"), nb::arg("C2D"), nb::arg("S"), nb::arg("Tol"), R"nbdoc(Warning: the C3D and C2D must have the same parametric domain.)nbdoc")
+        .def(nb::init<const occ::handle<Geom_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const double>(), nb::arg("C3D").none(), nb::arg("C2D").none(), nb::arg("S").none(), nb::arg("Tol"), R"nbdoc(Warning: the C3D and C2D must have the same parametric domain.)nbdoc")
+        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Adaptor3d_Surface> &, const double>(), nb::arg("C3D").none(), nb::arg("C2D").none(), nb::arg("S").none(), nb::arg("Tol"), R"nbdoc(Warning: the C3D and C2D must have the same parametric domain.)nbdoc")
+        .def(nb::init<const occ::handle<Adaptor3d_Curve> &, const occ::handle<Adaptor2d_Curve2d> &, const occ::handle<Adaptor3d_Surface> &, const double>(), nb::arg("C3D").none(), nb::arg("C2D").none(), nb::arg("S").none(), nb::arg("Tol"), R"nbdoc(Warning: the C3D and C2D must have the same parametric domain.)nbdoc")
         .def("IsDone", static_cast<bool (Approx_SameParameter::*)() const>(&Approx_SameParameter::IsDone), R"nbdoc(@Returns .false. if calculations failed,
 .true. if calculations succeed)nbdoc")
         .def("TolReached", static_cast<double (Approx_SameParameter::*)() const>(&Approx_SameParameter::TolReached), R"nbdoc(@Returns tolerance (maximal distance) between 3d curve
@@ -280,7 +282,7 @@ specified tolerance.)nbdoc")
 the 3D curve up to the specified tolerance.)nbdoc");
     nanoocp_implicit_copy_ctor<Approx_SameParameter>(nb::borrow<nb::class_<Approx_SameParameter>>(m.attr("Approx_SameParameter")));
     nb::borrow<nb::class_<Approx_SweepApproximation>>(m.attr("Approx_SweepApproximation"))
-        .def(nb::init<const occ::handle<Approx_SweepFunction> &>(), nb::arg("Func"))
+        .def(nb::init<const occ::handle<Approx_SweepFunction> &>(), nb::arg("Func").none())
         .def("Perform", static_cast<void (Approx_SweepApproximation::*)(const double, const double, const double, const double, const double, const double, const GeomAbs_Shape, const int, const int)>(&Approx_SweepApproximation::Perform), nb::arg("First"), nb::arg("Last"), nb::arg("Tol3d"), nb::arg("BoundTol"), nb::arg("Tol2d"), nb::arg("TolAngular"), nb::arg("Continuity") = static_cast<std::decay_t<const GeomAbs_Shape>>(GeomAbs_C0), nb::arg("Degmax") = static_cast<std::decay_t<const int>>(11), nb::arg("Segmax") = static_cast<std::decay_t<const int>>(50), R"nbdoc(Perform the Approximation
 [First, Last] : Approx_SweepApproximation.cdl
 Tol3d : Tolerance to surface approximation

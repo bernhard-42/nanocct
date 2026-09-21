@@ -3,10 +3,11 @@ namespace functions), BRep_Builder/BRep_Tool, TopExp, TopTools aliases of hashed
 import importlib
 import os
 import tempfile
+from pathlib import Path
 
 import pytest
 
-from nanoocp import BRep, BRepAdaptor, BRepLProp, BRepTools, BinTools, Geom, GeomAbs, NCollection, Standard, TopAbs, TopExp, TopTools, TopoDS, gp
+from nanoocp import BRep, BRepAdaptor, BRepLProp, BRepTools, BinTools, Geom, Geom2d, GeomAbs, NCollection, Standard, TopAbs, TopExp, TopLoc, TopTools, TopoDS, gp
 
 PACKAGES = ["TopoDS", "TopExp", "TopTools", "BRep", "BRepLProp", "BRepAdaptor", "BRepTools", "BinTools", "BRepGraph", "BRepGraphInc"]
 
@@ -113,5 +114,47 @@ def test_brep_and_binary_round_trip():
 
 def test_unbindable_classes_are_reported_not_bound():
     from nanoocp import BRepGraph
+    from generator.report import read_report
     assert not hasattr(BRepGraph, "BRepGraph_CacheMesh")            # member of a type defined only in the .cxx
     assert hasattr(BRepGraph, "BRepGraph")                          # the graph itself is bound
+    rows = read_report(Path(__file__).parents[1] / "src" / "cpp" / "TKBRep" / "report.txt")
+    matches = [(cat, pkg, msg) for cat, pkg, msg in rows if msg.startswith("BRepGraph_CacheMesh:")]
+    assert matches == [("incomplete", "BRepGraph",
+                        "BRepGraph_CacheMesh: member mySlots of incomplete type BRepGraph_CacheMesh::Slot -> class skipped")]
+    assert all(cat != "misc" for cat, _, _ in rows)                 # every omission has a category (generator/report.py)
+
+
+def test_handle_parameters_accept_none():
+    # a handle<T> parameter is nb::arg(...).none(): None is the null handle (Design.md 4.2)
+    tf = BRep.BRep_TFace()
+    tf.Surface(None)
+    assert tf.Surface() is None
+    b = BRep.BRep_Builder()
+    e = TopoDS.TopoDS_Edge()
+    b.MakeEdge(e)
+    b.UpdateEdge(e, None, TopLoc.TopLoc_Location(), 1e-6)          # handle<Geom_Curve>& C = null: an edge without 3D curve
+    assert BRep.BRep_Tool.Degenerated(e) is False
+
+
+def test_handle_out_parameters_are_returned():
+    # handle<T>& out-parameters come back in the result tuple, like double& (Design.md 6)
+    b = BRep.BRep_Builder()
+    e = TopoDS.TopoDS_Edge()
+    b.MakeEdge(e, Geom.Geom_Line(gp.gp_Pnt(), gp.gp_Dir(1.0, 0.0, 0.0)), 1e-7)
+    b.Range(e, 0.0, 2.0)
+    plane = Geom.Geom_Plane(gp.gp_Pnt(), gp.gp_Dir(0.0, 0.0, 1.0))
+    b.UpdateEdge(e, Geom2d.Geom2d_Line(gp.gp_Pnt2d(), gp.gp_Dir2d(1.0, 0.0)), plane, TopLoc.TopLoc_Location(), 1e-7)
+    loc = TopLoc.TopLoc_Location()
+    curve2d, surface, first, last = BRep.BRep_Tool.CurveOnSurface(e, loc)   # C, S (out), L (in place), First, Last (out)
+    assert isinstance(curve2d, Geom2d.Geom2d_Line) and surface is plane
+    assert (first, last) == (0.0, 2.0)
+    assert BRep.BRep_Tool.CurveOnSurface.__doc__.splitlines()[0].endswith(
+        "-> tuple[nanoocp.Geom2d.Geom2d_Curve, nanoocp.Geom.Geom_Surface, float, float]")
+
+
+def test_unscoped_enumerators_are_exported_to_the_enclosing_scope():
+    # C++ puts TopAbs_FACE next to TopAbs_ShapeEnum; export_values() does the same (Design.md 6)
+    assert TopAbs.TopAbs_FACE is TopAbs.TopAbs_ShapeEnum.TopAbs_FACE
+    assert int(TopAbs.TopAbs_FACE) == 4
+    assert TopoDS.TopoDS_TShape.Bits_Reserved is TopoDS.TopoDS_TShape.BitLayout.Bits_Reserved   # nested unscoped enum -> class attribute
+    assert gp.gp_Dir.D.NZ is not None and not hasattr(gp.gp_Dir, "NZ")                        # scoped enum class stays nested

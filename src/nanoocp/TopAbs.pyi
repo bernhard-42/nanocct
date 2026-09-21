@@ -36,6 +36,14 @@ class TopAbs_Orientation(enum.IntEnum):
 
     TopAbs_EXTERNAL = 3
 
+TopAbs_FORWARD: TopAbs_Orientation = TopAbs_Orientation.TopAbs_FORWARD
+
+TopAbs_REVERSED: TopAbs_Orientation = TopAbs_Orientation.TopAbs_REVERSED
+
+TopAbs_INTERNAL: TopAbs_Orientation = TopAbs_Orientation.TopAbs_INTERNAL
+
+TopAbs_EXTERNAL: TopAbs_Orientation = TopAbs_Orientation.TopAbs_EXTERNAL
+
 class TopAbs_ShapeEnum(enum.IntEnum):
     """
     Identifies various topological shapes. This
@@ -83,6 +91,24 @@ class TopAbs_ShapeEnum(enum.IntEnum):
 
     TopAbs_SHAPE = 8
 
+TopAbs_COMPOUND: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_COMPOUND
+
+TopAbs_COMPSOLID: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_COMPSOLID
+
+TopAbs_SOLID: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_SOLID
+
+TopAbs_SHELL: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_SHELL
+
+TopAbs_FACE: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_FACE
+
+TopAbs_WIRE: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_WIRE
+
+TopAbs_EDGE: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_EDGE
+
+TopAbs_VERTEX: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_VERTEX
+
+TopAbs_SHAPE: TopAbs_ShapeEnum = TopAbs_ShapeEnum.TopAbs_SHAPE
+
 class TopAbs_State(enum.IntEnum):
     """
     Identifies the position of a vertex or a set of
@@ -99,6 +125,14 @@ class TopAbs_State(enum.IntEnum):
     TopAbs_ON = 2
 
     TopAbs_UNKNOWN = 3
+
+TopAbs_IN: TopAbs_State = TopAbs_State.TopAbs_IN
+
+TopAbs_OUT: TopAbs_State = TopAbs_State.TopAbs_OUT
+
+TopAbs_ON: TopAbs_State = TopAbs_State.TopAbs_ON
+
+TopAbs_UNKNOWN: TopAbs_State = TopAbs_State.TopAbs_UNKNOWN
 
 class TopAbs:
     """

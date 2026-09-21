@@ -29,6 +29,14 @@ class GeomLib_InterpolationErrors(enum.IntEnum):
 
     GeomLib_InversionProblem = 3
 
+GeomLib_NoError: GeomLib_InterpolationErrors = GeomLib_InterpolationErrors.GeomLib_NoError
+
+GeomLib_NotEnoughtPoints: GeomLib_InterpolationErrors = ...
+
+GeomLib_DegreeSmallerThan3: GeomLib_InterpolationErrors = ...
+
+GeomLib_InversionProblem: GeomLib_InterpolationErrors = ...
+
 class GeomLib:
     """
     Geom Library. This package provides an
@@ -43,7 +51,7 @@ class GeomLib:
     def __init__(self, theOther: GeomLib) -> None: ...
 
     @staticmethod
-    def To3d(Position: nanoocp.gp.gp_Ax2, Curve2d: nanoocp.Geom2d.Geom2d_Curve) -> nanoocp.Geom.Geom_Curve:
+    def To3d(Position: nanoocp.gp.gp_Ax2, Curve2d: nanoocp.Geom2d.Geom2d_Curve | None) -> nanoocp.Geom.Geom_Curve:
         """
         Computes the curve 3d from package Geom
         corresponding to curve 2d from package Geom2d, on
@@ -52,7 +60,7 @@ class GeomLib:
         """
 
     @staticmethod
-    def GTransform(Curve: nanoocp.Geom2d.Geom2d_Curve, GTrsf: nanoocp.gp.gp_GTrsf2d) -> nanoocp.Geom2d.Geom2d_Curve:
+    def GTransform(Curve: nanoocp.Geom2d.Geom2d_Curve | None, GTrsf: nanoocp.gp.gp_GTrsf2d) -> nanoocp.Geom2d.Geom2d_Curve:
         """
         Computes the curve 3d from package Geom
         corresponding to the curve 3d from package Geom,
@@ -65,7 +73,7 @@ class GeomLib:
         """
 
     @staticmethod
-    def SameRange(Tolerance: float, Curve2dPtr: nanoocp.Geom2d.Geom2d_Curve, First: float, Last: float, RequestedFirst: float, RequestedLast: float, NewCurve2dPtr: nanoocp.Geom2d.Geom2d_Curve) -> None:
+    def SameRange(Tolerance: float, Curve2dPtr: nanoocp.Geom2d.Geom2d_Curve | None, First: float, Last: float, RequestedFirst: float, RequestedLast: float) -> nanoocp.Geom2d.Geom2d_Curve:
         """
         Make the curve Curve2dPtr have the imposed
         range First to List the most economic way,
@@ -76,13 +84,13 @@ class GeomLib:
         """
 
     @staticmethod
-    def BuildCurve3d(Tolerance: float, CurvePtr: nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface, FirstParameter: float, LastParameter: float, NewCurvePtr: nanoocp.Geom.Geom_Curve, Continuity: nanoocp.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C1, MaxDegree: int = 14, MaxSegment: int = 30) -> tuple[float, float]: ...
+    def BuildCurve3d(Tolerance: float, CurvePtr: nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface, FirstParameter: float, LastParameter: float, Continuity: nanoocp.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C1, MaxDegree: int = 14, MaxSegment: int = 30) -> tuple[nanoocp.Geom.Geom_Curve, float, float]: ...
 
     @staticmethod
-    def AdjustExtremity(Curve: nanoocp.Geom.Geom_BoundedCurve, P1: nanoocp.gp.gp_Pnt, P2: nanoocp.gp.gp_Pnt, T1: nanoocp.gp.gp_Vec, T2: nanoocp.gp.gp_Vec) -> None: ...
+    def AdjustExtremity(Curve: nanoocp.Geom.Geom_BoundedCurve | None, P1: nanoocp.gp.gp_Pnt, P2: nanoocp.gp.gp_Pnt, T1: nanoocp.gp.gp_Vec, T2: nanoocp.gp.gp_Vec) -> nanoocp.Geom.Geom_BoundedCurve: ...
 
     @staticmethod
-    def ExtendCurveToPoint(Curve: nanoocp.Geom.Geom_BoundedCurve, Point: nanoocp.gp.gp_Pnt, Cont: int, After: bool) -> None:
+    def ExtendCurveToPoint(Curve: nanoocp.Geom.Geom_BoundedCurve | None, Point: nanoocp.gp.gp_Pnt, Cont: int, After: bool) -> nanoocp.Geom.Geom_BoundedCurve:
         """
         Extends the bounded curve Curve to the point Point.
         The extension is built:
@@ -101,7 +109,7 @@ class GeomLib:
         """
 
     @staticmethod
-    def ExtendSurfByLength(Surf: nanoocp.Geom.Geom_BoundedSurface, Length: float, Cont: int, InU: bool, After: bool) -> None:
+    def ExtendSurfByLength(Surf: nanoocp.Geom.Geom_BoundedSurface | None, Length: float, Cont: int, InU: bool, After: bool) -> nanoocp.Geom.Geom_BoundedSurface:
         """
         Extends the bounded surface Surf along one of its
         boundaries. The chord length of the extension is equal to Length.
@@ -143,7 +151,7 @@ class GeomLib:
         """
 
     @staticmethod
-    def RemovePointsFromArray(NumPoints: int, InParameters: nanoocp.NCollection.NCollection_Array1[float], OutParameters: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
+    def RemovePointsFromArray(NumPoints: int, InParameters: nanoocp.NCollection.NCollection_Array1[float]) -> nanoocp.NCollection.NCollection_HArray1[float]:
         """
         Warning! This assume that the InParameter is an increasing sequence
         of real number and it will not check for that : Unpredictable
@@ -164,7 +172,7 @@ class GeomLib:
         """
 
     @staticmethod
-    def DensifyArray1OfReal(MinNumPoints: int, InParameters: nanoocp.NCollection.NCollection_Array1[float], OutParameters: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
+    def DensifyArray1OfReal(MinNumPoints: int, InParameters: nanoocp.NCollection.NCollection_Array1[float]) -> nanoocp.NCollection.NCollection_HArray1[float]:
         """
         this makes sure that there is at least MinNumPoints
         in OutParameters taking into account the parameters in
@@ -205,14 +213,14 @@ class GeomLib:
         """
 
     @staticmethod
-    def CancelDenominatorDerivative(BSurf: nanoocp.Geom.Geom_BSplineSurface, UDirection: bool, VDirection: bool) -> None:
+    def CancelDenominatorDerivative(BSurf: nanoocp.Geom.Geom_BSplineSurface | None, UDirection: bool, VDirection: bool) -> nanoocp.Geom.Geom_BSplineSurface:
         """
         Cancel,on the boundaries,the denominator first derivative
         in the directions wished by the user and set its value to 1.
         """
 
     @staticmethod
-    def NormEstim(theSurf: nanoocp.Geom.Geom_Surface, theUV: nanoocp.gp.gp_Pnt2d, theTol: float, theNorm: nanoocp.gp.gp_Dir) -> int:
+    def NormEstim(theSurf: nanoocp.Geom.Geom_Surface | None, theUV: nanoocp.gp.gp_Pnt2d, theTol: float, theNorm: nanoocp.gp.gp_Dir) -> int:
         """
         Estimate surface normal at the given (U, V) point.
         @param[in]  theSurf input surface
@@ -225,14 +233,14 @@ class GeomLib:
         """
 
     @staticmethod
-    def IsClosed(S: nanoocp.Geom.Geom_Surface, Tol: float) -> tuple[bool, bool]:
+    def IsClosed(S: nanoocp.Geom.Geom_Surface | None, Tol: float) -> tuple[bool, bool]:
         """
         This method defines if opposite boundaries of surface
         coincide with given tolerance
         """
 
     @staticmethod
-    def IsBSplUClosed(S: nanoocp.Geom.Geom_BSplineSurface, U1: float, U2: float, Tol: float) -> bool:
+    def IsBSplUClosed(S: nanoocp.Geom.Geom_BSplineSurface | None, U1: float, U2: float, Tol: float) -> bool:
         """
         Returns true if the poles of U1 isoline and the poles of
         U2 isoline of surface are identical according to tolerance criterion.
@@ -240,7 +248,7 @@ class GeomLib:
         """
 
     @staticmethod
-    def IsBSplVClosed(S: nanoocp.Geom.Geom_BSplineSurface, V1: float, V2: float, Tol: float) -> bool:
+    def IsBSplVClosed(S: nanoocp.Geom.Geom_BSplineSurface | None, V1: float, V2: float, Tol: float) -> bool:
         """
         Returns true if the poles of V1 isoline and the poles of
         V2 isoline of surface are identical according to tolerance criterion.
@@ -248,21 +256,21 @@ class GeomLib:
         """
 
     @staticmethod
-    def IsBzUClosed(S: nanoocp.Geom.Geom_BezierSurface, U1: float, U2: float, Tol: float) -> bool:
+    def IsBzUClosed(S: nanoocp.Geom.Geom_BezierSurface | None, U1: float, U2: float, Tol: float) -> bool:
         """
         Returns true if the poles of U1 isoline and the poles of
         U2 isoline of surface are identical according to tolerance criterion.
         """
 
     @staticmethod
-    def IsBzVClosed(S: nanoocp.Geom.Geom_BezierSurface, V1: float, V2: float, Tol: float) -> bool:
+    def IsBzVClosed(S: nanoocp.Geom.Geom_BezierSurface | None, V1: float, V2: float, Tol: float) -> bool:
         """
         Returns true if the poles of V1 isoline and the poles of
         V2 isoline of surface are identical according to tolerance criterion.
         """
 
     @staticmethod
-    def isIsoLine(theC2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d) -> tuple[bool, bool, float, bool]:
+    def isIsoLine(theC2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None) -> tuple[bool, bool, float, bool]:
         """
         Checks whether the 2d curve is a isoline. It can be represented by b-spline, bezier,
         or geometric line. This line should have natural parameterization.
@@ -274,7 +282,7 @@ class GeomLib:
         """
 
     @staticmethod
-    def buildC3dOnIsoLine(theC2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d, theSurf: nanoocp.Adaptor3d.Adaptor3d_Surface, theFirst: float, theLast: float, theTolerance: float, theIsU: bool, theParam: float, theIsForward: bool) -> nanoocp.Geom.Geom_Curve:
+    def buildC3dOnIsoLine(theC2D: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None, theSurf: nanoocp.Adaptor3d.Adaptor3d_Surface | None, theFirst: float, theLast: float, theTolerance: float, theIsU: bool, theParam: float, theIsForward: bool) -> nanoocp.Geom.Geom_Curve:
         """
         Builds 3D curve for a isoline. This method takes corresponding isoline from
         the input surface.
@@ -292,7 +300,7 @@ class GeomLib_Check2dBSplineCurve:
     """
 
     @overload
-    def __init__(self, Curve: nanoocp.Geom2d.Geom2d_BSplineCurve, Tolerance: float, AngularTolerance: float) -> None: ...
+    def __init__(self, Curve: nanoocp.Geom2d.Geom2d_BSplineCurve | None, Tolerance: float, AngularTolerance: float) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomLib_Check2dBSplineCurve) -> None: ...
@@ -323,21 +331,21 @@ class GeomLib_CheckCurveOnSurface:
         """Default constructor"""
 
     @overload
-    def __init__(self, theCurve: nanoocp.Adaptor3d.Adaptor3d_Curve, theTolRange: float = 1e-09) -> None:
+    def __init__(self, theCurve: nanoocp.Adaptor3d.Adaptor3d_Curve | None, theTolRange: float = 1e-09) -> None:
         """Constructor"""
 
     @overload
     def __init__(self, theOther: GeomLib_CheckCurveOnSurface) -> None: ...
 
     @overload
-    def Init(self, theCurve: nanoocp.Adaptor3d.Adaptor3d_Curve, theTolRange: float = 1e-09) -> None:
+    def Init(self, theCurve: nanoocp.Adaptor3d.Adaptor3d_Curve | None, theTolRange: float = 1e-09) -> None:
         """Sets the data for the algorithm"""
 
     @overload
     def Init(self) -> None:
         """Initializes all members by default values"""
 
-    def Perform(self, theCurveOnSurface: nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface) -> None:
+    def Perform(self, theCurveOnSurface: nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface | None) -> None:
         """
         Computes the max distance for the 3d curve <myCurve>
         and 2d curve <theCurveOnSurface>
@@ -376,7 +384,7 @@ class GeomLib_CheckBSplineCurve:
     """
 
     @overload
-    def __init__(self, Curve: nanoocp.Geom.Geom_BSplineCurve, Tolerance: float, AngularTolerance: float) -> None: ...
+    def __init__(self, Curve: nanoocp.Geom.Geom_BSplineCurve | None, Tolerance: float, AngularTolerance: float) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomLib_CheckBSplineCurve) -> None: ...
@@ -404,7 +412,7 @@ class GeomLib_DenominatorMultiplier:
     """
 
     @overload
-    def __init__(self, Surface: nanoocp.Geom.Geom_BSplineSurface, KnotVector: nanoocp.NCollection.NCollection_Array1[float]) -> None:
+    def __init__(self, Surface: nanoocp.Geom.Geom_BSplineSurface | None, KnotVector: nanoocp.NCollection.NCollection_Array1[float]) -> None:
         """
         if the surface is rational this will define the evaluator
         of a real function of 2 variables a(u,v) such that
@@ -466,7 +474,7 @@ class GeomLib_IsPlanarSurface:
     """Find if a surface is a planar surface."""
 
     @overload
-    def __init__(self, S: nanoocp.Geom.Geom_Surface, Tol: float = 1e-07) -> None: ...
+    def __init__(self, S: nanoocp.Geom.Geom_Surface | None, Tol: float = 1e-07) -> None: ...
 
     @overload
     def __init__(self, theOther: GeomLib_IsPlanarSurface) -> None: ...
@@ -617,7 +625,7 @@ class GeomLib_Tool:
 
     @overload
     @staticmethod
-    def Parameter(Curve: nanoocp.Geom.Geom_Curve, Point: nanoocp.gp.gp_Pnt, MaxDist: float) -> tuple[bool, float]:
+    def Parameter(Curve: nanoocp.Geom.Geom_Curve | None, Point: nanoocp.gp.gp_Pnt, MaxDist: float) -> tuple[bool, float]:
         """
         Extracts the parameter of a 3D point lying on a 3D curve
         or at a distance less than the MaxDist value.
@@ -625,14 +633,14 @@ class GeomLib_Tool:
 
     @overload
     @staticmethod
-    def Parameter(Curve: nanoocp.Geom2d.Geom2d_Curve, Point: nanoocp.gp.gp_Pnt2d, MaxDist: float) -> tuple[bool, float]:
+    def Parameter(Curve: nanoocp.Geom2d.Geom2d_Curve | None, Point: nanoocp.gp.gp_Pnt2d, MaxDist: float) -> tuple[bool, float]:
         """
         Extracts the parameter of a 2D point lying on a 2D curve
         or at a distance less than the MaxDist value.
         """
 
     @staticmethod
-    def Parameters(Surface: nanoocp.Geom.Geom_Surface, Point: nanoocp.gp.gp_Pnt, MaxDist: float) -> tuple[bool, float, float]:
+    def Parameters(Surface: nanoocp.Geom.Geom_Surface | None, Point: nanoocp.gp.gp_Pnt, MaxDist: float) -> tuple[bool, float, float]:
         """
         Extracts the parameter of a 3D point lying on a surface
         or at a distance less than the MaxDist value.

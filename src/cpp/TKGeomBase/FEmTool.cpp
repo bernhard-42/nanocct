@@ -58,7 +58,7 @@ void nanoocp_templates_FEmTool(nb::module_ &m) {
 
 void nanoocp_define_FEmTool(nb::module_ &m) {
     nb::borrow<nb::class_<FEmTool_Assembly>>(m.attr("FEmTool_Assembly"))
-        .def(nb::init<const NCollection_Array2<int> &, const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> &>(), nb::arg("Dependence"), nb::arg("Table"))
+        .def(nb::init<const NCollection_Array2<int> &, const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> &>(), nb::arg("Dependence"), nb::arg("Table").none())
         .def("NullifyMatrix", static_cast<void (FEmTool_Assembly::*)()>(&FEmTool_Assembly::NullifyMatrix), R"nbdoc(Nullify all Matrix's Coefficient)nbdoc")
         .def("AddMatrix", static_cast<void (FEmTool_Assembly::*)(const int, const int, const int, const math_Matrix &)>(&FEmTool_Assembly::AddMatrix), nb::arg("Element"), nb::arg("Dimension1"), nb::arg("Dimension2"), nb::arg("Mat"), R"nbdoc(Add an elementary Matrix in the assembly Matrix
 if Dependence(Dimension1,Dimension2) is False)nbdoc")
@@ -95,7 +95,7 @@ Returns false if the computation failed.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (FEmTool_Curve::*)() const>(&FEmTool_Curve::DynamicType));
     nanoocp_implicit_copy_ctor<FEmTool_Curve>(nb::borrow<nb::class_<FEmTool_Curve>>(m.attr("FEmTool_Curve")));
     nb::borrow<nb::class_<FEmTool_ElementaryCriterion>>(m.attr("FEmTool_ElementaryCriterion"))
-        .def("Set", static_cast<void (FEmTool_ElementaryCriterion::*)(const occ::handle<NCollection_HArray2<double>> &)>(&FEmTool_ElementaryCriterion::Set), nb::arg("Coeff"), R"nbdoc(Set the coefficient of the Element (the Curve))nbdoc")
+        .def("Set", static_cast<void (FEmTool_ElementaryCriterion::*)(const occ::handle<NCollection_HArray2<double>> &)>(&FEmTool_ElementaryCriterion::Set), nb::arg("Coeff").none(), R"nbdoc(Set the coefficient of the Element (the Curve))nbdoc")
         .def("Set", static_cast<void (FEmTool_ElementaryCriterion::*)(const double, const double)>(&FEmTool_ElementaryCriterion::Set), nb::arg("FirstKnot"), nb::arg("LastKnot"), R"nbdoc(Set the definition interval of the Element)nbdoc")
         .def("DependenceTable", static_cast<occ::handle<NCollection_HArray2<int>> (FEmTool_ElementaryCriterion::*)() const>(&FEmTool_ElementaryCriterion::DependenceTable), R"nbdoc(To know if two dimension are independent.)nbdoc")
         .def("Value", static_cast<double (FEmTool_ElementaryCriterion::*)()>(&FEmTool_ElementaryCriterion::Value), R"nbdoc(To Compute J(E) where E is the current Element)nbdoc")

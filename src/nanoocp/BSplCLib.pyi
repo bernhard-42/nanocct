@@ -23,6 +23,10 @@ class BSplCLib_KnotDistribution(enum.IntEnum):
 
     BSplCLib_Uniform = 1
 
+BSplCLib_NonUniform: BSplCLib_KnotDistribution = BSplCLib_KnotDistribution.BSplCLib_NonUniform
+
+BSplCLib_Uniform: BSplCLib_KnotDistribution = BSplCLib_KnotDistribution.BSplCLib_Uniform
+
 class BSplCLib_MultDistribution(enum.IntEnum):
     """
     This enumeration describes the form of the
@@ -43,6 +47,12 @@ class BSplCLib_MultDistribution(enum.IntEnum):
     BSplCLib_Constant = 1
 
     BSplCLib_QuasiConstant = 2
+
+BSplCLib_NonConstant: BSplCLib_MultDistribution = BSplCLib_MultDistribution.BSplCLib_NonConstant
+
+BSplCLib_Constant: BSplCLib_MultDistribution = BSplCLib_MultDistribution.BSplCLib_Constant
+
+BSplCLib_QuasiConstant: BSplCLib_MultDistribution = BSplCLib_MultDistribution.BSplCLib_QuasiConstant
 
 class BSplCLib_EvaluatorFunction:
     pass
@@ -1090,7 +1100,7 @@ class BSplCLib:
         """
 
     @staticmethod
-    def MergeBSplineKnots(Tolerance: float, StartValue: float, EndValue: float, Degree1: int, Knots1: nanoocp.NCollection.NCollection_Array1[float], Mults1: nanoocp.NCollection.NCollection_Array1[int], Degree2: int, Knots2: nanoocp.NCollection.NCollection_Array1[float], Mults2: nanoocp.NCollection.NCollection_Array1[int], NewKnots: nanoocp.NCollection.NCollection_HArray1[float], NewMults: nanoocp.NCollection.NCollection_HArray1[int]) -> int:
+    def MergeBSplineKnots(Tolerance: float, StartValue: float, EndValue: float, Degree1: int, Knots1: nanoocp.NCollection.NCollection_Array1[float], Mults1: nanoocp.NCollection.NCollection_Array1[int], Degree2: int, Knots2: nanoocp.NCollection.NCollection_Array1[float], Mults2: nanoocp.NCollection.NCollection_Array1[int]) -> tuple[int, nanoocp.NCollection.NCollection_HArray1[float], nanoocp.NCollection.NCollection_HArray1[int]]:
         """
         Merges two knot vector by setting the starting and
         ending values to StartValue and EndValue

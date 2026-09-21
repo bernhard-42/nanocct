@@ -77,7 +77,8 @@ void nanoocp_declare_OSD(nb::module_ &m) {
         .value("OSD_SignalMode_AsIs", OSD_SignalMode_AsIs)
         .value("OSD_SignalMode_Set", OSD_SignalMode_Set)
         .value("OSD_SignalMode_SetUnhandled", OSD_SignalMode_SetUnhandled)
-        .value("OSD_SignalMode_Unset", OSD_SignalMode_Unset);
+        .value("OSD_SignalMode_Unset", OSD_SignalMode_Unset)
+        .export_values();
     nb::enum_<OSD_SysType>(m, "OSD_SysType", R"nbdoc(Thisd is a set of possible system types.
 'Default' means SysType of machine operating this process.
 This can be used with the Path class.
@@ -96,7 +97,8 @@ WindowsNT and OS2.)nbdoc", nb::is_arithmetic())
         .value("OSD_Taligent", OSD_Taligent)
         .value("OSD_WindowsNT", OSD_WindowsNT)
         .value("OSD_LinuxREDHAT", OSD_LinuxREDHAT)
-        .value("OSD_Aix", OSD_Aix);
+        .value("OSD_Aix", OSD_Aix)
+        .export_values();
     nb::enum_<OSD_WhoAmI>(m, "OSD_WhoAmI", R"nbdoc(Allows great accuracy for error management.
 This is private.)nbdoc", nb::is_arithmetic())
         .value("OSD_WDirectory", OSD_WDirectory)
@@ -113,17 +115,20 @@ This is private.)nbdoc", nb::is_arithmetic())
         .value("OSD_WChronometer", OSD_WChronometer)
         .value("OSD_WTimer", OSD_WTimer)
         .value("OSD_WPackage", OSD_WPackage)
-        .value("OSD_WEnvironmentIterator", OSD_WEnvironmentIterator);
+        .value("OSD_WEnvironmentIterator", OSD_WEnvironmentIterator)
+        .export_values();
     nb::enum_<OSD_FromWhere>(m, "OSD_FromWhere", R"nbdoc(Used by OSD_File in the method Seek.)nbdoc", nb::is_arithmetic())
         .value("OSD_FromBeginning", OSD_FromBeginning)
         .value("OSD_FromHere", OSD_FromHere)
-        .value("OSD_FromEnd", OSD_FromEnd);
+        .value("OSD_FromEnd", OSD_FromEnd)
+        .export_values();
     nb::enum_<OSD_KindFile>(m, "OSD_KindFile", R"nbdoc(Specifies the type of files.)nbdoc", nb::is_arithmetic())
         .value("OSD_FILE", OSD_FILE)
         .value("OSD_DIRECTORY", OSD_DIRECTORY)
         .value("OSD_LINK", OSD_LINK)
         .value("OSD_SOCKET", OSD_SOCKET)
-        .value("OSD_UNKNOWN", OSD_UNKNOWN);
+        .value("OSD_UNKNOWN", OSD_UNKNOWN)
+        .export_values();
     nb::enum_<OSD_LockType>(m, "OSD_LockType", R"nbdoc(locks for files.
 NoLock is the default value when opening a file.
 
@@ -139,11 +144,13 @@ user is the one who puts the lock.)nbdoc", nb::is_arithmetic())
         .value("OSD_NoLock", OSD_NoLock)
         .value("OSD_ReadLock", OSD_ReadLock)
         .value("OSD_WriteLock", OSD_WriteLock)
-        .value("OSD_ExclusiveLock", OSD_ExclusiveLock);
+        .value("OSD_ExclusiveLock", OSD_ExclusiveLock)
+        .export_values();
     nb::enum_<OSD_OpenMode>(m, "OSD_OpenMode", R"nbdoc(Specifies the file open mode.)nbdoc", nb::is_arithmetic())
         .value("OSD_ReadOnly", OSD_ReadOnly)
         .value("OSD_WriteOnly", OSD_WriteOnly)
-        .value("OSD_ReadWrite", OSD_ReadWrite);
+        .value("OSD_ReadWrite", OSD_ReadWrite)
+        .export_values();
     nb::enum_<OSD_OEMType>(m, "OSD_OEMType", R"nbdoc(This is set of possible machine types
 used in OSD_Host::MachineType)nbdoc", nb::is_arithmetic())
         .value("OSD_Unavailable", OSD_Unavailable)
@@ -157,10 +164,12 @@ used in OSD_Host::MachineType)nbdoc", nb::is_arithmetic())
         .value("OSD_IBM", OSD_IBM)
         .value("OSD_VAX", OSD_VAX)
         .value("OSD_LIN", OSD_LIN)
-        .value("OSD_AIX", OSD_AIX);
+        .value("OSD_AIX", OSD_AIX)
+        .export_values();
     nb::enum_<OSD_LoadMode>(m, "OSD_LoadMode", R"nbdoc(This enumeration is used to load shareable libraries.)nbdoc", nb::is_arithmetic())
         .value("OSD_RTLD_LAZY", OSD_RTLD_LAZY)
-        .value("OSD_RTLD_NOW", OSD_RTLD_NOW);
+        .value("OSD_RTLD_NOW", OSD_RTLD_NOW)
+        .export_values();
     nb::enum_<OSD_SingleProtection>(m, "OSD_SingleProtection", R"nbdoc(Access rights for files.
 R means Read, W means Write, X means eXecute and D means Delete.
 On UNIX, the right to Delete is combined with Write access.
@@ -181,7 +190,8 @@ and if "W" is set, "D" will be too.)nbdoc", nb::is_arithmetic())
         .value("OSD_XD", OSD_XD)
         .value("OSD_RXD", OSD_RXD)
         .value("OSD_WXD", OSD_WXD)
-        .value("OSD_RWXD", OSD_RWXD);
+        .value("OSD_RWXD", OSD_RWXD)
+        .export_values();
     { nb::class_<OSD> cls(m, "OSD", R"nbdoc(Set of Operating System Dependent (OSD) tools.)nbdoc");
     }
     { nb::class_<OSD_FileSystem, Standard_Transient> cls(m, "OSD_FileSystem", R"nbdoc(Base interface for a file stream provider.
@@ -289,7 +299,8 @@ memory management by application itself.)nbdoc");
           .value("MemSwapUsage", OSD_MemInfo::MemSwapUsage)
           .value("MemSwapUsagePeak", OSD_MemInfo::MemSwapUsagePeak)
           .value("MemHeapUsage", OSD_MemInfo::MemHeapUsage)
-          .value("MemCounter_NB", OSD_MemInfo::MemCounter_NB);
+          .value("MemCounter_NB", OSD_MemInfo::MemCounter_NB)
+          .export_values();
     }
     nanoocp_register_exception<OSD_OSDError>(nanoocp_new_exception(m, "OSD_OSDError", nullptr, nb::module_::import_("nanoocp._TKernel.Standard").attr("Standard_Failure").ptr()));
     { nb::class_<OSD_Thread> cls(m, "OSD_Thread", R"nbdoc(A simple platform-intependent interface to execute
@@ -514,22 +525,22 @@ not. If yes then raises Exception_CTRL_BREAK.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (OSD_FileSystem::*)() const>(&OSD_FileSystem::DynamicType))
         .def_static("DefaultFileSystem", static_cast<const occ::handle<OSD_FileSystem> & (*)()>(&OSD_FileSystem::DefaultFileSystem), R"nbdoc(Returns a global file system, which a selector between registered file systems
 (OSD_FileSystemSelector).)nbdoc")
-        .def_static("AddDefaultProtocol", static_cast<void (*)(const occ::handle<OSD_FileSystem> &, bool)>(&OSD_FileSystem::AddDefaultProtocol), nb::arg("theFileSystem"), nb::arg("theIsPreferred") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Registers file system within the global file system selector returned by
+        .def_static("AddDefaultProtocol", static_cast<void (*)(const occ::handle<OSD_FileSystem> &, bool)>(&OSD_FileSystem::AddDefaultProtocol), nb::arg("theFileSystem").none(), nb::arg("theIsPreferred") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Registers file system within the global file system selector returned by
 OSD_FileSystem::DefaultFileSystem(). Note that registering protocols is not thread-safe
 operation and expected to be done once at application startup.
 @param[in] theFileSystem  file system to register
 @param[in] theIsPreferred add to the beginning of the list when TRUE, or add to the end
 otherwise)nbdoc")
-        .def_static("RemoveDefaultProtocol", static_cast<void (*)(const occ::handle<OSD_FileSystem> &)>(&OSD_FileSystem::RemoveDefaultProtocol), nb::arg("theFileSystem"), R"nbdoc(Unregisters file system within the global file system selector returned by
+        .def_static("RemoveDefaultProtocol", static_cast<void (*)(const occ::handle<OSD_FileSystem> &)>(&OSD_FileSystem::RemoveDefaultProtocol), nb::arg("theFileSystem").none(), R"nbdoc(Unregisters file system within the global file system selector returned by
 OSD_FileSystem::DefaultFileSystem().)nbdoc")
         .def("IsSupportedPath", static_cast<bool (OSD_FileSystem::*)(const TCollection_AsciiString &) const>(&OSD_FileSystem::IsSupportedPath), nb::arg("theUrl"), R"nbdoc(Returns TRUE if URL defines a supported protocol.)nbdoc");
     nb::borrow<nb::class_<OSD_CachedFileSystem>>(m.attr("OSD_CachedFileSystem"))
-        .def(nb::new_([](const occ::handle<OSD_FileSystem> & theLinkedFileSystem) { return opencascade::handle<OSD_CachedFileSystem>(new OSD_CachedFileSystem(theLinkedFileSystem)); }), nb::arg("theLinkedFileSystem") = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ :: handle < OSD_FileSystem > ( )), R"nbdoc(Constructor.)nbdoc")
+        .def(nb::new_([](const occ::handle<OSD_FileSystem> & theLinkedFileSystem) { return opencascade::handle<OSD_CachedFileSystem>(new OSD_CachedFileSystem(theLinkedFileSystem)); }), nb::arg("theLinkedFileSystem").none() = static_cast<std::decay_t<const occ::handle<OSD_FileSystem> &>>(occ::handle < OSD_FileSystem >()), R"nbdoc(Constructor.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&OSD_CachedFileSystem::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&OSD_CachedFileSystem::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (OSD_CachedFileSystem::*)() const>(&OSD_CachedFileSystem::DynamicType))
         .def("LinkedFileSystem", static_cast<const occ::handle<OSD_FileSystem> & (OSD_CachedFileSystem::*)() const>(&OSD_CachedFileSystem::LinkedFileSystem), R"nbdoc(Return linked file system; initialized with OSD_FileSystem::DefaultFileSystem() by default.)nbdoc")
-        .def("SetLinkedFileSystem", static_cast<void (OSD_CachedFileSystem::*)(const occ::handle<OSD_FileSystem> &)>(&OSD_CachedFileSystem::SetLinkedFileSystem), nb::arg("theLinkedFileSystem"), R"nbdoc(Sets linked file system.)nbdoc")
+        .def("SetLinkedFileSystem", static_cast<void (OSD_CachedFileSystem::*)(const occ::handle<OSD_FileSystem> &)>(&OSD_CachedFileSystem::SetLinkedFileSystem), nb::arg("theLinkedFileSystem").none(), R"nbdoc(Sets linked file system.)nbdoc")
         .def("IsSupportedPath", static_cast<bool (OSD_CachedFileSystem::*)(const TCollection_AsciiString &) const>(&OSD_CachedFileSystem::IsSupportedPath), nb::arg("theUrl"), R"nbdoc(Returns TRUE if URL defines a supported protocol.)nbdoc");
     nanoocp_implicit_copy_ctor<OSD_CachedFileSystem>(nb::borrow<nb::class_<OSD_CachedFileSystem>>(m.attr("OSD_CachedFileSystem")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<OSD_FileSystem> &>, OSD_CachedFileSystem>();
@@ -940,11 +951,11 @@ position of the iterator.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&OSD_FileSystemSelector::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&OSD_FileSystemSelector::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (OSD_FileSystemSelector::*)() const>(&OSD_FileSystemSelector::DynamicType))
-        .def("AddProtocol", static_cast<void (OSD_FileSystemSelector::*)(const occ::handle<OSD_FileSystem> &, bool)>(&OSD_FileSystemSelector::AddProtocol), nb::arg("theFileSystem"), nb::arg("theIsPreferred") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Registers file system within this selector.
+        .def("AddProtocol", static_cast<void (OSD_FileSystemSelector::*)(const occ::handle<OSD_FileSystem> &, bool)>(&OSD_FileSystemSelector::AddProtocol), nb::arg("theFileSystem").none(), nb::arg("theIsPreferred") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Registers file system within this selector.
 @param[in] theFileSystem   file system to register
 @param[in] theIsPreferred  add to the beginning of the list when TRUE, or add to the end
 otherwise)nbdoc")
-        .def("RemoveProtocol", static_cast<void (OSD_FileSystemSelector::*)(const occ::handle<OSD_FileSystem> &)>(&OSD_FileSystemSelector::RemoveProtocol), nb::arg("theFileSystem"), R"nbdoc(Unregisters file system within this selector.)nbdoc")
+        .def("RemoveProtocol", static_cast<void (OSD_FileSystemSelector::*)(const occ::handle<OSD_FileSystem> &)>(&OSD_FileSystemSelector::RemoveProtocol), nb::arg("theFileSystem").none(), R"nbdoc(Unregisters file system within this selector.)nbdoc")
         .def("IsSupportedPath", static_cast<bool (OSD_FileSystemSelector::*)(const TCollection_AsciiString &) const>(&OSD_FileSystemSelector::IsSupportedPath), nb::arg("theUrl"), R"nbdoc(Returns TRUE if URL defines a supported protocol.)nbdoc");
     nanoocp_implicit_copy_ctor<OSD_FileSystemSelector>(nb::borrow<nb::class_<OSD_FileSystemSelector>>(m.attr("OSD_FileSystemSelector")));
     nb::borrow<nb::class_<OSD_Host>>(m.attr("OSD_Host"))

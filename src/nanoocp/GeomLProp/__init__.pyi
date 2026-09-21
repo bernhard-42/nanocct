@@ -27,7 +27,7 @@ class GeomLProp:
 
     @overload
     @staticmethod
-    def Continuity(C1: nanoocp.Geom.Geom_Curve, C2: nanoocp.Geom.Geom_Curve, u1: float, u2: float, r1: bool, r2: bool, tl: float, ta: float) -> nanoocp.GeomAbs.GeomAbs_Shape:
+    def Continuity(C1: nanoocp.Geom.Geom_Curve | None, C2: nanoocp.Geom.Geom_Curve | None, u1: float, u2: float, r1: bool, r2: bool, tl: float, ta: float) -> nanoocp.GeomAbs.GeomAbs_Shape:
         """
         Computes the regularity at the junction between C1 and
         C2. The booleans r1 and r2 are true if the curves must
@@ -39,7 +39,7 @@ class GeomLProp:
 
     @overload
     @staticmethod
-    def Continuity(C1: nanoocp.Geom.Geom_Curve, C2: nanoocp.Geom.Geom_Curve, u1: float, u2: float, r1: bool, r2: bool) -> nanoocp.GeomAbs.GeomAbs_Shape:
+    def Continuity(C1: nanoocp.Geom.Geom_Curve | None, C2: nanoocp.Geom.Geom_Curve | None, u1: float, u2: float, r1: bool, r2: bool) -> nanoocp.GeomAbs.GeomAbs_Shape:
         """
         The same as preceding but using the standard
         tolerances from package Precision.
@@ -271,16 +271,16 @@ class GeomLProp_CurAndInf2d(nanoocp.LProp.LProp_CurAndInf):
     @overload
     def __init__(self, theOther: GeomLProp_CurAndInf2d) -> None: ...
 
-    def Perform(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None:
+    def Perform(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None:
         """
         For the curve C, Computes both the
         inflection points and the maximum and minimum curvatures.
         """
 
-    def PerformCurExt(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None:
+    def PerformCurExt(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None:
         """For the curve C, Computes the locals extremas of curvature."""
 
-    def PerformInf(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None:
+    def PerformInf(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None:
         """
         For the curve C, Computes the inflections.
         After computation, the following functions can be used:

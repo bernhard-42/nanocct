@@ -118,12 +118,15 @@ class Emitter:
         for p in params:
             if skip_out and (p.is_out and not p.is_inout or p.stream == "out"):
                 continue
+            # a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
+            # the caster runs (Design.md 4.2)
+            arg = f'nb::arg("{p.name}").none()' if p.is_handle else f'nb::arg("{p.name}")'
             if p.default is None:
-                parts.append(f'nb::arg("{p.name}")')
+                parts.append(arg)
             else:
                 # cast to the parameter's value type: a `char` default written as 0 must become a
                 # 1-character str, an enum default written as an int must become the enum, etc.
-                parts.append(f'nb::arg("{p.name}") = static_cast<std::decay_t<{p.type}>>({p.default})')
+                parts.append(f'{arg} = static_cast<std::decay_t<{p.type}>>({p.default})')
                 self._note_types(p.default)
         return "".join(", " + s for s in parts)
 
@@ -286,6 +289,10 @@ class Emitter:
         lines = [head]
         for py, cpp in e.values:
             lines.append(f'    .value("{py}", {cpp})')
+        if not e.is_scoped:
+            # C++ puts the enumerators of an unscoped enum into the enclosing scope (TopAbs_FACE next to
+            # TopAbs_ShapeEnum); export_values() does the same on the module or class. Scoped enums stay nested.
+            lines.append("    .export_values()")
         lines[-1] += ";"
         return lines
 

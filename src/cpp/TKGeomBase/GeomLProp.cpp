@@ -72,13 +72,13 @@ void nanoocp_templates_GeomLProp(nb::module_ &m) {
 void nanoocp_define_GeomLProp(nb::module_ &m) {
     nanoocp_implicit_default_ctor<GeomLProp>(nb::borrow<nb::class_<GeomLProp>>(m.attr("GeomLProp")));
     nb::borrow<nb::class_<GeomLProp>>(m.attr("GeomLProp"))
-        .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double, const double, const bool, const bool, const double, const double)>(&GeomLProp::Continuity), nb::arg("C1"), nb::arg("C2"), nb::arg("u1"), nb::arg("u2"), nb::arg("r1"), nb::arg("r2"), nb::arg("tl"), nb::arg("ta"), R"nbdoc(Computes the regularity at the junction between C1 and
+        .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double, const double, const bool, const bool, const double, const double)>(&GeomLProp::Continuity), nb::arg("C1").none(), nb::arg("C2").none(), nb::arg("u1"), nb::arg("u2"), nb::arg("r1"), nb::arg("r2"), nb::arg("tl"), nb::arg("ta"), R"nbdoc(Computes the regularity at the junction between C1 and
 C2. The booleans r1 and r2 are true if the curves must
 be taken reversed. The point u1 on C1 and the point
 u2 on C2 must be confused.
 tl and ta are the linear and angular tolerance used two
 compare the derivative.)nbdoc")
-        .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double, const double, const bool, const bool)>(&GeomLProp::Continuity), nb::arg("C1"), nb::arg("C2"), nb::arg("u1"), nb::arg("u2"), nb::arg("r1"), nb::arg("r2"), R"nbdoc(The same as preceding but using the standard
+        .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double, const double, const bool, const bool)>(&GeomLProp::Continuity), nb::arg("C1").none(), nb::arg("C2").none(), nb::arg("u1"), nb::arg("u2"), nb::arg("r1"), nb::arg("r2"), R"nbdoc(The same as preceding but using the standard
 tolerances from package Precision.)nbdoc");
     nanoocp_implicit_copy_ctor<GeomLProp>(nb::borrow<nb::class_<GeomLProp>>(m.attr("GeomLProp")));
     nb::borrow<nb::class_<GeomLProp_CLPropsBase<gp_Pnt, gp_Vec, gp_Dir, opencascade::handle<Geom_Curve>, LProp_CurveUtils::DirectAccess>>>(m.attr("GeomLProp_CLProps"))
@@ -162,10 +162,10 @@ three first derivatives are all null.)nbdoc")
 Note: The curve on which the local properties are
 computed is defined using one of the following
 functions: Perform, PerformCurExt or PerformInf.)nbdoc")
-        .def("Perform", static_cast<void (GeomLProp_CurAndInf2d::*)(const occ::handle<Geom2d_Curve> &)>(&GeomLProp_CurAndInf2d::Perform), nb::arg("C"), R"nbdoc(For the curve C, Computes both the
+        .def("Perform", static_cast<void (GeomLProp_CurAndInf2d::*)(const occ::handle<Geom2d_Curve> &)>(&GeomLProp_CurAndInf2d::Perform), nb::arg("C").none(), R"nbdoc(For the curve C, Computes both the
 inflection points and the maximum and minimum curvatures.)nbdoc")
-        .def("PerformCurExt", static_cast<void (GeomLProp_CurAndInf2d::*)(const occ::handle<Geom2d_Curve> &)>(&GeomLProp_CurAndInf2d::PerformCurExt), nb::arg("C"), R"nbdoc(For the curve C, Computes the locals extremas of curvature.)nbdoc")
-        .def("PerformInf", static_cast<void (GeomLProp_CurAndInf2d::*)(const occ::handle<Geom2d_Curve> &)>(&GeomLProp_CurAndInf2d::PerformInf), nb::arg("C"), R"nbdoc(For the curve C, Computes the inflections.
+        .def("PerformCurExt", static_cast<void (GeomLProp_CurAndInf2d::*)(const occ::handle<Geom2d_Curve> &)>(&GeomLProp_CurAndInf2d::PerformCurExt), nb::arg("C").none(), R"nbdoc(For the curve C, Computes the locals extremas of curvature.)nbdoc")
+        .def("PerformInf", static_cast<void (GeomLProp_CurAndInf2d::*)(const occ::handle<Geom2d_Curve> &)>(&GeomLProp_CurAndInf2d::PerformInf), nb::arg("C").none(), R"nbdoc(For the curve C, Computes the inflections.
 After computation, the following functions can be used:
 - IsDone to check if the computation was successful
 - NbPoints to obtain the number of computed particular points

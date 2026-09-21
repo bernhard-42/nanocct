@@ -296,7 +296,7 @@ class BndLib_Add2dCurve:
 
     @overload
     @staticmethod
-    def Add(C: nanoocp.Geom2d.Geom2d_Curve, Tol: float, Box: nanoocp.Bnd.Bnd_Box2d) -> None:
+    def Add(C: nanoocp.Geom2d.Geom2d_Curve | None, Tol: float, Box: nanoocp.Bnd.Bnd_Box2d) -> None:
         """
         Adds to the bounding box B the curve C
         B is then enlarged by the tolerance value Tol.
@@ -309,7 +309,7 @@ class BndLib_Add2dCurve:
 
     @overload
     @staticmethod
-    def Add(C: nanoocp.Geom2d.Geom2d_Curve, U1: float, U2: float, Tol: float, B: nanoocp.Bnd.Bnd_Box2d) -> None:
+    def Add(C: nanoocp.Geom2d.Geom2d_Curve | None, U1: float, U2: float, Tol: float, B: nanoocp.Bnd.Bnd_Box2d) -> None:
         """
         Adds to the bounding box B the part of curve C
         B is then enlarged by the tolerance value Tol.
@@ -322,7 +322,7 @@ class BndLib_Add2dCurve:
         """
 
     @staticmethod
-    def AddOptimal(C: nanoocp.Geom2d.Geom2d_Curve, U1: float, U2: float, Tol: float, B: nanoocp.Bnd.Bnd_Box2d) -> None:
+    def AddOptimal(C: nanoocp.Geom2d.Geom2d_Curve | None, U1: float, U2: float, Tol: float, B: nanoocp.Bnd.Bnd_Box2d) -> None:
         """
         Adds to the bounding box B the part of curve C
         B is then enlarged by the tolerance value Tol.

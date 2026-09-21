@@ -86,6 +86,22 @@ class Convert_ParameterisationType(enum.IntEnum):
 
     Convert_Polynomial = 7
 
+Convert_TgtThetaOver2: Convert_ParameterisationType = ...
+
+Convert_TgtThetaOver2_1: Convert_ParameterisationType = ...
+
+Convert_TgtThetaOver2_2: Convert_ParameterisationType = ...
+
+Convert_TgtThetaOver2_3: Convert_ParameterisationType = ...
+
+Convert_TgtThetaOver2_4: Convert_ParameterisationType = ...
+
+Convert_QuasiAngular: Convert_ParameterisationType = Convert_ParameterisationType.Convert_QuasiAngular
+
+Convert_RationalC1: Convert_ParameterisationType = Convert_ParameterisationType.Convert_RationalC1
+
+Convert_Polynomial: Convert_ParameterisationType = Convert_ParameterisationType.Convert_Polynomial
+
 class Convert_ConicToBSplineCurve:
     """
     Root class for algorithms which convert a conic curve into
@@ -364,7 +380,7 @@ class Convert_CompPolynomialToPoles:
         """To Convert only one span."""
 
     @overload
-    def __init__(self, NumCurves: int, Continuity: int, Dimension: int, MaxDegree: int, NumCoeffPerCurve: nanoocp.NCollection.NCollection_HArray1[int], Coefficients: nanoocp.NCollection.NCollection_HArray1[float], PolynomialIntervals: nanoocp.NCollection.NCollection_HArray2[float], TrueIntervals: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
+    def __init__(self, NumCurves: int, Continuity: int, Dimension: int, MaxDegree: int, NumCoeffPerCurve: nanoocp.NCollection.NCollection_HArray1[int] | None, Coefficients: nanoocp.NCollection.NCollection_HArray1[float] | None, PolynomialIntervals: nanoocp.NCollection.NCollection_HArray2[float] | None, TrueIntervals: nanoocp.NCollection.NCollection_HArray1[float] | None) -> None:
         """
         Warning!
         Continuity can be at MOST the maximum degree of
@@ -610,7 +626,7 @@ class Convert_GridPolynomialToPoles:
         """
 
     @overload
-    def __init__(self, theMaxUDegree: int, theMaxVDegree: int, theNumCoeff: nanoocp.NCollection.NCollection_HArray1[int], theCoefficients: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
+    def __init__(self, theMaxUDegree: int, theMaxVDegree: int, theNumCoeff: nanoocp.NCollection.NCollection_HArray1[int] | None, theCoefficients: nanoocp.NCollection.NCollection_HArray1[float] | None, thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1[float] | None, thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1[float] | None) -> None:
         """
         Handle-based overload (delegates to the array-based constructor).
         Provided for backward compatibility; new code should prefer the
@@ -637,7 +653,7 @@ class Convert_GridPolynomialToPoles:
         """
 
     @overload
-    def __init__(self, theNbUSurfaces: int, theNbVSurfaces: int, theUContinuity: int, theVContinuity: int, theMaxUDegree: int, theMaxVDegree: int, theNumCoeffPerSurface: nanoocp.NCollection.NCollection_HArray2[int], theCoefficients: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1[float], thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1[float], theTrueUIntervals: nanoocp.NCollection.NCollection_HArray1[float], theTrueVIntervals: nanoocp.NCollection.NCollection_HArray1[float]) -> None:
+    def __init__(self, theNbUSurfaces: int, theNbVSurfaces: int, theUContinuity: int, theVContinuity: int, theMaxUDegree: int, theMaxVDegree: int, theNumCoeffPerSurface: nanoocp.NCollection.NCollection_HArray2[int] | None, theCoefficients: nanoocp.NCollection.NCollection_HArray1[float] | None, thePolynomialUIntervals: nanoocp.NCollection.NCollection_HArray1[float] | None, thePolynomialVIntervals: nanoocp.NCollection.NCollection_HArray1[float] | None, theTrueUIntervals: nanoocp.NCollection.NCollection_HArray1[float] | None, theTrueVIntervals: nanoocp.NCollection.NCollection_HArray1[float] | None) -> None:
         """Handle-based overload (delegates to the array-based constructor)."""
 
     @overload

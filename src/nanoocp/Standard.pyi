@@ -27,6 +27,22 @@ class Standard_JsonKey(enum.IntEnum):
 
     Standard_JsonKey_SeparatorValueToValue = 7
 
+Standard_JsonKey_None: Standard_JsonKey = Standard_JsonKey.Standard_JsonKey_None
+
+Standard_JsonKey_OpenChild: Standard_JsonKey = Standard_JsonKey.Standard_JsonKey_OpenChild
+
+Standard_JsonKey_CloseChild: Standard_JsonKey = Standard_JsonKey.Standard_JsonKey_CloseChild
+
+Standard_JsonKey_OpenContainer: Standard_JsonKey = Standard_JsonKey.Standard_JsonKey_OpenContainer
+
+Standard_JsonKey_CloseContainer: Standard_JsonKey = Standard_JsonKey.Standard_JsonKey_CloseContainer
+
+Standard_JsonKey_Quote: Standard_JsonKey = Standard_JsonKey.Standard_JsonKey_Quote
+
+Standard_JsonKey_SeparatorKeyToValue: Standard_JsonKey = ...
+
+Standard_JsonKey_SeparatorValueToValue: Standard_JsonKey = ...
+
 class Standard:
     """
     The package Standard provides global memory allocator and other basic
@@ -96,7 +112,7 @@ class Standard_Transient:
         """Returns a type descriptor about this object."""
 
     @overload
-    def IsInstance(self, theType: Standard_Type) -> bool:
+    def IsInstance(self, theType: Standard_Type | None) -> bool:
         """Returns a true value if this is an instance of Type."""
 
     @overload
@@ -104,7 +120,7 @@ class Standard_Transient:
         """Returns a true value if this is an instance of TypeName."""
 
     @overload
-    def IsKind(self, theType: Standard_Type) -> bool:
+    def IsKind(self, theType: Standard_Type | None) -> bool:
         """
         Returns true if this is an instance of Type or an
         instance of any class that inherits from Type.
@@ -191,7 +207,7 @@ class Standard_Type(Standard_Transient):
         """Returns descriptor of the base class in the hierarchy"""
 
     @overload
-    def SubType(self, theOther: Standard_Type) -> bool: ...
+    def SubType(self, theOther: Standard_Type | None) -> bool: ...
 
     @overload
     def SubType(self, theOther: str) -> bool:
@@ -426,7 +442,7 @@ class Standard_Dump:
         """
 
     @staticmethod
-    def GetPointerInfo(thePointer: Standard_Transient, isShortInfo: bool = True) -> nanoocp.TCollection.TCollection_AsciiString:
+    def GetPointerInfo(thePointer: Standard_Transient | None, isShortInfo: bool = True) -> nanoocp.TCollection.TCollection_AsciiString:
         """
         Convert handle pointer to address of the pointer. If the handle is NULL, the result is an
         empty string.

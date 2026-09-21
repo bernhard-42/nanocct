@@ -176,7 +176,7 @@ class Geom_AxisPlacement(Geom_Geometry):
     def SetLocation(self, P: nanoocp.gp.gp_Pnt) -> None:
         """Assigns the point P as the origin of this positioning system."""
 
-    def Angle(self, Other: Geom_AxisPlacement) -> float:
+    def Angle(self, Other: Geom_AxisPlacement | None) -> float:
         """
         Computes the angular value, in radians, between the
         "main Direction" of this positioning system and that
@@ -810,7 +810,7 @@ class Geom_BezierCurve(Geom_BoundedCurve):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepCurveDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepCurveDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -1681,7 +1681,7 @@ class Geom_BezierSurface(Geom_BoundedSurface):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -2370,7 +2370,7 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepCurveDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepCurveDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -3003,7 +3003,7 @@ class Geom_BSplineCurve(Geom_BoundedCurve):
     def Copy(self) -> Geom_Geometry:
         """Creates a new object which is a copy of this BSpline curve."""
 
-    def IsEqual(self, theOther: Geom_BSplineCurve, thePreci: float) -> bool:
+    def IsEqual(self, theOther: Geom_BSplineCurve | None, thePreci: float) -> bool:
         """Compare two Bspline curve on identity;"""
 
     def DumpJson(self, theDepth: int = -1) -> object:
@@ -3206,7 +3206,7 @@ class Geom_BSplineSurface(Geom_BoundedSurface):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -4308,10 +4308,10 @@ class Geom_Point(Geom_Geometry):
     def Z(self) -> float:
         """returns the Z coordinate of <me>."""
 
-    def Distance(self, Other: Geom_Point) -> float:
+    def Distance(self, Other: Geom_Point | None) -> float:
         """Computes the distance between <me> and <Other>."""
 
-    def SquareDistance(self, Other: Geom_Point) -> float:
+    def SquareDistance(self, Other: Geom_Point | None) -> float:
         """Computes the square distance between <me> and <Other>."""
 
     @staticmethod
@@ -5301,7 +5301,7 @@ class Geom_Vector(Geom_Geometry):
     def Reversed(self) -> Geom_Vector:
         """Returns a copy of <me> reversed."""
 
-    def Angle(self, Other: Geom_Vector) -> float:
+    def Angle(self, Other: Geom_Vector | None) -> float:
         """
         Computes the angular value, in radians, between this
         vector and vector Other. The result is a value between 0 and Pi.
@@ -5313,7 +5313,7 @@ class Geom_Vector(Geom_Geometry):
         to gp::Resolution().
         """
 
-    def AngleWithRef(self, Other: Geom_Vector, VRef: Geom_Vector) -> float:
+    def AngleWithRef(self, Other: Geom_Vector | None, VRef: Geom_Vector | None) -> float:
         """
         Computes the angular value, in radians, between this
         vector and vector Other. The result is a value
@@ -5349,7 +5349,7 @@ class Geom_Vector(Geom_Geometry):
     def Z(self) -> float:
         """Returns the Z coordinate of <me>."""
 
-    def Cross(self, Other: Geom_Vector) -> None:
+    def Cross(self, Other: Geom_Vector | None) -> None:
         """
         Computes the cross product between <me> and <Other>.
 
@@ -5358,7 +5358,7 @@ class Geom_Vector(Geom_Geometry):
         "Direction" with null length.
         """
 
-    def Crossed(self, Other: Geom_Vector) -> Geom_Vector:
+    def Crossed(self, Other: Geom_Vector | None) -> Geom_Vector:
         """
         Computes the cross product between <me> and <Other>.
         A new direction is returned.
@@ -5368,7 +5368,7 @@ class Geom_Vector(Geom_Geometry):
         "Direction" with null length.
         """
 
-    def CrossCross(self, V1: Geom_Vector, V2: Geom_Vector) -> None:
+    def CrossCross(self, V1: Geom_Vector | None, V2: Geom_Vector | None) -> None:
         """
         Computes the triple vector product <me> ^(V1 ^ V2).
 
@@ -5376,7 +5376,7 @@ class Geom_Vector(Geom_Geometry):
         or <me> and (V1 ^ V2) are parallel
         """
 
-    def CrossCrossed(self, V1: Geom_Vector, V2: Geom_Vector) -> Geom_Vector:
+    def CrossCrossed(self, V1: Geom_Vector | None, V2: Geom_Vector | None) -> Geom_Vector:
         """
         Computes the triple vector product <me> ^(V1 ^ V2).
 
@@ -5384,10 +5384,10 @@ class Geom_Vector(Geom_Geometry):
         parallel or <me> and (V1 ^ V2) are parallel
         """
 
-    def Dot(self, Other: Geom_Vector) -> float:
+    def Dot(self, Other: Geom_Vector | None) -> float:
         """Computes the scalar product of this vector and vector Other."""
 
-    def DotCross(self, V1: Geom_Vector, V2: Geom_Vector) -> float:
+    def DotCross(self, V1: Geom_Vector | None, V2: Geom_Vector | None) -> float:
         """Computes the triple scalar product. Returns me . (V1 ^ V2)"""
 
     def Vec(self) -> nanoocp.gp.gp_Vec:
@@ -5465,7 +5465,7 @@ class Geom_Direction(Geom_Vector):
     def SquareMagnitude(self) -> float:
         """returns 1.0 which is the square magnitude of any unit vector."""
 
-    def Cross(self, Other: Geom_Vector) -> None:
+    def Cross(self, Other: Geom_Vector | None) -> None:
         """
         Computes the cross product between <me> and <Other>.
 
@@ -5473,7 +5473,7 @@ class Geom_Direction(Geom_Vector):
         not possible to have a direction with null length.
         """
 
-    def CrossCross(self, V1: Geom_Vector, V2: Geom_Vector) -> None:
+    def CrossCross(self, V1: Geom_Vector | None, V2: Geom_Vector | None) -> None:
         """
         Computes the triple vector product <me> ^(V1 ^ V2).
 
@@ -5481,7 +5481,7 @@ class Geom_Direction(Geom_Vector):
         parallel
         """
 
-    def Crossed(self, Other: Geom_Vector) -> Geom_Vector:
+    def Crossed(self, Other: Geom_Vector | None) -> Geom_Vector:
         """
         Computes the cross product between <me> and <Other>.
         A new direction is returned.
@@ -5490,7 +5490,7 @@ class Geom_Direction(Geom_Vector):
         not possible to have a direction with null length.
         """
 
-    def CrossCrossed(self, V1: Geom_Vector, V2: Geom_Vector) -> Geom_Vector:
+    def CrossCrossed(self, V1: Geom_Vector | None, V2: Geom_Vector | None) -> Geom_Vector:
         """
         Computes the triple vector product <me> ^(V1 ^ V2).
 
@@ -6251,7 +6251,7 @@ class Geom_OffsetCurve(Geom_Curve):
         """
 
     @overload
-    def __init__(self, C: Geom_Curve, Offset: float, V: nanoocp.gp.gp_Dir, isNotCheckC0: bool = False) -> None:
+    def __init__(self, C: Geom_Curve | None, Offset: float, V: nanoocp.gp.gp_Dir, isNotCheckC0: bool = False) -> None:
         """
         C is the basis curve, Offset is the distance between <me> and
         the basis curve at any point. V defines the fixed reference
@@ -6280,7 +6280,7 @@ class Geom_OffsetCurve(Geom_Curve):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepCurveDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepCurveDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -6307,7 +6307,7 @@ class Geom_OffsetCurve(Geom_Curve):
         the point of parameter U on this offset curve.
         """
 
-    def SetBasisCurve(self, C: Geom_Curve, isNotCheckC0: bool = False) -> None:
+    def SetBasisCurve(self, C: Geom_Curve | None, isNotCheckC0: bool = False) -> None:
         """
         Changes this offset curve by assigning C
         as the basis curve from which it is built.
@@ -6542,7 +6542,7 @@ class Geom_OffsetSurface(Geom_Surface):
         """
 
     @overload
-    def __init__(self, S: Geom_Surface, Offset: float, isNotCheckC0: bool = False) -> None:
+    def __init__(self, S: Geom_Surface | None, Offset: float, isNotCheckC0: bool = False) -> None:
         """
         Constructs a surface offset from the basis surface
         S, where Offset is the distance between the offset
@@ -6578,7 +6578,7 @@ class Geom_OffsetSurface(Geom_Surface):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -6587,7 +6587,7 @@ class Geom_OffsetSurface(Geom_Surface):
     def ClearEvalRepresentation(self) -> None:
         """Removes the evaluation representation."""
 
-    def SetBasisSurface(self, S: Geom_Surface, isNotCheckC0: bool = False) -> None:
+    def SetBasisSurface(self, S: Geom_Surface | None, isNotCheckC0: bool = False) -> None:
         """
         Raised if S is not at least C1.
         Warnings :
@@ -6865,7 +6865,7 @@ class Geom_OffsetSurface(Geom_Surface):
         the offset is null.
         """
 
-    def UOsculatingSurface(self, U: float, V: float, UOsculSurf: Geom_BSplineSurface) -> tuple[bool, bool]:
+    def UOsculatingSurface(self, U: float, V: float) -> tuple[bool, bool, Geom_BSplineSurface]:
         """
         if true, L is the local osculating surface
         along U at the point U,V. It means that DL/DU is
@@ -6873,7 +6873,7 @@ class Geom_OffsetSurface(Geom_Surface):
         these vectors have opposite direction.
         """
 
-    def VOsculatingSurface(self, U: float, V: float, VOsculSurf: Geom_BSplineSurface) -> tuple[bool, bool]:
+    def VOsculatingSurface(self, U: float, V: float) -> tuple[bool, bool, Geom_BSplineSurface]:
         """
         if true, L is the local osculating surface
         along V at the point U,V.
@@ -7378,7 +7378,7 @@ class Geom_RectangularTrimmedSurface(Geom_BoundedSurface):
     """
 
     @overload
-    def __init__(self, S: Geom_Surface, Param1: float, Param2: float, UTrim: bool, Sense: bool = True) -> None:
+    def __init__(self, S: Geom_Surface | None, Param1: float, Param2: float, UTrim: bool, Sense: bool = True) -> None:
         """
         The basis surface S is only trim in one parametric direction.
         If UTrim = True the surface is trimmed in the U parametric
@@ -7404,7 +7404,7 @@ class Geom_RectangularTrimmedSurface(Geom_BoundedSurface):
         """
 
     @overload
-    def __init__(self, S: Geom_Surface, U1: float, U2: float, V1: float, V2: float, USense: bool = True, VSense: bool = True) -> None:
+    def __init__(self, S: Geom_Surface | None, U1: float, U2: float, V1: float, V2: float, USense: bool = True, VSense: bool = True) -> None:
         """
         The U parametric direction of the surface is oriented from U1
         to U2. The V parametric direction of the surface is oriented
@@ -7991,7 +7991,7 @@ class Geom_SurfaceOfLinearExtrusion(Geom_SweptSurface):
     """
 
     @overload
-    def __init__(self, C: Geom_Curve, V: nanoocp.gp.gp_Dir) -> None:
+    def __init__(self, C: Geom_Curve | None, V: nanoocp.gp.gp_Dir) -> None:
         """
         V is the direction of extrusion.
         C is the extruded curve.
@@ -8017,7 +8017,7 @@ class Geom_SurfaceOfLinearExtrusion(Geom_SweptSurface):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -8032,7 +8032,7 @@ class Geom_SurfaceOfLinearExtrusion(Geom_SweptSurface):
         surface of linear extrusion.
         """
 
-    def SetBasisCurve(self, C: Geom_Curve) -> None:
+    def SetBasisCurve(self, C: Geom_Curve | None) -> None:
         """
         Modifies this surface of linear extrusion by redefining
         its "basis curve" (the "extruded curve").
@@ -8272,7 +8272,7 @@ class Geom_SurfaceOfRevolution(Geom_SweptSurface):
     """
 
     @overload
-    def __init__(self, C: Geom_Curve, A1: nanoocp.gp.gp_Ax1) -> None:
+    def __init__(self, C: Geom_Curve | None, A1: nanoocp.gp.gp_Ax1) -> None:
         """
         C : is the meridian or the referenced curve.
         A1 is the axis of revolution.
@@ -8305,7 +8305,7 @@ class Geom_SurfaceOfRevolution(Geom_SweptSurface):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.GeomEval.GeomEval_RepSurfaceDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -8330,7 +8330,7 @@ class Geom_SurfaceOfRevolution(Geom_SweptSurface):
         revolved curve.
         """
 
-    def SetBasisCurve(self, C: Geom_Curve) -> None:
+    def SetBasisCurve(self, C: Geom_Curve | None) -> None:
         """
         Changes the revolved curve of the surface.
         Warnings :
@@ -8988,14 +8988,14 @@ class Geom_Transformation(nanoocp.Standard.Standard_Transient):
         package gp.
         """
 
-    def Multiplied(self, Other: Geom_Transformation) -> Geom_Transformation:
+    def Multiplied(self, Other: Geom_Transformation | None) -> Geom_Transformation:
         """
         Computes the transformation composed with Other and <me>.
         <me> * Other.
         Returns a new transformation
         """
 
-    def Multiply(self, theOther: Geom_Transformation) -> None:
+    def Multiply(self, theOther: Geom_Transformation | None) -> None:
         """
         Computes the transformation composed with Other and <me> .
         <me> = <me> * Other.
@@ -9014,7 +9014,7 @@ class Geom_Transformation(nanoocp.Standard.Standard_Transient):
     def Powered(self, N: int) -> Geom_Transformation:
         """Raised if N < 0 and if the transformation is not inversible"""
 
-    def PreMultiply(self, Other: Geom_Transformation) -> None:
+    def PreMultiply(self, Other: Geom_Transformation | None) -> None:
         """
         Computes the matrix of the transformation composed with
         <me> and Other. <me> = Other * <me>
@@ -9042,7 +9042,7 @@ class Geom_TrimmedCurve(Geom_BoundedCurve):
     """
 
     @overload
-    def __init__(self, C: Geom_Curve, U1: float, U2: float, Sense: bool = True, theAdjustPeriodic: bool = True) -> None:
+    def __init__(self, C: Geom_Curve | None, U1: float, U2: float, Sense: bool = True, theAdjustPeriodic: bool = True) -> None:
         """
         Constructs a trimmed curve from the basis curve C
         which is limited between parameter values U1 and U2.
@@ -9348,28 +9348,28 @@ class Geom_VectorWithMagnitude(Geom_Vector):
     def SquareMagnitude(self) -> float:
         """Returns the square magnitude of <me>."""
 
-    def Add(self, Other: Geom_Vector) -> None:
+    def Add(self, Other: Geom_Vector | None) -> None:
         """Adds the Vector Other to <me>."""
 
-    def Added(self, Other: Geom_Vector) -> Geom_VectorWithMagnitude:
+    def Added(self, Other: Geom_Vector | None) -> Geom_VectorWithMagnitude:
         """Adds the vector Other to <me>."""
 
-    def Cross(self, Other: Geom_Vector) -> None:
+    def Cross(self, Other: Geom_Vector | None) -> None:
         """
         Computes the cross product between <me> and Other
         <me> ^ Other.
         """
 
-    def Crossed(self, Other: Geom_Vector) -> Geom_Vector:
+    def Crossed(self, Other: Geom_Vector | None) -> Geom_Vector:
         """
         Computes the cross product between <me> and Other
         <me> ^ Other. A new vector is returned.
         """
 
-    def CrossCross(self, V1: Geom_Vector, V2: Geom_Vector) -> None:
+    def CrossCross(self, V1: Geom_Vector | None, V2: Geom_Vector | None) -> None:
         """Computes the triple vector product <me> ^ (V1 ^ V2)."""
 
-    def CrossCrossed(self, V1: Geom_Vector, V2: Geom_Vector) -> Geom_Vector:
+    def CrossCrossed(self, V1: Geom_Vector | None, V2: Geom_Vector | None) -> Geom_Vector:
         """
         Computes the triple vector product <me> ^ (V1 ^ V2).
         A new vector is returned.
@@ -9406,10 +9406,10 @@ class Geom_VectorWithMagnitude(Geom_Vector):
         Resolution from package gp.
         """
 
-    def Subtract(self, Other: Geom_Vector) -> None:
+    def Subtract(self, Other: Geom_Vector | None) -> None:
         """Subtracts the Vector Other to <me>."""
 
-    def Subtracted(self, Other: Geom_Vector) -> Geom_VectorWithMagnitude:
+    def Subtracted(self, Other: Geom_Vector | None) -> Geom_VectorWithMagnitude:
         """Subtracts the vector Other to <me>. A new vector is returned."""
 
     def Transform(self, T: nanoocp.gp.gp_Trsf) -> None:

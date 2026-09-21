@@ -294,7 +294,7 @@ where D^p is the diagonal matrix with eigenvalues raised to power p.
 
 @param theA input symmetric positive definite matrix
 @return A^(-1/2) such that A^(-1/2) * A * A^(-1/2) = I)nbdoc");
-    m.def("LeastSquares", static_cast<MathLin::LeastSquaresResult (*)(const math_Matrix &, const math_Vector &, MathLin::LeastSquaresMethod, double)>(&MathLin::LeastSquares), nb::arg("theA"), nb::arg("theB"), nb::arg("theMethod") = static_cast<std::decay_t<MathLin::LeastSquaresMethod>>(MathLin::LeastSquaresMethod :: QR), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Solve overdetermined linear least squares: minimize ||Ax - b||_2.
+    m.def("LeastSquares", static_cast<MathLin::LeastSquaresResult (*)(const math_Matrix &, const math_Vector &, MathLin::LeastSquaresMethod, double)>(&MathLin::LeastSquares), nb::arg("theA"), nb::arg("theB"), nb::arg("theMethod") = static_cast<std::decay_t<MathLin::LeastSquaresMethod>>(MathLin::LeastSquaresMethod::QR), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Solve overdetermined linear least squares: minimize ||Ax - b||_2.
 
 Given m x n matrix A (m >= n) and m-vector b, finds n-vector x
 that minimizes the 2-norm of the residual r = Ax - b.
@@ -309,7 +309,7 @@ Methods:
 @param theMethod solution method (default: QR)
 @param theTolerance for rank/singularity detection
 @return least squares result)nbdoc");
-    m.def("WeightedLeastSquares", static_cast<MathLin::LeastSquaresResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, MathLin::LeastSquaresMethod, double)>(&MathLin::WeightedLeastSquares), nb::arg("theA"), nb::arg("theB"), nb::arg("theW"), nb::arg("theMethod") = static_cast<std::decay_t<MathLin::LeastSquaresMethod>>(MathLin::LeastSquaresMethod :: QR), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Solve weighted least squares: minimize ||W^{1/2}(Ax - b)||_2.
+    m.def("WeightedLeastSquares", static_cast<MathLin::LeastSquaresResult (*)(const math_Matrix &, const math_Vector &, const math_Vector &, MathLin::LeastSquaresMethod, double)>(&MathLin::WeightedLeastSquares), nb::arg("theA"), nb::arg("theB"), nb::arg("theW"), nb::arg("theMethod") = static_cast<std::decay_t<MathLin::LeastSquaresMethod>>(MathLin::LeastSquaresMethod::QR), nb::arg("theTolerance") = static_cast<std::decay_t<double>>(1.0e-15), R"nbdoc(Solve weighted least squares: minimize ||W^{1/2}(Ax - b)||_2.
 
 Equivalent to minimizing sum of w_i * (a_i^T * x - b_i)^2
 where w_i are the weights.

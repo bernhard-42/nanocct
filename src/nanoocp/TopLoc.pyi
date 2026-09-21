@@ -68,7 +68,7 @@ class TopLoc_ItemLocation:
     """
 
     @overload
-    def __init__(self, D: TopLoc_Datum3D, P: int) -> None:
+    def __init__(self, D: TopLoc_Datum3D | None, P: int) -> None:
         """
         Sets the elementary Datum to <D>
         Sets the exponent to <P>
@@ -183,7 +183,7 @@ class TopLoc_Location:
         """
 
     @overload
-    def __init__(self, D: TopLoc_Datum3D) -> None:
+    def __init__(self, D: TopLoc_Datum3D | None) -> None:
         """
         Constructs the local coordinate system object defined by the 3D datum D.
         Exceptions
@@ -318,4 +318,4 @@ class TopLoc_SListNodeOfItemLocation(nanoocp.Standard.Standard_Transient):
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
-def ShallowDump(me: TopLoc_Datum3D) -> object: ...
+def ShallowDump(me: TopLoc_Datum3D | None) -> object: ...

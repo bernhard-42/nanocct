@@ -660,13 +660,13 @@ Kind is implicit from the concrete struct type (ShellRef, FaceRef, etc.).)nbdoc"
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::FaceTriangulationRep>>(m.attr("FaceTriangulationRep")), "ParentFaceId", &BRepGraphInc::FaceTriangulationRep::ParentFaceId, R"nbdoc(Owning face identifier)nbdoc");
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::FaceTriangulationRep>>(m.attr("FaceTriangulationRep")), "Triangulation", &BRepGraphInc::FaceTriangulationRep::Triangulation, R"nbdoc(Triangulation mesh)nbdoc");
     nb::borrow<nb::class_<BRepGraphInc_Populate>>(m.attr("BRepGraphInc_Populate"))
-        .def_static("Perform", static_cast<BRepGraphInc_Populate::BuildStatus (*)(BRepGraph &, const TopoDS_Shape &, bool, const BRepGraphInc_Populate::Options &)>(&BRepGraphInc_Populate::Perform), nb::arg("theGraph"), nb::arg("theShape"), nb::arg("theParallel"), nb::arg("theOptions") = static_cast<std::decay_t<const BRepGraphInc_Populate::Options &>>(BRepGraphInc_Populate::Options ( )), R"nbdoc(Build backend incidence storage from a TopoDS_Shape.
+        .def_static("Perform", static_cast<BRepGraphInc_Populate::BuildStatus (*)(BRepGraph &, const TopoDS_Shape &, bool, const BRepGraphInc_Populate::Options &)>(&BRepGraphInc_Populate::Perform), nb::arg("theGraph"), nb::arg("theShape"), nb::arg("theParallel"), nb::arg("theOptions") = static_cast<std::decay_t<const BRepGraphInc_Populate::Options &>>(BRepGraphInc_Populate::Options()), R"nbdoc(Build backend incidence storage from a TopoDS_Shape.
 @param[out] theGraph    graph whose storage to populate (cleared first)
 @param[in]  theShape    root shape
 @param[in]  theParallel if true, face-level extraction runs in parallel
 @param[in]  theOptions  optional post-pass controls
 @return build status indicating success, warnings, or failure)nbdoc")
-        .def_static("AppendFlattened", static_cast<BRepGraphInc_Populate::BuildStatus (*)(BRepGraph &, const TopoDS_Shape &, bool, NCollection_LinearVector<BRepGraph_NodeId> &, const BRepGraphInc_Populate::Options &)>(&BRepGraphInc_Populate::AppendFlattened), nb::arg("theGraph"), nb::arg("theShape"), nb::arg("theParallel"), nb::arg("theAppendedRoots"), nb::arg("theOptions") = static_cast<std::decay_t<const BRepGraphInc_Populate::Options &>>(BRepGraphInc_Populate::Options ( )), R"nbdoc(Extend existing backend storage with additional shapes (no clear).
+        .def_static("AppendFlattened", static_cast<BRepGraphInc_Populate::BuildStatus (*)(BRepGraph &, const TopoDS_Shape &, bool, NCollection_LinearVector<BRepGraph_NodeId> &, const BRepGraphInc_Populate::Options &)>(&BRepGraphInc_Populate::AppendFlattened), nb::arg("theGraph"), nb::arg("theShape"), nb::arg("theParallel"), nb::arg("theAppendedRoots"), nb::arg("theOptions") = static_cast<std::decay_t<const BRepGraphInc_Populate::Options &>>(BRepGraphInc_Populate::Options()), R"nbdoc(Extend existing backend storage with additional shapes (no clear).
 Flattens hierarchy containers away; Solid/Shell/Compound/CompSolid inputs
 contribute appended face roots instead of container entities.
 Recomputes the built-in metadata layers from the populated storage.
@@ -676,7 +676,7 @@ Recomputes the built-in metadata layers from the populated storage.
 @param[out]    theAppendedRoots collected root NodeIds for non-container shapes
 @param[in]     theOptions       optional post-pass controls
 @return build status indicating success, warnings, or failure)nbdoc")
-        .def_static("Append", static_cast<BRepGraphInc_Populate::BuildStatus (*)(BRepGraph &, const TopoDS_Shape &, bool, const BRepGraphInc_Populate::Options &)>(&BRepGraphInc_Populate::Append), nb::arg("theGraph"), nb::arg("theShape"), nb::arg("theParallel"), nb::arg("theOptions") = static_cast<std::decay_t<const BRepGraphInc_Populate::Options &>>(BRepGraphInc_Populate::Options ( )), R"nbdoc(Extend existing backend storage with additional shapes (no clear).
+        .def_static("Append", static_cast<BRepGraphInc_Populate::BuildStatus (*)(BRepGraph &, const TopoDS_Shape &, bool, const BRepGraphInc_Populate::Options &)>(&BRepGraphInc_Populate::Append), nb::arg("theGraph"), nb::arg("theShape"), nb::arg("theParallel"), nb::arg("theOptions") = static_cast<std::decay_t<const BRepGraphInc_Populate::Options &>>(BRepGraphInc_Populate::Options()), R"nbdoc(Extend existing backend storage with additional shapes (no clear).
 Preserves the full shape hierarchy: Solid/Shell/Compound/CompSolid nodes
 are created alongside Face/Edge/Vertex nodes. Shapes already present in
 the storage with the same definition identity (TShape + Location, orientation ignored)
@@ -975,13 +975,13 @@ Compound, CompSolid, Product, Occurrence) has been allocated.)nbdoc")
 @param[in] theChildSolidId      child solid identifier
 @param[in] theOrientation       orientation within parent
 @return the newly created solid reference identifier)nbdoc")
-        .def("AttachChildToCompound", static_cast<BRepGraph_ChildRefId (BRepGraphInc_Storage::*)(const BRepGraph_CompoundId, const BRepGraph_NodeId, const TopLoc_Location &, const BRepGraphInc::ParityOrientation)>(&BRepGraphInc_Storage::AttachChildToCompound), nb::arg("theParentCompoundId"), nb::arg("theChildNodeId"), nb::arg("theLocation") = static_cast<std::decay_t<const TopLoc_Location &>>(TopLoc_Location ( )), nb::arg("theOrientation") = static_cast<std::decay_t<const BRepGraphInc::ParityOrientation>>(TopAbs_FORWARD), R"nbdoc(Attach a child node to a compound by creating a child reference.
+        .def("AttachChildToCompound", static_cast<BRepGraph_ChildRefId (BRepGraphInc_Storage::*)(const BRepGraph_CompoundId, const BRepGraph_NodeId, const TopLoc_Location &, const BRepGraphInc::ParityOrientation)>(&BRepGraphInc_Storage::AttachChildToCompound), nb::arg("theParentCompoundId"), nb::arg("theChildNodeId"), nb::arg("theLocation") = static_cast<std::decay_t<const TopLoc_Location &>>(TopLoc_Location()), nb::arg("theOrientation") = static_cast<std::decay_t<const BRepGraphInc::ParityOrientation>>(TopAbs_FORWARD), R"nbdoc(Attach a child node to a compound by creating a child reference.
 @param[in] theParentCompoundId parent compound identifier
 @param[in] theChildNodeId      child node identifier
 @param[in] theLocation         optional location transformation
 @param[in] theOrientation      orientation within parent
 @return the newly created child reference identifier)nbdoc")
-        .def("AttachOccurrenceToProduct", static_cast<BRepGraph_OccurrenceRefId (BRepGraphInc_Storage::*)(const BRepGraph_ProductId, const BRepGraph_OccurrenceId, const TopLoc_Location &)>(&BRepGraphInc_Storage::AttachOccurrenceToProduct), nb::arg("theParentProductId"), nb::arg("theChildOccurrenceId"), nb::arg("theLocation") = static_cast<std::decay_t<const TopLoc_Location &>>(TopLoc_Location ( )), R"nbdoc(Attach an occurrence to a product by creating an occurrence reference.
+        .def("AttachOccurrenceToProduct", static_cast<BRepGraph_OccurrenceRefId (BRepGraphInc_Storage::*)(const BRepGraph_ProductId, const BRepGraph_OccurrenceId, const TopLoc_Location &)>(&BRepGraphInc_Storage::AttachOccurrenceToProduct), nb::arg("theParentProductId"), nb::arg("theChildOccurrenceId"), nb::arg("theLocation") = static_cast<std::decay_t<const TopLoc_Location &>>(TopLoc_Location()), R"nbdoc(Attach an occurrence to a product by creating an occurrence reference.
 @param[in] theParentProductId     parent product identifier
 @param[in] theChildOccurrenceId   child occurrence identifier
 @param[in] theLocation            optional location transformation

@@ -76,7 +76,8 @@ void nanoocp_declare_NCollection(nb::module_ &m) {
     m.def_submodule("NCollection_Primes", "C++ namespace NCollection_Primes (OCCT package NCollection)");
     nb::enum_<NCollection_CellFilter_Action>(m, "NCollection_CellFilter_Action", R"nbdoc(Auxiliary enumeration serving as response from method Inspect)nbdoc", nb::is_arithmetic())
         .value("CellFilter_Keep", CellFilter_Keep)
-        .value("CellFilter_Purge", CellFilter_Purge);
+        .value("CellFilter_Purge", CellFilter_Purge)
+        .export_values();
     { nb::class_<NCollection_BaseAllocator, Standard_Transient> cls(m, "NCollection_BaseAllocator", R"nbdoc(Purpose:     Basic class for memory allocation wizards.
 Defines  the  interface  for devising  different  allocators
 firstly to be used  by collections of NCollection, though it
@@ -409,7 +410,7 @@ create more BaseAllocators, but it is injurious.)nbdoc")
         .def("IsEmpty", static_cast<bool (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::IsEmpty), R"nbdoc(@return true if buffer is not allocated)nbdoc")
         .def("Size", static_cast<size_t (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::Size), R"nbdoc(Return buffer length in bytes.)nbdoc")
         .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_Buffer::*)() const noexcept>(&NCollection_Buffer::Allocator), R"nbdoc(@return buffer allocator)nbdoc")
-        .def("SetAllocator", static_cast<void (NCollection_Buffer::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_Buffer::SetAllocator), nb::arg("theAlloc"), R"nbdoc(Assign new buffer allocator with de-allocation of buffer.)nbdoc")
+        .def("SetAllocator", static_cast<void (NCollection_Buffer::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_Buffer::SetAllocator), nb::arg("theAlloc").none(), R"nbdoc(Assign new buffer allocator with de-allocation of buffer.)nbdoc")
         .def("Allocate", static_cast<bool (NCollection_Buffer::*)(const size_t)>(&NCollection_Buffer::Allocate), nb::arg("theSize"), R"nbdoc(Allocate the buffer.
 @param theSize buffer length in bytes)nbdoc")
         .def("Free", static_cast<void (NCollection_Buffer::*)()>(&NCollection_Buffer::Free), R"nbdoc(De-allocate buffer.)nbdoc")

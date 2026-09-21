@@ -30,7 +30,8 @@ orientation to the shape as a whole.)nbdoc", nb::is_arithmetic())
         .value("TopAbs_FORWARD", TopAbs_FORWARD)
         .value("TopAbs_REVERSED", TopAbs_REVERSED)
         .value("TopAbs_INTERNAL", TopAbs_INTERNAL)
-        .value("TopAbs_EXTERNAL", TopAbs_EXTERNAL);
+        .value("TopAbs_EXTERNAL", TopAbs_EXTERNAL)
+        .export_values();
     nb::enum_<TopAbs_ShapeEnum>(m, "TopAbs_ShapeEnum", R"nbdoc(Identifies various topological shapes. This
 enumeration allows you to use dynamic typing of shapes.
 The values are listed in order of complexity, from the
@@ -64,7 +65,8 @@ to a curve, and bound by a vertex at each extremity.
         .value("TopAbs_WIRE", TopAbs_WIRE)
         .value("TopAbs_EDGE", TopAbs_EDGE)
         .value("TopAbs_VERTEX", TopAbs_VERTEX)
-        .value("TopAbs_SHAPE", TopAbs_SHAPE);
+        .value("TopAbs_SHAPE", TopAbs_SHAPE)
+        .export_values();
     nb::enum_<TopAbs_State>(m, "TopAbs_State", R"nbdoc(Identifies the position of a vertex or a set of
 vertices relative to a region of a shape.
 The figure shown above illustrates the states of
@@ -73,7 +75,8 @@ to the face which it intersects.)nbdoc", nb::is_arithmetic())
         .value("TopAbs_IN", TopAbs_IN)
         .value("TopAbs_OUT", TopAbs_OUT)
         .value("TopAbs_ON", TopAbs_ON)
-        .value("TopAbs_UNKNOWN", TopAbs_UNKNOWN);
+        .value("TopAbs_UNKNOWN", TopAbs_UNKNOWN)
+        .export_values();
     { nb::class_<TopAbs> cls(m, "TopAbs", R"nbdoc(This package gives resources for Topology oriented
 applications such as: Topological Data Structure,
 Topological Algorithms.

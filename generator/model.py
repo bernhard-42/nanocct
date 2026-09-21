@@ -9,9 +9,10 @@ class Param:
     name: str
     type: str            # C++ spelling as written (typedefs resolved to canonical where safe)
     default: str | None  # C++ expression or None
-    is_out: bool         # non-const lvalue ref to a primitive -> returned in a tuple
+    is_out: bool         # non-const lvalue ref to a primitive or to a handle<T> -> returned in a tuple
     is_inout: bool = False  # ... and also taken as input (overrides.toml [inout])
     class_name: str = ""    # canonical name of the class/enum type behind the parameter ("" for scalars, strings, std types)
+    is_handle: bool = False # opencascade::handle<T> (by value or reference): nb::arg(...).none(), a null handle is None
     stream: str = ""        # "out": std::ostream& -> the text comes back as a str; "in": std::istream&/std::stringstream <- a str
 
 

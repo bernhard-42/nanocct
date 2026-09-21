@@ -15,7 +15,8 @@ void nanoocp_declare_UnitsMethods(nb::module_ &m) {
         .value("UnitsMethods_LengthUnit_Mil", UnitsMethods_LengthUnit_Mil)
         .value("UnitsMethods_LengthUnit_Micron", UnitsMethods_LengthUnit_Micron)
         .value("UnitsMethods_LengthUnit_Centimeter", UnitsMethods_LengthUnit_Centimeter)
-        .value("UnitsMethods_LengthUnit_Microinch", UnitsMethods_LengthUnit_Microinch);
+        .value("UnitsMethods_LengthUnit_Microinch", UnitsMethods_LengthUnit_Microinch)
+        .export_values();
     { nb::class_<UnitsMethods> cls(m, "UnitsMethods", R"nbdoc(Class for using global units variables)nbdoc");
     }
 }

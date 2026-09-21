@@ -1,12 +1,14 @@
 """Generated bindings for TKGeomBase: GC/gce makers, GCPnts, Extrema (6c alias instantiations Extrema_ExtPC/ExtCC),
 GeomLProp_CLProps, BndLib, GeomConvert, IntAna, the ExtremaPC namespace, deprecated GCE2d class aliases."""
 import importlib
+import io
 import math
+from pathlib import Path
 
 import pytest
 
 from nanoocp import (GC, GCE2d, BndLib, Bnd, Extrema, ExtremaPC, GCPnts, Geom, Geom2d, GeomAdaptor, GeomConvert, GeomLProp,
-                     GeomBndLib, IntAna, gce, gp)
+                     GeomBndLib, GeomLib, GeomTools, IntAna, gce, gp)
 
 PACKAGES = ["ProjLib", "GeomProjLib", "GCPnts", "CPnts", "Approx", "AppParCurves", "FEmTool", "AppCont", "Extrema", "ExtremaPC",
             "IntAna", "IntAna2d", "GeomConvert", "AdvApp2Var", "GeomLib", "Geom2dConvert", "Hermit", "BndLib", "GeomBndLib",
@@ -83,3 +85,26 @@ def test_conversion_operators():
 
 def test_classes_with_undefined_copy_constructor_are_skipped():
     assert not hasattr(GCPnts, "GCPnts_DistFunction")                  # copy ctor declared, never defined in libTKGeomBase
+
+
+def test_handle_inout_parameters_keep_the_input_and_return_the_result():
+    # GeomLib::ExtendCurveToPoint(handle<Geom_BoundedCurve>& Curve, ...) reads Curve and assigns the extended BSpline
+    # back to it (overrides.toml [inout]): the parameter stays in the signature and the new handle is returned
+    seg = GC.GC_MakeSegment(gp.gp_Pnt(0.0, 0.0, 0.0), gp.gp_Pnt(1.0, 0.0, 0.0)).Value()
+    extended = GeomLib.GeomLib.ExtendCurveToPoint(seg, gp.gp_Pnt(2.0, 0.0, 0.0), 1, True)
+    assert isinstance(extended, Geom.Geom_BSplineCurve)
+    assert extended.LastParameter() == pytest.approx(2.0) and seg.LastParameter() == 1.0   # the Python object is unchanged
+    assert GeomLib.GeomLib.ExtendCurveToPoint.__doc__.splitlines()[0].startswith(
+        "ExtendCurveToPoint(Curve: nanoocp.Geom.Geom_BoundedCurve | None, Point:")
+
+
+def test_handle_out_parameter_with_stream():
+    # GeomTools::Read(handle<Geom_Surface>& S, istream&): the surface comes back as the result (pure out-parameter)
+    plane = Geom.Geom_Plane(gp.gp_Pnt(0.0, 0.0, 1.0), gp.gp_Dir(0.0, 0.0, 1.0))
+    text = GeomTools.GeomTools.Write(plane)
+    back = GeomTools.GeomTools.Read(io.StringIO(text))
+    assert isinstance(back, Geom.Geom_Plane) and back.Location().Z() == 1.0
+    # the Geom_Curve / Geom2d_Curve overloads differ only in the out-parameter type -> unreachable, reported
+    from generator.report import read_report
+    rows = read_report(Path(__file__).parents[1] / "src" / "cpp" / "TKGeomBase" / "report.txt")
+    assert sum(1 for cat, pkg, msg in rows if cat == "overload-collision" and msg.startswith("GeomTools::Read(")) == 2

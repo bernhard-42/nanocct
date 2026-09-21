@@ -25,6 +25,14 @@ class BinTools_FormatVersion(enum.IntEnum):
 
     BinTools_FormatVersion_CURRENT = 4
 
+BinTools_FormatVersion_VERSION_1: BinTools_FormatVersion = ...
+
+BinTools_FormatVersion_VERSION_2: BinTools_FormatVersion = ...
+
+BinTools_FormatVersion_VERSION_3: BinTools_FormatVersion = ...
+
+BinTools_FormatVersion_VERSION_4: BinTools_FormatVersion = ...
+
 BinTools_FormatVersion_LOWER: int = 1
 
 BinTools_FormatVersion_UPPER: int = 4
@@ -79,6 +87,52 @@ class BinTools_ObjectType(enum.IntEnum):
     BinTools_ObjectType_EmptyShape = 198
 
     BinTools_ObjectType_EndShape = 199
+
+BinTools_ObjectType_Unknown: BinTools_ObjectType = BinTools_ObjectType.BinTools_ObjectType_Unknown
+
+BinTools_ObjectType_Reference8: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Reference16: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Reference32: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Reference64: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Location: BinTools_ObjectType = BinTools_ObjectType.BinTools_ObjectType_Location
+
+BinTools_ObjectType_SimpleLocation: BinTools_ObjectType = ...
+
+BinTools_ObjectType_EmptyLocation: BinTools_ObjectType = ...
+
+BinTools_ObjectType_LocationEnd: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Curve: BinTools_ObjectType = BinTools_ObjectType.BinTools_ObjectType_Curve
+
+BinTools_ObjectType_EmptyCurve: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Curve2d: BinTools_ObjectType = BinTools_ObjectType.BinTools_ObjectType_Curve2d
+
+BinTools_ObjectType_EmptyCurve2d: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Surface: BinTools_ObjectType = BinTools_ObjectType.BinTools_ObjectType_Surface
+
+BinTools_ObjectType_EmptySurface: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Polygon3d: BinTools_ObjectType = BinTools_ObjectType.BinTools_ObjectType_Polygon3d
+
+BinTools_ObjectType_EmptyPolygon3d: BinTools_ObjectType = ...
+
+BinTools_ObjectType_PolygonOnTriangulation: BinTools_ObjectType = ...
+
+BinTools_ObjectType_EmptyPolygonOnTriangulation: BinTools_ObjectType = ...
+
+BinTools_ObjectType_Triangulation: BinTools_ObjectType = ...
+
+BinTools_ObjectType_EmptyTriangulation: BinTools_ObjectType = ...
+
+BinTools_ObjectType_EmptyShape: BinTools_ObjectType = ...
+
+BinTools_ObjectType_EndShape: BinTools_ObjectType = BinTools_ObjectType.BinTools_ObjectType_EndShape
 
 class BinTools:
     """Tool to keep shapes in binary format"""
@@ -209,7 +263,7 @@ class BinTools_Curve2dSet:
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Add(self, C: nanoocp.Geom2d.Geom2d_Curve) -> int:
+    def Add(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> int:
         """
         Incorporate a new Curve in the set and returns
         its index.
@@ -218,7 +272,7 @@ class BinTools_Curve2dSet:
     def Curve2d(self, I: int) -> nanoocp.Geom2d.Geom2d_Curve:
         """Returns the Curve of index <I>."""
 
-    def Index(self, C: nanoocp.Geom2d.Geom2d_Curve) -> int:
+    def Index(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> int:
         """Returns the index of <L>."""
 
     def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
@@ -234,7 +288,7 @@ class BinTools_Curve2dSet:
         """
 
     @staticmethod
-    def WriteCurve2d(C: nanoocp.Geom2d.Geom2d_Curve, OS: BinTools_OStream) -> None:
+    def WriteCurve2d(C: nanoocp.Geom2d.Geom2d_Curve | None, OS: BinTools_OStream) -> None:
         """Dumps the curve on the binary stream, that can be read back."""
 
 class BinTools_CurveSet:
@@ -250,7 +304,7 @@ class BinTools_CurveSet:
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Add(self, C: nanoocp.Geom.Geom_Curve) -> int:
+    def Add(self, C: nanoocp.Geom.Geom_Curve | None) -> int:
         """
         Incorporate a new Curve in the set and returns
         its index.
@@ -259,7 +313,7 @@ class BinTools_CurveSet:
     def Curve(self, I: int) -> nanoocp.Geom.Geom_Curve:
         """Returns the Curve of index <I>."""
 
-    def Index(self, C: nanoocp.Geom.Geom_Curve) -> int:
+    def Index(self, C: nanoocp.Geom.Geom_Curve | None) -> int:
         """Returns the index of <L>."""
 
     def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
@@ -275,7 +329,7 @@ class BinTools_CurveSet:
         """
 
     @staticmethod
-    def WriteCurve(C: nanoocp.Geom.Geom_Curve, OS: BinTools_OStream) -> None:
+    def WriteCurve(C: nanoocp.Geom.Geom_Curve | None, OS: BinTools_OStream) -> None:
         """
         Dumps the curve on the stream in binary format
         that can be read back.
@@ -490,7 +544,7 @@ class BinTools_SurfaceSet:
     def Clear(self) -> None:
         """Clears the content of the set."""
 
-    def Add(self, S: nanoocp.Geom.Geom_Surface) -> int:
+    def Add(self, S: nanoocp.Geom.Geom_Surface | None) -> int:
         """
         Incorporate a new Surface in the set and returns
         its index.
@@ -499,7 +553,7 @@ class BinTools_SurfaceSet:
     def Surface(self, I: int) -> nanoocp.Geom.Geom_Surface:
         """Returns the Surface of index <I>."""
 
-    def Index(self, S: nanoocp.Geom.Geom_Surface) -> int:
+    def Index(self, S: nanoocp.Geom.Geom_Surface | None) -> int:
         """Returns the index of <L>."""
 
     def Write(self, theRange: nanoocp.Message.Message_ProgressRange = ...) -> object:
@@ -515,7 +569,7 @@ class BinTools_SurfaceSet:
         """
 
     @staticmethod
-    def WriteSurface(S: nanoocp.Geom.Geom_Surface, OS: BinTools_OStream) -> None:
+    def WriteSurface(S: nanoocp.Geom.Geom_Surface | None, OS: BinTools_OStream) -> None:
         """
         Dumps the surface on the stream in binary
         format that can be read back.

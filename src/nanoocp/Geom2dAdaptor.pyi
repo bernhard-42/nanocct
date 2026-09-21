@@ -50,10 +50,10 @@ class Geom2dAdaptor_Curve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
     def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     @overload
-    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve, UFirst: float, ULast: float) -> None:
+    def __init__(self, C: nanoocp.Geom2d.Geom2d_Curve | None, UFirst: float, ULast: float) -> None:
         """Standard_ConstructionError is raised if Ufirst>Ulast"""
 
     @overload
@@ -164,10 +164,10 @@ class Geom2dAdaptor_Curve(nanoocp.Adaptor2d.Adaptor2d_Curve2d):
         """Reset currently loaded curve (undone Load())."""
 
     @overload
-    def Load(self, theCurve: nanoocp.Geom2d.Geom2d_Curve) -> None: ...
+    def Load(self, theCurve: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
     @overload
-    def Load(self, theCurve: nanoocp.Geom2d.Geom2d_Curve, theUFirst: float, theULast: float) -> None:
+    def Load(self, theCurve: nanoocp.Geom2d.Geom2d_Curve | None, theUFirst: float, theULast: float) -> None:
         """
         Standard_ConstructionError is raised if theUFirst > theULast + Precision::PConfusion()
         """

@@ -18,7 +18,7 @@ void nanoocp_templates_GeomProjLib(nb::module_ &m) {
 void nanoocp_define_GeomProjLib(nb::module_ &m) {
     nanoocp_implicit_default_ctor<GeomProjLib>(nb::borrow<nb::class_<GeomProjLib>>(m.attr("GeomProjLib")));
     nb::borrow<nb::class_<GeomProjLib>>(m.attr("GeomProjLib"))
-        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const double First, const double Last, const occ::handle<Geom_Surface> & S, const double UFirst, const double ULast, const double VFirst, const double VLast) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, First, Last, S, UFirst, ULast, VFirst, VLast, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C"), nb::arg("First"), nb::arg("Last"), nb::arg("S"), nb::arg("UFirst"), nb::arg("ULast"), nb::arg("VFirst"), nb::arg("VLast"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const double First, const double Last, const occ::handle<Geom_Surface> & S, const double UFirst, const double ULast, const double VFirst, const double VLast) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, First, Last, S, UFirst, ULast, VFirst, VLast, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C").none(), nb::arg("First"), nb::arg("Last"), nb::arg("S").none(), nb::arg("UFirst"), nb::arg("ULast"), nb::arg("VFirst"), nb::arg("VLast"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 The 3dCurve is taken between the parametrization
 range [First, Last]
@@ -27,7 +27,7 @@ an approximation. In this case, the reached
 tolerance is set in <Tolerance> as output.
 WARNING: if the projection has failed, this
 method returns a null Handle.)nbdoc")
-        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const double First, const double Last, const occ::handle<Geom_Surface> & S) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, First, Last, S, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C"), nb::arg("First"), nb::arg("Last"), nb::arg("S"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const double First, const double Last, const occ::handle<Geom_Surface> & S) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, First, Last, S, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C").none(), nb::arg("First"), nb::arg("Last"), nb::arg("S").none(), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 The 3dCurve is taken between the parametrization
 range [First, Last]
@@ -36,7 +36,7 @@ an approximation. In this case, the reached
 tolerance is set in <Tolerance> as output.
 WARNING: if the projection has failed, this
 method returns a null Handle.)nbdoc")
-        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const double, const double, const occ::handle<Geom_Surface> &)>(&GeomProjLib::Curve2d), nb::arg("C"), nb::arg("First"), nb::arg("Last"), nb::arg("S"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const double, const double, const occ::handle<Geom_Surface> &)>(&GeomProjLib::Curve2d), nb::arg("C").none(), nb::arg("First"), nb::arg("Last"), nb::arg("S").none(), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 The 3dCurve is taken between the parametrization
 range [First, Last]
@@ -44,31 +44,31 @@ If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.)nbdoc")
-        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &)>(&GeomProjLib::Curve2d), nb::arg("C"), nb::arg("S"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &)>(&GeomProjLib::Curve2d), nb::arg("C").none(), nb::arg("S").none(), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.)nbdoc")
-        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const occ::handle<Geom_Surface> & S, const double UDeb, const double UFin, const double VDeb, const double VFin) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, S, UDeb, UFin, VDeb, VFin, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C"), nb::arg("S"), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", [](const occ::handle<Geom_Curve> & C, const occ::handle<Geom_Surface> & S, const double UDeb, const double UFin, const double VDeb, const double VFin) { double Tolerance{}; auto result = GeomProjLib::Curve2d(C, S, UDeb, UFin, VDeb, VFin, Tolerance); return std::make_tuple(result, Tolerance); }, nb::arg("C").none(), nb::arg("S").none(), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.
 can expand a little the bounds of surface)nbdoc")
-        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double)>(&GeomProjLib::Curve2d), nb::arg("C"), nb::arg("S"), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
+        .def_static("Curve2d", static_cast<occ::handle<Geom2d_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &, const double, const double, const double, const double)>(&GeomProjLib::Curve2d), nb::arg("C").none(), nb::arg("S").none(), nb::arg("UDeb"), nb::arg("UFin"), nb::arg("VDeb"), nb::arg("VFin"), R"nbdoc(gives the 2d-curve of a 3d-curve lying on a
 surface (uses GeomProjLib_ProjectedCurve)
 If the projection needs an approximation,
 Precision::PApproximation() is used.
 WARNING: if the projection has failed, this
 method returns a null Handle.
 can expand a little the bounds of surface)nbdoc")
-        .def_static("Project", static_cast<occ::handle<Geom_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &)>(&GeomProjLib::Project), nb::arg("C"), nb::arg("S"), R"nbdoc(Constructs the 3d-curve from the normal
+        .def_static("Project", static_cast<occ::handle<Geom_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Surface> &)>(&GeomProjLib::Project), nb::arg("C").none(), nb::arg("S").none(), R"nbdoc(Constructs the 3d-curve from the normal
 projection of the Curve <C> on the surface <S>.
 WARNING: if the projection has failed, returns a
 null Handle.)nbdoc")
-        .def_static("ProjectOnPlane", static_cast<occ::handle<Geom_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Plane> &, const gp_Dir &, const bool)>(&GeomProjLib::ProjectOnPlane), nb::arg("Curve"), nb::arg("Plane"), nb::arg("Dir"), nb::arg("KeepParametrization"), R"nbdoc(Constructs the 3d-curves from the projection
+        .def_static("ProjectOnPlane", static_cast<occ::handle<Geom_Curve> (*)(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Plane> &, const gp_Dir &, const bool)>(&GeomProjLib::ProjectOnPlane), nb::arg("Curve").none(), nb::arg("Plane").none(), nb::arg("Dir"), nb::arg("KeepParametrization"), R"nbdoc(Constructs the 3d-curves from the projection
 of the curve <Curve> on the plane <Plane> along
 the direction <Dir>.
 If <KeepParametrization> is true, the parametrization

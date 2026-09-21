@@ -19,7 +19,8 @@ void nanoocp_declare_TopTools(nb::module_ &m) {
         .value("TopTools_FormatVersion_VERSION_1", TopTools_FormatVersion_VERSION_1)
         .value("TopTools_FormatVersion_VERSION_2", TopTools_FormatVersion_VERSION_2)
         .value("TopTools_FormatVersion_VERSION_3", TopTools_FormatVersion_VERSION_3)
-        .value("TopTools_FormatVersion_CURRENT", TopTools_FormatVersion_CURRENT);
+        .value("TopTools_FormatVersion_CURRENT", TopTools_FormatVersion_CURRENT)
+        .export_values();
     m.attr("TopTools_FormatVersion_LOWER") = nb::int_(static_cast<long long>(TopTools_FormatVersion_LOWER));
     m.attr("TopTools_FormatVersion_UPPER") = nb::int_(static_cast<long long>(TopTools_FormatVersion_UPPER));
     { nb::class_<TopTools> cls(m, "TopTools", R"nbdoc(The TopTools package provides utilities for the
@@ -104,9 +105,9 @@ its index.)nbdoc")
         .def("Location", static_cast<const TopLoc_Location & (TopTools_LocationSet::*)(const int) const>(&TopTools_LocationSet::Location), nb::arg("I"), R"nbdoc(Returns the location of index <I>.)nbdoc")
         .def("Index", static_cast<int (TopTools_LocationSet::*)(const TopLoc_Location &) const>(&TopTools_LocationSet::Index), nb::arg("L"), R"nbdoc(Returns the index of <L>.)nbdoc")
         .def("Dump", [](const TopTools_LocationSet &self) { std::ostringstream OS_stream; self.Dump(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the content of me on the stream <OS>.)nbdoc")
-        .def("Write", [](const TopTools_LocationSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.Write(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the content of me on the stream <OS> in a
+        .def("Write", [](const TopTools_LocationSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.Write(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in a
 format that can be read back by Read.)nbdoc")
-        .def("Read", [](TopTools_LocationSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the content of me from the stream <IS>. me
+        .def("Read", [](TopTools_LocationSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
 is first cleared.)nbdoc");
     nanoocp_implicit_copy_ctor<TopTools_LocationSet>(nb::borrow<nb::class_<TopTools_LocationSet>>(m.attr("TopTools_LocationSet")));
     nanoocp_implicit_default_ctor<TopTools_ShapeMapHasher>(nb::borrow<nb::class_<TopTools_ShapeMapHasher>>(m.attr("TopTools_ShapeMapHasher")));
@@ -140,7 +141,7 @@ calls DumpGeometry(S)
 Dumps the geometry calling DumpGeometry.
 
 Dumps the locations.)nbdoc")
-        .def("Write", [](TopTools_ShapeSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.Write(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the content of me on the stream <OS> in a
+        .def("Write", [](TopTools_ShapeSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.Write(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the content of me on the stream <OS> in a
 format that can be read back by Read.
 
 Writes the locations.
@@ -152,7 +153,7 @@ For each shape:
 Write the type.
 calls WriteGeometry(S).
 Write the flags, the subshapes.)nbdoc")
-        .def("Read", [](TopTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the content of me from the stream <IS>. me
+        .def("Read", [](TopTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.Read(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the content of me from the stream <IS>. me
 is first cleared.
 
 Reads the locations.
@@ -173,9 +174,9 @@ of the Location.)nbdoc")
         .def("Read", [](const TopTools_ShapeSet &self, TopoDS_Shape & S, const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); self.Read(S, IS_stream); }, nb::arg("S"), nb::arg("IS"), R"nbdoc(Reads from <IS> a shape and returns it in S.)nbdoc")
         .def("AddGeometry", static_cast<void (TopTools_ShapeSet::*)(const TopoDS_Shape &)>(&TopTools_ShapeSet::AddGeometry), nb::arg("S"), R"nbdoc(Stores the geometry of <S>.)nbdoc")
         .def("DumpGeometry", [](const TopTools_ShapeSet &self) { std::ostringstream OS_stream; self.DumpGeometry(OS_stream); return nanoocp_stream_text(OS_stream); }, R"nbdoc(Dumps the geometry of me on the stream <OS>.)nbdoc")
-        .def("WriteGeometry", [](TopTools_ShapeSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteGeometry(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Writes the geometry of me on the stream <OS> in a
+        .def("WriteGeometry", [](TopTools_ShapeSet &self, const Message_ProgressRange & theProgress) { std::ostringstream OS_stream; self.WriteGeometry(OS_stream, theProgress); return nanoocp_stream_text(OS_stream); }, nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes the geometry of me on the stream <OS> in a
 format that can be read back by Read.)nbdoc")
-        .def("ReadGeometry", [](TopTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadGeometry(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange ( )), R"nbdoc(Reads the geometry of me from the stream <IS>.)nbdoc")
+        .def("ReadGeometry", [](TopTools_ShapeSet &self, const nanoocp::TextInput &IS, const Message_ProgressRange & theProgress) { std::stringstream IS_stream(IS.text); self.ReadGeometry(IS_stream, theProgress); }, nb::arg("IS"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads the geometry of me from the stream <IS>.)nbdoc")
         .def("DumpGeometry", [](const TopTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.DumpGeometry(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Dumps the geometry of <S> on the stream <OS>.)nbdoc")
         .def("WriteGeometry", [](const TopTools_ShapeSet &self, const TopoDS_Shape & S) { std::ostringstream OS_stream; self.WriteGeometry(S, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("S"), R"nbdoc(Writes the geometry of <S> on the stream <OS> in a
 format that can be read back by Read.)nbdoc")

@@ -26,6 +26,12 @@ class UnitsAPI_SystemUnits(enum.IntEnum):
 
     UnitsAPI_MDTV = 2
 
+UnitsAPI_DEFAULT: UnitsAPI_SystemUnits = UnitsAPI_SystemUnits.UnitsAPI_DEFAULT
+
+UnitsAPI_SI: UnitsAPI_SystemUnits = UnitsAPI_SystemUnits.UnitsAPI_SI
+
+UnitsAPI_MDTV: UnitsAPI_SystemUnits = UnitsAPI_SystemUnits.UnitsAPI_MDTV
+
 class UnitsAPI:
     """
     The UnitsAPI global functions are used to
@@ -103,7 +109,7 @@ class UnitsAPI:
 
     @overload
     @staticmethod
-    def AnyToLS(aData: float, aUnit: str, aDim: nanoocp.Units.Units_Dimensions) -> float:
+    def AnyToLS(aData: float, aUnit: str) -> tuple[float, nanoocp.Units.Units_Dimensions]:
         """
         Converts the local unit value to the local system units value.
         and gives the associated dimension of the unit
@@ -119,7 +125,7 @@ class UnitsAPI:
 
     @overload
     @staticmethod
-    def AnyToSI(aData: float, aUnit: str, aDim: nanoocp.Units.Units_Dimensions) -> float:
+    def AnyToSI(aData: float, aUnit: str) -> tuple[float, nanoocp.Units.Units_Dimensions]:
         """
         Converts the local unit value to the SI system units value.
         and gives the associated dimension of the unit

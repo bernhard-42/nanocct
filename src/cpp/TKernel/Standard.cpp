@@ -106,7 +106,8 @@ void nanoocp_declare_Standard(nb::module_ &m) {
         .value("Standard_JsonKey_CloseContainer", Standard_JsonKey_CloseContainer)
         .value("Standard_JsonKey_Quote", Standard_JsonKey_Quote)
         .value("Standard_JsonKey_SeparatorKeyToValue", Standard_JsonKey_SeparatorKeyToValue)
-        .value("Standard_JsonKey_SeparatorValueToValue", Standard_JsonKey_SeparatorValueToValue);
+        .value("Standard_JsonKey_SeparatorValueToValue", Standard_JsonKey_SeparatorValueToValue)
+        .export_values();
     { nb::class_<Standard> cls(m, "Standard", R"nbdoc(The package Standard provides global memory allocator and other basic
 services used by other OCCT components.)nbdoc");
       nb::enum_<Standard::AllocatorType>(cls, "AllocatorType", R"nbdoc(Enumiration of possible allocator types)nbdoc")
@@ -311,9 +312,9 @@ Returns non-zero if some memory has been actually freed.)nbdoc");
         .def_static("get_type_name", static_cast<const char * (*)()>(&Standard_Transient::get_type_name))
         .def_static("get_type_descriptor", static_cast<const opencascade::handle<Standard_Type> & (*)()>(&Standard_Transient::get_type_descriptor), R"nbdoc(Returns type descriptor of Standard_Transient class)nbdoc")
         .def("DynamicType", static_cast<const opencascade::handle<Standard_Type> & (Standard_Transient::*)() const>(&Standard_Transient::DynamicType), R"nbdoc(Returns a type descriptor about this object.)nbdoc")
-        .def("IsInstance", static_cast<bool (Standard_Transient::*)(const opencascade::handle<Standard_Type> &) const>(&Standard_Transient::IsInstance), nb::arg("theType"), R"nbdoc(Returns a true value if this is an instance of Type.)nbdoc")
+        .def("IsInstance", static_cast<bool (Standard_Transient::*)(const opencascade::handle<Standard_Type> &) const>(&Standard_Transient::IsInstance), nb::arg("theType").none(), R"nbdoc(Returns a true value if this is an instance of Type.)nbdoc")
         .def("IsInstance", static_cast<bool (Standard_Transient::*)(const char *const) const>(&Standard_Transient::IsInstance), nb::arg("theTypeName"), R"nbdoc(Returns a true value if this is an instance of TypeName.)nbdoc")
-        .def("IsKind", static_cast<bool (Standard_Transient::*)(const opencascade::handle<Standard_Type> &) const>(&Standard_Transient::IsKind), nb::arg("theType"), R"nbdoc(Returns true if this is an instance of Type or an
+        .def("IsKind", static_cast<bool (Standard_Transient::*)(const opencascade::handle<Standard_Type> &) const>(&Standard_Transient::IsKind), nb::arg("theType").none(), R"nbdoc(Returns true if this is an instance of Type or an
 instance of any class that inherits from Type.
 Note that multiple inheritance is not supported by OCCT RTTI mechanism.)nbdoc")
         .def("IsKind", static_cast<bool (Standard_Transient::*)(const char *const) const>(&Standard_Transient::IsKind), nb::arg("theTypeName"), R"nbdoc(Returns true if this is an instance of TypeName or an
@@ -339,7 +340,7 @@ This is more efficient than using acq_rel for every decrement.)nbdoc")
         .def("Name", static_cast<const char * (Standard_Type::*)() const>(&Standard_Type::Name), R"nbdoc(Returns the given name of the class type (get_type_name))nbdoc")
         .def("Size", static_cast<size_t (Standard_Type::*)() const>(&Standard_Type::Size), R"nbdoc(Returns the size of the class instance in bytes)nbdoc")
         .def("Parent", static_cast<const occ::handle<Standard_Type> & (Standard_Type::*)() const>(&Standard_Type::Parent), R"nbdoc(Returns descriptor of the base class in the hierarchy)nbdoc")
-        .def("SubType", static_cast<bool (Standard_Type::*)(const occ::handle<Standard_Type> &) const>(&Standard_Type::SubType), nb::arg("theOther"), R"nbdoc(Returns True if this type is the same as theOther, or inherits from theOther.
+        .def("SubType", static_cast<bool (Standard_Type::*)(const occ::handle<Standard_Type> &) const>(&Standard_Type::SubType), nb::arg("theOther").none(), R"nbdoc(Returns True if this type is the same as theOther, or inherits from theOther.
 Note that multiple inheritance is not supported.)nbdoc")
         .def("SubType", static_cast<bool (Standard_Type::*)(const char *const) const>(&Standard_Type::SubType), nb::arg("theOther"), R"nbdoc(Returns True if this type is the same as theOther, or inherits from theOther.
 Note that multiple inheritance is not supported.)nbdoc")
@@ -413,7 +414,7 @@ of the value in the stream text)nbdoc")
         .def_static("AddValuesSeparator", []() { std::ostringstream theOStream_stream; Standard_Dump::AddValuesSeparator(theOStream_stream); return nanoocp_stream_text(theOStream_stream); }, R"nbdoc(@param theOStream source value)nbdoc")
         .def_static("GetPointerPrefix", static_cast<TCollection_AsciiString (*)()>(&Standard_Dump::GetPointerPrefix), R"nbdoc(Returns default prefix added for each pointer info string if short presentation of pointer
 used)nbdoc")
-        .def_static("GetPointerInfo", static_cast<TCollection_AsciiString (*)(const occ::handle<Standard_Transient> &, const bool)>(&Standard_Dump::GetPointerInfo), nb::arg("thePointer"), nb::arg("isShortInfo") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Convert handle pointer to address of the pointer. If the handle is NULL, the result is an
+        .def_static("GetPointerInfo", static_cast<TCollection_AsciiString (*)(const occ::handle<Standard_Transient> &, const bool)>(&Standard_Dump::GetPointerInfo), nb::arg("thePointer").none(), nb::arg("isShortInfo") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Convert handle pointer to address of the pointer. If the handle is NULL, the result is an
 empty string.
 @param thePointer a pointer
 @param isShortInfo if true, all '0' symbols in the beginning of the pointer are skipped

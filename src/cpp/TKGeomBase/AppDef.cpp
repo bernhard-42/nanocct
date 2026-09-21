@@ -411,7 +411,7 @@ The values are non null from Index(ieme point) +1
 to Index(ieme point) + degree +1.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute>(nb::borrow<nb::class_<AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute>>(m.attr("AppDef_BSpParLeastSquareOfMyBSplGradientOfBSplineCompute")));
     nb::borrow<nb::class_<AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute>>(m.attr("AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("NbPol"), R"nbdoc(initializes the fields of the function. The approximating
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("NbPol"), R"nbdoc(initializes the fields of the function. The approximating
 curve has <NbPol> control points.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)() const>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
@@ -440,8 +440,8 @@ multiline.)nbdoc")
 A and DA.
 The values are non null from Index(ieme point) +1
 to Index(ieme point) + degree +1.)nbdoc")
-        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::FirstConstraint), nb::arg("TheConstraints"), nb::arg("FirstPoint"))
-        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::LastConstraint), nb::arg("TheConstraints"), nb::arg("LastPoint"))
+        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::FirstConstraint), nb::arg("TheConstraints").none(), nb::arg("FirstPoint"))
+        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::LastConstraint), nb::arg("TheConstraints").none(), nb::arg("LastPoint"))
         .def("SetFirstLambda", static_cast<void (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)(const double)>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::SetFirstLambda), nb::arg("l1"))
         .def("SetLastLambda", static_cast<void (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)(const double)>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::SetLastLambda), nb::arg("l2"));
     nanoocp_implicit_copy_ctor<AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute>(nb::borrow<nb::class_<AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute>>(m.attr("AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute")));
@@ -495,11 +495,11 @@ corresponding to the points of the multicurve <Index>.)nbdoc");
         .def("IsSolutionReached", static_cast<bool (AppDef_Gradient_BFGSOfTheGradient::*)(math_MultipleVarFunctionWithGradient &) const>(&AppDef_Gradient_BFGSOfTheGradient::IsSolutionReached), nb::arg("F"));
     nanoocp_implicit_copy_ctor<AppDef_Gradient_BFGSOfTheGradient>(nb::borrow<nb::class_<AppDef_Gradient_BFGSOfTheGradient>>(m.attr("AppDef_Gradient_BFGSOfTheGradient")));
     nb::borrow<nb::class_<AppDef_SmoothCriterion>>(m.attr("AppDef_SmoothCriterion"))
-        .def("SetParameters", static_cast<void (AppDef_SmoothCriterion::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_SmoothCriterion::SetParameters), nb::arg("Parameters"))
-        .def("SetCurve", static_cast<void (AppDef_SmoothCriterion::*)(const occ::handle<FEmTool_Curve> &)>(&AppDef_SmoothCriterion::SetCurve), nb::arg("C"))
+        .def("SetParameters", static_cast<void (AppDef_SmoothCriterion::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_SmoothCriterion::SetParameters), nb::arg("Parameters").none())
+        .def("SetCurve", static_cast<void (AppDef_SmoothCriterion::*)(const occ::handle<FEmTool_Curve> &)>(&AppDef_SmoothCriterion::SetCurve), nb::arg("C").none())
         .def("Curve", static_cast<occ::handle<FEmTool_Curve> (AppDef_SmoothCriterion::*)() const>(&AppDef_SmoothCriterion::Curve), R"nbdoc(Returns the curve associated with this criterion.
 @return handle to the FEmTool curve)nbdoc")
-        .def("GetCurve", static_cast<void (AppDef_SmoothCriterion::*)(occ::handle<FEmTool_Curve> &) const>(&AppDef_SmoothCriterion::GetCurve), nb::arg("C"))
+        .def("GetCurve", [](const AppDef_SmoothCriterion &self) { occ::handle<FEmTool_Curve> C{}; self.GetCurve(C); return C; })
         .def("SetEstimation", static_cast<void (AppDef_SmoothCriterion::*)(const double, const double, const double)>(&AppDef_SmoothCriterion::SetEstimation), nb::arg("E1"), nb::arg("E2"), nb::arg("E3"))
         .def("EstLength", [](AppDef_SmoothCriterion &self) -> double { return self.EstLength(); })
         .def("SetEstLength", [](AppDef_SmoothCriterion &self, double theValue) { self.EstLength() = theValue; }, nb::arg("theValue"), "Python addition: sets the value EstLength() returns by reference in C++.")
@@ -510,7 +510,7 @@ corresponding to the points of the multicurve <Index>.)nbdoc");
         .def("ErrorValues", [](AppDef_SmoothCriterion &self) { double MaxError{}; double QuadraticError{}; double AverageError{}; self.ErrorValues(MaxError, QuadraticError, AverageError); return std::make_tuple(MaxError, QuadraticError, AverageError); })
         .def("Hessian", static_cast<void (AppDef_SmoothCriterion::*)(const int, const int, const int, math_Matrix &)>(&AppDef_SmoothCriterion::Hessian), nb::arg("Element"), nb::arg("Dimension1"), nb::arg("Dimension2"), nb::arg("H"))
         .def("Gradient", static_cast<void (AppDef_SmoothCriterion::*)(const int, const int, math_Vector &)>(&AppDef_SmoothCriterion::Gradient), nb::arg("Element"), nb::arg("Dimension"), nb::arg("G"))
-        .def("InputVector", static_cast<void (AppDef_SmoothCriterion::*)(const math_Vector &, const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> &)>(&AppDef_SmoothCriterion::InputVector), nb::arg("X"), nb::arg("AssTable"), R"nbdoc(Convert the assembly Vector in an Curve;)nbdoc")
+        .def("InputVector", static_cast<void (AppDef_SmoothCriterion::*)(const math_Vector &, const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> &)>(&AppDef_SmoothCriterion::InputVector), nb::arg("X"), nb::arg("AssTable").none(), R"nbdoc(Convert the assembly Vector in an Curve;)nbdoc")
         .def("SetWeight", static_cast<void (AppDef_SmoothCriterion::*)(const double, const double, const double, const double, const double)>(&AppDef_SmoothCriterion::SetWeight), nb::arg("QuadraticWeight"), nb::arg("QualityWeight"), nb::arg("percentJ1"), nb::arg("percentJ2"), nb::arg("percentJ3"))
         .def("GetWeight", [](const AppDef_SmoothCriterion &self) { double QuadraticWeight{}; double QualityWeight{}; self.GetWeight(QuadraticWeight, QualityWeight); return std::make_tuple(QuadraticWeight, QualityWeight); })
         .def("SetWeight", static_cast<void (AppDef_SmoothCriterion::*)(const NCollection_Array1<double> &)>(&AppDef_SmoothCriterion::SetWeight), nb::arg("Weight"))
@@ -519,9 +519,9 @@ corresponding to the points of the multicurve <Index>.)nbdoc");
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (AppDef_SmoothCriterion::*)() const>(&AppDef_SmoothCriterion::DynamicType));
     nb::borrow<nb::class_<AppDef_LinearCriteria>>(m.attr("AppDef_LinearCriteria"))
         .def(nb::new_([](const AppDef_MultiLine & SSP, const int FirstPoint, const int LastPoint) { return opencascade::handle<AppDef_LinearCriteria>(new AppDef_LinearCriteria(SSP, FirstPoint, LastPoint)); }), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"))
-        .def("SetParameters", static_cast<void (AppDef_LinearCriteria::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_LinearCriteria::SetParameters), nb::arg("Parameters"))
-        .def("SetCurve", static_cast<void (AppDef_LinearCriteria::*)(const occ::handle<FEmTool_Curve> &)>(&AppDef_LinearCriteria::SetCurve), nb::arg("C"))
-        .def("GetCurve", static_cast<void (AppDef_LinearCriteria::*)(occ::handle<FEmTool_Curve> &) const>(&AppDef_LinearCriteria::GetCurve), nb::arg("C"))
+        .def("SetParameters", static_cast<void (AppDef_LinearCriteria::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_LinearCriteria::SetParameters), nb::arg("Parameters").none())
+        .def("SetCurve", static_cast<void (AppDef_LinearCriteria::*)(const occ::handle<FEmTool_Curve> &)>(&AppDef_LinearCriteria::SetCurve), nb::arg("C").none())
+        .def("GetCurve", [](const AppDef_LinearCriteria &self) { occ::handle<FEmTool_Curve> C{}; self.GetCurve(C); return C; })
         .def("SetEstimation", static_cast<void (AppDef_LinearCriteria::*)(const double, const double, const double)>(&AppDef_LinearCriteria::SetEstimation), nb::arg("E1"), nb::arg("E2"), nb::arg("E3"))
         .def("EstLength", [](AppDef_LinearCriteria &self) -> double { return self.EstLength(); })
         .def("SetEstLength", [](AppDef_LinearCriteria &self, double theValue) { self.EstLength() = theValue; }, nb::arg("theValue"), "Python addition: sets the value EstLength() returns by reference in C++.")
@@ -532,7 +532,7 @@ corresponding to the points of the multicurve <Index>.)nbdoc");
         .def("ErrorValues", [](AppDef_LinearCriteria &self) { double MaxError{}; double QuadraticError{}; double AverageError{}; self.ErrorValues(MaxError, QuadraticError, AverageError); return std::make_tuple(MaxError, QuadraticError, AverageError); })
         .def("Hessian", static_cast<void (AppDef_LinearCriteria::*)(const int, const int, const int, math_Matrix &)>(&AppDef_LinearCriteria::Hessian), nb::arg("Element"), nb::arg("Dimension1"), nb::arg("Dimension2"), nb::arg("H"))
         .def("Gradient", static_cast<void (AppDef_LinearCriteria::*)(const int, const int, math_Vector &)>(&AppDef_LinearCriteria::Gradient), nb::arg("Element"), nb::arg("Dimension"), nb::arg("G"))
-        .def("InputVector", static_cast<void (AppDef_LinearCriteria::*)(const math_Vector &, const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> &)>(&AppDef_LinearCriteria::InputVector), nb::arg("X"), nb::arg("AssTable"), R"nbdoc(Convert the assembly Vector in an Curve;)nbdoc")
+        .def("InputVector", static_cast<void (AppDef_LinearCriteria::*)(const math_Vector &, const occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> &)>(&AppDef_LinearCriteria::InputVector), nb::arg("X"), nb::arg("AssTable").none(), R"nbdoc(Convert the assembly Vector in an Curve;)nbdoc")
         .def("SetWeight", static_cast<void (AppDef_LinearCriteria::*)(const double, const double, const double, const double, const double)>(&AppDef_LinearCriteria::SetWeight), nb::arg("QuadraticWeight"), nb::arg("QualityWeight"), nb::arg("percentJ1"), nb::arg("percentJ2"), nb::arg("percentJ3"))
         .def("GetWeight", [](const AppDef_LinearCriteria &self) { double QuadraticWeight{}; double QualityWeight{}; self.GetWeight(QuadraticWeight, QualityWeight); return std::make_tuple(QuadraticWeight, QualityWeight); })
         .def("SetWeight", static_cast<void (AppDef_LinearCriteria::*)(const NCollection_Array1<double> &)>(&AppDef_LinearCriteria::SetWeight), nb::arg("Weight"))
@@ -541,13 +541,13 @@ corresponding to the points of the multicurve <Index>.)nbdoc");
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (AppDef_LinearCriteria::*)() const>(&AppDef_LinearCriteria::DynamicType));
     nanoocp_implicit_copy_ctor<AppDef_LinearCriteria>(nb::borrow<nb::class_<AppDef_LinearCriteria>>(m.attr("AppDef_LinearCriteria")));
     nb::borrow<nb::class_<AppDef_MyBSplGradientOfBSplineCompute>>(m.attr("AppDef_MyBSplGradientOfBSplineCompute"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(1), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(1), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
 where Pui describe the approximating BSpline curves'Poles
 and Qi the MultiLine points with a parameter ui.
 In this algorithm, the parameters ui are the unknowns.
 The tolerance required on this sum is given by Tol.
 The desired degree of the resulting curve is Deg.)nbdoc")
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, const double, const double, const int, const double, const double>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations"), nb::arg("lambda1"), nb::arg("lambda2"), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, const double, const double, const int, const double, const double>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations"), nb::arg("lambda1"), nb::arg("lambda2"), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
 where Pui describe the approximating BSpline curves'Poles
 and Qi the MultiLine points with a parameter ui.
 In this algorithm, the parameters ui are the unknowns.
@@ -568,7 +568,7 @@ new approximation.)nbdoc")
 new approximation.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_MyBSplGradientOfBSplineCompute>(nb::borrow<nb::class_<AppDef_MyBSplGradientOfBSplineCompute>>(m.attr("AppDef_MyBSplGradientOfBSplineCompute")));
     nb::borrow<nb::class_<AppDef_MyGradientbisOfBSplineCompute>>(m.attr("AppDef_MyGradientbisOfBSplineCompute"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(200), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(200), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
 where Pui describe the approximating Bezier curves'Poles
 and Qi the MultiLine points with a parameter ui.
 In this algorithm, the parameters ui are the unknowns.
@@ -589,7 +589,7 @@ new approximation.)nbdoc")
 new approximation.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_MyGradientbisOfBSplineCompute>(nb::borrow<nb::class_<AppDef_MyGradientbisOfBSplineCompute>>(m.attr("AppDef_MyGradientbisOfBSplineCompute")));
     nb::borrow<nb::class_<AppDef_MyGradientOfCompute>>(m.attr("AppDef_MyGradientOfCompute"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(200), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(200), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
 where Pui describe the approximating Bezier curves'Poles
 and Qi the MultiLine points with a parameter ui.
 In this algorithm, the parameters ui are the unknowns.
@@ -716,7 +716,7 @@ The values are non null from Index(ieme point) +1
 to Index(ieme point) + degree +1.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_ParLeastSquareOfMyGradientbisOfBSplineCompute>(nb::borrow<nb::class_<AppDef_ParLeastSquareOfMyGradientbisOfBSplineCompute>>(m.attr("AppDef_ParLeastSquareOfMyGradientbisOfBSplineCompute")));
     nb::borrow<nb::class_<AppDef_ParFunctionOfMyGradientbisOfBSplineCompute>>(m.attr("AppDef_ParFunctionOfMyGradientbisOfBSplineCompute"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)() const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
@@ -737,8 +737,8 @@ IPoint and the curve CurveIndex.)nbdoc")
 and the MultiCurve.)nbdoc")
         .def("MaxError2d", static_cast<double (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)() const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::MaxError2d), R"nbdoc(returns the maximum distance between the points
 and the MultiCurve.)nbdoc")
-        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::FirstConstraint), nb::arg("TheConstraints"), nb::arg("FirstPoint"))
-        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::LastConstraint), nb::arg("TheConstraints"), nb::arg("LastPoint"));
+        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::FirstConstraint), nb::arg("TheConstraints").none(), nb::arg("FirstPoint"))
+        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::LastConstraint), nb::arg("TheConstraints").none(), nb::arg("LastPoint"));
     nanoocp_implicit_copy_ctor<AppDef_ParFunctionOfMyGradientbisOfBSplineCompute>(nb::borrow<nb::class_<AppDef_ParFunctionOfMyGradientbisOfBSplineCompute>>(m.attr("AppDef_ParFunctionOfMyGradientbisOfBSplineCompute")));
     nb::borrow<nb::class_<AppDef_ParLeastSquareOfMyGradientOfCompute>>(m.attr("AppDef_ParLeastSquareOfMyGradientOfCompute"))
         .def(nb::init<const AppDef_MultiLine &, const int, const int, const AppParCurves_Constraint, const AppParCurves_Constraint, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("FirstCons"), nb::arg("LastCons"), nb::arg("NbPol"), R"nbdoc(Initializes the fields of the object.)nbdoc")
@@ -817,7 +817,7 @@ The values are non null from Index(ieme point) +1
 to Index(ieme point) + degree +1.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_ParLeastSquareOfMyGradientOfCompute>(nb::borrow<nb::class_<AppDef_ParLeastSquareOfMyGradientOfCompute>>(m.attr("AppDef_ParLeastSquareOfMyGradientOfCompute")));
     nb::borrow<nb::class_<AppDef_ParFunctionOfMyGradientOfCompute>>(m.attr("AppDef_ParFunctionOfMyGradientOfCompute"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_ParFunctionOfMyGradientOfCompute::*)() const>(&AppDef_ParFunctionOfMyGradientOfCompute::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
@@ -838,8 +838,8 @@ IPoint and the curve CurveIndex.)nbdoc")
 and the MultiCurve.)nbdoc")
         .def("MaxError2d", static_cast<double (AppDef_ParFunctionOfMyGradientOfCompute::*)() const>(&AppDef_ParFunctionOfMyGradientOfCompute::MaxError2d), R"nbdoc(returns the maximum distance between the points
 and the MultiCurve.)nbdoc")
-        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientOfCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientOfCompute::FirstConstraint), nb::arg("TheConstraints"), nb::arg("FirstPoint"))
-        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientOfCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientOfCompute::LastConstraint), nb::arg("TheConstraints"), nb::arg("LastPoint"));
+        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientOfCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientOfCompute::FirstConstraint), nb::arg("TheConstraints").none(), nb::arg("FirstPoint"))
+        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfMyGradientOfCompute::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfMyGradientOfCompute::LastConstraint), nb::arg("TheConstraints").none(), nb::arg("LastPoint"));
     nanoocp_implicit_copy_ctor<AppDef_ParFunctionOfMyGradientOfCompute>(nb::borrow<nb::class_<AppDef_ParFunctionOfMyGradientOfCompute>>(m.attr("AppDef_ParFunctionOfMyGradientOfCompute")));
     nb::borrow<nb::class_<AppDef_ParLeastSquareOfTheGradient>>(m.attr("AppDef_ParLeastSquareOfTheGradient"))
         .def(nb::init<const AppDef_MultiLine &, const int, const int, const AppParCurves_Constraint, const AppParCurves_Constraint, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("FirstCons"), nb::arg("LastCons"), nb::arg("NbPol"), R"nbdoc(Initializes the fields of the object.)nbdoc")
@@ -918,7 +918,7 @@ The values are non null from Index(ieme point) +1
 to Index(ieme point) + degree +1.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_ParLeastSquareOfTheGradient>(nb::borrow<nb::class_<AppDef_ParLeastSquareOfTheGradient>>(m.attr("AppDef_ParLeastSquareOfTheGradient")));
     nb::borrow<nb::class_<AppDef_ParFunctionOfTheGradient>>(m.attr("AppDef_ParFunctionOfTheGradient"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_ParFunctionOfTheGradient::*)() const>(&AppDef_ParFunctionOfTheGradient::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
@@ -939,11 +939,11 @@ IPoint and the curve CurveIndex.)nbdoc")
 and the MultiCurve.)nbdoc")
         .def("MaxError2d", static_cast<double (AppDef_ParFunctionOfTheGradient::*)() const>(&AppDef_ParFunctionOfTheGradient::MaxError2d), R"nbdoc(returns the maximum distance between the points
 and the MultiCurve.)nbdoc")
-        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfTheGradient::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfTheGradient::FirstConstraint), nb::arg("TheConstraints"), nb::arg("FirstPoint"))
-        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfTheGradient::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfTheGradient::LastConstraint), nb::arg("TheConstraints"), nb::arg("LastPoint"));
+        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfTheGradient::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfTheGradient::FirstConstraint), nb::arg("TheConstraints").none(), nb::arg("FirstPoint"))
+        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_ParFunctionOfTheGradient::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_ParFunctionOfTheGradient::LastConstraint), nb::arg("TheConstraints").none(), nb::arg("LastPoint"));
     nanoocp_implicit_copy_ctor<AppDef_ParFunctionOfTheGradient>(nb::borrow<nb::class_<AppDef_ParFunctionOfTheGradient>>(m.attr("AppDef_ParFunctionOfTheGradient")));
     nb::borrow<nb::class_<AppDef_ResConstraintOfMyGradientbisOfBSplineCompute>>(m.attr("AppDef_ResConstraintOfMyGradientbisOfBSplineCompute"))
-        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints"), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
+        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints").none(), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
 algorithm finds the best curve solution to approximate it.
 The poles from SCurv issued for example from the least
 squares are used as a guess solution for the uzawa
@@ -961,7 +961,7 @@ The MultiCurve is modified. New MultiPoles are given.)nbdoc")
 Cont is the constraint matrix for the algorithm.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_ResConstraintOfMyGradientbisOfBSplineCompute>(nb::borrow<nb::class_<AppDef_ResConstraintOfMyGradientbisOfBSplineCompute>>(m.attr("AppDef_ResConstraintOfMyGradientbisOfBSplineCompute")));
     nb::borrow<nb::class_<AppDef_ResConstraintOfMyGradientOfCompute>>(m.attr("AppDef_ResConstraintOfMyGradientOfCompute"))
-        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints"), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
+        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints").none(), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
 algorithm finds the best curve solution to approximate it.
 The poles from SCurv issued for example from the least
 squares are used as a guess solution for the uzawa
@@ -979,7 +979,7 @@ The MultiCurve is modified. New MultiPoles are given.)nbdoc")
 Cont is the constraint matrix for the algorithm.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_ResConstraintOfMyGradientOfCompute>(nb::borrow<nb::class_<AppDef_ResConstraintOfMyGradientOfCompute>>(m.attr("AppDef_ResConstraintOfMyGradientOfCompute")));
     nb::borrow<nb::class_<AppDef_ResConstraintOfTheGradient>>(m.attr("AppDef_ResConstraintOfTheGradient"))
-        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints"), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
+        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints").none(), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
 algorithm finds the best curve solution to approximate it.
 The poles from SCurv issued for example from the least
 squares are used as a guess solution for the uzawa
@@ -1073,7 +1073,7 @@ The values are non null from Index(ieme point) +1
 to Index(ieme point) + degree +1.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_TheLeastSquares>(nb::borrow<nb::class_<AppDef_TheLeastSquares>>(m.attr("AppDef_TheLeastSquares")));
     nb::borrow<nb::class_<AppDef_TheFunction>>(m.attr("AppDef_TheFunction"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Vector &, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Deg"), R"nbdoc(initializes the fields of the function. The approximating
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_TheFunction::*)() const>(&AppDef_TheFunction::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
@@ -1094,11 +1094,11 @@ IPoint and the curve CurveIndex.)nbdoc")
 and the MultiCurve.)nbdoc")
         .def("MaxError2d", static_cast<double (AppDef_TheFunction::*)() const>(&AppDef_TheFunction::MaxError2d), R"nbdoc(returns the maximum distance between the points
 and the MultiCurve.)nbdoc")
-        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_TheFunction::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_TheFunction::FirstConstraint), nb::arg("TheConstraints"), nb::arg("FirstPoint"))
-        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_TheFunction::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_TheFunction::LastConstraint), nb::arg("TheConstraints"), nb::arg("LastPoint"));
+        .def("FirstConstraint", static_cast<AppParCurves_Constraint (AppDef_TheFunction::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_TheFunction::FirstConstraint), nb::arg("TheConstraints").none(), nb::arg("FirstPoint"))
+        .def("LastConstraint", static_cast<AppParCurves_Constraint (AppDef_TheFunction::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int) const>(&AppDef_TheFunction::LastConstraint), nb::arg("TheConstraints").none(), nb::arg("LastPoint"));
     nanoocp_implicit_copy_ctor<AppDef_TheFunction>(nb::borrow<nb::class_<AppDef_TheFunction>>(m.attr("AppDef_TheFunction")));
     nb::borrow<nb::class_<AppDef_TheGradient>>(m.attr("AppDef_TheGradient"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("Parameters"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(200), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, math_Vector &, const int, const double, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("Parameters"), nb::arg("Deg"), nb::arg("Tol3d"), nb::arg("Tol2d"), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(200), R"nbdoc(Tries to minimize the sum (square(||Qui - Bi*Pi||))
 where Pui describe the approximating Bezier curves'Poles
 and Qi the MultiLine points with a parameter ui.
 In this algorithm, the parameters ui are the unknowns.
@@ -1119,7 +1119,7 @@ new approximation.)nbdoc")
 new approximation.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_TheGradient>(nb::borrow<nb::class_<AppDef_TheGradient>>(m.attr("AppDef_TheGradient")));
     nb::borrow<nb::class_<AppDef_TheResol>>(m.attr("AppDef_TheResol"))
-        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints"), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
+        .def(nb::init<const AppDef_MultiLine &, AppParCurves_MultiCurve &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const math_Matrix &, const math_Matrix &, const double>(), nb::arg("SSP"), nb::arg("SCurv"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("Constraints").none(), nb::arg("Bern"), nb::arg("DerivativeBern"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-10), R"nbdoc(Given a MultiLine SSP with constraints points, this
 algorithm finds the best curve solution to approximate it.
 The poles from SCurv issued for example from the least
 squares are used as a guess solution for the uzawa
@@ -1137,7 +1137,7 @@ The MultiCurve is modified. New MultiPoles are given.)nbdoc")
 Cont is the constraint matrix for the algorithm.)nbdoc");
     nanoocp_implicit_copy_ctor<AppDef_TheResol>(nb::borrow<nb::class_<AppDef_TheResol>>(m.attr("AppDef_TheResol")));
     nb::borrow<nb::class_<AppDef_Variational>>(m.attr("AppDef_Variational"))
-        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int, const int, const GeomAbs_Shape, const bool, const bool, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints"), nb::arg("MaxDegree") = static_cast<std::decay_t<const int>>(14), nb::arg("MaxSegment") = static_cast<std::decay_t<const int>>(100), nb::arg("Continuity") = static_cast<std::decay_t<const GeomAbs_Shape>>(GeomAbs_C2), nb::arg("WithMinMax") = static_cast<std::decay_t<const bool>>(false), nb::arg("WithCutting") = static_cast<std::decay_t<const bool>>(true), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(2), R"nbdoc(Constructor.
+        .def(nb::init<const AppDef_MultiLine &, const int, const int, const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &, const int, const int, const GeomAbs_Shape, const bool, const bool, const double, const int>(), nb::arg("SSP"), nb::arg("FirstPoint"), nb::arg("LastPoint"), nb::arg("TheConstraints").none(), nb::arg("MaxDegree") = static_cast<std::decay_t<const int>>(14), nb::arg("MaxSegment") = static_cast<std::decay_t<const int>>(100), nb::arg("Continuity") = static_cast<std::decay_t<const GeomAbs_Shape>>(GeomAbs_C2), nb::arg("WithMinMax") = static_cast<std::decay_t<const bool>>(false), nb::arg("WithCutting") = static_cast<std::decay_t<const bool>>(true), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(2), R"nbdoc(Constructor.
 Initialization of the fields.
 Warning:
 Nc0 : number of PassagePoint consraints
@@ -1186,11 +1186,11 @@ maximum Error or not.)nbdoc")
 of the object.
 MaxError,MaxErrorIndex,AverageError,QuadraticError,Criterium
 Distances,Degre,Nombre de poles, parametres, noeuds)nbdoc")
-        .def("SetConstraints", static_cast<bool (AppDef_Variational::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &)>(&AppDef_Variational::SetConstraints), nb::arg("aConstrainst"), R"nbdoc(Define the constraints to approximate
+        .def("SetConstraints", static_cast<bool (AppDef_Variational::*)(const occ::handle<NCollection_HArray1<AppParCurves_ConstraintCouple>> &)>(&AppDef_Variational::SetConstraints), nb::arg("aConstrainst").none(), R"nbdoc(Define the constraints to approximate
 If this value is incompatible with the others fields
 this method modify nothing and returns false)nbdoc")
-        .def("SetParameters", static_cast<void (AppDef_Variational::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_Variational::SetParameters), nb::arg("param"), R"nbdoc(Defines the parameters used by the approximations.)nbdoc")
-        .def("SetKnots", static_cast<bool (AppDef_Variational::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_Variational::SetKnots), nb::arg("knots"), R"nbdoc(Defines the knots used by the approximations
+        .def("SetParameters", static_cast<void (AppDef_Variational::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_Variational::SetParameters), nb::arg("param").none(), R"nbdoc(Defines the parameters used by the approximations.)nbdoc")
+        .def("SetKnots", static_cast<bool (AppDef_Variational::*)(const occ::handle<NCollection_HArray1<double>> &)>(&AppDef_Variational::SetKnots), nb::arg("knots").none(), R"nbdoc(Defines the knots used by the approximations
 If this value is incompatible with the others fields
 this method modify nothing and returns false)nbdoc")
         .def("SetMaxDegree", static_cast<bool (AppDef_Variational::*)(const int)>(&AppDef_Variational::SetMaxDegree), nb::arg("Degree"), R"nbdoc(Define the Maximum Degree used in the approximation

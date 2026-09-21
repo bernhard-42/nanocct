@@ -133,7 +133,8 @@ A range can be void indicating there is no point included in the range.)nbdoc");
 @sa IsIntersected())nbdoc", nb::is_arithmetic())
           .value("IntersectStatus_Out", Bnd_Range::IntersectStatus_Out)
           .value("IntersectStatus_In", Bnd_Range::IntersectStatus_In)
-          .value("IntersectStatus_Boundary", Bnd_Range::IntersectStatus_Boundary);
+          .value("IntersectStatus_Boundary", Bnd_Range::IntersectStatus_Boundary)
+          .export_values();
     }
     { nb::class_<Bnd_Range::Bounds> cls(m.attr("Bnd_Range"), "Bounds", R"nbdoc(Structure containing the range bounds (Min, Max).
 Can be used with C++17 structured bindings:
@@ -508,9 +509,9 @@ using Add() method will be returned as is.)nbdoc")
     nb::borrow<nb::class_<Bnd_BoundSortBox>>(m.attr("Bnd_BoundSortBox"))
         .def(nb::init<>(), R"nbdoc(Constructs an empty comparison algorithm for bounding boxes.
 The bounding boxes are then defined using the Initialize function.)nbdoc")
-        .def("Initialize", static_cast<void (Bnd_BoundSortBox::*)(const occ::handle<NCollection_HArray1<Bnd_Box>> &)>(&Bnd_BoundSortBox::Initialize), nb::arg("theSetOfBoxes"), R"nbdoc(Initializes this comparison algorithm with the set of boxes.
+        .def("Initialize", static_cast<void (Bnd_BoundSortBox::*)(const occ::handle<NCollection_HArray1<Bnd_Box>> &)>(&Bnd_BoundSortBox::Initialize), nb::arg("theSetOfBoxes").none(), R"nbdoc(Initializes this comparison algorithm with the set of boxes.
 @param theSetOfBoxes The set of bounding boxes to be used by this algorithm.)nbdoc")
-        .def("Initialize", static_cast<void (Bnd_BoundSortBox::*)(const Bnd_Box &, const occ::handle<NCollection_HArray1<Bnd_Box>> &)>(&Bnd_BoundSortBox::Initialize), nb::arg("theEnclosingBox"), nb::arg("theSetOfBoxes"), R"nbdoc(Initializes this comparison algorithm with the set of boxes and the bounding box
+        .def("Initialize", static_cast<void (Bnd_BoundSortBox::*)(const Bnd_Box &, const occ::handle<NCollection_HArray1<Bnd_Box>> &)>(&Bnd_BoundSortBox::Initialize), nb::arg("theEnclosingBox"), nb::arg("theSetOfBoxes").none(), R"nbdoc(Initializes this comparison algorithm with the set of boxes and the bounding box
 that encloses all those boxes. This version of initialization can be used if complete
 box is known in advance to avoid calculating it again inside the algorithm.
 @param theEnclosingBox The bounding box that contains all the boxes in @p theSetOfBoxes.

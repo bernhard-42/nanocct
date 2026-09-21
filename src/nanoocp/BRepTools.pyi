@@ -203,7 +203,7 @@ class BRepTools:
         """
 
     @staticmethod
-    def LoadTriangulation(theShape: nanoocp.TopoDS.TopoDS_Shape, theTriangulationIdx: int = -1, theToSetAsActive: bool = False, theFileSystem: nanoocp.OSD.OSD_FileSystem = None) -> bool:
+    def LoadTriangulation(theShape: nanoocp.TopoDS.TopoDS_Shape, theTriangulationIdx: int = -1, theToSetAsActive: bool = False, theFileSystem: nanoocp.OSD.OSD_FileSystem | None = None) -> bool:
         """
         Loads triangulation data for each face of the shape
         from some deferred storage using specified shared input file system
@@ -250,7 +250,7 @@ class BRepTools:
         """
 
     @staticmethod
-    def LoadAllTriangulations(theShape: nanoocp.TopoDS.TopoDS_Shape, theFileSystem: nanoocp.OSD.OSD_FileSystem = None) -> bool:
+    def LoadAllTriangulations(theShape: nanoocp.TopoDS.TopoDS_Shape, theFileSystem: nanoocp.OSD.OSD_FileSystem | None = None) -> bool:
         """
         Loads all available triangulations for each face of the shape
         from some deferred storage using specified shared input file system
@@ -389,7 +389,7 @@ class BRepTools:
         """
 
     @staticmethod
-    def EvalAndUpdateTol(theE: nanoocp.TopoDS.TopoDS_Edge, theC3d: nanoocp.Geom.Geom_Curve, theC2d: nanoocp.Geom2d.Geom2d_Curve, theS: nanoocp.Geom.Geom_Surface, theF: float, theL: float) -> float:
+    def EvalAndUpdateTol(theE: nanoocp.TopoDS.TopoDS_Edge, theC3d: nanoocp.Geom.Geom_Curve | None, theC2d: nanoocp.Geom2d.Geom2d_Curve | None, theS: nanoocp.Geom.Geom_Surface | None, theF: float, theL: float) -> float:
         """
         Evals real tolerance of edge <theE>.
         <theC3d>, <theC2d>, <theS>, <theF>, <theL> are
@@ -433,7 +433,7 @@ class BRepTools_Modification(nanoocp.Standard.Standard_Transient):
     changes to faces, edges and vertices.
     """
 
-    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float, bool, bool]:
+    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Surface, float, bool, bool]:
         """
         Returns true if the face, F, has been modified.
         If the face has been modified:
@@ -450,14 +450,14 @@ class BRepTools_Modification(nanoocp.Standard.Standard_Transient):
         RevFace are not significant.
         """
 
-    def NewTriangulation(self, F: nanoocp.TopoDS.TopoDS_Face, T: nanoocp.Poly.Poly_Triangulation) -> bool:
+    def NewTriangulation(self, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_Triangulation]:
         """
         Returns true if the face has been modified according to changed triangulation.
         If the face has been modified:
         - T is a new triangulation on the face
         """
 
-    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float]:
+    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Curve, float]:
         """
         Returns true if the edge, E, has been modified.
         If the edge has been modified:
@@ -468,14 +468,14 @@ class BRepTools_Modification(nanoocp.Standard.Standard_Transient):
         returns false, and the values of C, L and Tol are not significant.
         """
 
-    def NewPolygon(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D) -> bool:
+    def NewPolygon(self, E: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, nanoocp.Poly.Poly_Polygon3D]:
         """
         Returns true if the edge has been modified according to changed polygon.
         If the edge has been modified:
         - P is a new polygon
         """
 
-    def NewPolygonOnTriangulation(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, P: nanoocp.Poly.Poly_PolygonOnTriangulation) -> bool:
+    def NewPolygonOnTriangulation(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_PolygonOnTriangulation]:
         """
         Returns true if the edge has been modified according to changed polygon on triangulation.
         If the edge has been modified:
@@ -492,7 +492,7 @@ class BRepTools_Modification(nanoocp.Standard.Standard_Transient):
         returns false, and the values of P and Tol are not significant.
         """
 
-    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face, C: nanoocp.Geom2d.Geom2d_Curve) -> tuple[bool, float]:
+    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Geom2d.Geom2d_Curve, float]:
         """
         Returns true if the edge, E, has a new curve on
         surface on the face, F.
@@ -549,7 +549,7 @@ class BRepTools_CopyModification(BRepTools_Modification):
     @overload
     def __init__(self, theOther: BRepTools_CopyModification) -> None: ...
 
-    def NewSurface(self, theFace: nanoocp.TopoDS.TopoDS_Face, theSurf: nanoocp.Geom.Geom_Surface, theLoc: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float, bool, bool]:
+    def NewSurface(self, theFace: nanoocp.TopoDS.TopoDS_Face, theLoc: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Surface, float, bool, bool]:
         """
         Returns true if theFace has been modified.
         If the face has been modified:
@@ -559,7 +559,7 @@ class BRepTools_CopyModification(BRepTools_Modification):
         theRevWires, theRevFace are always set to false, because the orientation is not changed.
         """
 
-    def NewCurve(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theCurve: nanoocp.Geom.Geom_Curve, theLoc: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float]:
+    def NewCurve(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theLoc: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Curve, float]:
         """
         Returns true if theEdge has been modified.
         If the edge has been modified:
@@ -580,7 +580,7 @@ class BRepTools_CopyModification(BRepTools_Modification):
         returns false, and the values of thePnt and theTol are not significant.
         """
 
-    def NewCurve2d(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face, theNewEdge: nanoocp.TopoDS.TopoDS_Edge, theNewFace: nanoocp.TopoDS.TopoDS_Face, theCurve: nanoocp.Geom2d.Geom2d_Curve) -> tuple[bool, float]:
+    def NewCurve2d(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face, theNewEdge: nanoocp.TopoDS.TopoDS_Edge, theNewFace: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Geom2d.Geom2d_Curve, float]:
         """
         Returns true if theEdge has a new curve on surface on theFace.
         If a new curve exists:
@@ -608,21 +608,21 @@ class BRepTools_CopyModification(BRepTools_Modification):
         (resp. theNewFace2) is the new face created from theFace1 (resp. theFace2).
         """
 
-    def NewTriangulation(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTri: nanoocp.Poly.Poly_Triangulation) -> bool:
+    def NewTriangulation(self, theFace: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_Triangulation]:
         """
         Returns true if the face has been modified according to changed triangulation.
         If the face has been modified:
         - theTri is a new triangulation on the face
         """
 
-    def NewPolygon(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, thePoly: nanoocp.Poly.Poly_Polygon3D) -> bool:
+    def NewPolygon(self, theEdge: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, nanoocp.Poly.Poly_Polygon3D]:
         """
         Returns true if the edge has been modified according to changed polygon.
         If the edge has been modified:
         - thePoly is a new polygon
         """
 
-    def NewPolygonOnTriangulation(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face, thePoly: nanoocp.Poly.Poly_PolygonOnTriangulation) -> bool:
+    def NewPolygonOnTriangulation(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_PolygonOnTriangulation]:
         """
         Returns true if the edge has been modified according to changed polygon on triangulation.
         If the edge has been modified:
@@ -653,7 +653,7 @@ class BRepTools_GTrsfModification(BRepTools_Modification):
     def GTrsf(self) -> nanoocp.gp.gp_GTrsf:
         """Gives an access on the GTrsf."""
 
-    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float, bool, bool]:
+    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Surface, float, bool, bool]:
         """
         Returns true if the face <F> has been
         modified. In this case, <S> is the new geometric
@@ -668,7 +668,7 @@ class BRepTools_GTrsfModification(BRepTools_Modification):
         - gp_Trsf is negative.
         """
 
-    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float]:
+    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Curve, float]:
         """
         Returns true if the edge <E> has been
         modified. In this case, <C> is the new geometric
@@ -687,7 +687,7 @@ class BRepTools_GTrsfModification(BRepTools_Modification):
         are not significant.
         """
 
-    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face, C: nanoocp.Geom2d.Geom2d_Curve) -> tuple[bool, float]:
+    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Geom2d.Geom2d_Curve, float]:
         """
         Returns true if the edge <E> has a new
         curve on surface on the face <F>.In this case, <C>
@@ -716,21 +716,21 @@ class BRepTools_GTrsfModification(BRepTools_Modification):
         (resp. <F2>).
         """
 
-    def NewTriangulation(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTri: nanoocp.Poly.Poly_Triangulation) -> bool:
+    def NewTriangulation(self, theFace: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_Triangulation]:
         """
         Returns true if the face has been modified according to changed triangulation.
         If the face has been modified:
         - theTri is a new triangulation on the face
         """
 
-    def NewPolygon(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, thePoly: nanoocp.Poly.Poly_Polygon3D) -> bool:
+    def NewPolygon(self, theEdge: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, nanoocp.Poly.Poly_Polygon3D]:
         """
         Returns true if the edge has been modified according to changed polygon.
         If the edge has been modified:
         - thePoly is a new polygon
         """
 
-    def NewPolygonOnTriangulation(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face, thePoly: nanoocp.Poly.Poly_PolygonOnTriangulation) -> bool:
+    def NewPolygonOnTriangulation(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_PolygonOnTriangulation]:
         """
         Returns true if the edge has been modified according to changed polygon on triangulation.
         If the edge has been modified:
@@ -830,6 +830,12 @@ class BRepTools_History(nanoocp.Standard.Standard_Transient):
 
         TRelationType_Modified = 2
 
+    TRelationType_Removed: BRepTools_History.TRelationType = TRelationType.TRelationType_Removed
+
+    TRelationType_Generated: BRepTools_History.TRelationType = TRelationType.TRelationType_Generated
+
+    TRelationType_Modified: BRepTools_History.TRelationType = TRelationType.TRelationType_Modified
+
     @staticmethod
     def IsSupportedType(theShape: nanoocp.TopoDS.TopoDS_Shape) -> bool:
         """Returns 'true' if the type of the shape is supported by the history."""
@@ -877,7 +883,7 @@ class BRepTools_History(nanoocp.Standard.Standard_Transient):
         """Returns 'true' if there any removed shapes present"""
 
     @overload
-    def Merge(self, theHistory23: BRepTools_History) -> None:
+    def Merge(self, theHistory23: BRepTools_History | None) -> None:
         """
         A method to merge a next history to this history.
         Merges the next history to this history.
@@ -916,7 +922,7 @@ class BRepTools_Modifier:
         """Creates a modifier on the shape <S>."""
 
     @overload
-    def __init__(self, S: nanoocp.TopoDS.TopoDS_Shape, M: BRepTools_Modification) -> None:
+    def __init__(self, S: nanoocp.TopoDS.TopoDS_Shape, M: BRepTools_Modification | None) -> None:
         """
         Creates a modifier on the shape <S>, and performs
         the modifications described by <M>.
@@ -928,7 +934,7 @@ class BRepTools_Modifier:
     def Init(self, S: nanoocp.TopoDS.TopoDS_Shape) -> None:
         """Initializes the modifier with the shape <S>."""
 
-    def Perform(self, M: BRepTools_Modification, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> None:
+    def Perform(self, M: BRepTools_Modification | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> None:
         """Performs the modifications described by <M>."""
 
     def IsDone(self) -> bool:
@@ -963,7 +969,7 @@ class BRepTools_NurbsConvertModification(BRepTools_CopyModification):
     @overload
     def __init__(self, theOther: BRepTools_NurbsConvertModification) -> None: ...
 
-    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float, bool, bool]:
+    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Surface, float, bool, bool]:
         """
         Returns true if the face <F> has been
         modified. In this case, <S> is the new geometric
@@ -978,7 +984,7 @@ class BRepTools_NurbsConvertModification(BRepTools_CopyModification):
         - gp_Trsf is negative.
         """
 
-    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float]:
+    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Curve, float]:
         """
         Returns true if the edge <E> has been
         modified. In this case, <C> is the new geometric
@@ -997,7 +1003,7 @@ class BRepTools_NurbsConvertModification(BRepTools_CopyModification):
         are not significant.
         """
 
-    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face, C: nanoocp.Geom2d.Geom2d_Curve) -> tuple[bool, float]:
+    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Geom2d.Geom2d_Curve, float]:
         """
         Returns true if the edge <E> has a new
         curve on surface on the face <F>.In this case, <C>
@@ -1026,21 +1032,21 @@ class BRepTools_NurbsConvertModification(BRepTools_CopyModification):
         (resp. <F2>).
         """
 
-    def NewTriangulation(self, theFace: nanoocp.TopoDS.TopoDS_Face, theTri: nanoocp.Poly.Poly_Triangulation) -> bool:
+    def NewTriangulation(self, theFace: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_Triangulation]:
         """
         Returns true if the face has been modified according to changed triangulation.
         If the face has been modified:
         - theTri is a new triangulation on the face
         """
 
-    def NewPolygon(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, thePoly: nanoocp.Poly.Poly_Polygon3D) -> bool:
+    def NewPolygon(self, theEdge: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, nanoocp.Poly.Poly_Polygon3D]:
         """
         Returns true if the edge has been modified according to changed polygon.
         If the edge has been modified:
         - thePoly is a new polygon
         """
 
-    def NewPolygonOnTriangulation(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face, thePoly: nanoocp.Poly.Poly_PolygonOnTriangulation) -> bool:
+    def NewPolygonOnTriangulation(self, theEdge: nanoocp.TopoDS.TopoDS_Edge, theFace: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_PolygonOnTriangulation]:
         """
         Returns true if the edge has been modified according to changed polygon on triangulation.
         If the edge has been modified:
@@ -1463,7 +1469,7 @@ class BRepTools_TrsfModification(BRepTools_Modification):
         Python addition: sets the value IsCopyMesh() returns by reference in C++.
         """
 
-    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, S: nanoocp.Geom.Geom_Surface, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float, bool, bool]:
+    def NewSurface(self, F: nanoocp.TopoDS.TopoDS_Face, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Surface, float, bool, bool]:
         """
         Returns true if the face F has been modified.
         If the face has been modified:
@@ -1478,28 +1484,28 @@ class BRepTools_TrsfModification(BRepTools_Modification):
         associated with this modification is negative.
         """
 
-    def NewTriangulation(self, F: nanoocp.TopoDS.TopoDS_Face, T: nanoocp.Poly.Poly_Triangulation) -> bool:
+    def NewTriangulation(self, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_Triangulation]:
         """
         Returns true if the face has been modified according to changed triangulation.
         If the face has been modified:
         - T is a new triangulation on the face
         """
 
-    def NewPolygon(self, E: nanoocp.TopoDS.TopoDS_Edge, P: nanoocp.Poly.Poly_Polygon3D) -> bool:
+    def NewPolygon(self, E: nanoocp.TopoDS.TopoDS_Edge) -> tuple[bool, nanoocp.Poly.Poly_Polygon3D]:
         """
         Returns true if the edge has been modified according to changed polygon.
         If the edge has been modified:
         - P is a new polygon
         """
 
-    def NewPolygonOnTriangulation(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, P: nanoocp.Poly.Poly_PolygonOnTriangulation) -> bool:
+    def NewPolygonOnTriangulation(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Poly.Poly_PolygonOnTriangulation]:
         """
         Returns true if the edge has been modified according to changed polygon on triangulation.
         If the edge has been modified:
         - P is a new polygon on triangulation
         """
 
-    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, C: nanoocp.Geom.Geom_Curve, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, float]:
+    def NewCurve(self, E: nanoocp.TopoDS.TopoDS_Edge, L: nanoocp.TopLoc.TopLoc_Location) -> tuple[bool, nanoocp.Geom.Geom_Curve, float]:
         """
         Always returns true indicating that the edge E is always modified.
         - C is the new geometric support of the edge,
@@ -1517,7 +1523,7 @@ class BRepTools_TrsfModification(BRepTools_Modification):
         returns false, and the values of P and Tol are not significant.
         """
 
-    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face, C: nanoocp.Geom2d.Geom2d_Curve) -> tuple[bool, float]:
+    def NewCurve2d(self, E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face, NewE: nanoocp.TopoDS.TopoDS_Edge, NewF: nanoocp.TopoDS.TopoDS_Face) -> tuple[bool, nanoocp.Geom2d.Geom2d_Curve, float]:
         """
         Returns true if the edge E has a new curve on surface on the face F.
         If a new curve exists:

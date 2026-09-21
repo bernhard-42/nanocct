@@ -71,6 +71,28 @@ class TopoDS_TShape(nanoocp.Standard.Standard_Transient):
 
         Bits_Reserved = 61440
 
+    Bits_ShapeType_Mask: TopoDS_TShape.BitLayout = BitLayout.Bits_ShapeType_Mask
+
+    Bits_ShapeType_Shift: TopoDS_TShape.BitLayout = BitLayout.Bits_ShapeType_Shift
+
+    Bit_Free: TopoDS_TShape.BitLayout = BitLayout.Bit_Free
+
+    Bit_Modified: TopoDS_TShape.BitLayout = BitLayout.Bit_Modified
+
+    Bit_Checked: TopoDS_TShape.BitLayout = BitLayout.Bit_Checked
+
+    Bit_Orientable: TopoDS_TShape.BitLayout = BitLayout.Bit_Orientable
+
+    Bit_Closed: TopoDS_TShape.BitLayout = BitLayout.Bit_Closed
+
+    Bit_Infinite: TopoDS_TShape.BitLayout = BitLayout.Bit_Infinite
+
+    Bit_Convex: TopoDS_TShape.BitLayout = BitLayout.Bit_Convex
+
+    Bit_Locked: TopoDS_TShape.BitLayout = BitLayout.Bit_Locked
+
+    Bits_Reserved: TopoDS_TShape.BitLayout = BitLayout.Bits_Reserved
+
     @overload
     def Free(self) -> bool:
         """Returns the free flag."""
@@ -236,7 +258,7 @@ class TopoDS_Shape:
         """Returns a handle to the actual shape implementation."""
 
     @overload
-    def TShape(self, theTShape: TopoDS_TShape) -> None: ...
+    def TShape(self, theTShape: TopoDS_TShape | None) -> None: ...
 
     def ShapeType(self) -> nanoocp.TopAbs.TopAbs_ShapeEnum:
         """
@@ -436,7 +458,7 @@ class TopoDS_AlertAttribute(nanoocp.Message.Message_AttributeStream):
         """Returns contained shape"""
 
     @staticmethod
-    def Send(theMessenger: nanoocp.Message.Message_Messenger, theShape: TopoDS_Shape) -> None:
+    def Send(theMessenger: nanoocp.Message.Message_Messenger | None, theShape: TopoDS_Shape) -> None:
         """Push shape information into messenger"""
 
     def DumpJson(self, theDepth: int = -1) -> object:
@@ -985,7 +1007,7 @@ class TopoDS_AlertWithShape(nanoocp.Message.Message_Alert):
     def SupportsMerge(self) -> bool:
         """Returns false."""
 
-    def Merge(self, theTarget: nanoocp.Message.Message_Alert) -> bool:
+    def Merge(self, theTarget: nanoocp.Message.Message_Alert | None) -> bool:
         """Returns false."""
 
     @staticmethod

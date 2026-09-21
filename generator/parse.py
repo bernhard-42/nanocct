@@ -135,7 +135,9 @@ def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | 
         for i, tok in enumerate(expr):
             if tok == target.spelling and (i == 0 or expr[i - 1] != "::"):
                 expr[i] = qualified
-    return _apply_subst(" ".join(expr))          # template parameters in defaults (Element_t(0)) while instantiating.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
+    joined = _apply_subst(" ".join(expr))        # template parameters in defaults (Element_t(0)) while instantiating
+    # the tokens are joined with spaces; tidy the spelling (`Message_ProgressRange ( )` -> `Message_ProgressRange()`)
+    return joined.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
 
 
 def _scope_qualified(decl: cindex.Cursor, need_namespace: bool) -> str | None:
@@ -193,13 +195,28 @@ def _is_scalar(t: cindex.Type) -> bool:
     return False
 
 
+def _is_handle(t: cindex.Type) -> bool:
+    """opencascade::handle<T>, possibly behind const/&."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind != TK.RECORD:
+        return False
+    decl = canon.get_declaration()
+    return decl.kind != K.NO_DECL_FOUND and decl.spelling == "handle" and canon.get_num_template_arguments() == 1
+
+
 def _is_out_param(t: cindex.Type) -> bool:
+    """Non-const lvalue reference to a primitive or to a handle<T>: the callee writes it, Python gets it back in the
+    result tuple. A handle<T>& is an out-parameter because the caster hands the callee a temporary handle, so a
+    handle assigned by the callee (GeomTools::Read(handle<Geom_Curve>&, ...)) would otherwise be lost silently;
+    in/out cases are listed in overrides.toml [inout] exactly as for double&."""
     if t.kind != TK.LVALUEREFERENCE:
         return False
     pointee = t.get_pointee()
     if pointee.is_const_qualified():
         return False
-    return pointee.get_canonical().kind in _PRIMITIVE_KINDS
+    return pointee.get_canonical().kind in _PRIMITIVE_KINDS or _is_handle(pointee)
 
 
 _subst: dict[str, str] = {}          # template parameter -> argument while walking a class template (alias instantiation)
@@ -466,7 +483,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
         params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=is_out, is_inout=is_out and inout,
-                            class_name=_class_behind(p.type), stream=stream))
+                            class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type)))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None

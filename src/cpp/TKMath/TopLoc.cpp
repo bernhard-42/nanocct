@@ -70,7 +70,7 @@ raised if the Trsf is not a rigid transformation.)nbdoc")
     nanoocp_implicit_copy_ctor<TopLoc_Datum3D>(nb::borrow<nb::class_<TopLoc_Datum3D>>(m.attr("TopLoc_Datum3D")));
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, TopLoc_Datum3D>();
     nb::borrow<nb::class_<TopLoc_ItemLocation>>(m.attr("TopLoc_ItemLocation"))
-        .def(nb::init<const occ::handle<TopLoc_Datum3D> &, const int>(), nb::arg("D"), nb::arg("P"), R"nbdoc(Sets the elementary Datum to <D>
+        .def(nb::init<const occ::handle<TopLoc_Datum3D> &, const int>(), nb::arg("D").none(), nb::arg("P"), R"nbdoc(Sets the elementary Datum to <D>
 Sets the exponent to <P>)nbdoc")
         .def("DumpJson", [](const TopLoc_ItemLocation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<TopLoc_ItemLocation>(nb::borrow<nb::class_<TopLoc_ItemLocation>>(m.attr("TopLoc_ItemLocation")));
@@ -99,7 +99,7 @@ Note: A Location constructed from a default datum is said to be "empty".)nbdoc")
         .def(nb::init<const TopLoc_Location &>(), nb::arg("theOther"), R"nbdoc(Copy constructor.)nbdoc")
         .def(nb::init<const gp_Trsf &>(), nb::arg("T"), R"nbdoc(Constructs the local coordinate system object defined
 by the transformation T. T invokes in turn, a TopLoc_Datum3D object.)nbdoc")
-        .def(nb::init<const occ::handle<TopLoc_Datum3D> &>(), nb::arg("D"), R"nbdoc(Constructs the local coordinate system object defined by the 3D datum D.
+        .def(nb::init<const occ::handle<TopLoc_Datum3D> &>(), nb::arg("D").none(), R"nbdoc(Constructs the local coordinate system object defined by the 3D datum D.
 Exceptions
 Standard_ConstructionError if the transformation
 T does not represent a 3D coordinate system.)nbdoc")
@@ -161,7 +161,7 @@ This method is an alias for operator !=.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopLoc_SListNodeOfItemLocation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopLoc_SListNodeOfItemLocation::*)() const>(&TopLoc_SListNodeOfItemLocation::DynamicType));
     nanoocp_implicit_copy_ctor<TopLoc_SListNodeOfItemLocation>(nb::borrow<nb::class_<TopLoc_SListNodeOfItemLocation>>(m.attr("TopLoc_SListNodeOfItemLocation")));
-    m.def("ShallowDump", [](const occ::handle<TopLoc_Datum3D> & me) { std::ostringstream S_stream; ShallowDump(me, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("me"));
+    m.def("ShallowDump", [](const occ::handle<TopLoc_Datum3D> & me) { std::ostringstream S_stream; ShallowDump(me, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("me").none());
 }
 
 void nanoocp_conversions_TopLoc(nb::module_ &m) {

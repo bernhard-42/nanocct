@@ -30,6 +30,20 @@ class CSLib_DerivativeStatus(enum.IntEnum):
 
     CSLib_D1uIsParallelD1v = 6
 
+CSLib_Done: CSLib_DerivativeStatus = CSLib_DerivativeStatus.CSLib_Done
+
+CSLib_D1uIsNull: CSLib_DerivativeStatus = CSLib_DerivativeStatus.CSLib_D1uIsNull
+
+CSLib_D1vIsNull: CSLib_DerivativeStatus = CSLib_DerivativeStatus.CSLib_D1vIsNull
+
+CSLib_D1IsNull: CSLib_DerivativeStatus = CSLib_DerivativeStatus.CSLib_D1IsNull
+
+CSLib_D1uD1vRatioIsNull: CSLib_DerivativeStatus = CSLib_DerivativeStatus.CSLib_D1uD1vRatioIsNull
+
+CSLib_D1vD1uRatioIsNull: CSLib_DerivativeStatus = CSLib_DerivativeStatus.CSLib_D1vD1uRatioIsNull
+
+CSLib_D1uIsParallelD1v: CSLib_DerivativeStatus = CSLib_DerivativeStatus.CSLib_D1uIsParallelD1v
+
 class CSLib_NormalStatus(enum.IntEnum):
     """
     Status of surface normal computation.
@@ -55,6 +69,24 @@ class CSLib_NormalStatus(enum.IntEnum):
     CSLib_D1NvNuRatioIsNull = 7
 
     CSLib_D1NuIsParallelD1Nv = 8
+
+CSLib_Singular: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_Singular
+
+CSLib_Defined: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_Defined
+
+CSLib_InfinityOfSolutions: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_InfinityOfSolutions
+
+CSLib_D1NuIsNull: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_D1NuIsNull
+
+CSLib_D1NvIsNull: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_D1NvIsNull
+
+CSLib_D1NIsNull: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_D1NIsNull
+
+CSLib_D1NuNvRatioIsNull: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_D1NuNvRatioIsNull
+
+CSLib_D1NvNuRatioIsNull: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_D1NvNuRatioIsNull
+
+CSLib_D1NuIsParallelD1Nv: CSLib_NormalStatus = CSLib_NormalStatus.CSLib_D1NuIsParallelD1Nv
 
 class CSLib:
     """
@@ -277,6 +309,12 @@ class CSLib_Class2d:
         Result_Outside = -1
 
         Result_Uncertain = 0
+
+    Result_Inside: CSLib_Class2d.Result = Result.Result_Inside
+
+    Result_Outside: CSLib_Class2d.Result = Result.Result_Outside
+
+    Result_Uncertain: CSLib_Class2d.Result = Result.Result_Uncertain
 
     def SiDans(self, thePoint: nanoocp.gp.gp_Pnt2d) -> CSLib_Class2d.Result:
         """

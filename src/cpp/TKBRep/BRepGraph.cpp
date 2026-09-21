@@ -2194,7 +2194,7 @@ NodeKind is set to Kind::Solid but is meaningless when !IsValid().)nbdoc")
         .def_static("IsTopologyKind", static_cast<bool (*)(const BRepGraph_NodeId::Kind)>(&BRepGraph_NodeId::IsTopologyKind), nb::arg("theKind"), R"nbdoc(True if the kind is a core topology kind (Solid..CoEdge).)nbdoc")
         .def_static("IsAssemblyKind", static_cast<bool (*)(const BRepGraph_NodeId::Kind)>(&BRepGraph_NodeId::IsAssemblyKind), nb::arg("theKind"), R"nbdoc(True if the kind is an assembly kind (Product or Occurrence).)nbdoc")
         .def_static("Start", static_cast<BRepGraph_NodeId (*)(const BRepGraph_NodeId::Kind)>(&BRepGraph_NodeId::Start), nb::arg("theKind"), R"nbdoc(First valid id in a dense sequence for the specified kind.)nbdoc")
-        .def_static("Invalid", static_cast<BRepGraph_NodeId (*)(const BRepGraph_NodeId::Kind)>(&BRepGraph_NodeId::Invalid), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_NodeId::Kind>>(BRepGraph_NodeId::Kind :: Solid), R"nbdoc(Invalid sentinel id for the specified kind.)nbdoc")
+        .def_static("Invalid", static_cast<BRepGraph_NodeId (*)(const BRepGraph_NodeId::Kind)>(&BRepGraph_NodeId::Invalid), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_NodeId::Kind>>(BRepGraph_NodeId::Kind::Solid), R"nbdoc(Invalid sentinel id for the specified kind.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_NodeId::*)() const>(&BRepGraph_NodeId::IsValid), R"nbdoc(True if this id points to an allocated node slot.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_NodeId::*)(const uint32_t) const>(&BRepGraph_NodeId::IsValid), nb::arg("theMaxCount"), R"nbdoc(True if this id points to an allocated slot within [0, theMaxCount).
 UINT32_MAX (invalid sentinel) always fails this check for any realistic count.)nbdoc")
@@ -2512,7 +2512,7 @@ Asserts that the Kind matches in debug builds.
         .def_static("IsValidKind", static_cast<bool (*)(const BRepGraph_RefId::Kind)>(&BRepGraph_RefId::IsValidKind), nb::arg("theKind"), R"nbdoc(True if the kind value is one of the supported reference kinds.)nbdoc")
         .def_static("IsTopologyRefKind", static_cast<bool (*)(const BRepGraph_RefId::Kind)>(&BRepGraph_RefId::IsTopologyRefKind), nb::arg("theKind"))
         .def_static("Start", static_cast<BRepGraph_RefId (*)(const BRepGraph_RefId::Kind)>(&BRepGraph_RefId::Start), nb::arg("theKind"), R"nbdoc(First valid id in a dense sequence for the specified kind.)nbdoc")
-        .def_static("Invalid", static_cast<BRepGraph_RefId (*)(const BRepGraph_RefId::Kind)>(&BRepGraph_RefId::Invalid), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_RefId::Kind>>(BRepGraph_RefId::Kind :: Shell), R"nbdoc(Invalid sentinel id for the specified kind.)nbdoc")
+        .def_static("Invalid", static_cast<BRepGraph_RefId (*)(const BRepGraph_RefId::Kind)>(&BRepGraph_RefId::Invalid), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_RefId::Kind>>(BRepGraph_RefId::Kind::Shell), R"nbdoc(Invalid sentinel id for the specified kind.)nbdoc")
         .def("IsValid", static_cast<bool (BRepGraph_RefId::*)() const>(&BRepGraph_RefId::IsValid))
         .def("IsValid", static_cast<bool (BRepGraph_RefId::*)(const uint32_t) const>(&BRepGraph_RefId::IsValid), nb::arg("theMaxCount"), R"nbdoc(True if this id points to an allocated slot within [0, theMaxCount).
 UINT32_MAX (invalid sentinel) always fails this check for any realistic count.)nbdoc")
@@ -2876,10 +2876,10 @@ Source item ids are returned directly as target item ids after validation.)nbdoc
     nanoocp_implicit_copy_ctor<BRepGraph_CopyRemap>(nb::borrow<nb::class_<BRepGraph_CopyRemap>>(m.attr("BRepGraph_CopyRemap")));
     nb::borrow<nb::class_<BRepGraph_CacheRegistry>>(m.attr("BRepGraph_CacheRegistry"))
         .def(nb::init<>())
-        .def("RegisterCache", static_cast<uint32_t (BRepGraph_CacheRegistry::*)(const occ::handle<BRepGraph_Cache> &)>(&BRepGraph_CacheRegistry::RegisterCache), nb::arg("theCache"), R"nbdoc(Register a cache service. Replaces an existing cache with the same GUID.
+        .def("RegisterCache", static_cast<uint32_t (BRepGraph_CacheRegistry::*)(const occ::handle<BRepGraph_Cache> &)>(&BRepGraph_CacheRegistry::RegisterCache), nb::arg("theCache").none(), R"nbdoc(Register a cache service. Replaces an existing cache with the same GUID.
 @param[in] theCache cache service
 @return graph-local slot index)nbdoc")
-        .def("Register", static_cast<uint32_t (BRepGraph_CacheRegistry::*)(const occ::handle<BRepGraph_Cache> &)>(&BRepGraph_CacheRegistry::Register), nb::arg("theCache"), R"nbdoc(Register a cache service. Short form used by graph-local cache operations.
+        .def("Register", static_cast<uint32_t (BRepGraph_CacheRegistry::*)(const occ::handle<BRepGraph_Cache> &)>(&BRepGraph_CacheRegistry::Register), nb::arg("theCache").none(), R"nbdoc(Register a cache service. Short form used by graph-local cache operations.
 @param[in] theCache cache service
 @return graph-local slot index)nbdoc")
         .def("UnregisterCache", static_cast<void (BRepGraph_CacheRegistry::*)(const Standard_GUID &)>(&BRepGraph_CacheRegistry::UnregisterCache), nb::arg("theGUID"), R"nbdoc(Remove a cache service by GUID.
@@ -2891,7 +2891,7 @@ Source item ids are returned directly as target item ids after validation.)nbdoc
 @param[in] theGUID cache family identity
 @param[out] theSlot graph-local slot index
 @return true if the cache service is registered)nbdoc")
-        .def("FindSlot", [](const BRepGraph_CacheRegistry &self, const occ::handle<BRepGraph_Cache> & theCache) { uint32_t theSlot{}; auto result = self.FindSlot(theCache, theSlot); return std::make_tuple(result, theSlot); }, nb::arg("theCache"), R"nbdoc(Return current graph-local slot for a cache service.
+        .def("FindSlot", [](const BRepGraph_CacheRegistry &self, const occ::handle<BRepGraph_Cache> & theCache) { uint32_t theSlot{}; auto result = self.FindSlot(theCache, theSlot); return std::make_tuple(result, theSlot); }, nb::arg("theCache").none(), R"nbdoc(Return current graph-local slot for a cache service.
 @param[in] theCache cache service
 @param[out] theSlot graph-local slot index
 @return true if the cache service is registered)nbdoc")
@@ -3045,37 +3045,37 @@ Supported owner kinds are vertex, edge, face, shell, solid, compsolid, and compo
 @param[in] theKind semantic attachment kind
 @param[in] theShape supplemental shape to attach
 @return non-zero attachment uid on success, `0` on rejection)nbdoc")
-        .def("AttachToVertex", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_VertexId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToVertex), nb::arg("theVertex"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement :: AttachmentKind :: VertexSupplementShape), R"nbdoc(@brief Attach a supplemental shape to a vertex owner.
+        .def("AttachToVertex", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_VertexId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToVertex), nb::arg("theVertex"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement::AttachmentKind::VertexSupplementShape), R"nbdoc(@brief Attach a supplemental shape to a vertex owner.
 @param[in] theVertex active vertex owner
 @param[in] theShape supplemental shape to attach
 @param[in] theKind semantic attachment kind
 @return non-zero attachment uid on success, `0` on rejection)nbdoc")
-        .def("AttachToEdge", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_EdgeId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToEdge), nb::arg("theEdge"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement :: AttachmentKind :: EdgeInternalVertex), R"nbdoc(@brief Attach a supplemental shape to an edge owner.
+        .def("AttachToEdge", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_EdgeId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToEdge), nb::arg("theEdge"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement::AttachmentKind::EdgeInternalVertex), R"nbdoc(@brief Attach a supplemental shape to an edge owner.
 @param[in] theEdge active edge owner
 @param[in] theShape supplemental shape to attach
 @param[in] theKind semantic attachment kind
 @return non-zero attachment uid on success, `0` on rejection)nbdoc")
-        .def("AttachToFace", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_FaceId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToFace), nb::arg("theFace"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement :: AttachmentKind :: FaceDirectVertex), R"nbdoc(@brief Attach a supplemental shape to a face owner.
+        .def("AttachToFace", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_FaceId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToFace), nb::arg("theFace"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement::AttachmentKind::FaceDirectVertex), R"nbdoc(@brief Attach a supplemental shape to a face owner.
 @param[in] theFace active face owner
 @param[in] theShape supplemental shape to attach
 @param[in] theKind semantic attachment kind
 @return non-zero attachment uid on success, `0` on rejection)nbdoc")
-        .def("AttachToSolid", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_SolidId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToSolid), nb::arg("theSolid"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement :: AttachmentKind :: SolidAuxShape), R"nbdoc(@brief Attach a supplemental shape to a solid owner.
+        .def("AttachToSolid", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_SolidId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToSolid), nb::arg("theSolid"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement::AttachmentKind::SolidAuxShape), R"nbdoc(@brief Attach a supplemental shape to a solid owner.
 @param[in] theSolid active solid owner
 @param[in] theShape supplemental shape to attach
 @param[in] theKind semantic attachment kind
 @return non-zero attachment uid on success, `0` on rejection)nbdoc")
-        .def("AttachToCompSolid", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_CompSolidId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToCompSolid), nb::arg("theCompSolid"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement :: AttachmentKind :: CompSolidAuxShape), R"nbdoc(@brief Attach a supplemental shape to a compsolid owner.
+        .def("AttachToCompSolid", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_CompSolidId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToCompSolid), nb::arg("theCompSolid"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement::AttachmentKind::CompSolidAuxShape), R"nbdoc(@brief Attach a supplemental shape to a compsolid owner.
 @param[in] theCompSolid active compsolid owner
 @param[in] theShape supplemental shape to attach
 @param[in] theKind semantic attachment kind
 @return non-zero attachment uid on success, `0` on rejection)nbdoc")
-        .def("AttachToShell", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_ShellId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToShell), nb::arg("theShell"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement :: AttachmentKind :: ShellAuxShape), R"nbdoc(@brief Attach a supplemental shape to a shell owner.
+        .def("AttachToShell", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_ShellId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToShell), nb::arg("theShell"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement::AttachmentKind::ShellAuxShape), R"nbdoc(@brief Attach a supplemental shape to a shell owner.
 @param[in] theShell active shell owner
 @param[in] theShape supplemental shape to attach
 @param[in] theKind semantic attachment kind
 @return non-zero attachment uid on success, `0` on rejection)nbdoc")
-        .def("AttachToCompound", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_CompoundId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToCompound), nb::arg("theCompound"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement :: AttachmentKind :: CompoundAuxShape), R"nbdoc(@brief Attach a supplemental shape to a compound owner.
+        .def("AttachToCompound", static_cast<uint64_t (BRepGraph_SupplementEditor::*)(BRepGraph_CompoundId, const TopoDS_Shape &, BRepGraph_LayerTopoSupplement::AttachmentKind)>(&BRepGraph_SupplementEditor::AttachToCompound), nb::arg("theCompound"), nb::arg("theShape"), nb::arg("theKind") = static_cast<std::decay_t<BRepGraph_LayerTopoSupplement::AttachmentKind>>(BRepGraph_LayerTopoSupplement::AttachmentKind::CompoundAuxShape), R"nbdoc(@brief Attach a supplemental shape to a compound owner.
 @param[in] theCompound active compound owner
 @param[in] theShape supplemental shape to attach
 @param[in] theKind semantic attachment kind
@@ -3149,7 +3149,7 @@ Edge).)nbdoc")
         .def("SetRefChildVertexId", static_cast<void (BRepGraph::EditorView::VertexOps::*)(BRepGraph_MutGuard<BRepGraphInc::VertexRef> &, const BRepGraph_VertexId)>(&BRepGraph::EditorView::VertexOps::SetRefChildVertexId), nb::arg("theMut"), nb::arg("theVertex"));
     nanoocp_implicit_copy_ctor<BRepGraph::EditorView::VertexOps>(nb::borrow<nb::class_<BRepGraph::EditorView::VertexOps>>(m.attr("BRepGraph").attr("EditorView").attr("VertexOps")));
     nb::borrow<nb::class_<BRepGraph::EditorView::EdgeOps>>(m.attr("BRepGraph").attr("EditorView").attr("EdgeOps"))
-        .def("Add", static_cast<BRepGraph_EdgeId (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_VertexId, const BRepGraph_VertexId, const occ::handle<Geom_Curve> &, const double, const double, const double)>(&BRepGraph::EditorView::EdgeOps::Add), nb::arg("theStartVtx"), nb::arg("theEndVtx"), nb::arg("theCurve"), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolerance"), R"nbdoc(Add an edge definition to the graph.
+        .def("Add", static_cast<BRepGraph_EdgeId (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_VertexId, const BRepGraph_VertexId, const occ::handle<Geom_Curve> &, const double, const double, const double)>(&BRepGraph::EditorView::EdgeOps::Add), nb::arg("theStartVtx"), nb::arg("theEndVtx"), nb::arg("theCurve").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolerance"), R"nbdoc(Add an edge definition to the graph.
 @param[in] theStartVtx  typed start vertex definition identifier
 @param[in] theEndVtx    typed end vertex definition identifier
 @param[in] theCurve     3D curve (may be null for degenerate edges)
@@ -3196,7 +3196,7 @@ should follow up with SetParamRange).
 @param[in] theTolerance new tolerance value)nbdoc")
         .def("SetParamRange", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_EdgeId, const double, const double)>(&BRepGraph::EditorView::EdgeOps::SetParamRange), nb::arg("theEdge"), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Set the parametric range of an edge definition.)nbdoc")
         .def("SetParamRange", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(BRepGraph_MutGuard<BRepGraphInc::EdgeDef> &, const double, const double)>(&BRepGraph::EditorView::EdgeOps::SetParamRange), nb::arg("theMut"), nb::arg("theFirst"), nb::arg("theLast"))
-        .def("SetCurve", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_EdgeId, const occ::handle<Geom_Curve> &, const double, const double)>(&BRepGraph::EditorView::EdgeOps::SetCurve), nb::arg("theEdge"), nb::arg("theCurve"), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Set the 3D curve on an edge. Creates an owned EdgeCurve3DRep record
+        .def("SetCurve", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_EdgeId, const occ::handle<Geom_Curve> &, const double, const double)>(&BRepGraph::EditorView::EdgeOps::SetCurve), nb::arg("theEdge"), nb::arg("theCurve").none(), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Set the 3D curve on an edge. Creates an owned EdgeCurve3DRep record
 and an associated Curve3DRep for edge geometry access.
 @param[in] theEdge  edge definition identifier
 @param[in] theCurve 3D curve geometry (must not be null)
@@ -3204,7 +3204,7 @@ and an associated Curve3DRep for edge geometry access.
 @param[in] theLast  last curve parameter)nbdoc")
         .def("ClearCurve", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_EdgeId)>(&BRepGraph::EditorView::EdgeOps::ClearCurve), nb::arg("theEdge"), R"nbdoc(Clear the 3D curve on an edge. Removes the owned use record binding.
 @param[in] theEdge edge definition identifier)nbdoc")
-        .def("SetPersistentPolygon3D", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_EdgeId, const occ::handle<Poly_Polygon3D> &)>(&BRepGraph::EditorView::EdgeOps::SetPersistentPolygon3D), nb::arg("theEdge"), nb::arg("thePolygon"), R"nbdoc(Set the persistent 3D polygon on an edge. Creates an owned EdgePolygon3DRep record.
+        .def("SetPersistentPolygon3D", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_EdgeId, const occ::handle<Poly_Polygon3D> &)>(&BRepGraph::EditorView::EdgeOps::SetPersistentPolygon3D), nb::arg("theEdge"), nb::arg("thePolygon").none(), R"nbdoc(Set the persistent 3D polygon on an edge. Creates an owned EdgePolygon3DRep record.
 @param[in] theEdge    edge definition identifier
 @param[in] thePolygon 3D polygon (must not be null))nbdoc")
         .def("ClearPersistentPolygon3D", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(const BRepGraph_EdgeId)>(&BRepGraph::EditorView::EdgeOps::ClearPersistentPolygon3D), nb::arg("theEdge"), R"nbdoc(Clear the persistent 3D polygon on an edge.
@@ -3215,7 +3215,7 @@ and an associated Curve3DRep for edge geometry access.
         .def("SetEndVertexRefId", static_cast<void (BRepGraph::EditorView::EdgeOps::*)(BRepGraph_MutGuard<BRepGraphInc::EdgeDef> &, const BRepGraph_VertexRefId)>(&BRepGraph::EditorView::EdgeOps::SetEndVertexRefId), nb::arg("theMut"), nb::arg("theVertexRef"));
     nanoocp_implicit_copy_ctor<BRepGraph::EditorView::EdgeOps>(nb::borrow<nb::class_<BRepGraph::EditorView::EdgeOps>>(m.attr("BRepGraph").attr("EditorView").attr("EdgeOps")));
     nb::borrow<nb::class_<BRepGraph::EditorView::CoEdgeOps>>(m.attr("BRepGraph").attr("EditorView").attr("CoEdgeOps"))
-        .def("SetPCurve", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Geom2d_Curve> &)>(&BRepGraph::EditorView::CoEdgeOps::SetPCurve), nb::arg("theCoEdge"), nb::arg("theCurve2d"), R"nbdoc(Assign or clear the PCurve bound to an existing coedge.
+        .def("SetPCurve", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Geom2d_Curve> &)>(&BRepGraph::EditorView::CoEdgeOps::SetPCurve), nb::arg("theCoEdge"), nb::arg("theCurve2d").none(), R"nbdoc(Assign or clear the PCurve bound to an existing coedge.
 Creates a new Curve2DRep for non-null curves and stores its id on the coedge.
 Pass a null handle to clear the stored PCurve binding.
 @param[in] theCoEdge  typed coedge identifier to update
@@ -3226,7 +3226,7 @@ via WireOps::Add().
 @param[in] theEdge       typed edge definition identifier
 @param[in] theOrientation orientation of the edge in the wire
 @return typed coedge identifier, or invalid if the edge is invalid)nbdoc")
-        .def("Add", static_cast<BRepGraph_CoEdgeId (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_EdgeId, const BRepGraph_FaceId, const occ::handle<Geom2d_Curve> &, const double, const double, const BRepGraphInc::ParityOrientation)>(&BRepGraph::EditorView::CoEdgeOps::Add), nb::arg("theEdgeEntity"), nb::arg("theFaceEntity"), nb::arg("theCurve2d"), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theEdgeOrientation") = static_cast<std::decay_t<const BRepGraphInc::ParityOrientation>>(TopAbs_FORWARD), R"nbdoc(Create a new CoEdge entity with a PCurve for a given edge-face pair.
+        .def("Add", static_cast<BRepGraph_CoEdgeId (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_EdgeId, const BRepGraph_FaceId, const occ::handle<Geom2d_Curve> &, const double, const double, const BRepGraphInc::ParityOrientation)>(&BRepGraph::EditorView::CoEdgeOps::Add), nb::arg("theEdgeEntity"), nb::arg("theFaceEntity"), nb::arg("theCurve2d").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theEdgeOrientation") = static_cast<std::decay_t<const BRepGraphInc::ParityOrientation>>(TopAbs_FORWARD), R"nbdoc(Create a new CoEdge entity with a PCurve for a given edge-face pair.
 Creates a new CoEdge entity with Curve2DRep and updates relation tables.
 This always appends a new CoEdge entry for the edge-face pair; callers
 should avoid duplicate creation unless multiple bindings are intentional
@@ -3251,17 +3251,17 @@ mutation sequence, use CoEdges().SetPCurve().
 @param[in] theLast  new last parameter value)nbdoc")
         .def("SetOrientation", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const BRepGraphInc::ParityOrientation)>(&BRepGraph::EditorView::CoEdgeOps::SetOrientation), nb::arg("theCoEdge"), nb::arg("theOrientation"), R"nbdoc(Set the orientation of a coedge definition.)nbdoc")
         .def("SetOrientation", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(BRepGraph_MutGuard<BRepGraphInc::CoEdgeDef> &, const BRepGraphInc::ParityOrientation)>(&BRepGraph::EditorView::CoEdgeOps::SetOrientation), nb::arg("theMut"), nb::arg("theOrientation"))
-        .def("SetPCurve", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Geom2d_Curve> &, const double, const double)>(&BRepGraph::EditorView::CoEdgeOps::SetPCurve), nb::arg("theCoEdge"), nb::arg("theCurve2d"), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Set the PCurve on a coedge. Creates an owned CoEdgeCurve2DRep record.
+        .def("SetPCurve", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Geom2d_Curve> &, const double, const double)>(&BRepGraph::EditorView::CoEdgeOps::SetPCurve), nb::arg("theCoEdge"), nb::arg("theCurve2d").none(), nb::arg("theFirst"), nb::arg("theLast"), R"nbdoc(Set the PCurve on a coedge. Creates an owned CoEdgeCurve2DRep record.
 @param[in] theCoEdge  coedge definition identifier
 @param[in] theCurve2d 2D curve geometry (must not be null)
 @param[in] theFirst   first curve parameter
 @param[in] theLast    last curve parameter)nbdoc")
         .def("ClearPCurve", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId)>(&BRepGraph::EditorView::CoEdgeOps::ClearPCurve), nb::arg("theCoEdge"), R"nbdoc(Clear the PCurve on a coedge.
 @param[in] theCoEdge coedge definition identifier)nbdoc")
-        .def("SetPersistentPolygon2D", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_Polygon2D> &)>(&BRepGraph::EditorView::CoEdgeOps::SetPersistentPolygon2D), nb::arg("theCoEdge"), nb::arg("thePolygon"), R"nbdoc(Set the persistent 2D polygon on a coedge.
+        .def("SetPersistentPolygon2D", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_Polygon2D> &)>(&BRepGraph::EditorView::CoEdgeOps::SetPersistentPolygon2D), nb::arg("theCoEdge"), nb::arg("thePolygon").none(), R"nbdoc(Set the persistent 2D polygon on a coedge.
 @param[in] theCoEdge  coedge definition identifier
 @param[in] thePolygon 2D polygon (must not be null))nbdoc")
-        .def("SetPersistentPolygonOnTri", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepGraph::EditorView::CoEdgeOps::SetPersistentPolygonOnTri), nb::arg("theCoEdge"), nb::arg("thePolygon"), R"nbdoc(Set the persistent polygon-on-triangulation on a coedge.
+        .def("SetPersistentPolygonOnTri", static_cast<void (BRepGraph::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepGraph::EditorView::CoEdgeOps::SetPersistentPolygonOnTri), nb::arg("theCoEdge"), nb::arg("thePolygon").none(), R"nbdoc(Set the persistent polygon-on-triangulation on a coedge.
 The triangulation is resolved via CoEdgeDef.FaceId -> FaceDef.TriangulationRepId.
 @param[in] theCoEdge       coedge definition identifier
 @param[in] thePolygon      polygon-on-triangulation (must not be null))nbdoc")
@@ -3328,7 +3328,7 @@ current content.
         .def("SetRefChildWireId", static_cast<void (BRepGraph::EditorView::WireOps::*)(BRepGraph_MutGuard<BRepGraphInc::WireRef> &, const BRepGraph_WireId)>(&BRepGraph::EditorView::WireOps::SetRefChildWireId), nb::arg("theMut"), nb::arg("theWire"));
     nanoocp_implicit_copy_ctor<BRepGraph::EditorView::WireOps>(nb::borrow<nb::class_<BRepGraph::EditorView::WireOps>>(m.attr("BRepGraph").attr("EditorView").attr("WireOps")));
     nb::borrow<nb::class_<BRepGraph::EditorView::FaceOps>>(m.attr("BRepGraph").attr("EditorView").attr("FaceOps"))
-        .def("Add", static_cast<BRepGraph_FaceId (BRepGraph::EditorView::FaceOps::*)(const occ::handle<Geom_Surface> &, const BRepGraph_WireId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>> &, const double)>(&BRepGraph::EditorView::FaceOps::Add), nb::arg("theSurface"), nb::arg("theOuterWire"), nb::arg("theInnerWires"), nb::arg("theTolerance"), R"nbdoc(Add a face definition to the graph.
+        .def("Add", static_cast<BRepGraph_FaceId (BRepGraph::EditorView::FaceOps::*)(const occ::handle<Geom_Surface> &, const BRepGraph_WireId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>> &, const double)>(&BRepGraph::EditorView::FaceOps::Add), nb::arg("theSurface").none(), nb::arg("theOuterWire"), nb::arg("theInnerWires"), nb::arg("theTolerance"), R"nbdoc(Add a face definition to the graph.
 @param[in] theSurface    surface geometry
 @param[in] theOuterWire  typed outer wire definition identifier
 @param[in] theInnerWires typed inner wire definition identifiers
@@ -3357,13 +3357,13 @@ Wire subtree when it has no other active usages.
         .def("SetTolerance", static_cast<void (BRepGraph::EditorView::FaceOps::*)(BRepGraph_MutGuard<BRepGraphInc::FaceDef> &, double)>(&BRepGraph::EditorView::FaceOps::SetTolerance), nb::arg("theMut"), nb::arg("theTolerance"), R"nbdoc(Set the tolerance of a face definition inside a batched mutation scope.
 @param[in] theMut       active mutable face guard
 @param[in] theTolerance new tolerance value)nbdoc")
-        .def("SetSurface", static_cast<void (BRepGraph::EditorView::FaceOps::*)(const BRepGraph_FaceId, const occ::handle<Geom_Surface> &)>(&BRepGraph::EditorView::FaceOps::SetSurface), nb::arg("theFace"), nb::arg("theSurface"), R"nbdoc(Set the surface on a face. Creates an owned FaceSurfaceRep record
+        .def("SetSurface", static_cast<void (BRepGraph::EditorView::FaceOps::*)(const BRepGraph_FaceId, const occ::handle<Geom_Surface> &)>(&BRepGraph::EditorView::FaceOps::SetSurface), nb::arg("theFace"), nb::arg("theSurface").none(), R"nbdoc(Set the surface on a face. Creates an owned FaceSurfaceRep record
 and an associated SurfaceRep for face geometry access.
 @param[in] theFace    face definition identifier
 @param[in] theSurface surface geometry (must not be null))nbdoc")
         .def("ClearSurface", static_cast<void (BRepGraph::EditorView::FaceOps::*)(const BRepGraph_FaceId)>(&BRepGraph::EditorView::FaceOps::ClearSurface), nb::arg("theFace"), R"nbdoc(Clear the surface on a face. Removes the owned use record binding.
 @param[in] theFace face definition identifier)nbdoc")
-        .def("SetPersistentTriangulation", static_cast<void (BRepGraph::EditorView::FaceOps::*)(const BRepGraph_FaceId, const occ::handle<Poly_Triangulation> &)>(&BRepGraph::EditorView::FaceOps::SetPersistentTriangulation), nb::arg("theFace"), nb::arg("theTriangulation"), R"nbdoc(Set the persistent triangulation on a face. Creates an owned FaceTriangulationRep record.
+        .def("SetPersistentTriangulation", static_cast<void (BRepGraph::EditorView::FaceOps::*)(const BRepGraph_FaceId, const occ::handle<Poly_Triangulation> &)>(&BRepGraph::EditorView::FaceOps::SetPersistentTriangulation), nb::arg("theFace"), nb::arg("theTriangulation").none(), R"nbdoc(Set the persistent triangulation on a face. Creates an owned FaceTriangulationRep record.
 Also creates a TriangulationRep for backward compatibility.
 @param[in] theFace         face definition identifier
 @param[in] theTriangulation triangulation mesh (must not be null))nbdoc")
@@ -3387,7 +3387,7 @@ Appends FaceRef and stores its FaceRefId in shell FaceRefIds.
 @param[in] theFaceEntity  typed face definition identifier
 @param[in] theOri         orientation of the face in the shell
 @return typed face reference identifier, or invalid if inputs are not active)nbdoc")
-        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>> (BRepGraph::EditorView::ShellOps::*)(const BRepGraph_ShellId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::ShellOps::Append), nb::arg("theShellEntity"), nb::arg("theFaceIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc :: ParityOrientation > ( )), R"nbdoc(Batch-append multiple faces to a shell.
+        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face>> (BRepGraph::EditorView::ShellOps::*)(const BRepGraph_ShellId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::ShellOps::Append), nb::arg("theShellEntity"), nb::arg("theFaceIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc::ParityOrientation >()), R"nbdoc(Batch-append multiple faces to a shell.
 Two-pass: validates all inputs first, then links all.
 @param[in] theShellEntity typed shell definition identifier
 @param[in] theFaceIds     face definition identifiers to append
@@ -3422,7 +3422,7 @@ Appends ShellRef and stores its ShellRefId in solid ShellRefIds.
 @param[in] theShellEntity typed shell definition identifier
 @param[in] theOri         orientation of the shell in the solid
 @return typed shell reference identifier, or invalid if inputs are not active)nbdoc")
-        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>> (BRepGraph::EditorView::SolidOps::*)(const BRepGraph_SolidId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::SolidOps::Append), nb::arg("theSolidEntity"), nb::arg("theShellIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc :: ParityOrientation > ( )), R"nbdoc(Batch-append multiple shells to a solid.
+        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell>> (BRepGraph::EditorView::SolidOps::*)(const BRepGraph_SolidId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::SolidOps::Append), nb::arg("theSolidEntity"), nb::arg("theShellIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc::ParityOrientation >()), R"nbdoc(Batch-append multiple shells to a solid.
 Two-pass: validates all inputs first, then links all.
 @param[in] theSolidEntity typed solid definition identifier
 @param[in] theShellIds    shell definition identifiers to append
@@ -3458,7 +3458,7 @@ CompSolid).)nbdoc")
 @param[in] theChildEntity    typed child topology definition identifier
 @param[in] theOri            orientation of the child in the compound
 @return typed child reference identifier, or invalid if inputs are not active)nbdoc")
-        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>> (BRepGraph::EditorView::CompoundOps::*)(const BRepGraph_CompoundId, const NCollection_Array1<BRepGraph_NodeId> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::CompoundOps::Append), nb::arg("theCompoundEntity"), nb::arg("theChildIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc :: ParityOrientation > ( )), R"nbdoc(Batch-append multiple children to an existing compound definition.
+        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child>> (BRepGraph::EditorView::CompoundOps::*)(const BRepGraph_CompoundId, const NCollection_Array1<BRepGraph_NodeId> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::CompoundOps::Append), nb::arg("theCompoundEntity"), nb::arg("theChildIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc::ParityOrientation >()), R"nbdoc(Batch-append multiple children to an existing compound definition.
 Two-pass: validates all inputs first, then links all.
 @param[in] theCompoundEntity typed compound definition identifier
 @param[in] theChildIds       child node identifiers to append
@@ -3492,7 +3492,7 @@ Delegates to Gen().SetChildRefChildNodeId().
 @param[in] theSolidEntity     typed solid definition identifier
 @param[in] theOri             orientation of the solid in the compsolid
 @return typed solid reference identifier, or invalid if inputs are not active)nbdoc")
-        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>> (BRepGraph::EditorView::CompSolidOps::*)(const BRepGraph_CompSolidId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::CompSolidOps::Append), nb::arg("theCompSolidEntity"), nb::arg("theSolidIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc :: ParityOrientation > ( )), R"nbdoc(Batch-append multiple solids to an existing compsolid definition.
+        .def("Append", static_cast<NCollection_Array1<BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid>> (BRepGraph::EditorView::CompSolidOps::*)(const BRepGraph_CompSolidId, const NCollection_Array1<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid>> &, const NCollection_Array1<BRepGraphInc::ParityOrientation> &)>(&BRepGraph::EditorView::CompSolidOps::Append), nb::arg("theCompSolidEntity"), nb::arg("theSolidIds"), nb::arg("theOrientations") = static_cast<std::decay_t<const NCollection_Array1<BRepGraphInc::ParityOrientation> &>>(NCollection_Array1 < BRepGraphInc::ParityOrientation >()), R"nbdoc(Batch-append multiple solids to an existing compsolid definition.
 Two-pass: validates all inputs first, then links all.
 @param[in] theCompSolidEntity typed compsolid definition identifier
 @param[in] theSolidIds        solid definition identifiers to append
@@ -3518,7 +3518,7 @@ Delegates to Solids().SetRefChildSolidId().
 @param[in] theNewSolid new solid definition identifier)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph::EditorView::CompSolidOps>(nb::borrow<nb::class_<BRepGraph::EditorView::CompSolidOps>>(m.attr("BRepGraph").attr("EditorView").attr("CompSolidOps")));
     nb::borrow<nb::class_<BRepGraph::EditorView::ProductOps>>(m.attr("BRepGraph").attr("EditorView").attr("ProductOps"))
-        .def("Add", static_cast<BRepGraph_ProductId (BRepGraph::EditorView::ProductOps::*)(const BRepGraph_NodeId, const TopLoc_Location &)>(&BRepGraph::EditorView::ProductOps::Add), nb::arg("theShapeRoot"), nb::arg("thePlacement") = static_cast<std::decay_t<const TopLoc_Location &>>(TopLoc_Location ( )), R"nbdoc(Create a Product wrapping an existing topology root via an Occurrence.
+        .def("Add", static_cast<BRepGraph_ProductId (BRepGraph::EditorView::ProductOps::*)(const BRepGraph_NodeId, const TopLoc_Location &)>(&BRepGraph::EditorView::ProductOps::Add), nb::arg("theShapeRoot"), nb::arg("thePlacement") = static_cast<std::decay_t<const TopLoc_Location &>>(TopLoc_Location()), R"nbdoc(Create a Product wrapping an existing topology root via an Occurrence.
 The product is NOT added to document roots; call AppendDocumentRoot() explicitly
 when this Product is a document root.
 @param[in] theShapeRoot root topology NodeId for the part
@@ -3530,7 +3530,7 @@ The product is NOT added to document roots; call AppendDocumentRoot() explicitly
 when this Product is a document root.
 @return typed product definition identifier)nbdoc")
         .def("AppendDocumentRoot", static_cast<void (BRepGraph::EditorView::ProductOps::*)(const BRepGraph_ProductId)>(&BRepGraph::EditorView::ProductOps::AppendDocumentRoot), nb::arg("theProductId"), R"nbdoc(Add an active Product to document roots if it is not already listed.)nbdoc")
-        .def("Append", static_cast<BRepGraph_OccurrenceId (BRepGraph::EditorView::ProductOps::*)(const BRepGraph_ProductId, const BRepGraph_ProductId, const TopLoc_Location &, const BRepGraph_OccurrenceId, BRepGraph_OccurrenceRefId *)>(&BRepGraph::EditorView::ProductOps::Append), nb::arg("theParentProduct"), nb::arg("theReferencedProduct"), nb::arg("thePlacement"), nb::arg("theParentOccurrence") = static_cast<std::decay_t<const BRepGraph_OccurrenceId>>(BRepGraph_OccurrenceId ( )), nb::arg("theOutOccurrenceRefId") = static_cast<std::decay_t<BRepGraph_OccurrenceRefId *>>(nullptr), R"nbdoc(Append two existing Products via a fresh Occurrence.
+        .def("Append", static_cast<BRepGraph_OccurrenceId (BRepGraph::EditorView::ProductOps::*)(const BRepGraph_ProductId, const BRepGraph_ProductId, const TopLoc_Location &, const BRepGraph_OccurrenceId, BRepGraph_OccurrenceRefId *)>(&BRepGraph::EditorView::ProductOps::Append), nb::arg("theParentProduct"), nb::arg("theReferencedProduct"), nb::arg("thePlacement"), nb::arg("theParentOccurrence") = static_cast<std::decay_t<const BRepGraph_OccurrenceId>>(BRepGraph_OccurrenceId()), nb::arg("theOutOccurrenceRefId") = static_cast<std::decay_t<BRepGraph_OccurrenceRefId *>>(nullptr), R"nbdoc(Append two existing Products via a fresh Occurrence.
 @param[in] theParentProduct       typed parent product identifier
 @param[in] theReferencedProduct   typed child product identifier being instantiated
 @param[in] thePlacement           local placement relative to parent
@@ -4190,7 +4190,7 @@ Uses first step, last step, and size for O(1) computation.)nbdoc")
 @param[in] theGraph     graph to walk
 @param[in] theProduct   product whose occurrences and topology are explored
 @param[in] theTargetKind kind of nodes to emit)nbdoc")
-        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode :: Recursive), R"nbdoc(Explore descendants while pruning branches at the avoid kind.
+        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode::Recursive), R"nbdoc(Explore descendants while pruning branches at the avoid kind.
 @param[in] theGraph        graph to walk
 @param[in] theRoot         root node where the walk begins
 @param[in] theAvoidKind    node kind to avoid descending into
@@ -4207,21 +4207,21 @@ using the given traversal mode.
 @param[in] theProduct   product whose occurrences and topology are explored
 @param[in] theTargetKind kind of nodes to emit
 @param[in] theMode      traversal strategy)nbdoc")
-        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theTargetKind"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode :: Recursive), R"nbdoc(Explore descendants of the given target kind while pruning branches at the avoid kind.
+        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theTargetKind"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode::Recursive), R"nbdoc(Explore descendants of the given target kind while pruning branches at the avoid kind.
 @param[in] theGraph        graph to walk
 @param[in] theRoot         root node where the walk begins
 @param[in] theTargetKind   kind of nodes to emit
 @param[in] theAvoidKind    node kind to avoid descending into
 @param[in] theEmitAvoidKind if true, emit matching avoid-kind nodes once before skipping
 @param[in] theMode         traversal strategy)nbdoc")
-        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, bool, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theTargetKind"), nb::arg("theCumLoc"), nb::arg("theCumOri"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode :: Recursive), R"nbdoc(Explore only descendants of the given target kind with explicit location/orientation control.
+        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, bool, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theTargetKind"), nb::arg("theCumLoc"), nb::arg("theCumOri"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode::Recursive), R"nbdoc(Explore only descendants of the given target kind with explicit location/orientation control.
 @param[in] theGraph     graph to walk
 @param[in] theRoot      root node where the walk begins
 @param[in] theTargetKind kind of nodes to emit
 @param[in] theCumLoc    if true, accumulate location down the walk
 @param[in] theCumOri    if true, accumulate orientation down the walk
 @param[in] theMode      traversal strategy)nbdoc")
-        .def(nb::init<const BRepGraph &, const BRepGraph_ProductId, BRepGraph_NodeId::Kind, bool, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theProduct"), nb::arg("theTargetKind"), nb::arg("theCumLoc"), nb::arg("theCumOri"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode :: Recursive), R"nbdoc(Explore only descendants of the given target kind starting from a product,
+        .def(nb::init<const BRepGraph &, const BRepGraph_ProductId, BRepGraph_NodeId::Kind, bool, bool, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theProduct"), nb::arg("theTargetKind"), nb::arg("theCumLoc"), nb::arg("theCumOri"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode::Recursive), R"nbdoc(Explore only descendants of the given target kind starting from a product,
 with explicit location/orientation control.
 @param[in] theGraph     graph to walk
 @param[in] theProduct   product whose occurrences and topology are explored
@@ -4229,7 +4229,7 @@ with explicit location/orientation control.
 @param[in] theCumLoc    if true, accumulate location down the walk
 @param[in] theCumOri    if true, accumulate orientation down the walk
 @param[in] theMode      traversal strategy)nbdoc")
-        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, const TopLoc_Location &, TopAbs_Orientation, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theTargetKind"), nb::arg("theStartLoc"), nb::arg("theStartOri"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode :: DirectChildren), R"nbdoc(Explore only descendants of the given target kind with an explicit initial transform.
+        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, const TopLoc_Location &, TopAbs_Orientation, BRepGraph_ChildExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theRoot"), nb::arg("theTargetKind"), nb::arg("theStartLoc"), nb::arg("theStartOri"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ChildExplorer::TraversalMode>>(BRepGraph_ChildExplorer::TraversalMode::DirectChildren), R"nbdoc(Explore only descendants of the given target kind with an explicit initial transform.
 @param[in] theGraph     graph to walk
 @param[in] theRoot      root node where the walk begins
 @param[in] theTargetKind kind of nodes to emit
@@ -4574,7 +4574,7 @@ to compute container priority in selection-mode building.)nbdoc")
 @param[in] theGraph     graph to walk
 @param[in] theNode      starting node whose ancestors are explored
 @param[in] theTargetKind kind of nodes to emit)nbdoc")
-        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ParentExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theNode"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ParentExplorer::TraversalMode>>(BRepGraph_ParentExplorer::TraversalMode :: Recursive), R"nbdoc(Explore all parents while pruning branches at the avoid kind.
+        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ParentExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theNode"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ParentExplorer::TraversalMode>>(BRepGraph_ParentExplorer::TraversalMode::Recursive), R"nbdoc(Explore all parents while pruning branches at the avoid kind.
 @param[in] theGraph        graph to walk
 @param[in] theNode         starting node whose ancestors are explored
 @param[in] theAvoidKind    node kind to avoid ascending through
@@ -4585,7 +4585,7 @@ to compute container priority in selection-mode building.)nbdoc")
 @param[in] theNode      starting node whose ancestors are explored
 @param[in] theTargetKind kind of nodes to emit
 @param[in] theMode      traversal strategy)nbdoc")
-        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ParentExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theNode"), nb::arg("theTargetKind"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ParentExplorer::TraversalMode>>(BRepGraph_ParentExplorer::TraversalMode :: Recursive), R"nbdoc(Explore parents of the given kind while pruning branches at the avoid kind.
+        .def(nb::init<const BRepGraph &, const BRepGraph_NodeId, BRepGraph_NodeId::Kind, const std::optional<BRepGraph_NodeId::Kind> &, bool, BRepGraph_ParentExplorer::TraversalMode>(), nb::arg("theGraph"), nb::arg("theNode"), nb::arg("theTargetKind"), nb::arg("theAvoidKind"), nb::arg("theEmitAvoidKind"), nb::arg("theMode") = static_cast<std::decay_t<BRepGraph_ParentExplorer::TraversalMode>>(BRepGraph_ParentExplorer::TraversalMode::Recursive), R"nbdoc(Explore parents of the given kind while pruning branches at the avoid kind.
 @param[in] theGraph        graph to walk
 @param[in] theNode         starting node whose ancestors are explored
 @param[in] theTargetKind   kind of nodes to emit
@@ -4620,7 +4620,7 @@ CoEdge->Edge and Occurrence->Product/topology-root.)nbdoc")
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_ParentExplorer::Config>>(m.attr("BRepGraph_ParentExplorer").attr("Config")), "EmitAvoidKind", &BRepGraph_ParentExplorer::Config::EmitAvoidKind, R"nbdoc(Emit matching avoid-kind ancestors once.)nbdoc");
     nb::borrow<nb::class_<BRepGraph_LayerRegistry>>(m.attr("BRepGraph_LayerRegistry"))
         .def(nb::init<>())
-        .def("RegisterLayer", static_cast<uint32_t (BRepGraph_LayerRegistry::*)(const occ::handle<BRepGraph_Layer> &)>(&BRepGraph_LayerRegistry::RegisterLayer), nb::arg("theLayer"), R"nbdoc(Register a layer. Replaces an existing layer with the same GUID.
+        .def("RegisterLayer", static_cast<uint32_t (BRepGraph_LayerRegistry::*)(const occ::handle<BRepGraph_Layer> &)>(&BRepGraph_LayerRegistry::RegisterLayer), nb::arg("theLayer").none(), R"nbdoc(Register a layer. Replaces an existing layer with the same GUID.
 @return slot index in the internal dense vector.)nbdoc")
         .def("UnregisterLayer", static_cast<void (BRepGraph_LayerRegistry::*)(const Standard_GUID &)>(&BRepGraph_LayerRegistry::UnregisterLayer), nb::arg("theGUID"), R"nbdoc(Remove a layer by GUID.)nbdoc")
         .def("FindLayer", static_cast<occ::handle<BRepGraph_Layer> (BRepGraph_LayerRegistry::*)(const Standard_GUID &) const>(&BRepGraph_LayerRegistry::FindLayer), nb::arg("theGUID"), R"nbdoc(Find a layer by GUID. Returns null handle if not found.)nbdoc")
@@ -4790,24 +4790,24 @@ the entry has no representation. For internal/testing use.
         .def("PromoteToPersistent", static_cast<void (BRepGraph::MeshView::EditorView::*)()>(&BRepGraph::MeshView::EditorView::PromoteToPersistent), R"nbdoc(Promote all currently fresh default-slot cache mesh entries to persistent mesh reps.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph::MeshView::EditorView>(nb::borrow<nb::class_<BRepGraph::MeshView::EditorView>>(m.attr("BRepGraph").attr("MeshView").attr("EditorView")));
     nb::borrow<nb::class_<BRepGraph::MeshView::EditorView::FaceOps>>(m.attr("BRepGraph").attr("MeshView").attr("EditorView").attr("FaceOps"))
-        .def("SetCachedTriangulation", static_cast<void (BRepGraph::MeshView::EditorView::FaceOps::*)(const BRepGraph_FaceId, const occ::handle<Poly_Triangulation> &)>(&BRepGraph::MeshView::EditorView::FaceOps::SetCachedTriangulation), nb::arg("theFace"), nb::arg("theTriangulation"), R"nbdoc(Set the cached triangulation for a face.
+        .def("SetCachedTriangulation", static_cast<void (BRepGraph::MeshView::EditorView::FaceOps::*)(const BRepGraph_FaceId, const occ::handle<Poly_Triangulation> &)>(&BRepGraph::MeshView::EditorView::FaceOps::SetCachedTriangulation), nb::arg("theFace"), nb::arg("theTriangulation").none(), R"nbdoc(Set the cached triangulation for a face.
 @param[in] theFace         typed face definition identifier
 @param[in] theTriangulation triangulation to store (null clears))nbdoc")
         .def("Clear", static_cast<void (BRepGraph::MeshView::EditorView::FaceOps::*)(const BRepGraph_FaceId)>(&BRepGraph::MeshView::EditorView::FaceOps::Clear), nb::arg("theFace"), R"nbdoc(Clear the face's cached mesh entry (no effect if absent).
 @param[in] theFace typed face definition identifier)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph::MeshView::EditorView::FaceOps>(nb::borrow<nb::class_<BRepGraph::MeshView::EditorView::FaceOps>>(m.attr("BRepGraph").attr("MeshView").attr("EditorView").attr("FaceOps")));
     nb::borrow<nb::class_<BRepGraph::MeshView::EditorView::EdgeOps>>(m.attr("BRepGraph").attr("MeshView").attr("EditorView").attr("EdgeOps"))
-        .def("SetCachedPolygon3D", static_cast<void (BRepGraph::MeshView::EditorView::EdgeOps::*)(const BRepGraph_EdgeId, const occ::handle<Poly_Polygon3D> &)>(&BRepGraph::MeshView::EditorView::EdgeOps::SetCachedPolygon3D), nb::arg("theEdge"), nb::arg("thePolygon3D"), R"nbdoc(Bind a Polygon3D to the edge's cached entry.
+        .def("SetCachedPolygon3D", static_cast<void (BRepGraph::MeshView::EditorView::EdgeOps::*)(const BRepGraph_EdgeId, const occ::handle<Poly_Polygon3D> &)>(&BRepGraph::MeshView::EditorView::EdgeOps::SetCachedPolygon3D), nb::arg("theEdge"), nb::arg("thePolygon3D").none(), R"nbdoc(Bind a Polygon3D to the edge's cached entry.
 @param[in] theEdge     typed edge definition identifier
 @param[in] thePolygon3D polygon-3D handle (null clears the cached binding))nbdoc")
         .def("Clear", static_cast<void (BRepGraph::MeshView::EditorView::EdgeOps::*)(const BRepGraph_EdgeId)>(&BRepGraph::MeshView::EditorView::EdgeOps::Clear), nb::arg("theEdge"), R"nbdoc(Clear the edge's cached mesh entry.
 @param[in] theEdge typed edge definition identifier)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph::MeshView::EditorView::EdgeOps>(nb::borrow<nb::class_<BRepGraph::MeshView::EditorView::EdgeOps>>(m.attr("BRepGraph").attr("MeshView").attr("EditorView").attr("EdgeOps")));
     nb::borrow<nb::class_<BRepGraph::MeshView::EditorView::CoEdgeOps>>(m.attr("BRepGraph").attr("MeshView").attr("EditorView").attr("CoEdgeOps"))
-        .def("AppendCachedPolygonOnTri", static_cast<void (BRepGraph::MeshView::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepGraph::MeshView::EditorView::CoEdgeOps::AppendCachedPolygonOnTri), nb::arg("theCoEdge"), nb::arg("thePolygonOnTri"), R"nbdoc(Append a polygon-on-triangulation to the coedge's cached list.
+        .def("AppendCachedPolygonOnTri", static_cast<void (BRepGraph::MeshView::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRepGraph::MeshView::EditorView::CoEdgeOps::AppendCachedPolygonOnTri), nb::arg("theCoEdge"), nb::arg("thePolygonOnTri").none(), R"nbdoc(Append a polygon-on-triangulation to the coedge's cached list.
 @param[in] theCoEdge    typed coedge definition identifier
 @param[in] thePolygonOnTri polygon-on-tri to append)nbdoc")
-        .def("SetCachedPolygon2D", static_cast<void (BRepGraph::MeshView::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_Polygon2D> &)>(&BRepGraph::MeshView::EditorView::CoEdgeOps::SetCachedPolygon2D), nb::arg("theCoEdge"), nb::arg("thePolygon2D"), R"nbdoc(Bind a polygon-2D to the coedge's cached entry.
+        .def("SetCachedPolygon2D", static_cast<void (BRepGraph::MeshView::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId, const occ::handle<Poly_Polygon2D> &)>(&BRepGraph::MeshView::EditorView::CoEdgeOps::SetCachedPolygon2D), nb::arg("theCoEdge"), nb::arg("thePolygon2D").none(), R"nbdoc(Bind a polygon-2D to the coedge's cached entry.
 @param[in] theCoEdge   typed coedge definition identifier
 @param[in] thePolygon2D polygon-2D handle (null clears the cached binding))nbdoc")
         .def("Clear", static_cast<void (BRepGraph::MeshView::EditorView::CoEdgeOps::*)(const BRepGraph_CoEdgeId)>(&BRepGraph::MeshView::EditorView::CoEdgeOps::Clear), nb::arg("theCoEdge"), R"nbdoc(Clear the coedge's cached mesh entry.
@@ -4852,11 +4852,11 @@ Options::CreateAutoProduct is ignored.)nbdoc")
 resolvable through FindNode().  This is intended for algorithms that
 reconstruct selected graph roots to TopoDS, run OCCT, and then need to
 translate BRepTools_History back to graph NodeIds.)nbdoc")
-        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputs"), nb::arg("theHistory"), nb::arg("theOpLabel"), R"nbdoc(Add an OCCT algorithm result and absorb BRepTools_History into the
+        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputs"), nb::arg("theHistory").none(), nb::arg("theOpLabel"), R"nbdoc(Add an OCCT algorithm result and absorb BRepTools_History into the
 registered BRepGraph_LayerHistory layer using explicit input shape mapping.)nbdoc")
-        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &, const BRepGraph::ShapesView::Options &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputs"), nb::arg("theHistory"), nb::arg("theOpLabel"), nb::arg("theOptions"), R"nbdoc(Add an OCCT algorithm result and absorb BRepTools_History with explicit options.)nbdoc")
-        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_Array1<BRepGraph_NodeId> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputRoots"), nb::arg("theHistory"), nb::arg("theOpLabel"), R"nbdoc(Convenience overload that collects the history input map from selected roots.)nbdoc")
-        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_Array1<BRepGraph_NodeId> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &, const BRepGraph::ShapesView::Options &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputRoots"), nb::arg("theHistory"), nb::arg("theOpLabel"), nb::arg("theOptions"), R"nbdoc(Convenience overload that collects the history input map from selected roots
+        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &, const BRepGraph::ShapesView::Options &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputs"), nb::arg("theHistory").none(), nb::arg("theOpLabel"), nb::arg("theOptions"), R"nbdoc(Add an OCCT algorithm result and absorb BRepTools_History with explicit options.)nbdoc")
+        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_Array1<BRepGraph_NodeId> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputRoots"), nb::arg("theHistory").none(), nb::arg("theOpLabel"), R"nbdoc(Convenience overload that collects the history input map from selected roots.)nbdoc")
+        .def("AddWithHistory", static_cast<BRepGraph::ShapesView::Result (BRepGraph::ShapesView::*)(const TopoDS_Shape &, const NCollection_Array1<BRepGraph_NodeId> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &, const BRepGraph::ShapesView::Options &)>(&BRepGraph::ShapesView::AddWithHistory), nb::arg("theResultShape"), nb::arg("theInputRoots"), nb::arg("theHistory").none(), nb::arg("theOpLabel"), nb::arg("theOptions"), R"nbdoc(Convenience overload that collects the history input map from selected roots
 and uses explicit options.)nbdoc")
         .def("Shape", static_cast<TopoDS_Shape (BRepGraph::ShapesView::*)(const BRepGraph_NodeId) const>(&BRepGraph::ShapesView::Shape), nb::arg("theNode"), R"nbdoc(Return or reconstruct a TopoDS_Shape for a node.
 Prefer this route for repeated public queries.
@@ -5004,7 +5004,7 @@ original shapes, TShape->NodeId mapping, UIDs, and UID reverse indexes.)nbdoc");
         .def_static("GetID", static_cast<const Standard_GUID & (*)()>(&BRepGraph_LayerHistory::GetID), R"nbdoc(Stable layer GUID.)nbdoc")
         .def("ID", static_cast<const Standard_GUID & (BRepGraph_LayerHistory::*)() const>(&BRepGraph_LayerHistory::ID), R"nbdoc(Layer type identity.)nbdoc")
         .def("Name", static_cast<const TCollection_AsciiString & (BRepGraph_LayerHistory::*)() const>(&BRepGraph_LayerHistory::Name), R"nbdoc(Layer display name.)nbdoc")
-        .def("Record", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const BRepGraph_NodeId, const NCollection_Array1<BRepGraph_NodeId> &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::Record), nb::arg("theOpLabel"), nb::arg("theOriginal"), nb::arg("theReplacements"), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory :: Kind :: Modified), R"nbdoc(Record a modification: theOriginal was replaced by theReplacements.
+        .def("Record", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const BRepGraph_NodeId, const NCollection_Array1<BRepGraph_NodeId> &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::Record), nb::arg("theOpLabel"), nb::arg("theOriginal"), nb::arg("theReplacements"), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory::Kind::Modified), R"nbdoc(Record a modification: theOriginal was replaced by theReplacements.
 
 @note When @p theReplacements is empty the record is auto-downgraded to
 Kind::Deleted and @p theOriginal is added to the deleted set,
@@ -5014,7 +5014,7 @@ deletion case to avoid relying on this implicit conversion.
 @param[in] theOriginal     node id before the operation
 @param[in] theReplacements node ids after the operation
 @param[in] theKind         classification of this record (default Modified))nbdoc")
-        .def("RecordBatch", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const NCollection_Array1<BRepGraph_NodeId> &, const NCollection_Array1<BRepGraph_NodeId> &, const TCollection_AsciiString &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::RecordBatch), nb::arg("theOpLabel"), nb::arg("theOriginals"), nb::arg("theReplacements"), nb::arg("theExtraInfo") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString ( )), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory :: Kind :: Modified), R"nbdoc(Record a batch of 1-to-1 modifications in a single history event.
+        .def("RecordBatch", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const NCollection_Array1<BRepGraph_NodeId> &, const NCollection_Array1<BRepGraph_NodeId> &, const TCollection_AsciiString &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::RecordBatch), nb::arg("theOpLabel"), nb::arg("theOriginals"), nb::arg("theReplacements"), nb::arg("theExtraInfo") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString()), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory::Kind::Modified), R"nbdoc(Record a batch of 1-to-1 modifications in a single history event.
 Each original is paired with the replacement at the same logical position.
 More efficient than calling Record() in a loop: creates one HistoryRecord
 and updates the per-kind maps with minimal overhead.
@@ -5031,17 +5031,17 @@ deleted set and emits a single audit record with empty replacements.
         .def("RecordReplaced", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const BRepGraph_NodeId, const BRepGraph_NodeId)>(&BRepGraph_LayerHistory::RecordReplaced), nb::arg("theOpLabel"), nb::arg("theOriginal"), nb::arg("theReplacement"), R"nbdoc(Record replacements: each original is logically removed/detached and
 continued by the corresponding replacement.  Replaced records participate
 in modified-image queries and also mark originals as deleted.)nbdoc")
-        .def("RecordReplacedBatch", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const NCollection_Array1<BRepGraph_NodeId> &, const NCollection_Array1<BRepGraph_NodeId> &, const TCollection_AsciiString &)>(&BRepGraph_LayerHistory::RecordReplacedBatch), nb::arg("theOpLabel"), nb::arg("theOriginals"), nb::arg("theReplacements"), nb::arg("theExtraInfo") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString ( )), R"nbdoc(Record a batch of 1-to-1 replacements in a single history event.)nbdoc")
-        .def("RecordUid", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const BRepGraph_UID &, const NCollection_Array1<BRepGraph_UID> &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::RecordUid), nb::arg("theOpLabel"), nb::arg("theOriginal"), nb::arg("theReplacements"), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory :: Kind :: Modified), R"nbdoc(Record a UID-keyed modification/generation event.
+        .def("RecordReplacedBatch", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const NCollection_Array1<BRepGraph_NodeId> &, const NCollection_Array1<BRepGraph_NodeId> &, const TCollection_AsciiString &)>(&BRepGraph_LayerHistory::RecordReplacedBatch), nb::arg("theOpLabel"), nb::arg("theOriginals"), nb::arg("theReplacements"), nb::arg("theExtraInfo") = static_cast<std::decay_t<const TCollection_AsciiString &>>(TCollection_AsciiString()), R"nbdoc(Record a batch of 1-to-1 replacements in a single history event.)nbdoc")
+        .def("RecordUid", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const BRepGraph_UID &, const NCollection_Array1<BRepGraph_UID> &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::RecordUid), nb::arg("theOpLabel"), nb::arg("theOriginal"), nb::arg("theReplacements"), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory::Kind::Modified), R"nbdoc(Record a UID-keyed modification/generation event.
 
 This is the durable-history path for operations whose source and result
 identities may live in different BRepGraph instances.  Existing NodeId
 records remain available for in-graph algorithms; UID records are queried
 directly by cross-graph consumers.)nbdoc")
         .def("RecordDeletedUid", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const NCollection_Array1<BRepGraph_UID> &)>(&BRepGraph_LayerHistory::RecordDeletedUid), nb::arg("theOpLabel"), nb::arg("theDeleted"), R"nbdoc(Record UID-keyed deletions.)nbdoc")
-        .def("RecordItemUid", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const BRepGraph_ItemUID &, const NCollection_Array1<BRepGraph_ItemUID> &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::RecordItemUid), nb::arg("theOpLabel"), nb::arg("theOriginal"), nb::arg("theReplacements"), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory :: Kind :: Modified), R"nbdoc(Record an all-domain ItemUID-keyed modification/generation event.)nbdoc")
+        .def("RecordItemUid", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const BRepGraph_ItemUID &, const NCollection_Array1<BRepGraph_ItemUID> &, const BRepGraph_LayerHistory::Kind)>(&BRepGraph_LayerHistory::RecordItemUid), nb::arg("theOpLabel"), nb::arg("theOriginal"), nb::arg("theReplacements"), nb::arg("theKind") = static_cast<std::decay_t<const BRepGraph_LayerHistory::Kind>>(BRepGraph_LayerHistory::Kind::Modified), R"nbdoc(Record an all-domain ItemUID-keyed modification/generation event.)nbdoc")
         .def("RecordDeletedItemUid", static_cast<void (BRepGraph_LayerHistory::*)(const TCollection_AsciiString &, const NCollection_Array1<BRepGraph_ItemUID> &)>(&BRepGraph_LayerHistory::RecordDeletedItemUid), nb::arg("theOpLabel"), nb::arg("theDeleted"), R"nbdoc(Record ItemUID-keyed deletions.)nbdoc")
-        .def("Absorb", static_cast<void (BRepGraph_LayerHistory::*)(const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph_LayerHistory::Absorb), nb::arg("theInputs"), nb::arg("theOutputs"), nb::arg("theSource"), nb::arg("theOpLabel"), R"nbdoc(Import a BRepTools_History into this graph-native history log.
+        .def("Absorb", static_cast<void (BRepGraph_LayerHistory::*)(const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph_LayerHistory::Absorb), nb::arg("theInputs"), nb::arg("theOutputs"), nb::arg("theSource").none(), nb::arg("theOpLabel"), R"nbdoc(Import a BRepTools_History into this graph-native history log.
 
 Iterates @p theInputs, queries @p theSource for Modified / Generated /
 IsRemoved, translates each TopoDS_Shape image to a NodeId via
@@ -5069,7 +5069,7 @@ BRepGraph::ShapesView::Add with TrackAddedNodes)
 @param[in] theSource  BRepTools_History from the OCCT algorithm.
 Null is accepted (no-op).
 @param[in] theOpLabel record label written into every emitted record)nbdoc")
-        .def("Absorb", static_cast<void (BRepGraph_LayerHistory::*)(const BRepGraph &, const BRepGraph &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph_LayerHistory::Absorb), nb::arg("theInputGraph"), nb::arg("theOutputGraph"), nb::arg("theInputs"), nb::arg("theOutputs"), nb::arg("theSource"), nb::arg("theOpLabel"), R"nbdoc(Import a BRepTools_History using persistent UIDs from source/result graphs.
+        .def("Absorb", static_cast<void (BRepGraph_LayerHistory::*)(const BRepGraph &, const BRepGraph &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher> &, const occ::handle<BRepTools_History> &, const TCollection_AsciiString &)>(&BRepGraph_LayerHistory::Absorb), nb::arg("theInputGraph"), nb::arg("theOutputGraph"), nb::arg("theInputs"), nb::arg("theOutputs"), nb::arg("theSource").none(), nb::arg("theOpLabel"), R"nbdoc(Import a BRepTools_History using persistent UIDs from source/result graphs.
 
 This overload is the canonical bridge for cross-graph algorithms: input
 shapes are resolved in @p theInputGraph, output shapes are resolved in
@@ -6218,7 +6218,7 @@ incidence.
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_Compact::Result>>(m.attr("BRepGraph_Compact").attr("Result")), "NbNodesAfter", &BRepGraph_Compact::Result::NbNodesAfter);
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_Compact::Result>>(m.attr("BRepGraph_Compact").attr("Result")), "NbUnmappedActiveDefs", &BRepGraph_Compact::Result::NbUnmappedActiveDefs);
     nb::borrow<nb::class_<BRepGraph_Copy>>(m.attr("BRepGraph_Copy"))
-        .def_static("Perform", static_cast<bool (*)(const BRepGraph &, BRepGraph &, BRepGraph_Copy::GeomPolicy, BRepGraph_Copy::MeshPolicy, BRepGraph_Copy::CachePolicy)>(&BRepGraph_Copy::Perform), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy::GeomPolicy :: Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy::MeshPolicy :: Copy), nb::arg("theCachePolicy") = static_cast<std::decay_t<BRepGraph_Copy::CachePolicy>>(BRepGraph_Copy::CachePolicy :: Drop), R"nbdoc(Copy the entire source graph into the target graph.
+        .def_static("Perform", static_cast<bool (*)(const BRepGraph &, BRepGraph &, BRepGraph_Copy::GeomPolicy, BRepGraph_Copy::MeshPolicy, BRepGraph_Copy::CachePolicy)>(&BRepGraph_Copy::Perform), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy::GeomPolicy::Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy::MeshPolicy::Copy), nb::arg("theCachePolicy") = static_cast<std::decay_t<BRepGraph_Copy::CachePolicy>>(BRepGraph_Copy::CachePolicy::Drop), R"nbdoc(Copy the entire source graph into the target graph.
 
 Self-copy (theSourceGraph == theTargetGraph):
 Identity no-op, returns true immediately.
@@ -6235,7 +6235,7 @@ Entities from theSourceGraph are appended to theTargetGraph.
 @param[in] theGeomPolicy geometry handle policy (default: Copy)
 @param[in] theMeshPolicy mesh data policy (default: Copy)
 @return true on success, false on failure (empty source))nbdoc")
-        .def_static("CopyNode", static_cast<BRepGraph_NodeId (*)(const BRepGraph &, BRepGraph &, const BRepGraph_NodeId, BRepGraph_Copy::GeomPolicy, BRepGraph_Copy::MeshPolicy, BRepGraph_Copy::CachePolicy)>(&BRepGraph_Copy::CopyNode), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theNodeId"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy::GeomPolicy :: Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy::MeshPolicy :: Copy), nb::arg("theCachePolicy") = static_cast<std::decay_t<BRepGraph_Copy::CachePolicy>>(BRepGraph_Copy::CachePolicy :: Drop), R"nbdoc(Copy a single node sub-graph of any kind (Face, Shell, Solid, Wire, Edge, Vertex, etc.).
+        .def_static("CopyNode", static_cast<BRepGraph_NodeId (*)(const BRepGraph &, BRepGraph &, const BRepGraph_NodeId, BRepGraph_Copy::GeomPolicy, BRepGraph_Copy::MeshPolicy, BRepGraph_Copy::CachePolicy)>(&BRepGraph_Copy::CopyNode), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theNodeId"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy::GeomPolicy::Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy::MeshPolicy::Copy), nb::arg("theCachePolicy") = static_cast<std::decay_t<BRepGraph_Copy::CachePolicy>>(BRepGraph_Copy::CachePolicy::Drop), R"nbdoc(Copy a single node sub-graph of any kind (Face, Shell, Solid, Wire, Edge, Vertex, etc.).
 The target graph receives the specified node and all entities it references.
 
 External copy (theSourceGraph != theTargetGraph):
@@ -6255,7 +6255,7 @@ are preserved as-is.
 @return the mapped root NodeId in theTargetGraph, or invalid NodeId on failure)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph_Copy>(nb::borrow<nb::class_<BRepGraph_Copy>>(m.attr("BRepGraph_Copy")));
     nb::borrow<nb::class_<BRepGraph_Transform>>(m.attr("BRepGraph_Transform"))
-        .def_static("Perform", static_cast<bool (*)(const BRepGraph &, BRepGraph &, const gp_Trsf &, const BRepGraph_Copy::GeomPolicy, const BRepGraph_Copy::MeshPolicy)>(&BRepGraph_Transform::Perform), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theTrsf"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy :: GeomPolicy :: Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy :: MeshPolicy :: Drop), R"nbdoc(Transform the entire graph into a target graph.
+        .def_static("Perform", static_cast<bool (*)(const BRepGraph &, BRepGraph &, const gp_Trsf &, const BRepGraph_Copy::GeomPolicy, const BRepGraph_Copy::MeshPolicy)>(&BRepGraph_Transform::Perform), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theTrsf"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy::GeomPolicy::Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy::MeshPolicy::Drop), R"nbdoc(Transform the entire graph into a target graph.
 
 Self-transform (theSourceGraph == theTargetGraph):
 Applies transform in-place on theTargetGraph.
@@ -6273,7 +6273,7 @@ Appends source entities into target with explicit mapping, then transforms.
 @param[in] theMeshPolicy mesh data policy (default: Drop)
 @return true on success, false on failure (empty source, or Drop +
 geometry-modification-required))nbdoc")
-        .def_static("TransformNode", static_cast<BRepGraph_NodeId (*)(const BRepGraph &, BRepGraph &, const BRepGraph_NodeId, const gp_Trsf &, const BRepGraph_Copy::GeomPolicy, const BRepGraph_Copy::MeshPolicy)>(&BRepGraph_Transform::TransformNode), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theNodeId"), nb::arg("theTrsf"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy :: GeomPolicy :: Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy :: MeshPolicy :: Drop), R"nbdoc(Transform a single node sub-graph of any kind.
+        .def_static("TransformNode", static_cast<BRepGraph_NodeId (*)(const BRepGraph &, BRepGraph &, const BRepGraph_NodeId, const gp_Trsf &, const BRepGraph_Copy::GeomPolicy, const BRepGraph_Copy::MeshPolicy)>(&BRepGraph_Transform::TransformNode), nb::arg("theSourceGraph"), nb::arg("theTargetGraph"), nb::arg("theNodeId"), nb::arg("theTrsf"), nb::arg("theGeomPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::GeomPolicy>>(BRepGraph_Copy::GeomPolicy::Copy), nb::arg("theMeshPolicy") = static_cast<std::decay_t<const BRepGraph_Copy::MeshPolicy>>(BRepGraph_Copy::MeshPolicy::Drop), R"nbdoc(Transform a single node sub-graph of any kind.
 Topology nodes are copied and transformed by baking the transform into their definitions.
 
 Self-transform (theSourceGraph == theTargetGraph):

@@ -160,7 +160,7 @@ class Geom2d_AxisPlacement(Geom2d_Geometry):
     def SetLocation(self, P: nanoocp.gp.gp_Pnt2d) -> None:
         """Changes the "Location" point (origin) of the axis placement."""
 
-    def Angle(self, Other: Geom2d_AxisPlacement) -> float:
+    def Angle(self, Other: Geom2d_AxisPlacement | None) -> float:
         """
         Computes the angle between the "Direction" of
         two axis placement in radians.
@@ -635,7 +635,7 @@ class Geom2d_BezierCurve(Geom2d_BoundedCurve):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -1055,7 +1055,7 @@ class Geom2d_BSplineCurve(Geom2d_BoundedCurve):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -1778,10 +1778,10 @@ class Geom2d_Point(Geom2d_Geometry):
     def Y(self) -> float:
         """returns the Y coordinate of <me>."""
 
-    def Distance(self, Other: Geom2d_Point) -> float:
+    def Distance(self, Other: Geom2d_Point | None) -> float:
         """computes the distance between <me> and <Other>."""
 
-    def SquareDistance(self, Other: Geom2d_Point) -> float:
+    def SquareDistance(self, Other: Geom2d_Point | None) -> float:
         """computes the square distance between <me> and <Other>."""
 
     def DumpJson(self, theDepth: int = -1) -> object:
@@ -2130,7 +2130,7 @@ class Geom2d_Vector(Geom2d_Geometry):
     def Reversed(self) -> Geom2d_Vector:
         """Returns a copy of <me> reversed."""
 
-    def Angle(self, Other: Geom2d_Vector) -> float:
+    def Angle(self, Other: Geom2d_Vector | None) -> float:
         """
         Computes the angular value, in radians, between this
         vector and vector Other. The result is a value
@@ -2155,10 +2155,10 @@ class Geom2d_Vector(Geom2d_Geometry):
     def Y(self) -> float:
         """Returns the Y coordinate of <me>."""
 
-    def Crossed(self, Other: Geom2d_Vector) -> float:
+    def Crossed(self, Other: Geom2d_Vector | None) -> float:
         """Cross product of <me> with the vector <Other>."""
 
-    def Dot(self, Other: Geom2d_Vector) -> float:
+    def Dot(self, Other: Geom2d_Vector | None) -> float:
         """Returns the scalar product of 2 Vectors."""
 
     def Vec2d(self) -> nanoocp.gp.gp_Vec2d:
@@ -2231,10 +2231,10 @@ class Geom2d_Direction(Geom2d_Vector):
     def SquareMagnitude(self) -> float:
         """returns 1.0"""
 
-    def Crossed(self, Other: Geom2d_Vector) -> float:
+    def Crossed(self, Other: Geom2d_Vector | None) -> float:
         """Computes the cross product between <me> and <Other>."""
 
-    def __xor__(self, Other: Geom2d_Vector) -> float: ...
+    def __xor__(self, Other: Geom2d_Vector | None) -> float: ...
 
     def Transform(self, T: nanoocp.gp.gp_Trsf2d) -> None:
         """Applies the transformation T to this unit vector, then normalizes it."""
@@ -3019,7 +3019,7 @@ class Geom2d_OffsetCurve(Geom2d_Curve):
         """Copy constructor for optimized copying without validation."""
 
     @overload
-    def __init__(self, C: Geom2d_Curve, Offset: float, isNotCheckC0: bool = False) -> None:
+    def __init__(self, C: Geom2d_Curve | None, Offset: float, isNotCheckC0: bool = False) -> None:
         """
         Constructs a curve offset from the basis curve C,
         where Offset is the distance between the offset
@@ -3051,7 +3051,7 @@ class Geom2d_OffsetCurve(Geom2d_Curve):
         Returns the current evaluation representation descriptor (may be null).
         """
 
-    def SetEvalRepresentation(self, theDesc: nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base) -> None:
+    def SetEvalRepresentation(self, theDesc: nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base | None) -> None:
         """
         Sets a new evaluation representation.
         Validates descriptor data and ensures no circular references.
@@ -3078,7 +3078,7 @@ class Geom2d_OffsetCurve(Geom2d_Curve):
         the point of parameter U on this offset curve.
         """
 
-    def SetBasisCurve(self, C: Geom2d_Curve, isNotCheckC0: bool = False) -> None:
+    def SetBasisCurve(self, C: Geom2d_Curve | None, isNotCheckC0: bool = False) -> None:
         """
         Changes this offset curve by assigning C as the
         basis curve from which it is built.
@@ -3670,16 +3670,16 @@ class Geom2d_Transformation(nanoocp.Standard.Standard_Transient):
         the ScaleFactor is lower or equal to Resolution from package gp.
         """
 
-    def Multiplied(self, Other: Geom2d_Transformation) -> Geom2d_Transformation:
+    def Multiplied(self, Other: Geom2d_Transformation | None) -> Geom2d_Transformation:
         """
         Computes the transformation composed with Other and <me>.
         <me> * Other.
         Returns a new transformation
         """
 
-    def __mul__(self, Other: Geom2d_Transformation) -> Geom2d_Transformation: ...
+    def __mul__(self, Other: Geom2d_Transformation | None) -> Geom2d_Transformation: ...
 
-    def Multiply(self, Other: Geom2d_Transformation) -> None:
+    def Multiply(self, Other: Geom2d_Transformation | None) -> None:
         """
         Computes the transformation composed with Other and <me> .
         <me> = <me> * Other.
@@ -3690,7 +3690,7 @@ class Geom2d_Transformation(nanoocp.Standard.Standard_Transient):
         if N < 0  <me>.Invert() * .........* <me>.Invert()
         """
 
-    def __imul__(self, Other: Geom2d_Transformation) -> Geom2d_Transformation: ...
+    def __imul__(self, Other: Geom2d_Transformation | None) -> Geom2d_Transformation: ...
 
     def Power(self, N: int) -> None:
         """Raised if N < 0 and if the transformation is not inversible"""
@@ -3698,7 +3698,7 @@ class Geom2d_Transformation(nanoocp.Standard.Standard_Transient):
     def Powered(self, N: int) -> Geom2d_Transformation:
         """Raised if N < 0 and if the transformation is not inversible"""
 
-    def PreMultiply(self, Other: Geom2d_Transformation) -> None:
+    def PreMultiply(self, Other: Geom2d_Transformation | None) -> None:
         """
         Computes the matrix of the transformation composed with
         <me> and Other. <me> = Other * <me>
@@ -3730,7 +3730,7 @@ class Geom2d_TrimmedCurve(Geom2d_BoundedCurve):
     """
 
     @overload
-    def __init__(self, C: Geom2d_Curve, U1: float, U2: float, Sense: bool = True, theAdjustPeriodic: bool = True) -> None:
+    def __init__(self, C: Geom2d_Curve | None, U1: float, U2: float, Sense: bool = True, theAdjustPeriodic: bool = True) -> None:
         """
         Creates a trimmed curve from the basis curve C limited between
         U1 and U2.
@@ -4031,23 +4031,23 @@ class Geom2d_VectorWithMagnitude(Geom2d_Vector):
     def SquareMagnitude(self) -> float:
         """Returns the square magnitude of <me>."""
 
-    def Add(self, Other: Geom2d_Vector) -> None:
+    def Add(self, Other: Geom2d_Vector | None) -> None:
         """Adds the Vector Other to <me>."""
 
-    def __iadd__(self, Other: Geom2d_Vector) -> Geom2d_VectorWithMagnitude: ...
+    def __iadd__(self, Other: Geom2d_Vector | None) -> Geom2d_VectorWithMagnitude: ...
 
-    def Added(self, Other: Geom2d_Vector) -> Geom2d_VectorWithMagnitude:
+    def Added(self, Other: Geom2d_Vector | None) -> Geom2d_VectorWithMagnitude:
         """Adds the vector Other to <me>."""
 
-    def __add__(self, Other: Geom2d_Vector) -> Geom2d_VectorWithMagnitude: ...
+    def __add__(self, Other: Geom2d_Vector | None) -> Geom2d_VectorWithMagnitude: ...
 
-    def Crossed(self, Other: Geom2d_Vector) -> float:
+    def Crossed(self, Other: Geom2d_Vector | None) -> float:
         """
         Computes the cross product between <me> and Other
         <me> ^ Other. A new vector is returned.
         """
 
-    def __xor__(self, Other: Geom2d_Vector) -> float: ...
+    def __xor__(self, Other: Geom2d_Vector | None) -> float: ...
 
     def Divide(self, Scalar: float) -> None:
         """Divides <me> by a scalar."""
@@ -4089,15 +4089,15 @@ class Geom2d_VectorWithMagnitude(Geom2d_Vector):
         Resolution from package gp.
         """
 
-    def Subtract(self, Other: Geom2d_Vector) -> None:
+    def Subtract(self, Other: Geom2d_Vector | None) -> None:
         """Subtracts the Vector Other to <me>."""
 
-    def __isub__(self, Other: Geom2d_Vector) -> Geom2d_VectorWithMagnitude: ...
+    def __isub__(self, Other: Geom2d_Vector | None) -> Geom2d_VectorWithMagnitude: ...
 
-    def Subtracted(self, Other: Geom2d_Vector) -> Geom2d_VectorWithMagnitude:
+    def Subtracted(self, Other: Geom2d_Vector | None) -> Geom2d_VectorWithMagnitude:
         """Subtracts the vector Other to <me>. A new vector is returned."""
 
-    def __sub__(self, Other: Geom2d_Vector) -> Geom2d_VectorWithMagnitude: ...
+    def __sub__(self, Other: Geom2d_Vector | None) -> Geom2d_VectorWithMagnitude: ...
 
     def Transform(self, T: nanoocp.gp.gp_Trsf2d) -> None:
         """Applies the transformation T to this vector."""

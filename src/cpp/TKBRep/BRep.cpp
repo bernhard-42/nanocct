@@ -163,16 +163,16 @@ void nanoocp_define_BRep(nb::module_ &m) {
     nanoocp_implicit_default_ctor<BRep_Builder>(nb::borrow<nb::class_<BRep_Builder>>(m.attr("BRep_Builder")));
     nb::borrow<nb::class_<BRep_Builder>>(m.attr("BRep_Builder"))
         .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &) const>(&BRep_Builder::MakeFace), nb::arg("F"), R"nbdoc(Makes an undefined Face.)nbdoc")
-        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const occ::handle<Geom_Surface> &, const double) const>(&BRep_Builder::MakeFace), nb::arg("F"), nb::arg("S"), nb::arg("Tol"), R"nbdoc(Makes a Face with a surface.)nbdoc")
-        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::MakeFace), nb::arg("F"), nb::arg("S"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Makes a Face with a surface and a location.)nbdoc")
-        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::MakeFace), nb::arg("theFace"), nb::arg("theTriangulation"), R"nbdoc(Makes a theFace with a single triangulation. The triangulation
+        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const occ::handle<Geom_Surface> &, const double) const>(&BRep_Builder::MakeFace), nb::arg("F"), nb::arg("S").none(), nb::arg("Tol"), R"nbdoc(Makes a Face with a surface.)nbdoc")
+        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::MakeFace), nb::arg("F"), nb::arg("S").none(), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Makes a Face with a surface and a location.)nbdoc")
+        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::MakeFace), nb::arg("theFace"), nb::arg("theTriangulation").none(), R"nbdoc(Makes a theFace with a single triangulation. The triangulation
 is in the same reference system than the TFace.)nbdoc")
-        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const NCollection_List<opencascade::handle<Poly_Triangulation>> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::MakeFace), nb::arg("theFace"), nb::arg("theTriangulations"), nb::arg("theActiveTriangulation") = static_cast<std::decay_t<const occ::handle<Poly_Triangulation> &>>(occ :: handle < Poly_Triangulation > ( )), R"nbdoc(Makes a Face with a list of triangulations and active one.
+        .def("MakeFace", static_cast<void (BRep_Builder::*)(TopoDS_Face &, const NCollection_List<opencascade::handle<Poly_Triangulation>> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::MakeFace), nb::arg("theFace"), nb::arg("theTriangulations"), nb::arg("theActiveTriangulation").none() = static_cast<std::decay_t<const occ::handle<Poly_Triangulation> &>>(occ::handle < Poly_Triangulation >()), R"nbdoc(Makes a Face with a list of triangulations and active one.
 Use NULL active triangulation to set the first triangulation in list as active.
 The triangulations is in the same reference system than the TFace.)nbdoc")
-        .def("UpdateFace", static_cast<void (BRep_Builder::*)(const TopoDS_Face &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateFace), nb::arg("F"), nb::arg("S"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Updates the face F using the tolerance value Tol,
+        .def("UpdateFace", static_cast<void (BRep_Builder::*)(const TopoDS_Face &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateFace), nb::arg("F"), nb::arg("S").none(), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Updates the face F using the tolerance value Tol,
 surface S and location Location.)nbdoc")
-        .def("UpdateFace", static_cast<void (BRep_Builder::*)(const TopoDS_Face &, const occ::handle<Poly_Triangulation> &, const bool) const>(&BRep_Builder::UpdateFace), nb::arg("theFace"), nb::arg("theTriangulation"), nb::arg("theToReset") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Changes a face triangulation.
+        .def("UpdateFace", static_cast<void (BRep_Builder::*)(const TopoDS_Face &, const occ::handle<Poly_Triangulation> &, const bool) const>(&BRep_Builder::UpdateFace), nb::arg("theFace"), nb::arg("theTriangulation").none(), nb::arg("theToReset") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Changes a face triangulation.
 A NULL theTriangulation removes face triangulations.
 If theToReset is TRUE face triangulations will be reset to new list with only one input
 triangulation that will be active. Else if theTriangulation is contained in internal
@@ -181,57 +181,57 @@ else the active triangulation will be replaced to theTriangulation one.)nbdoc")
         .def("UpdateFace", static_cast<void (BRep_Builder::*)(const TopoDS_Face &, const double) const>(&BRep_Builder::UpdateFace), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Updates the face Tolerance.)nbdoc")
         .def("NaturalRestriction", static_cast<void (BRep_Builder::*)(const TopoDS_Face &, const bool) const>(&BRep_Builder::NaturalRestriction), nb::arg("F"), nb::arg("N"), R"nbdoc(Sets the NaturalRestriction flag of the face.)nbdoc")
         .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &) const>(&BRep_Builder::MakeEdge), nb::arg("E"), R"nbdoc(Makes an undefined Edge (no geometry).)nbdoc")
-        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Geom_Curve> &, const double) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("C"), nb::arg("Tol"), R"nbdoc(Makes an Edge with a curve.)nbdoc")
-        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Geom_Curve> &, const TopLoc_Location &, const double) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("C"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Makes an Edge with a curve and a location.)nbdoc")
-        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Poly_Polygon3D> &) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("P"), R"nbdoc(Makes an Edge with a polygon 3d.)nbdoc")
-        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("N"), nb::arg("T"), R"nbdoc(makes an Edge polygon on Triangulation.)nbdoc")
-        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("N"), nb::arg("T"), nb::arg("L"), R"nbdoc(makes an Edge polygon on Triangulation.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Curve> &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C"), nb::arg("Tol"), R"nbdoc(Sets a 3D curve for the edge.
+        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Geom_Curve> &, const double) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("C").none(), nb::arg("Tol"), R"nbdoc(Makes an Edge with a curve.)nbdoc")
+        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Geom_Curve> &, const TopLoc_Location &, const double) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("C").none(), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Makes an Edge with a curve and a location.)nbdoc")
+        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Poly_Polygon3D> &) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("P").none(), R"nbdoc(Makes an Edge with a polygon 3d.)nbdoc")
+        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("N").none(), nb::arg("T").none(), R"nbdoc(makes an Edge polygon on Triangulation.)nbdoc")
+        .def("MakeEdge", static_cast<void (BRep_Builder::*)(TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_Builder::MakeEdge), nb::arg("E"), nb::arg("N").none(), nb::arg("T").none(), nb::arg("L"), R"nbdoc(makes an Edge polygon on Triangulation.)nbdoc")
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Curve> &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C").none(), nb::arg("Tol"), R"nbdoc(Sets a 3D curve for the edge.
 If <C> is a null handle, remove any existing 3d curve.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Curve> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets a 3D curve for the edge.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Curve> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C").none(), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets a 3D curve for the edge.
 If <C> is a null handle, remove any existing 3d curve.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const TopoDS_Face &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C"), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Sets a pcurve for the edge on the face.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const TopoDS_Face &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C").none(), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Sets a pcurve for the edge on the face.
 If <C> is a null handle, remove any existing pcurve.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &, const TopoDS_Face &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C1"), nb::arg("C2"), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Sets pcurves for the edge on the closed face. If
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &, const TopoDS_Face &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C1").none(), nb::arg("C2").none(), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Sets pcurves for the edge on the closed face. If
 <C1> or <C2> is a null handle, remove any existing
 pcurve.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C"), nb::arg("S"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets a pcurve for the edge on the face.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C").none(), nb::arg("S").none(), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets a pcurve for the edge on the face.
 If <C> is a null handle, remove any existing pcurve.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double, const gp_Pnt2d &, const gp_Pnt2d &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C"), nb::arg("S"), nb::arg("L"), nb::arg("Tol"), nb::arg("Pf"), nb::arg("Pl"), R"nbdoc(Sets a pcurve for the edge on the face.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double, const gp_Pnt2d &, const gp_Pnt2d &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C").none(), nb::arg("S").none(), nb::arg("L"), nb::arg("Tol"), nb::arg("Pf"), nb::arg("Pl"), R"nbdoc(Sets a pcurve for the edge on the face.
 If <C> is a null handle, remove any existing pcurve.
 Sets UV bounds for curve repsentation)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C1"), nb::arg("C2"), nb::arg("S"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets pcurves for the edge on the closed surface.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C1").none(), nb::arg("C2").none(), nb::arg("S").none(), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets pcurves for the edge on the closed surface.
 <C1> or <C2> is a null handle, remove any existing
 pcurve.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double, const gp_Pnt2d &, const gp_Pnt2d &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C1"), nb::arg("C2"), nb::arg("S"), nb::arg("L"), nb::arg("Tol"), nb::arg("Pf"), nb::arg("Pl"), R"nbdoc(Sets pcurves for the edge on the closed surface.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double, const gp_Pnt2d &, const gp_Pnt2d &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("C1").none(), nb::arg("C2").none(), nb::arg("S").none(), nb::arg("L"), nb::arg("Tol"), nb::arg("Pf"), nb::arg("Pl"), R"nbdoc(Sets pcurves for the edge on the closed surface.
 <C1> or <C2> is a null handle, remove any existing
 pcurve.
 Sets UV bounds for curve repsentation)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon3D> &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P"), R"nbdoc(Changes an Edge 3D polygon.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon3D> &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P").none(), R"nbdoc(Changes an Edge 3D polygon.
 A null Polygon removes the 3d Polygon.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon3D> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P"), nb::arg("L"), R"nbdoc(Changes an Edge 3D polygon.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon3D> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P").none(), nb::arg("L"), R"nbdoc(Changes an Edge 3D polygon.
 A null Polygon removes the 3d Polygon.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N"), nb::arg("T"), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N"), nb::arg("T"), nb::arg("L"), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N1"), nb::arg("N2"), nb::arg("T"), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N1"), nb::arg("N2"), nb::arg("T"), nb::arg("L"), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const TopoDS_Face &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P"), nb::arg("S"), R"nbdoc(Changes Edge polygon on a face.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P"), nb::arg("S"), nb::arg("T"), R"nbdoc(Changes Edge polygon on a face.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Poly_Polygon2D> &, const TopoDS_Face &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P1"), nb::arg("P2"), nb::arg("S"), R"nbdoc(Changes Edge polygons on a face.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N").none(), nb::arg("T").none(), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N").none(), nb::arg("T").none(), nb::arg("L"), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N1").none(), nb::arg("N2").none(), nb::arg("T").none(), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_PolygonOnTriangulation> &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("N1").none(), nb::arg("N2").none(), nb::arg("T").none(), nb::arg("L"), R"nbdoc(Changes an Edge polygon on Triangulation.)nbdoc")
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const TopoDS_Face &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P").none(), nb::arg("S"), R"nbdoc(Changes Edge polygon on a face.)nbdoc")
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P").none(), nb::arg("S").none(), nb::arg("T"), R"nbdoc(Changes Edge polygon on a face.)nbdoc")
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Poly_Polygon2D> &, const TopoDS_Face &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P1").none(), nb::arg("P2").none(), nb::arg("S"), R"nbdoc(Changes Edge polygons on a face.
 
 A null Polygon removes the 2d Polygon.)nbdoc")
-        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P1"), nb::arg("P2"), nb::arg("S"), nb::arg("L"), R"nbdoc(Changes Edge polygons on a face.
+        .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Poly_Polygon2D> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("P1").none(), nb::arg("P2").none(), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Changes Edge polygons on a face.
 
 A null Polygon removes the 2d Polygon.)nbdoc")
         .def("UpdateEdge", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const double) const>(&BRep_Builder::UpdateEdge), nb::arg("E"), nb::arg("Tol"), R"nbdoc(Updates the edge tolerance.)nbdoc")
         .def("Continuity", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const TopoDS_Face &, const TopoDS_Face &, const GeomAbs_Shape) const>(&BRep_Builder::Continuity), nb::arg("E"), nb::arg("F1"), nb::arg("F2"), nb::arg("C"), R"nbdoc(Sets the geometric continuity on the edge.)nbdoc")
-        .def("Continuity", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &, const GeomAbs_Shape) const>(&BRep_Builder::Continuity), nb::arg("E"), nb::arg("S1"), nb::arg("S2"), nb::arg("L1"), nb::arg("L2"), nb::arg("C"), R"nbdoc(Sets the geometric continuity on the edge.)nbdoc")
+        .def("Continuity", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &, const GeomAbs_Shape) const>(&BRep_Builder::Continuity), nb::arg("E"), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("L1"), nb::arg("L2"), nb::arg("C"), R"nbdoc(Sets the geometric continuity on the edge.)nbdoc")
         .def("SameParameter", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const bool) const>(&BRep_Builder::SameParameter), nb::arg("E"), nb::arg("S"), R"nbdoc(Sets the same parameter flag for the edge <E>.)nbdoc")
         .def("SameRange", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const bool) const>(&BRep_Builder::SameRange), nb::arg("E"), nb::arg("S"), R"nbdoc(Sets the same range flag for the edge <E>.)nbdoc")
         .def("Degenerated", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const bool) const>(&BRep_Builder::Degenerated), nb::arg("E"), nb::arg("D"), R"nbdoc(Sets the degenerated flag for the edge <E>.)nbdoc")
         .def("Range", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const double, const double, const bool) const>(&BRep_Builder::Range), nb::arg("E"), nb::arg("First"), nb::arg("Last"), nb::arg("Only3d") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Sets the range of the 3d curve if Only3d=TRUE,
 otherwise sets the range to all the representations)nbdoc")
-        .def("Range", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double, const double) const>(&BRep_Builder::Range), nb::arg("E"), nb::arg("S"), nb::arg("L"), nb::arg("First"), nb::arg("Last"), R"nbdoc(Sets the range of the edge on the pcurve on the
+        .def("Range", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double, const double) const>(&BRep_Builder::Range), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), nb::arg("First"), nb::arg("Last"), R"nbdoc(Sets the range of the edge on the pcurve on the
 surface.)nbdoc")
         .def("Range", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const TopoDS_Face &, const double, const double) const>(&BRep_Builder::Range), nb::arg("E"), nb::arg("F"), nb::arg("First"), nb::arg("Last"), R"nbdoc(Sets the range of the edge on the pcurve on the face.)nbdoc")
         .def("Transfert", static_cast<void (BRep_Builder::*)(const TopoDS_Edge &, const TopoDS_Edge &) const>(&BRep_Builder::Transfert), nb::arg("Ein"), nb::arg("Eout"), R"nbdoc(Add to <Eout> the geometric representations of <Ein>.)nbdoc")
@@ -241,7 +241,7 @@ surface.)nbdoc")
         .def("UpdateVertex", static_cast<void (BRep_Builder::*)(const TopoDS_Vertex &, const double, const TopoDS_Edge &, const double) const>(&BRep_Builder::UpdateVertex), nb::arg("V"), nb::arg("P"), nb::arg("E"), nb::arg("Tol"), R"nbdoc(Sets the parameter for the vertex on the edge curves.)nbdoc")
         .def("UpdateVertex", static_cast<void (BRep_Builder::*)(const TopoDS_Vertex &, const double, const TopoDS_Edge &, const TopoDS_Face &, const double) const>(&BRep_Builder::UpdateVertex), nb::arg("V"), nb::arg("P"), nb::arg("E"), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Sets the parameter for the vertex on the edge
 pcurve on the face.)nbdoc")
-        .def("UpdateVertex", static_cast<void (BRep_Builder::*)(const TopoDS_Vertex &, const double, const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateVertex), nb::arg("V"), nb::arg("P"), nb::arg("E"), nb::arg("S"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets the parameter for the vertex on the edge
+        .def("UpdateVertex", static_cast<void (BRep_Builder::*)(const TopoDS_Vertex &, const double, const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const double) const>(&BRep_Builder::UpdateVertex), nb::arg("V"), nb::arg("P"), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), nb::arg("Tol"), R"nbdoc(Sets the parameter for the vertex on the edge
 pcurve on the surface.)nbdoc")
         .def("UpdateVertex", static_cast<void (BRep_Builder::*)(const TopoDS_Vertex &, const double, const double, const TopoDS_Face &, const double) const>(&BRep_Builder::UpdateVertex), nb::arg("Ve"), nb::arg("U"), nb::arg("V"), nb::arg("F"), nb::arg("Tol"), R"nbdoc(Sets the parameters for the vertex on the face.)nbdoc")
         .def("UpdateVertex", static_cast<void (BRep_Builder::*)(const TopoDS_Vertex &, const double) const>(&BRep_Builder::UpdateVertex), nb::arg("V"), nb::arg("Tol"), R"nbdoc(Updates the vertex tolerance.)nbdoc")
@@ -251,7 +251,7 @@ parameter of Vout on Eout.)nbdoc");
     nb::borrow<nb::class_<BRep_TFace>>(m.attr("BRep_TFace"))
         .def(nb::new_([]() { return opencascade::handle<BRep_TFace>(new BRep_TFace()); }), R"nbdoc(Creates an empty TFace.)nbdoc")
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_TFace::*)() const>(&BRep_TFace::Surface), R"nbdoc(Returns face surface.)nbdoc")
-        .def("Surface", static_cast<void (BRep_TFace::*)(const occ::handle<Geom_Surface> &)>(&BRep_TFace::Surface), nb::arg("theSurface"), R"nbdoc(Sets surface for this face.)nbdoc")
+        .def("Surface", static_cast<void (BRep_TFace::*)(const occ::handle<Geom_Surface> &)>(&BRep_TFace::Surface), nb::arg("theSurface").none(), R"nbdoc(Sets surface for this face.)nbdoc")
         .def("Location", static_cast<const TopLoc_Location & (BRep_TFace::*)() const>(&BRep_TFace::Location), R"nbdoc(Returns the face location.)nbdoc")
         .def("Location", static_cast<void (BRep_TFace::*)(const TopLoc_Location &)>(&BRep_TFace::Location), nb::arg("theLocation"), R"nbdoc(Sets the location for this face.)nbdoc")
         .def("Tolerance", static_cast<double (BRep_TFace::*)() const>(&BRep_TFace::Tolerance), R"nbdoc(Returns the face tolerance.)nbdoc")
@@ -265,7 +265,7 @@ VMin, VMax).)nbdoc")
 the first triangulation appropriate for the input purpose,
 just the first triangulation if none matching other criteria and input purpose is
 AnyFallback or null handle if there is no any suitable triangulation.)nbdoc")
-        .def("Triangulation", static_cast<void (BRep_TFace::*)(const occ::handle<Poly_Triangulation> &, const bool)>(&BRep_TFace::Triangulation), nb::arg("theTriangulation"), nb::arg("theToReset") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets input triangulation for this face.
+        .def("Triangulation", static_cast<void (BRep_TFace::*)(const occ::handle<Poly_Triangulation> &, const bool)>(&BRep_TFace::Triangulation), nb::arg("theTriangulation").none(), nb::arg("theToReset") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Sets input triangulation for this face.
 @param[in] theTriangulation  triangulation to be set
 @param[in] theToReset  flag to reset triangulations list to new list with only one input
 triangulation. If theTriangulation is NULL internal list of triangulations will be cleared and
@@ -277,7 +277,7 @@ else the active triangulation will be replaced to input one.)nbdoc")
 The new Face has no triangulation.)nbdoc")
         .def("DumpJson", [](const BRep_TFace &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("Triangulations", static_cast<const NCollection_List<opencascade::handle<Poly_Triangulation>> & (BRep_TFace::*)() const>(&BRep_TFace::Triangulations), R"nbdoc(Returns the list of available face triangulations.)nbdoc")
-        .def("Triangulations", static_cast<void (BRep_TFace::*)(const NCollection_List<opencascade::handle<Poly_Triangulation>> &, const occ::handle<Poly_Triangulation> &)>(&BRep_TFace::Triangulations), nb::arg("theTriangulations"), nb::arg("theActiveTriangulation"), R"nbdoc(Sets input list of triangulations and currently active triangulation for this face.
+        .def("Triangulations", static_cast<void (BRep_TFace::*)(const NCollection_List<opencascade::handle<Poly_Triangulation>> &, const occ::handle<Poly_Triangulation> &)>(&BRep_TFace::Triangulations), nb::arg("theTriangulations"), nb::arg("theActiveTriangulation").none(), R"nbdoc(Sets input list of triangulations and currently active triangulation for this face.
 If list is empty internal list of triangulations will be cleared and active triangulation will
 be nullified. Else this list will be saved and the input active triangulation be saved as
 active. Use NULL active triangulation to set the first triangulation in list as active. Note:
@@ -293,9 +293,9 @@ if this list doesn't contain input active triangulation.)nbdoc")
         .def("IsPointOnCurve", static_cast<bool (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::IsPointOnCurve), R"nbdoc(A point on a 3d curve.)nbdoc")
         .def("IsPointOnCurveOnSurface", static_cast<bool (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::IsPointOnCurveOnSurface), R"nbdoc(A point on a 2d curve on a surface.)nbdoc")
         .def("IsPointOnSurface", static_cast<bool (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::IsPointOnSurface), R"nbdoc(A point on a surface.)nbdoc")
-        .def("IsPointOnCurve", static_cast<bool (BRep_PointRepresentation::*)(const occ::handle<Geom_Curve> &, const TopLoc_Location &) const>(&BRep_PointRepresentation::IsPointOnCurve), nb::arg("C"), nb::arg("L"), R"nbdoc(A point on the curve <C>.)nbdoc")
-        .def("IsPointOnCurveOnSurface", static_cast<bool (BRep_PointRepresentation::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointRepresentation::IsPointOnCurveOnSurface), nb::arg("PC"), nb::arg("S"), nb::arg("L"), R"nbdoc(A point on the 2d curve <PC> on the surface <S>.)nbdoc")
-        .def("IsPointOnSurface", static_cast<bool (BRep_PointRepresentation::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointRepresentation::IsPointOnSurface), nb::arg("S"), nb::arg("L"), R"nbdoc(A point on the surface <S>.)nbdoc")
+        .def("IsPointOnCurve", static_cast<bool (BRep_PointRepresentation::*)(const occ::handle<Geom_Curve> &, const TopLoc_Location &) const>(&BRep_PointRepresentation::IsPointOnCurve), nb::arg("C").none(), nb::arg("L"), R"nbdoc(A point on the curve <C>.)nbdoc")
+        .def("IsPointOnCurveOnSurface", static_cast<bool (BRep_PointRepresentation::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointRepresentation::IsPointOnCurveOnSurface), nb::arg("PC").none(), nb::arg("S").none(), nb::arg("L"), R"nbdoc(A point on the 2d curve <PC> on the surface <S>.)nbdoc")
+        .def("IsPointOnSurface", static_cast<bool (BRep_PointRepresentation::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointRepresentation::IsPointOnSurface), nb::arg("S").none(), nb::arg("L"), R"nbdoc(A point on the surface <S>.)nbdoc")
         .def("Location", static_cast<const TopLoc_Location & (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::Location))
         .def("Location", static_cast<void (BRep_PointRepresentation::*)(const TopLoc_Location &)>(&BRep_PointRepresentation::Location), nb::arg("L"))
         .def("Parameter", static_cast<double (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::Parameter))
@@ -303,11 +303,11 @@ if this list doesn't contain input active triangulation.)nbdoc")
         .def("Parameter2", static_cast<double (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::Parameter2))
         .def("Parameter2", static_cast<void (BRep_PointRepresentation::*)(const double)>(&BRep_PointRepresentation::Parameter2), nb::arg("P"))
         .def("Curve", static_cast<const occ::handle<Geom_Curve> & (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::Curve))
-        .def("Curve", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom_Curve> &)>(&BRep_PointRepresentation::Curve), nb::arg("C"))
+        .def("Curve", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom_Curve> &)>(&BRep_PointRepresentation::Curve), nb::arg("C").none())
         .def("PCurve", static_cast<const occ::handle<Geom2d_Curve> & (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::PCurve))
-        .def("PCurve", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_PointRepresentation::PCurve), nb::arg("C"))
+        .def("PCurve", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_PointRepresentation::PCurve), nb::arg("C").none())
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_PointRepresentation::*)() const>(&BRep_PointRepresentation::Surface))
-        .def("Surface", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom_Surface> &)>(&BRep_PointRepresentation::Surface), nb::arg("S"))
+        .def("Surface", static_cast<void (BRep_PointRepresentation::*)(const occ::handle<Geom_Surface> &)>(&BRep_PointRepresentation::Surface), nb::arg("S").none())
         .def("DumpJson", [](const BRep_PointRepresentation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointRepresentation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointRepresentation::get_type_descriptor))
@@ -364,65 +364,65 @@ In <First> and <Last> the parameter range.
 It can be a copy if there is a Location.)nbdoc")
         .def_static("Polygon3D", static_cast<const occ::handle<Poly_Polygon3D> & (*)(const TopoDS_Edge &, TopLoc_Location &)>(&BRep_Tool::Polygon3D), nb::arg("E"), nb::arg("L"), R"nbdoc(Returns the 3D polygon of the edge. May be a Null
 handle. Returns in <L> the location for the polygon.)nbdoc")
-        .def_static("CurveOnPlane", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnPlane(E, S, L, First, Last); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("S"), nb::arg("L"), R"nbdoc(For the planar surface builds the 2d curve for the edge
+        .def_static("CurveOnPlane", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnPlane(E, S, L, First, Last); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(For the planar surface builds the 2d curve for the edge
 by projection of the edge on plane.
 Returns a NULL handle if the surface is not planar or
 the projection failed.)nbdoc")
-        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, occ::handle<Geom2d_Curve> & C, occ::handle<Geom_Surface> & S, TopLoc_Location & L) { double First{}; double Last{}; BRep_Tool::CurveOnSurface(E, C, S, L, First, Last); return std::make_tuple(First, Last); }, nb::arg("E"), nb::arg("C"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns in <C>, <S>, <L> a 2d curve, a surface and
+        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom2d_Curve> C{}; occ::handle<Geom_Surface> S{}; double First{}; double Last{}; BRep_Tool::CurveOnSurface(E, C, S, L, First, Last); return std::make_tuple(C, S, First, Last); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns in <C>, <S>, <L> a 2d curve, a surface and
 a location for the edge <E>. <C> and <S> are null
 if the edge has no curve on surface. Returns in
 <First> and <Last> the parameter range.)nbdoc")
-        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, occ::handle<Geom2d_Curve> & C, occ::handle<Geom_Surface> & S, TopLoc_Location & L, const int Index) { double First{}; double Last{}; BRep_Tool::CurveOnSurface(E, C, S, L, First, Last, Index); return std::make_tuple(First, Last); }, nb::arg("E"), nb::arg("C"), nb::arg("S"), nb::arg("L"), nb::arg("Index"), R"nbdoc(Returns in <C>, <S>, <L> the 2d curve, the surface
+        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, TopLoc_Location & L, const int Index) { occ::handle<Geom2d_Curve> C{}; occ::handle<Geom_Surface> S{}; double First{}; double Last{}; BRep_Tool::CurveOnSurface(E, C, S, L, First, Last, Index); return std::make_tuple(C, S, First, Last); }, nb::arg("E"), nb::arg("L"), nb::arg("Index"), R"nbdoc(Returns in <C>, <S>, <L> the 2d curve, the surface
 and the location for the edge <E> of rank <Index>.
 <C> and <S> are null if the index is out of range.
 Returns in <First> and <Last> the parameter range.)nbdoc")
         .def_static("PolygonOnSurface", static_cast<occ::handle<Poly_Polygon2D> (*)(const TopoDS_Edge &, const TopoDS_Face &)>(&BRep_Tool::PolygonOnSurface), nb::arg("E"), nb::arg("F"), R"nbdoc(Returns the polygon associated to the edge in the
 parametric space of the face. Returns a NULL
 handle if this polygon does not exist.)nbdoc")
-        .def_static("PolygonOnSurface", static_cast<occ::handle<Poly_Polygon2D> (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&BRep_Tool::PolygonOnSurface), nb::arg("E"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns the polygon associated to the edge in the
+        .def_static("PolygonOnSurface", static_cast<occ::handle<Poly_Polygon2D> (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&BRep_Tool::PolygonOnSurface), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Returns the polygon associated to the edge in the
 parametric space of the surface. Returns a NULL
 handle if this polygon does not exist.)nbdoc")
-        .def_static("PolygonOnSurface", static_cast<void (*)(const TopoDS_Edge &, occ::handle<Poly_Polygon2D> &, occ::handle<Geom_Surface> &, TopLoc_Location &)>(&BRep_Tool::PolygonOnSurface), nb::arg("E"), nb::arg("C"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns in <C>, <S>, <L> a 2d curve, a surface and
+        .def_static("PolygonOnSurface", [](const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Poly_Polygon2D> C{}; occ::handle<Geom_Surface> S{}; BRep_Tool::PolygonOnSurface(E, C, S, L); return std::make_tuple(C, S); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns in <C>, <S>, <L> a 2d curve, a surface and
 a location for the edge <E>. <C> and <S> are null
 if the edge has no polygon on surface.)nbdoc")
-        .def_static("PolygonOnSurface", static_cast<void (*)(const TopoDS_Edge &, occ::handle<Poly_Polygon2D> &, occ::handle<Geom_Surface> &, TopLoc_Location &, const int)>(&BRep_Tool::PolygonOnSurface), nb::arg("E"), nb::arg("C"), nb::arg("S"), nb::arg("L"), nb::arg("Index"), R"nbdoc(Returns in <C>, <S>, <L> the 2d curve, the surface
+        .def_static("PolygonOnSurface", [](const TopoDS_Edge & E, TopLoc_Location & L, const int Index) { occ::handle<Poly_Polygon2D> C{}; occ::handle<Geom_Surface> S{}; BRep_Tool::PolygonOnSurface(E, C, S, L, Index); return std::make_tuple(C, S); }, nb::arg("E"), nb::arg("L"), nb::arg("Index"), R"nbdoc(Returns in <C>, <S>, <L> the 2d curve, the surface
 and the location for the edge <E> of rank <Index>.
 <C> and <S> are null if the index is out of range.)nbdoc")
-        .def_static("PolygonOnTriangulation", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (*)(const TopoDS_Edge &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &)>(&BRep_Tool::PolygonOnTriangulation), nb::arg("E"), nb::arg("T"), nb::arg("L"), R"nbdoc(Returns the polygon associated to the edge in the
+        .def_static("PolygonOnTriangulation", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (*)(const TopoDS_Edge &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &)>(&BRep_Tool::PolygonOnTriangulation), nb::arg("E"), nb::arg("T").none(), nb::arg("L"), R"nbdoc(Returns the polygon associated to the edge in the
 parametric space of the face. Returns a NULL
 handle if this polygon does not exist.)nbdoc")
-        .def_static("PolygonOnTriangulation", static_cast<void (*)(const TopoDS_Edge &, occ::handle<Poly_PolygonOnTriangulation> &, occ::handle<Poly_Triangulation> &, TopLoc_Location &)>(&BRep_Tool::PolygonOnTriangulation), nb::arg("E"), nb::arg("P"), nb::arg("T"), nb::arg("L"), R"nbdoc(Returns in <P>, <T>, <L> a polygon on triangulation, a
+        .def_static("PolygonOnTriangulation", [](const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Poly_PolygonOnTriangulation> P{}; occ::handle<Poly_Triangulation> T{}; BRep_Tool::PolygonOnTriangulation(E, P, T, L); return std::make_tuple(P, T); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns in <P>, <T>, <L> a polygon on triangulation, a
 triangulation and a location for the edge <E>.
 <P> and <T> are null if the edge has no
 polygon on triangulation.)nbdoc")
-        .def_static("PolygonOnTriangulation", static_cast<void (*)(const TopoDS_Edge &, occ::handle<Poly_PolygonOnTriangulation> &, occ::handle<Poly_Triangulation> &, TopLoc_Location &, const int)>(&BRep_Tool::PolygonOnTriangulation), nb::arg("E"), nb::arg("P"), nb::arg("T"), nb::arg("L"), nb::arg("Index"), R"nbdoc(Returns in <P>, <T>, <L> a polygon on
+        .def_static("PolygonOnTriangulation", [](const TopoDS_Edge & E, TopLoc_Location & L, const int Index) { occ::handle<Poly_PolygonOnTriangulation> P{}; occ::handle<Poly_Triangulation> T{}; BRep_Tool::PolygonOnTriangulation(E, P, T, L, Index); return std::make_tuple(P, T); }, nb::arg("E"), nb::arg("L"), nb::arg("Index"), R"nbdoc(Returns in <P>, <T>, <L> a polygon on
 triangulation, a triangulation and a location for
 the edge <E> for the range index. <C> and <S> are
 null if the edge has no polygon on triangulation.)nbdoc")
         .def_static("IsClosed", static_cast<bool (*)(const TopoDS_Edge &, const TopoDS_Face &)>(&BRep_Tool::IsClosed), nb::arg("E"), nb::arg("F"), R"nbdoc(Returns True if <E> has two PCurves in the
 parametric space of <F>. i.e. <F> is on a closed
 surface and <E> is on the closing curve.)nbdoc")
-        .def_static("IsClosed", static_cast<bool (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&BRep_Tool::IsClosed), nb::arg("E"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns True if <E> has two PCurves in the
+        .def_static("IsClosed", static_cast<bool (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&BRep_Tool::IsClosed), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Returns True if <E> has two PCurves in the
 parametric space of <S>. i.e. <S> is a closed
 surface and <E> is on the closing curve.)nbdoc")
-        .def_static("IsClosed", static_cast<bool (*)(const TopoDS_Edge &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &)>(&BRep_Tool::IsClosed), nb::arg("E"), nb::arg("T"), nb::arg("L"), R"nbdoc(Returns True if <E> has two arrays of indices in
+        .def_static("IsClosed", static_cast<bool (*)(const TopoDS_Edge &, const occ::handle<Poly_Triangulation> &, const TopLoc_Location &)>(&BRep_Tool::IsClosed), nb::arg("E"), nb::arg("T").none(), nb::arg("L"), R"nbdoc(Returns True if <E> has two arrays of indices in
 the triangulation <T>.)nbdoc")
         .def_static("Tolerance", static_cast<double (*)(const TopoDS_Edge &)>(&BRep_Tool::Tolerance), nb::arg("E"), R"nbdoc(Returns the tolerance for <E>.)nbdoc")
         .def_static("SameParameter", static_cast<bool (*)(const TopoDS_Edge &)>(&BRep_Tool::SameParameter), nb::arg("E"), R"nbdoc(Returns the SameParameter flag for the edge.)nbdoc")
         .def_static("SameRange", static_cast<bool (*)(const TopoDS_Edge &)>(&BRep_Tool::SameRange), nb::arg("E"), R"nbdoc(Returns the SameRange flag for the edge.)nbdoc")
         .def_static("Degenerated", static_cast<bool (*)(const TopoDS_Edge &)>(&BRep_Tool::Degenerated), nb::arg("E"), R"nbdoc(Returns True if the edge is degenerated.)nbdoc")
         .def_static("Range", [](const TopoDS_Edge & E) { double First{}; double Last{}; BRep_Tool::Range(E, First, Last); return std::make_tuple(First, Last); }, nb::arg("E"), R"nbdoc(Gets the range of the 3d curve.)nbdoc")
-        .def_static("Range", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; BRep_Tool::Range(E, S, L, First, Last); return std::make_tuple(First, Last); }, nb::arg("E"), nb::arg("S"), nb::arg("L"), R"nbdoc(Gets the range of the edge on the pcurve on the surface.)nbdoc")
+        .def_static("Range", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; BRep_Tool::Range(E, S, L, First, Last); return std::make_tuple(First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Gets the range of the edge on the pcurve on the surface.)nbdoc")
         .def_static("Range", [](const TopoDS_Edge & E, const TopoDS_Face & F) { double First{}; double Last{}; BRep_Tool::Range(E, F, First, Last); return std::make_tuple(First, Last); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Gets the range of the edge on the pcurve on the face.)nbdoc")
-        .def_static("UVPoints", static_cast<void (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, gp_Pnt2d &, gp_Pnt2d &)>(&BRep_Tool::UVPoints), nb::arg("E"), nb::arg("S"), nb::arg("L"), nb::arg("PFirst"), nb::arg("PLast"), R"nbdoc(Gets the UV locations of the extremities of the edge.)nbdoc")
+        .def_static("UVPoints", static_cast<void (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, gp_Pnt2d &, gp_Pnt2d &)>(&BRep_Tool::UVPoints), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), nb::arg("PFirst"), nb::arg("PLast"), R"nbdoc(Gets the UV locations of the extremities of the edge.)nbdoc")
         .def_static("UVPoints", static_cast<void (*)(const TopoDS_Edge &, const TopoDS_Face &, gp_Pnt2d &, gp_Pnt2d &)>(&BRep_Tool::UVPoints), nb::arg("E"), nb::arg("F"), nb::arg("PFirst"), nb::arg("PLast"), R"nbdoc(Gets the UV locations of the extremities of the edge.)nbdoc")
-        .def_static("SetUVPoints", static_cast<void (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const gp_Pnt2d &, const gp_Pnt2d &)>(&BRep_Tool::SetUVPoints), nb::arg("E"), nb::arg("S"), nb::arg("L"), nb::arg("PFirst"), nb::arg("PLast"), R"nbdoc(Sets the UV locations of the extremities of the edge.)nbdoc")
+        .def_static("SetUVPoints", static_cast<void (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const gp_Pnt2d &, const gp_Pnt2d &)>(&BRep_Tool::SetUVPoints), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), nb::arg("PFirst"), nb::arg("PLast"), R"nbdoc(Sets the UV locations of the extremities of the edge.)nbdoc")
         .def_static("SetUVPoints", static_cast<void (*)(const TopoDS_Edge &, const TopoDS_Face &, const gp_Pnt2d &, const gp_Pnt2d &)>(&BRep_Tool::SetUVPoints), nb::arg("E"), nb::arg("F"), nb::arg("PFirst"), nb::arg("PLast"), R"nbdoc(Sets the UV locations of the extremities of the edge.)nbdoc")
         .def_static("HasContinuity", static_cast<bool (*)(const TopoDS_Edge &, const TopoDS_Face &, const TopoDS_Face &)>(&BRep_Tool::HasContinuity), nb::arg("E"), nb::arg("F1"), nb::arg("F2"), R"nbdoc(Returns True if the edge is on the surfaces of the
 two faces.)nbdoc")
         .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const TopoDS_Edge &, const TopoDS_Face &, const TopoDS_Face &)>(&BRep_Tool::Continuity), nb::arg("E"), nb::arg("F1"), nb::arg("F2"), R"nbdoc(Returns the continuity.)nbdoc")
-        .def_static("HasContinuity", static_cast<bool (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &)>(&BRep_Tool::HasContinuity), nb::arg("E"), nb::arg("S1"), nb::arg("S2"), nb::arg("L1"), nb::arg("L2"), R"nbdoc(Returns True if the edge is on the surfaces.)nbdoc")
-        .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &)>(&BRep_Tool::Continuity), nb::arg("E"), nb::arg("S1"), nb::arg("S2"), nb::arg("L1"), nb::arg("L2"), R"nbdoc(Returns the continuity.)nbdoc")
+        .def_static("HasContinuity", static_cast<bool (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &)>(&BRep_Tool::HasContinuity), nb::arg("E"), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("L1"), nb::arg("L2"), R"nbdoc(Returns True if the edge is on the surfaces.)nbdoc")
+        .def_static("Continuity", static_cast<GeomAbs_Shape (*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &)>(&BRep_Tool::Continuity), nb::arg("E"), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("L1"), nb::arg("L2"), R"nbdoc(Returns the continuity.)nbdoc")
         .def_static("HasContinuity", static_cast<bool (*)(const TopoDS_Edge &)>(&BRep_Tool::HasContinuity), nb::arg("E"), R"nbdoc(Returns True if the edge has regularity on some two surfaces.)nbdoc")
         .def_static("MaxContinuity", static_cast<GeomAbs_Shape (*)(const TopoDS_Edge &)>(&BRep_Tool::MaxContinuity), nb::arg("theEdge"), R"nbdoc(Returns the max continuity of edge between some surfaces or GeomAbs_C0
 if there are no such surfaces.)nbdoc")
@@ -437,7 +437,7 @@ Throws Standard_NoSuchObject if no parameter on edge)nbdoc")
 @return TRUE if done)nbdoc")
         .def_static("Parameter", static_cast<double (*)(const TopoDS_Vertex &, const TopoDS_Edge &, const TopoDS_Face &)>(&BRep_Tool::Parameter), nb::arg("V"), nb::arg("E"), nb::arg("F"), R"nbdoc(Returns the parameters of the vertex on the
 pcurve of the edge on the face.)nbdoc")
-        .def_static("Parameter", static_cast<double (*)(const TopoDS_Vertex &, const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&BRep_Tool::Parameter), nb::arg("V"), nb::arg("E"), nb::arg("S"), nb::arg("L"), R"nbdoc(Returns the parameters of the vertex on the
+        .def_static("Parameter", static_cast<double (*)(const TopoDS_Vertex &, const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&BRep_Tool::Parameter), nb::arg("V"), nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Returns the parameters of the vertex on the
 pcurve of the edge on the surface.)nbdoc")
         .def_static("Parameters", static_cast<gp_Pnt2d (*)(const TopoDS_Vertex &, const TopoDS_Face &)>(&BRep_Tool::Parameters), nb::arg("V"), nb::arg("F"), R"nbdoc(Returns the parameters of the vertex on the face.)nbdoc")
         .def_static("MaxTolerance", static_cast<double (*)(const TopoDS_Shape &, const TopAbs_ShapeEnum)>(&BRep_Tool::MaxTolerance), nb::arg("theShape"), nb::arg("theSubShape"));
@@ -448,42 +448,42 @@ pcurve of the edge on the surface.)nbdoc")
         .def("IsRegularity", static_cast<bool (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::IsRegularity), R"nbdoc(A continuity between two surfaces.)nbdoc")
         .def("IsCurveOnClosedSurface", static_cast<bool (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::IsCurveOnClosedSurface), R"nbdoc(A curve with two parametric curves on the same
 surface.)nbdoc")
-        .def("IsCurveOnSurface", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsCurveOnSurface), nb::arg("S"), nb::arg("L"), R"nbdoc(Is it a curve in the parametric space of <S> with
+        .def("IsCurveOnSurface", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsCurveOnSurface), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Is it a curve in the parametric space of <S> with
 location <L>.)nbdoc")
-        .def("IsRegularity", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsRegularity), nb::arg("S1"), nb::arg("S2"), nb::arg("L1"), nb::arg("L2"), R"nbdoc(Is it a regularity between <S1> and <S2> with
+        .def("IsRegularity", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsRegularity), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("L1"), nb::arg("L2"), R"nbdoc(Is it a regularity between <S1> and <S2> with
 location <L1> and <L2>.)nbdoc")
         .def("IsPolygon3D", static_cast<bool (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::IsPolygon3D), R"nbdoc(A 3D polygon representation.)nbdoc")
         .def("IsPolygonOnTriangulation", static_cast<bool (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::IsPolygonOnTriangulation), R"nbdoc(A representation by an array of nodes on a
 triangulation.)nbdoc")
-        .def("IsPolygonOnTriangulation", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsPolygonOnTriangulation), nb::arg("T"), nb::arg("L"), R"nbdoc(Is it a polygon in the definition of <T> with
+        .def("IsPolygonOnTriangulation", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsPolygonOnTriangulation), nb::arg("T").none(), nb::arg("L"), R"nbdoc(Is it a polygon in the definition of <T> with
 location <L>.)nbdoc")
         .def("IsPolygonOnClosedTriangulation", static_cast<bool (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::IsPolygonOnClosedTriangulation), R"nbdoc(A representation by two arrays of nodes on a
 triangulation.)nbdoc")
         .def("IsPolygonOnSurface", static_cast<bool (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::IsPolygonOnSurface), R"nbdoc(A polygon in the parametric space of a surface.)nbdoc")
-        .def("IsPolygonOnSurface", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsPolygonOnSurface), nb::arg("S"), nb::arg("L"), R"nbdoc(Is it a polygon in the parametric space of <S> with
+        .def("IsPolygonOnSurface", static_cast<bool (BRep_CurveRepresentation::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_CurveRepresentation::IsPolygonOnSurface), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Is it a polygon in the parametric space of <S> with
 location <L>.)nbdoc")
         .def("IsPolygonOnClosedSurface", static_cast<bool (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::IsPolygonOnClosedSurface), R"nbdoc(Two 2D polygon representations in the parametric
 space of a surface.)nbdoc")
         .def("Location", static_cast<const TopLoc_Location & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Location))
         .def("Location", static_cast<void (BRep_CurveRepresentation::*)(const TopLoc_Location &)>(&BRep_CurveRepresentation::Location), nb::arg("L"))
         .def("Curve3D", static_cast<const occ::handle<Geom_Curve> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Curve3D))
-        .def("Curve3D", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Geom_Curve> &)>(&BRep_CurveRepresentation::Curve3D), nb::arg("C"))
+        .def("Curve3D", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Geom_Curve> &)>(&BRep_CurveRepresentation::Curve3D), nb::arg("C").none())
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Surface))
         .def("PCurve", static_cast<const occ::handle<Geom2d_Curve> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::PCurve))
-        .def("PCurve", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveRepresentation::PCurve), nb::arg("C"))
+        .def("PCurve", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveRepresentation::PCurve), nb::arg("C").none())
         .def("PCurve2", static_cast<const occ::handle<Geom2d_Curve> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::PCurve2))
-        .def("PCurve2", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveRepresentation::PCurve2), nb::arg("C"))
+        .def("PCurve2", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveRepresentation::PCurve2), nb::arg("C").none())
         .def("Polygon3D", static_cast<const occ::handle<Poly_Polygon3D> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Polygon3D))
-        .def("Polygon3D", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_Polygon3D> &)>(&BRep_CurveRepresentation::Polygon3D), nb::arg("P"))
+        .def("Polygon3D", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_Polygon3D> &)>(&BRep_CurveRepresentation::Polygon3D), nb::arg("P").none())
         .def("Polygon", static_cast<const occ::handle<Poly_Polygon2D> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Polygon))
-        .def("Polygon", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_CurveRepresentation::Polygon), nb::arg("P"))
+        .def("Polygon", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_CurveRepresentation::Polygon), nb::arg("P").none())
         .def("Polygon2", static_cast<const occ::handle<Poly_Polygon2D> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Polygon2))
-        .def("Polygon2", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_CurveRepresentation::Polygon2), nb::arg("P"))
+        .def("Polygon2", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_CurveRepresentation::Polygon2), nb::arg("P").none())
         .def("Triangulation", static_cast<const occ::handle<Poly_Triangulation> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Triangulation))
         .def("PolygonOnTriangulation", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::PolygonOnTriangulation))
-        .def("PolygonOnTriangulation", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_CurveRepresentation::PolygonOnTriangulation), nb::arg("P"))
+        .def("PolygonOnTriangulation", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_CurveRepresentation::PolygonOnTriangulation), nb::arg("P").none())
         .def("PolygonOnTriangulation2", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::PolygonOnTriangulation2))
-        .def("PolygonOnTriangulation2", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_CurveRepresentation::PolygonOnTriangulation2), nb::arg("P2"))
+        .def("PolygonOnTriangulation2", static_cast<void (BRep_CurveRepresentation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_CurveRepresentation::PolygonOnTriangulation2), nb::arg("P2").none())
         .def("Surface2", static_cast<const occ::handle<Geom_Surface> & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Surface2))
         .def("Location2", static_cast<const TopLoc_Location & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Location2))
         .def("Continuity", static_cast<const GeomAbs_Shape & (BRep_CurveRepresentation::*)() const>(&BRep_CurveRepresentation::Continuity))
@@ -508,11 +508,11 @@ This is called when the range is modified.)nbdoc")
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_GCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_GCurve::*)() const>(&BRep_GCurve::DynamicType));
     nb::borrow<nb::class_<BRep_Curve3D>>(m.attr("BRep_Curve3D"))
-        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const TopLoc_Location & L) { return opencascade::handle<BRep_Curve3D>(new BRep_Curve3D(C, L)); }), nb::arg("C"), nb::arg("L"))
+        .def(nb::new_([](const occ::handle<Geom_Curve> & C, const TopLoc_Location & L) { return opencascade::handle<BRep_Curve3D>(new BRep_Curve3D(C, L)); }), nb::arg("C").none(), nb::arg("L"))
         .def("D0", static_cast<void (BRep_Curve3D::*)(const double, gp_Pnt &) const>(&BRep_Curve3D::D0), nb::arg("U"), nb::arg("P"), R"nbdoc(Computes the point at parameter U.)nbdoc")
         .def("IsCurve3D", static_cast<bool (BRep_Curve3D::*)() const>(&BRep_Curve3D::IsCurve3D), R"nbdoc(Returns True.)nbdoc")
         .def("Curve3D", static_cast<const occ::handle<Geom_Curve> & (BRep_Curve3D::*)() const>(&BRep_Curve3D::Curve3D))
-        .def("Curve3D", static_cast<void (BRep_Curve3D::*)(const occ::handle<Geom_Curve> &)>(&BRep_Curve3D::Curve3D), nb::arg("C"))
+        .def("Curve3D", static_cast<void (BRep_Curve3D::*)(const occ::handle<Geom_Curve> &)>(&BRep_Curve3D::Curve3D), nb::arg("C").none())
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_Curve3D::*)() const>(&BRep_Curve3D::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("DumpJson", [](const BRep_Curve3D &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_Curve3D::get_type_name))
@@ -520,9 +520,9 @@ This is called when the range is modified.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_Curve3D::*)() const>(&BRep_Curve3D::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_Curve3D>(nb::borrow<nb::class_<BRep_Curve3D>>(m.attr("BRep_Curve3D")));
     nb::borrow<nb::class_<BRep_CurveOn2Surfaces>>(m.attr("BRep_CurveOn2Surfaces"))
-        .def(nb::new_([](const occ::handle<Geom_Surface> & S1, const occ::handle<Geom_Surface> & S2, const TopLoc_Location & L1, const TopLoc_Location & L2, const GeomAbs_Shape C) { return opencascade::handle<BRep_CurveOn2Surfaces>(new BRep_CurveOn2Surfaces(S1, S2, L1, L2, C)); }), nb::arg("S1"), nb::arg("S2"), nb::arg("L1"), nb::arg("L2"), nb::arg("C"))
+        .def(nb::new_([](const occ::handle<Geom_Surface> & S1, const occ::handle<Geom_Surface> & S2, const TopLoc_Location & L1, const TopLoc_Location & L2, const GeomAbs_Shape C) { return opencascade::handle<BRep_CurveOn2Surfaces>(new BRep_CurveOn2Surfaces(S1, S2, L1, L2, C)); }), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("L1"), nb::arg("L2"), nb::arg("C"))
         .def("IsRegularity", static_cast<bool (BRep_CurveOn2Surfaces::*)() const>(&BRep_CurveOn2Surfaces::IsRegularity), R"nbdoc(Returns True.)nbdoc")
-        .def("IsRegularity", static_cast<bool (BRep_CurveOn2Surfaces::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &) const>(&BRep_CurveOn2Surfaces::IsRegularity), nb::arg("S1"), nb::arg("S2"), nb::arg("L1"), nb::arg("L2"), R"nbdoc(A curve on two surfaces (continuity).)nbdoc")
+        .def("IsRegularity", static_cast<bool (BRep_CurveOn2Surfaces::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &) const>(&BRep_CurveOn2Surfaces::IsRegularity), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("L1"), nb::arg("L2"), R"nbdoc(A curve on two surfaces (continuity).)nbdoc")
         .def("D0", static_cast<void (BRep_CurveOn2Surfaces::*)(const double, gp_Pnt &) const>(&BRep_CurveOn2Surfaces::D0), nb::arg("U"), nb::arg("P"), R"nbdoc(Raises an error.)nbdoc")
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_CurveOn2Surfaces::*)() const>(&BRep_CurveOn2Surfaces::Surface))
         .def("Surface2", static_cast<const occ::handle<Geom_Surface> & (BRep_CurveOn2Surfaces::*)() const>(&BRep_CurveOn2Surfaces::Surface2))
@@ -536,15 +536,15 @@ This is called when the range is modified.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_CurveOn2Surfaces::*)() const>(&BRep_CurveOn2Surfaces::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_CurveOn2Surfaces>(nb::borrow<nb::class_<BRep_CurveOn2Surfaces>>(m.attr("BRep_CurveOn2Surfaces")));
     nb::borrow<nb::class_<BRep_CurveOnSurface>>(m.attr("BRep_CurveOnSurface"))
-        .def(nb::new_([](const occ::handle<Geom2d_Curve> & PC, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_CurveOnSurface>(new BRep_CurveOnSurface(PC, S, L)); }), nb::arg("PC"), nb::arg("S"), nb::arg("L"))
+        .def(nb::new_([](const occ::handle<Geom2d_Curve> & PC, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_CurveOnSurface>(new BRep_CurveOnSurface(PC, S, L)); }), nb::arg("PC").none(), nb::arg("S").none(), nb::arg("L"))
         .def("SetUVPoints", static_cast<void (BRep_CurveOnSurface::*)(const gp_Pnt2d &, const gp_Pnt2d &)>(&BRep_CurveOnSurface::SetUVPoints), nb::arg("P1"), nb::arg("P2"))
         .def("UVPoints", static_cast<void (BRep_CurveOnSurface::*)(gp_Pnt2d &, gp_Pnt2d &) const>(&BRep_CurveOnSurface::UVPoints), nb::arg("P1"), nb::arg("P2"))
         .def("D0", static_cast<void (BRep_CurveOnSurface::*)(const double, gp_Pnt &) const>(&BRep_CurveOnSurface::D0), nb::arg("U"), nb::arg("P"), R"nbdoc(Computes the point at parameter U.)nbdoc")
         .def("IsCurveOnSurface", static_cast<bool (BRep_CurveOnSurface::*)() const>(&BRep_CurveOnSurface::IsCurveOnSurface), R"nbdoc(Returns True.)nbdoc")
-        .def("IsCurveOnSurface", static_cast<bool (BRep_CurveOnSurface::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_CurveOnSurface::IsCurveOnSurface), nb::arg("S"), nb::arg("L"), R"nbdoc(A curve in the parametric space of a surface.)nbdoc")
+        .def("IsCurveOnSurface", static_cast<bool (BRep_CurveOnSurface::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_CurveOnSurface::IsCurveOnSurface), nb::arg("S").none(), nb::arg("L"), R"nbdoc(A curve in the parametric space of a surface.)nbdoc")
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_CurveOnSurface::*)() const>(&BRep_CurveOnSurface::Surface))
         .def("PCurve", static_cast<const occ::handle<Geom2d_Curve> & (BRep_CurveOnSurface::*)() const>(&BRep_CurveOnSurface::PCurve))
-        .def("PCurve", static_cast<void (BRep_CurveOnSurface::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveOnSurface::PCurve), nb::arg("C"))
+        .def("PCurve", static_cast<void (BRep_CurveOnSurface::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveOnSurface::PCurve), nb::arg("C").none())
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_CurveOnSurface::*)() const>(&BRep_CurveOnSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("Update", static_cast<void (BRep_CurveOnSurface::*)()>(&BRep_CurveOnSurface::Update), R"nbdoc(Recomputes any derived data after a modification.
 This is called when the range is modified.)nbdoc")
@@ -554,18 +554,18 @@ This is called when the range is modified.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_CurveOnSurface::*)() const>(&BRep_CurveOnSurface::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_CurveOnSurface>(nb::borrow<nb::class_<BRep_CurveOnSurface>>(m.attr("BRep_CurveOnSurface")));
     nb::borrow<nb::class_<BRep_CurveOnClosedSurface>>(m.attr("BRep_CurveOnClosedSurface"))
-        .def(nb::new_([](const occ::handle<Geom2d_Curve> & PC1, const occ::handle<Geom2d_Curve> & PC2, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L, const GeomAbs_Shape C) { return opencascade::handle<BRep_CurveOnClosedSurface>(new BRep_CurveOnClosedSurface(PC1, PC2, S, L, C)); }), nb::arg("PC1"), nb::arg("PC2"), nb::arg("S"), nb::arg("L"), nb::arg("C"))
+        .def(nb::new_([](const occ::handle<Geom2d_Curve> & PC1, const occ::handle<Geom2d_Curve> & PC2, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L, const GeomAbs_Shape C) { return opencascade::handle<BRep_CurveOnClosedSurface>(new BRep_CurveOnClosedSurface(PC1, PC2, S, L, C)); }), nb::arg("PC1").none(), nb::arg("PC2").none(), nb::arg("S").none(), nb::arg("L"), nb::arg("C"))
         .def("SetUVPoints2", static_cast<void (BRep_CurveOnClosedSurface::*)(const gp_Pnt2d &, const gp_Pnt2d &)>(&BRep_CurveOnClosedSurface::SetUVPoints2), nb::arg("P1"), nb::arg("P2"))
         .def("UVPoints2", static_cast<void (BRep_CurveOnClosedSurface::*)(gp_Pnt2d &, gp_Pnt2d &) const>(&BRep_CurveOnClosedSurface::UVPoints2), nb::arg("P1"), nb::arg("P2"))
         .def("IsCurveOnClosedSurface", static_cast<bool (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::IsCurveOnClosedSurface), R"nbdoc(Returns True.)nbdoc")
         .def("IsRegularity", static_cast<bool (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::IsRegularity), R"nbdoc(Returns True)nbdoc")
-        .def("IsRegularity", static_cast<bool (BRep_CurveOnClosedSurface::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &) const>(&BRep_CurveOnClosedSurface::IsRegularity), nb::arg("S1"), nb::arg("S2"), nb::arg("L1"), nb::arg("L2"), R"nbdoc(A curve on two surfaces (continuity).)nbdoc")
+        .def("IsRegularity", static_cast<bool (BRep_CurveOnClosedSurface::*)(const occ::handle<Geom_Surface> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &, const TopLoc_Location &) const>(&BRep_CurveOnClosedSurface::IsRegularity), nb::arg("S1").none(), nb::arg("S2").none(), nb::arg("L1"), nb::arg("L2"), R"nbdoc(A curve on two surfaces (continuity).)nbdoc")
         .def("PCurve2", static_cast<const occ::handle<Geom2d_Curve> & (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::PCurve2))
         .def("Surface2", static_cast<const occ::handle<Geom_Surface> & (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::Surface2), R"nbdoc(Returns Surface())nbdoc")
         .def("Location2", static_cast<const TopLoc_Location & (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::Location2), R"nbdoc(Returns Location())nbdoc")
         .def("Continuity", static_cast<const GeomAbs_Shape & (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::Continuity))
         .def("Continuity", static_cast<void (BRep_CurveOnClosedSurface::*)(const GeomAbs_Shape)>(&BRep_CurveOnClosedSurface::Continuity), nb::arg("C"))
-        .def("PCurve2", static_cast<void (BRep_CurveOnClosedSurface::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveOnClosedSurface::PCurve2), nb::arg("C"))
+        .def("PCurve2", static_cast<void (BRep_CurveOnClosedSurface::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_CurveOnClosedSurface::PCurve2), nb::arg("C").none())
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("Update", static_cast<void (BRep_CurveOnClosedSurface::*)()>(&BRep_CurveOnClosedSurface::Update), R"nbdoc(Recomputes any derived data after a modification.
 This is called when the range is modified.)nbdoc")
@@ -575,11 +575,11 @@ This is called when the range is modified.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_CurveOnClosedSurface::*)() const>(&BRep_CurveOnClosedSurface::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_CurveOnClosedSurface>(nb::borrow<nb::class_<BRep_CurveOnClosedSurface>>(m.attr("BRep_CurveOnClosedSurface")));
     nb::borrow<nb::class_<BRep_PointOnCurve>>(m.attr("BRep_PointOnCurve"))
-        .def(nb::new_([](const double P, const occ::handle<Geom_Curve> & C, const TopLoc_Location & L) { return opencascade::handle<BRep_PointOnCurve>(new BRep_PointOnCurve(P, C, L)); }), nb::arg("P"), nb::arg("C"), nb::arg("L"))
+        .def(nb::new_([](const double P, const occ::handle<Geom_Curve> & C, const TopLoc_Location & L) { return opencascade::handle<BRep_PointOnCurve>(new BRep_PointOnCurve(P, C, L)); }), nb::arg("P"), nb::arg("C").none(), nb::arg("L"))
         .def("IsPointOnCurve", static_cast<bool (BRep_PointOnCurve::*)() const>(&BRep_PointOnCurve::IsPointOnCurve), R"nbdoc(Returns True)nbdoc")
-        .def("IsPointOnCurve", static_cast<bool (BRep_PointOnCurve::*)(const occ::handle<Geom_Curve> &, const TopLoc_Location &) const>(&BRep_PointOnCurve::IsPointOnCurve), nb::arg("C"), nb::arg("L"))
+        .def("IsPointOnCurve", static_cast<bool (BRep_PointOnCurve::*)(const occ::handle<Geom_Curve> &, const TopLoc_Location &) const>(&BRep_PointOnCurve::IsPointOnCurve), nb::arg("C").none(), nb::arg("L"))
         .def("Curve", static_cast<const occ::handle<Geom_Curve> & (BRep_PointOnCurve::*)() const>(&BRep_PointOnCurve::Curve))
-        .def("Curve", static_cast<void (BRep_PointOnCurve::*)(const occ::handle<Geom_Curve> &)>(&BRep_PointOnCurve::Curve), nb::arg("C"))
+        .def("Curve", static_cast<void (BRep_PointOnCurve::*)(const occ::handle<Geom_Curve> &)>(&BRep_PointOnCurve::Curve), nb::arg("C").none())
         .def("DumpJson", [](const BRep_PointOnCurve &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointOnCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointOnCurve::get_type_descriptor))
@@ -587,27 +587,27 @@ This is called when the range is modified.)nbdoc")
     nanoocp_implicit_copy_ctor<BRep_PointOnCurve>(nb::borrow<nb::class_<BRep_PointOnCurve>>(m.attr("BRep_PointOnCurve")));
     nb::borrow<nb::class_<BRep_PointsOnSurface>>(m.attr("BRep_PointsOnSurface"))
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_PointsOnSurface::*)() const>(&BRep_PointsOnSurface::Surface))
-        .def("Surface", static_cast<void (BRep_PointsOnSurface::*)(const occ::handle<Geom_Surface> &)>(&BRep_PointsOnSurface::Surface), nb::arg("S"))
+        .def("Surface", static_cast<void (BRep_PointsOnSurface::*)(const occ::handle<Geom_Surface> &)>(&BRep_PointsOnSurface::Surface), nb::arg("S").none())
         .def("DumpJson", [](const BRep_PointsOnSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointsOnSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointsOnSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PointsOnSurface::*)() const>(&BRep_PointsOnSurface::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_PointsOnSurface>(nb::borrow<nb::class_<BRep_PointsOnSurface>>(m.attr("BRep_PointsOnSurface")));
     nb::borrow<nb::class_<BRep_PointOnCurveOnSurface>>(m.attr("BRep_PointOnCurveOnSurface"))
-        .def(nb::new_([](const double P, const occ::handle<Geom2d_Curve> & C, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PointOnCurveOnSurface>(new BRep_PointOnCurveOnSurface(P, C, S, L)); }), nb::arg("P"), nb::arg("C"), nb::arg("S"), nb::arg("L"))
+        .def(nb::new_([](const double P, const occ::handle<Geom2d_Curve> & C, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PointOnCurveOnSurface>(new BRep_PointOnCurveOnSurface(P, C, S, L)); }), nb::arg("P"), nb::arg("C").none(), nb::arg("S").none(), nb::arg("L"))
         .def("IsPointOnCurveOnSurface", static_cast<bool (BRep_PointOnCurveOnSurface::*)() const>(&BRep_PointOnCurveOnSurface::IsPointOnCurveOnSurface), R"nbdoc(Returns True)nbdoc")
-        .def("IsPointOnCurveOnSurface", static_cast<bool (BRep_PointOnCurveOnSurface::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointOnCurveOnSurface::IsPointOnCurveOnSurface), nb::arg("PC"), nb::arg("S"), nb::arg("L"))
+        .def("IsPointOnCurveOnSurface", static_cast<bool (BRep_PointOnCurveOnSurface::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointOnCurveOnSurface::IsPointOnCurveOnSurface), nb::arg("PC").none(), nb::arg("S").none(), nb::arg("L"))
         .def("PCurve", static_cast<const occ::handle<Geom2d_Curve> & (BRep_PointOnCurveOnSurface::*)() const>(&BRep_PointOnCurveOnSurface::PCurve))
-        .def("PCurve", static_cast<void (BRep_PointOnCurveOnSurface::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_PointOnCurveOnSurface::PCurve), nb::arg("C"))
+        .def("PCurve", static_cast<void (BRep_PointOnCurveOnSurface::*)(const occ::handle<Geom2d_Curve> &)>(&BRep_PointOnCurveOnSurface::PCurve), nb::arg("C").none())
         .def("DumpJson", [](const BRep_PointOnCurveOnSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointOnCurveOnSurface::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRep_PointOnCurveOnSurface::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PointOnCurveOnSurface::*)() const>(&BRep_PointOnCurveOnSurface::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_PointOnCurveOnSurface>(nb::borrow<nb::class_<BRep_PointOnCurveOnSurface>>(m.attr("BRep_PointOnCurveOnSurface")));
     nb::borrow<nb::class_<BRep_PointOnSurface>>(m.attr("BRep_PointOnSurface"))
-        .def(nb::new_([](const double P1, const double P2, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PointOnSurface>(new BRep_PointOnSurface(P1, P2, S, L)); }), nb::arg("P1"), nb::arg("P2"), nb::arg("S"), nb::arg("L"))
+        .def(nb::new_([](const double P1, const double P2, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PointOnSurface>(new BRep_PointOnSurface(P1, P2, S, L)); }), nb::arg("P1"), nb::arg("P2"), nb::arg("S").none(), nb::arg("L"))
         .def("IsPointOnSurface", static_cast<bool (BRep_PointOnSurface::*)() const>(&BRep_PointOnSurface::IsPointOnSurface))
-        .def("IsPointOnSurface", static_cast<bool (BRep_PointOnSurface::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointOnSurface::IsPointOnSurface), nb::arg("S"), nb::arg("L"))
+        .def("IsPointOnSurface", static_cast<bool (BRep_PointOnSurface::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PointOnSurface::IsPointOnSurface), nb::arg("S").none(), nb::arg("L"))
         .def("Parameter2", static_cast<double (BRep_PointOnSurface::*)() const>(&BRep_PointOnSurface::Parameter2))
         .def("Parameter2", static_cast<void (BRep_PointOnSurface::*)(const double)>(&BRep_PointOnSurface::Parameter2), nb::arg("P"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PointOnSurface::get_type_name))
@@ -615,10 +615,10 @@ This is called when the range is modified.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PointOnSurface::*)() const>(&BRep_PointOnSurface::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_PointOnSurface>(nb::borrow<nb::class_<BRep_PointOnSurface>>(m.attr("BRep_PointOnSurface")));
     nb::borrow<nb::class_<BRep_Polygon3D>>(m.attr("BRep_Polygon3D"))
-        .def(nb::new_([](const occ::handle<Poly_Polygon3D> & P, const TopLoc_Location & L) { return opencascade::handle<BRep_Polygon3D>(new BRep_Polygon3D(P, L)); }), nb::arg("P"), nb::arg("L"))
+        .def(nb::new_([](const occ::handle<Poly_Polygon3D> & P, const TopLoc_Location & L) { return opencascade::handle<BRep_Polygon3D>(new BRep_Polygon3D(P, L)); }), nb::arg("P").none(), nb::arg("L"))
         .def("IsPolygon3D", static_cast<bool (BRep_Polygon3D::*)() const>(&BRep_Polygon3D::IsPolygon3D), R"nbdoc(Returns True.)nbdoc")
         .def("Polygon3D", static_cast<const occ::handle<Poly_Polygon3D> & (BRep_Polygon3D::*)() const>(&BRep_Polygon3D::Polygon3D))
-        .def("Polygon3D", static_cast<void (BRep_Polygon3D::*)(const occ::handle<Poly_Polygon3D> &)>(&BRep_Polygon3D::Polygon3D), nb::arg("P"))
+        .def("Polygon3D", static_cast<void (BRep_Polygon3D::*)(const occ::handle<Poly_Polygon3D> &)>(&BRep_Polygon3D::Polygon3D), nb::arg("P").none())
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_Polygon3D::*)() const>(&BRep_Polygon3D::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("DumpJson", [](const BRep_Polygon3D &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_Polygon3D::get_type_name))
@@ -626,14 +626,14 @@ This is called when the range is modified.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_Polygon3D::*)() const>(&BRep_Polygon3D::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_Polygon3D>(nb::borrow<nb::class_<BRep_Polygon3D>>(m.attr("BRep_Polygon3D")));
     nb::borrow<nb::class_<BRep_PolygonOnSurface>>(m.attr("BRep_PolygonOnSurface"))
-        .def(nb::new_([](const occ::handle<Poly_Polygon2D> & P, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnSurface>(new BRep_PolygonOnSurface(P, S, L)); }), nb::arg("P"), nb::arg("S"), nb::arg("L"))
+        .def(nb::new_([](const occ::handle<Poly_Polygon2D> & P, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnSurface>(new BRep_PolygonOnSurface(P, S, L)); }), nb::arg("P").none(), nb::arg("S").none(), nb::arg("L"))
         .def("IsPolygonOnSurface", static_cast<bool (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::IsPolygonOnSurface), R"nbdoc(A 2D polygon representation in the parametric
 space of a surface.)nbdoc")
-        .def("IsPolygonOnSurface", static_cast<bool (BRep_PolygonOnSurface::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PolygonOnSurface::IsPolygonOnSurface), nb::arg("S"), nb::arg("L"), R"nbdoc(A 2D polygon representation in the parametric
+        .def("IsPolygonOnSurface", static_cast<bool (BRep_PolygonOnSurface::*)(const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&BRep_PolygonOnSurface::IsPolygonOnSurface), nb::arg("S").none(), nb::arg("L"), R"nbdoc(A 2D polygon representation in the parametric
 space of a surface.)nbdoc")
         .def("Surface", static_cast<const occ::handle<Geom_Surface> & (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::Surface))
         .def("Polygon", static_cast<const occ::handle<Poly_Polygon2D> & (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::Polygon))
-        .def("Polygon", static_cast<void (BRep_PolygonOnSurface::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_PolygonOnSurface::Polygon), nb::arg("P"))
+        .def("Polygon", static_cast<void (BRep_PolygonOnSurface::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_PolygonOnSurface::Polygon), nb::arg("P").none())
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("DumpJson", [](const BRep_PolygonOnSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PolygonOnSurface::get_type_name))
@@ -641,10 +641,10 @@ space of a surface.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PolygonOnSurface::*)() const>(&BRep_PolygonOnSurface::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_PolygonOnSurface>(nb::borrow<nb::class_<BRep_PolygonOnSurface>>(m.attr("BRep_PolygonOnSurface")));
     nb::borrow<nb::class_<BRep_PolygonOnClosedSurface>>(m.attr("BRep_PolygonOnClosedSurface"))
-        .def(nb::new_([](const occ::handle<Poly_Polygon2D> & P1, const occ::handle<Poly_Polygon2D> & P2, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnClosedSurface>(new BRep_PolygonOnClosedSurface(P1, P2, S, L)); }), nb::arg("P1"), nb::arg("P2"), nb::arg("S"), nb::arg("L"))
+        .def(nb::new_([](const occ::handle<Poly_Polygon2D> & P1, const occ::handle<Poly_Polygon2D> & P2, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnClosedSurface>(new BRep_PolygonOnClosedSurface(P1, P2, S, L)); }), nb::arg("P1").none(), nb::arg("P2").none(), nb::arg("S").none(), nb::arg("L"))
         .def("IsPolygonOnClosedSurface", static_cast<bool (BRep_PolygonOnClosedSurface::*)() const>(&BRep_PolygonOnClosedSurface::IsPolygonOnClosedSurface), R"nbdoc(returns True.)nbdoc")
         .def("Polygon2", static_cast<const occ::handle<Poly_Polygon2D> & (BRep_PolygonOnClosedSurface::*)() const>(&BRep_PolygonOnClosedSurface::Polygon2))
-        .def("Polygon2", static_cast<void (BRep_PolygonOnClosedSurface::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_PolygonOnClosedSurface::Polygon2), nb::arg("P"))
+        .def("Polygon2", static_cast<void (BRep_PolygonOnClosedSurface::*)(const occ::handle<Poly_Polygon2D> &)>(&BRep_PolygonOnClosedSurface::Polygon2), nb::arg("P").none())
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnClosedSurface::*)() const>(&BRep_PolygonOnClosedSurface::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("DumpJson", [](const BRep_PolygonOnClosedSurface &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRep_PolygonOnClosedSurface::get_type_name))
@@ -652,11 +652,11 @@ space of a surface.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PolygonOnClosedSurface::*)() const>(&BRep_PolygonOnClosedSurface::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_PolygonOnClosedSurface>(nb::borrow<nb::class_<BRep_PolygonOnClosedSurface>>(m.attr("BRep_PolygonOnClosedSurface")));
     nb::borrow<nb::class_<BRep_PolygonOnTriangulation>>(m.attr("BRep_PolygonOnTriangulation"))
-        .def(nb::new_([](const occ::handle<Poly_PolygonOnTriangulation> & P, const occ::handle<Poly_Triangulation> & T, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnTriangulation>(new BRep_PolygonOnTriangulation(P, T, L)); }), nb::arg("P"), nb::arg("T"), nb::arg("L"))
+        .def(nb::new_([](const occ::handle<Poly_PolygonOnTriangulation> & P, const occ::handle<Poly_Triangulation> & T, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnTriangulation>(new BRep_PolygonOnTriangulation(P, T, L)); }), nb::arg("P").none(), nb::arg("T").none(), nb::arg("L"))
         .def("IsPolygonOnTriangulation", static_cast<bool (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::IsPolygonOnTriangulation), R"nbdoc(returns True.)nbdoc")
-        .def("IsPolygonOnTriangulation", static_cast<bool (BRep_PolygonOnTriangulation::*)(const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_PolygonOnTriangulation::IsPolygonOnTriangulation), nb::arg("T"), nb::arg("L"), R"nbdoc(Is it a polygon in the definition of <T> with
+        .def("IsPolygonOnTriangulation", static_cast<bool (BRep_PolygonOnTriangulation::*)(const occ::handle<Poly_Triangulation> &, const TopLoc_Location &) const>(&BRep_PolygonOnTriangulation::IsPolygonOnTriangulation), nb::arg("T").none(), nb::arg("L"), R"nbdoc(Is it a polygon in the definition of <T> with
 location <L>.)nbdoc")
-        .def("PolygonOnTriangulation", static_cast<void (BRep_PolygonOnTriangulation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_PolygonOnTriangulation::PolygonOnTriangulation), nb::arg("P"), R"nbdoc(returns True.)nbdoc")
+        .def("PolygonOnTriangulation", static_cast<void (BRep_PolygonOnTriangulation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_PolygonOnTriangulation::PolygonOnTriangulation), nb::arg("P").none(), R"nbdoc(returns True.)nbdoc")
         .def("Triangulation", static_cast<const occ::handle<Poly_Triangulation> & (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::Triangulation))
         .def("PolygonOnTriangulation", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::PolygonOnTriangulation))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
@@ -666,9 +666,9 @@ location <L>.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRep_PolygonOnTriangulation::*)() const>(&BRep_PolygonOnTriangulation::DynamicType));
     nanoocp_implicit_copy_ctor<BRep_PolygonOnTriangulation>(nb::borrow<nb::class_<BRep_PolygonOnTriangulation>>(m.attr("BRep_PolygonOnTriangulation")));
     nb::borrow<nb::class_<BRep_PolygonOnClosedTriangulation>>(m.attr("BRep_PolygonOnClosedTriangulation"))
-        .def(nb::new_([](const occ::handle<Poly_PolygonOnTriangulation> & P1, const occ::handle<Poly_PolygonOnTriangulation> & P2, const occ::handle<Poly_Triangulation> & Tr, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnClosedTriangulation>(new BRep_PolygonOnClosedTriangulation(P1, P2, Tr, L)); }), nb::arg("P1"), nb::arg("P2"), nb::arg("Tr"), nb::arg("L"))
+        .def(nb::new_([](const occ::handle<Poly_PolygonOnTriangulation> & P1, const occ::handle<Poly_PolygonOnTriangulation> & P2, const occ::handle<Poly_Triangulation> & Tr, const TopLoc_Location & L) { return opencascade::handle<BRep_PolygonOnClosedTriangulation>(new BRep_PolygonOnClosedTriangulation(P1, P2, Tr, L)); }), nb::arg("P1").none(), nb::arg("P2").none(), nb::arg("Tr").none(), nb::arg("L"))
         .def("IsPolygonOnClosedTriangulation", static_cast<bool (BRep_PolygonOnClosedTriangulation::*)() const>(&BRep_PolygonOnClosedTriangulation::IsPolygonOnClosedTriangulation), R"nbdoc(Returns True.)nbdoc")
-        .def("PolygonOnTriangulation2", static_cast<void (BRep_PolygonOnClosedTriangulation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_PolygonOnClosedTriangulation::PolygonOnTriangulation2), nb::arg("P2"))
+        .def("PolygonOnTriangulation2", static_cast<void (BRep_PolygonOnClosedTriangulation::*)(const occ::handle<Poly_PolygonOnTriangulation> &)>(&BRep_PolygonOnClosedTriangulation::PolygonOnTriangulation2), nb::arg("P2").none())
         .def("PolygonOnTriangulation2", static_cast<const occ::handle<Poly_PolygonOnTriangulation> & (BRep_PolygonOnClosedTriangulation::*)() const>(&BRep_PolygonOnClosedTriangulation::PolygonOnTriangulation2))
         .def("Copy", static_cast<occ::handle<BRep_CurveRepresentation> (BRep_PolygonOnClosedTriangulation::*)() const>(&BRep_PolygonOnClosedTriangulation::Copy), R"nbdoc(Return a copy of this representation.)nbdoc")
         .def("DumpJson", [](const BRep_PolygonOnClosedTriangulation &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
