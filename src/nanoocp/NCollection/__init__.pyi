@@ -652,6 +652,8 @@ class _NCollection_Shared_template:
     @overload
     def __getitem__(self, item: type[NCollection_Array1[int]]) -> type[NCollection_Shared__NCollection_Array1__int]: ...
     @overload
+    def __getitem__(self, item: type[NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.OpenGl.OpenGl_Resource]]) -> type[NCollection_Shared__NCollection_DataMap__TCollection_AsciiString__Handle_OpenGl_Resource]: ...
+    @overload
     def __getitem__(self, item: type[NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, int, nanoocp.TopTools.TopTools_ShapeMapHasher]]) -> type[NCollection_Shared__NCollection_DataMap__TopoDS_Shape__int__TopTools_ShapeMapHasher]: ...
     @overload
     def __getitem__(self, item: type[NCollection_DataMap[int, nanoocp.NCollection.NCollection_Shared__NCollection_List__int]]) -> type[NCollection_Shared__NCollection_DataMap__int__NCollection_Shared__NCollection_List__int]: ...
@@ -776,6 +778,7 @@ import nanoocp.Message
 from nanoocp.NCollection import (
     NCollection_Primes as NCollection_Primes
 )
+import nanoocp.OpenGl
 import nanoocp.PCDM
 import nanoocp.Plate
 import nanoocp.Poly
@@ -4451,5 +4454,133 @@ class NCollection_DataMap__TopoDS_Shape__double__TopTools_ShapeMapHasher(NCollec
     class Iterator(NCollection_DataMap.Iterator[nanoocp.TopoDS.TopoDS_Shape, float]): ...
 class NCollection_List__BRepOffset_Interval(NCollection_List[nanoocp.BRepOffset.BRepOffset_Interval]):
     class Iterator(NCollection_List.Iterator[nanoocp.BRepOffset.BRepOffset_Interval]): ...
+class NCollection_Array1__OpenGl_TextureSet_TextureSlot(NCollection_Array1[nanoocp.OpenGl.OpenGl_TextureSet.TextureSlot]): ...
+class NCollection_Array1__Handle_OpenGl_ShadowMap(NCollection_Array1[nanoocp.OpenGl.OpenGl_ShadowMap]): ...
+class NCollection_DataMap__TCollection_AsciiString__Handle_OpenGl_Resource(NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.OpenGl.OpenGl_Resource]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_AsciiString, nanoocp.OpenGl.OpenGl_Resource]): ...
+class NCollection_DataMap__int__Handle_Graphic3d_Layer(NCollection_DataMap[int, nanoocp.Graphic3d.Graphic3d_Layer]):
+    class Iterator(NCollection_DataMap.Iterator[int, nanoocp.Graphic3d.Graphic3d_Layer]): ...
+class NCollection_DynamicArray__Handle_OpenGl_VertexBuffer(NCollection_DynamicArray[nanoocp.OpenGl.OpenGl_VertexBuffer]): ...
+class NCollection_DynamicArray__unsigned_int:
+    """
+    Class NCollection_DynamicArray (dynamic array of objects)
+
+    The array's indices always start at 0.
+
+    The Vector is always created with 0 length. It can be enlarged by two means:
+    1. Calling the method Append (val) - then "val" is added to the end of the
+    vector (the vector length is incremented)
+    2. Calling the method SetValue (i, val) - if "i" is greater than or equal
+    to the current length of the vector, the vector is enlarged to accomo-
+    date this index
+
+    The methods Append and SetValue return a non-const reference to the copied
+    object inside the vector. This reference is guaranteed to be valid until
+    the vector is destroyed. It can be used to access the vector member directly
+    or to pass its address to other data structures.
+
+    The vector iterator remembers the length of the vector at the moment of the
+    creation or initialisation of the iterator. Therefore the iteration begins
+    at index 0 and stops at the index equal to (remembered_length-1). It is OK
+    to enlarge the vector during the iteration.
+    """
+
+    @overload
+    def __init__(self, theIncrement: int = 256) -> None: ...
+
+    @overload
+    def __init__(self, theIncrement: int, theAlloc: NCollection_BaseAllocator | None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DynamicArray__unsigned_int) -> None:
+        """@name public methods"""
+
+    def Size(self) -> int:
+        """Total number of items in the vector."""
+
+    def Length(self) -> int:
+        """Total number of items (legacy int-returning API)."""
+
+    def Lower(self) -> int:
+        """
+        Method for consistency with other collections.
+        @return Lower bound (inclusive) for iteration.
+        """
+
+    def Upper(self) -> int:
+        """
+        Method for consistency with other collections.
+        @return Upper bound (inclusive) for iteration.
+        """
+
+    def IsEmpty(self) -> bool:
+        """Empty query"""
+
+    def Assign(self, theOther: NCollection_DynamicArray__unsigned_int, theOwnAllocator: bool = True) -> NCollection_DynamicArray__unsigned_int:
+        """Assignment to the collection of the same type"""
+
+    def EraseLast(self) -> None: ...
+
+    def Value(self, theIndex: int) -> int: ...
+
+    def __call__(self, theIndex: int) -> int:
+        """Operator() - query the const value"""
+
+    def __getitem__(self, theIndex: int) -> int:
+        """Operator[] - query the const value"""
+
+    def First(self) -> int:
+        """@return first element"""
+
+    def Last(self) -> int:
+        """@return last element"""
+
+    def Clear(self, theReleaseMemory: bool = False) -> None: ...
+
+    def SetIncrement(self, theIncrement: int) -> None: ...
+
+    def __setitem__(self, theIndex: int, theItem: int) -> None:
+        """Python addition: alias to SetValue (0-based)."""
+
+    def __len__(self) -> int:
+        """Python addition: alias to Length."""
+
+    def __iter__(self) -> Iterator[int]:
+        """Python addition: iterates over the values."""
+
+    def Append(self, theValue: int) -> int:
+        """Append"""
+
+    def InsertAfter(self, theIndex: int, theValue: int) -> int:
+        """
+        Insert a value after the element at theIndex, shifting subsequent elements right.
+        @param theIndex index after which to insert (must be in [0, Size()-1])
+        @param theValue value to insert
+        @return reference to the inserted element
+        """
+
+    def InsertBefore(self, theIndex: int, theValue: int) -> int:
+        """
+        Insert a value before the element at theIndex, shifting it and subsequent elements right.
+        @param theIndex index before which to insert (must be in [0, Size()-1])
+        @param theValue value to insert
+        @return reference to the inserted element
+        """
+
+    def Appended(self) -> int:
+        """Appends an empty value and returns the reference to it"""
+
+    def SetValue(self, theIndex: int, theValue: int) -> int:
+        """SetValue () - set or append a value"""
+
+class NCollection_Array1__OpenGl_RaytraceLight(NCollection_Array1[nanoocp.OpenGl.OpenGl_RaytraceLight]): ...
+class NCollection_LinearVector__OpenGl_RaytraceLight(NCollection_LinearVector[nanoocp.OpenGl.OpenGl_RaytraceLight]): ...
+class NCollection_Array1__OpenGl_RaytraceMaterial(NCollection_Array1[nanoocp.OpenGl.OpenGl_RaytraceMaterial]): ...
+class NCollection_LinearVector__OpenGl_RaytraceMaterial(NCollection_LinearVector[nanoocp.OpenGl.OpenGl_RaytraceMaterial]): ...
+class NCollection_Sequence__Handle_OpenGl_ShaderProgram(NCollection_Sequence[nanoocp.OpenGl.OpenGl_ShaderProgram]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.OpenGl.OpenGl_ShaderProgram]): ...
+class NCollection_Sequence__Handle_OpenGl_Texture(NCollection_Sequence[nanoocp.OpenGl.OpenGl_Texture]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.OpenGl.OpenGl_Texture]): ...
+class NCollection_Shared__NCollection_DataMap__TCollection_AsciiString__Handle_OpenGl_Resource(nanoocp.NCollection.NCollection_DataMap__TCollection_AsciiString__Handle_OpenGl_Resource, _NCollection_Shared_members): ...
 class NCollection_DataMap__TCollection_AsciiString__Handle_XmlMDF_ADriver(NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.XmlMDF.XmlMDF_ADriver]):
     class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_AsciiString, nanoocp.XmlMDF.XmlMDF_ADriver]): ...

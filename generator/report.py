@@ -30,7 +30,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("incomplete", r"incomplete type"),
     ("not-constructible", r"operator new is not public|copy constructor declared in the header"),
     ("noncopyable", r"non-copyable wrapper|no non-copyable wrapper possible"),
-    ("inheritance", r"additional base|non-public base"),
+    ("inheritance", r"additional base|non-public base|of a base, not a method"),
     ("array", r"\barray\b"),
     ("rvalue", r"rvalue reference"),
     ("variadic", r"\bvariadic\b"),

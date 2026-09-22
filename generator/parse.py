@@ -996,7 +996,11 @@ def _using_methods(using: cindex.Cursor, c: Class) -> None:
             c.ctors.append(ctor)                   # has_declared_ctor stays: inherited constructors do not suppress the implicit default one
             continue
         if d.kind != K.CXX_METHOD or d.access_specifier == Access.PRIVATE:
-            c.skipped.append(f"{c.name}: using {using.spelling}: {d.kind.name.lower()} (not bound)")
+            # R-USING re-exports the *methods* behind a using-declaration. A re-exported data member is a different
+            # thing and stays out: OpenGl_ArbDbg & co. re-export the GL entry points of the protected OpenGl_GlFunctions
+            # base, which are C function pointers (755 of them in TKOpenGl, 2026-09-22).
+            what = "data member" if d.kind == K.FIELD_DECL else d.kind.name.lower()
+            c.skipped.append(f"{c.name}: using {using.spelling}: {what} of a base, not a method (not bound)")
             continue
         base_cursor = d.semantic_parent
         base = _type_spelling(base_cursor.type)

@@ -95,7 +95,12 @@ def load_tree(src: Path, install: Path) -> OcctTree:
             if ext.exists():
                 tk.depends = [d for d in _cmake_list(ext) if d.startswith("TK") and d != tk_name]
             tree.toolkits[tk_name] = tk
+    # A toolkit can *borrow* another's package: TKOpenGles compiles the same sources as TKOpenGl and lists them as
+    # "../TKOpenGl/OpenGl". The headers belong to the owner, so a borrowed entry (a path, not a bare package name)
+    # must not claim them -- R-LINK asked for libTKOpenGles, which a USE_GLES2=OFF build does not have (2026-09-22).
     for pkg in tree.packages.values():
+        if "/" in pkg.name:
+            continue
         for header in pkg.headers:
             tree.toolkit_of_header[header] = pkg.toolkit
     return tree

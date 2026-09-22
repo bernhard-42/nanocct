@@ -76,6 +76,10 @@ headers = [
     "GeomBndLib_Line2d.hxx",
     "GeomBndLib_Curve.hxx",
     "GeomBndLib_Curve2d.hxx",
+    # OpenGL ES only: declares GLES function-pointer typedefs through GL_APIENTRYP, which is defined by the GLES
+    # headers. This build is USE_GLES2=OFF and OpenGl_GlFunctions.hxx only includes it under GL_ES_VERSION_2_0, so
+    # libclang sees GL_APIENTRYP/GLenum undefined ("expected ')'", 20 parse errors) (2026-09-22).
+    "OpenGl_GLESExtensions.hxx",
 ]
 # Members not bound although the header declares them. "Class::Name" skips every overload,
 # "Class::Name(<param types>)" one overload. Members declared but never defined in the OCCT libraries are detected
