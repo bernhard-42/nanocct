@@ -27,6 +27,7 @@ _ALIASES = {
     "TColStd_HSequenceOfReal": ("nanoocp.NCollection", "NCollection_HSequence__double"),
     "TColStd_ListOfInteger": ("nanoocp.NCollection", "NCollection_List__int"),
     "TColStd_ListOfReal": ("nanoocp.NCollection", "NCollection_List__double"),
+    "TColStd_ListOfTransient": ("nanoocp.NCollection", "NCollection_List__Handle_Standard_Transient"),
     "TColStd_SequenceOfAsciiString": ("nanoocp.NCollection", "NCollection_Sequence__TCollection_AsciiString"),
     "TColStd_SequenceOfBoolean": ("nanoocp.NCollection", "NCollection_Sequence__bool"),
     "TColStd_SequenceOfExtendedString": ("nanoocp.NCollection", "NCollection_Sequence__TCollection_ExtendedString"),

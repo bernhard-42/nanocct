@@ -1,14 +1,12 @@
-"""OCCT package Aspect (toolkit TKService)."""
+"""OCCT package Select3D (toolkit TKV3d)."""
 import importlib as _importlib
 
-from nanoocp._TKService import Aspect as _ext
-from nanoocp._TKService.Aspect import *  # noqa: F401,F403
+from nanoocp._TKV3d import Select3D as _ext
+from nanoocp._TKV3d.Select3D import *  # noqa: F401,F403
 
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
-    "Aspect_SequenceOfColor": ("nanoocp.NCollection", "NCollection_Sequence__Quantity_Color"),
-    "Aspect_TouchMap": ("nanoocp.NCollection", "NCollection_IndexedDataMap__unsigned_long__Aspect_Touch"),
 }
 
 

@@ -3037,7 +3037,7 @@ If the box is degenerated into line, returns the perimeter instead.)nbdoc")
     nanoocp_implicit_copy_ctor<BVH_Box<float, 4>>(nb::borrow<nb::class_<BVH_Box<float, 4>>>(m.attr("Graphic3d_BndBox4f")));
     nb::implicitly_convertible<std::decay_t<const BVH_Box<float, 4>::BVH_VecNt &>, BVH_Box<float, 4>>();
     nb::borrow<nb::class_<Graphic3d_BvhCStructureSet>>(m.attr("Graphic3d_BvhCStructureSet"))
-        .def(nb::init<>(), R"nbdoc(Creates an empty primitive set for BVH clipping.)nbdoc")
+        .def(nb::new_([]() { return opencascade::handle<Graphic3d_BvhCStructureSet>(new Graphic3d_BvhCStructureSet()); }), R"nbdoc(Creates an empty primitive set for BVH clipping.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Graphic3d_BvhCStructureSet::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Graphic3d_BvhCStructureSet::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Graphic3d_BvhCStructureSet::*)() const>(&Graphic3d_BvhCStructureSet::DynamicType))
@@ -5176,7 +5176,7 @@ trihedron transformation persistence)
 Traverses through BVH tree to determine which structures are in view volume.)nbdoc")
         .def("IsCulled", static_cast<bool (Graphic3d_Layer::*)() const>(&Graphic3d_Layer::IsCulled), R"nbdoc(Returns TRUE if layer is empty or has been discarded entirely by culling test.)nbdoc")
         .def("NbOfTransformPersistenceObjects", static_cast<int (Graphic3d_Layer::*)() const>(&Graphic3d_Layer::NbOfTransformPersistenceObjects), R"nbdoc(Returns number of transform persistence objects.)nbdoc")
-        .def("CullableStructuresBVH", static_cast<const Graphic3d_BvhCStructureSet & (Graphic3d_Layer::*)() const>(&Graphic3d_Layer::CullableStructuresBVH), R"nbdoc(Returns set of Graphic3d_CStructures structures for building BVH tree.)nbdoc")
+        .def("CullableStructuresBVH", [](const Graphic3d_Layer &self) { opencascade::handle<Graphic3d_BvhCStructureSet> result(&(self.CullableStructuresBVH())); return result; }, R"nbdoc(Returns set of Graphic3d_CStructures structures for building BVH tree.)nbdoc")
         .def("CullableTrsfPersStructuresBVH", static_cast<const Graphic3d_BvhCStructureSetTrsfPers & (Graphic3d_Layer::*)() const>(&Graphic3d_Layer::CullableTrsfPersStructuresBVH), R"nbdoc(Returns set of transform persistent Graphic3d_CStructures for building BVH tree.)nbdoc")
         .def("NonCullableStructures", static_cast<const NCollection_IndexedMap<const Graphic3d_CStructure *, NCollection_DefaultHasher<const Graphic3d_CStructure *>> & (Graphic3d_Layer::*)() const>(&Graphic3d_Layer::NonCullableStructures), R"nbdoc(Returns indexed map of always rendered structures.)nbdoc")
         .def("DumpJson", [](const Graphic3d_Layer &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");

@@ -660,6 +660,7 @@ def _is_noexcept(cursor: cindex.Cursor) -> bool:
 
 
 _derives_cache: dict[tuple[str, str], bool] = {}
+_derives_stack: set[tuple[str, str]] = set()   # keys being resolved (recursion guard for CRTP bases)
 _template_bases: list[tuple[str, cindex.Type, str]] = []   # (derived class, base type, header): bases that are template instantiations
 _template_uses: list[cindex.Type] = []                      # template instantiations seen in bound signatures (on-demand 6c)
 _dependent_bases: list[tuple[str, str, str]] = []           # (derived instantiation, substituted base spelling, header): template bases seen
@@ -694,20 +695,40 @@ def _is_plain_template_instance(t: cindex.Type) -> bool:
 
 
 def _derives_from(cls: cindex.Cursor, root: str) -> bool:
-    """True if cls is root or (transitively) derives from it, following the AST base specifiers."""
+    """True if cls is root or (transitively) derives from it, following the AST base specifiers. A base that is a template
+    instantiation (SelectMgr_RectangularFrustum : SelectMgr_Frustum<4>, BRepExtrema_TriangleSet : BVH_PrimitiveSet<double, 3>)
+    is followed into the template's definition through the base specifier's TEMPLATE_REF: libclang's cursor for the
+    instantiation has no children, so it alone would say "no bases". The cache is keyed by USR, not spelling -- the
+    instantiation and its template share the spelling (until 2026-09-22 the instantiation's False poisoned the template's
+    answer, and such classes got placement-new constructors on a handle-based base)."""
     name = cls.spelling
     if name == root:
         return True
-    key = (name, root)
+    key = (cls.get_usr() or name, root)
     if key in _derives_cache:
         return _derives_cache[key]
+    if key in _derives_stack:            # CRTP: Rules_Crtp<T> : Rules_CrtpBase<T, Rules_Crtp> names itself in its base
+        return False
+    _derives_stack.add(key)
     result = False
     for b in cls.get_children():
         if b.kind == K.CXX_BASE_SPECIFIER:
+            targets = []
             d = b.type.get_declaration()
-            if d.kind != K.NO_DECL_FOUND and _derives_from(d, root):
+            if d.kind != K.NO_DECL_FOUND:
+                targets.append(d)
+            # an instantiation's cursor has no children: follow it to its template's definition (clang_getSpecializedCursorTemplate;
+            # cindex has no wrapper) -- also when the base is written through a typedef (BRepExtrema_TriangleSet : BVH_PrimitiveSet3d)
+            canon_decl = b.type.get_canonical().get_declaration()
+            if canon_decl.kind != K.NO_DECL_FOUND and canon_decl.get_num_template_arguments() > 0:
+                tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(canon_decl)
+                if tmpl is not None and tmpl.kind != K.NO_DECL_FOUND:
+                    defn = tmpl.get_definition()
+                    targets.append(defn if defn is not None else tmpl)
+            if any(_derives_from(t, root) for t in targets):
                 result = True
                 break
+    _derives_stack.discard(key)
     _derives_cache[key] = result
     return result
 

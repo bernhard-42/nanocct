@@ -406,6 +406,8 @@ any data modification can lead to unpredictable consequences.)nbdoc");
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Font_FTLibrary::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Font_FTLibrary::*)() const>(&Font_FTLibrary::DynamicType));
     nanoocp_implicit_copy_ctor<Font_FTLibrary>(nb::borrow<nb::class_<Font_FTLibrary>>(m.attr("Font_FTLibrary")));
+    m.attr("Font_BRepFont") = nb::module_::import_("nanoocp._TKV3d.StdPrs").attr("StdPrs_BRepFont");   // Font_BRepFont = StdPrs_BRepFont
+    m.attr("Font_BRepTextBuilder") = nb::module_::import_("nanoocp._TKV3d.StdPrs").attr("StdPrs_BRepTextBuilder");   // Font_BRepTextBuilder = StdPrs_BRepTextBuilder
 }
 
 void nanoocp_conversions_Font(nb::module_ &m) {

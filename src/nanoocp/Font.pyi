@@ -8,6 +8,7 @@ import nanoocp.Graphic3d
 import nanoocp.Image
 import nanoocp.NCollection
 import nanoocp.Standard
+import nanoocp.StdPrs
 import nanoocp.TCollection
 
 
@@ -946,6 +947,10 @@ class Font_FTLibrary(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+# C++ typedef aliases
+Font_BRepFont = nanoocp.StdPrs.StdPrs_BRepFont
+Font_BRepTextBuilder = nanoocp.StdPrs.StdPrs_BRepTextBuilder
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection

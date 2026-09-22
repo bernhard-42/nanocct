@@ -7,6 +7,8 @@ from nanoocp._TKernel.Quantity import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "Quantity_Array1OfColor": ("nanoocp.NCollection", "NCollection_Array1__Quantity_Color"),
+    "Quantity_HArray1OfColor": ("nanoocp.NCollection", "NCollection_HArray1__Quantity_Color"),
 }
 
 

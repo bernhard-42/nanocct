@@ -3474,3 +3474,9 @@ class NCollection_Vec4__float:
     def __add__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...
 
     def __sub__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+import nanoocp.Quantity
+Quantity_Array1OfColor = nanoocp.NCollection.NCollection_Array1[nanoocp.Quantity.Quantity_Color]
+Quantity_HArray1OfColor = nanoocp.NCollection.NCollection_HArray1[nanoocp.Quantity.Quantity_Color]

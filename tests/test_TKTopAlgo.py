@@ -130,6 +130,15 @@ def test_mesh_proximity_through_the_bvh_chain():
     assert type(tri) is BRepExtrema.BRepExtrema_TriangleSet and tri.Size() == 12
     assert [c.__name__ for c in type(tri).__mro__[:4]] == ["BRepExtrema_TriangleSet", "BVH_PrimitiveSet3d", "BVH_Object__double__3", "BVH_ObjectTransient"]
     assert type(tri.Box()) is Bnd.BVH_Box__double__3 and tri.Box().CornerMax().x() == pytest.approx(1.0)   # BVH_Box<double, 3>, bound on demand by Bnd
+    # Transient through the template base (BVH_Object<double, 3> : Standard_Transient behind the BVH_PrimitiveSet3d typedef): the
+    # constructors return handles -- until 2026-09-22 they were placement-new __init__s and BRepExtrema_TriangleSet() raised TypeError
+    from nanoocp import NCollection, Standard, TopAbs, TopExp
+    faces = NCollection.NCollection_DynamicArray[TopoDS.TopoDS_Shape]()
+    for f in TopExp.TopExp_Explorer(a, TopAbs.TopAbs_FACE):
+        faces.Append(f)
+    own = BRepExtrema.BRepExtrema_TriangleSet(faces)
+    assert isinstance(own, Standard.Standard_Transient) and own.GetRefCount() == 1 and own.Size() == 12
+    assert BRepExtrema.BRepExtrema_TriangleSet().Size() == 0
     c = BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(0.5, 0.5, 0.5), gp.gp_Pnt(2, 2, 2)).Shape()
     BRepMesh.BRepMesh_IncrementalMesh(c, 0.1)
     overlap = BRepExtrema.BRepExtrema_ShapeProximity(a, c, 0.0)                                   # tolerance 0: overlap mode

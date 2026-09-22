@@ -1,5 +1,7 @@
 {
 "classes": {
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/AIS_NavigationMode.hxx:25:1)": "AIS",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/AIS_RotationMode.hxx:27:1)": "AIS",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Aspect_VKey.hxx:189:1)": "Aspect",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Aspect_VKeyFlags.hxx:21:1)": "Aspect",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Aspect_VKeyFlags.hxx:39:1)": "Aspect",
@@ -24,7 +26,96 @@
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Image_CompressedFormat.hxx:30:1)": "Image",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Image_Format.hxx:43:1)": "Image",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Poly_MeshPurpose.hxx:20:1)": "Poly",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Prs3d_DatumAttribute.hxx:40:1)": "Prs3d",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Prs3d_DatumParts.hxx:46:1)": "Prs3d",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TopTools_FormatVersion.hxx:31:1)": "TopTools",
+"AIS": "AIS",
+"AIS_Animation": "AIS",
+"AIS_AnimationAxisRotation": "AIS",
+"AIS_AnimationCamera": "AIS",
+"AIS_AnimationObject": "AIS",
+"AIS_AnimationProgress": "AIS",
+"AIS_AttributeFilter": "AIS",
+"AIS_Axis": "AIS",
+"AIS_BadEdgeFilter": "AIS",
+"AIS_BaseAnimationObject": "AIS",
+"AIS_C0RegularityFilter": "AIS",
+"AIS_CameraFrustum": "AIS",
+"AIS_CameraFrustum::SelectionMode": "AIS",
+"AIS_Circle": "AIS",
+"AIS_ColorScale": "AIS",
+"AIS_ColoredDrawer": "AIS",
+"AIS_ColoredShape": "AIS",
+"AIS_ConnectedInteractive": "AIS",
+"AIS_DisplayMode": "AIS",
+"AIS_DragAction": "AIS",
+"AIS_ExclusionFilter": "AIS",
+"AIS_GlobalStatus": "AIS",
+"AIS_GraphicTool": "AIS",
+"AIS_InteractiveContext": "AIS",
+"AIS_InteractiveObject": "AIS",
+"AIS_KindOfInteractive": "AIS",
+"AIS_LightSource": "AIS",
+"AIS_LightSourceOwner": "AIS",
+"AIS_Line": "AIS",
+"AIS_Manipulator": "AIS",
+"AIS_Manipulator::BehaviorOnTransform": "AIS",
+"AIS_Manipulator::ManipulatorSkin": "AIS",
+"AIS_Manipulator::OptionsForAttach": "AIS",
+"AIS_ManipulatorMode": "AIS",
+"AIS_ManipulatorOwner": "AIS",
+"AIS_MediaPlayer": "AIS",
+"AIS_MouseGesture": "AIS",
+"AIS_MultipleConnectedInteractive": "AIS",
+"AIS_NavigationMode": "AIS",
+"AIS_Plane": "AIS",
+"AIS_PlaneTrihedron": "AIS",
+"AIS_Point": "AIS",
+"AIS_PointCloud": "AIS",
+"AIS_PointCloud::DisplayMode": "AIS",
+"AIS_PointCloud::SelectionMode": "AIS",
+"AIS_PointCloudOwner": "AIS",
+"AIS_RotationMode": "AIS",
+"AIS_RubberBand": "AIS",
+"AIS_SelectStatus": "AIS",
+"AIS_Selection": "AIS",
+"AIS_SelectionModesConcurrency": "AIS",
+"AIS_SelectionScheme": "AIS",
+"AIS_Shape": "AIS",
+"AIS_SignatureFilter": "AIS",
+"AIS_StatusOfDetection": "AIS",
+"AIS_StatusOfPick": "AIS",
+"AIS_TextLabel": "AIS",
+"AIS_TexturedShape": "AIS",
+"AIS_Triangulation": "AIS",
+"AIS_Trihedron": "AIS",
+"AIS_TrihedronOwner": "AIS",
+"AIS_TrihedronSelectionMode": "AIS",
+"AIS_TypeFilter": "AIS",
+"AIS_TypeOfAttribute": "AIS",
+"AIS_TypeOfAxis": "AIS",
+"AIS_TypeOfIso": "AIS",
+"AIS_TypeOfPlane": "AIS",
+"AIS_ViewController": "AIS",
+"AIS_ViewCube": "AIS",
+"AIS_ViewCubeOwner": "AIS",
+"AIS_ViewCubeSensitive": "AIS",
+"AIS_ViewInputBuffer": "AIS",
+"AIS_ViewInputBuffer::_draggingParams": "AIS",
+"AIS_ViewInputBuffer::_highlighting": "AIS",
+"AIS_ViewInputBuffer::_orbitRotation": "AIS",
+"AIS_ViewInputBuffer::_orientation": "AIS",
+"AIS_ViewInputBuffer::_panningParams": "AIS",
+"AIS_ViewInputBuffer::_selection": "AIS",
+"AIS_ViewInputBuffer::_viewRotation": "AIS",
+"AIS_ViewInputBuffer::_zrotateParams": "AIS",
+"AIS_ViewInputBufferType": "AIS",
+"AIS_ViewSelectionTool": "AIS",
+"AIS_WalkDelta": "AIS",
+"AIS_WalkPart": "AIS",
+"AIS_WalkRotation": "AIS",
+"AIS_WalkTranslation": "AIS",
+"AIS_XRTrackedDevice": "AIS",
 "Adaptor2d_Curve2d": "Adaptor2d",
 "Adaptor2d_Line2d": "Adaptor2d",
 "Adaptor2d_OffsetCurve": "Adaptor2d",
@@ -1090,7 +1181,7 @@
 "BVH_BaseTraverse<double>": "IntPatch",
 "BVH_BinaryTree": "BVH",
 "BVH_Box<double, 2>": "Bnd",
-"BVH_Box<double, 3>": "Graphic3d",
+"BVH_Box<double, 3>": "Select3D",
 "BVH_Box<double, 4>": "Graphic3d",
 "BVH_Box<float, 4>": "Graphic3d",
 "BVH_BoxSet<double, 2, int>": "BOPTools",
@@ -1098,7 +1189,7 @@
 "BVH_BuildQueue": "BVH",
 "BVH_BuildThread": "BVH",
 "BVH_BuildTool": "BVH",
-"BVH_Builder<double, 3>": "BVH",
+"BVH_Builder<double, 3>": "Select3D",
 "BVH_BuilderTransient": "BVH",
 "BVH_Distance<double, 3, NCollection_Vec3<double>, BRepExtrema_TriangleSet>": "BRepExtrema",
 "BVH_Object<double, 2>": "BOPTools",
@@ -1115,7 +1206,7 @@
 "BVH_Traverse<double, 2, BVH_BoxSet<double, 2>, bool>": "BOPTools",
 "BVH_Traverse<double, 3, BRepExtrema_TriangleSet, double>": "BRepExtrema",
 "BVH_Traverse<double, 3, BVH_BoxSet<double, 3>, bool>": "BOPTools",
-"BVH_Tree<double, 3, BVH_BinaryTree>": "Graphic3d",
+"BVH_Tree<double, 3, BVH_BinaryTree>": "SelectMgr",
 "BVH_TreeBaseTransient": "BVH",
 "BiTgte_Blend": "BiTgte",
 "BiTgte_ContactType": "BiTgte",
@@ -1282,6 +1373,32 @@
 "Draft_FaceInfo": "Draft",
 "Draft_Modification": "Draft",
 "Draft_VertexInfo": "Draft",
+"DsgPrs": "DsgPrs",
+"DsgPrs_AnglePresentation": "DsgPrs",
+"DsgPrs_ArrowSide": "DsgPrs",
+"DsgPrs_Chamf2dPresentation": "DsgPrs",
+"DsgPrs_ConcentricPresentation": "DsgPrs",
+"DsgPrs_DatumPrs": "DsgPrs",
+"DsgPrs_DiameterPresentation": "DsgPrs",
+"DsgPrs_EllipseRadiusPresentation": "DsgPrs",
+"DsgPrs_EqualDistancePresentation": "DsgPrs",
+"DsgPrs_EqualRadiusPresentation": "DsgPrs",
+"DsgPrs_FilletRadiusPresentation": "DsgPrs",
+"DsgPrs_FixPresentation": "DsgPrs",
+"DsgPrs_IdenticPresentation": "DsgPrs",
+"DsgPrs_LengthPresentation": "DsgPrs",
+"DsgPrs_MidPointPresentation": "DsgPrs",
+"DsgPrs_OffsetPresentation": "DsgPrs",
+"DsgPrs_ParalPresentation": "DsgPrs",
+"DsgPrs_PerpenPresentation": "DsgPrs",
+"DsgPrs_RadiusPresentation": "DsgPrs",
+"DsgPrs_ShadedPlanePresentation": "DsgPrs",
+"DsgPrs_ShapeDirPresentation": "DsgPrs",
+"DsgPrs_SymbPresentation": "DsgPrs",
+"DsgPrs_SymmetricPresentation": "DsgPrs",
+"DsgPrs_TangentPresentation": "DsgPrs",
+"DsgPrs_XYZAxisPresentation": "DsgPrs",
+"DsgPrs_XYZPlanePresentation": "DsgPrs",
 "ElCLib": "ElCLib",
 "ElSLib": "ElSLib",
 "ExtremaPC::Config": "ExtremaPC",
@@ -2789,6 +2906,82 @@
 "ProjLib_Projector": "ProjLib",
 "ProjLib_Sphere": "ProjLib",
 "ProjLib_Torus": "ProjLib",
+"Prs3d": "Prs3d",
+"Prs3d_Arrow": "Prs3d",
+"Prs3d_ArrowAspect": "Prs3d",
+"Prs3d_BasicAspect": "Prs3d",
+"Prs3d_BndBox": "Prs3d",
+"Prs3d_DatumAspect": "Prs3d",
+"Prs3d_DatumAttribute": "Prs3d",
+"Prs3d_DatumAxes": "Prs3d",
+"Prs3d_DatumMode": "Prs3d",
+"Prs3d_DatumParts": "Prs3d",
+"Prs3d_DimensionArrowOrientation": "Prs3d",
+"Prs3d_DimensionAspect": "Prs3d",
+"Prs3d_DimensionTextHorizontalPosition": "Prs3d",
+"Prs3d_DimensionTextVerticalPosition": "Prs3d",
+"Prs3d_DimensionUnits": "Prs3d",
+"Prs3d_Drawer": "Prs3d",
+"Prs3d_InvalidAngle": "Prs3d",
+"Prs3d_IsoAspect": "Prs3d",
+"Prs3d_LineAspect": "Prs3d",
+"Prs3d_PlaneAspect": "Prs3d",
+"Prs3d_Point<TopoDS_Vertex, StdPrs_ToolVertex>": "StdPrs",
+"Prs3d_Point<opencascade::handle<Geom_Point>, StdPrs_ToolPoint>": "StdPrs",
+"Prs3d_PointAspect": "Prs3d",
+"Prs3d_PresentationShadow": "Prs3d",
+"Prs3d_Root": "Prs3d",
+"Prs3d_ShadingAspect": "Prs3d",
+"Prs3d_Text": "Prs3d",
+"Prs3d_TextAspect": "Prs3d",
+"Prs3d_ToolCylinder": "Prs3d",
+"Prs3d_ToolDisk": "Prs3d",
+"Prs3d_ToolQuadric": "Prs3d",
+"Prs3d_ToolSector": "Prs3d",
+"Prs3d_ToolSphere": "Prs3d",
+"Prs3d_ToolTorus": "Prs3d",
+"Prs3d_TypeOfHLR": "Prs3d",
+"Prs3d_TypeOfHighlight": "Prs3d",
+"Prs3d_TypeOfLinePicking": "Prs3d",
+"Prs3d_VertexDrawMode": "Prs3d",
+"PrsDim": "PrsDim",
+"PrsDim_AngleDimension": "PrsDim",
+"PrsDim_Chamf2dDimension": "PrsDim",
+"PrsDim_Chamf3dDimension": "PrsDim",
+"PrsDim_ConcentricRelation": "PrsDim",
+"PrsDim_DiameterDimension": "PrsDim",
+"PrsDim_Dimension": "PrsDim",
+"PrsDim_Dimension::ComputeMode": "PrsDim",
+"PrsDim_DimensionOwner": "PrsDim",
+"PrsDim_DimensionSelectionMode": "PrsDim",
+"PrsDim_DisplaySpecialSymbol": "PrsDim",
+"PrsDim_EllipseRadiusDimension": "PrsDim",
+"PrsDim_EqualDistanceRelation": "PrsDim",
+"PrsDim_EqualRadiusRelation": "PrsDim",
+"PrsDim_FixRelation": "PrsDim",
+"PrsDim_IdenticRelation": "PrsDim",
+"PrsDim_KindOfDimension": "PrsDim",
+"PrsDim_KindOfRelation": "PrsDim",
+"PrsDim_KindOfSurface": "PrsDim",
+"PrsDim_LengthDimension": "PrsDim",
+"PrsDim_MaxRadiusDimension": "PrsDim",
+"PrsDim_MidPointRelation": "PrsDim",
+"PrsDim_MinRadiusDimension": "PrsDim",
+"PrsDim_OffsetDimension": "PrsDim",
+"PrsDim_ParallelRelation": "PrsDim",
+"PrsDim_PerpendicularRelation": "PrsDim",
+"PrsDim_RadiusDimension": "PrsDim",
+"PrsDim_Relation": "PrsDim",
+"PrsDim_SymmetricRelation": "PrsDim",
+"PrsDim_TangentRelation": "PrsDim",
+"PrsDim_TypeOfAngle": "PrsDim",
+"PrsDim_TypeOfAngleArrowVisibility": "PrsDim",
+"PrsDim_TypeOfDist": "PrsDim",
+"PrsMgr_DisplayStatus": "PrsMgr",
+"PrsMgr_PresentableObject": "PrsMgr",
+"PrsMgr_Presentation": "PrsMgr",
+"PrsMgr_PresentationManager": "PrsMgr",
+"PrsMgr_TypeOfPresentation3d": "PrsMgr",
 "Quantity_Color": "Quantity",
 "Quantity_ColorRGBA": "Quantity",
 "Quantity_Date": "Quantity",
@@ -2802,6 +2995,72 @@
 "Resource_Manager": "Resource",
 "Resource_NoSuchResource": "Resource",
 "Resource_Unicode": "Resource",
+"Select3D_BVHIndexBuffer": "Select3D",
+"Select3D_InteriorSensitivePointSet": "Select3D",
+"Select3D_Pnt": "Select3D",
+"Select3D_PointData": "Select3D",
+"Select3D_SensitiveBox": "Select3D",
+"Select3D_SensitiveCircle": "Select3D",
+"Select3D_SensitiveCurve": "Select3D",
+"Select3D_SensitiveCylinder": "Select3D",
+"Select3D_SensitiveEntity": "Select3D",
+"Select3D_SensitiveFace": "Select3D",
+"Select3D_SensitiveGroup": "Select3D",
+"Select3D_SensitivePoint": "Select3D",
+"Select3D_SensitivePoly": "Select3D",
+"Select3D_SensitivePrimitiveArray": "Select3D",
+"Select3D_SensitiveSegment": "Select3D",
+"Select3D_SensitiveSet": "Select3D",
+"Select3D_SensitiveSphere": "Select3D",
+"Select3D_SensitiveTriangle": "Select3D",
+"Select3D_SensitiveTriangulation": "Select3D",
+"Select3D_SensitiveWire": "Select3D",
+"Select3D_TypeOfSensitivity": "Select3D",
+"SelectBasics": "SelectBasics",
+"SelectBasics_PickResult": "SelectBasics",
+"SelectBasics_SelectingVolumeManager": "SelectBasics",
+"SelectMgr": "SelectMgr",
+"SelectMgr_AndFilter": "SelectMgr",
+"SelectMgr_AndOrFilter": "SelectMgr",
+"SelectMgr_AxisIntersector": "SelectMgr",
+"SelectMgr_BVHThreadPool": "SelectMgr",
+"SelectMgr_BVHThreadPool::BVHThread": "SelectMgr",
+"SelectMgr_BaseFrustum": "SelectMgr",
+"SelectMgr_BaseIntersector": "SelectMgr",
+"SelectMgr_CompositionFilter": "SelectMgr",
+"SelectMgr_EntityOwner": "SelectMgr",
+"SelectMgr_Filter": "SelectMgr",
+"SelectMgr_FilterType": "SelectMgr",
+"SelectMgr_Frustum<3>": "SelectMgr",
+"SelectMgr_Frustum<4>": "SelectMgr",
+"SelectMgr_FrustumBuilder": "SelectMgr",
+"SelectMgr_OrFilter": "SelectMgr",
+"SelectMgr_PickingStrategy": "SelectMgr",
+"SelectMgr_RectangularFrustum": "SelectMgr",
+"SelectMgr_RectangularFrustum::SelectionRectangle": "SelectMgr",
+"SelectMgr_SelectableObject": "SelectMgr",
+"SelectMgr_SelectableObjectSet": "SelectMgr",
+"SelectMgr_SelectableObjectSet::BVHSubset": "SelectMgr",
+"SelectMgr_SelectableObjectSet::Iterator": "SelectMgr",
+"SelectMgr_SelectingVolumeManager": "SelectMgr",
+"SelectMgr_Selection": "SelectMgr",
+"SelectMgr_SelectionImageFiller": "SelectMgr",
+"SelectMgr_SelectionManager": "SelectMgr",
+"SelectMgr_SelectionType": "SelectMgr",
+"SelectMgr_SensitiveEntity": "SelectMgr",
+"SelectMgr_SensitiveEntitySet": "SelectMgr",
+"SelectMgr_SortCriterion": "SelectMgr",
+"SelectMgr_StateOfSelection": "SelectMgr",
+"SelectMgr_ToleranceMap": "SelectMgr",
+"SelectMgr_TriangularFrustum": "SelectMgr",
+"SelectMgr_TriangularFrustum::SelectionTriangle": "SelectMgr",
+"SelectMgr_TriangularFrustumSet": "SelectMgr",
+"SelectMgr_TriangularFrustumSet::SelectionPolyline": "SelectMgr",
+"SelectMgr_TypeOfBVHUpdate": "SelectMgr",
+"SelectMgr_TypeOfDepthTolerance": "SelectMgr",
+"SelectMgr_TypeOfUpdate": "SelectMgr",
+"SelectMgr_ViewClipRange": "SelectMgr",
+"SelectMgr_ViewerSelector": "SelectMgr",
 "ShapeAlgo": "ShapeAlgo",
 "ShapeAlgo_AlgoContainer": "ShapeAlgo",
 "ShapeAlgo_ToolContainer": "ShapeAlgo",
@@ -2967,6 +3226,43 @@
 "StdFail_Undefined": "StdFail",
 "StdFail_UndefinedDerivative": "StdFail",
 "StdFail_UndefinedValue": "StdFail",
+"StdPrs_BRepFont": "StdPrs",
+"StdPrs_BRepTextBuilder": "StdPrs",
+"StdPrs_Curve": "StdPrs",
+"StdPrs_DeflectionCurve": "StdPrs",
+"StdPrs_HLRPolyShape": "StdPrs",
+"StdPrs_HLRShape": "StdPrs",
+"StdPrs_HLRShapeI": "StdPrs",
+"StdPrs_HLRToolShape": "StdPrs",
+"StdPrs_Isolines": "StdPrs",
+"StdPrs_Isolines::PntOnIso": "StdPrs",
+"StdPrs_Isolines::SegOnIso": "StdPrs",
+"StdPrs_Plane": "StdPrs",
+"StdPrs_PoleCurve": "StdPrs",
+"StdPrs_ShadedShape": "StdPrs",
+"StdPrs_ShadedSurface": "StdPrs",
+"StdPrs_ShapeTool": "StdPrs",
+"StdPrs_ToolPoint": "StdPrs",
+"StdPrs_ToolRFace": "StdPrs",
+"StdPrs_ToolTriangulatedShape": "StdPrs",
+"StdPrs_ToolVertex": "StdPrs",
+"StdPrs_Volume": "StdPrs",
+"StdPrs_WFDeflectionRestrictedFace": "StdPrs",
+"StdPrs_WFDeflectionSurface": "StdPrs",
+"StdPrs_WFPoleSurface": "StdPrs",
+"StdPrs_WFRestrictedFace": "StdPrs",
+"StdPrs_WFShape": "StdPrs",
+"StdPrs_WFSurface": "StdPrs",
+"StdSelect": "StdSelect",
+"StdSelect_BRepOwner": "StdSelect",
+"StdSelect_BRepSelectionTool": "StdSelect",
+"StdSelect_EdgeFilter": "StdSelect",
+"StdSelect_FaceFilter": "StdSelect",
+"StdSelect_Shape": "StdSelect",
+"StdSelect_ShapeTypeFilter": "StdSelect",
+"StdSelect_TypeOfEdge": "StdSelect",
+"StdSelect_TypeOfFace": "StdSelect",
+"StdSelect_TypeOfSelectionImage": "StdSelect",
 "Storage": "Storage",
 "Storage_BaseDriver": "Storage",
 "Storage_Bucket": "Storage",
@@ -3209,6 +3505,26 @@
 "Units_UnitsDictionary": "Units",
 "Units_UnitsLexicon": "Units",
 "Units_UnitsSystem": "Units",
+"V3d": "V3d",
+"V3d_AmbientLight": "V3d",
+"V3d_BadValue": "V3d",
+"V3d_CircularGrid": "V3d",
+"V3d_DirectionalLight": "V3d",
+"V3d_ImageDumpOptions": "V3d",
+"V3d_Plane": "V3d",
+"V3d_PositionLight": "V3d",
+"V3d_PositionalLight": "V3d",
+"V3d_RectangularGrid": "V3d",
+"V3d_SpotLight": "V3d",
+"V3d_StereoDumpOptions": "V3d",
+"V3d_Trihedron": "V3d",
+"V3d_TypeOfAxe": "V3d",
+"V3d_TypeOfOrientation": "V3d",
+"V3d_TypeOfView": "V3d",
+"V3d_TypeOfVisualization": "V3d",
+"V3d_UnMapped": "V3d",
+"V3d_View": "V3d",
+"V3d_Viewer": "V3d",
 "WNT_ClassDefinitionError": "WNT",
 "WNT_HIDSpaceMouse": "WNT",
 "WNT_HIDSpaceMouse::(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/WNT_HIDSpaceMouse.hxx:94:3)": "WNT",
@@ -4940,6 +5256,18 @@
 "name": "NCollection_Array1__Poly_Triangle",
 "by": "Poly"
 },
+"NCollection_Array1<Quantity_Color>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Array1__Quantity_Color",
+"by": "AIS"
+},
+"NCollection_Array1<SelectMgr_BVHThreadPool::BVHThread>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Array1__SelectMgr_BVHThreadPool_BVHThread",
+"by": "SelectMgr"
+},
 "NCollection_Array1<TCollection_AsciiString>": {
 "toolkit": "TKService",
 "package": "NCollection",
@@ -4981,6 +5309,12 @@
 "package": "NCollection",
 "name": "NCollection_Array1__float",
 "by": "Poly"
+},
+"NCollection_Array1<gp_Dir>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Array1__gp_Dir",
+"by": "AIS"
 },
 "NCollection_Array1<gp_Lin>": {
 "toolkit": "TKGeomAlgo",
@@ -5119,6 +5453,12 @@
 "package": "NCollection",
 "name": "NCollection_Array1__Handle_Poly_PolygonOnTriangulation",
 "by": "BRepGraph"
+},
+"NCollection_Array1<opencascade::handle<SelectMgr_EntityOwner>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Array1__Handle_SelectMgr_EntityOwner",
+"by": "AIS"
 },
 "NCollection_Array1<opencascade::handle<Standard_Persistent>>": {
 "toolkit": "TKernel",
@@ -5350,6 +5690,12 @@
 "name": "NCollection_DataMap__TopoDS_Shape__int",
 "by": "TopOpeBRepTool"
 },
+"NCollection_DataMap<TopoDS_Shape, opencascade::handle<AIS_ColoredDrawer>, TopTools_ShapeMapHasher>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_DataMap__TopoDS_Shape__Handle_AIS_ColoredDrawer__TopTools_ShapeMapHasher",
+"by": "AIS"
+},
 "NCollection_DataMap<TopoDS_Shape, opencascade::handle<NCollection_HArray2<TopoDS_Shape>>, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -5410,11 +5756,29 @@
 "name": "NCollection_DataMap__Handle_Graphic3d_Aspects__Handle_Graphic3d_Aspects",
 "by": "Graphic3d"
 },
+"NCollection_DataMap<opencascade::handle<SelectMgr_EntityOwner>, int>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_DataMap__Handle_SelectMgr_EntityOwner__int",
+"by": "SelectMgr"
+},
 "NCollection_DataMap<opencascade::handle<Standard_Transient>, NCollection_List<Message_Msg>>": {
 "toolkit": "TKShHealing",
 "package": "NCollection",
 "name": "NCollection_DataMap__Handle_Standard_Transient__NCollection_List__Message_Msg",
 "by": "ShapeExtend"
+},
+"NCollection_DataMap<unsigned int, AIS_MouseGesture>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_DataMap__unsigned_int__AIS_MouseGesture",
+"by": "AIS"
+},
+"NCollection_DataMap<unsigned int, AIS_SelectionScheme>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_DataMap__unsigned_int__AIS_SelectionScheme",
+"by": "AIS"
 },
 "NCollection_DefaultHasher<BRepGraph_ItemId>": {
 "toolkit": "TKBRep",
@@ -5585,6 +5949,12 @@
 "name": "NCollection_DynamicArray__NCollection_Vec2__float",
 "by": "Font"
 },
+"NCollection_DynamicArray<NCollection_Vec4<double>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__NCollection_Vec4__double",
+"by": "SelectBasics"
+},
 "NCollection_DynamicArray<Poly_CoherentLink>": {
 "toolkit": "TKMath",
 "package": "NCollection",
@@ -5680,6 +6050,18 @@
 "package": "NCollection",
 "name": "NCollection_DynamicArray__Handle_IMeshData_Wire",
 "by": "IMeshData"
+},
+"NCollection_DynamicArray<opencascade::handle<Select3D_SensitiveEntity>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__Handle_Select3D_SensitiveEntity",
+"by": "Select3D"
+},
+"NCollection_DynamicArray<opencascade::handle<SelectMgr_SensitiveEntity>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__Handle_SelectMgr_SensitiveEntity",
+"by": "SelectMgr"
 },
 "NCollection_EBTree<int, Bnd_Box2d>": {
 "toolkit": "TKMesh",
@@ -5789,6 +6171,12 @@
 "name": "NCollection_HArray1__Poly_Triangle",
 "by": "Poly"
 },
+"NCollection_HArray1<Quantity_Color>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_HArray1__Quantity_Color",
+"by": "AIS"
+},
 "NCollection_HArray1<TopOpeBRep_LineInter>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -5818,6 +6206,12 @@
 "package": "NCollection",
 "name": "NCollection_HArray1__float",
 "by": "Poly"
+},
+"NCollection_HArray1<gp_Dir>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_HArray1__gp_Dir",
+"by": "AIS"
 },
 "NCollection_HArray1<gp_Pnt2d>": {
 "toolkit": "TKMath",
@@ -5962,6 +6356,12 @@
 "package": "NCollection",
 "name": "NCollection_HSequence__int",
 "by": "Units"
+},
+"NCollection_HSequence<opencascade::handle<AIS_InteractiveObject>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_HSequence__Handle_AIS_InteractiveObject",
+"by": "AIS"
 },
 "NCollection_HSequence<opencascade::handle<ChFiDS_SurfData>>": {
 "toolkit": "TKFillet",
@@ -6169,6 +6569,24 @@
 "package": "NCollection",
 "name": "NCollection_IndexedMap__Handle_BOPDS_PaveBlock",
 "by": "BOPDS"
+},
+"NCollection_IndexedMap<opencascade::handle<Select3D_SensitiveEntity>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__Handle_Select3D_SensitiveEntity",
+"by": "Select3D"
+},
+"NCollection_IndexedMap<opencascade::handle<SelectMgr_EntityOwner>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__Handle_SelectMgr_EntityOwner",
+"by": "SelectMgr"
+},
+"NCollection_IndexedMap<opencascade::handle<SelectMgr_SensitiveEntity>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__Handle_SelectMgr_SensitiveEntity",
+"by": "SelectMgr"
 },
 "NCollection_Iterator<NCollection_Array1<opencascade::handle<Graphic3d_TextureMap>>>": {
 "toolkit": "TKService",
@@ -6524,6 +6942,12 @@
 "name": "NCollection_List__int",
 "by": "Standard"
 },
+"NCollection_List<opencascade::handle<AIS_InteractiveObject>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__Handle_AIS_InteractiveObject",
+"by": "AIS"
+},
 "NCollection_List<opencascade::handle<BOPDS_PaveBlock>>": {
 "toolkit": "TKBO",
 "package": "NCollection",
@@ -6566,6 +6990,12 @@
 "name": "NCollection_List__Handle_Font_SystemFont",
 "by": "Font"
 },
+"NCollection_List<opencascade::handle<Graphic3d_CLight>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__Handle_Graphic3d_CLight",
+"by": "V3d"
+},
 "NCollection_List<opencascade::handle<Graphic3d_GraphicDriverFactory>>": {
 "toolkit": "TKService",
 "package": "NCollection",
@@ -6596,11 +7026,41 @@
 "name": "NCollection_List__Handle_Message_Alert",
 "by": "Message"
 },
+"NCollection_List<opencascade::handle<NCollection_HSequence<gp_Pnt>>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__opencascade_handle__NCollection_HSequence__gp_Pnt",
+"by": "Prs3d"
+},
 "NCollection_List<opencascade::handle<Poly_Triangulation>>": {
 "toolkit": "TKMath",
 "package": "NCollection",
 "name": "NCollection_List__Handle_Poly_Triangulation",
 "by": "Poly"
+},
+"NCollection_List<opencascade::handle<PrsMgr_PresentableObject>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__Handle_PrsMgr_PresentableObject",
+"by": "PrsMgr"
+},
+"NCollection_List<opencascade::handle<SelectMgr_EntityOwner>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__Handle_SelectMgr_EntityOwner",
+"by": "SelectMgr"
+},
+"NCollection_List<opencascade::handle<SelectMgr_Filter>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__Handle_SelectMgr_Filter",
+"by": "SelectMgr"
+},
+"NCollection_List<opencascade::handle<Standard_Transient>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__Handle_Standard_Transient",
+"by": "PrsDim"
 },
 "NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>>": {
 "toolkit": "TKBool",
@@ -6619,6 +7079,12 @@
 "package": "NCollection",
 "name": "NCollection_List__Handle_TopOpeBRepDS_Interference",
 "by": "TopOpeBRep"
+},
+"NCollection_List<opencascade::handle<V3d_View>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_List__Handle_V3d_View",
+"by": "V3d"
 },
 "NCollection_Map<BOPDS_Pair>": {
 "toolkit": "TKBO",
@@ -6658,6 +7124,13 @@
 "package": "NCollection",
 "name": "NCollection_Map__TopoDS_Shape__TopTools_ShapeMapHasher",
 "by": "TopExp"
+},
+"NCollection_Map<const Standard_Transient *>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "SelectMgr",
+"skipped": true
 },
 "NCollection_Map<double>": {
 "toolkit": "TKMesh",
@@ -6742,6 +7215,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__AppParCurves_MultiCurve",
 "by": "Approx"
+},
+"NCollection_Sequence<Aspect_ScrollDelta>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Aspect_ScrollDelta",
+"by": "AIS"
 },
 "NCollection_Sequence<BRepExtrema_SolutionElem>": {
 "toolkit": "TKTopAlgo",
@@ -6857,11 +7336,23 @@
 "name": "NCollection_Sequence__NCollection_Sequence__Handle_Geom2d_Geometry",
 "by": "MAT2d"
 },
+"NCollection_Sequence<NCollection_Vec2<int>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__NCollection_Vec2__int",
+"by": "AIS"
+},
 "NCollection_Sequence<Plate_PinpointConstraint>": {
 "toolkit": "TKGeomAlgo",
 "package": "NCollection",
 "name": "NCollection_Sequence__Plate_PinpointConstraint",
 "by": "Plate"
+},
+"NCollection_Sequence<Quantity_Color>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Quantity_Color",
+"by": "AIS"
 },
 "NCollection_Sequence<ShapeFix_WireSegment>": {
 "toolkit": "TKShHealing",
@@ -6965,6 +7456,18 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__int",
 "by": "Units"
+},
+"NCollection_Sequence<opencascade::handle<AIS_Animation>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_AIS_Animation",
+"by": "AIS"
+},
+"NCollection_Sequence<opencascade::handle<AIS_InteractiveObject>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_AIS_InteractiveObject",
+"by": "AIS"
 },
 "NCollection_Sequence<opencascade::handle<AdvApp2Var_Iso>>": {
 "toolkit": "TKGeomBase",
@@ -7098,6 +7601,30 @@
 "name": "NCollection_Sequence__opencascade_handle__NCollection_HSequence__gp_Pnt",
 "by": "ProjLib"
 },
+"NCollection_Sequence<opencascade::handle<PrsMgr_Presentation>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_PrsMgr_Presentation",
+"by": "PrsMgr"
+},
+"NCollection_Sequence<opencascade::handle<Select3D_SensitiveEntity>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Select3D_SensitiveEntity",
+"by": "Select3D"
+},
+"NCollection_Sequence<opencascade::handle<SelectMgr_EntityOwner>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_SelectMgr_EntityOwner",
+"by": "SelectMgr"
+},
+"NCollection_Sequence<opencascade::handle<SelectMgr_Selection>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_SelectMgr_Selection",
+"by": "SelectMgr"
+},
 "NCollection_Sequence<opencascade::handle<ShapeAnalysis_FreeBoundData>>": {
 "toolkit": "TKShHealing",
 "package": "NCollection",
@@ -7145,6 +7672,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__Handle_Units_Unit",
 "by": "Units"
+},
+"NCollection_Sequence<opencascade::handle<V3d_View>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_V3d_View",
+"by": "V3d"
 },
 "NCollection_Shared<NCollection_Array1<BRepMesh_Vertex>>": {
 "toolkit": "TKMesh",
@@ -7282,6 +7815,12 @@
 "name": "NCollection_Shared__NCollection_IndexedMap__double",
 "by": "IMeshData"
 },
+"NCollection_Shared<NCollection_IndexedMap<opencascade::handle<SelectMgr_EntityOwner>>>": {
+"toolkit": "TKV3d",
+"package": "NCollection",
+"name": "NCollection_Shared__NCollection_IndexedMap__Handle_SelectMgr_EntityOwner",
+"by": "SelectMgr"
+},
 "NCollection_Shared<NCollection_List<gp_Pnt2d>>": {
 "toolkit": "TKMesh",
 "package": "NCollection",
@@ -7318,6 +7857,13 @@
 "package": "",
 "name": "",
 "by": "IMeshData",
+"skipped": true
+},
+"NCollection_Shared<NCollection_Map<const Standard_Transient *>>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "SelectMgr",
 "skipped": true
 },
 "NCollection_Shared<NCollection_Map<double>>": {
@@ -7461,6 +8007,30 @@
 "by": "OSD",
 "skipped": true
 },
+"Prs3d_Point<TopoDS_Vertex, StdPrs_ToolVertex>": {
+"toolkit": "TKV3d",
+"package": "StdPrs",
+"name": "StdPrs_Vertex",
+"by": "StdPrs"
+},
+"Prs3d_Point<opencascade::handle<Geom_Point>, StdPrs_ToolPoint>": {
+"toolkit": "TKV3d",
+"package": "StdPrs",
+"name": "StdPrs_Point",
+"by": "StdPrs"
+},
+"SelectMgr_Frustum<3>": {
+"toolkit": "TKV3d",
+"package": "SelectMgr",
+"name": "SelectMgr_Frustum__3",
+"by": "SelectMgr"
+},
+"SelectMgr_Frustum<4>": {
+"toolkit": "TKV3d",
+"package": "SelectMgr",
+"name": "SelectMgr_Frustum__4",
+"by": "SelectMgr"
+},
 "math_VectorBase<double>": {
 "toolkit": "TKMath",
 "package": "math",
@@ -7475,6 +8045,7 @@
 }
 },
 "packages": {
+"AIS": "TKV3d",
 "Adaptor2d": "TKG2d",
 "Adaptor3d": "TKG3d",
 "AdvApp2Var": "TKGeomBase",
@@ -7542,6 +8113,7 @@
 "Contap": "TKHLR",
 "Convert": "TKMath",
 "Draft": "TKOffset",
+"DsgPrs": "TKV3d",
 "ElCLib": "TKMath",
 "ElSLib": "TKMath",
 "Extrema": "TKGeomBase",
@@ -7638,9 +8210,15 @@
 "Poly": "TKMath",
 "Precision": "TKernel",
 "ProjLib": "TKGeomBase",
+"Prs3d": "TKV3d",
+"PrsDim": "TKV3d",
+"PrsMgr": "TKV3d",
 "Quantity": "TKernel",
 "Resource": "TKernel",
 "SHMessage": "TKShHealing",
+"Select3D": "TKV3d",
+"SelectBasics": "TKV3d",
+"SelectMgr": "TKV3d",
 "Shaders": "TKService",
 "ShapeAlgo": "TKShHealing",
 "ShapeAnalysis": "TKShHealing",
@@ -7654,6 +8232,8 @@
 "ShapeUpgrade": "TKShHealing",
 "Standard": "TKernel",
 "StdFail": "TKernel",
+"StdPrs": "TKV3d",
+"StdSelect": "TKV3d",
 "Storage": "TKernel",
 "Sweep": "TKPrim",
 "TColStd": "TKernel",
@@ -7675,6 +8255,7 @@
 "Units": "TKernel",
 "UnitsAPI": "TKernel",
 "UnitsMethods": "TKernel",
+"V3d": "TKV3d",
 "WNT": "TKService",
 "Wasm": "TKService",
 "XBRepMesh": "TKXMesh",
@@ -7930,9 +8511,23 @@
 "Cocoa",
 "Font",
 "Shaders"
+],
+"TKV3d": [
+"V3d",
+"Select3D",
+"Prs3d",
+"StdPrs",
+"SelectBasics",
+"PrsMgr",
+"SelectMgr",
+"AIS",
+"StdSelect",
+"DsgPrs",
+"PrsDim"
 ]
 },
 "namespaces": {
+"AIS": [],
 "Adaptor2d": [],
 "Adaptor3d": [],
 "AdvApp2Var": [],
@@ -8014,6 +8609,7 @@
 "Contap": [],
 "Convert": [],
 "Draft": [],
+"DsgPrs": [],
 "ElCLib": [],
 "ElSLib": [],
 "Extrema": [],
@@ -8133,9 +8729,15 @@
 "Poly": [],
 "Precision": [],
 "ProjLib": [],
+"Prs3d": [],
+"PrsDim": [],
+"PrsMgr": [],
 "Quantity": [],
 "Resource": [],
 "SHMessage": [],
+"Select3D": [],
+"SelectBasics": [],
+"SelectMgr": [],
 "Shaders": [],
 "ShapeAlgo": [],
 "ShapeAnalysis": [],
@@ -8149,6 +8751,8 @@
 "ShapeUpgrade": [],
 "Standard": [],
 "StdFail": [],
+"StdPrs": [],
+"StdSelect": [],
 "Storage": [],
 "Sweep": [],
 "TColStd": [],
@@ -8170,6 +8774,7 @@
 "Units": [],
 "UnitsAPI": [],
 "UnitsMethods": [],
+"V3d": [],
 "WNT": [],
 "Wasm": [],
 "XBRepMesh": [],
@@ -8330,10 +8935,10 @@
 "BRepGraph_ReverseIterator::LookupParentRefsOf<BRepGraph_ReverseIterator::WireOfCoEdgeUsageTraits>": "BRepGraph_RefsWiresOfCoEdge",
 "BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>": "BRepGraph_CoEdgesOfEdge",
 "BRepGraph_ReverseIterator::ParentsOf<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>, NCollection_LinearVector<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>>>": "BRepGraph_EdgesOfVertex",
-"BVH_Box<double, 3>": "Graphic3d_BndBox3d",
+"BVH_Box<double, 3>": "Select3D_BndBox3d",
 "BVH_Box<double, 4>": "Graphic3d_BndBox4d",
 "BVH_Box<float, 4>": "Graphic3d_BndBox4f",
-"BVH_Builder<double, 3>": "BVH_Builder3d",
+"BVH_Builder<double, 3>": "Select3D_BVHBuilder3d",
 "BVH_PrimitiveSet<double, 3>": "BVH_PrimitiveSet3d",
 "Bnd_B2<double>": "Bnd_B2d",
 "Bnd_B2<float>": "Bnd_B2f",
@@ -8394,6 +8999,8 @@
 "NCollection_Vec4<double>": "BVH_Vec4d",
 "NCollection_Vec4<float>": "BVH_Vec4f",
 "NCollection_Vec4<int>": "BVH_Vec4i",
+"Prs3d_Point<TopoDS_Vertex, StdPrs_ToolVertex>": "StdPrs_Vertex",
+"Prs3d_Point<opencascade::handle<Geom_Point>, StdPrs_ToolPoint>": "StdPrs_Point",
 "math_VectorBase<double>": "math_Vector",
 "math_VectorBase<int>": "math_IntegerVector"
 }

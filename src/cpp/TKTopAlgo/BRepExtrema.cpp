@@ -415,8 +415,8 @@ Be careful: this method uses the Face only for classify not for the fields.)nbdo
         .def("SetAlgo", static_cast<void (BRepExtrema_ExtPF::*)(const Extrema_ExtAlgo)>(&BRepExtrema_ExtPF::SetAlgo), nb::arg("A"));
     nanoocp_implicit_copy_ctor<BRepExtrema_ExtPF>(nb::borrow<nb::class_<BRepExtrema_ExtPF>>(m.attr("BRepExtrema_ExtPF")));
     nb::borrow<nb::class_<BRepExtrema_TriangleSet>>(m.attr("BRepExtrema_TriangleSet"))
-        .def(nb::init<>(), R"nbdoc(Creates empty triangle set.)nbdoc")
-        .def(nb::init<const NCollection_DynamicArray<TopoDS_Shape> &>(), nb::arg("theFaces"), R"nbdoc(Creates triangle set from the given face.)nbdoc")
+        .def(nb::new_([]() { return opencascade::handle<BRepExtrema_TriangleSet>(new BRepExtrema_TriangleSet()); }), R"nbdoc(Creates empty triangle set.)nbdoc")
+        .def(nb::new_([](const NCollection_DynamicArray<TopoDS_Shape> & theFaces) { return opencascade::handle<BRepExtrema_TriangleSet>(new BRepExtrema_TriangleSet(theFaces)); }), nb::arg("theFaces"), R"nbdoc(Creates triangle set from the given face.)nbdoc")
         .def("Size", static_cast<int (BRepExtrema_TriangleSet::*)() const>(&BRepExtrema_TriangleSet::Size), R"nbdoc(@name methods implementing BVH set interface
 Returns total number of triangles.)nbdoc")
         .def("Box", static_cast<BVH_Box<double, 3> (BRepExtrema_TriangleSet::*)(const int) const>(&BRepExtrema_TriangleSet::Box), nb::arg("theIndex"), R"nbdoc(Returns AABB of the given triangle.)nbdoc")

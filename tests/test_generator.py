@@ -320,6 +320,28 @@ protected:
   NCollection_Sequence<gp_Pnt> myItems;
 };
 
+//! Transient through a template base (SelectMgr_RectangularFrustum : SelectMgr_Frustum<4> : ... : Standard_Transient,
+//! BRepExtrema_TriangleSet : BVH_PrimitiveSet<double, 3>): both the instantiation and the derived class are Transient.
+template <class T>
+class Rules_TTransient : public Standard_Transient
+{
+public:
+  Rules_TTransient() {}
+  T Tag() const { return T(); }
+};
+class Rules_ViaTemplate : public Rules_TTransient<int>
+{
+public:
+  Rules_ViaTemplate() {}
+};
+typedef Rules_TTransient<double> Rules_TTransientD;
+//! ... also when the base is written through a typedef (BRepExtrema_TriangleSet : BVH_PrimitiveSet3d).
+class Rules_ViaTypedef : public Rules_TTransientD
+{
+public:
+  Rules_ViaTypedef() {}
+};
+
 //! A namespace named like the package is the package module itself.
 namespace Rules
 {
@@ -367,7 +389,8 @@ def test_ir_classes_and_nesting(rules_ir):
     assert names[:14] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
                           "Rules_Algo", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2", "Rules_Alloc", "Rules_Arrays"]
     assert set(names[14:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
-                               "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator"}   # alias instantiations, probe bases
+                               "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_ViaTemplate",
+                               "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>"}   # alias instantiations, probe bases
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -493,7 +516,8 @@ def test_ir_records_mangled_names(rules_ir):
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
-             "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules"}
+             "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
+             "Rules_TTransient<double>": "Rules"}
     em = Emitter(rules_ir, OCCT / "include" / "opencascade", known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
                  ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
@@ -612,7 +636,8 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     tvec = by["Rules_TVec<unsigned long>"]
     assert tvec.ctors[0].params[0].default == "(unsigned long)(0)"
     em = Emitter(rules_ir, OCCT / "include" / "opencascade",
-                 {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Vis": "Rules", "Rules_Vis::Filter": "Rules"},
+                 {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Vis": "Rules", "Rules_Vis::Filter": "Rules",
+                  "Rules_TTransient<int>": "Rules", "Rules_TTransient<double>": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def_prop_rw("stick", [](const Rules_Vis &self) { return static_cast<unsigned int>(self.stick); }, [](Rules_Vis &self, unsigned int v) { self.stick = v; }, R"nbdoc(' in cpp
@@ -626,6 +651,11 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     # R-COLLISION with width twins: both Coord overloads keep the plain name, the double one first
     assert cpp.count('.def("Coord", [](const Rules_Vis &self)') == 2 and "Coord__float__float" not in cpp
     assert cpp.index("double theX{}; double theY{};") < cpp.index("float theX{}; float theY{};")
+    # Transient through a template base: both classes get nb::new_ constructors returning handles (2026-09-22)
+    assert by["Rules_ViaTemplate"].is_transient and by["Rules_TTransient<int>"].is_transient and by["Rules_ViaTemplate"].bases == ["Rules_TTransient<int>"]
+    assert by["Rules_ViaTypedef"].is_transient and by["Rules_ViaTypedef"].bases == ["Rules_TTransient<double>"]
+    assert "nb::new_([]() { return opencascade::handle<Rules_ViaTemplate>(new Rules_ViaTemplate()); })" in cpp
+    assert "new (self) Rules_ViaTemplate" not in cpp
     # 6a: the binder-Iterator-derived class is declared in the templates phase, after its base's instantiation
     it = by["Rules_PntSeq::Iterator"]
     assert it.after_templates and it.bases == ["NCollection_Sequence<gp_Pnt>::Iterator"]

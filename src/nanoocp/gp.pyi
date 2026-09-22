@@ -6,6 +6,7 @@ from typing import TextIO, overload
 import nanoocp.Geom2dAPI
 import nanoocp.GeomAPI
 import nanoocp.NCollection
+import nanoocp.Select3D
 import nanoocp.Standard
 import nanoocp.TopLoc
 import nanoocp.gce
@@ -569,6 +570,9 @@ class gp_XYZ:
     def __init__(self, theOther: gp_XYZ) -> None: ...
 
     @overload
+    def __init__(self, theFrom: nanoocp.Select3D.Select3D_Pnt) -> None: ...
+
+    @overload
     def SetCoord(self, theX: float, theY: float, theZ: float) -> None:
         """
         For this XYZ object, assigns
@@ -934,6 +938,9 @@ class gp_Pnt:
 
     @overload
     def __init__(self, theFrom: nanoocp.GeomAPI.GeomAPI_ProjectPointOnSurf) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.Select3D.Select3D_Pnt) -> None: ...
 
     @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:

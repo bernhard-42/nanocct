@@ -1,0 +1,61 @@
+# nanoOCP generator report for TKV3d: 50 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# conversion: 2
+# iterator: 2
+# overload-collision: 19
+# raw-pointer: 8
+# static-rename: 4
+# stream: 2
+# template: 5
+# unbound-type: 1
+# undefined: 7
+conversion	StdPrs	StdPrs_Isolines::SegOnIso::operator StdPrs_Isolines::PntOnIso *: conversion operator to an unsupported type
+conversion	StdPrs	StdPrs_Isolines::SegOnIso::operator const StdPrs_Isolines::PntOnIso *: conversion operator to an unsupported type
+iterator	AIS	AIS_Selection: __iter__ added (More/Next/Value)
+iterator	SelectMgr	SelectMgr_SelectableObjectSet::Iterator: __iter__ added (More/Next/Value)
+overload-collision	AIS	AIS_WalkDelta::operator[](AIS_WalkRotation) const: const twin of a less const overload -> not bound
+overload-collision	AIS	AIS_WalkDelta::operator[](AIS_WalkTranslation) const: const twin of a less const overload -> not bound
+overload-collision	Prs3d	Prs3d_ToolQuadric::FillArray(occ::handle<Graphic3d_ArrayOfTriangles> &, const gp_Trsf &): same Python signature as another overload after out-param removal -> bound as FillArray__Graphic3d_ArrayOfTriangles
+overload-collision	Prs3d	Prs3d_ToolQuadric::FillArray(occ::handle<Graphic3d_ArrayOfTriangles> &, occ::handle<Poly_Triangulation> &, const gp_Trsf &): same Python signature as another overload after out-param removal -> bound as FillArray__Graphic3d_ArrayOfTriangles__Poly_Triangulation
+overload-collision	PrsDim	PrsDim::ComputeGeometry(const TopoDS_Edge &, const TopoDS_Edge &, int &, occ::handle<Geom_Curve> &, occ::handle<Geom_Curve> &, gp_Pnt &, gp_Pnt &, gp_Pnt &, gp_Pnt &, occ::handle<Geom_Curve> &, bool &, bool &, const occ::handle<Geom_Plane> &): same Python signature as another overload after out-param removal -> bound as ComputeGeometry__int__Geom_Curve__Geom_Curve__Geom_Curve__bool__bool
+overload-collision	PrsDim	PrsDim::ComputeGeometry(const TopoDS_Edge &, const TopoDS_Edge &, occ::handle<Geom_Curve> &, occ::handle<Geom_Curve> &, gp_Pnt &, gp_Pnt &, gp_Pnt &, gp_Pnt &, const occ::handle<Geom_Plane> &): same Python signature as another overload after out-param removal -> bound as ComputeGeometry__Geom_Curve__Geom_Curve
+overload-collision	PrsDim	PrsDim::ComputeGeometry(const TopoDS_Edge &, occ::handle<Geom_Curve> &, gp_Pnt &, gp_Pnt &): same Python signature as another overload after out-param removal -> bound as ComputeGeometry__Geom_Curve
+overload-collision	PrsDim	PrsDim::ComputeGeometry(const TopoDS_Edge &, occ::handle<Geom_Curve> &, gp_Pnt &, gp_Pnt &, bool &): same Python signature as another overload after out-param removal -> bound as ComputeGeometry__Geom_Curve__bool
+overload-collision	Select3D	Select3D_InteriorSensitivePointSet::GetPoints(occ::handle<NCollection_HArray1<gp_Pnt>> &): same Python signature as another overload after out-param removal -> bound as GetPoints__NCollection_HArray1__gp_Pnt
+overload-collision	Select3D	Select3D_SensitiveFace::GetPoints(occ::handle<NCollection_HArray1<gp_Pnt>> &): same Python signature as another overload after out-param removal -> bound as GetPoints__NCollection_HArray1__gp_Pnt
+overload-collision	Select3D	Select3D_SensitivePoly::Points3D(occ::handle<NCollection_HArray1<gp_Pnt>> &): same Python signature as another overload after out-param removal -> bound as Points3D__NCollection_HArray1__gp_Pnt
+overload-collision	Select3D	Select3D_SensitiveTriangulation::LastDetectedTriangle(Poly_Triangle &, gp_Pnt[3]): same Python signature as another overload after out-param removal -> bound as LastDetectedTriangle__list
+overload-collision	V3d	V3d::TypeOfOrientationFromString(const char *const, V3d_TypeOfOrientation &): same Python signature as another overload after out-param removal -> bound as TypeOfOrientationFromString__V3d_TypeOfOrientation
+overload-collision	V3d	V3d_PositionalLight::Position(double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Position__float__float__float
+overload-collision	V3d	V3d_SpotLight::Position(double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Position__float__float__float
+overload-collision	V3d	V3d_View::Convert(const int, const int, double &, double &): same Python signature as another overload after out-param removal -> bound as Convert__float__float
+overload-collision	V3d	V3d_View::Convert(const int, const int, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Convert__float__float__float
+overload-collision	V3d	V3d_View::Project(const double, const double, const double, double &, double &): same Python signature as another overload after out-param removal -> bound as Project__float__float
+overload-collision	V3d	V3d_View::Project(const double, const double, const double, double &, double &, double &): same Python signature as another overload after out-param removal -> bound as Project__float__float__float
+raw-pointer	AIS	AIS_MediaPlayer::SetCallback(): param 'theCallbackFunction': function pointer
+raw-pointer	SelectMgr	SelectMgr_AxisIntersector::OverlapsBox(const NCollection_Vec3<double> &, const NCollection_Vec3<double> &): param 'theInside': raw pointer to primitive
+raw-pointer	SelectMgr	SelectMgr_RectangularFrustum::OverlapsBox(const NCollection_Vec3<double> &, const NCollection_Vec3<double> &): param 'theInside': raw pointer to primitive
+raw-pointer	SelectMgr	SelectMgr_RectangularFrustum::OverlapsSphere(const gp_Pnt &, const double): param 'theInside': raw pointer to primitive
+raw-pointer	SelectMgr	SelectMgr_TriangularFrustum::OverlapsBox(const NCollection_Vec3<double> &, const NCollection_Vec3<double> &): param 'theInside': raw pointer to primitive
+raw-pointer	SelectMgr	SelectMgr_TriangularFrustumSet::OverlapsBox(const NCollection_Vec3<double> &, const NCollection_Vec3<double> &): param 'theInside': raw pointer to primitive
+raw-pointer	V3d	V3d_CircularGrid::V3d_CircularGrid(): param 'aViewer': reference to pointer
+raw-pointer	V3d	V3d_RectangularGrid::V3d_RectangularGrid(): param 'aViewer': reference to pointer
+static-rename	AIS	AIS_ColorScale::FindColor: static overloads renamed to FindColor_s (instance method of same name exists)
+static-rename	Prs3d	Prs3d_ToolQuadric::TrianglesNb: static overloads renamed to TrianglesNb_s (instance method of same name exists)
+static-rename	Prs3d	Prs3d_ToolQuadric::VerticesNb: static overloads renamed to VerticesNb_s (instance method of same name exists)
+static-rename	StdPrs	StdPrs_ShapeTool::IsPlanarFace: static overloads renamed to IsPlanarFace_s (instance method of same name exists)
+stream	SelectMgr	SelectMgr_BVHThreadPool::BVHThread::BVHMutex(): return: iostream type
+stream	StdPrs	StdPrs_BRepFont::Mutex(): return: iostream type
+template	Prs3d	Prs3d_Point: template (not bound)
+template	Select3D	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>>: the probe typedef did not compile
+template	Select3D	BVH_Box<double, 3>: template base BVH_BaseBox<double, 3, BVH_Box<double, 3>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
+template	SelectMgr	NCollection_Map<const Standard_Transient *>: template argument const Standard_Transient * is a raw pointer -> instantiation skipped
+template	SelectMgr	SelectMgr_Frustum: template (not bound)
+unbound-type	SelectMgr	NCollection_Shared<NCollection_Map<const Standard_Transient *>>: wrapped type NCollection_Map<const Standard_Transient *> is not bound -> instantiation skipped
+undefined	DsgPrs	DsgPrs_RadiusPresentation::Add(const occ::handle<Graphic3d_Structure> &, const occ::handle<Prs3d_Drawer> &, const TCollection_ExtendedString &, const gp_Pnt &, const gp_Circ &, const double, const double, const DsgPrs_ArrowSide, const bool, const bool): declared in the header, no definition in libTKV3d
+undefined	PrsDim	PrsDim_Dimension::PrsDim_Dimension(const PrsDim_KindOfDimension): declared in the header, no definition in libTKV3d
+undefined	Select3D	Select3D_SensitiveSet::Select3D_SensitiveSet(const occ::handle<SelectMgr_EntityOwner> &): declared in the header, no definition in libTKV3d
+undefined	SelectBasics	SelectBasics_SelectingVolumeManager::SelectBasics_SelectingVolumeManager(): declared in the header, no definition in libTKV3d
+undefined	SelectMgr	SelectMgr_BVHThreadPool::Sentry: copy constructor declared in the header, no definition in libTKV3d -> class skipped
+undefined	SelectMgr	SelectMgr_BaseFrustum::SelectMgr_BaseFrustum(): declared in the header, no definition in libTKV3d
+undefined	SelectMgr	SelectMgr_BaseIntersector::SelectMgr_BaseIntersector(): declared in the header, no definition in libTKV3d

@@ -3225,4 +3225,5 @@ def Aspect_VKey2Modifier(theKey: int) -> int:
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection
 import nanoocp.Aspect
+Aspect_SequenceOfColor = nanoocp.NCollection.NCollection_Sequence[nanoocp.Quantity.Quantity_Color]
 Aspect_TouchMap = nanoocp.NCollection.NCollection_IndexedDataMap__unsigned_long__Aspect_Touch

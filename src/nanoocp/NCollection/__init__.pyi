@@ -684,6 +684,8 @@ class _NCollection_Shared_template:
     @overload
     def __getitem__(self, item: type[NCollection_IndexedMap[float]]) -> type[NCollection_Shared__NCollection_IndexedMap__double]: ...
     @overload
+    def __getitem__(self, item: type[NCollection_IndexedMap[nanoocp.SelectMgr.SelectMgr_EntityOwner]]) -> type[NCollection_Shared__NCollection_IndexedMap__Handle_SelectMgr_EntityOwner]: ...
+    @overload
     def __getitem__(self, item: type[NCollection_List[nanoocp.gp.gp_Pnt2d]]) -> type[NCollection_Shared__NCollection_List__gp_Pnt2d]: ...
     @overload
     def __getitem__(self, item: type[NCollection_List[int]]) -> type[NCollection_Shared__NCollection_List__int]: ...
@@ -717,6 +719,7 @@ from collections.abc import Iterator
 import enum
 from typing import overload
 
+import nanoocp.AIS
 import nanoocp.Adaptor3d
 import nanoocp.AdvApp2Var
 import nanoocp.AppDef
@@ -764,7 +767,10 @@ from nanoocp.NCollection import (
 )
 import nanoocp.Plate
 import nanoocp.Poly
+import nanoocp.PrsMgr
 import nanoocp.Quantity
+import nanoocp.Select3D
+import nanoocp.SelectMgr
 import nanoocp.ShapeAnalysis
 import nanoocp.ShapeFix
 import nanoocp.Standard
@@ -778,6 +784,7 @@ import nanoocp.TopOpeBRepBuild
 import nanoocp.TopOpeBRepDS
 import nanoocp.TopoDS
 import nanoocp.Units
+import nanoocp.V3d
 import nanoocp.gp
 
 
@@ -3221,3 +3228,442 @@ class NCollection_List__Handle_Font_SystemFont(NCollection_List[nanoocp.Font.Fon
     class Iterator(NCollection_List.Iterator[nanoocp.Font.Font_SystemFont]): ...
 class NCollection_Sequence__Handle_Font_SystemFont(NCollection_Sequence[nanoocp.Font.Font_SystemFont]):
     class Iterator(NCollection_Sequence.Iterator[nanoocp.Font.Font_SystemFont]): ...
+class NCollection_List__Handle_Graphic3d_CLight(NCollection_List[nanoocp.Graphic3d.Graphic3d_CLight]):
+    class Iterator(NCollection_List.Iterator[nanoocp.Graphic3d.Graphic3d_CLight]): ...
+class NCollection_List__Handle_V3d_View(NCollection_List[nanoocp.V3d.V3d_View]):
+    class Iterator(NCollection_List.Iterator[nanoocp.V3d.V3d_View]): ...
+class NCollection_Sequence__Handle_V3d_View(NCollection_Sequence[nanoocp.V3d.V3d_View]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.V3d.V3d_View]): ...
+class NCollection_DynamicArray__Handle_Select3D_SensitiveEntity(NCollection_DynamicArray[nanoocp.Select3D.Select3D_SensitiveEntity]): ...
+class NCollection_IndexedMap__Handle_Select3D_SensitiveEntity(NCollection_IndexedMap[nanoocp.Select3D.Select3D_SensitiveEntity]):
+    class Iterator(NCollection_IndexedMap.Iterator[nanoocp.Select3D.Select3D_SensitiveEntity]): ...
+class NCollection_Sequence__Handle_Select3D_SensitiveEntity(NCollection_Sequence[nanoocp.Select3D.Select3D_SensitiveEntity]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.Select3D.Select3D_SensitiveEntity]): ...
+class NCollection_List__opencascade_handle__NCollection_HSequence__gp_Pnt(NCollection_List[nanoocp.NCollection.NCollection_HSequence__gp_Pnt]):
+    class Iterator(NCollection_List.Iterator[nanoocp.NCollection.NCollection_HSequence__gp_Pnt]): ...
+class NCollection_DynamicArray__NCollection_Vec4__double(NCollection_DynamicArray[nanoocp.BVH.BVH_Vec4d]): ...
+class NCollection_List__Handle_PrsMgr_PresentableObject(NCollection_List[nanoocp.PrsMgr.PrsMgr_PresentableObject]):
+    class Iterator(NCollection_List.Iterator[nanoocp.PrsMgr.PrsMgr_PresentableObject]): ...
+class NCollection_Sequence__Handle_PrsMgr_Presentation(NCollection_Sequence[nanoocp.PrsMgr.PrsMgr_Presentation]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.PrsMgr.PrsMgr_Presentation]): ...
+class NCollection_Array1__SelectMgr_BVHThreadPool_BVHThread(NCollection_Array1[nanoocp.SelectMgr.SelectMgr_BVHThreadPool.BVHThread]): ...
+class NCollection_DataMap__Handle_SelectMgr_EntityOwner__int(NCollection_DataMap[nanoocp.SelectMgr.SelectMgr_EntityOwner, int]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.SelectMgr.SelectMgr_EntityOwner, int]): ...
+class NCollection_DynamicArray__Handle_SelectMgr_SensitiveEntity(NCollection_DynamicArray[nanoocp.SelectMgr.SelectMgr_SensitiveEntity]): ...
+class NCollection_IndexedMap__Handle_SelectMgr_EntityOwner(NCollection_IndexedMap[nanoocp.SelectMgr.SelectMgr_EntityOwner]):
+    class Iterator(NCollection_IndexedMap.Iterator[nanoocp.SelectMgr.SelectMgr_EntityOwner]): ...
+class NCollection_IndexedMap__Handle_SelectMgr_SensitiveEntity(NCollection_IndexedMap[nanoocp.SelectMgr.SelectMgr_SensitiveEntity]):
+    class Iterator(NCollection_IndexedMap.Iterator[nanoocp.SelectMgr.SelectMgr_SensitiveEntity]): ...
+class NCollection_List__Handle_SelectMgr_EntityOwner(NCollection_List[nanoocp.SelectMgr.SelectMgr_EntityOwner]):
+    class Iterator(NCollection_List.Iterator[nanoocp.SelectMgr.SelectMgr_EntityOwner]): ...
+class NCollection_List__Handle_SelectMgr_Filter(NCollection_List[nanoocp.SelectMgr.SelectMgr_Filter]):
+    class Iterator(NCollection_List.Iterator[nanoocp.SelectMgr.SelectMgr_Filter]): ...
+class NCollection_Sequence__Handle_SelectMgr_EntityOwner(NCollection_Sequence[nanoocp.SelectMgr.SelectMgr_EntityOwner]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.SelectMgr.SelectMgr_EntityOwner]): ...
+class NCollection_Sequence__Handle_SelectMgr_Selection(NCollection_Sequence[nanoocp.SelectMgr.SelectMgr_Selection]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.SelectMgr.SelectMgr_Selection]): ...
+class NCollection_Shared__NCollection_IndexedMap__Handle_SelectMgr_EntityOwner(nanoocp.NCollection.NCollection_IndexedMap__Handle_SelectMgr_EntityOwner, _NCollection_Shared_members): ...
+class NCollection_Array1__Handle_SelectMgr_EntityOwner(NCollection_Array1[nanoocp.SelectMgr.SelectMgr_EntityOwner]): ...
+class NCollection_DataMap__TopoDS_Shape__Handle_AIS_ColoredDrawer__TopTools_ShapeMapHasher(NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.AIS.AIS_ColoredDrawer, nanoocp.TopTools.TopTools_ShapeMapHasher]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TopoDS.TopoDS_Shape, nanoocp.AIS.AIS_ColoredDrawer]): ...
+class NCollection_DataMap__unsigned_int__AIS_MouseGesture:
+    """
+    Purpose:     The DataMap is a Map to store keys with associated
+    Items. See Map  from NCollection for  a discussion
+    about the number of buckets.
+
+    The DataMap can be seen as an extended array where
+    the Keys  are the   indices.  For this reason  the
+    operator () is defined on DataMap to fetch an Item
+    from a Key. So the following syntax can be used :
+
+    anItem = aMap(aKey);
+    aMap(aKey) = anItem;
+
+    This analogy has its  limit.   aMap(aKey) = anItem
+    can  be done only  if aKey was previously bound to
+    an item in the map.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theNbBuckets: int, theAllocator: NCollection_BaseAllocator | None = None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DataMap__unsigned_int__AIS_MouseGesture) -> None:
+        """Empty Constructor."""
+
+    class Iterator:
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theMap: NCollection_DataMap__unsigned_int__AIS_MouseGesture) -> None:
+            """Empty constructor"""
+
+        def Initialize(self, theMap: NCollection_DataMap__unsigned_int__AIS_MouseGesture) -> None: ...
+
+        def Reset(self) -> None: ...
+
+        def More(self) -> bool:
+            """Query if the end of collection is reached by iterator"""
+
+        def Next(self) -> None:
+            """Make a step along the collection"""
+
+        def Value(self) -> nanoocp.AIS.AIS_MouseGesture:
+            """Value inquiry"""
+
+        def Key(self) -> int:
+            """Key"""
+
+        def __iter__(self) -> NCollection_DataMap__unsigned_int__AIS_MouseGesture.Iterator:
+            """
+            Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+            """
+
+        def __next__(self) -> nanoocp.AIS.AIS_MouseGesture:
+            """Python addition: see __iter__."""
+
+        def ChangeValue(self) -> nanoocp.AIS.AIS_MouseGesture:
+            """Value change access"""
+
+    def NbBuckets(self) -> int:
+        """NbBuckets"""
+
+    def Extent(self) -> int:
+        """Extent (number of elements, legacy int-returning API)."""
+
+    def Length(self) -> int:
+        """
+        Length - number of elements (legacy int-returning API, synonym of Extent()).
+        """
+
+    def Size(self) -> int:
+        """Size - number of elements."""
+
+    def IsEmpty(self) -> bool:
+        """IsEmpty"""
+
+    def Allocator(self) -> NCollection_BaseAllocator:
+        """Returns attached allocator"""
+
+    def Exchange(self, theOther: NCollection_DataMap__unsigned_int__AIS_MouseGesture) -> None:
+        """
+        Exchange the content of two maps without re-allocations.
+        Notice that allocators will be swapped as well!
+        """
+
+    def Assign(self, theOther: NCollection_DataMap__unsigned_int__AIS_MouseGesture) -> NCollection_DataMap__unsigned_int__AIS_MouseGesture:
+        """
+        Assignment.
+        This method does not change the internal allocator.
+        """
+
+    def ReSize(self, N: int) -> None:
+        """ReSize"""
+
+    @overload
+    def Clear(self, doReleaseMemory: bool = True) -> None: ...
+
+    @overload
+    def Clear(self, theAllocator: NCollection_BaseAllocator | None) -> None:
+        """
+        Clear data. If doReleaseMemory is false then the table of
+        buckets is not released and will be reused.
+        """
+
+    def __len__(self) -> int:
+        """Python addition: alias to Extent."""
+
+    def Bind(self, theKey: int, theItem: nanoocp.AIS.AIS_MouseGesture) -> bool:
+        """
+        Bind binds Item to Key in map.
+        @param theKey  key to add/update
+        @param theItem new item; overrides value previously bound to the key (uses
+        destroy+reconstruct)
+        @return true if Key was not bound already
+        """
+
+    def TryBind(self, theKey: int, theItem: nanoocp.AIS.AIS_MouseGesture) -> bool:
+        """
+        TryBind binds Item to Key in map only if Key is not yet bound.
+        @param theKey  key to add
+        @param theItem item to bind if Key is not yet bound
+        @return true if Key was newly bound, false if Key already existed (no replacement)
+        """
+
+    def IsBound(self, theKey: int) -> bool:
+        """IsBound"""
+
+    def UnBind(self, theKey: int) -> bool:
+        """UnBind removes Item Key pair from map"""
+
+    def Find(self, theKey: int) -> nanoocp.AIS.AIS_MouseGesture:
+        """Find returns the Item for Key. Raises if Key was not bound"""
+
+    def __call__(self, theKey: int) -> nanoocp.AIS.AIS_MouseGesture:
+        """operator ()"""
+
+    def __contains__(self, theKey: int) -> bool:
+        """Python addition: alias to IsBound."""
+
+    def __getitem__(self, theKey: int) -> nanoocp.AIS.AIS_MouseGesture:
+        """Python addition: alias to Find."""
+
+    def __setitem__(self, theKey: int, theItem: nanoocp.AIS.AIS_MouseGesture) -> None:
+        """Python addition: alias to Bind."""
+
+    def __delitem__(self, theKey: int) -> None:
+        """Python addition: UnBind, KeyError if the key is not bound."""
+
+    def __iter__(self) -> Iterator[int]:
+        """Python addition: iterates over the keys."""
+
+    def items(self) -> list:
+        """Python addition: list of (key, value) tuples."""
+
+    def Bound(self, theKey: int, theItem: nanoocp.AIS.AIS_MouseGesture) -> nanoocp.AIS.AIS_MouseGesture:
+        """
+        Bound binds Item to Key in map.
+        @param theKey  key to add/update
+        @param theItem new item; overrides value previously bound to the key (uses
+        destroy+reconstruct)
+        @return pointer to modifiable Item
+        """
+
+    def TryBound(self, theKey: int, theItem: nanoocp.AIS.AIS_MouseGesture) -> nanoocp.AIS.AIS_MouseGesture:
+        """
+        TryBound binds Item to Key in map only if Key is not yet bound.
+        @param theKey  key to add
+        @param theItem item to bind if Key is not yet bound
+        @return reference to existing or newly bound Item
+        """
+
+    def ChangeFind(self, theKey: int) -> nanoocp.AIS.AIS_MouseGesture:
+        """ChangeFind returns modifiable Item by Key. Raises if Key was not bound"""
+
+    def Seek(self, theKey: int) -> nanoocp.AIS.AIS_MouseGesture | None:
+        """
+        Seek returns pointer to Item by Key. Returns
+        NULL is Key was not bound.
+        """
+
+    def ChangeSeek(self, theKey: int) -> nanoocp.AIS.AIS_MouseGesture | None:
+        """
+        ChangeSeek returns modifiable pointer to Item by Key. Returns
+        NULL is Key was not bound.
+        """
+
+class NCollection_DataMap__unsigned_int__AIS_SelectionScheme:
+    """
+    Purpose:     The DataMap is a Map to store keys with associated
+    Items. See Map  from NCollection for  a discussion
+    about the number of buckets.
+
+    The DataMap can be seen as an extended array where
+    the Keys  are the   indices.  For this reason  the
+    operator () is defined on DataMap to fetch an Item
+    from a Key. So the following syntax can be used :
+
+    anItem = aMap(aKey);
+    aMap(aKey) = anItem;
+
+    This analogy has its  limit.   aMap(aKey) = anItem
+    can  be done only  if aKey was previously bound to
+    an item in the map.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theNbBuckets: int, theAllocator: NCollection_BaseAllocator | None = None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DataMap__unsigned_int__AIS_SelectionScheme) -> None:
+        """Empty Constructor."""
+
+    class Iterator:
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theMap: NCollection_DataMap__unsigned_int__AIS_SelectionScheme) -> None:
+            """Empty constructor"""
+
+        def Initialize(self, theMap: NCollection_DataMap__unsigned_int__AIS_SelectionScheme) -> None: ...
+
+        def Reset(self) -> None: ...
+
+        def More(self) -> bool:
+            """Query if the end of collection is reached by iterator"""
+
+        def Next(self) -> None:
+            """Make a step along the collection"""
+
+        def Value(self) -> nanoocp.AIS.AIS_SelectionScheme:
+            """Value inquiry"""
+
+        def Key(self) -> int:
+            """Key"""
+
+        def __iter__(self) -> NCollection_DataMap__unsigned_int__AIS_SelectionScheme.Iterator:
+            """
+            Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+            """
+
+        def __next__(self) -> nanoocp.AIS.AIS_SelectionScheme:
+            """Python addition: see __iter__."""
+
+        def ChangeValue(self) -> nanoocp.AIS.AIS_SelectionScheme:
+            """Value change access"""
+
+    def NbBuckets(self) -> int:
+        """NbBuckets"""
+
+    def Extent(self) -> int:
+        """Extent (number of elements, legacy int-returning API)."""
+
+    def Length(self) -> int:
+        """
+        Length - number of elements (legacy int-returning API, synonym of Extent()).
+        """
+
+    def Size(self) -> int:
+        """Size - number of elements."""
+
+    def IsEmpty(self) -> bool:
+        """IsEmpty"""
+
+    def Allocator(self) -> NCollection_BaseAllocator:
+        """Returns attached allocator"""
+
+    def Exchange(self, theOther: NCollection_DataMap__unsigned_int__AIS_SelectionScheme) -> None:
+        """
+        Exchange the content of two maps without re-allocations.
+        Notice that allocators will be swapped as well!
+        """
+
+    def Assign(self, theOther: NCollection_DataMap__unsigned_int__AIS_SelectionScheme) -> NCollection_DataMap__unsigned_int__AIS_SelectionScheme:
+        """
+        Assignment.
+        This method does not change the internal allocator.
+        """
+
+    def ReSize(self, N: int) -> None:
+        """ReSize"""
+
+    @overload
+    def Clear(self, doReleaseMemory: bool = True) -> None: ...
+
+    @overload
+    def Clear(self, theAllocator: NCollection_BaseAllocator | None) -> None:
+        """
+        Clear data. If doReleaseMemory is false then the table of
+        buckets is not released and will be reused.
+        """
+
+    def __len__(self) -> int:
+        """Python addition: alias to Extent."""
+
+    def Bind(self, theKey: int, theItem: nanoocp.AIS.AIS_SelectionScheme) -> bool:
+        """
+        Bind binds Item to Key in map.
+        @param theKey  key to add/update
+        @param theItem new item; overrides value previously bound to the key (uses
+        destroy+reconstruct)
+        @return true if Key was not bound already
+        """
+
+    def TryBind(self, theKey: int, theItem: nanoocp.AIS.AIS_SelectionScheme) -> bool:
+        """
+        TryBind binds Item to Key in map only if Key is not yet bound.
+        @param theKey  key to add
+        @param theItem item to bind if Key is not yet bound
+        @return true if Key was newly bound, false if Key already existed (no replacement)
+        """
+
+    def IsBound(self, theKey: int) -> bool:
+        """IsBound"""
+
+    def UnBind(self, theKey: int) -> bool:
+        """UnBind removes Item Key pair from map"""
+
+    def Find(self, theKey: int) -> nanoocp.AIS.AIS_SelectionScheme:
+        """Find returns the Item for Key. Raises if Key was not bound"""
+
+    def __call__(self, theKey: int) -> nanoocp.AIS.AIS_SelectionScheme:
+        """operator ()"""
+
+    def __contains__(self, theKey: int) -> bool:
+        """Python addition: alias to IsBound."""
+
+    def __getitem__(self, theKey: int) -> nanoocp.AIS.AIS_SelectionScheme:
+        """Python addition: alias to Find."""
+
+    def __setitem__(self, theKey: int, theItem: nanoocp.AIS.AIS_SelectionScheme) -> None:
+        """Python addition: alias to Bind."""
+
+    def __delitem__(self, theKey: int) -> None:
+        """Python addition: UnBind, KeyError if the key is not bound."""
+
+    def __iter__(self) -> Iterator[int]:
+        """Python addition: iterates over the keys."""
+
+    def items(self) -> list:
+        """Python addition: list of (key, value) tuples."""
+
+    def Bound(self, theKey: int, theItem: nanoocp.AIS.AIS_SelectionScheme) -> nanoocp.AIS.AIS_SelectionScheme:
+        """
+        Bound binds Item to Key in map.
+        @param theKey  key to add/update
+        @param theItem new item; overrides value previously bound to the key (uses
+        destroy+reconstruct)
+        @return pointer to modifiable Item
+        """
+
+    def TryBound(self, theKey: int, theItem: nanoocp.AIS.AIS_SelectionScheme) -> nanoocp.AIS.AIS_SelectionScheme:
+        """
+        TryBound binds Item to Key in map only if Key is not yet bound.
+        @param theKey  key to add
+        @param theItem item to bind if Key is not yet bound
+        @return reference to existing or newly bound Item
+        """
+
+    def ChangeFind(self, theKey: int) -> nanoocp.AIS.AIS_SelectionScheme:
+        """ChangeFind returns modifiable Item by Key. Raises if Key was not bound"""
+
+    def Seek(self, theKey: int) -> nanoocp.AIS.AIS_SelectionScheme | None:
+        """
+        Seek returns pointer to Item by Key. Returns
+        NULL is Key was not bound.
+        """
+
+    def ChangeSeek(self, theKey: int) -> nanoocp.AIS.AIS_SelectionScheme | None:
+        """
+        ChangeSeek returns modifiable pointer to Item by Key. Returns
+        NULL is Key was not bound.
+        """
+
+class NCollection_Array1__Quantity_Color(NCollection_Array1[nanoocp.Quantity.Quantity_Color]): ...
+class NCollection_HArray1__Quantity_Color(NCollection_HArray1[nanoocp.Quantity.Quantity_Color]): ...
+class NCollection_Array1__gp_Dir(NCollection_Array1[nanoocp.gp.gp_Dir]): ...
+class NCollection_HArray1__gp_Dir(NCollection_HArray1[nanoocp.gp.gp_Dir]): ...
+class NCollection_Sequence__Handle_AIS_InteractiveObject(NCollection_Sequence[nanoocp.AIS.AIS_InteractiveObject]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.AIS.AIS_InteractiveObject]): ...
+class NCollection_HSequence__Handle_AIS_InteractiveObject(NCollection_HSequence[nanoocp.AIS.AIS_InteractiveObject]): ...
+class NCollection_List__Handle_AIS_InteractiveObject(NCollection_List[nanoocp.AIS.AIS_InteractiveObject]):
+    class Iterator(NCollection_List.Iterator[nanoocp.AIS.AIS_InteractiveObject]): ...
+class NCollection_Sequence__Aspect_ScrollDelta(NCollection_Sequence[nanoocp.Aspect.Aspect_ScrollDelta]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.Aspect.Aspect_ScrollDelta]): ...
+class NCollection_Sequence__NCollection_Vec2__int(NCollection_Sequence[nanoocp.BVH.BVH_Vec2i]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.BVH.BVH_Vec2i]): ...
+class NCollection_Sequence__Quantity_Color(NCollection_Sequence[nanoocp.Quantity.Quantity_Color]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.Quantity.Quantity_Color]): ...
+class NCollection_Sequence__Handle_AIS_Animation(NCollection_Sequence[nanoocp.AIS.AIS_Animation]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.AIS.AIS_Animation]): ...
+class NCollection_List__Handle_Standard_Transient(NCollection_List[nanoocp.Standard.Standard_Transient]):
+    class Iterator(NCollection_List.Iterator[nanoocp.Standard.Standard_Transient]): ...
