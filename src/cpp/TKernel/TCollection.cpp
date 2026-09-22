@@ -906,7 +906,8 @@ to.
 @param[in] theStringView1 first string view to compare
 @param[in] theStringView2 second string view to compare
 @param[in] theIsCaseSensitive flag indicating case sensitivity
-@return true if strings contain same characters)nbdoc");
+@return true if strings contain same characters)nbdoc")
+        .def("__hash__", [](const TCollection_AsciiString &self) { return static_cast<Py_ssize_t>(std::hash<TCollection_AsciiString>{}(self)); });
     nb::implicitly_convertible<std::decay_t<const char *const>, TCollection_AsciiString>();
     nb::implicitly_convertible<std::decay_t<const char>, TCollection_AsciiString>();
     nb::implicitly_convertible<std::decay_t<const int>, TCollection_AsciiString>();
@@ -1764,6 +1765,10 @@ aString.Value(2) returns 'e')nbdoc")
     nb::implicitly_convertible<std::decay_t<const TCollection_ExtendedString &>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<TCollection_HAsciiString> &>, TCollection_HExtendedString>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<TCollection_HExtendedString> &>, TCollection_HExtendedString>();
+    m.def("IsEqual", static_cast<bool (*)(const TCollection_AsciiString &, const TCollection_AsciiString &)>(&IsEqual), nb::arg("theString1"), nb::arg("theString2"), R"nbdoc(Returns True when the two strings are the same.
+@param[in] theString1 first string to compare
+@param[in] theString2 second string to compare
+@return true if strings are equal)nbdoc");
 }
 
 void nanoocp_conversions_TCollection(nb::module_ &m) {

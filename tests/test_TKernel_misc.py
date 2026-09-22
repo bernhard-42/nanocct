@@ -69,3 +69,22 @@ def test_extended_string_round_trip():
     e2 = TCollection.TCollection_ExtendedString()
     e2.AssignCat("x€")                                                        # str -> const char16_t*
     assert e2.ToExtString() == "x€" and e2.Search("€") == 2
+
+
+def test_lxx_hash_and_free_functions_are_bound():
+    """OCCT keeps std::hash<TCollection_AsciiString> and TopLoc_Location's ShallowDump in the .lxx part of the header;
+    those file-scope declarations belong to the package since 2026-09-22 (they were missed before: equal strings hashed
+    by identity)."""
+    from nanoocp import TopLoc, math
+    a, b = TCollection.TCollection_AsciiString("abc"), TCollection.TCollection_AsciiString("abc")
+    assert a == b and hash(a) == hash(b) and {a: 1}[b] == 1
+    assert hash(a) != hash(TCollection.TCollection_AsciiString("abd"))
+    assert TCollection.IsEqual(a, b) is True                                    # inline free function of the .lxx
+    # std::hash<handle<TCollection_HAsciiString>> / equal_to<handle<...>> in the same .lxx are specialisations on the handle,
+    # not on the class: HAsciiString objects have no value __eq__ and keep the identity hash (consistent, not by value)
+    h = TCollection.TCollection_HAsciiString("abc")
+    assert (h == TCollection.TCollection_HAsciiString("abc")) is False and hash(h) == hash(h)
+    loc = TopLoc.TopLoc_Location()
+    assert hash(loc) == hash(TopLoc.TopLoc_Location()) and TopLoc.ShallowDump(loc).startswith("TopLoc_Location")
+    m = math.math_Matrix(1, 2, 1, 2, 1.0)
+    assert (2.0 * m)(1, 1) == 2.0                                               # friend operator*(double, math_Matrix) defined in the .lxx

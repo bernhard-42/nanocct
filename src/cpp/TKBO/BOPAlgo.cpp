@@ -59,6 +59,7 @@
 #include <TopAbs_State.hxx>
 #include <TopTools_ShapeMapHasher.hxx>
 #include <TopoDS_AlertWithShape.hxx>
+#include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Solid.hxx>
@@ -759,6 +760,8 @@ on separate loops)nbdoc");
 
 It returns the following Error statuses
 - *BOPAlgo_AlertNullInputShapes* - in case there no input edges to build the loops.)nbdoc");
+    }
+    { nb::class_<BOPAlgo_EdgeInfo> cls(m, "BOPAlgo_EdgeInfo");
     }
     { nb::class_<BOPAlgo_CellsBuilder, BOPAlgo_Builder> cls(m, "BOPAlgo_CellsBuilder", R"nbdoc(The algorithm is based on the General Fuse algorithm (GFA).
 The result of GFA is all split parts of the Arguments.
@@ -1677,6 +1680,19 @@ Returns true if the objects are located far from the given point
         .def_static("SplitBlock", static_cast<void (*)(const TopoDS_Face &, BOPTools_ConnexityBlock &, const occ::handle<IntTools_Context> &)>(&BOPAlgo_WireSplitter::SplitBlock), nb::arg("theF"), nb::arg("theCB"), nb::arg("theContext").none());
     nanoocp_implicit_copy_ctor<BOPAlgo_WireSplitter>(nb::borrow<nb::class_<BOPAlgo_WireSplitter>>(m.attr("BOPAlgo_WireSplitter")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>, BOPAlgo_WireSplitter>();
+    nb::borrow<nb::class_<BOPAlgo_EdgeInfo>>(m.attr("BOPAlgo_EdgeInfo"))
+        .def(nb::init<>())
+        .def("SetEdge", static_cast<void (BOPAlgo_EdgeInfo::*)(const TopoDS_Edge &)>(&BOPAlgo_EdgeInfo::SetEdge), nb::arg("theE"))
+        .def("Edge", static_cast<const TopoDS_Edge & (BOPAlgo_EdgeInfo::*)() const>(&BOPAlgo_EdgeInfo::Edge))
+        .def("SetPassed", static_cast<void (BOPAlgo_EdgeInfo::*)(const bool)>(&BOPAlgo_EdgeInfo::SetPassed), nb::arg("theFlag"))
+        .def("Passed", static_cast<bool (BOPAlgo_EdgeInfo::*)() const>(&BOPAlgo_EdgeInfo::Passed))
+        .def("SetInFlag", static_cast<void (BOPAlgo_EdgeInfo::*)(const bool)>(&BOPAlgo_EdgeInfo::SetInFlag), nb::arg("theFlag"))
+        .def("IsIn", static_cast<bool (BOPAlgo_EdgeInfo::*)() const>(&BOPAlgo_EdgeInfo::IsIn))
+        .def("SetAngle", static_cast<void (BOPAlgo_EdgeInfo::*)(const double)>(&BOPAlgo_EdgeInfo::SetAngle), nb::arg("theAngle"))
+        .def("Angle", static_cast<double (BOPAlgo_EdgeInfo::*)() const>(&BOPAlgo_EdgeInfo::Angle))
+        .def("IsInside", static_cast<bool (BOPAlgo_EdgeInfo::*)() const>(&BOPAlgo_EdgeInfo::IsInside))
+        .def("SetIsInside", static_cast<void (BOPAlgo_EdgeInfo::*)(const bool)>(&BOPAlgo_EdgeInfo::SetIsInside), nb::arg("theIsInside"));
+    nanoocp_implicit_copy_ctor<BOPAlgo_EdgeInfo>(nb::borrow<nb::class_<BOPAlgo_EdgeInfo>>(m.attr("BOPAlgo_EdgeInfo")));
     nb::borrow<nb::class_<BOPAlgo_CellsBuilder>>(m.attr("BOPAlgo_CellsBuilder"))
         .def(nb::init<>())
         .def(nb::init<const occ::handle<NCollection_BaseAllocator> &>(), nb::arg("theAllocator").none())

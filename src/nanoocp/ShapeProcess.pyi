@@ -206,13 +206,13 @@ class ShapeProcess_Context(nanoocp.Standard.Standard_Transient):
         Returns False if parameter is not defined or has a wrong type
         """
 
-    def RealVal(self, param: str, def: float) -> float: ...
+    def RealVal(self, param: str, def_: float) -> float: ...
 
-    def IntegerVal(self, param: str, def: int) -> int: ...
+    def IntegerVal(self, param: str, def_: int) -> int: ...
 
-    def BooleanVal(self, param: str, def: bool) -> bool: ...
+    def BooleanVal(self, param: str, def_: bool) -> bool: ...
 
-    def StringVal(self, param: str, def: str) -> str:
+    def StringVal(self, param: str, def_: str) -> str:
         """
         Get value of parameter as being of specific type
         If parameter is not defined or does not have expected
@@ -409,7 +409,7 @@ class ShapeProcess_ShapeContext(ShapeProcess_Context):
         Returns False if parameter is not defined or has a wrong type
         """
 
-    def ContinuityVal(self, param: str, def: nanoocp.GeomAbs.GeomAbs_Shape) -> nanoocp.GeomAbs.GeomAbs_Shape:
+    def ContinuityVal(self, param: str, def_: nanoocp.GeomAbs.GeomAbs_Shape) -> nanoocp.GeomAbs.GeomAbs_Shape:
         """
         Get value of parameter as being of the type GeomAbs_Shape
         If parameter is not defined or does not have expected

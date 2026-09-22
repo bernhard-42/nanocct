@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKService: 290 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKService: 282 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # conversion: 8
 # incomplete: 8
@@ -10,7 +10,7 @@
 # raw-pointer: 98
 # rvalue: 1
 # static-rename: 11
-# template: 74
+# template: 66
 # undefined: 6
 conversion	Graphic3d	NCollection_Vec2<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	Graphic3d	NCollection_Vec2<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
@@ -223,19 +223,12 @@ static-rename	Graphic3d	NCollection_Mat3<double>::Multiply: static overloads ren
 static-rename	Graphic3d	NCollection_Mat3<float>::Multiply: static overloads renamed to Multiply_s (instance method of same name exists)
 static-rename	Image	Image_PixMap::SizePixelBytes: static overloads renamed to SizePixelBytes_s (instance method of same name exists)
 template	Aspect	Aspect_FrustumLRBT: template (not bound)
-template	Graphic3d	Apply: template (not bound)
-template	Graphic3d	Apply: template (not bound)
-template	Graphic3d	Apply: template (not bound)
-template	Graphic3d	Apply: template (not bound)
-template	Graphic3d	Apply: template (not bound)
 template	Graphic3d	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>>: the probe typedef did not compile
 template	Graphic3d	BVH_Box<double, 3>: template base BVH_BaseBox<double, 3, BVH_Box<double, 3>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 template	Graphic3d	BVH_Box<double, 4>: base class BVH_BaseBox<double, 4, BVH_Box<double, 4>>: the probe typedef did not compile
 template	Graphic3d	BVH_Box<double, 4>: template base BVH_BaseBox<double, 4, BVH_Box<double, 4>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 template	Graphic3d	BVH_Box<float, 4>: base class BVH_BaseBox<float, 4, BVH_Box<float, 4>>: the probe typedef did not compile
 template	Graphic3d	BVH_Box<float, 4>: template base BVH_BaseBox<float, 4, BVH_Box<float, 4>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
-template	Graphic3d	Compute: template (not bound)
-template	Graphic3d	Compute: template (not bound)
 template	Graphic3d	Graphic3d_Buffer::ChangeValue: template member
 template	Graphic3d	Graphic3d_Buffer::Value: template member
 template	Graphic3d	Graphic3d_Flipper::Apply: template member
@@ -287,7 +280,6 @@ template	Graphic3d	NCollection_Mat3<float>::NCollection_Mat3<Element_t>: templat
 template	Graphic3d	NCollection_Vec2<float>::NCollection_Vec2<Element_t>: template member
 template	Graphic3d	NCollection_Vec3<float>::NCollection_Vec3<Element_t>: template member
 template	Graphic3d	NCollection_Vec4<float>::NCollection_Vec4<Element_t>: template member
-template	Graphic3d	PushVariable: template (not bound)
 template	Image	Image_PixMap::ChangeValue: template member
 template	Image	Image_PixMap::ChangeValueXY: template member
 template	Image	Image_PixMap::ChangeValueXYZ: template member

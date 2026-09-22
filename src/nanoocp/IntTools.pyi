@@ -394,6 +394,8 @@ class IntTools_SurfaceRangeSample:
 
     def __eq__(self, theOther: IntTools_SurfaceRangeSample) -> bool: ...
 
+    def __hash__(self) -> int: ...
+
 class IntTools_BeanFaceIntersector:
     """
     The class BeanFaceIntersector computes ranges of parameters on

@@ -103,6 +103,8 @@ public:
   gp_Pnt*& PtrRef() { return myPtr; }
   //! R-PTR-INCOMPLETE: a pointer to a class only forward-declared here, whose header exists (BOPAlgo_Builder::PDS()).
   Rules_Fwd* Fwd() const { return nullptr; }
+  //! A member template declared here and defined in Rules.lxx: reported once, as a template member.
+  template <class T> T Half(const T theV) const;
   //! R-CSTR-NULL: a const char* with a null default stays in the signature as `str | None = None` (LDOM_XmlWriter, STEPCAFControl_Writer::Write).
   const char* Encoding(const char* const theEncoding = nullptr) const { return theEncoding == nullptr ? "none" : theEncoding; }
 
@@ -357,6 +359,24 @@ namespace RulesNs
 {
   inline int Twice(int theA) { return 2 * theA; }
 }
+
+#include <Rules.lxx>
+"""
+
+# The inline part OCCT keeps in X.lxx, included at the end of X.hxx: file-scope declarations there belong to the package
+# (std::hash<TDF_Label>, TopLoc_Location's ShallowDump, math_Matrix's friend operator* definition); out-of-line member
+# template definitions and explicit specialisations of member templates (BRepGraphInc_Storage::TypedStorePlanes<T>) do not.
+LXX = """
+namespace std
+{
+template <>
+struct hash<Rules_Ambiguous>
+{
+  size_t operator()(const Rules_Ambiguous&) const noexcept { return 7; }
+};
+}
+inline int Twice(const Rules_Ambiguous&) { return 2; }
+template <class T> T Rules_Value::Half(const T theV) const { return theV / 2; }
 """
 
 
@@ -367,6 +387,7 @@ def _parse_rules(tmp: Path) -> parse.PackageIR:
     inc = tmp / "include" / "opencascade"
     inc.mkdir(parents=True)
     (inc / "Rules.hxx").write_text(HEADER)
+    (inc / "Rules.lxx").write_text(LXX)
     (inc / "Rules_Fwd.hxx").write_text("class Rules_Fwd { public: int A = 1; };\n")     # exists, not included by Rules.hxx (R-PTR-INCOMPLETE)
     fake = OcctTree(src=real.src, install=inc.parents[1])
     args = parse.clang_args(real) + [f"-I{inc}"]
@@ -427,6 +448,7 @@ def test_header_allowlist_override(monkeypatch, tmp_path_factory):
     parse.configure_libclang()
     real = load_tree(OCCT_SRC, OCCT)
     (inc / "Rules.hxx").write_text(HEADER)
+    (inc / "Rules.lxx").write_text(LXX)
     (inc / "Rules_Fwd.hxx").write_text("class Rules_Fwd { public: int A = 1; };\n")     # exists, not included by Rules.hxx (R-PTR-INCOMPLETE)
     pkg = Package(name="Rules", toolkit="TKRules", module="Test", headers=["Rules.hxx", "Rules_Other.hxx"])
     ir = parse.parse_package(OcctTree(src=real.src, install=inc.parents[1]), pkg, args=parse.clang_args(real) + [f"-I{inc}"])
@@ -471,6 +493,17 @@ def test_ir_namespaces_functions_constants(rules_ir):
     assert helper.qualified == "Rules::Helper" and [p.is_out for p in helper.params] == [False, True]
     assert ((("RulesNs",), "Twice") in fns) and rules_ir.namespaces == [("RulesNs",)]
     assert [(k.py_name, k.cpp) for k in rules_ir.constants] == [("THE_CONST", "Rules::THE_CONST")]
+
+
+def test_ir_lxx_declarations_belong_to_the_package(rules_ir):
+    """Rules.lxx (included at the end of Rules.hxx) contributes its file-scope declarations under the header's name:
+    std::hash<Rules_Ambiguous> makes the class hashable, the free Twice(Rules_Ambiguous) is a package function; the
+    out-of-line definition of the member template Half is not reported as a free template."""
+    assert "Rules_Ambiguous" in rules_ir.hashable
+    twice = [f for f in rules_ir.functions if f.name == "Twice" and f.scope == ()]
+    assert [(f.header, [p.type for p in f.params]) for f in twice] == [("Rules.hxx", ["const Rules_Ambiguous &"])]
+    assert [line for line in rules_ir.report if line.startswith("Half:")] == []
+    assert "Rules_Value::Half: template member" in rules_ir.report
 
 
 def test_ir_container_instantiation_registered(rules_ir):

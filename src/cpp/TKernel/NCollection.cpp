@@ -211,6 +211,8 @@ passed as arguments to the protected methods.)nbdoc");
     }
     { nb::class_<NCollection_SparseArrayBase::Iterator> cls(m.attr("NCollection_SparseArrayBase"), "Iterator", R"nbdoc(Iterator)nbdoc");
     }
+    { nb::class_<NCollection_UtfStringTool> cls(m, "NCollection_UtfStringTool", R"nbdoc(Auxiliary conversion tool.)nbdoc");
+    }
     { nb::class_<NCollection_UtfString<char>> cls(m, "NCollection_String", R"nbdoc(This template class represent constant UTF-* string.
 String stored in memory continuously, always NULL-terminated
 and can be used as standard C-string using ToCString() method.
@@ -471,6 +473,9 @@ for future allocations.)nbdoc")
         .def("Next", static_cast<void (NCollection_SparseArrayBase::Iterator::*)()>(&NCollection_SparseArrayBase::Iterator::Next), R"nbdoc(Advances to the next item)nbdoc")
         .def("Index", static_cast<size_t (NCollection_SparseArrayBase::Iterator::*)() const noexcept>(&NCollection_SparseArrayBase::Iterator::Index), R"nbdoc(Returns current index)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_SparseArrayBase::Iterator>(nb::borrow<nb::class_<NCollection_SparseArrayBase::Iterator>>(m.attr("NCollection_SparseArrayBase").attr("Iterator")));
+    nb::borrow<nb::class_<NCollection_UtfStringTool>>(m.attr("NCollection_UtfStringTool"))
+        .def(nb::init<>(), R"nbdoc(Empty constructor.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_UtfStringTool>(nb::borrow<nb::class_<NCollection_UtfStringTool>>(m.attr("NCollection_UtfStringTool")));
     nanoocp_if_concrete<NCollection_UtfString<char>>(nb::borrow<nb::class_<NCollection_UtfString<char>>>(m.attr("NCollection_String")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Initialize empty string.)nbdoc")
         .def("__init__", [](nanoocp_T *self, const NCollection_UtfString<char> & theCopy) { new (self) nanoocp_T(theCopy); }, nb::arg("theCopy"), R"nbdoc(Copy constructor.

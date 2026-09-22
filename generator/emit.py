@@ -532,10 +532,15 @@ class Emitter:
         # R-FREE-OP: hidden friends, collected per class; an instantiation may be listed twice in ir.classes (the class
         # ordering pass dedups by name), so take each class once
         friend_ops = [f for c in {c.name: c for c in self.ir.classes}.values() for f in c.friend_ops]
+        seen_ops: set[tuple[str, str]] = set()   # a friend declared in the class and defined at file scope in the .lxx (math_Matrix's operator*)
         for fn in plain + [f for f in self.ir.functions if f.is_operator] + friend_ops:
             if fn.skip_reason is not None:
                 continue
             if fn.is_operator:
+                key = (fn.name, self._sig(fn.params))
+                if key in seen_ops:
+                    continue
+                seen_ops.add(key)
                 r = self._free_operator(fn)
                 if r is None:
                     self.report.append(f"{fn.name}({self._sig(fn.params)}): free operator not mapped")

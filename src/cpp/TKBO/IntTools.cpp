@@ -318,7 +318,8 @@ the Index can be from 1 to Length())nbdoc");
         .def("IsEqual", static_cast<bool (IntTools_SurfaceRangeSample::*)(const IntTools_SurfaceRangeSample &) const>(&IntTools_SurfaceRangeSample::IsEqual), nb::arg("Other"))
         .def("GetRangeIndexUDeeper", static_cast<int (IntTools_SurfaceRangeSample::*)(const int) const>(&IntTools_SurfaceRangeSample::GetRangeIndexUDeeper), nb::arg("theNbSampleU"))
         .def("GetRangeIndexVDeeper", static_cast<int (IntTools_SurfaceRangeSample::*)(const int) const>(&IntTools_SurfaceRangeSample::GetRangeIndexVDeeper), nb::arg("theNbSampleV"))
-        .def("__eq__", static_cast<bool (IntTools_SurfaceRangeSample::*)(const IntTools_SurfaceRangeSample &) const>(&IntTools_SurfaceRangeSample::operator==), nb::arg("theOther"), nb::is_operator());
+        .def("__eq__", static_cast<bool (IntTools_SurfaceRangeSample::*)(const IntTools_SurfaceRangeSample &) const>(&IntTools_SurfaceRangeSample::operator==), nb::arg("theOther"), nb::is_operator())
+        .def("__hash__", [](const IntTools_SurfaceRangeSample &self) { return static_cast<Py_ssize_t>(std::hash<IntTools_SurfaceRangeSample>{}(self)); });
     nb::borrow<nb::class_<IntTools_BeanFaceIntersector>>(m.attr("IntTools_BeanFaceIntersector"))
         .def(nb::init<>())
         .def(nb::init<const TopoDS_Edge &, const TopoDS_Face &>(), nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Initializes the algorithm

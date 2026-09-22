@@ -43,6 +43,7 @@ _EXTRA_INSTANCES = list(_OVERRIDES.get("instantiate", {}).get("extra", []))
 _INCLUDE_HEADERS: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("headers", {})   # package -> the only headers to bind
 INCLUDE_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("packages", {})   # toolkit -> the only packages to generate
 _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
+_BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
 
 _UNSUPPORTED_RE = re.compile(
     r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf|"
@@ -619,6 +620,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
     """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
     params: list[Param] = []
     inout = qualified in _INOUT or "*::" + qualified.rsplit("::", 1)[-1] in _INOUT   # "*::InitFromJson": every class
+    binary = qualified in _BINARY_MEMBERS                                              # R-STREAM-OUT/IN: a document stream in a text package
     if members is None:
         members = set()
     for i, p in enumerate(cursor.get_arguments()):
@@ -634,7 +636,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             is_str = spelled.startswith("const ") and base in ("char", "char16_t", "Standard_Character", "Standard_ExtCharacter", "Standard_Utf8Char")
             if base in _PRIMITIVE_SPELLINGS and not is_str:
                 reason = "raw pointer to primitive (template argument)"
-        name = p.spelling
+        name = py_safe(p.spelling)                 # R-KEYWORD: TDF_Attribute::Restore(const handle<TDF_Attribute>& with) -> with_
         if name == "":
             name = f"arg{i}"
         if reason in _OPTIONAL_PTR_REASONS and p.type.get_canonical().kind == TK.POINTER and _default_expr(p, scope, members) in ("NULL", "nullptr", "0"):
@@ -661,7 +663,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         cstr_none = _is_cstring(p.type) and default in ("NULL", "nullptr", "0")
         params.append(Param(name=name, type=_type_spelling(p.type), default="nullptr" if cstr_none else default, is_out=is_out, is_inout=is_out and inout,
                             class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
-                            out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none))
+                            out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, binary=binary and stream != StreamKind.NONE))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None
@@ -1467,13 +1469,23 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             ir.report.append(f"{pkg.name}: headers not self-contained, parsed with {', '.join(extra)} included first")
         if len(errors) > 0:
             raise RuntimeError(f"{pkg.name}: {len(errors)} parse errors, first: {errors[0]}")
+        def header_of(f: cindex.File) -> str | None:
+            """The package header a cursor belongs to: X.hxx, or X.hxx for a cursor in X.lxx (the inline part that X.hxx includes
+            at its end: std::hash<TDF_Label>, std::hash<TCollection_AsciiString>, TopLoc_Location's ShallowDump live there)."""
+            name = Path(f.name).name
+            if name in headers:
+                return name
+            if name.endswith(".lxx") and name[:-4] + ".hxx" in headers:
+                return name[:-4] + ".hxx"
+            return None
+
         def top_level(cursor: cindex.Cursor, ns: str):
             """File-scope declarations, descending into namespaces (OCCT 8 math packages use them)."""
             for cur in cursor.get_children():
                 f = cur.location.file
                 if f is None:
                     continue
-                if Path(f.name).name not in headers:
+                if header_of(f) is None:
                     continue
                 if cur.kind == K.NAMESPACE:
                     yield from top_level(cur, f"{ns}{cur.spelling}::")
@@ -1486,7 +1498,14 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 add_class(n)
 
         for cur, ns in top_level(tu.cursor, ""):
-            header = Path(cur.location.file.name).name
+            header = header_of(cur.location.file)
+            assert header is not None
+            if cur.kind in (K.CLASS_DECL, K.STRUCT_DECL) and cur.type.get_num_template_arguments() > 0 and cur.semantic_parent is not None \
+                    and cur.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
+                # an explicit specialisation of a member class template written at file scope (`template <> struct
+                # BRepGraphInc_Storage::TypedStorePlanes<BRepGraph_VertexId>` in BRepGraphInc_Storage.lxx): the member template is
+                # private to its class; an out-of-line definition of a plain nested class (`class BRepGraph::EditorView`) stays
+                continue
             if ns == "" and cur.semantic_parent is not None and cur.semantic_parent.kind == K.NAMESPACE:
                 ns = _qualified_template(cur.semantic_parent) + "::"     # `template <> struct std::hash<X>` written at file scope
             # a namespace named like the package is the package module itself (TopoDS::Vertex -> nanoocp.TopoDS.Vertex);
@@ -1557,6 +1576,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                     if inst is not None:
                         ir.classes.append(inst)
             elif cur.kind in (K.CLASS_TEMPLATE, K.FUNCTION_TEMPLATE):
+                if cur.semantic_parent is not None and cur.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
+                    continue                       # an out-of-line member template definition (TCollection_AsciiString::Cat<T> in the .lxx): reported with its class
                 ir.report.append(f"{cur.spelling}: template (not bound)")
         # bases that are un-aliased template instantiations (BRepGraph_WiresOfEdge : EdgeParentsOf<...>): instantiated
         # on demand under the mangled name, so that the derived class can be bound (Design.md 6c)

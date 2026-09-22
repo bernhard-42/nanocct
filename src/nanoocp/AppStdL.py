@@ -1,14 +1,12 @@
-"""OCCT package TFunction (toolkit TKLCAF)."""
+"""OCCT package AppStdL (toolkit TKLCAF)."""
 import importlib as _importlib
 
-from nanoocp._TKLCAF import TFunction as _ext
-from nanoocp._TKLCAF.TFunction import *  # noqa: F401,F403
+from nanoocp._TKLCAF import AppStdL as _ext
+from nanoocp._TKLCAF.AppStdL import *  # noqa: F401,F403
 
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
-    "TFunction_Array1OfDataMapOfGUIDDriver": ("nanoocp.NCollection", "NCollection_Array1__int"),
-    "TFunction_HArray1OfDataMapOfGUIDDriver": ("nanoocp.NCollection", "NCollection_HArray1__int"),
 }
 
 

@@ -44,6 +44,7 @@ namespaces = [
     "detail",       # MathSys::detail and friends: header-only implementation helpers
     "Detail",       # BRepGraph_RefsIterator::Detail: same
     "Internal",     # MathLin::Internal: same
+    "MurmurHash",   # opencascade::MurmurHash::MurmurHashUtils (Standard_HashUtils.lxx): the hash mixer behind std::hash, header-only
 ]
 # Headers not included in the package translation unit: platform-specific internals that OCCT
 # itself only includes from .cxx files under #ifdef.
@@ -116,4 +117,10 @@ binary_packages = [
     "BinTools",      # BinTools::Write/Read, BinTools_ShapeSet & co.: the binary BRep format (BinLDrivers etc. follow in Phase 2)
     "PCDM",          # PCDM_Reader::Read / PCDM_Writer::Write / PCDM::FileFormat: format-agnostic document streams, binary is the superset (XML decodes from bytes)
     "CDF",           # CDF_Application::Read(istream): same document streams
+]
+# Single members whose streams carry a document (binary or XML) inside a package whose other streams are text (DumpJson):
+# Class::method, every overload.
+binary_members = [
+    "TDocStd_Application::Open",     # Open(istream&, doc) reads a binary or XML OCAF document
+    "TDocStd_Application::SaveAs",   # SaveAs(doc, ostream&) writes one
 ]

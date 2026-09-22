@@ -151,7 +151,8 @@ This method is an alias for operator !=.)nbdoc")
         .def("DumpJson", [](const TopLoc_Location &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("ShallowDump", [](const TopLoc_Location &self) { std::ostringstream S_stream; self.ShallowDump(S_stream); return nanoocp_stream_text(S_stream); }, R"nbdoc(Prints the contents of <me> on the stream <s>.)nbdoc")
         .def("Clear", static_cast<void (TopLoc_Location::*)() noexcept>(&TopLoc_Location::Clear), R"nbdoc(Clear myItems)nbdoc")
-        .def_static("ScalePrec", static_cast<double (*)() noexcept>(&TopLoc_Location::ScalePrec));
+        .def_static("ScalePrec", static_cast<double (*)() noexcept>(&TopLoc_Location::ScalePrec))
+        .def("__hash__", [](const TopLoc_Location &self) { return static_cast<Py_ssize_t>(std::hash<TopLoc_Location>{}(self)); });
     nb::implicitly_convertible<std::decay_t<const gp_Trsf &>, TopLoc_Location>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<TopLoc_Datum3D> &>, TopLoc_Location>();
     nb::borrow<nb::class_<TopLoc_SListNodeOfItemLocation>>(m.attr("TopLoc_SListNodeOfItemLocation"))
@@ -163,6 +164,7 @@ This method is an alias for operator !=.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TopLoc_SListNodeOfItemLocation::*)() const>(&TopLoc_SListNodeOfItemLocation::DynamicType));
     nanoocp_implicit_copy_ctor<TopLoc_SListNodeOfItemLocation>(nb::borrow<nb::class_<TopLoc_SListNodeOfItemLocation>>(m.attr("TopLoc_SListNodeOfItemLocation")));
     m.def("ShallowDump", [](const occ::handle<TopLoc_Datum3D> & me) { std::ostringstream S_stream; ShallowDump(me, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("me").none());
+    m.def("ShallowDump", [](const TopLoc_Location & me) { std::ostringstream S_stream; ShallowDump(me, S_stream); return nanoocp_stream_text(S_stream); }, nb::arg("me"));
 }
 
 void nanoocp_conversions_TopLoc(nb::module_ &m) {

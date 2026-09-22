@@ -779,6 +779,8 @@ import nanoocp.Standard
 import nanoocp.Storage
 import nanoocp.TColStd
 import nanoocp.TCollection
+import nanoocp.TDF
+import nanoocp.TDocStd
 import nanoocp.TopAbs
 import nanoocp.TopLoc
 import nanoocp.TopOpeBRep
@@ -1463,6 +1465,16 @@ class NCollection_SparseArrayBase:
 
     def HasValue(self, theIndex: int) -> bool:
         """Check whether the value at given index is set"""
+
+class NCollection_UtfStringTool:
+    """Auxiliary conversion tool."""
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_UtfStringTool) -> None: ...
 
 class NCollection_String:
     """
@@ -2600,6 +2612,393 @@ class NCollection_HArray1__HLRAlgo_PolyHidingData(NCollection_HArray1[nanoocp.HL
 class NCollection_HArray1__HLRAlgo_TriangleData(NCollection_HArray1[nanoocp.HLRAlgo.HLRAlgo_TriangleData]): ...
 class NCollection_List__HLRAlgo_BiPoint(NCollection_List[nanoocp.HLRAlgo.HLRAlgo_BiPoint]):
     class Iterator(NCollection_List.Iterator[nanoocp.HLRAlgo.HLRAlgo_BiPoint]): ...
+class NCollection_DataMap__TDF_Label__TDF_Label(NCollection_DataMap[nanoocp.TDF.TDF_Label, nanoocp.TDF.TDF_Label]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TDF.TDF_Label, nanoocp.TDF.TDF_Label]): ...
+class NCollection_DataMap__TDF_Label__int(NCollection_DataMap[nanoocp.TDF.TDF_Label, int]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TDF.TDF_Label, int]): ...
+class NCollection_DataMap__Handle_TDF_Attribute__Handle_TDF_Attribute(NCollection_DataMap[nanoocp.TDF.TDF_Attribute, nanoocp.TDF.TDF_Attribute]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TDF.TDF_Attribute, nanoocp.TDF.TDF_Attribute]): ...
+class NCollection_IndexedDataMap__Handle_Standard_Transient__Handle_Standard_Transient(NCollection_IndexedDataMap[nanoocp.Standard.Standard_Transient, nanoocp.Standard.Standard_Transient]):
+    class Iterator(NCollection_IndexedDataMap.Iterator[nanoocp.Standard.Standard_Transient, nanoocp.Standard.Standard_Transient]): ...
+class NCollection_IndexedMap__Handle_TDF_Attribute(NCollection_IndexedMap[nanoocp.TDF.TDF_Attribute]):
+    class Iterator(NCollection_IndexedMap.Iterator[nanoocp.TDF.TDF_Attribute]): ...
+class NCollection_List__Standard_GUID(NCollection_List[nanoocp.Standard.Standard_GUID]):
+    class Iterator(NCollection_List.Iterator[nanoocp.Standard.Standard_GUID]): ...
+class NCollection_List__TDF_Label(NCollection_List[nanoocp.TDF.TDF_Label]):
+    class Iterator(NCollection_List.Iterator[nanoocp.TDF.TDF_Label]): ...
+class NCollection_List__Handle_TDF_Attribute(NCollection_List[nanoocp.TDF.TDF_Attribute]):
+    class Iterator(NCollection_List.Iterator[nanoocp.TDF.TDF_Attribute]): ...
+class NCollection_List__Handle_TDF_AttributeDelta(NCollection_List[nanoocp.TDF.TDF_AttributeDelta]):
+    class Iterator(NCollection_List.Iterator[nanoocp.TDF.TDF_AttributeDelta]): ...
+class NCollection_Map__TDF_Label(NCollection_Map[nanoocp.TDF.TDF_Label]):
+    class Iterator(NCollection_Map.Iterator[nanoocp.TDF.TDF_Label]): ...
+class NCollection_Map__Handle_TDF_Attribute(NCollection_Map[nanoocp.TDF.TDF_Attribute]):
+    class Iterator(NCollection_Map.Iterator[nanoocp.TDF.TDF_Attribute]): ...
+class NCollection_DataMap__TCollection_ExtendedString__TCollection_ExtendedString(NCollection_DataMap[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.TCollection.TCollection_ExtendedString]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.TCollection.TCollection_ExtendedString]): ...
+class NCollection_DataMap__TCollection_ExtendedString__double(NCollection_DataMap[nanoocp.TCollection.TCollection_ExtendedString, float]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_ExtendedString, float]): ...
+class NCollection_DataMap__TCollection_ExtendedString__int(NCollection_DataMap[nanoocp.TCollection.TCollection_ExtendedString, int]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_ExtendedString, int]): ...
+class NCollection_DataMap__TCollection_ExtendedString__opencascade_handle__NCollection_HArray1__double(NCollection_DataMap[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.NCollection.NCollection_HArray1__double]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.NCollection.NCollection_HArray1__double]): ...
+class NCollection_DataMap__TCollection_ExtendedString__opencascade_handle__NCollection_HArray1__int(NCollection_DataMap[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.NCollection.NCollection_HArray1__int]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.NCollection.NCollection_HArray1__int]): ...
+class NCollection_DataMap__TCollection_ExtendedString__unsigned_char:
+    """
+    Purpose:     The DataMap is a Map to store keys with associated
+    Items. See Map  from NCollection for  a discussion
+    about the number of buckets.
+
+    The DataMap can be seen as an extended array where
+    the Keys  are the   indices.  For this reason  the
+    operator () is defined on DataMap to fetch an Item
+    from a Key. So the following syntax can be used :
+
+    anItem = aMap(aKey);
+    aMap(aKey) = anItem;
+
+    This analogy has its  limit.   aMap(aKey) = anItem
+    can  be done only  if aKey was previously bound to
+    an item in the map.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theNbBuckets: int, theAllocator: NCollection_BaseAllocator | None = None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_DataMap__TCollection_ExtendedString__unsigned_char) -> None:
+        """Empty Constructor."""
+
+    class Iterator:
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theMap: NCollection_DataMap__TCollection_ExtendedString__unsigned_char) -> None:
+            """Empty constructor"""
+
+        def Initialize(self, theMap: NCollection_DataMap__TCollection_ExtendedString__unsigned_char) -> None: ...
+
+        def Reset(self) -> None: ...
+
+        def More(self) -> bool:
+            """Query if the end of collection is reached by iterator"""
+
+        def Next(self) -> None:
+            """Make a step along the collection"""
+
+        def Value(self) -> int:
+            """Value inquiry"""
+
+        def Key(self) -> nanoocp.TCollection.TCollection_ExtendedString:
+            """Key"""
+
+        def __iter__(self) -> NCollection_DataMap__TCollection_ExtendedString__unsigned_char.Iterator:
+            """
+            Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+            """
+
+        def __next__(self) -> int:
+            """Python addition: see __iter__."""
+
+        def ChangeValue(self) -> int:
+            """Value change access"""
+
+    def NbBuckets(self) -> int:
+        """NbBuckets"""
+
+    def Extent(self) -> int:
+        """Extent (number of elements, legacy int-returning API)."""
+
+    def Length(self) -> int:
+        """
+        Length - number of elements (legacy int-returning API, synonym of Extent()).
+        """
+
+    def Size(self) -> int:
+        """Size - number of elements."""
+
+    def IsEmpty(self) -> bool:
+        """IsEmpty"""
+
+    def Allocator(self) -> NCollection_BaseAllocator:
+        """Returns attached allocator"""
+
+    def Exchange(self, theOther: NCollection_DataMap__TCollection_ExtendedString__unsigned_char) -> None:
+        """
+        Exchange the content of two maps without re-allocations.
+        Notice that allocators will be swapped as well!
+        """
+
+    def Assign(self, theOther: NCollection_DataMap__TCollection_ExtendedString__unsigned_char) -> NCollection_DataMap__TCollection_ExtendedString__unsigned_char:
+        """
+        Assignment.
+        This method does not change the internal allocator.
+        """
+
+    def ReSize(self, N: int) -> None:
+        """ReSize"""
+
+    @overload
+    def Clear(self, doReleaseMemory: bool = True) -> None: ...
+
+    @overload
+    def Clear(self, theAllocator: NCollection_BaseAllocator | None) -> None:
+        """
+        Clear data. If doReleaseMemory is false then the table of
+        buckets is not released and will be reused.
+        """
+
+    def __len__(self) -> int:
+        """Python addition: alias to Extent."""
+
+    def Bind(self, theKey: nanoocp.TCollection.TCollection_ExtendedString, theItem: int) -> bool:
+        """
+        Bind binds Item to Key in map.
+        @param theKey  key to add/update
+        @param theItem new item; overrides value previously bound to the key (uses
+        destroy+reconstruct)
+        @return true if Key was not bound already
+        """
+
+    def TryBind(self, theKey: nanoocp.TCollection.TCollection_ExtendedString, theItem: int) -> bool:
+        """
+        TryBind binds Item to Key in map only if Key is not yet bound.
+        @param theKey  key to add
+        @param theItem item to bind if Key is not yet bound
+        @return true if Key was newly bound, false if Key already existed (no replacement)
+        """
+
+    def IsBound(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> bool:
+        """IsBound"""
+
+    def UnBind(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> bool:
+        """UnBind removes Item Key pair from map"""
+
+    def Find(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> int:
+        """Find returns the Item for Key. Raises if Key was not bound"""
+
+    def __call__(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> int:
+        """operator ()"""
+
+    def __contains__(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> bool:
+        """Python addition: alias to IsBound."""
+
+    def __getitem__(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> int:
+        """Python addition: alias to Find."""
+
+    def __setitem__(self, theKey: nanoocp.TCollection.TCollection_ExtendedString, theItem: int) -> None:
+        """Python addition: alias to Bind."""
+
+    def __delitem__(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> None:
+        """Python addition: UnBind, KeyError if the key is not bound."""
+
+    def __iter__(self) -> Iterator[nanoocp.TCollection.TCollection_ExtendedString]:
+        """Python addition: iterates over the keys."""
+
+    def items(self) -> list:
+        """Python addition: list of (key, value) tuples."""
+
+    def Bound(self, theKey: nanoocp.TCollection.TCollection_ExtendedString, theItem: int) -> int:
+        """
+        Bound binds Item to Key in map.
+        @param theKey  key to add/update
+        @param theItem new item; overrides value previously bound to the key (uses
+        destroy+reconstruct)
+        @return pointer to modifiable Item
+        """
+
+    def TryBound(self, theKey: nanoocp.TCollection.TCollection_ExtendedString, theItem: int) -> int:
+        """
+        TryBound binds Item to Key in map only if Key is not yet bound.
+        @param theKey  key to add
+        @param theItem item to bind if Key is not yet bound
+        @return reference to existing or newly bound Item
+        """
+
+    def ChangeFind(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> int:
+        """ChangeFind returns modifiable Item by Key. Raises if Key was not bound"""
+
+    def Seek(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> int | None:
+        """
+        Seek returns pointer to Item by Key. Returns
+        NULL is Key was not bound.
+        """
+
+    def ChangeSeek(self, theKey: nanoocp.TCollection.TCollection_ExtendedString) -> int | None:
+        """
+        ChangeSeek returns modifiable pointer to Item by Key. Returns
+        NULL is Key was not bound.
+        """
+
+class NCollection_Array1__TCollection_ExtendedString(NCollection_Array1[nanoocp.TCollection.TCollection_ExtendedString]): ...
+class NCollection_HArray1__TCollection_ExtendedString(NCollection_HArray1[nanoocp.TCollection.TCollection_ExtendedString]): ...
+class NCollection_Array1__TDF_Label(NCollection_Array1[nanoocp.TDF.TDF_Label]): ...
+class NCollection_HArray1__TDF_Label(NCollection_HArray1[nanoocp.TDF.TDF_Label]): ...
+class NCollection_List__TCollection_ExtendedString(NCollection_List[nanoocp.TCollection.TCollection_ExtendedString]):
+    class Iterator(NCollection_List.Iterator[nanoocp.TCollection.TCollection_ExtendedString]): ...
+class NCollection_List__unsigned_char:
+    """
+    Purpose:      Simple list to link  items together keeping the first
+    and the last one.
+    Inherits BaseList, adding the data item to each node.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theAllocator: NCollection_BaseAllocator | None) -> None: ...
+
+    @overload
+    def __init__(self, theOther: NCollection_List__unsigned_char) -> None:
+        """Empty constructor."""
+
+    class Iterator:
+        """
+        Purpose:     This Iterator class iterates on BaseList of TListNode and is
+        instantiated in List/Set/Queue/Stack
+        Remark:      TListIterator is internal class
+        """
+
+        @overload
+        def __init__(self) -> None: ...
+
+        @overload
+        def __init__(self, theList: NCollection_List__unsigned_char) -> None:
+            """Empty constructor - for later Init"""
+
+        def Initialize(self, theList: NCollection_List__unsigned_char) -> None: ...
+
+        def More(self) -> bool:
+            """Check end"""
+
+        def Next(self) -> None:
+            """Make step"""
+
+        def Value(self) -> int:
+            """Constant Value access"""
+
+        def ChangeValue(self) -> int:
+            """Non-const Value access"""
+
+        def __iter__(self) -> NCollection_List__unsigned_char.Iterator:
+            """
+            Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
+            """
+
+        def __next__(self) -> int:
+            """Python addition: see __iter__."""
+
+    def Extent(self) -> int: ...
+
+    def Length(self) -> int:
+        """
+        Length - number of nodes (legacy int-returning API, synonym of Extent()).
+        """
+
+    def Size(self) -> int:
+        """Size - number of nodes."""
+
+    def IsEmpty(self) -> bool: ...
+
+    def Allocator(self) -> NCollection_BaseAllocator:
+        """Returns attached allocator"""
+
+    def Assign(self, theOther: NCollection_List__unsigned_char) -> NCollection_List__unsigned_char:
+        """
+        Replace this list by the items of another list (theOther parameter).
+        This method does not change the internal allocator.
+        """
+
+    def Clear(self, theAllocator: NCollection_BaseAllocator | None = None) -> None:
+        """Clear this list"""
+
+    def First(self) -> int:
+        """First item"""
+
+    def Last(self) -> int:
+        """Last item"""
+
+    @overload
+    def Append(self, theItem: int, theIter: NCollection_List__unsigned_char.Iterator) -> None: ...
+
+    @overload
+    def Append(self, theOther: NCollection_List__unsigned_char) -> None: ...
+
+    @overload
+    def Append(self, theItem: int) -> int:
+        """Append one item at the end"""
+
+    @overload
+    def Prepend(self, theOther: NCollection_List__unsigned_char) -> None: ...
+
+    @overload
+    def Prepend(self, theItem: int) -> int:
+        """Prepend one item at the beginning"""
+
+    def RemoveFirst(self) -> None:
+        """RemoveFirst item"""
+
+    @overload
+    def Remove(self, theIter: NCollection_List__unsigned_char.Iterator) -> None: ...
+
+    @overload
+    def Remove(self, theObject: int) -> bool:
+        """
+        Remove item pointed by iterator theIter;
+        theIter is then set to the next item
+        """
+
+    @overload
+    def InsertBefore(self, theOther: NCollection_List__unsigned_char, theIter: NCollection_List__unsigned_char.Iterator) -> None: ...
+
+    @overload
+    def InsertBefore(self, theItem: int, theIter: NCollection_List__unsigned_char.Iterator) -> int:
+        """InsertBefore"""
+
+    @overload
+    def InsertAfter(self, theOther: NCollection_List__unsigned_char, theIter: NCollection_List__unsigned_char.Iterator) -> None: ...
+
+    @overload
+    def InsertAfter(self, theItem: int, theIter: NCollection_List__unsigned_char.Iterator) -> int:
+        """InsertAfter"""
+
+    def Reverse(self) -> None:
+        """Reverse the list"""
+
+    def Exchange(self, theOther: NCollection_List__unsigned_char) -> None:
+        """
+        Exchange the content of two lists without re-allocations.
+        Swaps all internal state including allocators, ensuring correct
+        deallocation. Existing iterators remain valid but will point to
+        the other list's elements.
+        """
+
+    def __len__(self) -> int:
+        """Python addition: alias to Extent."""
+
+    def __iter__(self) -> Iterator[int]:
+        """Python addition: iterates over the values."""
+
+    def Contains(self, theObject: int) -> bool:
+        """Return true if object is stored in the list."""
+
+    def __contains__(self, theObject: int) -> bool:
+        """Python addition: alias to Contains."""
+
+class NCollection_DoubleMap__int__TDF_Label(NCollection_DoubleMap[int, nanoocp.TDF.TDF_Label]):
+    class Iterator(NCollection_DoubleMap.Iterator[int, nanoocp.TDF.TDF_Label]): ...
+class NCollection_List__Handle_TDF_Delta(NCollection_List[nanoocp.TDF.TDF_Delta]):
+    class Iterator(NCollection_List.Iterator[nanoocp.TDF.TDF_Delta]): ...
+class NCollection_Sequence__Handle_TDocStd_ApplicationDelta(NCollection_Sequence[nanoocp.TDocStd.TDocStd_ApplicationDelta]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.TDocStd.TDocStd_ApplicationDelta]): ...
+class NCollection_Sequence__Handle_TDocStd_Document(NCollection_Sequence[nanoocp.TDocStd.TDocStd_Document]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.TDocStd.TDocStd_Document]): ...
 class NCollection_Array1__BRepMesh_Vertex(NCollection_Array1[nanoocp.BRepMesh.BRepMesh_Vertex]): ...
 class NCollection_Shared__NCollection_List__int(nanoocp.NCollection.NCollection_List__int, _NCollection_Shared_members): ...
 class NCollection_DataMap__int__NCollection_Shared__NCollection_List__int(NCollection_DataMap[int, nanoocp.NCollection.NCollection_Shared__NCollection_List__int]):

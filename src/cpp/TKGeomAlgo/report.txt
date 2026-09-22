@@ -1,11 +1,11 @@
-# nanoOCP generator report for TKGeomAlgo: 78 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomAlgo: 81 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # header: 1
 # overload-collision: 30
 # override: 4
 # raw-pointer: 2
-# stream: 1
+# stream: 4
 # template: 3
 # undefined: 36
 array	IntImp	IntImp_ComputeTangence(...): param 'DPuv': array
@@ -46,7 +46,10 @@ override	IntPolyh	IntPolyh_Array<IntPolyh_PointNormal>::Dump(): overrides.toml [
 override	IntPolyh	IntPolyh_Array<IntPolyh_Triangle>::Dump(): overrides.toml [skip] methods
 raw-pointer	GeomInt	GeomInt_TheMultiLineOfWLApprox::GeomInt_TheMultiLineOfWLApprox(const occ::handle<IntPatch_WLine> &): param 'PtrSvSurfaces': void pointer
 raw-pointer	IntPatch	IntPatch_WLineTool::ExtendTwoWLines(NCollection_Sequence<opencascade::handle<IntPatch_Line>> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_Surface> &, const double): param 'theArrPeriods': raw pointer to primitive
+stream	FairCurve	operator<<(...): iostream type
+stream	FairCurve	operator<<(...): iostream type
 stream	IntPatch	math_VectorBase<double>: friend operator<<(Standard_OStream &, const math_VectorBase<double> &): iostream type
+stream	IntRes2d	operator<<(...): iostream type
 template	IntPatch	math_VectorBase: template (not bound)
 template	IntPatch	math_VectorBase<double>::math_VectorBase<double>(): param 'theTab': raw pointer to primitive (template argument)
 template	IntPolyh	IntPolyh_Array: template (not bound)

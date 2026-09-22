@@ -18,6 +18,7 @@ import nanoocp._TKFeat  # noqa: F401
 import nanoocp._TKFillet  # noqa: F401
 import nanoocp._TKHLR  # noqa: F401
 import nanoocp._TKHelix  # noqa: F401
+import nanoocp._TKLCAF  # noqa: F401
 import nanoocp._TKMesh  # noqa: F401
 import nanoocp._TKOffset  # noqa: F401
 import nanoocp._TKService  # noqa: F401

@@ -1569,6 +1569,8 @@ class TCollection_AsciiString:
         @return true if strings contain same characters
         """
 
+    def __hash__(self) -> int: ...
+
 class TCollection_ExtendedString:
     """
     A variable-length sequence of "extended" (UNICODE) characters (16-bit character type).
@@ -3281,3 +3283,11 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+def IsEqual(theString1: TCollection_AsciiString, theString2: TCollection_AsciiString) -> bool:
+    """
+    Returns True when the two strings are the same.
+    @param[in] theString1 first string to compare
+    @param[in] theString2 second string to compare
+    @return true if strings are equal
+    """

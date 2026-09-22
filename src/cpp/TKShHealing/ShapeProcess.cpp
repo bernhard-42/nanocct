@@ -132,10 +132,10 @@ internal static Resource_Manager object is null)nbdoc")
         .def("GetBoolean", [](const ShapeProcess_Context &self, const char *const param) { bool val{}; auto result = self.GetBoolean(param, val); return std::make_tuple(result, val); }, nb::arg("param"))
         .def("GetString", static_cast<bool (ShapeProcess_Context::*)(const char *const, TCollection_AsciiString &) const>(&ShapeProcess_Context::GetString), nb::arg("param"), nb::arg("val"), R"nbdoc(Get value of parameter as being of specific type
 Returns False if parameter is not defined or has a wrong type)nbdoc")
-        .def("RealVal", static_cast<double (ShapeProcess_Context::*)(const char *const, const double) const>(&ShapeProcess_Context::RealVal), nb::arg("param"), nb::arg("def"))
-        .def("IntegerVal", static_cast<int (ShapeProcess_Context::*)(const char *const, const int) const>(&ShapeProcess_Context::IntegerVal), nb::arg("param"), nb::arg("def"))
-        .def("BooleanVal", static_cast<bool (ShapeProcess_Context::*)(const char *const, const bool) const>(&ShapeProcess_Context::BooleanVal), nb::arg("param"), nb::arg("def"))
-        .def("StringVal", static_cast<const char * (ShapeProcess_Context::*)(const char *const, const char *const) const>(&ShapeProcess_Context::StringVal), nb::arg("param"), nb::arg("def"), R"nbdoc(Get value of parameter as being of specific type
+        .def("RealVal", static_cast<double (ShapeProcess_Context::*)(const char *const, const double) const>(&ShapeProcess_Context::RealVal), nb::arg("param"), nb::arg("def_"))
+        .def("IntegerVal", static_cast<int (ShapeProcess_Context::*)(const char *const, const int) const>(&ShapeProcess_Context::IntegerVal), nb::arg("param"), nb::arg("def_"))
+        .def("BooleanVal", static_cast<bool (ShapeProcess_Context::*)(const char *const, const bool) const>(&ShapeProcess_Context::BooleanVal), nb::arg("param"), nb::arg("def_"))
+        .def("StringVal", static_cast<const char * (ShapeProcess_Context::*)(const char *const, const char *const) const>(&ShapeProcess_Context::StringVal), nb::arg("param"), nb::arg("def_"), R"nbdoc(Get value of parameter as being of specific type
 If parameter is not defined or does not have expected
 type, returns default value as specified)nbdoc")
         .def("SetMessenger", static_cast<void (ShapeProcess_Context::*)(const occ::handle<Message_Messenger> &)>(&ShapeProcess_Context::SetMessenger), nb::arg("messenger").none(), R"nbdoc(Sets Messenger used for outputting messages.)nbdoc")
@@ -210,7 +210,7 @@ Shape S should be one of subshapes of original shape
 Records only if Message() is not Null)nbdoc")
         .def("GetContinuity", [](const ShapeProcess_ShapeContext &self, const char *const param) { GeomAbs_Shape val{}; auto result = self.GetContinuity(param, val); return std::make_tuple(result, val); }, nb::arg("param"), R"nbdoc(Get value of parameter as being of the type GeomAbs_Shape
 Returns False if parameter is not defined or has a wrong type)nbdoc")
-        .def("ContinuityVal", static_cast<GeomAbs_Shape (ShapeProcess_ShapeContext::*)(const char *const, const GeomAbs_Shape) const>(&ShapeProcess_ShapeContext::ContinuityVal), nb::arg("param"), nb::arg("def"), R"nbdoc(Get value of parameter as being of the type GeomAbs_Shape
+        .def("ContinuityVal", static_cast<GeomAbs_Shape (ShapeProcess_ShapeContext::*)(const char *const, const GeomAbs_Shape) const>(&ShapeProcess_ShapeContext::ContinuityVal), nb::arg("param"), nb::arg("def_"), R"nbdoc(Get value of parameter as being of the type GeomAbs_Shape
 If parameter is not defined or does not have expected
 type, returns default value as specified)nbdoc")
         .def("PrintStatistics", static_cast<void (ShapeProcess_ShapeContext::*)() const>(&ShapeProcess_ShapeContext::PrintStatistics), R"nbdoc(Prints statistics on Shape Processing onto the current Messenger.)nbdoc")

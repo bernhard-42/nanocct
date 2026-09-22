@@ -32,3 +32,18 @@ def test_type_checker_reports_exactly_the_marked_lines(checker, check):
     else:
         cmd = [sys.executable, "-m", "ty", "check", "--output-format", "concise", str(check)]
     assert _reported_lines(cmd, check) == _expected(check)
+
+
+STUBS = sorted((Path(__file__).parents[1] / "src" / "nanoocp").rglob("*.pyi"))
+
+
+def test_every_stub_is_valid_python():
+    """Every .pyi must parse: mypy only reaches the modules a check file imports, so a keyword used as a parameter name
+    (`def RealVal(self, param: str, def: float)` in ShapeProcess.pyi until 2026-09-22, R-KEYWORD) went unnoticed."""
+    import ast
+    assert len(STUBS) > 100
+    for stub in STUBS:
+        try:
+            ast.parse(stub.read_text(), filename=str(stub))
+        except SyntaxError as e:
+            pytest.fail(f"{stub.relative_to(STUBS[0].parents[1])}: {e}")

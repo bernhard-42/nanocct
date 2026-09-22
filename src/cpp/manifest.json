@@ -28,6 +28,9 @@
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Poly_MeshPurpose.hxx:20:1)": "Poly",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Prs3d_DatumAttribute.hxx:40:1)": "Prs3d",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Prs3d_DatumParts.hxx:46:1)": "Prs3d",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDF_Attribute.lxx:22:1)": "TDF",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDF_LabelNode.hxx:34:1)": "TDF",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDocStd_FormatVersion.hxx:86:1)": "TDocStd",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TopTools_FormatVersion.hxx:31:1)": "TopTools",
 "AIS": "AIS",
 "AIS_Animation": "AIS",
@@ -187,6 +190,7 @@
 "AppParCurves_MultiBSpCurve": "AppParCurves",
 "AppParCurves_MultiCurve": "AppParCurves",
 "AppParCurves_MultiPoint": "AppParCurves",
+"AppStdL_Application": "AppStdL",
 "ApproxInt_KnotTools": "ApproxInt",
 "ApproxInt_SvSurfaces": "ApproxInt",
 "Approx_Curve2d": "Approx",
@@ -317,6 +321,7 @@
 "BOPAlgo_CheckResult": "BOPAlgo",
 "BOPAlgo_CheckStatus": "BOPAlgo",
 "BOPAlgo_CheckerSI": "BOPAlgo",
+"BOPAlgo_EdgeInfo": "BOPAlgo",
 "BOPAlgo_GlueEnum": "BOPAlgo",
 "BOPAlgo_MakeConnected": "BOPAlgo",
 "BOPAlgo_MakePeriodic": "BOPAlgo",
@@ -2800,6 +2805,7 @@
 "NCollection_UBTree<int, Bnd_Box2d>": "IMeshData",
 "NCollection_UBTreeFiller<int, Bnd_Box2d>": "IMeshData",
 "NCollection_UtfString<char>": "NCollection",
+"NCollection_UtfStringTool": "NCollection",
 "NCollection_Vec2<double>": "BVH",
 "NCollection_Vec2<float>": "Graphic3d",
 "NCollection_Vec2<int>": "BVH",
@@ -3357,6 +3363,102 @@
 "TCollection_ExtendedString": "TCollection",
 "TCollection_HAsciiString": "TCollection",
 "TCollection_HExtendedString": "TCollection",
+"TDF": "TDF",
+"TDF_Attribute": "TDF",
+"TDF_AttributeDelta": "TDF",
+"TDF_AttributeIterator": "TDF",
+"TDF_ChildIDIterator": "TDF",
+"TDF_ChildIterator": "TDF",
+"TDF_ClosureMode": "TDF",
+"TDF_ClosureTool": "TDF",
+"TDF_ComparisonTool": "TDF",
+"TDF_CopyLabel": "TDF",
+"TDF_CopyTool": "TDF",
+"TDF_Data": "TDF",
+"TDF_DataSet": "TDF",
+"TDF_DefaultDeltaOnModification": "TDF",
+"TDF_DefaultDeltaOnRemoval": "TDF",
+"TDF_Delta": "TDF",
+"TDF_DeltaOnAddition": "TDF",
+"TDF_DeltaOnForget": "TDF",
+"TDF_DeltaOnModification": "TDF",
+"TDF_DeltaOnRemoval": "TDF",
+"TDF_DeltaOnResume": "TDF",
+"TDF_DerivedAttribute": "TDF",
+"TDF_IDFilter": "TDF",
+"TDF_Label": "TDF",
+"TDF_Reference": "TDF",
+"TDF_RelocationTable": "TDF",
+"TDF_TagSource": "TDF",
+"TDF_Tool": "TDF",
+"TDF_Transaction": "TDF",
+"TDataStd": "TDataStd",
+"TDataStd_AsciiString": "TDataStd",
+"TDataStd_BooleanArray": "TDataStd",
+"TDataStd_BooleanList": "TDataStd",
+"TDataStd_ByteArray": "TDataStd",
+"TDataStd_ChildNodeIterator": "TDataStd",
+"TDataStd_Comment": "TDataStd",
+"TDataStd_Current": "TDataStd",
+"TDataStd_DeltaOnModificationOfByteArray": "TDataStd",
+"TDataStd_DeltaOnModificationOfExtStringArray": "TDataStd",
+"TDataStd_DeltaOnModificationOfIntArray": "TDataStd",
+"TDataStd_DeltaOnModificationOfIntPackedMap": "TDataStd",
+"TDataStd_DeltaOnModificationOfRealArray": "TDataStd",
+"TDataStd_Directory": "TDataStd",
+"TDataStd_Expression": "TDataStd",
+"TDataStd_ExtStringArray": "TDataStd",
+"TDataStd_ExtStringList": "TDataStd",
+"TDataStd_GenericEmpty": "TDataStd",
+"TDataStd_GenericExtString": "TDataStd",
+"TDataStd_HDataMapOfStringByte": "TDataStd",
+"TDataStd_HDataMapOfStringHArray1OfInteger": "TDataStd",
+"TDataStd_HDataMapOfStringHArray1OfReal": "TDataStd",
+"TDataStd_HDataMapOfStringInteger": "TDataStd",
+"TDataStd_HDataMapOfStringReal": "TDataStd",
+"TDataStd_HDataMapOfStringString": "TDataStd",
+"TDataStd_IntPackedMap": "TDataStd",
+"TDataStd_Integer": "TDataStd",
+"TDataStd_IntegerArray": "TDataStd",
+"TDataStd_IntegerList": "TDataStd",
+"TDataStd_Name": "TDataStd",
+"TDataStd_NamedData": "TDataStd",
+"TDataStd_NoteBook": "TDataStd",
+"TDataStd_Real": "TDataStd",
+"TDataStd_RealArray": "TDataStd",
+"TDataStd_RealEnum": "TDataStd",
+"TDataStd_RealList": "TDataStd",
+"TDataStd_ReferenceArray": "TDataStd",
+"TDataStd_ReferenceList": "TDataStd",
+"TDataStd_Relation": "TDataStd",
+"TDataStd_Tick": "TDataStd",
+"TDataStd_TreeNode": "TDataStd",
+"TDataStd_UAttribute": "TDataStd",
+"TDataStd_Variable": "TDataStd",
+"TDocStd": "TDocStd",
+"TDocStd_Application": "TDocStd",
+"TDocStd_ApplicationDelta": "TDocStd",
+"TDocStd_CompoundDelta": "TDocStd",
+"TDocStd_Context": "TDocStd",
+"TDocStd_Document": "TDocStd",
+"TDocStd_FormatVersion": "TDocStd",
+"TDocStd_Modified": "TDocStd",
+"TDocStd_MultiTransactionManager": "TDocStd",
+"TDocStd_Owner": "TDocStd",
+"TDocStd_PathParser": "TDocStd",
+"TDocStd_XLink": "TDocStd",
+"TDocStd_XLinkIterator": "TDocStd",
+"TDocStd_XLinkRoot": "TDocStd",
+"TDocStd_XLinkTool": "TDocStd",
+"TFunction_Driver": "TFunction",
+"TFunction_DriverTable": "TFunction",
+"TFunction_ExecutionStatus": "TFunction",
+"TFunction_Function": "TFunction",
+"TFunction_GraphNode": "TFunction",
+"TFunction_IFunction": "TFunction",
+"TFunction_Iterator": "TFunction",
+"TFunction_Logbook": "TFunction",
+"TFunction_Scope": "TFunction",
 "TopAbs": "TopAbs",
 "TopAbs_Orientation": "TopAbs",
 "TopAbs_ShapeEnum": "TopAbs",
@@ -5335,6 +5437,18 @@
 "name": "NCollection_Array1__TCollection_AsciiString",
 "by": "Graphic3d"
 },
+"NCollection_Array1<TCollection_ExtendedString>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_Array1__TCollection_ExtendedString",
+"by": "TDataStd"
+},
+"NCollection_Array1<TDF_Label>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_Array1__TDF_Label",
+"by": "TDataStd"
+},
 "NCollection_Array1<TopLoc_Location>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
@@ -5673,11 +5787,59 @@
 "name": "NCollection_DataMap__TCollection_AsciiString__int",
 "by": "NCollection"
 },
+"NCollection_DataMap<TCollection_ExtendedString, TCollection_ExtendedString>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_ExtendedString__TCollection_ExtendedString",
+"by": "TDataStd"
+},
+"NCollection_DataMap<TCollection_ExtendedString, double>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_ExtendedString__double",
+"by": "TDataStd"
+},
+"NCollection_DataMap<TCollection_ExtendedString, int>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_ExtendedString__int",
+"by": "TDataStd"
+},
 "NCollection_DataMap<TCollection_ExtendedString, opencascade::handle<CDM_MetaData>>": {
 "toolkit": "TKCDF",
 "package": "NCollection",
 "name": "NCollection_DataMap__TCollection_ExtendedString__Handle_CDM_MetaData",
 "by": "CDM"
+},
+"NCollection_DataMap<TCollection_ExtendedString, opencascade::handle<NCollection_HArray1<double>>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_ExtendedString__opencascade_handle__NCollection_HArray1__double",
+"by": "TDataStd"
+},
+"NCollection_DataMap<TCollection_ExtendedString, opencascade::handle<NCollection_HArray1<int>>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_ExtendedString__opencascade_handle__NCollection_HArray1__int",
+"by": "TDataStd"
+},
+"NCollection_DataMap<TCollection_ExtendedString, unsigned char>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_ExtendedString__unsigned_char",
+"by": "TDataStd"
+},
+"NCollection_DataMap<TDF_Label, TDF_Label>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TDF_Label__TDF_Label",
+"by": "TDF"
+},
+"NCollection_DataMap<TDF_Label, int>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TDF_Label__int",
+"by": "TDF"
 },
 "NCollection_DataMap<TopoDS_Shape, BRepGraph_NodeId, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBRep",
@@ -5835,6 +5997,12 @@
 "name": "NCollection_DataMap__Handle_Standard_Transient__NCollection_List__Message_Msg",
 "by": "ShapeExtend"
 },
+"NCollection_DataMap<opencascade::handle<TDF_Attribute>, opencascade::handle<TDF_Attribute>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__Handle_TDF_Attribute__Handle_TDF_Attribute",
+"by": "TDF"
+},
 "NCollection_DataMap<unsigned int, AIS_MouseGesture>": {
 "toolkit": "TKV3d",
 "package": "NCollection",
@@ -5876,6 +6044,12 @@
 "package": "NCollection",
 "name": "NCollection_DoubleMap__int__TCollection_AsciiString",
 "by": "NCollection"
+},
+"NCollection_DoubleMap<int, TDF_Label>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_DoubleMap__int__TDF_Label",
+"by": "TFunction"
 },
 "NCollection_DynamicArray<BOPDS_Curve>": {
 "toolkit": "TKBO",
@@ -6244,6 +6418,18 @@
 "name": "NCollection_HArray1__Quantity_Color",
 "by": "AIS"
 },
+"NCollection_HArray1<TCollection_ExtendedString>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_HArray1__TCollection_ExtendedString",
+"by": "TDataStd"
+},
+"NCollection_HArray1<TDF_Label>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_HArray1__TDF_Label",
+"by": "TDataStd"
+},
 "NCollection_HArray1<TopOpeBRep_LineInter>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -6581,6 +6767,12 @@
 "name": "NCollection_IndexedDataMap__Handle_BOPDS_PaveBlock__NCollection_List__Handle_BOPDS_PaveBlock",
 "by": "BOPAlgo"
 },
+"NCollection_IndexedDataMap<opencascade::handle<Standard_Transient>, opencascade::handle<Standard_Transient>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__Handle_Standard_Transient__Handle_Standard_Transient",
+"by": "TDF"
+},
 "NCollection_IndexedDataMap<unsigned long, Aspect_Touch>": {
 "toolkit": "TKService",
 "package": "NCollection",
@@ -6654,6 +6846,12 @@
 "package": "NCollection",
 "name": "NCollection_IndexedMap__Handle_SelectMgr_SensitiveEntity",
 "by": "SelectMgr"
+},
+"NCollection_IndexedMap<opencascade::handle<TDF_Attribute>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__Handle_TDF_Attribute",
+"by": "TDF"
 },
 "NCollection_Iterator<NCollection_Array1<opencascade::handle<Graphic3d_TextureMap>>>": {
 "toolkit": "TKService",
@@ -6979,6 +7177,24 @@
 "name": "NCollection_List__Poly_Triangle",
 "by": "BRepMesh"
 },
+"NCollection_List<Standard_GUID>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_List__Standard_GUID",
+"by": "TDF"
+},
+"NCollection_List<TCollection_ExtendedString>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_List__TCollection_ExtendedString",
+"by": "TDataStd"
+},
+"NCollection_List<TDF_Label>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_List__TDF_Label",
+"by": "TDF"
+},
 "NCollection_List<TopoDS_Shape>": {
 "toolkit": "TKBRep",
 "package": "NCollection",
@@ -7129,6 +7345,24 @@
 "name": "NCollection_List__Handle_Standard_Transient",
 "by": "PrsDim"
 },
+"NCollection_List<opencascade::handle<TDF_Attribute>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_List__Handle_TDF_Attribute",
+"by": "TDF"
+},
+"NCollection_List<opencascade::handle<TDF_AttributeDelta>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_List__Handle_TDF_AttributeDelta",
+"by": "TDF"
+},
+"NCollection_List<opencascade::handle<TDF_Delta>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_List__Handle_TDF_Delta",
+"by": "TDocStd"
+},
 "NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -7152,6 +7386,12 @@
 "package": "NCollection",
 "name": "NCollection_List__Handle_V3d_View",
 "by": "V3d"
+},
+"NCollection_List<unsigned char>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_List__unsigned_char",
+"by": "TDataStd"
 },
 "NCollection_Map<BOPDS_Pair>": {
 "toolkit": "TKBO",
@@ -7185,6 +7425,12 @@
 "name": "",
 "by": "IMeshData",
 "skipped": true
+},
+"NCollection_Map<TDF_Label>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_Map__TDF_Label",
+"by": "TDF"
 },
 "NCollection_Map<TopoDS_Shape, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBRep",
@@ -7222,6 +7468,12 @@
 "package": "NCollection",
 "name": "NCollection_Map__Handle_Graphic3d_Structure",
 "by": "Graphic3d"
+},
+"NCollection_Map<opencascade::handle<TDF_Attribute>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_Map__Handle_TDF_Attribute",
+"by": "TDF"
 },
 "NCollection_Mat3<double>": {
 "toolkit": "TKService",
@@ -7734,6 +7986,18 @@
 "name": "NCollection_Sequence__Handle_TCollection_HExtendedString",
 "by": "Message"
 },
+"NCollection_Sequence<opencascade::handle<TDocStd_ApplicationDelta>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_TDocStd_ApplicationDelta",
+"by": "TDocStd"
+},
+"NCollection_Sequence<opencascade::handle<TDocStd_Document>>": {
+"toolkit": "TKLCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_TDocStd_Document",
+"by": "TDocStd"
+},
 "NCollection_Sequence<opencascade::handle<Units_Quantity>>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -8133,6 +8397,7 @@
 "AppCont": "TKGeomBase",
 "AppDef": "TKGeomBase",
 "AppParCurves": "TKGeomBase",
+"AppStdL": "TKLCAF",
 "Approx": "TKGeomBase",
 "ApproxInt": "TKGeomAlgo",
 "Aspect": "TKService",
@@ -8321,6 +8586,10 @@
 "Sweep": "TKPrim",
 "TColStd": "TKernel",
 "TCollection": "TKernel",
+"TDF": "TKLCAF",
+"TDataStd": "TKLCAF",
+"TDocStd": "TKLCAF",
+"TFunction": "TKLCAF",
 "TShort": "TKernel",
 "TopAbs": "TKG3d",
 "TopBas": "TKHLR",
@@ -8615,6 +8884,13 @@
 "PCDM",
 "CDF",
 "UTL"
+],
+"TKLCAF": [
+"TDF",
+"TDataStd",
+"TFunction",
+"TDocStd",
+"AppStdL"
 ]
 },
 "namespaces": {
@@ -8627,6 +8903,7 @@
 "AppCont": [],
 "AppDef": [],
 "AppParCurves": [],
+"AppStdL": [],
 "Approx": [],
 "ApproxInt": [],
 "Aspect": [],
@@ -8852,6 +9129,10 @@
 "Sweep": [],
 "TColStd": [],
 "TCollection": [],
+"TDF": [],
+"TDataStd": [],
+"TDocStd": [],
+"TFunction": [],
 "TShort": [],
 "TopAbs": [],
 "TopBas": [],

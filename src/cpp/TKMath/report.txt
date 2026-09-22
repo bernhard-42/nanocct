@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKMath: 422 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 452 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 2
 # conversion: 18
@@ -13,8 +13,8 @@
 # rvalue: 3
 # static-rename: 4
 # std: 2
-# stream: 5
-# template: 220
+# stream: 27
+# template: 228
 # undefined: 5
 array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
 array	Poly	Poly_CoherentTriangulation::FindTriangle(const Poly_CoherentLink &): param 'pTri': array
@@ -213,17 +213,46 @@ stream	math	math_VectorBase<int>: friend operator<<(Standard_OStream &, const ma
 stream	math	operator<<(...): iostream type
 stream	math	operator<<(...): iostream type
 stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
+stream	math	operator<<(...): iostream type
 template	BVH	BVH::Array: template in namespace (not bound)
 template	BVH	BVH::ArrayType: template in namespace (not bound)
 template	BVH	BVH::BVH_AxisSelector: template in namespace (not bound)
 template	BVH	BVH::BoundData: template in namespace (not bound)
 template	BVH	BVH::BoxMinMax: template in namespace (not bound)
 template	BVH	BVH::CenterAxis: template in namespace (not bound)
+template	BVH	BVH::DirectionToNearestPoint: template in namespace (not bound)
+template	BVH	BVH::DistanceToBox: template in namespace (not bound)
 template	BVH	BVH::EstimateSAH: template in namespace (not bound)
 template	BVH	BVH::IntFloor: template in namespace (not bound)
 template	BVH	BVH::MatrixOp: template in namespace (not bound)
 template	BVH	BVH::MatrixType: template in namespace (not bound)
+template	BVH	BVH::PointGeometrySquareDistance: template in namespace (not bound)
+template	BVH	BVH::PointTriangulationSquareDistance: template in namespace (not bound)
 template	BVH	BVH::SplitPrimitives: template in namespace (not bound)
+template	BVH	BVH::SquareDistanceToGeomerty: template in namespace (not bound)
+template	BVH	BVH::SquareDistanceToObject: template in namespace (not bound)
+template	BVH	BVH::SquareDistanceToPoint: template in namespace (not bound)
 template	BVH	BVH::SurfaceCalculator: template in namespace (not bound)
 template	BVH	BVH::ToBndBox: template in namespace (not bound)
 template	BVH	BVH::ToBndBox: template in namespace (not bound)
@@ -252,6 +281,7 @@ template	BVH	BVH_Object: template (not bound)
 template	BVH	BVH_ObjectSet: template (not bound)
 template	BVH	BVH_PairDistance: template (not bound)
 template	BVH	BVH_PairTraverse: template (not bound)
+template	BVH	BVH_ParallelDistanceFieldBuilder: template (not bound)
 template	BVH	BVH_ParallelDistanceFieldBuilder: template (not bound)
 template	BVH	BVH_PrimitiveSet: template (not bound)
 template	BVH	BVH_QueueBuilder: template (not bound)

@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKernel: 418 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 426 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 7
@@ -7,13 +7,13 @@
 # not-constructible: 3
 # operator: 34
 # overload-collision: 40
-# override: 13
-# raw-pointer: 82
+# override: 24
+# raw-pointer: 84
 # rvalue: 5
 # static-rename: 16
 # std: 4
 # stream: 35
-# template: 163
+# template: 158
 # unbound-type: 7
 # undefined: 3
 # variadic: 3
@@ -116,6 +116,17 @@ override	NCollection	std::tuple_size: namespace skipped (overrides.toml [skip] n
 override	NCollection	std::tuple_size: namespace skipped (overrides.toml [skip] namespaces)
 override	OSD	OSD_WNT.hxx: skipped (overrides.toml [skip] headers)
 override	Standard	Standard_Static_Assert<true>: skipped (overrides.toml [skip])
+override	Standard	opencascade::MurmurHash::MurmurHash2A: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::MurmurHash2A: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::MurmurHash64A: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::MurmurHash64A: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::MurmurHashUtils::load_bytes: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::MurmurHashUtils::shift_mix: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::MurmurHashUtils::unaligned_load: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::hash_combine: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::hash_combine: namespace skipped (overrides.toml [skip] namespaces)
+override	Standard	opencascade::MurmurHash::optimalSeed: namespace skipped (overrides.toml [skip] namespaces)
+override	TCollection	std::equal_to: namespace skipped (overrides.toml [skip] namespaces)
 override	TCollection	std::equal_to: namespace skipped (overrides.toml [skip] namespaces)
 raw-pointer	FSD	FSD_Base64::Decode(): param 'theDecodedData': raw pointer to primitive
 raw-pointer	FSD	FSD_Base64::Encode(): param 'theData': raw pointer to primitive
@@ -142,6 +153,8 @@ raw-pointer	NCollection	NCollection_IncAllocator::IBlock::NCollection_IncAllocat
 raw-pointer	NCollection	NCollection_UtfString<char>::NCollection_UtfString<char>(): param 'theCopyUtf32': raw pointer to primitive
 raw-pointer	NCollection	NCollection_UtfString<char>::NCollection_UtfString<char>(): param 'theCopyUtfWide': raw pointer to primitive
 raw-pointer	NCollection	NCollection_UtfString<char>::ToLocale(): param 'theBuffer': raw pointer to primitive
+raw-pointer	NCollection	NCollection_UtfStringTool::FromLocale(const char *): return: raw pointer to primitive
+raw-pointer	NCollection	NCollection_UtfStringTool::ToLocale(): param 'theWideString': raw pointer to primitive
 raw-pointer	NCollection	NCollection_WinHeapAllocator::Allocate(const size_t): return: void pointer
 raw-pointer	NCollection	NCollection_WinHeapAllocator::AllocateOptimal(const size_t): return: void pointer
 raw-pointer	NCollection	NCollection_WinHeapAllocator::Free(): param 'theAddress': void pointer
@@ -164,9 +177,9 @@ raw-pointer	Resource	Resource_Unicode::ConvertUnicodeToFormat(const TCollection_
 raw-pointer	Resource	Resource_Unicode::ConvertUnicodeToGB(const TCollection_ExtendedString &): param 'tostr': reference to pointer
 raw-pointer	Resource	Resource_Unicode::ConvertUnicodeToSJIS(const TCollection_ExtendedString &): param 'tostr': reference to pointer
 raw-pointer	Standard	FNVHash1A(...): param 'theKey': void pointer
+raw-pointer	Standard	FNVHash1A(...): param 'theKey': void pointer
 raw-pointer	Standard	FNVHash64A(...): param 'theKey': void pointer
-raw-pointer	Standard	MurmurHash2A(...): param 'theKey': void pointer
-raw-pointer	Standard	MurmurHash64A(...): param 'theKey': void pointer
+raw-pointer	Standard	FNVHash64A(...): param 'theKey': void pointer
 raw-pointer	Standard	Standard::Allocate(const size_t): return: void pointer
 raw-pointer	Standard	Standard::AllocateAligned(const size_t, const size_t): return: void pointer
 raw-pointer	Standard	Standard::AllocateOptimal(const size_t): return: void pointer
@@ -260,7 +273,6 @@ stream	TCollection	TCollection_AsciiString: friend operator<<(Standard_OStream &
 stream	TCollection	TCollection_AsciiString: friend operator>>(Standard_IStream &, TCollection_AsciiString &): iostream type
 stream	TCollection	TCollection_ExtendedString: friend operator<<(Standard_OStream &, const TCollection_ExtendedString &): iostream type
 template	Message	Message_Messenger::StreamBuffer::operator<<: template member
-template	Message	Message_ProgressScope: template (not bound)
 template	Message	Message_ProgressScope::Message_ProgressScope: template member
 template	Message	Message_ProgressScope::SetName: template member
 template	NCollection	<deduction guide for NCollection_ForwardRange>: template (not bound)
@@ -357,7 +369,6 @@ template	Quantity	NCollection_Vec3<float>::NCollection_Vec3<Element_t>: template
 template	Quantity	NCollection_Vec4<float>::NCollection_Vec4<Element_t>: template member
 template	Quantity	Quantity_Color::Convert_LinearRGB_To_sRGB: template member
 template	Quantity	Quantity_Color::Convert_sRGB_To_LinearRGB: template member
-template	Standard	Abort: template (not bound)
 template	Standard	IsEqual: template (not bound)
 template	Standard	Standard::Free: template member
 template	Standard	Standard::FreeAligned: template member
@@ -378,9 +389,6 @@ template	Standard	occ::type_of: template in namespace (not bound)
 template	Standard	opencascade::FNVHash::hash_combine: template in namespace (not bound)
 template	Standard	opencascade::FNVHash::hash_combine: template in namespace (not bound)
 template	Standard	opencascade::FNVHash::optimalSeed: template in namespace (not bound)
-template	Standard	opencascade::MurmurHash::hash_combine: template in namespace (not bound)
-template	Standard	opencascade::MurmurHash::hash_combine: template in namespace (not bound)
-template	Standard	opencascade::MurmurHash::optimalSeed: template in namespace (not bound)
 template	Standard	opencascade::disable_deduction: template in namespace (not bound)
 template	Standard	opencascade::handle: template in namespace (not bound)
 template	Standard	opencascade::handle: template in namespace (not bound)

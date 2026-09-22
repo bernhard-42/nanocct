@@ -144,6 +144,7 @@ sequence <Tool>.)nbdoc")
         .def("Value", static_cast<const Intrv_Interval & (Intrv_Intervals::*)(const int) const>(&Intrv_Intervals::Value), nb::arg("Index"));
     nanoocp_implicit_copy_ctor<Intrv_Intervals>(nb::borrow<nb::class_<Intrv_Intervals>>(m.attr("Intrv_Intervals")));
     nb::implicitly_convertible<std::decay_t<const Intrv_Interval &>, Intrv_Intervals>();
+    m.def("AreFused", static_cast<bool (*)(const double, const float, const double, const float)>(&AreFused), nb::arg("c1"), nb::arg("t1"), nb::arg("c2"), nb::arg("t2"));
 }
 
 void nanoocp_conversions_Intrv(nb::module_ &m) {
