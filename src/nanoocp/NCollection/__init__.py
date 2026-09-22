@@ -125,6 +125,7 @@ NCollection_DataMap = _Template("NCollection_DataMap", "nanoocp.NCollection", {
     (('nanoocp.SelectMgr', 'SelectMgr_EntityOwner'), ('builtins', 'int')): "NCollection_DataMap__Handle_SelectMgr_EntityOwner__int",
     (('nanoocp.Standard', 'Standard_Transient'), ('nanoocp.NCollection', 'NCollection_List__Message_Msg')): "NCollection_DataMap__Handle_Standard_Transient__NCollection_List__Message_Msg",
     (('nanoocp.TDF', 'TDF_Attribute'), ('nanoocp.TDF', 'TDF_Attribute')): "NCollection_DataMap__Handle_TDF_Attribute__Handle_TDF_Attribute",
+    (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.XmlMDF', 'XmlMDF_ADriver')): "NCollection_DataMap__TCollection_AsciiString__Handle_XmlMDF_ADriver",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.TCollection', 'TCollection_AsciiString')): "NCollection_DataMap__TCollection_AsciiString__TCollection_AsciiString",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('builtins', 'int')): "NCollection_DataMap__TCollection_AsciiString__int",
     (('nanoocp.TCollection', 'TCollection_ExtendedString'), ('nanoocp.CDM', 'CDM_MetaData')): "NCollection_DataMap__TCollection_ExtendedString__Handle_CDM_MetaData",

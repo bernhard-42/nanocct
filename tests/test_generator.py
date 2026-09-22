@@ -83,6 +83,9 @@ public:
   double OldLength() const { return myValue; }
   //! Conversion operator to a bound class.
   operator gp_Pnt() const { return gp_Pnt(); }
+  //! Const / non-const conversion twins (XmlObjMgt_Persistent::operator XmlObjMgt_Element&): one conversion.
+  operator const gp_XYZ&() const { return myOrigin; }
+  operator gp_XYZ&() { return myOrigin; }
   //! A container in the signature registers the instantiation.
   int Count(const NCollection_Array1<gp_Pnt>& thePoles) const { return thePoles.Length(); }
   //! NCollection_TListIterator<T> is NCollection_List<T>::Iterator: registers the List instantiation, no 6c class (TopOpeBRepDS).
@@ -493,7 +496,8 @@ def test_ir_deprecated_member_is_bound_with_note(rules_ir):
 
 def test_ir_conversion_operator_and_implicit_ctor(rules_ir):
     value = next(c for c in rules_ir.classes if c.name == "Rules_Value")
-    assert [(k.kind, k.target, k.is_explicit) for k in value.conversions] == [(ConversionKind.CLASS, "gp_Pnt", False)]
+    assert [(k.kind, k.target_class, k.is_explicit) for k in value.conversions] == [(ConversionKind.CLASS, "gp_Pnt", False),
+                                                                                  (ConversionKind.CLASS, "gp_XYZ", False), (ConversionKind.CLASS, "gp_XYZ", False)]
     implicit = [k for k in value.ctors if k.is_implicit]
     assert len(implicit) == 1 and implicit[0].params[0].type == "const gp_Pnt &"
 
@@ -548,6 +552,8 @@ def test_emitter_static_rename_and_collision(rules_ir):
     # R-CONST-TWIN: the const Origin() is skipped, the non-const one (reference_internal) bound
     assert cpp.count('.def("Origin"') == 1 and 'gp_XYZ & (Rules_Value::*)() const' not in cpp
     assert "Rules_Value::Origin() const: const twin of a less const overload -> not bound" in em.report
+    # conversion operators: the const/non-const twins to gp_XYZ give one conversion (emission mutates the IR: first emitter only)
+    assert cpp.count("nanoocp_conversion<Rules_Value, gp_XYZ>(") == 1 and cpp.count("nanoocp_conversion<Rules_Value, gp_Pnt>(") == 1
     # R-WIDTH: the wider twin is registered first although the header declares it second
     assert cpp.index('(Rules_Value::*)(const double) const') < cpp.index('(Rules_Value::*)(const float) const')
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')

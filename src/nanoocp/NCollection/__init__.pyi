@@ -790,6 +790,7 @@ import nanoocp.TopOpeBRepDS
 import nanoocp.TopoDS
 import nanoocp.Units
 import nanoocp.V3d
+import nanoocp.XmlMDF
 import nanoocp.gp
 
 
@@ -4084,3 +4085,5 @@ class NCollection_Sequence__Handle_AIS_Animation(NCollection_Sequence[nanoocp.AI
     class Iterator(NCollection_Sequence.Iterator[nanoocp.AIS.AIS_Animation]): ...
 class NCollection_List__Handle_Standard_Transient(NCollection_List[nanoocp.Standard.Standard_Transient]):
     class Iterator(NCollection_List.Iterator[nanoocp.Standard.Standard_Transient]): ...
+class NCollection_DataMap__TCollection_AsciiString__Handle_XmlMDF_ADriver(NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.XmlMDF.XmlMDF_ADriver]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_AsciiString, nanoocp.XmlMDF.XmlMDF_ADriver]): ...

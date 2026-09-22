@@ -743,10 +743,14 @@ class Emitter:
         the operator is not explicit (TopoDS_Shape s = aMakeShape; BRepGraph_NodeId(anEdgeId)). Emitted in a phase of its
         own (after every definition of the toolkit: nanobind wants a class's zero-argument __new__ before other overloads)."""
         conversions: list[str] = []
+        seen: set[tuple[str, str]] = set()      # const and non-const twins (XmlObjMgt_Persistent::operator XmlObjMgt_Element&/const&) once
         for c in classes:
             for conv in c.conversions:
                 if conv.kind not in (ConversionKind.CLASS, ConversionKind.HANDLE):
                     continue
+                if (c.name, conv.target_class) in seen:
+                    continue
+                seen.add((c.name, conv.target_class))
                 inst = self.templates.get(conv.target_class)
                 if inst is not None and not inst.get("skipped", False):
                     pkg, path = inst["package"], inst["name"]         # an instantiation bound under an alias (BVH_Vec3f)

@@ -5,6 +5,7 @@ from typing import TextIO, overload
 
 import nanoocp.Standard
 import nanoocp.TCollection
+import nanoocp.XmlObjMgt
 
 
 class LDOMBasicString:
@@ -285,6 +286,9 @@ class LDOM_Element(LDOM_Node):
 
     @overload
     def __init__(self, anOther: LDOM_Element) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.XmlObjMgt.XmlObjMgt_Persistent) -> None: ...
 
     def getTagName(self) -> LDOMString: ...
 

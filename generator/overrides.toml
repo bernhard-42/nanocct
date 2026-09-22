@@ -132,6 +132,13 @@ binary_packages = [
     "BinDrivers",    # the full BinOcaf format (TKBin): shapes through BinMNaming/BinTools
     "BinMDataXtd",
     "BinMNaming",
+    # The XML formats too: XmlLDrivers_DocumentStorageDriver::Write / RetrievalDriver::Read override the PCDM_Writer/Reader
+    # virtuals that already take bytes / BinaryIO (PCDM above), TDocStd_Application.SaveAs(doc) returns bytes for an XML
+    # document as well, and a serialised XML document is a byte sequence with an encoding declaration (bytes.decode() /
+    # xml.etree accept it). Document streams are bytes whatever the format (2026-09-22).
+    "XmlLDrivers",
+    "XmlDrivers",
+    "XmlXCAFDrivers",
 ]
 # Single members whose streams carry a document (binary or XML) inside a package whose other streams are text (DumpJson):
 # Class::method, every overload.

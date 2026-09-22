@@ -1,0 +1,7 @@
+# nanoOCP generator report for TKXmlL: 3 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# overload-collision: 1
+# raw-pointer: 2
+overload-collision	XmlObjMgt	XmlObjMgt_Persistent::Element() const: const twin of a less const overload -> not bound
+raw-pointer	XmlObjMgt	XmlObjMgt::GetInteger(): param 'theString': reference to pointer
+raw-pointer	XmlObjMgt	XmlObjMgt::GetReal(): param 'theString': reference to pointer
