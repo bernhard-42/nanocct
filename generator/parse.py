@@ -458,6 +458,15 @@ def _ast_py_path(cursor: cindex.Cursor, package: str) -> str:
 
 
 # Design.md 6 R-UNSUPPORTED, R-ARRAY, R-ITERATOR, R-STL, R-CSTRING
+def _is_cstring(t: cindex.Type) -> bool:
+    """const char* (Standard_CString): the pointer the char caster maps to str."""
+    canon = t.get_canonical()
+    if canon.kind != TK.POINTER:
+        return False
+    pointee = canon.get_pointee().get_canonical()
+    return pointee.kind in (TK.CHAR_S, TK.CHAR_U) and pointee.is_const_qualified()
+
+
 def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
     canon = t.get_canonical()
     cs = canon.spelling
@@ -646,9 +655,13 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             return params, f"param '{p.spelling}': {reason}"
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
-        params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=is_out, is_inout=is_out and inout,
+        default = _default_expr(p, scope, members)
+        # R-CSTR-NULL: nanobind's const char* caster rejects None, so a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
+        # STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)) would be unreachable -> nanoocp::OptionalCString, `str | None = None`
+        cstr_none = _is_cstring(p.type) and default in ("NULL", "nullptr", "0")
+        params.append(Param(name=name, type=_type_spelling(p.type), default="nullptr" if cstr_none else default, is_out=is_out, is_inout=is_out and inout,
                             class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
-                            out_py=_out_py_type(p.type) if is_out else ""))
+                            out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None

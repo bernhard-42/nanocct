@@ -194,7 +194,7 @@ class AppParCurves_MultiPoint:
         newy = y + dy*oldy    for all points of the curve.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current
         state of the object.
@@ -388,7 +388,7 @@ class AppParCurves_MultiCurve:
         An exception is raised if the curve dimension is 2d.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current
         state of the object.
@@ -530,7 +530,7 @@ class AppParCurves_MultiBSpCurve(AppParCurves_MultiCurve):
         An exception is raised if the curve dimension is 2d.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current
         state of the object.

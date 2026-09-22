@@ -2447,7 +2447,7 @@ class Quantity_Color:
     def SetEpsilon(theEpsilon: float) -> None:
         """Set the value used to compare two colors for equality."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -2553,7 +2553,7 @@ class Quantity_ColorRGBA:
     def Convert_sRGB_To_LinearRGB(theRGB: NCollection_Vec4__float) -> NCollection_Vec4__float:
         """Convert sRGB components into linear RGB using OpenGL specs formula."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -3091,7 +3091,7 @@ class NCollection_Vec3__float:
     def DZ() -> NCollection_Vec3__float:
         """Construct DZ unit vector."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: NCollection_Vec3__float, /) -> NCollection_Vec3__float: ...
@@ -3468,7 +3468,7 @@ class NCollection_Vec4__float:
     @overload
     def __truediv__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...

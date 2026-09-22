@@ -84,7 +84,7 @@ class TopTools:
     def __init__(self, theOther: TopTools) -> None: ...
 
     @staticmethod
-    def Dump(Sh: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def Dump(Sh: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """
         A set of Shapes. Can be dump, wrote or read.
         Dumps the topological structure of <Sh> on the
@@ -134,10 +134,10 @@ class TopTools_LocationSet:
     def Index(self, L: nanoocp.TopLoc.TopLoc_Location) -> int:
         """Returns the index of <L>."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Dumps the content of me on the stream <OS>."""
 
-    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
@@ -209,7 +209,7 @@ class TopTools_ShapeSet:
     def ChangeLocations(self) -> TopTools_LocationSet: ...
 
     @overload
-    def DumpExtent(self) -> object:
+    def DumpExtent(self) -> str:
         """
         Dumps the number of objects in me on the stream <OS>.
         (Number of shapes of each type)
@@ -223,7 +223,7 @@ class TopTools_ShapeSet:
         """
 
     @overload
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Dumps the content of me on the stream <OS>.
 
@@ -238,7 +238,7 @@ class TopTools_ShapeSet:
         """
 
     @overload
-    def Dump(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def Dump(self, S: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """
         Dumps on <OS> the shape <S>. Dumps the
         orientation, the index of the TShape and the index
@@ -246,7 +246,7 @@ class TopTools_ShapeSet:
         """
 
     @overload
-    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
@@ -263,7 +263,7 @@ class TopTools_ShapeSet:
         """
 
     @overload
-    def Write(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def Write(self, S: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """
         Writes on <OS> the shape <S>. Writes the
         orientation, the index of the TShape and the index
@@ -295,22 +295,22 @@ class TopTools_ShapeSet:
         """Stores the geometry of <S>."""
 
     @overload
-    def DumpGeometry(self) -> object:
+    def DumpGeometry(self) -> str:
         """Dumps the geometry of me on the stream <OS>."""
 
     @overload
-    def DumpGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def DumpGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """Dumps the geometry of <S> on the stream <OS>."""
 
     @overload
-    def WriteGeometry(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WriteGeometry(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the geometry of me on the stream <OS> in a
         format that can be read back by Read.
         """
 
     @overload
-    def WriteGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def WriteGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """
         Writes the geometry of <S> on the stream <OS> in a
         format that can be read back by Read.

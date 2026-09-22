@@ -106,7 +106,7 @@ class AdvApprox_ApproxAFunction:
     @overload
     def AverageError(self, Dimension: int, Index: int) -> float: ...
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """display information on approximation."""
 
 class AdvApprox_Cutting:
@@ -208,5 +208,5 @@ class AdvApprox_SimpleApprox:
 
     def AverageError(self, Index: int) -> float: ...
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """display information on approximation"""

@@ -210,9 +210,9 @@ inline void nanoocp_install_exception_translator(PyObject *fallback) {
 
 // The text an OCCT method wrote to a std::ostream& parameter, as a str. OCCT streams are text (Dump, DumpJson, Print,
 // BRepTools::Write); decoded with surrogateescape so that a stray non-UTF-8 byte is lossless.
-inline nb::object nanoocp_stream_text(const std::ostringstream &stream) {
+inline nb::str nanoocp_stream_text(const std::ostringstream &stream) {
     const std::string text = stream.str();
-    return nb::steal(PyUnicode_DecodeUTF8(text.data(), static_cast<Py_ssize_t>(text.size()), "surrogateescape"));
+    return nb::steal<nb::str>(PyUnicode_DecodeUTF8(text.data(), static_cast<Py_ssize_t>(text.size()), "surrogateescape"));
 }
 
 // The same for the binary formats (the BinTools package, overrides.toml [stream] binary_packages): bytes.
@@ -232,6 +232,13 @@ struct TextInput {
 // returns bytes. Typed typing.BinaryIO. A text file-like object falls through (read() returns str).
 struct BinaryInput {
     std::string data;
+};
+// R-CSTR-NULL: a const char* parameter with a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
+// STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)). nanobind's const char* caster rejects None, which
+// would make the default unreachable; this one takes a str or None (-> nullptr). The UTF-8 buffer belongs to the str
+// object, which is alive for the duration of the call (as for nanobind's own caster). Typed `str | None` (with .none()).
+struct OptionalCString {
+    const char *ptr = nullptr;
 };
 }
 
@@ -257,6 +264,32 @@ template <> struct type_caster<nanoocp::TextInput> {
     }
 
     static handle from_cpp(const nanoocp::TextInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
+};
+
+template <> struct type_caster<nanoocp::OptionalCString> {
+    NB_TYPE_CASTER(nanoocp::OptionalCString, const_name("str"))   // nb::arg(...).none() appends "| None"
+
+    bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
+        if (src.is_none()) {
+            value.ptr = nullptr;
+            return true;
+        }
+        if (!str_check(src.ptr()))
+            return false;
+        Py_ssize_t size = 0;
+        value.ptr = PyUnicode_AsUTF8AndSize(src.ptr(), &size);
+        if (value.ptr == nullptr) {
+            PyErr_Clear();
+            return false;
+        }
+        return true;
+    }
+
+    static handle from_cpp(const nanoocp::OptionalCString &v, rv_policy, cleanup_list *) noexcept {
+        if (v.ptr == nullptr)
+            return none_ref();
+        return PyUnicode_FromString(v.ptr);
+    }
 };
 
 template <> struct type_caster<nanoocp::BinaryInput> {

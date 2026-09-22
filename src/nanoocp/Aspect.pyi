@@ -1425,7 +1425,7 @@ class Aspect_Background:
     def Color(self) -> nanoocp.Quantity.Quantity_Color:
         """Returns the colour of the window background <me>."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_Grid(nanoocp.Standard.Standard_Transient):
@@ -1510,7 +1510,7 @@ class Aspect_Grid(nanoocp.Standard.Standard_Transient):
 
     def Init(self) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_CircularGrid(Aspect_Grid):
@@ -1581,7 +1581,7 @@ class Aspect_CircularGrid(Aspect_Grid):
 
     def Init(self) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_DisplayConnection(nanoocp.Standard.Standard_Transient):
@@ -1691,7 +1691,7 @@ class Aspect_GenId:
     def Upper(self) -> int:
         """Returns the upper identifier in range."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_GradientBackground(Aspect_Background):
@@ -1721,7 +1721,7 @@ class Aspect_GradientBackground(Aspect_Background):
     def BgGradientFillMethod(self) -> Aspect_GradientFillMethod:
         """Returns the current gradient background fill mode."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_GraphicDeviceDefinitionError(nanoocp.Standard.Standard_OutOfRange):
@@ -2043,7 +2043,7 @@ class Aspect_Window(nanoocp.Standard.Standard_Transient):
     def ConvertPointFromBacking(self, thePnt: nanoocp.BVH.BVH_Vec2d) -> nanoocp.BVH.BVH_Vec2d:
         """Convert point from backing store units to logical units."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_NeutralWindow(Aspect_Window):
@@ -2746,7 +2746,7 @@ class Aspect_RectangularGrid(Aspect_Grid):
 
     def Init(self) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_ScrollDelta:
@@ -2876,7 +2876,7 @@ class Aspect_SkydomeBackground:
     def SetSize(self, theSize: int) -> None:
         """Set size of cubemap. By default this value is 512"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Aspect_Touch:

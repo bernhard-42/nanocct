@@ -313,7 +313,7 @@ class AppDef_MultiPointConstraint(nanoocp.AppParCurves.AppParCurves_MultiPoint):
     def IsCurvaturePoint(self) -> bool:
         """returns True if the MultiPoint has a curvature value."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current
         state of the object.
@@ -407,7 +407,7 @@ class AppDef_MultiLine:
         An exception is raised if Index<0 or Index>MPoint.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current
         state of the object.
@@ -2373,7 +2373,7 @@ class AppDef_Variational:
     def NbIterations(self) -> int:
         """returns the number of iterations used in the approximation."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.

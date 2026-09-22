@@ -530,7 +530,7 @@ class Poly_Triangulation(nanoocp.Standard.Standard_Transient):
         cached min - max range).
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def IsDoublePrecision(self) -> bool:
@@ -712,7 +712,7 @@ class Poly:
 
     @overload
     @staticmethod
-    def Write(T: Poly_Triangulation | None, Compact: bool = True) -> object:
+    def Write(T: Poly_Triangulation | None, Compact: bool = True) -> str:
         """
         Writes the content of the triangulation <T> on the
         stream <OS>. If <Compact> is true this is a "save"
@@ -723,7 +723,7 @@ class Poly:
 
     @overload
     @staticmethod
-    def Write(P: Poly_Polygon3D | None, Compact: bool = True) -> object:
+    def Write(P: Poly_Polygon3D | None, Compact: bool = True) -> str:
         """
         Writes the content of the 3D polygon <P> on the
         stream <OS>. If <Compact> is true this is a "save"
@@ -734,7 +734,7 @@ class Poly:
 
     @overload
     @staticmethod
-    def Write(P: Poly_Polygon2D | None, Compact: bool = True) -> object:
+    def Write(P: Poly_Polygon2D | None, Compact: bool = True) -> str:
         """
         Writes the content of the 2D polygon <P> on the
         stream <OS>. If <Compact> is true this is a "save"
@@ -745,7 +745,7 @@ class Poly:
 
     @overload
     @staticmethod
-    def Dump(T: Poly_Triangulation | None) -> object:
+    def Dump(T: Poly_Triangulation | None) -> str:
         """
         Dumps the triangulation. This is a call to the
         previous method with Comapct set to False.
@@ -753,7 +753,7 @@ class Poly:
 
     @overload
     @staticmethod
-    def Dump(P: Poly_Polygon3D | None) -> object:
+    def Dump(P: Poly_Polygon3D | None) -> str:
         """
         Dumps the 3D polygon. This is a call to the
         previous method with Comapct set to False.
@@ -761,7 +761,7 @@ class Poly:
 
     @overload
     @staticmethod
-    def Dump(P: Poly_Polygon2D | None) -> object:
+    def Dump(P: Poly_Polygon2D | None) -> str:
         """
         Dumps the 2D polygon. This is a call to the
         previous method with Comapct set to False.
@@ -1052,7 +1052,7 @@ class Poly_CoherentNode(nanoocp.gp.gp_XYZ):
     def TriangleIterator(self) -> Poly_CoherentTriPtr.Iterator:
         """Create an iterator of incident triangles."""
 
-    def Dump(self) -> object: ...
+    def Dump(self) -> str: ...
 
 class Poly_CoherentTriangle:
     """
@@ -1417,7 +1417,7 @@ class Poly_CoherentTriangulation(nanoocp.Standard.Standard_Transient):
     def Clone(self, theAlloc: nanoocp.NCollection.NCollection_BaseAllocator | None) -> Poly_CoherentTriangulation:
         """Create a copy of this Triangulation, using the given allocator."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Debugging output."""
 
     @staticmethod
@@ -2156,7 +2156,7 @@ class Poly_Polygon2D(nanoocp.Standard.Standard_Transient):
     def ChangeNodes(self) -> nanoocp.NCollection.NCollection_Array1[nanoocp.gp.gp_Pnt2d]:
         """Returns the table of nodes for this polygon."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2247,7 +2247,7 @@ class Poly_Polygon3D(nanoocp.Standard.Standard_Transient):
         directly modify the data structure of this polygon.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2365,7 +2365,7 @@ class Poly_PolygonOnTriangulation(nanoocp.Standard.Standard_Transient):
         Raises exception if array size doesn't much number of polygon nodes.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def Nodes(self) -> nanoocp.NCollection.NCollection_Array1[int]:

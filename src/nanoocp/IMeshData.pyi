@@ -592,7 +592,7 @@ class NCollection_UBTreeFiller__int__Bnd_Box2d:
         so the destructor of this Filler should not populate the useless Tree.
         """
 
-    def CheckTree(self) -> tuple[int, object]:
+    def CheckTree(self) -> tuple[int, str]:
         """
         Check the filled tree for the total number of items and the balance
         outputting these results to std::ostream.

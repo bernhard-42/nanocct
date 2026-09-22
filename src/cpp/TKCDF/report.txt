@@ -1,0 +1,26 @@
+# nanoOCP generator report for TKCDF: 19 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# iterator: 1
+# operator: 1
+# raw-pointer: 13
+# unbound-type: 2
+# undefined: 2
+iterator	CDF	CDF_StoreList: __iter__ added (More/Next/Value)
+operator	CDM	CDM_MetaData::operator<<(Standard_OStream &): operator has no Python equivalent
+raw-pointer	CDM	CDM_Document::Update(const occ::handle<CDM_Document> &, const int): param 'aModifContext': void pointer
+raw-pointer	CDM	CDM_Document::UpdateFromDocuments(): param 'aModifContext': void pointer
+raw-pointer	LDOM	LDOMBasicString::operator!=(): param '': pointer to incomplete type
+raw-pointer	LDOM	LDOMBasicString::operator==(): param '': pointer to incomplete type
+raw-pointer	LDOM	LDOM_CharReference::Decode(): param 'theSrc': raw pointer to primitive
+raw-pointer	LDOM	LDOM_CharReference::Encode(const char *, int &, const bool): return: raw pointer to primitive
+raw-pointer	LDOM	LDOM_Document::operator!=(): param '': pointer to incomplete type
+raw-pointer	LDOM	LDOM_Document::operator==(): param '': pointer to incomplete type
+raw-pointer	LDOM	LDOM_MemManager::Allocate(const int): return: void pointer
+raw-pointer	LDOM	LDOM_Node::operator!=(): param '': pointer to incomplete type
+raw-pointer	LDOM	LDOM_Node::operator==(): param '': pointer to incomplete type
+raw-pointer	LDOM	LDOM_NodeList::operator!=(): param '': pointer to incomplete type
+raw-pointer	LDOM	LDOM_NodeList::operator==(): param '': pointer to incomplete type
+unbound-type	LDOM	LDOM_OSStream: base class Standard_OStream is not bound (package not generated) -> class skipped
+unbound-type	LDOM	LDOM_SBuffer: base class std::streambuf is not bound (package not generated) -> class skipped
+undefined	CDF	CDF_DirectoryIterator::CDF_DirectoryIterator(): declared in the header, no definition in libTKCDF
+undefined	CDM	CDM_Document::operator<<(Standard_OStream &): declared in the header, no definition in libTKCDF

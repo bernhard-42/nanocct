@@ -902,7 +902,7 @@ class Image_AlienPixMap(Image_PixMap):
         @param[in] theFileName file name to save
         """
 
-    def Save__str(self, theExtension: nanoocp.TCollection.TCollection_AsciiString) -> tuple[bool, object]:
+    def Save__str(self, theExtension: nanoocp.TCollection.TCollection_AsciiString) -> tuple[bool, str]:
         """
         Save__str: the C++ overload Save(std::ostream &, const TCollection_AsciiString &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Write image data to stream.
@@ -1250,13 +1250,13 @@ class Image_Texture(nanoocp.Standard.Standard_Transient):
     def WriteImage(self, theFile: nanoocp.TCollection.TCollection_AsciiString) -> bool:
         """Write image to specified file without decoding data."""
 
-    def WriteImage__str(self, theFile: nanoocp.TCollection.TCollection_AsciiString) -> tuple[bool, object]:
+    def WriteImage__str(self, theFile: nanoocp.TCollection.TCollection_AsciiString) -> tuple[bool, str]:
         """
         WriteImage__str: the C++ overload WriteImage(std::ostream &, const TCollection_AsciiString &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Write image to specified stream without decoding data.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """
         @name hasher interface
         Dumps the content of me into the stream
@@ -1608,7 +1608,7 @@ class NCollection_Vec3__unsigned_long:
     def DZ() -> NCollection_Vec3__unsigned_long:
         """Construct DZ unit vector."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: NCollection_Vec3__unsigned_long, /) -> NCollection_Vec3__unsigned_long: ...

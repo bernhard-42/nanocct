@@ -404,7 +404,7 @@ class V3d_CircularGrid(nanoocp.Aspect.Aspect_CircularGrid):
         @param[in] OffSet plane-normal displacement
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """
         Dumps the content of me into the stream.
         @param[in,out] theOStream destination stream
@@ -1087,7 +1087,7 @@ class V3d_Viewer(nanoocp.Standard.Standard_Transient):
         Deprecated in OCCT: Deprecated method - DefinedLights() should be used instead
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class V3d_Trihedron(nanoocp.Standard.Standard_Transient):
@@ -1192,7 +1192,7 @@ class V3d_Trihedron(nanoocp.Standard.Standard_Transient):
     def Erase(self) -> None:
         """Erase trihedron."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class V3d_View(nanoocp.Standard.Standard_Transient):
@@ -2322,7 +2322,7 @@ class V3d_View(nanoocp.Standard.Standard_Transient):
         Returns the Objects number and the gravity center of ALL viewable points in the view
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def IsSubview(self) -> bool:
@@ -2535,7 +2535,7 @@ class V3d_RectangularGrid(nanoocp.Aspect.Aspect_RectangularGrid):
         @param[in] OffSet plane-normal displacement
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """
         Dumps the content of me into the stream.
         @param[in,out] theOStream destination stream

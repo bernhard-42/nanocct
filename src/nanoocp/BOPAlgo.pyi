@@ -200,10 +200,10 @@ class BOPAlgo_Options:
     def GetReport(self) -> nanoocp.Message.Message_Report:
         """Returns report collecting all errors and warnings"""
 
-    def DumpErrors(self) -> object:
+    def DumpErrors(self) -> str:
         """Dumps the error status into the given stream"""
 
-    def DumpWarnings(self) -> object:
+    def DumpWarnings(self) -> str:
         """Dumps the warning statuses into the given stream"""
 
     def ClearWarnings(self) -> None:

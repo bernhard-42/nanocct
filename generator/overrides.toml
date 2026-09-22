@@ -114,4 +114,6 @@ headers = {}
 [stream]
 binary_packages = [
     "BinTools",      # BinTools::Write/Read, BinTools_ShapeSet & co.: the binary BRep format (BinLDrivers etc. follow in Phase 2)
+    "PCDM",          # PCDM_Reader::Read / PCDM_Writer::Write / PCDM::FileFormat: format-agnostic document streams, binary is the superset (XML decodes from bytes)
+    "CDF",           # CDF_Application::Read(istream): same document streams
 ]

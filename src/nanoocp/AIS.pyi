@@ -951,7 +951,7 @@ class AIS_InteractiveObject(nanoocp.SelectMgr.SelectMgr_SelectableObject):
         Sets the graphic basic aspect to the current presentation.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class AIS_GlobalStatus(nanoocp.Standard.Standard_Transient):
@@ -2588,7 +2588,7 @@ class AIS_InteractiveContext(nanoocp.Standard.Standard_Transient):
         @param theSelection an instance of the selection
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class AIS_BaseAnimationObject(AIS_Animation):
@@ -3394,7 +3394,7 @@ class AIS_Shape(AIS_InteractiveObject):
     def computeHlrPresentation(theProjector: nanoocp.Graphic3d.Graphic3d_Camera | None, thePrs: nanoocp.Graphic3d.Graphic3d_Structure | None, theShape: nanoocp.TopoDS.TopoDS_Shape, theDrawer: nanoocp.Prs3d.Prs3d_Drawer | None) -> None:
         """Compute HLR presentation for specified shape."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class AIS_ColoredShape(AIS_Shape):

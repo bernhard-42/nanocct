@@ -45,6 +45,7 @@ class Param:
     binary: bool = False    # the stream carries a binary format (overrides.toml [stream] binary_packages): bytes / typing.BinaryIO instead of str / typing.TextIO
     out_py: str = ""        # Python type name of a removed out-parameter (float, int, bool, str, an enum or class name): the R-COLLISION suffix
     omitted: bool = False   # R-OPTIONAL-PTR: a pointer parameter with a null default, dropped from the signature; the callee gets nullptr
+    cstr_none: bool = False # R-CSTR-NULL: a const char* parameter with a null default: `str | None = None` (nanoocp::OptionalCString caster)
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
 
 

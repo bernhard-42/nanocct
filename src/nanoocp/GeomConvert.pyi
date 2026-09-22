@@ -403,7 +403,7 @@ class GeomConvert_ApproxCurve:
         has been done, 0 if no approximation)
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Print on the stream o information about the object"""
 
 class GeomConvert_ApproxSurface:
@@ -471,7 +471,7 @@ class GeomConvert_ApproxSurface:
         has been done, 0 if no  approximation )
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints on the stream o information on the current state of the object."""
 
 class GeomConvert_BSplineCurveKnotSplitting:

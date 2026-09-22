@@ -74,7 +74,7 @@ class GccEnt:
     def __init__(self, theOther: GccEnt) -> None: ...
 
     @staticmethod
-    def Print(thePosition: GccEnt_Position) -> object:
+    def Print(thePosition: GccEnt_Position) -> str:
         """Prints the name of Position type as a String on the Stream."""
 
     @staticmethod

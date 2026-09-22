@@ -543,7 +543,7 @@ class gp_Mat:
     def Transposed(self) -> gp_Mat:
         """Transposes the matrix. A(j, i) -> A (i, j)"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __rmul__(self, arg: float, /) -> gp_Mat: ...
@@ -905,7 +905,7 @@ class gp_XYZ:
         @endcode
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -1096,7 +1096,7 @@ class gp_Pnt:
     @overload
     def Translated(self, theP1: gp_Pnt, theP2: gp_Pnt) -> gp_Pnt: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -1446,7 +1446,7 @@ class gp_Trsf:
     def Transforms(self, theCoord: gp_XYZ) -> None:
         """Transformation of a triplet XYZ with a Trsf"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -2337,7 +2337,7 @@ class gp_Pnt2d:
     @overload
     def Translated(self, theP1: gp_Pnt2d, theP2: gp_Pnt2d) -> gp_Pnt2d: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class gp_VectorWithNullMagnitude(nanoocp.Standard.Standard_DomainError):
@@ -2900,7 +2900,7 @@ class gp_Dir2d:
         direction <me> is reversed.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class gp_Ax2d:
@@ -3073,7 +3073,7 @@ class gp_Ax2d:
     def Translated(self, theP1: gp_Pnt2d, theP2: gp_Pnt2d) -> gp_Ax2d:
         """Translates an axis placement from the point theP1 to the point theP2."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class gp_Vec:
@@ -3425,7 +3425,7 @@ class gp_Vec:
     def Transformed(self, theT: gp_Trsf) -> gp_Vec:
         """Transforms a vector with the transformation theT."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __rmul__(self, arg: float, /) -> gp_Vec: ...
@@ -3744,7 +3744,7 @@ class gp_Dir:
         direction <me> is reversed.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -3967,7 +3967,7 @@ class gp_Ax1:
         and creates a new one.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -4310,7 +4310,7 @@ class gp_Ax2:
         Translates an axis placement from the point <theP1> to the point <theP2>.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -4630,7 +4630,7 @@ class gp_Ax3:
         point <theP2>.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -4844,7 +4844,7 @@ class gp_Ax22d:
         point <theP2>.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class gp_Circ:
@@ -6386,7 +6386,7 @@ class gp_GTrsf:
 
     def Trsf(self) -> gp_Trsf: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class gp_GTrsf2d:
@@ -8377,7 +8377,7 @@ class gp_Pln:
     def Translated(self, theP1: gp_Pnt, theP2: gp_Pnt) -> gp_Pln:
         """Translates a plane from the point theP1 to the point theP2."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class gp_Quaternion:

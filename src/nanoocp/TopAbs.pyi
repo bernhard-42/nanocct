@@ -218,17 +218,17 @@ class TopAbs:
 
     @overload
     @staticmethod
-    def Print(theShapeType: TopAbs_ShapeEnum) -> object:
+    def Print(theShapeType: TopAbs_ShapeEnum) -> str:
         """Prints the name of Shape type as a String on the Stream."""
 
     @overload
     @staticmethod
-    def Print(theOrientation: TopAbs_Orientation) -> object:
+    def Print(theOrientation: TopAbs_Orientation) -> str:
         """Prints the name of the Orientation as a String on the Stream."""
 
     @overload
     @staticmethod
-    def Print(St: TopAbs_State) -> object:
+    def Print(St: TopAbs_State) -> str:
         """
         Prints the name of the State <St> as a String on
         the Stream <S> and returns <S>.

@@ -243,7 +243,7 @@ class FairCurve_Batten:
     def Curve(self) -> nanoocp.Geom2d.Geom2d_BSplineCurve:
         """Returns the computed curve a 2d BSpline."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -509,7 +509,7 @@ class FairCurve_MinimalVariation(FairCurve_Batten):
     def GetPhysicalRatio(self) -> float:
         """Returns the physical ratio, or kind of energy."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.

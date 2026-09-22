@@ -147,7 +147,7 @@ class Font_Rect:
     def Height(self) -> float:
         """Rectangle height."""
 
-    def DumpJson(self, arg1: int) -> object:
+    def DumpJson(self, arg1: int) -> str:
         """Dumps the content of me into the stream"""
 
     @property

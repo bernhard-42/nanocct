@@ -310,7 +310,7 @@ class BRepTools:
         """Detect closedness of face in U and V directions"""
 
     @staticmethod
-    def Dump(Sh: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def Dump(Sh: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """
         Dumps the topological structure and the geometry
         of <Sh> on the stream <S>.
@@ -318,7 +318,7 @@ class BRepTools:
 
     @overload
     @staticmethod
-    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the shape to the stream in an ASCII format TopTools_FormatVersion_VERSION_1.
         This alias writes shape with triangulation data.
@@ -329,7 +329,7 @@ class BRepTools:
 
     @overload
     @staticmethod
-    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theWithTriangles: bool, theWithNormals: bool, theVersion: nanoocp.TopTools.TopTools_FormatVersion, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theWithTriangles: bool, theWithNormals: bool, theVersion: nanoocp.TopTools.TopTools_FormatVersion, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the shape to the stream in an ASCII format of specified version.
         @param[in] theShape          the shape to write
@@ -893,7 +893,7 @@ class BRepTools_History(nanoocp.Standard.Standard_Transient):
     def Merge(self, theHistory23: BRepTools_History) -> None:
         """Merges the next history to this history."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         A method to dump a history
         Prints the brief description of the history into a stream
@@ -1295,22 +1295,22 @@ class BRepTools_ShapeSet(nanoocp.TopTools.TopTools_ShapeSet):
         """Stores the geometry of <S>."""
 
     @overload
-    def DumpGeometry(self) -> object:
+    def DumpGeometry(self) -> str:
         """Dumps the geometry of me on the stream <OS>."""
 
     @overload
-    def DumpGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def DumpGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """Dumps the geometry of <S> on the stream <OS>."""
 
     @overload
-    def WriteGeometry(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WriteGeometry(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the geometry of me on the stream <OS> in a
         format that can be read back by Read.
         """
 
     @overload
-    def WriteGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> object:
+    def WriteGeometry(self, S: nanoocp.TopoDS.TopoDS_Shape) -> str:
         """
         Writes the geometry of <S> on the stream <OS> in a
         format that can be read back by Read.
@@ -1342,14 +1342,14 @@ class BRepTools_ShapeSet(nanoocp.TopTools.TopTools_ShapeSet):
         from the stream <IS>.
         """
 
-    def WritePolygon3D(self, Compact: bool = True, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WritePolygon3D(self, Compact: bool = True, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the 3d polygons
         on the stream <OS> in a format that can
         be read back by Read.
         """
 
-    def DumpPolygon3D(self) -> object:
+    def DumpPolygon3D(self) -> str:
         """
         Dumps the 3d polygons
         on the stream <OS>.
@@ -1361,14 +1361,14 @@ class BRepTools_ShapeSet(nanoocp.TopTools.TopTools_ShapeSet):
         from the stream <IS>.
         """
 
-    def WriteTriangulation(self, Compact: bool = True, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WriteTriangulation(self, Compact: bool = True, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the triangulation
         on the stream <OS> in a format that can
         be read back by Read.
         """
 
-    def DumpTriangulation(self) -> object:
+    def DumpTriangulation(self) -> str:
         """
         Dumps the triangulation
         on the stream <OS>.
@@ -1380,14 +1380,14 @@ class BRepTools_ShapeSet(nanoocp.TopTools.TopTools_ShapeSet):
         from the stream <IS>.
         """
 
-    def WritePolygonOnTriangulation(self, Compact: bool = True, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def WritePolygonOnTriangulation(self, Compact: bool = True, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the polygons on triangulation
         on the stream <OS> in a format that can
         be read back by Read.
         """
 
-    def DumpPolygonOnTriangulation(self) -> object:
+    def DumpPolygonOnTriangulation(self) -> str:
         """
         Dumps the polygons on triangulation
         on the stream <OS>.

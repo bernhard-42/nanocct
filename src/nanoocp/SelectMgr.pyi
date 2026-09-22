@@ -516,7 +516,7 @@ class SelectMgr_BaseIntersector(nanoocp.Standard.Standard_Transient):
         infinite point for the base class.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def RaySphereIntersection(self, theCenter: nanoocp.gp.gp_Pnt, theRadius: float, theLoc: nanoocp.gp.gp_Pnt, theRayDir: nanoocp.gp.gp_Dir) -> tuple[bool, float, float]:
@@ -681,7 +681,7 @@ class SelectMgr_AxisIntersector(SelectMgr_BaseIntersector):
     def GetViewRayDirection(self) -> nanoocp.gp.gp_Dir:
         """Returns axis direction."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_BaseFrustum(SelectMgr_BaseIntersector):
@@ -716,7 +716,7 @@ class SelectMgr_BaseFrustum(SelectMgr_BaseIntersector):
         there it's boundaries lying inside the sphere
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -767,7 +767,7 @@ class SelectMgr_ViewClipRange:
     def AddClipSubRange(self, theRange: nanoocp.Bnd.Bnd_Range) -> None:
         """Adds a clipping sub-range (for clipping chains)."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_SelectingVolumeManager(nanoocp.SelectBasics.SelectBasics_SelectingVolumeManager):
@@ -1052,7 +1052,7 @@ class SelectMgr_SelectingVolumeManager(nanoocp.SelectBasics.SelectBasics_Selecti
         Ax + By + Cz + D = 0) to the given vector
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_BVHThreadPool(nanoocp.Standard.Standard_Transient):
@@ -1127,7 +1127,7 @@ class SelectMgr_SensitiveEntity(nanoocp.Standard.Standard_Transient):
     def SetActiveForSelection(self) -> None:
         """Marks entity as active for selection"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1252,7 +1252,7 @@ class SelectMgr_Selection(nanoocp.Standard.Standard_Transient):
         proper updates use SelectMgr_SelectionManager::SetSelectionSensitivity method.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_SelectableObject(nanoocp.PrsMgr.PrsMgr_PresentableObject):
@@ -1440,7 +1440,7 @@ class SelectMgr_SelectableObject(nanoocp.PrsMgr.PrsMgr_PresentableObject):
     def GetAssemblyOwner(self) -> SelectMgr_EntityOwner:
         """Returns common entity owner if the object is an assembly"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_EntityOwner(nanoocp.Standard.Standard_Transient):
@@ -1620,7 +1620,7 @@ class SelectMgr_EntityOwner(nanoocp.Standard.Standard_Transient):
         Sets flag indicating this owner points to a part of object (TRUE) or to entire object (FALSE).
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @overload
@@ -1744,7 +1744,7 @@ class SelectMgr_Frustum__4(SelectMgr_BaseFrustum):
     V1_Near - V0_Near, V2_Near - V1_Near, V2_Near - V0_Near.
     """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_RectangularFrustum(SelectMgr_Frustum__4):
@@ -1942,7 +1942,7 @@ class SelectMgr_RectangularFrustum(SelectMgr_Frustum__4):
         Ax + By + Cz + D = 0) to the given vector
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_SelectableObjectSet:
@@ -2106,7 +2106,7 @@ class SelectMgr_SelectableObjectSet:
     def BVH(self, theSubset: SelectMgr_SelectableObjectSet.BVHSubset) -> nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree:
         """Returns computed BVH for the theSubset given."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_SelectionImageFiller(nanoocp.Standard.Standard_Transient):
@@ -2549,7 +2549,7 @@ class SelectMgr_ViewerSelector(nanoocp.Standard.Standard_Transient):
 
     def ClearSensitive(self, theView: nanoocp.V3d.V3d_View | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def SetToPrebuildBVH(self, theToPrebuild: bool, theThreadsNum: int = -1) -> None:
@@ -2784,7 +2784,7 @@ class SelectMgr_Frustum__3(SelectMgr_BaseFrustum):
     V1_Near - V0_Near, V2_Near - V1_Near, V2_Near - V0_Near.
     """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class SelectMgr_TriangularFrustum(SelectMgr_Frustum__3):
@@ -2915,7 +2915,7 @@ class SelectMgr_TriangularFrustum(SelectMgr_Frustum__3):
         Ax + By + Cz + D = 0) to the given vector
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -3052,7 +3052,7 @@ class SelectMgr_TriangularFrustumSet(SelectMgr_BaseFrustum):
         algorithm will mark both included and overlapped entities as matched
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)

@@ -206,7 +206,7 @@ class Select3D_SensitiveEntity(nanoocp.Standard.Standard_Transient):
         otherwise clears the flipper.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_SensitiveSet(Select3D_SensitiveEntity):
@@ -300,7 +300,7 @@ class Select3D_SensitiveSet(Select3D_SensitiveEntity):
     def GetLeafNodeSize(self) -> int:
         """Returns a number of nodes in 1 BVH leaf"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_SensitivePoly(Select3D_SensitiveSet):
@@ -402,7 +402,7 @@ class Select3D_SensitivePoly(Select3D_SensitiveSet):
     def Swap(self, theIdx1: int, theIdx2: int) -> None:
         """Swaps items with indexes theIdx1 and theIdx2 in the vector"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_InteriorSensitivePointSet(Select3D_SensitiveSet):
@@ -465,7 +465,7 @@ class Select3D_InteriorSensitivePointSet(Select3D_SensitiveSet):
     def NbSubElements(self) -> int:
         """Returns the amount of points in set"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -533,7 +533,7 @@ class Select3D_SensitiveBox(Select3D_SensitiveEntity):
     def ToBuildBVH(self) -> bool:
         """Returns TRUE if BVH tree is in invalidated state"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_SensitiveCircle(Select3D_SensitiveEntity):
@@ -771,7 +771,7 @@ class Select3D_SensitiveFace(Select3D_SensitiveEntity):
     def NbSubElements(self) -> int:
         """Returns the amount of sub-entities (points or planar convex polygons)"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_SensitiveGroup(Select3D_SensitiveSet):
@@ -917,7 +917,7 @@ class Select3D_SensitiveGroup(Select3D_SensitiveSet):
     def Size(self) -> int:
         """Returns the length of vector of sensitive entities"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_SensitivePoint(Select3D_SensitiveEntity):
@@ -967,7 +967,7 @@ class Select3D_SensitivePoint(Select3D_SensitiveEntity):
     def ToBuildBVH(self) -> bool:
         """Returns TRUE if BVH tree is in invalidated state"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_SensitivePrimitiveArray(Select3D_SensitiveSet):
@@ -1160,7 +1160,7 @@ class Select3D_SensitivePrimitiveArray(Select3D_SensitiveSet):
         @param[in] theIndex zero-based triangle index within [0, triangle count)
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def Matches(self, theMgr: nanoocp.SelectBasics.SelectBasics_SelectingVolumeManager, thePickResult: nanoocp.SelectBasics.SelectBasics_PickResult) -> bool:
@@ -1294,7 +1294,7 @@ class Select3D_SensitiveSegment(Select3D_SensitiveEntity):
     def ToBuildBVH(self) -> bool:
         """Returns TRUE if BVH tree is in invalidated state"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Select3D_SensitiveSphere(Select3D_SensitiveEntity):
@@ -1394,7 +1394,7 @@ class Select3D_SensitiveTriangle(Select3D_SensitiveEntity):
 
     def CenterOfGeometry(self) -> nanoocp.gp.gp_Pnt: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1508,7 +1508,7 @@ class Select3D_SensitiveTriangulation(Select3D_SensitiveSet):
 
     def GetInitLocation(self) -> nanoocp.TopLoc.TopLoc_Location: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def Matches(self, theMgr: nanoocp.SelectBasics.SelectBasics_SelectingVolumeManager, thePickResult: nanoocp.SelectBasics.SelectBasics_PickResult) -> bool:
@@ -1575,7 +1575,7 @@ class Select3D_SensitiveWire(Select3D_SensitiveSet):
     def Swap(self, theIdx1: int, theIdx2: int) -> None:
         """Swaps items with indexes theIdx1 and theIdx2 in the vector"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod

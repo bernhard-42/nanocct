@@ -235,7 +235,7 @@ class SelectBasics_SelectingVolumeManager:
         Ax + By + Cz + D = 0) to the given vector
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @overload

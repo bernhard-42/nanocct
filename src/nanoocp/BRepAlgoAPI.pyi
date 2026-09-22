@@ -31,10 +31,10 @@ class BRepAlgoAPI_Algo(nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeShape):
     def ClearWarnings(self) -> None:
         """Clears the warnings of the algorithm"""
 
-    def DumpErrors(self) -> object:
+    def DumpErrors(self) -> str:
         """Dumps the error status into the given stream"""
 
-    def DumpWarnings(self) -> object:
+    def DumpWarnings(self) -> str:
         """Dumps the warning statuses into the given stream"""
 
     def FuzzyValue(self) -> float:

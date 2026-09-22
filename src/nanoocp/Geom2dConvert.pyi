@@ -339,7 +339,7 @@ class Geom2dConvert_ApproxCurve:
         has been done, 0 if no approximation)
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Print on the stream o information about the object"""
 
 class Geom2dConvert_BSplineCurveKnotSplitting:

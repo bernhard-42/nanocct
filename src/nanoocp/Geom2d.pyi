@@ -103,7 +103,7 @@ class Geom2d_Geometry(nanoocp.Standard.Standard_Transient):
 
     def Copy(self) -> Geom2d_Geometry: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -490,7 +490,7 @@ class Geom2d_Curve(Geom2d_Geometry):
     def Value(self, U: float) -> nanoocp.gp.gp_Pnt2d:
         """Computes the point of parameter U on <me>. Implemented with D0."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -535,7 +535,7 @@ class Geom2d_BoundedCurve(Geom2d_Curve):
         "FirstParameter" of the curve.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -892,7 +892,7 @@ class Geom2d_BezierCurve(Geom2d_BoundedCurve):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object which is a copy of this Bezier curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def Knots(self) -> nanoocp.NCollection.NCollection_Array1[float]:
@@ -1838,7 +1838,7 @@ class Geom2d_BSplineCurve(Geom2d_BoundedCurve):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object which is a copy of this BSpline curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1875,7 +1875,7 @@ class Geom2d_Point(Geom2d_Geometry):
     def SquareDistance(self, Other: Geom2d_Point | None) -> float:
         """computes the square distance between <me> and <Other>."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1935,7 +1935,7 @@ class Geom2d_CartesianPoint(Geom2d_Point):
 
     def Copy(self) -> Geom2d_Geometry: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2049,7 +2049,7 @@ class Geom2d_Conic(Geom2d_Curve):
     def IsCN(self, N: int) -> bool:
         """Returns True, the order of continuity of a conic is infinite."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2195,7 +2195,7 @@ class Geom2d_Circle(Geom2d_Conic):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object which is a copy of this circle."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2578,7 +2578,7 @@ class Geom2d_Ellipse(Geom2d_Conic):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object which is a copy of this ellipse."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2883,7 +2883,7 @@ class Geom2d_Hyperbola(Geom2d_Conic):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object which is a copy of this hyperbola."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -3053,7 +3053,7 @@ class Geom2d_Line(Geom2d_Curve):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object, which is a copy of this line."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -3363,7 +3363,7 @@ class Geom2d_OffsetCurve(Geom2d_Curve):
     def GetBasisCurveContinuity(self) -> nanoocp.GeomAbs.GeomAbs_Shape:
         """Returns continuity of the basis curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -3574,7 +3574,7 @@ class Geom2d_Parabola(Geom2d_Conic):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object, which is a copy of this parabola."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -4070,7 +4070,7 @@ class Geom2d_TrimmedCurve(Geom2d_BoundedCurve):
     def Copy(self) -> Geom2d_Geometry:
         """Creates a new object, which is a copy of this trimmed curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod

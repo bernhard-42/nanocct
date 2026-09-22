@@ -2063,7 +2063,7 @@ class Graphic3d_Buffer(nanoocp.NCollection.NCollection_Buffer):
     def Invalidate(self) -> None:
         """Invalidate entire buffer."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -2112,7 +2112,7 @@ class Graphic3d_BoundBuffer(nanoocp.NCollection.NCollection_Buffer):
     def Init(self, theNbBounds: int, theHasColors: bool) -> bool:
         """Allocates new empty array"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -2163,7 +2163,7 @@ class Graphic3d_IndexBuffer(Graphic3d_Buffer):
     def SetIndex(self, theIndex: int, theValue: int) -> None:
         """Change index at specified position"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_ArrayOfPrimitives(nanoocp.Standard.Standard_Transient):
@@ -3432,7 +3432,7 @@ class Graphic3d_Fresnel:
     def FresnelType(self) -> Graphic3d_FresnelModel:
         """Returns type of Fresnel."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_BSDF:
@@ -3490,7 +3490,7 @@ class Graphic3d_BSDF:
     def __eq__(self, theOther: Graphic3d_BSDF) -> bool:
         """Performs comparison of two BSDFs."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -3701,7 +3701,7 @@ class Graphic3d_PBRMaterial:
         recommended to be disabled.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_MaterialAspect:
@@ -3920,7 +3920,7 @@ class Graphic3d_MaterialAspect:
     def __eq__(self, theOther: Graphic3d_MaterialAspect) -> bool:
         """Returns TRUE if this material is identical to specified one."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def SetReflectionModeOff(self, theType: Graphic3d_TypeOfReflection) -> None:
@@ -3969,7 +3969,7 @@ class Graphic3d_HatchStyle(nanoocp.Standard.Standard_Transient):
         is custom, returns unique index of the style
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_PolygonOffset:
@@ -3985,7 +3985,7 @@ class Graphic3d_PolygonOffset:
     def __eq__(self, theOther: Graphic3d_PolygonOffset) -> bool:
         """Equality comparison."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -5460,7 +5460,7 @@ class Graphic3d_Aspects(nanoocp.Standard.Standard_Transient):
     def IsEqual(self, theOther: Graphic3d_Aspects) -> bool:
         """Check for equality with another aspects."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def ToSuppressBackFaces(self) -> bool:
@@ -5754,7 +5754,7 @@ class Graphic3d_AspectText3d(Graphic3d_Aspects):
     def GetTextFontAspect(self) -> nanoocp.Font.Font_FontAspect:
         """Returns text FontAspect"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_AttribBuffer(Graphic3d_Buffer):
@@ -5888,7 +5888,7 @@ class Graphic3d_BndBox4d:
     def Center(self, theAxis: int) -> float:
         """Returns center of bounding box along the given axis."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -5971,7 +5971,7 @@ class Graphic3d_BndBox4f:
     def Center(self, theAxis: int) -> float:
         """Returns center of bounding box along the given axis."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -6133,7 +6133,7 @@ class Graphic3d_WorldViewProjState:
         @return true if the other projection state is equal to this one.
         """
 
-    def DumpJson(self, arg1: int) -> object:
+    def DumpJson(self, arg1: int) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_BvhCStructureSetTrsfPers(nanoocp.BVH.BVH_Set__double__3):
@@ -6224,7 +6224,7 @@ class Graphic3d_CameraTile:
     def __eq__(self, theOther: Graphic3d_CameraTile) -> bool:
         """Equality check."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -6947,7 +6947,7 @@ class Graphic3d_Camera(nanoocp.Standard.Standard_Transient):
     def SetCustomMonoProjection(self, theProj: nanoocp.BVH.BVH_Mat4d) -> None:
         """Set custom projection matrix."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def FrustumPoints(self, thePoints: nanoocp.NCollection.NCollection_Array1[nanoocp.BVH.BVH_Vec3d], theModelWorld: nanoocp.BVH.BVH_Mat4d = ...) -> None:
@@ -7209,7 +7209,7 @@ class Graphic3d_CLight(nanoocp.Standard.Standard_Transient):
     def Revision(self) -> int:
         """@return modification counter"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_ClipPlane(nanoocp.Standard.Standard_Transient):
@@ -7527,7 +7527,7 @@ class Graphic3d_ClipPlane(nanoocp.Standard.Standard_Transient):
         NOT discarded by clipping plane).
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def MCountEquation(self) -> int:
@@ -7609,7 +7609,7 @@ class Graphic3d_PresentationAttributes(nanoocp.Standard.Standard_Transient):
     def SetBasicFillAreaAspect(self, theAspect: Graphic3d_AspectFillArea3d | None) -> None:
         """Sets basic presentation fill area aspect."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_Flipper(nanoocp.Standard.Standard_Transient):
@@ -7643,7 +7643,7 @@ class Graphic3d_Flipper(nanoocp.Standard.Standard_Transient):
     def SetRefPlane(self, theValue: nanoocp.gp.gp_Ax2) -> None:
         """Set reference plane used for flipping."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream."""
 
 class Graphic3d_Vertex:
@@ -7689,7 +7689,7 @@ class Graphic3d_Vertex:
     def Distance(self, theOther: Graphic3d_Vertex) -> float:
         """Returns the distance between two points."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -7909,7 +7909,7 @@ class Graphic3d_Group(nanoocp.Standard.Standard_Transient):
         Creates the string <theText> at orientation <theOrientation> in 3D space.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_SequenceOfHClipPlane(nanoocp.Standard.Standard_Transient):
@@ -8003,7 +8003,7 @@ class Graphic3d_SequenceOfHClipPlane(nanoocp.Standard.Standard_Transient):
     def First(self) -> Graphic3d_ClipPlane:
         """Return the first item in sequence."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_ViewAffinity(nanoocp.Standard.Standard_Transient):
@@ -8027,7 +8027,7 @@ class Graphic3d_ViewAffinity(nanoocp.Standard.Standard_Transient):
     def SetVisible(self, theViewId: int, theIsVisible: bool) -> None:
         """Setup visibility flag."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -8232,7 +8232,7 @@ class Graphic3d_TransformPers(nanoocp.Standard.Standard_Transient):
         @param[in] theAnchor  if not NULL, overrides anchor point
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_CStructure(nanoocp.Standard.Standard_Transient):
@@ -8397,7 +8397,7 @@ class Graphic3d_CStructure(nanoocp.Standard.Standard_Transient):
     def updateLayerTransformation(self) -> None:
         """Update render transformation matrix."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -9149,7 +9149,7 @@ class Graphic3d_RenderingParams:
     def ResolutionRatio(self) -> float:
         """Returns resolution ratio."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @property
@@ -10022,7 +10022,7 @@ class Graphic3d_Structure(nanoocp.Standard.Standard_Transient):
     def CStructure(self) -> Graphic3d_CStructure:
         """Returns the low-level structure"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_TextureEnv(Graphic3d_TextureRoot):
@@ -10367,7 +10367,7 @@ class Graphic3d_ZLayerSettings:
     def SetDepthOffsetNegative(self) -> None:
         """Sets minimal possible negative depth offset."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_CView(Graphic3d_DataStructureManager):
@@ -10898,7 +10898,7 @@ class Graphic3d_CView(Graphic3d_DataStructureManager):
         @param[in] theMax  the maximum point of scene.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def IsSubview(self) -> bool:
@@ -11363,7 +11363,7 @@ class Graphic3d_GraphicDriver(nanoocp.Standard.Standard_Transient):
     def RemoveIdentification(self, theId: int) -> None:
         """Frees the identifier of a structure."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_GraphicDriverFactory(nanoocp.Standard.Standard_Transient):
@@ -11816,7 +11816,7 @@ class Graphic3d_StructureManager(nanoocp.Standard.Standard_Transient):
     def SetDeviceLost(self) -> None:
         """Sets Device Lost flag."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Graphic3d_Text(nanoocp.Standard.Standard_Transient):
@@ -12310,7 +12310,7 @@ class Graphic3d_Layer(nanoocp.Standard.Standard_Transient):
     def NonCullableStructures(self) -> "NCollection_IndexedMap<Graphic3d_CStructure const*, NCollection_DefaultHasher<Graphic3d_CStructure const*>>":
         """Returns indexed map of always rendered structures."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class NCollection_Mat3__float:
@@ -12585,7 +12585,7 @@ class NCollection_Mat3__float:
     def Inverted(self) -> NCollection_Mat3__float:
         """Return inverted matrix."""
 
-    def DumpJson(self, arg1: int) -> object:
+    def DumpJson(self, arg1: int) -> str:
         """Dumps the content of me into the stream"""
 
 class BVH_Tree__double__3__BVH_BinaryTree:
@@ -12869,7 +12869,7 @@ class NCollection_Mat3__double:
     def Inverted(self) -> NCollection_Mat3__double:
         """Return inverted matrix."""
 
-    def DumpJson(self, arg1: int) -> object:
+    def DumpJson(self, arg1: int) -> str:
         """Dumps the content of me into the stream"""
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)

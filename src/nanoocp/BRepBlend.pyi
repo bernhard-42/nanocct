@@ -338,7 +338,7 @@ class BRepBlend_AppSurface(nanoocp.AppBlend.AppBlend_Approx):
 
     def TolCurveOnSurf(self, Index: int) -> float: ...
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """display information on approximation."""
 
 class BRepBlend_BlendTool:

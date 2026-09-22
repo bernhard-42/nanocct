@@ -1053,7 +1053,7 @@ class Bnd_Box:
     def HasFinitePart(self) -> bool:
         """Returns TRUE if this box has finite part."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -1626,7 +1626,7 @@ class Bnd_OBB:
         (which it was created from) and theP.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Bnd_Range:
@@ -1848,7 +1848,7 @@ class Bnd_Range:
     def __eq__(self, theOther: Bnd_Range) -> bool:
         """Returns TRUE if theOther is equal to <*this>"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Bnd_Sphere:
@@ -2001,7 +2001,7 @@ class BVH_Box__double__2:
     def Center(self, theAxis: int) -> float:
         """Returns center of bounding box along the given axis."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
@@ -2084,7 +2084,7 @@ class BVH_Box__double__3:
     def Center(self, theAxis: int) -> float:
         """Returns center of bounding box along the given axis."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:

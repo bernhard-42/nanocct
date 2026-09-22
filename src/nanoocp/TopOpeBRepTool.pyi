@@ -115,7 +115,7 @@ class TopOpeBRepTool:
         """
 
     @staticmethod
-    def Print(OCT: TopOpeBRepTool_OutCurveType) -> object:
+    def Print(OCT: TopOpeBRepTool_OutCurveType) -> str:
         """Prints <OCT> as string on stream <S>; returns <S>."""
 
 class TopOpeBRepTool_AncestorsTool:
@@ -893,7 +893,7 @@ class TopOpeBRepTool_ShapeExplorer(nanoocp.TopExp.TopExp_Explorer):
     def Index(self) -> int:
         """Index of current sub-shape"""
 
-    def DumpCurrent(self) -> object:
+    def DumpCurrent(self) -> str:
         """Dump info on current shape to stream"""
 
 class TopOpeBRepTool_ShapeTool:

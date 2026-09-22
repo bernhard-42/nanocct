@@ -652,7 +652,7 @@ class OSD_Chronometer:
         The chronometer can be running (laps Time) or stopped.
         """
 
-    def Show__str(self) -> object:
+    def Show__str(self) -> str:
         """
         Show__str: the C++ overload Show(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Shows the current CPU user and system time on the output
@@ -2422,7 +2422,7 @@ class OSD_Timer(OSD_Chronometer):
         stopped.
         """
 
-    def Show__str(self) -> object:
+    def Show__str(self) -> str:
         """
         Show__str: the C++ overload Show(Standard_OStream &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
         Shows both the elapsed time and CPU time on the

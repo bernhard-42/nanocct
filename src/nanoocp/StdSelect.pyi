@@ -259,7 +259,7 @@ class StdSelect_BRepOwner(nanoocp.SelectMgr.SelectMgr_EntityOwner):
         highlight structure
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class StdSelect_BRepSelectionTool:
@@ -504,7 +504,7 @@ class StdSelect_Shape(nanoocp.PrsMgr.PrsMgr_PresentableObject):
     @overload
     def Shape(self, theShape: nanoocp.TopoDS.TopoDS_Shape) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class StdSelect_ShapeTypeFilter(nanoocp.SelectMgr.SelectMgr_Filter):

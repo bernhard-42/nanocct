@@ -26,7 +26,7 @@ class GeomTools:
 
     @overload
     @staticmethod
-    def Dump(S: nanoocp.Geom.Geom_Surface | None) -> object:
+    def Dump(S: nanoocp.Geom.Geom_Surface | None) -> str:
         """
         A set of Curves from Geom2d.
         Dumps the surface on the stream.
@@ -34,25 +34,25 @@ class GeomTools:
 
     @overload
     @staticmethod
-    def Dump(C: nanoocp.Geom.Geom_Curve | None) -> object: ...
+    def Dump(C: nanoocp.Geom.Geom_Curve | None) -> str: ...
 
     @overload
     @staticmethod
-    def Dump(C: nanoocp.Geom2d.Geom2d_Curve | None) -> object:
+    def Dump(C: nanoocp.Geom2d.Geom2d_Curve | None) -> str:
         """Dumps the Curve on the stream."""
 
     @overload
     @staticmethod
-    def Write(S: nanoocp.Geom.Geom_Surface | None) -> object:
+    def Write(S: nanoocp.Geom.Geom_Surface | None) -> str:
         """Writes the surface on the stream."""
 
     @overload
     @staticmethod
-    def Write(C: nanoocp.Geom.Geom_Curve | None) -> object: ...
+    def Write(C: nanoocp.Geom.Geom_Curve | None) -> str: ...
 
     @overload
     @staticmethod
-    def Write(C: nanoocp.Geom2d.Geom2d_Curve | None) -> object:
+    def Write(C: nanoocp.Geom2d.Geom2d_Curve | None) -> str:
         """Writes the Curve on the stream."""
 
     @staticmethod
@@ -114,10 +114,10 @@ class GeomTools_Curve2dSet:
     def Index(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> int:
         """Returns the index of <L>."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Dumps the content of me on the stream <OS>."""
 
-    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
@@ -130,7 +130,7 @@ class GeomTools_Curve2dSet:
         """
 
     @staticmethod
-    def PrintCurve2d(C: nanoocp.Geom2d.Geom2d_Curve | None, compact: bool = False) -> object:
+    def PrintCurve2d(C: nanoocp.Geom2d.Geom2d_Curve | None, compact: bool = False) -> str:
         """
         Dumps the curve on the stream, if compact is True
         use the compact format that can be read back.
@@ -169,10 +169,10 @@ class GeomTools_CurveSet:
     def Index(self, C: nanoocp.Geom.Geom_Curve | None) -> int:
         """Returns the index of <L>."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Dumps the content of me on the stream <OS>."""
 
-    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
@@ -185,7 +185,7 @@ class GeomTools_CurveSet:
         """
 
     @staticmethod
-    def PrintCurve(C: nanoocp.Geom.Geom_Curve | None, compact: bool = False) -> object:
+    def PrintCurve(C: nanoocp.Geom.Geom_Curve | None, compact: bool = False) -> str:
         """
         Dumps the curve on the stream, if compact is True
         use the compact format that can be read back.
@@ -224,10 +224,10 @@ class GeomTools_SurfaceSet:
     def Index(self, S: nanoocp.Geom.Geom_Surface | None) -> int:
         """Returns the index of <L>."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Dumps the content of me on the stream <OS>."""
 
-    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> object:
+    def Write(self, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> str:
         """
         Writes the content of me on the stream <OS> in a
         format that can be read back by Read.
@@ -240,7 +240,7 @@ class GeomTools_SurfaceSet:
         """
 
     @staticmethod
-    def PrintSurface(S: nanoocp.Geom.Geom_Surface | None, compact: bool = False) -> object:
+    def PrintSurface(S: nanoocp.Geom.Geom_Surface | None, compact: bool = False) -> str:
         """
         Dumps the surface on the stream, if compact is True
         use the compact format that can be read back.
@@ -261,11 +261,11 @@ class GeomTools_UndefinedTypeHandler(nanoocp.Standard.Standard_Transient):
     @overload
     def __init__(self, theOther: GeomTools_UndefinedTypeHandler) -> None: ...
 
-    def PrintCurve(self, C: nanoocp.Geom.Geom_Curve | None, compact: bool = False) -> object: ...
+    def PrintCurve(self, C: nanoocp.Geom.Geom_Curve | None, compact: bool = False) -> str: ...
 
-    def PrintCurve2d(self, C: nanoocp.Geom2d.Geom2d_Curve | None, compact: bool = False) -> object: ...
+    def PrintCurve2d(self, C: nanoocp.Geom2d.Geom2d_Curve | None, compact: bool = False) -> str: ...
 
-    def PrintSurface(self, S: nanoocp.Geom.Geom_Surface | None, compact: bool = False) -> object: ...
+    def PrintSurface(self, S: nanoocp.Geom.Geom_Surface | None, compact: bool = False) -> str: ...
 
     @staticmethod
     def get_type_name() -> str: ...

@@ -132,7 +132,7 @@ class Geom2dEval_AHTBezierCurve(nanoocp.Geom2d.Geom2d_BoundedCurve):
     def Copy(self) -> nanoocp.Geom2d.Geom2d_Geometry:
         """Creates a new object which is a copy of this curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream."""
 
     @staticmethod
@@ -241,7 +241,7 @@ class Geom2dEval_ArchimedeanSpiralCurve(nanoocp.Geom2d.Geom2d_Curve):
     def Copy(self) -> nanoocp.Geom2d.Geom2d_Geometry:
         """Creates a new object which is a copy of this curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream."""
 
     @staticmethod
@@ -346,7 +346,7 @@ class Geom2dEval_CircleInvoluteCurve(nanoocp.Geom2d.Geom2d_Curve):
     def Copy(self) -> nanoocp.Geom2d.Geom2d_Geometry:
         """Creates a new object which is a copy of this curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream."""
 
     @staticmethod
@@ -455,7 +455,7 @@ class Geom2dEval_LogarithmicSpiralCurve(nanoocp.Geom2d.Geom2d_Curve):
     def Copy(self) -> nanoocp.Geom2d.Geom2d_Geometry:
         """Creates a new object which is a copy of this curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream."""
 
     @staticmethod
@@ -567,7 +567,7 @@ class Geom2dEval_SineWaveCurve(nanoocp.Geom2d.Geom2d_Curve):
     def Copy(self) -> nanoocp.Geom2d.Geom2d_Geometry:
         """Creates a new object which is a copy of this curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream."""
 
     @staticmethod
@@ -709,7 +709,7 @@ class Geom2dEval_TBezierCurve(nanoocp.Geom2d.Geom2d_BoundedCurve):
     def Copy(self) -> nanoocp.Geom2d.Geom2d_Geometry:
         """Creates a new object which is a copy of this T-Bezier curve."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream."""
 
     @staticmethod

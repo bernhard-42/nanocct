@@ -94,7 +94,7 @@ class Approx_Curve3d:
         has been done, 0 if no approximation)
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Print on the stream 'o' information about the object"""
 
 class Approx_CurveOnSurface:
@@ -209,7 +209,7 @@ class Approx_CurvilinearParameter:
     def MaxError2d2(self) -> float:
         """returns the maximum error on the second reparametrized 2D curve"""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """print the maximum errors(s)"""
 
 class Approx_CurvlinFunc(nanoocp.Standard.Standard_Transient):
@@ -617,7 +617,7 @@ class Approx_SweepApproximation:
         2d curve approximation on the Surface.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """display information on approximation."""
 
 class Approx_SweepFunction(nanoocp.Standard.Standard_Transient):

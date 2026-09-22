@@ -104,7 +104,7 @@ class PrsMgr_Presentation(nanoocp.Graphic3d.Graphic3d_Structure):
     def Compute(self) -> None:
         """Compute structure using presentation manager."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class PrsMgr_PresentableObject(nanoocp.Standard.Standard_Transient):
@@ -592,7 +592,7 @@ class PrsMgr_PresentableObject(nanoocp.Standard.Standard_Transient):
     def UnsetAttributes(self) -> None:
         """Clears settings provided by the drawing tool aDrawer."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def ToPropagateVisualState(self) -> bool:

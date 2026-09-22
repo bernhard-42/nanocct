@@ -128,7 +128,9 @@ class Emitter:
             # a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
             # the caster runs (Design.md 4.2)
             arg = f'nb::arg("{p.name}").none()' if p.is_handle else f'nb::arg("{p.name}")'
-            if p.default is None:
+            if p.cstr_none:                    # R-CSTR-NULL: None reaches the OptionalCString caster only with .none()
+                parts.append(f'nb::arg("{p.name}").none() = nb::none()')
+            elif p.default is None:
                 parts.append(arg)
             else:
                 # cast to the parameter's value type: a `char` default written as 0 must become a
@@ -160,6 +162,7 @@ class Emitter:
         if cls is not None and not m.is_static:
             lam_params.append(f"{'const ' if m.is_const else ''}{self_type if self_type is not None else cls} &self")
         lam_params += [f"const nanoocp::{'BinaryInput' if p.binary else 'TextInput'} &{p.name}" if p.stream == StreamKind.IN
+                       else f"nanoocp::OptionalCString {p.name}" if p.cstr_none                              # R-CSTR-NULL: str or None
                        else f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0     # R-FIXED-ARRAY in: a sequence of N
                        else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
         body: list[str] = [f"{p.type} {p.name}[{p.array_len}]{{}};" if p.array_len > 0 else f"{_strip_ref(p.type)} {p.name}{{}};"
@@ -172,6 +175,7 @@ class Emitter:
         body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == StreamKind.OUT]
         body += [f"std::stringstream {p.name}_stream({p.name}.{'data' if p.binary else 'text'});" for p in m.params if p.stream == StreamKind.IN]
         call_args = ", ".join("nullptr" if p.omitted                                   # R-OPTIONAL-PTR
+                              else f"{p.name}.ptr" if p.cstr_none                        # R-CSTR-NULL
                               else f"{p.name}_stream" if p.stream != StreamKind.NONE
                               else f"{p.name}_arr" if p.array_len > 0 and not p.is_out else p.name for p in m.params)
         if cls is None:
@@ -234,9 +238,9 @@ class Emitter:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
             return f'.def("{py}", {lam}, nb::rv_policy::reference{self._extras(doc, m.params, False, True)})'
-        if has_out or wrap or m.via_using != "" or m.force_lambda or any(p.omitted or p.array_len > 0 for p in m.params):
+        if has_out or wrap or m.via_using != "" or m.force_lambda or any(p.omitted or p.array_len > 0 or p.cstr_none for p in m.params):
             # R-USING: a member re-exported by `using Base::name;` is called on the derived object (the base may be non-public);
-            # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY need a lambda too
+            # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY, R-CSTR-NULL need a lambda too
             defn = "def_static" if m.is_static else "def"
             ptr_policy = policy if m.result_kind == ResultKind.PTR_CLASS else ""     # a lambda copies class results (auto)
             return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._extras(doc, m.params, True, m.is_operator)})'
@@ -282,11 +286,12 @@ class Emitter:
         self._note_types(*(p.type for p in params))
         self._note_types(*(p.class_name for p in params))
         T = type_name if type_name is not None else cls.bound_type
-        special = any(p.omitted or p.array_len > 0 for p in params)     # R-OPTIONAL-PTR / R-FIXED-ARRAY: nb::init cannot drop or convert
+        special = any(p.omitted or p.array_len > 0 or p.cstr_none for p in params)     # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL: nb::init cannot drop or convert
         ins = [p for p in params if not p.omitted]
-        lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0 else f"{p.type} {p.name}" for p in ins)
+        lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0
+                               else f"nanoocp::OptionalCString {p.name}" if p.cstr_none else f"{p.type} {p.name}" for p in ins)
         pre = " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
-        call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else p.name for p in params)
+        call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else f"{p.name}.ptr" if p.cstr_none else p.name for p in params)
         if cls.is_transient:
             fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {T}({call})); }})"
         elif special or type_name is not None:
@@ -556,8 +561,8 @@ class Emitter:
                 py += fn.suffix
                 doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).\n{fn.doc}"
                 self.report.append(f"{qualified}({self._sig(fn.params)}): same Python signature as another overload after out-param removal -> bound as {py}")
-            if any(p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 for p in fn.params):
-                # out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY need the lambda too
+            if any(p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none for p in fn.params):
+                # out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL need the lambda too
                 as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
                                    result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=doc)
                 ptr_policy = policy if fn.result_kind == ResultKind.PTR_CLASS else ""

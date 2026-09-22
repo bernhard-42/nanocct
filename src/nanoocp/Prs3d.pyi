@@ -1300,7 +1300,7 @@ class Prs3d_Drawer(nanoocp.Graphic3d.Graphic3d_PresentationAttributes):
     def SetShadingModel(self, theModel: nanoocp.Graphic3d.Graphic3d_TypeOfShadingModel, theToOverrideDefaults: bool = False) -> bool:
         """Sets Shading Model type for the shading aspect."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @overload
@@ -1466,7 +1466,7 @@ class Prs3d_BasicAspect(nanoocp.Standard.Standard_Transient):
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_ArrowAspect(Prs3d_BasicAspect):
@@ -1529,7 +1529,7 @@ class Prs3d_ArrowAspect(Prs3d_BasicAspect):
 
     def SetAspect(self, theAspect: nanoocp.Graphic3d.Graphic3d_AspectLine3d | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_Root:
@@ -1676,7 +1676,7 @@ class Prs3d_LineAspect(Prs3d_BasicAspect):
 
     def SetAspect(self, theAspect: nanoocp.Graphic3d.Graphic3d_AspectLine3d | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_PointAspect(Prs3d_BasicAspect):
@@ -1735,7 +1735,7 @@ class Prs3d_PointAspect(Prs3d_BasicAspect):
     def GetTexture(self) -> nanoocp.Graphic3d.Graphic3d_MarkerImage:
         """Returns marker's texture."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_ShadingAspect(Prs3d_BasicAspect):
@@ -1802,7 +1802,7 @@ class Prs3d_ShadingAspect(Prs3d_BasicAspect):
 
     def SetAspect(self, theAspect: nanoocp.Graphic3d.Graphic3d_AspectFillArea3d | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_TextAspect(Prs3d_BasicAspect):
@@ -1897,7 +1897,7 @@ class Prs3d_TextAspect(Prs3d_BasicAspect):
 
     def SetAspect(self, theAspect: nanoocp.Graphic3d.Graphic3d_AspectText3d | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_DatumAspect(Prs3d_BasicAspect):
@@ -1992,7 +1992,7 @@ class Prs3d_DatumAspect(Prs3d_BasicAspect):
     def CopyAspectsFrom(self, theOther: Prs3d_DatumAspect | None) -> None:
         """Performs deep copy of attributes from another aspect instance."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2116,7 +2116,7 @@ class Prs3d_DimensionAspect(Prs3d_BasicAspect):
     def ValueStringFormat(self) -> nanoocp.TCollection.TCollection_AsciiString:
         """Returns format."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_InvalidAngle(nanoocp.Standard.Standard_RangeError):
@@ -2257,7 +2257,7 @@ class Prs3d_PlaneAspect(Prs3d_BasicAspect):
         Returns the distance between isoparameters used in the display of planes.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_PresentationShadow(nanoocp.Graphic3d.Graphic3d_Structure):
@@ -2291,7 +2291,7 @@ class Prs3d_PresentationShadow(nanoocp.Graphic3d.Graphic3d_Structure):
         Do nothing - axis-aligned bounding box should be initialized from parent structure.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Prs3d_Text:

@@ -529,7 +529,7 @@ class math_Matrix:
 
     def __neg__(self) -> math_Matrix: ...
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints information on the current state of the object.
         Is used to redefine the operator <<.
@@ -837,7 +837,7 @@ class math_Vector:
 
     def __sub__(self, theRight: math_Vector) -> math_Vector: ...
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints information on the current state of the object.
         Is used to redefine the operator <<.
@@ -1018,7 +1018,7 @@ class math_BFGS:
         The exception NotDone is raised if the minimum was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1082,7 +1082,7 @@ class math_BissecNewton:
         Exception NotDone is raised if the minimum was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1134,7 +1134,7 @@ class math_BracketedRoot:
         Exception NotDone is raised if the minimum was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1231,7 +1231,7 @@ class math_BracketMinimum:
         StdFail_NotDone if the algorithm fails (and IsDone returns false).
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1303,7 +1303,7 @@ class math_BrentMinimum:
         Exception NotDone is raised if the minimum was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1418,7 +1418,7 @@ class math_Crout:
         StdFail_NotDone if the algorithm fails (and IsDone returns false).
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1547,7 +1547,7 @@ class math_DirectPolynomialRoots:
         @return root value
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints diagnostic information about the current state of the solver.
         Outputs computation status, number of roots, and individual root values.
@@ -1689,7 +1689,7 @@ class math_FRPR:
         Exception NotDone is raised if the minimum was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1797,7 +1797,7 @@ class math_FunctionAllRoots:
         An exception is raised if Index<=0 or Index >Nbintervals.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1867,7 +1867,7 @@ class math_FunctionRoot:
         Exception NotDone is raised if the root was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -1928,7 +1928,7 @@ class math_FunctionRoots:
         or Nieme > NbSolutions.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -2295,7 +2295,7 @@ class math_IntegerVector:
 
     def __sub__(self, theRight: math_IntegerVector) -> math_IntegerVector: ...
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints information on the current state of the object.
         Is used to redefine the operator <<.
@@ -2453,7 +2453,7 @@ class math_FunctionSetRoot:
         is not equal to the range of the StartingPoint.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -2596,7 +2596,7 @@ class math_Gauss:
         equal to the ranges of A.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -2644,7 +2644,7 @@ class math_GaussLeastSquare:
         not equal to the colrange of A.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -2675,7 +2675,7 @@ class math_GaussMultipleIntegration:
     def Value(self) -> float:
         """returns the value of the integral."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints information on the current state of the object."""
 
 class math_GaussSetIntegration:
@@ -2703,7 +2703,7 @@ class math_GaussSetIntegration:
     def Value(self) -> math_Vector:
         """returns the value of the integral."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints information on the current state of the object."""
 
 class math_GaussSingleIntegration:
@@ -2740,7 +2740,7 @@ class math_GaussSingleIntegration:
     def Value(self) -> float:
         """returns the value of the integral."""
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints information on the current state of the object."""
 
 class math_MultipleVarFunction:
@@ -2950,7 +2950,7 @@ class math_Householder:
         done.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints information on the current state of the object."""
 
 class math_Jacobi:
@@ -3003,7 +3003,7 @@ class math_Jacobi:
         Exception NotDone is raised if calculation is not done successfully.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints information on the current state of the object.
         Is used to redefine the operator <<.
@@ -3234,7 +3234,7 @@ class math_NewtonFunctionRoot:
         Exception NotDone is raised if the root was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints information on the current state of the object."""
 
 class math_NewtonFunctionSetRoot:
@@ -3359,7 +3359,7 @@ class math_NewtonFunctionSetRoot:
         Exception NotDone is raised if the root was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints information on the current state of the object.
         Is used to redefine the operator <<.
@@ -3447,7 +3447,7 @@ class math_NewtonMinimum:
         The exception NotDone is raised if an error has occurred.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints on the stream o information on the current state
         of the object.
@@ -3517,7 +3517,7 @@ class math_Powell:
         Exception NotDone is raised if the minimum was not found.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints information on the current state of the object.
         Is used to redefine the operator <<.
@@ -3674,7 +3674,7 @@ class math_SVD:
         compatible with the ranges of A.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """
         Prints information on the current state of the object.
         Is used to redefine the operator <<.
@@ -3742,7 +3742,7 @@ class math_TrigonometricFunctionRoots:
         An exception is raised if there is an infinity of solutions.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints information on the current state of the object."""
 
 class math_TrigonometricEquationFunction(math_FunctionWithDerivative):
@@ -3855,7 +3855,7 @@ class math_Uzawa:
         when approximating a curve.
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints information on the current state of the object."""
 
 class math_ValueAndWeight:

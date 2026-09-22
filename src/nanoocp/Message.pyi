@@ -906,7 +906,7 @@ class Message_Messenger(nanoocp.Standard.Standard_Transient):
     def SendTrace(self, theMessage: nanoocp.TCollection.TCollection_AsciiString) -> None:
         """Short-cut to Send (theMessage, Message_Trace)"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Message:
@@ -1093,7 +1093,7 @@ class Message_Alert(nanoocp.Standard.Standard_Transient):
         Base implementation always returns true.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1168,7 +1168,7 @@ class Message_AlertExtended(Message_Alert):
         @return True if merged
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1624,7 +1624,7 @@ class Message_Attribute(nanoocp.Standard.Standard_Transient):
         @param theName a name for the alert
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Message_AttributeMeter(Message_Attribute):
@@ -1710,7 +1710,7 @@ class Message_AttributeMeter(Message_Attribute):
         @param theStartValue flag, if true, the start value is collected otherwise stop
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1751,7 +1751,7 @@ class Message_AttributeObject(Message_Attribute):
         @param theObject an instance
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Message_AttributeStream(Message_Attribute):
@@ -1768,7 +1768,7 @@ class Message_AttributeStream(Message_Attribute):
     def SetStream(self, theStream: TextIO) -> None:
         """Sets stream value"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
@@ -1843,7 +1843,7 @@ class Message_CompositeAlerts(nanoocp.Standard.Standard_Transient):
         @param theType an alert type
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
 class Message_ProgressScope:
@@ -2638,11 +2638,11 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Dumps all collected alerts to stream"""
 
     @overload
-    def Dump(self, theGravity: Message_Gravity) -> object:
+    def Dump(self, theGravity: Message_Gravity) -> str:
         """Dumps collected alerts with specified gravity to stream"""
 
     @overload
@@ -2665,7 +2665,7 @@ class Message_Report(nanoocp.Standard.Standard_Transient):
     def Merge(self, theOther: Message_Report | None, theGravity: Message_Gravity) -> None:
         """Merges alerts with specified gravity from theOther report into this"""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod

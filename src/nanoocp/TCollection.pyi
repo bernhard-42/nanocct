@@ -2,6 +2,7 @@
 
 from typing import TextIO, overload
 
+import nanoocp.LDOM
 import nanoocp.Message
 import nanoocp.Standard
 
@@ -148,6 +149,9 @@ class TCollection_AsciiString:
         @param[in] theString the string to copy
         @param[in] theOtherString the string to append
         """
+
+    @overload
+    def __init__(self, theFrom: nanoocp.LDOM.LDOMBasicString) -> None: ...
 
     @overload
     def AssignCat(self, theOther: str) -> None:
@@ -1088,7 +1092,7 @@ class TCollection_AsciiString:
         @param[in] theOther the string to prepend
         """
 
-    def Print(self) -> object:
+    def Print(self) -> str:
         """
         Displays this string on a stream.
         @param[in] theStream the output stream
@@ -1672,6 +1676,9 @@ class TCollection_ExtendedString:
     def __init__(self, theFrom: nanoocp.Message.Message_Msg) -> None: ...
 
     @overload
+    def __init__(self, theFrom: nanoocp.LDOM.LDOMBasicString) -> None: ...
+
+    @overload
     def AssignCat(self, theOther: TCollection_ExtendedString) -> None:
         """
         Appends the other extended string to this extended string.
@@ -2127,7 +2134,7 @@ class TCollection_ExtendedString:
         @return the number of 16-bit code units
         """
 
-    def Print(self) -> object:
+    def Print(self) -> str:
         """
         Displays this string on a stream.
         @param[in] theStream the output stream
@@ -2860,7 +2867,7 @@ class TCollection_HAsciiString(nanoocp.Standard.Standard_Transient):
         me = "abcde" , S = "ab\"
         """
 
-    def Print(self) -> object:
+    def Print(self) -> str:
         """Prints this string on the stream <astream>."""
 
     def RealValue(self) -> float:
@@ -3262,7 +3269,7 @@ class TCollection_HExtendedString(nanoocp.Standard.Standard_Transient):
     def String(self) -> TCollection_ExtendedString:
         """Returns the field myString"""
 
-    def Print(self) -> object:
+    def Print(self) -> str:
         """Displays <me>."""
 
     def IsSameState(self, other: TCollection_HExtendedString | None) -> bool: ...

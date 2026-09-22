@@ -217,7 +217,7 @@ class Standard_Type(Standard_Transient):
         Note that multiple inheritance is not supported.
         """
 
-    def Print(self) -> object:
+    def Print(self) -> str:
         """Prints type (address of descriptor + name) to a stream"""
 
     @staticmethod
@@ -432,7 +432,7 @@ class Standard_Dump:
         """Returns length value for enum type"""
 
     @staticmethod
-    def AddValuesSeparator() -> object:
+    def AddValuesSeparator() -> str:
         """@param theOStream source value"""
 
     @staticmethod
@@ -453,7 +453,7 @@ class Standard_Dump:
         """
 
     @staticmethod
-    def DumpKeyToClass(theKey: nanoocp.TCollection.TCollection_AsciiString, theField: nanoocp.TCollection.TCollection_AsciiString) -> object:
+    def DumpKeyToClass(theKey: nanoocp.TCollection.TCollection_AsciiString, theField: nanoocp.TCollection.TCollection_AsciiString) -> str:
         """
         Append into output value: "Name": { Field }
         @param[out] theOStream  stream to be fill with values
@@ -657,7 +657,7 @@ class Standard_GUID:
     def Assign(self, uid: Standard_UUID) -> None:
         """Assigns uid to this GUID."""
 
-    def ShallowDump(self) -> object:
+    def ShallowDump(self) -> str:
         """
         Display the GUID with the following format:
 

@@ -44,7 +44,7 @@ class LocalAnalysis:
 
     @overload
     @staticmethod
-    def Dump(surfconti: LocalAnalysis_SurfaceContinuity) -> object:
+    def Dump(surfconti: LocalAnalysis_SurfaceContinuity) -> str:
         """
         This class computes and gives tools to check the local
         continuity between two points situated on 2 curves.
@@ -54,7 +54,7 @@ class LocalAnalysis:
 
     @overload
     @staticmethod
-    def Dump(curvconti: LocalAnalysis_CurveContinuity) -> object:
+    def Dump(curvconti: LocalAnalysis_CurveContinuity) -> str:
         """This function gives information about a variable SurfaceContinuity"""
 
 class LocalAnalysis_CurveContinuity:

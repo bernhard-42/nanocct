@@ -103,6 +103,8 @@ public:
   gp_Pnt*& PtrRef() { return myPtr; }
   //! R-PTR-INCOMPLETE: a pointer to a class only forward-declared here, whose header exists (BOPAlgo_Builder::PDS()).
   Rules_Fwd* Fwd() const { return nullptr; }
+  //! R-CSTR-NULL: a const char* with a null default stays in the signature as `str | None = None` (LDOM_XmlWriter, STEPCAFControl_Writer::Write).
+  const char* Encoding(const char* const theEncoding = nullptr) const { return theEncoding == nullptr ? "none" : theEncoding; }
 
   //! A public nested class.
   struct Nested
@@ -609,6 +611,11 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     assert "const std::array<int, 3> &theNodes) { int theNodes_arr[3]; std::copy(theNodes.begin(), theNodes.end(), theNodes_arr);" in cpp
     assert '.def_prop_rw("myPeriod", [](const Rules_Value &self) { std::array<double, 3> a;' in cpp
     assert '.def("PtrRef", [](Rules_Value &self) { auto result = self.PtrRef(); return result; }, nb::rv_policy::reference' in cpp
+    # R-CSTR-NULL: the null-defaulted const char* is kept (unlike R-OPTIONAL-PTR) and takes str or None through nanoocp::OptionalCString
+    enc = _method(rules_ir, "Rules_Value", "Encoding")
+    assert enc.skip_reason is None and [(p.name, p.cstr_none, p.omitted, p.default) for p in enc.params] == [("theEncoding", True, False, "nullptr")]
+    assert ('.def("Encoding", [](const Rules_Value &self, nanoocp::OptionalCString theEncoding) { auto result = self.Encoding(theEncoding.ptr); return result; }, '
+            'nb::arg("theEncoding").none() = nb::none()') in cpp
 
 
 def test_ir_and_emitter_visualization_idioms(rules_ir):

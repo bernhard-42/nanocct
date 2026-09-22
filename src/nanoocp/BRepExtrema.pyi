@@ -287,7 +287,7 @@ class BRepExtrema_DistShapeShape:
         is situated on an Face of the second shape
         """
 
-    def Dump(self) -> object:
+    def Dump(self) -> str:
         """Prints on the stream o information on the current state of the object."""
 
     def SetFlag(self, F: nanoocp.Extrema.Extrema_ExtFlag) -> None:

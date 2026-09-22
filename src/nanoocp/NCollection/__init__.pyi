@@ -738,6 +738,7 @@ import nanoocp.BRepOffset
 import nanoocp.BRepTopAdaptor
 import nanoocp.BVH
 import nanoocp.Bnd
+import nanoocp.CDM
 import nanoocp.ChFiDS
 import nanoocp.Extrema
 import nanoocp.ExtremaPC
@@ -765,6 +766,7 @@ import nanoocp.Message
 from nanoocp.NCollection import (
     NCollection_Primes as NCollection_Primes
 )
+import nanoocp.PCDM
 import nanoocp.Plate
 import nanoocp.Poly
 import nanoocp.PrsMgr
@@ -1295,7 +1297,7 @@ class NCollection_Buffer(nanoocp.Standard.Standard_Transient):
     def Free(self) -> None:
         """De-allocate buffer."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -2559,6 +2561,12 @@ class NCollection_DataMap__TopoDS_Shape__opencascade_handle__NCollection_HArray2
     class Iterator(NCollection_DataMap.Iterator[nanoocp.TopoDS.TopoDS_Shape, nanoocp.NCollection.NCollection_HArray2__TopoDS_Shape]): ...
 class NCollection_Array2__TopoDS_Shape(NCollection_Array2[nanoocp.TopoDS.TopoDS_Shape]): ...
 class NCollection_HArray2__TopoDS_Shape(NCollection_HArray2[nanoocp.TopoDS.TopoDS_Shape]): ...
+class NCollection_DataMap__TCollection_ExtendedString__Handle_CDM_MetaData(NCollection_DataMap[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.CDM.CDM_MetaData]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_ExtendedString, nanoocp.CDM.CDM_MetaData]): ...
+class NCollection_Sequence__PCDM_Reference(NCollection_Sequence[nanoocp.PCDM.PCDM_Reference]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.PCDM.PCDM_Reference]): ...
+class NCollection_Sequence__Handle_PCDM_Document(NCollection_Sequence[nanoocp.PCDM.PCDM_Document]):
+    class Iterator(NCollection_Sequence.Iterator[nanoocp.PCDM.PCDM_Document]): ...
 class NCollection_Sequence__gp_Circ(NCollection_Sequence[nanoocp.gp.gp_Circ]):
     class Iterator(NCollection_Sequence.Iterator[nanoocp.gp.gp_Circ]): ...
 class NCollection_Sequence__gp_Lin(NCollection_Sequence[nanoocp.gp.gp_Lin]):

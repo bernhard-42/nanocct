@@ -253,7 +253,7 @@ class BRepFeat:
     def Tool(SRef: nanoocp.TopoDS.TopoDS_Shape, Fac: nanoocp.TopoDS.TopoDS_Face, Orf: nanoocp.TopAbs.TopAbs_Orientation) -> nanoocp.TopoDS.TopoDS_Solid: ...
 
     @staticmethod
-    def Print(SE: BRepFeat_StatusError) -> object:
+    def Print(SE: BRepFeat_StatusError) -> str:
         """
         Prints the Error description of the State <St> as a String on
         the Stream <S> and returns <S>.

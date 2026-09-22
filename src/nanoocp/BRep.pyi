@@ -396,7 +396,7 @@ class BRep_TFace(nanoocp.TopoDS.TopoDS_TFace):
         The new Face has no triangulation.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @overload
@@ -496,7 +496,7 @@ class BRep_PointRepresentation(nanoocp.Standard.Standard_Transient):
     @overload
     def Surface(self, S: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -546,7 +546,7 @@ class BRep_TVertex(nanoocp.TopoDS.TopoDS_TVertex):
     def EmptyCopy(self) -> nanoocp.TopoDS.TopoDS_TShape:
         """Returns a copy of the TShape with no sub-shapes."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1091,7 +1091,7 @@ class BRep_CurveRepresentation(nanoocp.Standard.Standard_Transient):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1134,7 +1134,7 @@ class BRep_GCurve(BRep_CurveRepresentation):
         This is called when the range is modified.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1169,7 +1169,7 @@ class BRep_Curve3D(BRep_GCurve):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1215,7 +1215,7 @@ class BRep_CurveOn2Surfaces(BRep_CurveRepresentation):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1270,7 +1270,7 @@ class BRep_CurveOnSurface(BRep_GCurve):
         This is called when the range is modified.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1335,7 +1335,7 @@ class BRep_CurveOnClosedSurface(BRep_CurveOnSurface):
         This is called when the range is modified.
         """
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1368,7 +1368,7 @@ class BRep_PointOnCurve(BRep_PointRepresentation):
     @overload
     def Curve(self, C: nanoocp.Geom.Geom_Curve | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1390,7 +1390,7 @@ class BRep_PointsOnSurface(BRep_PointRepresentation):
     @overload
     def Surface(self, S: nanoocp.Geom.Geom_Surface | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1426,7 +1426,7 @@ class BRep_PointOnCurveOnSurface(BRep_PointsOnSurface):
     @overload
     def PCurve(self, C: nanoocp.Geom2d.Geom2d_Curve | None) -> None: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1487,7 +1487,7 @@ class BRep_Polygon3D(BRep_CurveRepresentation):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1531,7 +1531,7 @@ class BRep_PolygonOnSurface(BRep_CurveRepresentation):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1566,7 +1566,7 @@ class BRep_PolygonOnClosedSurface(BRep_PolygonOnSurface):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1612,7 +1612,7 @@ class BRep_PolygonOnTriangulation(BRep_CurveRepresentation):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1647,7 +1647,7 @@ class BRep_PolygonOnClosedTriangulation(BRep_PolygonOnTriangulation):
     def Copy(self) -> BRep_CurveRepresentation:
         """Return a copy of this representation."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod
@@ -1716,7 +1716,7 @@ class BRep_TEdge(nanoocp.TopoDS.TopoDS_TEdge):
     def EmptyCopy(self) -> nanoocp.TopoDS.TopoDS_TShape:
         """Returns a copy of the TShape with no sub-shapes."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     @staticmethod

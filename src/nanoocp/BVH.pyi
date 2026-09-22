@@ -169,7 +169,7 @@ class BVH_Vec2i:
     def DY() -> BVH_Vec2i:
         """Construct DY unit vector."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: BVH_Vec2i, /) -> BVH_Vec2i: ...
@@ -402,7 +402,7 @@ class BVH_Vec3i:
     def DZ() -> BVH_Vec3i:
         """Construct DZ unit vector."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: BVH_Vec3i, /) -> BVH_Vec3i: ...
@@ -776,7 +776,7 @@ class BVH_Vec4i:
     @overload
     def __truediv__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
@@ -924,7 +924,7 @@ class BVH_Vec2f:
     def DY() -> BVH_Vec2f:
         """Construct DY unit vector."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
@@ -1072,7 +1072,7 @@ class BVH_Vec2d:
     def DY() -> BVH_Vec2d:
         """Construct DY unit vector."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: BVH_Vec2d, /) -> BVH_Vec2d: ...
@@ -1305,7 +1305,7 @@ class BVH_Vec3d:
     def DZ() -> BVH_Vec3d:
         """Construct DZ unit vector."""
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: BVH_Vec3d, /) -> BVH_Vec3d: ...
@@ -1679,7 +1679,7 @@ class BVH_Vec4d:
     @overload
     def __truediv__(self, arg: BVH_Vec4d, /) -> BVH_Vec4d: ...
 
-    def DumpJson(self, theDepth: int = -1) -> object:
+    def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
     def __add__(self, arg: BVH_Vec4d, /) -> BVH_Vec4d: ...
@@ -2022,7 +2022,7 @@ class BVH_Mat4f:
     def Adjoint(self) -> BVH_Mat4f:
         """Return adjoint (adjugate matrix, e.g. conjugate transpose)."""
 
-    def DumpJson(self, arg1: int) -> object:
+    def DumpJson(self, arg1: int) -> str:
         """Dumps the content of me into the stream"""
 
 class BVH_Mat4d:
@@ -2361,7 +2361,7 @@ class BVH_Mat4d:
     def Adjoint(self) -> BVH_Mat4d:
         """Return adjoint (adjugate matrix, e.g. conjugate transpose)."""
 
-    def DumpJson(self, arg1: int) -> object:
+    def DumpJson(self, arg1: int) -> str:
         """Dumps the content of me into the stream"""
 
 class BVH_TreeBaseTransient(nanoocp.Standard.Standard_Transient):
