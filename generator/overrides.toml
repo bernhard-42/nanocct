@@ -129,6 +129,9 @@ binary_packages = [
     "BinMDataStd",
     "BinMDocStd",
     "BinMFunction",
+    "BinDrivers",    # the full BinOcaf format (TKBin): shapes through BinMNaming/BinTools
+    "BinMDataXtd",
+    "BinMNaming",
 ]
 # Single members whose streams carry a document (binary or XML) inside a package whose other streams are text (DumpJson):
 # Class::method, every overload.

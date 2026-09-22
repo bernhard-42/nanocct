@@ -14,9 +14,10 @@ import nanoocp._TKShHealing  # noqa: F401
 import nanoocp._TKBO  # noqa: F401
 import nanoocp._TKCDF  # noqa: F401
 import nanoocp._TKLCAF  # noqa: F401
-import nanoocp._TKBinL  # noqa: F401
-import nanoocp._TKBool  # noqa: F401
 import nanoocp._TKCAF  # noqa: F401
+import nanoocp._TKBinL  # noqa: F401
+import nanoocp._TKBin  # noqa: F401
+import nanoocp._TKBool  # noqa: F401
 import nanoocp._TKFeat  # noqa: F401
 import nanoocp._TKFillet  # noqa: F401
 import nanoocp._TKHLR  # noqa: F401
