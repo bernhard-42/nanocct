@@ -80,10 +80,25 @@ def test_report():
     rows = read_report(REPORT)
     assert all(cat != "misc" for cat, _, _ in rows)
     msgs = [msg for _, _, msg in rows]
-    # std::bitset parameter (ShapeProcess::Perform) and a function-pointer constructor are inherent limits
-    assert any(m.startswith("ShapeProcess::Perform(") and "std::bitset" in m for m in msgs)
+    # the std::bitset overload of ShapeProcess::Perform is bound since the R-BITSET caster (2026-09-22); a
+    # function-pointer constructor is an inherent limit
+    assert not any("std::bitset" in m for m in msgs)
     assert any(m.startswith("ShapeProcess_UOperator::ShapeProcess_UOperator(): param 'func': function pointer") for m in msgs)
     # R-UNDEFINED: a constructor declared but never defined in libTKShHealing
     assert any(m.startswith("ShapeFix_WireSegment::ShapeFix_WireSegment(const TopoDS_Wire &, const TopAbs_Orientation): declared") for m in msgs)
     sigs = [l for l in ShapeFix.ShapeFix_WireSegment.__init__.__doc__.splitlines() if l.startswith("__init__(self")]
     assert len(sigs) == 3                                                            # (), (WireData, ori), copy
+
+
+def test_shape_process_operations_are_a_set_of_flags():
+    """R-BITSET: ShapeProcess::OperationsFlags is a std::bitset indexed by ShapeProcess::Operation, so Python passes
+    the set of enumerators. The name-taking Perform overload stays reachable because the caster rejects a str."""
+    from nanoocp.ShapeProcess import ShapeProcess, ShapeProcess_Context
+    assert ShapeProcess.ToOperationFlag("FixShape") == (ShapeProcess.FixShape, True)
+    assert ShapeProcess.ToOperationFlag("no-such-operation")[1] is False
+    overloads = [l for l in ShapeProcess.Perform.__doc__.splitlines() if l.startswith("Perform(")]
+    assert len(overloads) == 2
+    assert any("seq: str" in l for l in overloads) and any("theOperations: set[int]" in l for l in overloads)
+    context = ShapeProcess_Context()
+    assert ShapeProcess.Perform(context, set()) is False                    # nothing to do, no operator performed
+    assert ShapeProcess.Perform(context, "no-such-sequence") is False       # the str overload is still selected

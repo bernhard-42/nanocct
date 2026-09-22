@@ -653,6 +653,19 @@ class XSControl_Reader:
         @return the parameters for shape processing. Empty map if no parameters were set.
         """
 
+    def SetShapeProcessFlags(self, theFlags: set[int]) -> None:
+        """
+        Sets flags defining operations to be performed on shapes.
+        @param theFlags The flags defining operations to be performed on shapes.
+        """
+
+    def GetShapeProcessFlags(self) -> tuple[set[int], bool]:
+        """
+        Returns flags defining operations to be performed on shapes.
+        @return Pair of values defining operations to be performed on shapes and a boolean value
+        that indicates whether the flags were set.
+        """
+
 class XSControl_SelectForTransfer(nanoocp.IFSelect.IFSelect_SelectExtract):
     """
     This selection selects the entities which are recognised for

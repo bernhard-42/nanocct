@@ -19,6 +19,7 @@
 #include <nanobind/stl/vector.h>
 #include <algorithm>
 #include <array>
+#include <bitset>
 #include <tuple>
 #include <type_traits>
 
@@ -244,6 +245,69 @@ struct OptionalCString {
 
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
+
+// Design.md 6 R-BITSET: an std::bitset<N> is a set of flags indexed by an enumerator
+// (ShapeProcess::OperationsFlags = std::bitset<ShapeProcess::Operation::Last + 1>), so Python sees the set of the
+// indices whose bit is set: proc.ProcessShape(shape, {ShapeProcess.FixShape, ShapeProcess.SameParameter}).
+// nanobind's arithmetic enums are Python IntEnums, so the enumerators go in as ints and the plain ints that come
+// back compare and hash equal to them ({0, 1} == {ShapeProcess.DirectFaces, ShapeProcess.SameParameter}).
+// Any iterable of indices is accepted (set, frozenset, list, tuple); str, bytes and dict are rejected so that a
+// name-taking overload stays reachable (ShapeProcess::Perform(context, const char* seq, range)).
+template <size_t N> struct type_caster<std::bitset<N>> {
+    NB_TYPE_CASTER(std::bitset<N>, const_name("set[int]"))
+
+    bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
+        if (src.ptr() == nullptr || str_check(src.ptr()) || bytes_check(src.ptr()) || dict_check(src.ptr()))
+            return false;
+        PyObject *iterator = PyObject_GetIter(src.ptr());
+        if (iterator == nullptr) {
+            PyErr_Clear();
+            return false;
+        }
+        value.reset();
+        bool ok = true;
+        PyObject *item = nullptr;
+        while (ok && (item = PyIter_Next(iterator)) != nullptr) {
+            if (!int_check(item)) {
+                ok = false;
+            } else {
+                Py_ssize_t index = PyLong_AsSsize_t(item);
+                if (index < 0 || (size_t) index >= N)
+                    ok = false;
+                else
+                    value.set((size_t) index);
+            }
+            Py_DECREF(item);
+        }
+        Py_DECREF(iterator);
+        if (PyErr_Occurred() != nullptr) {
+            PyErr_Clear();
+            ok = false;
+        }
+        return ok;
+    }
+
+    static handle from_cpp(const std::bitset<N> &v, rv_policy, cleanup_list *) noexcept {
+        PyObject *out = PySet_New(nullptr);
+        if (out == nullptr) {
+            PyErr_Clear();
+            return handle();
+        }
+        for (size_t i = 0; i < N; ++i) {
+            if (!v.test(i))
+                continue;
+            PyObject *index = PyLong_FromSize_t(i);
+            if (index == nullptr || PySet_Add(out, index) != 0) {
+                Py_XDECREF(index);
+                Py_DECREF(out);
+                PyErr_Clear();
+                return handle();
+            }
+            Py_DECREF(index);
+        }
+        return out;
+    }
+};
 
 template <> struct type_caster<nanoocp::TextInput> {
     NB_TYPE_CASTER(nanoocp::TextInput, const_name("typing.TextIO"))

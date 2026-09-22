@@ -352,6 +352,20 @@ class Transfer_ActorOfTransientProcess(Transfer_ActorOfProcessForTransient):
         @return the parameters for shape processing. Empty map if no parameters were set.
         """
 
+    def SetProcessingFlags(self, theFlags: set[int]) -> None:
+        """
+        Sets flags defining operations to be performed on shapes.
+        @param theFlags The flags defining operations to be performed on shapes.
+        """
+
+    def GetProcessingFlags(self) -> tuple[set[int], bool]:
+        """
+        Returns flags defining operations to be performed on shapes.
+        @return Pair: the flags defining operations to be performed on shapes and a boolean value that
+        indicates
+        whether the flags were set.
+        """
+
     @staticmethod
     def get_type_name() -> str: ...
 
@@ -706,6 +720,19 @@ class Transfer_ActorOfFinderProcess(Transfer_ActorOfProcessForFinder):
         """
         Returns parameters for shape processing that was set by SetParameters() method.
         @return the parameters for shape processing. Empty map if no parameters were set.
+        """
+
+    def SetShapeProcessFlags(self, theFlags: set[int]) -> None:
+        """
+        Sets flags defining operations to be performed on shapes.
+        @param theFlags The flags defining operations to be performed on shapes.
+        """
+
+    def GetShapeProcessFlags(self) -> tuple[set[int], bool]:
+        """
+        Returns flags defining operations to be performed on shapes.
+        @return Pair of values defining operations to be performed on shapes and a boolean value
+        that indicates whether the flags were set.
         """
 
     @staticmethod

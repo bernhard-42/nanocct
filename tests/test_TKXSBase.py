@@ -6,15 +6,19 @@ import importlib
 
 import pytest
 
+from nanoocp.BRepGProp import BRepGProp
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanoocp.DE import DE_ShapeFixParameters, DE_Wrapper
 from nanoocp.IFSelect import (IFSelect_RetDone, IFSelect_RetError, IFSelect_ReturnStatus, IFSelect_SessionPilot,
                               IFSelect_WorkSession)
 from nanoocp.Interface import (Interface_Check, Interface_CheckIterator, Interface_EntityIterator, Interface_MSG,
                                Interface_Static)
+from nanoocp.GProp import GProp_GProps
+from nanoocp.Message import Message_ProgressRange
 from nanoocp.MoniTool import MoniTool_AttrList
+from nanoocp.ShapeProcess import ShapeProcess
 from nanoocp.Standard import Standard_DomainError
-from nanoocp.Transfer import Transfer_FinderProcess, Transfer_TransientProcess
+from nanoocp.Transfer import Transfer_ActorOfTransientProcess, Transfer_FinderProcess, Transfer_TransientProcess
 from nanoocp.TransferBRep import TransferBRep_ShapeBinder
 from nanoocp.XSAlgo import XSAlgo_ShapeProcessor
 from nanoocp.XSControl import XSControl_Reader, XSControl_WorkSession
@@ -90,12 +94,7 @@ def test_the_shape_processor_takes_the_de_parameters():
     processor = XSAlgo_ShapeProcessor(DE_ShapeFixParameters())
     assert type(processor).__name__ == "XSAlgo_ShapeProcessor"
     assert "nanoocp._TKDE" in Path(__file__).parents[1].joinpath("src/cpp/TKXSBase/_TKXSBase.cpp").read_text()
-    # ProcessShape takes a ShapeProcess::OperationsFlags (std::bitset) and stays unbound (2d); the reader-level entry
-    # point is the parameter struct, which XSControl_Reader takes directly.
-    assert not hasattr(XSAlgo_ShapeProcessor, "ProcessShape")
     assert hasattr(XSControl_Reader, "SetShapeFixParameters")
-    parameters = XSAlgo_ShapeProcessor.ParameterMap() if hasattr(XSAlgo_ShapeProcessor, "ParameterMap") else None
-    assert parameters is None or parameters.Extent() == 0
 
 
 def test_the_work_session_closes_tkde_signatures():
@@ -123,15 +122,38 @@ def test_session_pilot():
     assert pilot.Session() is session and pilot.RecordMode() is False
 
 
+def test_the_shape_process_flags_are_a_set_of_operations():
+    """R-BITSET: ShapeProcess::OperationsFlags is a std::bitset indexed by ShapeProcess::Operation; Python passes and
+    receives the set of enumerators (nanobind's arithmetic enums are IntEnums, so the plain ints that come back
+    compare equal). The flags live on the transfer actor -- XSControl_Reader forwards to it and has none without a
+    norm, so the round trip is tested where OCCT stores it (XSControl_Reader.cxx)."""
+    actor = Transfer_ActorOfTransientProcess()
+    assert actor.GetProcessingFlags() == (set(), False)
+    flags = {ShapeProcess.FixShape, ShapeProcess.SameParameter}
+    actor.SetProcessingFlags(flags)
+    stored, used = actor.GetProcessingFlags()
+    assert stored == flags and stored == {1, 15} and used is True
+    actor.SetProcessingFlags([0, 1])                                             # any iterable of indices is accepted
+    assert actor.GetProcessingFlags()[0] == {ShapeProcess.DirectFaces, ShapeProcess.SameParameter}
+    for bad in ({99}, "FixShape", {-1}, {"FixShape"}):
+        with pytest.raises(TypeError):
+            actor.SetProcessingFlags(bad)
+    processor = XSAlgo_ShapeProcessor(DE_ShapeFixParameters())
+    box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
+    processed = processor.ProcessShape(box, {ShapeProcess.FixShape}, Message_ProgressRange())
+    properties = GProp_GProps()
+    BRepGProp.VolumeProperties(processed, properties)
+    assert properties.Mass() == pytest.approx(6.0)                               # a clean box survives unchanged
+
+
 def test_report_categories():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert len(lines) == 56
+    assert len(lines) == 48
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    assert counts == {"raw-pointer": 19, "overload-collision": 9, "std": 8, "iterator": 5, "undefined": 5,
+    assert counts == {"raw-pointer": 19, "overload-collision": 9, "iterator": 5, "undefined": 5,
                       "rvalue": 3, "static-rename": 3, "template": 3, "conversion": 1}
-    # the std lines are all ShapeProcess::OperationsFlags (std::bitset) -- one gap, eight members (2d)
-    assert sum("bitset" in line for line in lines) == 8
+    assert not any("bitset" in line for line in lines)                           # closed by R-BITSET (2026-09-22)
     # the rvalue lines are the && twins of bound const& overloads, so nothing is lost
     assert all("SetShapeFixParameters" in line for line in lines if line.startswith("rvalue"))

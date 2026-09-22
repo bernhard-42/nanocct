@@ -108,6 +108,14 @@ void nanoocp_define_ShapeProcess(nb::module_ &m) {
         .def_static("Perform", static_cast<bool (*)(const occ::handle<ShapeProcess_Context> &, const char *const, const Message_ProgressRange &)>(&ShapeProcess::Perform), nb::arg("context").none(), nb::arg("seq"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Performs a specified sequence of operators on Context
 Resource file and other data should be already loaded
 to Context (including description of sequence seq))nbdoc")
+        .def_static("Perform", static_cast<bool (*)(const occ::handle<ShapeProcess_Context> &, const std::bitset<18> &, const Message_ProgressRange &)>(&ShapeProcess::Perform), nb::arg("theContext").none(), nb::arg("theOperations"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Performs a specified sequence of operators on @p theContext.
+@param theContext Context to perform operations on. Contains the shape to process
+and processing parameters. If processing parameters are not set, default values are
+used. Parameters should be in a scope of operation, for example, instead of
+"FromSTEP.FixShape.Tolerance3d"	we should use just "FixShape.Tolerance3d".
+@param theOperations Bitset of operations to perform.
+@param theProgress Progress indicator.
+@return true if at least one operation was performed, false otherwise.)nbdoc")
         .def_static("ToOperationFlag", static_cast<std::pair<ShapeProcess::Operation, bool> (*)(const char *)>(&ShapeProcess::ToOperationFlag), nb::arg("theName"), R"nbdoc(Converts operation name to operation flag.
 @param theName Operation name.
 @return Operation flag and true if the operation name is valid, false otherwise.)nbdoc");

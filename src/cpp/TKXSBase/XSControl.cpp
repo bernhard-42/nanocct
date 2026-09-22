@@ -483,7 +483,12 @@ if they are not present in @p theParameters.
 @param theParameters the parameters for shape processing.
 @param theAdditionalParameters the additional parameters for shape processing.)nbdoc")
         .def("GetShapeFixParameters", static_cast<const NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString> & (XSControl_Reader::*)() const>(&XSControl_Reader::GetShapeFixParameters), R"nbdoc(Returns parameters for shape processing that was set by SetParameters() method.
-@return the parameters for shape processing. Empty map if no parameters were set.)nbdoc");
+@return the parameters for shape processing. Empty map if no parameters were set.)nbdoc")
+        .def("SetShapeProcessFlags", static_cast<void (XSControl_Reader::*)(const std::bitset<18> &)>(&XSControl_Reader::SetShapeProcessFlags), nb::arg("theFlags"), R"nbdoc(Sets flags defining operations to be performed on shapes.
+@param theFlags The flags defining operations to be performed on shapes.)nbdoc")
+        .def("GetShapeProcessFlags", static_cast<const std::pair<std::bitset<18>, bool> & (XSControl_Reader::*)() const>(&XSControl_Reader::GetShapeProcessFlags), R"nbdoc(Returns flags defining operations to be performed on shapes.
+@return Pair of values defining operations to be performed on shapes and a boolean value
+that indicates whether the flags were set.)nbdoc");
     nanoocp_implicit_copy_ctor<XSControl_Reader>(nb::borrow<nb::class_<XSControl_Reader>>(m.attr("XSControl_Reader")));
     nb::implicitly_convertible<std::decay_t<const char *const>, XSControl_Reader>();
     nb::implicitly_convertible<std::decay_t<const occ::handle<XSControl_WorkSession> &>, XSControl_Reader>();

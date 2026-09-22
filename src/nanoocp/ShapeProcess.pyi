@@ -127,12 +127,27 @@ class ShapeProcess:
     def FindOperator(name: str) -> tuple[bool, ShapeProcess_Operator]:
         """Finds operator by its name"""
 
+    @overload
     @staticmethod
     def Perform(context: ShapeProcess_Context | None, seq: str, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> bool:
         """
         Performs a specified sequence of operators on Context
         Resource file and other data should be already loaded
         to Context (including description of sequence seq)
+        """
+
+    @overload
+    @staticmethod
+    def Perform(theContext: ShapeProcess_Context | None, theOperations: set[int], theProgress: nanoocp.Message.Message_ProgressRange = ...) -> bool:
+        """
+        Performs a specified sequence of operators on @p theContext.
+        @param theContext Context to perform operations on. Contains the shape to process
+        and processing parameters. If processing parameters are not set, default values are
+        used. Parameters should be in a scope of operation, for example, instead of
+        "FromSTEP.FixShape.Tolerance3d"	we should use just "FixShape.Tolerance3d".
+        @param theOperations Bitset of operations to perform.
+        @param theProgress Progress indicator.
+        @return true if at least one operation was performed, false otherwise.
         """
 
     @staticmethod

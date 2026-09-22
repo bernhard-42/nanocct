@@ -39,6 +39,7 @@ HEADER = """
 #include <NCollection_DefineAlloc.hxx>
 #include <utility>
 #include <gp_Trsf.hxx>
+#include <bitset>
 #include <mutex>
 
 class Rules_Fwd;
@@ -75,6 +76,9 @@ public:
   static std::mutex& LoadMutex() { static std::mutex aMutex; return aMutex; }
   //! A braced default (`= {}`): list-initialised, because static_cast from a braced-init-list is not C++.
   void Braced(const gp_XYZ& theXYZ = {}) const { (void)theXYZ; }
+  //! std::bitset<N> is a set of flag indices in Python (R-BITSET); its size is a non-type template argument.
+  void Flags(const std::bitset<4>& theFlags) const { (void)theFlags; }
+  std::bitset<4> GetFlags() const { return std::bitset<4>(); }
   //! Mutable reference to a primitive -> getter + SetValue Python addition.
   double& Value(int theIndex) { (void)theIndex; return myValue; }
   //! Static and instance method with the same name -> Static_s.
@@ -935,3 +939,16 @@ def test_a_braced_default_is_list_initialised(rules_ir):
     cpp = em.emit()
     assert 'nb::arg("theXYZ") = std::decay_t<const gp_XYZ &>{ }' in cpp
     assert "static_cast<std::decay_t<const gp_XYZ &>>({ })" not in cpp
+
+
+# Design.md 6 R-BITSET
+def test_a_bitset_is_a_set_of_indices(rules_ir):
+    """std::bitset<N> is cast to a Python set of the indices whose bit is set, so it is not reported as an unsupported
+    std type; its size is a non-type template argument (libclang gives an INVALID type, which the std check skips)."""
+    assert all("bitset" not in line for line in rules_ir.report), [l for l in rules_ir.report if "bitset" in l]
+    assert _method(rules_ir, "Rules_Value", "Flags").skip_reason is None
+    assert _method(rules_ir, "Rules_Value", "GetFlags").skip_reason is None
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert '.def("Flags"' in cpp and '.def("GetFlags"' in cpp

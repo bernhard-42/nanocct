@@ -77,6 +77,11 @@ If @p theParameters has some shape healing values, they will override the
 corresponding values from @p theShapeFixParameters.)nbdoc")
         .def(nb::init<const DE_ShapeFixParameters &>(), nb::arg("theParameters"), R"nbdoc(Constructor.
 @param theParameters Parameters to be used in the processing.)nbdoc")
+        .def("ProcessShape", static_cast<TopoDS_Shape (XSAlgo_ShapeProcessor::*)(const TopoDS_Shape &, const std::bitset<18> &, const Message_ProgressRange &)>(&XSAlgo_ShapeProcessor::ProcessShape), nb::arg("theShape"), nb::arg("theOperations"), nb::arg("theProgress"), R"nbdoc(Process the shape by applying the specified operations.
+@param theShape Shape to process.
+@param theOperations Operations to be performed.
+@param theProgress Progress indicator.
+@return Processed shape. May be the same as the input shape if no modifications were made.)nbdoc")
         .def("GetContext", static_cast<occ::handle<ShapeProcess_ShapeContext> (XSAlgo_ShapeProcessor::*)()>(&XSAlgo_ShapeProcessor::GetContext), R"nbdoc(Get the context of the last processing.
 Only valid after the ProcessShape() method was called.
 @return Shape context.)nbdoc")
@@ -91,6 +96,14 @@ Only valid after the ProcessShape() method was called.
 @param thePrecision Precision to use for checking.
 @param theIsSeam Flag indicating whether the edge is a seam edge.
 @return True if the pcurve was corrected, false if it was dropped.)nbdoc")
+        .def_static("ReadProcessingData", static_cast<std::pair<NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString>, std::bitset<18>> (*)(const TCollection_AsciiString &, const TCollection_AsciiString &)>(&XSAlgo_ShapeProcessor::ReadProcessingData), nb::arg("theFileResourceName"), nb::arg("theScopeResourceName"), R"nbdoc(Reads the parameter map from and operation flags from the file specified in static interface.
+@param theFileResourceName Name of the parameter in interface static that contains the name
+of the file. For example, parameter "read.iges.resource.name" may contain string
+"IGES".
+@param theScopeResourceName Name of the parameter in interface static that contains the name
+of the scope. For example, parameter "read.iges.sequence" may contain string
+"FromIGES".
+@return Read parameter map.)nbdoc")
         .def_static("FillParameterMap", static_cast<void (*)(const DE_ShapeFixParameters &, const bool, NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString> &)>(&XSAlgo_ShapeProcessor::FillParameterMap), nb::arg("theParameters"), nb::arg("theIsReplace"), nb::arg("theMap"), R"nbdoc(Fill the parameter map with the values from the specified parameters.
 @param theParameters Parameters to be used in the processing.
 @param theIsForce Flag indicating whether parameter should be replaced if it already exists in

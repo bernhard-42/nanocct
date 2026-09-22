@@ -53,7 +53,8 @@ _UNSUPPORTED_RE = re.compile(
 _UNSUPPORTED_STD_RE = re.compile(r"std::(__\w+::)?(locale|thread|mutex|atomic|type_info|exception_ptr)\b")
 # std templates nanobind casts (nanobind/stl/*.h, all included from nanoocp_common.h)
 _STD_TEMPLATES_OK = {"shared_ptr", "unique_ptr", "vector", "map", "unordered_map", "set", "unordered_set", "pair",
-                     "optional", "function", "tuple", "array", "variant", "list", "basic_string", "basic_string_view"}
+                     "optional", "function", "tuple", "array", "variant", "list", "basic_string", "basic_string_view",
+                     "bitset"}   # R-BITSET: set[int] of the set bits' indices (its size is a non-type argument, kind INVALID)
 
 
 def _resource_dir() -> str | None:

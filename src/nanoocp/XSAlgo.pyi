@@ -121,6 +121,15 @@ class XSAlgo_ShapeProcessor:
     @overload
     def __init__(self, theOther: XSAlgo_ShapeProcessor) -> None: ...
 
+    def ProcessShape(self, theShape: nanoocp.TopoDS.TopoDS_Shape, theOperations: set[int], theProgress: nanoocp.Message.Message_ProgressRange) -> nanoocp.TopoDS.TopoDS_Shape:
+        """
+        Process the shape by applying the specified operations.
+        @param theShape Shape to process.
+        @param theOperations Operations to be performed.
+        @param theProgress Progress indicator.
+        @return Processed shape. May be the same as the input shape if no modifications were made.
+        """
+
     def GetContext(self) -> nanoocp.ShapeProcess.ShapeProcess_ShapeContext:
         """
         Get the context of the last processing.
@@ -152,6 +161,19 @@ class XSAlgo_ShapeProcessor:
         @param thePrecision Precision to use for checking.
         @param theIsSeam Flag indicating whether the edge is a seam edge.
         @return True if the pcurve was corrected, false if it was dropped.
+        """
+
+    @staticmethod
+    def ReadProcessingData(theFileResourceName: nanoocp.TCollection.TCollection_AsciiString, theScopeResourceName: nanoocp.TCollection.TCollection_AsciiString) -> tuple[nanoocp.NCollection.NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.TCollection.TCollection_AsciiString], set[int]]:
+        """
+        Reads the parameter map from and operation flags from the file specified in static interface.
+        @param theFileResourceName Name of the parameter in interface static that contains the name
+        of the file. For example, parameter "read.iges.resource.name" may contain string
+        "IGES".
+        @param theScopeResourceName Name of the parameter in interface static that contains the name
+        of the scope. For example, parameter "read.iges.sequence" may contain string
+        "FromIGES".
+        @return Read parameter map.
         """
 
     @staticmethod

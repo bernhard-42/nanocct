@@ -1,8 +1,7 @@
-# nanoOCP generator report for TKShHealing: 12 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKShHealing: 11 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # overload-collision: 8
 # raw-pointer: 1
-# std: 1
 # template: 1
 # undefined: 1
 overload-collision	ShapeAnalysis	ShapeAnalysis_FreeBounds::ConnectEdgesToWires(const occ::handle<NCollection_HSequence<TopoDS_Shape>> &, const double, const bool, occ::handle<NCollection_HSequence<TopoDS_Shape>> &): same Python signature as another overload after out-param removal -> bound as ConnectEdgesToWires__NCollection_HSequence__TopoDS_Shape
@@ -14,6 +13,5 @@ overload-collision	ShapeAnalysis	ShapeAnalysis_Wire::CheckShapeConnect(double &,
 overload-collision	ShapeProcess	ShapeProcess_ShapeContext::Messages() const: const twin of a less const overload -> not bound
 overload-collision	ShapeUpgrade	ShapeUpgrade_UnifySameDomain::History() const: const twin of a less const overload -> not bound
 raw-pointer	ShapeProcess	ShapeProcess_UOperator::ShapeProcess_UOperator(): param 'func': function pointer
-std	ShapeProcess	ShapeProcess::Perform(const occ::handle<ShapeProcess_Context> &): param 'theOperations': std::bitset
 template	ShapeAnalysis	ShapeAnalysis_BoxBndTreeSelector: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 undefined	ShapeFix	ShapeFix_WireSegment::ShapeFix_WireSegment(const TopoDS_Wire &, const TopAbs_Orientation): declared in the header, no definition in libTKShHealing

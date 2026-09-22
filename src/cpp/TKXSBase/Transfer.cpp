@@ -391,6 +391,12 @@ if they are not present in @p theParameters.
 @param theAdditionalParameters the additional parameters for shape processing.)nbdoc")
         .def("GetShapeFixParameters", static_cast<const NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString> & (Transfer_ActorOfTransientProcess::*)() const>(&Transfer_ActorOfTransientProcess::GetShapeFixParameters), R"nbdoc(Returns parameters for shape processing that was set by SetParameters() method.
 @return the parameters for shape processing. Empty map if no parameters were set.)nbdoc")
+        .def("SetProcessingFlags", static_cast<void (Transfer_ActorOfTransientProcess::*)(const std::bitset<18> &)>(&Transfer_ActorOfTransientProcess::SetProcessingFlags), nb::arg("theFlags"), R"nbdoc(Sets flags defining operations to be performed on shapes.
+@param theFlags The flags defining operations to be performed on shapes.)nbdoc")
+        .def("GetProcessingFlags", static_cast<const std::pair<std::bitset<18>, bool> & (Transfer_ActorOfTransientProcess::*)() const>(&Transfer_ActorOfTransientProcess::GetProcessingFlags), R"nbdoc(Returns flags defining operations to be performed on shapes.
+@return Pair: the flags defining operations to be performed on shapes and a boolean value that
+indicates
+whether the flags were set.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Transfer_ActorOfTransientProcess::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Transfer_ActorOfTransientProcess::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Transfer_ActorOfTransientProcess::*)() const>(&Transfer_ActorOfTransientProcess::DynamicType));
@@ -533,6 +539,11 @@ if they are not present in @p theParameters.
 @param theAdditionalParameters the additional parameters for shape processing.)nbdoc")
         .def("GetShapeFixParameters", static_cast<const NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString> & (Transfer_ActorOfFinderProcess::*)() const>(&Transfer_ActorOfFinderProcess::GetShapeFixParameters), R"nbdoc(Returns parameters for shape processing that was set by SetParameters() method.
 @return the parameters for shape processing. Empty map if no parameters were set.)nbdoc")
+        .def("SetShapeProcessFlags", static_cast<void (Transfer_ActorOfFinderProcess::*)(const std::bitset<18> &)>(&Transfer_ActorOfFinderProcess::SetShapeProcessFlags), nb::arg("theFlags"), R"nbdoc(Sets flags defining operations to be performed on shapes.
+@param theFlags The flags defining operations to be performed on shapes.)nbdoc")
+        .def("GetShapeProcessFlags", static_cast<const std::pair<std::bitset<18>, bool> & (Transfer_ActorOfFinderProcess::*)() const>(&Transfer_ActorOfFinderProcess::GetShapeProcessFlags), R"nbdoc(Returns flags defining operations to be performed on shapes.
+@return Pair of values defining operations to be performed on shapes and a boolean value
+that indicates whether the flags were set.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Transfer_ActorOfFinderProcess::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&Transfer_ActorOfFinderProcess::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Transfer_ActorOfFinderProcess::*)() const>(&Transfer_ActorOfFinderProcess::DynamicType));

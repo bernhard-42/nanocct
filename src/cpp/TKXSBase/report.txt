@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKXSBase: 56 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKXSBase: 48 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # conversion: 1
 # iterator: 5
@@ -6,7 +6,6 @@
 # raw-pointer: 19
 # rvalue: 3
 # static-rename: 3
-# std: 8
 # template: 3
 # undefined: 5
 conversion	Interface	Interface_MSG::operator const char *: conversion operator to an unsupported type
@@ -49,14 +48,6 @@ rvalue	XSControl	XSControl_Reader::SetShapeFixParameters(): param 'theParameters
 static-rename	MoniTool	MoniTool_Timer::Start: static overloads renamed to Start_s (instance method of same name exists)
 static-rename	MoniTool	MoniTool_Timer::Stop: static overloads renamed to Stop_s (instance method of same name exists)
 static-rename	MoniTool	MoniTool_Timer::Timer: static overloads renamed to Timer_s (instance method of same name exists)
-std	Transfer	Transfer_ActorOfFinderProcess::GetShapeProcessFlags(): return: std::pair of std::bitset
-std	Transfer	Transfer_ActorOfFinderProcess::SetShapeProcessFlags(): param 'theFlags': std::bitset
-std	Transfer	Transfer_ActorOfTransientProcess::GetProcessingFlags(): return: std::pair of std::bitset
-std	Transfer	Transfer_ActorOfTransientProcess::SetProcessingFlags(): param 'theFlags': std::bitset
-std	XSAlgo	XSAlgo_ShapeProcessor::ProcessShape(const TopoDS_Shape &): param 'theOperations': std::bitset
-std	XSAlgo	XSAlgo_ShapeProcessor::ReadProcessingData(const TCollection_AsciiString &, const TCollection_AsciiString &): return: std::pair of std::bitset
-std	XSControl	XSControl_Reader::GetShapeProcessFlags(): return: std::pair of std::bitset
-std	XSControl	XSControl_Reader::SetShapeProcessFlags(): param 'theFlags': std::bitset
 template	MoniTool	NCollection_DataMap<const char *, opencascade::handle<MoniTool_Timer>, Standard_CStringHasher>: template argument const char * is a raw pointer -> instantiation skipped
 template	Transfer	Transfer_ProcessForFinder::FindTypedTransient: template member
 template	Transfer	Transfer_ProcessForFinder::GetTypedTransient: template member
