@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 import tomllib
+from fnmatch import fnmatch
 from pathlib import Path
 
 from clang import cindex
@@ -627,7 +628,10 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             allow_streams: bool = True) -> tuple[list[Param], str | None]:
     """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
     params: list[Param] = []
-    inout = qualified in _INOUT or "*::" + qualified.rsplit("::", 1)[-1] in _INOUT   # "*::InitFromJson": every class
+    # overrides.toml [inout] entries are glob patterns on the qualified name: "gp_Trsf::Transforms" exactly,
+    # "*::InitFromJson" for every class, "DE*_Provider::Read" for every DataExchange provider (each one repeats the
+    # same personizeWS(theWS) body, and forgetting one only shows up as four overload collisions in its report)
+    inout = any(fnmatch(qualified, pattern) for pattern in _INOUT)
     binary = qualified in _BINARY_MEMBERS                                              # R-STREAM-OUT/IN: a document stream in a text package
     if members is None:
         members = set()

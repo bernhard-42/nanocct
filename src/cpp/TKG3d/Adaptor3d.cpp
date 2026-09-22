@@ -390,14 +390,14 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
     nb::borrow<nb::class_<Adaptor3d_InterFunc>>(m.attr("Adaptor3d_InterFunc"))
         .def(nb::init<const occ::handle<Adaptor2d_Curve2d> &, const double, const int>(), nb::arg("C").none(), nb::arg("FixVal"), nb::arg("Fix"), R"nbdoc(build the function U(t)=FixVal if Fix =1 or
 V(t)=FixVal if Fix=2)nbdoc")
-        .def("Value", [](Adaptor3d_InterFunc &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(computes the value <F>of the function for the variable <X>.
+        .def("Value", [](Adaptor3d_InterFunc &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(computes the value <F>of the function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Derivative", [](Adaptor3d_InterFunc &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"), R"nbdoc(computes the derivative <D> of the function
+        .def("Derivative", [](Adaptor3d_InterFunc &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"), R"nbdoc(computes the derivative <D> of the function
 for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Values", [](Adaptor3d_InterFunc &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"), R"nbdoc(computes the value <F> and the derivative <D> of the
+        .def("Values", [](Adaptor3d_InterFunc &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"), R"nbdoc(computes the value <F> and the derivative <D> of the
 function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc");

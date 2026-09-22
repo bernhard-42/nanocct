@@ -400,7 +400,7 @@ For orders > 3, uses basis curve DN method.
     nb::borrow<nb::class_<Geom2dGridEval_OtherCurve>>(m.attr("Geom2dGridEval_OtherCurve"))
         .def(nb::init<const Adaptor2d_Curve2d &>(), nb::arg("theCurve"), R"nbdoc(Constructor with curve adaptor reference.
 @param theCurve reference to 2D curve adaptor (must remain valid))nbdoc")
-        .def("Curve", [](const Geom2dGridEval_OtherCurve &self) { opencascade::handle<Adaptor2d_Curve2d> result(&(self.Curve())); return result; }, R"nbdoc(Returns the curve adaptor reference.)nbdoc")
+        .def("Curve", [](const Geom2dGridEval_OtherCurve &self) { opencascade::handle<Adaptor2d_Curve2d> nanoocp_result(&(self.Curve())); return nanoocp_result; }, R"nbdoc(Returns the curve adaptor reference.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt2d> (Geom2dGridEval_OtherCurve::*)(const NCollection_Array1<double> &) const>(&Geom2dGridEval_OtherCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
 @param theParams array of parameter values
 @return array of evaluated points (1-based indexing),

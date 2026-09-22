@@ -291,7 +291,7 @@ A TransferDispatch is created as a CopyTool in which the
 Control is set to TransientProcess)nbdoc")
         .def(nb::init<const occ::handle<Interface_InterfaceModel> &, const occ::handle<Interface_Protocol> &>(), nb::arg("amodel").none(), nb::arg("protocol").none(), R"nbdoc(Same as above, but Library is defined through a Protocol)nbdoc")
         .def("TransientProcess", static_cast<occ::handle<Transfer_TransientProcess> (Transfer_TransferDispatch::*)() const>(&Transfer_TransferDispatch::TransientProcess), R"nbdoc(Returns the content of Control Object, as a TransientProcess)nbdoc")
-        .def("Copy", [](Transfer_TransferDispatch &self, const occ::handle<Standard_Transient> & entfrom, const bool mapped, const bool errstat) { occ::handle<Standard_Transient> entto{}; auto result = self.Copy(entfrom, entto, mapped, errstat); return std::make_tuple(result, entto); }, nb::arg("entfrom").none(), nb::arg("mapped"), nb::arg("errstat"), R"nbdoc(Copies an Entity by calling the method Transferring from the
+        .def("Copy", [](Transfer_TransferDispatch &self, const occ::handle<Standard_Transient> & entfrom, const bool mapped, const bool errstat) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.Copy(entfrom, entto, mapped, errstat); return std::make_tuple(nanoocp_result, entto); }, nb::arg("entfrom").none(), nb::arg("mapped"), nb::arg("errstat"), R"nbdoc(Copies an Entity by calling the method Transferring from the
 TransferProcess. If this called produces a Null Binder, then
 the standard, inherited Copy is called)nbdoc");
     nanoocp_implicit_copy_ctor<Transfer_TransferDispatch>(nb::borrow<nb::class_<Transfer_TransferDispatch>>(m.attr("Transfer_TransferDispatch")));
@@ -436,7 +436,7 @@ of ValueType, unless it is for a non-handled object)nbdoc")
 with the same name if already exists))nbdoc")
         .def("RemoveAttribute", static_cast<bool (Transfer_Finder::*)(const char *const)>(&Transfer_Finder::RemoveAttribute), nb::arg("name"), R"nbdoc(Removes an attribute
 Returns True when done, False if this attribute did not exist)nbdoc")
-        .def("GetAttribute", [](const Transfer_Finder &self, const char *const name, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> val{}; auto result = self.GetAttribute(name, type, val); return std::make_tuple(result, val); }, nb::arg("name"), nb::arg("type").none(), R"nbdoc(Returns an attribute from its name, filtered by a type
+        .def("GetAttribute", [](const Transfer_Finder &self, const char *const name, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.GetAttribute(name, type, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("name"), nb::arg("type").none(), R"nbdoc(Returns an attribute from its name, filtered by a type
 If no attribute has this name, or if it is not kind of this
 type, <val> is Null and returned value is False
 Else, it is True)nbdoc")
@@ -446,13 +446,13 @@ Else, it is True)nbdoc")
 ParamInt , ParamReal , ParamText (String) , ParamIdent (any)
 or ParamVoid (not recorded))nbdoc")
         .def("SetIntegerAttribute", static_cast<void (Transfer_Finder::*)(const char *const, const int)>(&Transfer_Finder::SetIntegerAttribute), nb::arg("name"), nb::arg("val"), R"nbdoc(Adds an integer value for an attribute)nbdoc")
-        .def("GetIntegerAttribute", [](const Transfer_Finder &self, const char *const name) { int val{}; auto result = self.GetIntegerAttribute(name, val); return std::make_tuple(result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as integer
+        .def("GetIntegerAttribute", [](const Transfer_Finder &self, const char *const name) { int val{}; auto nanoocp_result = self.GetIntegerAttribute(name, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as integer
 If no attribute has this name, or not an integer,
 <val> is 0 and returned value is False
 Else, it is True)nbdoc")
         .def("IntegerAttribute", static_cast<int (Transfer_Finder::*)(const char *const) const>(&Transfer_Finder::IntegerAttribute), nb::arg("name"), R"nbdoc(Returns an integer attribute from its name. 0 if not recorded)nbdoc")
         .def("SetRealAttribute", static_cast<void (Transfer_Finder::*)(const char *const, const double)>(&Transfer_Finder::SetRealAttribute), nb::arg("name"), nb::arg("val"), R"nbdoc(Adds a real value for an attribute)nbdoc")
-        .def("GetRealAttribute", [](const Transfer_Finder &self, const char *const name) { double val{}; auto result = self.GetRealAttribute(name, val); return std::make_tuple(result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as real
+        .def("GetRealAttribute", [](const Transfer_Finder &self, const char *const name) { double val{}; auto nanoocp_result = self.GetRealAttribute(name, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as real
 If no attribute has this name, or not a real
 <val> is 0.0 and returned value is False
 Else, it is True)nbdoc")
@@ -559,7 +559,7 @@ See Binder itself)nbdoc")
 (void) if no result is defined)nbdoc")
         .def("SetResult", static_cast<void (Transfer_SimpleBinderOfTransient::*)(const occ::handle<Standard_Transient> &)>(&Transfer_SimpleBinderOfTransient::SetResult), nb::arg("res").none(), R"nbdoc(Defines the Result)nbdoc")
         .def("Result", static_cast<const occ::handle<Standard_Transient> & (Transfer_SimpleBinderOfTransient::*)() const>(&Transfer_SimpleBinderOfTransient::Result), R"nbdoc(Returns the defined Result, if there is one)nbdoc")
-        .def_static("GetTypedResult", [](const occ::handle<Transfer_Binder> & bnd, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> res{}; auto result = Transfer_SimpleBinderOfTransient::GetTypedResult(bnd, atype, res); return std::make_tuple(result, res); }, nb::arg("bnd").none(), nb::arg("atype").none(), R"nbdoc(Returns a transient result according to its type (IsKind)
+        .def_static("GetTypedResult", [](const occ::handle<Transfer_Binder> & bnd, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> res{}; auto nanoocp_result = Transfer_SimpleBinderOfTransient::GetTypedResult(bnd, atype, res); return std::make_tuple(nanoocp_result, res); }, nb::arg("bnd").none(), nb::arg("atype").none(), R"nbdoc(Returns a transient result according to its type (IsKind)
 i.e. the result itself if IsKind(atype), else searches in
 NextResult, until first found, then returns True
 If not found, returns False (res is NOT touched)
@@ -594,7 +594,7 @@ for a direct call, if the basic methods do not suffice)nbdoc")
         .def("StartingModel", static_cast<const occ::handle<Interface_InterfaceModel> & (Transfer_DispatchControl::*)() const>(&Transfer_DispatchControl::StartingModel), R"nbdoc(Returns the Model from which the transfer is to be done)nbdoc")
         .def("Clear", static_cast<void (Transfer_DispatchControl::*)()>(&Transfer_DispatchControl::Clear), R"nbdoc(Clears the List of Copied Results)nbdoc")
         .def("Bind", static_cast<void (Transfer_DispatchControl::*)(const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &)>(&Transfer_DispatchControl::Bind), nb::arg("ent").none(), nb::arg("res").none(), R"nbdoc(Binds a (Transient) Result to a (Transient) Starting Entity)nbdoc")
-        .def("Search", [](const Transfer_DispatchControl &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto result = self.Search(ent, res); return std::make_tuple(result, res); }, nb::arg("ent").none(), R"nbdoc(Searches for the Result bound to a Starting Entity
+        .def("Search", [](const Transfer_DispatchControl &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto nanoocp_result = self.Search(ent, res); return std::make_tuple(nanoocp_result, res); }, nb::arg("ent").none(), R"nbdoc(Searches for the Result bound to a Starting Entity
 If Found, returns True and fills <res>
 Else, returns False and nullifies <res>)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&Transfer_DispatchControl::get_type_name))
@@ -720,7 +720,7 @@ accept Multiple Binding.
 Considers a category number, by default 0)nbdoc")
         .def("AddMultiple", static_cast<void (Transfer_ProcessForFinder::*)(const occ::handle<Transfer_Finder> &, const occ::handle<Standard_Transient> &)>(&Transfer_ProcessForFinder::AddMultiple), nb::arg("start").none(), nb::arg("res").none(), R"nbdoc(Adds an item to a list of results bound to a starting object.
 Considers a category number, by default 0, for all results)nbdoc")
-        .def("FindTypedTransient", [](const Transfer_ProcessForFinder &self, const occ::handle<Transfer_Finder> & start, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto result = self.FindTypedTransient(start, atype, val); return std::make_tuple(result, val); }, nb::arg("start").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result attached to a starting object,
+        .def("FindTypedTransient", [](const Transfer_ProcessForFinder &self, const occ::handle<Transfer_Finder> & start, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.FindTypedTransient(start, atype, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("start").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result attached to a starting object,
 according to its type, by criterium IsKind(atype)
 
 In case of multiple result, explores the list and gives in
@@ -731,7 +731,7 @@ Else, returns False (<val> is not touched, not even nullified)
 This syntactic form avoids to do DownCast : if a result is
 found with the good type, it is loaded in <val> and can be
 immediately used, well initialised)nbdoc")
-        .def("GetTypedTransient", [](const Transfer_ProcessForFinder &self, const occ::handle<Transfer_Binder> & binder, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto result = self.GetTypedTransient(binder, atype, val); return std::make_tuple(result, val); }, nb::arg("binder").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result recorded in a Binder, whatever
+        .def("GetTypedTransient", [](const Transfer_ProcessForFinder &self, const occ::handle<Transfer_Binder> & binder, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.GetTypedTransient(binder, atype, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("binder").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result recorded in a Binder, whatever
 this Binder is recorded or not in <me>
 
 This is strictly equivalent to the class method GetTypedResult
@@ -1093,7 +1093,7 @@ accept Multiple Binding.
 Considers a category number, by default 0)nbdoc")
         .def("AddMultiple", static_cast<void (Transfer_ProcessForTransient::*)(const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &)>(&Transfer_ProcessForTransient::AddMultiple), nb::arg("start").none(), nb::arg("res").none(), R"nbdoc(Adds an item to a list of results bound to a starting object.
 Considers a category number, by default 0, for all results)nbdoc")
-        .def("FindTypedTransient", [](const Transfer_ProcessForTransient &self, const occ::handle<Standard_Transient> & start, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto result = self.FindTypedTransient(start, atype, val); return std::make_tuple(result, val); }, nb::arg("start").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result attached to a starting object,
+        .def("FindTypedTransient", [](const Transfer_ProcessForTransient &self, const occ::handle<Standard_Transient> & start, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.FindTypedTransient(start, atype, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("start").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result attached to a starting object,
 according to its type, by criterium IsKind(atype)
 
 In case of multiple result, explores the list and gives in
@@ -1104,7 +1104,7 @@ Else, returns False (<val> is not touched, not even nullified)
 This syntactic form avoids to do DownCast : if a result is
 found with the good type, it is loaded in <val> and can be
 immediately used, well initialised)nbdoc")
-        .def("GetTypedTransient", [](const Transfer_ProcessForTransient &self, const occ::handle<Transfer_Binder> & binder, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto result = self.GetTypedTransient(binder, atype, val); return std::make_tuple(result, val); }, nb::arg("binder").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result recorded in a Binder, whatever
+        .def("GetTypedTransient", [](const Transfer_ProcessForTransient &self, const occ::handle<Transfer_Binder> & binder, const occ::handle<Standard_Type> & atype) { occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.GetTypedTransient(binder, atype, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("binder").none(), nb::arg("atype").none(), R"nbdoc(Searches for a transient result recorded in a Binder, whatever
 this Binder is recorded or not in <me>
 
 This is strictly equivalent to the class method GetTypedResult
@@ -1400,7 +1400,7 @@ on Integrity, to give information significant for each norm.)nbdoc")
         .def("Graph", static_cast<const Interface_Graph & (Transfer_TransientProcess::*)() const>(&Transfer_TransientProcess::Graph))
         .def("SetContext", static_cast<void (Transfer_TransientProcess::*)(const char *const, const occ::handle<Standard_Transient> &)>(&Transfer_TransientProcess::SetContext), nb::arg("name"), nb::arg("ctx").none(), R"nbdoc(Sets a Context : according to receiving appli, to be
 interpreted by the Actor)nbdoc")
-        .def("GetContext", [](const Transfer_TransientProcess &self, const char *const name, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> ctx{}; auto result = self.GetContext(name, type, ctx); return std::make_tuple(result, ctx); }, nb::arg("name"), nb::arg("type").none(), R"nbdoc(Returns the Context attached to a name, if set and if it is
+        .def("GetContext", [](const Transfer_TransientProcess &self, const char *const name, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> ctx{}; auto nanoocp_result = self.GetContext(name, type, ctx); return std::make_tuple(nanoocp_result, ctx); }, nb::arg("name"), nb::arg("type").none(), R"nbdoc(Returns the Context attached to a name, if set and if it is
 Kind of the type, else a Null Handle
 Returns True if OK, False if no Context)nbdoc")
         .def("Context", static_cast<NCollection_DataMap<TCollection_AsciiString, opencascade::handle<Standard_Transient>, NCollection_DefaultHasher<TCollection_AsciiString>> & (Transfer_TransientProcess::*)()>(&Transfer_TransientProcess::Context), nb::rv_policy::reference_internal, R"nbdoc(Returns (modifiable) the whole definition of Context

@@ -526,8 +526,6 @@ void nanoocp_templates_StepBasic(nb::module_ &m) {
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<opencascade::handle<StepBasic_Product>>(home, "NCollection_HArray1__Handle_StepBasic_Product"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<opencascade::handle<StepBasic_ProductContext>>(home, "NCollection_Array1__Handle_StepBasic_ProductContext"); }
     { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<opencascade::handle<StepBasic_ProductContext>>(home, "NCollection_HArray1__Handle_StepBasic_ProductContext"); }
-    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_Array1<opencascade::handle<TCollection_HAsciiString>>(home, "NCollection_Array1__Handle_TCollection_HAsciiString"); }
-    { nb::module_ home = nb::module_::import_("nanoocp._TKernel.NCollection"); nanoocp::bind_NCollection_HArray1<opencascade::handle<TCollection_HAsciiString>>(home, "NCollection_HArray1__Handle_TCollection_HAsciiString"); }
 }
 
 void nanoocp_define_StepBasic(nb::module_ &m) {

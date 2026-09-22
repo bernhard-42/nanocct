@@ -306,7 +306,7 @@ false otherwise.)nbdoc");
     nb::borrow<nb::class_<CDF_StoreList>>(m.attr("CDF_StoreList"))
         .def(nb::new_([](const occ::handle<CDM_Document> & aDocument) { return opencascade::handle<CDF_StoreList>(new CDF_StoreList(aDocument)); }), nb::arg("aDocument").none())
         .def("IsConsistent", static_cast<bool (CDF_StoreList::*)() const>(&CDF_StoreList::IsConsistent))
-        .def("Store", [](CDF_StoreList &self, TCollection_ExtendedString & aStatusAssociatedText, const Message_ProgressRange & theRange) { occ::handle<CDM_MetaData> aMetaData{}; auto result = self.Store(aMetaData, aStatusAssociatedText, theRange); return std::make_tuple(result, aMetaData); }, nb::arg("aStatusAssociatedText"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(stores each object of the storelist in the reverse
+        .def("Store", [](CDF_StoreList &self, TCollection_ExtendedString & aStatusAssociatedText, const Message_ProgressRange & theRange) { occ::handle<CDM_MetaData> aMetaData{}; auto nanoocp_result = self.Store(aMetaData, aStatusAssociatedText, theRange); return std::make_tuple(nanoocp_result, aMetaData); }, nb::arg("aStatusAssociatedText"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(stores each object of the storelist in the reverse
 order of which they had been added.)nbdoc")
         .def("Init", static_cast<void (CDF_StoreList::*)()>(&CDF_StoreList::Init))
         .def("More", static_cast<bool (CDF_StoreList::*)() const>(&CDF_StoreList::More))

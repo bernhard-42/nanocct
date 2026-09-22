@@ -146,7 +146,7 @@ void nanoocp_templates_BRepOffset(nb::module_ &m) {
 void nanoocp_define_BRepOffset(nb::module_ &m) {
     nanoocp_implicit_default_ctor<BRepOffset>(nb::borrow<nb::class_<BRepOffset>>(m.attr("BRepOffset")));
     nb::borrow<nb::class_<BRepOffset>>(m.attr("BRepOffset"))
-        .def_static("Surface", [](const occ::handle<Geom_Surface> & Surface, const double Offset, bool allowC0) { BRepOffset_Status theStatus{}; auto result = BRepOffset::Surface(Surface, Offset, theStatus, allowC0); return std::make_tuple(result, theStatus); }, nb::arg("Surface").none(), nb::arg("Offset"), nb::arg("allowC0") = static_cast<std::decay_t<bool>>(false), R"nbdoc(returns the Offset surface computed from the
+        .def_static("Surface", [](const occ::handle<Geom_Surface> & Surface, const double Offset, bool allowC0) { BRepOffset_Status theStatus{}; auto nanoocp_result = BRepOffset::Surface(Surface, Offset, theStatus, allowC0); return std::make_tuple(nanoocp_result, theStatus); }, nb::arg("Surface").none(), nb::arg("Offset"), nb::arg("allowC0") = static_cast<std::decay_t<bool>>(false), R"nbdoc(returns the Offset surface computed from the
 surface <Surface> at an OffsetDistance <Offset>.
 
 If possible, this method returns the real type of
@@ -354,7 +354,7 @@ Returns the list of shapes generated from the shape <S>.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepOffset_SimpleOffset::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRepOffset_SimpleOffset::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRepOffset_SimpleOffset::*)() const>(&BRepOffset_SimpleOffset::DynamicType))
-        .def("NewSurface", [](BRepOffset_SimpleOffset &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](BRepOffset_SimpleOffset &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location,
 <Tol> the new tolerance. <RevWires> has to be set to
@@ -365,24 +365,24 @@ true if the orientation of the modified
 face changes in the shells which contain it.
 Here, <RevFace> will return true if the
 gp_Trsf is negative.)nbdoc")
-        .def("NewCurve", [](BRepOffset_SimpleOffset &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](BRepOffset_SimpleOffset &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location,
 <Tol> the new tolerance. Otherwise, returns
 false, and <C>, <L>,
 <Tol> are not significant.)nbdoc")
-        .def("NewPoint", [](BRepOffset_SimpleOffset &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](BRepOffset_SimpleOffset &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>,
 <Tol> are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepOffset_SimpleOffset &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](BRepOffset_SimpleOffset &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>. In this case,
 <C> is the new geometric support of the edge,
 <L> the new location, <Tol> the new tolerance.
 Otherwise, returns false, and <C>, <L>,
 <Tol> are not significant.)nbdoc")
-        .def("NewParameter", [](BRepOffset_SimpleOffset &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](BRepOffset_SimpleOffset &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case,
 <P> is the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>,

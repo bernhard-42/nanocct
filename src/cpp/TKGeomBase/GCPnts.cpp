@@ -459,13 +459,13 @@ or founded with parametric tolerance (replaced if theIsReplace is true))nbdoc")
     nanoocp_implicit_copy_ctor<GCPnts_TangentialDeflection>(nb::borrow<nb::class_<GCPnts_TangentialDeflection>>(m.attr("GCPnts_TangentialDeflection")));
     nb::borrow<nb::class_<GCPnts_DistFunctionMV>>(m.attr("GCPnts_DistFunctionMV"))
         .def(nb::init<GCPnts_DistFunction &>(), nb::arg("theCurvLinDist"))
-        .def("Value", [](GCPnts_DistFunctionMV &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
+        .def("Value", [](GCPnts_DistFunctionMV &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"))
         .def("NbVariables", static_cast<int (GCPnts_DistFunctionMV::*)() const>(&GCPnts_DistFunctionMV::NbVariables));
     nanoocp_implicit_copy_ctor<GCPnts_DistFunctionMV>(nb::borrow<nb::class_<GCPnts_DistFunctionMV>>(m.attr("GCPnts_DistFunctionMV")));
     nb::implicitly_convertible<std::decay_t<GCPnts_DistFunction &>, GCPnts_DistFunctionMV>();
     nb::borrow<nb::class_<GCPnts_DistFunction2dMV>>(m.attr("GCPnts_DistFunction2dMV"))
         .def(nb::init<GCPnts_DistFunction2d &>(), nb::arg("theCurvLinDist"))
-        .def("Value", [](GCPnts_DistFunction2dMV &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
+        .def("Value", [](GCPnts_DistFunction2dMV &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"))
         .def("NbVariables", static_cast<int (GCPnts_DistFunction2dMV::*)() const>(&GCPnts_DistFunction2dMV::NbVariables));
     nanoocp_implicit_copy_ctor<GCPnts_DistFunction2dMV>(nb::borrow<nb::class_<GCPnts_DistFunction2dMV>>(m.attr("GCPnts_DistFunction2dMV")));
     nb::implicitly_convertible<std::decay_t<GCPnts_DistFunction2d &>, GCPnts_DistFunction2dMV>();

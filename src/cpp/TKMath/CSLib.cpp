@@ -237,21 +237,21 @@ instead of the tolerances specified at construction.
 
 @param[in] theK0 Polynomial degree (must be >= 0)
 @param[in] theLi Array of coefficients with indices 0 to theK0)nbdoc")
-        .def("Value", [](CSLib_NormalPolyDef &self, const double theX) { double theF{}; auto result = self.Value(theX, theF); return std::make_tuple(result, theF); }, nb::arg("theX"), R"nbdoc(Computes the value of the function for the given variable.
+        .def("Value", [](CSLib_NormalPolyDef &self, const double theX) { double theF{}; auto nanoocp_result = self.Value(theX, theF); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theX"), R"nbdoc(Computes the value of the function for the given variable.
 
 Evaluates F(X) = Sum_{i=0}^{k0} C(k0,i) * cos^i(X) * sin^(k0-i)(X) * li(i)
 
 @param[in]  theX Input variable (angle in radians)
 @param[out] theF Computed function value
 @return true if calculation was successful, false otherwise)nbdoc")
-        .def("Derivative", [](CSLib_NormalPolyDef &self, const double theX) { double theD{}; auto result = self.Derivative(theX, theD); return std::make_tuple(result, theD); }, nb::arg("theX"), R"nbdoc(Computes the derivative of the function for the given variable.
+        .def("Derivative", [](CSLib_NormalPolyDef &self, const double theX) { double theD{}; auto nanoocp_result = self.Derivative(theX, theD); return std::make_tuple(nanoocp_result, theD); }, nb::arg("theX"), R"nbdoc(Computes the derivative of the function for the given variable.
 
 Evaluates dF/dX using the chain rule on the trigonometric polynomial.
 
 @param[in]  theX Input variable (angle in radians)
 @param[out] theD Computed derivative value
 @return true if calculation was successful, false otherwise)nbdoc")
-        .def("Values", [](CSLib_NormalPolyDef &self, const double theX) { double theF{}; double theD{}; auto result = self.Values(theX, theF, theD); return std::make_tuple(result, theF, theD); }, nb::arg("theX"), R"nbdoc(Computes both the value and derivative of the function.
+        .def("Values", [](CSLib_NormalPolyDef &self, const double theX) { double theF{}; double theD{}; auto nanoocp_result = self.Values(theX, theF, theD); return std::make_tuple(nanoocp_result, theF, theD); }, nb::arg("theX"), R"nbdoc(Computes both the value and derivative of the function.
 
 More efficient than calling Value() and Derivative() separately
 as common subexpressions are computed only once.

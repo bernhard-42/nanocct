@@ -500,7 +500,7 @@ format.)nbdoc");
     nanoocp_implicit_copy_ctor<TDataXtd_Presentation>(nb::borrow<nb::class_<TDataXtd_Presentation>>(m.attr("TDataXtd_Presentation")));
     nb::borrow<nb::class_<TDataXtd_Shape>>(m.attr("TDataXtd_Shape"))
         .def(nb::new_([]() { return opencascade::handle<TDataXtd_Shape>(new TDataXtd_Shape()); }))
-        .def_static("Find", [](const TDF_Label & current) { occ::handle<TDataXtd_Shape> S{}; auto result = TDataXtd_Shape::Find(current, S); return std::make_tuple(result, S); }, nb::arg("current"), R"nbdoc(class methods
+        .def_static("Find", [](const TDF_Label & current) { occ::handle<TDataXtd_Shape> S{}; auto nanoocp_result = TDataXtd_Shape::Find(current, S); return std::make_tuple(nanoocp_result, S); }, nb::arg("current"), R"nbdoc(class methods
 =============
 try to retrieve a Shape attribute at <current> label
 or in fathers label of <current>. Returns True if

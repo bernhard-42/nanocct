@@ -148,10 +148,10 @@ If <ent> is not recognised, produces "..NOT FROM SCHEMA <name>..")nbdoc")
 0 (D) : prints numbers, then displays table number/label
 1 : prints labels, then displays table label/number
 2 : prints labels onky)nbdoc")
-        .def("ReadFile", [](const StepSelect_WorkLibrary &self, const char *const name, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; auto result = self.ReadFile(name, model, protocol); return std::make_tuple(result, model); }, nb::arg("name"), nb::arg("protocol").none(), R"nbdoc(Reads a STEP File and returns a STEP Model (into <mod>),
+        .def("ReadFile", [](const StepSelect_WorkLibrary &self, const char *const name, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; auto nanoocp_result = self.ReadFile(name, model, protocol); return std::make_tuple(nanoocp_result, model); }, nb::arg("name"), nb::arg("protocol").none(), R"nbdoc(Reads a STEP File and returns a STEP Model (into <mod>),
 or lets <mod> "Null" in case of Error
 Returns 0 if OK, 1 if Read Error, -1 if File not opened)nbdoc")
-        .def("ReadStream", [](const StepSelect_WorkLibrary &self, const char *const theName, const nanoocp::TextInput &theIStream, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; std::stringstream theIStream_stream(theIStream.text); auto result = self.ReadStream(theName, theIStream_stream, model, protocol); return std::make_tuple(result, model); }, nb::arg("theName"), nb::arg("theIStream"), nb::arg("protocol").none(), R"nbdoc(Reads a STEP File from stream and returns a STEP Model (into <mod>),
+        .def("ReadStream", [](const StepSelect_WorkLibrary &self, const char *const theName, const nanoocp::TextInput &theIStream, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; std::stringstream theIStream_stream(theIStream.text); auto nanoocp_result = self.ReadStream(theName, theIStream_stream, model, protocol); return std::make_tuple(nanoocp_result, model); }, nb::arg("theName"), nb::arg("theIStream"), nb::arg("protocol").none(), R"nbdoc(Reads a STEP File from stream and returns a STEP Model (into <mod>),
 or lets <mod> "Null" in case of Error
 Returns 0 if OK, 1 if Read Error, -1 if File not opened)nbdoc")
         .def("WriteFile", static_cast<bool (StepSelect_WorkLibrary::*)(IFSelect_ContextWrite &) const>(&StepSelect_WorkLibrary::WriteFile), nb::arg("ctx"), R"nbdoc(Writes a File from a STEP Model

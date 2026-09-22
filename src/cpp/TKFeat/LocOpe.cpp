@@ -163,7 +163,7 @@ element of range <I>.)nbdoc")
         .def("Point", static_cast<const LocOpe_PntFace & (LocOpe_CSIntersector::*)(const int, const int) const>(&LocOpe_CSIntersector::Point), nb::arg("I"), nb::arg("Index"), R"nbdoc(Returns the intersection point of range <Index> on
 element of range <I>. The points are sorted in
 increasing order of parameter along the axis.)nbdoc")
-        .def("LocalizeAfter", [](const LocOpe_CSIntersector &self, const int I, const double From, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeAfter(I, From, Tol, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("From"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
+        .def("LocalizeAfter", [](const LocOpe_CSIntersector &self, const int I, const double From, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeAfter(I, From, Tol, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("From"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
 intersection point located after the parameter
 <From>, which orientation is not TopAbs_EXTERNAL.
 If found, returns <true>. <Or> contains
@@ -174,7 +174,7 @@ the point. (IndFrom <= IndTo). <Tol> is used to
 determine if 2 parameters are equal.
 
 Otherwise, returns <false>.)nbdoc")
-        .def("LocalizeBefore", [](const LocOpe_CSIntersector &self, const int I, const double From, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeBefore(I, From, Tol, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("From"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
+        .def("LocalizeBefore", [](const LocOpe_CSIntersector &self, const int I, const double From, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeBefore(I, From, Tol, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("From"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
 intersection point located before the parameter
 <From>, which orientation is not TopAbs_EXTERNAL.
 If found, returns <true>. <Or> contains
@@ -185,7 +185,7 @@ the point (IndFrom <= IndTo). <Tol> is used to
 determine if 2 parameters are equal.
 
 Otherwise, returns <false>.)nbdoc")
-        .def("LocalizeAfter", [](const LocOpe_CSIntersector &self, const int I, const int FromInd, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeAfter(I, FromInd, Tol, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("FromInd"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
+        .def("LocalizeAfter", [](const LocOpe_CSIntersector &self, const int I, const int FromInd, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeAfter(I, FromInd, Tol, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("FromInd"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
 intersection point located after the index
 <FromInd> ( >= FromInd + 1), which orientation is
 not TopAbs_EXTERNAL. If found, returns
@@ -196,7 +196,7 @@ point corresponding to the point. (IndFrom <= IndTo).
 <Tol> is used to determine if 2 parameters are equal.
 
 Otherwise, returns <false>.)nbdoc")
-        .def("LocalizeBefore", [](const LocOpe_CSIntersector &self, const int I, const int FromInd, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeBefore(I, FromInd, Tol, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("FromInd"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
+        .def("LocalizeBefore", [](const LocOpe_CSIntersector &self, const int I, const int FromInd, const double Tol) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeBefore(I, FromInd, Tol, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("I"), nb::arg("FromInd"), nb::arg("Tol"), R"nbdoc(On the element of range <I>, searches the first
 intersection point located before the index
 <FromInd> (<= FromInd -1), which orientation is
 not TopAbs_EXTERNAL. If found, returns
@@ -236,7 +236,7 @@ been done.)nbdoc")
         .def("Point", static_cast<const LocOpe_PntFace & (LocOpe_CurveShapeIntersector::*)(const int) const>(&LocOpe_CurveShapeIntersector::Point), nb::arg("Index"), R"nbdoc(Returns the intersection point of range <Index>.
 The points are sorted in increasing order of
 parameter along the axis.)nbdoc")
-        .def("LocalizeAfter", [](const LocOpe_CurveShapeIntersector &self, const double From) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeAfter(From, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("From"), R"nbdoc(Searches the first intersection point located
+        .def("LocalizeAfter", [](const LocOpe_CurveShapeIntersector &self, const double From) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeAfter(From, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("From"), R"nbdoc(Searches the first intersection point located
 after the parameter <From>, which orientation is
 not TopAbs_EXTERNAL. If found, returns
 <true>. <Or> contains the orientation of
@@ -245,7 +245,7 @@ interval of index in the sequence of intersection
 point corresponding to the point. (IndFrom <= IndTo).
 
 Otherwise, returns <false>.)nbdoc")
-        .def("LocalizeBefore", [](const LocOpe_CurveShapeIntersector &self, const double From) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeBefore(From, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("From"), R"nbdoc(Searches the first intersection point located
+        .def("LocalizeBefore", [](const LocOpe_CurveShapeIntersector &self, const double From) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeBefore(From, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("From"), R"nbdoc(Searches the first intersection point located
 before the parameter <From>, which orientation is
 not TopAbs_EXTERNAL. If found, returns
 <true>. <Or> contains the orientation of
@@ -254,7 +254,7 @@ interval of index in the sequence of intersection
 point corresponding to the point (IndFrom <= IndTo).
 
 Otherwise, returns <false>.)nbdoc")
-        .def("LocalizeAfter", [](const LocOpe_CurveShapeIntersector &self, const int FromInd) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeAfter(FromInd, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("FromInd"), R"nbdoc(Searches the first intersection point located
+        .def("LocalizeAfter", [](const LocOpe_CurveShapeIntersector &self, const int FromInd) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeAfter(FromInd, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("FromInd"), R"nbdoc(Searches the first intersection point located
 after the index <FromInd> (>= FromInd + 1), which
 orientation is not TopAbs_EXTERNAL. If found,
 returns <true>. <Or> contains the
@@ -264,7 +264,7 @@ of intersection point corresponding to the point.
 (IndFrom <= IndTo).
 
 Otherwise, returns <false>.)nbdoc")
-        .def("LocalizeBefore", [](const LocOpe_CurveShapeIntersector &self, const int FromInd) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto result = self.LocalizeBefore(FromInd, Or, IndFrom, IndTo); return std::make_tuple(result, Or, IndFrom, IndTo); }, nb::arg("FromInd"), R"nbdoc(Searches the first intersection point located
+        .def("LocalizeBefore", [](const LocOpe_CurveShapeIntersector &self, const int FromInd) { TopAbs_Orientation Or{}; int IndFrom{}; int IndTo{}; auto nanoocp_result = self.LocalizeBefore(FromInd, Or, IndFrom, IndTo); return std::make_tuple(nanoocp_result, Or, IndFrom, IndTo); }, nb::arg("FromInd"), R"nbdoc(Searches the first intersection point located
 before the index <FromInd> ( <= FromInd -1), which
 orientation is not TopAbs_EXTERNAL. If found,
 returns <true>. <Or> contains the
@@ -509,12 +509,12 @@ returns <true> and sets the value of <E>.
 Otherwise, returns <false>.)nbdoc")
         .def("NextEdge", static_cast<void (LocOpe_WiresOnShape::*)()>(&LocOpe_WiresOnShape::NextEdge))
         .def("OnVertex", static_cast<bool (LocOpe_WiresOnShape::*)(const TopoDS_Vertex &, TopoDS_Vertex &)>(&LocOpe_WiresOnShape::OnVertex), nb::arg("Vwire"), nb::arg("Vshape"))
-        .def("OnEdge", [](LocOpe_WiresOnShape &self, const TopoDS_Vertex & V, TopoDS_Edge & E) { double P{}; auto result = self.OnEdge(V, E, P); return std::make_tuple(result, P); }, nb::arg("V"), nb::arg("E"), R"nbdoc(If the vertex <V> lies on an edge of the original
+        .def("OnEdge", [](LocOpe_WiresOnShape &self, const TopoDS_Vertex & V, TopoDS_Edge & E) { double P{}; auto nanoocp_result = self.OnEdge(V, E, P); return std::make_tuple(nanoocp_result, P); }, nb::arg("V"), nb::arg("E"), R"nbdoc(If the vertex <V> lies on an edge of the original
 shape, returns <true> and sets the
 concerned edge in <E>, and the parameter on the
 edge in <P>.
 Else returns <false>.)nbdoc")
-        .def("OnEdge", [](LocOpe_WiresOnShape &self, const TopoDS_Vertex & V, const TopoDS_Edge & EdgeFrom, TopoDS_Edge & E) { double P{}; auto result = self.OnEdge(V, EdgeFrom, E, P); return std::make_tuple(result, P); }, nb::arg("V"), nb::arg("EdgeFrom"), nb::arg("E"), R"nbdoc(If the vertex <V> lies on an edge of the original
+        .def("OnEdge", [](LocOpe_WiresOnShape &self, const TopoDS_Vertex & V, const TopoDS_Edge & EdgeFrom, TopoDS_Edge & E) { double P{}; auto nanoocp_result = self.OnEdge(V, EdgeFrom, E, P); return std::make_tuple(nanoocp_result, P); }, nb::arg("V"), nb::arg("EdgeFrom"), nb::arg("E"), R"nbdoc(If the vertex <V> lies on an edge of the original
 shape, returns <true> and sets the
 concerned edge in <E>, and the parameter on the
 edge in <P>.

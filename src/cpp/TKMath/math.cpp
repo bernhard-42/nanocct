@@ -1131,7 +1131,7 @@ of the object.
 Is used to redefine the operator <<.)nbdoc");
     nanoocp_implicit_copy_ctor<math_FRPR>(nb::borrow<nb::class_<math_FRPR>>(m.attr("math_FRPR")));
     nb::borrow<nb::class_<math_Function>>(m.attr("math_Function"))
-        .def("Value", [](math_Function &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function <F> for a given value of
+        .def("Value", [](math_Function &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function <F> for a given value of
 variable <X>.
 returns True if the computation was done successfully,
 False otherwise.)nbdoc")
@@ -1447,14 +1447,14 @@ False otherwise.)nbdoc")
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc");
     nb::borrow<nb::class_<math_FunctionWithDerivative>>(m.attr("math_FunctionWithDerivative"))
-        .def("Value", [](math_FunctionWithDerivative &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the value <F>of the function for the variable <X>.
+        .def("Value", [](math_FunctionWithDerivative &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the value <F>of the function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Derivative", [](math_FunctionWithDerivative &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"), R"nbdoc(Computes the derivative <D> of the function
+        .def("Derivative", [](math_FunctionWithDerivative &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"), R"nbdoc(Computes the derivative <D> of the function
 for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Values", [](math_FunctionWithDerivative &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"), R"nbdoc(Computes the value <F> and the derivative <D> of the
+        .def("Values", [](math_FunctionWithDerivative &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"), R"nbdoc(Computes the value <F> and the derivative <D> of the
 function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc");
@@ -1543,7 +1543,7 @@ Lower and Upper.)nbdoc")
     nanoocp_implicit_copy_ctor<math_GaussSingleIntegration>(nb::borrow<nb::class_<math_GaussSingleIntegration>>(m.attr("math_GaussSingleIntegration")));
     nb::borrow<nb::class_<math_MultipleVarFunction>>(m.attr("math_MultipleVarFunction"))
         .def("NbVariables", static_cast<int (math_MultipleVarFunction::*)() const>(&math_MultipleVarFunction::NbVariables), R"nbdoc(Returns the number of variables of the function)nbdoc")
-        .def("Value", [](math_MultipleVarFunction &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions <F> for the
+        .def("Value", [](math_MultipleVarFunction &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions <F> for the
 variable <X>.
 returns True if the computation was done successfully,
 otherwise false.)nbdoc")
@@ -1683,23 +1683,23 @@ successfully.)nbdoc")
 for which the result is computed.)nbdoc")
         .def("NbIterReached", static_cast<int (math_KronrodSingleIntegration::*)() const>(&math_KronrodSingleIntegration::NbIterReached), R"nbdoc(Returns the number of iterations
 that were made to compute result.)nbdoc")
-        .def_static("GKRule", [](math_Function & theFunction, const double theLower, const double theUpper, const math_Vector & theGaussP, const math_Vector & theGaussW, const math_Vector & theKronrodP, const math_Vector & theKronrodW) { double theValue{}; double theError{}; auto result = math_KronrodSingleIntegration::GKRule(theFunction, theLower, theUpper, theGaussP, theGaussW, theKronrodP, theKronrodW, theValue, theError); return std::make_tuple(result, theValue, theError); }, nb::arg("theFunction"), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theGaussP"), nb::arg("theGaussW"), nb::arg("theKronrodP"), nb::arg("theKronrodW"));
+        .def_static("GKRule", [](math_Function & theFunction, const double theLower, const double theUpper, const math_Vector & theGaussP, const math_Vector & theGaussW, const math_Vector & theKronrodP, const math_Vector & theKronrodW) { double theValue{}; double theError{}; auto nanoocp_result = math_KronrodSingleIntegration::GKRule(theFunction, theLower, theUpper, theGaussP, theGaussW, theKronrodP, theKronrodW, theValue, theError); return std::make_tuple(nanoocp_result, theValue, theError); }, nb::arg("theFunction"), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theGaussP"), nb::arg("theGaussW"), nb::arg("theKronrodP"), nb::arg("theKronrodW"));
     nanoocp_implicit_copy_ctor<math_KronrodSingleIntegration>(nb::borrow<nb::class_<math_KronrodSingleIntegration>>(m.attr("math_KronrodSingleIntegration")));
     nb::borrow<nb::class_<math_MultipleVarFunctionWithGradient>>(m.attr("math_MultipleVarFunctionWithGradient"))
         .def("NbVariables", static_cast<int (math_MultipleVarFunctionWithGradient::*)() const>(&math_MultipleVarFunctionWithGradient::NbVariables), R"nbdoc(Returns the number of variables of the function.)nbdoc")
-        .def("Value", [](math_MultipleVarFunctionWithGradient &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions <F> for the variable <X>.
+        .def("Value", [](math_MultipleVarFunctionWithGradient &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions <F> for the variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
         .def("Gradient", static_cast<bool (math_MultipleVarFunctionWithGradient::*)(const math_Vector &, math_Vector &)>(&math_MultipleVarFunctionWithGradient::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(Computes the gradient <G> of the functions for the variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
-        .def("Values", [](math_MultipleVarFunctionWithGradient &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(computes the value <F> and the gradient <G> of the
+        .def("Values", [](math_MultipleVarFunctionWithGradient &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(computes the value <F> and the gradient <G> of the
 functions for the variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc");
     nb::borrow<nb::class_<math_MultipleVarFunctionWithHessian>>(m.attr("math_MultipleVarFunctionWithHessian"))
         .def("NbVariables", static_cast<int (math_MultipleVarFunctionWithHessian::*)() const>(&math_MultipleVarFunctionWithHessian::NbVariables), R"nbdoc(returns the number of variables of the function.)nbdoc")
-        .def("Value", [](math_MultipleVarFunctionWithHessian &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(computes the values of the Functions <F> for the
+        .def("Value", [](math_MultipleVarFunctionWithHessian &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(computes the values of the Functions <F> for the
 variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
@@ -1707,11 +1707,11 @@ False otherwise.)nbdoc")
 variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
-        .def("Values", [](math_MultipleVarFunctionWithHessian &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(computes the value <F> and the gradient <G> of the
+        .def("Values", [](math_MultipleVarFunctionWithHessian &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(computes the value <F> and the gradient <G> of the
 functions for the variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
-        .def("Values", [](math_MultipleVarFunctionWithHessian &self, const math_Vector & X, math_Vector & G, math_Matrix & H) { double F{}; auto result = self.Values(X, F, G, H); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), nb::arg("H"), R"nbdoc(computes the value <F>, the gradient <G> and the
+        .def("Values", [](math_MultipleVarFunctionWithHessian &self, const math_Vector & X, math_Vector & G, math_Matrix & H) { double F{}; auto nanoocp_result = self.Values(X, F, G, H); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), nb::arg("H"), R"nbdoc(computes the value <F>, the gradient <G> and the
 hessian <H> of the functions for the variable <X>.
 Returns True if the computation was done
 successfully, False otherwise.)nbdoc");
@@ -1930,9 +1930,9 @@ An exception is raised if there is an infinity of solutions.)nbdoc")
     nanoocp_implicit_copy_ctor<math_TrigonometricFunctionRoots>(nb::borrow<nb::class_<math_TrigonometricFunctionRoots>>(m.attr("math_TrigonometricFunctionRoots")));
     nb::borrow<nb::class_<math_TrigonometricEquationFunction>>(m.attr("math_TrigonometricEquationFunction"))
         .def(nb::init<const double, const double, const double, const double, const double>(), nb::arg("A"), nb::arg("B"), nb::arg("C"), nb::arg("D"), nb::arg("E"))
-        .def("Value", [](math_TrigonometricEquationFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
-        .def("Derivative", [](math_TrigonometricEquationFunction &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"))
-        .def("Values", [](math_TrigonometricEquationFunction &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"));
+        .def("Value", [](math_TrigonometricEquationFunction &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"))
+        .def("Derivative", [](math_TrigonometricEquationFunction &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"))
+        .def("Values", [](math_TrigonometricEquationFunction &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"));
     nanoocp_implicit_copy_ctor<math_TrigonometricEquationFunction>(nb::borrow<nb::class_<math_TrigonometricEquationFunction>>(m.attr("math_TrigonometricEquationFunction")));
     nb::borrow<nb::class_<math_Uzawa>>(m.attr("math_Uzawa"))
         .def(nb::init<const math_Matrix &, const math_Vector &, const math_Vector &, const double, const double, const int>(), nb::arg("Cont"), nb::arg("Secont"), nb::arg("StartingPoint"), nb::arg("EpsLix") = static_cast<std::decay_t<const double>>(1.0e-06), nb::arg("EpsLic") = static_cast<std::decay_t<const double>>(1.0e-06), nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(500), R"nbdoc(Given an input matrix Cont, two input vectors Secont
@@ -1982,8 +1982,8 @@ when approximating a curve.)nbdoc")
         .def("Weight", static_cast<double (math_ValueAndWeight::*)() const>(&math_ValueAndWeight::Weight))
         .def("__lt__", [](const math_ValueAndWeight & theLeft, const math_ValueAndWeight & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */;
     nanoocp_implicit_copy_ctor<math_ValueAndWeight>(nb::borrow<nb::class_<math_ValueAndWeight>>(m.attr("math_ValueAndWeight")));
-    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
-    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, math_Vector & vv, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto result = LU_Decompose(a, indx, d, vv, TINY, theProgress); return std::make_tuple(result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
+    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto nanoocp_result = LU_Decompose(a, indx, d, TINY, theProgress); return std::make_tuple(nanoocp_result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-20), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
+    m.def("LU_Decompose", [](math_Matrix & a, math_IntegerVector & indx, math_Vector & vv, double TINY, const Message_ProgressRange & theProgress) { double d{}; auto nanoocp_result = LU_Decompose(a, indx, d, vv, TINY, theProgress); return std::make_tuple(nanoocp_result, d); }, nb::arg("a"), nb::arg("indx"), nb::arg("vv"), nb::arg("TINY") = static_cast<std::decay_t<double>>(1.0e-30), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()));
     m.def("LU_Solve", static_cast<void (*)(const math_Matrix &, const math_IntegerVector &, math_Vector &)>(&LU_Solve), nb::arg("a"), nb::arg("indx"), nb::arg("b"));
     m.def("LU_Invert", static_cast<int (*)(math_Matrix &)>(&LU_Invert), nb::arg("a"));
     m.def("SVD_Decompose", static_cast<int (*)(math_Matrix &, math_Vector &, math_Matrix &)>(&SVD_Decompose), nb::arg("a"), nb::arg("w"), nb::arg("v"));
@@ -1991,7 +1991,7 @@ when approximating a curve.)nbdoc")
     m.def("SVD_Solve", static_cast<void (*)(const math_Matrix &, const math_Vector &, const math_Matrix &, const math_Vector &, math_Vector &)>(&SVD_Solve), nb::arg("u"), nb::arg("w"), nb::arg("v"), nb::arg("b"), nb::arg("x"));
     m.def("DACTCL_Decompose", static_cast<int (*)(math_Vector &, const math_IntegerVector &, const double)>(&DACTCL_Decompose), nb::arg("a"), nb::arg("indx"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.e-20));
     m.def("DACTCL_Solve", static_cast<int (*)(const math_Vector &, math_Vector &, const math_IntegerVector &, const double)>(&DACTCL_Solve), nb::arg("a"), nb::arg("b"), nb::arg("indx"), nb::arg("MinPivot") = static_cast<std::decay_t<const double>>(1.e-20));
-    m.def("Jacobi", [](math_Matrix & a, math_Vector & d, math_Matrix & v) { int nrot{}; auto result = Jacobi(a, d, v, nrot); return std::make_tuple(result, nrot); }, nb::arg("a"), nb::arg("d"), nb::arg("v"));
+    m.def("Jacobi", [](math_Matrix & a, math_Vector & d, math_Matrix & v) { int nrot{}; auto nanoocp_result = Jacobi(a, d, v, nrot); return std::make_tuple(nanoocp_result, nrot); }, nb::arg("a"), nb::arg("d"), nb::arg("v"));
 }
 
 void nanoocp_conversions_math(nb::module_ &m) {

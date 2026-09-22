@@ -97,7 +97,7 @@ void nanoocp_define_Media(nb::module_ &m) {
         .def("OpenInput", static_cast<bool (Media_FormatContext::*)(const TCollection_AsciiString &)>(&Media_FormatContext::OpenInput), nb::arg("theInput"), R"nbdoc(Open input.)nbdoc")
         .def("Close", static_cast<void (Media_FormatContext::*)()>(&Media_FormatContext::Close), R"nbdoc(Close input.)nbdoc")
         .def("NbSteams", static_cast<unsigned int (Media_FormatContext::*)() const>(&Media_FormatContext::NbSteams), R"nbdoc(Return amount of streams.)nbdoc")
-        .def("StreamInfo", [](const Media_FormatContext &self, unsigned int theIndex) { auto result = self.StreamInfo(theIndex, nullptr); return result; }, nb::arg("theIndex"), R"nbdoc(Format stream info.)nbdoc")
+        .def("StreamInfo", [](const Media_FormatContext &self, unsigned int theIndex) { auto nanoocp_result = self.StreamInfo(theIndex, nullptr); return nanoocp_result; }, nb::arg("theIndex"), R"nbdoc(Format stream info.)nbdoc")
         .def("PtsStartBase", static_cast<double (Media_FormatContext::*)() const>(&Media_FormatContext::PtsStartBase), R"nbdoc(Return PTS start base in seconds.)nbdoc")
         .def("Duration", static_cast<double (Media_FormatContext::*)() const>(&Media_FormatContext::Duration), R"nbdoc(Return duration in seconds.)nbdoc")
         .def("ReadPacket", static_cast<bool (Media_FormatContext::*)(const occ::handle<Media_Packet> &)>(&Media_FormatContext::ReadPacket), nb::arg("thePacket").none(), R"nbdoc(av_read_frame() wrapper.)nbdoc")

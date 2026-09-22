@@ -146,7 +146,7 @@ Calls corresponding message of message registrator.)nbdoc")
         .def(nb::new_([]() { return opencascade::handle<ShapeCustom_BSplineRestriction>(new ShapeCustom_BSplineRestriction()); }), R"nbdoc(Empty constructor.)nbdoc")
         .def(nb::new_([](const bool anApproxSurfaceFlag, const bool anApproxCurve3dFlag, const bool anApproxCurve2dFlag, const double aTol3d, const double aTol2d, const GeomAbs_Shape aContinuity3d, const GeomAbs_Shape aContinuity2d, const int aMaxDegree, const int aNbMaxSeg, const bool Degree, const bool Rational) { return opencascade::handle<ShapeCustom_BSplineRestriction>(new ShapeCustom_BSplineRestriction(anApproxSurfaceFlag, anApproxCurve3dFlag, anApproxCurve2dFlag, aTol3d, aTol2d, aContinuity3d, aContinuity2d, aMaxDegree, aNbMaxSeg, Degree, Rational)); }), nb::arg("anApproxSurfaceFlag"), nb::arg("anApproxCurve3dFlag"), nb::arg("anApproxCurve2dFlag"), nb::arg("aTol3d"), nb::arg("aTol2d"), nb::arg("aContinuity3d"), nb::arg("aContinuity2d"), nb::arg("aMaxDegree"), nb::arg("aNbMaxSeg"), nb::arg("Degree"), nb::arg("Rational"), R"nbdoc(Initializes with specified parameters of approximation.)nbdoc")
         .def(nb::new_([](const bool anApproxSurfaceFlag, const bool anApproxCurve3dFlag, const bool anApproxCurve2dFlag, const double aTol3d, const double aTol2d, const GeomAbs_Shape aContinuity3d, const GeomAbs_Shape aContinuity2d, const int aMaxDegree, const int aNbMaxSeg, const bool Degree, const bool Rational, const occ::handle<ShapeCustom_RestrictionParameters> & aModes) { return opencascade::handle<ShapeCustom_BSplineRestriction>(new ShapeCustom_BSplineRestriction(anApproxSurfaceFlag, anApproxCurve3dFlag, anApproxCurve2dFlag, aTol3d, aTol2d, aContinuity3d, aContinuity2d, aMaxDegree, aNbMaxSeg, Degree, Rational, aModes)); }), nb::arg("anApproxSurfaceFlag"), nb::arg("anApproxCurve3dFlag"), nb::arg("anApproxCurve2dFlag"), nb::arg("aTol3d"), nb::arg("aTol2d"), nb::arg("aContinuity3d"), nb::arg("aContinuity2d"), nb::arg("aMaxDegree"), nb::arg("aNbMaxSeg"), nb::arg("Degree"), nb::arg("Rational"), nb::arg("aModes").none(), R"nbdoc(Initializes with specified parameters of approximation.)nbdoc")
-        .def("NewSurface", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location,
 <Tol> the new tolerance. <RevWires> has to be set to
@@ -158,7 +158,7 @@ face changes in the shells which contain it.
 
 Otherwise, returns false, and <S>, <L>,
 <Tol>, <RevWires>, <RevFace> are not significant.)nbdoc")
-        .def("NewCurve", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if curve from the edge <E> has been
+        .def("NewCurve", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if curve from the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance.
@@ -167,7 +167,7 @@ one of pcurves of edge is modified. In this case C is copy of
 geometric support of the edge.
 In other cases returns false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewCurve2d", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has been modified.
+        .def("NewCurve2d", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has been modified.
 In this case,if curve on the surface is modified, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance. If curve on the surface
@@ -178,13 +178,13 @@ Otherwise, returns false, and <C>, <L>,
 
 <NewE> is the new edge created from <E>. <NewF>
 is the new face created from <F>. They may be useful.)nbdoc")
-        .def("ConvertSurface", [](ShapeCustom_BSplineRestriction &self, const occ::handle<Geom_Surface> & aSurface, const double UF, const double UL, const double VF, const double VL, const bool IsOf) { occ::handle<Geom_Surface> S{}; auto result = self.ConvertSurface(aSurface, S, UF, UL, VF, VL, IsOf); return std::make_tuple(result, S); }, nb::arg("aSurface").none(), nb::arg("UF"), nb::arg("UL"), nb::arg("VF"), nb::arg("VL"), nb::arg("IsOf") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns true if the surface has been modified.
+        .def("ConvertSurface", [](ShapeCustom_BSplineRestriction &self, const occ::handle<Geom_Surface> & aSurface, const double UF, const double UL, const double VF, const double VL, const bool IsOf) { occ::handle<Geom_Surface> S{}; auto nanoocp_result = self.ConvertSurface(aSurface, S, UF, UL, VF, VL, IsOf); return std::make_tuple(nanoocp_result, S); }, nb::arg("aSurface").none(), nb::arg("UF"), nb::arg("UL"), nb::arg("VF"), nb::arg("VL"), nb::arg("IsOf") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns true if the surface has been modified.
 if flag IsOf equals true Offset surfaces are approximated to Offset
 if false to BSpline)nbdoc")
-        .def("ConvertCurve", [](ShapeCustom_BSplineRestriction &self, const occ::handle<Geom_Curve> & aCurve, const bool IsConvert, const double First, const double Last, const bool IsOf) { occ::handle<Geom_Curve> C{}; double TolCur{}; auto result = self.ConvertCurve(aCurve, C, IsConvert, First, Last, TolCur, IsOf); return std::make_tuple(result, C, TolCur); }, nb::arg("aCurve").none(), nb::arg("IsConvert"), nb::arg("First"), nb::arg("Last"), nb::arg("IsOf") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns true if the curve has been modified.
+        .def("ConvertCurve", [](ShapeCustom_BSplineRestriction &self, const occ::handle<Geom_Curve> & aCurve, const bool IsConvert, const double First, const double Last, const bool IsOf) { occ::handle<Geom_Curve> C{}; double TolCur{}; auto nanoocp_result = self.ConvertCurve(aCurve, C, IsConvert, First, Last, TolCur, IsOf); return std::make_tuple(nanoocp_result, C, TolCur); }, nb::arg("aCurve").none(), nb::arg("IsConvert"), nb::arg("First"), nb::arg("Last"), nb::arg("IsOf") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns true if the curve has been modified.
 if flag IsOf equals true Offset curves are approximated to Offset
 if false to BSpline)nbdoc")
-        .def("ConvertCurve2d", [](ShapeCustom_BSplineRestriction &self, const occ::handle<Geom2d_Curve> & aCurve, const bool IsConvert, const double First, const double Last, const bool IsOf) { occ::handle<Geom2d_Curve> C{}; double TolCur{}; auto result = self.ConvertCurve2d(aCurve, C, IsConvert, First, Last, TolCur, IsOf); return std::make_tuple(result, C, TolCur); }, nb::arg("aCurve").none(), nb::arg("IsConvert"), nb::arg("First"), nb::arg("Last"), nb::arg("IsOf") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns true if the pcurve has been modified.
+        .def("ConvertCurve2d", [](ShapeCustom_BSplineRestriction &self, const occ::handle<Geom2d_Curve> & aCurve, const bool IsConvert, const double First, const double Last, const bool IsOf) { occ::handle<Geom2d_Curve> C{}; double TolCur{}; auto nanoocp_result = self.ConvertCurve2d(aCurve, C, IsConvert, First, Last, TolCur, IsOf); return std::make_tuple(nanoocp_result, C, TolCur); }, nb::arg("aCurve").none(), nb::arg("IsConvert"), nb::arg("First"), nb::arg("Last"), nb::arg("IsOf") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns true if the pcurve has been modified.
 if flag IsOf equals true Offset pcurves are approximated to Offset
 if false to BSpline)nbdoc")
         .def("SetTol3d", static_cast<void (ShapeCustom_BSplineRestriction::*)(const double)>(&ShapeCustom_BSplineRestriction::SetTol3d), nb::arg("Tol3d"), R"nbdoc(Sets tolerance of approximation for curve3d and surface)nbdoc")
@@ -219,10 +219,10 @@ what geometry should be converted to BSplines.)nbdoc")
         .def("Curve3dError", static_cast<double (ShapeCustom_BSplineRestriction::*)() const>(&ShapeCustom_BSplineRestriction::Curve3dError), R"nbdoc(Returns error for approximation curve3d.)nbdoc")
         .def("Curve2dError", static_cast<double (ShapeCustom_BSplineRestriction::*)() const>(&ShapeCustom_BSplineRestriction::Curve2dError), R"nbdoc(Returns error for approximation curve2d.)nbdoc")
         .def("SurfaceError", static_cast<double (ShapeCustom_BSplineRestriction::*)() const>(&ShapeCustom_BSplineRestriction::SurfaceError), R"nbdoc(Returns error for approximation surface.)nbdoc")
-        .def("NewPoint", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"))
-        .def("NewParameter", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"))
+        .def("NewPoint", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"))
+        .def("NewParameter", [](ShapeCustom_BSplineRestriction &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"))
         .def("Continuity", static_cast<GeomAbs_Shape (ShapeCustom_BSplineRestriction::*)(const TopoDS_Edge &, const TopoDS_Face &, const TopoDS_Face &, const TopoDS_Edge &, const TopoDS_Face &, const TopoDS_Face &)>(&ShapeCustom_BSplineRestriction::Continuity), nb::arg("E"), nb::arg("F1"), nb::arg("F2"), nb::arg("NewE"), nb::arg("NewF1"), nb::arg("NewF2"))
-        .def("MaxErrors", [](const ShapeCustom_BSplineRestriction &self) { double aCurve3dErr{}; double aCurve2dErr{}; auto result = self.MaxErrors(aCurve3dErr, aCurve2dErr); return std::make_tuple(result, aCurve3dErr, aCurve2dErr); }, R"nbdoc(Returns error for approximation surface, curve3d and curve2d.)nbdoc")
+        .def("MaxErrors", [](const ShapeCustom_BSplineRestriction &self) { double aCurve3dErr{}; double aCurve2dErr{}; auto nanoocp_result = self.MaxErrors(aCurve3dErr, aCurve2dErr); return std::make_tuple(nanoocp_result, aCurve3dErr, aCurve2dErr); }, R"nbdoc(Returns error for approximation surface, curve3d and curve2d.)nbdoc")
         .def("NbOfSpan", static_cast<int (ShapeCustom_BSplineRestriction::*)() const>(&ShapeCustom_BSplineRestriction::NbOfSpan), R"nbdoc(Returns number for approximation surface, curve3d and curve2d.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&ShapeCustom_BSplineRestriction::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&ShapeCustom_BSplineRestriction::get_type_descriptor))
@@ -235,24 +235,24 @@ extrusion.)nbdoc")
         .def("SetRevolutionMode", static_cast<void (ShapeCustom_ConvertToBSpline::*)(const bool)>(&ShapeCustom_ConvertToBSpline::SetRevolutionMode), nb::arg("revolMode"), R"nbdoc(Sets mode for conversion of Surfaces of Revolution.)nbdoc")
         .def("SetOffsetMode", static_cast<void (ShapeCustom_ConvertToBSpline::*)(const bool)>(&ShapeCustom_ConvertToBSpline::SetOffsetMode), nb::arg("offsetMode"), R"nbdoc(Sets mode for conversion of Offset surfaces.)nbdoc")
         .def("SetPlaneMode", static_cast<void (ShapeCustom_ConvertToBSpline::*)(const bool)>(&ShapeCustom_ConvertToBSpline::SetPlaneMode), nb::arg("planeMode"), R"nbdoc(Sets mode for conversion of Plane surfaces.)nbdoc")
-        .def("NewSurface", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location,
 <Tol> the new tolerance. Otherwise, returns
 false, and <S>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewCurve", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location,
 <Tol> the new tolerance. Otherwise, returns
 false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewPoint", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
@@ -262,7 +262,7 @@ Otherwise, returns false, and <C>, <L>,
 
 <NewE> is the new edge created from <E>. <NewF>
 is the new face created from <F>. They may be useful.)nbdoc")
-        .def("NewParameter", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](ShapeCustom_ConvertToBSpline &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case, <P> is
 the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
@@ -279,24 +279,24 @@ and <NewF2>.
     nanoocp_implicit_copy_ctor<ShapeCustom_ConvertToBSpline>(nb::borrow<nb::class_<ShapeCustom_ConvertToBSpline>>(m.attr("ShapeCustom_ConvertToBSpline")));
     nb::borrow<nb::class_<ShapeCustom_ConvertToRevolution>>(m.attr("ShapeCustom_ConvertToRevolution"))
         .def(nb::new_([]() { return opencascade::handle<ShapeCustom_ConvertToRevolution>(new ShapeCustom_ConvertToRevolution()); }))
-        .def("NewSurface", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <S>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewCurve", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewPoint", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
@@ -306,7 +306,7 @@ Otherwise, returns false, and <C>, <L>,
 
 <NewE> is the new edge created from <E>. <NewF>
 is the new face created from <F>. They may be useful.)nbdoc")
-        .def("NewParameter", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](ShapeCustom_ConvertToRevolution &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case, <P> is
 the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
@@ -334,35 +334,35 @@ Else, or in case of failure, returns a Null Handle)nbdoc");
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Curve> &>, ShapeCustom_Curve>();
     nanoocp_implicit_default_ctor<ShapeCustom_Curve2d>(nb::borrow<nb::class_<ShapeCustom_Curve2d>>(m.attr("ShapeCustom_Curve2d")));
     nb::borrow<nb::class_<ShapeCustom_Curve2d>>(m.attr("ShapeCustom_Curve2d"))
-        .def_static("IsLinear", [](const NCollection_Array1<gp_Pnt2d> & thePoles, const double theTolerance) { double theDeviation{}; auto result = ShapeCustom_Curve2d::IsLinear(thePoles, theTolerance, theDeviation); return std::make_tuple(result, theDeviation); }, nb::arg("thePoles"), nb::arg("theTolerance"), R"nbdoc(Check if poleses is in the plane with given precision
+        .def_static("IsLinear", [](const NCollection_Array1<gp_Pnt2d> & thePoles, const double theTolerance) { double theDeviation{}; auto nanoocp_result = ShapeCustom_Curve2d::IsLinear(thePoles, theTolerance, theDeviation); return std::make_tuple(nanoocp_result, theDeviation); }, nb::arg("thePoles"), nb::arg("theTolerance"), R"nbdoc(Check if poleses is in the plane with given precision
 Returns false if no.)nbdoc")
-        .def_static("ConvertToLine2d", [](const occ::handle<Geom2d_Curve> & theCurve, const double theFirstIn, const double theLastIn, const double theTolerance) { double theNewFirst{}; double theNewLast{}; double theDeviation{}; auto result = ShapeCustom_Curve2d::ConvertToLine2d(theCurve, theFirstIn, theLastIn, theTolerance, theNewFirst, theNewLast, theDeviation); return std::make_tuple(result, theNewFirst, theNewLast, theDeviation); }, nb::arg("theCurve").none(), nb::arg("theFirstIn"), nb::arg("theLastIn"), nb::arg("theTolerance"), R"nbdoc(Try to convert BSpline2d or Bezier2d to line 2d
+        .def_static("ConvertToLine2d", [](const occ::handle<Geom2d_Curve> & theCurve, const double theFirstIn, const double theLastIn, const double theTolerance) { double theNewFirst{}; double theNewLast{}; double theDeviation{}; auto nanoocp_result = ShapeCustom_Curve2d::ConvertToLine2d(theCurve, theFirstIn, theLastIn, theTolerance, theNewFirst, theNewLast, theDeviation); return std::make_tuple(nanoocp_result, theNewFirst, theNewLast, theDeviation); }, nb::arg("theCurve").none(), nb::arg("theFirstIn"), nb::arg("theLastIn"), nb::arg("theTolerance"), R"nbdoc(Try to convert BSpline2d or Bezier2d to line 2d
 only if it is linear. Recalculate first and last parameters.
 Returns line2d or null curve2d.)nbdoc")
-        .def_static("SimplifyBSpline2d", [](const double theTolerance) { occ::handle<Geom2d_BSplineCurve> theBSpline2d{}; auto result = ShapeCustom_Curve2d::SimplifyBSpline2d(theBSpline2d, theTolerance); return std::make_tuple(result, theBSpline2d); }, nb::arg("theTolerance"), R"nbdoc(Try to remove knots from bspline where local derivatives are the same.
+        .def_static("SimplifyBSpline2d", [](const double theTolerance) { occ::handle<Geom2d_BSplineCurve> theBSpline2d{}; auto nanoocp_result = ShapeCustom_Curve2d::SimplifyBSpline2d(theBSpline2d, theTolerance); return std::make_tuple(nanoocp_result, theBSpline2d); }, nb::arg("theTolerance"), R"nbdoc(Try to remove knots from bspline where local derivatives are the same.
 Remove knots with given precision.
 Returns false if Bsplien was not modified)nbdoc");
     nanoocp_implicit_copy_ctor<ShapeCustom_Curve2d>(nb::borrow<nb::class_<ShapeCustom_Curve2d>>(m.attr("ShapeCustom_Curve2d")));
     nb::borrow<nb::class_<ShapeCustom_DirectModification>>(m.attr("ShapeCustom_DirectModification"))
         .def(nb::new_([]() { return opencascade::handle<ShapeCustom_DirectModification>(new ShapeCustom_DirectModification()); }))
-        .def("NewSurface", [](ShapeCustom_DirectModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](ShapeCustom_DirectModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <S>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewCurve", [](ShapeCustom_DirectModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](ShapeCustom_DirectModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewPoint", [](ShapeCustom_DirectModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](ShapeCustom_DirectModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](ShapeCustom_DirectModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](ShapeCustom_DirectModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
@@ -372,7 +372,7 @@ Otherwise, returns false, and <C>, <L>,
 
 <NewE> is the new edge created from <E>. <NewF>
 is the new face created from <F>. They may be useful.)nbdoc")
-        .def("NewParameter", [](ShapeCustom_DirectModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](ShapeCustom_DirectModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case, <P> is
 the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
@@ -464,24 +464,24 @@ Else, or in case of failure, returns a Null Handle)nbdoc");
     nb::implicitly_convertible<std::decay_t<const occ::handle<Geom_Surface> &>, ShapeCustom_Surface>();
     nb::borrow<nb::class_<ShapeCustom_SweptToElementary>>(m.attr("ShapeCustom_SweptToElementary"))
         .def(nb::new_([]() { return opencascade::handle<ShapeCustom_SweptToElementary>(new ShapeCustom_SweptToElementary()); }))
-        .def("NewSurface", [](ShapeCustom_SweptToElementary &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](ShapeCustom_SweptToElementary &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <S>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewCurve", [](ShapeCustom_SweptToElementary &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](ShapeCustom_SweptToElementary &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewPoint", [](ShapeCustom_SweptToElementary &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](ShapeCustom_SweptToElementary &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](ShapeCustom_SweptToElementary &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](ShapeCustom_SweptToElementary &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
@@ -491,7 +491,7 @@ Otherwise, returns false, and <C>, <L>,
 
 <NewE> is the new edge created from <E>. <NewF>
 is the new face created from <F>. They may be useful.)nbdoc")
-        .def("NewParameter", [](ShapeCustom_SweptToElementary &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](ShapeCustom_SweptToElementary &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case, <P> is
 the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
@@ -508,19 +508,19 @@ and <NewF2>.
     nanoocp_implicit_copy_ctor<ShapeCustom_SweptToElementary>(nb::borrow<nb::class_<ShapeCustom_SweptToElementary>>(m.attr("ShapeCustom_SweptToElementary")));
     nb::borrow<nb::class_<ShapeCustom_TrsfModification>>(m.attr("ShapeCustom_TrsfModification"))
         .def(nb::new_([](const gp_Trsf & T) { return opencascade::handle<ShapeCustom_TrsfModification>(new ShapeCustom_TrsfModification(T)); }), nb::arg("T"), R"nbdoc(Empty constructor)nbdoc")
-        .def("NewSurface", [](ShapeCustom_TrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Calls inherited method.
+        .def("NewSurface", [](ShapeCustom_TrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Calls inherited method.
 Sets <Tol> as actual tolerance of <F> multiplied with scale
 factor.)nbdoc")
-        .def("NewCurve", [](ShapeCustom_TrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Calls inherited method.
+        .def("NewCurve", [](ShapeCustom_TrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Calls inherited method.
 Sets <Tol> as actual tolerance of <E> multiplied with scale
 factor.)nbdoc")
-        .def("NewPoint", [](ShapeCustom_TrsfModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Calls inherited method.
+        .def("NewPoint", [](ShapeCustom_TrsfModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Calls inherited method.
 Sets <Tol> as actual tolerance of <V> multiplied with scale
 factor.)nbdoc")
-        .def("NewCurve2d", [](ShapeCustom_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Calls inherited method.
+        .def("NewCurve2d", [](ShapeCustom_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Calls inherited method.
 Sets <Tol> as actual tolerance of <E> multiplied with scale
 factor.)nbdoc")
-        .def("NewParameter", [](ShapeCustom_TrsfModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Calls inherited method.
+        .def("NewParameter", [](ShapeCustom_TrsfModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Calls inherited method.
 Sets <Tol> as actual tolerance of <V> multiplied with scale
 factor.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&ShapeCustom_TrsfModification::get_type_name))

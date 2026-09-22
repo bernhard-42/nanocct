@@ -158,7 +158,7 @@ Performs auxiliary actions such as cleaning shape from old triangulation.
     nanoocp_implicit_copy_ctor<IMeshTools_Context>(nb::borrow<nb::class_<IMeshTools_Context>>(m.attr("IMeshTools_Context")));
     nb::borrow<nb::class_<IMeshTools_CurveTessellator>>(m.attr("IMeshTools_CurveTessellator"))
         .def("PointsNb", static_cast<int (IMeshTools_CurveTessellator::*)() const>(&IMeshTools_CurveTessellator::PointsNb), R"nbdoc(Returns number of tessellation points.)nbdoc")
-        .def("Value", [](const IMeshTools_CurveTessellator &self, const int theIndex, gp_Pnt & thePoint) { double theParameter{}; auto result = self.Value(theIndex, thePoint, theParameter); return std::make_tuple(result, theParameter); }, nb::arg("theIndex"), nb::arg("thePoint"), R"nbdoc(Returns parameters of solution with the given index.
+        .def("Value", [](const IMeshTools_CurveTessellator &self, const int theIndex, gp_Pnt & thePoint) { double theParameter{}; auto nanoocp_result = self.Value(theIndex, thePoint, theParameter); return std::make_tuple(nanoocp_result, theParameter); }, nb::arg("theIndex"), nb::arg("thePoint"), R"nbdoc(Returns parameters of solution with the given index.
 @param theIndex index of tessellation point.
 @param thePoint tessellation point.
 @param theParameter parameters on PCurve corresponded to the solution.

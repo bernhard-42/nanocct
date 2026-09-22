@@ -137,10 +137,10 @@ will be on the line between the point and the center of the
 bounding box. Returns True if point was not changed.)nbdoc")
         .def("Reject", static_cast<bool (BRepClass_FaceExplorer::*)(const gp_Pnt2d &) const>(&BRepClass_FaceExplorer::Reject), nb::arg("P"), R"nbdoc(Should return True if the point is outside a
 bounding volume of the face.)nbdoc")
-        .def("Segment", [](BRepClass_FaceExplorer &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto result = self.Segment(P, L, Par); return std::make_tuple(result, Par); }, nb::arg("P"), nb::arg("L"), R"nbdoc(Returns in <L>, <Par> a segment having at least
+        .def("Segment", [](BRepClass_FaceExplorer &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto nanoocp_result = self.Segment(P, L, Par); return std::make_tuple(nanoocp_result, Par); }, nb::arg("P"), nb::arg("L"), R"nbdoc(Returns in <L>, <Par> a segment having at least
 one intersection with the face boundary to
 compute intersections.)nbdoc")
-        .def("OtherSegment", [](BRepClass_FaceExplorer &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto result = self.OtherSegment(P, L, Par); return std::make_tuple(result, Par); }, nb::arg("P"), nb::arg("L"), R"nbdoc(Returns in <L>, <Par> a segment having at least
+        .def("OtherSegment", [](BRepClass_FaceExplorer &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto nanoocp_result = self.OtherSegment(P, L, Par); return std::make_tuple(nanoocp_result, Par); }, nb::arg("P"), nb::arg("L"), R"nbdoc(Returns in <L>, <Par> a segment having at least
 one intersection with the face boundary to
 compute intersections. Each call gives another segment.)nbdoc")
         .def("InitWires", static_cast<void (BRepClass_FaceExplorer::*)()>(&BRepClass_FaceExplorer::InitWires), R"nbdoc(Starts an exploration of the wires.)nbdoc")

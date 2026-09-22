@@ -233,8 +233,8 @@ void nanoocp_templates_ShapeUpgrade(nb::module_ &m) {
 void nanoocp_define_ShapeUpgrade(nb::module_ &m) {
     nanoocp_implicit_default_ctor<ShapeUpgrade>(nb::borrow<nb::class_<ShapeUpgrade>>(m.attr("ShapeUpgrade")));
     nb::borrow<nb::class_<ShapeUpgrade>>(m.attr("ShapeUpgrade"))
-        .def_static("C0BSplineToSequenceOfC1BSplineCurve", [](const occ::handle<Geom_BSplineCurve> & BS) { occ::handle<NCollection_HSequence<opencascade::handle<Geom_BoundedCurve>>> seqBS{}; auto result = ShapeUpgrade::C0BSplineToSequenceOfC1BSplineCurve(BS, seqBS); return std::make_tuple(result, seqBS); }, nb::arg("BS").none(), R"nbdoc(Unifies same domain faces and edges of specified shape)nbdoc")
-        .def_static("C0BSplineToSequenceOfC1BSplineCurve", [](const occ::handle<Geom2d_BSplineCurve> & BS) { occ::handle<NCollection_HSequence<opencascade::handle<Geom2d_BoundedCurve>>> seqBS{}; auto result = ShapeUpgrade::C0BSplineToSequenceOfC1BSplineCurve(BS, seqBS); return std::make_tuple(result, seqBS); }, nb::arg("BS").none(), R"nbdoc(Converts C0 B-Spline curve into sequence of C1 B-Spline curves.
+        .def_static("C0BSplineToSequenceOfC1BSplineCurve", [](const occ::handle<Geom_BSplineCurve> & BS) { occ::handle<NCollection_HSequence<opencascade::handle<Geom_BoundedCurve>>> seqBS{}; auto nanoocp_result = ShapeUpgrade::C0BSplineToSequenceOfC1BSplineCurve(BS, seqBS); return std::make_tuple(nanoocp_result, seqBS); }, nb::arg("BS").none(), R"nbdoc(Unifies same domain faces and edges of specified shape)nbdoc")
+        .def_static("C0BSplineToSequenceOfC1BSplineCurve", [](const occ::handle<Geom2d_BSplineCurve> & BS) { occ::handle<NCollection_HSequence<opencascade::handle<Geom2d_BoundedCurve>>> seqBS{}; auto nanoocp_result = ShapeUpgrade::C0BSplineToSequenceOfC1BSplineCurve(BS, seqBS); return std::make_tuple(nanoocp_result, seqBS); }, nb::arg("BS").none(), R"nbdoc(Converts C0 B-Spline curve into sequence of C1 B-Spline curves.
 This method splits B-Spline at the knots with multiplicities equal to degree,
 i.e. unlike method GeomConvert::C0BSplineToArrayOfC1BSplineCurve
 this one does not use any tolerance and therefore does not change the geometry of B-Spline.
@@ -486,7 +486,7 @@ the parts are similar to squares in 2D.)nbdoc")
     nb::borrow<nb::class_<ShapeUpgrade_FixSmallCurves>>(m.attr("ShapeUpgrade_FixSmallCurves"))
         .def(nb::new_([]() { return opencascade::handle<ShapeUpgrade_FixSmallCurves>(new ShapeUpgrade_FixSmallCurves()); }))
         .def("Init", static_cast<void (ShapeUpgrade_FixSmallCurves::*)(const TopoDS_Edge &, const TopoDS_Face &)>(&ShapeUpgrade_FixSmallCurves::Init), nb::arg("theEdge"), nb::arg("theFace"))
-        .def("Approx", [](ShapeUpgrade_FixSmallCurves &self) { occ::handle<Geom_Curve> Curve3d{}; occ::handle<Geom2d_Curve> Curve2d{}; occ::handle<Geom2d_Curve> Curve2dR{}; double First{}; double Last{}; auto result = self.Approx(Curve3d, Curve2d, Curve2dR, First, Last); return std::make_tuple(result, Curve3d, Curve2d, Curve2dR, First, Last); })
+        .def("Approx", [](ShapeUpgrade_FixSmallCurves &self) { occ::handle<Geom_Curve> Curve3d{}; occ::handle<Geom2d_Curve> Curve2d{}; occ::handle<Geom2d_Curve> Curve2dR{}; double First{}; double Last{}; auto nanoocp_result = self.Approx(Curve3d, Curve2d, Curve2dR, First, Last); return std::make_tuple(nanoocp_result, Curve3d, Curve2d, Curve2dR, First, Last); })
         .def("SetSplitCurve3dTool", static_cast<void (ShapeUpgrade_FixSmallCurves::*)(const occ::handle<ShapeUpgrade_SplitCurve3d> &)>(&ShapeUpgrade_FixSmallCurves::SetSplitCurve3dTool), nb::arg("splitCurve3dTool").none(), R"nbdoc(Sets the tool for splitting 3D curves.)nbdoc")
         .def("SetSplitCurve2dTool", static_cast<void (ShapeUpgrade_FixSmallCurves::*)(const occ::handle<ShapeUpgrade_SplitCurve2d> &)>(&ShapeUpgrade_FixSmallCurves::SetSplitCurve2dTool), nb::arg("splitCurve2dTool").none(), R"nbdoc(Sets the tool for splitting pcurves.)nbdoc")
         .def("Status", static_cast<bool (ShapeUpgrade_FixSmallCurves::*)(const ShapeExtend_Status) const>(&ShapeUpgrade_FixSmallCurves::Status), nb::arg("status"), R"nbdoc(Queries the status of last call to Perform
@@ -500,7 +500,7 @@ FAIL1:)nbdoc")
     nanoocp_implicit_copy_ctor<ShapeUpgrade_FixSmallCurves>(nb::borrow<nb::class_<ShapeUpgrade_FixSmallCurves>>(m.attr("ShapeUpgrade_FixSmallCurves")));
     nb::borrow<nb::class_<ShapeUpgrade_FixSmallBezierCurves>>(m.attr("ShapeUpgrade_FixSmallBezierCurves"))
         .def(nb::new_([]() { return opencascade::handle<ShapeUpgrade_FixSmallBezierCurves>(new ShapeUpgrade_FixSmallBezierCurves()); }))
-        .def("Approx", [](ShapeUpgrade_FixSmallBezierCurves &self) { occ::handle<Geom_Curve> Curve3d{}; occ::handle<Geom2d_Curve> Curve2d{}; occ::handle<Geom2d_Curve> Curve2dR{}; double First{}; double Last{}; auto result = self.Approx(Curve3d, Curve2d, Curve2dR, First, Last); return std::make_tuple(result, Curve3d, Curve2d, Curve2dR, First, Last); })
+        .def("Approx", [](ShapeUpgrade_FixSmallBezierCurves &self) { occ::handle<Geom_Curve> Curve3d{}; occ::handle<Geom2d_Curve> Curve2d{}; occ::handle<Geom2d_Curve> Curve2dR{}; double First{}; double Last{}; auto nanoocp_result = self.Approx(Curve3d, Curve2d, Curve2dR, First, Last); return std::make_tuple(nanoocp_result, Curve3d, Curve2d, Curve2dR, First, Last); })
         .def_static("get_type_name", static_cast<const char * (*)()>(&ShapeUpgrade_FixSmallBezierCurves::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&ShapeUpgrade_FixSmallBezierCurves::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (ShapeUpgrade_FixSmallBezierCurves::*)() const>(&ShapeUpgrade_FixSmallBezierCurves::DynamicType));

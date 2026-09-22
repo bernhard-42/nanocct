@@ -278,7 +278,7 @@ Sets the index of edge of pave block <theEdge>)nbdoc")
 Returns the index of edge of pave block)nbdoc")
         .def("HasEdge", static_cast<bool (BOPDS_PaveBlock::*)() const>(&BOPDS_PaveBlock::HasEdge), R"nbdoc(Query
 Returns true if the pave block has edge)nbdoc")
-        .def("HasEdge__int", [](const BOPDS_PaveBlock &self) { int theEdge{}; auto result = self.HasEdge(theEdge); return std::make_tuple(result, theEdge); }, R"nbdoc(HasEdge__int: the C++ overload HasEdge(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("HasEdge__int", [](const BOPDS_PaveBlock &self) { int theEdge{}; auto nanoocp_result = self.HasEdge(theEdge); return std::make_tuple(nanoocp_result, theEdge); }, R"nbdoc(HasEdge__int: the C++ overload HasEdge(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Query
 Returns true if the pave block has edge
 Returns the index of edge <theEdge>)nbdoc")
@@ -317,7 +317,7 @@ Updates the pave block. The extra paves are used
 to create new pave blocks <theLPB>.
 <theFlag> - if true, the first and second
 pave are used to produce new pave blocks.)nbdoc")
-        .def("ContainsParameter", [](const BOPDS_PaveBlock &self, const double thePrm, const double theTol) { int theInd{}; auto result = self.ContainsParameter(thePrm, theTol, theInd); return std::make_tuple(result, theInd); }, nb::arg("thePrm"), nb::arg("theTol"), R"nbdoc(Query
+        .def("ContainsParameter", [](const BOPDS_PaveBlock &self, const double thePrm, const double theTol) { int theInd{}; auto nanoocp_result = self.ContainsParameter(thePrm, theTol, theInd); return std::make_tuple(nanoocp_result, theInd); }, nb::arg("thePrm"), nb::arg("theTol"), R"nbdoc(Query
 Returns true if the extra paves contain the pave
 with given value of the parameter <thePrm>
 <theTol>  - the value of the tolerance to compare
@@ -564,7 +564,7 @@ the index)nbdoc")
         .def("IndexNew", static_cast<int (BOPDS_Interf::*)() const>(&BOPDS_Interf::IndexNew), R"nbdoc(Returns the index of new shape
 @return theIndex
 the index of new shape)nbdoc")
-        .def("HasIndexNew__int", [](const BOPDS_Interf &self) { int theIndex{}; auto result = self.HasIndexNew(theIndex); return std::make_tuple(result, theIndex); }, R"nbdoc(HasIndexNew__int: the C++ overload HasIndexNew(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("HasIndexNew__int", [](const BOPDS_Interf &self) { int theIndex{}; auto nanoocp_result = self.HasIndexNew(theIndex); return std::make_tuple(nanoocp_result, theIndex); }, R"nbdoc(HasIndexNew__int: the C++ overload HasIndexNew(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns true if the interference has index of new shape
 that is equal to the given index
 @param theIndex
@@ -759,7 +759,7 @@ an interference
 Flag)nbdoc")
         .def("HasFlag", static_cast<bool (BOPDS_ShapeInfo::*)() const>(&BOPDS_ShapeInfo::HasFlag), R"nbdoc(Query
 Returns true if there is flag.)nbdoc")
-        .def("HasFlag__int", [](const BOPDS_ShapeInfo &self) { int theFlag{}; auto result = self.HasFlag(theFlag); return std::make_tuple(result, theFlag); }, R"nbdoc(HasFlag__int: the C++ overload HasFlag(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("HasFlag__int", [](const BOPDS_ShapeInfo &self) { int theFlag{}; auto nanoocp_result = self.HasFlag(theFlag); return std::make_tuple(nanoocp_result, theFlag); }, R"nbdoc(HasFlag__int: the C++ overload HasFlag(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Query
 Returns true if there is flag.
 Returns the flag theFlag)nbdoc")
@@ -889,7 +889,7 @@ Returns the collection same domain shapes)nbdoc")
         .def("AddShapeSD", static_cast<void (BOPDS_DS::*)(const int, const int)>(&BOPDS_DS::AddShapeSD), nb::arg("theIndex"), nb::arg("theIndexSD"), R"nbdoc(Modifier
 Adds the information about same domain shapes
 with indices theIndex, theIndexSD)nbdoc")
-        .def("HasShapeSD", [](const BOPDS_DS &self, const int theIndex) { int theIndexSD{}; auto result = self.HasShapeSD(theIndex, theIndexSD); return std::make_tuple(result, theIndexSD); }, nb::arg("theIndex"), R"nbdoc(Query
+        .def("HasShapeSD", [](const BOPDS_DS &self, const int theIndex) { int theIndexSD{}; auto nanoocp_result = self.HasShapeSD(theIndex, theIndexSD); return std::make_tuple(nanoocp_result, theIndexSD); }, nb::arg("theIndex"), R"nbdoc(Query
 Returns true if the shape with index theIndex has the
 same domain shape. In this case theIndexSD will contain
 the index of same domain shape found

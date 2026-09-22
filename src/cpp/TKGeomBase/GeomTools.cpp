@@ -70,7 +70,7 @@ format that can be read back by Read.)nbdoc")
 me is first cleared.)nbdoc")
         .def_static("PrintCurve2d", [](const occ::handle<Geom2d_Curve> & C, const bool compact) { std::ostringstream OS_stream; GeomTools_Curve2dSet::PrintCurve2d(C, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("C").none(), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Dumps the curve on the stream, if compact is True
 use the compact format that can be read back.)nbdoc")
-        .def_static("ReadCurve2d", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = GeomTools_Curve2dSet::ReadCurve2d(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads the curve from the stream. The curve is
+        .def_static("ReadCurve2d", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto nanoocp_result = GeomTools_Curve2dSet::ReadCurve2d(IS_stream); return nanoocp_result; }, nb::arg("IS"), R"nbdoc(Reads the curve from the stream. The curve is
 assumed to have been written with the Print
 method (compact = True).)nbdoc");
     nanoocp_implicit_copy_ctor<GeomTools_Curve2dSet>(nb::borrow<nb::class_<GeomTools_Curve2dSet>>(m.attr("GeomTools_Curve2dSet")));
@@ -88,7 +88,7 @@ format that can be read back by Read.)nbdoc")
 me is first cleared.)nbdoc")
         .def_static("PrintCurve", [](const occ::handle<Geom_Curve> & C, const bool compact) { std::ostringstream OS_stream; GeomTools_CurveSet::PrintCurve(C, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("C").none(), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Dumps the curve on the stream, if compact is True
 use the compact format that can be read back.)nbdoc")
-        .def_static("ReadCurve", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = GeomTools_CurveSet::ReadCurve(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads the curve from the stream. The curve is
+        .def_static("ReadCurve", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto nanoocp_result = GeomTools_CurveSet::ReadCurve(IS_stream); return nanoocp_result; }, nb::arg("IS"), R"nbdoc(Reads the curve from the stream. The curve is
 assumed to have been written with the Print
 method (compact = True).)nbdoc");
     nanoocp_implicit_copy_ctor<GeomTools_CurveSet>(nb::borrow<nb::class_<GeomTools_CurveSet>>(m.attr("GeomTools_CurveSet")));
@@ -106,7 +106,7 @@ format that can be read back by Read.)nbdoc")
 me is first cleared.)nbdoc")
         .def_static("PrintSurface", [](const occ::handle<Geom_Surface> & S, const bool compact) { std::ostringstream OS_stream; GeomTools_SurfaceSet::PrintSurface(S, OS_stream, compact); return nanoocp_stream_text(OS_stream); }, nb::arg("S").none(), nb::arg("compact") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Dumps the surface on the stream, if compact is True
 use the compact format that can be read back.)nbdoc")
-        .def_static("ReadSurface", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = GeomTools_SurfaceSet::ReadSurface(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads the surface from the stream. The surface is
+        .def_static("ReadSurface", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto nanoocp_result = GeomTools_SurfaceSet::ReadSurface(IS_stream); return nanoocp_result; }, nb::arg("IS"), R"nbdoc(Reads the surface from the stream. The surface is
 assumed to have been written with the Print
 method (compact = True).)nbdoc");
     nanoocp_implicit_copy_ctor<GeomTools_SurfaceSet>(nb::borrow<nb::class_<GeomTools_SurfaceSet>>(m.attr("GeomTools_SurfaceSet")));

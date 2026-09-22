@@ -202,12 +202,12 @@ IsClosed of the domain of the ellipse returns False.)nbdoc")
     nb::implicitly_convertible<std::decay_t<const IntRes2d_Domain &>, PeriodicInterval>();
     nb::borrow<nb::class_<IntCurve_MyImpParToolOfIntImpConicParConic>>(m.attr("IntCurve_MyImpParToolOfIntImpConicParConic"))
         .def(nb::init<const IntCurve_IConicTool &, const IntCurve_PConic &>(), nb::arg("IT"), nb::arg("PC"), R"nbdoc(Constructor of the class.)nbdoc")
-        .def("Value", [](IntCurve_MyImpParToolOfIntImpConicParConic &self, const double Param) { double F{}; auto result = self.Value(Param, F); return std::make_tuple(result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
+        .def("Value", [](IntCurve_MyImpParToolOfIntImpConicParConic &self, const double Param) { double F{}; auto nanoocp_result = self.Value(Param, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
 the implicit curve and the point at parameter Param
 on the parametrised curve.)nbdoc")
-        .def("Derivative", [](IntCurve_MyImpParToolOfIntImpConicParConic &self, const double Param) { double D{}; auto result = self.Derivative(Param, D); return std::make_tuple(result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
+        .def("Derivative", [](IntCurve_MyImpParToolOfIntImpConicParConic &self, const double Param) { double D{}; auto nanoocp_result = self.Derivative(Param, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
 parameter Param.)nbdoc")
-        .def("Values", [](IntCurve_MyImpParToolOfIntImpConicParConic &self, const double Param) { double F{}; double D{}; auto result = self.Values(Param, F, D); return std::make_tuple(result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.)nbdoc");
+        .def("Values", [](IntCurve_MyImpParToolOfIntImpConicParConic &self, const double Param) { double F{}; double D{}; auto nanoocp_result = self.Values(Param, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.)nbdoc");
     nanoocp_implicit_copy_ctor<IntCurve_MyImpParToolOfIntImpConicParConic>(nb::borrow<nb::class_<IntCurve_MyImpParToolOfIntImpConicParConic>>(m.attr("IntCurve_MyImpParToolOfIntImpConicParConic")));
     nb::borrow<nb::class_<IntCurve_PConic>>(m.attr("IntCurve_PConic"))
         .def(nb::init<const IntCurve_PConic &>(), nb::arg("PC"))

@@ -185,10 +185,10 @@ void nanoocp_define_AdvApp2Var(nb::module_ &m) {
     nb::borrow<nb::class_<AdvApp2Var_Network>>(m.attr("AdvApp2Var_Network"))
         .def(nb::init<>())
         .def(nb::init<const NCollection_Sequence<opencascade::handle<AdvApp2Var_Patch>> &, const NCollection_Sequence<double> &, const NCollection_Sequence<double> &>(), nb::arg("Net"), nb::arg("TheU"), nb::arg("TheV"))
-        .def("FirstNotApprox", [](const AdvApp2Var_Network &self) { int Index{}; auto result = self.FirstNotApprox(Index); return std::make_tuple(result, Index); }, R"nbdoc(search the Index of the first Patch not approximated,
+        .def("FirstNotApprox", [](const AdvApp2Var_Network &self) { int Index{}; auto nanoocp_result = self.FirstNotApprox(Index); return std::make_tuple(nanoocp_result, Index); }, R"nbdoc(search the Index of the first Patch not approximated,
 if all Patches are approximated false is returned)nbdoc")
-        .def("ChangePatch", [](AdvApp2Var_Network &self, const int Index) { opencascade::handle<AdvApp2Var_Patch> result(&(self.ChangePatch(Index))); return result; }, nb::arg("Index"))
-        .def("__call__", [](AdvApp2Var_Network &self, const int Index) { opencascade::handle<AdvApp2Var_Patch> result(&(self.operator()(Index))); return result; }, nb::arg("Index"), nb::is_operator())
+        .def("ChangePatch", [](AdvApp2Var_Network &self, const int Index) { opencascade::handle<AdvApp2Var_Patch> nanoocp_result(&(self.ChangePatch(Index))); return nanoocp_result; }, nb::arg("Index"))
+        .def("__call__", [](AdvApp2Var_Network &self, const int Index) { opencascade::handle<AdvApp2Var_Patch> nanoocp_result(&(self.operator()(Index))); return nanoocp_result; }, nb::arg("Index"), nb::is_operator())
         .def("UpdateInU", static_cast<void (AdvApp2Var_Network::*)(const double)>(&AdvApp2Var_Network::UpdateInU), nb::arg("CuttingValue"))
         .def("UpdateInV", static_cast<void (AdvApp2Var_Network::*)(const double)>(&AdvApp2Var_Network::UpdateInV), nb::arg("CuttingValue"))
         .def("SameDegree", [](AdvApp2Var_Network &self, const int iu, const int iv) { int ncfu{}; int ncfv{}; self.SameDegree(iu, iv, ncfu, ncfv); return std::make_tuple(ncfu, ncfv); }, nb::arg("iu"), nb::arg("iv"))
@@ -197,8 +197,8 @@ if all Patches are approximated false is returned)nbdoc")
         .def("NbPatchInV", static_cast<int (AdvApp2Var_Network::*)() const>(&AdvApp2Var_Network::NbPatchInV))
         .def("UParameter", static_cast<double (AdvApp2Var_Network::*)(const int) const>(&AdvApp2Var_Network::UParameter), nb::arg("Index"))
         .def("VParameter", static_cast<double (AdvApp2Var_Network::*)(const int) const>(&AdvApp2Var_Network::VParameter), nb::arg("Index"))
-        .def("Patch", [](const AdvApp2Var_Network &self, const int UIndex, const int VIndex) { opencascade::handle<AdvApp2Var_Patch> result(&(self.Patch(UIndex, VIndex))); return result; }, nb::arg("UIndex"), nb::arg("VIndex"))
-        .def("__call__", [](const AdvApp2Var_Network &self, const int UIndex, const int VIndex) { opencascade::handle<AdvApp2Var_Patch> result(&(self.operator()(UIndex, VIndex))); return result; }, nb::arg("UIndex"), nb::arg("VIndex"), nb::is_operator());
+        .def("Patch", [](const AdvApp2Var_Network &self, const int UIndex, const int VIndex) { opencascade::handle<AdvApp2Var_Patch> nanoocp_result(&(self.Patch(UIndex, VIndex))); return nanoocp_result; }, nb::arg("UIndex"), nb::arg("VIndex"))
+        .def("__call__", [](const AdvApp2Var_Network &self, const int UIndex, const int VIndex) { opencascade::handle<AdvApp2Var_Patch> nanoocp_result(&(self.operator()(UIndex, VIndex))); return nanoocp_result; }, nb::arg("UIndex"), nb::arg("VIndex"), nb::is_operator());
     nanoocp_implicit_copy_ctor<AdvApp2Var_Network>(nb::borrow<nb::class_<AdvApp2Var_Network>>(m.attr("AdvApp2Var_Network")));
     nb::borrow<nb::class_<AdvApp2Var_Node>>(m.attr("AdvApp2Var_Node"))
         .def(nb::new_([]() { return opencascade::handle<AdvApp2Var_Node>(new AdvApp2Var_Node()); }))
@@ -253,15 +253,15 @@ if all Patches are approximated false is returned)nbdoc")
     nb::borrow<nb::class_<AdvApp2Var_Framework>>(m.attr("AdvApp2Var_Framework"))
         .def(nb::init<>())
         .def(nb::init<const NCollection_Sequence<opencascade::handle<AdvApp2Var_Node>> &, const NCollection_Sequence<NCollection_Sequence<opencascade::handle<AdvApp2Var_Iso>>> &, const NCollection_Sequence<NCollection_Sequence<opencascade::handle<AdvApp2Var_Iso>>> &>(), nb::arg("Frame"), nb::arg("UFrontier"), nb::arg("VFrontier"))
-        .def("FirstNotApprox", [](const AdvApp2Var_Framework &self) { int IndexIso{}; int IndexStrip{}; auto result = self.FirstNotApprox(IndexIso, IndexStrip); return std::make_tuple(result, IndexIso, IndexStrip); }, R"nbdoc(search the Index of the first Iso not approximated,
+        .def("FirstNotApprox", [](const AdvApp2Var_Framework &self) { int IndexIso{}; int IndexStrip{}; auto nanoocp_result = self.FirstNotApprox(IndexIso, IndexStrip); return std::make_tuple(nanoocp_result, IndexIso, IndexStrip); }, R"nbdoc(search the Index of the first Iso not approximated,
 if all Isos are approximated NULL is returned.)nbdoc")
         .def("FirstNode", static_cast<int (AdvApp2Var_Framework::*)(const GeomAbs_IsoType, const int, const int) const>(&AdvApp2Var_Framework::FirstNode), nb::arg("Type"), nb::arg("IndexIso"), nb::arg("IndexStrip"))
         .def("LastNode", static_cast<int (AdvApp2Var_Framework::*)(const GeomAbs_IsoType, const int, const int) const>(&AdvApp2Var_Framework::LastNode), nb::arg("Type"), nb::arg("IndexIso"), nb::arg("IndexStrip"))
         .def("ChangeIso", static_cast<void (AdvApp2Var_Framework::*)(const int, const int, const occ::handle<AdvApp2Var_Iso> &)>(&AdvApp2Var_Framework::ChangeIso), nb::arg("IndexIso"), nb::arg("IndexStrip"), nb::arg("anIso").none())
         .def("Node", static_cast<const occ::handle<AdvApp2Var_Node> & (AdvApp2Var_Framework::*)(const int) const>(&AdvApp2Var_Framework::Node), nb::arg("IndexNode"))
         .def("Node", static_cast<const occ::handle<AdvApp2Var_Node> & (AdvApp2Var_Framework::*)(const double, const double) const>(&AdvApp2Var_Framework::Node), nb::arg("U"), nb::arg("V"))
-        .def("IsoU", [](const AdvApp2Var_Framework &self, const double U, const double V0, const double V1) { opencascade::handle<AdvApp2Var_Iso> result(&(self.IsoU(U, V0, V1))); return result; }, nb::arg("U"), nb::arg("V0"), nb::arg("V1"))
-        .def("IsoV", [](const AdvApp2Var_Framework &self, const double U0, const double U1, const double V) { opencascade::handle<AdvApp2Var_Iso> result(&(self.IsoV(U0, U1, V))); return result; }, nb::arg("U0"), nb::arg("U1"), nb::arg("V"))
+        .def("IsoU", [](const AdvApp2Var_Framework &self, const double U, const double V0, const double V1) { opencascade::handle<AdvApp2Var_Iso> nanoocp_result(&(self.IsoU(U, V0, V1))); return nanoocp_result; }, nb::arg("U"), nb::arg("V0"), nb::arg("V1"))
+        .def("IsoV", [](const AdvApp2Var_Framework &self, const double U0, const double U1, const double V) { opencascade::handle<AdvApp2Var_Iso> nanoocp_result(&(self.IsoV(U0, U1, V))); return nanoocp_result; }, nb::arg("U0"), nb::arg("U1"), nb::arg("V"))
         .def("UpdateInU", static_cast<void (AdvApp2Var_Framework::*)(const double)>(&AdvApp2Var_Framework::UpdateInU), nb::arg("CuttingValue"))
         .def("UpdateInV", static_cast<void (AdvApp2Var_Framework::*)(const double)>(&AdvApp2Var_Framework::UpdateInV), nb::arg("CuttingValue"))
         .def("UEquation", static_cast<const occ::handle<NCollection_HArray1<double>> & (AdvApp2Var_Framework::*)(const int, const int) const>(&AdvApp2Var_Framework::UEquation), nb::arg("IndexIso"), nb::arg("IndexStrip"))

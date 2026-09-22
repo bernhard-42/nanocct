@@ -253,9 +253,9 @@ value = 16.)nbdoc")
         .def("Bounds", [](const ProjLib_CompProjectedCurve &self, const int Index) { double Udeb{}; double Ufin{}; self.Bounds(Index, Udeb, Ufin); return std::make_tuple(Udeb, Ufin); }, nb::arg("Index"), R"nbdoc(returns the bounds of the continuous part corresponding to Index)nbdoc")
         .def("IsSinglePnt", static_cast<bool (ProjLib_CompProjectedCurve::*)(const int, gp_Pnt2d &) const>(&ProjLib_CompProjectedCurve::IsSinglePnt), nb::arg("Index"), nb::arg("P"), R"nbdoc(returns True if part of projection with number Index is a single point and writes
 its coordinates in P)nbdoc")
-        .def("IsUIso", [](const ProjLib_CompProjectedCurve &self, const int Index) { double U{}; auto result = self.IsUIso(Index, U); return std::make_tuple(result, U); }, nb::arg("Index"), R"nbdoc(returns True if part of projection with number Index is an u-isoparametric curve of
+        .def("IsUIso", [](const ProjLib_CompProjectedCurve &self, const int Index) { double U{}; auto nanoocp_result = self.IsUIso(Index, U); return std::make_tuple(nanoocp_result, U); }, nb::arg("Index"), R"nbdoc(returns True if part of projection with number Index is an u-isoparametric curve of
 input surface)nbdoc")
-        .def("IsVIso", [](const ProjLib_CompProjectedCurve &self, const int Index) { double V{}; auto result = self.IsVIso(Index, V); return std::make_tuple(result, V); }, nb::arg("Index"), R"nbdoc(returns True if part of projection with number Index is an v-isoparametric curve of
+        .def("IsVIso", [](const ProjLib_CompProjectedCurve &self, const int Index) { double V{}; auto nanoocp_result = self.IsVIso(Index, V); return std::make_tuple(nanoocp_result, V); }, nb::arg("Index"), R"nbdoc(returns True if part of projection with number Index is an v-isoparametric curve of
 input surface)nbdoc")
         .def("Value", static_cast<gp_Pnt2d (ProjLib_CompProjectedCurve::*)(const double) const>(&ProjLib_CompProjectedCurve::Value), nb::arg("U"), R"nbdoc(Computes the point of parameter U on the curve.)nbdoc")
         .def("D0", static_cast<void (ProjLib_CompProjectedCurve::*)(const double, gp_Pnt2d &) const>(&ProjLib_CompProjectedCurve::D0), nb::arg("U"), nb::arg("P"), R"nbdoc(Computes the point of parameter U on the curve.)nbdoc")

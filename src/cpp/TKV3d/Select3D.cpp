@@ -649,7 +649,7 @@ to be computed later, this syntax reduces computation time.)nbdoc")
         .def("LastDetectedTriangle", static_cast<bool (Select3D_SensitiveTriangulation::*)(Poly_Triangle &) const>(&Select3D_SensitiveTriangulation::LastDetectedTriangle), nb::arg("theTriangle"), R"nbdoc(Get last detected triangle.
 @param[out] theTriangle  triangle node indexes
 @return TRUE if defined)nbdoc")
-        .def("LastDetectedTriangle__list", [](const Select3D_SensitiveTriangulation &self, Poly_Triangle & theTriangle) { gp_Pnt theTriNodes[3]{}; auto result = self.LastDetectedTriangle(theTriangle, theTriNodes); std::array<gp_Pnt, 3> theTriNodes_out; std::copy(std::begin(theTriNodes), std::end(theTriNodes), theTriNodes_out.begin()); return std::make_tuple(result, theTriNodes_out); }, nb::arg("theTriangle"), R"nbdoc(LastDetectedTriangle__list: the C++ overload LastDetectedTriangle(Poly_Triangle &, gp_Pnt[3]); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("LastDetectedTriangle__list", [](const Select3D_SensitiveTriangulation &self, Poly_Triangle & theTriangle) { gp_Pnt theTriNodes[3]{}; auto nanoocp_result = self.LastDetectedTriangle(theTriangle, theTriNodes); std::array<gp_Pnt, 3> theTriNodes_out; std::copy(std::begin(theTriNodes), std::end(theTriNodes), theTriNodes_out.begin()); return std::make_tuple(nanoocp_result, theTriNodes_out); }, nb::arg("theTriangle"), R"nbdoc(LastDetectedTriangle__list: the C++ overload LastDetectedTriangle(Poly_Triangle &, gp_Pnt[3]); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Get last detected triangle.
 @param[out] theTriangle  triangle node indexes
 @param[out] theTriNodes  triangle nodes (with pre-applied transformation)

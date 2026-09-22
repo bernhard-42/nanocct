@@ -228,7 +228,7 @@ For rational surfaces Weights(i)*Poles(i) are checked.)nbdoc")
 U2 isoline of surface are identical according to tolerance criterion.)nbdoc")
         .def_static("IsBzVClosed", static_cast<bool (*)(const occ::handle<Geom_BezierSurface> &, const double, const double, const double)>(&GeomLib::IsBzVClosed), nb::arg("S").none(), nb::arg("V1"), nb::arg("V2"), nb::arg("Tol"), R"nbdoc(Returns true if the poles of V1 isoline and the poles of
 V2 isoline of surface are identical according to tolerance criterion.)nbdoc")
-        .def_static("isIsoLine", [](const occ::handle<Adaptor2d_Curve2d> & theC2D) { bool theIsU{}; double theParam{}; bool theIsForward{}; auto result = GeomLib::isIsoLine(theC2D, theIsU, theParam, theIsForward); return std::make_tuple(result, theIsU, theParam, theIsForward); }, nb::arg("theC2D").none(), R"nbdoc(Checks whether the 2d curve is a isoline. It can be represented by b-spline, bezier,
+        .def_static("isIsoLine", [](const occ::handle<Adaptor2d_Curve2d> & theC2D) { bool theIsU{}; double theParam{}; bool theIsForward{}; auto nanoocp_result = GeomLib::isIsoLine(theC2D, theIsU, theParam, theIsForward); return std::make_tuple(nanoocp_result, theIsU, theParam, theIsForward); }, nb::arg("theC2D").none(), R"nbdoc(Checks whether the 2d curve is a isoline. It can be represented by b-spline, bezier,
 or geometric line. This line should have natural parameterization.
 @param theC2D       Trimmed curve to be checked.
 @param theIsU       Flag indicating that line is u const.
@@ -362,14 +362,14 @@ if the Approx is not Done)nbdoc");
     nb::implicitly_convertible<std::decay_t<const AdvApprox_ApproxAFunction &>, GeomLib_MakeCurvefromApprox>();
     nb::borrow<nb::class_<GeomLib_PolyFunc>>(m.attr("GeomLib_PolyFunc"))
         .def(nb::init<const math_Vector &>(), nb::arg("Coeffs"))
-        .def("Value", [](GeomLib_PolyFunc &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(computes the value <F>of the function for the variable <X>.
+        .def("Value", [](GeomLib_PolyFunc &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(computes the value <F>of the function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Derivative", [](GeomLib_PolyFunc &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"), R"nbdoc(computes the derivative <D> of the function
+        .def("Derivative", [](GeomLib_PolyFunc &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"), R"nbdoc(computes the derivative <D> of the function
 for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Values", [](GeomLib_PolyFunc &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"), R"nbdoc(computes the value <F> and the derivative <D> of the
+        .def("Values", [](GeomLib_PolyFunc &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"), R"nbdoc(computes the value <F> and the derivative <D> of the
 function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc");
@@ -377,13 +377,13 @@ False otherwise.)nbdoc");
     nb::implicitly_convertible<std::decay_t<const math_Vector &>, GeomLib_PolyFunc>();
     nanoocp_implicit_default_ctor<GeomLib_Tool>(nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool")));
     nb::borrow<nb::class_<GeomLib_Tool>>(m.attr("GeomLib_Tool"))
-        .def_static("Parameter", [](const occ::handle<Geom_Curve> & Curve, const gp_Pnt & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a 3D curve
+        .def_static("Parameter", [](const occ::handle<Geom_Curve> & Curve, const gp_Pnt & Point, const double MaxDist) { double U{}; auto nanoocp_result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(nanoocp_result, U); }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a 3D curve
 or at a distance less than the MaxDist value.)nbdoc")
-        .def_static("Parameters", [](const occ::handle<Geom_Surface> & Surface, const gp_Pnt & Point, const double MaxDist) { double U{}; double V{}; auto result = GeomLib_Tool::Parameters(Surface, Point, MaxDist, U, V); return std::make_tuple(result, U, V); }, nb::arg("Surface").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a surface
+        .def_static("Parameters", [](const occ::handle<Geom_Surface> & Surface, const gp_Pnt & Point, const double MaxDist) { double U{}; double V{}; auto nanoocp_result = GeomLib_Tool::Parameters(Surface, Point, MaxDist, U, V); return std::make_tuple(nanoocp_result, U, V); }, nb::arg("Surface").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 3D point lying on a surface
 or at a distance less than the MaxDist value.)nbdoc")
-        .def_static("Parameter", [](const occ::handle<Geom2d_Curve> & Curve, const gp_Pnt2d & Point, const double MaxDist) { double U{}; auto result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(result, U); }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 2D point lying on a 2D curve
+        .def_static("Parameter", [](const occ::handle<Geom2d_Curve> & Curve, const gp_Pnt2d & Point, const double MaxDist) { double U{}; auto nanoocp_result = GeomLib_Tool::Parameter(Curve, Point, MaxDist, U); return std::make_tuple(nanoocp_result, U); }, nb::arg("Curve").none(), nb::arg("Point"), nb::arg("MaxDist"), R"nbdoc(Extracts the parameter of a 2D point lying on a 2D curve
 or at a distance less than the MaxDist value.)nbdoc")
-        .def_static("ComputeDeviation", [](const Geom2dAdaptor_Curve & theCurve, const double theFPar, const double theLPar, const double theStartParameter, const int theNbIters, gp_Pnt2d *const thePtOnCurve, gp_Vec2d *const theVecCurvLine, gp_Lin2d *const theLine) { auto result = GeomLib_Tool::ComputeDeviation(theCurve, theFPar, theLPar, theStartParameter, theNbIters, nullptr, thePtOnCurve, theVecCurvLine, theLine); return result; }, nb::arg("theCurve"), nb::arg("theFPar"), nb::arg("theLPar"), nb::arg("theStartParameter"), nb::arg("theNbIters") = static_cast<std::decay_t<const int>>(100), nb::arg("thePtOnCurve") = static_cast<std::decay_t<gp_Pnt2d *const>>(nullptr), nb::arg("theVecCurvLine") = static_cast<std::decay_t<gp_Vec2d *const>>(nullptr), nb::arg("theLine") = static_cast<std::decay_t<gp_Lin2d *const>>(nullptr), R"nbdoc(Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
+        .def_static("ComputeDeviation", [](const Geom2dAdaptor_Curve & theCurve, const double theFPar, const double theLPar, const double theStartParameter, const int theNbIters, gp_Pnt2d *const thePtOnCurve, gp_Vec2d *const theVecCurvLine, gp_Lin2d *const theLine) { auto nanoocp_result = GeomLib_Tool::ComputeDeviation(theCurve, theFPar, theLPar, theStartParameter, theNbIters, nullptr, thePtOnCurve, theVecCurvLine, theLine); return nanoocp_result; }, nb::arg("theCurve"), nb::arg("theFPar"), nb::arg("theLPar"), nb::arg("theStartParameter"), nb::arg("theNbIters") = static_cast<std::decay_t<const int>>(100), nb::arg("thePtOnCurve") = static_cast<std::decay_t<gp_Pnt2d *const>>(nullptr), nb::arg("theVecCurvLine") = static_cast<std::decay_t<gp_Vec2d *const>>(nullptr), nb::arg("theLine") = static_cast<std::decay_t<gp_Lin2d *const>>(nullptr), R"nbdoc(Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
 between theCurve and the linear segment joining its points with
 the parameters theFPar and theLPar is obtained.
 Returns the (positive) value of deviation. Returns negative value if
@@ -400,7 +400,7 @@ Additionally, following values can be returned (optionally):
 perpendicular theLine);
 @param theLine - the linear segment joining the point of theCurve having parameters
 theFPar and theLPar.)nbdoc")
-        .def_static("ComputeDeviation", [](const Geom2dAdaptor_Curve & theCurve, const double theFPar, const double theLPar, const int theNbSubIntervals, const int theNbIters) { auto result = GeomLib_Tool::ComputeDeviation(theCurve, theFPar, theLPar, theNbSubIntervals, theNbIters, nullptr); return result; }, nb::arg("theCurve"), nb::arg("theFPar"), nb::arg("theLPar"), nb::arg("theNbSubIntervals"), nb::arg("theNbIters") = static_cast<std::decay_t<const int>>(10), R"nbdoc(Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
+        .def_static("ComputeDeviation", [](const Geom2dAdaptor_Curve & theCurve, const double theFPar, const double theLPar, const int theNbSubIntervals, const int theNbIters) { auto nanoocp_result = GeomLib_Tool::ComputeDeviation(theCurve, theFPar, theLPar, theNbSubIntervals, theNbIters, nullptr); return nanoocp_result; }, nb::arg("theCurve"), nb::arg("theFPar"), nb::arg("theLPar"), nb::arg("theNbSubIntervals"), nb::arg("theNbIters") = static_cast<std::decay_t<const int>>(10), R"nbdoc(Computes parameter in theCurve (*thePrmOnCurve) where maximal deviation
 between theCurve and the linear segment joining its points with
 the parameters theFPar and theLPar is obtained.
 Returns the (positive) value of deviation. Returns negative value if

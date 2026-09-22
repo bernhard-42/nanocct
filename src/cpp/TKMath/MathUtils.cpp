@@ -524,11 +524,11 @@ Uses 53 bits of randomness for full double precision.
     nb::borrow<nb::class_<MathUtils::Polynomial>>(m.attr("Polynomial"))
         .def(nb::init<const math_Vector &>(), nb::arg("theCoeffs"), R"nbdoc(Constructor from math_Vector.
 @param theCoeffs coefficients in ascending power order)nbdoc")
-        .def("Value", [](const MathUtils::Polynomial &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates polynomial at theX using Horner's method.
+        .def("Value", [](const MathUtils::Polynomial &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates polynomial at theX using Horner's method.
 @param[in] theX input value
 @param[out] theY polynomial value p(theX)
 @return true (always succeeds for polynomials))nbdoc")
-        .def("Values", [](const MathUtils::Polynomial &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates polynomial and its derivative at theX.
+        .def("Values", [](const MathUtils::Polynomial &self, double theX) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(theX, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates polynomial and its derivative at theX.
 @param[in] theX input value
 @param[out] theY polynomial value p(theX)
 @param[out] theDY derivative value p'(theX)
@@ -543,7 +543,7 @@ Uses 53 bits of randomness for full double precision.
         .def(nb::init<const math_Vector &, const math_Vector &>(), nb::arg("theNum"), nb::arg("theDenom"), R"nbdoc(Constructor from math_Vector.
 @param theNum numerator coefficients (ascending power order)
 @param theDenom denominator coefficients (ascending power order))nbdoc")
-        .def("Value", [](const MathUtils::Rational &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates rational function at theX.
+        .def("Value", [](const MathUtils::Rational &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates rational function at theX.
 @param[in] theX input value
 @param[out] theY function value P(theX)/Q(theX)
 @return false if denominator is zero)nbdoc");
@@ -551,11 +551,11 @@ Uses 53 bits of randomness for full double precision.
     nb::borrow<nb::class_<MathUtils::Constant>>(m.attr("Constant"))
         .def(nb::init<double>(), nb::arg("theValue"), R"nbdoc(Constructor from constant value.
 @param theValue constant value)nbdoc")
-        .def("Value", [](const MathUtils::Constant &self, double arg0) { double theY{}; auto result = self.Value(arg0, theY); return std::make_tuple(result, theY); }, nb::arg("arg0"), R"nbdoc(Evaluates constant function.
+        .def("Value", [](const MathUtils::Constant &self, double arg0) { double theY{}; auto nanoocp_result = self.Value(arg0, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("arg0"), R"nbdoc(Evaluates constant function.
 @param[in] theX input value (ignored)
 @param[out] theY constant value
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Constant &self, double arg0) { double theY{}; double theDY{}; auto result = self.Values(arg0, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("arg0"), R"nbdoc(Evaluates constant and derivative (derivative is always 0).
+        .def("Values", [](const MathUtils::Constant &self, double arg0) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(arg0, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("arg0"), R"nbdoc(Evaluates constant and derivative (derivative is always 0).
 @param[in] theX input value (ignored)
 @param[out] theY constant value
 @param[out] theDY derivative (always 0)
@@ -565,11 +565,11 @@ Uses 53 bits of randomness for full double precision.
         .def(nb::init<double, double>(), nb::arg("theSlope"), nb::arg("theIntercept"), R"nbdoc(Constructor from slope and intercept.
 @param theSlope coefficient a (slope)
 @param theIntercept coefficient b (y-intercept))nbdoc")
-        .def("Value", [](const MathUtils::Linear &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates linear function a*x + b.
+        .def("Value", [](const MathUtils::Linear &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates linear function a*x + b.
 @param[in] theX input value
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Linear &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates linear function and derivative.
+        .def("Values", [](const MathUtils::Linear &self, double theX) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(theX, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates linear function and derivative.
 @param[in] theX input value
 @param[out] theY function value
 @param[out] theDY derivative (= slope)
@@ -581,11 +581,11 @@ Uses 53 bits of randomness for full double precision.
 @param theFrequency angular frequency b
 @param thePhase phase shift c
 @param theOffset vertical offset d)nbdoc")
-        .def("Value", [](const MathUtils::Sine &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates sine function.
+        .def("Value", [](const MathUtils::Sine &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates sine function.
 @param[in] theX input value
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Sine &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates sine function and derivative.
+        .def("Values", [](const MathUtils::Sine &self, double theX) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(theX, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates sine function and derivative.
 @param[in] theX input value
 @param[out] theY function value
 @param[out] theDY derivative value
@@ -598,11 +598,11 @@ Uses 53 bits of randomness for full double precision.
 @param theFrequency angular frequency b
 @param thePhase phase shift c
 @param theOffset vertical offset d)nbdoc")
-        .def("Value", [](const MathUtils::Cosine &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates cosine function.
+        .def("Value", [](const MathUtils::Cosine &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates cosine function.
 @param[in] theX input value
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Cosine &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates cosine function and derivative.
+        .def("Values", [](const MathUtils::Cosine &self, double theX) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(theX, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates cosine function and derivative.
 @param[in] theX input value
 @param[out] theY function value
 @param[out] theDY derivative value
@@ -614,11 +614,11 @@ Uses 53 bits of randomness for full double precision.
 @param theScale scale factor a
 @param theRate rate b
 @param theOffset vertical offset c)nbdoc")
-        .def("Value", [](const MathUtils::Exponential &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates exponential function.
+        .def("Value", [](const MathUtils::Exponential &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates exponential function.
 @param[in] theX input value
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Exponential &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates exponential function and derivative.
+        .def("Values", [](const MathUtils::Exponential &self, double theX) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(theX, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates exponential function and derivative.
 @param[in] theX input value
 @param[out] theY function value
 @param[out] theDY derivative value
@@ -630,11 +630,11 @@ Uses 53 bits of randomness for full double precision.
 @param theExponent power n
 @param theScale scale factor a
 @param theOffset vertical offset b)nbdoc")
-        .def("Value", [](const MathUtils::Power &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates power function.
+        .def("Value", [](const MathUtils::Power &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates power function.
 @param[in] theX input value
 @param[out] theY function value
 @return false if x < 0 and exponent is non-integer)nbdoc")
-        .def("Values", [](const MathUtils::Power &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates power function and derivative.
+        .def("Values", [](const MathUtils::Power &self, double theX) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(theX, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates power function and derivative.
 @param[in] theX input value
 @param[out] theY function value
 @param[out] theDY derivative value
@@ -646,11 +646,11 @@ Uses 53 bits of randomness for full double precision.
 @param theAmplitude amplitude a (peak height)
 @param theMean mean mu (center)
 @param theSigma standard deviation sigma (width))nbdoc")
-        .def("Value", [](const MathUtils::Gaussian &self, double theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates Gaussian function.
+        .def("Value", [](const MathUtils::Gaussian &self, double theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates Gaussian function.
 @param[in] theX input value
 @param[out] theY function value
 @return false if sigma is zero)nbdoc")
-        .def("Values", [](const MathUtils::Gaussian &self, double theX) { double theY{}; double theDY{}; auto result = self.Values(theX, theY, theDY); return std::make_tuple(result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates Gaussian function and derivative.
+        .def("Values", [](const MathUtils::Gaussian &self, double theX) { double theY{}; double theDY{}; auto nanoocp_result = self.Values(theX, theY, theDY); return std::make_tuple(nanoocp_result, theY, theDY); }, nb::arg("theX"), R"nbdoc(Evaluates Gaussian function and derivative.
 @param[in] theX input value
 @param[out] theY function value
 @param[out] theDY derivative value
@@ -662,7 +662,7 @@ Uses 53 bits of randomness for full double precision.
 @param theA quadratic coefficient matrix (must be square)
 @param theB linear coefficient vector
 @param theC constant term)nbdoc")
-        .def("Value", [](const MathUtils::QuadraticForm &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the quadratic form f(x) = x^T A x + b^T x + c.
+        .def("Value", [](const MathUtils::QuadraticForm &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the quadratic form f(x) = x^T A x + b^T x + c.
 @param[in] theX input vector
 @param[out] theY function value
 @return true if evaluation succeeded)nbdoc")
@@ -670,7 +670,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theG gradient vector
 @return true if evaluation succeeded)nbdoc")
-        .def("Values", [](const MathUtils::QuadraticForm &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::QuadraticForm &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX input vector
 @param[out] theY function value
 @param[out] theG gradient vector
@@ -680,7 +680,7 @@ Uses 53 bits of randomness for full double precision.
         .def(nb::init<double, double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(1.0), nb::arg("theB") = static_cast<std::decay_t<double>>(100.0), R"nbdoc(Constructor with parameters.
 @param theA parameter a (default 1.0)
 @param theB parameter b (default 100.0))nbdoc")
-        .def("Value", [](const MathUtils::Rosenbrock &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Rosenbrock function.
+        .def("Value", [](const MathUtils::Rosenbrock &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Rosenbrock function.
 @param[in] theX input vector (must have length 2)
 @param[out] theY function value
 @return true if evaluation succeeded)nbdoc")
@@ -688,7 +688,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theG gradient vector
 @return true if evaluation succeeded)nbdoc")
-        .def("Values", [](const MathUtils::Rosenbrock &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::Rosenbrock &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX input vector
 @param[out] theY function value
 @param[out] theG gradient vector
@@ -697,7 +697,7 @@ Uses 53 bits of randomness for full double precision.
     nb::implicitly_convertible<std::decay_t<double>, MathUtils::Rosenbrock>();
     nanoocp_implicit_default_ctor<MathUtils::Sphere>(nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere")));
     nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere"))
-        .def("Value", [](const MathUtils::Sphere &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the sphere function.
+        .def("Value", [](const MathUtils::Sphere &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the sphere function.
 @param[in] theX input vector
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
@@ -705,7 +705,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Sphere &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::Sphere &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX input vector
 @param[out] theY function value
 @param[out] theG gradient vector
@@ -713,7 +713,7 @@ Uses 53 bits of randomness for full double precision.
     nanoocp_implicit_copy_ctor<MathUtils::Sphere>(nb::borrow<nb::class_<MathUtils::Sphere>>(m.attr("Sphere")));
     nanoocp_implicit_default_ctor<MathUtils::Booth>(nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth")));
     nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth"))
-        .def("Value", [](const MathUtils::Booth &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Booth function.
+        .def("Value", [](const MathUtils::Booth &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Booth function.
 @param[in] theX input vector (must have length 2)
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
@@ -721,7 +721,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Booth &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::Booth &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX input vector
 @param[out] theY function value
 @param[out] theG gradient vector
@@ -729,7 +729,7 @@ Uses 53 bits of randomness for full double precision.
     nanoocp_implicit_copy_ctor<MathUtils::Booth>(nb::borrow<nb::class_<MathUtils::Booth>>(m.attr("Booth")));
     nanoocp_implicit_default_ctor<MathUtils::Beale>(nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale")));
     nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale"))
-        .def("Value", [](const MathUtils::Beale &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Beale function.
+        .def("Value", [](const MathUtils::Beale &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Beale function.
 @param[in] theX input vector (must have length 2)
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
@@ -737,7 +737,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Beale &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::Beale &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX input vector
 @param[out] theY function value
 @param[out] theG gradient vector
@@ -745,7 +745,7 @@ Uses 53 bits of randomness for full double precision.
     nanoocp_implicit_copy_ctor<MathUtils::Beale>(nb::borrow<nb::class_<MathUtils::Beale>>(m.attr("Beale")));
     nanoocp_implicit_default_ctor<MathUtils::Himmelblau>(nb::borrow<nb::class_<MathUtils::Himmelblau>>(m.attr("Himmelblau")));
     nb::borrow<nb::class_<MathUtils::Himmelblau>>(m.attr("Himmelblau"))
-        .def("Value", [](const MathUtils::Himmelblau &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Himmelblau function.
+        .def("Value", [](const MathUtils::Himmelblau &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Himmelblau function.
 @param[in] theX input vector (must have length 2)
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
@@ -753,7 +753,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Himmelblau &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::Himmelblau &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX input vector
 @param[out] theY function value
 @param[out] theG gradient vector
@@ -762,7 +762,7 @@ Uses 53 bits of randomness for full double precision.
     nb::borrow<nb::class_<MathUtils::Rastrigin>>(m.attr("Rastrigin"))
         .def(nb::init<double>(), nb::arg("theA") = static_cast<std::decay_t<double>>(10.0), R"nbdoc(Constructor with parameter.
 @param theA parameter A (default 10.0))nbdoc")
-        .def("Value", [](const MathUtils::Rastrigin &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Rastrigin function.
+        .def("Value", [](const MathUtils::Rastrigin &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Rastrigin function.
 @param[in] theX input vector
 @param[out] theY function value
 @return true (always succeeds))nbdoc")
@@ -770,7 +770,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX input vector
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::Rastrigin &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::Rastrigin &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX input vector
 @param[out] theY function value
 @param[out] theG gradient vector
@@ -781,7 +781,7 @@ Uses 53 bits of randomness for full double precision.
 @param theA parameter a (default 20.0)
 @param theB parameter b (default 0.2)
 @param theC parameter c (default 2*pi))nbdoc")
-        .def("Value", [](const MathUtils::Ackley &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Ackley function.
+        .def("Value", [](const MathUtils::Ackley &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the Ackley function.
 @param[in] theX input vector
 @param[out] theY function value
 @return true (always succeeds))nbdoc");
@@ -791,7 +791,7 @@ Uses 53 bits of randomness for full double precision.
         .def(nb::init<const math_Matrix &, const math_Vector &>(), nb::arg("theA"), nb::arg("theB"), R"nbdoc(Constructor from matrix and right-hand side.
 @param theA coefficient matrix (m x n)
 @param theB right-hand side vector (m))nbdoc")
-        .def("Value", [](const MathUtils::LinearResidual &self, const math_Vector & theX) { double theY{}; auto result = self.Value(theX, theY); return std::make_tuple(result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the residual ||Ax - b||^2.
+        .def("Value", [](const MathUtils::LinearResidual &self, const math_Vector & theX) { double theY{}; auto nanoocp_result = self.Value(theX, theY); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), R"nbdoc(Evaluates the residual ||Ax - b||^2.
 @param[in] theX solution vector (n)
 @param[out] theY squared residual norm
 @return true (always succeeds))nbdoc")
@@ -799,7 +799,7 @@ Uses 53 bits of randomness for full double precision.
 @param[in] theX solution vector
 @param[out] theG gradient vector
 @return true (always succeeds))nbdoc")
-        .def("Values", [](const MathUtils::LinearResidual &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto result = self.Values(theX, theY, theG); return std::make_tuple(result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
+        .def("Values", [](const MathUtils::LinearResidual &self, const math_Vector & theX, math_Vector & theG) { double theY{}; auto nanoocp_result = self.Values(theX, theY, theG); return std::make_tuple(nanoocp_result, theY); }, nb::arg("theX"), nb::arg("theG"), R"nbdoc(Evaluates both value and gradient.
 @param[in] theX solution vector
 @param[out] theY squared residual norm
 @param[out] theG gradient vector

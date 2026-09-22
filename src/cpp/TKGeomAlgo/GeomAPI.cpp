@@ -314,7 +314,7 @@ Exceptions StdFail_NotDone if this algorithm fails.)nbdoc")
         .def("TotalNearestPoints", static_cast<bool (GeomAPI_ExtremaCurveCurve::*)(gp_Pnt &, gp_Pnt &)>(&GeomAPI_ExtremaCurveCurve::TotalNearestPoints), nb::arg("P1"), nb::arg("P2"), R"nbdoc(set in <P1> and <P2> the couple solution points
 such a the distance [P1,P2] is the minimum. taking in account
 extremity points of curves.)nbdoc")
-        .def("TotalLowerDistanceParameters", [](GeomAPI_ExtremaCurveCurve &self) { double U1{}; double U2{}; auto result = self.TotalLowerDistanceParameters(U1, U2); return std::make_tuple(result, U1, U2); }, R"nbdoc(set in <U1> and <U2> the parameters of the couple
+        .def("TotalLowerDistanceParameters", [](GeomAPI_ExtremaCurveCurve &self) { double U1{}; double U2{}; auto nanoocp_result = self.TotalLowerDistanceParameters(U1, U2); return std::make_tuple(nanoocp_result, U1, U2); }, R"nbdoc(set in <U1> and <U2> the parameters of the couple
 solution points which represents the total nearest
 solution.)nbdoc")
         .def("TotalLowerDistance", static_cast<double (GeomAPI_ExtremaCurveCurve::*)()>(&GeomAPI_ExtremaCurveCurve::TotalLowerDistance), R"nbdoc(return the distance of the total nearest couple solution

@@ -616,7 +616,7 @@ account.)nbdoc")
         .def("Init", static_cast<void (StdPrs_ToolRFace::*)()>(&StdPrs_ToolRFace::Init), R"nbdoc(Move iterator to the first element.)nbdoc")
         .def("More", static_cast<bool (StdPrs_ToolRFace::*)() const>(&StdPrs_ToolRFace::More), R"nbdoc(Return TRUE if iterator points to the curve.)nbdoc")
         .def("Next", static_cast<void (StdPrs_ToolRFace::*)()>(&StdPrs_ToolRFace::Next), R"nbdoc(Go to the next curve in the face.)nbdoc")
-        .def("Value", [](const StdPrs_ToolRFace &self) { opencascade::handle<Adaptor2d_Curve2d> result(&(self.Value())); return result; }, R"nbdoc(Return current curve.)nbdoc")
+        .def("Value", [](const StdPrs_ToolRFace &self) { opencascade::handle<Adaptor2d_Curve2d> nanoocp_result(&(self.Value())); return nanoocp_result; }, R"nbdoc(Return current curve.)nbdoc")
         .def("Edge", static_cast<const TopoDS_Edge & (StdPrs_ToolRFace::*)() const>(&StdPrs_ToolRFace::Edge), R"nbdoc(Return current edge.)nbdoc")
         .def("Orientation", static_cast<TopAbs_Orientation (StdPrs_ToolRFace::*)() const>(&StdPrs_ToolRFace::Orientation), R"nbdoc(Return current edge orientation.)nbdoc")
         .def("IsInvalidGeometry", static_cast<bool (StdPrs_ToolRFace::*)() const>(&StdPrs_ToolRFace::IsInvalidGeometry), R"nbdoc(Return TRUE if NULL curves have been skipped.)nbdoc");

@@ -241,7 +241,7 @@ Object can be of any type interpreted by redefined MsgRegistrator.)nbdoc")
     nb::borrow<nb::class_<ShapeExtend_ComplexCurve>>(m.attr("ShapeExtend_ComplexCurve"))
         .def("NbCurves", static_cast<int (ShapeExtend_ComplexCurve::*)() const>(&ShapeExtend_ComplexCurve::NbCurves), R"nbdoc(Returns number of curves)nbdoc")
         .def("Curve", static_cast<const occ::handle<Geom_Curve> & (ShapeExtend_ComplexCurve::*)(const int) const>(&ShapeExtend_ComplexCurve::Curve), nb::arg("index"), R"nbdoc(Returns curve given by its index)nbdoc")
-        .def("LocateParameter", [](const ShapeExtend_ComplexCurve &self, const double U) { double UOut{}; auto result = self.LocateParameter(U, UOut); return std::make_tuple(result, UOut); }, nb::arg("U"), R"nbdoc(Returns number of the curve for the given parameter U
+        .def("LocateParameter", [](const ShapeExtend_ComplexCurve &self, const double U) { double UOut{}; auto nanoocp_result = self.LocateParameter(U, UOut); return std::make_tuple(nanoocp_result, UOut); }, nb::arg("U"), R"nbdoc(Returns number of the curve for the given parameter U
 and local parameter UOut for the found curve)nbdoc")
         .def("LocalToGlobal", static_cast<double (ShapeExtend_ComplexCurve::*)(const int, const double) const>(&ShapeExtend_ComplexCurve::LocalToGlobal), nb::arg("index"), nb::arg("Ulocal"), R"nbdoc(Returns global parameter for the whole curve according
 to the segment and local parameter on it)nbdoc")
@@ -333,7 +333,7 @@ given point)nbdoc")
         .def("UGlobalToLocal", static_cast<double (ShapeExtend_CompositeSurface::*)(const int, const int, const double) const>(&ShapeExtend_CompositeSurface::UGlobalToLocal), nb::arg("i"), nb::arg("j"), nb::arg("U"), R"nbdoc(Converts global parameter U to local parameter u on patch i,j)nbdoc")
         .def("VGlobalToLocal", static_cast<double (ShapeExtend_CompositeSurface::*)(const int, const int, const double) const>(&ShapeExtend_CompositeSurface::VGlobalToLocal), nb::arg("i"), nb::arg("j"), nb::arg("V"), R"nbdoc(Converts global parameter V to local parameter v on patch i,j)nbdoc")
         .def("GlobalToLocal", static_cast<gp_Pnt2d (ShapeExtend_CompositeSurface::*)(const int, const int, const gp_Pnt2d &) const>(&ShapeExtend_CompositeSurface::GlobalToLocal), nb::arg("i"), nb::arg("j"), nb::arg("UV"), R"nbdoc(Converts global parameters UV to local parameters uv on patch i,j)nbdoc")
-        .def("GlobalToLocalTransformation", [](const ShapeExtend_CompositeSurface &self, const int i, const int j, gp_Trsf2d & Trsf) { double uFact{}; auto result = self.GlobalToLocalTransformation(i, j, uFact, Trsf); return std::make_tuple(result, uFact); }, nb::arg("i"), nb::arg("j"), nb::arg("Trsf"), R"nbdoc(Computes transformation operator and uFactor descrinbing affine
+        .def("GlobalToLocalTransformation", [](const ShapeExtend_CompositeSurface &self, const int i, const int j, gp_Trsf2d & Trsf) { double uFact{}; auto nanoocp_result = self.GlobalToLocalTransformation(i, j, uFact, Trsf); return std::make_tuple(nanoocp_result, uFact); }, nb::arg("i"), nb::arg("j"), nb::arg("Trsf"), R"nbdoc(Computes transformation operator and uFactor descrinbing affine
 transformation required to convert global parameters on composite
 surface to local parameters on patch (i,j):
 uv = ( uFactor, 1. ) X Trsf * UV;

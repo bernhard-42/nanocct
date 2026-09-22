@@ -191,16 +191,19 @@ class Emitter:
             callee = f"{cls}::{m.name}({call_args})"
         else:
             callee = f"self.{m.name}({call_args})"
+        # the C++ return value's temporary is prefixed like every other generated name: 99 OCCT parameters are called
+        # `result` (IGESConvGeom::SplineCurveFromIGES(…, handle<Geom_BSplineCurve>& result)), and a bare `result` here
+        # is a redefinition when such a parameter is an out-parameter of a non-void method (2026-09-22)
         results: list[str] = []
         if m.result_kind == ResultKind.PTR_TRANSIENT:
-            body.append(f"opencascade::handle<{m.result_class}> result({callee});")
-            results.append("result")
+            body.append(f"opencascade::handle<{m.result_class}> nanoocp_result({callee});")
+            results.append("nanoocp_result")
         elif m.result_kind == ResultKind.REF_TRANSIENT:
-            body.append(f"opencascade::handle<{m.result_class}> result(&({callee}));")
-            results.append("result")
+            body.append(f"opencascade::handle<{m.result_class}> nanoocp_result(&({callee}));")
+            results.append("nanoocp_result")
         elif m.result != "void":
-            body.append(f"auto result = {callee};")
-            results.append("result")
+            body.append(f"auto nanoocp_result = {callee};")
+            results.append("nanoocp_result")
         else:
             body.append(f"{callee};")
         for p in outs:

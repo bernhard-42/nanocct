@@ -398,7 +398,7 @@ TopLoc_Location::ScalePrec()) All sub-shapes having such locations are put in li
 theProblemShapes)nbdoc");
     nanoocp_implicit_copy_ctor<BRepTools>(nb::borrow<nb::class_<BRepTools>>(m.attr("BRepTools")));
     nb::borrow<nb::class_<BRepTools_Modification>>(m.attr("BRepTools_Modification"))
-        .def("NewSurface", [](BRepTools_Modification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face, F, has been modified.
+        .def("NewSurface", [](BRepTools_Modification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face, F, has been modified.
 If the face has been modified:
 - S is the new geometry of the face,
 - L is its new location, and
@@ -411,29 +411,29 @@ the modified face changes in the shells which contain it.
 If the face has not been modified this function returns
 false, and the values of S, L, Tol, RevWires and
 RevFace are not significant.)nbdoc")
-        .def("NewTriangulation", [](BRepTools_Modification &self, const TopoDS_Face & F) { occ::handle<Poly_Triangulation> T{}; auto result = self.NewTriangulation(F, T); return std::make_tuple(result, T); }, nb::arg("F"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_Modification &self, const TopoDS_Face & F) { occ::handle<Poly_Triangulation> T{}; auto nanoocp_result = self.NewTriangulation(F, T); return std::make_tuple(nanoocp_result, T); }, nb::arg("F"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - T is a new triangulation on the face)nbdoc")
-        .def("NewCurve", [](BRepTools_Modification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge, E, has been modified.
+        .def("NewCurve", [](BRepTools_Modification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge, E, has been modified.
 If the edge has been modified:
 - C is the new geometry associated with the edge,
 - L is its new location, and
 - Tol is the new tolerance.
 If the edge has not been modified, this function
 returns false, and the values of C, L and Tol are not significant.)nbdoc")
-        .def("NewPolygon", [](BRepTools_Modification &self, const TopoDS_Edge & E) { occ::handle<Poly_Polygon3D> P{}; auto result = self.NewPolygon(E, P); return std::make_tuple(result, P); }, nb::arg("E"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_Modification &self, const TopoDS_Edge & E) { occ::handle<Poly_Polygon3D> P{}; auto nanoocp_result = self.NewPolygon(E, P); return std::make_tuple(nanoocp_result, P); }, nb::arg("E"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - P is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", [](BRepTools_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F) { occ::handle<Poly_PolygonOnTriangulation> P{}; auto result = self.NewPolygonOnTriangulation(E, F, P); return std::make_tuple(result, P); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F) { occ::handle<Poly_PolygonOnTriangulation> P{}; auto nanoocp_result = self.NewPolygonOnTriangulation(E, F, P); return std::make_tuple(nanoocp_result, P); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - P is a new polygon on triangulation)nbdoc")
-        .def("NewPoint", [](BRepTools_Modification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex V has been modified.
+        .def("NewPoint", [](BRepTools_Modification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex V has been modified.
 If V has been modified:
 - P is the new geometry of the vertex, and
 - Tol is the new tolerance.
 If the vertex has not been modified this function
 returns false, and the values of P and Tol are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge, E, has a new curve on
+        .def("NewCurve2d", [](BRepTools_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge, E, has a new curve on
 surface on the face, F.
 If a new curve exists:
 - C is the new geometry of the edge,
@@ -443,7 +443,7 @@ NewE is the new edge created from E, and NewF is
 the new face created from F.
 If there is no new curve on the face, this function
 returns false, and the values of C, L and Tol are not significant.)nbdoc")
-        .def("NewParameter", [](BRepTools_Modification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the vertex V has a new parameter on the edge E.
+        .def("NewParameter", [](BRepTools_Modification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the vertex V has a new parameter on the edge E.
 If a new parameter exists:
 - P is the parameter, and
 - Tol is the new tolerance.
@@ -461,32 +461,32 @@ and <NewF2>.
         .def(nb::new_([](const bool theCopyGeom, const bool theCopyMesh) { return opencascade::handle<BRepTools_CopyModification>(new BRepTools_CopyModification(theCopyGeom, theCopyMesh)); }), nb::arg("theCopyGeom") = static_cast<std::decay_t<const bool>>(true), nb::arg("theCopyMesh") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Constructor.
 \param[in] theCopyGeom  indicates that the geometry (surfaces and curves) should be copied
 \param[in] theCopyMesh  indicates that the triangulation should be copied)nbdoc")
-        .def("NewSurface", [](BRepTools_CopyModification &self, const TopoDS_Face & theFace, TopLoc_Location & theLoc) { occ::handle<Geom_Surface> theSurf{}; double theTol{}; bool theRevWires{}; bool theRevFace{}; auto result = self.NewSurface(theFace, theSurf, theLoc, theTol, theRevWires, theRevFace); return std::make_tuple(result, theSurf, theTol, theRevWires, theRevFace); }, nb::arg("theFace"), nb::arg("theLoc"), R"nbdoc(Returns true if theFace has been modified.
+        .def("NewSurface", [](BRepTools_CopyModification &self, const TopoDS_Face & theFace, TopLoc_Location & theLoc) { occ::handle<Geom_Surface> theSurf{}; double theTol{}; bool theRevWires{}; bool theRevFace{}; auto nanoocp_result = self.NewSurface(theFace, theSurf, theLoc, theTol, theRevWires, theRevFace); return std::make_tuple(nanoocp_result, theSurf, theTol, theRevWires, theRevFace); }, nb::arg("theFace"), nb::arg("theLoc"), R"nbdoc(Returns true if theFace has been modified.
 If the face has been modified:
 - theSurf is the new geometry of the face,
 - theLoc is its new location, and
 - theTol is the new tolerance.
 theRevWires, theRevFace are always set to false, because the orientation is not changed.)nbdoc")
-        .def("NewCurve", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, TopLoc_Location & theLoc) { occ::handle<Geom_Curve> theCurve{}; double theTol{}; auto result = self.NewCurve(theEdge, theCurve, theLoc, theTol); return std::make_tuple(result, theCurve, theTol); }, nb::arg("theEdge"), nb::arg("theLoc"), R"nbdoc(Returns true if theEdge has been modified.
+        .def("NewCurve", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, TopLoc_Location & theLoc) { occ::handle<Geom_Curve> theCurve{}; double theTol{}; auto nanoocp_result = self.NewCurve(theEdge, theCurve, theLoc, theTol); return std::make_tuple(nanoocp_result, theCurve, theTol); }, nb::arg("theEdge"), nb::arg("theLoc"), R"nbdoc(Returns true if theEdge has been modified.
 If the edge has been modified:
 - theCurve is the new geometric support of the edge,
 - theLoc is the new location, and
 - theTol is the new tolerance.
 If the edge has not been modified, this function
 returns false, and the values of theCurve, theLoc and theTol are not significant.)nbdoc")
-        .def("NewPoint", [](BRepTools_CopyModification &self, const TopoDS_Vertex & theVertex, gp_Pnt & thePnt) { double theTol{}; auto result = self.NewPoint(theVertex, thePnt, theTol); return std::make_tuple(result, theTol); }, nb::arg("theVertex"), nb::arg("thePnt"), R"nbdoc(Returns true if theVertex has been modified.
+        .def("NewPoint", [](BRepTools_CopyModification &self, const TopoDS_Vertex & theVertex, gp_Pnt & thePnt) { double theTol{}; auto nanoocp_result = self.NewPoint(theVertex, thePnt, theTol); return std::make_tuple(nanoocp_result, theTol); }, nb::arg("theVertex"), nb::arg("thePnt"), R"nbdoc(Returns true if theVertex has been modified.
 If the vertex has been modified:
 - thePnt is the new geometry of the vertex, and
 - theTol is the new tolerance.
 If the vertex has not been modified this function
 returns false, and the values of thePnt and theTol are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const TopoDS_Edge & theNewEdge, const TopoDS_Face & theNewFace) { occ::handle<Geom2d_Curve> theCurve{}; double theTol{}; auto result = self.NewCurve2d(theEdge, theFace, theNewEdge, theNewFace, theCurve, theTol); return std::make_tuple(result, theCurve, theTol); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("theNewEdge"), nb::arg("theNewFace"), R"nbdoc(Returns true if theEdge has a new curve on surface on theFace.
+        .def("NewCurve2d", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const TopoDS_Edge & theNewEdge, const TopoDS_Face & theNewFace) { occ::handle<Geom2d_Curve> theCurve{}; double theTol{}; auto nanoocp_result = self.NewCurve2d(theEdge, theFace, theNewEdge, theNewFace, theCurve, theTol); return std::make_tuple(nanoocp_result, theCurve, theTol); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("theNewEdge"), nb::arg("theNewFace"), R"nbdoc(Returns true if theEdge has a new curve on surface on theFace.
 If a new curve exists:
 - theCurve is the new geometric support of the edge,
 - theTol the new tolerance.
 If no new curve exists, this function returns false, and
 the values of theCurve and theTol are not significant.)nbdoc")
-        .def("NewParameter", [](BRepTools_CopyModification &self, const TopoDS_Vertex & theVertex, const TopoDS_Edge & theEdge) { double thePnt{}; double theTol{}; auto result = self.NewParameter(theVertex, theEdge, thePnt, theTol); return std::make_tuple(result, thePnt, theTol); }, nb::arg("theVertex"), nb::arg("theEdge"), R"nbdoc(Returns true if theVertex has a new parameter on theEdge.
+        .def("NewParameter", [](BRepTools_CopyModification &self, const TopoDS_Vertex & theVertex, const TopoDS_Edge & theEdge) { double thePnt{}; double theTol{}; auto nanoocp_result = self.NewParameter(theVertex, theEdge, thePnt, theTol); return std::make_tuple(nanoocp_result, thePnt, theTol); }, nb::arg("theVertex"), nb::arg("theEdge"), R"nbdoc(Returns true if theVertex has a new parameter on theEdge.
 If a new parameter exists:
 - thePnt is the parameter, and
 - theTol is the new tolerance.
@@ -496,13 +496,13 @@ and the values of thePnt and theTol are not significant.)nbdoc")
 
 theNewEdge is the new edge created from theEdge. theNewFace1
 (resp. theNewFace2) is the new face created from theFace1 (resp. theFace2).)nbdoc")
-        .def("NewTriangulation", [](BRepTools_CopyModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto result = self.NewTriangulation(theFace, theTri); return std::make_tuple(result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_CopyModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto nanoocp_result = self.NewTriangulation(theFace, theTri); return std::make_tuple(nanoocp_result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - theTri is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto nanoocp_result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(nanoocp_result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - thePoly is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_CopyModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto nanoocp_result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(nanoocp_result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - thePoly is a new polygon on triangulation)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepTools_CopyModification::get_type_name))
@@ -512,7 +512,7 @@ If the edge has been modified:
     nb::borrow<nb::class_<BRepTools_GTrsfModification>>(m.attr("BRepTools_GTrsfModification"))
         .def(nb::new_([](const gp_GTrsf & T) { return opencascade::handle<BRepTools_GTrsfModification>(new BRepTools_GTrsfModification(T)); }), nb::arg("T"))
         .def("GTrsf", static_cast<gp_GTrsf & (BRepTools_GTrsfModification::*)()>(&BRepTools_GTrsfModification::GTrsf), nb::rv_policy::reference_internal, R"nbdoc(Gives an access on the GTrsf.)nbdoc")
-        .def("NewSurface", [](BRepTools_GTrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](BRepTools_GTrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location,<Tol>
 the new tolerance.<RevWires> has to be set to
@@ -523,24 +523,24 @@ true if the orientation of the modified
 face changes in the shells which contain it.
 Here, <RevFace> will return true if the
 - gp_Trsf is negative.)nbdoc")
-        .def("NewCurve", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewPoint", [](BRepTools_GTrsfModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](BRepTools_GTrsfModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
 Otherwise, returns false, and <C>, <L>,
 <Tol> are not significant.)nbdoc")
-        .def("NewParameter", [](BRepTools_GTrsfModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](BRepTools_GTrsfModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case, <P> is
 the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
@@ -551,13 +551,13 @@ and <NewF2>.
 <NewE> is the new edge created from <E>. <NewF1>
 (resp. <NewF2>) is the new face created from <F1>
 (resp. <F2>).)nbdoc")
-        .def("NewTriangulation", [](BRepTools_GTrsfModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto result = self.NewTriangulation(theFace, theTri); return std::make_tuple(result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_GTrsfModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto nanoocp_result = self.NewTriangulation(theFace, theTri); return std::make_tuple(nanoocp_result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - theTri is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto nanoocp_result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(nanoocp_result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - thePoly is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_GTrsfModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto nanoocp_result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(nanoocp_result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - thePoly is a new polygon on triangulation)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepTools_GTrsfModification::get_type_name))
@@ -611,7 +611,7 @@ during modification process)nbdoc")
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, BRepTools_Modifier>();
     nb::borrow<nb::class_<BRepTools_NurbsConvertModification>>(m.attr("BRepTools_NurbsConvertModification"))
         .def(nb::new_([]() { return opencascade::handle<BRepTools_NurbsConvertModification>(new BRepTools_NurbsConvertModification()); }))
-        .def("NewSurface", [](BRepTools_NurbsConvertModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](BRepTools_NurbsConvertModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location,<Tol>
 the new tolerance.<RevWires> has to be set to
@@ -622,24 +622,24 @@ true if the orientation of the modified
 face changes in the shells which contain it.
 Here, <RevFace> will return true if the
 - gp_Trsf is negative.)nbdoc")
-        .def("NewCurve", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewPoint", [](BRepTools_NurbsConvertModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](BRepTools_NurbsConvertModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
 Otherwise, returns false, and <C>, <L>,
 <Tol> are not significant.)nbdoc")
-        .def("NewParameter", [](BRepTools_NurbsConvertModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](BRepTools_NurbsConvertModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case, <P> is
 the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
@@ -650,13 +650,13 @@ and <NewF2>.
 <NewE> is the new edge created from <E>. <NewF1>
 (resp. <NewF2>) is the new face created from <F1>
 (resp. <F2>).)nbdoc")
-        .def("NewTriangulation", [](BRepTools_NurbsConvertModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto result = self.NewTriangulation(theFace, theTri); return std::make_tuple(result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_NurbsConvertModification &self, const TopoDS_Face & theFace) { occ::handle<Poly_Triangulation> theTri{}; auto nanoocp_result = self.NewTriangulation(theFace, theTri); return std::make_tuple(nanoocp_result, theTri); }, nb::arg("theFace"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - theTri is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & theEdge) { occ::handle<Poly_Polygon3D> thePoly{}; auto nanoocp_result = self.NewPolygon(theEdge, thePoly); return std::make_tuple(nanoocp_result, thePoly); }, nb::arg("theEdge"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - thePoly is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_NurbsConvertModification &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace) { occ::handle<Poly_PolygonOnTriangulation> thePoly{}; auto nanoocp_result = self.NewPolygonOnTriangulation(theEdge, theFace, thePoly); return std::make_tuple(nanoocp_result, thePoly); }, nb::arg("theEdge"), nb::arg("theFace"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - thePoly is a new polygon on triangulation)nbdoc")
         .def("GetUpdatedEdges", static_cast<const NCollection_List<TopoDS_Shape> & (BRepTools_NurbsConvertModification::*)() const>(&BRepTools_NurbsConvertModification::GetUpdatedEdges))
@@ -812,7 +812,7 @@ the resul of <Build>)nbdoc")
 modification. The transformation can be changed.)nbdoc")
         .def("IsCopyMesh", [](BRepTools_TrsfModification &self) -> bool { return self.IsCopyMesh(); }, R"nbdoc(Sets a flag to indicate the need to copy mesh.)nbdoc")
         .def("SetIsCopyMesh", [](BRepTools_TrsfModification &self, bool theValue) { self.IsCopyMesh() = theValue; }, nb::arg("theValue"), "Python addition: sets the value IsCopyMesh() returns by reference in C++.")
-        .def("NewSurface", [](BRepTools_TrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face F has been modified.
+        .def("NewSurface", [](BRepTools_TrsfModification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face F has been modified.
 If the face has been modified:
 - S is the new geometry of the face,
 - L is its new location, and
@@ -823,33 +823,33 @@ RevFace is set to true if the orientation of the
 modified face changes in the shells which contain it.
 For this class, RevFace returns true if the gp_Trsf
 associated with this modification is negative.)nbdoc")
-        .def("NewTriangulation", [](BRepTools_TrsfModification &self, const TopoDS_Face & F) { occ::handle<Poly_Triangulation> T{}; auto result = self.NewTriangulation(F, T); return std::make_tuple(result, T); }, nb::arg("F"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
+        .def("NewTriangulation", [](BRepTools_TrsfModification &self, const TopoDS_Face & F) { occ::handle<Poly_Triangulation> T{}; auto nanoocp_result = self.NewTriangulation(F, T); return std::make_tuple(nanoocp_result, T); }, nb::arg("F"), R"nbdoc(Returns true if the face has been modified according to changed triangulation.
 If the face has been modified:
 - T is a new triangulation on the face)nbdoc")
-        .def("NewPolygon", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E) { occ::handle<Poly_Polygon3D> P{}; auto result = self.NewPolygon(E, P); return std::make_tuple(result, P); }, nb::arg("E"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
+        .def("NewPolygon", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E) { occ::handle<Poly_Polygon3D> P{}; auto nanoocp_result = self.NewPolygon(E, P); return std::make_tuple(nanoocp_result, P); }, nb::arg("E"), R"nbdoc(Returns true if the edge has been modified according to changed polygon.
 If the edge has been modified:
 - P is a new polygon)nbdoc")
-        .def("NewPolygonOnTriangulation", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F) { occ::handle<Poly_PolygonOnTriangulation> P{}; auto result = self.NewPolygonOnTriangulation(E, F, P); return std::make_tuple(result, P); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
+        .def("NewPolygonOnTriangulation", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F) { occ::handle<Poly_PolygonOnTriangulation> P{}; auto nanoocp_result = self.NewPolygonOnTriangulation(E, F, P); return std::make_tuple(nanoocp_result, P); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns true if the edge has been modified according to changed polygon on triangulation.
 If the edge has been modified:
 - P is a new polygon on triangulation)nbdoc")
-        .def("NewCurve", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Always returns true indicating that the edge E is always modified.
+        .def("NewCurve", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Always returns true indicating that the edge E is always modified.
 - C is the new geometric support of the edge,
 - L is the new location, and
 - Tol is the new tolerance.)nbdoc")
-        .def("NewPoint", [](BRepTools_TrsfModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex V has been modified.
+        .def("NewPoint", [](BRepTools_TrsfModification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex V has been modified.
 If the vertex has been modified:
 - P is the new geometry of the vertex, and
 - Tol is the new tolerance.
 If the vertex has not been modified this function
 returns false, and the values of P and Tol are not significant.)nbdoc")
-        .def("NewCurve2d", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge E has a new curve on surface on the face F.
+        .def("NewCurve2d", [](BRepTools_TrsfModification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge E has a new curve on surface on the face F.
 If a new curve exists:
 - C is the new geometric support of the edge,
 - L is the new location, and
 - Tol the new tolerance.
 If no new curve exists, this function returns false, and
 the values of C, L and Tol are not significant.)nbdoc")
-        .def("NewParameter", [](BRepTools_TrsfModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex V has a new parameter on the edge E.
+        .def("NewParameter", [](BRepTools_TrsfModification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex V has a new parameter on the edge E.
 If a new parameter exists:
 - P is the parameter, and
 - Tol is the new tolerance.

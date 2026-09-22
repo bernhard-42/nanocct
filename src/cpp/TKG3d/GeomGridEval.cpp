@@ -600,7 +600,7 @@ For orders > 3, uses geometry DN method.
     nb::borrow<nb::class_<GeomGridEval_OtherCurve>>(m.attr("GeomGridEval_OtherCurve"))
         .def(nb::init<const Adaptor3d_Curve &>(), nb::arg("theCurve"), R"nbdoc(Constructor with curve adaptor reference.
 @param theCurve reference to curve adaptor (must remain valid))nbdoc")
-        .def("Curve", [](const GeomGridEval_OtherCurve &self) { opencascade::handle<Adaptor3d_Curve> result(&(self.Curve())); return result; }, R"nbdoc(Returns the curve adaptor reference.)nbdoc")
+        .def("Curve", [](const GeomGridEval_OtherCurve &self) { opencascade::handle<Adaptor3d_Curve> nanoocp_result(&(self.Curve())); return nanoocp_result; }, R"nbdoc(Returns the curve adaptor reference.)nbdoc")
         .def("EvaluateGrid", static_cast<NCollection_Array1<gp_Pnt> (GeomGridEval_OtherCurve::*)(const NCollection_Array1<double> &) const>(&GeomGridEval_OtherCurve::EvaluateGrid), nb::arg("theParams"), R"nbdoc(Evaluate all grid points.
 @param theParams array of parameter values
 @return array of evaluated points (1-based indexing),

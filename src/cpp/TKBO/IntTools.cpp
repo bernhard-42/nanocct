@@ -206,8 +206,8 @@ of the function on the bounds f(t1), f(t2).)nbdoc");
 values ti and tj such as |ti-tj] < anEpsT.)nbdoc")
         .def_static("SortRoots", static_cast<void (*)(NCollection_Sequence<IntTools_Root> &, const double)>(&IntTools::SortRoots), nb::arg("aSeq"), nb::arg("anEpsT"), R"nbdoc(Sort the sequence aSeq of the Roots to arrange the Roots in increasing order.)nbdoc")
         .def_static("FindRootStates", static_cast<void (*)(NCollection_Sequence<IntTools_Root> &, const double)>(&IntTools::FindRootStates), nb::arg("aSeq"), nb::arg("anEpsNull"), R"nbdoc(Find the states (before and after) for each Root from the sequence aSeq)nbdoc")
-        .def_static("Parameter", [](const gp_Pnt & P, const occ::handle<Geom_Curve> & Curve) { double aParm{}; auto result = IntTools::Parameter(P, Curve, aParm); return std::make_tuple(result, aParm); }, nb::arg("P"), nb::arg("Curve").none())
-        .def_static("GetRadius", [](const BRepAdaptor_Curve & C, const double t1, const double t3) { double R{}; auto result = IntTools::GetRadius(C, t1, t3, R); return std::make_tuple(result, R); }, nb::arg("C"), nb::arg("t1"), nb::arg("t3"))
+        .def_static("Parameter", [](const gp_Pnt & P, const occ::handle<Geom_Curve> & Curve) { double aParm{}; auto nanoocp_result = IntTools::Parameter(P, Curve, aParm); return std::make_tuple(nanoocp_result, aParm); }, nb::arg("P"), nb::arg("Curve").none())
+        .def_static("GetRadius", [](const BRepAdaptor_Curve & C, const double t1, const double t3) { double R{}; auto nanoocp_result = IntTools::GetRadius(C, t1, t3, R); return std::make_tuple(nanoocp_result, R); }, nb::arg("C"), nb::arg("t1"), nb::arg("t3"))
         .def_static("PrepareArgs", static_cast<int (*)(BRepAdaptor_Curve &, const double, const double, const int, const double, NCollection_Array1<double> &)>(&IntTools::PrepareArgs), nb::arg("C"), nb::arg("tMax"), nb::arg("tMin"), nb::arg("Discret"), nb::arg("Deflect"), nb::arg("anArgs"));
     nanoocp_implicit_copy_ctor<IntTools>(nb::borrow<nb::class_<IntTools>>(m.attr("IntTools")));
     nb::borrow<nb::class_<IntTools_BaseRangeSample>>(m.attr("IntTools_BaseRangeSample"))
@@ -400,11 +400,11 @@ for given face)nbdoc")
 for given solid)nbdoc")
         .def("Hatcher", static_cast<Geom2dHatch_Hatcher & (IntTools_Context::*)(const TopoDS_Face &)>(&IntTools_Context::Hatcher), nb::rv_policy::reference_internal, nb::arg("aF"), R"nbdoc(Returns a reference to 2D hatcher
 for given face)nbdoc")
-        .def("SurfaceAdaptor", [](IntTools_Context &self, const TopoDS_Face & theFace) { opencascade::handle<BRepAdaptor_Surface> result(&(self.SurfaceAdaptor(theFace))); return result; }, nb::arg("theFace"), R"nbdoc(Returns a reference to surface adaptor for given face)nbdoc")
+        .def("SurfaceAdaptor", [](IntTools_Context &self, const TopoDS_Face & theFace) { opencascade::handle<BRepAdaptor_Surface> nanoocp_result(&(self.SurfaceAdaptor(theFace))); return nanoocp_result; }, nb::arg("theFace"), R"nbdoc(Returns a reference to surface adaptor for given face)nbdoc")
         .def("OBB", static_cast<Bnd_OBB & (IntTools_Context::*)(const TopoDS_Shape &, const double)>(&IntTools_Context::OBB), nb::rv_policy::reference_internal, nb::arg("theShape"), nb::arg("theFuzzyValue") = static_cast<std::decay_t<const double>>(Precision::Confusion()), R"nbdoc(Builds and stores an Oriented Bounding Box for the shape.
 Returns a reference to OBB.)nbdoc")
         .def("UVBounds", [](IntTools_Context &self, const TopoDS_Face & theFace) { double UMin{}; double UMax{}; double VMin{}; double VMax{}; self.UVBounds(theFace, UMin, UMax, VMin, VMax); return std::make_tuple(UMin, UMax, VMin, VMax); }, nb::arg("theFace"), R"nbdoc(Computes the boundaries of the face using surface adaptor)nbdoc")
-        .def("ComputePE", [](IntTools_Context &self, const gp_Pnt & theP, const double theTolP, const TopoDS_Edge & theE) { double theT{}; double theDist{}; auto result = self.ComputePE(theP, theTolP, theE, theT, theDist); return std::make_tuple(result, theT, theDist); }, nb::arg("theP"), nb::arg("theTolP"), nb::arg("theE"), R"nbdoc(Computes parameter of the Point theP on
+        .def("ComputePE", [](IntTools_Context &self, const gp_Pnt & theP, const double theTolP, const TopoDS_Edge & theE) { double theT{}; double theDist{}; auto nanoocp_result = self.ComputePE(theP, theTolP, theE, theT, theDist); return std::make_tuple(nanoocp_result, theT, theDist); }, nb::arg("theP"), nb::arg("theTolP"), nb::arg("theE"), R"nbdoc(Computes parameter of the Point theP on
 the edge aE.
 Returns zero if the distance between point
 and edge is less than sum of tolerance value of edge and theTopP,
@@ -413,7 +413,7 @@ negative value
 1. the edge is degenerated (-1)
 2. the edge does not contain 3d curve and pcurves (-2)
 3. projection algorithm failed (-3))nbdoc")
-        .def("ComputeVE", [](IntTools_Context &self, const TopoDS_Vertex & theV, const TopoDS_Edge & theE, const double theFuzz) { double theT{}; double theTol{}; auto result = self.ComputeVE(theV, theE, theT, theTol, theFuzz); return std::make_tuple(result, theT, theTol); }, nb::arg("theV"), nb::arg("theE"), nb::arg("theFuzz") = static_cast<std::decay_t<const double>>(Precision::Confusion()), R"nbdoc(Computes parameter of the vertex aV on
+        .def("ComputeVE", [](IntTools_Context &self, const TopoDS_Vertex & theV, const TopoDS_Edge & theE, const double theFuzz) { double theT{}; double theTol{}; auto nanoocp_result = self.ComputeVE(theV, theE, theT, theTol, theFuzz); return std::make_tuple(nanoocp_result, theT, theTol); }, nb::arg("theV"), nb::arg("theE"), nb::arg("theFuzz") = static_cast<std::decay_t<const double>>(Precision::Confusion()), R"nbdoc(Computes parameter of the vertex aV on
 the edge aE and correct tolerance value for
 the vertex on the edge.
 Returns zero if the distance between vertex
@@ -423,7 +423,7 @@ negative value:
 1. the edge is degenerated (-1)
 2. the edge does not contain 3d curve and pcurves (-2)
 3. projection algorithm failed (-3))nbdoc")
-        .def("ComputeVF", [](IntTools_Context &self, const TopoDS_Vertex & theVertex, const TopoDS_Face & theFace, const double theFuzz) { double theU{}; double theV{}; double theTol{}; auto result = self.ComputeVF(theVertex, theFace, theU, theV, theTol, theFuzz); return std::make_tuple(result, theU, theV, theTol); }, nb::arg("theVertex"), nb::arg("theFace"), nb::arg("theFuzz") = static_cast<std::decay_t<const double>>(Precision::Confusion()), R"nbdoc(Computes UV parameters of the vertex aV on face aF
+        .def("ComputeVF", [](IntTools_Context &self, const TopoDS_Vertex & theVertex, const TopoDS_Face & theFace, const double theFuzz) { double theU{}; double theV{}; double theTol{}; auto nanoocp_result = self.ComputeVF(theVertex, theFace, theU, theV, theTol, theFuzz); return std::make_tuple(nanoocp_result, theU, theV, theTol); }, nb::arg("theVertex"), nb::arg("theFace"), nb::arg("theFuzz") = static_cast<std::decay_t<const double>>(Precision::Confusion()), R"nbdoc(Computes UV parameters of the vertex aV on face aF
 and correct tolerance value for the vertex on the face.
 Returns zero if the distance between vertex and face is
 less than or equal the sum of tolerances and the fuzzy value
@@ -453,19 +453,19 @@ for some 3d point that lay on the curve aIC bounded by
 parameters aT1 and aT2)nbdoc")
         .def("IsValidBlockForFaces", static_cast<bool (IntTools_Context::*)(const double, const double, const IntTools_Curve &, const TopoDS_Face &, const TopoDS_Face &, const double)>(&IntTools_Context::IsValidBlockForFaces), nb::arg("aT1"), nb::arg("aT2"), nb::arg("aIC"), nb::arg("aF1"), nb::arg("aF2"), nb::arg("aTol"), R"nbdoc(Returns true if IsValidBlockForFace returns true
 for both faces aF1 and aF2)nbdoc")
-        .def("IsVertexOnLine", [](IntTools_Context &self, const TopoDS_Vertex & aV, const IntTools_Curve & aIC, const double aTolC) { double aT{}; auto result = self.IsVertexOnLine(aV, aIC, aTolC, aT); return std::make_tuple(result, aT); }, nb::arg("aV"), nb::arg("aIC"), nb::arg("aTolC"), R"nbdoc(Computes parameter of the vertex aV on
+        .def("IsVertexOnLine", [](IntTools_Context &self, const TopoDS_Vertex & aV, const IntTools_Curve & aIC, const double aTolC) { double aT{}; auto nanoocp_result = self.IsVertexOnLine(aV, aIC, aTolC, aT); return std::make_tuple(nanoocp_result, aT); }, nb::arg("aV"), nb::arg("aIC"), nb::arg("aTolC"), R"nbdoc(Computes parameter of the vertex aV on
 the curve aIC.
 Returns true if the distance between vertex and
 curve is less than sum of tolerance of aV and aTolC,
 otherwise or if projection algorithm failed
 returns false (in this case aT isn't significant))nbdoc")
-        .def("IsVertexOnLine", [](IntTools_Context &self, const TopoDS_Vertex & aV, const double aTolV, const IntTools_Curve & aIC, const double aTolC) { double aT{}; auto result = self.IsVertexOnLine(aV, aTolV, aIC, aTolC, aT); return std::make_tuple(result, aT); }, nb::arg("aV"), nb::arg("aTolV"), nb::arg("aIC"), nb::arg("aTolC"), R"nbdoc(Computes parameter of the vertex aV on
+        .def("IsVertexOnLine", [](IntTools_Context &self, const TopoDS_Vertex & aV, const double aTolV, const IntTools_Curve & aIC, const double aTolC) { double aT{}; auto nanoocp_result = self.IsVertexOnLine(aV, aTolV, aIC, aTolC, aT); return std::make_tuple(nanoocp_result, aT); }, nb::arg("aV"), nb::arg("aTolV"), nb::arg("aIC"), nb::arg("aTolC"), R"nbdoc(Computes parameter of the vertex aV on
 the curve aIC.
 Returns true if the distance between vertex and
 curve is less than sum of tolerance of aV and aTolC,
 otherwise or if projection algorithm failed
 returns false (in this case aT isn't significant))nbdoc")
-        .def("ProjectPointOnEdge", [](IntTools_Context &self, const gp_Pnt & aP, const TopoDS_Edge & aE) { double aT{}; auto result = self.ProjectPointOnEdge(aP, aE, aT); return std::make_tuple(result, aT); }, nb::arg("aP"), nb::arg("aE"), R"nbdoc(Computes parameter of the point aP on
+        .def("ProjectPointOnEdge", [](IntTools_Context &self, const gp_Pnt & aP, const TopoDS_Edge & aE) { double aT{}; auto nanoocp_result = self.ProjectPointOnEdge(aP, aE, aT); return std::make_tuple(nanoocp_result, aT); }, nb::arg("aP"), nb::arg("aE"), R"nbdoc(Computes parameter of the point aP on
 the edge aE.
 Returns false if projection algorithm failed
 other wiese returns true.)nbdoc")
@@ -495,7 +495,7 @@ correct value for all projectors)nbdoc")
         .def("Tolerance", static_cast<double (IntTools_Curve::*)() const>(&IntTools_Curve::Tolerance), R"nbdoc(Returns the tolerance)nbdoc")
         .def("TangentialTolerance", static_cast<double (IntTools_Curve::*)() const>(&IntTools_Curve::TangentialTolerance), R"nbdoc(Returns the tangential tolerance)nbdoc")
         .def("HasBounds", static_cast<bool (IntTools_Curve::*)() const>(&IntTools_Curve::HasBounds), R"nbdoc(Returns TRUE if 3d curve is BoundedCurve)nbdoc")
-        .def("Bounds", [](const IntTools_Curve &self, gp_Pnt & theFirstPnt, gp_Pnt & theLastPnt) { double theFirst{}; double theLast{}; auto result = self.Bounds(theFirst, theLast, theFirstPnt, theLastPnt); return std::make_tuple(result, theFirst, theLast); }, nb::arg("theFirstPnt"), nb::arg("theLastPnt"), R"nbdoc(If the 3d curve is bounded curve the method will return TRUE
+        .def("Bounds", [](const IntTools_Curve &self, gp_Pnt & theFirstPnt, gp_Pnt & theLastPnt) { double theFirst{}; double theLast{}; auto nanoocp_result = self.Bounds(theFirst, theLast, theFirstPnt, theLastPnt); return std::make_tuple(nanoocp_result, theFirst, theLast); }, nb::arg("theFirstPnt"), nb::arg("theLastPnt"), R"nbdoc(If the 3d curve is bounded curve the method will return TRUE
 and modify the output parameters with boundary parameters of
 the curve and corresponded 3d points.
 If the curve does not have bounds, the method will return false
@@ -737,8 +737,8 @@ Builds bounding box for the curve and stores it into <theBox>.)nbdoc")
         .def_static("VertexParameter", [](const IntTools_CommonPrt & theCP) { double theT{}; IntTools_Tools::VertexParameter(theCP, theT); return theT; }, nb::arg("theCP"))
         .def_static("IsOnPave1", static_cast<bool (*)(const double, const IntTools_Range &, const double)>(&IntTools_Tools::IsOnPave1), nb::arg("theT"), nb::arg("theRange"), nb::arg("theTol"))
         .def_static("IsInRange", static_cast<bool (*)(const IntTools_Range &, const IntTools_Range &, const double)>(&IntTools_Tools::IsInRange), nb::arg("theRRef"), nb::arg("theR"), nb::arg("theTol"), R"nbdoc(Checks if the range <theR> interfere with the range <theRRef>)nbdoc")
-        .def_static("SegPln", [](const gp_Lin & theLin, const double theTLin1, const double theTLin2, const double theTolLin, const gp_Pln & thePln, const double theTolPln, gp_Pnt & theP) { double theT{}; double theTolP{}; double theTmin{}; double theTmax{}; auto result = IntTools_Tools::SegPln(theLin, theTLin1, theTLin2, theTolLin, thePln, theTolPln, theP, theT, theTolP, theTmin, theTmax); return std::make_tuple(result, theT, theTolP, theTmin, theTmax); }, nb::arg("theLin"), nb::arg("theTLin1"), nb::arg("theTLin2"), nb::arg("theTolLin"), nb::arg("thePln"), nb::arg("theTolPln"), nb::arg("theP"))
-        .def_static("ComputeTolerance", [](const occ::handle<Geom_Curve> & theCurve3D, const occ::handle<Geom2d_Curve> & theCurve2D, const occ::handle<Geom_Surface> & theSurf, const double theFirst, const double theLast, const double theTolRange, const bool theToRunParallel) { double theMaxDist{}; double theMaxPar{}; auto result = IntTools_Tools::ComputeTolerance(theCurve3D, theCurve2D, theSurf, theFirst, theLast, theMaxDist, theMaxPar, theTolRange, theToRunParallel); return std::make_tuple(result, theMaxDist, theMaxPar); }, nb::arg("theCurve3D").none(), nb::arg("theCurve2D").none(), nb::arg("theSurf").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolRange") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), nb::arg("theToRunParallel") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Computes the max distance between points
+        .def_static("SegPln", [](const gp_Lin & theLin, const double theTLin1, const double theTLin2, const double theTolLin, const gp_Pln & thePln, const double theTolPln, gp_Pnt & theP) { double theT{}; double theTolP{}; double theTmin{}; double theTmax{}; auto nanoocp_result = IntTools_Tools::SegPln(theLin, theTLin1, theTLin2, theTolLin, thePln, theTolPln, theP, theT, theTolP, theTmin, theTmax); return std::make_tuple(nanoocp_result, theT, theTolP, theTmin, theTmax); }, nb::arg("theLin"), nb::arg("theTLin1"), nb::arg("theTLin2"), nb::arg("theTolLin"), nb::arg("thePln"), nb::arg("theTolPln"), nb::arg("theP"))
+        .def_static("ComputeTolerance", [](const occ::handle<Geom_Curve> & theCurve3D, const occ::handle<Geom2d_Curve> & theCurve2D, const occ::handle<Geom_Surface> & theSurf, const double theFirst, const double theLast, const double theTolRange, const bool theToRunParallel) { double theMaxDist{}; double theMaxPar{}; auto nanoocp_result = IntTools_Tools::ComputeTolerance(theCurve3D, theCurve2D, theSurf, theFirst, theLast, theMaxDist, theMaxPar, theTolRange, theToRunParallel); return std::make_tuple(nanoocp_result, theMaxDist, theMaxPar); }, nb::arg("theCurve3D").none(), nb::arg("theCurve2D").none(), nb::arg("theSurf").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolRange") = static_cast<std::decay_t<const double>>(Precision::PConfusion()), nb::arg("theToRunParallel") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Computes the max distance between points
 taken from 3D and 2D curves by the same parameter)nbdoc")
         .def_static("ComputeIntRange", static_cast<double (*)(const double, const double, const double)>(&IntTools_Tools::ComputeIntRange), nb::arg("theTol1"), nb::arg("theTol2"), nb::arg("theAngle"), R"nbdoc(Computes the correct Intersection range for
 Line/Line, Line/Plane and Plane/Plane intersections)nbdoc");

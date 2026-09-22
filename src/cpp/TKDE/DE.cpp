@@ -150,17 +150,17 @@ Save all parameters with their values.
 @param[in] theParam complex parameter name
 @param[in] theScope base parameter name
 @return true if parameter is defined in the resource file)nbdoc")
-        .def("GetReal", [](const DE_ConfigurationContext &self, const TCollection_AsciiString & theParam, const TCollection_AsciiString & theScope) { double theValue{}; auto result = self.GetReal(theParam, theValue, theScope); return std::make_tuple(result, theValue); }, nb::arg("theParam"), nb::arg("theScope") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), R"nbdoc(Gets value of parameter as being of specific type
+        .def("GetReal", [](const DE_ConfigurationContext &self, const TCollection_AsciiString & theParam, const TCollection_AsciiString & theScope) { double theValue{}; auto nanoocp_result = self.GetReal(theParam, theValue, theScope); return std::make_tuple(nanoocp_result, theValue); }, nb::arg("theParam"), nb::arg("theScope") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), R"nbdoc(Gets value of parameter as being of specific type
 @param[in] theParam complex parameter name
 @param[out] theValue value to get by parameter
 @param[in] theScope base parameter name
 @return false if parameter is not defined or has a wrong type)nbdoc")
-        .def("GetInteger", [](const DE_ConfigurationContext &self, const TCollection_AsciiString & theParam, const TCollection_AsciiString & theScope) { int theValue{}; auto result = self.GetInteger(theParam, theValue, theScope); return std::make_tuple(result, theValue); }, nb::arg("theParam"), nb::arg("theScope") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), R"nbdoc(Gets value of parameter as being of specific type
+        .def("GetInteger", [](const DE_ConfigurationContext &self, const TCollection_AsciiString & theParam, const TCollection_AsciiString & theScope) { int theValue{}; auto nanoocp_result = self.GetInteger(theParam, theValue, theScope); return std::make_tuple(nanoocp_result, theValue); }, nb::arg("theParam"), nb::arg("theScope") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), R"nbdoc(Gets value of parameter as being of specific type
 @param[in] theParam complex parameter name
 @param[out] theValue value to get by parameter
 @param[in] theScope base parameter name
 @return false if parameter is not defined or has a wrong type)nbdoc")
-        .def("GetBoolean", [](const DE_ConfigurationContext &self, const TCollection_AsciiString & theParam, const TCollection_AsciiString & theScope) { bool theValue{}; auto result = self.GetBoolean(theParam, theValue, theScope); return std::make_tuple(result, theValue); }, nb::arg("theParam"), nb::arg("theScope") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), R"nbdoc(Gets value of parameter as being of specific type
+        .def("GetBoolean", [](const DE_ConfigurationContext &self, const TCollection_AsciiString & theParam, const TCollection_AsciiString & theScope) { bool theValue{}; auto nanoocp_result = self.GetBoolean(theParam, theValue, theScope); return std::make_tuple(nanoocp_result, theValue); }, nb::arg("theParam"), nb::arg("theScope") = static_cast<std::decay_t<const TCollection_AsciiString &>>(""), R"nbdoc(Gets value of parameter as being of specific type
 @param[in] theParam complex parameter name
 @param[out] theValue value to get by parameter
 @param[in] theScope base parameter name
@@ -264,25 +264,25 @@ unit is unknown, default 1.0 (MM))nbdoc");
         .def_static("get_type_name", static_cast<const char * (*)()>(&DE_Provider::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&DE_Provider::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (DE_Provider::*)() const>(&DE_Provider::DynamicType))
-        .def("Read", [](DE_Provider &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(thePath, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
+        .def("Read", [](DE_Provider &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(thePath, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
 @param[in] thePath path to the import CAD file
 @param[out] theDocument document to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return True if Read was successful)nbdoc")
-        .def("Write", [](DE_Provider &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(thePath, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
+        .def("Write", [](DE_Provider &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(thePath, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
 @param[in] thePath path to the export CAD file
 @param[out] theDocument document to export
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return True if Write was successful)nbdoc")
-        .def("Read", [](DE_Provider &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(theStreams, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
+        .def("Read", [](DE_Provider &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(theStreams, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
 @param[in] theStreams streams to read from
 @param[out] theDocument document to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return True if Read was successful)nbdoc")
-        .def("Write", [](DE_Provider &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(theStreams, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
+        .def("Write", [](DE_Provider &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(theStreams, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
 @param[in] theStreams streams to write to
 @param[out] theDocument document to export
 @param[in] theWS current work session
@@ -308,25 +308,25 @@ unit is unknown, default 1.0 (MM))nbdoc");
 @param[out] theDocument document to export
 @param[in] theProgress progress indicator
 @return True if Write was successful)nbdoc")
-        .def("Read", [](DE_Provider &self, const TCollection_AsciiString & thePath, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(thePath, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
+        .def("Read", [](DE_Provider &self, const TCollection_AsciiString & thePath, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(thePath, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
 @param[in] thePath path to the import CAD file
 @param[out] theShape shape to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return True if Read was successful)nbdoc")
-        .def("Write", [](DE_Provider &self, const TCollection_AsciiString & thePath, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(thePath, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
+        .def("Write", [](DE_Provider &self, const TCollection_AsciiString & thePath, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(thePath, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
 @param[in] thePath path to the export CAD file
 @param[out] theShape shape to export
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return True if Write was successful)nbdoc")
-        .def("Read", [](DE_Provider &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(theStreams, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
+        .def("Read", [](DE_Provider &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(theStreams, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
 @param[in] theStreams streams to read from
 @param[out] theShape shape to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return True if Read was successful)nbdoc")
-        .def("Write", [](DE_Provider &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(theStreams, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
+        .def("Write", [](DE_Provider &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(theStreams, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
 @param[in] theStreams streams to write to
 @param[out] theShape shape to export
 @param[in] theWS current work session
@@ -376,13 +376,13 @@ If wrapper is not set, create it by default as base class object.
 @return point to global configuration)nbdoc")
         .def_static("SetGlobalWrapper", static_cast<void (*)(const occ::handle<DE_Wrapper> &)>(&DE_Wrapper::SetGlobalWrapper), nb::arg("theWrapper").none(), R"nbdoc(Sets global configuration singleton
 @param[in] theWrapper object to set as global configuration)nbdoc")
-        .def("Read", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(thePath, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
+        .def("Read", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(thePath, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
 @param[in] thePath path to the import CAD file
 @param[out] theDocument document to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return true if Read operation has ended correctly)nbdoc")
-        .def("Write", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(thePath, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
+        .def("Write", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(thePath, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
 @param[in] thePath path to the export CAD file
 @param[out] theDocument document to export
 @param[in] theWS current work session
@@ -398,13 +398,13 @@ If wrapper is not set, create it by default as base class object.
 @param[out] theDocument document to export
 @param[in] theProgress progress indicator
 @return true if Write operation has ended correctly)nbdoc")
-        .def("Read", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(thePath, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
+        .def("Read", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(thePath, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads a CAD file, according internal configuration
 @param[in] thePath path to the import CAD file
 @param[out] theShape shape to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return true if Read operation has ended correctly)nbdoc")
-        .def("Write", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(thePath, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
+        .def("Write", [](DE_Wrapper &self, const TCollection_AsciiString & thePath, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(thePath, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("thePath"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes a CAD file, according internal configuration
 @param[in] thePath path to the export CAD file
 @param[out] theShape shape to export
 @param[in] theWS current work session
@@ -420,13 +420,13 @@ If wrapper is not set, create it by default as base class object.
 @param[out] theShape shape to export
 @param[in] theProgress progress indicator
 @return true if Write operation has ended correctly)nbdoc")
-        .def("Read", [](DE_Wrapper &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(theStreams, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
+        .def("Read", [](DE_Wrapper &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(theStreams, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
 @param[in] theStreams streams to read from
 @param[out] theDocument document to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return true if Read operation has ended correctly)nbdoc")
-        .def("Write", [](DE_Wrapper &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(theStreams, theDocument, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
+        .def("Write", [](DE_Wrapper &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const occ::handle<TDocStd_Document> & theDocument, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(theStreams, theDocument, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theDocument").none(), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
 @param[in] theStreams streams to write to
 @param[out] theDocument document to export
 @param[in] theWS current work session
@@ -442,13 +442,13 @@ If wrapper is not set, create it by default as base class object.
 @param[out] theDocument document to export
 @param[in] theProgress progress indicator
 @return true if Write operation has ended correctly)nbdoc")
-        .def("Read", [](DE_Wrapper &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Read(theStreams, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
+        .def("Read", [](DE_Wrapper &self, NCollection_List<DE_Provider::ReadStreamNode> & theStreams, TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Read(theStreams, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Reads streams according to internal configuration
 @param[in] theStreams streams to read from
 @param[out] theShape shape to save result
 @param[in] theWS current work session
 @param[in] theProgress progress indicator
 @return true if Read operation has ended correctly)nbdoc")
-        .def("Write", [](DE_Wrapper &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto result = self.Write(theStreams, theShape, theWS, theProgress); return std::make_tuple(result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
+        .def("Write", [](DE_Wrapper &self, NCollection_List<DE_Provider::WriteStreamNode> & theStreams, const TopoDS_Shape & theShape, occ::handle<XSControl_WorkSession> theWS, const Message_ProgressRange & theProgress) { auto nanoocp_result = self.Write(theStreams, theShape, theWS, theProgress); return std::make_tuple(nanoocp_result, theWS); }, nb::arg("theStreams"), nb::arg("theShape"), nb::arg("theWS").none(), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Writes streams according to internal configuration
 @param[in] theStreams streams to write to
 @param[out] theShape shape to export
 @param[in] theWS current work session
@@ -489,7 +489,7 @@ If wrapper is not set, create it by default as base class object.
         .def("UnBind", static_cast<bool (DE_Wrapper::*)(const occ::handle<DE_ConfigurationNode> &)>(&DE_Wrapper::UnBind), nb::arg("theNode").none(), R"nbdoc(Removes node with the same type from the map
 @param[in] theNode input node to remove the same
 @return true if removed)nbdoc")
-        .def("Find", [](const DE_Wrapper &self, const TCollection_AsciiString & theFormat, const TCollection_AsciiString & theVendor) { occ::handle<DE_ConfigurationNode> theNode{}; auto result = self.Find(theFormat, theVendor, theNode); return std::make_tuple(result, theNode); }, nb::arg("theFormat"), nb::arg("theVendor"), R"nbdoc(Finds a node associated with input format and vendor
+        .def("Find", [](const DE_Wrapper &self, const TCollection_AsciiString & theFormat, const TCollection_AsciiString & theVendor) { occ::handle<DE_ConfigurationNode> theNode{}; auto nanoocp_result = self.Find(theFormat, theVendor, theNode); return std::make_tuple(nanoocp_result, theNode); }, nb::arg("theFormat"), nb::arg("theVendor"), R"nbdoc(Finds a node associated with input format and vendor
 @param[in] theFormat input node CAD format
 @param[in] theVendor input node vendor name
 @param[out] theNode output node
@@ -501,25 +501,25 @@ If wrapper is not set, create it by default as base class object.
         .def("ChangePriority", static_cast<void (DE_Wrapper::*)(const NCollection_List<TCollection_AsciiString> &, const bool)>(&DE_Wrapper::ChangePriority), nb::arg("theVendorPriority"), nb::arg("theToDisable") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Changes provider priority to all loaded nodes
 @param[in] theVendorPriority priority of work with vendors
 @param[in] theToDisable flag for disabling nodes that are not included in the priority)nbdoc")
-        .def("FindProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath, const bool theToImport) { occ::handle<DE_Provider> theProvider{}; auto result = self.FindProvider(thePath, theToImport, theProvider); return std::make_tuple(result, theProvider); }, nb::arg("thePath"), nb::arg("theToImport"), R"nbdoc(Find available provider from the configuration.
+        .def("FindProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath, const bool theToImport) { occ::handle<DE_Provider> theProvider{}; auto nanoocp_result = self.FindProvider(thePath, theToImport, theProvider); return std::make_tuple(nanoocp_result, theProvider); }, nb::arg("thePath"), nb::arg("theToImport"), R"nbdoc(Find available provider from the configuration.
 If there are several providers, choose the one with the highest priority.
 @param[in] thePath path to the CAD file
 @param[in] theToImport flag to finds for import. true-import, false-export
 @param[out] theProvider created new provider
 @return true if provider found and created)nbdoc")
-        .def("FindReadProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath, const bool theCheckContent) { occ::handle<DE_Provider> theProvider{}; auto result = self.FindReadProvider(thePath, theCheckContent, theProvider); return std::make_tuple(result, theProvider); }, nb::arg("thePath"), nb::arg("theCheckContent"), R"nbdoc(Find available read provider from the configuration for file-based operations.
+        .def("FindReadProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath, const bool theCheckContent) { occ::handle<DE_Provider> theProvider{}; auto nanoocp_result = self.FindReadProvider(thePath, theCheckContent, theProvider); return std::make_tuple(nanoocp_result, theProvider); }, nb::arg("thePath"), nb::arg("theCheckContent"), R"nbdoc(Find available read provider from the configuration for file-based operations.
 If there are several providers, choose the one with the highest priority.
 @param[in] thePath path to the CAD file (for extension and content checking)
 @param[in] theCheckContent flag to enable content checking via file reading
 @param[out] theProvider created new provider
 @return true if provider found and created)nbdoc")
-        .def("FindReadProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath, const nanoocp::BinaryInput &theStream) { occ::handle<DE_Provider> theProvider{}; std::stringstream theStream_stream(theStream.data); auto result = self.FindReadProvider(thePath, theStream_stream, theProvider); return std::make_tuple(result, theProvider); }, nb::arg("thePath"), nb::arg("theStream"), R"nbdoc(Find available read provider from the configuration for stream-based operations.
+        .def("FindReadProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath, const nanoocp::BinaryInput &theStream) { occ::handle<DE_Provider> theProvider{}; std::stringstream theStream_stream(theStream.data); auto nanoocp_result = self.FindReadProvider(thePath, theStream_stream, theProvider); return std::make_tuple(nanoocp_result, theProvider); }, nb::arg("thePath"), nb::arg("theStream"), R"nbdoc(Find available read provider from the configuration for stream-based operations.
 If there are several providers, choose the one with the highest priority.
 @param[in] thePath path to the CAD file (for extension extraction)
 @param[in] theStream input stream for content checking
 @param[out] theProvider created new provider
 @return true if provider found and created)nbdoc")
-        .def("FindWriteProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath) { occ::handle<DE_Provider> theProvider{}; auto result = self.FindWriteProvider(thePath, theProvider); return std::make_tuple(result, theProvider); }, nb::arg("thePath"), R"nbdoc(Find available write provider from the configuration.
+        .def("FindWriteProvider", [](const DE_Wrapper &self, const TCollection_AsciiString & thePath) { occ::handle<DE_Provider> theProvider{}; auto nanoocp_result = self.FindWriteProvider(thePath, theProvider); return std::make_tuple(nanoocp_result, theProvider); }, nb::arg("thePath"), R"nbdoc(Find available write provider from the configuration.
 If there are several providers, choose the one with the highest priority.
 @param[in] thePath path to the CAD file (for extension checking only)
 @param[out] theProvider created new provider
@@ -640,11 +640,11 @@ import/export)nbdoc")
 @param[in] theContext context string for warning messages
 @param[in] theIsVerbose if true, sends warning messages via Message::SendWarning
 @return true always (this is just a warning))nbdoc")
-        .def_static("CreateContentBuffer", [](const TCollection_AsciiString & thePath) { occ::handle<NCollection_Buffer> theBuffer{}; auto result = DE_ValidationUtils::CreateContentBuffer(thePath, theBuffer); return std::make_tuple(result, theBuffer); }, nb::arg("thePath"), R"nbdoc(Creates buffer by reading from file stream for content checking
+        .def_static("CreateContentBuffer", [](const TCollection_AsciiString & thePath) { occ::handle<NCollection_Buffer> theBuffer{}; auto nanoocp_result = DE_ValidationUtils::CreateContentBuffer(thePath, theBuffer); return std::make_tuple(nanoocp_result, theBuffer); }, nb::arg("thePath"), R"nbdoc(Creates buffer by reading from file stream for content checking
 @param[in] thePath file path for reading
 @param[out] theBuffer output buffer with file content
 @return true if successful, false otherwise)nbdoc")
-        .def_static("CreateContentBuffer", [](const nanoocp::BinaryInput &theStream) { occ::handle<NCollection_Buffer> theBuffer{}; std::stringstream theStream_stream(theStream.data); auto result = DE_ValidationUtils::CreateContentBuffer(theStream_stream, theBuffer); return std::make_tuple(result, theBuffer); }, nb::arg("theStream"), R"nbdoc(Creates buffer by reading from input stream for content checking
+        .def_static("CreateContentBuffer", [](const nanoocp::BinaryInput &theStream) { occ::handle<NCollection_Buffer> theBuffer{}; std::stringstream theStream_stream(theStream.data); auto nanoocp_result = DE_ValidationUtils::CreateContentBuffer(theStream_stream, theBuffer); return std::make_tuple(nanoocp_result, theBuffer); }, nb::arg("theStream"), R"nbdoc(Creates buffer by reading from input stream for content checking
 @param[in,out] theStream input stream to read from (position will be restored)
 @param[out] theBuffer output buffer with stream content
 @return true if successful, false otherwise)nbdoc");

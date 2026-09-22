@@ -350,7 +350,7 @@ according to the discretization of the Curve.)nbdoc")
         .def("NbTriangles", static_cast<int (IntCurveSurface_ThePolyhedronOfHInter::*)() const>(&IntCurveSurface_ThePolyhedronOfHInter::NbTriangles), R"nbdoc(Give the number of triangles in this double array of)nbdoc")
         .def("Triangle", [](const IntCurveSurface_ThePolyhedronOfHInter &self, const int Index) { int P1{}; int P2{}; int P3{}; self.Triangle(Index, P1, P2, P3); return std::make_tuple(P1, P2, P3); }, nb::arg("Index"), R"nbdoc(Give the 3 points of the triangle of address Index in
 the double array of triangles.)nbdoc")
-        .def("TriConnex", [](const IntCurveSurface_ThePolyhedronOfHInter &self, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto result = self.TriConnex(Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(result, TriCon, OtherP); }, nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to the
+        .def("TriConnex", [](const IntCurveSurface_ThePolyhedronOfHInter &self, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto nanoocp_result = self.TriConnex(Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(nanoocp_result, TriCon, OtherP); }, nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to the
 triangle of address Triang by the edge Pivot Pedge and
 the third point of this connexe triangle. When we are
 on a free edge TriCon==0 but the function return the
@@ -360,7 +360,7 @@ the free edge. Used to turn around a vertex.)nbdoc")
 triangles ((nbdu+1)*(nbdv+1)).)nbdoc")
         .def("Point", static_cast<void (IntCurveSurface_ThePolyhedronOfHInter::*)(const gp_Pnt &, const int, const int, const double, const double)>(&IntCurveSurface_ThePolyhedronOfHInter::Point), nb::arg("thePnt"), nb::arg("lig"), nb::arg("col"), nb::arg("U"), nb::arg("V"), R"nbdoc(Set the value of a field of the double array of
 points.)nbdoc")
-        .def("Point__float__float", [](const IntCurveSurface_ThePolyhedronOfHInter &self, const int Index) { double U{}; double V{}; auto result = self.Point(Index, U, V); return std::make_tuple(result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float__float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Point__float__float", [](const IntCurveSurface_ThePolyhedronOfHInter &self, const int Index) { double U{}; double V{}; auto nanoocp_result = self.Point(Index, U, V); return std::make_tuple(nanoocp_result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float__float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<const gp_Pnt & (IntCurveSurface_ThePolyhedronOfHInter::*)(const int) const>(&IntCurveSurface_ThePolyhedronOfHInter::Point), nb::arg("Index"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<void (IntCurveSurface_ThePolyhedronOfHInter::*)(const int, gp_Pnt &) const>(&IntCurveSurface_ThePolyhedronOfHInter::Point), nb::arg("Index"), nb::arg("P"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
@@ -394,7 +394,7 @@ to the triangle <n>.)nbdoc")
         .def_static("Triangle", [](const IntCurveSurface_ThePolyhedronOfHInter & thePolyh, const int Index) { int P1{}; int P2{}; int P3{}; IntCurveSurface_ThePolyhedronToolOfHInter::Triangle(thePolyh, Index, P1, P2, P3); return std::make_tuple(P1, P2, P3); }, nb::arg("thePolyh"), nb::arg("Index"), R"nbdoc(Give the indices of the 3 points of the triangle of
 address Index in the PolyhedronTool.)nbdoc")
         .def_static("Point", static_cast<const gp_Pnt & (*)(const IntCurveSurface_ThePolyhedronOfHInter &, const int)>(&IntCurveSurface_ThePolyhedronToolOfHInter::Point), nb::arg("thePolyh"), nb::arg("Index"), R"nbdoc(Give the point of index i in the polyhedral surface.)nbdoc")
-        .def_static("TriConnex", [](const IntCurveSurface_ThePolyhedronOfHInter & thePolyh, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto result = IntCurveSurface_ThePolyhedronToolOfHInter::TriConnex(thePolyh, Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(result, TriCon, OtherP); }, nb::arg("thePolyh"), nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to
+        .def_static("TriConnex", [](const IntCurveSurface_ThePolyhedronOfHInter & thePolyh, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto nanoocp_result = IntCurveSurface_ThePolyhedronToolOfHInter::TriConnex(thePolyh, Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(nanoocp_result, TriCon, OtherP); }, nb::arg("thePolyh"), nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to
 the triangle of address Triang by the edge Pivot Pedge
 and the third point of this connexe triangle. When we
 are on a free edge TriCon==0 but the function return
@@ -419,14 +419,14 @@ a segment on the curve.)nbdoc");
     nanoocp_implicit_copy_ctor<IntCurveSurface_TheQuadCurvExactHInter>(nb::borrow<nb::class_<IntCurveSurface_TheQuadCurvExactHInter>>(m.attr("IntCurveSurface_TheQuadCurvExactHInter")));
     nb::borrow<nb::class_<IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter>>(m.attr("IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter"))
         .def(nb::init<const IntSurf_Quadric &, const occ::handle<Adaptor3d_Curve> &>(), nb::arg("Q"), nb::arg("C").none(), R"nbdoc(Create the function.)nbdoc")
-        .def("Value", [](IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter &self, const double Param) { double F{}; auto result = self.Value(Param, F); return std::make_tuple(result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
+        .def("Value", [](IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter &self, const double Param) { double F{}; auto nanoocp_result = self.Value(Param, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
 the implicit surface and the point at parameter
 Param on the parametrised curve.
 Value always returns True.)nbdoc")
-        .def("Derivative", [](IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter &self, const double Param) { double D{}; auto result = self.Derivative(Param, D); return std::make_tuple(result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
+        .def("Derivative", [](IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter &self, const double Param) { double D{}; auto nanoocp_result = self.Derivative(Param, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
 parameter Param.
 Derivative always returns True.)nbdoc")
-        .def("Values", [](IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter &self, const double Param) { double F{}; double D{}; auto result = self.Values(Param, F, D); return std::make_tuple(result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.
+        .def("Values", [](IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter &self, const double Param) { double F{}; double D{}; auto nanoocp_result = self.Values(Param, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.
 returns True.)nbdoc");
     nanoocp_implicit_copy_ctor<IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter>(nb::borrow<nb::class_<IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter>>(m.attr("IntCurveSurface_TheQuadCurvFuncOfTheQuadCurvExactHInter")));
 }

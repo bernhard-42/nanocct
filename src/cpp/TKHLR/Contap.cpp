@@ -128,9 +128,9 @@ void nanoocp_define_Contap(nb::module_ &m) {
         .def("Set", static_cast<void (Contap_ArcFunction::*)(const gp_Pnt &)>(&Contap_ArcFunction::Set), nb::arg("Eye"))
         .def("Set", static_cast<void (Contap_ArcFunction::*)(const gp_Pnt &, const double)>(&Contap_ArcFunction::Set), nb::arg("Eye"), nb::arg("Angle"))
         .def("Set", static_cast<void (Contap_ArcFunction::*)(const occ::handle<Adaptor2d_Curve2d> &)>(&Contap_ArcFunction::Set), nb::arg("A").none())
-        .def("Value", [](Contap_ArcFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
-        .def("Derivative", [](Contap_ArcFunction &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"))
-        .def("Values", [](Contap_ArcFunction &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"))
+        .def("Value", [](Contap_ArcFunction &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"))
+        .def("Derivative", [](Contap_ArcFunction &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"))
+        .def("Values", [](Contap_ArcFunction &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"))
         .def("NbSamples", static_cast<int (Contap_ArcFunction::*)() const>(&Contap_ArcFunction::NbSamples))
         .def("GetStateNumber", static_cast<int (Contap_ArcFunction::*)()>(&Contap_ArcFunction::GetStateNumber))
         .def("Valpoint", static_cast<const gp_Pnt & (Contap_ArcFunction::*)(const int) const>(&Contap_ArcFunction::Valpoint), nb::arg("Index"))
@@ -358,7 +358,7 @@ the Surface and the CurveOnSurface complexity.)nbdoc")
 These limits must be finite : they are either
 the real limits of the arc, for a finite arc,
 or a bounding box for an infinite arc.)nbdoc")
-        .def_static("Project", [](const occ::handle<Adaptor2d_Curve2d> & C, const gp_Pnt2d & P, gp_Pnt2d & Ptproj) { double Paramproj{}; auto result = Contap_HContTool::Project(C, P, Paramproj, Ptproj); return std::make_tuple(result, Paramproj); }, nb::arg("C").none(), nb::arg("P"), nb::arg("Ptproj"), R"nbdoc(Projects the point P on the arc C.
+        .def_static("Project", [](const occ::handle<Adaptor2d_Curve2d> & C, const gp_Pnt2d & P, gp_Pnt2d & Ptproj) { double Paramproj{}; auto nanoocp_result = Contap_HContTool::Project(C, P, Paramproj, Ptproj); return std::make_tuple(nanoocp_result, Paramproj); }, nb::arg("C").none(), nb::arg("P"), nb::arg("Ptproj"), R"nbdoc(Projects the point P on the arc C.
 If the methods returns true, the projection is
 successful, and Paramproj is the parameter on the arc
 of the projected point, Ptproj is the projected Point.
@@ -379,13 +379,13 @@ corresponds with a vertex on the arc A.)nbdoc")
 vertex on the arc A.)nbdoc")
         .def_static("NbSegments", static_cast<int (*)(const occ::handle<Adaptor2d_Curve2d> &)>(&Contap_HContTool::NbSegments), nb::arg("C").none(), R"nbdoc(returns the number of part of A solution of the
 of intersection problem.)nbdoc")
-        .def_static("HasFirstPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndFirst{}; auto result = Contap_HContTool::HasFirstPoint(C, Index, IndFirst); return std::make_tuple(result, IndFirst); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
+        .def_static("HasFirstPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndFirst{}; auto nanoocp_result = Contap_HContTool::HasFirstPoint(C, Index, IndFirst); return std::make_tuple(nanoocp_result, IndFirst); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
 open at the left side. In that case, IndFirst is the
 range in the list intersection points (see NbPoints)
 of the one which defines the left bound of the segment.
 Otherwise, the method has to return False, and IndFirst
 has no meaning.)nbdoc")
-        .def_static("HasLastPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndLast{}; auto result = Contap_HContTool::HasLastPoint(C, Index, IndLast); return std::make_tuple(result, IndLast); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
+        .def_static("HasLastPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndLast{}; auto nanoocp_result = Contap_HContTool::HasLastPoint(C, Index, IndLast); return std::make_tuple(nanoocp_result, IndLast); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
 open at the right side. In that case, IndLast is the
 range in the list intersection points (see NbPoints)
 of the one which defines the right bound of the segment.
@@ -500,7 +500,7 @@ passing point.)nbdoc")
         .def("PassingPoint", [](const Contap_TheIWLineOfTheIWalking &self, const int Index) { int IndexLine{}; int IndexPnts{}; self.PassingPoint(Index, IndexLine, IndexPnts); return std::make_tuple(IndexLine, IndexPnts); }, nb::arg("Index"), R"nbdoc(returns the index of the point belonging to the line which
 is associated to the passing point belonging to Pnts1
 an exception is raised if Index > NbPassingPoint())nbdoc")
-        .def("TangentVector", [](const Contap_TheIWLineOfTheIWalking &self) { int Index{}; auto result = self.TangentVector(Index); return std::make_tuple(result, Index); })
+        .def("TangentVector", [](const Contap_TheIWLineOfTheIWalking &self) { int Index{}; auto nanoocp_result = self.TangentVector(Index); return std::make_tuple(nanoocp_result, Index); })
         .def("IsTangentAtBegining", static_cast<bool (Contap_TheIWLineOfTheIWalking::*)() const>(&Contap_TheIWLineOfTheIWalking::IsTangentAtBegining))
         .def("IsTangentAtEnd", static_cast<bool (Contap_TheIWLineOfTheIWalking::*)() const>(&Contap_TheIWLineOfTheIWalking::IsTangentAtEnd))
         .def_static("get_type_name", static_cast<const char * (*)()>(&Contap_TheIWLineOfTheIWalking::get_type_name))

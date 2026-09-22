@@ -478,7 +478,7 @@ Error of the computation is not calculated.
 @param[out] theOutMass - mass (volume) of region;
 @param[out] theOutGravityCenter - garvity center of region;
 @param[out] theOutInertia - matrix of inertia;)nbdoc")
-        .def("Compute", [](BRepGProp_Gauss &self, BRepGProp_Face & theSurface, BRepGProp_Domain & theDomain, const gp_Pnt & theLocation, const double theEps, gp_Pnt & theOutGravityCenter, gp_Mat & theOutInertia) { double theOutMass{}; auto result = self.Compute(theSurface, theDomain, theLocation, theEps, theOutMass, theOutGravityCenter, theOutInertia); return std::make_tuple(result, theOutMass); }, nb::arg("theSurface"), nb::arg("theDomain"), nb::arg("theLocation"), nb::arg("theEps"), nb::arg("theOutGravityCenter"), nb::arg("theOutInertia"), R"nbdoc(Computes the global properties of the face. Adaptive 2D Gauss integration is used.
+        .def("Compute", [](BRepGProp_Gauss &self, BRepGProp_Face & theSurface, BRepGProp_Domain & theDomain, const gp_Pnt & theLocation, const double theEps, gp_Pnt & theOutGravityCenter, gp_Mat & theOutInertia) { double theOutMass{}; auto nanoocp_result = self.Compute(theSurface, theDomain, theLocation, theEps, theOutMass, theOutGravityCenter, theOutInertia); return std::make_tuple(nanoocp_result, theOutMass); }, nb::arg("theSurface"), nb::arg("theDomain"), nb::arg("theLocation"), nb::arg("theEps"), nb::arg("theOutGravityCenter"), nb::arg("theOutInertia"), R"nbdoc(Computes the global properties of the face. Adaptive 2D Gauss integration is used.
 If Epsilon more than 0.001 then algorithm performs non-adaptive integration.
 @param theSurface - bounding surface of the region;
 @param theDomain - surface boundings;
@@ -512,7 +512,7 @@ get actual relative error of the computation, else return 1.0.)nbdoc");
         .def("SetValueType", static_cast<void (BRepGProp_UFunction::*)(const GProp_ValueType)>(&BRepGProp_UFunction::SetValueType), nb::arg("theType"), R"nbdoc(Setting the type of the value to be returned.)nbdoc")
         .def("SetVParam", static_cast<void (BRepGProp_UFunction::*)(const double)>(&BRepGProp_UFunction::SetVParam), nb::arg("theVParam"), R"nbdoc(Setting the V parameter that is constant during the
 integral computation.)nbdoc")
-        .def("Value", [](BRepGProp_UFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Returns a value of the function.)nbdoc");
+        .def("Value", [](BRepGProp_UFunction &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Returns a value of the function.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGProp_UFunction>(nb::borrow<nb::class_<BRepGProp_UFunction>>(m.attr("BRepGProp_UFunction")));
     nb::borrow<nb::class_<BRepGProp_TFunction>>(m.attr("BRepGProp_TFunction"))
         .def("Init", static_cast<void (BRepGProp_TFunction::*)()>(&BRepGProp_TFunction::Init))
@@ -533,7 +533,7 @@ parameter is directly passed to the UFunction.)nbdoc")
 the last call of GetStateNumber method.)nbdoc")
         .def("AbsolutError", static_cast<double (BRepGProp_TFunction::*)() const>(&BRepGProp_TFunction::AbsolutError), R"nbdoc(Returns the absolut reached error of all values computation since
 the last call of GetStateNumber method.)nbdoc")
-        .def("Value", [](BRepGProp_TFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Returns a value of the function. The value represents an
+        .def("Value", [](BRepGProp_TFunction &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Returns a value of the function. The value represents an
 integral of UFunction. It is computed with the predefined
 tolerance using the adaptive Gauss-Kronrod method.)nbdoc")
         .def("GetStateNumber", static_cast<int (BRepGProp_TFunction::*)()>(&BRepGProp_TFunction::GetStateNumber), R"nbdoc(Redefined method. Remembers the error reached during

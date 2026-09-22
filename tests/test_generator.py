@@ -624,7 +624,7 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     block = cpp[start:cpp.index('m.attr("Rules_Iter"))', start)]          # the .def chain of Rules_Algo (lambda bodies contain ';')
     # bound through lambdas on the derived class (a member pointer of Rules_Options would need the inaccessible upcast)
     assert '.def("SetFuzzy", [](Rules_Algo &self, const double theV) { self.SetFuzzy(theV); }' in block
-    assert '.def("Fuzzy", [](const Rules_Algo &self) { auto result = self.Fuzzy(); return result; }' in block
+    assert '.def("Fuzzy", [](const Rules_Algo &self) { auto nanoocp_result = self.Fuzzy(); return nanoocp_result; }' in block
     assert block.count('.def("Flag"') == 2 and "&Rules_Options::" not in block
     assert '.def("Dump", [](const Rules_Algo &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return nanoocp_stream_text(theS_stream); }' in block
     # inherited constructors: Rules_Value(const gp_Pnt&) becomes Rules_Inherit's; the default and copy constructors are not inherited
@@ -671,15 +671,15 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
-    assert '.def("Optional", [](const Rules_Value &self, const int theA) { auto result = self.Optional(theA, nullptr); return result; }, nb::arg("theA")' in cpp
-    assert "gp_Pnt theP[8]{}; auto result = self.Corners(theP); std::array<gp_Pnt, 8> theP_out;" in cpp
+    assert '.def("Optional", [](const Rules_Value &self, const int theA) { auto nanoocp_result = self.Optional(theA, nullptr); return nanoocp_result; }, nb::arg("theA")' in cpp
+    assert "gp_Pnt theP[8]{}; auto nanoocp_result = self.Corners(theP); std::array<gp_Pnt, 8> theP_out;" in cpp
     assert "const std::array<int, 3> &theNodes) { int theNodes_arr[3]; std::copy(theNodes.begin(), theNodes.end(), theNodes_arr);" in cpp
     assert '.def_prop_rw("myPeriod", [](const Rules_Value &self) { std::array<double, 3> a;' in cpp
-    assert '.def("PtrRef", [](Rules_Value &self) { auto result = self.PtrRef(); return result; }, nb::rv_policy::reference' in cpp
+    assert '.def("PtrRef", [](Rules_Value &self) { auto nanoocp_result = self.PtrRef(); return nanoocp_result; }, nb::rv_policy::reference' in cpp
     # R-CSTR-NULL: the null-defaulted const char* is kept (unlike R-OPTIONAL-PTR) and takes str or None through nanoocp::OptionalCString
     enc = _method(rules_ir, "Rules_Value", "Encoding")
     assert enc.skip_reason is None and [(p.name, p.cstr_none, p.omitted, p.default) for p in enc.params] == [("theEncoding", True, False, "nullptr")]
-    assert ('.def("Encoding", [](const Rules_Value &self, nanoocp::OptionalCString theEncoding) { auto result = self.Encoding(theEncoding.ptr); return result; }, '
+    assert ('.def("Encoding", [](const Rules_Value &self, nanoocp::OptionalCString theEncoding) { auto nanoocp_result = self.Encoding(theEncoding.ptr); return nanoocp_result; }, '
             'nb::arg("theEncoding").none() = nb::none()') in cpp
 
 
@@ -983,3 +983,16 @@ def test_resolve_static_renames_follows_the_inheritance_chain():
     skipped = cls("Skipped", "XCAFDoc_Note", ("Set", True))
     skipped.methods[0].skip_reason = "x"
     assert resolve_static_renames([note, skipped])["Skipped"] == set()
+
+
+# Design.md 6 R-OUT
+def test_the_lambda_temporary_cannot_collide_with_a_parameter(rules_ir):
+    """99 OCCT parameters are called `result` (IGESConvGeom::SplineCurveFromIGES(..., handle<Geom_BSplineCurve>&
+    result)); when such a parameter is an out-parameter of a non-void method, a bare `result` for the C++ return value
+    is a redefinition in the same lambda (TKDEIGES did not compile, 2026-09-22). Generated temporaries carry the
+    nanoocp_ prefix, which no OCCT name uses."""
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "auto nanoocp_result = " in cpp
+    assert re.search(r"\bauto result\b", cpp) is None and re.search(r"> result\(", cpp) is None

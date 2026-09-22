@@ -320,7 +320,7 @@ Note that multiple inheritance is not supported by OCCT RTTI mechanism.)nbdoc")
         .def("IsKind", static_cast<bool (Standard_Transient::*)(const char *const) const>(&Standard_Transient::IsKind), nb::arg("theTypeName"), R"nbdoc(Returns true if this is an instance of TypeName or an
 instance of any class that inherits from TypeName.
 Note that multiple inheritance is not supported by OCCT RTTI mechanism.)nbdoc")
-        .def("This", [](const Standard_Transient &self) { opencascade::handle<Standard_Transient> result(self.This()); return result; }, R"nbdoc(Returns non-const pointer to this object (like const_cast).
+        .def("This", [](const Standard_Transient &self) { opencascade::handle<Standard_Transient> nanoocp_result(self.This()); return nanoocp_result; }, R"nbdoc(Returns non-const pointer to this object (like const_cast).
 For protection against creating handle to objects allocated in stack
 or call from constructor, it will raise exception Standard_ProgramError
 if reference counter is zero.)nbdoc")
@@ -381,10 +381,10 @@ and returns true if it was in signaling state.
     nanoocp_def_field(nb::borrow<nb::class_<Standard_DumpValue>>(m.attr("Standard_DumpValue")), "myStartPosition", &Standard_DumpValue::myStartPosition, R"nbdoc(position of the value first char in the whole stream)nbdoc");
     nanoocp_implicit_default_ctor<Standard_Dump>(nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump")));
     nb::borrow<nb::class_<Standard_Dump>>(m.attr("Standard_Dump"))
-        .def_static("Text", [](const nanoocp::TextInput &theStream) { std::stringstream theStream_stream(theStream.text); auto result = Standard_Dump::Text(theStream_stream); return result; }, nb::arg("theStream"), R"nbdoc(Converts stream value to string value. The result is original stream value.
+        .def_static("Text", [](const nanoocp::TextInput &theStream) { std::stringstream theStream_stream(theStream.text); auto nanoocp_result = Standard_Dump::Text(theStream_stream); return nanoocp_result; }, nb::arg("theStream"), R"nbdoc(Converts stream value to string value. The result is original stream value.
 @param theStream source value
 @return text presentation)nbdoc")
-        .def_static("FormatJson", [](const nanoocp::TextInput &theStream, const int theIndent) { std::stringstream theStream_stream(theStream.text); auto result = Standard_Dump::FormatJson(theStream_stream, theIndent); return result; }, nb::arg("theStream"), nb::arg("theIndent") = static_cast<std::decay_t<const int>>(3), R"nbdoc(Converts stream value to string value. Improves the text presentation with the following
+        .def_static("FormatJson", [](const nanoocp::TextInput &theStream, const int theIndent) { std::stringstream theStream_stream(theStream.text); auto nanoocp_result = Standard_Dump::FormatJson(theStream_stream, theIndent); return nanoocp_result; }, nb::arg("theStream"), nb::arg("theIndent") = static_cast<std::decay_t<const int>>(3), R"nbdoc(Converts stream value to string value. Improves the text presentation with the following
 cases:
 - for '{' append after '\n' and indent to the next value, increment current indent value
 - for '}' append '\n' and current indent before it, decrement indent value
@@ -423,15 +423,15 @@ empty string.
 @param[out] theOStream  stream to be fill with values
 @param theKey a source value
 @param theField stream value)nbdoc")
-        .def_static("ProcessStreamName", [](const TCollection_AsciiString & theStreamStr, const TCollection_AsciiString & theName) { int theStreamPos{}; auto result = Standard_Dump::ProcessStreamName(theStreamStr, theName, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theStreamStr"), nb::arg("theName"), R"nbdoc(Check whether the parameter name is equal to the name in the stream at position
+        .def_static("ProcessStreamName", [](const TCollection_AsciiString & theStreamStr, const TCollection_AsciiString & theName) { int theStreamPos{}; auto nanoocp_result = Standard_Dump::ProcessStreamName(theStreamStr, theName, theStreamPos); return std::make_tuple(nanoocp_result, theStreamPos); }, nb::arg("theStreamStr"), nb::arg("theName"), R"nbdoc(Check whether the parameter name is equal to the name in the stream at position
 @param[in]  theStreamStr stream with values
 @param[in]  theName      stream key value
 @param[out] theStreamPos current position in the stream)nbdoc")
-        .def_static("ProcessFieldName", [](const TCollection_AsciiString & theStreamStr, const TCollection_AsciiString & theName) { int theStreamPos{}; auto result = Standard_Dump::ProcessFieldName(theStreamStr, theName, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theStreamStr"), nb::arg("theName"), R"nbdoc(Check whether the field name is equal to the name in the stream at position
+        .def_static("ProcessFieldName", [](const TCollection_AsciiString & theStreamStr, const TCollection_AsciiString & theName) { int theStreamPos{}; auto nanoocp_result = Standard_Dump::ProcessFieldName(theStreamStr, theName, theStreamPos); return std::make_tuple(nanoocp_result, theStreamPos); }, nb::arg("theStreamStr"), nb::arg("theName"), R"nbdoc(Check whether the field name is equal to the name in the stream at position
 @param[in]  theStreamStr stream with values
 @param[in]  theName      stream key field value
 @param[out] theStreamPos current position in the stream)nbdoc")
-        .def_static("InitValue", [](const TCollection_AsciiString & theStreamStr, TCollection_AsciiString & theValue) { int theStreamPos{}; auto result = Standard_Dump::InitValue(theStreamStr, theStreamPos, theValue); return std::make_tuple(result, theStreamPos); }, nb::arg("theStreamStr"), nb::arg("theValue"), R"nbdoc(Returns real value
+        .def_static("InitValue", [](const TCollection_AsciiString & theStreamStr, TCollection_AsciiString & theValue) { int theStreamPos{}; auto nanoocp_result = Standard_Dump::InitValue(theStreamStr, theStreamPos, theValue); return std::make_tuple(nanoocp_result, theStreamPos); }, nb::arg("theStreamStr"), nb::arg("theValue"), R"nbdoc(Returns real value
 @param[in]  theStreamStr stream with values
 @param[out] theStreamPos current position in the stream
 @param[out] theValue     stream value)nbdoc")

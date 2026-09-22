@@ -417,7 +417,7 @@ ShortCut Methods concerning associated attributes
 =================================================)nbdoc")
         .def("IsAttribute", static_cast<bool (TDF_Attribute::*)(const Standard_GUID &) const>(&TDF_Attribute::IsAttribute), nb::arg("anID"), R"nbdoc(Returns true if it exists an associated attribute
 of <me> with <anID> as ID.)nbdoc")
-        .def("FindAttribute", [](const TDF_Attribute &self, const Standard_GUID & anID) { occ::handle<TDF_Attribute> anAttribute{}; auto result = self.FindAttribute(anID, anAttribute); return std::make_tuple(result, anAttribute); }, nb::arg("anID"), R"nbdoc(Finds an associated attribute of <me>, according
+        .def("FindAttribute", [](const TDF_Attribute &self, const Standard_GUID & anID) { occ::handle<TDF_Attribute> anAttribute{}; auto nanoocp_result = self.FindAttribute(anID, anAttribute); return std::make_tuple(nanoocp_result, anAttribute); }, nb::arg("anID"), R"nbdoc(Finds an associated attribute of <me>, according
 to <anID>. the returned <anAttribute> is a valid
 one. The method returns True if found, False
 otherwise. A removed attribute cannot be found using
@@ -578,14 +578,14 @@ course, this method is compatible with Transaction
         .def("ResumeAttribute", static_cast<void (TDF_Label::*)(const occ::handle<TDF_Attribute> &) const>(&TDF_Label::ResumeAttribute), nb::arg("anAttribute").none(), R"nbdoc(Undo Forget action, setting its forgotten status
 false and its valid status true. Raises if the
 attribute is not in the structure.)nbdoc")
-        .def("FindAttribute", [](const TDF_Label &self, const Standard_GUID & anID) { occ::handle<TDF_Attribute> anAttribute{}; auto result = self.FindAttribute(anID, anAttribute); return std::make_tuple(result, anAttribute); }, nb::arg("anID"), R"nbdoc(Finds an attribute of the current label, according
+        .def("FindAttribute", [](const TDF_Label &self, const Standard_GUID & anID) { occ::handle<TDF_Attribute> anAttribute{}; auto nanoocp_result = self.FindAttribute(anID, anAttribute); return std::make_tuple(nanoocp_result, anAttribute); }, nb::arg("anID"), R"nbdoc(Finds an attribute of the current label, according
 to <anID>.
 If anAttribute is not a valid one, false is returned.
 
 The method returns True if found, False otherwise.
 
 A removed attribute cannot be found.)nbdoc")
-        .def("FindAttribute", [](const TDF_Label &self, const Standard_GUID & anID, const int aTransaction) { occ::handle<TDF_Attribute> anAttribute{}; auto result = self.FindAttribute(anID, aTransaction, anAttribute); return std::make_tuple(result, anAttribute); }, nb::arg("anID"), nb::arg("aTransaction"), R"nbdoc(Finds an attribute of the current label, according
+        .def("FindAttribute", [](const TDF_Label &self, const Standard_GUID & anID, const int aTransaction) { occ::handle<TDF_Attribute> anAttribute{}; auto nanoocp_result = self.FindAttribute(anID, aTransaction, anAttribute); return std::make_tuple(nanoocp_result, anAttribute); }, nb::arg("anID"), nb::arg("aTransaction"), R"nbdoc(Finds an attribute of the current label, according
 to <anID> and <aTransaction>. This attribute
 has/had to be a valid one for the given
 transaction index. So, this attribute is not
@@ -758,7 +758,7 @@ memory pages.)nbdoc")
         .def("More", static_cast<bool (TDF_AttributeIterator::*)() const>(&TDF_AttributeIterator::More))
         .def("Next", static_cast<void (TDF_AttributeIterator::*)()>(&TDF_AttributeIterator::Next))
         .def("Value", static_cast<occ::handle<TDF_Attribute> (TDF_AttributeIterator::*)() const>(&TDF_AttributeIterator::Value))
-        .def("PtrValue", [](const TDF_AttributeIterator &self) { opencascade::handle<TDF_Attribute> result(self.PtrValue()); return result; }, R"nbdoc(Provides an access to the internal pointer of the current attribute.
+        .def("PtrValue", [](const TDF_AttributeIterator &self) { opencascade::handle<TDF_Attribute> nanoocp_result(self.PtrValue()); return nanoocp_result; }, R"nbdoc(Provides an access to the internal pointer of the current attribute.
 The method has better performance as not-creating handle.)nbdoc");
     nanoocp_implicit_copy_ctor<TDF_AttributeIterator>(nb::borrow<nb::class_<TDF_AttributeIterator>>(m.attr("TDF_AttributeIterator")));
     nb::implicitly_convertible<std::decay_t<const TDF_Label &>, TDF_AttributeIterator>();
@@ -1109,14 +1109,14 @@ and returns it into <aTargetLabel>.
 explanation about the method behavior))nbdoc")
         .def("SetRelocation", static_cast<void (TDF_RelocationTable::*)(const occ::handle<TDF_Attribute> &, const occ::handle<TDF_Attribute> &)>(&TDF_RelocationTable::SetRelocation), nb::arg("aSourceAttribute").none(), nb::arg("aTargetAttribute").none(), R"nbdoc(Sets the relocation value of <aSourceAttribute> to
 <aTargetAttribute>.)nbdoc")
-        .def("HasRelocation", [](const TDF_RelocationTable &self, const occ::handle<TDF_Attribute> & aSourceAttribute) { occ::handle<TDF_Attribute> aTargetAttribute{}; auto result = self.HasRelocation(aSourceAttribute, aTargetAttribute); return std::make_tuple(result, aTargetAttribute); }, nb::arg("aSourceAttribute").none(), R"nbdoc(Finds the relocation value of <aSourceAttribute>
+        .def("HasRelocation", [](const TDF_RelocationTable &self, const occ::handle<TDF_Attribute> & aSourceAttribute) { occ::handle<TDF_Attribute> aTargetAttribute{}; auto nanoocp_result = self.HasRelocation(aSourceAttribute, aTargetAttribute); return std::make_tuple(nanoocp_result, aTargetAttribute); }, nb::arg("aSourceAttribute").none(), R"nbdoc(Finds the relocation value of <aSourceAttribute>
 and returns it into <aTargetAttribute>.
 
 (See above SelfRelocate method for more
 explanation about the method behavior))nbdoc")
         .def("SetTransientRelocation", static_cast<void (TDF_RelocationTable::*)(const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &)>(&TDF_RelocationTable::SetTransientRelocation), nb::arg("aSourceTransient").none(), nb::arg("aTargetTransient").none(), R"nbdoc(Sets the relocation value of <aSourceTransient> to
 <aTargetTransient>.)nbdoc")
-        .def("HasTransientRelocation", [](const TDF_RelocationTable &self, const occ::handle<Standard_Transient> & aSourceTransient) { occ::handle<Standard_Transient> aTargetTransient{}; auto result = self.HasTransientRelocation(aSourceTransient, aTargetTransient); return std::make_tuple(result, aTargetTransient); }, nb::arg("aSourceTransient").none(), R"nbdoc(Finds the relocation value of <aSourceTransient>
+        .def("HasTransientRelocation", [](const TDF_RelocationTable &self, const occ::handle<Standard_Transient> & aSourceTransient) { occ::handle<Standard_Transient> aTargetTransient{}; auto nanoocp_result = self.HasTransientRelocation(aSourceTransient, aTargetTransient); return std::make_tuple(nanoocp_result, aTargetTransient); }, nb::arg("aSourceTransient").none(), R"nbdoc(Finds the relocation value of <aSourceTransient>
 and returns it into <aTargetTransient>.
 
 (See above SelfRelocate method for more

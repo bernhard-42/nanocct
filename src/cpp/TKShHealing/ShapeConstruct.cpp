@@ -69,7 +69,7 @@ void nanoocp_define_ShapeConstruct(nb::module_ &m) {
         .def_static("JoinPCurves", static_cast<bool (*)(const occ::handle<NCollection_HSequence<TopoDS_Shape>> &, const TopoDS_Face &, TopoDS_Edge &)>(&ShapeConstruct::JoinPCurves), nb::arg("theEdges").none(), nb::arg("theFace"), nb::arg("theEdge"), R"nbdoc(join pcurves of the <theEdge> on the <theFace>
 try to use pcurves from originas edges <theEdges>
 Returns false if cannot join pcurves)nbdoc")
-        .def_static("JoinCurves", [](const occ::handle<Geom_Curve> & c3d1, const occ::handle<Geom_Curve> & ac3d2, const TopAbs_Orientation Orient1, const TopAbs_Orientation Orient2) { double first1{}; double last1{}; double first2{}; double last2{}; occ::handle<Geom_Curve> c3dOut{}; bool isRev1{}; bool isRev2{}; auto result = ShapeConstruct::JoinCurves(c3d1, ac3d2, Orient1, Orient2, first1, last1, first2, last2, c3dOut, isRev1, isRev2); return std::make_tuple(result, first1, last1, first2, last2, c3dOut, isRev1, isRev2); }, nb::arg("c3d1").none(), nb::arg("ac3d2").none(), nb::arg("Orient1"), nb::arg("Orient2"), R"nbdoc(Method for joininig curves 3D.
+        .def_static("JoinCurves", [](const occ::handle<Geom_Curve> & c3d1, const occ::handle<Geom_Curve> & ac3d2, const TopAbs_Orientation Orient1, const TopAbs_Orientation Orient2) { double first1{}; double last1{}; double first2{}; double last2{}; occ::handle<Geom_Curve> c3dOut{}; bool isRev1{}; bool isRev2{}; auto nanoocp_result = ShapeConstruct::JoinCurves(c3d1, ac3d2, Orient1, Orient2, first1, last1, first2, last2, c3dOut, isRev1, isRev2); return std::make_tuple(nanoocp_result, first1, last1, first2, last2, c3dOut, isRev1, isRev2); }, nb::arg("c3d1").none(), nb::arg("ac3d2").none(), nb::arg("Orient1"), nb::arg("Orient2"), R"nbdoc(Method for joininig curves 3D.
 Parameters : c3d1,ac3d2 - initial curves
 Orient1, Orient2 - initial edges orientations.
 first1,last1,first2,last2 - parameters for trimming curves
@@ -78,7 +78,7 @@ c3dOut - result curve
 isRev1,isRev2 - out parameters indicative on possible errors.
 Return value : True - if curves were joined successfully,
 else - False.)nbdoc")
-        .def_static("JoinCurves", [](const occ::handle<Geom2d_Curve> & c2d1, const occ::handle<Geom2d_Curve> & ac2d2, const TopAbs_Orientation Orient1, const TopAbs_Orientation Orient2, const bool isError) { double first1{}; double last1{}; double first2{}; double last2{}; occ::handle<Geom2d_Curve> c2dOut{}; bool isRev1{}; bool isRev2{}; auto result = ShapeConstruct::JoinCurves(c2d1, ac2d2, Orient1, Orient2, first1, last1, first2, last2, c2dOut, isRev1, isRev2, isError); return std::make_tuple(result, first1, last1, first2, last2, c2dOut, isRev1, isRev2); }, nb::arg("c2d1").none(), nb::arg("ac2d2").none(), nb::arg("Orient1"), nb::arg("Orient2"), nb::arg("isError") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Method for joininig curves 3D.
+        .def_static("JoinCurves", [](const occ::handle<Geom2d_Curve> & c2d1, const occ::handle<Geom2d_Curve> & ac2d2, const TopAbs_Orientation Orient1, const TopAbs_Orientation Orient2, const bool isError) { double first1{}; double last1{}; double first2{}; double last2{}; occ::handle<Geom2d_Curve> c2dOut{}; bool isRev1{}; bool isRev2{}; auto nanoocp_result = ShapeConstruct::JoinCurves(c2d1, ac2d2, Orient1, Orient2, first1, last1, first2, last2, c2dOut, isRev1, isRev2, isError); return std::make_tuple(nanoocp_result, first1, last1, first2, last2, c2dOut, isRev1, isRev2); }, nb::arg("c2d1").none(), nb::arg("ac2d2").none(), nb::arg("Orient1"), nb::arg("Orient2"), nb::arg("isError") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Method for joininig curves 3D.
 Parameters : c3d1,ac3d2 - initial curves
 Orient1, Orient2 - initial edges orientations.
 first1,last1,first2,last2 - parameters for trimming curves
@@ -125,7 +125,7 @@ of original curve:
 BSpline -> C.Segment(first,last)
 Bezier and Line -> GeomConvert::CurveToBSplineCurve(C).Segment(first,last)
 Conic and Other -> Approx_Curve2d(C[first,last],prec,C1,9,1000))nbdoc")
-        .def_static("FixKnots", []() { occ::handle<NCollection_HArray1<double>> knots{}; auto result = ShapeConstruct_Curve::FixKnots(knots); return std::make_tuple(result, knots); })
+        .def_static("FixKnots", []() { occ::handle<NCollection_HArray1<double>> knots{}; auto nanoocp_result = ShapeConstruct_Curve::FixKnots(knots); return std::make_tuple(nanoocp_result, knots); })
         .def_static("FixKnots", static_cast<bool (*)(NCollection_Array1<double> &)>(&ShapeConstruct_Curve::FixKnots), nb::arg("knots"), R"nbdoc(Fix bspline knots to ensure that there is enough
 gap between neighbouring values
 Returns True if something fixed (by shifting knot))nbdoc");
@@ -170,7 +170,7 @@ Default value is True
         .def("Status", static_cast<bool (ShapeConstruct_ProjectCurveOnSurface::*)(const ShapeExtend_Status) const>(&ShapeConstruct_ProjectCurveOnSurface::Status), nb::arg("theStatus"), R"nbdoc(Returns the status of last Perform
 @param[in] theStatus the status to query
 @return true if the specified status is set)nbdoc")
-        .def("Perform", [](ShapeConstruct_ProjectCurveOnSurface &self, const occ::handle<Geom_Curve> & theC3D, const double theFirst, const double theLast, const double theTolFirst, const double theTolLast) { occ::handle<Geom2d_Curve> theC2D{}; auto result = self.Perform(theC3D, theFirst, theLast, theC2D, theTolFirst, theTolLast); return std::make_tuple(result, theC2D); }, nb::arg("theC3D").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolFirst") = static_cast<std::decay_t<const double>>(Precision::Confusion()), nb::arg("theTolLast") = static_cast<std::decay_t<const double>>(Precision::Confusion()), R"nbdoc(Computes the projection of 3d curve onto a surface using the
+        .def("Perform", [](ShapeConstruct_ProjectCurveOnSurface &self, const occ::handle<Geom_Curve> & theC3D, const double theFirst, const double theLast, const double theTolFirst, const double theTolLast) { occ::handle<Geom2d_Curve> theC2D{}; auto nanoocp_result = self.Perform(theC3D, theFirst, theLast, theC2D, theTolFirst, theTolLast); return std::make_tuple(nanoocp_result, theC2D); }, nb::arg("theC3D").none(), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("theTolFirst") = static_cast<std::decay_t<const double>>(Precision::Confusion()), nb::arg("theTolLast") = static_cast<std::decay_t<const double>>(Precision::Confusion()), R"nbdoc(Computes the projection of 3d curve onto a surface using the
 specialized algorithm. Returns False if projector fails,
 otherwise, if pcurve computed successfully, returns True.
 The output curve 2D is guaranteed to be same-parameter

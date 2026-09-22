@@ -534,7 +534,7 @@ point defined in parametric space of surface.)nbdoc")
         .def("Bind", static_cast<void (BRepMesh_CircleTool::*)(const int, const gp_Circ2d &)>(&BRepMesh_CircleTool::Bind), nb::arg("theIndex"), nb::arg("theCircle"), R"nbdoc(Binds the circle to the tool.
 @param theIndex index a circle should be bound with.
 @param theCircle circle to be bound.)nbdoc")
-        .def_static("MakeCircle", [](const gp_XY & thePoint1, const gp_XY & thePoint2, const gp_XY & thePoint3, gp_XY & theLocation) { double theRadius{}; auto result = BRepMesh_CircleTool::MakeCircle(thePoint1, thePoint2, thePoint3, theLocation, theRadius); return std::make_tuple(result, theRadius); }, nb::arg("thePoint1"), nb::arg("thePoint2"), nb::arg("thePoint3"), nb::arg("theLocation"), R"nbdoc(Computes circle on three points.
+        .def_static("MakeCircle", [](const gp_XY & thePoint1, const gp_XY & thePoint2, const gp_XY & thePoint3, gp_XY & theLocation) { double theRadius{}; auto nanoocp_result = BRepMesh_CircleTool::MakeCircle(thePoint1, thePoint2, thePoint3, theLocation, theRadius); return std::make_tuple(nanoocp_result, theRadius); }, nb::arg("thePoint1"), nb::arg("thePoint2"), nb::arg("thePoint3"), nb::arg("theLocation"), R"nbdoc(Computes circle on three points.
 @param thePoint1 first point.
 @param thePoint2 second point.
 @param thePoint3 third point.
@@ -576,7 +576,7 @@ further classification of points.
     nanoocp_implicit_copy_ctor<BRepMesh_Classifier>(nb::borrow<nb::class_<BRepMesh_Classifier>>(m.attr("BRepMesh_Classifier")));
     nb::borrow<nb::class_<BRepMesh_ConeRangeSplitter>>(m.attr("BRepMesh_ConeRangeSplitter"))
         .def(nb::init<>(), R"nbdoc(Constructor.)nbdoc")
-        .def("GetSplitSteps", [](const BRepMesh_ConeRangeSplitter &self, const IMeshTools_Parameters & theParameters) { std::pair<int, int> theStepsNb{}; auto result = self.GetSplitSteps(theParameters, theStepsNb); return std::make_tuple(result, theStepsNb); }, nb::arg("theParameters"), R"nbdoc(Returns split intervals along U and V direction.
+        .def("GetSplitSteps", [](const BRepMesh_ConeRangeSplitter &self, const IMeshTools_Parameters & theParameters) { std::pair<int, int> theStepsNb{}; auto nanoocp_result = self.GetSplitSteps(theParameters, theStepsNb); return std::make_tuple(nanoocp_result, theStepsNb); }, nb::arg("theParameters"), R"nbdoc(Returns split intervals along U and V direction.
 @param theParameters meshing parameters.
 @param[out] theStepsNb number of steps along corresponding direction.)nbdoc")
         .def("GenerateSurfaceNodes", static_cast<opencascade::handle<NCollection_Shared<NCollection_List<gp_Pnt2d>, void>> (BRepMesh_ConeRangeSplitter::*)(const IMeshTools_Parameters &) const>(&BRepMesh_ConeRangeSplitter::GenerateSurfaceNodes), nb::arg("theParameters"), R"nbdoc(Returns list of nodes generated using surface data and specified parameters.)nbdoc");
@@ -592,7 +592,7 @@ further classification of points.
         .def(nb::new_([](const IMeshData::IEdgeHandle & theEdge, const IMeshTools_Parameters & theParameters, const int theMinPointsNb) { return opencascade::handle<BRepMesh_CurveTessellator>(new BRepMesh_CurveTessellator(theEdge, theParameters, theMinPointsNb)); }), nb::arg("theEdge").none(), nb::arg("theParameters"), nb::arg("theMinPointsNb") = static_cast<std::decay_t<const int>>(2), R"nbdoc(Constructor.)nbdoc")
         .def(nb::new_([](const IMeshData::IEdgeHandle & theEdge, const TopAbs_Orientation theOrientation, const IMeshData::IFaceHandle & theFace, const IMeshTools_Parameters & theParameters, const int theMinPointsNb) { return opencascade::handle<BRepMesh_CurveTessellator>(new BRepMesh_CurveTessellator(theEdge, theOrientation, theFace, theParameters, theMinPointsNb)); }), nb::arg("theEdge").none(), nb::arg("theOrientation"), nb::arg("theFace").none(), nb::arg("theParameters"), nb::arg("theMinPointsNb") = static_cast<std::decay_t<const int>>(2), R"nbdoc(Constructor.)nbdoc")
         .def("PointsNb", static_cast<int (BRepMesh_CurveTessellator::*)() const>(&BRepMesh_CurveTessellator::PointsNb), R"nbdoc(Returns number of tessellation points.)nbdoc")
-        .def("Value", [](const BRepMesh_CurveTessellator &self, const int theIndex, gp_Pnt & thePoint) { double theParameter{}; auto result = self.Value(theIndex, thePoint, theParameter); return std::make_tuple(result, theParameter); }, nb::arg("theIndex"), nb::arg("thePoint"), R"nbdoc(Returns parameters of solution with the given index.
+        .def("Value", [](const BRepMesh_CurveTessellator &self, const int theIndex, gp_Pnt & thePoint) { double theParameter{}; auto nanoocp_result = self.Value(theIndex, thePoint, theParameter); return std::make_tuple(nanoocp_result, theParameter); }, nb::arg("theIndex"), nb::arg("thePoint"), R"nbdoc(Returns parameters of solution with the given index.
 @param theIndex index of tessellation point.
 @param theParameter parameters on PCurve corresponded to the solution.
 @param thePoint tessellation point.
@@ -770,7 +770,7 @@ to iso curve of the given surface.
 parametric tolerance of the given point.
 @return index of new added point or found with parametric tolerance)nbdoc")
         .def("NbPoints", static_cast<int (BRepMesh_GeomTool::*)() const>(&BRepMesh_GeomTool::NbPoints), R"nbdoc(Returns number of discretization points.)nbdoc")
-        .def("Value", [](const BRepMesh_GeomTool &self, const int theIndex, const double theIsoParam, gp_Pnt & thePoint, gp_Pnt2d & theUV) { double theParam{}; auto result = self.Value(theIndex, theIsoParam, theParam, thePoint, theUV); return std::make_tuple(result, theParam); }, nb::arg("theIndex"), nb::arg("theIsoParam"), nb::arg("thePoint"), nb::arg("theUV"), R"nbdoc(Gets parameters of discretization point with the given index.
+        .def("Value", [](const BRepMesh_GeomTool &self, const int theIndex, const double theIsoParam, gp_Pnt & thePoint, gp_Pnt2d & theUV) { double theParam{}; auto nanoocp_result = self.Value(theIndex, theIsoParam, theParam, thePoint, theUV); return std::make_tuple(nanoocp_result, theParam); }, nb::arg("theIndex"), nb::arg("theIsoParam"), nb::arg("thePoint"), nb::arg("theUV"), R"nbdoc(Gets parameters of discretization point with the given index.
 @param theIndex index of discretization point.
 @param theIsoParam parameter on surface to be used as second coordinate
 of resulting 2d point.
@@ -778,7 +778,7 @@ of resulting 2d point.
 @param[out] thePoint discretization point.
 @param[out] theUV discretization point in parametric space of the surface.
 @return TRUE on success, FALSE elsewhere.)nbdoc")
-        .def("Value", [](const BRepMesh_GeomTool &self, const int theIndex, const occ::handle<BRepAdaptor_Surface> & theSurface, gp_Pnt & thePoint, gp_Pnt2d & theUV) { double theParam{}; auto result = self.Value(theIndex, theSurface, theParam, thePoint, theUV); return std::make_tuple(result, theParam); }, nb::arg("theIndex"), nb::arg("theSurface").none(), nb::arg("thePoint"), nb::arg("theUV"), R"nbdoc(Gets parameters of discretization point with the given index.
+        .def("Value", [](const BRepMesh_GeomTool &self, const int theIndex, const occ::handle<BRepAdaptor_Surface> & theSurface, gp_Pnt & thePoint, gp_Pnt2d & theUV) { double theParam{}; auto nanoocp_result = self.Value(theIndex, theSurface, theParam, thePoint, theUV); return std::make_tuple(nanoocp_result, theParam); }, nb::arg("theIndex"), nb::arg("theSurface").none(), nb::arg("thePoint"), nb::arg("theUV"), R"nbdoc(Gets parameters of discretization point with the given index.
 @param theIndex index of discretization point.
 @param theSurface surface the curve is lying onto.
 @param[out] theParam parameter of the point on the curve.
@@ -794,7 +794,7 @@ position in parametric space.
 @param[out] thePoint 3d point corresponding to the given parameters.
 @param[out] theNormal normal vector at the point specified by the parameters.
 @return FALSE if the normal can not be computed, TRUE elsewhere.)nbdoc")
-        .def_static("IntLinLin", [](const gp_XY & theStartPnt1, const gp_XY & theEndPnt1, const gp_XY & theStartPnt2, const gp_XY & theEndPnt2, gp_XY & theIntPnt) { double theParamOnSegment[2]{}; auto result = BRepMesh_GeomTool::IntLinLin(theStartPnt1, theEndPnt1, theStartPnt2, theEndPnt2, theIntPnt, theParamOnSegment); std::array<double, 2> theParamOnSegment_out; std::copy(std::begin(theParamOnSegment), std::end(theParamOnSegment), theParamOnSegment_out.begin()); return std::make_tuple(result, theParamOnSegment_out); }, nb::arg("theStartPnt1"), nb::arg("theEndPnt1"), nb::arg("theStartPnt2"), nb::arg("theEndPnt2"), nb::arg("theIntPnt"), R"nbdoc(Checks intersection between two lines defined by two points.
+        .def_static("IntLinLin", [](const gp_XY & theStartPnt1, const gp_XY & theEndPnt1, const gp_XY & theStartPnt2, const gp_XY & theEndPnt2, gp_XY & theIntPnt) { double theParamOnSegment[2]{}; auto nanoocp_result = BRepMesh_GeomTool::IntLinLin(theStartPnt1, theEndPnt1, theStartPnt2, theEndPnt2, theIntPnt, theParamOnSegment); std::array<double, 2> theParamOnSegment_out; std::copy(std::begin(theParamOnSegment), std::end(theParamOnSegment), theParamOnSegment_out.begin()); return std::make_tuple(nanoocp_result, theParamOnSegment_out); }, nb::arg("theStartPnt1"), nb::arg("theEndPnt1"), nb::arg("theStartPnt2"), nb::arg("theEndPnt2"), nb::arg("theIntPnt"), R"nbdoc(Checks intersection between two lines defined by two points.
 @param theStartPnt1 start point of first line.
 @param theEndPnt1 end point of first line.
 @param theStartPnt2 start point of second line.
@@ -841,7 +841,7 @@ if FALSE returns NoIntersection flag.
         .def("GetEdge", static_cast<const BRepMesh_Edge & (BRepMesh_Delaun::*)(const int) const>(&BRepMesh_Delaun::GetEdge), nb::arg("theIndex"), R"nbdoc(Gives edge with the given index)nbdoc")
         .def("GetTriangle", static_cast<const BRepMesh_Triangle & (BRepMesh_Delaun::*)(const int) const>(&BRepMesh_Delaun::GetTriangle), nb::arg("theIndex"), R"nbdoc(Gives triangle with the given index)nbdoc")
         .def("Circles", static_cast<const BRepMesh_CircleTool & (BRepMesh_Delaun::*)() const>(&BRepMesh_Delaun::Circles), R"nbdoc(Returns tool used to build mesh consistent to Delaunay criteria.)nbdoc")
-        .def("Contains", [](const nanoocp_wrap_BRepMesh_Delaun &self, const int theTriangleId, const BRepMesh_Vertex & theVertex, const double theSqTolerance) { int theEdgeOn{}; auto result = self.Contains(theTriangleId, theVertex, theSqTolerance, theEdgeOn); return std::make_tuple(result, theEdgeOn); }, nb::arg("theTriangleId"), nb::arg("theVertex"), nb::arg("theSqTolerance"), R"nbdoc(Test is the given triangle contains the given vertex.
+        .def("Contains", [](const nanoocp_wrap_BRepMesh_Delaun &self, const int theTriangleId, const BRepMesh_Vertex & theVertex, const double theSqTolerance) { int theEdgeOn{}; auto nanoocp_result = self.Contains(theTriangleId, theVertex, theSqTolerance, theEdgeOn); return std::make_tuple(nanoocp_result, theEdgeOn); }, nb::arg("theTriangleId"), nb::arg("theVertex"), nb::arg("theSqTolerance"), R"nbdoc(Test is the given triangle contains the given vertex.
 @param theSqTolerance square tolerance to check closeness to some edge
 @param theEdgeOn If it is != 0 the vertex lies onto the edge index
 returned through this parameter.)nbdoc")
@@ -925,7 +925,7 @@ On fail Factory will continue to use previous algorithm.
     nb::borrow<nb::class_<BRepMesh_EdgeTessellationExtractor>>(m.attr("BRepMesh_EdgeTessellationExtractor"))
         .def(nb::new_([](const IMeshData::IEdgeHandle & theEdge, const IMeshData::IFaceHandle & theFace) { return opencascade::handle<BRepMesh_EdgeTessellationExtractor>(new BRepMesh_EdgeTessellationExtractor(theEdge, theFace)); }), nb::arg("theEdge").none(), nb::arg("theFace").none(), R"nbdoc(Constructor.)nbdoc")
         .def("PointsNb", static_cast<int (BRepMesh_EdgeTessellationExtractor::*)() const>(&BRepMesh_EdgeTessellationExtractor::PointsNb), R"nbdoc(Returns number of tessellation points.)nbdoc")
-        .def("Value", [](const BRepMesh_EdgeTessellationExtractor &self, const int theIndex, gp_Pnt & thePoint) { double theParameter{}; auto result = self.Value(theIndex, thePoint, theParameter); return std::make_tuple(result, theParameter); }, nb::arg("theIndex"), nb::arg("thePoint"), R"nbdoc(Returns parameters of solution with the given index.
+        .def("Value", [](const BRepMesh_EdgeTessellationExtractor &self, const int theIndex, gp_Pnt & thePoint) { double theParameter{}; auto nanoocp_result = self.Value(theIndex, thePoint, theParameter); return std::make_tuple(nanoocp_result, theParameter); }, nb::arg("theIndex"), nb::arg("thePoint"), R"nbdoc(Returns parameters of solution with the given index.
 @param theIndex index of tessellation point.
 @param theParameter parameters on PCurve corresponded to the solution.
 @param thePoint tessellation point.
@@ -1125,8 +1125,8 @@ reversed direction of the seam edge.
 @param thePnt point to be transformed.
 @param theLoc location to be applied.)nbdoc")
         .def_static("UVPoints", static_cast<bool (*)(const TopoDS_Edge &, const TopoDS_Face &, gp_Pnt2d &, gp_Pnt2d &, const bool)>(&BRepMesh_ShapeTool::UVPoints), nb::arg("theEdge"), nb::arg("theFace"), nb::arg("theFirstPoint2d"), nb::arg("theLastPoint2d"), nb::arg("isConsiderOrientation") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Gets the strict UV locations of the extremities of the edge using pcurve.)nbdoc")
-        .def_static("Range", [](const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const bool isConsiderOrientation) { occ::handle<Geom2d_Curve> thePCurve{}; double theFirstParam{}; double theLastParam{}; auto result = BRepMesh_ShapeTool::Range(theEdge, theFace, thePCurve, theFirstParam, theLastParam, isConsiderOrientation); return std::make_tuple(result, thePCurve, theFirstParam, theLastParam); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("isConsiderOrientation") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Gets the parametric range of the given edge on the given face.)nbdoc")
-        .def_static("Range", [](const TopoDS_Edge & theEdge, const bool isConsiderOrientation) { occ::handle<Geom_Curve> theCurve{}; double theFirstParam{}; double theLastParam{}; auto result = BRepMesh_ShapeTool::Range(theEdge, theCurve, theFirstParam, theLastParam, isConsiderOrientation); return std::make_tuple(result, theCurve, theFirstParam, theLastParam); }, nb::arg("theEdge"), nb::arg("isConsiderOrientation") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Gets the 3d range of the given edge.)nbdoc")
+        .def_static("Range", [](const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const bool isConsiderOrientation) { occ::handle<Geom2d_Curve> thePCurve{}; double theFirstParam{}; double theLastParam{}; auto nanoocp_result = BRepMesh_ShapeTool::Range(theEdge, theFace, thePCurve, theFirstParam, theLastParam, isConsiderOrientation); return std::make_tuple(nanoocp_result, thePCurve, theFirstParam, theLastParam); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("isConsiderOrientation") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Gets the parametric range of the given edge on the given face.)nbdoc")
+        .def_static("Range", [](const TopoDS_Edge & theEdge, const bool isConsiderOrientation) { occ::handle<Geom_Curve> theCurve{}; double theFirstParam{}; double theLastParam{}; auto nanoocp_result = BRepMesh_ShapeTool::Range(theEdge, theCurve, theFirstParam, theLastParam, isConsiderOrientation); return std::make_tuple(nanoocp_result, theCurve, theFirstParam, theLastParam); }, nb::arg("theEdge"), nb::arg("isConsiderOrientation") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Gets the 3d range of the given edge.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepMesh_ShapeTool::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRepMesh_ShapeTool::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRepMesh_ShapeTool::*)() const>(&BRepMesh_ShapeTool::DynamicType));

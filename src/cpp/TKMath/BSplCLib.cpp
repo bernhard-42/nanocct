@@ -299,7 +299,7 @@ positions.
 
 The results are found in the array poles depending
 on the Depth. (See the method GetPole).)nbdoc")
-        .def_static("AntiBoorScheme", [](const double U, const int Degree, const int Dimension, const int Depth, const int Length, const double Tolerance) { double Knots{}; double Poles{}; auto result = BSplCLib::AntiBoorScheme(U, Degree, Knots, Dimension, Poles, Depth, Length, Tolerance); return std::make_tuple(result, Knots, Poles); }, nb::arg("U"), nb::arg("Degree"), nb::arg("Dimension"), nb::arg("Depth"), nb::arg("Length"), nb::arg("Tolerance"), R"nbdoc(Compute the content of Pole before the BoorScheme.
+        .def_static("AntiBoorScheme", [](const double U, const int Degree, const int Dimension, const int Depth, const int Length, const double Tolerance) { double Knots{}; double Poles{}; auto nanoocp_result = BSplCLib::AntiBoorScheme(U, Degree, Knots, Dimension, Poles, Depth, Length, Tolerance); return std::make_tuple(nanoocp_result, Knots, Poles); }, nb::arg("U"), nb::arg("Degree"), nb::arg("Dimension"), nb::arg("Depth"), nb::arg("Length"), nb::arg("Tolerance"), R"nbdoc(Compute the content of Pole before the BoorScheme.
 This method is used to remove poles.
 
 U is the poles to remove, Knots should contains the
@@ -358,7 +358,7 @@ with <Length> and <Depth>.)nbdoc")
         .def_static("GetPole", [](const int Index, const int Length, const int Depth, const int Dimension, NCollection_Array1<double> & Pole) { double LocPoles{}; int Position{}; BSplCLib::GetPole(Index, Length, Depth, Dimension, LocPoles, Position, Pole); return std::make_tuple(LocPoles, Position); }, nb::arg("Index"), nb::arg("Length"), nb::arg("Depth"), nb::arg("Dimension"), nb::arg("Pole"), R"nbdoc(Copy the pole at position <Index> in the Boor
 scheme of dimension <Dimension> to <Position> in
 the array <Pole>. <Position> is updated.)nbdoc")
-        .def_static("PrepareInsertKnots", [](const int Degree, const bool Periodic, const NCollection_Array1<double> & Knots, const NCollection_Array1<int> & Mults, const NCollection_Array1<double> & AddKnots, const NCollection_Array1<int> * AddMults, const double Epsilon, const bool Add) { int NbPoles{}; int NbKnots{}; auto result = BSplCLib::PrepareInsertKnots(Degree, Periodic, Knots, Mults, AddKnots, AddMults, NbPoles, NbKnots, Epsilon, Add); return std::make_tuple(result, NbPoles, NbKnots); }, nb::arg("Degree"), nb::arg("Periodic"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("AddKnots"), nb::arg("AddMults"), nb::arg("Epsilon"), nb::arg("Add") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns in <NbPoles, NbKnots> the new number of poles
+        .def_static("PrepareInsertKnots", [](const int Degree, const bool Periodic, const NCollection_Array1<double> & Knots, const NCollection_Array1<int> & Mults, const NCollection_Array1<double> & AddKnots, const NCollection_Array1<int> * AddMults, const double Epsilon, const bool Add) { int NbPoles{}; int NbKnots{}; auto nanoocp_result = BSplCLib::PrepareInsertKnots(Degree, Periodic, Knots, Mults, AddKnots, AddMults, NbPoles, NbKnots, Epsilon, Add); return std::make_tuple(nanoocp_result, NbPoles, NbKnots); }, nb::arg("Degree"), nb::arg("Periodic"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("AddKnots"), nb::arg("AddMults"), nb::arg("Epsilon"), nb::arg("Add") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns in <NbPoles, NbKnots> the new number of poles
 and knots if the sequence of knots <AddKnots,
 AddMults> is inserted in the sequence <Knots, Mults>.
 
@@ -536,7 +536,7 @@ BSplinecurve defined with <degree>, <knots>, <mults>)nbdoc")
         .def_static("DN", [](const double U, const int N, const int Index, const int Degree, const bool Periodic, const NCollection_Array1<double> & Poles, const NCollection_Array1<double> * Weights, const NCollection_Array1<double> & Knots, const NCollection_Array1<int> * Mults) { double VN{}; BSplCLib::DN(U, N, Index, Degree, Periodic, Poles, Weights, Knots, Mults, VN); return VN; }, nb::arg("U"), nb::arg("N"), nb::arg("Index"), nb::arg("Degree"), nb::arg("Periodic"), nb::arg("Poles"), nb::arg("Weights"), nb::arg("Knots"), nb::arg("Mults"))
         .def_static("DN", static_cast<void (*)(const double, const int, const int, const int, const bool, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> *, const NCollection_Array1<double> &, const NCollection_Array1<int> *, gp_Vec &)>(&BSplCLib::DN), nb::arg("U"), nb::arg("N"), nb::arg("Index"), nb::arg("Degree"), nb::arg("Periodic"), nb::arg("Poles"), nb::arg("Weights"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("VN"))
         .def_static("DN", static_cast<void (*)(const double, const int, const int, const int, const bool, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> *, const NCollection_Array1<double> &, const NCollection_Array1<int> *, gp_Vec2d &)>(&BSplCLib::DN), nb::arg("U"), nb::arg("N"), nb::arg("UIndex"), nb::arg("Degree"), nb::arg("Periodic"), nb::arg("Poles"), nb::arg("Weights"), nb::arg("Knots"), nb::arg("Mults"), nb::arg("V"))
-        .def_static("EvalBsplineBasis", [](const int DerivativeOrder, const int Order, const NCollection_Array1<double> & FlatKnots, const double Parameter, math_Matrix & BsplineBasis, const bool isPeriodic) { int FirstNonZeroBsplineIndex{}; auto result = BSplCLib::EvalBsplineBasis(DerivativeOrder, Order, FlatKnots, Parameter, FirstNonZeroBsplineIndex, BsplineBasis, isPeriodic); return std::make_tuple(result, FirstNonZeroBsplineIndex); }, nb::arg("DerivativeOrder"), nb::arg("Order"), nb::arg("FlatKnots"), nb::arg("Parameter"), nb::arg("BsplineBasis"), nb::arg("isPeriodic") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(This evaluates the Bspline Basis at a
+        .def_static("EvalBsplineBasis", [](const int DerivativeOrder, const int Order, const NCollection_Array1<double> & FlatKnots, const double Parameter, math_Matrix & BsplineBasis, const bool isPeriodic) { int FirstNonZeroBsplineIndex{}; auto nanoocp_result = BSplCLib::EvalBsplineBasis(DerivativeOrder, Order, FlatKnots, Parameter, FirstNonZeroBsplineIndex, BsplineBasis, isPeriodic); return std::make_tuple(nanoocp_result, FirstNonZeroBsplineIndex); }, nb::arg("DerivativeOrder"), nb::arg("Order"), nb::arg("FlatKnots"), nb::arg("Parameter"), nb::arg("BsplineBasis"), nb::arg("isPeriodic") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(This evaluates the Bspline Basis at a
 given parameter Parameter up to the
 requested DerivativeOrder and store the
 result in the array BsplineBasis in the
@@ -559,7 +559,7 @@ BSplineBasis(N,1)   =
 value of Nth derivative of first non vanishing
 Bspline function which has Index FirstNonZeroBsplineIndex
 if N <= DerivativeOrder + 1)nbdoc")
-        .def_static("BuildBSpMatrix", [](const NCollection_Array1<double> & Parameters, const NCollection_Array1<int> & OrderArray, const NCollection_Array1<double> & FlatKnots, const int Degree, math_Matrix & Matrix) { int UpperBandWidth{}; int LowerBandWidth{}; auto result = BSplCLib::BuildBSpMatrix(Parameters, OrderArray, FlatKnots, Degree, Matrix, UpperBandWidth, LowerBandWidth); return std::make_tuple(result, UpperBandWidth, LowerBandWidth); }, nb::arg("Parameters"), nb::arg("OrderArray"), nb::arg("FlatKnots"), nb::arg("Degree"), nb::arg("Matrix"), R"nbdoc(This Builds a fully blown Matrix of
+        .def_static("BuildBSpMatrix", [](const NCollection_Array1<double> & Parameters, const NCollection_Array1<int> & OrderArray, const NCollection_Array1<double> & FlatKnots, const int Degree, math_Matrix & Matrix) { int UpperBandWidth{}; int LowerBandWidth{}; auto nanoocp_result = BSplCLib::BuildBSpMatrix(Parameters, OrderArray, FlatKnots, Degree, Matrix, UpperBandWidth, LowerBandWidth); return std::make_tuple(nanoocp_result, UpperBandWidth, LowerBandWidth); }, nb::arg("Parameters"), nb::arg("OrderArray"), nb::arg("FlatKnots"), nb::arg("Degree"), nb::arg("Matrix"), R"nbdoc(This Builds a fully blown Matrix of
 (ni)
 Bi    (tj)
 
@@ -567,14 +567,14 @@ with i and j within 1..Order + NumPoles
 The integer ni is the ith slot of the
 array OrderArray, tj is the jth slot of
 the array Parameters)nbdoc")
-        .def_static("FactorBandedMatrix", [](math_Matrix & Matrix, const int UpperBandWidth, const int LowerBandWidth) { int PivotIndexProblem{}; auto result = BSplCLib::FactorBandedMatrix(Matrix, UpperBandWidth, LowerBandWidth, PivotIndexProblem); return std::make_tuple(result, PivotIndexProblem); }, nb::arg("Matrix"), nb::arg("UpperBandWidth"), nb::arg("LowerBandWidth"), R"nbdoc(this factors the Banded Matrix in
+        .def_static("FactorBandedMatrix", [](math_Matrix & Matrix, const int UpperBandWidth, const int LowerBandWidth) { int PivotIndexProblem{}; auto nanoocp_result = BSplCLib::FactorBandedMatrix(Matrix, UpperBandWidth, LowerBandWidth, PivotIndexProblem); return std::make_tuple(nanoocp_result, PivotIndexProblem); }, nb::arg("Matrix"), nb::arg("UpperBandWidth"), nb::arg("LowerBandWidth"), R"nbdoc(this factors the Banded Matrix in
 the LU form with a Banded storage of
 components of the L matrix
 WARNING : do not use if the Matrix is
 totally positive (It is the case for
 Bspline matrices build as above with
 parameters being the Schoenberg points)nbdoc")
-        .def_static("SolveBandedSystem", [](const math_Matrix & Matrix, const int UpperBandWidth, const int LowerBandWidth, const int ArrayDimension) { double Array{}; auto result = BSplCLib::SolveBandedSystem(Matrix, UpperBandWidth, LowerBandWidth, ArrayDimension, Array); return std::make_tuple(result, Array); }, nb::arg("Matrix"), nb::arg("UpperBandWidth"), nb::arg("LowerBandWidth"), nb::arg("ArrayDimension"), R"nbdoc(This solves the system Matrix.X = B
+        .def_static("SolveBandedSystem", [](const math_Matrix & Matrix, const int UpperBandWidth, const int LowerBandWidth, const int ArrayDimension) { double Array{}; auto nanoocp_result = BSplCLib::SolveBandedSystem(Matrix, UpperBandWidth, LowerBandWidth, ArrayDimension, Array); return std::make_tuple(nanoocp_result, Array); }, nb::arg("Matrix"), nb::arg("UpperBandWidth"), nb::arg("LowerBandWidth"), nb::arg("ArrayDimension"), R"nbdoc(This solves the system Matrix.X = B
 with when Matrix is factored in LU form
 The Array is an seen as an
 Array[1..N][1..ArrayDimension] with N =
@@ -599,7 +599,7 @@ result is stored in Array when each
 coordinate is solved that is B is the
 array whose values are
 B[i] = Array[i][p] for each p in 1..ArrayDimension)nbdoc")
-        .def_static("SolveBandedSystem", [](const math_Matrix & Matrix, const int UpperBandWidth, const int LowerBandWidth, const bool HomogenousFlag, const int ArrayDimension) { double Array{}; double Weights{}; auto result = BSplCLib::SolveBandedSystem(Matrix, UpperBandWidth, LowerBandWidth, HomogenousFlag, ArrayDimension, Array, Weights); return std::make_tuple(result, Array, Weights); }, nb::arg("Matrix"), nb::arg("UpperBandWidth"), nb::arg("LowerBandWidth"), nb::arg("HomogenousFlag"), nb::arg("ArrayDimension"))
+        .def_static("SolveBandedSystem", [](const math_Matrix & Matrix, const int UpperBandWidth, const int LowerBandWidth, const bool HomogenousFlag, const int ArrayDimension) { double Array{}; double Weights{}; auto nanoocp_result = BSplCLib::SolveBandedSystem(Matrix, UpperBandWidth, LowerBandWidth, HomogenousFlag, ArrayDimension, Array, Weights); return std::make_tuple(nanoocp_result, Array, Weights); }, nb::arg("Matrix"), nb::arg("UpperBandWidth"), nb::arg("LowerBandWidth"), nb::arg("HomogenousFlag"), nb::arg("ArrayDimension"))
         .def_static("SolveBandedSystem", static_cast<int (*)(const math_Matrix &, const int, const int, const bool, NCollection_Array1<gp_Pnt2d> &, NCollection_Array1<double> &)>(&BSplCLib::SolveBandedSystem), nb::arg("Matrix"), nb::arg("UpperBandWidth"), nb::arg("LowerBandWidth"), nb::arg("HomogenousFlag"), nb::arg("Array"), nb::arg("Weights"), R"nbdoc(This solves the system Matrix.X = B
 with when Matrix is factored in LU form
 The Array is an seen as an

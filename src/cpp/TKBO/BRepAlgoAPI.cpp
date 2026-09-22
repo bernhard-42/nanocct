@@ -235,13 +235,13 @@ User defined options are not cleared.)nbdoc")
         .def("ClearWarnings", [](BRepAlgoAPI_Algo &self) { self.ClearWarnings(); }, R"nbdoc(Clears the warnings of the algorithm)nbdoc")
         .def("DumpErrors", [](const BRepAlgoAPI_Algo &self) { std::ostringstream theOS_stream; self.DumpErrors(theOS_stream); return nanoocp_stream_text(theOS_stream); }, R"nbdoc(Dumps the error status into the given stream)nbdoc")
         .def("DumpWarnings", [](const BRepAlgoAPI_Algo &self) { std::ostringstream theOS_stream; self.DumpWarnings(theOS_stream); return nanoocp_stream_text(theOS_stream); }, R"nbdoc(Dumps the warning statuses into the given stream)nbdoc")
-        .def("FuzzyValue", [](const BRepAlgoAPI_Algo &self) { auto result = self.FuzzyValue(); return result; }, R"nbdoc(Returns the additional tolerance)nbdoc")
-        .def("GetReport", [](const BRepAlgoAPI_Algo &self) { auto result = self.GetReport(); return result; }, R"nbdoc(Returns report collecting all errors and warnings)nbdoc")
-        .def("HasError", [](const BRepAlgoAPI_Algo &self, const occ::handle<Standard_Type> & theType) { auto result = self.HasError(theType); return result; }, nb::arg("theType").none(), R"nbdoc(Returns true if algorithm has generated error of specified type)nbdoc")
-        .def("HasErrors", [](const BRepAlgoAPI_Algo &self) { auto result = self.HasErrors(); return result; }, R"nbdoc(Returns true if algorithm has failed)nbdoc")
-        .def("HasWarning", [](const BRepAlgoAPI_Algo &self, const occ::handle<Standard_Type> & theType) { auto result = self.HasWarning(theType); return result; }, nb::arg("theType").none(), R"nbdoc(Returns true if algorithm has generated warning of specified type)nbdoc")
-        .def("HasWarnings", [](const BRepAlgoAPI_Algo &self) { auto result = self.HasWarnings(); return result; }, R"nbdoc(Returns true if algorithm has generated some warning alerts)nbdoc")
-        .def("RunParallel", [](const BRepAlgoAPI_Algo &self) { auto result = self.RunParallel(); return result; }, R"nbdoc(Returns the flag of parallel processing)nbdoc")
+        .def("FuzzyValue", [](const BRepAlgoAPI_Algo &self) { auto nanoocp_result = self.FuzzyValue(); return nanoocp_result; }, R"nbdoc(Returns the additional tolerance)nbdoc")
+        .def("GetReport", [](const BRepAlgoAPI_Algo &self) { auto nanoocp_result = self.GetReport(); return nanoocp_result; }, R"nbdoc(Returns report collecting all errors and warnings)nbdoc")
+        .def("HasError", [](const BRepAlgoAPI_Algo &self, const occ::handle<Standard_Type> & theType) { auto nanoocp_result = self.HasError(theType); return nanoocp_result; }, nb::arg("theType").none(), R"nbdoc(Returns true if algorithm has generated error of specified type)nbdoc")
+        .def("HasErrors", [](const BRepAlgoAPI_Algo &self) { auto nanoocp_result = self.HasErrors(); return nanoocp_result; }, R"nbdoc(Returns true if algorithm has failed)nbdoc")
+        .def("HasWarning", [](const BRepAlgoAPI_Algo &self, const occ::handle<Standard_Type> & theType) { auto nanoocp_result = self.HasWarning(theType); return nanoocp_result; }, nb::arg("theType").none(), R"nbdoc(Returns true if algorithm has generated warning of specified type)nbdoc")
+        .def("HasWarnings", [](const BRepAlgoAPI_Algo &self) { auto nanoocp_result = self.HasWarnings(); return nanoocp_result; }, R"nbdoc(Returns true if algorithm has generated some warning alerts)nbdoc")
+        .def("RunParallel", [](const BRepAlgoAPI_Algo &self) { auto nanoocp_result = self.RunParallel(); return nanoocp_result; }, R"nbdoc(Returns the flag of parallel processing)nbdoc")
         .def("SetFuzzyValue", [](BRepAlgoAPI_Algo &self, const double theFuzz) { self.SetFuzzyValue(theFuzz); }, nb::arg("theFuzz"), R"nbdoc(Sets the additional tolerance)nbdoc")
         .def("SetRunParallel", [](BRepAlgoAPI_Algo &self, const bool theFlag) { self.SetRunParallel(theFlag); }, nb::arg("theFlag"), R"nbdoc(Set the flag of parallel processing
 if <theFlag> is true  the parallel processing is switched on
@@ -318,9 +318,9 @@ Allows disabling the history collection)nbdoc")
         .def("SectionEdges", static_cast<const NCollection_List<TopoDS_Shape> & (BRepAlgoAPI_BuilderAlgo::*)()>(&BRepAlgoAPI_BuilderAlgo::SectionEdges), R"nbdoc(@name Getting the section edges
 Returns a list of section edges.
 The edges represent the result of intersection between arguments of operation.)nbdoc")
-        .def("DSFiller", [](const BRepAlgoAPI_BuilderAlgo &self) { auto result = self.DSFiller(); return result; }, nb::rv_policy::reference, R"nbdoc(@name Getting tools performing the job
+        .def("DSFiller", [](const BRepAlgoAPI_BuilderAlgo &self) { auto nanoocp_result = self.DSFiller(); return nanoocp_result; }, nb::rv_policy::reference, R"nbdoc(@name Getting tools performing the job
 Returns the Intersection tool)nbdoc")
-        .def("Builder", [](const BRepAlgoAPI_BuilderAlgo &self) { auto result = self.Builder(); return result; }, nb::rv_policy::reference, R"nbdoc(Returns the Building tool)nbdoc")
+        .def("Builder", [](const BRepAlgoAPI_BuilderAlgo &self) { auto nanoocp_result = self.Builder(); return nanoocp_result; }, nb::rv_policy::reference, R"nbdoc(Returns the Building tool)nbdoc")
         .def("History", static_cast<occ::handle<BRepTools_History> (BRepAlgoAPI_BuilderAlgo::*)() const>(&BRepAlgoAPI_BuilderAlgo::History), R"nbdoc(History tool)nbdoc");
     nanoocp_implicit_copy_ctor<BRepAlgoAPI_BuilderAlgo>(nb::borrow<nb::class_<BRepAlgoAPI_BuilderAlgo>>(m.attr("BRepAlgoAPI_BuilderAlgo")));
     nb::implicitly_convertible<std::decay_t<const BOPAlgo_PaveFiller &>, BRepAlgoAPI_BuilderAlgo>();

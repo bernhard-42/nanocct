@@ -554,7 +554,7 @@ Raises ConstructionError if the face does not belong to the
 basis shape, or the edge to the prismed shape.)nbdoc")
         .def("Perform", static_cast<void (BRepFeat_MakeLinearForm::*)()>(&BRepFeat_MakeLinearForm::Perform), R"nbdoc(Performs a prism from the wire to the plane along the
 basis shape Sbase. Reconstructs the feature topologically.)nbdoc")
-        .def("Propagate", [](BRepFeat_MakeLinearForm &self, NCollection_List<TopoDS_Shape> & L, const TopoDS_Face & F, const gp_Pnt & FPoint, const gp_Pnt & LPoint) { bool falseside{}; auto result = self.Propagate(L, F, FPoint, LPoint, falseside); return std::make_tuple(result, falseside); }, nb::arg("L"), nb::arg("F"), nb::arg("FPoint"), nb::arg("LPoint"));
+        .def("Propagate", [](BRepFeat_MakeLinearForm &self, NCollection_List<TopoDS_Shape> & L, const TopoDS_Face & F, const gp_Pnt & FPoint, const gp_Pnt & LPoint) { bool falseside{}; auto nanoocp_result = self.Propagate(L, F, FPoint, LPoint, falseside); return std::make_tuple(nanoocp_result, falseside); }, nb::arg("L"), nb::arg("F"), nb::arg("FPoint"), nb::arg("LPoint"));
     nanoocp_implicit_copy_ctor<BRepFeat_MakeLinearForm>(nb::borrow<nb::class_<BRepFeat_MakeLinearForm>>(m.attr("BRepFeat_MakeLinearForm")));
     nb::borrow<nb::class_<BRepFeat_MakePipe>>(m.attr("BRepFeat_MakePipe"))
         .def(nb::init<>(), R"nbdoc(initializes the pipe class.)nbdoc")
@@ -682,7 +682,7 @@ Fuse offers a choice between:
 basis shape, or the edge to the prismed shape.)nbdoc")
         .def("Perform", static_cast<void (BRepFeat_MakeRevolutionForm::*)()>(&BRepFeat_MakeRevolutionForm::Perform), R"nbdoc(Performs a prism from the wire to the plane
 along the basis shape S. Reconstructs the feature topologically.)nbdoc")
-        .def("Propagate", [](BRepFeat_MakeRevolutionForm &self, NCollection_List<TopoDS_Shape> & L, const TopoDS_Face & F, const gp_Pnt & FPoint, const gp_Pnt & LPoint) { bool falseside{}; auto result = self.Propagate(L, F, FPoint, LPoint, falseside); return std::make_tuple(result, falseside); }, nb::arg("L"), nb::arg("F"), nb::arg("FPoint"), nb::arg("LPoint"));
+        .def("Propagate", [](BRepFeat_MakeRevolutionForm &self, NCollection_List<TopoDS_Shape> & L, const TopoDS_Face & F, const gp_Pnt & FPoint, const gp_Pnt & LPoint) { bool falseside{}; auto nanoocp_result = self.Propagate(L, F, FPoint, LPoint, falseside); return std::make_tuple(nanoocp_result, falseside); }, nb::arg("L"), nb::arg("F"), nb::arg("FPoint"), nb::arg("LPoint"));
     nanoocp_implicit_copy_ctor<BRepFeat_MakeRevolutionForm>(nb::borrow<nb::class_<BRepFeat_MakeRevolutionForm>>(m.attr("BRepFeat_MakeRevolutionForm")));
     nb::borrow<nb::class_<BRepFeat_SplitShape>>(m.attr("BRepFeat_SplitShape"))
         .def(nb::init<>(), R"nbdoc(Empty constructor)nbdoc")

@@ -85,7 +85,7 @@ Remark: the BasicElts on a contour are sorted.)nbdoc")
         .def("GeomElt", static_cast<occ::handle<Geom2d_Geometry> (BRepMAT2d_BisectingLocus::*)(const occ::handle<MAT_BasicElt> &) const>(&BRepMAT2d_BisectingLocus::GeomElt), nb::arg("aBasicElt").none(), R"nbdoc(Returns the geometry linked to the <BasicElt>.)nbdoc")
         .def("GeomElt", static_cast<gp_Pnt2d (BRepMAT2d_BisectingLocus::*)(const occ::handle<MAT_Node> &) const>(&BRepMAT2d_BisectingLocus::GeomElt), nb::arg("aNode").none(), R"nbdoc(Returns the geometry of type <gp> linked to
 the <Node>.)nbdoc")
-        .def("GeomBis", [](const BRepMAT2d_BisectingLocus &self, const occ::handle<MAT_Arc> & anArc) { bool Reverse{}; auto result = self.GeomBis(anArc, Reverse); return std::make_tuple(result, Reverse); }, nb::arg("anArc").none(), R"nbdoc(Returns the geometry of type <Bissec>
+        .def("GeomBis", [](const BRepMAT2d_BisectingLocus &self, const occ::handle<MAT_Arc> & anArc) { bool Reverse{}; auto nanoocp_result = self.GeomBis(anArc, Reverse); return std::make_tuple(nanoocp_result, Reverse); }, nb::arg("anArc").none(), R"nbdoc(Returns the geometry of type <Bissec>
 linked to the arc <ARC>.
 <Reverse> is False when the FirstNode of <anArc>
 correspond to the first point of geometry.)nbdoc");

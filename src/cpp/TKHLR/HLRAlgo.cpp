@@ -434,11 +434,11 @@ is True (or False). If the hidden part is on
         .def("InitHide", static_cast<void (HLRAlgo_PolyAlgo::*)()>(&HLRAlgo_PolyAlgo::InitHide))
         .def("MoreHide", static_cast<bool (HLRAlgo_PolyAlgo::*)() const>(&HLRAlgo_PolyAlgo::MoreHide))
         .def("NextHide", static_cast<void (HLRAlgo_PolyAlgo::*)()>(&HLRAlgo_PolyAlgo::NextHide))
-        .def("Hide", [](HLRAlgo_PolyAlgo &self, HLRAlgo_EdgeStatus & status) { int Index{}; bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto result = self.Hide(status, Index, reg1, regn, outl, intl); return std::make_tuple(result, Index, reg1, regn, outl, intl); }, nb::arg("status"), R"nbdoc(process hiding between <Pt1> and <Pt2>.)nbdoc")
+        .def("Hide", [](HLRAlgo_PolyAlgo &self, HLRAlgo_EdgeStatus & status) { int Index{}; bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto nanoocp_result = self.Hide(status, Index, reg1, regn, outl, intl); return std::make_tuple(nanoocp_result, Index, reg1, regn, outl, intl); }, nb::arg("status"), R"nbdoc(process hiding between <Pt1> and <Pt2>.)nbdoc")
         .def("InitShow", static_cast<void (HLRAlgo_PolyAlgo::*)()>(&HLRAlgo_PolyAlgo::InitShow))
         .def("MoreShow", static_cast<bool (HLRAlgo_PolyAlgo::*)() const>(&HLRAlgo_PolyAlgo::MoreShow))
         .def("NextShow", static_cast<void (HLRAlgo_PolyAlgo::*)()>(&HLRAlgo_PolyAlgo::NextShow))
-        .def("Show", [](HLRAlgo_PolyAlgo &self) { int Index{}; bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto result = self.Show(Index, reg1, regn, outl, intl); return std::make_tuple(result, Index, reg1, regn, outl, intl); }, R"nbdoc(process hiding between <Pt1> and <Pt2>.)nbdoc")
+        .def("Show", [](HLRAlgo_PolyAlgo &self) { int Index{}; bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto nanoocp_result = self.Show(Index, reg1, regn, outl, intl); return std::make_tuple(nanoocp_result, Index, reg1, regn, outl, intl); }, R"nbdoc(process hiding between <Pt1> and <Pt2>.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&HLRAlgo_PolyAlgo::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&HLRAlgo_PolyAlgo::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (HLRAlgo_PolyAlgo::*)() const>(&HLRAlgo_PolyAlgo::DynamicType));

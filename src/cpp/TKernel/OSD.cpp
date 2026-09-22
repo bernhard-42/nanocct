@@ -507,7 +507,7 @@ By default, returns OSD_SignalMode_AsIs.)nbdoc")
 according to current (platform-dependent) settings in this thread.)nbdoc")
         .def_static("SecSleep", static_cast<void (*)(const int)>(&OSD::SecSleep), nb::arg("theSeconds"), R"nbdoc(Commands the process to sleep for a number of seconds.)nbdoc")
         .def_static("MilliSecSleep", static_cast<void (*)(const int)>(&OSD::MilliSecSleep), nb::arg("theMilliseconds"), R"nbdoc(Commands the process to sleep for a number of milliseconds)nbdoc")
-        .def_static("CStringToReal", [](const char *const aString) { double aReal{}; auto result = OSD::CStringToReal(aString, aReal); return std::make_tuple(result, aReal); }, nb::arg("aString"), R"nbdoc(Converts aCstring representing a real with a period as decimal point,
+        .def_static("CStringToReal", [](const char *const aString) { double aReal{}; auto nanoocp_result = OSD::CStringToReal(aString, aReal); return std::make_tuple(nanoocp_result, aReal); }, nb::arg("aString"), R"nbdoc(Converts aCstring representing a real with a period as decimal point,
 no thousand separator and no grouping of digits into aReal.
 
 The conversion is independent from the current locale.)nbdoc")
@@ -1010,7 +1010,7 @@ double(-1) means invalid (unavailable) value.)nbdoc")
         .def(nb::init<const OSD_Thread &>(), nb::arg("other"), R"nbdoc(Copy constructor)nbdoc")
         .def("Assign", static_cast<void (OSD_Thread::*)(const OSD_Thread &)>(&OSD_Thread::Assign), nb::arg("other"), R"nbdoc(Copy thread handle from other OSD_Thread object.)nbdoc")
         .def("SetPriority", static_cast<void (OSD_Thread::*)(const int)>(&OSD_Thread::SetPriority), nb::arg("thePriority"))
-        .def("Run", [](OSD_Thread &self, const int WNTStackSize) { auto result = self.Run(nullptr, WNTStackSize); return result; }, nb::arg("WNTStackSize") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Starts a thread with thread function given in constructor,
+        .def("Run", [](OSD_Thread &self, const int WNTStackSize) { auto nanoocp_result = self.Run(nullptr, WNTStackSize); return nanoocp_result; }, nb::arg("WNTStackSize") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Starts a thread with thread function given in constructor,
 passing the specified input data (as void *) to it.
 The parameter \a WNTStackSize (on Windows only)
 specifies size of the stack to be allocated for the thread

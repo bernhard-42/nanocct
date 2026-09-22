@@ -167,8 +167,8 @@ void nanoocp_templates_PCDM(nb::module_ &m) {
 void nanoocp_define_PCDM(nb::module_ &m) {
     nanoocp_implicit_default_ctor<PCDM>(nb::borrow<nb::class_<PCDM>>(m.attr("PCDM")));
     nb::borrow<nb::class_<PCDM>>(m.attr("PCDM"))
-        .def_static("FileDriverType", [](const TCollection_AsciiString & aFileName) { occ::handle<Storage_BaseDriver> aBaseDriver{}; auto result = PCDM::FileDriverType(aFileName, aBaseDriver); return std::make_tuple(result, aBaseDriver); }, nb::arg("aFileName"))
-        .def_static("FileDriverType", [](const nanoocp::BinaryInput &theIStream) { occ::handle<Storage_BaseDriver> theBaseDriver{}; std::stringstream theIStream_stream(theIStream.data); auto result = PCDM::FileDriverType(theIStream_stream, theBaseDriver); return std::make_tuple(result, theBaseDriver); }, nb::arg("theIStream"));
+        .def_static("FileDriverType", [](const TCollection_AsciiString & aFileName) { occ::handle<Storage_BaseDriver> aBaseDriver{}; auto nanoocp_result = PCDM::FileDriverType(aFileName, aBaseDriver); return std::make_tuple(nanoocp_result, aBaseDriver); }, nb::arg("aFileName"))
+        .def_static("FileDriverType", [](const nanoocp::BinaryInput &theIStream) { occ::handle<Storage_BaseDriver> theBaseDriver{}; std::stringstream theIStream_stream(theIStream.data); auto nanoocp_result = PCDM::FileDriverType(theIStream_stream, theBaseDriver); return std::make_tuple(nanoocp_result, theBaseDriver); }, nb::arg("theIStream"));
     nanoocp_implicit_copy_ctor<PCDM>(nb::borrow<nb::class_<PCDM>>(m.attr("PCDM")));
     nanoocp_implicit_default_ctor<PCDM_Document>(nb::borrow<nb::class_<PCDM_Document>>(m.attr("PCDM_Document")));
     nb::borrow<nb::class_<PCDM_Document>>(m.attr("PCDM_Document"))
@@ -249,7 +249,7 @@ iteration start.)nbdoc")
         .def_static("FileFormat", static_cast<TCollection_ExtendedString (*)(const TCollection_ExtendedString &)>(&PCDM_ReadWriter::FileFormat), nb::arg("aFileName"), R"nbdoc(tries to get a format in the file. returns an empty
 string if the file could not be read or does not have
 a FileFormat information.)nbdoc")
-        .def_static("FileFormat", [](const nanoocp::BinaryInput &theIStream) { occ::handle<Storage_Data> theData{}; std::stringstream theIStream_stream(theIStream.data); auto result = PCDM_ReadWriter::FileFormat(theIStream_stream, theData); return std::make_tuple(result, theData); }, nb::arg("theIStream"), R"nbdoc(tries to get a format from the stream. returns an empty
+        .def_static("FileFormat", [](const nanoocp::BinaryInput &theIStream) { occ::handle<Storage_Data> theData{}; std::stringstream theIStream_stream(theIStream.data); auto nanoocp_result = PCDM_ReadWriter::FileFormat(theIStream_stream, theData); return std::make_tuple(nanoocp_result, theData); }, nb::arg("theIStream"), R"nbdoc(tries to get a format from the stream. returns an empty
 string if the file could not be read or does not have
 a FileFormat information.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&PCDM_ReadWriter::get_type_name))

@@ -6,6 +6,7 @@
 # default rule treats such parameters as pure outputs (dropped from the Python signature, returned in a
 # tuple). Listed methods keep them as inputs and still return the updated values. Each entry was checked
 # against the .cxx body (the parameter is read before it is assigned).
+# Entries are glob patterns on the qualified name: "gp_Trsf::Transforms", "*::InitFromJson", "DE*_Provider::Read".
 inout = [
     "gp_Trsf::Transforms",
     "gp_Trsf2d::Transforms",
@@ -27,8 +28,10 @@ inout = [
     "DE_Provider::Write",
     "DE_Wrapper::Read",
     "DE_Wrapper::Write",
-    "DESTEP_Provider::Read",     # the same personizeWS pattern in every format provider (DESTEP_Provider.cxx:692-707)
-    "DESTEP_Provider::Write",
+    # ... and in every format provider, which all repeat that body verbatim (DESTEP, DEIGES, DESTL, DEOBJ, DEPLY,
+    # DEGLTF, DEVRML): entries are glob patterns on the qualified name, so one pair covers the toolkits still to come.
+    "DE*_Provider::Read",
+    "DE*_Provider::Write",
     # handle<XSControl_WorkSession>& WS of the controllers: the session to configure, dereferenced right away
     # (WS->NamedItem("xst-model-roots"), STEPControl_Controller.cxx) and never replaced. Three overrides in scope
     # (XSControl_Controller, STEPControl_Controller, IGESControl_Controller), all with the same contract.

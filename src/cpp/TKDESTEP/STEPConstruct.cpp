@@ -172,7 +172,7 @@ search on the same shape without location. The Loc corresponds to the
 location with which result is found (either location of the Shape,
 or Null))nbdoc")
         .def_static("FindShape", static_cast<TopoDS_Shape (*)(const occ::handle<Transfer_TransientProcess> &, const occ::handle<StepRepr_RepresentationItem> &)>(&STEPConstruct::FindShape), nb::arg("TransientProcess").none(), nb::arg("item").none(), R"nbdoc(Returns Shape resulting from given STEP entity (Null if not mapped))nbdoc")
-        .def_static("FindCDSR", [](const occ::handle<Transfer_Binder> & ComponentBinder, const occ::handle<StepShape_ShapeDefinitionRepresentation> & AssemblySDR) { occ::handle<StepShape_ContextDependentShapeRepresentation> ComponentCDSR{}; auto result = STEPConstruct::FindCDSR(ComponentBinder, AssemblySDR, ComponentCDSR); return std::make_tuple(result, ComponentCDSR); }, nb::arg("ComponentBinder").none(), nb::arg("AssemblySDR").none(), R"nbdoc(Find CDSR corresponding to the component in the specified assembly)nbdoc");
+        .def_static("FindCDSR", [](const occ::handle<Transfer_Binder> & ComponentBinder, const occ::handle<StepShape_ShapeDefinitionRepresentation> & AssemblySDR) { occ::handle<StepShape_ContextDependentShapeRepresentation> ComponentCDSR{}; auto nanoocp_result = STEPConstruct::FindCDSR(ComponentBinder, AssemblySDR, ComponentCDSR); return std::make_tuple(nanoocp_result, ComponentCDSR); }, nb::arg("ComponentBinder").none(), nb::arg("AssemblySDR").none(), R"nbdoc(Find CDSR corresponding to the component in the specified assembly)nbdoc");
     nanoocp_implicit_copy_ctor<STEPConstruct>(nb::borrow<nb::class_<STEPConstruct>>(m.attr("STEPConstruct")));
     nb::borrow<nb::class_<STEPConstruct_AP203Context>>(m.attr("STEPConstruct_AP203Context"))
         .def(nb::init<>(), R"nbdoc(Creates tool and fills constant fields)nbdoc")
@@ -499,7 +499,7 @@ sequence of stored styles. If Override is not Null, then
 the resulting style will be of the subtype OverridingStyledItem.
 The Sape is used to find corresponding STEP entity by call to
 STEPConstruct::FindEntity(), then previous method is called.)nbdoc")
-        .def("CreateMDGPR", [](STEPConstruct_Styles &self, const occ::handle<StepRepr_RepresentationContext> & Context) { occ::handle<StepVisual_MechanicalDesignGeometricPresentationRepresentation> MDGPR{}; occ::handle<StepData_StepModel> theStepModel{}; auto result = self.CreateMDGPR(Context, MDGPR, theStepModel); return std::make_tuple(result, MDGPR, theStepModel); }, nb::arg("Context").none(), R"nbdoc(Create MDGPR, fill it with all the styles previously defined,
+        .def("CreateMDGPR", [](STEPConstruct_Styles &self, const occ::handle<StepRepr_RepresentationContext> & Context) { occ::handle<StepVisual_MechanicalDesignGeometricPresentationRepresentation> MDGPR{}; occ::handle<StepData_StepModel> theStepModel{}; auto nanoocp_result = self.CreateMDGPR(Context, MDGPR, theStepModel); return std::make_tuple(nanoocp_result, MDGPR, theStepModel); }, nb::arg("Context").none(), R"nbdoc(Create MDGPR, fill it with all the styles previously defined,
 and add it to the model)nbdoc")
         .def("CreateNAUOSRD", static_cast<bool (STEPConstruct_Styles::*)(const occ::handle<StepRepr_RepresentationContext> &, const occ::handle<StepShape_ContextDependentShapeRepresentation> &, const occ::handle<StepRepr_ProductDefinitionShape> &)>(&STEPConstruct_Styles::CreateNAUOSRD), nb::arg("Context").none(), nb::arg("CDSR").none(), nb::arg("initPDS").none(), R"nbdoc(Create MDGPR, fill it with all the styles previously defined,
 and add it to the model
@@ -510,7 +510,7 @@ given shape is defined. This context (if found) can be used
 then in call to CreateMDGPR())nbdoc")
         .def("LoadStyles", static_cast<bool (STEPConstruct_Styles::*)()>(&STEPConstruct_Styles::LoadStyles), R"nbdoc(Searches the STEP model for the MDGPR or DM entities
 (which bring styles) and fills sequence of styles)nbdoc")
-        .def("LoadInvisStyles", [](const STEPConstruct_Styles &self) { occ::handle<NCollection_HSequence<opencascade::handle<Standard_Transient>>> InvSyles{}; auto result = self.LoadInvisStyles(InvSyles); return std::make_tuple(result, InvSyles); }, R"nbdoc(Searches the STEP model for the INISIBILITY entities
+        .def("LoadInvisStyles", [](const STEPConstruct_Styles &self) { occ::handle<NCollection_HSequence<opencascade::handle<Standard_Transient>>> InvSyles{}; auto nanoocp_result = self.LoadInvisStyles(InvSyles); return std::make_tuple(nanoocp_result, InvSyles); }, R"nbdoc(Searches the STEP model for the INISIBILITY entities
 (which bring styles) and fills out sequence of styles)nbdoc")
         .def("MakeColorPSA", static_cast<occ::handle<StepVisual_PresentationStyleAssignment> (STEPConstruct_Styles::*)(const occ::handle<StepRepr_RepresentationItem> &, const occ::handle<StepVisual_Colour> &, const occ::handle<StepVisual_Colour> &, const STEPConstruct_RenderingProperties &, const bool) const>(&STEPConstruct_Styles::MakeColorPSA), nb::arg("item").none(), nb::arg("SurfCol").none(), nb::arg("CurveCol").none(), nb::arg("theRenderingProps"), nb::arg("isForNAUO") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Create a PresentationStyleAssignment entity which defines
 two colors (for filling surfaces and curves)
@@ -519,7 +519,7 @@ if isForNAUO true then returns PresentationStyleByContext)nbdoc")
 surface and curve colors as Col. This PSA is either created
 or taken from internal map where all PSAs created by this
 method are remembered.)nbdoc")
-        .def("GetColors", [](const STEPConstruct_Styles &self, const occ::handle<StepVisual_StyledItem> & theStyle, STEPConstruct_RenderingProperties & theRenderingProps) { occ::handle<StepVisual_Colour> theSurfaceColour{}; occ::handle<StepVisual_Colour> theBoundaryColour{}; occ::handle<StepVisual_Colour> theCurveColour{}; bool theIsComponent{}; auto result = self.GetColors(theStyle, theSurfaceColour, theBoundaryColour, theCurveColour, theRenderingProps, theIsComponent); return std::make_tuple(result, theSurfaceColour, theBoundaryColour, theCurveColour, theIsComponent); }, nb::arg("theStyle").none(), nb::arg("theRenderingProps"), R"nbdoc(Extract color definitions from the style entity
+        .def("GetColors", [](const STEPConstruct_Styles &self, const occ::handle<StepVisual_StyledItem> & theStyle, STEPConstruct_RenderingProperties & theRenderingProps) { occ::handle<StepVisual_Colour> theSurfaceColour{}; occ::handle<StepVisual_Colour> theBoundaryColour{}; occ::handle<StepVisual_Colour> theCurveColour{}; bool theIsComponent{}; auto nanoocp_result = self.GetColors(theStyle, theSurfaceColour, theBoundaryColour, theCurveColour, theRenderingProps, theIsComponent); return std::make_tuple(nanoocp_result, theSurfaceColour, theBoundaryColour, theCurveColour, theIsComponent); }, nb::arg("theStyle").none(), nb::arg("theRenderingProps"), R"nbdoc(Extract color definitions from the style entity
 For each type of color supported, result can be either
 NULL if it is not defined by that style, or last
 definition (if they are 1 or more))nbdoc")
@@ -587,7 +587,7 @@ Returns True if success, False in case of fail)nbdoc")
 Returns True if success, False in case of fail
 If instance is True, then centroid is assigned to
 an instance of component in assembly)nbdoc")
-        .def("FindTarget", [](STEPConstruct_ValidationProps &self, const TopoDS_Shape & S, StepRepr_CharacterizedDefinition & target, const bool instance) { occ::handle<StepRepr_RepresentationContext> Context{}; auto result = self.FindTarget(S, target, Context, instance); return std::make_tuple(result, Context); }, nb::arg("S"), nb::arg("target"), nb::arg("instance") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Finds target STEP entity to which validation props should
+        .def("FindTarget", [](STEPConstruct_ValidationProps &self, const TopoDS_Shape & S, StepRepr_CharacterizedDefinition & target, const bool instance) { occ::handle<StepRepr_RepresentationContext> Context{}; auto nanoocp_result = self.FindTarget(S, target, Context, instance); return std::make_tuple(nanoocp_result, Context); }, nb::arg("S"), nb::arg("target"), nb::arg("instance") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Finds target STEP entity to which validation props should
 be assigned, and corresponding context, starting from shape
 Returns True if success, False in case of fail)nbdoc")
         .def("LoadProps", static_cast<bool (STEPConstruct_ValidationProps::*)(NCollection_Sequence<opencascade::handle<Standard_Transient>> &) const>(&STEPConstruct_ValidationProps::LoadProps), nb::arg("seq"), R"nbdoc(Searches for entities of the type PropertyDefinitionRepresentation
@@ -600,7 +600,7 @@ in the model and fills the sequence by them)nbdoc")
 if not found)nbdoc")
         .def("GetPropShape", static_cast<TopoDS_Shape (STEPConstruct_ValidationProps::*)(const occ::handle<StepRepr_PropertyDefinition> &) const>(&STEPConstruct_ValidationProps::GetPropShape), nb::arg("PD").none(), R"nbdoc(Returns Shape associated with given PpD or Null Shape
 if not found)nbdoc")
-        .def("GetPropReal", [](const STEPConstruct_ValidationProps &self, const occ::handle<StepRepr_RepresentationItem> & item, const StepData_Factors & theLocalFactors) { double Val{}; bool isArea{}; auto result = self.GetPropReal(item, Val, isArea, theLocalFactors); return std::make_tuple(result, Val, isArea); }, nb::arg("item").none(), nb::arg("theLocalFactors") = static_cast<std::decay_t<const StepData_Factors &>>(StepData_Factors()), R"nbdoc(Returns value of Real-Valued property (Area or Volume)
+        .def("GetPropReal", [](const STEPConstruct_ValidationProps &self, const occ::handle<StepRepr_RepresentationItem> & item, const StepData_Factors & theLocalFactors) { double Val{}; bool isArea{}; auto nanoocp_result = self.GetPropReal(item, Val, isArea, theLocalFactors); return std::make_tuple(nanoocp_result, Val, isArea); }, nb::arg("item").none(), nb::arg("theLocalFactors") = static_cast<std::decay_t<const StepData_Factors &>>(StepData_Factors()), R"nbdoc(Returns value of Real-Valued property (Area or Volume)
 If Property is neither Area nor Volume, returns False
 Else returns True and isArea indicates whether property
 is area or volume)nbdoc")

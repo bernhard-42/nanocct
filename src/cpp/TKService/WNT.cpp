@@ -96,14 +96,14 @@ void nanoocp_define_WNT(nb::module_ &m) {
         .def("RawValueRange", static_cast<int16_t (WNT_HIDSpaceMouse::*)() const>(&WNT_HIDSpaceMouse::RawValueRange), R"nbdoc(Return the raw value range.)nbdoc")
         .def("SetRawValueRange", static_cast<void (WNT_HIDSpaceMouse::*)(int16_t)>(&WNT_HIDSpaceMouse::SetRawValueRange), nb::arg("theRange"), R"nbdoc(Set the raw value range.)nbdoc")
         .def("IsTranslation", static_cast<bool (WNT_HIDSpaceMouse::*)() const>(&WNT_HIDSpaceMouse::IsTranslation), R"nbdoc(Return TRUE if data chunk defines new translation values.)nbdoc")
-        .def("Translation", [](const WNT_HIDSpaceMouse &self, bool theIsQuadric) { bool theIsIdle{}; auto result = self.Translation(theIsIdle, theIsQuadric); return std::make_tuple(result, theIsIdle); }, nb::arg("theIsQuadric"), R"nbdoc(Return new translation values.
+        .def("Translation", [](const WNT_HIDSpaceMouse &self, bool theIsQuadric) { bool theIsIdle{}; auto nanoocp_result = self.Translation(theIsIdle, theIsQuadric); return std::make_tuple(nanoocp_result, theIsIdle); }, nb::arg("theIsQuadric"), R"nbdoc(Return new translation values.
 @param[out] theIsIdle  flag indicating idle state (no translation)
 @param[in] theIsQuadric  flag to apply non-linear scale factor
 @return vector of 3 elements defining translation values within [-1..1] range, 0 meaning idle,
 .x defining left/right slide, .y defining forward/backward and .z defining up/down
 slide.)nbdoc")
         .def("IsRotation", static_cast<bool (WNT_HIDSpaceMouse::*)() const>(&WNT_HIDSpaceMouse::IsRotation), R"nbdoc(Return TRUE if data chunk defines new rotation values.)nbdoc")
-        .def("Rotation", [](const WNT_HIDSpaceMouse &self, bool theIsQuadric) { bool theIsIdle{}; auto result = self.Rotation(theIsIdle, theIsQuadric); return std::make_tuple(result, theIsIdle); }, nb::arg("theIsQuadric"), R"nbdoc(Return new rotation values.
+        .def("Rotation", [](const WNT_HIDSpaceMouse &self, bool theIsQuadric) { bool theIsIdle{}; auto nanoocp_result = self.Rotation(theIsIdle, theIsQuadric); return std::make_tuple(nanoocp_result, theIsIdle); }, nb::arg("theIsQuadric"), R"nbdoc(Return new rotation values.
 @param[out] theIsIdle  flag indicating idle state (no rotation)
 @param[in] theIsQuadric  flag to apply non-linear scale factor
 @return vector of 3 elements defining rotation values within [-1..1] range, 0 meaning idle,

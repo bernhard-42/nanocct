@@ -509,7 +509,7 @@ adding any finite points. WARNING! This method relies on Open flags, the infinit
 using Add() method will be returned as is.)nbdoc")
         .def("HasFinitePart", static_cast<bool (Bnd_Box::*)() const noexcept>(&Bnd_Box::HasFinitePart), R"nbdoc(Returns TRUE if this box has finite part.)nbdoc")
         .def("DumpJson", [](const Bnd_Box &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
-        .def("InitFromJson", [](Bnd_Box &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
+        .def("InitFromJson", [](Bnd_Box &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto nanoocp_result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(nanoocp_result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc");
     nanoocp_implicit_copy_ctor<Bnd_Box>(nb::borrow<nb::class_<Bnd_Box>>(m.attr("Bnd_Box")));
     nanoocp_implicit_default_ctor<Bnd_Box::Limits>(nb::borrow<nb::class_<Bnd_Box::Limits>>(m.attr("Bnd_Box").attr("Limits")));
     nanoocp_implicit_copy_ctor<Bnd_Box::Limits>(nb::borrow<nb::class_<Bnd_Box::Limits>>(m.attr("Bnd_Box").attr("Limits")));
@@ -691,7 +691,7 @@ auto [aHX, aHY, aHZ] = anOBB.GetHalfSizes();
         .def("SetAABox", static_cast<void (Bnd_OBB::*)(const bool &)>(&Bnd_OBB::SetAABox), nb::arg("theFlag"), R"nbdoc(Sets the flag for axes aligned box)nbdoc")
         .def("IsAABox", static_cast<bool (Bnd_OBB::*)() const noexcept>(&Bnd_OBB::IsAABox), R"nbdoc(Returns TRUE if the box is axes aligned)nbdoc")
         .def("Enlarge", static_cast<void (Bnd_OBB::*)(const double)>(&Bnd_OBB::Enlarge), nb::arg("theGapAdd"), R"nbdoc(Enlarges the box with the given value)nbdoc")
-        .def("GetVertex", [](const Bnd_OBB &self) { gp_Pnt theP[8]{}; auto result = self.GetVertex(theP); std::array<gp_Pnt, 8> theP_out; std::copy(std::begin(theP), std::end(theP), theP_out.begin()); return std::make_tuple(result, theP_out); }, R"nbdoc(Returns the array of vertices in <this>.
+        .def("GetVertex", [](const Bnd_OBB &self) { gp_Pnt theP[8]{}; auto nanoocp_result = self.GetVertex(theP); std::array<gp_Pnt, 8> theP_out; std::copy(std::begin(theP), std::end(theP), theP_out.begin()); return std::make_tuple(nanoocp_result, theP_out); }, R"nbdoc(Returns the array of vertices in <this>.
 The local coordinate of the vertex depending on the
 index of the array are follow:
 Index == 0: (-XHSize(), -YHSize(), -ZHSize())
@@ -747,11 +747,11 @@ If (myFirst == myLast) then this function will return only either Out or Boundar
         .def("Add", static_cast<void (Bnd_Range::*)(const double)>(&Bnd_Range::Add), nb::arg("theParameter"), R"nbdoc(Extends <this> to include theParameter)nbdoc")
         .def("Add", static_cast<void (Bnd_Range::*)(const Bnd_Range &)>(&Bnd_Range::Add), nb::arg("theRange"), R"nbdoc(Extends this range to include both ranges.
 @sa use method ::Union() to check if two ranges overlap method merging)nbdoc")
-        .def("GetMin", [](const Bnd_Range &self) { double thePar{}; auto result = self.GetMin(thePar); return std::make_tuple(result, thePar); }, R"nbdoc(Obtain MIN boundary of <this>.
+        .def("GetMin", [](const Bnd_Range &self) { double thePar{}; auto nanoocp_result = self.GetMin(thePar); return std::make_tuple(nanoocp_result, thePar); }, R"nbdoc(Obtain MIN boundary of <this>.
 If <this> is VOID the method returns false.)nbdoc")
-        .def("GetMax", [](const Bnd_Range &self) { double thePar{}; auto result = self.GetMax(thePar); return std::make_tuple(result, thePar); }, R"nbdoc(Obtain MAX boundary of <this>.
+        .def("GetMax", [](const Bnd_Range &self) { double thePar{}; auto nanoocp_result = self.GetMax(thePar); return std::make_tuple(nanoocp_result, thePar); }, R"nbdoc(Obtain MAX boundary of <this>.
 If <this> is VOID the method returns false.)nbdoc")
-        .def("GetBounds", [](const Bnd_Range &self) { double theFirstPar{}; double theLastPar{}; auto result = self.GetBounds(theFirstPar, theLastPar); return std::make_tuple(result, theFirstPar, theLastPar); }, R"nbdoc(Obtain first and last boundary of <this>.
+        .def("GetBounds", [](const Bnd_Range &self) { double theFirstPar{}; double theLastPar{}; auto nanoocp_result = self.GetBounds(theFirstPar, theLastPar); return std::make_tuple(nanoocp_result, theFirstPar, theLastPar); }, R"nbdoc(Obtain first and last boundary of <this>.
 If <this> is VOID the method returns false.)nbdoc")
         .def("Get", static_cast<std::optional<Bnd_Range::Bounds> (Bnd_Range::*)() const noexcept>(&Bnd_Range::Get), R"nbdoc(Returns the bounds of this range as a Bounds structure.
 Returns std::nullopt if IsVoid().
@@ -762,7 +762,7 @@ if (auto aBounds = aRange.Get())
 auto [aMin, aMax] = *aBounds;
 }
 @endcode)nbdoc")
-        .def("GetIntermediatePoint", [](const Bnd_Range &self, const double theLambda) { double theParameter{}; auto result = self.GetIntermediatePoint(theLambda, theParameter); return std::make_tuple(result, theParameter); }, nb::arg("theLambda"), R"nbdoc(Obtain theParameter satisfied to the equation
+        .def("GetIntermediatePoint", [](const Bnd_Range &self, const double theLambda) { double theParameter{}; auto nanoocp_result = self.GetIntermediatePoint(theLambda, theParameter); return std::make_tuple(nanoocp_result, theParameter); }, nb::arg("theLambda"), R"nbdoc(Obtain theParameter satisfied to the equation
 (theParameter-MIN)/(MAX-MIN) == theLambda.
 *  theLambda == 0 --> MIN boundary will be returned;
 *  theLambda == 0.5 --> Middle point will be returned;
@@ -813,13 +813,13 @@ may affect performance!)nbdoc")
         .def("SquareDistances", [](const Bnd_Sphere &self, const gp_XYZ & theXYZ) { double theMin{}; double theMax{}; self.SquareDistances(theXYZ, theMin, theMax); return std::make_tuple(theMin, theMax); }, nb::arg("theXYZ"), R"nbdoc(Calculate and return minimal and maximal distance to sphere.
 NOTE: This function is tightly optimized; any modifications
 may affect performance!)nbdoc")
-        .def("Project", [](const Bnd_Sphere &self, const gp_XYZ & theNode, gp_XYZ & theProjNode) { double theDist{}; bool theInside{}; auto result = self.Project(theNode, theProjNode, theDist, theInside); return std::make_tuple(result, theDist, theInside); }, nb::arg("theNode"), nb::arg("theProjNode"), R"nbdoc(Projects a point on entity.
+        .def("Project", [](const Bnd_Sphere &self, const gp_XYZ & theNode, gp_XYZ & theProjNode) { double theDist{}; bool theInside{}; auto nanoocp_result = self.Project(theNode, theProjNode, theDist, theInside); return std::make_tuple(nanoocp_result, theDist, theInside); }, nb::arg("theNode"), nb::arg("theProjNode"), R"nbdoc(Projects a point on entity.
 Returns true if success)nbdoc")
         .def("Distance", static_cast<double (Bnd_Sphere::*)(const gp_XYZ &) const>(&Bnd_Sphere::Distance), nb::arg("theNode"))
         .def("SquareDistance", static_cast<double (Bnd_Sphere::*)(const gp_XYZ &) const>(&Bnd_Sphere::SquareDistance), nb::arg("theNode"))
         .def("Add", static_cast<void (Bnd_Sphere::*)(const Bnd_Sphere &)>(&Bnd_Sphere::Add), nb::arg("theOther"))
         .def("IsOut", static_cast<bool (Bnd_Sphere::*)(const Bnd_Sphere &) const>(&Bnd_Sphere::IsOut), nb::arg("theOther"))
-        .def("IsOut", [](const Bnd_Sphere &self, const gp_XYZ & thePnt) { double theMaxDist{}; auto result = self.IsOut(thePnt, theMaxDist); return std::make_tuple(result, theMaxDist); }, nb::arg("thePnt"))
+        .def("IsOut", [](const Bnd_Sphere &self, const gp_XYZ & thePnt) { double theMaxDist{}; auto nanoocp_result = self.IsOut(thePnt, theMaxDist); return std::make_tuple(nanoocp_result, theMaxDist); }, nb::arg("thePnt"))
         .def("SquareExtent", static_cast<double (Bnd_Sphere::*)() const>(&Bnd_Sphere::SquareExtent));
     nanoocp_implicit_copy_ctor<Bnd_Sphere>(nb::borrow<nb::class_<Bnd_Sphere>>(m.attr("Bnd_Sphere")));
     nanoocp_implicit_default_ctor<Bnd_Tools>(nb::borrow<nb::class_<Bnd_Tools>>(m.attr("Bnd_Tools")));
@@ -845,11 +845,11 @@ If the box is degenerated into line, returns the perimeter instead.)nbdoc")
         .def("Center", static_cast<BVH_Box<double, 2>::BVH_VecNt (BVH_Box<double, 2>::*)() const>(&BVH_Box<double, 2>::Center), R"nbdoc(Returns center of bounding box.)nbdoc")
         .def("Center", static_cast<double (BVH_Box<double, 2>::*)(const int) const>(&BVH_Box<double, 2>::Center), nb::arg("theAxis"), R"nbdoc(Returns center of bounding box along the given axis.)nbdoc")
         .def("DumpJson", [](const BVH_Box<double, 2> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
-        .def("InitFromJson", [](BVH_Box<double, 2> &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
+        .def("InitFromJson", [](BVH_Box<double, 2> &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto nanoocp_result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(nanoocp_result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
         .def("IsOut", static_cast<bool (BVH_Box<double, 2>::*)(const BVH_Box<double, 2> &) const>(&BVH_Box<double, 2>::IsOut), nb::arg("theOther"), R"nbdoc(Checks if the Box is out of the other box.)nbdoc")
         .def("IsOut", static_cast<bool (BVH_Box<double, 2>::*)(const BVH_Box<double, 2>::BVH_VecNt &, const BVH_Box<double, 2>::BVH_VecNt &) const>(&BVH_Box<double, 2>::IsOut), nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is out of the other box defined by two points.)nbdoc")
-        .def("Contains", [](const BVH_Box<double, 2> &self, const BVH_Box<double, 2> & theOther) { bool hasOverlap{}; auto result = self.Contains(theOther, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theOther"), R"nbdoc(Checks if the Box fully contains the other box.)nbdoc")
-        .def("Contains", [](const BVH_Box<double, 2> &self, const BVH_Box<double, 2>::BVH_VecNt & theMinPoint, const BVH_Box<double, 2>::BVH_VecNt & theMaxPoint) { bool hasOverlap{}; auto result = self.Contains(theMinPoint, theMaxPoint, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is fully contains the other box.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 2> &self, const BVH_Box<double, 2> & theOther) { bool hasOverlap{}; auto nanoocp_result = self.Contains(theOther, hasOverlap); return std::make_tuple(nanoocp_result, hasOverlap); }, nb::arg("theOther"), R"nbdoc(Checks if the Box fully contains the other box.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 2> &self, const BVH_Box<double, 2>::BVH_VecNt & theMinPoint, const BVH_Box<double, 2>::BVH_VecNt & theMaxPoint) { bool hasOverlap{}; auto nanoocp_result = self.Contains(theMinPoint, theMaxPoint, hasOverlap); return std::make_tuple(nanoocp_result, hasOverlap); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is fully contains the other box.)nbdoc")
         .def("IsOut", static_cast<bool (BVH_Box<double, 2>::*)(const BVH_Box<double, 2>::BVH_VecNt &) const>(&BVH_Box<double, 2>::IsOut), nb::arg("thePoint"), R"nbdoc(Checks if the Point is out of the box.)nbdoc");
     nanoocp_implicit_copy_ctor<BVH_Box<double, 2>>(nb::borrow<nb::class_<BVH_Box<double, 2>>>(m.attr("BVH_Box__double__2")));
     nb::implicitly_convertible<std::decay_t<const BVH_Box<double, 2>::BVH_VecNt &>, BVH_Box<double, 2>>();
@@ -870,11 +870,11 @@ If the box is degenerated into line, returns the perimeter instead.)nbdoc")
         .def("Center", static_cast<BVH_Box<double, 3>::BVH_VecNt (BVH_Box<double, 3>::*)() const>(&BVH_Box<double, 3>::Center), R"nbdoc(Returns center of bounding box.)nbdoc")
         .def("Center", static_cast<double (BVH_Box<double, 3>::*)(const int) const>(&BVH_Box<double, 3>::Center), nb::arg("theAxis"), R"nbdoc(Returns center of bounding box along the given axis.)nbdoc")
         .def("DumpJson", [](const BVH_Box<double, 3> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
-        .def("InitFromJson", [](BVH_Box<double, 3> &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
+        .def("InitFromJson", [](BVH_Box<double, 3> &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto nanoocp_result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(nanoocp_result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
         .def("IsOut", static_cast<bool (BVH_Box<double, 3>::*)(const BVH_Box<double, 3> &) const>(&BVH_Box<double, 3>::IsOut), nb::arg("theOther"), R"nbdoc(Checks if the Box is out of the other box.)nbdoc")
         .def("IsOut", static_cast<bool (BVH_Box<double, 3>::*)(const BVH_Box<double, 3>::BVH_VecNt &, const BVH_Box<double, 3>::BVH_VecNt &) const>(&BVH_Box<double, 3>::IsOut), nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is out of the other box defined by two points.)nbdoc")
-        .def("Contains", [](const BVH_Box<double, 3> &self, const BVH_Box<double, 3> & theOther) { bool hasOverlap{}; auto result = self.Contains(theOther, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theOther"), R"nbdoc(Checks if the Box fully contains the other box.)nbdoc")
-        .def("Contains", [](const BVH_Box<double, 3> &self, const BVH_Box<double, 3>::BVH_VecNt & theMinPoint, const BVH_Box<double, 3>::BVH_VecNt & theMaxPoint) { bool hasOverlap{}; auto result = self.Contains(theMinPoint, theMaxPoint, hasOverlap); return std::make_tuple(result, hasOverlap); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is fully contains the other box.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 3> &self, const BVH_Box<double, 3> & theOther) { bool hasOverlap{}; auto nanoocp_result = self.Contains(theOther, hasOverlap); return std::make_tuple(nanoocp_result, hasOverlap); }, nb::arg("theOther"), R"nbdoc(Checks if the Box fully contains the other box.)nbdoc")
+        .def("Contains", [](const BVH_Box<double, 3> &self, const BVH_Box<double, 3>::BVH_VecNt & theMinPoint, const BVH_Box<double, 3>::BVH_VecNt & theMaxPoint) { bool hasOverlap{}; auto nanoocp_result = self.Contains(theMinPoint, theMaxPoint, hasOverlap); return std::make_tuple(nanoocp_result, hasOverlap); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is fully contains the other box.)nbdoc")
         .def("IsOut", static_cast<bool (BVH_Box<double, 3>::*)(const BVH_Box<double, 3>::BVH_VecNt &) const>(&BVH_Box<double, 3>::IsOut), nb::arg("thePoint"), R"nbdoc(Checks if the Point is out of the box.)nbdoc");
     nanoocp_implicit_copy_ctor<BVH_Box<double, 3>>(nb::borrow<nb::class_<BVH_Box<double, 3>>>(m.attr("BVH_Box__double__3")));
     nb::implicitly_convertible<std::decay_t<const BVH_Box<double, 3>::BVH_VecNt &>, BVH_Box<double, 3>>();

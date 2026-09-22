@@ -833,7 +833,7 @@ make fast approximation of rational surfaces.)nbdoc")
         .def("Constraint", static_cast<void (GeomFill_CornerState::*)()>(&GeomFill_CornerState::Constraint))
         .def("NorAng", static_cast<double (GeomFill_CornerState::*)() const>(&GeomFill_CornerState::NorAng))
         .def("NorAng", static_cast<void (GeomFill_CornerState::*)(const double)>(&GeomFill_CornerState::NorAng), nb::arg("Ang"))
-        .def("IsToKill", [](const GeomFill_CornerState &self) { double Scal{}; auto result = self.IsToKill(Scal); return std::make_tuple(result, Scal); })
+        .def("IsToKill", [](const GeomFill_CornerState &self) { double Scal{}; auto nanoocp_result = self.IsToKill(Scal); return std::make_tuple(nanoocp_result, Scal); })
         .def("DoKill", static_cast<void (GeomFill_CornerState::*)(const double)>(&GeomFill_CornerState::DoKill), nb::arg("Scal"));
     nanoocp_implicit_copy_ctor<GeomFill_CornerState>(nb::borrow<nb::class_<GeomFill_CornerState>>(m.attr("GeomFill_CornerState")));
     nb::borrow<nb::class_<GeomFill_ConstrainedFilling>>(m.attr("GeomFill_ConstrainedFilling"))
@@ -869,7 +869,7 @@ used in the call to Init.)nbdoc")
 blending functions set by several calls to SetDomain.)nbdoc")
         .def("Boundary", static_cast<occ::handle<GeomFill_Boundary> (GeomFill_ConstrainedFilling::*)(const int) const>(&GeomFill_ConstrainedFilling::Boundary), nb::arg("I"), R"nbdoc(Returns the bound of index i after sort.)nbdoc")
         .def("Surface", static_cast<occ::handle<Geom_BSplineSurface> (GeomFill_ConstrainedFilling::*)() const>(&GeomFill_ConstrainedFilling::Surface), R"nbdoc(Returns the BSpline surface after computation of the fill by this framework.)nbdoc")
-        .def("Eval", [](const GeomFill_ConstrainedFilling &self, const double W, const int Ord) { double Result{}; auto result = self.Eval(W, Ord, Result); return std::make_tuple(result, Result); }, nb::arg("W"), nb::arg("Ord"), R"nbdoc(Internal use for Advmath approximation call.)nbdoc")
+        .def("Eval", [](const GeomFill_ConstrainedFilling &self, const double W, const int Ord) { double Result{}; auto nanoocp_result = self.Eval(W, Ord, Result); return std::make_tuple(nanoocp_result, Result); }, nb::arg("W"), nb::arg("Ord"), R"nbdoc(Internal use for Advmath approximation call.)nbdoc")
         .def("CheckCoonsAlgPatch", static_cast<void (GeomFill_ConstrainedFilling::*)(const int)>(&GeomFill_ConstrainedFilling::CheckCoonsAlgPatch), nb::arg("I"), R"nbdoc(Computes the fields of tangents on 30 points along the
 bound I, these are not the constraint tangents but
 gives an idea of the coonsAlgPatch regularity.)nbdoc")
@@ -1015,9 +1015,9 @@ The default implementation make nothing.)nbdoc")
 is usful to find a good Tolerance to approx M(t).)nbdoc")
         .def("GetAverageLaw", static_cast<void (GeomFill_LocationLaw::*)(gp_Mat &, gp_Vec &)>(&GeomFill_LocationLaw::GetAverageLaw), nb::arg("AM"), nb::arg("AV"), R"nbdoc(Get average value of M(t) and V(t) it is useful to
 make fast approximation of rational surfaces.)nbdoc")
-        .def("IsTranslation", [](const GeomFill_LocationLaw &self) { double Error{}; auto result = self.IsTranslation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
+        .def("IsTranslation", [](const GeomFill_LocationLaw &self) { double Error{}; auto nanoocp_result = self.IsTranslation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
 The default implementation is " returns False ".)nbdoc")
-        .def("IsRotation", [](const GeomFill_LocationLaw &self) { double Error{}; auto result = self.IsRotation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
+        .def("IsRotation", [](const GeomFill_LocationLaw &self) { double Error{}; auto nanoocp_result = self.IsRotation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
 The default implementation is " returns False ".)nbdoc")
         .def("Rotation", static_cast<void (GeomFill_LocationLaw::*)(gp_Pnt &) const>(&GeomFill_LocationLaw::Rotation), nb::arg("Center"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomFill_LocationLaw::get_type_name))
@@ -1059,9 +1059,9 @@ SetValue method)nbdoc")
 is usful to find a good Tolerance to approx M(t).)nbdoc")
         .def("GetAverageLaw", static_cast<void (GeomFill_CurveAndTrihedron::*)(gp_Mat &, gp_Vec &)>(&GeomFill_CurveAndTrihedron::GetAverageLaw), nb::arg("AM"), nb::arg("AV"), R"nbdoc(Get average value of M(t) and V(t) it is useful to
 make fast approximation of rational surfaces.)nbdoc")
-        .def("IsTranslation", [](const GeomFill_CurveAndTrihedron &self) { double Error{}; auto result = self.IsTranslation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
+        .def("IsTranslation", [](const GeomFill_CurveAndTrihedron &self) { double Error{}; auto nanoocp_result = self.IsTranslation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
 The default implementation is " returns False ".)nbdoc")
-        .def("IsRotation", [](const GeomFill_CurveAndTrihedron &self) { double Error{}; auto result = self.IsRotation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
+        .def("IsRotation", [](const GeomFill_CurveAndTrihedron &self) { double Error{}; auto nanoocp_result = self.IsRotation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
 The default implementation is " returns False ".)nbdoc")
         .def("Rotation", static_cast<void (GeomFill_CurveAndTrihedron::*)(gp_Pnt &) const>(&GeomFill_CurveAndTrihedron::Rotation), nb::arg("Center"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomFill_CurveAndTrihedron::get_type_name))
@@ -1231,10 +1231,10 @@ in all sections.
 This information is useful to control error
 in rational approximation.
 Warning: Used only if <me> IsRational)nbdoc")
-        .def("IsConstant", [](const GeomFill_SectionLaw &self) { double Error{}; auto result = self.IsConstant(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if all sections are equals)nbdoc")
+        .def("IsConstant", [](const GeomFill_SectionLaw &self) { double Error{}; auto nanoocp_result = self.IsConstant(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if all sections are equals)nbdoc")
         .def("ConstantSection", static_cast<occ::handle<Geom_Curve> (GeomFill_SectionLaw::*)() const>(&GeomFill_SectionLaw::ConstantSection), R"nbdoc(Return a copy of the constant Section, if <me>
 IsConstant)nbdoc")
-        .def("IsConicalLaw", [](const GeomFill_SectionLaw &self) { double Error{}; auto result = self.IsConicalLaw(Error); return std::make_tuple(result, Error); }, R"nbdoc(Returns True if all section are circle, with same
+        .def("IsConicalLaw", [](const GeomFill_SectionLaw &self) { double Error{}; auto nanoocp_result = self.IsConicalLaw(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Returns True if all section are circle, with same
 plane,same center and linear radius evolution
 Return False by Default.)nbdoc")
         .def("CirclSection", static_cast<occ::handle<Geom_Curve> (GeomFill_SectionLaw::*)(const double) const>(&GeomFill_SectionLaw::CirclSection), nb::arg("Param"), R"nbdoc(Return the circle section at parameter <Param>, if
@@ -1295,7 +1295,7 @@ in all sections.
 This information is useful to control error
 in rational approximation.
 Warning: Used only if <me> IsRational)nbdoc")
-        .def("IsConstant", [](const GeomFill_EvolvedSection &self) { double Error{}; auto result = self.IsConstant(Error); return std::make_tuple(result, Error); }, R"nbdoc(return True If the Law isConstant)nbdoc")
+        .def("IsConstant", [](const GeomFill_EvolvedSection &self) { double Error{}; auto nanoocp_result = self.IsConstant(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(return True If the Law isConstant)nbdoc")
         .def("ConstantSection", static_cast<occ::handle<Geom_Curve> (GeomFill_EvolvedSection::*)() const>(&GeomFill_EvolvedSection::ConstantSection), R"nbdoc(Return the constant Section if <me> IsConstant.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomFill_EvolvedSection::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomFill_EvolvedSection::get_type_descriptor))
@@ -1619,9 +1619,9 @@ Warning: Used only if Nb2dCurve > 0)nbdoc")
 is usful to find a good Tolerance to approx M(t).)nbdoc")
         .def("GetAverageLaw", static_cast<void (GeomFill_LocationDraft::*)(gp_Mat &, gp_Vec &)>(&GeomFill_LocationDraft::GetAverageLaw), nb::arg("AM"), nb::arg("AV"), R"nbdoc(Get average value of M(t) and V(t) it is useful to
 make fast approximation of rational surfaces.)nbdoc")
-        .def("IsTranslation", [](const GeomFill_LocationDraft &self) { double Error{}; auto result = self.IsTranslation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
+        .def("IsTranslation", [](const GeomFill_LocationDraft &self) { double Error{}; auto nanoocp_result = self.IsTranslation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
 The default implementation is " returns False ".)nbdoc")
-        .def("IsRotation", [](const GeomFill_LocationDraft &self) { double Error{}; auto result = self.IsRotation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
+        .def("IsRotation", [](const GeomFill_LocationDraft &self) { double Error{}; auto nanoocp_result = self.IsRotation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
 The default implementation is " returns False ".)nbdoc")
         .def("Rotation", static_cast<void (GeomFill_LocationDraft::*)(gp_Pnt &) const>(&GeomFill_LocationDraft::Rotation), nb::arg("Center"))
         .def("IsIntersec", static_cast<bool (GeomFill_LocationDraft::*)() const>(&GeomFill_LocationDraft::IsIntersec), R"nbdoc(Say if the generatrice interset the surface)nbdoc")
@@ -1686,15 +1686,15 @@ Warning: Used only if Nb2dCurve > 0)nbdoc")
 is usful to find a good Tolerance to approx M(t).)nbdoc")
         .def("GetAverageLaw", static_cast<void (GeomFill_LocationGuide::*)(gp_Mat &, gp_Vec &)>(&GeomFill_LocationGuide::GetAverageLaw), nb::arg("AM"), nb::arg("AV"), R"nbdoc(Get average value of M(t) and V(t) it is useful to
 make fast approximation of rational surfaces.)nbdoc")
-        .def("IsTranslation", [](const GeomFill_LocationGuide &self) { double Error{}; auto result = self.IsTranslation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
+        .def("IsTranslation", [](const GeomFill_LocationGuide &self) { double Error{}; auto nanoocp_result = self.IsTranslation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is an translation of Location
 The default implementation is " returns False ".)nbdoc")
-        .def("IsRotation", [](const GeomFill_LocationGuide &self) { double Error{}; auto result = self.IsRotation(Error); return std::make_tuple(result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
+        .def("IsRotation", [](const GeomFill_LocationGuide &self) { double Error{}; auto nanoocp_result = self.IsRotation(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Say if the Location Law, is a rotation of Location
 The default implementation is " returns False ".)nbdoc")
         .def("Rotation", static_cast<void (GeomFill_LocationGuide::*)(gp_Pnt &) const>(&GeomFill_LocationGuide::Rotation), nb::arg("Center"))
         .def("Section", static_cast<occ::handle<Geom_Curve> (GeomFill_LocationGuide::*)() const>(&GeomFill_LocationGuide::Section))
         .def("Guide", static_cast<occ::handle<Adaptor3d_Curve> (GeomFill_LocationGuide::*)() const>(&GeomFill_LocationGuide::Guide))
         .def("SetOrigine", static_cast<void (GeomFill_LocationGuide::*)(const double, const double)>(&GeomFill_LocationGuide::SetOrigine), nb::arg("Param1"), nb::arg("Param2"))
-        .def("ComputeAutomaticLaw", [](const GeomFill_LocationGuide &self) { occ::handle<NCollection_HArray1<gp_Pnt2d>> ParAndRad{}; auto result = self.ComputeAutomaticLaw(ParAndRad); return std::make_tuple(result, ParAndRad); })
+        .def("ComputeAutomaticLaw", [](const GeomFill_LocationGuide &self) { occ::handle<NCollection_HArray1<gp_Pnt2d>> ParAndRad{}; auto nanoocp_result = self.ComputeAutomaticLaw(ParAndRad); return std::make_tuple(nanoocp_result, ParAndRad); })
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomFill_LocationGuide::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomFill_LocationGuide::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (GeomFill_LocationGuide::*)() const>(&GeomFill_LocationGuide::DynamicType));
@@ -1776,9 +1776,9 @@ in all sections.
 This information is useful to control error
 in rational approximation.
 Warning: Used only if <me> IsRational)nbdoc")
-        .def("IsConstant", [](const GeomFill_NSections &self) { double Error{}; auto result = self.IsConstant(Error); return std::make_tuple(result, Error); }, R"nbdoc(return True If the Law isConstant)nbdoc")
+        .def("IsConstant", [](const GeomFill_NSections &self) { double Error{}; auto nanoocp_result = self.IsConstant(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(return True If the Law isConstant)nbdoc")
         .def("ConstantSection", static_cast<occ::handle<Geom_Curve> (GeomFill_NSections::*)() const>(&GeomFill_NSections::ConstantSection), R"nbdoc(Return the constant Section if <me> IsConstant.)nbdoc")
-        .def("IsConicalLaw", [](const GeomFill_NSections &self) { double Error{}; auto result = self.IsConicalLaw(Error); return std::make_tuple(result, Error); }, R"nbdoc(Returns True if all section are circle, with same
+        .def("IsConicalLaw", [](const GeomFill_NSections &self) { double Error{}; auto nanoocp_result = self.IsConicalLaw(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(Returns True if all section are circle, with same
 plane,same center and linear radius evolution
 Return False by Default.)nbdoc")
         .def("CirclSection", static_cast<occ::handle<Geom_Curve> (GeomFill_NSections::*)(const double) const>(&GeomFill_NSections::CirclSection), nb::arg("Param"), R"nbdoc(Return the circle section at parameter <Param>, if
@@ -1906,14 +1906,14 @@ is plane, cylinder ... this error can be 0.)nbdoc")
     nanoocp_implicit_copy_ctor<GeomFill_Pipe>(nb::borrow<nb::class_<GeomFill_Pipe>>(m.attr("GeomFill_Pipe")));
     nb::borrow<nb::class_<GeomFill_PlanFunc>>(m.attr("GeomFill_PlanFunc"))
         .def(nb::init<const gp_Pnt &, const gp_Vec &, const occ::handle<Adaptor3d_Curve> &>(), nb::arg("P"), nb::arg("V"), nb::arg("C").none())
-        .def("Value", [](GeomFill_PlanFunc &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(computes the value <F>of the function for the variable <X>.
+        .def("Value", [](GeomFill_PlanFunc &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(computes the value <F>of the function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Derivative", [](GeomFill_PlanFunc &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"), R"nbdoc(computes the derivative <D> of the function
+        .def("Derivative", [](GeomFill_PlanFunc &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"), R"nbdoc(computes the derivative <D> of the function
 for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
-        .def("Values", [](GeomFill_PlanFunc &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"), R"nbdoc(computes the value <F> and the derivative <D> of the
+        .def("Values", [](GeomFill_PlanFunc &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"), R"nbdoc(computes the value <F> and the derivative <D> of the
 function for the variable <X>.
 Returns True if the calculation were successfully done,
 False otherwise.)nbdoc")
@@ -2280,7 +2280,7 @@ in all sections.
 This information is useful to control error
 in rational approximation.
 Warning: Used only if <me> IsRational)nbdoc")
-        .def("IsConstant", [](const GeomFill_UniformSection &self) { double Error{}; auto result = self.IsConstant(Error); return std::make_tuple(result, Error); }, R"nbdoc(return True)nbdoc")
+        .def("IsConstant", [](const GeomFill_UniformSection &self) { double Error{}; auto nanoocp_result = self.IsConstant(Error); return std::make_tuple(nanoocp_result, Error); }, R"nbdoc(return True)nbdoc")
         .def("ConstantSection", static_cast<occ::handle<Geom_Curve> (GeomFill_UniformSection::*)() const>(&GeomFill_UniformSection::ConstantSection), R"nbdoc(Return the constant Section if <me> IsConstant.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&GeomFill_UniformSection::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&GeomFill_UniformSection::get_type_descriptor))

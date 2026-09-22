@@ -348,7 +348,7 @@ to allow recovering connectivities after fixing or removing
 the small faces or parts of faces
 Enchains various checks on a face
 inshell : to compute more information, relevant to topology)nbdoc")
-        .def("IsSpotFace", [](const ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F, gp_Pnt & spot, const double tol) { double spotol{}; auto result = self.IsSpotFace(F, spot, spotol, tol); return std::make_tuple(result, spotol); }, nb::arg("F"), nb::arg("spot"), nb::arg("tol") = static_cast<std::decay_t<const double>>(- 1.0), R"nbdoc(Checks if a Face is as a Spot
+        .def("IsSpotFace", [](const ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F, gp_Pnt & spot, const double tol) { double spotol{}; auto nanoocp_result = self.IsSpotFace(F, spot, spotol, tol); return std::make_tuple(nanoocp_result, spotol); }, nb::arg("F"), nb::arg("spot"), nb::arg("tol") = static_cast<std::decay_t<const double>>(- 1.0), R"nbdoc(Checks if a Face is as a Spot
 Returns 0 if not, 1 if yes, 2 if yes and all vertices are the
 same
 By default, considers the tolerance zone of its vertices
@@ -364,9 +364,9 @@ So the Face is a strip. But a Face may be a strip elsewhere ..
 A given value <tol> may be given to check max width
 By default, considers the tolerance zone of its edges
 Returns 0 if not a strip support, 1 strip in U, 2 strip in V)nbdoc")
-        .def("CheckStripEdges", [](const ShapeAnalysis_CheckSmallFace &self, const TopoDS_Edge & E1, const TopoDS_Edge & E2, const double tol) { double dmax{}; auto result = self.CheckStripEdges(E1, E2, tol, dmax); return std::make_tuple(result, dmax); }, nb::arg("E1"), nb::arg("E2"), nb::arg("tol"), R"nbdoc(Checks if two edges define a strip, i.e. distance maxi below
+        .def("CheckStripEdges", [](const ShapeAnalysis_CheckSmallFace &self, const TopoDS_Edge & E1, const TopoDS_Edge & E2, const double tol) { double dmax{}; auto nanoocp_result = self.CheckStripEdges(E1, E2, tol, dmax); return std::make_tuple(nanoocp_result, dmax); }, nb::arg("E1"), nb::arg("E2"), nb::arg("tol"), R"nbdoc(Checks if two edges define a strip, i.e. distance maxi below
 tolerance, given or some of those of E1 and E2)nbdoc")
-        .def("FindStripEdges", [](ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F, TopoDS_Edge & E1, TopoDS_Edge & E2, const double tol) { double dmax{}; auto result = self.FindStripEdges(F, E1, E2, tol, dmax); return std::make_tuple(result, dmax); }, nb::arg("F"), nb::arg("E1"), nb::arg("E2"), nb::arg("tol"), R"nbdoc(Searches for two and only two edges up tolerance
+        .def("FindStripEdges", [](ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F, TopoDS_Edge & E1, TopoDS_Edge & E2, const double tol) { double dmax{}; auto nanoocp_result = self.FindStripEdges(F, E1, E2, tol, dmax); return std::make_tuple(nanoocp_result, dmax); }, nb::arg("F"), nb::arg("E1"), nb::arg("E2"), nb::arg("tol"), R"nbdoc(Searches for two and only two edges up tolerance
 Returns True if OK, false if not 2 edges
 If True, returns the two edges and their maximum distance)nbdoc")
         .def("CheckSingleStrip", static_cast<bool (ShapeAnalysis_CheckSmallFace::*)(const TopoDS_Face &, TopoDS_Edge &, TopoDS_Edge &, const double)>(&ShapeAnalysis_CheckSmallFace::CheckSingleStrip), nb::arg("F"), nb::arg("E1"), nb::arg("E2"), nb::arg("tol") = static_cast<std::decay_t<const double>>(- 1.0), R"nbdoc(Checks if a Face is a single strip, i.e. brings two great
@@ -390,7 +390,7 @@ projection on non adjacent edges
 Returns the count of found splitting vertices
 Each vertex then brings a diagnostic "SplittingVertex",
 with data : "Face" for the face, "Edge" for the split edge)nbdoc")
-        .def("CheckPin", [](ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F) { int whatrow{}; int sence{}; auto result = self.CheckPin(F, whatrow, sence); return std::make_tuple(result, whatrow, sence); }, nb::arg("F"), R"nbdoc(Checks if a Face has a pin, which can be edited
+        .def("CheckPin", [](ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F) { int whatrow{}; int sence{}; auto nanoocp_result = self.CheckPin(F, whatrow, sence); return std::make_tuple(nanoocp_result, whatrow, sence); }, nb::arg("F"), R"nbdoc(Checks if a Face has a pin, which can be edited
 No singularity : no pin, returns 0
 If there is a pin, checked topics, with returned value :
 - 0 : nothing to do more
@@ -399,7 +399,7 @@ If there is a pin, checked topics, with returned value :
 - 2 : stretched pin, i.e. is possible to relimit the face by
 another vertex, so that this vertex still gives a pin
 -> diagnostic "StretchedPin" with location of vertex (Pnt))nbdoc")
-        .def("CheckTwisted", [](ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F) { double paramu{}; double paramv{}; auto result = self.CheckTwisted(F, paramu, paramv); return std::make_tuple(result, paramu, paramv); }, nb::arg("F"), R"nbdoc(Checks if a Face is twisted (apart from checking Pin, i.e. it
+        .def("CheckTwisted", [](ShapeAnalysis_CheckSmallFace &self, const TopoDS_Face & F) { double paramu{}; double paramv{}; auto nanoocp_result = self.CheckTwisted(F, paramu, paramv); return std::make_tuple(nanoocp_result, paramu, paramv); }, nb::arg("F"), R"nbdoc(Checks if a Face is twisted (apart from checking Pin, i.e. it
 does not give information on pin, only "it is twisted"))nbdoc")
         .def("CheckPinFace", static_cast<bool (ShapeAnalysis_CheckSmallFace::*)(const TopoDS_Face &, NCollection_DataMap<TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher> &, const double)>(&ShapeAnalysis_CheckSmallFace::CheckPinFace), nb::arg("F"), nb::arg("mapEdges"), nb::arg("toler") = static_cast<std::decay_t<const double>>(- 1.0))
         .def("CheckPinEdges", static_cast<bool (ShapeAnalysis_CheckSmallFace::*)(const TopoDS_Edge &, const TopoDS_Edge &, const double, const double, const double) const>(&ShapeAnalysis_CheckSmallFace::CheckPinEdges), nb::arg("theFirstEdge"), nb::arg("theSecondEdge"), nb::arg("coef1"), nb::arg("coef2"), nb::arg("toler"))
@@ -433,7 +433,7 @@ local tolerances zones are to be considered)nbdoc")
     nanoocp_implicit_copy_ctor<ShapeAnalysis_CheckSmallFace>(nb::borrow<nb::class_<ShapeAnalysis_CheckSmallFace>>(m.attr("ShapeAnalysis_CheckSmallFace")));
     nanoocp_implicit_default_ctor<ShapeAnalysis_Curve>(nb::borrow<nb::class_<ShapeAnalysis_Curve>>(m.attr("ShapeAnalysis_Curve")));
     nb::borrow<nb::class_<ShapeAnalysis_Curve>>(m.attr("ShapeAnalysis_Curve"))
-        .def("Project", [](const ShapeAnalysis_Curve &self, const occ::handle<Geom_Curve> & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const bool AdjustToEnds) { double param{}; auto result = self.Project(C3D, P3D, preci, proj, param, AdjustToEnds); return std::make_tuple(result, param); }, nb::arg("C3D").none(), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve.
+        .def("Project", [](const ShapeAnalysis_Curve &self, const occ::handle<Geom_Curve> & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const bool AdjustToEnds) { double param{}; auto nanoocp_result = self.Project(C3D, P3D, preci, proj, param, AdjustToEnds); return std::make_tuple(nanoocp_result, param); }, nb::arg("C3D").none(), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve.
 Computes the projected point and its parameter on the curve.
 <preci> is used as 3d precision (hence, 0 will produce
 reject unless exact confusion).
@@ -443,7 +443,7 @@ of the curve if distance is less than <preci>
 
 Returned value is the distance between the given point and
 computed one.)nbdoc")
-        .def("Project", [](const ShapeAnalysis_Curve &self, const Adaptor3d_Curve & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const bool AdjustToEnds) { double param{}; auto result = self.Project(C3D, P3D, preci, proj, param, AdjustToEnds); return std::make_tuple(result, param); }, nb::arg("C3D"), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve.
+        .def("Project", [](const ShapeAnalysis_Curve &self, const Adaptor3d_Curve & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const bool AdjustToEnds) { double param{}; auto nanoocp_result = self.Project(C3D, P3D, preci, proj, param, AdjustToEnds); return std::make_tuple(nanoocp_result, param); }, nb::arg("C3D"), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve.
 Computes the projected point and its parameter on the curve.
 <preci> is used as 3d precision (hence, 0 will produce
 reject unless exact confusion).
@@ -451,22 +451,22 @@ The number of iterations is limited.
 
 Returned value is the distance between the given point and
 computed one.)nbdoc")
-        .def("Project", [](const ShapeAnalysis_Curve &self, const occ::handle<Geom_Curve> & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const double cf, const double cl, const bool AdjustToEnds) { double param{}; auto result = self.Project(C3D, P3D, preci, proj, param, cf, cl, AdjustToEnds); return std::make_tuple(result, param); }, nb::arg("C3D").none(), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("cf"), nb::arg("cl"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve, but parameters are limited
+        .def("Project", [](const ShapeAnalysis_Curve &self, const occ::handle<Geom_Curve> & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const double cf, const double cl, const bool AdjustToEnds) { double param{}; auto nanoocp_result = self.Project(C3D, P3D, preci, proj, param, cf, cl, AdjustToEnds); return std::make_tuple(nanoocp_result, param); }, nb::arg("C3D").none(), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("cf"), nb::arg("cl"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve, but parameters are limited
 between <cf> and <cl>.
 The range [cf, cl] is extended with help of Adaptor3d on the
 basis of 3d precision <preci>.
 If AdjustToEnds is True, point will be adjusted to the end
 of the curve if distance is less than <preci>)nbdoc")
-        .def("ProjectAct", [](const ShapeAnalysis_Curve &self, const Adaptor3d_Curve & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj) { double param{}; auto result = self.ProjectAct(C3D, P3D, preci, proj, param); return std::make_tuple(result, param); }, nb::arg("C3D"), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"))
-        .def("NextProject", [](const ShapeAnalysis_Curve &self, const double paramPrev, const occ::handle<Geom_Curve> & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const double cf, const double cl, const bool AdjustToEnds) { double param{}; auto result = self.NextProject(paramPrev, C3D, P3D, preci, proj, param, cf, cl, AdjustToEnds); return std::make_tuple(result, param); }, nb::arg("paramPrev"), nb::arg("C3D").none(), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("cf"), nb::arg("cl"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve using Newton method.
+        .def("ProjectAct", [](const ShapeAnalysis_Curve &self, const Adaptor3d_Curve & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj) { double param{}; auto nanoocp_result = self.ProjectAct(C3D, P3D, preci, proj, param); return std::make_tuple(nanoocp_result, param); }, nb::arg("C3D"), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"))
+        .def("NextProject", [](const ShapeAnalysis_Curve &self, const double paramPrev, const occ::handle<Geom_Curve> & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj, const double cf, const double cl, const bool AdjustToEnds) { double param{}; auto nanoocp_result = self.NextProject(paramPrev, C3D, P3D, preci, proj, param, cf, cl, AdjustToEnds); return std::make_tuple(nanoocp_result, param); }, nb::arg("paramPrev"), nb::arg("C3D").none(), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), nb::arg("cf"), nb::arg("cl"), nb::arg("AdjustToEnds") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Projects a Point on a Curve using Newton method.
 <paramPrev> is taken as the first approximation of solution.
 If Newton algorithm fails the method Project() is used.
 If AdjustToEnds is True, point will be adjusted to the end
 of the curve if distance is less than <preci>)nbdoc")
-        .def("NextProject", [](const ShapeAnalysis_Curve &self, const double paramPrev, const Adaptor3d_Curve & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj) { double param{}; auto result = self.NextProject(paramPrev, C3D, P3D, preci, proj, param); return std::make_tuple(result, param); }, nb::arg("paramPrev"), nb::arg("C3D"), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), R"nbdoc(Projects a Point on a Curve using Newton method.
+        .def("NextProject", [](const ShapeAnalysis_Curve &self, const double paramPrev, const Adaptor3d_Curve & C3D, const gp_Pnt & P3D, const double preci, gp_Pnt & proj) { double param{}; auto nanoocp_result = self.NextProject(paramPrev, C3D, P3D, preci, proj, param); return std::make_tuple(nanoocp_result, param); }, nb::arg("paramPrev"), nb::arg("C3D"), nb::arg("P3D"), nb::arg("preci"), nb::arg("proj"), R"nbdoc(Projects a Point on a Curve using Newton method.
 <paramPrev> is taken as the first approximation of solution.
 If Newton algorithm fails the method Project() is used.)nbdoc")
-        .def("ValidateRange", [](const ShapeAnalysis_Curve &self, const occ::handle<Geom_Curve> & Crv, const double prec) { double First{}; double Last{}; auto result = self.ValidateRange(Crv, First, Last, prec); return std::make_tuple(result, First, Last); }, nb::arg("Crv").none(), nb::arg("prec"), R"nbdoc(Validate parameters First and Last for the given curve
+        .def("ValidateRange", [](const ShapeAnalysis_Curve &self, const occ::handle<Geom_Curve> & Crv, const double prec) { double First{}; double Last{}; auto nanoocp_result = self.ValidateRange(Crv, First, Last, prec); return std::make_tuple(nanoocp_result, First, Last); }, nb::arg("Crv").none(), nb::arg("prec"), R"nbdoc(Validate parameters First and Last for the given curve
 in order to make them valid for creation of edge.
 This includes:
 - limiting range [First,Last] by range of curve
@@ -502,7 +502,7 @@ Current implementation takes into account that curve may be offset.)nbdoc")
     nb::borrow<nb::class_<ShapeAnalysis_Edge>>(m.attr("ShapeAnalysis_Edge"))
         .def(nb::init<>(), R"nbdoc(Empty constructor; initialises Status to OK)nbdoc")
         .def("HasCurve3d", static_cast<bool (ShapeAnalysis_Edge::*)(const TopoDS_Edge &) const>(&ShapeAnalysis_Edge::HasCurve3d), nb::arg("edge"), R"nbdoc(Tells if the edge has a 3d curve)nbdoc")
-        .def("Curve3d", [](const ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const bool orient) { occ::handle<Geom_Curve> C3d{}; double cf{}; double cl{}; auto result = self.Curve3d(edge, C3d, cf, cl, orient); return std::make_tuple(result, C3d, cf, cl); }, nb::arg("edge"), nb::arg("orient") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns the 3d curve and bounding parameters for the edge
+        .def("Curve3d", [](const ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const bool orient) { occ::handle<Geom_Curve> C3d{}; double cf{}; double cl{}; auto nanoocp_result = self.Curve3d(edge, C3d, cf, cl, orient); return std::make_tuple(nanoocp_result, C3d, cf, cl); }, nb::arg("edge"), nb::arg("orient") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns the 3d curve and bounding parameters for the edge
 Returns False if no 3d curve.
 If <orient> is True (default), takes orientation into account:
 if the edge is reversed, cf and cl are toggled)nbdoc")
@@ -510,8 +510,8 @@ if the edge is reversed, cf and cl are toggled)nbdoc")
 and the edge has the same vertex at start and end)nbdoc")
         .def("HasPCurve", static_cast<bool (ShapeAnalysis_Edge::*)(const TopoDS_Edge &, const TopoDS_Face &) const>(&ShapeAnalysis_Edge::HasPCurve), nb::arg("edge"), nb::arg("face"), R"nbdoc(Tells if the Edge has a pcurve on the face.)nbdoc")
         .def("HasPCurve", static_cast<bool (ShapeAnalysis_Edge::*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &) const>(&ShapeAnalysis_Edge::HasPCurve), nb::arg("edge"), nb::arg("surface").none(), nb::arg("location"), R"nbdoc(Tells if the edge has a pcurve on the surface (with location).)nbdoc")
-        .def("PCurve", [](const ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const TopoDS_Face & face, const bool orient) { occ::handle<Geom2d_Curve> C2d{}; double cf{}; double cl{}; auto result = self.PCurve(edge, face, C2d, cf, cl, orient); return std::make_tuple(result, C2d, cf, cl); }, nb::arg("edge"), nb::arg("face"), nb::arg("orient") = static_cast<std::decay_t<const bool>>(true))
-        .def("PCurve", [](const ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const occ::handle<Geom_Surface> & surface, const TopLoc_Location & location, const bool orient) { occ::handle<Geom2d_Curve> C2d{}; double cf{}; double cl{}; auto result = self.PCurve(edge, surface, location, C2d, cf, cl, orient); return std::make_tuple(result, C2d, cf, cl); }, nb::arg("edge"), nb::arg("surface").none(), nb::arg("location"), nb::arg("orient") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns the pcurve and bounding parameters for the edge
+        .def("PCurve", [](const ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const TopoDS_Face & face, const bool orient) { occ::handle<Geom2d_Curve> C2d{}; double cf{}; double cl{}; auto nanoocp_result = self.PCurve(edge, face, C2d, cf, cl, orient); return std::make_tuple(nanoocp_result, C2d, cf, cl); }, nb::arg("edge"), nb::arg("face"), nb::arg("orient") = static_cast<std::decay_t<const bool>>(true))
+        .def("PCurve", [](const ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const occ::handle<Geom_Surface> & surface, const TopLoc_Location & location, const bool orient) { occ::handle<Geom2d_Curve> C2d{}; double cf{}; double cl{}; auto nanoocp_result = self.PCurve(edge, surface, location, C2d, cf, cl, orient); return std::make_tuple(nanoocp_result, C2d, cf, cl); }, nb::arg("edge"), nb::arg("surface").none(), nb::arg("location"), nb::arg("orient") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns the pcurve and bounding parameters for the edge
 lying on the surface.
 Returns False if the edge has no pcurve on this surface.
 If <orient> is True (default), takes orientation into account:
@@ -546,8 +546,8 @@ with pcurve with the given precision.
 <vtx> = 0 : both
 If preci < 0 the vertices are considered with their own
 tolerances, else with the given <preci>.)nbdoc")
-        .def("CheckVertexTolerance", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const TopoDS_Face & face) { double toler1{}; double toler2{}; auto result = self.CheckVertexTolerance(edge, face, toler1, toler2); return std::make_tuple(result, toler1, toler2); }, nb::arg("edge"), nb::arg("face"))
-        .def("CheckVertexTolerance", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & edge) { double toler1{}; double toler2{}; auto result = self.CheckVertexTolerance(edge, toler1, toler2); return std::make_tuple(result, toler1, toler2); }, nb::arg("edge"), R"nbdoc(Checks if it is necessary to increase tolerances of the edge
+        .def("CheckVertexTolerance", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const TopoDS_Face & face) { double toler1{}; double toler2{}; auto nanoocp_result = self.CheckVertexTolerance(edge, face, toler1, toler2); return std::make_tuple(nanoocp_result, toler1, toler2); }, nb::arg("edge"), nb::arg("face"))
+        .def("CheckVertexTolerance", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & edge) { double toler1{}; double toler2{}; auto nanoocp_result = self.CheckVertexTolerance(edge, toler1, toler2); return std::make_tuple(nanoocp_result, toler1, toler2); }, nb::arg("edge"), R"nbdoc(Checks if it is necessary to increase tolerances of the edge
 vertices to comprise the ends of 3d curve and pcurve on
 the given face (first method) or all pcurves stored in an edge
 (second one)
@@ -557,14 +557,14 @@ toler2 returns necessary tolerance for last vertex.)nbdoc")
         .def("CheckCurve3dWithPCurve", static_cast<bool (ShapeAnalysis_Edge::*)(const TopoDS_Edge &, const occ::handle<Geom_Surface> &, const TopLoc_Location &)>(&ShapeAnalysis_Edge::CheckCurve3dWithPCurve), nb::arg("edge"), nb::arg("surface").none(), nb::arg("location"), R"nbdoc(Checks mutual orientation of 3d curve and pcurve on the
 analysis of curves bounding points)nbdoc")
         .def("Status", static_cast<bool (ShapeAnalysis_Edge::*)(const ShapeExtend_Status) const>(&ShapeAnalysis_Edge::Status), nb::arg("status"), R"nbdoc(Returns the status (in the form of True/False) of last Check)nbdoc")
-        .def("CheckSameParameter", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const int NbControl) { double maxdev{}; auto result = self.CheckSameParameter(edge, maxdev, NbControl); return std::make_tuple(result, maxdev); }, nb::arg("edge"), nb::arg("NbControl") = static_cast<std::decay_t<const int>>(23), R"nbdoc(Checks the edge to be SameParameter.
+        .def("CheckSameParameter", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & edge, const int NbControl) { double maxdev{}; auto nanoocp_result = self.CheckSameParameter(edge, maxdev, NbControl); return std::make_tuple(nanoocp_result, maxdev); }, nb::arg("edge"), nb::arg("NbControl") = static_cast<std::decay_t<const int>>(23), R"nbdoc(Checks the edge to be SameParameter.
 Calculates the maximal deviation between 3d curve and each
 pcurve of the edge on <NbControl> equidistant points (the same
 algorithm as in BRepCheck; default value is 23 as in BRepCheck).
 This deviation is returned in <maxdev> parameter.
 If deviation is greater than tolerance of the edge (i.e.
 incorrect flag) returns False, else returns True.)nbdoc")
-        .def("CheckSameParameter", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const int theNbControl) { double theMaxdev{}; auto result = self.CheckSameParameter(theEdge, theFace, theMaxdev, theNbControl); return std::make_tuple(result, theMaxdev); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("theNbControl") = static_cast<std::decay_t<const int>>(23), R"nbdoc(Checks the edge to be SameParameter.
+        .def("CheckSameParameter", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & theEdge, const TopoDS_Face & theFace, const int theNbControl) { double theMaxdev{}; auto nanoocp_result = self.CheckSameParameter(theEdge, theFace, theMaxdev, theNbControl); return std::make_tuple(nanoocp_result, theMaxdev); }, nb::arg("theEdge"), nb::arg("theFace"), nb::arg("theNbControl") = static_cast<std::decay_t<const int>>(23), R"nbdoc(Checks the edge to be SameParameter.
 Calculates the maximal deviation between 3d curve and each
 pcurve of the edge on <NbControl> equidistant points (the same
 algorithm as in BRepCheck; default value is 23 as in BRepCheck).
@@ -573,7 +573,7 @@ If deviation is greater than tolerance of the edge (i.e.
 incorrect flag) returns False, else returns True.)nbdoc")
         .def("CheckPCurveRange", static_cast<bool (ShapeAnalysis_Edge::*)(const double, const double, const occ::handle<Geom2d_Curve> &)>(&ShapeAnalysis_Edge::CheckPCurveRange), nb::arg("theFirst"), nb::arg("theLast"), nb::arg("thePC").none(), R"nbdoc(Checks possibility for pcurve thePC to have range [theFirst, theLast] (edge range)
 having respect to real first, last parameters of thePC)nbdoc")
-        .def("CheckOverlapping", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & theEdge1, const TopoDS_Edge & theEdge2, const double theDomainDist) { double theTolOverlap{}; auto result = self.CheckOverlapping(theEdge1, theEdge2, theTolOverlap, theDomainDist); return std::make_tuple(result, theTolOverlap); }, nb::arg("theEdge1"), nb::arg("theEdge2"), nb::arg("theDomainDist") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Checks the first edge is overlapped with second edge.
+        .def("CheckOverlapping", [](ShapeAnalysis_Edge &self, const TopoDS_Edge & theEdge1, const TopoDS_Edge & theEdge2, const double theDomainDist) { double theTolOverlap{}; auto nanoocp_result = self.CheckOverlapping(theEdge1, theEdge2, theTolOverlap, theDomainDist); return std::make_tuple(nanoocp_result, theTolOverlap); }, nb::arg("theEdge1"), nb::arg("theEdge2"), nb::arg("theDomainDist") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Checks the first edge is overlapped with second edge.
 If distance between two edges is less then theTolOverlap
 edges are overlapped.
 theDomainDis - length of part of edges on which edges are overlapped.)nbdoc");
@@ -733,15 +733,15 @@ number)nbdoc")
         .def("DispatchBounds", static_cast<bool (ShapeAnalysis_FreeBoundsProperties::*)()>(&ShapeAnalysis_FreeBoundsProperties::DispatchBounds))
         .def("CheckContours", static_cast<bool (ShapeAnalysis_FreeBoundsProperties::*)(const double)>(&ShapeAnalysis_FreeBoundsProperties::CheckContours), nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0))
         .def("CheckNotches", static_cast<bool (ShapeAnalysis_FreeBoundsProperties::*)(const double)>(&ShapeAnalysis_FreeBoundsProperties::CheckNotches), nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0))
-        .def("CheckNotches__ShapeAnalysis_FreeBoundData", [](ShapeAnalysis_FreeBoundsProperties &self, const double prec) { occ::handle<ShapeAnalysis_FreeBoundData> fbData{}; auto result = self.CheckNotches(fbData, prec); return std::make_tuple(result, fbData); }, nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(CheckNotches__ShapeAnalysis_FreeBoundData: the C++ overload CheckNotches(occ::handle<ShapeAnalysis_FreeBoundData> &, const double); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("CheckNotches__ShapeAnalysis_FreeBoundData", [](ShapeAnalysis_FreeBoundsProperties &self, const double prec) { occ::handle<ShapeAnalysis_FreeBoundData> fbData{}; auto nanoocp_result = self.CheckNotches(fbData, prec); return std::make_tuple(nanoocp_result, fbData); }, nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(CheckNotches__ShapeAnalysis_FreeBoundData: the C++ overload CheckNotches(occ::handle<ShapeAnalysis_FreeBoundData> &, const double); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 )nbdoc")
-        .def("CheckNotches", [](ShapeAnalysis_FreeBoundsProperties &self, const TopoDS_Wire & freebound, const int num, TopoDS_Wire & notch, const double prec) { double distMax{}; auto result = self.CheckNotches(freebound, num, notch, distMax, prec); return std::make_tuple(result, distMax); }, nb::arg("freebound"), nb::arg("num"), nb::arg("notch"), nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0))
-        .def("FillProperties", [](ShapeAnalysis_FreeBoundsProperties &self, const double prec) { occ::handle<ShapeAnalysis_FreeBoundData> fbData{}; auto result = self.FillProperties(fbData, prec); return std::make_tuple(result, fbData); }, nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0));
+        .def("CheckNotches", [](ShapeAnalysis_FreeBoundsProperties &self, const TopoDS_Wire & freebound, const int num, TopoDS_Wire & notch, const double prec) { double distMax{}; auto nanoocp_result = self.CheckNotches(freebound, num, notch, distMax, prec); return std::make_tuple(nanoocp_result, distMax); }, nb::arg("freebound"), nb::arg("num"), nb::arg("notch"), nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0))
+        .def("FillProperties", [](ShapeAnalysis_FreeBoundsProperties &self, const double prec) { occ::handle<ShapeAnalysis_FreeBoundData> fbData{}; auto nanoocp_result = self.FillProperties(fbData, prec); return std::make_tuple(nanoocp_result, fbData); }, nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0));
     nanoocp_implicit_copy_ctor<ShapeAnalysis_FreeBoundsProperties>(nb::borrow<nb::class_<ShapeAnalysis_FreeBoundsProperties>>(m.attr("ShapeAnalysis_FreeBoundsProperties")));
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, ShapeAnalysis_FreeBoundsProperties>();
     nanoocp_implicit_default_ctor<ShapeAnalysis_Geom>(nb::borrow<nb::class_<ShapeAnalysis_Geom>>(m.attr("ShapeAnalysis_Geom")));
     nb::borrow<nb::class_<ShapeAnalysis_Geom>>(m.attr("ShapeAnalysis_Geom"))
-        .def_static("NearestPlane", [](const NCollection_Array1<gp_Pnt> & Pnts, gp_Pln & aPln) { double Dmax{}; auto result = ShapeAnalysis_Geom::NearestPlane(Pnts, aPln, Dmax); return std::make_tuple(result, Dmax); }, nb::arg("Pnts"), nb::arg("aPln"), R"nbdoc(Builds a plane out of a set of points in array
+        .def_static("NearestPlane", [](const NCollection_Array1<gp_Pnt> & Pnts, gp_Pln & aPln) { double Dmax{}; auto nanoocp_result = ShapeAnalysis_Geom::NearestPlane(Pnts, aPln, Dmax); return std::make_tuple(nanoocp_result, Dmax); }, nb::arg("Pnts"), nb::arg("aPln"), R"nbdoc(Builds a plane out of a set of points in array
 Returns in <dmax> the maximal distance between the produced
 plane and given points)nbdoc")
         .def_static("PositionTrsf", static_cast<bool (*)(const occ::handle<NCollection_HArray2<double>> &, gp_Trsf &, const double, const double)>(&ShapeAnalysis_Geom::PositionTrsf), nb::arg("coefs").none(), nb::arg("trsf"), nb::arg("unit"), nb::arg("prec"), R"nbdoc(Builds transformation object out of matrix.
@@ -888,7 +888,7 @@ not greater than precision).)nbdoc")
         .def("NbSingularities", static_cast<int (ShapeAnalysis_Surface::*)(const double)>(&ShapeAnalysis_Surface::NbSingularities), nb::arg("preci"), R"nbdoc(Returns the number of singularities for the given precision
 (i.e. number of surface singularities with sizes not greater
 than precision).)nbdoc")
-        .def("Singularity", [](ShapeAnalysis_Surface &self, const int num, gp_Pnt & P3d, gp_Pnt2d & firstP2d, gp_Pnt2d & lastP2d) { double preci{}; double firstpar{}; double lastpar{}; bool uisodeg{}; auto result = self.Singularity(num, preci, P3d, firstP2d, lastP2d, firstpar, lastpar, uisodeg); return std::make_tuple(result, preci, firstpar, lastpar, uisodeg); }, nb::arg("num"), nb::arg("P3d"), nb::arg("firstP2d"), nb::arg("lastP2d"), R"nbdoc(Returns the characteristics of the singularity specified by
+        .def("Singularity", [](ShapeAnalysis_Surface &self, const int num, gp_Pnt & P3d, gp_Pnt2d & firstP2d, gp_Pnt2d & lastP2d) { double preci{}; double firstpar{}; double lastpar{}; bool uisodeg{}; auto nanoocp_result = self.Singularity(num, preci, P3d, firstP2d, lastP2d, firstpar, lastpar, uisodeg); return std::make_tuple(nanoocp_result, preci, firstpar, lastpar, uisodeg); }, nb::arg("num"), nb::arg("P3d"), nb::arg("firstP2d"), nb::arg("lastP2d"), R"nbdoc(Returns the characteristics of the singularity specified by
 its rank number <num>.
 That means, that it is not necessary for <num> to be in the
 range [1, NbSingularities] but must be not greater than
@@ -909,7 +909,7 @@ Returns False if <num> is out of range, else returns True.)nbdoc")
 is considered as degenerated with <preci> and distance
 between P3d and corresponding singular point is less than
 <preci>)nbdoc")
-        .def("DegeneratedValues", [](ShapeAnalysis_Surface &self, const gp_Pnt & P3d, const double preci, gp_Pnt2d & firstP2d, gp_Pnt2d & lastP2d, const bool forward) { double firstpar{}; double lastpar{}; auto result = self.DegeneratedValues(P3d, preci, firstP2d, lastP2d, firstpar, lastpar, forward); return std::make_tuple(result, firstpar, lastpar); }, nb::arg("P3d"), nb::arg("preci"), nb::arg("firstP2d"), nb::arg("lastP2d"), nb::arg("forward") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns True if there is at least one surface iso-line which
+        .def("DegeneratedValues", [](ShapeAnalysis_Surface &self, const gp_Pnt & P3d, const double preci, gp_Pnt2d & firstP2d, gp_Pnt2d & lastP2d, const bool forward) { double firstpar{}; double lastpar{}; auto nanoocp_result = self.DegeneratedValues(P3d, preci, firstP2d, lastP2d, firstpar, lastpar, forward); return std::make_tuple(nanoocp_result, firstpar, lastpar); }, nb::arg("P3d"), nb::arg("preci"), nb::arg("firstP2d"), nb::arg("lastP2d"), nb::arg("forward") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns True if there is at least one surface iso-line which
 is considered as degenerated with <preci> and distance
 between P3d and corresponding singular point is less than
 <preci> (like IsDegenerated).
@@ -998,7 +998,7 @@ If <maxpreci> >0. and distance between solution and
 P3D is greater than <maxpreci>, that solution is considered
 as bad, and ValueOfUV() is used.
 If not succeeded, calls ValueOfUV())nbdoc")
-        .def("UVFromIso", [](ShapeAnalysis_Surface &self, const gp_Pnt & P3D, const double preci) { double U{}; double V{}; auto result = self.UVFromIso(P3D, preci, U, V); return std::make_tuple(result, U, V); }, nb::arg("P3D"), nb::arg("preci"), R"nbdoc(Tries a refinement of an already computed couple (U,V) by
+        .def("UVFromIso", [](ShapeAnalysis_Surface &self, const gp_Pnt & P3D, const double preci) { double U{}; double V{}; auto nanoocp_result = self.UVFromIso(P3D, preci, U, V); return std::make_tuple(nanoocp_result, U, V); }, nb::arg("P3D"), nb::arg("preci"), R"nbdoc(Tries a refinement of an already computed couple (U,V) by
 using projecting 3D point on iso-lines:
 1. boundaries of the surface,
 2. iso-lines passing through (U,V)
@@ -1178,7 +1178,7 @@ OK   : edge is not small or degenerated
 DONE1: edge is small, vertices are the same
 DONE2: edge is small, vertices are not the same
 FAIL : no 3d curve and pcurve)nbdoc")
-        .def("CheckSeam__Geom2d_Curve__Geom2d_Curve__float__float", [](ShapeAnalysis_Wire &self, const int num) { occ::handle<Geom2d_Curve> C1{}; occ::handle<Geom2d_Curve> C2{}; double cf{}; double cl{}; auto result = self.CheckSeam(num, C1, C2, cf, cl); return std::make_tuple(result, C1, C2, cf, cl); }, nb::arg("num"), R"nbdoc(CheckSeam__Geom2d_Curve__Geom2d_Curve__float__float: the C++ overload CheckSeam(const int, occ::handle<Geom2d_Curve> &, occ::handle<Geom2d_Curve> &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("CheckSeam__Geom2d_Curve__Geom2d_Curve__float__float", [](ShapeAnalysis_Wire &self, const int num) { occ::handle<Geom2d_Curve> C1{}; occ::handle<Geom2d_Curve> C2{}; double cf{}; double cl{}; auto nanoocp_result = self.CheckSeam(num, C1, C2, cf, cl); return std::make_tuple(nanoocp_result, C1, C2, cf, cl); }, nb::arg("num"), R"nbdoc(CheckSeam__Geom2d_Curve__Geom2d_Curve__float__float: the C++ overload CheckSeam(const int, occ::handle<Geom2d_Curve> &, occ::handle<Geom2d_Curve> &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Checks if a seam pcurves are correct oriented
 Returns: False (status OK) if given edge is not a seam or if it is OK
 C1 - current pcurve for FORWARD edge,
@@ -1298,7 +1298,7 @@ Uses ShapeAnalysis::IsOuterBound for analysis
 If <APIMake> is True uses BRepAPI_MakeWire to build the
 wire, if False (to be used only when edges share common
 vertices) uses BRep_Builder to build the wire)nbdoc")
-        .def("CheckNotchedEdges", [](ShapeAnalysis_Wire &self, const int num, const double Tolerance) { int shortNum{}; double param{}; auto result = self.CheckNotchedEdges(num, shortNum, param, Tolerance); return std::make_tuple(result, shortNum, param); }, nb::arg("num"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Detects a notch)nbdoc")
+        .def("CheckNotchedEdges", [](ShapeAnalysis_Wire &self, const int num, const double Tolerance) { int shortNum{}; double param{}; auto nanoocp_result = self.CheckNotchedEdges(num, shortNum, param, Tolerance); return std::make_tuple(nanoocp_result, shortNum, param); }, nb::arg("num"), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Detects a notch)nbdoc")
         .def("CheckSmallArea", static_cast<bool (ShapeAnalysis_Wire::*)(const TopoDS_Wire &)>(&ShapeAnalysis_Wire::CheckSmallArea), nb::arg("theWire"), R"nbdoc(Checks if wire has parametric area less than precision.)nbdoc")
         .def("CheckShapeConnect", static_cast<bool (ShapeAnalysis_Wire::*)(const TopoDS_Shape &, const double)>(&ShapeAnalysis_Wire::CheckShapeConnect), nb::arg("shape"), nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(Checks with what orientation <shape> (wire or edge) can be
 connected to the wire.
@@ -1329,7 +1329,7 @@ For tail of <SBWD> if DONE4 is True <shape> should be direct,
 otherwise reversed.
 For head of <SBWD> if DONE5 is True <shape> should be direct,
 otherwise reversed.)nbdoc")
-        .def("CheckShapeConnect__float__float__float__float", [](ShapeAnalysis_Wire &self, const TopoDS_Shape & shape, const double prec) { double tailhead{}; double tailtail{}; double headtail{}; double headhead{}; auto result = self.CheckShapeConnect(tailhead, tailtail, headtail, headhead, shape, prec); return std::make_tuple(result, tailhead, tailtail, headtail, headhead); }, nb::arg("shape"), nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(CheckShapeConnect__float__float__float__float: the C++ overload CheckShapeConnect(double &, double &, double &, double &, const TopoDS_Shape &, const double); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("CheckShapeConnect__float__float__float__float", [](ShapeAnalysis_Wire &self, const TopoDS_Shape & shape, const double prec) { double tailhead{}; double tailtail{}; double headtail{}; double headhead{}; auto nanoocp_result = self.CheckShapeConnect(tailhead, tailtail, headtail, headhead, shape, prec); return std::make_tuple(nanoocp_result, tailhead, tailtail, headtail, headhead); }, nb::arg("shape"), nb::arg("prec") = static_cast<std::decay_t<const double>>(0.0), R"nbdoc(CheckShapeConnect__float__float__float__float: the C++ overload CheckShapeConnect(double &, double &, double &, double &, const TopoDS_Shape &, const double); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 The same as previous CheckShapeConnect but is more advanced.
 It returns the distances between each end of <sbwd> and each
 end of <shape>. For example, <tailhead> stores distance
@@ -1454,7 +1454,7 @@ More detail by method Data)nbdoc")
         .def("Position", static_cast<gp_XYZ (ShapeAnalysis_WireVertex::*)(const int) const>(&ShapeAnalysis_WireVertex::Position), nb::arg("num"))
         .def("UPrevious", static_cast<double (ShapeAnalysis_WireVertex::*)(const int) const>(&ShapeAnalysis_WireVertex::UPrevious), nb::arg("num"))
         .def("UFollowing", static_cast<double (ShapeAnalysis_WireVertex::*)(const int) const>(&ShapeAnalysis_WireVertex::UFollowing), nb::arg("num"))
-        .def("Data", [](const ShapeAnalysis_WireVertex &self, const int num, gp_XYZ & pos) { double upre{}; double ufol{}; auto result = self.Data(num, pos, upre, ufol); return std::make_tuple(result, upre, ufol); }, nb::arg("num"), nb::arg("pos"), R"nbdoc(Returns the recorded status for a vertex
+        .def("Data", [](const ShapeAnalysis_WireVertex &self, const int num, gp_XYZ & pos) { double upre{}; double ufol{}; auto nanoocp_result = self.Data(num, pos, upre, ufol); return std::make_tuple(nanoocp_result, upre, ufol); }, nb::arg("num"), nb::arg("pos"), R"nbdoc(Returns the recorded status for a vertex
 With its recorded position and parameters on both edges
 These values are relevant regarding the status:
 Status  Meaning    Position  Preceding   Following

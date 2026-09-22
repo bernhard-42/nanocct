@@ -232,7 +232,7 @@ is identical to the quadric.)nbdoc")
 of the point of range N.)nbdoc")
         .def("HasNextCurve", static_cast<bool (IntAna_IntQuadQuad::*)(const int) const>(&IntAna_IntQuadQuad::HasNextCurve), nb::arg("I"), R"nbdoc(Returns True if the Curve I shares its last bound
 with another curve.)nbdoc")
-        .def("NextCurve", [](const IntAna_IntQuadQuad &self, const int I) { bool theOpposite{}; auto result = self.NextCurve(I, theOpposite); return std::make_tuple(result, theOpposite); }, nb::arg("I"), R"nbdoc(If HasNextCurve(I) returns True, this function
+        .def("NextCurve", [](const IntAna_IntQuadQuad &self, const int I) { bool theOpposite{}; auto nanoocp_result = self.NextCurve(I, theOpposite); return std::make_tuple(nanoocp_result, theOpposite); }, nb::arg("I"), R"nbdoc(If HasNextCurve(I) returns True, this function
 returns the Index J of the curve which has a
 common bound with the curve I. If theOpposite ==
 True, then the last parameter of the curve I, and
@@ -242,7 +242,7 @@ the first parameter of the curve J are the same
 point.)nbdoc")
         .def("HasPreviousCurve", static_cast<bool (IntAna_IntQuadQuad::*)(const int) const>(&IntAna_IntQuadQuad::HasPreviousCurve), nb::arg("I"), R"nbdoc(Returns True if the Curve I shares its first bound
 with another curve.)nbdoc")
-        .def("PreviousCurve", [](const IntAna_IntQuadQuad &self, const int I) { bool theOpposite{}; auto result = self.PreviousCurve(I, theOpposite); return std::make_tuple(result, theOpposite); }, nb::arg("I"), R"nbdoc(if HasPreviousCurve(I) returns True, this function
+        .def("PreviousCurve", [](const IntAna_IntQuadQuad &self, const int I) { bool theOpposite{}; auto nanoocp_result = self.PreviousCurve(I, theOpposite); return std::make_tuple(nanoocp_result, theOpposite); }, nb::arg("I"), R"nbdoc(if HasPreviousCurve(I) returns True, this function
 returns the Index J of the curve which has a common
 bound with the curve I. If theOpposite == True
 then the first parameter of the curve I, and the

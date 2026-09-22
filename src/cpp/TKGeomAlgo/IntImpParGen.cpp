@@ -32,11 +32,11 @@ Math function, instantiated inside the Intersector.
 Tool used by the package IntCurve and IntImpParGen)nbdoc")
         .def_static("DetermineTransition", static_cast<bool (*)(const IntRes2d_Position, gp_Vec2d &, IntRes2d_Transition &, const IntRes2d_Position, gp_Vec2d &, IntRes2d_Transition &, const double)>(&IntImpParGen::DetermineTransition), nb::arg("Pos1"), nb::arg("Tan1"), nb::arg("Trans1"), nb::arg("Pos2"), nb::arg("Tan2"), nb::arg("Trans2"), nb::arg("Tol"))
         .def_static("DeterminePosition", [](const IntRes2d_Domain & Dom1, const gp_Pnt2d & P1, const double Tol) { IntRes2d_Position Pos1{}; IntImpParGen::DeterminePosition(Pos1, Dom1, P1, Tol); return Pos1; }, nb::arg("Dom1"), nb::arg("P1"), nb::arg("Tol"))
-        .def_static("NormalizeOnDomain", [](const IntRes2d_Domain & Dom1) { double Par1{}; auto result = IntImpParGen::NormalizeOnDomain(Par1, Dom1); return std::make_tuple(result, Par1); }, nb::arg("Dom1"));
+        .def_static("NormalizeOnDomain", [](const IntRes2d_Domain & Dom1) { double Par1{}; auto nanoocp_result = IntImpParGen::NormalizeOnDomain(Par1, Dom1); return std::make_tuple(nanoocp_result, Par1); }, nb::arg("Dom1"));
     nanoocp_implicit_copy_ctor<IntImpParGen>(nb::borrow<nb::class_<IntImpParGen>>(m.attr("IntImpParGen")));
     nanoocp_implicit_default_ctor<IntImpParGen_ImpTool>(nb::borrow<nb::class_<IntImpParGen_ImpTool>>(m.attr("IntImpParGen_ImpTool")));
     nanoocp_implicit_copy_ctor<IntImpParGen_ImpTool>(nb::borrow<nb::class_<IntImpParGen_ImpTool>>(m.attr("IntImpParGen_ImpTool")));
-    m.def("NormalizeOnDomain", [](const IntRes2d_Domain & arg1) { double arg0{}; auto result = NormalizeOnDomain(arg0, arg1); return std::make_tuple(result, arg0); }, nb::arg("arg1"));
+    m.def("NormalizeOnDomain", [](const IntRes2d_Domain & arg1) { double arg0{}; auto nanoocp_result = NormalizeOnDomain(arg0, arg1); return std::make_tuple(nanoocp_result, arg0); }, nb::arg("arg1"));
     m.def("Determine_Position", [](const IntRes2d_Domain & arg1, const gp_Pnt2d & arg2, const double arg3) { IntRes2d_Position arg0{}; Determine_Position(arg0, arg1, arg2, arg3); return arg0; }, nb::arg("arg1"), nb::arg("arg2"), nb::arg("arg3"));
     m.def("Determine_Transition", static_cast<void (*)(const IntRes2d_Position, gp_Vec2d &, const gp_Vec2d &, IntRes2d_Transition &, const IntRes2d_Position, gp_Vec2d &, const gp_Vec2d &, IntRes2d_Transition &, const double)>(&Determine_Transition), nb::arg("Pos1"), nb::arg("Tan1"), nb::arg("Norm1"), nb::arg("Trans1"), nb::arg("Pos2"), nb::arg("Tan2"), nb::arg("Norm2"), nb::arg("Trans2"), nb::arg("ToleranceAng"));
 }

@@ -1,0 +1,19 @@
+# nanoOCP generator report for TKDEIGES: 13 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# raw-pointer: 6
+# rvalue: 2
+# template: 3
+# undefined: 2
+raw-pointer	IGESData	IGESData_DirPart::Values(int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &): param 'res1': raw pointer to primitive
+raw-pointer	IGESData	IGESData_IGESEntity::CResValues(): param 'res1': raw pointer to primitive
+raw-pointer	IGESData	IGESData_IGESReaderData::DirValues(const int, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &, int &): param 'res1': raw pointer to primitive
+raw-pointer	IGESFile	IGESFile_Read(...): param 'nomfic': raw pointer to primitive
+raw-pointer	IGESFile	IGESFile_Read(...): param 'nomfic': raw pointer to primitive
+raw-pointer	IGESFile	IGESFile_ReadFNES(...): param 'nomfic': raw pointer to primitive
+rvalue	IGESControl	IGESControl_Writer::SetShapeFixParameters(): param 'theParameters': rvalue reference
+rvalue	IGESToBRep	IGESToBRep_Reader::SetShapeFixParameters(): param 'theParameters': rvalue reference
+template	IGESData	IGESData_IGESWriter::Send: template member
+template	IGESData	IGESData_ParamReader::ReadEntity: template member
+template	IGESData	IGESData_ParamReader::ReadEntity: template member
+undefined	IGESSelect	IGESSelect_SelectBasicGeom::CurvesOnly(): declared in the header, no definition in libTKDEIGES
+undefined	IGESToBRep	IGESToBRep_TopoSurface::TransferPlaneSurface(const occ::handle<IGESSolid_PlaneSurface> &): declared in the header, no definition in libTKDEIGES

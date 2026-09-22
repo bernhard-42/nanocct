@@ -194,7 +194,7 @@ Zero means Root label.)nbdoc")
     nb::implicitly_convertible<std::decay_t<const TCollection_AsciiString &>, XCAFPrs_DocumentIdIterator>();
     nanoocp_implicit_default_ctor<XCAFPrs_Driver>(nb::borrow<nb::class_<XCAFPrs_Driver>>(m.attr("XCAFPrs_Driver")));
     nb::borrow<nb::class_<XCAFPrs_Driver>>(m.attr("XCAFPrs_Driver"))
-        .def("Update", [](XCAFPrs_Driver &self, const TDF_Label & L) { occ::handle<AIS_InteractiveObject> ais{}; auto result = self.Update(L, ais); return std::make_tuple(result, ais); }, nb::arg("L"))
+        .def("Update", [](XCAFPrs_Driver &self, const TDF_Label & L) { occ::handle<AIS_InteractiveObject> ais{}; auto nanoocp_result = self.Update(L, ais); return std::make_tuple(nanoocp_result, ais); }, nb::arg("L"))
         .def_static("GetID", static_cast<const Standard_GUID & (*)()>(&XCAFPrs_Driver::GetID), R"nbdoc(returns GUID of the driver)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&XCAFPrs_Driver::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&XCAFPrs_Driver::get_type_descriptor))

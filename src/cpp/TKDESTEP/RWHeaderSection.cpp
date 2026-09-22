@@ -56,7 +56,7 @@ Protocol).)nbdoc")
         .def("CopyCase", static_cast<void (RWHeaderSection_GeneralModule::*)(const int, const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &, Interface_CopyTool &) const>(&RWHeaderSection_GeneralModule::CopyCase), nb::arg("CN"), nb::arg("entfrom").none(), nb::arg("entto").none(), nb::arg("TC"), R"nbdoc(Specific Copy ("Deep") from <entfrom> to <entto> (same type)
 by using a CopyTool which provides its working Map.
 Use method Transferred from CopyTool to work)nbdoc")
-        .def("NewVoid", [](const RWHeaderSection_GeneralModule &self, const int CN) { occ::handle<Standard_Transient> ent{}; auto result = self.NewVoid(CN, ent); return std::make_tuple(result, ent); }, nb::arg("CN"))
+        .def("NewVoid", [](const RWHeaderSection_GeneralModule &self, const int CN) { occ::handle<Standard_Transient> ent{}; auto nanoocp_result = self.NewVoid(CN, ent); return std::make_tuple(nanoocp_result, ent); }, nb::arg("CN"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&RWHeaderSection_GeneralModule::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&RWHeaderSection_GeneralModule::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (RWHeaderSection_GeneralModule::*)() const>(&RWHeaderSection_GeneralModule::DynamicType));

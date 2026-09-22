@@ -165,12 +165,12 @@ Has.)nbdoc")
         .def_static("New", static_cast<occ::handle<TPrsStd_AISViewer> (*)(const TDF_Label &, const occ::handle<V3d_Viewer> &)>(&TPrsStd_AISViewer::New), nb::arg("acces"), nb::arg("viewer").none(), R"nbdoc(create and set an AISAttribute at root label. The
 interactive context is build. Raise an exception if
 Has.)nbdoc")
-        .def_static("Find__TPrsStd_AISViewer", [](const TDF_Label & acces) { occ::handle<TPrsStd_AISViewer> A{}; auto result = TPrsStd_AISViewer::Find(acces, A); return std::make_tuple(result, A); }, nb::arg("acces"), R"nbdoc(Find__TPrsStd_AISViewer: the C++ overload Find(const TDF_Label &, occ::handle<TPrsStd_AISViewer> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("Find__TPrsStd_AISViewer", [](const TDF_Label & acces) { occ::handle<TPrsStd_AISViewer> A{}; auto nanoocp_result = TPrsStd_AISViewer::Find(acces, A); return std::make_tuple(nanoocp_result, A); }, nb::arg("acces"), R"nbdoc(Find__TPrsStd_AISViewer: the C++ overload Find(const TDF_Label &, occ::handle<TPrsStd_AISViewer> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Finds the viewer attribute at the label access, the
 root of the data framework. Calling this function can be used to initialize an AIS viewer)nbdoc")
-        .def_static("Find__AIS_InteractiveContext", [](const TDF_Label & acces) { occ::handle<AIS_InteractiveContext> IC{}; auto result = TPrsStd_AISViewer::Find(acces, IC); return std::make_tuple(result, IC); }, nb::arg("acces"), R"nbdoc(Find__AIS_InteractiveContext: the C++ overload Find(const TDF_Label &, occ::handle<AIS_InteractiveContext> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("Find__AIS_InteractiveContext", [](const TDF_Label & acces) { occ::handle<AIS_InteractiveContext> IC{}; auto nanoocp_result = TPrsStd_AISViewer::Find(acces, IC); return std::make_tuple(nanoocp_result, IC); }, nb::arg("acces"), R"nbdoc(Find__AIS_InteractiveContext: the C++ overload Find(const TDF_Label &, occ::handle<AIS_InteractiveContext> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 )nbdoc")
-        .def_static("Find__V3d_Viewer", [](const TDF_Label & acces) { occ::handle<V3d_Viewer> V{}; auto result = TPrsStd_AISViewer::Find(acces, V); return std::make_tuple(result, V); }, nb::arg("acces"), R"nbdoc(Find__V3d_Viewer: the C++ overload Find(const TDF_Label &, occ::handle<V3d_Viewer> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("Find__V3d_Viewer", [](const TDF_Label & acces) { occ::handle<V3d_Viewer> V{}; auto nanoocp_result = TPrsStd_AISViewer::Find(acces, V); return std::make_tuple(nanoocp_result, V); }, nb::arg("acces"), R"nbdoc(Find__V3d_Viewer: the C++ overload Find(const TDF_Label &, occ::handle<V3d_Viewer> &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 )nbdoc")
         .def_static("Update_s", static_cast<void (*)(const TDF_Label &)>(&TPrsStd_AISViewer::Update), nb::arg("acces"), R"nbdoc(AISViewer methods
 =================)nbdoc")
@@ -188,14 +188,14 @@ access is the root of the data framework.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TPrsStd_AISViewer::*)() const>(&TPrsStd_AISViewer::DynamicType));
     nanoocp_implicit_copy_ctor<TPrsStd_AISViewer>(nb::borrow<nb::class_<TPrsStd_AISViewer>>(m.attr("TPrsStd_AISViewer")));
     nb::borrow<nb::class_<TPrsStd_Driver>>(m.attr("TPrsStd_Driver"))
-        .def("Update", [](TPrsStd_Driver &self, const TDF_Label & L) { occ::handle<AIS_InteractiveObject> ais{}; auto result = self.Update(L, ais); return std::make_tuple(result, ais); }, nb::arg("L"), R"nbdoc(Updates the interactive object ais with
+        .def("Update", [](TPrsStd_Driver &self, const TDF_Label & L) { occ::handle<AIS_InteractiveObject> ais{}; auto nanoocp_result = self.Update(L, ais); return std::make_tuple(nanoocp_result, ais); }, nb::arg("L"), R"nbdoc(Updates the interactive object ais with
 information found on the attributes associated with the label L.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&TPrsStd_Driver::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TPrsStd_Driver::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (TPrsStd_Driver::*)() const>(&TPrsStd_Driver::DynamicType));
     nb::borrow<nb::class_<TPrsStd_AxisDriver>>(m.attr("TPrsStd_AxisDriver"))
         .def(nb::new_([]() { return opencascade::handle<TPrsStd_AxisDriver>(new TPrsStd_AxisDriver()); }), R"nbdoc(Constructs an empty axis driver.)nbdoc")
-        .def("Update", [](TPrsStd_AxisDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto result = self.Update(aLabel, anAISObject); return std::make_tuple(result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
+        .def("Update", [](TPrsStd_AxisDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto nanoocp_result = self.Update(aLabel, anAISObject); return std::make_tuple(nanoocp_result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
 No compute is done.
 Returns <True> if information was found
 and AISObject updated.)nbdoc")
@@ -205,7 +205,7 @@ and AISObject updated.)nbdoc")
     nanoocp_implicit_copy_ctor<TPrsStd_AxisDriver>(nb::borrow<nb::class_<TPrsStd_AxisDriver>>(m.attr("TPrsStd_AxisDriver")));
     nb::borrow<nb::class_<TPrsStd_ConstraintDriver>>(m.attr("TPrsStd_ConstraintDriver"))
         .def(nb::new_([]() { return opencascade::handle<TPrsStd_ConstraintDriver>(new TPrsStd_ConstraintDriver()); }), R"nbdoc(Constructs an empty constraint driver.)nbdoc")
-        .def("Update", [](TPrsStd_ConstraintDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto result = self.Update(aLabel, anAISObject); return std::make_tuple(result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
+        .def("Update", [](TPrsStd_ConstraintDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto nanoocp_result = self.Update(aLabel, anAISObject); return std::make_tuple(nanoocp_result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
 No compute is done.
 Returns <True> if information was found
 and AISObject updated.)nbdoc")
@@ -371,7 +371,7 @@ Deprecated in OCCT: Use ComputeAngleForOneFace() returning handle by value inste
 If it does not exist, creates it and fills it with standard drivers.)nbdoc")
         .def("InitStandardDrivers", static_cast<void (TPrsStd_DriverTable::*)()>(&TPrsStd_DriverTable::InitStandardDrivers), R"nbdoc(Fills the table with standard drivers)nbdoc")
         .def("AddDriver", static_cast<bool (TPrsStd_DriverTable::*)(const Standard_GUID &, const occ::handle<TPrsStd_Driver> &)>(&TPrsStd_DriverTable::AddDriver), nb::arg("guid"), nb::arg("driver").none(), R"nbdoc(Returns true if the driver has been added successfully to the driver table.)nbdoc")
-        .def("FindDriver", [](const TPrsStd_DriverTable &self, const Standard_GUID & guid) { occ::handle<TPrsStd_Driver> driver{}; auto result = self.FindDriver(guid, driver); return std::make_tuple(result, driver); }, nb::arg("guid"), R"nbdoc(Returns true if the driver was found.)nbdoc")
+        .def("FindDriver", [](const TPrsStd_DriverTable &self, const Standard_GUID & guid) { occ::handle<TPrsStd_Driver> driver{}; auto nanoocp_result = self.FindDriver(guid, driver); return std::make_tuple(nanoocp_result, driver); }, nb::arg("guid"), R"nbdoc(Returns true if the driver was found.)nbdoc")
         .def("RemoveDriver", static_cast<bool (TPrsStd_DriverTable::*)(const Standard_GUID &)>(&TPrsStd_DriverTable::RemoveDriver), nb::arg("guid"), R"nbdoc(Removes a driver with the given GUID.
 Returns true if the driver has been removed successfully.)nbdoc")
         .def("Clear", static_cast<void (TPrsStd_DriverTable::*)()>(&TPrsStd_DriverTable::Clear), R"nbdoc(Removes all drivers.
@@ -384,7 +384,7 @@ called to fill the table with standard drivers.)nbdoc")
     nanoocp_implicit_copy_ctor<TPrsStd_DriverTable>(nb::borrow<nb::class_<TPrsStd_DriverTable>>(m.attr("TPrsStd_DriverTable")));
     nb::borrow<nb::class_<TPrsStd_GeometryDriver>>(m.attr("TPrsStd_GeometryDriver"))
         .def(nb::new_([]() { return opencascade::handle<TPrsStd_GeometryDriver>(new TPrsStd_GeometryDriver()); }), R"nbdoc(Constructs an empty geometry driver.)nbdoc")
-        .def("Update", [](TPrsStd_GeometryDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto result = self.Update(aLabel, anAISObject); return std::make_tuple(result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
+        .def("Update", [](TPrsStd_GeometryDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto nanoocp_result = self.Update(aLabel, anAISObject); return std::make_tuple(nanoocp_result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
 No compute is done.
 Returns <True> if information was found
 and AISObject updated.)nbdoc")
@@ -394,7 +394,7 @@ and AISObject updated.)nbdoc")
     nanoocp_implicit_copy_ctor<TPrsStd_GeometryDriver>(nb::borrow<nb::class_<TPrsStd_GeometryDriver>>(m.attr("TPrsStd_GeometryDriver")));
     nb::borrow<nb::class_<TPrsStd_NamedShapeDriver>>(m.attr("TPrsStd_NamedShapeDriver"))
         .def(nb::new_([]() { return opencascade::handle<TPrsStd_NamedShapeDriver>(new TPrsStd_NamedShapeDriver()); }), R"nbdoc(Constructs an empty named shape driver.)nbdoc")
-        .def("Update", [](TPrsStd_NamedShapeDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto result = self.Update(aLabel, anAISObject); return std::make_tuple(result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
+        .def("Update", [](TPrsStd_NamedShapeDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto nanoocp_result = self.Update(aLabel, anAISObject); return std::make_tuple(nanoocp_result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
 No compute is done.
 Returns <True> if information was found
 and AISObject updated.)nbdoc")
@@ -404,7 +404,7 @@ and AISObject updated.)nbdoc")
     nanoocp_implicit_copy_ctor<TPrsStd_NamedShapeDriver>(nb::borrow<nb::class_<TPrsStd_NamedShapeDriver>>(m.attr("TPrsStd_NamedShapeDriver")));
     nb::borrow<nb::class_<TPrsStd_PlaneDriver>>(m.attr("TPrsStd_PlaneDriver"))
         .def(nb::new_([]() { return opencascade::handle<TPrsStd_PlaneDriver>(new TPrsStd_PlaneDriver()); }), R"nbdoc(Constructs an empty plane driver.)nbdoc")
-        .def("Update", [](TPrsStd_PlaneDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto result = self.Update(aLabel, anAISObject); return std::make_tuple(result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
+        .def("Update", [](TPrsStd_PlaneDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto nanoocp_result = self.Update(aLabel, anAISObject); return std::make_tuple(nanoocp_result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
 No compute is done.
 Returns <True> if information was found
 and AISObject updated.)nbdoc")
@@ -414,7 +414,7 @@ and AISObject updated.)nbdoc")
     nanoocp_implicit_copy_ctor<TPrsStd_PlaneDriver>(nb::borrow<nb::class_<TPrsStd_PlaneDriver>>(m.attr("TPrsStd_PlaneDriver")));
     nb::borrow<nb::class_<TPrsStd_PointDriver>>(m.attr("TPrsStd_PointDriver"))
         .def(nb::new_([]() { return opencascade::handle<TPrsStd_PointDriver>(new TPrsStd_PointDriver()); }), R"nbdoc(Constructs an empty point driver.)nbdoc")
-        .def("Update", [](TPrsStd_PointDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto result = self.Update(aLabel, anAISObject); return std::make_tuple(result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
+        .def("Update", [](TPrsStd_PointDriver &self, const TDF_Label & aLabel) { occ::handle<AIS_InteractiveObject> anAISObject{}; auto nanoocp_result = self.Update(aLabel, anAISObject); return std::make_tuple(nanoocp_result, anAISObject); }, nb::arg("aLabel"), R"nbdoc(Build the AISObject (if null) or update it.
 No compute is done.
 Returns <True> if information was found
 and AISObject updated.)nbdoc")

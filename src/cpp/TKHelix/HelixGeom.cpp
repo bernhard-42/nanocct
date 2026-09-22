@@ -136,7 +136,7 @@ Must be redefined.)nbdoc");
     nanoocp_implicit_copy_ctor<HelixGeom_HelixCurve>(nb::borrow<nb::class_<HelixGeom_HelixCurve>>(m.attr("HelixGeom_HelixCurve")));
     nanoocp_implicit_default_ctor<HelixGeom_Tools>(nb::borrow<nb::class_<HelixGeom_Tools>>(m.attr("HelixGeom_Tools")));
     nb::borrow<nb::class_<HelixGeom_Tools>>(m.attr("HelixGeom_Tools"))
-        .def_static("ApprHelix", [](const double aT1, const double aT2, const double aPitch, const double aRStart, const double aTaperAngle, const bool aIsCW, const double aTol) { occ::handle<Geom_BSplineCurve> theBSpl{}; double theMaxError{}; auto result = HelixGeom_Tools::ApprHelix(aT1, aT2, aPitch, aRStart, aTaperAngle, aIsCW, aTol, theBSpl, theMaxError); return std::make_tuple(result, theBSpl, theMaxError); }, nb::arg("aT1"), nb::arg("aT2"), nb::arg("aPitch"), nb::arg("aRStart"), nb::arg("aTaperAngle"), nb::arg("aIsCW"), nb::arg("aTol"), R"nbdoc(Approximates a parametric helix curve using B-spline representation.
+        .def_static("ApprHelix", [](const double aT1, const double aT2, const double aPitch, const double aRStart, const double aTaperAngle, const bool aIsCW, const double aTol) { occ::handle<Geom_BSplineCurve> theBSpl{}; double theMaxError{}; auto nanoocp_result = HelixGeom_Tools::ApprHelix(aT1, aT2, aPitch, aRStart, aTaperAngle, aIsCW, aTol, theBSpl, theMaxError); return std::make_tuple(nanoocp_result, theBSpl, theMaxError); }, nb::arg("aT1"), nb::arg("aT2"), nb::arg("aPitch"), nb::arg("aRStart"), nb::arg("aTaperAngle"), nb::arg("aIsCW"), nb::arg("aTol"), R"nbdoc(Approximates a parametric helix curve using B-spline representation.
 @param aT1 [in] Start parameter (angular position in radians)
 @param aT2 [in] End parameter (angular position in radians)
 @param aPitch [in] Helix pitch (vertical distance per 2*PI radians)
@@ -147,7 +147,7 @@ Must be redefined.)nbdoc");
 @param theBSpl [out] Resulting B-spline curve
 @param theMaxError [out] Maximum approximation error achieved
 @return 0 on success, error code otherwise)nbdoc")
-        .def_static("ApprCurve3D", [](const occ::handle<Adaptor3d_Curve> & theHC, const double theTol, const GeomAbs_Shape theCont, const int theMaxSeg, const int theMaxDeg) { occ::handle<Geom_BSplineCurve> theBSpl{}; double theMaxError{}; auto result = HelixGeom_Tools::ApprCurve3D(theHC, theTol, theCont, theMaxSeg, theMaxDeg, theBSpl, theMaxError); return std::make_tuple(result, theBSpl, theMaxError); }, nb::arg("theHC").none(), nb::arg("theTol"), nb::arg("theCont"), nb::arg("theMaxSeg"), nb::arg("theMaxDeg"), R"nbdoc(Approximates a generic 3D curve using B-spline representation.
+        .def_static("ApprCurve3D", [](const occ::handle<Adaptor3d_Curve> & theHC, const double theTol, const GeomAbs_Shape theCont, const int theMaxSeg, const int theMaxDeg) { occ::handle<Geom_BSplineCurve> theBSpl{}; double theMaxError{}; auto nanoocp_result = HelixGeom_Tools::ApprCurve3D(theHC, theTol, theCont, theMaxSeg, theMaxDeg, theBSpl, theMaxError); return std::make_tuple(nanoocp_result, theBSpl, theMaxError); }, nb::arg("theHC").none(), nb::arg("theTol"), nb::arg("theCont"), nb::arg("theMaxSeg"), nb::arg("theMaxDeg"), R"nbdoc(Approximates a generic 3D curve using B-spline representation.
 @param theHC [in] Handle to the curve adaptor to approximate
 @param theTol [in] Approximation tolerance
 @param theCont [in] Required continuity (C0, C1, C2)

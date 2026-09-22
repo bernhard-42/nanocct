@@ -486,7 +486,7 @@ void nanoocp_define_IMeshData(nb::module_ &m) {
         .def("IsForward", static_cast<bool (IMeshData_PCurve::*)() const>(&IMeshData_PCurve::IsForward), R"nbdoc(Returns forward flag of this pcurve.)nbdoc")
         .def("IsInternal", static_cast<bool (IMeshData_PCurve::*)() const>(&IMeshData_PCurve::IsInternal), R"nbdoc(Returns internal flag of this pcurve.)nbdoc")
         .def("GetOrientation", static_cast<TopAbs_Orientation (IMeshData_PCurve::*)() const>(&IMeshData_PCurve::GetOrientation), R"nbdoc(Returns orientation of the edge associated with current pcurve.)nbdoc")
-        .def("GetFace", [](const IMeshData_PCurve &self) { opencascade::handle<IMeshData_Face> result(self.GetFace()); return result; }, R"nbdoc(Returns discrete face pcurve is associated to.)nbdoc")
+        .def("GetFace", [](const IMeshData_PCurve &self) { opencascade::handle<IMeshData_Face> nanoocp_result(self.GetFace()); return nanoocp_result; }, R"nbdoc(Returns discrete face pcurve is associated to.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&IMeshData_PCurve::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&IMeshData_PCurve::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (IMeshData_PCurve::*)() const>(&IMeshData_PCurve::DynamicType));
@@ -528,7 +528,7 @@ Returns number of edges in discrete model.)nbdoc")
     nb::borrow<nb::class_<IMeshData_Wire>>(m.attr("IMeshData_Wire"))
         .def("GetWire", static_cast<const TopoDS_Wire & (IMeshData_Wire::*)() const>(&IMeshData_Wire::GetWire), R"nbdoc(Returns TopoDS_Face attached to model.)nbdoc")
         .def("EdgesNb", static_cast<int (IMeshData_Wire::*)() const>(&IMeshData_Wire::EdgesNb), R"nbdoc(Returns number of edges.)nbdoc")
-        .def("GetEdge", [](const IMeshData_Wire &self, const int theIndex) { opencascade::handle<IMeshData_Edge> result(self.GetEdge(theIndex)); return result; }, nb::arg("theIndex"), R"nbdoc(Returns discrete edge with the given index.)nbdoc")
+        .def("GetEdge", [](const IMeshData_Wire &self, const int theIndex) { opencascade::handle<IMeshData_Edge> nanoocp_result(self.GetEdge(theIndex)); return nanoocp_result; }, nb::arg("theIndex"), R"nbdoc(Returns discrete edge with the given index.)nbdoc")
         .def("GetEdgeOrientation", static_cast<TopAbs_Orientation (IMeshData_Wire::*)(const int) const>(&IMeshData_Wire::GetEdgeOrientation), nb::arg("theIndex"), R"nbdoc(Returns True if orientation of discrete edge with the given index is forward.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&IMeshData_Wire::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&IMeshData_Wire::get_type_descriptor))
@@ -606,7 +606,7 @@ twice.
 the number of objects added to the tree.)nbdoc")
         .def("Reset", static_cast<void (NCollection_UBTreeFiller<int, Bnd_Box2d>::*)()>(&NCollection_UBTreeFiller<int, Bnd_Box2d>::Reset), R"nbdoc(Remove all data from Filler, partculary if the Tree no more needed
 so the destructor of this Filler should not populate the useless Tree.)nbdoc")
-        .def("CheckTree", [](NCollection_UBTreeFiller<int, Bnd_Box2d> &self) { std::ostringstream theStream_stream; auto result = self.CheckTree(theStream_stream); return std::make_tuple(result, nanoocp_stream_text(theStream_stream)); }, R"nbdoc(Check the filled tree for the total number of items and the balance
+        .def("CheckTree", [](NCollection_UBTreeFiller<int, Bnd_Box2d> &self) { std::ostringstream theStream_stream; auto nanoocp_result = self.CheckTree(theStream_stream); return std::make_tuple(nanoocp_result, nanoocp_stream_text(theStream_stream)); }, R"nbdoc(Check the filled tree for the total number of items and the balance
 outputting these results to std::ostream.
 @return
 the tree size (the same value is returned by method Fill()).)nbdoc");

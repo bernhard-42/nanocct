@@ -60,16 +60,16 @@ void nanoocp_templates_CPnts(nb::module_ &m) {
 void nanoocp_define_CPnts(nb::module_ &m) {
     nb::borrow<nb::class_<CPnts_MyGaussFunction>>(m.attr("CPnts_MyGaussFunction"))
         .def(nb::init<>())
-        .def("Value", [](CPnts_MyGaussFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"));
+        .def("Value", [](CPnts_MyGaussFunction &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"));
     nanoocp_implicit_copy_ctor<CPnts_MyGaussFunction>(nb::borrow<nb::class_<CPnts_MyGaussFunction>>(m.attr("CPnts_MyGaussFunction")));
     nb::borrow<nb::class_<CPnts_MyRootFunction>>(m.attr("CPnts_MyRootFunction"))
         .def(nb::init<>())
         .def("Init", static_cast<void (CPnts_MyRootFunction::*)(const double, const double)>(&CPnts_MyRootFunction::Init), nb::arg("X0"), nb::arg("L"), R"nbdoc(We want to solve Integral(X0,X,F(X,D)) = L)nbdoc")
         .def("Init", static_cast<void (CPnts_MyRootFunction::*)(const double, const double, const double)>(&CPnts_MyRootFunction::Init), nb::arg("X0"), nb::arg("L"), nb::arg("Tol"), R"nbdoc(We want to solve Integral(X0,X,F(X,D)) = L
 with given tolerance)nbdoc")
-        .def("Value", [](CPnts_MyRootFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(This is Integral(X0,X,F(X,D)) - L)nbdoc")
-        .def("Derivative", [](CPnts_MyRootFunction &self, const double X) { double Df{}; auto result = self.Derivative(X, Df); return std::make_tuple(result, Df); }, nb::arg("X"), R"nbdoc(This is F(X,D))nbdoc")
-        .def("Values", [](CPnts_MyRootFunction &self, const double X) { double F{}; double Df{}; auto result = self.Values(X, F, Df); return std::make_tuple(result, F, Df); }, nb::arg("X"));
+        .def("Value", [](CPnts_MyRootFunction &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(This is Integral(X0,X,F(X,D)) - L)nbdoc")
+        .def("Derivative", [](CPnts_MyRootFunction &self, const double X) { double Df{}; auto nanoocp_result = self.Derivative(X, Df); return std::make_tuple(nanoocp_result, Df); }, nb::arg("X"), R"nbdoc(This is F(X,D))nbdoc")
+        .def("Values", [](CPnts_MyRootFunction &self, const double X) { double F{}; double Df{}; auto nanoocp_result = self.Values(X, F, Df); return std::make_tuple(nanoocp_result, F, Df); }, nb::arg("X"));
     nanoocp_implicit_copy_ctor<CPnts_MyRootFunction>(nb::borrow<nb::class_<CPnts_MyRootFunction>>(m.attr("CPnts_MyRootFunction")));
     nb::borrow<nb::class_<CPnts_AbscissaPoint>>(m.attr("CPnts_AbscissaPoint"))
         .def(nb::init<>())

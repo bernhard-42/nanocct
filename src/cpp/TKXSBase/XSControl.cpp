@@ -273,7 +273,7 @@ Erases formerly recorded bounds and values
 Actually only for shape
 Then, for each value a little help can be attached)nbdoc")
         .def("SetModeWriteHelp", static_cast<void (XSControl_Controller::*)(const int, const char *const, const bool)>(&XSControl_Controller::SetModeWriteHelp), nb::arg("modetrans"), nb::arg("help"), nb::arg("shape") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Attaches a short line of help to a value of modetrans (write))nbdoc")
-        .def("ModeWriteBounds", [](const XSControl_Controller &self, const bool shape) { int modemin{}; int modemax{}; auto result = self.ModeWriteBounds(modemin, modemax, shape); return std::make_tuple(result, modemin, modemax); }, nb::arg("shape") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns recorded min and max values for modetrans (write)
+        .def("ModeWriteBounds", [](const XSControl_Controller &self, const bool shape) { int modemin{}; int modemax{}; auto nanoocp_result = self.ModeWriteBounds(modemin, modemax, shape); return std::make_tuple(nanoocp_result, modemin, modemax); }, nb::arg("shape") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Returns recorded min and max values for modetrans (write)
 Actually only for shapes
 Returns True if bounds are set, False else (then, free value))nbdoc")
         .def("IsModeWrite", static_cast<bool (XSControl_Controller::*)(const int, const bool) const>(&XSControl_Controller::IsModeWrite), nb::arg("modetrans"), nb::arg("shape") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Tells if a value of <modetrans> is a good value(within bounds)
@@ -320,7 +320,7 @@ If <name> is unknown, returns a Null Handle)nbdoc")
     nanoocp_implicit_default_ctor<XSControl_FuncShape>(nb::borrow<nb::class_<XSControl_FuncShape>>(m.attr("XSControl_FuncShape")));
     nb::borrow<nb::class_<XSControl_FuncShape>>(m.attr("XSControl_FuncShape"))
         .def_static("Init", static_cast<void (*)()>(&XSControl_FuncShape::Init), R"nbdoc(Defines and loads all functions which work on shapes for XSControl (as ActFunc))nbdoc")
-        .def_static("MoreShapes", [](const occ::handle<XSControl_WorkSession> & session, const char *const name) { occ::handle<NCollection_HSequence<TopoDS_Shape>> list{}; auto result = XSControl_FuncShape::MoreShapes(session, list, name); return std::make_tuple(result, list); }, nb::arg("session").none(), nb::arg("name"), R"nbdoc(Analyses a name as designating Shapes from a Vars or from
+        .def_static("MoreShapes", [](const occ::handle<XSControl_WorkSession> & session, const char *const name) { occ::handle<NCollection_HSequence<TopoDS_Shape>> list{}; auto nanoocp_result = XSControl_FuncShape::MoreShapes(session, list, name); return std::make_tuple(nanoocp_result, list); }, nb::arg("session").none(), nb::arg("name"), R"nbdoc(Analyses a name as designating Shapes from a Vars or from
 XSTEP transfer (last Transfer on Reading). <name> can be :
 "*" : all the root shapes produced by last Transfer (Read)
 i.e. considers roots of the TransientProcess
@@ -360,7 +360,7 @@ Returns True if done, False if <norm> is not available)nbdoc")
         .def("WS", static_cast<occ::handle<XSControl_WorkSession> (XSControl_Reader::*)() const>(&XSControl_Reader::WS), R"nbdoc(Returns the session used in <me>)nbdoc")
         .def("ReadFile", static_cast<IFSelect_ReturnStatus (XSControl_Reader::*)(const char *const)>(&XSControl_Reader::ReadFile), nb::arg("filename"), R"nbdoc(Loads a file and returns the read status
 Zero for a Model which complies with the Controller)nbdoc")
-        .def("ReadStream", [](XSControl_Reader &self, const char *const theName, const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto result = self.ReadStream(theName, theIStream_stream); return result; }, nb::arg("theName"), nb::arg("theIStream"), R"nbdoc(Loads a file from stream and returns the read status)nbdoc")
+        .def("ReadStream", [](XSControl_Reader &self, const char *const theName, const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto nanoocp_result = self.ReadStream(theName, theIStream_stream); return nanoocp_result; }, nb::arg("theName"), nb::arg("theIStream"), R"nbdoc(Loads a file from stream and returns the read status)nbdoc")
         .def("Model", static_cast<occ::handle<Interface_InterfaceModel> (XSControl_Reader::*)() const>(&XSControl_Reader::Model), R"nbdoc(Returns the model. It can then be consulted (header, product))nbdoc")
         .def("GiveList", static_cast<occ::handle<NCollection_HSequence<opencascade::handle<Standard_Transient>>> (XSControl_Reader::*)(const char *const, const char *const)>(&XSControl_Reader::GiveList), nb::arg("first") = static_cast<std::decay_t<const char *const>>(""), nb::arg("second") = static_cast<std::decay_t<const char *const>>(""), R"nbdoc(Returns a list of entities from the IGES or STEP file
 according to the following rules:
@@ -549,7 +549,7 @@ from another one, to be lost (see also Clear))nbdoc")
         .def("Model", static_cast<const occ::handle<Interface_InterfaceModel> & (XSControl_TransferReader::*)() const>(&XSControl_TransferReader::Model), R"nbdoc(Returns the currently set InterfaceModel)nbdoc")
         .def("SetContext", static_cast<void (XSControl_TransferReader::*)(const char *const, const occ::handle<Standard_Transient> &)>(&XSControl_TransferReader::SetContext), nb::arg("theName"), nb::arg("theCtx").none(), R"nbdoc(Sets a Context : according to receiving appli, to be
 interpreted by the Actor)nbdoc")
-        .def("GetContext", [](const XSControl_TransferReader &self, const char *const theName, const occ::handle<Standard_Type> & theType) { occ::handle<Standard_Transient> theCtx{}; auto result = self.GetContext(theName, theType, theCtx); return std::make_tuple(result, theCtx); }, nb::arg("theName"), nb::arg("theType").none(), R"nbdoc(Returns the Context attached to a name, if set and if it is
+        .def("GetContext", [](const XSControl_TransferReader &self, const char *const theName, const occ::handle<Standard_Type> & theType) { occ::handle<Standard_Transient> theCtx{}; auto nanoocp_result = self.GetContext(theName, theType, theCtx); return std::make_tuple(nanoocp_result, theCtx); }, nb::arg("theName"), nb::arg("theType").none(), R"nbdoc(Returns the Context attached to a name, if set and if it is
 Kind of the type, else a Null Handle
 Returns True if OK, False if no Context)nbdoc")
         .def("Context", static_cast<NCollection_DataMap<TCollection_AsciiString, opencascade::handle<Standard_Transient>, NCollection_DefaultHasher<TCollection_AsciiString>> & (XSControl_TransferReader::*)()>(&XSControl_TransferReader::Context), nb::rv_policy::reference_internal, R"nbdoc(Returns (modifiable) the whole definition of Context
@@ -857,7 +857,7 @@ The Context is given to the TransientProcess for TransferRead)nbdoc")
         .def("SetAllContext", static_cast<void (XSControl_WorkSession::*)(const XSControl_WorkSessionMap &)>(&XSControl_WorkSession::SetAllContext), nb::arg("theContext"), R"nbdoc(Sets the current Context List, as a whole
 Sets it to the TransferReader)nbdoc")
         .def("ClearContext", static_cast<void (XSControl_WorkSession::*)()>(&XSControl_WorkSession::ClearContext), R"nbdoc(Clears the whole current Context (nullifies it))nbdoc")
-        .def("PrintTransferStatus", [](const XSControl_WorkSession &self, const int theNum, const bool theWri) { std::ostringstream theS_stream; auto result = self.PrintTransferStatus(theNum, theWri, theS_stream); return std::make_tuple(result, nanoocp_stream_text(theS_stream)); }, nb::arg("theNum"), nb::arg("theWri"), R"nbdoc(Prints the transfer status of a transferred item, as being
+        .def("PrintTransferStatus", [](const XSControl_WorkSession &self, const int theNum, const bool theWri) { std::ostringstream theS_stream; auto nanoocp_result = self.PrintTransferStatus(theNum, theWri, theS_stream); return std::make_tuple(nanoocp_result, nanoocp_stream_text(theS_stream)); }, nb::arg("theNum"), nb::arg("theWri"), R"nbdoc(Prints the transfer status of a transferred item, as being
 the Mapped n0 <num>, from MapWriter if <wri> is True, or
 from MapReader if <wri> is False
 Returns True when done, False else (i.e. num out of range))nbdoc")

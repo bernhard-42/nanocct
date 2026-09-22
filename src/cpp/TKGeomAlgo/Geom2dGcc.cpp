@@ -1298,13 +1298,13 @@ number of solutions.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dGcc_CurveTool>(nb::borrow<nb::class_<Geom2dGcc_CurveTool>>(m.attr("Geom2dGcc_CurveTool")));
     nb::borrow<nb::class_<Geom2dGcc_FunctionTanCirCu>>(m.attr("Geom2dGcc_FunctionTanCirCu"))
         .def(nb::init<const gp_Circ2d &, const Geom2dAdaptor_Curve &>(), nb::arg("Circ"), nb::arg("Curv"))
-        .def("Value", [](Geom2dGcc_FunctionTanCirCu &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function F for the variable X.
+        .def("Value", [](Geom2dGcc_FunctionTanCirCu &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function F for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc")
-        .def("Derivative", [](Geom2dGcc_FunctionTanCirCu &self, const double X) { double Deriv{}; auto result = self.Derivative(X, Deriv); return std::make_tuple(result, Deriv); }, nb::arg("X"), R"nbdoc(Computes the derivative of the function F for the variable X.
+        .def("Derivative", [](Geom2dGcc_FunctionTanCirCu &self, const double X) { double Deriv{}; auto nanoocp_result = self.Derivative(X, Deriv); return std::make_tuple(nanoocp_result, Deriv); }, nb::arg("X"), R"nbdoc(Computes the derivative of the function F for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc")
-        .def("Values", [](Geom2dGcc_FunctionTanCirCu &self, const double X) { double F{}; double Deriv{}; auto result = self.Values(X, F, Deriv); return std::make_tuple(result, F, Deriv); }, nb::arg("X"), R"nbdoc(Computes the value and the derivative of the function F
+        .def("Values", [](Geom2dGcc_FunctionTanCirCu &self, const double X) { double F{}; double Deriv{}; auto nanoocp_result = self.Values(X, F, Deriv); return std::make_tuple(nanoocp_result, F, Deriv); }, nb::arg("X"), R"nbdoc(Computes the value and the derivative of the function F
 for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc");
@@ -1364,26 +1364,26 @@ for the variable <X>.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dGcc_FunctionTanCuCuOnCu>(nb::borrow<nb::class_<Geom2dGcc_FunctionTanCuCuOnCu>>(m.attr("Geom2dGcc_FunctionTanCuCuOnCu")));
     nb::borrow<nb::class_<Geom2dGcc_FunctionTanCuPnt>>(m.attr("Geom2dGcc_FunctionTanCuPnt"))
         .def(nb::init<const Geom2dAdaptor_Curve &, const gp_Pnt2d &>(), nb::arg("C"), nb::arg("Point"))
-        .def("Value", [](Geom2dGcc_FunctionTanCuPnt &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function F for the variable X.
+        .def("Value", [](Geom2dGcc_FunctionTanCuPnt &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function F for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc")
-        .def("Derivative", [](Geom2dGcc_FunctionTanCuPnt &self, const double X) { double Deriv{}; auto result = self.Derivative(X, Deriv); return std::make_tuple(result, Deriv); }, nb::arg("X"), R"nbdoc(Computes the derivative of the function F for the variable X.
+        .def("Derivative", [](Geom2dGcc_FunctionTanCuPnt &self, const double X) { double Deriv{}; auto nanoocp_result = self.Derivative(X, Deriv); return std::make_tuple(nanoocp_result, Deriv); }, nb::arg("X"), R"nbdoc(Computes the derivative of the function F for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc")
-        .def("Values", [](Geom2dGcc_FunctionTanCuPnt &self, const double X) { double F{}; double Deriv{}; auto result = self.Values(X, F, Deriv); return std::make_tuple(result, F, Deriv); }, nb::arg("X"), R"nbdoc(Computes the value and the derivative of the function F
+        .def("Values", [](Geom2dGcc_FunctionTanCuPnt &self, const double X) { double F{}; double Deriv{}; auto nanoocp_result = self.Values(X, F, Deriv); return std::make_tuple(nanoocp_result, F, Deriv); }, nb::arg("X"), R"nbdoc(Computes the value and the derivative of the function F
 for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dGcc_FunctionTanCuPnt>(nb::borrow<nb::class_<Geom2dGcc_FunctionTanCuPnt>>(m.attr("Geom2dGcc_FunctionTanCuPnt")));
     nb::borrow<nb::class_<Geom2dGcc_FunctionTanObl>>(m.attr("Geom2dGcc_FunctionTanObl"))
         .def(nb::init<const Geom2dAdaptor_Curve &, const gp_Dir2d &>(), nb::arg("Curve"), nb::arg("Dir"))
-        .def("Value", [](Geom2dGcc_FunctionTanObl &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function F for the variable X.
+        .def("Value", [](Geom2dGcc_FunctionTanObl &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the value of the function F for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc")
-        .def("Derivative", [](Geom2dGcc_FunctionTanObl &self, const double X) { double Deriv{}; auto result = self.Derivative(X, Deriv); return std::make_tuple(result, Deriv); }, nb::arg("X"), R"nbdoc(Computes the derivative of the function F for the variable X.
+        .def("Derivative", [](Geom2dGcc_FunctionTanObl &self, const double X) { double Deriv{}; auto nanoocp_result = self.Derivative(X, Deriv); return std::make_tuple(nanoocp_result, Deriv); }, nb::arg("X"), R"nbdoc(Computes the derivative of the function F for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc")
-        .def("Values", [](Geom2dGcc_FunctionTanObl &self, const double X) { double F{}; double Deriv{}; auto result = self.Values(X, F, Deriv); return std::make_tuple(result, F, Deriv); }, nb::arg("X"), R"nbdoc(Computes the value and the derivative of the function F
+        .def("Values", [](Geom2dGcc_FunctionTanObl &self, const double X) { double F{}; double Deriv{}; auto nanoocp_result = self.Values(X, F, Deriv); return std::make_tuple(nanoocp_result, F, Deriv); }, nb::arg("X"), R"nbdoc(Computes the value and the derivative of the function F
 for the variable X.
 It returns True if the computation is successfully done,
 False otherwise.)nbdoc");

@@ -90,7 +90,7 @@ Useful in storage procedure.)nbdoc")
         .def("AssignIds", static_cast<void (BinMDF_ADriverTable::*)(const NCollection_Sequence<TCollection_AsciiString> &)>(&BinMDF_ADriverTable::AssignIds), nb::arg("theTypeNames"), R"nbdoc(Assigns the IDs to the drivers of the given Type Names;
 It uses indices in the sequence as IDs.
 Useful in retrieval procedure.)nbdoc")
-        .def("GetDriver", [](BinMDF_ADriverTable &self, const occ::handle<Standard_Type> & theType) { occ::handle<BinMDF_ADriver> theDriver{}; auto result = self.GetDriver(theType, theDriver); return std::make_tuple(result, theDriver); }, nb::arg("theType").none(), R"nbdoc(Gets a driver <theDriver> according to <theType>.
+        .def("GetDriver", [](BinMDF_ADriverTable &self, const occ::handle<Standard_Type> & theType) { occ::handle<BinMDF_ADriver> theDriver{}; auto nanoocp_result = self.GetDriver(theType, theDriver); return std::make_tuple(nanoocp_result, theDriver); }, nb::arg("theType").none(), R"nbdoc(Gets a driver <theDriver> according to <theType>.
 Returns Type ID if the driver was assigned an ID; 0 otherwise.)nbdoc")
         .def("GetDriver", static_cast<occ::handle<BinMDF_ADriver> (BinMDF_ADriverTable::*)(const int)>(&BinMDF_ADriverTable::GetDriver), nb::arg("theTypeId"), R"nbdoc(Returns a driver according to <theTypeId>.
 Returns null handle if a driver is not found)nbdoc")

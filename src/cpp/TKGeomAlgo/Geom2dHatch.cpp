@@ -96,7 +96,7 @@ face described by <F>.)nbdoc")
 rejection. The state is OUT.)nbdoc")
         .def("NoWires", static_cast<bool (Geom2dHatch_Classifier::*)() const>(&Geom2dHatch_Classifier::NoWires), R"nbdoc(Returns True if the face contains no wire.
 The state is IN.)nbdoc")
-        .def("Edge", [](const Geom2dHatch_Classifier &self) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.Edge())); return result; }, R"nbdoc(Returns the Edge used to determine the
+        .def("Edge", [](const Geom2dHatch_Classifier &self) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.Edge())); return nanoocp_result; }, R"nbdoc(Returns the Edge used to determine the
 classification. When the State is ON this is the
 Edge containing the point.)nbdoc")
         .def("EdgeParameter", static_cast<double (Geom2dHatch_Classifier::*)() const>(&Geom2dHatch_Classifier::EdgeParameter), R"nbdoc(Returns the parameter on Edge() used to determine the
@@ -107,8 +107,8 @@ returned by Edge.)nbdoc");
     nb::borrow<nb::class_<Geom2dHatch_Element>>(m.attr("Geom2dHatch_Element"))
         .def(nb::init<>())
         .def(nb::init<const Geom2dAdaptor_Curve &, const TopAbs_Orientation>(), nb::arg("Curve"), nb::arg("Orientation") = static_cast<std::decay_t<const TopAbs_Orientation>>(TopAbs_FORWARD), R"nbdoc(Creates an element.)nbdoc")
-        .def("Curve", [](const Geom2dHatch_Element &self) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.Curve())); return result; }, R"nbdoc(Returns the curve associated to the element.)nbdoc")
-        .def("ChangeCurve", [](Geom2dHatch_Element &self) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.ChangeCurve())); return result; }, R"nbdoc(Returns the curve associated to the element.)nbdoc")
+        .def("Curve", [](const Geom2dHatch_Element &self) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.Curve())); return nanoocp_result; }, R"nbdoc(Returns the curve associated to the element.)nbdoc")
+        .def("ChangeCurve", [](Geom2dHatch_Element &self) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.ChangeCurve())); return nanoocp_result; }, R"nbdoc(Returns the curve associated to the element.)nbdoc")
         .def("Orientation", static_cast<void (Geom2dHatch_Element::*)(const TopAbs_Orientation)>(&Geom2dHatch_Element::Orientation), nb::arg("Orientation"), R"nbdoc(Sets the orientation of the element.)nbdoc")
         .def("Orientation", static_cast<TopAbs_Orientation (Geom2dHatch_Element::*)() const>(&Geom2dHatch_Element::Orientation), R"nbdoc(Returns the orientation of the element.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dHatch_Element>(nb::borrow<nb::class_<Geom2dHatch_Element>>(m.attr("Geom2dHatch_Element")));
@@ -125,8 +125,8 @@ returned by Edge.)nbdoc");
         .def("__call__", static_cast<Geom2dHatch_Element & (Geom2dHatch_Elements::*)(const int)>(&Geom2dHatch_Elements::operator()), nb::rv_policy::reference_internal, nb::arg("K"), nb::is_operator())
         .def("CheckPoint", static_cast<bool (Geom2dHatch_Elements::*)(gp_Pnt2d &)>(&Geom2dHatch_Elements::CheckPoint), nb::arg("P"))
         .def("Reject", static_cast<bool (Geom2dHatch_Elements::*)(const gp_Pnt2d &) const>(&Geom2dHatch_Elements::Reject), nb::arg("P"))
-        .def("Segment", [](Geom2dHatch_Elements &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto result = self.Segment(P, L, Par); return std::make_tuple(result, Par); }, nb::arg("P"), nb::arg("L"))
-        .def("OtherSegment", [](Geom2dHatch_Elements &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto result = self.OtherSegment(P, L, Par); return std::make_tuple(result, Par); }, nb::arg("P"), nb::arg("L"))
+        .def("Segment", [](Geom2dHatch_Elements &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto nanoocp_result = self.Segment(P, L, Par); return std::make_tuple(nanoocp_result, Par); }, nb::arg("P"), nb::arg("L"))
+        .def("OtherSegment", [](Geom2dHatch_Elements &self, const gp_Pnt2d & P, gp_Lin2d & L) { double Par{}; auto nanoocp_result = self.OtherSegment(P, L, Par); return std::make_tuple(nanoocp_result, Par); }, nb::arg("P"), nb::arg("L"))
         .def("InitWires", static_cast<void (Geom2dHatch_Elements::*)()>(&Geom2dHatch_Elements::InitWires))
         .def("MoreWires", static_cast<bool (Geom2dHatch_Elements::*)() const>(&Geom2dHatch_Elements::MoreWires))
         .def("NextWire", static_cast<void (Geom2dHatch_Elements::*)()>(&Geom2dHatch_Elements::NextWire))
@@ -139,8 +139,8 @@ returned by Edge.)nbdoc");
     nb::borrow<nb::class_<Geom2dHatch_Hatching>>(m.attr("Geom2dHatch_Hatching"))
         .def(nb::init<>())
         .def(nb::init<const Geom2dAdaptor_Curve &>(), nb::arg("Curve"), R"nbdoc(Creates a hatching.)nbdoc")
-        .def("Curve", [](const Geom2dHatch_Hatching &self) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.Curve())); return result; }, R"nbdoc(Returns the curve associated to the hatching.)nbdoc")
-        .def("ChangeCurve", [](Geom2dHatch_Hatching &self) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.ChangeCurve())); return result; }, R"nbdoc(Returns the curve associated to the hatching.)nbdoc")
+        .def("Curve", [](const Geom2dHatch_Hatching &self) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.Curve())); return nanoocp_result; }, R"nbdoc(Returns the curve associated to the hatching.)nbdoc")
+        .def("ChangeCurve", [](Geom2dHatch_Hatching &self) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.ChangeCurve())); return nanoocp_result; }, R"nbdoc(Returns the curve associated to the hatching.)nbdoc")
         .def("TrimDone", static_cast<void (Geom2dHatch_Hatching::*)(const bool)>(&Geom2dHatch_Hatching::TrimDone), nb::arg("Flag"), R"nbdoc(Sets the flag about the trimming computations to the
 given value.)nbdoc")
         .def("TrimDone", static_cast<bool (Geom2dHatch_Hatching::*)() const>(&Geom2dHatch_Hatching::TrimDone), R"nbdoc(Returns the flag about the trimming computations.)nbdoc")
@@ -199,12 +199,12 @@ which two points are considered identical in the
         .def("KeepSegments", static_cast<void (Geom2dHatch_Hatcher::*)(const bool)>(&Geom2dHatch_Hatcher::KeepSegments), nb::arg("Keep"), R"nbdoc(Sets the above flag.)nbdoc")
         .def("KeepSegments", static_cast<bool (Geom2dHatch_Hatcher::*)() const>(&Geom2dHatch_Hatcher::KeepSegments), R"nbdoc(Returns the flag about the segments consideration.)nbdoc")
         .def("Clear", static_cast<void (Geom2dHatch_Hatcher::*)()>(&Geom2dHatch_Hatcher::Clear), R"nbdoc(Removes all the hatchings and all the elements.)nbdoc")
-        .def("ElementCurve", [](const Geom2dHatch_Hatcher &self, const int IndE) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.ElementCurve(IndE))); return result; }, nb::arg("IndE"), R"nbdoc(Returns the curve associated to the IndE-th element.)nbdoc")
+        .def("ElementCurve", [](const Geom2dHatch_Hatcher &self, const int IndE) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.ElementCurve(IndE))); return nanoocp_result; }, nb::arg("IndE"), R"nbdoc(Returns the curve associated to the IndE-th element.)nbdoc")
         .def("AddElement", static_cast<int (Geom2dHatch_Hatcher::*)(const Geom2dAdaptor_Curve &, const TopAbs_Orientation)>(&Geom2dHatch_Hatcher::AddElement), nb::arg("Curve"), nb::arg("Orientation") = static_cast<std::decay_t<const TopAbs_Orientation>>(TopAbs_FORWARD), R"nbdoc(Adds an element to the hatcher and returns its index.)nbdoc")
         .def("AddElement", static_cast<int (Geom2dHatch_Hatcher::*)(const occ::handle<Geom2d_Curve> &, const TopAbs_Orientation)>(&Geom2dHatch_Hatcher::AddElement), nb::arg("Curve").none(), nb::arg("Orientation") = static_cast<std::decay_t<const TopAbs_Orientation>>(TopAbs_FORWARD), R"nbdoc(Adds an element to the hatcher and returns its index.)nbdoc")
         .def("RemElement", static_cast<void (Geom2dHatch_Hatcher::*)(const int)>(&Geom2dHatch_Hatcher::RemElement), nb::arg("IndE"), R"nbdoc(Removes the IndE-th element from the hatcher.)nbdoc")
         .def("ClrElements", static_cast<void (Geom2dHatch_Hatcher::*)()>(&Geom2dHatch_Hatcher::ClrElements), R"nbdoc(Removes all the elements from the hatcher.)nbdoc")
-        .def("HatchingCurve", [](const Geom2dHatch_Hatcher &self, const int IndH) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.HatchingCurve(IndH))); return result; }, nb::arg("IndH"), R"nbdoc(Returns the curve associated to the IndH-th hatching.)nbdoc")
+        .def("HatchingCurve", [](const Geom2dHatch_Hatcher &self, const int IndH) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.HatchingCurve(IndH))); return nanoocp_result; }, nb::arg("IndH"), R"nbdoc(Returns the curve associated to the IndH-th hatching.)nbdoc")
         .def("AddHatching", static_cast<int (Geom2dHatch_Hatcher::*)(const Geom2dAdaptor_Curve &)>(&Geom2dHatch_Hatcher::AddHatching), nb::arg("Curve"), R"nbdoc(Adds a hatching to the hatcher and returns its index.)nbdoc")
         .def("RemHatching", static_cast<void (Geom2dHatch_Hatcher::*)(const int)>(&Geom2dHatch_Hatcher::RemHatching), nb::arg("IndH"), R"nbdoc(Removes the IndH-th hatching from the hatcher.)nbdoc")
         .def("ClrHatchings", static_cast<void (Geom2dHatch_Hatcher::*)()>(&Geom2dHatch_Hatcher::ClrHatchings), R"nbdoc(Removes all the hatchings from the hatcher.)nbdoc")

@@ -690,7 +690,7 @@ Raises IdentDefinitionError if theUpper is less than theLow.)nbdoc")
         .def("Lower", static_cast<int (Aspect_GenId::*)() const>(&Aspect_GenId::Lower), R"nbdoc(Returns the lower identifier in range.)nbdoc")
         .def("Next", static_cast<int (Aspect_GenId::*)()>(&Aspect_GenId::Next), R"nbdoc(Returns the next available identifier.
 Warning: Raises IdentDefinitionError if all identifiers are busy.)nbdoc")
-        .def("Next__int", [](Aspect_GenId &self) { int theId{}; auto result = self.Next(theId); return std::make_tuple(result, theId); }, R"nbdoc(Next__int: the C++ overload Next(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Next__int", [](Aspect_GenId &self) { int theId{}; auto nanoocp_result = self.Next(theId); return std::make_tuple(nanoocp_result, theId); }, R"nbdoc(Next__int: the C++ overload Next(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Generates the next available identifier.
 @param[out] theId  generated identifier
 @return FALSE if all identifiers are busy.)nbdoc")
@@ -930,11 +930,11 @@ Distance unit is meters by default (@sa UnitFactor()).)nbdoc")
         .def("TrackedPoses", static_cast<const NCollection_Array1<Aspect_TrackedDevicePose> & (Aspect_XRSession::*)() const>(&Aspect_XRSession::TrackedPoses), R"nbdoc(Return number of tracked poses array.)nbdoc")
         .def("HasTrackedPose", static_cast<bool (Aspect_XRSession::*)(int) const>(&Aspect_XRSession::HasTrackedPose), nb::arg("theDevice"), R"nbdoc(Return TRUE if device orientation is defined.)nbdoc")
         .def("NamedTrackedDevice", static_cast<int (Aspect_XRSession::*)(Aspect_XRTrackedDeviceRole) const>(&Aspect_XRSession::NamedTrackedDevice), nb::arg("theDevice"), R"nbdoc(Return index of tracked device of known role, or -1 if undefined.)nbdoc")
-        .def("LoadRenderModel", [](Aspect_XRSession &self, int theDevice) { occ::handle<Image_Texture> theTexture{}; auto result = self.LoadRenderModel(theDevice, theTexture); return std::make_tuple(result, theTexture); }, nb::arg("theDevice"), R"nbdoc(Load model for displaying device.
+        .def("LoadRenderModel", [](Aspect_XRSession &self, int theDevice) { occ::handle<Image_Texture> theTexture{}; auto nanoocp_result = self.LoadRenderModel(theDevice, theTexture); return std::make_tuple(nanoocp_result, theTexture); }, nb::arg("theDevice"), R"nbdoc(Load model for displaying device.
 @param[in] theDevice   device index
 @param[out] theTexture  texture source
 @return model triangulation or NULL if not found)nbdoc")
-        .def("LoadRenderModel", [](Aspect_XRSession &self, int theDevice, bool theToApplyUnitFactor) { occ::handle<Image_Texture> theTexture{}; auto result = self.LoadRenderModel(theDevice, theToApplyUnitFactor, theTexture); return std::make_tuple(result, theTexture); }, nb::arg("theDevice"), nb::arg("theToApplyUnitFactor"), R"nbdoc(Load model for displaying device.
+        .def("LoadRenderModel", [](Aspect_XRSession &self, int theDevice, bool theToApplyUnitFactor) { occ::handle<Image_Texture> theTexture{}; auto nanoocp_result = self.LoadRenderModel(theDevice, theToApplyUnitFactor, theTexture); return std::make_tuple(nanoocp_result, theTexture); }, nb::arg("theDevice"), nb::arg("theToApplyUnitFactor"), R"nbdoc(Load model for displaying device.
 @param[in] theDevice   device index
 @param[in] theToApplyUnitFactor  flag to apply unit scale factor
 @param[out] theTexture  texture source
@@ -1077,13 +1077,13 @@ so this method could be used only for batch processing of keys.)nbdoc")
 @param theKey key pressed
 @param theTime event timestamp)nbdoc")
         .def("KeyFromAxis", static_cast<void (Aspect_VKeySet::*)(Aspect_VKey, Aspect_VKey, double, double)>(&Aspect_VKeySet::KeyFromAxis), nb::arg("theNegative"), nb::arg("thePositive"), nb::arg("theTime"), nb::arg("thePressure"), R"nbdoc(Simulate key up/down events from axis value.)nbdoc")
-        .def("HoldDuration__float", [](Aspect_VKeySet &self, Aspect_VKey theKey, double theTime) { double theDuration{}; auto result = self.HoldDuration(theKey, theTime, theDuration); return std::make_tuple(result, theDuration); }, nb::arg("theKey"), nb::arg("theTime"), R"nbdoc(HoldDuration__float: the C++ overload HoldDuration(Aspect_VKey, double, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("HoldDuration__float", [](Aspect_VKeySet &self, Aspect_VKey theKey, double theTime) { double theDuration{}; auto nanoocp_result = self.HoldDuration(theKey, theTime, theDuration); return std::make_tuple(nanoocp_result, theDuration); }, nb::arg("theKey"), nb::arg("theTime"), R"nbdoc(HoldDuration__float: the C++ overload HoldDuration(Aspect_VKey, double, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Return duration of the button in pressed state.
 @param theKey      key to check
 @param theTime     current time (for computing duration from key down time)
 @param theDuration key press duration
 @return TRUE if key was in pressed state)nbdoc")
-        .def("HoldDuration__float__float", [](Aspect_VKeySet &self, Aspect_VKey theKey, double theTime) { double theDuration{}; double thePressure{}; auto result = self.HoldDuration(theKey, theTime, theDuration, thePressure); return std::make_tuple(result, theDuration, thePressure); }, nb::arg("theKey"), nb::arg("theTime"), R"nbdoc(HoldDuration__float__float: the C++ overload HoldDuration(Aspect_VKey, double, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("HoldDuration__float__float", [](Aspect_VKeySet &self, Aspect_VKey theKey, double theTime) { double theDuration{}; double thePressure{}; auto nanoocp_result = self.HoldDuration(theKey, theTime, theDuration, thePressure); return std::make_tuple(nanoocp_result, theDuration, thePressure); }, nb::arg("theKey"), nb::arg("theTime"), R"nbdoc(HoldDuration__float__float: the C++ overload HoldDuration(Aspect_VKey, double, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Return duration of the button in pressed state.
 @param theKey      key to check
 @param theTime     current time (for computing duration from key down time)
@@ -1098,9 +1098,9 @@ Return duration of the button in pressed state.
         .def("ProcessInput", static_cast<void (Aspect_WindowInputListener::*)()>(&Aspect_WindowInputListener::ProcessInput), R"nbdoc(Handle window input event immediately (flush input buffer or ignore).)nbdoc")
         .def("ProcessFocus", static_cast<void (Aspect_WindowInputListener::*)(bool)>(&Aspect_WindowInputListener::ProcessFocus), nb::arg("theIsActivated"), R"nbdoc(Handle focus event.)nbdoc")
         .def("ProcessClose", static_cast<void (Aspect_WindowInputListener::*)()>(&Aspect_WindowInputListener::ProcessClose), R"nbdoc(Handle window close event.)nbdoc")
-        .def("Keys", [](const Aspect_WindowInputListener &self) { opencascade::handle<Aspect_VKeySet> result(&(self.Keys())); return result; }, R"nbdoc(@name keyboard input
+        .def("Keys", [](const Aspect_WindowInputListener &self) { opencascade::handle<Aspect_VKeySet> nanoocp_result(&(self.Keys())); return nanoocp_result; }, R"nbdoc(@name keyboard input
 Return keyboard state.)nbdoc")
-        .def("ChangeKeys", [](Aspect_WindowInputListener &self) { opencascade::handle<Aspect_VKeySet> result(&(self.ChangeKeys())); return result; }, R"nbdoc(Return keyboard state.)nbdoc")
+        .def("ChangeKeys", [](Aspect_WindowInputListener &self) { opencascade::handle<Aspect_VKeySet> nanoocp_result(&(self.ChangeKeys())); return nanoocp_result; }, R"nbdoc(Return keyboard state.)nbdoc")
         .def("KeyDown", static_cast<void (Aspect_WindowInputListener::*)(Aspect_VKey, double, double)>(&Aspect_WindowInputListener::KeyDown), nb::arg("theKey"), nb::arg("theTime"), nb::arg("thePressure") = static_cast<std::decay_t<double>>(1.0), R"nbdoc(Press key.
 Default implementation updates internal cache.
 @param theKey key pressed

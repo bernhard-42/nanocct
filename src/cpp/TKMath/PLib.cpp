@@ -220,7 +220,7 @@ Results stores the result in the following format
 f(1)             f(2)  ....     f(Dimension)
 @endcode
 Warning: <Results> and <PolynomialCoeff> must be dimensioned properly)nbdoc")
-        .def_static("EvalLagrange", [](const double U, const int DerivativeOrder, const int Degree, const int Dimension) { double ValueArray{}; double ParameterArray{}; double Results{}; auto result = PLib::EvalLagrange(U, DerivativeOrder, Degree, Dimension, ValueArray, ParameterArray, Results); return std::make_tuple(result, ValueArray, ParameterArray, Results); }, nb::arg("U"), nb::arg("DerivativeOrder"), nb::arg("Degree"), nb::arg("Dimension"), R"nbdoc(Performs the Lagrange Interpolation of
+        .def_static("EvalLagrange", [](const double U, const int DerivativeOrder, const int Degree, const int Dimension) { double ValueArray{}; double ParameterArray{}; double Results{}; auto nanoocp_result = PLib::EvalLagrange(U, DerivativeOrder, Degree, Dimension, ValueArray, ParameterArray, Results); return std::make_tuple(nanoocp_result, ValueArray, ParameterArray, Results); }, nb::arg("U"), nb::arg("DerivativeOrder"), nb::arg("Degree"), nb::arg("Dimension"), R"nbdoc(Performs the Lagrange Interpolation of
 given series of points with given parameters
 with the requested derivative order
 Results will store things in the following format
@@ -231,7 +231,7 @@ with d = DerivativeOrder
 
 [d *Dimension],  [d*Dimension + Dimension-1]: dth   derivative
 @endcode)nbdoc")
-        .def_static("EvalCubicHermite", [](const double U, const int DerivativeOrder, const int Dimension) { double ValueArray{}; double DerivativeArray{}; double ParameterArray{}; double Results{}; auto result = PLib::EvalCubicHermite(U, DerivativeOrder, Dimension, ValueArray, DerivativeArray, ParameterArray, Results); return std::make_tuple(result, ValueArray, DerivativeArray, ParameterArray, Results); }, nb::arg("U"), nb::arg("DerivativeOrder"), nb::arg("Dimension"), R"nbdoc(Performs the Cubic Hermite Interpolation of
+        .def_static("EvalCubicHermite", [](const double U, const int DerivativeOrder, const int Dimension) { double ValueArray{}; double DerivativeArray{}; double ParameterArray{}; double Results{}; auto nanoocp_result = PLib::EvalCubicHermite(U, DerivativeOrder, Dimension, ValueArray, DerivativeArray, ParameterArray, Results); return std::make_tuple(nanoocp_result, ValueArray, DerivativeArray, ParameterArray, Results); }, nb::arg("U"), nb::arg("DerivativeOrder"), nb::arg("Dimension"), R"nbdoc(Performs the Cubic Hermite Interpolation of
 given series of points with given parameters
 with the requested derivative order.
 ValueArray stores the value at the first and
@@ -349,7 +349,7 @@ The possible values for NbGaussPoints are: 8, 10, 15, 20, 25, 30,
 abs ( W(t)*Jk(t) ) for t bellonging to [-1,1]
 This values are loaded is the array TabMax(0,myWorkDegree-2*(myNivConst+1))
 MaxValue ( me ; TabMaxPointer : in  out  Real );)nbdoc")
-        .def("MaxError", [](const PLib_JacobiPolynomial &self, const int theDimension, const int theNewDegree) { double theJacCoeff{}; auto result = self.MaxError(theDimension, theJacCoeff, theNewDegree); return std::make_tuple(result, theJacCoeff); }, nb::arg("theDimension"), nb::arg("theNewDegree"), R"nbdoc(This method computes the maximum error on the polynomial
+        .def("MaxError", [](const PLib_JacobiPolynomial &self, const int theDimension, const int theNewDegree) { double theJacCoeff{}; auto nanoocp_result = self.MaxError(theDimension, theJacCoeff, theNewDegree); return std::make_tuple(nanoocp_result, theJacCoeff); }, nb::arg("theDimension"), nb::arg("theNewDegree"), R"nbdoc(This method computes the maximum error on the polynomial
 W(t) Q(t) obtained by missing the coefficients of JacCoeff from
 NewDegree +1 to Degree)nbdoc")
         .def("ReduceDegree", [](const PLib_JacobiPolynomial &self, const int theDimension, const int theMaxDegree, const double theTol) { double theJacCoeff{}; int theNewDegree{}; double theMaxError{}; self.ReduceDegree(theDimension, theMaxDegree, theTol, theJacCoeff, theNewDegree, theMaxError); return std::make_tuple(theJacCoeff, theNewDegree, theMaxError); }, nb::arg("theDimension"), nb::arg("theMaxDegree"), nb::arg("theTol"), R"nbdoc(Compute NewDegree <= MaxDegree so that MaxError is lower
@@ -357,7 +357,7 @@ than Tol.
 MaxError can be greater than Tol if it is not possible
 to find a NewDegree <= MaxDegree.
 In this case NewDegree = MaxDegree)nbdoc")
-        .def("AverageError", [](const PLib_JacobiPolynomial &self, const int theDimension, const int theNewDegree) { double theJacCoeff{}; auto result = self.AverageError(theDimension, theJacCoeff, theNewDegree); return std::make_tuple(result, theJacCoeff); }, nb::arg("theDimension"), nb::arg("theNewDegree"))
+        .def("AverageError", [](const PLib_JacobiPolynomial &self, const int theDimension, const int theNewDegree) { double theJacCoeff{}; auto nanoocp_result = self.AverageError(theDimension, theJacCoeff, theNewDegree); return std::make_tuple(nanoocp_result, theJacCoeff); }, nb::arg("theDimension"), nb::arg("theNewDegree"))
         .def("ToCoefficients", static_cast<void (PLib_JacobiPolynomial::*)(const int, const int, const NCollection_Array1<double> &, NCollection_Array1<double> &) const>(&PLib_JacobiPolynomial::ToCoefficients), nb::arg("theDimension"), nb::arg("theDegree"), nb::arg("theJacCoeff"), nb::arg("theCoefficients"), R"nbdoc(Convert the polynomial P(t) = R(t) + W(t) Q(t) in the canonical base.)nbdoc")
         .def("D0", static_cast<void (PLib_JacobiPolynomial::*)(const double, NCollection_Array1<double> &) const>(&PLib_JacobiPolynomial::D0), nb::arg("theU"), nb::arg("theBasisValue"), R"nbdoc(Compute the values of the basis functions in u)nbdoc")
         .def("D1", static_cast<void (PLib_JacobiPolynomial::*)(const double, NCollection_Array1<double> &, NCollection_Array1<double> &) const>(&PLib_JacobiPolynomial::D1), nb::arg("theU"), nb::arg("theBasisValue"), nb::arg("theBasisD1"), R"nbdoc(Compute the values and the derivatives values of
@@ -375,7 +375,7 @@ Degree has to be <= 30
 ConstraintOrder has to be GeomAbs_C0
 GeomAbs_C1
 GeomAbs_C2)nbdoc")
-        .def("MaxError", [](const PLib_HermitJacobi &self, const int Dimension, const int NewDegree) { double HermJacCoeff{}; auto result = self.MaxError(Dimension, HermJacCoeff, NewDegree); return std::make_tuple(result, HermJacCoeff); }, nb::arg("Dimension"), nb::arg("NewDegree"), R"nbdoc(This method computes the maximum error on the polynomial
+        .def("MaxError", [](const PLib_HermitJacobi &self, const int Dimension, const int NewDegree) { double HermJacCoeff{}; auto nanoocp_result = self.MaxError(Dimension, HermJacCoeff, NewDegree); return std::make_tuple(nanoocp_result, HermJacCoeff); }, nb::arg("Dimension"), nb::arg("NewDegree"), R"nbdoc(This method computes the maximum error on the polynomial
 W(t) Q(t) obtained by missing the coefficients of JacCoeff from
 NewDegree +1 to Degree)nbdoc")
         .def("ReduceDegree", [](const PLib_HermitJacobi &self, const int Dimension, const int MaxDegree, const double Tol) { double HermJacCoeff{}; int NewDegree{}; double MaxError{}; self.ReduceDegree(Dimension, MaxDegree, Tol, HermJacCoeff, NewDegree, MaxError); return std::make_tuple(HermJacCoeff, NewDegree, MaxError); }, nb::arg("Dimension"), nb::arg("MaxDegree"), nb::arg("Tol"), R"nbdoc(Compute NewDegree <= MaxDegree so that MaxError is lower
@@ -383,7 +383,7 @@ than Tol.
 MaxError can be greater than Tol if it is not possible
 to find a NewDegree <= MaxDegree.
 In this case NewDegree = MaxDegree)nbdoc")
-        .def("AverageError", [](const PLib_HermitJacobi &self, const int Dimension, const int NewDegree) { double HermJacCoeff{}; auto result = self.AverageError(Dimension, HermJacCoeff, NewDegree); return std::make_tuple(result, HermJacCoeff); }, nb::arg("Dimension"), nb::arg("NewDegree"))
+        .def("AverageError", [](const PLib_HermitJacobi &self, const int Dimension, const int NewDegree) { double HermJacCoeff{}; auto nanoocp_result = self.AverageError(Dimension, HermJacCoeff, NewDegree); return std::make_tuple(nanoocp_result, HermJacCoeff); }, nb::arg("Dimension"), nb::arg("NewDegree"))
         .def("ToCoefficients", static_cast<void (PLib_HermitJacobi::*)(const int, const int, const NCollection_Array1<double> &, NCollection_Array1<double> &) const>(&PLib_HermitJacobi::ToCoefficients), nb::arg("Dimension"), nb::arg("Degree"), nb::arg("HermJacCoeff"), nb::arg("Coefficients"), R"nbdoc(Convert the polynomial P(t) = H(t) + W(t) Q(t) in the canonical base.)nbdoc")
         .def("D0", static_cast<void (PLib_HermitJacobi::*)(const double, NCollection_Array1<double> &) const>(&PLib_HermitJacobi::D0), nb::arg("U"), nb::arg("BasisValue"), R"nbdoc(Compute the values of the basis functions in u)nbdoc")
         .def("D1", static_cast<void (PLib_HermitJacobi::*)(const double, NCollection_Array1<double> &, NCollection_Array1<double> &) const>(&PLib_HermitJacobi::D1), nb::arg("U"), nb::arg("BasisValue"), nb::arg("BasisD1"), R"nbdoc(Compute the values and the derivatives values of

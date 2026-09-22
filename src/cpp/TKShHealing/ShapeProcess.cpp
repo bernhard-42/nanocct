@@ -104,7 +104,7 @@ void nanoocp_define_ShapeProcess(nb::module_ &m) {
     nanoocp_implicit_default_ctor<ShapeProcess>(nb::borrow<nb::class_<ShapeProcess>>(m.attr("ShapeProcess")));
     nb::borrow<nb::class_<ShapeProcess>>(m.attr("ShapeProcess"))
         .def_static("RegisterOperator", static_cast<bool (*)(const char *const, const occ::handle<ShapeProcess_Operator> &)>(&ShapeProcess::RegisterOperator), nb::arg("name"), nb::arg("op").none(), R"nbdoc(Registers operator to make it visible for Performer)nbdoc")
-        .def_static("FindOperator", [](const char *const name) { occ::handle<ShapeProcess_Operator> op{}; auto result = ShapeProcess::FindOperator(name, op); return std::make_tuple(result, op); }, nb::arg("name"), R"nbdoc(Finds operator by its name)nbdoc")
+        .def_static("FindOperator", [](const char *const name) { occ::handle<ShapeProcess_Operator> op{}; auto nanoocp_result = ShapeProcess::FindOperator(name, op); return std::make_tuple(nanoocp_result, op); }, nb::arg("name"), R"nbdoc(Finds operator by its name)nbdoc")
         .def_static("Perform", static_cast<bool (*)(const occ::handle<ShapeProcess_Context> &, const char *const, const Message_ProgressRange &)>(&ShapeProcess::Perform), nb::arg("context").none(), nb::arg("seq"), nb::arg("theProgress") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Performs a specified sequence of operators on Context
 Resource file and other data should be already loaded
 to Context (including description of sequence seq))nbdoc")
@@ -135,9 +135,9 @@ internal static Resource_Manager object is null)nbdoc")
         .def("SetScope", static_cast<void (ShapeProcess_Context::*)(const char *const)>(&ShapeProcess_Context::SetScope), nb::arg("scope"), R"nbdoc(Set a new (sub)scope)nbdoc")
         .def("UnSetScope", static_cast<void (ShapeProcess_Context::*)()>(&ShapeProcess_Context::UnSetScope), R"nbdoc(Go out of current scope)nbdoc")
         .def("IsParamSet", static_cast<bool (ShapeProcess_Context::*)(const char *const) const>(&ShapeProcess_Context::IsParamSet), nb::arg("param"), R"nbdoc(Returns True if parameter is defined in the resource file)nbdoc")
-        .def("GetReal", [](const ShapeProcess_Context &self, const char *const param) { double val{}; auto result = self.GetReal(param, val); return std::make_tuple(result, val); }, nb::arg("param"))
-        .def("GetInteger", [](const ShapeProcess_Context &self, const char *const param) { int val{}; auto result = self.GetInteger(param, val); return std::make_tuple(result, val); }, nb::arg("param"))
-        .def("GetBoolean", [](const ShapeProcess_Context &self, const char *const param) { bool val{}; auto result = self.GetBoolean(param, val); return std::make_tuple(result, val); }, nb::arg("param"))
+        .def("GetReal", [](const ShapeProcess_Context &self, const char *const param) { double val{}; auto nanoocp_result = self.GetReal(param, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("param"))
+        .def("GetInteger", [](const ShapeProcess_Context &self, const char *const param) { int val{}; auto nanoocp_result = self.GetInteger(param, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("param"))
+        .def("GetBoolean", [](const ShapeProcess_Context &self, const char *const param) { bool val{}; auto nanoocp_result = self.GetBoolean(param, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("param"))
         .def("GetString", static_cast<bool (ShapeProcess_Context::*)(const char *const, TCollection_AsciiString &) const>(&ShapeProcess_Context::GetString), nb::arg("param"), nb::arg("val"), R"nbdoc(Get value of parameter as being of specific type
 Returns False if parameter is not defined or has a wrong type)nbdoc")
         .def("RealVal", static_cast<double (ShapeProcess_Context::*)(const char *const, const double) const>(&ShapeProcess_Context::RealVal), nb::arg("param"), nb::arg("def_"))
@@ -216,7 +216,7 @@ result to a new one explicitly)nbdoc")
 Shape S should be one of subshapes of original shape
 (or whole one), but not one of intermediate shapes
 Records only if Message() is not Null)nbdoc")
-        .def("GetContinuity", [](const ShapeProcess_ShapeContext &self, const char *const param) { GeomAbs_Shape val{}; auto result = self.GetContinuity(param, val); return std::make_tuple(result, val); }, nb::arg("param"), R"nbdoc(Get value of parameter as being of the type GeomAbs_Shape
+        .def("GetContinuity", [](const ShapeProcess_ShapeContext &self, const char *const param) { GeomAbs_Shape val{}; auto nanoocp_result = self.GetContinuity(param, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("param"), R"nbdoc(Get value of parameter as being of the type GeomAbs_Shape
 Returns False if parameter is not defined or has a wrong type)nbdoc")
         .def("ContinuityVal", static_cast<GeomAbs_Shape (ShapeProcess_ShapeContext::*)(const char *const, const GeomAbs_Shape) const>(&ShapeProcess_ShapeContext::ContinuityVal), nb::arg("param"), nb::arg("def_"), R"nbdoc(Get value of parameter as being of the type GeomAbs_Shape
 If parameter is not defined or does not have expected

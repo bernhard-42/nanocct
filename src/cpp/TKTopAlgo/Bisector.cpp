@@ -250,12 +250,12 @@ interval.)nbdoc")
         .def("IntervalContinuity", static_cast<GeomAbs_Shape (Bisector_BisecCC::*)() const>(&Bisector_BisecCC::IntervalContinuity))
         .def("IsClosed", static_cast<bool (Bisector_BisecCC::*)() const>(&Bisector_BisecCC::IsClosed))
         .def("IsPeriodic", static_cast<bool (Bisector_BisecCC::*)() const>(&Bisector_BisecCC::IsPeriodic))
-        .def("ValueAndDist", [](const Bisector_BisecCC &self, const double U) { double U1{}; double U2{}; double Distance{}; auto result = self.ValueAndDist(U, U1, U2, Distance); return std::make_tuple(result, U1, U2, Distance); }, nb::arg("U"), R"nbdoc(Returns the point of parameter U.
+        .def("ValueAndDist", [](const Bisector_BisecCC &self, const double U) { double U1{}; double U2{}; double Distance{}; auto nanoocp_result = self.ValueAndDist(U, U1, U2, Distance); return std::make_tuple(nanoocp_result, U1, U2, Distance); }, nb::arg("U"), R"nbdoc(Returns the point of parameter U.
 Computes the distance between the current point and
 the two curves I separate.
 Computes the parameters on each curve corresponding
 of the projection of the current point.)nbdoc")
-        .def("ValueByInt", [](const Bisector_BisecCC &self, const double U) { double U1{}; double U2{}; double Distance{}; auto result = self.ValueByInt(U, U1, U2, Distance); return std::make_tuple(result, U1, U2, Distance); }, nb::arg("U"), R"nbdoc(Returns the point of parameter U.
+        .def("ValueByInt", [](const Bisector_BisecCC &self, const double U) { double U1{}; double U2{}; double Distance{}; auto nanoocp_result = self.ValueByInt(U, U1, U2, Distance); return std::make_tuple(nanoocp_result, U1, U2, Distance); }, nb::arg("U"), R"nbdoc(Returns the point of parameter U.
 Computes the distance between the current point and
 the two curves I separate.
 Computes the parameters on each curve corresponding
@@ -347,18 +347,18 @@ of the point of parameter U on <me>.)nbdoc")
     nanoocp_implicit_copy_ctor<Bisector_BisecPC>(nb::borrow<nb::class_<Bisector_BisecPC>>(m.attr("Bisector_BisecPC")));
     nb::borrow<nb::class_<Bisector_FunctionH>>(m.attr("Bisector_FunctionH"))
         .def(nb::init<const occ::handle<Geom2d_Curve> &, const gp_Pnt2d &, const gp_Vec2d &>(), nb::arg("C2").none(), nb::arg("P1"), nb::arg("T1"))
-        .def("Value", [](Bisector_FunctionH &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions for the variable <X>.)nbdoc")
-        .def("Derivative", [](Bisector_FunctionH &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"))
-        .def("Values", [](Bisector_FunctionH &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"), R"nbdoc(Returns the values of the functions and the derivatives
+        .def("Value", [](Bisector_FunctionH &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions for the variable <X>.)nbdoc")
+        .def("Derivative", [](Bisector_FunctionH &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"))
+        .def("Values", [](Bisector_FunctionH &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"), R"nbdoc(Returns the values of the functions and the derivatives
 for the variable <X>.)nbdoc");
     nanoocp_implicit_copy_ctor<Bisector_FunctionH>(nb::borrow<nb::class_<Bisector_FunctionH>>(m.attr("Bisector_FunctionH")));
     nb::borrow<nb::class_<Bisector_FunctionInter>>(m.attr("Bisector_FunctionInter"))
         .def(nb::init<>())
         .def(nb::init<const occ::handle<Geom2d_Curve> &, const occ::handle<Bisector_Curve> &, const occ::handle<Bisector_Curve> &>(), nb::arg("C").none(), nb::arg("Bis1").none(), nb::arg("Bis2").none())
         .def("Perform", static_cast<void (Bisector_FunctionInter::*)(const occ::handle<Geom2d_Curve> &, const occ::handle<Bisector_Curve> &, const occ::handle<Bisector_Curve> &)>(&Bisector_FunctionInter::Perform), nb::arg("C").none(), nb::arg("Bis1").none(), nb::arg("Bis2").none())
-        .def("Value", [](Bisector_FunctionInter &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions for the variable <X>.)nbdoc")
-        .def("Derivative", [](Bisector_FunctionInter &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"))
-        .def("Values", [](Bisector_FunctionInter &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"), R"nbdoc(Returns the values of the functions and the derivatives
+        .def("Value", [](Bisector_FunctionInter &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Computes the values of the Functions for the variable <X>.)nbdoc")
+        .def("Derivative", [](Bisector_FunctionInter &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"))
+        .def("Values", [](Bisector_FunctionInter &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"), R"nbdoc(Returns the values of the functions and the derivatives
 for the variable <X>.)nbdoc");
     nanoocp_implicit_copy_ctor<Bisector_FunctionInter>(nb::borrow<nb::class_<Bisector_FunctionInter>>(m.attr("Bisector_FunctionInter")));
     nb::borrow<nb::class_<Bisector_Inter>>(m.attr("Bisector_Inter"))

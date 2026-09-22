@@ -168,7 +168,7 @@ void nanoocp_define_Font(nb::module_ &m) {
         .def_static("IsCharRightToLeft", static_cast<bool (*)(char32_t)>(&Font_FTFont::IsCharRightToLeft), nb::arg("theUChar"), R"nbdoc(Return TRUE if specified character should be displayed in Right-to-Left order.)nbdoc")
         .def_static("CharSubset", static_cast<Font_UnicodeSubset (*)(char32_t)>(&Font_FTFont::CharSubset), nb::arg("theUChar"), R"nbdoc(Determine Unicode subset for specified character)nbdoc")
         .def("IsValid", static_cast<bool (Font_FTFont::*)() const>(&Font_FTFont::IsValid), R"nbdoc(@return true if font is loaded)nbdoc")
-        .def("GlyphImage", [](const Font_FTFont &self) { opencascade::handle<Image_PixMap> result(&(self.GlyphImage())); return result; }, R"nbdoc(@return image plane for currently rendered glyph)nbdoc")
+        .def("GlyphImage", [](const Font_FTFont &self) { opencascade::handle<Image_PixMap> nanoocp_result(&(self.GlyphImage())); return nanoocp_result; }, R"nbdoc(@return image plane for currently rendered glyph)nbdoc")
         .def("Init", static_cast<bool (Font_FTFont::*)(const TCollection_AsciiString &, const Font_FTFontParams &, const int)>(&Font_FTFont::Init), nb::arg("theFontPath"), nb::arg("theParams"), nb::arg("theFaceId") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Initialize the font from the given file path.
 @param theFontPath path to the font
 @param theParams   initialization parameters
@@ -308,7 +308,7 @@ Should not be called more than once after initialization!)nbdoc")
         .def("FontFaceId", static_cast<int (Font_SystemFont::*)(Font_FontAspect) const>(&Font_SystemFont::FontFaceId), nb::arg("theAspect"), R"nbdoc(Returns font file path.)nbdoc")
         .def("SetFontPath", static_cast<void (Font_SystemFont::*)(Font_FontAspect, const TCollection_AsciiString &, const int)>(&Font_SystemFont::SetFontPath), nb::arg("theAspect"), nb::arg("thePath"), nb::arg("theFaceId") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Sets font file path for specific aspect.)nbdoc")
         .def("HasFontAspect", static_cast<bool (Font_SystemFont::*)(Font_FontAspect) const>(&Font_SystemFont::HasFontAspect), nb::arg("theAspect"), R"nbdoc(Returns TRUE if dedicated file for specified font aspect has been defined.)nbdoc")
-        .def("FontPathAny", [](const Font_SystemFont &self, Font_FontAspect theAspect) { bool theToSynthesizeItalic{}; int theFaceId{}; auto result = self.FontPathAny(theAspect, theToSynthesizeItalic, theFaceId); return std::make_tuple(result, theToSynthesizeItalic, theFaceId); }, nb::arg("theAspect"), R"nbdoc(Returns any defined font file path.)nbdoc")
+        .def("FontPathAny", [](const Font_SystemFont &self, Font_FontAspect theAspect) { bool theToSynthesizeItalic{}; int theFaceId{}; auto nanoocp_result = self.FontPathAny(theAspect, theToSynthesizeItalic, theFaceId); return std::make_tuple(nanoocp_result, theToSynthesizeItalic, theFaceId); }, nb::arg("theAspect"), R"nbdoc(Returns any defined font file path.)nbdoc")
         .def("IsEqual", static_cast<bool (Font_SystemFont::*)(const occ::handle<Font_SystemFont> &) const>(&Font_SystemFont::IsEqual), nb::arg("theOtherFont").none(), R"nbdoc(Return true if the FontName, FontAspect and FontSize are the same.)nbdoc")
         .def("IsSingleStrokeFont", static_cast<bool (Font_SystemFont::*)() const>(&Font_SystemFont::IsSingleStrokeFont), R"nbdoc(Return TRUE if this is single-stroke (one-line) font, FALSE by default.
 Such fonts define single-line glyphs instead of closed contours, so that they are rendered
@@ -336,7 +336,7 @@ If theFontAspect is Font_FA_Undefined returned font can have any FontAspect.
 If theFontSize is "-1" returned font can have any FontSize.)nbdoc")
         .def("GetFont", static_cast<occ::handle<Font_SystemFont> (Font_FontMgr::*)(const TCollection_AsciiString &) const>(&Font_FontMgr::GetFont), nb::arg("theFontName"), R"nbdoc(Returns font that match given name or NULL if such font family is NOT registered.
 Note that unlike FindFont(), this method ignores font aliases and does not look for fall-back.)nbdoc")
-        .def("FindFont", [](const Font_FontMgr &self, const TCollection_AsciiString & theFontName, Font_StrictLevel theStrictLevel, Font_FontAspect theFontAspect, bool theDoFailMsg) { auto result = self.FindFont(theFontName, theStrictLevel, theFontAspect, theDoFailMsg); return std::make_tuple(result, theFontAspect); }, nb::arg("theFontName"), nb::arg("theStrictLevel"), nb::arg("theFontAspect"), nb::arg("theDoFailMsg") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Tries to find font by given parameters.
+        .def("FindFont", [](const Font_FontMgr &self, const TCollection_AsciiString & theFontName, Font_StrictLevel theStrictLevel, Font_FontAspect theFontAspect, bool theDoFailMsg) { auto nanoocp_result = self.FindFont(theFontName, theStrictLevel, theFontAspect, theDoFailMsg); return std::make_tuple(nanoocp_result, theFontAspect); }, nb::arg("theFontName"), nb::arg("theStrictLevel"), nb::arg("theFontAspect"), nb::arg("theDoFailMsg") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Tries to find font by given parameters.
 If the specified font is not found tries to use font names mapping.
 If the requested family name not found -> search for any font family with given aspect and
 height. If the font is still not found, returns any font available in the system. Returns NULL
@@ -348,7 +348,7 @@ found);
 can be modified if specified font alias refers to another
 style (compatibility with obsolete aliases)
 @param[in] theDoFailMsg          put error message on failure into default messenger)nbdoc")
-        .def("FindFont", [](const Font_FontMgr &self, const TCollection_AsciiString & theFontName, Font_FontAspect theFontAspect) { auto result = self.FindFont(theFontName, theFontAspect); return std::make_tuple(result, theFontAspect); }, nb::arg("theFontName"), nb::arg("theFontAspect"), R"nbdoc(Tries to find font by given parameters.)nbdoc")
+        .def("FindFont", [](const Font_FontMgr &self, const TCollection_AsciiString & theFontName, Font_FontAspect theFontAspect) { auto nanoocp_result = self.FindFont(theFontName, theFontAspect); return std::make_tuple(nanoocp_result, theFontAspect); }, nb::arg("theFontName"), nb::arg("theFontAspect"), R"nbdoc(Tries to find font by given parameters.)nbdoc")
         .def("FindFallbackFont", static_cast<occ::handle<Font_SystemFont> (Font_FontMgr::*)(Font_UnicodeSubset, Font_FontAspect) const>(&Font_FontMgr::FindFallbackFont), nb::arg("theSubset"), nb::arg("theFontAspect"), R"nbdoc(Tries to find fallback font for specified Unicode subset.
 Returns NULL in case when fallback font is not found in the system.
 @param[in] theSubset      Unicode subset

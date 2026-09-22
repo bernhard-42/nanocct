@@ -118,7 +118,7 @@ void nanoocp_define_LDOM(nb::module_ &m) {
         .def(nb::init<const char *, const occ::handle<LDOM_MemManager> &>(), nb::arg("aValue"), nb::arg("aDoc").none())
         .def(nb::init<const char *, const int, const occ::handle<LDOM_MemManager> &>(), nb::arg("aValue"), nb::arg("aLen"), nb::arg("aDoc").none())
         .def("Type", static_cast<LDOMBasicString::StringType (LDOMBasicString::*)() const>(&LDOMBasicString::Type))
-        .def("GetInteger", [](const LDOMBasicString &self) { int aResult{}; auto result = self.GetInteger(aResult); return std::make_tuple(result, aResult); })
+        .def("GetInteger", [](const LDOMBasicString &self) { int aResult{}; auto nanoocp_result = self.GetInteger(aResult); return std::make_tuple(nanoocp_result, aResult); })
         .def("GetString", static_cast<const char * (LDOMBasicString::*)() const>(&LDOMBasicString::GetString))
         .def("equals", static_cast<bool (LDOMBasicString::*)(const LDOMBasicString &) const>(&LDOMBasicString::equals), nb::arg("anOther"))
         .def("__eq__", static_cast<bool (LDOMBasicString::*)(const LDOMBasicString &) const>(&LDOMBasicString::operator==), nb::arg("anOther"), nb::is_operator())
@@ -130,16 +130,16 @@ void nanoocp_define_LDOM(nb::module_ &m) {
         .def(nb::init<const LDOMString &>(), nb::arg("anOther"))
         .def(nb::init<const int>(), nb::arg("aValue"))
         .def(nb::init<const char *>(), nb::arg("aValue"))
-        .def("getOwnerDocument", [](const LDOMString &self) { opencascade::handle<LDOM_MemManager> result(&(self.getOwnerDocument())); return result; });
+        .def("getOwnerDocument", [](const LDOMString &self) { opencascade::handle<LDOM_MemManager> nanoocp_result(&(self.getOwnerDocument())); return nanoocp_result; });
     nb::implicitly_convertible<std::decay_t<const int>, LDOMString>();
     nb::implicitly_convertible<std::decay_t<const char *>, LDOMString>();
     nb::borrow<nb::class_<LDOM_MemManager>>(m.attr("LDOM_MemManager"))
         .def(nb::new_([](const int aBlockSize) { return opencascade::handle<LDOM_MemManager>(new LDOM_MemManager(aBlockSize)); }), nb::arg("aBlockSize"))
-        .def("HashedAllocate", [](LDOM_MemManager &self, const char * aString, const int theLen) { int theHash{}; auto result = self.HashedAllocate(aString, theLen, theHash); return std::make_tuple(result, theHash); }, nb::arg("aString"), nb::arg("theLen"))
+        .def("HashedAllocate", [](LDOM_MemManager &self, const char * aString, const int theLen) { int theHash{}; auto nanoocp_result = self.HashedAllocate(aString, theLen, theHash); return std::make_tuple(nanoocp_result, theHash); }, nb::arg("aString"), nb::arg("theLen"))
         .def("HashedAllocate", static_cast<void (LDOM_MemManager::*)(const char *, const int, LDOMBasicString &)>(&LDOM_MemManager::HashedAllocate), nb::arg("aString"), nb::arg("theLen"), nb::arg("theResult"))
         .def_static("Hash", static_cast<int (*)(const char *, const int)>(&LDOM_MemManager::Hash), nb::arg("theString"), nb::arg("theLen"))
         .def_static("CompareStrings", static_cast<bool (*)(const char *, const int, const char *)>(&LDOM_MemManager::CompareStrings), nb::arg("theString"), nb::arg("theHashValue"), nb::arg("theHashedStr"))
-        .def("Self", [](const LDOM_MemManager &self) { opencascade::handle<LDOM_MemManager> result(&(self.Self())); return result; })
+        .def("Self", [](const LDOM_MemManager &self) { opencascade::handle<LDOM_MemManager> nanoocp_result(&(self.Self())); return nanoocp_result; })
         .def("RootElement", static_cast<const LDOM_BasicElement * (LDOM_MemManager::*)() const>(&LDOM_MemManager::RootElement), nb::rv_policy::reference)
         .def_static("get_type_name", static_cast<const char * (*)()>(&LDOM_MemManager::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&LDOM_MemManager::get_type_descriptor))
@@ -149,7 +149,7 @@ void nanoocp_define_LDOM(nb::module_ &m) {
     nb::borrow<nb::class_<LDOM_Node>>(m.attr("LDOM_Node"))
         .def(nb::init<>())
         .def(nb::init<const LDOM_Node &>(), nb::arg("anOther"))
-        .def("getOwnerDocument", [](const LDOM_Node &self) { opencascade::handle<LDOM_MemManager> result(&(self.getOwnerDocument())); return result; })
+        .def("getOwnerDocument", [](const LDOM_Node &self) { opencascade::handle<LDOM_MemManager> nanoocp_result(&(self.getOwnerDocument())); return nanoocp_result; })
         .def("__eq__", static_cast<bool (LDOM_Node::*)(const LDOM_Node &) const>(&LDOM_Node::operator==), nb::arg("anOther"), nb::is_operator())
         .def("__ne__", static_cast<bool (LDOM_Node::*)(const LDOM_Node &) const>(&LDOM_Node::operator!=), nb::arg("anOther"), nb::is_operator())
         .def("isNull", static_cast<bool (LDOM_Node::*)() const>(&LDOM_Node::isNull))
@@ -253,7 +253,7 @@ void nanoocp_define_LDOM(nb::module_ &m) {
     nanoocp_implicit_copy_ctor<LDOM_LDOMImplementation>(nb::borrow<nb::class_<LDOM_LDOMImplementation>>(m.attr("LDOM_LDOMImplementation")));
     nb::borrow<nb::class_<LDOM_XmlReader>>(m.attr("LDOM_XmlReader"))
         .def(nb::init<const occ::handle<LDOM_MemManager> &, TCollection_AsciiString &, const bool>(), nb::arg("aDocument").none(), nb::arg("anErrorString"), nb::arg("theTagPerStep") = static_cast<std::decay_t<const bool>>(false))
-        .def("ReadRecord", [](LDOM_XmlReader &self, const nanoocp::TextInput &theIStream, LDOM_OSStream & theData) { bool theDocStart{}; std::stringstream theIStream_stream(theIStream.text); auto result = self.ReadRecord(theIStream_stream, theData, theDocStart); return std::make_tuple(result, theDocStart); }, nb::arg("theIStream"), nb::arg("theData"))
+        .def("ReadRecord", [](LDOM_XmlReader &self, const nanoocp::TextInput &theIStream, LDOM_OSStream & theData) { bool theDocStart{}; std::stringstream theIStream_stream(theIStream.text); auto nanoocp_result = self.ReadRecord(theIStream_stream, theData, theDocStart); return std::make_tuple(nanoocp_result, theDocStart); }, nb::arg("theIStream"), nb::arg("theData"))
         .def("GetElement", static_cast<LDOM_BasicElement & (LDOM_XmlReader::*)() const>(&LDOM_XmlReader::GetElement), nb::rv_policy::reference_internal)
         .def("CreateElement", static_cast<void (LDOM_XmlReader::*)(const char *, const int)>(&LDOM_XmlReader::CreateElement), nb::arg("theName"), nb::arg("theLen"))
         .def_static("getInteger", static_cast<bool (*)(LDOMBasicString &, const char *, const char *)>(&LDOM_XmlReader::getInteger), nb::arg("theValue"), nb::arg("theStart"), nb::arg("theEnd"))
@@ -270,7 +270,7 @@ void nanoocp_define_LDOM(nb::module_ &m) {
         .def(nb::init<>())
         .def("getDocument", static_cast<LDOM_Document (LDOMParser::*)()>(&LDOMParser::getDocument))
         .def("parse", static_cast<bool (LDOMParser::*)(const char *const)>(&LDOMParser::parse), nb::arg("aFileName"))
-        .def("parse", [](LDOMParser &self, const nanoocp::TextInput &anInput, const bool theTagPerStep, const bool theWithoutRoot) { std::stringstream anInput_stream(anInput.text); auto result = self.parse(anInput_stream, theTagPerStep, theWithoutRoot); return result; }, nb::arg("anInput"), nb::arg("theTagPerStep") = static_cast<std::decay_t<const bool>>(false), nb::arg("theWithoutRoot") = static_cast<std::decay_t<const bool>>(false))
+        .def("parse", [](LDOMParser &self, const nanoocp::TextInput &anInput, const bool theTagPerStep, const bool theWithoutRoot) { std::stringstream anInput_stream(anInput.text); auto nanoocp_result = self.parse(anInput_stream, theTagPerStep, theWithoutRoot); return nanoocp_result; }, nb::arg("anInput"), nb::arg("theTagPerStep") = static_cast<std::decay_t<const bool>>(false), nb::arg("theWithoutRoot") = static_cast<std::decay_t<const bool>>(false))
         .def("GetError", static_cast<const TCollection_AsciiString & (LDOMParser::*)(TCollection_AsciiString &) const>(&LDOMParser::GetError), nb::arg("aData"))
         .def("GetBOM", static_cast<LDOM_OSStream::BOMType (LDOMParser::*)() const>(&LDOMParser::GetBOM));
     nanoocp_implicit_copy_ctor<LDOMParser>(nb::borrow<nb::class_<LDOMParser>>(m.attr("LDOMParser")));

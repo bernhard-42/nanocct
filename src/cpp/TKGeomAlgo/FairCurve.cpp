@@ -165,7 +165,7 @@ When sliding is free, the sliding factor is automatically
 computed to satisfy the equilibrium of the batten. When
 sliding is imposed, a value is required for the sliding factor.
 SlidingFactor is initialized with the default setting of 1.)nbdoc")
-        .def("Compute", [](FairCurve_Batten &self, const int NbIterations, const double Tolerance) { FairCurve_AnalysisCode Code{}; auto result = self.Compute(Code, NbIterations, Tolerance); return std::make_tuple(result, Code); }, nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(50), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-3), R"nbdoc(Performs the algorithm, using the arguments Code,
+        .def("Compute", [](FairCurve_Batten &self, const int NbIterations, const double Tolerance) { FairCurve_AnalysisCode Code{}; auto nanoocp_result = self.Compute(Code, NbIterations, Tolerance); return std::make_tuple(nanoocp_result, Code); }, nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(50), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-3), R"nbdoc(Performs the algorithm, using the arguments Code,
 NbIterations and Tolerance and computes the curve
 with respect to the constraints.
 Code will have one of the following values:
@@ -209,7 +209,7 @@ Sliding : Active Length of the batten without extension)nbdoc")
         .def("SetSliding", static_cast<void (FairCurve_BattenLaw::*)(const double)>(&FairCurve_BattenLaw::SetSliding), nb::arg("Sliding"), R"nbdoc(Change the value of sliding)nbdoc")
         .def("SetHeigth", static_cast<void (FairCurve_BattenLaw::*)(const double)>(&FairCurve_BattenLaw::SetHeigth), nb::arg("Heigth"), R"nbdoc(Change the value of Heigth at the middle point.)nbdoc")
         .def("SetSlope", static_cast<void (FairCurve_BattenLaw::*)(const double)>(&FairCurve_BattenLaw::SetSlope), nb::arg("Slope"), R"nbdoc(Change the value of the geometric slope.)nbdoc")
-        .def("Value", [](FairCurve_BattenLaw &self, const double T) { double THeigth{}; auto result = self.Value(T, THeigth); return std::make_tuple(result, THeigth); }, nb::arg("T"), R"nbdoc(computes the value of the heigth for the parameter T
+        .def("Value", [](FairCurve_BattenLaw &self, const double T) { double THeigth{}; auto nanoocp_result = self.Value(T, THeigth); return std::make_tuple(nanoocp_result, THeigth); }, nb::arg("T"), R"nbdoc(computes the value of the heigth for the parameter T
 on the neutral fibber)nbdoc");
     nanoocp_implicit_copy_ctor<FairCurve_BattenLaw>(nb::borrow<nb::class_<FairCurve_BattenLaw>>(m.attr("FairCurve_BattenLaw")));
     nb::borrow<nb::class_<FairCurve_DistributionOfEnergy>>(m.attr("FairCurve_DistributionOfEnergy"))
@@ -240,7 +240,7 @@ False otherwise.)nbdoc");
     nanoocp_implicit_copy_ctor<FairCurve_DistributionOfTension>(nb::borrow<nb::class_<FairCurve_DistributionOfTension>>(m.attr("FairCurve_DistributionOfTension")));
     nb::borrow<nb::class_<FairCurve_Energy>>(m.attr("FairCurve_Energy"))
         .def("NbVariables", static_cast<int (FairCurve_Energy::*)() const>(&FairCurve_Energy::NbVariables), R"nbdoc(returns the number of variables of the energy.)nbdoc")
-        .def("Value", [](FairCurve_Energy &self, const math_Vector & X) { double E{}; auto result = self.Value(X, E); return std::make_tuple(result, E); }, nb::arg("X"), R"nbdoc(computes the values of the Energys E for the
+        .def("Value", [](FairCurve_Energy &self, const math_Vector & X) { double E{}; auto nanoocp_result = self.Value(X, E); return std::make_tuple(nanoocp_result, E); }, nb::arg("X"), R"nbdoc(computes the values of the Energys E for the
 variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
@@ -248,11 +248,11 @@ False otherwise.)nbdoc")
 variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
-        .def("Values", [](FairCurve_Energy &self, const math_Vector & X, math_Vector & G) { double E{}; auto result = self.Values(X, E, G); return std::make_tuple(result, E); }, nb::arg("X"), nb::arg("G"), R"nbdoc(computes the Energy <E> and the gradient <G> of the
+        .def("Values", [](FairCurve_Energy &self, const math_Vector & X, math_Vector & G) { double E{}; auto nanoocp_result = self.Values(X, E, G); return std::make_tuple(nanoocp_result, E); }, nb::arg("X"), nb::arg("G"), R"nbdoc(computes the Energy <E> and the gradient <G> of the
 energy for the variable <X>.
 Returns True if the computation was done successfully,
 False otherwise.)nbdoc")
-        .def("Values", [](FairCurve_Energy &self, const math_Vector & X, math_Vector & G, math_Matrix & H) { double E{}; auto result = self.Values(X, E, G, H); return std::make_tuple(result, E); }, nb::arg("X"), nb::arg("G"), nb::arg("H"), R"nbdoc(computes the Energy <E>, the gradient <G> and the
+        .def("Values", [](FairCurve_Energy &self, const math_Vector & X, math_Vector & G, math_Matrix & H) { double E{}; auto nanoocp_result = self.Values(X, E, G, H); return std::make_tuple(nanoocp_result, E); }, nb::arg("X"), nb::arg("G"), nb::arg("H"), R"nbdoc(computes the Energy <E>, the gradient <G> and the
 Hessian <H> of the energy for the variable <X>.
 Returns True if the computation was done
 successfully, False otherwise.)nbdoc")
@@ -306,7 +306,7 @@ The kinds of energy which you can specify include:
 1 is only "Sagging" Energy like batten
 Warning: if Ratio is 1 it is impossible to impose curvature constraints.
 Raises DomainError if Ratio < 0 or Ratio > 1)nbdoc")
-        .def("Compute", [](FairCurve_MinimalVariation &self, const int NbIterations, const double Tolerance) { FairCurve_AnalysisCode ACode{}; auto result = self.Compute(ACode, NbIterations, Tolerance); return std::make_tuple(result, ACode); }, nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(50), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-3), R"nbdoc(Computes the curve with respect to the constraints,
+        .def("Compute", [](FairCurve_MinimalVariation &self, const int NbIterations, const double Tolerance) { FairCurve_AnalysisCode ACode{}; auto nanoocp_result = self.Compute(ACode, NbIterations, Tolerance); return std::make_tuple(nanoocp_result, ACode); }, nb::arg("NbIterations") = static_cast<std::decay_t<const int>>(50), nb::arg("Tolerance") = static_cast<std::decay_t<const double>>(1.0e-3), R"nbdoc(Computes the curve with respect to the constraints,
 NbIterations and Tolerance. The tolerance setting
 allows you to control the precision of computation, and
 the maximum number of iterations allows you to set a limit on computation time.)nbdoc")

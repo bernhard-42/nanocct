@@ -86,7 +86,7 @@ void nanoocp_define_GccEnt(nb::module_ &m) {
         .def_static("PositionFromString", static_cast<GccEnt_Position (*)(const char *)>(&GccEnt::PositionFromString), nb::arg("thePositionString"), R"nbdoc(Returns the position from the given string identifier (using case-insensitive comparison).
 @param thePositionString string identifier
 @return position or GccEnt_unqualified if string identifier is invalid)nbdoc")
-        .def_static("PositionFromString__GccEnt_Position", [](const char * thePositionString) { GccEnt_Position thePosition{}; auto result = GccEnt::PositionFromString(thePositionString, thePosition); return std::make_tuple(result, thePosition); }, nb::arg("thePositionString"), R"nbdoc(PositionFromString__GccEnt_Position: the C++ overload PositionFromString(const char *, GccEnt_Position &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("PositionFromString__GccEnt_Position", [](const char * thePositionString) { GccEnt_Position thePosition{}; auto nanoocp_result = GccEnt::PositionFromString(thePositionString, thePosition); return std::make_tuple(nanoocp_result, thePosition); }, nb::arg("thePositionString"), R"nbdoc(PositionFromString__GccEnt_Position: the C++ overload PositionFromString(const char *, GccEnt_Position &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Determines the position from the given string identifier (using case-insensitive comparison).
 @param thePositionString string identifier
 @param thePosition detected shape type

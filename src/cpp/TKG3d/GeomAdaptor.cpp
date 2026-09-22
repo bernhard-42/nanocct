@@ -497,9 +497,9 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
         .def("Trsf", static_cast<const gp_Trsf & (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::Trsf), R"nbdoc(Returns the transformation.)nbdoc")
         .def("Is3DCurve", static_cast<bool (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::Is3DCurve), R"nbdoc(Returns true if the geometry is a 3D curve (not curve on surface).)nbdoc")
         .def("IsCurveOnSurface", static_cast<bool (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::IsCurveOnSurface), R"nbdoc(Returns true if the geometry is a curve on surface.)nbdoc")
-        .def("Curve", [](const GeomAdaptor_TransformedCurve &self) { opencascade::handle<GeomAdaptor_Curve> result(&(self.Curve())); return result; }, R"nbdoc(Returns the underlying GeomAdaptor_Curve.)nbdoc")
-        .def("ChangeCurve", [](GeomAdaptor_TransformedCurve &self) { opencascade::handle<GeomAdaptor_Curve> result(&(self.ChangeCurve())); return result; }, R"nbdoc(Returns the underlying GeomAdaptor_Curve for modification.)nbdoc")
-        .def("CurveOnSurface", [](const GeomAdaptor_TransformedCurve &self) { opencascade::handle<Adaptor3d_CurveOnSurface> result(&(self.CurveOnSurface())); return result; }, R"nbdoc(Returns the CurveOnSurface adaptor.)nbdoc")
+        .def("Curve", [](const GeomAdaptor_TransformedCurve &self) { opencascade::handle<GeomAdaptor_Curve> nanoocp_result(&(self.Curve())); return nanoocp_result; }, R"nbdoc(Returns the underlying GeomAdaptor_Curve.)nbdoc")
+        .def("ChangeCurve", [](GeomAdaptor_TransformedCurve &self) { opencascade::handle<GeomAdaptor_Curve> nanoocp_result(&(self.ChangeCurve())); return nanoocp_result; }, R"nbdoc(Returns the underlying GeomAdaptor_Curve for modification.)nbdoc")
+        .def("CurveOnSurface", [](const GeomAdaptor_TransformedCurve &self) { opencascade::handle<Adaptor3d_CurveOnSurface> nanoocp_result(&(self.CurveOnSurface())); return nanoocp_result; }, R"nbdoc(Returns the CurveOnSurface adaptor.)nbdoc")
         .def("GeomCurve", static_cast<const occ::handle<Geom_Curve> & (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::GeomCurve), R"nbdoc(Returns the underlying Geom_Curve.)nbdoc")
         .def("FirstParameter", static_cast<double (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::FirstParameter))
         .def("LastParameter", static_cast<double (GeomAdaptor_TransformedCurve::*)() const>(&GeomAdaptor_TransformedCurve::LastParameter))
@@ -564,11 +564,11 @@ SurfaceOfExtrusion, OtherSurface)nbdoc")
 @param theTrsf transformation to apply)nbdoc")
         .def("HasTrsf", static_cast<bool (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::HasTrsf), R"nbdoc(Returns true if non-identity transformation is applied.)nbdoc")
         .def("Trsf", static_cast<const gp_Trsf & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::Trsf), R"nbdoc(Returns the transformation.)nbdoc")
-        .def("Surface", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> result(&(self.Surface())); return result; }, R"nbdoc(Deprecated in OCCT: Use AdaptorSurfaceOriginal() instead to get the original surface without transformation
+        .def("Surface", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> nanoocp_result(&(self.Surface())); return nanoocp_result; }, R"nbdoc(Deprecated in OCCT: Use AdaptorSurfaceOriginal() instead to get the original surface without transformation
 
 Returns the underlying GeomAdaptor_Surface.)nbdoc")
-        .def("AdaptorSurfaceOriginal", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> result(&(self.AdaptorSurfaceOriginal())); return result; }, R"nbdoc(Returns the underlying original GeomAdaptor_Surface without transformation applied.)nbdoc")
-        .def("AdaptorSurfaceTransformed", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> result(&(self.AdaptorSurfaceTransformed())); return result; }, R"nbdoc(Returns an adaptor for the transformed surface state.
+        .def("AdaptorSurfaceOriginal", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> nanoocp_result(&(self.AdaptorSurfaceOriginal())); return nanoocp_result; }, R"nbdoc(Returns the underlying original GeomAdaptor_Surface without transformation applied.)nbdoc")
+        .def("AdaptorSurfaceTransformed", [](const GeomAdaptor_TransformedSurface &self) { opencascade::handle<GeomAdaptor_Surface> nanoocp_result(&(self.AdaptorSurfaceTransformed())); return nanoocp_result; }, R"nbdoc(Returns an adaptor for the transformed surface state.
 Uses the original adaptor for identity transformation to preserve existing trimming.)nbdoc")
         .def("GeomSurfaceOriginal", static_cast<const occ::handle<Geom_Surface> & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::GeomSurfaceOriginal), R"nbdoc(Returns the underlying original Geom_Surface without transformation applied.)nbdoc")
         .def("GeomSurfaceTransformed", static_cast<const occ::handle<Geom_Surface> & (GeomAdaptor_TransformedSurface::*)() const>(&GeomAdaptor_TransformedSurface::GeomSurfaceTransformed), R"nbdoc(Returns the transformed Geom_Surface cached for current state.)nbdoc")

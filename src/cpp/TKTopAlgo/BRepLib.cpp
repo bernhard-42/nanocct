@@ -400,7 +400,7 @@ Use only in interfaces or processing assimilate batch)nbdoc")
 the same parameter as the 3d curve.
 The algorithm is not done if the flag SameParameter
 was True on the Edge.)nbdoc")
-        .def_static("SameParameter", [](const TopoDS_Edge & theEdge, const double theTolerance, const bool IsUseOldEdge) { double theNewTol{}; auto result = BRepLib::SameParameter(theEdge, theTolerance, theNewTol, IsUseOldEdge); return std::make_tuple(result, theNewTol); }, nb::arg("theEdge"), nb::arg("theTolerance"), nb::arg("IsUseOldEdge"), R"nbdoc(Computes new 2d curve(s) for the edge <theEdge> to have
+        .def_static("SameParameter", [](const TopoDS_Edge & theEdge, const double theTolerance, const bool IsUseOldEdge) { double theNewTol{}; auto nanoocp_result = BRepLib::SameParameter(theEdge, theTolerance, theNewTol, IsUseOldEdge); return std::make_tuple(nanoocp_result, theNewTol); }, nb::arg("theEdge"), nb::arg("theTolerance"), nb::arg("IsUseOldEdge"), R"nbdoc(Computes new 2d curve(s) for the edge <theEdge> to have
 the same parameter as the 3d curve.
 The algorithm is not done if the flag SameParameter
 was True on the Edge.
@@ -468,12 +468,12 @@ by the maximum deviation measured on existing triangulation.)nbdoc")
 Returns the center (theNewCenter) and the radius (theNewTol) of this sphere.
 This can be used to construct the new vertex which covers the given set of
 other vertices.)nbdoc")
-        .def_static("FindValidRange", [](const Adaptor3d_Curve & theCurve, const double theTolE, const double theParV1, const gp_Pnt & thePntV1, const double theTolV1, const double theParV2, const gp_Pnt & thePntV2, const double theTolV2) { double theFirst{}; double theLast{}; auto result = BRepLib::FindValidRange(theCurve, theTolE, theParV1, thePntV1, theTolV1, theParV2, thePntV2, theTolV2, theFirst, theLast); return std::make_tuple(result, theFirst, theLast); }, nb::arg("theCurve"), nb::arg("theTolE"), nb::arg("theParV1"), nb::arg("thePntV1"), nb::arg("theTolV1"), nb::arg("theParV2"), nb::arg("thePntV2"), nb::arg("theTolV2"), R"nbdoc(For an edge defined by 3d curve and tolerance and vertices defined by points,
+        .def_static("FindValidRange", [](const Adaptor3d_Curve & theCurve, const double theTolE, const double theParV1, const gp_Pnt & thePntV1, const double theTolV1, const double theParV2, const gp_Pnt & thePntV2, const double theTolV2) { double theFirst{}; double theLast{}; auto nanoocp_result = BRepLib::FindValidRange(theCurve, theTolE, theParV1, thePntV1, theTolV1, theParV2, thePntV2, theTolV2, theFirst, theLast); return std::make_tuple(nanoocp_result, theFirst, theLast); }, nb::arg("theCurve"), nb::arg("theTolE"), nb::arg("theParV1"), nb::arg("thePntV1"), nb::arg("theTolV1"), nb::arg("theParV2"), nb::arg("thePntV2"), nb::arg("theTolV2"), R"nbdoc(For an edge defined by 3d curve and tolerance and vertices defined by points,
 parameters on curve and tolerances,
 finds a range of curve between vertices not covered by vertices tolerances.
 Returns false if there is no such range. Otherwise, sets theFirst and
 theLast as its bounds.)nbdoc")
-        .def_static("FindValidRange", [](const TopoDS_Edge & theEdge) { double theFirst{}; double theLast{}; auto result = BRepLib::FindValidRange(theEdge, theFirst, theLast); return std::make_tuple(result, theFirst, theLast); }, nb::arg("theEdge"), R"nbdoc(Finds a range of 3d curve of the edge not covered by vertices tolerances.
+        .def_static("FindValidRange", [](const TopoDS_Edge & theEdge) { double theFirst{}; double theLast{}; auto nanoocp_result = BRepLib::FindValidRange(theEdge, theFirst, theLast); return std::make_tuple(nanoocp_result, theFirst, theLast); }, nb::arg("theEdge"), R"nbdoc(Finds a range of 3d curve of the edge not covered by vertices tolerances.
 Returns false if there is no such range. Otherwise, sets theFirst and
 theLast as its bounds.)nbdoc")
         .def_static("ExtendFace", static_cast<void (*)(const TopoDS_Face &, const double, const bool, const bool, const bool, const bool, TopoDS_Face &)>(&BRepLib::ExtendFace), nb::arg("theF"), nb::arg("theExtVal"), nb::arg("theExtUMin"), nb::arg("theExtUMax"), nb::arg("theExtVMin"), nb::arg("theExtVMax"), nb::arg("theFExtended"), R"nbdoc(Enlarges the face on the given value.
@@ -714,7 +714,7 @@ of degenerated edges.)nbdoc")
         .def("Add", static_cast<void (BRepLib_MakeFace::*)(const TopoDS_Wire &)>(&BRepLib_MakeFace::Add), nb::arg("W"), R"nbdoc(Adds the wire <W> in the current face.)nbdoc")
         .def("Error", static_cast<BRepLib_FaceError (BRepLib_MakeFace::*)() const>(&BRepLib_MakeFace::Error))
         .def("Face", static_cast<const TopoDS_Face & (BRepLib_MakeFace::*)() const>(&BRepLib_MakeFace::Face), R"nbdoc(Returns the new face.)nbdoc")
-        .def_static("IsDegenerated", [](const occ::handle<Geom_Curve> & theCurve, const double theMaxTol) { double theActTol{}; auto result = BRepLib_MakeFace::IsDegenerated(theCurve, theMaxTol, theActTol); return std::make_tuple(result, theActTol); }, nb::arg("theCurve").none(), nb::arg("theMaxTol"), R"nbdoc(Checks the specified curve is degenerated
+        .def_static("IsDegenerated", [](const occ::handle<Geom_Curve> & theCurve, const double theMaxTol) { double theActTol{}; auto nanoocp_result = BRepLib_MakeFace::IsDegenerated(theCurve, theMaxTol, theActTol); return std::make_tuple(nanoocp_result, theActTol); }, nb::arg("theCurve").none(), nb::arg("theMaxTol"), R"nbdoc(Checks the specified curve is degenerated
 according to specified tolerance.
 Returns <theActTol> less than <theMaxTol>, which shows
 actual tolerance to decide the curve is degenerated.

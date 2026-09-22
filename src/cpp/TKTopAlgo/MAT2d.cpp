@@ -196,7 +196,7 @@ this Items are the geometrics representations of
 the BasicElts from MAT.)nbdoc")
         .def("NumberOfItems", static_cast<int (MAT2d_Tool2d::*)() const>(&MAT2d_Tool2d::NumberOfItems), R"nbdoc(Returns the Number of Items .)nbdoc")
         .def("ToleranceOfConfusion", static_cast<double (MAT2d_Tool2d::*)() const>(&MAT2d_Tool2d::ToleranceOfConfusion), R"nbdoc(Returns tolerance to test the confusion of two points.)nbdoc")
-        .def("FirstPoint", [](MAT2d_Tool2d &self, const int anitem) { double dist{}; auto result = self.FirstPoint(anitem, dist); return std::make_tuple(result, dist); }, nb::arg("anitem"), R"nbdoc(Creates the point at the origin of the bisector between
+        .def("FirstPoint", [](MAT2d_Tool2d &self, const int anitem) { double dist{}; auto nanoocp_result = self.FirstPoint(anitem, dist); return std::make_tuple(nanoocp_result, dist); }, nb::arg("anitem"), R"nbdoc(Creates the point at the origin of the bisector between
 anitem and the previous item.
 dist is the distance from the FirstPoint to <anitem>.
 Returns the index of this point in <theGeomPnts>.)nbdoc")
@@ -218,7 +218,7 @@ else Return True.)nbdoc")
 <apoint> in <theGeomPnts>.
 If the point is out of the bisector, Return FALSE.
 else Return True.)nbdoc")
-        .def("IntersectBisector", [](MAT2d_Tool2d &self, const occ::handle<MAT_Bisector> & bisectorone, const occ::handle<MAT_Bisector> & bisectortwo) { int intpnt{}; auto result = self.IntersectBisector(bisectorone, bisectortwo, intpnt); return std::make_tuple(result, intpnt); }, nb::arg("bisectorone").none(), nb::arg("bisectortwo").none(), R"nbdoc(Computes the point of intersection between the
+        .def("IntersectBisector", [](MAT2d_Tool2d &self, const occ::handle<MAT_Bisector> & bisectorone, const occ::handle<MAT_Bisector> & bisectortwo) { int intpnt{}; auto nanoocp_result = self.IntersectBisector(bisectorone, bisectortwo, intpnt); return std::make_tuple(nanoocp_result, intpnt); }, nb::arg("bisectorone").none(), nb::arg("bisectortwo").none(), R"nbdoc(Computes the point of intersection between the
 bisectors defined by <bisectorone> and
 <bisectortwo> .
 If this point exists, <intpnt> is its index

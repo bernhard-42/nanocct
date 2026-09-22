@@ -437,12 +437,12 @@ when the transitions are Touch.)nbdoc")
 of points.)nbdoc")
         .def("SetFirstPoint", static_cast<void (IntPatch_ALine::*)(const int)>(&IntPatch_ALine::SetFirstPoint), nb::arg("IndFirst"))
         .def("SetLastPoint", static_cast<void (IntPatch_ALine::*)(const int)>(&IntPatch_ALine::SetLastPoint), nb::arg("IndLast"))
-        .def("FirstParameter", [](const IntPatch_ALine &self) { bool IsIncluded{}; auto result = self.FirstParameter(IsIncluded); return std::make_tuple(result, IsIncluded); }, R"nbdoc(Returns the first parameter on the intersection line.
+        .def("FirstParameter", [](const IntPatch_ALine &self) { bool IsIncluded{}; auto nanoocp_result = self.FirstParameter(IsIncluded); return std::make_tuple(nanoocp_result, IsIncluded); }, R"nbdoc(Returns the first parameter on the intersection line.
 If IsIncluded returns True, Value and D1 methods can
 be call with a parameter equal to FirstParameter.
 Otherwise, the parameter must be greater than
 FirstParameter.)nbdoc")
-        .def("LastParameter", [](const IntPatch_ALine &self) { bool IsIncluded{}; auto result = self.LastParameter(IsIncluded); return std::make_tuple(result, IsIncluded); }, R"nbdoc(Returns the last parameter on the intersection line.
+        .def("LastParameter", [](const IntPatch_ALine &self) { bool IsIncluded{}; auto nanoocp_result = self.LastParameter(IsIncluded); return std::make_tuple(nanoocp_result, IsIncluded); }, R"nbdoc(Returns the last parameter on the intersection line.
 If IsIncluded returns True, Value and D1 methods can
 be call with a parameter equal to LastParameter.
 Otherwise, the parameter must be less than LastParameter.)nbdoc")
@@ -498,9 +498,9 @@ Walking-lines and adds them in theLines.)nbdoc");
         .def("SetQuadric", static_cast<void (IntPatch_ArcFunction::*)(const IntSurf_Quadric &)>(&IntPatch_ArcFunction::SetQuadric), nb::arg("Q"))
         .def("Set", static_cast<void (IntPatch_ArcFunction::*)(const occ::handle<Adaptor2d_Curve2d> &)>(&IntPatch_ArcFunction::Set), nb::arg("A").none())
         .def("Set", static_cast<void (IntPatch_ArcFunction::*)(const occ::handle<Adaptor3d_Surface> &)>(&IntPatch_ArcFunction::Set), nb::arg("S").none())
-        .def("Value", [](IntPatch_ArcFunction &self, const double X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
-        .def("Derivative", [](IntPatch_ArcFunction &self, const double X) { double D{}; auto result = self.Derivative(X, D); return std::make_tuple(result, D); }, nb::arg("X"))
-        .def("Values", [](IntPatch_ArcFunction &self, const double X) { double F{}; double D{}; auto result = self.Values(X, F, D); return std::make_tuple(result, F, D); }, nb::arg("X"))
+        .def("Value", [](IntPatch_ArcFunction &self, const double X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"))
+        .def("Derivative", [](IntPatch_ArcFunction &self, const double X) { double D{}; auto nanoocp_result = self.Derivative(X, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("X"))
+        .def("Values", [](IntPatch_ArcFunction &self, const double X) { double F{}; double D{}; auto nanoocp_result = self.Values(X, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("X"))
         .def("NbSamples", static_cast<int (IntPatch_ArcFunction::*)() const>(&IntPatch_ArcFunction::NbSamples))
         .def("GetStateNumber", static_cast<int (IntPatch_ArcFunction::*)()>(&IntPatch_ArcFunction::GetStateNumber))
         .def("Valpoint", static_cast<const gp_Pnt & (IntPatch_ArcFunction::*)(const int) const>(&IntPatch_ArcFunction::Valpoint), nb::arg("Index"))
@@ -547,7 +547,7 @@ Returns the number of accepted pairs of elements.)nbdoc");
 @return number of collected pairs)nbdoc")
         .def("Pairs", static_cast<const NCollection_DynamicArray<IntPatch_BVHTraversal::TrianglePair> & (IntPatch_BVHTraversal::*)() const>(&IntPatch_BVHTraversal::Pairs), R"nbdoc(Returns the collected triangle pairs.)nbdoc")
         .def("Clear", static_cast<void (IntPatch_BVHTraversal::*)()>(&IntPatch_BVHTraversal::Clear), R"nbdoc(Clears the collected pairs.)nbdoc")
-        .def("RejectNode", [](const IntPatch_BVHTraversal &self, const BVH_Vec3d & theCMin1, const BVH_Vec3d & theCMax1, const BVH_Vec3d & theCMin2, const BVH_Vec3d & theCMax2) { double theMetric{}; auto result = self.RejectNode(theCMin1, theCMax1, theCMin2, theCMax2, theMetric); return std::make_tuple(result, theMetric); }, nb::arg("theCMin1"), nb::arg("theCMax1"), nb::arg("theCMin2"), nb::arg("theCMax2"), R"nbdoc(@name BVH_PairTraverse interface implementation
+        .def("RejectNode", [](const IntPatch_BVHTraversal &self, const BVH_Vec3d & theCMin1, const BVH_Vec3d & theCMax1, const BVH_Vec3d & theCMin2, const BVH_Vec3d & theCMax2) { double theMetric{}; auto nanoocp_result = self.RejectNode(theCMin1, theCMax1, theCMin2, theCMax2, theMetric); return std::make_tuple(nanoocp_result, theMetric); }, nb::arg("theCMin1"), nb::arg("theCMax1"), nb::arg("theCMin2"), nb::arg("theCMax2"), R"nbdoc(@name BVH_PairTraverse interface implementation
 Rejects pair of nodes if their bounding boxes don't overlap.
 @param[in] theCMin1 minimum corner of the first node's bounding box
 @param[in] theCMax1 maximum corner of the first node's bounding box
@@ -750,7 +750,7 @@ the Surface and the CurveOnSurface complexity.)nbdoc")
 These limits must be finite : they are either
 the real limits of the arc, for a finite arc,
 or a bounding box for an infinite arc.)nbdoc")
-        .def_static("Project", [](const occ::handle<Adaptor2d_Curve2d> & C, const gp_Pnt2d & P, gp_Pnt2d & Ptproj) { double Paramproj{}; auto result = IntPatch_HInterTool::Project(C, P, Paramproj, Ptproj); return std::make_tuple(result, Paramproj); }, nb::arg("C").none(), nb::arg("P"), nb::arg("Ptproj"), R"nbdoc(Projects the point P on the arc C.
+        .def_static("Project", [](const occ::handle<Adaptor2d_Curve2d> & C, const gp_Pnt2d & P, gp_Pnt2d & Ptproj) { double Paramproj{}; auto nanoocp_result = IntPatch_HInterTool::Project(C, P, Paramproj, Ptproj); return std::make_tuple(nanoocp_result, Paramproj); }, nb::arg("C").none(), nb::arg("P"), nb::arg("Ptproj"), R"nbdoc(Projects the point P on the arc C.
 If the methods returns true, the projection is
 successful, and Paramproj is the parameter on the arc
 of the projected point, Ptproj is the projected Point.
@@ -771,13 +771,13 @@ corresponds with a vertex on the arc A.)nbdoc")
 vertex on the arc A.)nbdoc")
         .def_static("NbSegments", static_cast<int (*)(const occ::handle<Adaptor2d_Curve2d> &)>(&IntPatch_HInterTool::NbSegments), nb::arg("C").none(), R"nbdoc(returns the number of part of A solution of the
 of intersection problem.)nbdoc")
-        .def_static("HasFirstPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndFirst{}; auto result = IntPatch_HInterTool::HasFirstPoint(C, Index, IndFirst); return std::make_tuple(result, IndFirst); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
+        .def_static("HasFirstPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndFirst{}; auto nanoocp_result = IntPatch_HInterTool::HasFirstPoint(C, Index, IndFirst); return std::make_tuple(nanoocp_result, IndFirst); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
 open at the left side. In that case, IndFirst is the
 range in the list intersection points (see NbPoints)
 of the one which defines the left bound of the segment.
 Otherwise, the method has to return False, and IndFirst
 has no meaning.)nbdoc")
-        .def_static("HasLastPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndLast{}; auto result = IntPatch_HInterTool::HasLastPoint(C, Index, IndLast); return std::make_tuple(result, IndLast); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
+        .def_static("HasLastPoint", [](const occ::handle<Adaptor2d_Curve2d> & C, const int Index) { int IndLast{}; auto nanoocp_result = IntPatch_HInterTool::HasLastPoint(C, Index, IndLast); return std::make_tuple(nanoocp_result, IndLast); }, nb::arg("C").none(), nb::arg("Index"), R"nbdoc(Returns True when the segment of range Index is not
 open at the right side. In that case, IndLast is the
 range in the list intersection points (see NbPoints)
 of the one which defines the right bound of the segment.
@@ -977,7 +977,7 @@ An exception is raised if Index<=0 or Index>NbLine.)nbdoc")
         .def("SequenceOfLine", static_cast<const NCollection_Sequence<opencascade::handle<IntPatch_Line>> & (IntPatch_Intersection::*)() const>(&IntPatch_Intersection::SequenceOfLine))
         .def("Dump", static_cast<void (IntPatch_Intersection::*)(const int, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_TopolTool> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_TopolTool> &) const>(&IntPatch_Intersection::Dump), nb::arg("Mode"), nb::arg("S1").none(), nb::arg("D1").none(), nb::arg("S2").none(), nb::arg("D2").none(), R"nbdoc(Dump of each result line.
 Mode for more accurate dumps.)nbdoc")
-        .def_static("CheckSingularPoints", [](const occ::handle<Adaptor3d_Surface> & theS1, const occ::handle<Adaptor3d_TopolTool> & theD1, const occ::handle<Adaptor3d_Surface> & theS2) { double theDist{}; auto result = IntPatch_Intersection::CheckSingularPoints(theS1, theD1, theS2, theDist); return std::make_tuple(result, theDist); }, nb::arg("theS1").none(), nb::arg("theD1").none(), nb::arg("theS2").none(), R"nbdoc(Checks if surface theS1 has degenerated boundary (dS/du or dS/dv = 0) and
+        .def_static("CheckSingularPoints", [](const occ::handle<Adaptor3d_Surface> & theS1, const occ::handle<Adaptor3d_TopolTool> & theD1, const occ::handle<Adaptor3d_Surface> & theS2) { double theDist{}; auto nanoocp_result = IntPatch_Intersection::CheckSingularPoints(theS1, theD1, theS2, theDist); return std::make_tuple(nanoocp_result, theDist); }, nb::arg("theS1").none(), nb::arg("theD1").none(), nb::arg("theS2").none(), R"nbdoc(Checks if surface theS1 has degenerated boundary (dS/du or dS/dv = 0) and
 calculates minimal distance between corresponding singular points and surface theS2
 If singular point exists the method returns "true" and stores minimal distance in theDist.)nbdoc")
         .def_static("DefineUVMaxStep", static_cast<double (*)(const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_TopolTool> &, const occ::handle<Adaptor3d_Surface> &, const occ::handle<Adaptor3d_TopolTool> &)>(&IntPatch_Intersection::DefineUVMaxStep), nb::arg("theS1").none(), nb::arg("theD1").none(), nb::arg("theS2").none(), nb::arg("theD2").none(), R"nbdoc(Calculates recommended value for myUVMaxStep depending on surfaces and their domains)nbdoc")
@@ -1052,7 +1052,7 @@ representation of a double array of triangles.)nbdoc")
 triangles (nbdu*nbdv*2).)nbdoc")
         .def("Triangle", [](const IntPatch_Polyhedron &self, const int Index) { int P1{}; int P2{}; int P3{}; self.Triangle(Index, P1, P2, P3); return std::make_tuple(P1, P2, P3); }, nb::arg("Index"), R"nbdoc(Give the 3 points of the triangle of address Index in
 the double array of triangles.)nbdoc")
-        .def("TriConnex", [](const IntPatch_Polyhedron &self, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto result = self.TriConnex(Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(result, TriCon, OtherP); }, nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to the
+        .def("TriConnex", [](const IntPatch_Polyhedron &self, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto nanoocp_result = self.TriConnex(Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(nanoocp_result, TriCon, OtherP); }, nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to the
 triangle of address Triang by the edge Pivot Pedge and
 the third point of this connexe triangle. When we are
 on a free edge TriCon==0 but the function return the
@@ -1062,7 +1062,7 @@ the free edge. Used to turn around a vertex.)nbdoc")
 triangles ((nbdu+1)*(nbdv+1)).)nbdoc")
         .def("Point", static_cast<void (IntPatch_Polyhedron::*)(const gp_Pnt &, const int, const int, const double, const double)>(&IntPatch_Polyhedron::Point), nb::arg("thePnt"), nb::arg("lig"), nb::arg("col"), nb::arg("U"), nb::arg("V"), R"nbdoc(Set the value of a field of the double array of
 points.)nbdoc")
-        .def("Point__float__float", [](const IntPatch_Polyhedron &self, const int Index) { double U{}; double V{}; auto result = self.Point(Index, U, V); return std::make_tuple(result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float__float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Point__float__float", [](const IntPatch_Polyhedron &self, const int Index) { double U{}; double V{}; auto nanoocp_result = self.Point(Index, U, V); return std::make_tuple(nanoocp_result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float__float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<const gp_Pnt & (IntPatch_Polyhedron::*)(const int) const>(&IntPatch_Polyhedron::Point), nb::arg("Index"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<void (IntPatch_Polyhedron::*)(const int, gp_Pnt &) const>(&IntPatch_Polyhedron::Point), nb::arg("Index"), nb::arg("P"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
@@ -1085,7 +1085,7 @@ to the triangle <n>.)nbdoc")
         .def("Init", static_cast<void (IntPatch_PolyhedronBVH::*)(const IntPatch_Polyhedron &)>(&IntPatch_PolyhedronBVH::Init), nb::arg("thePoly"), R"nbdoc(Initializes BVH set from the given polyhedron.
 @param[in] thePoly the polyhedron to wrap (must remain valid during BVH lifetime))nbdoc")
         .def("Clear", static_cast<void (IntPatch_PolyhedronBVH::*)()>(&IntPatch_PolyhedronBVH::Clear), R"nbdoc(Clears the BVH set.)nbdoc")
-        .def("Box", [](const IntPatch_PolyhedronBVH &self) { auto result = self.Box(); return result; }, R"nbdoc(Returns AABB of primitive set.)nbdoc")
+        .def("Box", [](const IntPatch_PolyhedronBVH &self) { auto nanoocp_result = self.Box(); return nanoocp_result; }, R"nbdoc(Returns AABB of primitive set.)nbdoc")
         .def("Size", static_cast<int (IntPatch_PolyhedronBVH::*)() const>(&IntPatch_PolyhedronBVH::Size), R"nbdoc(Returns the total number of triangles.)nbdoc")
         .def("Box", static_cast<BVH_Box<double, 3> (IntPatch_PolyhedronBVH::*)(const int) const>(&IntPatch_PolyhedronBVH::Box), nb::arg("theIndex"), R"nbdoc(Returns AABB of the triangle with the given index.
 @param[in] theIndex 0-based triangle index (after BVH reordering))nbdoc")
@@ -1113,7 +1113,7 @@ to the triangle <n>.)nbdoc")
         .def_static("Triangle", [](const IntPatch_Polyhedron & thePolyh, const int Index) { int P1{}; int P2{}; int P3{}; IntPatch_PolyhedronTool::Triangle(thePolyh, Index, P1, P2, P3); return std::make_tuple(P1, P2, P3); }, nb::arg("thePolyh"), nb::arg("Index"), R"nbdoc(Give the indices of the 3 points of the triangle of
 address Index in the Polyhedron.)nbdoc")
         .def_static("Point", static_cast<const gp_Pnt & (*)(const IntPatch_Polyhedron &, const int)>(&IntPatch_PolyhedronTool::Point), nb::arg("thePolyh"), nb::arg("Index"), R"nbdoc(Give the point of index i in the polyhedral surface.)nbdoc")
-        .def_static("TriConnex", [](const IntPatch_Polyhedron & thePolyh, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto result = IntPatch_PolyhedronTool::TriConnex(thePolyh, Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(result, TriCon, OtherP); }, nb::arg("thePolyh"), nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Gives the address Tricon of the triangle connexe to
+        .def_static("TriConnex", [](const IntPatch_Polyhedron & thePolyh, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto nanoocp_result = IntPatch_PolyhedronTool::TriConnex(thePolyh, Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(nanoocp_result, TriCon, OtherP); }, nb::arg("thePolyh"), nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Gives the address Tricon of the triangle connexe to
 the triangle of address Triang by the edge Pivot Pedge
 and the third point of this connexe triangle. When we
 are on a free edge TriCon==0 but the function return
@@ -1183,7 +1183,7 @@ or if IsDone returns False)nbdoc")
         .def("Val", static_cast<int (IntPatch_PrmPrmIntersection_T3Bits::*)(const int) const>(&IntPatch_PrmPrmIntersection_T3Bits::Val), nb::arg("t"))
         .def("Raz", static_cast<void (IntPatch_PrmPrmIntersection_T3Bits::*)(const int)>(&IntPatch_PrmPrmIntersection_T3Bits::Raz), nb::arg("t"))
         .def("ResetAnd", static_cast<void (IntPatch_PrmPrmIntersection_T3Bits::*)()>(&IntPatch_PrmPrmIntersection_T3Bits::ResetAnd))
-        .def("And", [](IntPatch_PrmPrmIntersection_T3Bits &self, IntPatch_PrmPrmIntersection_T3Bits & Oth) { int indiceprecedent{}; auto result = self.And(Oth, indiceprecedent); return std::make_tuple(result, indiceprecedent); }, nb::arg("Oth"));
+        .def("And", [](IntPatch_PrmPrmIntersection_T3Bits &self, IntPatch_PrmPrmIntersection_T3Bits & Oth) { int indiceprecedent{}; auto nanoocp_result = self.And(Oth, indiceprecedent); return std::make_tuple(nanoocp_result, indiceprecedent); }, nb::arg("Oth"));
     nanoocp_implicit_copy_ctor<IntPatch_PrmPrmIntersection_T3Bits>(nb::borrow<nb::class_<IntPatch_PrmPrmIntersection_T3Bits>>(m.attr("IntPatch_PrmPrmIntersection_T3Bits")));
     nb::implicitly_convertible<std::decay_t<const int>, IntPatch_PrmPrmIntersection_T3Bits>();
     nb::borrow<nb::class_<IntPatch_RLine>>(m.attr("IntPatch_RLine"))
@@ -1353,7 +1353,7 @@ passing point.)nbdoc")
         .def("PassingPoint", [](const IntPatch_TheIWLineOfTheIWalking &self, const int Index) { int IndexLine{}; int IndexPnts{}; self.PassingPoint(Index, IndexLine, IndexPnts); return std::make_tuple(IndexLine, IndexPnts); }, nb::arg("Index"), R"nbdoc(returns the index of the point belonging to the line which
 is associated to the passing point belonging to Pnts1
 an exception is raised if Index > NbPassingPoint())nbdoc")
-        .def("TangentVector", [](const IntPatch_TheIWLineOfTheIWalking &self) { int Index{}; auto result = self.TangentVector(Index); return std::make_tuple(result, Index); })
+        .def("TangentVector", [](const IntPatch_TheIWLineOfTheIWalking &self) { int Index{}; auto nanoocp_result = self.TangentVector(Index); return std::make_tuple(nanoocp_result, Index); })
         .def("IsTangentAtBegining", static_cast<bool (IntPatch_TheIWLineOfTheIWalking::*)() const>(&IntPatch_TheIWLineOfTheIWalking::IsTangentAtBegining))
         .def("IsTangentAtEnd", static_cast<bool (IntPatch_TheIWLineOfTheIWalking::*)() const>(&IntPatch_TheIWLineOfTheIWalking::IsTangentAtEnd))
         .def_static("get_type_name", static_cast<const char * (*)()>(&IntPatch_TheIWLineOfTheIWalking::get_type_name))
@@ -1444,11 +1444,11 @@ This point is given by the method FirstPoint().)nbdoc")
 This point is given by the method LastPoint().)nbdoc")
         .def("FirstPoint", static_cast<const IntPatch_Point & (IntPatch_WLine::*)() const>(&IntPatch_WLine::FirstPoint), R"nbdoc(Returns the Point corresponding to the FirstPoint.)nbdoc")
         .def("LastPoint", static_cast<const IntPatch_Point & (IntPatch_WLine::*)() const>(&IntPatch_WLine::LastPoint), R"nbdoc(Returns the Point corresponding to the LastPoint.)nbdoc")
-        .def("FirstPoint__int", [](const IntPatch_WLine &self) { int Indfirst{}; auto result = self.FirstPoint(Indfirst); return std::make_tuple(result, Indfirst); }, R"nbdoc(FirstPoint__int: the C++ overload FirstPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("FirstPoint__int", [](const IntPatch_WLine &self) { int Indfirst{}; auto nanoocp_result = self.FirstPoint(Indfirst); return std::make_tuple(nanoocp_result, Indfirst); }, R"nbdoc(FirstPoint__int: the C++ overload FirstPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns the Point corresponding to the FirstPoint.
 Indfirst is the index of the first in the list
 of vertices.)nbdoc")
-        .def("LastPoint__int", [](const IntPatch_WLine &self) { int Indlast{}; auto result = self.LastPoint(Indlast); return std::make_tuple(result, Indlast); }, R"nbdoc(LastPoint__int: the C++ overload LastPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("LastPoint__int", [](const IntPatch_WLine &self) { int Indlast{}; auto nanoocp_result = self.LastPoint(Indlast); return std::make_tuple(nanoocp_result, Indlast); }, R"nbdoc(LastPoint__int: the C++ overload LastPoint(int &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns the Point corresponding to the LastPoint.
 Indlast is the index of the last in the list
 of vertices.)nbdoc")

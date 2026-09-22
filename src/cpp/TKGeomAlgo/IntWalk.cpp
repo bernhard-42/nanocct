@@ -60,7 +60,7 @@ void nanoocp_define_IntWalk(nb::module_ &m) {
         .def("ComputeParameters", static_cast<void (IntWalk_TheFunctionOfTheInt2S::*)(const IntImp_ConstIsoparametric, const NCollection_Array1<double> &, math_Vector &, math_Vector &, math_Vector &, math_Vector &)>(&IntWalk_TheFunctionOfTheInt2S::ComputeParameters), nb::arg("ChoixIso"), nb::arg("Param"), nb::arg("UVap"), nb::arg("BornInf"), nb::arg("BornSup"), nb::arg("Tolerance"))
         .def("Root", static_cast<double (IntWalk_TheFunctionOfTheInt2S::*)() const>(&IntWalk_TheFunctionOfTheInt2S::Root), R"nbdoc(returns somme des fi*fi)nbdoc")
         .def("Point", static_cast<gp_Pnt (IntWalk_TheFunctionOfTheInt2S::*)() const>(&IntWalk_TheFunctionOfTheInt2S::Point))
-        .def("IsTangent", [](IntWalk_TheFunctionOfTheInt2S &self, const math_Vector & UVap, NCollection_Array1<double> & Param) { IntImp_ConstIsoparametric BestChoix{}; auto result = self.IsTangent(UVap, Param, BestChoix); return std::make_tuple(result, BestChoix); }, nb::arg("UVap"), nb::arg("Param"))
+        .def("IsTangent", [](IntWalk_TheFunctionOfTheInt2S &self, const math_Vector & UVap, NCollection_Array1<double> & Param) { IntImp_ConstIsoparametric BestChoix{}; auto nanoocp_result = self.IsTangent(UVap, Param, BestChoix); return std::make_tuple(nanoocp_result, BestChoix); }, nb::arg("UVap"), nb::arg("Param"))
         .def("Direction", static_cast<gp_Dir (IntWalk_TheFunctionOfTheInt2S::*)() const>(&IntWalk_TheFunctionOfTheInt2S::Direction))
         .def("DirectionOnS1", static_cast<gp_Dir2d (IntWalk_TheFunctionOfTheInt2S::*)() const>(&IntWalk_TheFunctionOfTheInt2S::DirectionOnS1))
         .def("DirectionOnS2", static_cast<gp_Dir2d (IntWalk_TheFunctionOfTheInt2S::*)() const>(&IntWalk_TheFunctionOfTheInt2S::DirectionOnS2))
@@ -155,9 +155,9 @@ of the line.
 An exception is raised if IsDone returns False.)nbdoc")
         .def("IsClosed", static_cast<bool (IntWalk_PWalking::*)() const>(&IntWalk_PWalking::IsClosed), R"nbdoc(Returns True if the line is closed.
 An exception is raised if IsDone returns False.)nbdoc")
-        .def("TangentAtLine", [](const IntWalk_PWalking &self) { int Index{}; auto result = self.TangentAtLine(Index); return std::make_tuple(result, Index); })
+        .def("TangentAtLine", [](const IntWalk_PWalking &self) { int Index{}; auto nanoocp_result = self.TangentAtLine(Index); return std::make_tuple(nanoocp_result, Index); })
         .def("TestDeflection", static_cast<IntWalk_StatusDeflection (IntWalk_PWalking::*)(const IntImp_ConstIsoparametric, const IntWalk_StatusDeflection)>(&IntWalk_PWalking::TestDeflection), nb::arg("ChoixIso"), nb::arg("theStatus"))
-        .def("TestArret", [](IntWalk_PWalking &self, const bool DejaReparti, NCollection_Array1<double> & Param) { IntImp_ConstIsoparametric ChoixIso{}; auto result = self.TestArret(DejaReparti, Param, ChoixIso); return std::make_tuple(result, ChoixIso); }, nb::arg("DejaReparti"), nb::arg("Param"))
+        .def("TestArret", [](IntWalk_PWalking &self, const bool DejaReparti, NCollection_Array1<double> & Param) { IntImp_ConstIsoparametric ChoixIso{}; auto nanoocp_result = self.TestArret(DejaReparti, Param, ChoixIso); return std::make_tuple(nanoocp_result, ChoixIso); }, nb::arg("DejaReparti"), nb::arg("Param"))
         .def("RepartirOuDiviser", [](IntWalk_PWalking &self) { bool DejaReparti{}; IntImp_ConstIsoparametric ChoixIso{}; bool Arrive{}; self.RepartirOuDiviser(DejaReparti, ChoixIso, Arrive); return std::make_tuple(DejaReparti, ChoixIso, Arrive); })
         .def("AddAPoint", static_cast<void (IntWalk_PWalking::*)(const IntSurf_PntOn2S &)>(&IntWalk_PWalking::AddAPoint), nb::arg("thePOn2S"), R"nbdoc(Inserts thePOn2S in the end of line)nbdoc")
         .def("RemoveAPoint", static_cast<void (IntWalk_PWalking::*)(const int)>(&IntWalk_PWalking::RemoveAPoint), nb::arg("theIndex"), R"nbdoc(Removes point with index theIndex from line.

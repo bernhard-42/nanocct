@@ -328,7 +328,7 @@ on the label <L> (and sub-labels if necessary)
 (TNaming_GENERATED is set))nbdoc")
         .def_static("MakeShape", static_cast<TopoDS_Shape (*)(const NCollection_Map<TopoDS_Shape, TopTools_ShapeMapHasher> &)>(&TNaming::MakeShape), nb::arg("MS"), R"nbdoc(Builds shape from map content)nbdoc")
         .def_static("FindUniqueContext", static_cast<TopoDS_Shape (*)(const TopoDS_Shape &, const TopoDS_Shape &)>(&TNaming::FindUniqueContext), nb::arg("S"), nb::arg("Context"), R"nbdoc(Find unique context of shape <S>)nbdoc")
-        .def_static("FindUniqueContextSet", [](const TopoDS_Shape & S, const TopoDS_Shape & Context) { occ::handle<NCollection_HArray1<TopoDS_Shape>> Arr{}; auto result = TNaming::FindUniqueContextSet(S, Context, Arr); return std::make_tuple(result, Arr); }, nb::arg("S"), nb::arg("Context"), R"nbdoc(Find unique context of shape <S>,which is pure concatenation
+        .def_static("FindUniqueContextSet", [](const TopoDS_Shape & S, const TopoDS_Shape & Context) { occ::handle<NCollection_HArray1<TopoDS_Shape>> Arr{}; auto nanoocp_result = TNaming::FindUniqueContextSet(S, Context, Arr); return std::make_tuple(nanoocp_result, Arr); }, nb::arg("S"), nb::arg("Context"), R"nbdoc(Find unique context of shape <S>,which is pure concatenation
 of atomic shapes (Compound). The result is concatenation of
 single contexts)nbdoc")
         .def_static("SubstituteSShape", static_cast<bool (*)(const TDF_Label &, const TopoDS_Shape &, TopoDS_Shape &)>(&TNaming::SubstituteSShape), nb::arg("accesslabel"), nb::arg("From"), nb::arg("To"), R"nbdoc(Substitutes shape in source structure)nbdoc")
@@ -636,7 +636,7 @@ Valid Scope.)nbdoc");
         .def(nb::init<const TDF_Label &>(), nb::arg("aLabel"), R"nbdoc(Create a selector on this label
 to select a shape.
 ==================)nbdoc")
-        .def_static("IsIdentified", [](const TDF_Label & access, const TopoDS_Shape & selection, const bool Geometry) { occ::handle<TNaming_NamedShape> NS{}; auto result = TNaming_Selector::IsIdentified(access, selection, NS, Geometry); return std::make_tuple(result, NS); }, nb::arg("access"), nb::arg("selection"), nb::arg("Geometry") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(To know if a shape is already identified (not selected)
+        .def_static("IsIdentified", [](const TDF_Label & access, const TopoDS_Shape & selection, const bool Geometry) { occ::handle<TNaming_NamedShape> NS{}; auto nanoocp_result = TNaming_Selector::IsIdentified(access, selection, NS, Geometry); return std::make_tuple(nanoocp_result, NS); }, nb::arg("access"), nb::arg("selection"), nb::arg("Geometry") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(To know if a shape is already identified (not selected)
 =======================================================
 
 The label access defines the point of access to the data framework.
@@ -741,7 +741,7 @@ modification of S and contained in the named
 shape Generation.)nbdoc")
         .def_static("Collect", static_cast<void (*)(const occ::handle<TNaming_NamedShape> &, NCollection_Map<opencascade::handle<TNaming_NamedShape>, NCollection_DefaultHasher<opencascade::handle<TNaming_NamedShape>>> &, const bool)>(&TNaming_Tool::Collect), nb::arg("NS").none(), nb::arg("Labels"), nb::arg("OnlyModif") = static_cast<std::decay_t<const bool>>(true))
         .def_static("HasLabel", static_cast<bool (*)(const TDF_Label &, const TopoDS_Shape &)>(&TNaming_Tool::HasLabel), nb::arg("access"), nb::arg("aShape"), R"nbdoc(Returns True if <aShape> appears under a label.(DP))nbdoc")
-        .def_static("Label", [](const TDF_Label & access, const TopoDS_Shape & aShape) { int TransDef{}; auto result = TNaming_Tool::Label(access, aShape, TransDef); return std::make_tuple(result, TransDef); }, nb::arg("access"), nb::arg("aShape"), R"nbdoc(Returns the label of the first apparition  of
+        .def_static("Label", [](const TDF_Label & access, const TopoDS_Shape & aShape) { int TransDef{}; auto nanoocp_result = TNaming_Tool::Label(access, aShape, TransDef); return std::make_tuple(nanoocp_result, TransDef); }, nb::arg("access"), nb::arg("aShape"), R"nbdoc(Returns the label of the first apparition  of
 <aShape>. Transdef is a value of the transaction
 of the first apparition of <aShape>.)nbdoc")
         .def_static("InitialShape", static_cast<TopoDS_Shape (*)(const TopoDS_Shape &, const TDF_Label &, NCollection_List<TDF_Label> &)>(&TNaming_Tool::InitialShape), nb::arg("aShape"), nb::arg("anAcces"), nb::arg("Labels"), R"nbdoc(Returns the shape created from the shape

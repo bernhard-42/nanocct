@@ -356,29 +356,29 @@ AnyFallback or null handle if there is no any suitable triangulation.)nbdoc")
         .def_static("NaturalRestriction", static_cast<bool (*)(const TopoDS_Face &)>(&BRep_Tool::NaturalRestriction), nb::arg("F"), R"nbdoc(Returns the NaturalRestriction flag of the face.)nbdoc")
         .def_static("IsGeometric", static_cast<bool (*)(const TopoDS_Face &)>(&BRep_Tool::IsGeometric), nb::arg("F"), R"nbdoc(Returns True if <F> has a surface, false otherwise.)nbdoc")
         .def_static("IsGeometric", static_cast<bool (*)(const TopoDS_Edge &)>(&BRep_Tool::IsGeometric), nb::arg("E"), R"nbdoc(Returns True if <E> is a 3d curve or a curve on surface.)nbdoc")
-        .def_static("Curve", [](const TopoDS_Edge & E, TopLoc_Location & L) { double First{}; double Last{}; auto result = BRep_Tool::Curve(E, L, First, Last); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns the 3D curve of the edge. May be a Null
+        .def_static("Curve", [](const TopoDS_Edge & E, TopLoc_Location & L) { double First{}; double Last{}; auto nanoocp_result = BRep_Tool::Curve(E, L, First, Last); return std::make_tuple(nanoocp_result, First, Last); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns the 3D curve of the edge. May be a Null
 handle. Returns in <L> the location for the curve.
 In <First> and <Last> the parameter range.)nbdoc")
-        .def_static("Curve", [](const TopoDS_Edge & E) { double First{}; double Last{}; auto result = BRep_Tool::Curve(E, First, Last); return std::make_tuple(result, First, Last); }, nb::arg("E"), R"nbdoc(Returns the 3D curve of the edge. May be a Null handle.
+        .def_static("Curve", [](const TopoDS_Edge & E) { double First{}; double Last{}; auto nanoocp_result = BRep_Tool::Curve(E, First, Last); return std::make_tuple(nanoocp_result, First, Last); }, nb::arg("E"), R"nbdoc(Returns the 3D curve of the edge. May be a Null handle.
 In <First> and <Last> the parameter range.
 It can be a copy if there is a Location.)nbdoc")
         .def_static("Polygon3D", static_cast<const occ::handle<Poly_Polygon3D> & (*)(const TopoDS_Edge &, TopLoc_Location &)>(&BRep_Tool::Polygon3D), nb::arg("E"), nb::arg("L"), R"nbdoc(Returns the 3D polygon of the edge. May be a Null
 handle. Returns in <L> the location for the polygon.)nbdoc")
-        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, const TopoDS_Face & F) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnSurface(E, F, First, Last, nullptr); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns the curve associated to the edge in the
+        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, const TopoDS_Face & F) { double First{}; double Last{}; auto nanoocp_result = BRep_Tool::CurveOnSurface(E, F, First, Last, nullptr); return std::make_tuple(nanoocp_result, First, Last); }, nb::arg("E"), nb::arg("F"), R"nbdoc(Returns the curve associated to the edge in the
 parametric space of the face. Returns a NULL
 handle if this curve does not exist. Returns in
 <First> and <Last> the parameter range.
 If the surface is a plane the curve can be not stored but created a new
 each time. The flag pointed by <theIsStored> serves to indicate storage status.
 It is valued if the pointer is non-null.)nbdoc")
-        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnSurface(E, S, L, First, Last, nullptr); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Returns the curve associated to the edge in the
+        .def_static("CurveOnSurface", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto nanoocp_result = BRep_Tool::CurveOnSurface(E, S, L, First, Last, nullptr); return std::make_tuple(nanoocp_result, First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(Returns the curve associated to the edge in the
 parametric space of the surface. Returns a NULL
 handle if this curve does not exist. Returns in
 <First> and <Last> the parameter range.
 If the surface is a plane the curve can be not stored but created a new
 each time. The flag pointed by <theIsStored> serves to indicate storage status.
 It is valued if the pointer is non-null.)nbdoc")
-        .def_static("CurveOnPlane", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto result = BRep_Tool::CurveOnPlane(E, S, L, First, Last); return std::make_tuple(result, First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(For the planar surface builds the 2d curve for the edge
+        .def_static("CurveOnPlane", [](const TopoDS_Edge & E, const occ::handle<Geom_Surface> & S, const TopLoc_Location & L) { double First{}; double Last{}; auto nanoocp_result = BRep_Tool::CurveOnPlane(E, S, L, First, Last); return std::make_tuple(nanoocp_result, First, Last); }, nb::arg("E"), nb::arg("S").none(), nb::arg("L"), R"nbdoc(For the planar surface builds the 2d curve for the edge
 by projection of the edge on plane.
 Returns a NULL handle if the surface is not planar or
 the projection failed.)nbdoc")
@@ -442,7 +442,7 @@ two faces.)nbdoc")
 if there are no such surfaces.)nbdoc")
         .def_static("Pnt", static_cast<gp_Pnt (*)(const TopoDS_Vertex &)>(&BRep_Tool::Pnt), nb::arg("V"), R"nbdoc(Returns the 3d point.)nbdoc")
         .def_static("Tolerance", static_cast<double (*)(const TopoDS_Vertex &)>(&BRep_Tool::Tolerance), nb::arg("V"), R"nbdoc(Returns the tolerance.)nbdoc")
-        .def_static("Parameter__float", [](const TopoDS_Vertex & theV, const TopoDS_Edge & theE) { double theParam{}; auto result = BRep_Tool::Parameter(theV, theE, theParam); return std::make_tuple(result, theParam); }, nb::arg("theV"), nb::arg("theE"), R"nbdoc(Parameter__float: the C++ overload Parameter(const TopoDS_Vertex &, const TopoDS_Edge &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("Parameter__float", [](const TopoDS_Vertex & theV, const TopoDS_Edge & theE) { double theParam{}; auto nanoocp_result = BRep_Tool::Parameter(theV, theE, theParam); return std::make_tuple(nanoocp_result, theParam); }, nb::arg("theV"), nb::arg("theE"), R"nbdoc(Parameter__float: the C++ overload Parameter(const TopoDS_Vertex &, const TopoDS_Edge &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Finds the parameter of <theV> on <theE>.
 @param[in] theV  input vertex
 @param[in] theE  input edge

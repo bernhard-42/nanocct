@@ -195,7 +195,7 @@ void nanoocp_define_MoniTool(nb::module_ &m) {
 with the same name if already exists))nbdoc")
         .def("RemoveAttribute", static_cast<bool (MoniTool_AttrList::*)(const char *const)>(&MoniTool_AttrList::RemoveAttribute), nb::arg("name"), R"nbdoc(Removes an attribute
 Returns True when done, False if this attribute did not exist)nbdoc")
-        .def("GetAttribute", [](const MoniTool_AttrList &self, const char *const name, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> val{}; auto result = self.GetAttribute(name, type, val); return std::make_tuple(result, val); }, nb::arg("name"), nb::arg("type").none(), R"nbdoc(Returns an attribute from its name, filtered by a type
+        .def("GetAttribute", [](const MoniTool_AttrList &self, const char *const name, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.GetAttribute(name, type, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("name"), nb::arg("type").none(), R"nbdoc(Returns an attribute from its name, filtered by a type
 If no attribute has this name, or if it is not kind of this
 type, <val> is Null and returned value is False
 Else, it is True)nbdoc")
@@ -208,13 +208,13 @@ Text is recorded as HAsciiString)nbdoc")
 ValueInt, ValueReal, ValueText (String), ValueIdent (any)
 or ValueVoid (not recorded))nbdoc")
         .def("SetIntegerAttribute", static_cast<void (MoniTool_AttrList::*)(const char *const, const int)>(&MoniTool_AttrList::SetIntegerAttribute), nb::arg("name"), nb::arg("val"), R"nbdoc(Adds an integer value for an attribute)nbdoc")
-        .def("GetIntegerAttribute", [](const MoniTool_AttrList &self, const char *const name) { int val{}; auto result = self.GetIntegerAttribute(name, val); return std::make_tuple(result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as integer
+        .def("GetIntegerAttribute", [](const MoniTool_AttrList &self, const char *const name) { int val{}; auto nanoocp_result = self.GetIntegerAttribute(name, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as integer
 If no attribute has this name, or not an integer,
 <val> is 0 and returned value is False
 Else, it is True)nbdoc")
         .def("IntegerAttribute", static_cast<int (MoniTool_AttrList::*)(const char *const) const>(&MoniTool_AttrList::IntegerAttribute), nb::arg("name"), R"nbdoc(Returns an integer attribute from its name. 0 if not recorded)nbdoc")
         .def("SetRealAttribute", static_cast<void (MoniTool_AttrList::*)(const char *const, const double)>(&MoniTool_AttrList::SetRealAttribute), nb::arg("name"), nb::arg("val"), R"nbdoc(Adds a real value for an attribute)nbdoc")
-        .def("GetRealAttribute", [](const MoniTool_AttrList &self, const char *const name) { double val{}; auto result = self.GetRealAttribute(name, val); return std::make_tuple(result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as real
+        .def("GetRealAttribute", [](const MoniTool_AttrList &self, const char *const name) { double val{}; auto nanoocp_result = self.GetRealAttribute(name, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("name"), R"nbdoc(Returns an attribute from its name, as real
 If no attribute has this name, or not a real
 <val> is 0.0 and returned value is False
 Else, it is True)nbdoc")
@@ -286,7 +286,7 @@ instance : it will then be printed with the help of a DBPE)nbdoc")
         .def("RemoveData", static_cast<void (MoniTool_CaseData::*)(const int)>(&MoniTool_CaseData::RemoveData), nb::arg("num"), R"nbdoc(Removes a Data from its rank. Does nothing if out of range)nbdoc")
         .def("NbData", static_cast<int (MoniTool_CaseData::*)() const>(&MoniTool_CaseData::NbData), R"nbdoc(Returns the count of data recorded to a set)nbdoc")
         .def("Data", static_cast<occ::handle<Standard_Transient> (MoniTool_CaseData::*)(const int) const>(&MoniTool_CaseData::Data), nb::arg("nd"), R"nbdoc(Returns a data item (n0 <nd> in the set <num>))nbdoc")
-        .def("GetData", [](const MoniTool_CaseData &self, const int nd, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> val{}; auto result = self.GetData(nd, type, val); return std::make_tuple(result, val); }, nb::arg("nd"), nb::arg("type").none(), R"nbdoc(Returns a data item, under control of a Type
+        .def("GetData", [](const MoniTool_CaseData &self, const int nd, const occ::handle<Standard_Type> & type) { occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.GetData(nd, type, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("nd"), nb::arg("type").none(), R"nbdoc(Returns a data item, under control of a Type
 If the data item is kind of this type, it is returned in <val>
 and the returned value is True
 Else, <val> is unchanged and the returned value is False)nbdoc")
@@ -321,10 +321,10 @@ See allowed values in method Kind)nbdoc")
 Returns False if not the good type)nbdoc")
         .def("XY", static_cast<bool (MoniTool_CaseData::*)(const int, gp_XY &) const>(&MoniTool_CaseData::XY), nb::arg("nd"), nb::arg("val"), R"nbdoc(Returns a data as a XY (i.e. Geom2d_CartesianPoint)
 Returns False if not the good type)nbdoc")
-        .def("Reals", [](const MoniTool_CaseData &self, const int nd) { double v1{}; double v2{}; auto result = self.Reals(nd, v1, v2); return std::make_tuple(result, v1, v2); }, nb::arg("nd"), R"nbdoc(Returns a couple of reals (stored in Geom2d_CartesianPoint))nbdoc")
-        .def("Real", [](const MoniTool_CaseData &self, const int nd) { double val{}; auto result = self.Real(nd, val); return std::make_tuple(result, val); }, nb::arg("nd"), R"nbdoc(Returns a real or CPU amount (stored in Geom2d_CartesianPoint)
+        .def("Reals", [](const MoniTool_CaseData &self, const int nd) { double v1{}; double v2{}; auto nanoocp_result = self.Reals(nd, v1, v2); return std::make_tuple(nanoocp_result, v1, v2); }, nb::arg("nd"), R"nbdoc(Returns a couple of reals (stored in Geom2d_CartesianPoint))nbdoc")
+        .def("Real", [](const MoniTool_CaseData &self, const int nd) { double val{}; auto nanoocp_result = self.Real(nd, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("nd"), R"nbdoc(Returns a real or CPU amount (stored in Geom2d_CartesianPoint)
 (allows an Integer converted to a Real))nbdoc")
-        .def("Integer", [](const MoniTool_CaseData &self, const int nd) { int val{}; auto result = self.Integer(nd, val); return std::make_tuple(result, val); }, nb::arg("nd"), R"nbdoc(Returns an Integer)nbdoc")
+        .def("Integer", [](const MoniTool_CaseData &self, const int nd) { int val{}; auto nanoocp_result = self.Integer(nd, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("nd"), R"nbdoc(Returns an Integer)nbdoc")
         .def("Msg", static_cast<Message_Msg (MoniTool_CaseData::*)() const>(&MoniTool_CaseData::Msg), R"nbdoc(Returns a Msg from a CaseData : it is build from DefMsg, which
 gives the message code plus the designation of items of the
 CaseData to be added to the Msg
@@ -527,12 +527,12 @@ tmax   l  : maximum length for a text)nbdoc")
         .def("MaxLength", static_cast<int (MoniTool_TypedValue::*)() const>(&MoniTool_TypedValue::MaxLength), R"nbdoc(Returns the maximum length, 0 if not set)nbdoc")
         .def("SetIntegerLimit", static_cast<void (MoniTool_TypedValue::*)(const bool, const int)>(&MoniTool_TypedValue::SetIntegerLimit), nb::arg("max"), nb::arg("val"), R"nbdoc(Sets an Integer limit (included) to <val>, the upper limit
 if <max> is True, the lower limit if <max> is False)nbdoc")
-        .def("IntegerLimit", [](const MoniTool_TypedValue &self, const bool max) { int val{}; auto result = self.IntegerLimit(max, val); return std::make_tuple(result, val); }, nb::arg("max"), R"nbdoc(Gives an Integer Limit (upper if <max> True, lower if <max>
+        .def("IntegerLimit", [](const MoniTool_TypedValue &self, const bool max) { int val{}; auto nanoocp_result = self.IntegerLimit(max, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("max"), R"nbdoc(Gives an Integer Limit (upper if <max> True, lower if <max>
 False). Returns True if this limit is defined, False else
 (in that case, gives the natural limit for Integer))nbdoc")
         .def("SetRealLimit", static_cast<void (MoniTool_TypedValue::*)(const bool, const double)>(&MoniTool_TypedValue::SetRealLimit), nb::arg("max"), nb::arg("val"), R"nbdoc(Sets a Real limit (included) to <val>, the upper limit
 if <max> is True, the lower limit if <max> is False)nbdoc")
-        .def("RealLimit", [](const MoniTool_TypedValue &self, const bool max) { double val{}; auto result = self.RealLimit(max, val); return std::make_tuple(result, val); }, nb::arg("max"), R"nbdoc(Gives an Real Limit (upper if <max> True, lower if <max>
+        .def("RealLimit", [](const MoniTool_TypedValue &self, const bool max) { double val{}; auto nanoocp_result = self.RealLimit(max, val); return std::make_tuple(nanoocp_result, val); }, nb::arg("max"), R"nbdoc(Gives an Real Limit (upper if <max> True, lower if <max>
 False). Returns True if this limit is defined, False else
 (in that case, gives the natural limit for Real))nbdoc")
         .def("SetUnitDef", static_cast<void (MoniTool_TypedValue::*)(const char *const)>(&MoniTool_TypedValue::SetUnitDef), nb::arg("def_"), R"nbdoc(Sets (Clears if <def> empty) a unit definition, as an equation
@@ -549,7 +549,7 @@ case, the Integer Value will be Start - 1.
 values. If it is the first setting for this value, it is
 recorded as main value. Else, it is recognized as alternate
 string for this numeric value)nbdoc")
-        .def("EnumDef", [](const MoniTool_TypedValue &self) { int startcase{}; int endcase{}; bool match{}; auto result = self.EnumDef(startcase, endcase, match); return std::make_tuple(result, startcase, endcase, match); }, R"nbdoc(Gives the Enum definitions : start value, end value, match
+        .def("EnumDef", [](const MoniTool_TypedValue &self) { int startcase{}; int endcase{}; bool match{}; auto nanoocp_result = self.EnumDef(startcase, endcase, match); return std::make_tuple(nanoocp_result, startcase, endcase, match); }, R"nbdoc(Gives the Enum definitions : start value, end value, match
 status. Returns True for an Enum, False else.)nbdoc")
         .def("EnumVal", static_cast<const char * (MoniTool_TypedValue::*)(const int) const>(&MoniTool_TypedValue::EnumVal), nb::arg("num"), R"nbdoc(Returns the value of an enumerative definition, from its rank
 Empty string if out of range or not an Enum)nbdoc")

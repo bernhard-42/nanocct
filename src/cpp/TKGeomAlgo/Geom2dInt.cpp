@@ -255,12 +255,12 @@ and a parametric curve.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dInt_IntConicCurveOfGInter>(nb::borrow<nb::class_<Geom2dInt_IntConicCurveOfGInter>>(m.attr("Geom2dInt_IntConicCurveOfGInter")));
     nb::borrow<nb::class_<Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter>>(m.attr("Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter"))
         .def(nb::init<const IntCurve_IConicTool &, const Adaptor2d_Curve2d &>(), nb::arg("IT"), nb::arg("PC"), R"nbdoc(Constructor of the class.)nbdoc")
-        .def("Value", [](Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter &self, const double Param) { double F{}; auto result = self.Value(Param, F); return std::make_tuple(result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
+        .def("Value", [](Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter &self, const double Param) { double F{}; auto nanoocp_result = self.Value(Param, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
 the implicit curve and the point at parameter Param
 on the parametrised curve.)nbdoc")
-        .def("Derivative", [](Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter &self, const double Param) { double D{}; auto result = self.Derivative(Param, D); return std::make_tuple(result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
+        .def("Derivative", [](Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter &self, const double Param) { double D{}; auto nanoocp_result = self.Derivative(Param, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
 parameter Param.)nbdoc")
-        .def("Values", [](Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter &self, const double Param) { double F{}; double D{}; auto result = self.Values(Param, F, D); return std::make_tuple(result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.)nbdoc");
+        .def("Values", [](Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter &self, const double Param) { double F{}; double D{}; auto nanoocp_result = self.Values(Param, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.)nbdoc");
     nanoocp_implicit_copy_ctor<Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter>(nb::borrow<nb::class_<Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter>>(m.attr("Geom2dInt_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfGInter")));
     nanoocp_if_concrete<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>(nb::borrow<nb::class_<Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>>>(m.attr("Geom2dInt_PCLocFOfTheLocateExtPCOfTheProjPCurOfGInter")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor.)nbdoc")
@@ -272,15 +272,15 @@ parameter Param.)nbdoc")
 @param theC Curve to set)nbdoc")
         .def("SetPoint", static_cast<void (Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::*)(const gp_Pnt2d &)>(&Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::SetPoint), nb::arg("theP"), R"nbdoc(Sets the point field.
 @param theP Point to set)nbdoc")
-        .def("Value", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; auto result = self.Value(theU, theF); return std::make_tuple(result, theF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u).
+        .def("Value", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; auto nanoocp_result = self.Value(theU, theF); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u).
 @param theU Parameter value
 @param theF Output function value
 @return True if computation succeeded)nbdoc")
-        .def("Derivative", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theDF{}; auto result = self.Derivative(theU, theDF); return std::make_tuple(result, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F'(u).
+        .def("Derivative", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theDF{}; auto nanoocp_result = self.Derivative(theU, theDF); return std::make_tuple(nanoocp_result, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F'(u).
 @param theU Parameter value
 @param theDF Output derivative value
 @return True if computation succeeded)nbdoc")
-        .def("Values", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; double theDF{}; auto result = self.Values(theU, theF, theDF); return std::make_tuple(result, theF, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u) and F'(u).
+        .def("Values", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Geom2dInt_Geom2dCurveTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; double theDF{}; auto nanoocp_result = self.Values(theU, theF, theDF); return std::make_tuple(nanoocp_result, theF, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u) and F'(u).
 @param theU Parameter value
 @param theF Output function value
 @param theDF Output derivative value

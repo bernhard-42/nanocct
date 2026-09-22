@@ -291,7 +291,7 @@ Radius   : Radius of circle.)nbdoc")
 comparison).
 @param theTypeString string identifier
 @return orientation type or V3d_TypeOfOrientation if string identifier is invalid)nbdoc")
-        .def_static("TypeOfOrientationFromString__V3d_TypeOfOrientation", [](const char *const theTypeString) { V3d_TypeOfOrientation theType{}; auto result = V3d::TypeOfOrientationFromString(theTypeString, theType); return std::make_tuple(result, theType); }, nb::arg("theTypeString"), R"nbdoc(TypeOfOrientationFromString__V3d_TypeOfOrientation: the C++ overload TypeOfOrientationFromString(const char *const, V3d_TypeOfOrientation &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("TypeOfOrientationFromString__V3d_TypeOfOrientation", [](const char *const theTypeString) { V3d_TypeOfOrientation theType{}; auto nanoocp_result = V3d::TypeOfOrientationFromString(theTypeString, theType); return std::make_tuple(nanoocp_result, theType); }, nb::arg("theTypeString"), R"nbdoc(TypeOfOrientationFromString__V3d_TypeOfOrientation: the C++ overload TypeOfOrientationFromString(const char *const, V3d_TypeOfOrientation &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Determines the shape type from the given string identifier (using case-insensitive
 comparison).
 @param theTypeString string identifier
@@ -407,14 +407,14 @@ CreateView() method.)nbdoc")
         .def("DefaultBgGradientColors", static_cast<void (V3d_Viewer::*)(Quantity_Color &, Quantity_Color &) const>(&V3d_Viewer::DefaultBgGradientColors), nb::arg("theColor1"), nb::arg("theColor2"), R"nbdoc(Returns the gradient background colour objects of the view.)nbdoc")
         .def("GetAllZLayers", static_cast<void (V3d_Viewer::*)(NCollection_Sequence<int> &) const>(&V3d_Viewer::GetAllZLayers), nb::arg("theLayerSeq"), R"nbdoc(Return all Z layer ids in sequence ordered by overlay level from lowest layer to highest (
 foreground ). The first layer ID in sequence is the default layer that can't be removed.)nbdoc")
-        .def("AddZLayer", [](V3d_Viewer &self, const Graphic3d_ZLayerSettings & theSettings) { Graphic3d_ZLayerId theLayerId{}; auto result = self.AddZLayer(theLayerId, theSettings); return std::make_tuple(result, theLayerId); }, nb::arg("theSettings") = static_cast<std::decay_t<const Graphic3d_ZLayerSettings &>>(Graphic3d_ZLayerSettings()), R"nbdoc(Add a new top-level Z layer to all managed views and get its ID as <theLayerId> value.
+        .def("AddZLayer", [](V3d_Viewer &self, const Graphic3d_ZLayerSettings & theSettings) { Graphic3d_ZLayerId theLayerId{}; auto nanoocp_result = self.AddZLayer(theLayerId, theSettings); return std::make_tuple(nanoocp_result, theLayerId); }, nb::arg("theSettings") = static_cast<std::decay_t<const Graphic3d_ZLayerSettings &>>(Graphic3d_ZLayerSettings()), R"nbdoc(Add a new top-level Z layer to all managed views and get its ID as <theLayerId> value.
 The Z layers are controlled entirely by viewer, it is not possible to add a layer to a
 particular view. Custom layers will be inserted before Graphic3d_ZLayerId_Top (e.g. between
 Graphic3d_ZLayerId_Default and before Graphic3d_ZLayerId_Top).
 @param[out] theLayerId  id of created layer
 @param[in] theSettings  new layer settings
 @return FALSE if the layer can not be created)nbdoc")
-        .def("InsertLayerBefore", [](V3d_Viewer &self, const Graphic3d_ZLayerSettings & theSettings, const Graphic3d_ZLayerId theLayerAfter) { Graphic3d_ZLayerId theNewLayerId{}; auto result = self.InsertLayerBefore(theNewLayerId, theSettings, theLayerAfter); return std::make_tuple(result, theNewLayerId); }, nb::arg("theSettings"), nb::arg("theLayerAfter"), R"nbdoc(Add a new top-level Z layer to all managed views and get its ID as <theLayerId> value.
+        .def("InsertLayerBefore", [](V3d_Viewer &self, const Graphic3d_ZLayerSettings & theSettings, const Graphic3d_ZLayerId theLayerAfter) { Graphic3d_ZLayerId theNewLayerId{}; auto nanoocp_result = self.InsertLayerBefore(theNewLayerId, theSettings, theLayerAfter); return std::make_tuple(nanoocp_result, theNewLayerId); }, nb::arg("theSettings"), nb::arg("theLayerAfter"), R"nbdoc(Add a new top-level Z layer to all managed views and get its ID as <theLayerId> value.
 The Z layers are controlled entirely by viewer, it is not possible to add a layer to a
 particular view. Layer rendering order is defined by its position in list (altered by
 theLayerAfter) and IsImmediate() flag (all layers with IsImmediate() flag are drawn
@@ -424,7 +424,7 @@ layer position in the list
 @param[in] theSettings     new layer settings
 @param[in] theLayerAfter   id of layer to append new layer before
 @return FALSE if the layer can not be created)nbdoc")
-        .def("InsertLayerAfter", [](V3d_Viewer &self, const Graphic3d_ZLayerSettings & theSettings, const Graphic3d_ZLayerId theLayerBefore) { Graphic3d_ZLayerId theNewLayerId{}; auto result = self.InsertLayerAfter(theNewLayerId, theSettings, theLayerBefore); return std::make_tuple(result, theNewLayerId); }, nb::arg("theSettings"), nb::arg("theLayerBefore"), R"nbdoc(Add a new top-level Z layer to all managed views and get its ID as <theLayerId> value.
+        .def("InsertLayerAfter", [](V3d_Viewer &self, const Graphic3d_ZLayerSettings & theSettings, const Graphic3d_ZLayerId theLayerBefore) { Graphic3d_ZLayerId theNewLayerId{}; auto nanoocp_result = self.InsertLayerAfter(theNewLayerId, theSettings, theLayerBefore); return std::make_tuple(nanoocp_result, theNewLayerId); }, nb::arg("theSettings"), nb::arg("theLayerBefore"), R"nbdoc(Add a new top-level Z layer to all managed views and get its ID as <theLayerId> value.
 The Z layers are controlled entirely by viewer, it is not possible to add a layer to a
 particular view. Layer rendering order is defined by its position in list (altered by
 theLayerAfter) and IsImmediate() flag (all layers with IsImmediate() flag are drawn
@@ -1120,7 +1120,7 @@ Thus application should not parse returned information to weed out specific para
         .def("DumpJson", [](const V3d_View &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
         .def("IsSubview", static_cast<bool (V3d_View::*)() const>(&V3d_View::IsSubview), R"nbdoc(@name subvew management
 Return TRUE if this is a subview of another view.)nbdoc")
-        .def("ParentView", [](V3d_View &self) { opencascade::handle<V3d_View> result(self.ParentView()); return result; }, R"nbdoc(Return parent View or NULL if this is not a subview.)nbdoc")
+        .def("ParentView", [](V3d_View &self) { opencascade::handle<V3d_View> nanoocp_result(self.ParentView()); return nanoocp_result; }, R"nbdoc(Return parent View or NULL if this is not a subview.)nbdoc")
         .def("Subviews", static_cast<const NCollection_Sequence<opencascade::handle<V3d_View>> & (V3d_View::*)() const>(&V3d_View::Subviews), R"nbdoc(Return subview list.)nbdoc")
         .def("PickSubview", static_cast<occ::handle<V3d_View> (V3d_View::*)(const NCollection_Vec2<int> &) const>(&V3d_View::PickSubview), nb::arg("thePnt"), R"nbdoc(Pick subview from the given 2D point.)nbdoc")
         .def("AddSubview", static_cast<void (V3d_View::*)(const occ::handle<V3d_View> &)>(&V3d_View::AddSubview), nb::arg("theView").none(), R"nbdoc(Add subview to the list.)nbdoc")
@@ -1164,7 +1164,7 @@ standard clipping workflow.
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (V3d_PositionalLight::*)() const>(&V3d_PositionalLight::DynamicType))
         .def("Position__float__float__float", [](const V3d_PositionalLight &self) { double theX{}; double theY{}; double theZ{}; self.Position(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, R"nbdoc(Position__float__float__float: the C++ overload Position(double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns location of positional/spot light.)nbdoc")
-        .def("Position", [](const V3d_PositionalLight &self) { auto result = self.Position(); return result; }, R"nbdoc(Returns location of positional/spot light; (0, 0, 0) by default.)nbdoc")
+        .def("Position", [](const V3d_PositionalLight &self) { auto nanoocp_result = self.Position(); return nanoocp_result; }, R"nbdoc(Returns location of positional/spot light; (0, 0, 0) by default.)nbdoc")
         .def("SetPosition", [](V3d_PositionalLight &self, double theX, double theY, double theZ) { self.SetPosition(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Setup location of positional/spot light.)nbdoc")
         .def("SetPosition", [](V3d_PositionalLight &self, const gp_Pnt & thePosition) { self.SetPosition(thePosition); }, nb::arg("thePosition"), R"nbdoc(Setup location of positional/spot light.)nbdoc");
     nanoocp_implicit_copy_ctor<V3d_PositionalLight>(nb::borrow<nb::class_<V3d_PositionalLight>>(m.attr("V3d_PositionalLight")));
@@ -1203,7 +1203,7 @@ Returns location of positional/spot light.)nbdoc")
 according to a predefined directional vector.)nbdoc")
         .def("Position__float__float__float", [](const V3d_SpotLight &self) { double theX{}; double theY{}; double theZ{}; self.Position(theX, theY, theZ); return std::make_tuple(theX, theY, theZ); }, R"nbdoc(Position__float__float__float: the C++ overload Position(double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns location of positional/spot light.)nbdoc")
-        .def("Position", [](const V3d_SpotLight &self) { auto result = self.Position(); return result; }, R"nbdoc(Returns location of positional/spot light; (0, 0, 0) by default.)nbdoc")
+        .def("Position", [](const V3d_SpotLight &self) { auto nanoocp_result = self.Position(); return nanoocp_result; }, R"nbdoc(Returns location of positional/spot light; (0, 0, 0) by default.)nbdoc")
         .def("SetDirection", [](V3d_SpotLight &self, double theVx, double theVy, double theVz) { self.SetDirection(theVx, theVy, theVz); }, nb::arg("theVx"), nb::arg("theVy"), nb::arg("theVz"), R"nbdoc(Sets direction of directional/spot light.)nbdoc")
         .def("SetDirection", [](V3d_SpotLight &self, const gp_Dir & theDir) { self.SetDirection(theDir); }, nb::arg("theDir"), R"nbdoc(Sets direction of directional/spot light.)nbdoc")
         .def("SetPosition", [](V3d_SpotLight &self, double theX, double theY, double theZ) { self.SetPosition(theX, theY, theZ); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), R"nbdoc(Setup location of positional/spot light.)nbdoc")

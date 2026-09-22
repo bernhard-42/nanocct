@@ -666,7 +666,7 @@ geometry and triangulation will be shared with original shape.)nbdoc");
         .def("SetTolerance", static_cast<void (BRepBuilderAPI_FastSewing::*)(const double)>(&BRepBuilderAPI_FastSewing::SetTolerance), nb::arg("theToler"), R"nbdoc(Sets tolerance)nbdoc")
         .def("GetTolerance", static_cast<double (BRepBuilderAPI_FastSewing::*)() const>(&BRepBuilderAPI_FastSewing::GetTolerance), R"nbdoc(Returns tolerance)nbdoc")
         .def("GetResult", static_cast<const TopoDS_Shape & (BRepBuilderAPI_FastSewing::*)() const>(&BRepBuilderAPI_FastSewing::GetResult), R"nbdoc(Returns resulted shape)nbdoc")
-        .def("GetStatuses", [](BRepBuilderAPI_FastSewing &self) { auto result = self.GetStatuses(nullptr); return result; }, R"nbdoc(Returns list of statuses. Print message if theOS != 0)nbdoc")
+        .def("GetStatuses", [](BRepBuilderAPI_FastSewing &self) { auto nanoocp_result = self.GetStatuses(nullptr); return nanoocp_result; }, R"nbdoc(Returns list of statuses. Print message if theOS != 0)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&BRepBuilderAPI_FastSewing::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&BRepBuilderAPI_FastSewing::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (BRepBuilderAPI_FastSewing::*)() const>(&BRepBuilderAPI_FastSewing::DynamicType));

@@ -132,7 +132,7 @@ an error occurred.)nbdoc")
 together with the face <F>.)nbdoc")
         .def("ModifiedFaces", static_cast<const NCollection_List<TopoDS_Shape> & (Draft_Modification::*)()>(&Draft_Modification::ModifiedFaces), R"nbdoc(Returns all the faces on which a modification has
 been given.)nbdoc")
-        .def("NewSurface", [](Draft_Modification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
+        .def("NewSurface", [](Draft_Modification &self, const TopoDS_Face & F, TopLoc_Location & L) { occ::handle<Geom_Surface> S{}; double Tol{}; bool RevWires{}; bool RevFace{}; auto nanoocp_result = self.NewSurface(F, S, L, Tol, RevWires, RevFace); return std::make_tuple(nanoocp_result, S, Tol, RevWires, RevFace); }, nb::arg("F"), nb::arg("L"), R"nbdoc(Returns true if the face <F> has been
 modified. In this case, <S> is the new geometric
 support of the face, <L> the new location, <Tol>
 the new tolerance.<RevWires> has to be set to
@@ -145,18 +145,18 @@ it will be set to false.
 
 Otherwise, returns false, and <S>, <L>,
 <Tol> , <RevWires> ,<RevFace> are not significant.)nbdoc")
-        .def("NewCurve", [](Draft_Modification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto result = self.NewCurve(E, C, L, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
+        .def("NewCurve", [](Draft_Modification &self, const TopoDS_Edge & E, TopLoc_Location & L) { occ::handle<Geom_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve(E, C, L, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("L"), R"nbdoc(Returns true if the edge <E> has been
 modified. In this case, <C> is the new geometric
 support of the edge, <L> the new location, <Tol>
 the new tolerance. Otherwise, returns
 false, and <C>, <L>, <Tol> are not
 significant.)nbdoc")
-        .def("NewPoint", [](Draft_Modification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto result = self.NewPoint(V, P, Tol); return std::make_tuple(result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
+        .def("NewPoint", [](Draft_Modification &self, const TopoDS_Vertex & V, gp_Pnt & P) { double Tol{}; auto nanoocp_result = self.NewPoint(V, P, Tol); return std::make_tuple(nanoocp_result, Tol); }, nb::arg("V"), nb::arg("P"), R"nbdoc(Returns true if the vertex <V> has been
 modified. In this case, <P> is the new geometric
 support of the vertex, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>
 are not significant.)nbdoc")
-        .def("NewCurve2d", [](Draft_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
+        .def("NewCurve2d", [](Draft_Modification &self, const TopoDS_Edge & E, const TopoDS_Face & F, const TopoDS_Edge & NewE, const TopoDS_Face & NewF) { occ::handle<Geom2d_Curve> C{}; double Tol{}; auto nanoocp_result = self.NewCurve2d(E, F, NewE, NewF, C, Tol); return std::make_tuple(nanoocp_result, C, Tol); }, nb::arg("E"), nb::arg("F"), nb::arg("NewE"), nb::arg("NewF"), R"nbdoc(Returns true if the edge <E> has a new
 curve on surface on the face <F>.In this case, <C>
 is the new geometric support of the edge, <L> the
 new location, <Tol> the new tolerance.
@@ -166,7 +166,7 @@ Otherwise, returns false, and <C>, <L>,
 
 <NewE> is the new edge created from <E>. <NewF>
 is the new face created from <F>. They may be useful.)nbdoc")
-        .def("NewParameter", [](Draft_Modification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto result = self.NewParameter(V, E, P, Tol); return std::make_tuple(result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
+        .def("NewParameter", [](Draft_Modification &self, const TopoDS_Vertex & V, const TopoDS_Edge & E) { double P{}; double Tol{}; auto nanoocp_result = self.NewParameter(V, E, P, Tol); return std::make_tuple(nanoocp_result, P, Tol); }, nb::arg("V"), nb::arg("E"), R"nbdoc(Returns true if the Vertex <V> has a new
 parameter on the edge <E>. In this case, <P> is
 the parameter, <Tol> the new tolerance.
 Otherwise, returns false, and <P>, <Tol>

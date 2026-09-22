@@ -322,7 +322,7 @@ Updated by State(State from TopAbs,Integer from Standard))nbdoc")
         .def("ChangeKeep", static_cast<void (TopOpeBRep_VPointInter::*)(const bool)>(&TopOpeBRep_VPointInter::ChangeKeep), nb::arg("keep"), R"nbdoc(updates VPointInter flag "keep" with <keep>.)nbdoc")
         .def("EqualpP", static_cast<bool (TopOpeBRep_VPointInter::*)(const TopOpeBRep_VPointInter &) const>(&TopOpeBRep_VPointInter::EqualpP), nb::arg("VP"), R"nbdoc(returns <True> if the 3d points and the parameters of the
 VPoints are same)nbdoc")
-        .def("ParonE", [](const TopOpeBRep_VPointInter &self, const TopoDS_Edge & E) { double par{}; auto result = self.ParonE(E, par); return std::make_tuple(result, par); }, nb::arg("E"), R"nbdoc(returns <false> if the vpoint is not given on arc <E>,
+        .def("ParonE", [](const TopOpeBRep_VPointInter &self, const TopoDS_Edge & E) { double par{}; auto nanoocp_result = self.ParonE(E, par); return std::make_tuple(nanoocp_result, par); }, nb::arg("E"), R"nbdoc(returns <false> if the vpoint is not given on arc <E>,
 else returns <par> parameter on <E>)nbdoc")
         .def("Index", static_cast<void (TopOpeBRep_VPointInter::*)(const int)>(&TopOpeBRep_VPointInter::Index), nb::arg("I"))
         .def("Index", static_cast<int (TopOpeBRep_VPointInter::*)() const>(&TopOpeBRep_VPointInter::Index))
@@ -426,7 +426,7 @@ If not, return values extracted from shapes.)nbdoc");
         .def("SetIsPointOfSegment", static_cast<void (TopOpeBRep_Point2d::*)(const bool)>(&TopOpeBRep_Point2d::SetIsPointOfSegment), nb::arg("B"))
         .def("IsPointOfSegment", static_cast<bool (TopOpeBRep_Point2d::*)() const>(&TopOpeBRep_Point2d::IsPointOfSegment))
         .def("SetSegmentAncestors", static_cast<void (TopOpeBRep_Point2d::*)(const int, const int)>(&TopOpeBRep_Point2d::SetSegmentAncestors), nb::arg("IP1"), nb::arg("IP2"))
-        .def("SegmentAncestors", [](const TopOpeBRep_Point2d &self) { int IP1{}; int IP2{}; auto result = self.SegmentAncestors(IP1, IP2); return std::make_tuple(result, IP1, IP2); })
+        .def("SegmentAncestors", [](const TopOpeBRep_Point2d &self) { int IP1{}; int IP2{}; auto nanoocp_result = self.SegmentAncestors(IP1, IP2); return std::make_tuple(nanoocp_result, IP1, IP2); })
         .def("SetStatus", static_cast<void (TopOpeBRep_Point2d::*)(const TopOpeBRep_P2Dstatus)>(&TopOpeBRep_Point2d::SetStatus), nb::arg("S"))
         .def("Status", static_cast<TopOpeBRep_P2Dstatus (TopOpeBRep_Point2d::*)() const>(&TopOpeBRep_Point2d::Status))
         .def("SetIndex", static_cast<void (TopOpeBRep_Point2d::*)(const int)>(&TopOpeBRep_Point2d::SetIndex), nb::arg("X"))
@@ -458,9 +458,9 @@ If not, return values extracted from shapes.)nbdoc");
         .def("HasSegment", static_cast<bool (TopOpeBRep_EdgesIntersector::*)() const>(&TopOpeBRep_EdgesIntersector::HasSegment), R"nbdoc(true if at least one intersection segment.)nbdoc")
         .def("SameDomain", static_cast<bool (TopOpeBRep_EdgesIntersector::*)() const>(&TopOpeBRep_EdgesIntersector::SameDomain), R"nbdoc(= mySameDomain.)nbdoc")
         .def("Edge", static_cast<const TopoDS_Shape & (TopOpeBRep_EdgesIntersector::*)(const int) const>(&TopOpeBRep_EdgesIntersector::Edge), nb::arg("Index"))
-        .def("Curve", [](const TopOpeBRep_EdgesIntersector &self, const int Index) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.Curve(Index))); return result; }, nb::arg("Index"))
+        .def("Curve", [](const TopOpeBRep_EdgesIntersector &self, const int Index) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.Curve(Index))); return nanoocp_result; }, nb::arg("Index"))
         .def("Face", static_cast<const TopoDS_Shape & (TopOpeBRep_EdgesIntersector::*)(const int) const>(&TopOpeBRep_EdgesIntersector::Face), nb::arg("Index"))
-        .def("Surface", [](const TopOpeBRep_EdgesIntersector &self, const int Index) { opencascade::handle<BRepAdaptor_Surface> result(&(self.Surface(Index))); return result; }, nb::arg("Index"))
+        .def("Surface", [](const TopOpeBRep_EdgesIntersector &self, const int Index) { opencascade::handle<BRepAdaptor_Surface> nanoocp_result(&(self.Surface(Index))); return nanoocp_result; }, nb::arg("Index"))
         .def("SurfacesSameOriented", static_cast<bool (TopOpeBRep_EdgesIntersector::*)() const>(&TopOpeBRep_EdgesIntersector::SurfacesSameOriented))
         .def("FacesSameOriented", static_cast<bool (TopOpeBRep_EdgesIntersector::*)() const>(&TopOpeBRep_EdgesIntersector::FacesSameOriented))
         .def("ToleranceMax", static_cast<double (TopOpeBRep_EdgesIntersector::*)() const>(&TopOpeBRep_EdgesIntersector::ToleranceMax))
@@ -580,23 +580,23 @@ of the 2 faces.)nbdoc")
         .def("ProcessVPonR", static_cast<void (TopOpeBRep_FacesFiller::*)(const TopOpeBRep_VPointInter &, const TopOpeBRepDS_Transition &, const TopoDS_Shape &, const int)>(&TopOpeBRep_FacesFiller::ProcessVPonR), nb::arg("VP"), nb::arg("trans1"), nb::arg("F1"), nb::arg("ShapeIndex"), R"nbdoc(adds <VP>'s geometric point (if not stored) and
 computes (curve or edge)/(point or vertex) interference.)nbdoc")
         .def("ProcessVPonclosingR", static_cast<void (TopOpeBRep_FacesFiller::*)(const TopOpeBRep_VPointInter &, const TopoDS_Shape &, const int, const TopOpeBRepDS_Transition &, const TopOpeBRepDS_Kind, const int, const bool, const occ::handle<TopOpeBRepDS_Interference> &)>(&TopOpeBRep_FacesFiller::ProcessVPonclosingR), nb::arg("VP"), nb::arg("F1"), nb::arg("ShapeIndex"), nb::arg("transEdge"), nb::arg("PVKind"), nb::arg("PVIndex"), nb::arg("EPIfound"), nb::arg("IEPI").none(), R"nbdoc(VP processing on closing arc.)nbdoc")
-        .def("ProcessVPondgE", [](TopOpeBRep_FacesFiller &self, const TopOpeBRep_VPointInter & VP, const int ShapeIndex) { TopOpeBRepDS_Kind PVKind{}; int PVIndex{}; bool EPIfound{}; occ::handle<TopOpeBRepDS_Interference> IEPI{}; bool CPIfound{}; occ::handle<TopOpeBRepDS_Interference> ICPI{}; auto result = self.ProcessVPondgE(VP, ShapeIndex, PVKind, PVIndex, EPIfound, IEPI, CPIfound, ICPI); return std::make_tuple(result, PVKind, PVIndex, EPIfound, IEPI, CPIfound, ICPI); }, nb::arg("VP"), nb::arg("ShapeIndex"), R"nbdoc(VP processing on degenerated arc.)nbdoc")
+        .def("ProcessVPondgE", [](TopOpeBRep_FacesFiller &self, const TopOpeBRep_VPointInter & VP, const int ShapeIndex) { TopOpeBRepDS_Kind PVKind{}; int PVIndex{}; bool EPIfound{}; occ::handle<TopOpeBRepDS_Interference> IEPI{}; bool CPIfound{}; occ::handle<TopOpeBRepDS_Interference> ICPI{}; auto nanoocp_result = self.ProcessVPondgE(VP, ShapeIndex, PVKind, PVIndex, EPIfound, IEPI, CPIfound, ICPI); return std::make_tuple(nanoocp_result, PVKind, PVIndex, EPIfound, IEPI, CPIfound, ICPI); }, nb::arg("VP"), nb::arg("ShapeIndex"), R"nbdoc(VP processing on degenerated arc.)nbdoc")
         .def("ProcessVPInotonR", static_cast<void (TopOpeBRep_FacesFiller::*)(TopOpeBRep_VPointInterIterator &)>(&TopOpeBRep_FacesFiller::ProcessVPInotonR), nb::arg("VPI"), R"nbdoc(processing ProcessVPnotonR for VPI.)nbdoc")
         .def("ProcessVPnotonR", static_cast<void (TopOpeBRep_FacesFiller::*)(const TopOpeBRep_VPointInter &)>(&TopOpeBRep_FacesFiller::ProcessVPnotonR), nb::arg("VP"), R"nbdoc(adds <VP>'s geometrical point to the DS (if not stored)
 and computes curve point interference.)nbdoc")
-        .def("GetGeometry", [](TopOpeBRep_FacesFiller &self, NCollection_TListIterator<opencascade::handle<TopOpeBRepDS_Interference>> & IT, const TopOpeBRep_VPointInter & VP) { int G{}; TopOpeBRepDS_Kind K{}; auto result = self.GetGeometry(IT, VP, G, K); return std::make_tuple(result, G, K); }, nb::arg("IT"), nb::arg("VP"), R"nbdoc(Get the geometry of a DS point <DSP>.
+        .def("GetGeometry", [](TopOpeBRep_FacesFiller &self, NCollection_TListIterator<opencascade::handle<TopOpeBRepDS_Interference>> & IT, const TopOpeBRep_VPointInter & VP) { int G{}; TopOpeBRepDS_Kind K{}; auto nanoocp_result = self.GetGeometry(IT, VP, G, K); return std::make_tuple(nanoocp_result, G, K); }, nb::arg("IT"), nb::arg("VP"), R"nbdoc(Get the geometry of a DS point <DSP>.
 Search for it with ScanInterfList (previous method).
 if found, set <G> to the geometry of the interference found.
 else, add the point <DSP> in the <DS> and set <G> to the
 value of the new geometry such created.
 returns the value of ScanInterfList().)nbdoc")
-        .def("MakeGeometry", [](TopOpeBRep_FacesFiller &self, const TopOpeBRep_VPointInter & VP, const int ShapeIndex) { TopOpeBRepDS_Kind K{}; auto result = self.MakeGeometry(VP, ShapeIndex, K); return std::make_tuple(result, K); }, nb::arg("VP"), nb::arg("ShapeIndex"))
+        .def("MakeGeometry", [](TopOpeBRep_FacesFiller &self, const TopOpeBRep_VPointInter & VP, const int ShapeIndex) { TopOpeBRepDS_Kind K{}; auto nanoocp_result = self.MakeGeometry(VP, ShapeIndex, K); return std::make_tuple(nanoocp_result, K); }, nb::arg("VP"), nb::arg("ShapeIndex"))
         .def("StoreCurveInterference", static_cast<void (TopOpeBRep_FacesFiller::*)(const occ::handle<TopOpeBRepDS_Interference> &)>(&TopOpeBRep_FacesFiller::StoreCurveInterference), nb::arg("I").none(), R"nbdoc(Add interference <I> to list myDSCIL.
 on a given line, at first call, add a new DS curve.)nbdoc")
-        .def("GetFFGeometry", [](const TopOpeBRep_FacesFiller &self, const TopOpeBRepDS_Point & DSP) { TopOpeBRepDS_Kind K{}; int G{}; auto result = self.GetFFGeometry(DSP, K, G); return std::make_tuple(result, K, G); }, nb::arg("DSP"), R"nbdoc(search for G = geometry of Point which is identical to <DSP>
+        .def("GetFFGeometry", [](const TopOpeBRep_FacesFiller &self, const TopOpeBRepDS_Point & DSP) { TopOpeBRepDS_Kind K{}; int G{}; auto nanoocp_result = self.GetFFGeometry(DSP, K, G); return std::make_tuple(nanoocp_result, K, G); }, nb::arg("DSP"), R"nbdoc(search for G = geometry of Point which is identical to <DSP>
 among the DS Points created in the CURRENT face/face
 intersection (current Insert() call).)nbdoc")
-        .def("GetFFGeometry", [](const TopOpeBRep_FacesFiller &self, const TopOpeBRep_VPointInter & VP) { TopOpeBRepDS_Kind K{}; int G{}; auto result = self.GetFFGeometry(VP, K, G); return std::make_tuple(result, K, G); }, nb::arg("VP"), R"nbdoc(search for G = geometry of Point which is identical to <VP>
+        .def("GetFFGeometry", [](const TopOpeBRep_FacesFiller &self, const TopOpeBRep_VPointInter & VP) { TopOpeBRepDS_Kind K{}; int G{}; auto nanoocp_result = self.GetFFGeometry(VP, K, G); return std::make_tuple(nanoocp_result, K, G); }, nb::arg("VP"), R"nbdoc(search for G = geometry of Point which is identical to <VP>
 among the DS Points created in the CURRENT face/face
 intersection (current Insert() call).)nbdoc")
         .def("ChangeFacesIntersector", static_cast<TopOpeBRep_FacesIntersector & (TopOpeBRep_FacesFiller::*)()>(&TopOpeBRep_FacesFiller::ChangeFacesIntersector), nb::rv_policy::reference_internal)
@@ -723,7 +723,7 @@ intersection line <L> lying on shapes <S1,S2>. <min,max> = <L> bounds)nbdoc")
         .def(nb::new_([]() { return opencascade::handle<TopOpeBRep_Hctxee2d>(new TopOpeBRep_Hctxee2d()); }))
         .def("SetEdges", static_cast<void (TopOpeBRep_Hctxee2d::*)(const TopoDS_Edge &, const TopoDS_Edge &, const BRepAdaptor_Surface &, const BRepAdaptor_Surface &)>(&TopOpeBRep_Hctxee2d::SetEdges), nb::arg("E1"), nb::arg("E2"), nb::arg("BAS1"), nb::arg("BAS2"))
         .def("Edge", static_cast<const TopoDS_Shape & (TopOpeBRep_Hctxee2d::*)(const int) const>(&TopOpeBRep_Hctxee2d::Edge), nb::arg("I"))
-        .def("Curve", [](const TopOpeBRep_Hctxee2d &self, const int I) { opencascade::handle<Geom2dAdaptor_Curve> result(&(self.Curve(I))); return result; }, nb::arg("I"))
+        .def("Curve", [](const TopOpeBRep_Hctxee2d &self, const int I) { opencascade::handle<Geom2dAdaptor_Curve> nanoocp_result(&(self.Curve(I))); return nanoocp_result; }, nb::arg("I"))
         .def("Domain", static_cast<const IntRes2d_Domain & (TopOpeBRep_Hctxee2d::*)(const int) const>(&TopOpeBRep_Hctxee2d::Domain), nb::arg("I"))
         .def_static("get_type_name", static_cast<const char * (*)()>(&TopOpeBRep_Hctxee2d::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&TopOpeBRep_Hctxee2d::get_type_descriptor))

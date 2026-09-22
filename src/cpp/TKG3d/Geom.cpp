@@ -4513,11 +4513,11 @@ This method calls the basis surface method.)nbdoc")
 when the basis surface is a canonic surface or a
 rectangular limited surface on canonic surface or if
 the offset is null.)nbdoc")
-        .def("UOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V) { bool IsOpposite{}; occ::handle<Geom_BSplineSurface> UOsculSurf{}; auto result = self.UOsculatingSurface(U, V, IsOpposite, UOsculSurf); return std::make_tuple(result, IsOpposite, UOsculSurf); }, nb::arg("U"), nb::arg("V"), R"nbdoc(if true, L is the local osculating surface
+        .def("UOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V) { bool IsOpposite{}; occ::handle<Geom_BSplineSurface> UOsculSurf{}; auto nanoocp_result = self.UOsculatingSurface(U, V, IsOpposite, UOsculSurf); return std::make_tuple(nanoocp_result, IsOpposite, UOsculSurf); }, nb::arg("U"), nb::arg("V"), R"nbdoc(if true, L is the local osculating surface
 along U at the point U,V. It means that DL/DU is
 collinear to DS/DU. If IsOpposite == true
 these vectors have opposite direction.)nbdoc")
-        .def("VOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V) { bool IsOpposite{}; occ::handle<Geom_BSplineSurface> VOsculSurf{}; auto result = self.VOsculatingSurface(U, V, IsOpposite, VOsculSurf); return std::make_tuple(result, IsOpposite, VOsculSurf); }, nb::arg("U"), nb::arg("V"), R"nbdoc(if true, L is the local osculating surface
+        .def("VOsculatingSurface", [](const Geom_OffsetSurface &self, const double U, const double V) { bool IsOpposite{}; occ::handle<Geom_BSplineSurface> VOsculSurf{}; auto nanoocp_result = self.VOsculatingSurface(U, V, IsOpposite, VOsculSurf); return std::make_tuple(nanoocp_result, IsOpposite, VOsculSurf); }, nb::arg("U"), nb::arg("V"), R"nbdoc(if true, L is the local osculating surface
 along V at the point U,V.
 It means that DL/DV is collinear to DS/DV.
 If IsOpposite == true

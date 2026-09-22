@@ -883,7 +883,7 @@ Construct the identity matrix.)nbdoc"); });
         .def("Size", static_cast<int (BVH_BuildQueue::*)() const>(&BVH_BuildQueue::Size), R"nbdoc(Returns current size of BVH build queue.
 Uses acquire semantics to synchronize with enqueue/dequeue operations.)nbdoc")
         .def("Enqueue", static_cast<void (BVH_BuildQueue::*)(const int)>(&BVH_BuildQueue::Enqueue), nb::arg("theWorkItem"), R"nbdoc(Enqueues new work-item onto BVH build queue.)nbdoc")
-        .def("Fetch", [](BVH_BuildQueue &self) { bool wasBusy{}; auto result = self.Fetch(wasBusy); return std::make_tuple(result, wasBusy); }, R"nbdoc(Fetches first work-item from BVH build queue.)nbdoc")
+        .def("Fetch", [](BVH_BuildQueue &self) { bool wasBusy{}; auto nanoocp_result = self.Fetch(wasBusy); return std::make_tuple(nanoocp_result, wasBusy); }, R"nbdoc(Fetches first work-item from BVH build queue.)nbdoc")
         .def("HasBusyThreads", static_cast<bool (BVH_BuildQueue::*)() const>(&BVH_BuildQueue::HasBusyThreads), R"nbdoc(Checks if there are active build threads.
 Uses acquire semantics to ensure visibility of thread counter updates.
 This is critical for termination detection: threads check this after

@@ -660,7 +660,7 @@ customized (if theToOverrideDefaults is also TRUE))nbdoc")
     nanoocp_implicit_copy_ctor<Prs3d_Drawer>(nb::borrow<nb::class_<Prs3d_Drawer>>(m.attr("Prs3d_Drawer")));
     nanoocp_implicit_default_ctor<Prs3d>(nb::borrow<nb::class_<Prs3d>>(m.attr("Prs3d")));
     nb::borrow<nb::class_<Prs3d>>(m.attr("Prs3d"))
-        .def_static("MatchSegment", [](const double X, const double Y, const double Z, const double aDistance, const gp_Pnt & p1, const gp_Pnt & p2) { double dist{}; auto result = Prs3d::MatchSegment(X, Y, Z, aDistance, p1, p2, dist); return std::make_tuple(result, dist); }, nb::arg("X"), nb::arg("Y"), nb::arg("Z"), nb::arg("aDistance"), nb::arg("p1"), nb::arg("p2"), R"nbdoc(draws an arrow at a given location, with respect
+        .def_static("MatchSegment", [](const double X, const double Y, const double Z, const double aDistance, const gp_Pnt & p1, const gp_Pnt & p2) { double dist{}; auto nanoocp_result = Prs3d::MatchSegment(X, Y, Z, aDistance, p1, p2, dist); return std::make_tuple(nanoocp_result, dist); }, nb::arg("X"), nb::arg("Y"), nb::arg("Z"), nb::arg("aDistance"), nb::arg("p1"), nb::arg("p2"), R"nbdoc(draws an arrow at a given location, with respect
 to a given direction.)nbdoc")
         .def_static("GetDeflection", static_cast<double (*)(const NCollection_Vec3<double> &, const NCollection_Vec3<double> &, const double)>(&Prs3d::GetDeflection), nb::arg("theBndMin"), nb::arg("theBndMax"), nb::arg("theDeviationCoefficient"), R"nbdoc(Computes the absolute deflection value based on relative deflection
 Prs3d_Drawer::DeviationCoefficient().

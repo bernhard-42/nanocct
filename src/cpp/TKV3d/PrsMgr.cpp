@@ -86,7 +86,7 @@ void nanoocp_define_PrsMgr(nb::module_ &m) {
         .def_static("get_type_name", static_cast<const char * (*)()>(&PrsMgr_Presentation::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&PrsMgr_Presentation::get_type_descriptor))
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (PrsMgr_Presentation::*)() const>(&PrsMgr_Presentation::DynamicType))
-        .def("Presentation", [](PrsMgr_Presentation &self) { opencascade::handle<Graphic3d_Structure> result(self.Presentation()); return result; }, R"nbdoc(Deprecated in OCCT: Dummy to simplify porting - returns self)nbdoc")
+        .def("Presentation", [](PrsMgr_Presentation &self) { opencascade::handle<Graphic3d_Structure> nanoocp_result(self.Presentation()); return nanoocp_result; }, R"nbdoc(Deprecated in OCCT: Dummy to simplify porting - returns self)nbdoc")
         .def("PresentationManager", static_cast<const occ::handle<PrsMgr_PresentationManager> & (PrsMgr_Presentation::*)() const>(&PrsMgr_Presentation::PresentationManager), R"nbdoc(returns the PresentationManager in which the presentation has been created.)nbdoc")
         .def("SetUpdateStatus", static_cast<void (PrsMgr_Presentation::*)(const bool)>(&PrsMgr_Presentation::SetUpdateStatus), nb::arg("theUpdateStatus"))
         .def("MustBeUpdated", static_cast<bool (PrsMgr_Presentation::*)() const>(&PrsMgr_Presentation::MustBeUpdated))
@@ -238,7 +238,7 @@ to predict the maximum possible number of object clipping planes.
 @param[in] thePlane  the clip plane to be appended to map of clip planes.)nbdoc")
         .def("RemoveClipPlane", static_cast<void (PrsMgr_PresentableObject::*)(const occ::handle<Graphic3d_ClipPlane> &)>(&PrsMgr_PresentableObject::RemoveClipPlane), nb::arg("thePlane").none(), R"nbdoc(Removes previously added clip plane.
 @param[in] thePlane  the clip plane to be removed from map of clip planes.)nbdoc")
-        .def("Parent", [](const PrsMgr_PresentableObject &self) { opencascade::handle<PrsMgr_PresentableObject> result(self.Parent()); return result; }, R"nbdoc(@name parent/children properties
+        .def("Parent", [](const PrsMgr_PresentableObject &self) { opencascade::handle<PrsMgr_PresentableObject> nanoocp_result(self.Parent()); return nanoocp_result; }, R"nbdoc(@name parent/children properties
 Returns parent of current object in scene hierarchy.)nbdoc")
         .def("Children", static_cast<const NCollection_List<opencascade::handle<PrsMgr_PresentableObject>> & (PrsMgr_PresentableObject::*)() const>(&PrsMgr_PresentableObject::Children), R"nbdoc(Returns children of the current object.)nbdoc")
         .def("AddChild", static_cast<void (PrsMgr_PresentableObject::*)(const occ::handle<PrsMgr_PresentableObject> &)>(&PrsMgr_PresentableObject::AddChild), nb::arg("theObject").none(), R"nbdoc(Makes theObject child of current object in scene hierarchy.)nbdoc")

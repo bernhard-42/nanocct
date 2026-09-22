@@ -92,14 +92,14 @@ Poles.)nbdoc")
         .def("Dump", [](const AdvApprox_ApproxAFunction &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(display information on approximation.)nbdoc");
     nanoocp_implicit_copy_ctor<AdvApprox_ApproxAFunction>(nb::borrow<nb::class_<AdvApprox_ApproxAFunction>>(m.attr("AdvApprox_ApproxAFunction")));
     nb::borrow<nb::class_<AdvApprox_Cutting>>(m.attr("AdvApprox_Cutting"))
-        .def("Value", [](const AdvApprox_Cutting &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
+        .def("Value", [](const AdvApprox_Cutting &self, const double a, const double b) { double cuttingvalue{}; auto nanoocp_result = self.Value(a, b, cuttingvalue); return std::make_tuple(nanoocp_result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
     nb::borrow<nb::class_<AdvApprox_DichoCutting>>(m.attr("AdvApprox_DichoCutting"))
         .def(nb::init<>())
-        .def("Value", [](const AdvApprox_DichoCutting &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
+        .def("Value", [](const AdvApprox_DichoCutting &self, const double a, const double b) { double cuttingvalue{}; auto nanoocp_result = self.Value(a, b, cuttingvalue); return std::make_tuple(nanoocp_result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
     nanoocp_implicit_copy_ctor<AdvApprox_DichoCutting>(nb::borrow<nb::class_<AdvApprox_DichoCutting>>(m.attr("AdvApprox_DichoCutting")));
     nb::borrow<nb::class_<AdvApprox_PrefAndRec>>(m.attr("AdvApprox_PrefAndRec"))
         .def(nb::init<const NCollection_Array1<double> &, const NCollection_Array1<double> &, const double>(), nb::arg("RecomendedCut"), nb::arg("PrefferedCut"), nb::arg("Weight") = static_cast<std::decay_t<const double>>(5))
-        .def("Value", [](const AdvApprox_PrefAndRec &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"), R"nbdoc(cuting value is
+        .def("Value", [](const AdvApprox_PrefAndRec &self, const double a, const double b) { double cuttingvalue{}; auto nanoocp_result = self.Value(a, b, cuttingvalue); return std::make_tuple(nanoocp_result, cuttingvalue); }, nb::arg("a"), nb::arg("b"), R"nbdoc(cuting value is
 - the recommended point nerest of (a+b)/2
 if pi is in ]a,b[ or else
 -  the preferential point nearest of (a+b) / 2
@@ -108,7 +108,7 @@ if pi is in ](r*a+b)/(r+1) , (a+r*b)/(r+1)[ where r = Weight
     nanoocp_implicit_copy_ctor<AdvApprox_PrefAndRec>(nb::borrow<nb::class_<AdvApprox_PrefAndRec>>(m.attr("AdvApprox_PrefAndRec")));
     nb::borrow<nb::class_<AdvApprox_PrefCutting>>(m.attr("AdvApprox_PrefCutting"))
         .def(nb::init<const NCollection_Array1<double> &>(), nb::arg("CutPnts"))
-        .def("Value", [](const AdvApprox_PrefCutting &self, const double a, const double b) { double cuttingvalue{}; auto result = self.Value(a, b, cuttingvalue); return std::make_tuple(result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
+        .def("Value", [](const AdvApprox_PrefCutting &self, const double a, const double b) { double cuttingvalue{}; auto nanoocp_result = self.Value(a, b, cuttingvalue); return std::make_tuple(nanoocp_result, cuttingvalue); }, nb::arg("a"), nb::arg("b"));
     nanoocp_implicit_copy_ctor<AdvApprox_PrefCutting>(nb::borrow<nb::class_<AdvApprox_PrefCutting>>(m.attr("AdvApprox_PrefCutting")));
     nb::implicitly_convertible<std::decay_t<const NCollection_Array1<double> &>, AdvApprox_PrefCutting>();
     nb::borrow<nb::class_<AdvApprox_SimpleApprox>>(m.attr("AdvApprox_SimpleApprox"))

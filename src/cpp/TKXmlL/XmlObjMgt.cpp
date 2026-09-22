@@ -71,7 +71,7 @@ returns False on Error)nbdoc")
         .def_static("FindChildElement", static_cast<XmlObjMgt_Element (*)(const XmlObjMgt_Element &, const int)>(&XmlObjMgt::FindChildElement), nb::arg("theSource"), nb::arg("theObjId"))
         .def_static("FindChildByRef", static_cast<XmlObjMgt_Element (*)(const XmlObjMgt_Element &, const XmlObjMgt_DOMString &)>(&XmlObjMgt::FindChildByRef), nb::arg("theSource"), nb::arg("theRefName"))
         .def_static("FindChildByName", static_cast<XmlObjMgt_Element (*)(const XmlObjMgt_Element &, const XmlObjMgt_DOMString &)>(&XmlObjMgt::FindChildByName), nb::arg("theSource"), nb::arg("theName"))
-        .def_static("GetReal", [](const XmlObjMgt_DOMString & theString) { double theValue{}; auto result = XmlObjMgt::GetReal(theString, theValue); return std::make_tuple(result, theValue); }, nb::arg("theString"));
+        .def_static("GetReal", [](const XmlObjMgt_DOMString & theString) { double theValue{}; auto nanoocp_result = XmlObjMgt::GetReal(theString, theValue); return std::make_tuple(nanoocp_result, theValue); }, nb::arg("theString"));
     nanoocp_implicit_copy_ctor<XmlObjMgt>(nb::borrow<nb::class_<XmlObjMgt>>(m.attr("XmlObjMgt")));
     nb::borrow<nb::class_<XmlObjMgt_Array1>>(m.attr("XmlObjMgt_Array1"))
         .def(nb::init<const int, const int>(), nb::arg("Low"), nb::arg("Up"), R"nbdoc(Create an array of lower bound <Low> and

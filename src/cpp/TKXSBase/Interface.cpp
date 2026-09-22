@@ -675,7 +675,7 @@ redefine the order of Modules before action : Clear then
 refill the Library by calls to AddProtocol))nbdoc")
         .def("SetComplete", static_cast<void (Interface_GeneralLib::*)()>(&Interface_GeneralLib::SetComplete), R"nbdoc(Sets a library to be defined with the complete Global list
 (all the couples Protocol/Modules recorded in it))nbdoc")
-        .def("Select", [](const Interface_GeneralLib &self, const occ::handle<Standard_Transient> & obj) { occ::handle<Interface_GeneralModule> module{}; int CN{}; auto result = self.Select(obj, module, CN); return std::make_tuple(result, module, CN); }, nb::arg("obj").none(), R"nbdoc(Selects a Module from the Library, given an Object.
+        .def("Select", [](const Interface_GeneralLib &self, const occ::handle<Standard_Transient> & obj) { occ::handle<Interface_GeneralModule> module{}; int CN{}; auto nanoocp_result = self.Select(obj, module, CN); return std::make_tuple(nanoocp_result, module, CN); }, nb::arg("obj").none(), R"nbdoc(Selects a Module from the Library, given an Object.
 Returns True if Select has succeeded, False else.
 Also Returns (as arguments) the selected Module and the Case
 Number determined by the associated Protocol.
@@ -710,7 +710,7 @@ then nothing is done)nbdoc")
 Does not clear the maps)nbdoc")
         .def("ClearEntities", static_cast<void (Interface_GTool::*)()>(&Interface_GTool::ClearEntities), R"nbdoc(Clears the maps which record, for each already recorded entity
 its Module and Case Number)nbdoc")
-        .def("Select", [](Interface_GTool &self, const occ::handle<Standard_Transient> & ent, const bool enforce) { occ::handle<Interface_GeneralModule> gmod{}; int CN{}; auto result = self.Select(ent, gmod, CN, enforce); return std::make_tuple(result, gmod, CN); }, nb::arg("ent").none(), nb::arg("enforce") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Selects for an entity, its Module and Case Number
+        .def("Select", [](Interface_GTool &self, const occ::handle<Standard_Transient> & ent, const bool enforce) { occ::handle<Interface_GeneralModule> gmod{}; int CN{}; auto nanoocp_result = self.Select(ent, gmod, CN, enforce); return std::make_tuple(nanoocp_result, gmod, CN); }, nb::arg("ent").none(), nb::arg("enforce") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Selects for an entity, its Module and Case Number
 It is optimised : once done for each entity, the result is
 mapped and the GeneralLib is not longer queried
 <enforce> True overpasses this optimisation)nbdoc")
@@ -1030,7 +1030,7 @@ as Unknown)nbdoc");
         .def("Clear", static_cast<void (Interface_CopyControl::*)()>(&Interface_CopyControl::Clear), R"nbdoc(Clears List of Copy Results. Gets Ready to begin another Copy
 Process.)nbdoc")
         .def("Bind", static_cast<void (Interface_CopyControl::*)(const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &)>(&Interface_CopyControl::Bind), nb::arg("ent").none(), nb::arg("res").none(), R"nbdoc(Bind a Result to a Starting Entity identified by its Number)nbdoc")
-        .def("Search", [](const Interface_CopyControl &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto result = self.Search(ent, res); return std::make_tuple(result, res); }, nb::arg("ent").none(), R"nbdoc(Searches for the Result bound to a Startingf Entity identified
+        .def("Search", [](const Interface_CopyControl &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto nanoocp_result = self.Search(ent, res); return std::make_tuple(nanoocp_result, res); }, nb::arg("ent").none(), R"nbdoc(Searches for the Result bound to a Startingf Entity identified
 by its Number.
 If Found, returns True and fills <res>
 Else, returns False and nullifies <res>)nbdoc")
@@ -1043,7 +1043,7 @@ Else, returns False and nullifies <res>)nbdoc")
         .def("Model", static_cast<occ::handle<Interface_InterfaceModel> (Interface_CopyMap::*)() const>(&Interface_CopyMap::Model), R"nbdoc(Returns the InterfaceModel used at Creation time)nbdoc")
         .def("Bind", static_cast<void (Interface_CopyMap::*)(const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &)>(&Interface_CopyMap::Bind), nb::arg("ent").none(), nb::arg("res").none(), R"nbdoc(Binds a Starting Entity identified by its Number <num> in the
 Starting Model, to a Result of Transfer <res>)nbdoc")
-        .def("Search", [](const Interface_CopyMap &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto result = self.Search(ent, res); return std::make_tuple(result, res); }, nb::arg("ent").none(), R"nbdoc(Search for the result of a Starting Object (i.e. an Entity,
+        .def("Search", [](const Interface_CopyMap &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto nanoocp_result = self.Search(ent, res); return std::make_tuple(nanoocp_result, res); }, nb::arg("ent").none(), R"nbdoc(Search for the result of a Starting Object (i.e. an Entity,
 identified by its Number <num> in the Starting Model)
 Returns True  if a  Result is Bound (and fills <res>)
 Returns False if no result is Bound (and nullifies <res>))nbdoc")
@@ -1063,7 +1063,7 @@ with a more sophisticated Mapping Control than the Standard
 one which is CopyMap (e.g. TransferProcess from Transfer))nbdoc")
         .def("Control", static_cast<occ::handle<Interface_CopyControl> (Interface_CopyTool::*)() const>(&Interface_CopyTool::Control), R"nbdoc(Returns the object used for Control)nbdoc")
         .def("Clear", static_cast<void (Interface_CopyTool::*)()>(&Interface_CopyTool::Clear), R"nbdoc(Clears Transfer List. Gets Ready to begin another Transfer)nbdoc")
-        .def("Copy", [](Interface_CopyTool &self, const occ::handle<Standard_Transient> & entfrom, const bool mapped, const bool errstat) { occ::handle<Standard_Transient> entto{}; auto result = self.Copy(entfrom, entto, mapped, errstat); return std::make_tuple(result, entto); }, nb::arg("entfrom").none(), nb::arg("mapped"), nb::arg("errstat"), R"nbdoc(Creates the CounterPart of an Entity (by ShallowCopy), Binds
+        .def("Copy", [](Interface_CopyTool &self, const occ::handle<Standard_Transient> & entfrom, const bool mapped, const bool errstat) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.Copy(entfrom, entto, mapped, errstat); return std::make_tuple(nanoocp_result, entto); }, nb::arg("entfrom").none(), nb::arg("mapped"), nb::arg("errstat"), R"nbdoc(Creates the CounterPart of an Entity (by ShallowCopy), Binds
 it, then Copies the content of the former Entity to the other
 one (same Type), by call to the General Service Library
 It may command the Copy of Referenced Entities
@@ -1092,14 +1092,14 @@ Used by method Transferred (which performs a normal Copy),
 but can also be called to enforce a result : in the latter
 case, the enforced result must be compatible with the other
 Transfers which are performed)nbdoc")
-        .def("Search", [](const Interface_CopyTool &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto result = self.Search(ent, res); return std::make_tuple(result, res); }, nb::arg("ent").none(), R"nbdoc(Search for the result of a Starting Object (i.e. an Entity)
+        .def("Search", [](const Interface_CopyTool &self, const occ::handle<Standard_Transient> & ent) { occ::handle<Standard_Transient> res{}; auto nanoocp_result = self.Search(ent, res); return std::make_tuple(nanoocp_result, res); }, nb::arg("ent").none(), R"nbdoc(Search for the result of a Starting Object (i.e. an Entity)
 Returns True if a Result is Bound (and fills "result")
 Returns False if no result is Bound)nbdoc")
         .def("ClearLastFlags", static_cast<void (Interface_CopyTool::*)()>(&Interface_CopyTool::ClearLastFlags), R"nbdoc(Clears LastFlags only. This allows to know what Entities are
 copied after its call (see method LastCopiedAfter). It can be
 used when copies are done by increments, which must be
 distinguished. ClearLastFlags is also called by Clear.)nbdoc")
-        .def("LastCopiedAfter", [](const Interface_CopyTool &self, const int numfrom) { occ::handle<Standard_Transient> ent{}; occ::handle<Standard_Transient> res{}; auto result = self.LastCopiedAfter(numfrom, ent, res); return std::make_tuple(result, ent, res); }, nb::arg("numfrom"), R"nbdoc(Returns an copied Entity and its Result which were operated
+        .def("LastCopiedAfter", [](const Interface_CopyTool &self, const int numfrom) { occ::handle<Standard_Transient> ent{}; occ::handle<Standard_Transient> res{}; auto nanoocp_result = self.LastCopiedAfter(numfrom, ent, res); return std::make_tuple(nanoocp_result, ent, res); }, nb::arg("numfrom"), R"nbdoc(Returns an copied Entity and its Result which were operated
 after last call to ClearLastFlags. It returns the first
 "Last Copied Entity" which Number follows <numfrom>, Zero if
 none. It is used in a loop as follow :
@@ -1310,7 +1310,7 @@ Default given at Model's creation time is True)nbdoc")
 ask the FileReaderTool for any entity referenced through an
 identifier. Calls Recognize which is specific to each specific
 type of FileReaderTool)nbdoc")
-        .def("Recognize", [](Interface_FileReaderTool &self, const int num) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto result = self.Recognize(num, ach, ent); return std::make_tuple(result, ach, ent); }, nb::arg("num"), R"nbdoc(Recognizes a record, given its number. Specific to each
+        .def("Recognize", [](Interface_FileReaderTool &self, const int num) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto nanoocp_result = self.Recognize(num, ach, ent); return std::make_tuple(nanoocp_result, ach, ent); }, nb::arg("num"), R"nbdoc(Recognizes a record, given its number. Specific to each
 Interface; called by SetEntities. It can call the basic method
 RecognizeByLib.
 Returns False if recognition has failed, True else.
@@ -1320,7 +1320,7 @@ generate error messages if NewRead is called
 
 Note that it works thru a Recognizer (method Evaluate) which
 has to be memorized before starting)nbdoc")
-        .def("RecognizeByLib", [](const Interface_FileReaderTool &self, const int num, Interface_GeneralLib & glib, Interface_ReaderLib & rlib) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto result = self.RecognizeByLib(num, glib, rlib, ach, ent); return std::make_tuple(result, ach, ent); }, nb::arg("num"), nb::arg("glib"), nb::arg("rlib"), R"nbdoc(Recognizes a record with the help of Libraries. Can be used
+        .def("RecognizeByLib", [](const Interface_FileReaderTool &self, const int num, Interface_GeneralLib & glib, Interface_ReaderLib & rlib) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto nanoocp_result = self.RecognizeByLib(num, glib, rlib, ach, ent); return std::make_tuple(nanoocp_result, ach, ent); }, nb::arg("num"), nb::arg("glib"), nb::arg("rlib"), R"nbdoc(Recognizes a record with the help of Libraries. Can be used
 to implement the method Recognize.
 <rlib> is used to find Protocol and CaseNumber to apply
 <glib> performs the creation (by service NewVoid, or NewRead
@@ -1351,7 +1351,7 @@ literal Content (as an UnknownEntity). Performs also Trace)nbdoc")
         .def("BeginRead", static_cast<void (Interface_FileReaderTool::*)(const occ::handle<Interface_InterfaceModel> &)>(&Interface_FileReaderTool::BeginRead), nb::arg("amodel").none(), R"nbdoc(Fills model's header; each Interface defines for its Model its
 own file header; this method fills it from FileReaderTool.+
 It is called by AnalyseFile from InterfaceModel)nbdoc")
-        .def("AnalyseRecord", [](Interface_FileReaderTool &self, const int num, const occ::handle<Standard_Transient> & anent) { occ::handle<Interface_Check> acheck{}; auto result = self.AnalyseRecord(num, anent, acheck); return std::make_tuple(result, acheck); }, nb::arg("num"), nb::arg("anent").none(), R"nbdoc(Fills an Entity, given record no; specific to each Interface,
+        .def("AnalyseRecord", [](Interface_FileReaderTool &self, const int num, const occ::handle<Standard_Transient> & anent) { occ::handle<Interface_Check> acheck{}; auto nanoocp_result = self.AnalyseRecord(num, anent, acheck); return std::make_tuple(nanoocp_result, acheck); }, nb::arg("num"), nb::arg("anent").none(), R"nbdoc(Fills an Entity, given record no; specific to each Interface,
 called by AnalyseFile from InterfaceModel (which manages its
 calling arguments)
 To work, each Interface can define a method in its proper
@@ -1440,7 +1440,7 @@ Can check context queried through a ShareTool, as required)nbdoc")
 Remark that it should be in phase with the implementation of
 NewVoid+CopyCase/NewCopyCase
 Default returns always False, can be redefined)nbdoc")
-        .def("Dispatch", [](const Interface_GeneralModule &self, const int CN, const occ::handle<Standard_Transient> & entfrom, Interface_CopyTool & TC) { occ::handle<Standard_Transient> entto{}; auto result = self.Dispatch(CN, entfrom, entto, TC); return std::make_tuple(result, entto); }, nb::arg("CN"), nb::arg("entfrom").none(), nb::arg("TC"), R"nbdoc(Dispatches an entity
+        .def("Dispatch", [](const Interface_GeneralModule &self, const int CN, const occ::handle<Standard_Transient> & entfrom, Interface_CopyTool & TC) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.Dispatch(CN, entfrom, entto, TC); return std::make_tuple(nanoocp_result, entto); }, nb::arg("CN"), nb::arg("entfrom").none(), nb::arg("TC"), R"nbdoc(Dispatches an entity
 Returns True if it works by copy, False if it just duplicates
 the starting Handle
 
@@ -1459,13 +1459,13 @@ by calling NewVoid+CopyCase (two steps) or NewCopiedCase (1)
 
 The provided default just duplicates the handle without
 copying, then returns False. Can be redefined)nbdoc")
-        .def("NewVoid", [](const Interface_GeneralModule &self, const int CN) { occ::handle<Standard_Transient> entto{}; auto result = self.NewVoid(CN, entto); return std::make_tuple(result, entto); }, nb::arg("CN"), R"nbdoc(Creates a new void entity <entto> according to a Case Number
+        .def("NewVoid", [](const Interface_GeneralModule &self, const int CN) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.NewVoid(CN, entto); return std::make_tuple(nanoocp_result, entto); }, nb::arg("CN"), R"nbdoc(Creates a new void entity <entto> according to a Case Number
 This entity remains to be filled, by reading from a file or
 by copying from another entity of same type (see CopyCase))nbdoc")
         .def("CopyCase", static_cast<void (Interface_GeneralModule::*)(const int, const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &, Interface_CopyTool &) const>(&Interface_GeneralModule::CopyCase), nb::arg("CN"), nb::arg("entfrom").none(), nb::arg("entto").none(), nb::arg("TC"), R"nbdoc(Specific Copy ("Deep") from <entfrom> to <entto> (same type)
 by using a CopyTool which provides its working Map.
 Use method Transferred from CopyTool to work)nbdoc")
-        .def("NewCopiedCase", [](const Interface_GeneralModule &self, const int CN, const occ::handle<Standard_Transient> & entfrom, Interface_CopyTool & TC) { occ::handle<Standard_Transient> entto{}; auto result = self.NewCopiedCase(CN, entfrom, entto, TC); return std::make_tuple(result, entto); }, nb::arg("CN"), nb::arg("entfrom").none(), nb::arg("TC"), R"nbdoc(Specific operator (create+copy) defaulted to do nothing.
+        .def("NewCopiedCase", [](const Interface_GeneralModule &self, const int CN, const occ::handle<Standard_Transient> & entfrom, Interface_CopyTool & TC) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.NewCopiedCase(CN, entfrom, entto, TC); return std::make_tuple(nanoocp_result, entto); }, nb::arg("CN"), nb::arg("entfrom").none(), nb::arg("TC"), R"nbdoc(Specific operator (create+copy) defaulted to do nothing.
 It can be redefined : When it is not possible to work in two
 steps (NewVoid then CopyCase). This can occur when there is
 no default constructor : hence the result <entto> must be
@@ -2003,10 +2003,10 @@ with one %d then one %s forms in it)nbdoc")
         .def("Value", static_cast<const char * (Interface_MSG::*)() const>(&Interface_MSG::Value), R"nbdoc(Returns the translated message, in a functional form with
 operator ()
 was C++ : return const)nbdoc")
-        .def_static("Read", [](const nanoocp::TextInput &S) { std::stringstream S_stream(S.text); auto result = Interface_MSG::Read(S_stream); return result; }, nb::arg("S"), R"nbdoc(Reads a list of messages from a stream, returns read count
+        .def_static("Read", [](const nanoocp::TextInput &S) { std::stringstream S_stream(S.text); auto nanoocp_result = Interface_MSG::Read(S_stream); return nanoocp_result; }, nb::arg("S"), R"nbdoc(Reads a list of messages from a stream, returns read count
 0 means empty file, -1 means error)nbdoc")
         .def_static("Read", static_cast<int (*)(const char *const)>(&Interface_MSG::Read), nb::arg("file"), R"nbdoc(Reads a list of messages from a file defined by its name)nbdoc")
-        .def_static("Write", [](const char *const rootkey) { std::ostringstream S_stream; auto result = Interface_MSG::Write(S_stream, rootkey); return std::make_tuple(result, nanoocp_stream_text(S_stream)); }, nb::arg("rootkey") = static_cast<std::decay_t<const char *const>>(""), R"nbdoc(Writes the list of messages recorded to be translated, to a
+        .def_static("Write", [](const char *const rootkey) { std::ostringstream S_stream; auto nanoocp_result = Interface_MSG::Write(S_stream, rootkey); return std::make_tuple(nanoocp_result, nanoocp_stream_text(S_stream)); }, nb::arg("rootkey") = static_cast<std::decay_t<const char *const>>(""), R"nbdoc(Writes the list of messages recorded to be translated, to a
 stream. Writes all the list (Default) or only keys which begin
 by <rootkey>. Returns the count of written messages)nbdoc")
         .def_static("IsKey", static_cast<bool (*)(const char *const)>(&Interface_MSG::IsKey), nb::arg("mess"), R"nbdoc(Returns True if a given message is surely a key
@@ -2051,7 +2051,7 @@ YYYY-MM-DD:HH-MN-SS fixed format, completed by leading zeros
 Another format can be provided, as follows :
 C:%d ...   C like format, preceded by C:
 S:...      format to call system (not yet implemented))nbdoc")
-        .def_static("NDate", [](const char *const text) { int yy{}; int mm{}; int dd{}; int hh{}; int mn{}; int ss{}; auto result = Interface_MSG::NDate(text, yy, mm, dd, hh, mn, ss); return std::make_tuple(result, yy, mm, dd, hh, mn, ss); }, nb::arg("text"), R"nbdoc(Decodes a date to numeric integer values
+        .def_static("NDate", [](const char *const text) { int yy{}; int mm{}; int dd{}; int hh{}; int mn{}; int ss{}; auto nanoocp_result = Interface_MSG::NDate(text, yy, mm, dd, hh, mn, ss); return std::make_tuple(nanoocp_result, yy, mm, dd, hh, mn, ss); }, nb::arg("text"), R"nbdoc(Decodes a date to numeric integer values
 Returns True if OK, False if text does not fit with required
 format. Incomplete forms are allowed (for instance, for only
 YYYY-MM-DD, hour is zero))nbdoc")
@@ -2168,7 +2168,7 @@ NbTypes).
 By default, returns DynamicType)nbdoc")
         .def("TypeNumber", static_cast<int (Interface_Protocol::*)(const occ::handle<Standard_Type> &) const>(&Interface_Protocol::TypeNumber), nb::arg("atype").none(), R"nbdoc(Returns a unique positive CaseNumber for each Recognized Type,
 Returns Zero for "<type> not recognized")nbdoc")
-        .def("GlobalCheck", [](const Interface_Protocol &self, const Interface_Graph & G) { occ::handle<Interface_Check> ach{}; auto result = self.GlobalCheck(G, ach); return std::make_tuple(result, ach); }, nb::arg("G"), R"nbdoc(Evaluates a Global Check for a model (with its Graph)
+        .def("GlobalCheck", [](const Interface_Protocol &self, const Interface_Graph & G) { occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.GlobalCheck(G, ach); return std::make_tuple(nanoocp_result, ach); }, nb::arg("G"), R"nbdoc(Evaluates a Global Check for a model (with its Graph)
 Returns True when done, False if data in model do not apply
 
 Very specific of each norm, i.e. of each protocol : the
@@ -2202,7 +2202,7 @@ redefine the order of Modules before action : Clear then
 refill the Library by calls to AddProtocol))nbdoc")
         .def("SetComplete", static_cast<void (Interface_ReaderLib::*)()>(&Interface_ReaderLib::SetComplete), R"nbdoc(Sets a library to be defined with the complete Global list
 (all the couples Protocol/Modules recorded in it))nbdoc")
-        .def("Select", [](const Interface_ReaderLib &self, const occ::handle<Standard_Transient> & obj) { occ::handle<Interface_ReaderModule> module{}; int CN{}; auto result = self.Select(obj, module, CN); return std::make_tuple(result, module, CN); }, nb::arg("obj").none(), R"nbdoc(Selects a Module from the Library, given an Object.
+        .def("Select", [](const Interface_ReaderLib &self, const occ::handle<Standard_Transient> & obj) { occ::handle<Interface_ReaderModule> module{}; int CN{}; auto nanoocp_result = self.Select(obj, module, CN); return std::make_tuple(nanoocp_result, module, CN); }, nb::arg("obj").none(), R"nbdoc(Selects a Module from the Library, given an Object.
 Returns True if Select has succeeded, False else.
 Also Returns (as arguments) the selected Module and the Case
 Number determined by the associated Protocol.
@@ -2223,7 +2223,7 @@ Case Number. If Recognition fails, must return 0)nbdoc")
 to the Entity <ent> formerly created
 In case of Error or Warning, fills <ach> with messages
 Remark that the Case Number comes from translating a record)nbdoc")
-        .def("NewRead", [](const Interface_ReaderModule &self, const int casenum, const occ::handle<Interface_FileReaderData> & data, const int num) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto result = self.NewRead(casenum, data, num, ach, ent); return std::make_tuple(result, ach, ent); }, nb::arg("casenum"), nb::arg("data").none(), nb::arg("num"), R"nbdoc(Specific operator (create+read) defaulted to do nothing.
+        .def("NewRead", [](const Interface_ReaderModule &self, const int casenum, const occ::handle<Interface_FileReaderData> & data, const int num) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto nanoocp_result = self.NewRead(casenum, data, num, ach, ent); return std::make_tuple(nanoocp_result, ach, ent); }, nb::arg("casenum"), nb::arg("data").none(), nb::arg("num"), R"nbdoc(Specific operator (create+read) defaulted to do nothing.
 It can be redefined when it is not possible to work in two
 steps (NewVoid then Read). This occurs when no default
 constructor is defined : hence the result <ent> must be
@@ -2533,7 +2533,7 @@ must be defined around it)nbdoc")
         .def(nb::new_([]() { return opencascade::handle<Interface_UndefinedContent>(new Interface_UndefinedContent()); }), R"nbdoc(Defines an empty UndefinedContent)nbdoc")
         .def("NbParams", static_cast<int (Interface_UndefinedContent::*)() const>(&Interface_UndefinedContent::NbParams), R"nbdoc(Gives count of recorded parameters)nbdoc")
         .def("NbLiterals", static_cast<int (Interface_UndefinedContent::*)() const>(&Interface_UndefinedContent::NbLiterals), R"nbdoc(Gives count of Literal Parameters)nbdoc")
-        .def("ParamData", [](const Interface_UndefinedContent &self, const int num) { Interface_ParamType ptype{}; occ::handle<Standard_Transient> ent{}; occ::handle<TCollection_HAsciiString> val{}; auto result = self.ParamData(num, ptype, ent, val); return std::make_tuple(result, ptype, ent, val); }, nb::arg("num"), R"nbdoc(Returns data of a Parameter : its type, and the entity if it
+        .def("ParamData", [](const Interface_UndefinedContent &self, const int num) { Interface_ParamType ptype{}; occ::handle<Standard_Transient> ent{}; occ::handle<TCollection_HAsciiString> val{}; auto nanoocp_result = self.ParamData(num, ptype, ent, val); return std::make_tuple(nanoocp_result, ptype, ent, val); }, nb::arg("num"), R"nbdoc(Returns data of a Parameter : its type, and the entity if it
 designates en entity ("ent") or its literal value else ("str")
 Returned value (Boolean) : True if it is an Entity, False else)nbdoc")
         .def("ParamType", static_cast<Interface_ParamType (Interface_UndefinedContent::*)(const int) const>(&Interface_UndefinedContent::ParamType), nb::arg("num"), R"nbdoc(Returns the ParamType of a Param, given its rank

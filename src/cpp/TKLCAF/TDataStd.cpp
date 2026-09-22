@@ -512,7 +512,7 @@ class methods
     nb::implicitly_convertible<std::decay_t<const occ::handle<TDataStd_RealArray> &>, TDataStd_DeltaOnModificationOfRealArray>();
     nb::borrow<nb::class_<TDataStd_Directory>>(m.attr("TDataStd_Directory"))
         .def(nb::new_([]() { return opencascade::handle<TDataStd_Directory>(new TDataStd_Directory()); }))
-        .def_static("Find", [](const TDF_Label & current) { occ::handle<TDataStd_Directory> D{}; auto result = TDataStd_Directory::Find(current, D); return std::make_tuple(result, D); }, nb::arg("current"), R"nbdoc(class methods
+        .def_static("Find", [](const TDF_Label & current) { occ::handle<TDataStd_Directory> D{}; auto nanoocp_result = TDataStd_Directory::Find(current, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("current"), R"nbdoc(class methods
 =============
 Searches for a directory attribute on the label
 current, or on one of the father labels of current.
@@ -999,7 +999,7 @@ read-only), so that modifications will be discarded (if any).
     nanoocp_implicit_copy_ctor<TDataStd_NamedData>(nb::borrow<nb::class_<TDataStd_NamedData>>(m.attr("TDataStd_NamedData")));
     nb::borrow<nb::class_<TDataStd_NoteBook>>(m.attr("TDataStd_NoteBook"))
         .def(nb::new_([]() { return opencascade::handle<TDataStd_NoteBook>(new TDataStd_NoteBook()); }))
-        .def_static("Find", [](const TDF_Label & current) { occ::handle<TDataStd_NoteBook> N{}; auto result = TDataStd_NoteBook::Find(current, N); return std::make_tuple(result, N); }, nb::arg("current"), R"nbdoc(class methods
+        .def_static("Find", [](const TDF_Label & current) { occ::handle<TDataStd_NoteBook> N{}; auto nanoocp_result = TDataStd_NoteBook::Find(current, N); return std::make_tuple(nanoocp_result, N); }, nb::arg("current"), R"nbdoc(class methods
 =============
 try to retrieve a NoteBook attribute at <current> label
 or in fathers label of <current>. Returns True if
@@ -1241,7 +1241,7 @@ Tick methods
     nanoocp_implicit_copy_ctor<TDataStd_Tick>(nb::borrow<nb::class_<TDataStd_Tick>>(m.attr("TDataStd_Tick")));
     nb::borrow<nb::class_<TDataStd_TreeNode>>(m.attr("TDataStd_TreeNode"))
         .def(nb::new_([]() { return opencascade::handle<TDataStd_TreeNode>(new TDataStd_TreeNode()); }))
-        .def_static("Find", [](const TDF_Label & L) { occ::handle<TDataStd_TreeNode> T{}; auto result = TDataStd_TreeNode::Find(L, T); return std::make_tuple(result, T); }, nb::arg("L"), R"nbdoc(class methods working on the node
+        .def_static("Find", [](const TDF_Label & L) { occ::handle<TDataStd_TreeNode> T{}; auto nanoocp_result = TDataStd_TreeNode::Find(L, T); return std::make_tuple(nanoocp_result, T); }, nb::arg("L"), R"nbdoc(class methods working on the node
 =================================
 Returns true if the tree node T is found on the label L.
 Otherwise, false is returned.)nbdoc")

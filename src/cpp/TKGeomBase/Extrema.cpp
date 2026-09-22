@@ -635,15 +635,15 @@ value on the curve and a Pnt from gp.)nbdoc")
 @param theC Curve to set)nbdoc")
         .def("SetPoint", static_cast<void (Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>::*)(const gp_Pnt &)>(&Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>::SetPoint), nb::arg("theP"), R"nbdoc(Sets the point field.
 @param theP Point to set)nbdoc")
-        .def("Value", [](Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>> &self, const double theU) { double theF{}; auto result = self.Value(theU, theF); return std::make_tuple(result, theF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u).
+        .def("Value", [](Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>> &self, const double theU) { double theF{}; auto nanoocp_result = self.Value(theU, theF); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u).
 @param theU Parameter value
 @param theF Output function value
 @return True if computation succeeded)nbdoc")
-        .def("Derivative", [](Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>> &self, const double theU) { double theDF{}; auto result = self.Derivative(theU, theDF); return std::make_tuple(result, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F'(u).
+        .def("Derivative", [](Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>> &self, const double theU) { double theDF{}; auto nanoocp_result = self.Derivative(theU, theDF); return std::make_tuple(nanoocp_result, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F'(u).
 @param theU Parameter value
 @param theDF Output derivative value
 @return True if computation succeeded)nbdoc")
-        .def("Values", [](Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>> &self, const double theU) { double theF{}; double theDF{}; auto result = self.Values(theU, theF, theDF); return std::make_tuple(result, theF, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u) and F'(u).
+        .def("Values", [](Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>> &self, const double theU) { double theF{}; double theDF{}; auto nanoocp_result = self.Values(theU, theF, theDF); return std::make_tuple(nanoocp_result, theF, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u) and F'(u).
 @param theU Parameter value
 @param theF Output function value
 @param theDF Output derivative value
@@ -810,24 +810,24 @@ within the specified parameter range.
         .def(nb::init<const Adaptor3d_Curve &, const Adaptor3d_Curve &>(), nb::arg("C1"), nb::arg("C2"))
         .def(nb::init<const Adaptor2d_Curve2d &, const Adaptor2d_Curve2d &>(), nb::arg("C1"), nb::arg("C2"))
         .def("NbVariables", static_cast<int (Extrema_GlobOptFuncCCC0::*)() const>(&Extrema_GlobOptFuncCCC0::NbVariables))
-        .def("Value", [](Extrema_GlobOptFuncCCC0 &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"));
+        .def("Value", [](Extrema_GlobOptFuncCCC0 &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"));
     nanoocp_implicit_copy_ctor<Extrema_GlobOptFuncCCC0>(nb::borrow<nb::class_<Extrema_GlobOptFuncCCC0>>(m.attr("Extrema_GlobOptFuncCCC0")));
     nb::borrow<nb::class_<Extrema_GlobOptFuncCCC1>>(m.attr("Extrema_GlobOptFuncCCC1"))
         .def(nb::init<const Adaptor3d_Curve &, const Adaptor3d_Curve &>(), nb::arg("C1"), nb::arg("C2"))
         .def(nb::init<const Adaptor2d_Curve2d &, const Adaptor2d_Curve2d &>(), nb::arg("C1"), nb::arg("C2"))
         .def("NbVariables", static_cast<int (Extrema_GlobOptFuncCCC1::*)() const>(&Extrema_GlobOptFuncCCC1::NbVariables))
-        .def("Value", [](Extrema_GlobOptFuncCCC1 &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
+        .def("Value", [](Extrema_GlobOptFuncCCC1 &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"))
         .def("Gradient", static_cast<bool (Extrema_GlobOptFuncCCC1::*)(const math_Vector &, math_Vector &)>(&Extrema_GlobOptFuncCCC1::Gradient), nb::arg("X"), nb::arg("G"))
-        .def("Values", [](Extrema_GlobOptFuncCCC1 &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"));
+        .def("Values", [](Extrema_GlobOptFuncCCC1 &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"));
     nanoocp_implicit_copy_ctor<Extrema_GlobOptFuncCCC1>(nb::borrow<nb::class_<Extrema_GlobOptFuncCCC1>>(m.attr("Extrema_GlobOptFuncCCC1")));
     nb::borrow<nb::class_<Extrema_GlobOptFuncCCC2>>(m.attr("Extrema_GlobOptFuncCCC2"))
         .def(nb::init<const Adaptor3d_Curve &, const Adaptor3d_Curve &>(), nb::arg("C1"), nb::arg("C2"))
         .def(nb::init<const Adaptor2d_Curve2d &, const Adaptor2d_Curve2d &>(), nb::arg("C1"), nb::arg("C2"))
         .def("NbVariables", static_cast<int (Extrema_GlobOptFuncCCC2::*)() const>(&Extrema_GlobOptFuncCCC2::NbVariables))
-        .def("Value", [](Extrema_GlobOptFuncCCC2 &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"))
+        .def("Value", [](Extrema_GlobOptFuncCCC2 &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"))
         .def("Gradient", static_cast<bool (Extrema_GlobOptFuncCCC2::*)(const math_Vector &, math_Vector &)>(&Extrema_GlobOptFuncCCC2::Gradient), nb::arg("X"), nb::arg("G"))
-        .def("Values", [](Extrema_GlobOptFuncCCC2 &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"))
-        .def("Values", [](Extrema_GlobOptFuncCCC2 &self, const math_Vector & X, math_Vector & G, math_Matrix & H) { double F{}; auto result = self.Values(X, F, G, H); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), nb::arg("H"));
+        .def("Values", [](Extrema_GlobOptFuncCCC2 &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"))
+        .def("Values", [](Extrema_GlobOptFuncCCC2 &self, const math_Vector & X, math_Vector & G, math_Matrix & H) { double F{}; auto nanoocp_result = self.Values(X, F, G, H); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), nb::arg("H"));
     nanoocp_implicit_copy_ctor<Extrema_GlobOptFuncCCC2>(nb::borrow<nb::class_<Extrema_GlobOptFuncCCC2>>(m.attr("Extrema_GlobOptFuncCCC2")));
     nanoocp_if_concrete<Extrema_GGenExtCC<Adaptor3d_Curve, Extrema_CurveTool, Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GGExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_ExtPElC, gp_Pnt, gp_Vec, Extrema_POnCurv, NCollection_Sequence<Extrema_POnCurv>, Extrema_GGenExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>>>>(nb::borrow<nb::class_<Extrema_GGenExtCC<Adaptor3d_Curve, Extrema_CurveTool, Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GGExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_ExtPElC, gp_Pnt, gp_Vec, Extrema_POnCurv, NCollection_Sequence<Extrema_POnCurv>, Extrema_GGenExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, Extrema_GFuncExtPC<Adaptor3d_Curve, Extrema_CurveTool, Extrema_POnCurv, gp_Pnt, gp_Vec, NCollection_Sequence<Extrema_POnCurv>>>>>>>(m.attr("Extrema_ECC")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor.)nbdoc")
@@ -855,15 +855,15 @@ within the specified parameter range.
 @param theC Curve to set)nbdoc")
         .def("SetPoint", static_cast<void (Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::*)(const gp_Pnt2d &)>(&Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>>::SetPoint), nb::arg("theP"), R"nbdoc(Sets the point field.
 @param theP Point to set)nbdoc")
-        .def("Value", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; auto result = self.Value(theU, theF); return std::make_tuple(result, theF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u).
+        .def("Value", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; auto nanoocp_result = self.Value(theU, theF); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u).
 @param theU Parameter value
 @param theF Output function value
 @return True if computation succeeded)nbdoc")
-        .def("Derivative", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theDF{}; auto result = self.Derivative(theU, theDF); return std::make_tuple(result, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F'(u).
+        .def("Derivative", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theDF{}; auto nanoocp_result = self.Derivative(theU, theDF); return std::make_tuple(nanoocp_result, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F'(u).
 @param theU Parameter value
 @param theDF Output derivative value
 @return True if computation succeeded)nbdoc")
-        .def("Values", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; double theDF{}; auto result = self.Values(theU, theF, theDF); return std::make_tuple(result, theF, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u) and F'(u).
+        .def("Values", [](Extrema_GFuncExtPC<Adaptor2d_Curve2d, Extrema_Curve2dTool, Extrema_POnCurv2d, gp_Pnt2d, gp_Vec2d, NCollection_Sequence<Extrema_POnCurv2d>> &self, const double theU) { double theF{}; double theDF{}; auto nanoocp_result = self.Values(theU, theF, theDF); return std::make_tuple(nanoocp_result, theF, theDF); }, nb::arg("theU"), R"nbdoc(Calculation of F(u) and F'(u).
 @param theU Parameter value
 @param theF Output function value
 @param theDF Output derivative value
@@ -1431,9 +1431,9 @@ initialized.)nbdoc")
     nb::borrow<nb::class_<Extrema_FuncPSDist>>(m.attr("Extrema_FuncPSDist"))
         .def(nb::init<const Adaptor3d_Surface &, const gp_Pnt &>(), nb::arg("theS"), nb::arg("theP"), R"nbdoc(Constructor.)nbdoc")
         .def("NbVariables", static_cast<int (Extrema_FuncPSDist::*)() const>(&Extrema_FuncPSDist::NbVariables), R"nbdoc(Number of variables.)nbdoc")
-        .def("Value", [](Extrema_FuncPSDist &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(Value.)nbdoc")
+        .def("Value", [](Extrema_FuncPSDist &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(Value.)nbdoc")
         .def("Gradient", static_cast<bool (Extrema_FuncPSDist::*)(const math_Vector &, math_Vector &)>(&Extrema_FuncPSDist::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(Gradient.)nbdoc")
-        .def("Values", [](Extrema_FuncPSDist &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(Value and gradient.)nbdoc");
+        .def("Values", [](Extrema_FuncPSDist &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(Value and gradient.)nbdoc");
     nanoocp_implicit_copy_ctor<Extrema_FuncPSDist>(nb::borrow<nb::class_<Extrema_FuncPSDist>>(m.attr("Extrema_FuncPSDist")));
     nb::borrow<nb::class_<Extrema_FuncExtSS>>(m.attr("Extrema_FuncExtSS"))
         .def(nb::init<>())
@@ -1555,10 +1555,10 @@ a zero near the close points.)nbdoc")
     nb::borrow<nb::class_<Extrema_GlobOptFuncCS>>(m.attr("Extrema_GlobOptFuncCS"))
         .def(nb::init<const Adaptor3d_Curve *, const Adaptor3d_Surface *>(), nb::arg("C"), nb::arg("S"), R"nbdoc(Curve and surface should exist during all the lifetime of Extrema_GlobOptFuncCS.)nbdoc")
         .def("NbVariables", static_cast<int (Extrema_GlobOptFuncCS::*)() const>(&Extrema_GlobOptFuncCS::NbVariables))
-        .def("Value", [](Extrema_GlobOptFuncCS &self, const math_Vector & theX) { double theF{}; auto result = self.Value(theX, theF); return std::make_tuple(result, theF); }, nb::arg("theX"))
+        .def("Value", [](Extrema_GlobOptFuncCS &self, const math_Vector & theX) { double theF{}; auto nanoocp_result = self.Value(theX, theF); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theX"))
         .def("Gradient", static_cast<bool (Extrema_GlobOptFuncCS::*)(const math_Vector &, math_Vector &)>(&Extrema_GlobOptFuncCS::Gradient), nb::arg("theX"), nb::arg("theG"))
-        .def("Values", [](Extrema_GlobOptFuncCS &self, const math_Vector & theX, math_Vector & theG) { double theF{}; auto result = self.Values(theX, theF, theG); return std::make_tuple(result, theF); }, nb::arg("theX"), nb::arg("theG"))
-        .def("Values", [](Extrema_GlobOptFuncCS &self, const math_Vector & theX, math_Vector & theG, math_Matrix & theH) { double theF{}; auto result = self.Values(theX, theF, theG, theH); return std::make_tuple(result, theF); }, nb::arg("theX"), nb::arg("theG"), nb::arg("theH"));
+        .def("Values", [](Extrema_GlobOptFuncCS &self, const math_Vector & theX, math_Vector & theG) { double theF{}; auto nanoocp_result = self.Values(theX, theF, theG); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theX"), nb::arg("theG"))
+        .def("Values", [](Extrema_GlobOptFuncCS &self, const math_Vector & theX, math_Vector & theG, math_Matrix & theH) { double theF{}; auto nanoocp_result = self.Values(theX, theF, theG, theH); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theX"), nb::arg("theG"), nb::arg("theH"));
     nanoocp_implicit_copy_ctor<Extrema_GlobOptFuncCS>(nb::borrow<nb::class_<Extrema_GlobOptFuncCS>>(m.attr("Extrema_GlobOptFuncCS")));
     nb::borrow<nb::class_<Extrema_GlobOptFuncConicS>>(m.attr("Extrema_GlobOptFuncConicS"))
         .def(nb::init<const Adaptor3d_Surface *>(), nb::arg("S"))
@@ -1566,7 +1566,7 @@ a zero near the close points.)nbdoc")
         .def(nb::init<const Adaptor3d_Surface *, const double, const double, const double, const double>(), nb::arg("S"), nb::arg("theUf"), nb::arg("theUl"), nb::arg("theVf"), nb::arg("theVl"))
         .def("LoadConic", static_cast<void (Extrema_GlobOptFuncConicS::*)(const Adaptor3d_Curve *, const double, const double)>(&Extrema_GlobOptFuncConicS::LoadConic), nb::arg("S"), nb::arg("theTf"), nb::arg("theTl"))
         .def("NbVariables", static_cast<int (Extrema_GlobOptFuncConicS::*)() const>(&Extrema_GlobOptFuncConicS::NbVariables))
-        .def("Value", [](Extrema_GlobOptFuncConicS &self, const math_Vector & theX) { double theF{}; auto result = self.Value(theX, theF); return std::make_tuple(result, theF); }, nb::arg("theX"))
+        .def("Value", [](Extrema_GlobOptFuncConicS &self, const math_Vector & theX) { double theF{}; auto nanoocp_result = self.Value(theX, theF); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theX"))
         .def("ConicParameter", static_cast<double (Extrema_GlobOptFuncConicS::*)(const math_Vector &) const>(&Extrema_GlobOptFuncConicS::ConicParameter), nb::arg("theUV"), R"nbdoc(Parameter of conic for point on surface defined by theUV)nbdoc");
     nanoocp_implicit_copy_ctor<Extrema_GlobOptFuncConicS>(nb::borrow<nb::class_<Extrema_GlobOptFuncConicS>>(m.attr("Extrema_GlobOptFuncConicS")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Surface *>, Extrema_GlobOptFuncConicS>();
@@ -1576,7 +1576,7 @@ a zero near the close points.)nbdoc")
         .def(nb::init<const Adaptor3d_Curve *, const double, const double>(), nb::arg("C"), nb::arg("theTf"), nb::arg("theTl"))
         .def("LoadQuad", static_cast<void (Extrema_GlobOptFuncCQuadric::*)(const Adaptor3d_Surface *, const double, const double, const double, const double)>(&Extrema_GlobOptFuncCQuadric::LoadQuad), nb::arg("S"), nb::arg("theUf"), nb::arg("theUl"), nb::arg("theVf"), nb::arg("theVl"))
         .def("NbVariables", static_cast<int (Extrema_GlobOptFuncCQuadric::*)() const>(&Extrema_GlobOptFuncCQuadric::NbVariables))
-        .def("Value", [](Extrema_GlobOptFuncCQuadric &self, const math_Vector & theX) { double theF{}; auto result = self.Value(theX, theF); return std::make_tuple(result, theF); }, nb::arg("theX"))
+        .def("Value", [](Extrema_GlobOptFuncCQuadric &self, const math_Vector & theX) { double theF{}; auto nanoocp_result = self.Value(theX, theF); return std::make_tuple(nanoocp_result, theF); }, nb::arg("theX"))
         .def("QuadricParameters", static_cast<void (Extrema_GlobOptFuncCQuadric::*)(const math_Vector &, math_Vector &) const>(&Extrema_GlobOptFuncCQuadric::QuadricParameters), nb::arg("theCT"), nb::arg("theUV"), R"nbdoc(Parameters of quadric for point on curve defined by theCT)nbdoc");
     nanoocp_implicit_copy_ctor<Extrema_GlobOptFuncCQuadric>(nb::borrow<nb::class_<Extrema_GlobOptFuncCQuadric>>(m.attr("Extrema_GlobOptFuncCQuadric")));
     nb::implicitly_convertible<std::decay_t<const Adaptor3d_Curve *>, Extrema_GlobOptFuncCQuadric>();

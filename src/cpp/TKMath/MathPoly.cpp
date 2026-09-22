@@ -90,7 +90,7 @@ Algorithm:
 @param theE coefficient of x
 @param theF constant term
 @return PolyResult containing real roots only)nbdoc");
-    m.def("Octic", [](const std::array<double, 9> &theCoeffs) { double theCoeffs_arr[9]; std::copy(theCoeffs.begin(), theCoeffs.end(), theCoeffs_arr); auto result = MathPoly::Octic(theCoeffs_arr); return result; }, nb::arg("theCoeffs"), R"nbdoc(Solve octic (degree 8) polynomial using Laguerre's method.
+    m.def("Octic", [](const std::array<double, 9> &theCoeffs) { double theCoeffs_arr[9]; std::copy(theCoeffs.begin(), theCoeffs.end(), theCoeffs_arr); auto nanoocp_result = MathPoly::Octic(theCoeffs_arr); return nanoocp_result; }, nb::arg("theCoeffs"), R"nbdoc(Solve octic (degree 8) polynomial using Laguerre's method.
 Useful for Circle-Ellipse extrema after Weierstrass substitution.
 @param theCoeffs coefficients [a0, a1, ..., a8] where polynomial is a0 + a1*x + ... + a8*x^8
 @return GeneralPolyResult containing all real roots)nbdoc");

@@ -767,7 +767,7 @@ However note that if this constructor is called, the buffer
 content (string) will not be copied (move is not supported for
 std::stringstream class on old compilers such as gcc 4.4, msvc 9).)nbdoc")
         .def("Flush", static_cast<void (Message_Messenger::StreamBuffer::*)(bool)>(&Message_Messenger::StreamBuffer::Flush), nb::arg("doForce") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Flush collected string to messenger)nbdoc")
-        .def("Messenger", [](Message_Messenger::StreamBuffer &self) { opencascade::handle<Message_Messenger> result(self.Messenger()); return result; }, R"nbdoc(Access to the messenger)nbdoc");
+        .def("Messenger", [](Message_Messenger::StreamBuffer &self) { opencascade::handle<Message_Messenger> nanoocp_result(self.Messenger()); return nanoocp_result; }, R"nbdoc(Access to the messenger)nbdoc");
     nanoocp_implicit_default_ctor<Message>(nb::borrow<nb::class_<Message>>(m.attr("Message")));
     nb::borrow<nb::class_<Message>>(m.attr("Message"))
         .def_static("DefaultMessenger", static_cast<const occ::handle<Message_Messenger> & (*)()>(&Message::DefaultMessenger), R"nbdoc(Defines default messenger for OCCT applications.
@@ -801,7 +801,7 @@ Example:
 3. (0,  0,  4.5   ) returns "4.50s")nbdoc")
         .def_static("DefaultReport", static_cast<const occ::handle<Message_Report> & (*)(const bool)>(&Message::DefaultReport), nb::arg("theToCreate") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(returns the only one instance of Report
 When theToCreate is true - automatically creates message report when not exist.)nbdoc")
-        .def_static("MetricFromString__Message_MetricType", [](const char *const theString) { Message_MetricType theType{}; auto result = Message::MetricFromString(theString, theType); return std::make_tuple(result, theType); }, nb::arg("theString"), R"nbdoc(MetricFromString__Message_MetricType: the C++ overload MetricFromString(const char *const, Message_MetricType &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("MetricFromString__Message_MetricType", [](const char *const theString) { Message_MetricType theType{}; auto nanoocp_result = Message::MetricFromString(theString, theType); return std::make_tuple(nanoocp_result, theType); }, nb::arg("theString"), R"nbdoc(MetricFromString__Message_MetricType: the C++ overload MetricFromString(const char *const, Message_MetricType &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Determines the metric from the given string identifier.
 @param theString string identifier
 @param theType detected type of metric
@@ -812,11 +812,11 @@ Determines the metric from the given string identifier.
         .def_static("MetricFromString", static_cast<Message_MetricType (*)(const char *const)>(&Message::MetricFromString), nb::arg("theString"), R"nbdoc(Returns the metric type from the given string identifier.
 @param theString string identifier
 @return metric type or Message_MetricType_None if string identifier is invalid)nbdoc")
-        .def_static("ToOSDMetric", [](const Message_MetricType theMetric) { OSD_MemInfo::Counter theMemInfo{}; auto result = Message::ToOSDMetric(theMetric, theMemInfo); return std::make_tuple(result, theMemInfo); }, nb::arg("theMetric"), R"nbdoc(Converts message metric to OSD memory info type.
+        .def_static("ToOSDMetric", [](const Message_MetricType theMetric) { OSD_MemInfo::Counter theMemInfo{}; auto nanoocp_result = Message::ToOSDMetric(theMetric, theMemInfo); return std::make_tuple(nanoocp_result, theMemInfo); }, nb::arg("theMetric"), R"nbdoc(Converts message metric to OSD memory info type.
 @param[in] theMetric  message metric
 @param[out] theMemInfo  filled memory info type
 @return true if converted)nbdoc")
-        .def_static("ToMessageMetric", [](const OSD_MemInfo::Counter theMemInfo) { Message_MetricType theMetric{}; auto result = Message::ToMessageMetric(theMemInfo, theMetric); return std::make_tuple(result, theMetric); }, nb::arg("theMemInfo"), R"nbdoc(Converts OSD memory info type to message metric.
+        .def_static("ToMessageMetric", [](const OSD_MemInfo::Counter theMemInfo) { Message_MetricType theMetric{}; auto nanoocp_result = Message::ToMessageMetric(theMemInfo, theMetric); return std::make_tuple(nanoocp_result, theMetric); }, nb::arg("theMemInfo"), R"nbdoc(Converts OSD memory info type to message metric.
 @param theMemInfo [int] memory info type
 @param[out] theMetric  filled message metric
 @return true if converted)nbdoc");

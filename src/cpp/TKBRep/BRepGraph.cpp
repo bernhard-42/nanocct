@@ -2862,7 +2862,7 @@ Computes and caches only Status - does NOT compute SameParameter/SameRange.
 Computes and caches only IsClosed.
 @param[in] theEdge edge definition identifier
 @return true if the edge is closed)nbdoc")
-        .def("GetWireIsClosed", [](BRepGraph_CacheDerivedState &self, BRepGraph_WireId theWire) { bool theClosed{}; auto result = self.GetWireIsClosed(theWire, theClosed); return std::make_tuple(result, theClosed); }, nb::arg("theWire"), R"nbdoc(@brief Return wire closure, computing and storing a fresh entry.
+        .def("GetWireIsClosed", [](BRepGraph_CacheDerivedState &self, BRepGraph_WireId theWire) { bool theClosed{}; auto nanoocp_result = self.GetWireIsClosed(theWire, theClosed); return std::make_tuple(nanoocp_result, theClosed); }, nb::arg("theWire"), R"nbdoc(@brief Return wire closure, computing and storing a fresh entry.
 @param[in]  theWire   wire definition identifier
 @param[out] theClosed filled with the fresh derived value
 @return true if computation succeeded)nbdoc")
@@ -2872,7 +2872,7 @@ Computes and caches only IsClosed.
         .def("IsShellClosed", static_cast<bool (BRepGraph_CacheDerivedState::*)(BRepGraph_ShellId)>(&BRepGraph_CacheDerivedState::IsShellClosed), nb::arg("theShell"), R"nbdoc(@brief Test if a shell is closed.
 @param[in] theShell shell definition identifier
 @return true if the shell is closed)nbdoc")
-        .def_static("ComputeEdgeProperties", [](const BRepGraph & theGraph, BRepGraph_EdgeId theEdge) { bool theIsDegenerated{}; bool theIsClosed{}; auto result = BRepGraph_CacheDerivedState::ComputeEdgeProperties(theGraph, theEdge, theIsDegenerated, theIsClosed); return std::make_tuple(result, theIsDegenerated, theIsClosed); }, nb::arg("theGraph"), nb::arg("theEdge"), R"nbdoc(Compute edge-own derived state (Status, IsClosed).
+        .def_static("ComputeEdgeProperties", [](const BRepGraph & theGraph, BRepGraph_EdgeId theEdge) { bool theIsDegenerated{}; bool theIsClosed{}; auto nanoocp_result = BRepGraph_CacheDerivedState::ComputeEdgeProperties(theGraph, theEdge, theIsDegenerated, theIsClosed); return std::make_tuple(nanoocp_result, theIsDegenerated, theIsClosed); }, nb::arg("theGraph"), nb::arg("theEdge"), R"nbdoc(Compute edge-own derived state (Status, IsClosed).
 SameRange/SameParameter are per-CoEdge - use the per-CoEdge cache directly.
 @param[in]  theGraph source graph
 @param[in]  theEdge  edge definition identifier
@@ -2940,11 +2940,11 @@ Source item ids are returned directly as target item ids after validation.)nbdoc
         .def("FindCache", static_cast<occ::handle<BRepGraph_Cache> (BRepGraph_CacheRegistry::*)(const Standard_GUID &) const>(&BRepGraph_CacheRegistry::FindCache), nb::arg("theGUID"), R"nbdoc(Find a cache service by GUID.
 @param[in] theGUID cache identity
 @return cache service, or null handle if not found)nbdoc")
-        .def("FindSlot", [](const BRepGraph_CacheRegistry &self, const Standard_GUID & theGUID) { uint32_t theSlot{}; auto result = self.FindSlot(theGUID, theSlot); return std::make_tuple(result, theSlot); }, nb::arg("theGUID"), R"nbdoc(Return current graph-local slot for a GUID.
+        .def("FindSlot", [](const BRepGraph_CacheRegistry &self, const Standard_GUID & theGUID) { uint32_t theSlot{}; auto nanoocp_result = self.FindSlot(theGUID, theSlot); return std::make_tuple(nanoocp_result, theSlot); }, nb::arg("theGUID"), R"nbdoc(Return current graph-local slot for a GUID.
 @param[in] theGUID cache family identity
 @param[out] theSlot graph-local slot index
 @return true if the cache service is registered)nbdoc")
-        .def("FindSlot", [](const BRepGraph_CacheRegistry &self, const occ::handle<BRepGraph_Cache> & theCache) { uint32_t theSlot{}; auto result = self.FindSlot(theCache, theSlot); return std::make_tuple(result, theSlot); }, nb::arg("theCache").none(), R"nbdoc(Return current graph-local slot for a cache service.
+        .def("FindSlot", [](const BRepGraph_CacheRegistry &self, const occ::handle<BRepGraph_Cache> & theCache) { uint32_t theSlot{}; auto nanoocp_result = self.FindSlot(theCache, theSlot); return std::make_tuple(nanoocp_result, theSlot); }, nb::arg("theCache").none(), R"nbdoc(Return current graph-local slot for a cache service.
 @param[in] theCache cache service
 @param[out] theSlot graph-local slot index
 @return true if the cache service is registered)nbdoc")
@@ -4712,7 +4712,7 @@ CoEdge->Edge and Occurrence->Product/topology-root.)nbdoc")
 @return slot index in the internal dense vector.)nbdoc")
         .def("UnregisterLayer", static_cast<void (BRepGraph_LayerRegistry::*)(const Standard_GUID &)>(&BRepGraph_LayerRegistry::UnregisterLayer), nb::arg("theGUID"), R"nbdoc(Remove a layer by GUID.)nbdoc")
         .def("FindLayer", static_cast<occ::handle<BRepGraph_Layer> (BRepGraph_LayerRegistry::*)(const Standard_GUID &) const>(&BRepGraph_LayerRegistry::FindLayer), nb::arg("theGUID"), R"nbdoc(Find a layer by GUID. Returns null handle if not found.)nbdoc")
-        .def("FindSlot", [](const BRepGraph_LayerRegistry &self, const Standard_GUID & theGUID) { uint32_t theSlot{}; auto result = self.FindSlot(theGUID, theSlot); return std::make_tuple(result, theSlot); }, nb::arg("theGUID"), R"nbdoc(Return current slot for a GUID.)nbdoc")
+        .def("FindSlot", [](const BRepGraph_LayerRegistry &self, const Standard_GUID & theGUID) { uint32_t theSlot{}; auto nanoocp_result = self.FindSlot(theGUID, theSlot); return std::make_tuple(nanoocp_result, theSlot); }, nb::arg("theGUID"), R"nbdoc(Return current slot for a GUID.)nbdoc")
         .def("Layer", static_cast<occ::handle<BRepGraph_Layer> (BRepGraph_LayerRegistry::*)(uint32_t) const>(&BRepGraph_LayerRegistry::Layer), nb::arg("theSlot"), R"nbdoc(Return layer by slot index, or null handle if the slot is out of range.)nbdoc")
         .def("NbLayers", static_cast<uint32_t (BRepGraph_LayerRegistry::*)() const>(&BRepGraph_LayerRegistry::NbLayers), R"nbdoc(Number of registered layers.)nbdoc")
         .def("HasModificationSubscribers", static_cast<bool (BRepGraph_LayerRegistry::*)() const>(&BRepGraph_LayerRegistry::HasModificationSubscribers), R"nbdoc(True if any registered layer subscribes to node modification events.)nbdoc")

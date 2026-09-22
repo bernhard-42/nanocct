@@ -113,7 +113,7 @@ ErrorString.)nbdoc")
 application resources the storage driver plugin, the file
 extension and other data used to store the document.)nbdoc")
         .def("Extensions", static_cast<void (CDM_Document::*)(NCollection_Sequence<TCollection_ExtendedString> &) const>(&CDM_Document::Extensions), nb::arg("Extensions"), R"nbdoc(by default empties the extensions.)nbdoc")
-        .def("GetAlternativeDocument", [](CDM_Document &self, const TCollection_ExtendedString & aFormat) { occ::handle<CDM_Document> anAlternativeDocument{}; auto result = self.GetAlternativeDocument(aFormat, anAlternativeDocument); return std::make_tuple(result, anAlternativeDocument); }, nb::arg("aFormat"), R"nbdoc(This method can be redefined to extract another document in
+        .def("GetAlternativeDocument", [](CDM_Document &self, const TCollection_ExtendedString & aFormat) { occ::handle<CDM_Document> anAlternativeDocument{}; auto nanoocp_result = self.GetAlternativeDocument(aFormat, anAlternativeDocument); return std::make_tuple(nanoocp_result, anAlternativeDocument); }, nb::arg("aFormat"), R"nbdoc(This method can be redefined to extract another document in
 a different format. For example, to extract a Shape
 from an applicative document.)nbdoc")
         .def("CreateReference", static_cast<int (CDM_Document::*)(const occ::handle<CDM_Document> &)>(&CDM_Document::CreateReference), nb::arg("anOtherDocument").none(), R"nbdoc(Creates a reference from this document to {anOtherDocument}.

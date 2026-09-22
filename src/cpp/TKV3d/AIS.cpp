@@ -997,7 +997,7 @@ corresponding AIS_InteractiveContext instance for cases when it
 is accessible. This method just redirects call to myCTXPtr,
 so this class field must be up to date for proper result.)nbdoc")
         .def("HasInteractiveContext", static_cast<bool (AIS_InteractiveObject::*)() const>(&AIS_InteractiveObject::HasInteractiveContext), R"nbdoc(Indicates whether the Interactive Object has a pointer to an interactive context.)nbdoc")
-        .def("InteractiveContext", [](const AIS_InteractiveObject &self) { opencascade::handle<AIS_InteractiveContext> result(self.InteractiveContext()); return result; }, R"nbdoc(Returns the context pointer to the interactive context.)nbdoc")
+        .def("InteractiveContext", [](const AIS_InteractiveObject &self) { opencascade::handle<AIS_InteractiveContext> nanoocp_result(self.InteractiveContext()); return nanoocp_result; }, R"nbdoc(Returns the context pointer to the interactive context.)nbdoc")
         .def("SetContext", static_cast<void (AIS_InteractiveObject::*)(const occ::handle<AIS_InteractiveContext> &)>(&AIS_InteractiveObject::SetContext), nb::arg("aCtx").none(), R"nbdoc(Sets the interactive context aCtx and provides a link
 to the default drawing tool or "Drawer" if there is none.)nbdoc")
         .def("HasOwner", static_cast<bool (AIS_InteractiveObject::*)() const>(&AIS_InteractiveObject::HasOwner), R"nbdoc(Returns true if the object has an owner attributed to it.
@@ -1189,9 +1189,9 @@ This is just a short-cut to SetHighlightStyle(Prs3d_TypeOfHighlight_Dynamic,theS
 This is just a short-cut to HighlightStyle(Prs3d_TypeOfHighlight_Selected).)nbdoc")
         .def("SetSelectionStyle", static_cast<void (AIS_InteractiveContext::*)(const occ::handle<Prs3d_Drawer> &)>(&AIS_InteractiveContext::SetSelectionStyle), nb::arg("theStyle").none(), R"nbdoc(Setup the style of selection highlighting.
 This is just a short-cut to SetHighlightStyle(Prs3d_TypeOfHighlight_Selected,theStyle).)nbdoc")
-        .def("HighlightStyle", [](const AIS_InteractiveContext &self, const occ::handle<AIS_InteractiveObject> & theObj) { occ::handle<Prs3d_Drawer> theStyle{}; auto result = self.HighlightStyle(theObj, theStyle); return std::make_tuple(result, theStyle); }, nb::arg("theObj").none(), R"nbdoc(Returns highlight style of the object if it is marked as highlighted via global status
+        .def("HighlightStyle", [](const AIS_InteractiveContext &self, const occ::handle<AIS_InteractiveObject> & theObj) { occ::handle<Prs3d_Drawer> theStyle{}; auto nanoocp_result = self.HighlightStyle(theObj, theStyle); return std::make_tuple(nanoocp_result, theStyle); }, nb::arg("theObj").none(), R"nbdoc(Returns highlight style of the object if it is marked as highlighted via global status
 @param[in] theObj  the object to check)nbdoc")
-        .def("HighlightStyle", [](const AIS_InteractiveContext &self, const occ::handle<SelectMgr_EntityOwner> & theOwner) { occ::handle<Prs3d_Drawer> theStyle{}; auto result = self.HighlightStyle(theOwner, theStyle); return std::make_tuple(result, theStyle); }, nb::arg("theOwner").none(), R"nbdoc(Returns highlight style of the owner if it is selected
+        .def("HighlightStyle", [](const AIS_InteractiveContext &self, const occ::handle<SelectMgr_EntityOwner> & theOwner) { occ::handle<Prs3d_Drawer> theStyle{}; auto nanoocp_result = self.HighlightStyle(theOwner, theStyle); return std::make_tuple(nanoocp_result, theStyle); }, nb::arg("theOwner").none(), R"nbdoc(Returns highlight style of the owner if it is selected
 @param[in] theOwner  the owner to check)nbdoc")
         .def("IsHilighted", static_cast<bool (AIS_InteractiveContext::*)(const occ::handle<AIS_InteractiveObject> &) const>(&AIS_InteractiveContext::IsHilighted), nb::arg("theObj").none(), R"nbdoc(Returns true if the object is marked as highlighted via its global status
 @param[in] theObj  the object to check)nbdoc")
@@ -1549,7 +1549,7 @@ displayed.)nbdoc")
 Sets the plane size defined by the length in the X direction XSize and that in the Y direction
 YSize.)nbdoc")
         .def("SetPlaneSize", static_cast<void (AIS_InteractiveContext::*)(const double, const bool)>(&AIS_InteractiveContext::SetPlaneSize), nb::arg("theSize"), nb::arg("theToUpdateViewer"), R"nbdoc(Sets the plane size aSize.)nbdoc")
-        .def("PlaneSize", [](const AIS_InteractiveContext &self) { double XSize{}; double YSize{}; auto result = self.PlaneSize(XSize, YSize); return std::make_tuple(result, XSize, YSize); }, R"nbdoc(Returns true if the length in the X direction XSize is the same as that in the Y direction
+        .def("PlaneSize", [](const AIS_InteractiveContext &self) { double XSize{}; double YSize{}; auto nanoocp_result = self.PlaneSize(XSize, YSize); return std::make_tuple(nanoocp_result, XSize, YSize); }, R"nbdoc(Returns true if the length in the X direction XSize is the same as that in the Y direction
 YSize.)nbdoc")
         .def("SetDeviationCoefficient", static_cast<void (AIS_InteractiveContext::*)(const occ::handle<AIS_InteractiveObject> &, const double, const bool)>(&AIS_InteractiveContext::SetDeviationCoefficient), nb::arg("theIObj").none(), nb::arg("theCoefficient"), nb::arg("theToUpdateViewer"), R"nbdoc(@name tessellation deviation properties for automatic triangulation
 Sets the deviation coefficient theCoefficient.
@@ -1960,11 +1960,11 @@ edges and vertices.)nbdoc")
 and set the values stored in myDrawer with these that become local to the shape)nbdoc")
         .def("UserAngle", static_cast<double (AIS_Shape::*)() const>(&AIS_Shape::UserAngle), R"nbdoc(gives back the angle initial value put by the User.)nbdoc")
         .def("SetOwnDeviationAngle", static_cast<void (AIS_Shape::*)(const double)>(&AIS_Shape::SetOwnDeviationAngle), nb::arg("anAngle"), R"nbdoc(sets myOwnDeviationAngle field in Prs3d_Drawer & recomputes presentation)nbdoc")
-        .def("OwnDeviationCoefficient", [](const AIS_Shape &self) { double aCoefficient{}; double aPreviousCoefficient{}; auto result = self.OwnDeviationCoefficient(aCoefficient, aPreviousCoefficient); return std::make_tuple(result, aCoefficient, aPreviousCoefficient); }, R"nbdoc(Returns true and the values of the deviation
+        .def("OwnDeviationCoefficient", [](const AIS_Shape &self) { double aCoefficient{}; double aPreviousCoefficient{}; auto nanoocp_result = self.OwnDeviationCoefficient(aCoefficient, aPreviousCoefficient); return std::make_tuple(nanoocp_result, aCoefficient, aPreviousCoefficient); }, R"nbdoc(Returns true and the values of the deviation
 coefficient aCoefficient and the previous deviation
 coefficient aPreviousCoefficient. If these values are
 not already set, false is returned.)nbdoc")
-        .def("OwnDeviationAngle", [](const AIS_Shape &self) { double anAngle{}; double aPreviousAngle{}; auto result = self.OwnDeviationAngle(anAngle, aPreviousAngle); return std::make_tuple(result, anAngle, aPreviousAngle); }, R"nbdoc(Returns true and the values of the deviation angle
+        .def("OwnDeviationAngle", [](const AIS_Shape &self) { double anAngle{}; double aPreviousAngle{}; auto nanoocp_result = self.OwnDeviationAngle(anAngle, aPreviousAngle); return std::make_tuple(nanoocp_result, anAngle, aPreviousAngle); }, R"nbdoc(Returns true and the values of the deviation angle
 anAngle and the previous deviation angle aPreviousAngle.
 If these values are not already set, false is returned.)nbdoc")
         .def("SetTypeOfHLR", static_cast<void (AIS_Shape::*)(const Prs3d_TypeOfHLR)>(&AIS_Shape::SetTypeOfHLR), nb::arg("theTypeOfHLR"), R"nbdoc(Sets the type of HLR algorithm used by the shape)nbdoc")
@@ -2565,7 +2565,7 @@ aCurrentMode equals true, the drawing tool, "Drawer" is not initialized.)nbdoc")
         .def("SetSize", static_cast<void (AIS_Plane::*)(const double, const double)>(&AIS_Plane::SetSize), nb::arg("Xval"), nb::arg("YVal"), R"nbdoc(Sets the size defined by the length along the X axis
 XVal and the length along the Y axis YVal.)nbdoc")
         .def("UnsetSize", static_cast<void (AIS_Plane::*)()>(&AIS_Plane::UnsetSize))
-        .def("Size", [](const AIS_Plane &self) { double X{}; double Y{}; auto result = self.Size(X, Y); return std::make_tuple(result, X, Y); })
+        .def("Size", [](const AIS_Plane &self) { double X{}; double Y{}; auto nanoocp_result = self.Size(X, Y); return std::make_tuple(nanoocp_result, X, Y); })
         .def("HasOwnSize", static_cast<bool (AIS_Plane::*)() const>(&AIS_Plane::HasOwnSize))
         .def("SetMinimumSize", static_cast<void (AIS_Plane::*)(const double)>(&AIS_Plane::SetMinimumSize), nb::arg("theValue"), R"nbdoc(Sets transform persistence for zoom with value of minimum size)nbdoc")
         .def("UnsetMinimumSize", static_cast<void (AIS_Plane::*)()>(&AIS_Plane::UnsetMinimumSize), R"nbdoc(Unsets transform persistence zoom)nbdoc")
@@ -2574,7 +2574,7 @@ XVal and the length along the Y axis YVal.)nbdoc")
         .def("Type", static_cast<AIS_KindOfInteractive (AIS_Plane::*)() const>(&AIS_Plane::Type))
         .def("Component", static_cast<const occ::handle<Geom_Plane> & (AIS_Plane::*)()>(&AIS_Plane::Component), R"nbdoc(Returns the component specified in SetComponent.)nbdoc")
         .def("SetComponent", static_cast<void (AIS_Plane::*)(const occ::handle<Geom_Plane> &)>(&AIS_Plane::SetComponent), nb::arg("aComponent").none(), R"nbdoc(Creates an instance of the plane aComponent.)nbdoc")
-        .def("PlaneAttributes", [](AIS_Plane &self, gp_Pnt & aCenter, gp_Pnt & aPmin, gp_Pnt & aPmax) { occ::handle<Geom_Plane> aComponent{}; auto result = self.PlaneAttributes(aComponent, aCenter, aPmin, aPmax); return std::make_tuple(result, aComponent); }, nb::arg("aCenter"), nb::arg("aPmin"), nb::arg("aPmax"), R"nbdoc(Returns the settings for the selected plane
+        .def("PlaneAttributes", [](AIS_Plane &self, gp_Pnt & aCenter, gp_Pnt & aPmin, gp_Pnt & aPmax) { occ::handle<Geom_Plane> aComponent{}; auto nanoocp_result = self.PlaneAttributes(aComponent, aCenter, aPmin, aPmax); return std::make_tuple(nanoocp_result, aComponent); }, nb::arg("aCenter"), nb::arg("aPmin"), nb::arg("aPmax"), R"nbdoc(Returns the settings for the selected plane
 aComponent, provided in SetPlaneAttributes.
 These include the points aCenter, aPmin, and aPmax)nbdoc")
         .def("SetPlaneAttributes", static_cast<void (AIS_Plane::*)(const occ::handle<Geom_Plane> &, const gp_Pnt &, const gp_Pnt &, const gp_Pnt &)>(&AIS_Plane::SetPlaneAttributes), nb::arg("aComponent").none(), nb::arg("aCenter"), nb::arg("aPmin"), nb::arg("aPmax"), R"nbdoc(Allows you to provide settings other than default ones
@@ -3114,8 +3114,8 @@ Aspect_VKey_NavLookUp/Aspect_VKey_NavLookDown; FALSE by default.)nbdoc")
         .def("SetDisplayXRAuxDevices", static_cast<void (AIS_ViewController::*)(bool)>(&AIS_ViewController::SetDisplayXRAuxDevices), nb::arg("theToDisplay"), R"nbdoc(Set if auxiliary tracked XR devices should be displayed.)nbdoc")
         .def("ToDisplayXRHands", static_cast<bool (AIS_ViewController::*)() const>(&AIS_ViewController::ToDisplayXRHands), R"nbdoc(Return TRUE to display XR hand controllers.)nbdoc")
         .def("SetDisplayXRHands", static_cast<void (AIS_ViewController::*)(bool)>(&AIS_ViewController::SetDisplayXRHands), nb::arg("theToDisplay"), R"nbdoc(Set if tracked XR hand controllers should be displayed.)nbdoc")
-        .def("ChangeKeys", [](AIS_ViewController &self) { opencascade::handle<Aspect_VKeySet> result(&(self.ChangeKeys())); return result; }, R"nbdoc(Return keyboard state.)nbdoc")
-        .def("Keys", [](const AIS_ViewController &self) { opencascade::handle<Aspect_VKeySet> result(&(self.Keys())); return result; }, R"nbdoc(@name keyboard input
+        .def("ChangeKeys", [](AIS_ViewController &self) { opencascade::handle<Aspect_VKeySet> nanoocp_result(&(self.ChangeKeys())); return nanoocp_result; }, R"nbdoc(Return keyboard state.)nbdoc")
+        .def("Keys", [](const AIS_ViewController &self) { opencascade::handle<Aspect_VKeySet> nanoocp_result(&(self.Keys())); return nanoocp_result; }, R"nbdoc(@name keyboard input
 Return keyboard state.)nbdoc")
         .def("KeyDown", static_cast<void (AIS_ViewController::*)(Aspect_VKey, double, double)>(&AIS_ViewController::KeyDown), nb::arg("theKey"), nb::arg("theTime"), nb::arg("thePressure") = static_cast<std::decay_t<double>>(1.0), R"nbdoc(Press key.
 Default implementation updates internal cache.
@@ -3187,7 +3187,7 @@ to be called from UI thread.
 @param theModifiers  key modifiers
 @param theIsDoubleClick flag indicating double mouse click
 @return TRUE if View should be redrawn)nbdoc")
-        .def("PressMouseButton", [](AIS_ViewController &self, const NCollection_Vec2<int> & thePoint, Aspect_VKeyMouse theButton, Aspect_VKeyFlags theModifiers, bool theIsEmulated) { auto result = self.PressMouseButton(thePoint, theButton, theModifiers, theIsEmulated); return result; }, nb::arg("thePoint"), nb::arg("theButton"), nb::arg("theModifiers"), nb::arg("theIsEmulated"), R"nbdoc(Handle mouse button press event.
+        .def("PressMouseButton", [](AIS_ViewController &self, const NCollection_Vec2<int> & thePoint, Aspect_VKeyMouse theButton, Aspect_VKeyFlags theModifiers, bool theIsEmulated) { auto nanoocp_result = self.PressMouseButton(thePoint, theButton, theModifiers, theIsEmulated); return nanoocp_result; }, nb::arg("thePoint"), nb::arg("theButton"), nb::arg("theModifiers"), nb::arg("theIsEmulated"), R"nbdoc(Handle mouse button press event.
 This method is expected to be called from UI thread.
 Default implementation redirects to UpdateMousePosition().
 @param thePoint      mouse cursor position
@@ -3196,7 +3196,7 @@ Default implementation redirects to UpdateMousePosition().
 @param theIsEmulated if TRUE then mouse event comes NOT from real mouse
 but emulated from non-precise input like touch on screen
 @return TRUE if window content should be redrawn)nbdoc")
-        .def("ReleaseMouseButton", [](AIS_ViewController &self, const NCollection_Vec2<int> & thePoint, Aspect_VKeyMouse theButton, Aspect_VKeyFlags theModifiers, bool theIsEmulated) { auto result = self.ReleaseMouseButton(thePoint, theButton, theModifiers, theIsEmulated); return result; }, nb::arg("thePoint"), nb::arg("theButton"), nb::arg("theModifiers"), nb::arg("theIsEmulated"), R"nbdoc(Handle mouse button release event.
+        .def("ReleaseMouseButton", [](AIS_ViewController &self, const NCollection_Vec2<int> & thePoint, Aspect_VKeyMouse theButton, Aspect_VKeyFlags theModifiers, bool theIsEmulated) { auto nanoocp_result = self.ReleaseMouseButton(thePoint, theButton, theModifiers, theIsEmulated); return nanoocp_result; }, nb::arg("thePoint"), nb::arg("theButton"), nb::arg("theModifiers"), nb::arg("theIsEmulated"), R"nbdoc(Handle mouse button release event.
 This method is expected to be called from UI thread.
 Default implementation redirects to UpdateMousePosition().
 @param thePoint      mouse cursor position
@@ -3205,9 +3205,9 @@ Default implementation redirects to UpdateMousePosition().
 @param theIsEmulated if TRUE then mouse event comes NOT from real mouse
 but emulated from non-precise input like touch on screen
 @return TRUE if window content should be redrawn)nbdoc")
-        .def("LastMouseFlags", [](const AIS_ViewController &self) { auto result = self.LastMouseFlags(); return result; }, R"nbdoc(Return active key modifiers passed with last mouse event.)nbdoc")
-        .def("LastMousePosition", [](const AIS_ViewController &self) { auto result = self.LastMousePosition(); return result; }, R"nbdoc(Return last mouse position.)nbdoc")
-        .def("PressedMouseButtons", [](const AIS_ViewController &self) { auto result = self.PressedMouseButtons(); return result; }, R"nbdoc(Return currently pressed mouse buttons.)nbdoc")
+        .def("LastMouseFlags", [](const AIS_ViewController &self) { auto nanoocp_result = self.LastMouseFlags(); return nanoocp_result; }, R"nbdoc(Return active key modifiers passed with last mouse event.)nbdoc")
+        .def("LastMousePosition", [](const AIS_ViewController &self) { auto nanoocp_result = self.LastMousePosition(); return nanoocp_result; }, R"nbdoc(Return last mouse position.)nbdoc")
+        .def("PressedMouseButtons", [](const AIS_ViewController &self) { auto nanoocp_result = self.PressedMouseButtons(); return nanoocp_result; }, R"nbdoc(Return currently pressed mouse buttons.)nbdoc")
         .def("TouchToleranceScale", static_cast<float (AIS_ViewController::*)() const>(&AIS_ViewController::TouchToleranceScale), R"nbdoc(@name multi-touch input
 Return scale factor for adjusting tolerances for starting multi-touch gestures; 1.0 by default
 This scale factor is expected to be computed from touch screen resolution.)nbdoc")
@@ -3227,7 +3227,7 @@ If point with specified ID was not registered before, it will be added.
 This method is expected to be called from UI thread.
 @param theId touch unique identifier
 @param thePnt touch coordinates)nbdoc")
-        .def("HasTouchPoints", [](const AIS_ViewController &self) { auto result = self.HasTouchPoints(); return result; }, R"nbdoc(@name multi-touch input
+        .def("HasTouchPoints", [](const AIS_ViewController &self) { auto nanoocp_result = self.HasTouchPoints(); return nanoocp_result; }, R"nbdoc(@name multi-touch input
 Return TRUE if touches map is not empty.)nbdoc")
         .def("Update3dMouse", static_cast<bool (AIS_ViewController::*)(const WNT_HIDSpaceMouse &)>(&AIS_ViewController::Update3dMouse), nb::arg("theEvent"), R"nbdoc(@name 3d mouse input
 Process 3d mouse input event (redirects to translation, rotation and keys).)nbdoc")
@@ -3243,7 +3243,7 @@ explicit FlushViewEvents() call.)nbdoc")
 Default implementation resets cached input state (pressed keys).)nbdoc")
         .def("ProcessClose", static_cast<void (AIS_ViewController::*)()>(&AIS_ViewController::ProcessClose), R"nbdoc(Handle window close event.
 Default implementation does nothing.)nbdoc")
-        .def("EventTime", [](const AIS_ViewController &self) { auto result = self.EventTime(); return result; }, R"nbdoc(Return event time (e.g. current time).)nbdoc")
+        .def("EventTime", [](const AIS_ViewController &self) { auto nanoocp_result = self.EventTime(); return nanoocp_result; }, R"nbdoc(Return event time (e.g. current time).)nbdoc")
         .def("ResetViewInput", static_cast<void (AIS_ViewController::*)()>(&AIS_ViewController::ResetViewInput), R"nbdoc(Reset input state (pressed keys, mouse buttons, etc.) e.g. on window focus loss.
 This method is expected to be called from UI thread.)nbdoc")
         .def("UpdateViewOrientation", static_cast<void (AIS_ViewController::*)(V3d_TypeOfOrientation, bool)>(&AIS_ViewController::UpdateViewOrientation), nb::arg("theOrientation"), nb::arg("theToFitAll"), R"nbdoc(Reset view orientation.

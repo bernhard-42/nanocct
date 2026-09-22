@@ -1014,7 +1014,7 @@ processes, call the class method Adding (mode 0))nbdoc")
         .def("AddSet", static_cast<void (IFSelect_Activator::*)(const int, const char *const) const>(&IFSelect_Activator::AddSet), nb::arg("number"), nb::arg("command"), R"nbdoc(Same as Add but specifies that this command is candidate for
 xset (creation of items, xset : named items; mode 1))nbdoc")
         .def_static("Remove", static_cast<void (*)(const char *const)>(&IFSelect_Activator::Remove), nb::arg("command"), R"nbdoc(Removes a Command, if it is recorded (else, does nothing))nbdoc")
-        .def_static("Select", [](const char *const command) { int number{}; occ::handle<IFSelect_Activator> actor{}; auto result = IFSelect_Activator::Select(command, number, actor); return std::make_tuple(result, number, actor); }, nb::arg("command"), R"nbdoc(Selects, for a Command given by its title, an actor with its
+        .def_static("Select", [](const char *const command) { int number{}; occ::handle<IFSelect_Activator> actor{}; auto nanoocp_result = IFSelect_Activator::Select(command, number, actor); return std::make_tuple(nanoocp_result, number, actor); }, nb::arg("command"), R"nbdoc(Selects, for a Command given by its title, an actor with its
 command number. Returns True if found, False else)nbdoc")
         .def_static("Mode", static_cast<int (*)(const char *const)>(&IFSelect_Activator::Mode), nb::arg("command"), R"nbdoc(Returns mode recorded for a command. -1 if not found)nbdoc")
         .def_static("Commands", static_cast<occ::handle<NCollection_HSequence<TCollection_AsciiString>> (*)(const int, const char *const)>(&IFSelect_Activator::Commands), nb::arg("mode") = static_cast<std::decay_t<const int>>(- 1), nb::arg("command") = static_cast<std::decay_t<const char *const>>(""), R"nbdoc(Returns, for a root of command title, the list of possible
@@ -1163,7 +1163,7 @@ Modifier will be applied on the list of designated entities.
 Else, it will be applied on all the file
 Returns True if done, False if no modifier has yet been added)nbdoc")
         .def("Count", static_cast<int (IFSelect_AppliedModifiers::*)() const>(&IFSelect_AppliedModifiers::Count), R"nbdoc(Returns the count of recorded modifiers)nbdoc")
-        .def("Item", [](IFSelect_AppliedModifiers &self, const int num) { occ::handle<IFSelect_GeneralModifier> modif{}; int entcount{}; auto result = self.Item(num, modif, entcount); return std::make_tuple(result, modif, entcount); }, nb::arg("num"), R"nbdoc(Returns the description for applied modifier n0 <num> :
+        .def("Item", [](IFSelect_AppliedModifiers &self, const int num) { occ::handle<IFSelect_GeneralModifier> modif{}; int entcount{}; auto nanoocp_result = self.Item(num, modif, entcount); return std::make_tuple(nanoocp_result, modif, entcount); }, nb::arg("num"), R"nbdoc(Returns the description for applied modifier n0 <num> :
 the modifier itself, and the count of entities to be applied
 on. If no specific list of number has been defined, returns
 the total count of entities of the file
@@ -1199,7 +1199,7 @@ there are some), False else : in that case, SessionFile will
 try another SessionDumper in the Library.
 WriteOwn can use these methods from SessionFile : SendVoid,
 SendItem, SendText, and if necessary, WorkSession.)nbdoc")
-        .def("ReadOwn", [](const IFSelect_SessionDumper &self, IFSelect_SessionFile & file, const TCollection_AsciiString & type) { occ::handle<Standard_Transient> item{}; auto result = self.ReadOwn(file, type, item); return std::make_tuple(result, item); }, nb::arg("file"), nb::arg("type"), R"nbdoc(Recognizes a Type (given as <type>) then Creates an Item of
+        .def("ReadOwn", [](const IFSelect_SessionDumper &self, IFSelect_SessionFile & file, const TCollection_AsciiString & type) { occ::handle<Standard_Transient> item{}; auto nanoocp_result = self.ReadOwn(file, type, item); return std::make_tuple(nanoocp_result, item); }, nb::arg("file"), nb::arg("type"), R"nbdoc(Recognizes a Type (given as <type>) then Creates an Item of
 this Type with the Own Parameter, as required.
 Returns True if it has recognized the Type (in this case, it
 is assumed to have created the Item, returned as <item>),
@@ -1214,7 +1214,7 @@ Parameters : NbOwnParams, IsVoid, IsText, TextValue, ItemValue)nbdoc")
         .def(nb::new_([]() { return opencascade::handle<IFSelect_BasicDumper>(new IFSelect_BasicDumper()); }), R"nbdoc(Creates a BasicDumper and puts it into the Library of Dumper)nbdoc")
         .def("WriteOwn", static_cast<bool (IFSelect_BasicDumper::*)(IFSelect_SessionFile &, const occ::handle<Standard_Transient> &) const>(&IFSelect_BasicDumper::WriteOwn), nb::arg("file"), nb::arg("item").none(), R"nbdoc(Write the Own Parameters of Types defined in package IFSelect
 Returns True if <item> has been processed, False else)nbdoc")
-        .def("ReadOwn", [](const IFSelect_BasicDumper &self, IFSelect_SessionFile & file, const TCollection_AsciiString & type) { occ::handle<Standard_Transient> item{}; auto result = self.ReadOwn(file, type, item); return std::make_tuple(result, item); }, nb::arg("file"), nb::arg("type"), R"nbdoc(Recognizes and Read Own Parameters for Types of package
+        .def("ReadOwn", [](const IFSelect_BasicDumper &self, IFSelect_SessionFile & file, const TCollection_AsciiString & type) { occ::handle<Standard_Transient> item{}; auto nanoocp_result = self.ReadOwn(file, type, item); return std::make_tuple(nanoocp_result, item); }, nb::arg("file"), nb::arg("type"), R"nbdoc(Recognizes and Read Own Parameters for Types of package
 IFSelect. Returns True if done and <item> created, False else)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&IFSelect_BasicDumper::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&IFSelect_BasicDumper::get_type_descriptor))
@@ -1452,7 +1452,7 @@ remainder can be empty at run-time even if answer is True.
 (to attach a RemainderFromDispatch Selection is not allowed if
 answer is True).
 Default answer given here is False (can be redefined))nbdoc")
-        .def("LimitedMax", [](const IFSelect_Dispatch &self, const int nbent) { int max{}; auto result = self.LimitedMax(nbent, max); return std::make_tuple(result, max); }, nb::arg("nbent"), R"nbdoc(Returns True if a Dispatch generates a count of Packets always
+        .def("LimitedMax", [](const IFSelect_Dispatch &self, const int nbent) { int max{}; auto nanoocp_result = self.LimitedMax(nbent, max); return std::make_tuple(nanoocp_result, max); }, nb::arg("nbent"), R"nbdoc(Returns True if a Dispatch generates a count of Packets always
 less than or equal to a maximum value : it can be computed
 from the total count of Entities to be dispatched : <nbent>.
 If answer is False, no limited maximum is expected for account
@@ -1482,7 +1482,7 @@ CanHaveRemainder is redefined to return True).)nbdoc")
     nb::borrow<nb::class_<IFSelect_DispGlobal>>(m.attr("IFSelect_DispGlobal"))
         .def(nb::new_([]() { return opencascade::handle<IFSelect_DispGlobal>(new IFSelect_DispGlobal()); }), R"nbdoc(Creates a DispGlobal)nbdoc")
         .def("Label", static_cast<TCollection_AsciiString (IFSelect_DispGlobal::*)() const>(&IFSelect_DispGlobal::Label), R"nbdoc(Returns as Label, "One File for all Input")nbdoc")
-        .def("LimitedMax", [](const IFSelect_DispGlobal &self, const int nbent) { int max{}; auto result = self.LimitedMax(nbent, max); return std::make_tuple(result, max); }, nb::arg("nbent"), R"nbdoc(Returns True : maximum equates 1)nbdoc")
+        .def("LimitedMax", [](const IFSelect_DispGlobal &self, const int nbent) { int max{}; auto nanoocp_result = self.LimitedMax(nbent, max); return std::make_tuple(nanoocp_result, max); }, nb::arg("nbent"), R"nbdoc(Returns True : maximum equates 1)nbdoc")
         .def("Packets", static_cast<void (IFSelect_DispGlobal::*)(const Interface_Graph &, IFGraph_SubPartsIterator &) const>(&IFSelect_DispGlobal::Packets), nb::arg("G"), nb::arg("packs"), R"nbdoc(Computes the list of produced Packets. It is made of only ONE
 Packet, which gets the RootResult from the Final Selection.
 Remark : the inherited exception raising is never activated.)nbdoc")
@@ -1497,7 +1497,7 @@ Remark : the inherited exception raising is never activated.)nbdoc")
         .def("CountValue", static_cast<int (IFSelect_DispPerCount::*)() const>(&IFSelect_DispPerCount::CountValue), R"nbdoc(Returns the effective value of the count parameter
 (if Count Parameter not Set or value not positive, returns 1))nbdoc")
         .def("Label", static_cast<TCollection_AsciiString (IFSelect_DispPerCount::*)() const>(&IFSelect_DispPerCount::Label), R"nbdoc(Returns as Label, "One File per <count> Input Entities")nbdoc")
-        .def("LimitedMax", [](const IFSelect_DispPerCount &self, const int nbent) { int max{}; auto result = self.LimitedMax(nbent, max); return std::make_tuple(result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum count is given as <nbent>)nbdoc")
+        .def("LimitedMax", [](const IFSelect_DispPerCount &self, const int nbent) { int max{}; auto nanoocp_result = self.LimitedMax(nbent, max); return std::make_tuple(nanoocp_result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum count is given as <nbent>)nbdoc")
         .def("Packets", static_cast<void (IFSelect_DispPerCount::*)(const Interface_Graph &, IFGraph_SubPartsIterator &) const>(&IFSelect_DispPerCount::Packets), nb::arg("G"), nb::arg("packs"), R"nbdoc(Computes the list of produced Packets. It defines Packets in
 order to have at most <Count> Entities per Packet, Entities
 are given by RootResult from the Final Selection.)nbdoc")
@@ -1512,7 +1512,7 @@ are given by RootResult from the Final Selection.)nbdoc")
         .def("CountValue", static_cast<int (IFSelect_DispPerFiles::*)() const>(&IFSelect_DispPerFiles::CountValue), R"nbdoc(Returns the effective value of the count parameter
 (if Count Parameter not Set or value not positive, returns 1))nbdoc")
         .def("Label", static_cast<TCollection_AsciiString (IFSelect_DispPerFiles::*)() const>(&IFSelect_DispPerFiles::Label), R"nbdoc(Returns as Label, "Maximum <count> Files")nbdoc")
-        .def("LimitedMax", [](const IFSelect_DispPerFiles &self, const int nbent) { int max{}; auto result = self.LimitedMax(nbent, max); return std::make_tuple(result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum count is given as CountValue)nbdoc")
+        .def("LimitedMax", [](const IFSelect_DispPerFiles &self, const int nbent) { int max{}; auto nanoocp_result = self.LimitedMax(nbent, max); return std::make_tuple(nanoocp_result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum count is given as CountValue)nbdoc")
         .def("Packets", static_cast<void (IFSelect_DispPerFiles::*)(const Interface_Graph &, IFGraph_SubPartsIterator &) const>(&IFSelect_DispPerFiles::Packets), nb::arg("G"), nb::arg("packs"), R"nbdoc(Computes the list of produced Packets. It defines Packets in
 order to have <Count> Packets, except if the input count of
 Entities is lower. Entities are given by RootResult from the
@@ -1524,7 +1524,7 @@ Final Selection.)nbdoc")
     nb::borrow<nb::class_<IFSelect_DispPerOne>>(m.attr("IFSelect_DispPerOne"))
         .def(nb::new_([]() { return opencascade::handle<IFSelect_DispPerOne>(new IFSelect_DispPerOne()); }), R"nbdoc(Creates a DispPerOne)nbdoc")
         .def("Label", static_cast<TCollection_AsciiString (IFSelect_DispPerOne::*)() const>(&IFSelect_DispPerOne::Label), R"nbdoc(Returns as Label, "One File per Input Entity")nbdoc")
-        .def("LimitedMax", [](const IFSelect_DispPerOne &self, const int nbent) { int max{}; auto result = self.LimitedMax(nbent, max); return std::make_tuple(result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum limit is given as <nbent>)nbdoc")
+        .def("LimitedMax", [](const IFSelect_DispPerOne &self, const int nbent) { int max{}; auto nanoocp_result = self.LimitedMax(nbent, max); return std::make_tuple(nanoocp_result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum limit is given as <nbent>)nbdoc")
         .def("Packets", static_cast<void (IFSelect_DispPerOne::*)(const Interface_Graph &, IFGraph_SubPartsIterator &) const>(&IFSelect_DispPerOne::Packets), nb::arg("G"), nb::arg("packs"), R"nbdoc(Returns the list of produced Packets. It defines one Packet
 per Entity given by RootResult from the Final Selection.)nbdoc")
         .def_static("get_type_name", static_cast<const char * (*)()>(&IFSelect_DispPerOne::get_type_name))
@@ -1540,7 +1540,7 @@ Remark : it is set to record lists of entities, not only counts)nbdoc")
         .def("SignName", static_cast<const char * (IFSelect_DispPerSignature::*)() const>(&IFSelect_DispPerSignature::SignName), R"nbdoc(Returns the name of the SignCounter, which characterises the
 sorting criterium for this Dispatch)nbdoc")
         .def("Label", static_cast<TCollection_AsciiString (IFSelect_DispPerSignature::*)() const>(&IFSelect_DispPerSignature::Label), R"nbdoc(Returns as Label, "One File per Signature <name>")nbdoc")
-        .def("LimitedMax", [](const IFSelect_DispPerSignature &self, const int nbent) { int max{}; auto result = self.LimitedMax(nbent, max); return std::make_tuple(result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum count is given as <nbent>)nbdoc")
+        .def("LimitedMax", [](const IFSelect_DispPerSignature &self, const int nbent) { int max{}; auto nanoocp_result = self.LimitedMax(nbent, max); return std::make_tuple(nanoocp_result, max); }, nb::arg("nbent"), R"nbdoc(Returns True, maximum count is given as <nbent>)nbdoc")
         .def("Packets", static_cast<void (IFSelect_DispPerSignature::*)(const Interface_Graph &, IFGraph_SubPartsIterator &) const>(&IFSelect_DispPerSignature::Packets), nb::arg("G"), nb::arg("packs"), R"nbdoc(Computes the list of produced Packets. It defines Packets from
 the SignCounter, which sirts the input Entities per Signature
 (specific of the SignCounter).)nbdoc")
@@ -2714,7 +2714,7 @@ status >0 in case of error (not a suitable end line).)nbdoc")
 which can then be queried by NbParams/ParamValue ...)nbdoc")
         .def("SplitLine", static_cast<void (IFSelect_SessionFile::*)(const char *const)>(&IFSelect_SessionFile::SplitLine), nb::arg("line"), R"nbdoc(Internal routine which processes a line into words
 and prepares its exploration)nbdoc")
-        .def("ReadOwn", [](IFSelect_SessionFile &self) { occ::handle<Standard_Transient> item{}; auto result = self.ReadOwn(item); return std::make_tuple(result, item); }, R"nbdoc(Tries to Read an Item, by calling the Library of Dumpers
+        .def("ReadOwn", [](IFSelect_SessionFile &self) { occ::handle<Standard_Transient> item{}; auto nanoocp_result = self.ReadOwn(item); return std::make_tuple(nanoocp_result, item); }, R"nbdoc(Tries to Read an Item, by calling the Library of Dumpers
 Sets the list of parameters of the line to be read from the
 first own one)nbdoc")
         .def("AddItem", static_cast<void (IFSelect_SessionFile::*)(const occ::handle<Standard_Transient> &, const bool)>(&IFSelect_SessionFile::AddItem), nb::arg("item").none(), nb::arg("active") = static_cast<std::decay_t<const bool>>(true), R"nbdoc(Adds an Item to the WorkSession, taken as Name the first
@@ -2943,7 +2943,7 @@ the returned value is Null)nbdoc");
         .def("SetIntCase", static_cast<void (IFSelect_Signature::*)(const bool, const int, const bool, const int)>(&IFSelect_Signature::SetIntCase), nb::arg("hasmin"), nb::arg("valmin"), nb::arg("hasmax"), nb::arg("valmax"), R"nbdoc(Sets the information data to tell "integer cases" with
 possible min and max values
 To be called when creating)nbdoc")
-        .def("IsIntCase", [](const IFSelect_Signature &self) { bool hasmin{}; int valmin{}; bool hasmax{}; int valmax{}; auto result = self.IsIntCase(hasmin, valmin, hasmax, valmax); return std::make_tuple(result, hasmin, valmin, hasmax, valmax); }, R"nbdoc(Tells if this Signature gives integer values
+        .def("IsIntCase", [](const IFSelect_Signature &self) { bool hasmin{}; int valmin{}; bool hasmax{}; int valmax{}; auto nanoocp_result = self.IsIntCase(hasmin, valmin, hasmax, valmax); return std::make_tuple(nanoocp_result, hasmin, valmin, hasmax, valmax); }, R"nbdoc(Tells if this Signature gives integer values
 and returns values from SetIntCase if True)nbdoc")
         .def("AddCase", static_cast<void (IFSelect_Signature::*)(const char *const)>(&IFSelect_Signature::AddCase), nb::arg("acase"), R"nbdoc(Adds a possible case
 To be called when creating, IF the list of possible cases for
@@ -3035,7 +3035,7 @@ Calls the class method CVal)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (IFSelect_SignValidity::*)() const>(&IFSelect_SignValidity::DynamicType));
     nanoocp_implicit_copy_ctor<IFSelect_SignValidity>(nb::borrow<nb::class_<IFSelect_SignValidity>>(m.attr("IFSelect_SignValidity")));
     nb::borrow<nb::class_<IFSelect_Transformer>>(m.attr("IFSelect_Transformer"))
-        .def("Perform", [](IFSelect_Transformer &self, const Interface_Graph & G, const occ::handle<Interface_Protocol> & protocol, Interface_CheckIterator & checks) { occ::handle<Interface_InterfaceModel> newmod{}; auto result = self.Perform(G, protocol, checks, newmod); return std::make_tuple(result, newmod); }, nb::arg("G"), nb::arg("protocol").none(), nb::arg("checks"), R"nbdoc(Performs a Transformation (defined by each sub-class) :
+        .def("Perform", [](IFSelect_Transformer &self, const Interface_Graph & G, const occ::handle<Interface_Protocol> & protocol, Interface_CheckIterator & checks) { occ::handle<Interface_InterfaceModel> newmod{}; auto nanoocp_result = self.Perform(G, protocol, checks, newmod); return std::make_tuple(nanoocp_result, newmod); }, nb::arg("G"), nb::arg("protocol").none(), nb::arg("checks"), R"nbdoc(Performs a Transformation (defined by each sub-class) :
 <G> gives the input data (especially the starting model) and
 can be used for queries (by Selections, etc...)
 <protocol> allows to work with General Services as necessary
@@ -3059,14 +3059,14 @@ the method Updated
 Returns True if Done, False if an Error occurred:
 in this case, if a new data set has been produced, the transformation is ignored,
 else data may be corrupted.)nbdoc")
-        .def("ChangeProtocol", [](const IFSelect_Transformer &self) { occ::handle<Interface_Protocol> newproto{}; auto result = self.ChangeProtocol(newproto); return std::make_tuple(result, newproto); }, R"nbdoc(This methods allows to declare that the Protocol applied to
+        .def("ChangeProtocol", [](const IFSelect_Transformer &self) { occ::handle<Interface_Protocol> newproto{}; auto nanoocp_result = self.ChangeProtocol(newproto); return std::make_tuple(nanoocp_result, newproto); }, R"nbdoc(This methods allows to declare that the Protocol applied to
 the new Model has changed. It applies to the last call to
 Perform.
 
 Returns True if the Protocol has changed, False else.
 The provided default keeps the starting Protocol. This method
 should be redefined as required by the effect of Perform.)nbdoc")
-        .def("Updated", [](const IFSelect_Transformer &self, const occ::handle<Standard_Transient> & entfrom) { occ::handle<Standard_Transient> entto{}; auto result = self.Updated(entfrom, entto); return std::make_tuple(result, entto); }, nb::arg("entfrom").none(), R"nbdoc(This method allows to know what happened to a starting
+        .def("Updated", [](const IFSelect_Transformer &self, const occ::handle<Standard_Transient> & entfrom) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.Updated(entfrom, entto); return std::make_tuple(nanoocp_result, entto); }, nb::arg("entfrom").none(), R"nbdoc(This method allows to know what happened to a starting
 entity after the last Perform. If <entfrom> (from starting
 model) has one and only one known item which corresponds in
 the new produced model, this method must return True and
@@ -3099,7 +3099,7 @@ Returns True if done, False if <atnum> is out of range)nbdoc")
 Returns True if done, False if <modif> not in the list)nbdoc")
         .def("RemoveModifier", static_cast<bool (IFSelect_TransformStandard::*)(const int)>(&IFSelect_TransformStandard::RemoveModifier), nb::arg("num"), R"nbdoc(Removes a Modifier from the list, given its rank
 Returns True if done, False if <num> is out of range)nbdoc")
-        .def("Perform", [](IFSelect_TransformStandard &self, const Interface_Graph & G, const occ::handle<Interface_Protocol> & protocol, Interface_CheckIterator & checks) { occ::handle<Interface_InterfaceModel> newmod{}; auto result = self.Perform(G, protocol, checks, newmod); return std::make_tuple(result, newmod); }, nb::arg("G"), nb::arg("protocol").none(), nb::arg("checks"), R"nbdoc(Performs the Standard Transformation, by calling Copy then
+        .def("Perform", [](IFSelect_TransformStandard &self, const Interface_Graph & G, const occ::handle<Interface_Protocol> & protocol, Interface_CheckIterator & checks) { occ::handle<Interface_InterfaceModel> newmod{}; auto nanoocp_result = self.Perform(G, protocol, checks, newmod); return std::make_tuple(nanoocp_result, newmod); }, nb::arg("G"), nb::arg("protocol").none(), nb::arg("checks"), R"nbdoc(Performs the Standard Transformation, by calling Copy then
 ApplyModifiers (which can return an error status))nbdoc")
         .def("Copy", static_cast<occ::handle<Interface_InterfaceModel> (IFSelect_TransformStandard::*)(const Interface_Graph &, Interface_CopyTool &) const>(&IFSelect_TransformStandard::Copy), nb::arg("G"), nb::arg("TC"), R"nbdoc(This the first operation. It calls StandardCopy or OnTheSpot
 according the option
@@ -3134,13 +3134,13 @@ The produced model is the same as the starting one.
 Deprecated in OCCT: Use OnTheSpot() returning handle by value instead
 
 @deprecated Use OnTheSpot() returning handle by value instead.)nbdoc")
-        .def("ApplyModifiers", [](const IFSelect_TransformStandard &self, const Interface_Graph & G, const occ::handle<Interface_Protocol> & protocol, Interface_CopyTool & TC, Interface_CheckIterator & checks) { occ::handle<Interface_InterfaceModel> newmod{}; auto result = self.ApplyModifiers(G, protocol, TC, checks, newmod); return std::make_tuple(result, newmod); }, nb::arg("G"), nb::arg("protocol").none(), nb::arg("TC"), nb::arg("checks"), R"nbdoc(Applies the modifiers sequentially.
+        .def("ApplyModifiers", [](const IFSelect_TransformStandard &self, const Interface_Graph & G, const occ::handle<Interface_Protocol> & protocol, Interface_CopyTool & TC, Interface_CheckIterator & checks) { occ::handle<Interface_InterfaceModel> newmod{}; auto nanoocp_result = self.ApplyModifiers(G, protocol, TC, checks, newmod); return std::make_tuple(nanoocp_result, newmod); }, nb::arg("G"), nb::arg("protocol").none(), nb::arg("TC"), nb::arg("checks"), R"nbdoc(Applies the modifiers sequentially.
 For each one, prepares required data (if a Selection is associated as a filter).
 For the option OnTheSpot, it determines if the graph may be
 changed and updates <newmod> if required
 If a Modifier causes an error (check "HasFailed"),
 ApplyModifier stops : the following Modifiers are ignored)nbdoc")
-        .def("Updated", [](const IFSelect_TransformStandard &self, const occ::handle<Standard_Transient> & entfrom) { occ::handle<Standard_Transient> entto{}; auto result = self.Updated(entfrom, entto); return std::make_tuple(result, entto); }, nb::arg("entfrom").none(), R"nbdoc(This methods allows to know what happened to a starting
+        .def("Updated", [](const IFSelect_TransformStandard &self, const occ::handle<Standard_Transient> & entfrom) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.Updated(entfrom, entto); return std::make_tuple(nanoocp_result, entto); }, nb::arg("entfrom").none(), R"nbdoc(This methods allows to know what happened to a starting
 entity after the last Perform. It reads result from the map
 which was filled by Perform.)nbdoc")
         .def("Label", static_cast<TCollection_AsciiString (IFSelect_TransformStandard::*)() const>(&IFSelect_TransformStandard::Label), R"nbdoc(Returns a text which defines the way a Transformer works :
@@ -3151,14 +3151,14 @@ which was filled by Perform.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (IFSelect_TransformStandard::*)() const>(&IFSelect_TransformStandard::DynamicType));
     nanoocp_implicit_copy_ctor<IFSelect_TransformStandard>(nb::borrow<nb::class_<IFSelect_TransformStandard>>(m.attr("IFSelect_TransformStandard")));
     nb::borrow<nb::class_<IFSelect_WorkLibrary>>(m.attr("IFSelect_WorkLibrary"))
-        .def("ReadFile", [](const IFSelect_WorkLibrary &self, const char *const name, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; auto result = self.ReadFile(name, model, protocol); return std::make_tuple(result, model); }, nb::arg("name"), nb::arg("protocol").none(), R"nbdoc(Gives the way to Read a File and transfer it to a Model
+        .def("ReadFile", [](const IFSelect_WorkLibrary &self, const char *const name, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; auto nanoocp_result = self.ReadFile(name, model, protocol); return std::make_tuple(nanoocp_result, model); }, nb::arg("name"), nb::arg("protocol").none(), R"nbdoc(Gives the way to Read a File and transfer it to a Model
 <mod> is the resulting Model, which has to be created by this
 method. In case of error, <mod> must be returned Null
 Return value is a status with free values.
 Simply, 0 is for "Execution OK"
 The Protocol can be used to work (e.g. create the Model, read
 and recognize the Entities))nbdoc")
-        .def("ReadStream", [](const IFSelect_WorkLibrary &self, const char *const theName, const nanoocp::TextInput &theIStream, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; std::stringstream theIStream_stream(theIStream.text); auto result = self.ReadStream(theName, theIStream_stream, model, protocol); return std::make_tuple(result, model); }, nb::arg("theName"), nb::arg("theIStream"), nb::arg("protocol").none(), R"nbdoc(Interface to read a data from the specified stream.
+        .def("ReadStream", [](const IFSelect_WorkLibrary &self, const char *const theName, const nanoocp::TextInput &theIStream, const occ::handle<Interface_Protocol> & protocol) { occ::handle<Interface_InterfaceModel> model{}; std::stringstream theIStream_stream(theIStream.text); auto nanoocp_result = self.ReadStream(theName, theIStream_stream, model, protocol); return std::make_tuple(nanoocp_result, model); }, nb::arg("theName"), nb::arg("theIStream"), nb::arg("protocol").none(), R"nbdoc(Interface to read a data from the specified stream.
 @param model is the resulting Model, which has to be created by this method.
 In case of error, model must be returned Null
 Return value is a status: 0 - OK, 1 - read failure, -1 - stream failure.
@@ -3248,7 +3248,7 @@ empty if unknown)nbdoc")
 Returns a integer status which can be :
 RetDone if OK, RetVoid if no Protocol not defined,
 RetError for file not found, RetFail if fail during read)nbdoc")
-        .def("ReadStream", [](IFSelect_WorkSession &self, const char *const theName, const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto result = self.ReadStream(theName, theIStream_stream); return result; }, nb::arg("theName"), nb::arg("theIStream"), R"nbdoc(Reads a file from stream with the WorkLibrary (sets Model and LoadedFile)
+        .def("ReadStream", [](IFSelect_WorkSession &self, const char *const theName, const nanoocp::TextInput &theIStream) { std::stringstream theIStream_stream(theIStream.text); auto nanoocp_result = self.ReadStream(theName, theIStream_stream); return nanoocp_result; }, nb::arg("theName"), nb::arg("theIStream"), R"nbdoc(Reads a file from stream with the WorkLibrary (sets Model and LoadedFile)
 Returns a integer status which can be :
 RetDone if OK, RetVoid if no Protocol not defined,
 RetError for file not found, RetFail if fail during read)nbdoc")

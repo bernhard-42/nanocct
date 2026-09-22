@@ -416,13 +416,13 @@ to Index(ieme point) + degree +1.)nbdoc");
 curve has <NbPol> control points.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)() const>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
-        .def("Value", [](AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
+        .def("Value", [](AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
 MultiLine
 SSP and calculates F = sum (||Pui - Bi*Pi||2) for each
 point of the MultiLine.)nbdoc")
         .def("Gradient", static_cast<bool (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)(const math_Vector &, math_Vector &)>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(returns the gradient G of the sum above for the
 parameters Xi.)nbdoc")
-        .def("Values", [](AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
+        .def("Values", [](AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
 returns the value G = grad(F) for the parameters Xi.)nbdoc")
         .def("NewParameters", static_cast<const math_Vector & (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)() const>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::NewParameters), R"nbdoc(returns the new parameters of the MultiLine.)nbdoc")
         .def("CurveValue", static_cast<AppParCurves_MultiBSpCurve (AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::*)()>(&AppDef_BSpParFunctionOfMyBSplGradientOfBSplineCompute::CurveValue), R"nbdoc(returns the MultiBSpCurve approximating the set after
@@ -507,7 +507,7 @@ corresponding to the points of the multicurve <Index>.)nbdoc");
         .def("GetEstimation", [](const AppDef_SmoothCriterion &self) { double E1{}; double E2{}; double E3{}; self.GetEstimation(E1, E2, E3); return std::make_tuple(E1, E2, E3); })
         .def("AssemblyTable", static_cast<occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> (AppDef_SmoothCriterion::*)() const>(&AppDef_SmoothCriterion::AssemblyTable))
         .def("DependenceTable", static_cast<occ::handle<NCollection_HArray2<int>> (AppDef_SmoothCriterion::*)() const>(&AppDef_SmoothCriterion::DependenceTable))
-        .def("QualityValues", [](AppDef_SmoothCriterion &self, const double J1min, const double J2min, const double J3min) { double J1{}; double J2{}; double J3{}; auto result = self.QualityValues(J1min, J2min, J3min, J1, J2, J3); return std::make_tuple(result, J1, J2, J3); }, nb::arg("J1min"), nb::arg("J2min"), nb::arg("J3min"))
+        .def("QualityValues", [](AppDef_SmoothCriterion &self, const double J1min, const double J2min, const double J3min) { double J1{}; double J2{}; double J3{}; auto nanoocp_result = self.QualityValues(J1min, J2min, J3min, J1, J2, J3); return std::make_tuple(nanoocp_result, J1, J2, J3); }, nb::arg("J1min"), nb::arg("J2min"), nb::arg("J3min"))
         .def("ErrorValues", [](AppDef_SmoothCriterion &self) { double MaxError{}; double QuadraticError{}; double AverageError{}; self.ErrorValues(MaxError, QuadraticError, AverageError); return std::make_tuple(MaxError, QuadraticError, AverageError); })
         .def("Hessian", static_cast<void (AppDef_SmoothCriterion::*)(const int, const int, const int, math_Matrix &)>(&AppDef_SmoothCriterion::Hessian), nb::arg("Element"), nb::arg("Dimension1"), nb::arg("Dimension2"), nb::arg("H"))
         .def("Gradient", static_cast<void (AppDef_SmoothCriterion::*)(const int, const int, math_Vector &)>(&AppDef_SmoothCriterion::Gradient), nb::arg("Element"), nb::arg("Dimension"), nb::arg("G"))
@@ -529,7 +529,7 @@ corresponding to the points of the multicurve <Index>.)nbdoc");
         .def("GetEstimation", [](const AppDef_LinearCriteria &self) { double E1{}; double E2{}; double E3{}; self.GetEstimation(E1, E2, E3); return std::make_tuple(E1, E2, E3); })
         .def("AssemblyTable", static_cast<occ::handle<NCollection_HArray2<opencascade::handle<NCollection_HArray1<int>>>> (AppDef_LinearCriteria::*)() const>(&AppDef_LinearCriteria::AssemblyTable))
         .def("DependenceTable", static_cast<occ::handle<NCollection_HArray2<int>> (AppDef_LinearCriteria::*)() const>(&AppDef_LinearCriteria::DependenceTable))
-        .def("QualityValues", [](AppDef_LinearCriteria &self, const double J1min, const double J2min, const double J3min) { double J1{}; double J2{}; double J3{}; auto result = self.QualityValues(J1min, J2min, J3min, J1, J2, J3); return std::make_tuple(result, J1, J2, J3); }, nb::arg("J1min"), nb::arg("J2min"), nb::arg("J3min"))
+        .def("QualityValues", [](AppDef_LinearCriteria &self, const double J1min, const double J2min, const double J3min) { double J1{}; double J2{}; double J3{}; auto nanoocp_result = self.QualityValues(J1min, J2min, J3min, J1, J2, J3); return std::make_tuple(nanoocp_result, J1, J2, J3); }, nb::arg("J1min"), nb::arg("J2min"), nb::arg("J3min"))
         .def("ErrorValues", [](AppDef_LinearCriteria &self) { double MaxError{}; double QuadraticError{}; double AverageError{}; self.ErrorValues(MaxError, QuadraticError, AverageError); return std::make_tuple(MaxError, QuadraticError, AverageError); })
         .def("Hessian", static_cast<void (AppDef_LinearCriteria::*)(const int, const int, const int, math_Matrix &)>(&AppDef_LinearCriteria::Hessian), nb::arg("Element"), nb::arg("Dimension1"), nb::arg("Dimension2"), nb::arg("H"))
         .def("Gradient", static_cast<void (AppDef_LinearCriteria::*)(const int, const int, math_Vector &)>(&AppDef_LinearCriteria::Gradient), nb::arg("Element"), nb::arg("Dimension"), nb::arg("G"))
@@ -721,13 +721,13 @@ to Index(ieme point) + degree +1.)nbdoc");
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)() const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
-        .def("Value", [](AppDef_ParFunctionOfMyGradientbisOfBSplineCompute &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
+        .def("Value", [](AppDef_ParFunctionOfMyGradientbisOfBSplineCompute &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
 MultiLine
 SSP and calculates F = sum (||Pui - Bi*Pi||2) for each
 point of the MultiLine.)nbdoc")
         .def("Gradient", static_cast<bool (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)(const math_Vector &, math_Vector &)>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(returns the gradient G of the sum above for the
 parameters Xi.)nbdoc")
-        .def("Values", [](AppDef_ParFunctionOfMyGradientbisOfBSplineCompute &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
+        .def("Values", [](AppDef_ParFunctionOfMyGradientbisOfBSplineCompute &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
 returns the value G = grad(F) for the parameters Xi.)nbdoc")
         .def("NewParameters", static_cast<const math_Vector & (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)() const>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::NewParameters), R"nbdoc(returns the new parameters of the MultiLine.)nbdoc")
         .def("CurveValue", static_cast<const AppParCurves_MultiCurve & (AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::*)()>(&AppDef_ParFunctionOfMyGradientbisOfBSplineCompute::CurveValue), R"nbdoc(returns the MultiCurve approximating the set after
@@ -822,13 +822,13 @@ to Index(ieme point) + degree +1.)nbdoc");
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_ParFunctionOfMyGradientOfCompute::*)() const>(&AppDef_ParFunctionOfMyGradientOfCompute::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
-        .def("Value", [](AppDef_ParFunctionOfMyGradientOfCompute &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
+        .def("Value", [](AppDef_ParFunctionOfMyGradientOfCompute &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
 MultiLine
 SSP and calculates F = sum (||Pui - Bi*Pi||2) for each
 point of the MultiLine.)nbdoc")
         .def("Gradient", static_cast<bool (AppDef_ParFunctionOfMyGradientOfCompute::*)(const math_Vector &, math_Vector &)>(&AppDef_ParFunctionOfMyGradientOfCompute::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(returns the gradient G of the sum above for the
 parameters Xi.)nbdoc")
-        .def("Values", [](AppDef_ParFunctionOfMyGradientOfCompute &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
+        .def("Values", [](AppDef_ParFunctionOfMyGradientOfCompute &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
 returns the value G = grad(F) for the parameters Xi.)nbdoc")
         .def("NewParameters", static_cast<const math_Vector & (AppDef_ParFunctionOfMyGradientOfCompute::*)() const>(&AppDef_ParFunctionOfMyGradientOfCompute::NewParameters), R"nbdoc(returns the new parameters of the MultiLine.)nbdoc")
         .def("CurveValue", static_cast<const AppParCurves_MultiCurve & (AppDef_ParFunctionOfMyGradientOfCompute::*)()>(&AppDef_ParFunctionOfMyGradientOfCompute::CurveValue), R"nbdoc(returns the MultiCurve approximating the set after
@@ -923,13 +923,13 @@ to Index(ieme point) + degree +1.)nbdoc");
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_ParFunctionOfTheGradient::*)() const>(&AppDef_ParFunctionOfTheGradient::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
-        .def("Value", [](AppDef_ParFunctionOfTheGradient &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
+        .def("Value", [](AppDef_ParFunctionOfTheGradient &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
 MultiLine
 SSP and calculates F = sum (||Pui - Bi*Pi||2) for each
 point of the MultiLine.)nbdoc")
         .def("Gradient", static_cast<bool (AppDef_ParFunctionOfTheGradient::*)(const math_Vector &, math_Vector &)>(&AppDef_ParFunctionOfTheGradient::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(returns the gradient G of the sum above for the
 parameters Xi.)nbdoc")
-        .def("Values", [](AppDef_ParFunctionOfTheGradient &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
+        .def("Values", [](AppDef_ParFunctionOfTheGradient &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
 returns the value G = grad(F) for the parameters Xi.)nbdoc")
         .def("NewParameters", static_cast<const math_Vector & (AppDef_ParFunctionOfTheGradient::*)() const>(&AppDef_ParFunctionOfTheGradient::NewParameters), R"nbdoc(returns the new parameters of the MultiLine.)nbdoc")
         .def("CurveValue", static_cast<const AppParCurves_MultiCurve & (AppDef_ParFunctionOfTheGradient::*)()>(&AppDef_ParFunctionOfTheGradient::CurveValue), R"nbdoc(returns the MultiCurve approximating the set after
@@ -1078,13 +1078,13 @@ to Index(ieme point) + degree +1.)nbdoc");
 curve has the desired degree Deg.)nbdoc")
         .def("NbVariables", static_cast<int (AppDef_TheFunction::*)() const>(&AppDef_TheFunction::NbVariables), R"nbdoc(returns the number of variables of the function. It
 corresponds to the number of MultiPoints.)nbdoc")
-        .def("Value", [](AppDef_TheFunction &self, const math_Vector & X) { double F{}; auto result = self.Value(X, F); return std::make_tuple(result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
+        .def("Value", [](AppDef_TheFunction &self, const math_Vector & X) { double F{}; auto nanoocp_result = self.Value(X, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), R"nbdoc(this method computes the new approximation of the
 MultiLine
 SSP and calculates F = sum (||Pui - Bi*Pi||2) for each
 point of the MultiLine.)nbdoc")
         .def("Gradient", static_cast<bool (AppDef_TheFunction::*)(const math_Vector &, math_Vector &)>(&AppDef_TheFunction::Gradient), nb::arg("X"), nb::arg("G"), R"nbdoc(returns the gradient G of the sum above for the
 parameters Xi.)nbdoc")
-        .def("Values", [](AppDef_TheFunction &self, const math_Vector & X, math_Vector & G) { double F{}; auto result = self.Values(X, F, G); return std::make_tuple(result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
+        .def("Values", [](AppDef_TheFunction &self, const math_Vector & X, math_Vector & G) { double F{}; auto nanoocp_result = self.Values(X, F, G); return std::make_tuple(nanoocp_result, F); }, nb::arg("X"), nb::arg("G"), R"nbdoc(returns the value F=sum(||Pui - Bi*Pi||)2.
 returns the value G = grad(F) for the parameters Xi.)nbdoc")
         .def("NewParameters", static_cast<const math_Vector & (AppDef_TheFunction::*)() const>(&AppDef_TheFunction::NewParameters), R"nbdoc(returns the new parameters of the MultiLine.)nbdoc")
         .def("CurveValue", static_cast<const AppParCurves_MultiCurve & (AppDef_TheFunction::*)()>(&AppDef_TheFunction::CurveValue), R"nbdoc(returns the MultiCurve approximating the set after

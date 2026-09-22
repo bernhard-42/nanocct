@@ -267,7 +267,7 @@ create more BaseAllocators, but it is injurious.)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (NCollection_BaseAllocator::*)() const>(&NCollection_BaseAllocator::DynamicType));
     nanoocp_implicit_copy_ctor<NCollection_BaseAllocator>(nb::borrow<nb::class_<NCollection_BaseAllocator>>(m.attr("NCollection_BaseAllocator")));
     nb::borrow<nb::class_<NCollection_ListNode>>(m.attr("NCollection_ListNode"))
-        .def("Next", [](NCollection_ListNode &self) { auto result = self.Next(); return result; }, nb::rv_policy::reference, R"nbdoc(Next pointer access)nbdoc");
+        .def("Next", [](NCollection_ListNode &self) { auto nanoocp_result = self.Next(); return nanoocp_result; }, nb::rv_policy::reference, R"nbdoc(Next pointer access)nbdoc");
     nb::borrow<nb::class_<NCollection_BaseMap>>(m.attr("NCollection_BaseMap"))
         .def("NbBuckets", static_cast<size_t (NCollection_BaseMap::*)() const noexcept>(&NCollection_BaseMap::NbBuckets), R"nbdoc(NbBuckets)nbdoc")
         .def("Extent", static_cast<int (NCollection_BaseMap::*)() const noexcept>(&NCollection_BaseMap::Extent), R"nbdoc(Extent (number of elements, legacy int-returning API).)nbdoc")

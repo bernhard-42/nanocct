@@ -657,15 +657,15 @@ Parabola, BezierCurve, BSplineCurve, OtherCurve.)nbdoc")
     nb::borrow<nb::class_<HLRBRep_Curve>>(m.attr("HLRBRep_Curve"))
         .def(nb::init<>(), R"nbdoc(Creates an undefined Curve.)nbdoc")
         .def("Projector", static_cast<void (HLRBRep_Curve::*)(const HLRAlgo_Projector *)>(&HLRBRep_Curve::Projector), nb::arg("Proj"))
-        .def("Curve", [](HLRBRep_Curve &self) { opencascade::handle<BRepAdaptor_Curve> result(&(self.Curve())); return result; }, R"nbdoc(Returns the 3D curve.)nbdoc")
+        .def("Curve", [](HLRBRep_Curve &self) { opencascade::handle<BRepAdaptor_Curve> nanoocp_result(&(self.Curve())); return nanoocp_result; }, R"nbdoc(Returns the 3D curve.)nbdoc")
         .def("Curve", static_cast<void (HLRBRep_Curve::*)(const TopoDS_Edge &)>(&HLRBRep_Curve::Curve), nb::arg("E"), R"nbdoc(Sets the 3D curve to be projected.)nbdoc")
-        .def("GetCurve", [](const HLRBRep_Curve &self) { opencascade::handle<BRepAdaptor_Curve> result(&(self.GetCurve())); return result; }, R"nbdoc(Returns the 3D curve.)nbdoc")
+        .def("GetCurve", [](const HLRBRep_Curve &self) { opencascade::handle<BRepAdaptor_Curve> nanoocp_result(&(self.GetCurve())); return nanoocp_result; }, R"nbdoc(Returns the 3D curve.)nbdoc")
         .def("Parameter2d", static_cast<double (HLRBRep_Curve::*)(const double) const>(&HLRBRep_Curve::Parameter2d), nb::arg("P3d"), R"nbdoc(Returns the parameter on the 2d curve from the
 parameter on the 3d curve.)nbdoc")
         .def("Parameter3d", static_cast<double (HLRBRep_Curve::*)(const double) const>(&HLRBRep_Curve::Parameter3d), nb::arg("P2d"), R"nbdoc(Returns the parameter on the 3d curve from the
 parameter on the 2d curve.)nbdoc")
-        .def("Update", [](HLRBRep_Curve &self) { double TotMin[16]{}; double TotMax[16]{}; auto result = self.Update(TotMin, TotMax); std::array<double, 16> TotMin_out; std::copy(std::begin(TotMin), std::end(TotMin), TotMin_out.begin()); std::array<double, 16> TotMax_out; std::copy(std::begin(TotMax), std::end(TotMax), TotMax_out.begin()); return std::make_tuple(result, TotMin_out, TotMax_out); }, R"nbdoc(Update the minmax and the internal data)nbdoc")
-        .def("UpdateMinMax", [](HLRBRep_Curve &self) { double TotMin[16]{}; double TotMax[16]{}; auto result = self.UpdateMinMax(TotMin, TotMax); std::array<double, 16> TotMin_out; std::copy(std::begin(TotMin), std::end(TotMin), TotMin_out.begin()); std::array<double, 16> TotMax_out; std::copy(std::begin(TotMax), std::end(TotMax), TotMax_out.begin()); return std::make_tuple(result, TotMin_out, TotMax_out); }, R"nbdoc(Update the minmax returns tol for enlarge;)nbdoc")
+        .def("Update", [](HLRBRep_Curve &self) { double TotMin[16]{}; double TotMax[16]{}; auto nanoocp_result = self.Update(TotMin, TotMax); std::array<double, 16> TotMin_out; std::copy(std::begin(TotMin), std::end(TotMin), TotMin_out.begin()); std::array<double, 16> TotMax_out; std::copy(std::begin(TotMax), std::end(TotMax), TotMax_out.begin()); return std::make_tuple(nanoocp_result, TotMin_out, TotMax_out); }, R"nbdoc(Update the minmax and the internal data)nbdoc")
+        .def("UpdateMinMax", [](HLRBRep_Curve &self) { double TotMin[16]{}; double TotMax[16]{}; auto nanoocp_result = self.UpdateMinMax(TotMin, TotMax); std::array<double, 16> TotMin_out; std::copy(std::begin(TotMin), std::end(TotMin), TotMin_out.begin()); std::array<double, 16> TotMax_out; std::copy(std::begin(TotMax), std::end(TotMax), TotMax_out.begin()); return std::make_tuple(nanoocp_result, TotMin_out, TotMax_out); }, R"nbdoc(Update the minmax returns tol for enlarge;)nbdoc")
         .def("Z", static_cast<double (HLRBRep_Curve::*)(const double) const>(&HLRBRep_Curve::Z), nb::arg("U"), R"nbdoc(Computes the Z coordinate of the point of
 parameter U on the curve in the viewing coordinate system)nbdoc")
         .def("Value3D", static_cast<gp_Pnt (HLRBRep_Curve::*)(const double) const>(&HLRBRep_Curve::Value3D), nb::arg("U"), R"nbdoc(Computes the 3D point of parameter U on the
@@ -812,7 +812,7 @@ FirstParameter must be less than LastParamenter.)nbdoc");
     nb::borrow<nb::class_<HLRBRep_Surface>>(m.attr("HLRBRep_Surface"))
         .def(nb::init<>(), R"nbdoc(Creates an undefined surface with no face loaded.)nbdoc")
         .def("Projector", static_cast<void (HLRBRep_Surface::*)(const HLRAlgo_Projector *)>(&HLRBRep_Surface::Projector), nb::arg("Proj"))
-        .def("Surface", [](HLRBRep_Surface &self) { opencascade::handle<BRepAdaptor_Surface> result(&(self.Surface())); return result; }, R"nbdoc(Returns the 3D Surface.)nbdoc")
+        .def("Surface", [](HLRBRep_Surface &self) { opencascade::handle<BRepAdaptor_Surface> nanoocp_result(&(self.Surface())); return nanoocp_result; }, R"nbdoc(Returns the 3D Surface.)nbdoc")
         .def("Surface", static_cast<void (HLRBRep_Surface::*)(const TopoDS_Face &)>(&HLRBRep_Surface::Surface), nb::arg("F"), R"nbdoc(Sets the 3D Surface to be projected.)nbdoc")
         .def("IsSide", static_cast<bool (HLRBRep_Surface::*)(const double, const double) const>(&HLRBRep_Surface::IsSide), nb::arg("tolf"), nb::arg("toler"), R"nbdoc(returns true if it is a side face)nbdoc")
         .def("IsAbove", static_cast<bool (HLRBRep_Surface::*)(const bool, const HLRBRep_Curve *, const double) const>(&HLRBRep_Surface::IsAbove), nb::arg("back"), nb::arg("A"), nb::arg("tolC"))
@@ -1028,7 +1028,7 @@ classification.)nbdoc")
         .def("SimplClassify", static_cast<TopAbs_State (HLRBRep_Data::*)(const int, const HLRBRep_EdgeData &, const int, const double, const double)>(&HLRBRep_Data::SimplClassify), nb::arg("E"), nb::arg("ED"), nb::arg("Nbp"), nb::arg("p1"), nb::arg("p2"), R"nbdoc(Simple classification of part of edge [p1, p2].
 Returns OUT if at least 1 of Nbp points of edge is out; otherwise returns IN.
 It is used to check "suspicion" hidden part of edge.)nbdoc")
-        .def("Classify", [](HLRBRep_Data &self, const int E, const HLRBRep_EdgeData & ED, const bool LevelFlag, const double param) { int Level{}; auto result = self.Classify(E, ED, LevelFlag, Level, param); return std::make_tuple(result, Level); }, nb::arg("E"), nb::arg("ED"), nb::arg("LevelFlag"), nb::arg("param"), R"nbdoc(Classification of an edge.)nbdoc")
+        .def("Classify", [](HLRBRep_Data &self, const int E, const HLRBRep_EdgeData & ED, const bool LevelFlag, const double param) { int Level{}; auto nanoocp_result = self.Classify(E, ED, LevelFlag, Level, param); return std::make_tuple(nanoocp_result, Level); }, nb::arg("E"), nb::arg("ED"), nb::arg("LevelFlag"), nb::arg("param"), R"nbdoc(Classification of an edge.)nbdoc")
         .def("IsBadFace", static_cast<bool (HLRBRep_Data::*)() const>(&HLRBRep_Data::IsBadFace), R"nbdoc(Returns true if the current face is bad.)nbdoc")
         .def("Destroy", static_cast<void (HLRBRep_Data::*)()>(&HLRBRep_Data::Destroy))
         .def_static("get_type_name", static_cast<const char * (*)()>(&HLRBRep_Data::get_type_name))
@@ -1241,12 +1241,12 @@ Deprecated in OCCT: Use SamplePars() returning handle by value instead
 @deprecated Use SamplePars() returning handle by value instead.)nbdoc");
     nanoocp_implicit_copy_ctor<HLRBRep_LineTool>(nb::borrow<nb::class_<HLRBRep_LineTool>>(m.attr("HLRBRep_LineTool")));
     nb::borrow<nb::class_<HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter>>(m.attr("HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter"))
-        .def("Value", [](HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter &self, const double Param) { double F{}; auto result = self.Value(Param, F); return std::make_tuple(result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
+        .def("Value", [](HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter &self, const double Param) { double F{}; auto nanoocp_result = self.Value(Param, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
 the implicit curve and the point at parameter Param
 on the parametrised curve.)nbdoc")
-        .def("Derivative", [](HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter &self, const double Param) { double D{}; auto result = self.Derivative(Param, D); return std::make_tuple(result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
+        .def("Derivative", [](HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter &self, const double Param) { double D{}; auto nanoocp_result = self.Derivative(Param, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
 parameter Param.)nbdoc")
-        .def("Values", [](HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter &self, const double Param) { double F{}; double D{}; auto result = self.Values(Param, F, D); return std::make_tuple(result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.)nbdoc");
+        .def("Values", [](HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter &self, const double Param) { double F{}; double D{}; auto nanoocp_result = self.Values(Param, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.)nbdoc");
     nanoocp_implicit_copy_ctor<HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter>(nb::borrow<nb::class_<HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter>>(m.attr("HLRBRep_MyImpParToolOfTheIntersectorOfTheIntConicCurveOfCInter")));
     nb::borrow<nb::class_<HLRBRep_PolyAlgo>>(m.attr("HLRBRep_PolyAlgo"))
         .def(nb::new_([]() { return opencascade::handle<HLRBRep_PolyAlgo>(new HLRBRep_PolyAlgo()); }), R"nbdoc(Constructs an empty framework for the
@@ -1281,11 +1281,11 @@ defining the shape or shapes to be visualized.)nbdoc")
         .def("InitHide", static_cast<void (HLRBRep_PolyAlgo::*)()>(&HLRBRep_PolyAlgo::InitHide))
         .def("MoreHide", static_cast<bool (HLRBRep_PolyAlgo::*)() const>(&HLRBRep_PolyAlgo::MoreHide))
         .def("NextHide", static_cast<void (HLRBRep_PolyAlgo::*)()>(&HLRBRep_PolyAlgo::NextHide))
-        .def("Hide", [](HLRBRep_PolyAlgo &self, HLRAlgo_EdgeStatus & status, TopoDS_Shape & S) { bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto result = self.Hide(status, S, reg1, regn, outl, intl); return std::make_tuple(result, reg1, regn, outl, intl); }, nb::arg("status"), nb::arg("S"))
+        .def("Hide", [](HLRBRep_PolyAlgo &self, HLRAlgo_EdgeStatus & status, TopoDS_Shape & S) { bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto nanoocp_result = self.Hide(status, S, reg1, regn, outl, intl); return std::make_tuple(nanoocp_result, reg1, regn, outl, intl); }, nb::arg("status"), nb::arg("S"))
         .def("InitShow", static_cast<void (HLRBRep_PolyAlgo::*)()>(&HLRBRep_PolyAlgo::InitShow))
         .def("MoreShow", static_cast<bool (HLRBRep_PolyAlgo::*)() const>(&HLRBRep_PolyAlgo::MoreShow))
         .def("NextShow", static_cast<void (HLRBRep_PolyAlgo::*)()>(&HLRBRep_PolyAlgo::NextShow))
-        .def("Show", [](HLRBRep_PolyAlgo &self, TopoDS_Shape & S) { bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto result = self.Show(S, reg1, regn, outl, intl); return std::make_tuple(result, reg1, regn, outl, intl); }, nb::arg("S"))
+        .def("Show", [](HLRBRep_PolyAlgo &self, TopoDS_Shape & S) { bool reg1{}; bool regn{}; bool outl{}; bool intl{}; auto nanoocp_result = self.Show(S, reg1, regn, outl, intl); return std::make_tuple(nanoocp_result, reg1, regn, outl, intl); }, nb::arg("S"))
         .def("OutLinedShape", static_cast<TopoDS_Shape (HLRBRep_PolyAlgo::*)(const TopoDS_Shape &) const>(&HLRBRep_PolyAlgo::OutLinedShape), nb::arg("S"), R"nbdoc(Make a shape with the internal outlines in each
 face.)nbdoc")
         .def("Debug", static_cast<bool (HLRBRep_PolyAlgo::*)() const>(&HLRBRep_PolyAlgo::Debug))
@@ -1379,7 +1379,7 @@ this case, the inner outlines of the torus seen on its side are hidden.)nbdoc");
         .def("Values", static_cast<bool (HLRBRep_TheCSFunctionOfInterCSurf::*)(const math_Vector &, math_Vector &, math_Matrix &)>(&HLRBRep_TheCSFunctionOfInterCSurf::Values), nb::arg("X"), nb::arg("F"), nb::arg("D"))
         .def("Point", static_cast<const gp_Pnt & (HLRBRep_TheCSFunctionOfInterCSurf::*)() const>(&HLRBRep_TheCSFunctionOfInterCSurf::Point))
         .def("Root", static_cast<double (HLRBRep_TheCSFunctionOfInterCSurf::*)() const>(&HLRBRep_TheCSFunctionOfInterCSurf::Root))
-        .def("AuxillarSurface", [](const HLRBRep_TheCSFunctionOfInterCSurf &self) { auto result = self.AuxillarSurface(); return result; }, nb::rv_policy::reference)
+        .def("AuxillarSurface", [](const HLRBRep_TheCSFunctionOfInterCSurf &self) { auto nanoocp_result = self.AuxillarSurface(); return nanoocp_result; }, nb::rv_policy::reference)
         .def("AuxillarCurve", static_cast<const gp_Lin & (HLRBRep_TheCSFunctionOfInterCSurf::*)() const>(&HLRBRep_TheCSFunctionOfInterCSurf::AuxillarCurve));
     nanoocp_implicit_copy_ctor<HLRBRep_TheCSFunctionOfInterCSurf>(nb::borrow<nb::class_<HLRBRep_TheCSFunctionOfInterCSurf>>(m.attr("HLRBRep_TheCSFunctionOfInterCSurf")));
     nb::borrow<nb::class_<HLRBRep_TheExactInterCSurf>>(m.attr("HLRBRep_TheExactInterCSurf"))
@@ -1511,7 +1511,7 @@ according to the discretization of the Curve.)nbdoc")
         .def("NbTriangles", static_cast<int (HLRBRep_ThePolyhedronOfInterCSurf::*)() const>(&HLRBRep_ThePolyhedronOfInterCSurf::NbTriangles), R"nbdoc(Give the number of triangles in this double array of)nbdoc")
         .def("Triangle", [](const HLRBRep_ThePolyhedronOfInterCSurf &self, const int Index) { int P1{}; int P2{}; int P3{}; self.Triangle(Index, P1, P2, P3); return std::make_tuple(P1, P2, P3); }, nb::arg("Index"), R"nbdoc(Give the 3 points of the triangle of address Index in
 the double array of triangles.)nbdoc")
-        .def("TriConnex", [](const HLRBRep_ThePolyhedronOfInterCSurf &self, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto result = self.TriConnex(Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(result, TriCon, OtherP); }, nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to the
+        .def("TriConnex", [](const HLRBRep_ThePolyhedronOfInterCSurf &self, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto nanoocp_result = self.TriConnex(Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(nanoocp_result, TriCon, OtherP); }, nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to the
 triangle of address Triang by the edge Pivot Pedge and
 the third point of this connexe triangle. When we are
 on a free edge TriCon==0 but the function return the
@@ -1521,7 +1521,7 @@ the free edge. Used to turn around a vertex.)nbdoc")
 triangles ((nbdu+1)*(nbdv+1)).)nbdoc")
         .def("Point", static_cast<void (HLRBRep_ThePolyhedronOfInterCSurf::*)(const gp_Pnt &, const int, const int, const double, const double)>(&HLRBRep_ThePolyhedronOfInterCSurf::Point), nb::arg("thePnt"), nb::arg("lig"), nb::arg("col"), nb::arg("U"), nb::arg("V"), R"nbdoc(Set the value of a field of the double array of
 points.)nbdoc")
-        .def("Point__float__float", [](const HLRBRep_ThePolyhedronOfInterCSurf &self, const int Index) { double U{}; double V{}; auto result = self.Point(Index, U, V); return std::make_tuple(result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float__float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Point__float__float", [](const HLRBRep_ThePolyhedronOfInterCSurf &self, const int Index) { double U{}; double V{}; auto nanoocp_result = self.Point(Index, U, V); return std::make_tuple(nanoocp_result, U, V); }, nb::arg("Index"), R"nbdoc(Point__float__float: the C++ overload Point(const int, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<const gp_Pnt & (HLRBRep_ThePolyhedronOfInterCSurf::*)(const int) const>(&HLRBRep_ThePolyhedronOfInterCSurf::Point), nb::arg("Index"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
         .def("Point", static_cast<void (HLRBRep_ThePolyhedronOfInterCSurf::*)(const int, gp_Pnt &) const>(&HLRBRep_ThePolyhedronOfInterCSurf::Point), nb::arg("Index"), nb::arg("P"), R"nbdoc(Give the point of index i in the MaTriangle.)nbdoc")
@@ -1555,7 +1555,7 @@ to the triangle <n>.)nbdoc")
         .def_static("Triangle", [](const HLRBRep_ThePolyhedronOfInterCSurf & thePolyh, const int Index) { int P1{}; int P2{}; int P3{}; HLRBRep_ThePolyhedronToolOfInterCSurf::Triangle(thePolyh, Index, P1, P2, P3); return std::make_tuple(P1, P2, P3); }, nb::arg("thePolyh"), nb::arg("Index"), R"nbdoc(Give the indices of the 3 points of the triangle of
 address Index in the PolyhedronTool.)nbdoc")
         .def_static("Point", static_cast<const gp_Pnt & (*)(const HLRBRep_ThePolyhedronOfInterCSurf &, const int)>(&HLRBRep_ThePolyhedronToolOfInterCSurf::Point), nb::arg("thePolyh"), nb::arg("Index"), R"nbdoc(Give the point of index i in the polyhedral surface.)nbdoc")
-        .def_static("TriConnex", [](const HLRBRep_ThePolyhedronOfInterCSurf & thePolyh, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto result = HLRBRep_ThePolyhedronToolOfInterCSurf::TriConnex(thePolyh, Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(result, TriCon, OtherP); }, nb::arg("thePolyh"), nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to
+        .def_static("TriConnex", [](const HLRBRep_ThePolyhedronOfInterCSurf & thePolyh, const int Triang, const int Pivot, const int Pedge) { int TriCon{}; int OtherP{}; auto nanoocp_result = HLRBRep_ThePolyhedronToolOfInterCSurf::TriConnex(thePolyh, Triang, Pivot, Pedge, TriCon, OtherP); return std::make_tuple(nanoocp_result, TriCon, OtherP); }, nb::arg("thePolyh"), nb::arg("Triang"), nb::arg("Pivot"), nb::arg("Pedge"), R"nbdoc(Give the address Tricon of the triangle connexe to
 the triangle of address Triang by the edge Pivot Pedge
 and the third point of this connexe triangle.
 When we are on a free edge TriCon==0 but the function return
@@ -1581,14 +1581,14 @@ a segment on the curve.)nbdoc");
     nanoocp_implicit_copy_ctor<HLRBRep_TheQuadCurvExactInterCSurf>(nb::borrow<nb::class_<HLRBRep_TheQuadCurvExactInterCSurf>>(m.attr("HLRBRep_TheQuadCurvExactInterCSurf")));
     nb::borrow<nb::class_<HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf>>(m.attr("HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf"))
         .def(nb::init<const IntSurf_Quadric &, const gp_Lin &>(), nb::arg("Q"), nb::arg("C"), R"nbdoc(Create the function.)nbdoc")
-        .def("Value", [](HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf &self, const double Param) { double F{}; auto result = self.Value(Param, F); return std::make_tuple(result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
+        .def("Value", [](HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf &self, const double Param) { double F{}; auto nanoocp_result = self.Value(Param, F); return std::make_tuple(nanoocp_result, F); }, nb::arg("Param"), R"nbdoc(Computes the value of the signed distance between
 the implicit surface and the point at parameter
 Param on the parametrised curve.
 Value always returns True.)nbdoc")
-        .def("Derivative", [](HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf &self, const double Param) { double D{}; auto result = self.Derivative(Param, D); return std::make_tuple(result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
+        .def("Derivative", [](HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf &self, const double Param) { double D{}; auto nanoocp_result = self.Derivative(Param, D); return std::make_tuple(nanoocp_result, D); }, nb::arg("Param"), R"nbdoc(Computes the derivative of the previous function at
 parameter Param.
 Derivative always returns True.)nbdoc")
-        .def("Values", [](HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf &self, const double Param) { double F{}; double D{}; auto result = self.Values(Param, F, D); return std::make_tuple(result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.
+        .def("Values", [](HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf &self, const double Param) { double F{}; double D{}; auto nanoocp_result = self.Values(Param, F, D); return std::make_tuple(nanoocp_result, F, D); }, nb::arg("Param"), R"nbdoc(Computes the value and the derivative of the function.
 returns True.)nbdoc");
     nanoocp_implicit_copy_ctor<HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf>(nb::borrow<nb::class_<HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf>>(m.attr("HLRBRep_TheQuadCurvFuncOfTheQuadCurvExactInterCSurf")));
     nanoocp_def_iter<HLRBRep_VertexList>(nb::borrow<nb::class_<HLRBRep_VertexList>>(m.attr("HLRBRep_VertexList")), [](HLRBRep_VertexList &self) { return self.Current(); });

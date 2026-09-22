@@ -288,7 +288,7 @@ Makes 2d curve of the edge <theE> on the faces <theF1> and <theF2>.
 <theContext> - storage for caching the geometrical tools)nbdoc")
         .def_static("IsHole", static_cast<bool (*)(const TopoDS_Shape &, const TopoDS_Shape &)>(&BOPTools_AlgoTools::IsHole), nb::arg("theW"), nb::arg("theF"), R"nbdoc(@name Wire classification relatively face
 Checks if the wire is a hole for the face.)nbdoc")
-        .def_static("IsSplitToReverse", [](const TopoDS_Shape & theSplit, const TopoDS_Shape & theShape, const occ::handle<IntTools_Context> & theContext) { auto result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(@name Choosing correct orientation for the split shape
+        .def_static("IsSplitToReverse", [](const TopoDS_Shape & theSplit, const TopoDS_Shape & theShape, const occ::handle<IntTools_Context> & theContext) { auto nanoocp_result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return nanoocp_result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(@name Choosing correct orientation for the split shape
 Checks if the direction of the split shape is opposite to
 the direction of the original shape.
 The method is an overload for (Edge,Edge) and (Face,Face) corresponding
@@ -313,7 +313,7 @@ In case of any error the method always returns FALSE.
         .def_static("IsSplitToReverseWithWarn", static_cast<bool (*)(const TopoDS_Shape &, const TopoDS_Shape &, const occ::handle<IntTools_Context> &, const occ::handle<Message_Report> &)>(&BOPTools_AlgoTools::IsSplitToReverseWithWarn), nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), nb::arg("theReport").none() = static_cast<std::decay_t<const occ::handle<Message_Report> &>>(nullptr), R"nbdoc(Add-on for the *IsSplitToReverse()* to check for its errors
 and in case of any add the *BOPAlgo_AlertUnableToOrientTheShape*
 warning to the report.)nbdoc")
-        .def_static("IsSplitToReverse", [](const TopoDS_Face & theSplit, const TopoDS_Face & theShape, const occ::handle<IntTools_Context> & theContext) { auto result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(Checks if the normal direction of the split face is opposite to
+        .def_static("IsSplitToReverse", [](const TopoDS_Face & theSplit, const TopoDS_Face & theShape, const occ::handle<IntTools_Context> & theContext) { auto nanoocp_result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return nanoocp_result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(Checks if the normal direction of the split face is opposite to
 the normal direction of the original face.
 The normal directions for both faces are taken in the same point -
 point inside the split face is projected onto the original face.
@@ -333,7 +333,7 @@ In case of any error the method always returns FALSE.
 @param[in] theShape  Original face
 @param[in] theContext  cached geometrical tools
 @param[out] theError  Error Status of the operation)nbdoc")
-        .def_static("IsSplitToReverse", [](const TopoDS_Edge & theSplit, const TopoDS_Edge & theShape, const occ::handle<IntTools_Context> & theContext) { auto result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(Checks if the tangent vector of the split edge is opposite to
+        .def_static("IsSplitToReverse", [](const TopoDS_Edge & theSplit, const TopoDS_Edge & theShape, const occ::handle<IntTools_Context> & theContext) { auto nanoocp_result = BOPTools_AlgoTools::IsSplitToReverse(theSplit, theShape, theContext, nullptr); return nanoocp_result; }, nb::arg("theSplit"), nb::arg("theShape"), nb::arg("theContext").none(), R"nbdoc(Checks if the tangent vector of the split edge is opposite to
 the tangent vector of the original edge.
 The tangent vectors for both edges are computed in the same point -
 point inside the split edge is projected onto the original edge.
@@ -412,7 +412,7 @@ Flag <theCheckSplittable> defines whether to take into account
 the possibility to split the edge or not.)nbdoc")
         .def_static("IsInvertedSolid", static_cast<bool (*)(const TopoDS_Solid &)>(&BOPTools_AlgoTools::IsInvertedSolid), nb::arg("theSolid"), R"nbdoc(@name Solid classification
 Returns true if the solid <theSolid> is inverted)nbdoc")
-        .def_static("ComputeTolerance", [](const TopoDS_Face & theFace, const TopoDS_Edge & theEdge) { double theMaxDist{}; double theMaxPar{}; auto result = BOPTools_AlgoTools::ComputeTolerance(theFace, theEdge, theMaxDist, theMaxPar); return std::make_tuple(result, theMaxDist, theMaxPar); }, nb::arg("theFace"), nb::arg("theEdge"), R"nbdoc(@name Edge/Face Deviation computation
+        .def_static("ComputeTolerance", [](const TopoDS_Face & theFace, const TopoDS_Edge & theEdge) { double theMaxDist{}; double theMaxPar{}; auto nanoocp_result = BOPTools_AlgoTools::ComputeTolerance(theFace, theEdge, theMaxDist, theMaxPar); return std::make_tuple(nanoocp_result, theMaxDist, theMaxPar); }, nb::arg("theFace"), nb::arg("theEdge"), R"nbdoc(@name Edge/Face Deviation computation
 Computes the necessary value of the tolerance for the edge)nbdoc")
         .def_static("MakeContainer", static_cast<void (*)(const TopAbs_ShapeEnum, TopoDS_Shape &)>(&BOPTools_AlgoTools::MakeContainer), nb::arg("theType"), nb::arg("theShape"), R"nbdoc(@name Other methods
 Makes empty container of requested type)nbdoc")
@@ -452,7 +452,7 @@ If the P-Curve does not exist, build it using Make2D().
 [aToler] - reached tolerance
 Raises exception Standard_ConstructionError if algorithm Make2D() fails.
 <theContext> - storage for caching the geometrical tools)nbdoc")
-        .def_static("HasCurveOnSurface__Geom2d_Curve__float__float__float", [](const TopoDS_Edge & aE, const TopoDS_Face & aF) { occ::handle<Geom2d_Curve> aC{}; double aFirst{}; double aLast{}; double aToler{}; auto result = BOPTools_AlgoTools2D::HasCurveOnSurface(aE, aF, aC, aFirst, aLast, aToler); return std::make_tuple(result, aC, aFirst, aLast, aToler); }, nb::arg("aE"), nb::arg("aF"), R"nbdoc(HasCurveOnSurface__Geom2d_Curve__float__float__float: the C++ overload HasCurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def_static("HasCurveOnSurface__Geom2d_Curve__float__float__float", [](const TopoDS_Edge & aE, const TopoDS_Face & aF) { occ::handle<Geom2d_Curve> aC{}; double aFirst{}; double aLast{}; double aToler{}; auto nanoocp_result = BOPTools_AlgoTools2D::HasCurveOnSurface(aE, aF, aC, aFirst, aLast, aToler); return std::make_tuple(nanoocp_result, aC, aFirst, aLast, aToler); }, nb::arg("aE"), nb::arg("aF"), R"nbdoc(HasCurveOnSurface__Geom2d_Curve__float__float__float: the C++ overload HasCurveOnSurface(const TopoDS_Edge &, const TopoDS_Face &, occ::handle<Geom2d_Curve> &, double &, double &, double &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Returns TRUE if the edge <aE> has P-Curve <aC>
 on surface <aF>.
 [aFirst, aLast] - range of the P-Curve
@@ -712,7 +712,7 @@ Empty constructor)nbdoc"); });
 Clears the indices)nbdoc")
         .def("SetBox", static_cast<void (BOPTools_BoxSelector<2>::*)(const BVH_Box<double, 2> &)>(&BOPTools_BoxSelector<2>::SetBox), nb::arg("theBox"), R"nbdoc(Sets the box)nbdoc")
         .def("Indices", static_cast<const NCollection_List<int> & (BOPTools_BoxSelector<2>::*)() const>(&BOPTools_BoxSelector<2>::Indices), R"nbdoc(Returns the list of accepted indices)nbdoc")
-        .def("RejectNode", [](const BOPTools_BoxSelector<2> &self, const BOPTools_BoxSelector<2>::BVH_VecNd & theCMin, const BOPTools_BoxSelector<2>::BVH_VecNd & theCMax) { bool theIsInside{}; auto result = self.RejectNode(theCMin, theCMax, theIsInside); return std::make_tuple(result, theIsInside); }, nb::arg("theCMin"), nb::arg("theCMax"), R"nbdoc(@name Rejection/Acceptance rules
+        .def("RejectNode", [](const BOPTools_BoxSelector<2> &self, const BOPTools_BoxSelector<2>::BVH_VecNd & theCMin, const BOPTools_BoxSelector<2>::BVH_VecNd & theCMax) { bool theIsInside{}; auto nanoocp_result = self.RejectNode(theCMin, theCMax, theIsInside); return std::make_tuple(nanoocp_result, theIsInside); }, nb::arg("theCMin"), nb::arg("theCMax"), R"nbdoc(@name Rejection/Acceptance rules
 Checks if the box should be rejected)nbdoc")
         .def("RejectElement", static_cast<bool (BOPTools_BoxSelector<2>::*)(const int)>(&BOPTools_BoxSelector<2>::RejectElement), nb::arg("theIndex"), R"nbdoc(Checks if the element should be rejected)nbdoc")
         .def("AcceptMetric", static_cast<bool (BOPTools_BoxSelector<2>::*)(const bool &) const>(&BOPTools_BoxSelector<2>::AcceptMetric), nb::arg("theIsInside"), R"nbdoc(Checks if the metric of the node may be accepted)nbdoc")
@@ -776,7 +776,7 @@ Empty constructor)nbdoc"); });
 Clears the indices)nbdoc")
         .def("SetBox", static_cast<void (BOPTools_BoxSelector<3>::*)(const BVH_Box<double, 3> &)>(&BOPTools_BoxSelector<3>::SetBox), nb::arg("theBox"), R"nbdoc(Sets the box)nbdoc")
         .def("Indices", static_cast<const NCollection_List<int> & (BOPTools_BoxSelector<3>::*)() const>(&BOPTools_BoxSelector<3>::Indices), R"nbdoc(Returns the list of accepted indices)nbdoc")
-        .def("RejectNode", [](const BOPTools_BoxSelector<3> &self, const BOPTools_BoxSelector<3>::BVH_VecNd & theCMin, const BOPTools_BoxSelector<3>::BVH_VecNd & theCMax) { bool theIsInside{}; auto result = self.RejectNode(theCMin, theCMax, theIsInside); return std::make_tuple(result, theIsInside); }, nb::arg("theCMin"), nb::arg("theCMax"), R"nbdoc(@name Rejection/Acceptance rules
+        .def("RejectNode", [](const BOPTools_BoxSelector<3> &self, const BOPTools_BoxSelector<3>::BVH_VecNd & theCMin, const BOPTools_BoxSelector<3>::BVH_VecNd & theCMax) { bool theIsInside{}; auto nanoocp_result = self.RejectNode(theCMin, theCMax, theIsInside); return std::make_tuple(nanoocp_result, theIsInside); }, nb::arg("theCMin"), nb::arg("theCMax"), R"nbdoc(@name Rejection/Acceptance rules
 Checks if the box should be rejected)nbdoc")
         .def("RejectElement", static_cast<bool (BOPTools_BoxSelector<3>::*)(const int)>(&BOPTools_BoxSelector<3>::RejectElement), nb::arg("theIndex"), R"nbdoc(Checks if the element should be rejected)nbdoc")
         .def("AcceptMetric", static_cast<bool (BOPTools_BoxSelector<3>::*)(const bool &) const>(&BOPTools_BoxSelector<3>::AcceptMetric), nb::arg("theIsInside"), R"nbdoc(Checks if the metric of the node may be accepted)nbdoc")
@@ -818,7 +818,7 @@ not contain pairs in which IDs are the same (pair (1, 1) will be rejected).
 If it is required to have a full vector of pairs even
 for the same BVH trees, just keep the false value of this flag.)nbdoc")
         .def("Pairs", static_cast<const NCollection_LinearVector<BOPTools_PairSelector<3>::PairIDs> & (BOPTools_PairSelector<3>::*)() const>(&BOPTools_PairSelector<3>::Pairs), R"nbdoc(Returns the list of accepted indices)nbdoc")
-        .def("RejectNode", [](const BOPTools_PairSelector<3> &self, const BOPTools_PairSelector<3>::BVH_VecNd & theCMin1, const BOPTools_PairSelector<3>::BVH_VecNd & theCMax1, const BOPTools_PairSelector<3>::BVH_VecNd & theCMin2, const BOPTools_PairSelector<3>::BVH_VecNd & theCMax2) { double arg4{}; auto result = self.RejectNode(theCMin1, theCMax1, theCMin2, theCMax2, arg4); return std::make_tuple(result, arg4); }, nb::arg("theCMin1"), nb::arg("theCMax1"), nb::arg("theCMin2"), nb::arg("theCMax2"), R"nbdoc(@name Rejection/Acceptance rules
+        .def("RejectNode", [](const BOPTools_PairSelector<3> &self, const BOPTools_PairSelector<3>::BVH_VecNd & theCMin1, const BOPTools_PairSelector<3>::BVH_VecNd & theCMax1, const BOPTools_PairSelector<3>::BVH_VecNd & theCMin2, const BOPTools_PairSelector<3>::BVH_VecNd & theCMax2) { double arg4{}; auto nanoocp_result = self.RejectNode(theCMin1, theCMax1, theCMin2, theCMax2, arg4); return std::make_tuple(nanoocp_result, arg4); }, nb::arg("theCMin1"), nb::arg("theCMax1"), nb::arg("theCMin2"), nb::arg("theCMax2"), R"nbdoc(@name Rejection/Acceptance rules
 Basing on the bounding boxes of the nodes checks if the pair of nodes should be rejected.)nbdoc")
         .def("RejectElement", static_cast<bool (BOPTools_PairSelector<3>::*)(const int, const int)>(&BOPTools_PairSelector<3>::RejectElement), nb::arg("theID1"), nb::arg("theID2"), R"nbdoc(Checks if the pair of elements should be rejected.)nbdoc")
         .def("Accept", static_cast<bool (BOPTools_PairSelector<3>::*)(const int, const int)>(&BOPTools_PairSelector<3>::Accept), nb::arg("theID1"), nb::arg("theID2"), R"nbdoc(Checks and accepts the pair of elements.)nbdoc");

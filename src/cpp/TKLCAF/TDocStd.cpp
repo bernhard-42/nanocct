@@ -450,7 +450,7 @@ if (insession > 0) {
 std::cout << "document " << insession << " is already in session" << std::endl;
 return 0;
 })nbdoc")
-        .def("Open", [](TDocStd_Application &self, const TCollection_ExtendedString & thePath, const occ::handle<PCDM_ReaderFilter> & theFilter, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; auto result = self.Open(thePath, theDoc, theFilter, theRange); return std::make_tuple(result, theDoc); }, nb::arg("thePath"), nb::arg("theFilter").none(), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves the document from specified file.
+        .def("Open", [](TDocStd_Application &self, const TCollection_ExtendedString & thePath, const occ::handle<PCDM_ReaderFilter> & theFilter, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; auto nanoocp_result = self.Open(thePath, theDoc, theFilter, theRange); return std::make_tuple(nanoocp_result, theDoc); }, nb::arg("thePath"), nb::arg("theFilter").none(), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves the document from specified file.
 In order not to override a version of the document which is already in memory,
 this method can be made to depend on the value returned by IsInSession.
 @param[in]  thePath   file path to open
@@ -458,27 +458,27 @@ this method can be made to depend on the value returned by IsInSession.
 @param[in]  theFilter optional filter to skip attributes or parts of the retrieved tree
 @param[in]  theRange  optional progress indicator
 @return reading status)nbdoc")
-        .def("Open", [](TDocStd_Application &self, const TCollection_ExtendedString & thePath, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; auto result = self.Open(thePath, theDoc, theRange); return std::make_tuple(result, theDoc); }, nb::arg("thePath"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves the document from specified file.
+        .def("Open", [](TDocStd_Application &self, const TCollection_ExtendedString & thePath, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; auto nanoocp_result = self.Open(thePath, theDoc, theRange); return std::make_tuple(nanoocp_result, theDoc); }, nb::arg("thePath"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves the document from specified file.
 In order not to override a version of the document which is already in memory,
 this method can be made to depend on the value returned by IsInSession.
 @param[in]  thePath  file path to open
 @param[out] theDoc   result document
 @param[in]  theRange optional progress indicator
 @return reading status)nbdoc")
-        .def("Open", [](TDocStd_Application &self, const nanoocp::BinaryInput &theIStream, const occ::handle<PCDM_ReaderFilter> & theFilter, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; std::stringstream theIStream_stream(theIStream.data); auto result = self.Open(theIStream_stream, theDoc, theFilter, theRange); return std::make_tuple(result, theDoc); }, nb::arg("theIStream"), nb::arg("theFilter").none(), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves document from standard stream.
+        .def("Open", [](TDocStd_Application &self, const nanoocp::BinaryInput &theIStream, const occ::handle<PCDM_ReaderFilter> & theFilter, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; std::stringstream theIStream_stream(theIStream.data); auto nanoocp_result = self.Open(theIStream_stream, theDoc, theFilter, theRange); return std::make_tuple(nanoocp_result, theDoc); }, nb::arg("theIStream"), nb::arg("theFilter").none(), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves document from standard stream.
 @param[in,out] theIStream input seekable stream
 @param[out]    theDoc     result document
 @param[in]     theFilter  optional filter to skip attributes or parts of the retrieved tree
 @param[in]     theRange   optional progress indicator
 @return reading status)nbdoc")
-        .def("Open", [](TDocStd_Application &self, const nanoocp::BinaryInput &theIStream, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; std::stringstream theIStream_stream(theIStream.data); auto result = self.Open(theIStream_stream, theDoc, theRange); return std::make_tuple(result, theDoc); }, nb::arg("theIStream"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves document from standard stream.
+        .def("Open", [](TDocStd_Application &self, const nanoocp::BinaryInput &theIStream, const Message_ProgressRange & theRange) { occ::handle<TDocStd_Document> theDoc{}; std::stringstream theIStream_stream(theIStream.data); auto nanoocp_result = self.Open(theIStream_stream, theDoc, theRange); return std::make_tuple(nanoocp_result, theDoc); }, nb::arg("theIStream"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Retrieves document from standard stream.
 @param[in,out] theIStream input seekable stream
 @param[out]    theDoc     result document
 @param[in]     theRange   optional progress indicator
 @return reading status)nbdoc")
         .def("SaveAs", static_cast<PCDM_StoreStatus (TDocStd_Application::*)(const occ::handle<TDocStd_Document> &, const TCollection_ExtendedString &, const Message_ProgressRange &)>(&TDocStd_Application::SaveAs), nb::arg("theDoc").none(), nb::arg("path"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Save the active document in the file <name> in the
 path <path>. overwrites the file if it already exists.)nbdoc")
-        .def("SaveAs", [](TDocStd_Application &self, const occ::handle<TDocStd_Document> & theDoc, const Message_ProgressRange & theRange) { std::ostringstream theOStream_stream; auto result = self.SaveAs(theDoc, theOStream_stream, theRange); return std::make_tuple(result, nanoocp_stream_bytes(theOStream_stream)); }, nb::arg("theDoc").none(), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Save theDoc to standard SEEKABLE stream theOStream.
+        .def("SaveAs", [](TDocStd_Application &self, const occ::handle<TDocStd_Document> & theDoc, const Message_ProgressRange & theRange) { std::ostringstream theOStream_stream; auto nanoocp_result = self.SaveAs(theDoc, theOStream_stream, theRange); return std::make_tuple(nanoocp_result, nanoocp_stream_bytes(theOStream_stream)); }, nb::arg("theDoc").none(), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Save theDoc to standard SEEKABLE stream theOStream.
 the stream should support SEEK functionality)nbdoc")
         .def("Save", static_cast<PCDM_StoreStatus (TDocStd_Application::*)(const occ::handle<TDocStd_Document> &, const Message_ProgressRange &)>(&TDocStd_Application::Save), nb::arg("theDoc").none(), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Save aDoc active document.
 Exceptions:
@@ -486,7 +486,7 @@ Standard_NotImplemented if the document
 was not retrieved in the applicative session by using Open.)nbdoc")
         .def("SaveAs", static_cast<PCDM_StoreStatus (TDocStd_Application::*)(const occ::handle<TDocStd_Document> &, const TCollection_ExtendedString &, TCollection_ExtendedString &, const Message_ProgressRange &)>(&TDocStd_Application::SaveAs), nb::arg("theDoc").none(), nb::arg("path"), nb::arg("theStatusMessage"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Save the active document in the file <name> in the
 path <path>. overwrite the file if it already exists.)nbdoc")
-        .def("SaveAs__bytes", [](TDocStd_Application &self, const occ::handle<TDocStd_Document> & theDoc, TCollection_ExtendedString & theStatusMessage, const Message_ProgressRange & theRange) { std::ostringstream theOStream_stream; auto result = self.SaveAs(theDoc, theOStream_stream, theStatusMessage, theRange); return std::make_tuple(result, nanoocp_stream_bytes(theOStream_stream)); }, nb::arg("theDoc").none(), nb::arg("theStatusMessage"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(SaveAs__bytes: the C++ overload SaveAs(const occ::handle<TDocStd_Document> &, Standard_OStream &, TCollection_ExtendedString &, const Message_ProgressRange &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("SaveAs__bytes", [](TDocStd_Application &self, const occ::handle<TDocStd_Document> & theDoc, TCollection_ExtendedString & theStatusMessage, const Message_ProgressRange & theRange) { std::ostringstream theOStream_stream; auto nanoocp_result = self.SaveAs(theDoc, theOStream_stream, theStatusMessage, theRange); return std::make_tuple(nanoocp_result, nanoocp_stream_bytes(theOStream_stream)); }, nb::arg("theDoc").none(), nb::arg("theStatusMessage"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(SaveAs__bytes: the C++ overload SaveAs(const occ::handle<TDocStd_Document> &, Standard_OStream &, TCollection_ExtendedString &, const Message_ProgressRange &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Save theDoc TO standard SEEKABLE stream theOStream.
 the stream should support SEEK functionality)nbdoc")
         .def("Save", static_cast<PCDM_StoreStatus (TDocStd_Application::*)(const occ::handle<TDocStd_Document> &, TCollection_ExtendedString &, const Message_ProgressRange &)>(&TDocStd_Application::Save), nb::arg("theDoc").none(), nb::arg("theStatusMessage"), nb::arg("theRange") = static_cast<std::decay_t<const Message_ProgressRange &>>(Message_ProgressRange()), R"nbdoc(Save the document overwriting the previous file)nbdoc")
@@ -664,7 +664,7 @@ nonsense to use this method.)nbdoc")
         .def("More", static_cast<bool (TDocStd_XLinkIterator::*)() const>(&TDocStd_XLinkIterator::More), R"nbdoc(Returns True if there is a current Item in the
 iteration.)nbdoc")
         .def("Next", static_cast<void (TDocStd_XLinkIterator::*)()>(&TDocStd_XLinkIterator::Next), R"nbdoc(Move to the next item; raises if there is no more item.)nbdoc")
-        .def("Value", [](const TDocStd_XLinkIterator &self) { opencascade::handle<TDocStd_XLink> result(self.Value()); return result; }, R"nbdoc(Returns the current item; a null handle if there is none.)nbdoc");
+        .def("Value", [](const TDocStd_XLinkIterator &self) { opencascade::handle<TDocStd_XLink> nanoocp_result(self.Value()); return nanoocp_result; }, R"nbdoc(Returns the current item; a null handle if there is none.)nbdoc");
     nanoocp_implicit_copy_ctor<TDocStd_XLinkIterator>(nb::borrow<nb::class_<TDocStd_XLinkIterator>>(m.attr("TDocStd_XLinkIterator")));
     nb::implicitly_convertible<std::decay_t<const occ::handle<TDocStd_Document> &>, TDocStd_XLinkIterator>();
     nb::borrow<nb::class_<TDocStd_XLinkRoot>>(m.attr("TDocStd_XLinkRoot"))

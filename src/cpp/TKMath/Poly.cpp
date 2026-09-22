@@ -602,9 +602,9 @@ previous method with Comapct set to False.)nbdoc")
 previous method with Comapct set to False.)nbdoc")
         .def_static("Dump", [](const occ::handle<Poly_Polygon2D> & P) { std::ostringstream OS_stream; Poly::Dump(P, OS_stream); return nanoocp_stream_text(OS_stream); }, nb::arg("P").none(), R"nbdoc(Dumps the 2D polygon. This is a call to the
 previous method with Comapct set to False.)nbdoc")
-        .def_static("ReadTriangulation", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = Poly::ReadTriangulation(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads a triangulation from the stream <IS>.)nbdoc")
-        .def_static("ReadPolygon3D", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = Poly::ReadPolygon3D(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads a 3d polygon from the stream <IS>.)nbdoc")
-        .def_static("ReadPolygon2D", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto result = Poly::ReadPolygon2D(IS_stream); return result; }, nb::arg("IS"), R"nbdoc(Reads a 2D polygon from the stream <IS>.)nbdoc")
+        .def_static("ReadTriangulation", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto nanoocp_result = Poly::ReadTriangulation(IS_stream); return nanoocp_result; }, nb::arg("IS"), R"nbdoc(Reads a triangulation from the stream <IS>.)nbdoc")
+        .def_static("ReadPolygon3D", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto nanoocp_result = Poly::ReadPolygon3D(IS_stream); return nanoocp_result; }, nb::arg("IS"), R"nbdoc(Reads a 3d polygon from the stream <IS>.)nbdoc")
+        .def_static("ReadPolygon2D", [](const nanoocp::TextInput &IS) { std::stringstream IS_stream(IS.text); auto nanoocp_result = Poly::ReadPolygon2D(IS_stream); return nanoocp_result; }, nb::arg("IS"), R"nbdoc(Reads a 2D polygon from the stream <IS>.)nbdoc")
         .def_static("ComputeNormals", static_cast<void (*)(const occ::handle<Poly_Triangulation> &)>(&Poly::ComputeNormals), nb::arg("Tri").none(), R"nbdoc(Compute node normals for face triangulation
 as mean normal of surrounding triangles)nbdoc")
         .def_static("PointOnTriangle", static_cast<double (*)(const gp_XY &, const gp_XY &, const gp_XY &, const gp_XY &, gp_XY &)>(&Poly::PointOnTriangle), nb::arg("P1"), nb::arg("P2"), nb::arg("P3"), nb::arg("P"), nb::arg("UV"), R"nbdoc(Computes parameters of the point P on triangle
@@ -617,7 +617,7 @@ is degenerated, the returned parameters correspond
 to closest point, and returned value is square of
 the distance from original point to triangle (0 if
 point is inside).)nbdoc")
-        .def_static("Intersect", [](const occ::handle<Poly_Triangulation> & theTri, const gp_Ax1 & theAxis, const bool theIsClosest, Poly_Triangle & theTriangle) { double theDistance{}; auto result = Poly::Intersect(theTri, theAxis, theIsClosest, theTriangle, theDistance); return std::make_tuple(result, theDistance); }, nb::arg("theTri").none(), nb::arg("theAxis"), nb::arg("theIsClosest"), nb::arg("theTriangle"), R"nbdoc(Computes the intersection between axis and triangulation.
+        .def_static("Intersect", [](const occ::handle<Poly_Triangulation> & theTri, const gp_Ax1 & theAxis, const bool theIsClosest, Poly_Triangle & theTriangle) { double theDistance{}; auto nanoocp_result = Poly::Intersect(theTri, theAxis, theIsClosest, theTriangle, theDistance); return std::make_tuple(nanoocp_result, theDistance); }, nb::arg("theTri").none(), nb::arg("theAxis"), nb::arg("theIsClosest"), nb::arg("theTriangle"), R"nbdoc(Computes the intersection between axis and triangulation.
 @param[in] theTri   input triangulation
 @param[in] theAxis  intersecting ray
 @param[in] theIsClosest  finds the closest intersection when TRUE, finds the farthest
@@ -625,7 +625,7 @@ otherwise
 @param[out] theTriangle  intersected triangle
 @param[out] theDistance  distance along ray to intersection point
 @return TRUE if intersection takes place, FALSE otherwise.)nbdoc")
-        .def_static("IntersectTriLine", [](const gp_XYZ & theStart, const gp_Dir & theDir, const gp_XYZ & theV0, const gp_XYZ & theV1, const gp_XYZ & theV2) { double theParam{}; auto result = Poly::IntersectTriLine(theStart, theDir, theV0, theV1, theV2, theParam); return std::make_tuple(result, theParam); }, nb::arg("theStart"), nb::arg("theDir"), nb::arg("theV0"), nb::arg("theV1"), nb::arg("theV2"), R"nbdoc(Computes the intersection between a triangle defined by three vertexes and a line.
+        .def_static("IntersectTriLine", [](const gp_XYZ & theStart, const gp_Dir & theDir, const gp_XYZ & theV0, const gp_XYZ & theV1, const gp_XYZ & theV2) { double theParam{}; auto nanoocp_result = Poly::IntersectTriLine(theStart, theDir, theV0, theV1, theV2, theParam); return std::make_tuple(nanoocp_result, theParam); }, nb::arg("theStart"), nb::arg("theDir"), nb::arg("theV0"), nb::arg("theV1"), nb::arg("theV2"), R"nbdoc(Computes the intersection between a triangle defined by three vertexes and a line.
 @param[in] theStart  picking ray origin
 @param[in] theDir    picking ray direction
 @param[in] theV0     first triangle node

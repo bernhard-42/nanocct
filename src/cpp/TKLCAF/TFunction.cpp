@@ -88,7 +88,7 @@ execution of function
         .def("MustExecute", static_cast<bool (TFunction_Driver::*)(const occ::handle<TFunction_Logbook> &) const>(&TFunction_Driver::MustExecute), nb::arg("log").none(), R"nbdoc(Analyzes the labels in the logbook log.
 Returns true if attributes have been modified.
 If the function label itself has been modified, the function must be executed.)nbdoc")
-        .def("Execute", [](const TFunction_Driver &self) { occ::handle<TFunction_Logbook> log{}; auto result = self.Execute(log); return std::make_tuple(result, log); }, R"nbdoc(Executes the function in this function driver and
+        .def("Execute", [](const TFunction_Driver &self) { occ::handle<TFunction_Logbook> log{}; auto nanoocp_result = self.Execute(log); return std::make_tuple(nanoocp_result, log); }, R"nbdoc(Executes the function in this function driver and
 puts the impacted labels in the logbook log.
 arguments & results of functions
 ================================)nbdoc")
@@ -104,7 +104,7 @@ where the results of the function are located.)nbdoc")
         .def_static("Get", static_cast<occ::handle<TFunction_DriverTable> (*)()>(&TFunction_DriverTable::Get), R"nbdoc(Returns the driver table. If a driver does not exist, creates it.)nbdoc")
         .def("AddDriver", static_cast<bool (TFunction_DriverTable::*)(const Standard_GUID &, const occ::handle<TFunction_Driver> &, const int)>(&TFunction_DriverTable::AddDriver), nb::arg("guid"), nb::arg("driver").none(), nb::arg("thread") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Returns true if the driver has been added successfully to the driver table.)nbdoc")
         .def("HasDriver", static_cast<bool (TFunction_DriverTable::*)(const Standard_GUID &, const int) const>(&TFunction_DriverTable::HasDriver), nb::arg("guid"), nb::arg("thread") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Returns true if the driver exists in the driver table.)nbdoc")
-        .def("FindDriver", [](const TFunction_DriverTable &self, const Standard_GUID & guid, const int thread) { occ::handle<TFunction_Driver> driver{}; auto result = self.FindDriver(guid, driver, thread); return std::make_tuple(result, driver); }, nb::arg("guid"), nb::arg("thread") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Returns true if the driver was found.)nbdoc")
+        .def("FindDriver", [](const TFunction_DriverTable &self, const Standard_GUID & guid, const int thread) { occ::handle<TFunction_Driver> driver{}; auto nanoocp_result = self.FindDriver(guid, driver, thread); return std::make_tuple(nanoocp_result, driver); }, nb::arg("guid"), nb::arg("thread") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Returns true if the driver was found.)nbdoc")
         .def("Dump", [](const TFunction_DriverTable &self) { std::ostringstream anOS_stream; self.Dump(anOS_stream); return nanoocp_stream_text(anOS_stream); })
         .def("RemoveDriver", static_cast<bool (TFunction_DriverTable::*)(const Standard_GUID &, const int)>(&TFunction_DriverTable::RemoveDriver), nb::arg("guid"), nb::arg("thread") = static_cast<std::decay_t<const int>>(0), R"nbdoc(Removes a driver with the given GUID.
 Returns true if the driver has been removed successfully.)nbdoc")

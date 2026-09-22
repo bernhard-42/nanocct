@@ -308,7 +308,7 @@ Use method Search from TransferControl to work)nbdoc")
         .def("FillSharedCase", static_cast<void (StepData_DefaultGeneral::*)(const int, const occ::handle<Standard_Transient> &, Interface_EntityIterator &) const>(&StepData_DefaultGeneral::FillSharedCase), nb::arg("casenum"), nb::arg("ent").none(), nb::arg("iter"), R"nbdoc(Specific filling of the list of Entities shared by an Entity
 <ent>, which is an UnknownEntity from StepData.)nbdoc")
         .def("CheckCase", [](const StepData_DefaultGeneral &self, const int casenum, const occ::handle<Standard_Transient> & ent, const Interface_ShareTool & shares) { occ::handle<Interface_Check> ach{}; self.CheckCase(casenum, ent, shares, ach); return ach; }, nb::arg("casenum"), nb::arg("ent").none(), nb::arg("shares"), R"nbdoc(Specific Checking of an Entity <ent>)nbdoc")
-        .def("NewVoid", [](const StepData_DefaultGeneral &self, const int CN) { occ::handle<Standard_Transient> entto{}; auto result = self.NewVoid(CN, entto); return std::make_tuple(result, entto); }, nb::arg("CN"), R"nbdoc(Specific creation of a new void entity)nbdoc")
+        .def("NewVoid", [](const StepData_DefaultGeneral &self, const int CN) { occ::handle<Standard_Transient> entto{}; auto nanoocp_result = self.NewVoid(CN, entto); return std::make_tuple(nanoocp_result, entto); }, nb::arg("CN"), R"nbdoc(Specific creation of a new void entity)nbdoc")
         .def("CopyCase", static_cast<void (StepData_DefaultGeneral::*)(const int, const occ::handle<Standard_Transient> &, const occ::handle<Standard_Transient> &, Interface_CopyTool &) const>(&StepData_DefaultGeneral::CopyCase), nb::arg("casenum"), nb::arg("entfrom").none(), nb::arg("entto").none(), nb::arg("TC"), R"nbdoc(Specific Copy ("Deep") from <entfrom> to <entto> (same type)
 by using a CopyTool which provides its working Map.
 Use method Transferred from TransferControl to work)nbdoc")
@@ -606,7 +606,7 @@ i.e. the count of Protocol recorded by calling the method Add)nbdoc")
         .def("TypeNumber", static_cast<int (StepData_FileProtocol::*)(const occ::handle<Standard_Type> &) const>(&StepData_FileProtocol::TypeNumber), nb::arg("atype").none(), R"nbdoc(Returns a Case Number, specific of each recognized Type
 Here, NO Type at all is recognized properly : all Types are
 recognized by the resources)nbdoc")
-        .def("GlobalCheck", [](const StepData_FileProtocol &self, const Interface_Graph & G) { occ::handle<Interface_Check> ach{}; auto result = self.GlobalCheck(G, ach); return std::make_tuple(result, ach); }, nb::arg("G"), R"nbdoc(Calls GlobalCheck for each of its recorded resources)nbdoc")
+        .def("GlobalCheck", [](const StepData_FileProtocol &self, const Interface_Graph & G) { occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.GlobalCheck(G, ach); return std::make_tuple(nanoocp_result, ach); }, nb::arg("G"), R"nbdoc(Calls GlobalCheck for each of its recorded resources)nbdoc")
         .def("SchemaName", static_cast<const char * (StepData_FileProtocol::*)(const occ::handle<Interface_InterfaceModel> &) const>(&StepData_FileProtocol::SchemaName), nb::arg("theModel").none(), R"nbdoc(Returns the Schema Name attached to each class of Protocol
 To be redefined by each sub-class
 Here, SchemaName returns "" (empty String)
@@ -616,7 +616,7 @@ was C++ : return const)nbdoc")
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (StepData_FileProtocol::*)() const>(&StepData_FileProtocol::DynamicType));
     nanoocp_implicit_copy_ctor<StepData_FileProtocol>(nb::borrow<nb::class_<StepData_FileProtocol>>(m.attr("StepData_FileProtocol")));
     nb::borrow<nb::class_<StepData_FileRecognizer>>(m.attr("StepData_FileRecognizer"))
-        .def("Evaluate", [](StepData_FileRecognizer &self, const TCollection_AsciiString & akey) { occ::handle<Standard_Transient> res{}; auto result = self.Evaluate(akey, res); return std::make_tuple(result, res); }, nb::arg("akey"), R"nbdoc(Evaluates if recognition has a result, returns it if yes
+        .def("Evaluate", [](StepData_FileRecognizer &self, const TCollection_AsciiString & akey) { occ::handle<Standard_Transient> res{}; auto nanoocp_result = self.Evaluate(akey, res); return std::make_tuple(nanoocp_result, res); }, nb::arg("akey"), R"nbdoc(Evaluates if recognition has a result, returns it if yes
 In case of success, Returns True and puts result in "res"
 In case of Failure, simply Returns False
 Works by calling deferred method Eval, and in case of failure,
@@ -647,7 +647,7 @@ If <next> is Null, Next is cleared)nbdoc")
 is given (exact match, no sub-type))nbdoc")
         .def("TypeList", static_cast<occ::handle<NCollection_HSequence<TCollection_AsciiString>> (StepData_FreeFormEntity::*)() const>(&StepData_FreeFormEntity::TypeList), R"nbdoc(Returns the list of types (one type for a simple entity),
 as is (non reordered))nbdoc")
-        .def_static("Reorder", []() { occ::handle<StepData_FreeFormEntity> ent{}; auto result = StepData_FreeFormEntity::Reorder(ent); return std::make_tuple(result, ent); }, R"nbdoc(Reorders a Complex entity if required, i.e. if member types
+        .def_static("Reorder", []() { occ::handle<StepData_FreeFormEntity> ent{}; auto nanoocp_result = StepData_FreeFormEntity::Reorder(ent); return std::make_tuple(nanoocp_result, ent); }, R"nbdoc(Reorders a Complex entity if required, i.e. if member types
 are not in alphabetic order
 Returns False if nothing done (order was OK or simple entity),
 True plus modified <ent> if <ent> has been reordered)nbdoc")
@@ -1020,7 +1020,7 @@ redefine the order of Modules before action : Clear then
 refill the Library by calls to AddProtocol))nbdoc")
         .def("SetComplete", static_cast<void (StepData_WriterLib::*)()>(&StepData_WriterLib::SetComplete), R"nbdoc(Sets a library to be defined with the complete Global list
 (all the couples Protocol/Modules recorded in it))nbdoc")
-        .def("Select", [](const StepData_WriterLib &self, const occ::handle<Standard_Transient> & obj) { occ::handle<StepData_ReadWriteModule> module{}; int CN{}; auto result = self.Select(obj, module, CN); return std::make_tuple(result, module, CN); }, nb::arg("obj").none(), R"nbdoc(Selects a Module from the Library, given an Object.
+        .def("Select", [](const StepData_WriterLib &self, const occ::handle<Standard_Transient> & obj) { occ::handle<StepData_ReadWriteModule> module{}; int CN{}; auto nanoocp_result = self.Select(obj, module, CN); return std::make_tuple(nanoocp_result, module, CN); }, nb::arg("obj").none(), R"nbdoc(Selects a Module from the Library, given an Object.
 Returns True if Select has succeeded, False else.
 Also Returns (as arguments) the selected Module and the Case
 Number determined by the associated Protocol.
@@ -1147,7 +1147,7 @@ for unknown entities, badly loaded ones, null or unknown
 references)nbdoc")
         .def("NbLines", static_cast<int (StepData_StepWriter::*)() const>(&StepData_StepWriter::NbLines), R"nbdoc(Returns count of Lines)nbdoc")
         .def("Line", static_cast<occ::handle<TCollection_HAsciiString> (StepData_StepWriter::*)(const int) const>(&StepData_StepWriter::Line), nb::arg("num"), R"nbdoc(Returns a Line given its rank in the File)nbdoc")
-        .def("Print", [](StepData_StepWriter &self) { std::ostringstream S_stream; auto result = self.Print(S_stream); return std::make_tuple(result, nanoocp_stream_text(S_stream)); }, R"nbdoc(writes result on an output defined as an OStream
+        .def("Print", [](StepData_StepWriter &self) { std::ostringstream S_stream; auto nanoocp_result = self.Print(S_stream); return std::make_tuple(nanoocp_result, nanoocp_stream_text(S_stream)); }, R"nbdoc(writes result on an output defined as an OStream
 then clears it)nbdoc")
         .def_static("CleanTextForSend", static_cast<TCollection_AsciiString (*)(const TCollection_AsciiString &)>(&StepData_StepWriter::CleanTextForSend), nb::arg("theText"), R"nbdoc(Static helper function to prepare text for STEP file output while preserving
 existing ISO 10303-21 control directives.
@@ -1190,7 +1190,7 @@ types to be dumped)
 2 for label without anymore)nbdoc")
         .def("StepWriter", static_cast<StepData_StepWriter & (StepData_StepDumper::*)()>(&StepData_StepDumper::StepWriter), nb::rv_policy::reference_internal, R"nbdoc(Gives an access to the tool which is used to work : this allow
 to acts on some parameters : Floating Format, Scopes ...)nbdoc")
-        .def("Dump", [](StepData_StepDumper &self, const occ::handle<Standard_Transient> & ent, const int level) { std::ostringstream S_stream; auto result = self.Dump(S_stream, ent, level); return std::make_tuple(result, nanoocp_stream_text(S_stream)); }, nb::arg("ent").none(), nb::arg("level"), R"nbdoc(Dumps a Entity on an Messenger. Returns True if
+        .def("Dump", [](StepData_StepDumper &self, const occ::handle<Standard_Transient> & ent, const int level) { std::ostringstream S_stream; auto nanoocp_result = self.Dump(S_stream, ent, level); return std::make_tuple(nanoocp_result, nanoocp_stream_text(S_stream)); }, nb::arg("ent").none(), nb::arg("level"), R"nbdoc(Dumps a Entity on an Messenger. Returns True if
 success, False, if the entity to dump has not been recognized
 by the Protocol. <level> can have one of these values :
 - 0 : prints the TYPE only, as known in STEP Files (StepType)
@@ -1206,7 +1206,7 @@ entity of the dump) <Lists Shared and Implied>
 
 For levels 1,2,3, the numbers displayed (form #nnn) are the
 numbers of the corresponding entities in the Model)nbdoc")
-        .def("Dump", [](StepData_StepDumper &self, const int num, const int level) { std::ostringstream S_stream; auto result = self.Dump(S_stream, num, level); return std::make_tuple(result, nanoocp_stream_text(S_stream)); }, nb::arg("num"), nb::arg("level"), R"nbdoc(Works as Dump with a Transient, but directly takes the
+        .def("Dump", [](StepData_StepDumper &self, const int num, const int level) { std::ostringstream S_stream; auto nanoocp_result = self.Dump(S_stream, num, level); return std::make_tuple(nanoocp_result, nanoocp_stream_text(S_stream)); }, nb::arg("num"), nb::arg("level"), R"nbdoc(Works as Dump with a Transient, but directly takes the
 entity designated by its number in the Model
 Returns False, also if <num> is out of range)nbdoc");
     nanoocp_implicit_copy_ctor<StepData_StepDumper>(nb::borrow<nb::class_<StepData_StepDumper>>(m.attr("StepData_StepDumper")));
@@ -1277,7 +1277,7 @@ For a SubList or a Scope mark, <types> remains empty)nbdoc")
         .def("NextForComplex", static_cast<int (StepData_StepReaderData::*)(const int) const>(&StepData_StepReaderData::NextForComplex), nb::arg("num"), R"nbdoc(Returns the Next "Component" for a Complex Type Entity, of
 which <num> is already a Component (the first one or a next one)
 Returns 0 for a Simple Type or for the last Component)nbdoc")
-        .def("NamedForComplex", [](const StepData_StepReaderData &self, const char *const name, const int num0) { int num{}; occ::handle<Interface_Check> ach{}; auto result = self.NamedForComplex(name, num0, num, ach); return std::make_tuple(result, num, ach); }, nb::arg("name"), nb::arg("num0"), R"nbdoc(Determines the first component which brings a given name, for
+        .def("NamedForComplex", [](const StepData_StepReaderData &self, const char *const name, const int num0) { int num{}; occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.NamedForComplex(name, num0, num, ach); return std::make_tuple(nanoocp_result, num, ach); }, nb::arg("name"), nb::arg("num0"), R"nbdoc(Determines the first component which brings a given name, for
 a Complex Type Entity
 <num0> is the very first record of this entity
 <num> is given the last NextNamedForComplex, starts at zero
@@ -1292,7 +1292,7 @@ In case of "not-found at all", <ach> is filled with a Fail,
 and <num> is returned as zero
 
 Returns True if alphabetic order, False else)nbdoc")
-        .def("NamedForComplex", [](const StepData_StepReaderData &self, const char *const theName, const char *const theShortName, const int num0) { int num{}; occ::handle<Interface_Check> ach{}; auto result = self.NamedForComplex(theName, theShortName, num0, num, ach); return std::make_tuple(result, num, ach); }, nb::arg("theName"), nb::arg("theShortName"), nb::arg("num0"), R"nbdoc(Determines the first component which brings a given name, or
+        .def("NamedForComplex", [](const StepData_StepReaderData &self, const char *const theName, const char *const theShortName, const int num0) { int num{}; occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.NamedForComplex(theName, theShortName, num0, num, ach); return std::make_tuple(nanoocp_result, num, ach); }, nb::arg("theName"), nb::arg("theShortName"), nb::arg("num0"), R"nbdoc(Determines the first component which brings a given name, or
 short name for a Complex Type Entity
 <num0> is the very first record of this entity
 <num> is given the last NextNamedForComplex, starts at zero
@@ -1307,11 +1307,11 @@ In case of "not-found at all", <ach> is filled with a Fail,
 and <num> is returned as zero
 
 Returns True if alphabetic order, False else)nbdoc")
-        .def("CheckNbParams", [](const StepData_StepReaderData &self, const int num, const int nbreq, const char *const mess) { occ::handle<Interface_Check> ach{}; auto result = self.CheckNbParams(num, nbreq, ach, mess); return std::make_tuple(result, ach); }, nb::arg("num"), nb::arg("nbreq"), nb::arg("mess") = static_cast<std::decay_t<const char *const>>(""), R"nbdoc(Checks Count of Parameters of record <num> to equate <nbreq>
+        .def("CheckNbParams", [](const StepData_StepReaderData &self, const int num, const int nbreq, const char *const mess) { occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.CheckNbParams(num, nbreq, ach, mess); return std::make_tuple(nanoocp_result, ach); }, nb::arg("num"), nb::arg("nbreq"), nb::arg("mess") = static_cast<std::decay_t<const char *const>>(""), R"nbdoc(Checks Count of Parameters of record <num> to equate <nbreq>
 If this Check is successful, returns True
 Else, fills <ach> with an Error Message then returns False
 <mess> is included in the Error message if given non empty)nbdoc")
-        .def("ReadSubList", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const bool optional, const int lenmin, const int lenmax) { occ::handle<Interface_Check> ach{}; int numsub{}; auto result = self.ReadSubList(num, nump, mess, ach, numsub, optional, lenmin, lenmax); return std::make_tuple(result, ach, numsub); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("optional") = static_cast<std::decay_t<const bool>>(false), nb::arg("lenmin") = static_cast<std::decay_t<const int>>(0), nb::arg("lenmax") = static_cast<std::decay_t<const int>>(0), R"nbdoc(reads parameter <nump> of record <num> as a sub-list (may be
+        .def("ReadSubList", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const bool optional, const int lenmin, const int lenmax) { occ::handle<Interface_Check> ach{}; int numsub{}; auto nanoocp_result = self.ReadSubList(num, nump, mess, ach, numsub, optional, lenmin, lenmax); return std::make_tuple(nanoocp_result, ach, numsub); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("optional") = static_cast<std::decay_t<const bool>>(false), nb::arg("lenmin") = static_cast<std::decay_t<const int>>(0), nb::arg("lenmax") = static_cast<std::decay_t<const int>>(0), R"nbdoc(reads parameter <nump> of record <num> as a sub-list (may be
 typed, see ReadTypedParameter in this case)
 Returns True if OK. Else (not a LIST), returns false and
 feeds Check with appropriate check
@@ -1319,7 +1319,7 @@ If <optional> is True and Param is not defined, returns True
 with <ach> not filled and <numsub> returned as 0
 Works with SubListNumber with <aslast> false (no specific case
 for last parameter))nbdoc")
-        .def("ReadSub", [](const StepData_StepReaderData &self, const int numsub, const char *const mess, const occ::handle<StepData_PDescr> & descr) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> val{}; auto result = self.ReadSub(numsub, mess, ach, descr, val); return std::make_tuple(result, ach, val); }, nb::arg("numsub"), nb::arg("mess"), nb::arg("descr").none(), R"nbdoc(reads the content of a sub-list into a transient :
+        .def("ReadSub", [](const StepData_StepReaderData &self, const int numsub, const char *const mess, const occ::handle<StepData_PDescr> & descr) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.ReadSub(numsub, mess, ach, descr, val); return std::make_tuple(nanoocp_result, ach, val); }, nb::arg("numsub"), nb::arg("mess"), nb::arg("descr").none(), R"nbdoc(reads the content of a sub-list into a transient :
 SelectNamed, or HArray1 of Integer,Real,String,Transient ...
 recursive call if list of list ...
 If a sub-list has mixed types, an HArray1OfTransient is
@@ -1327,7 +1327,7 @@ produced, it may contain SelectMember
 Intended to be called by ReadField
 The returned status is : negative if failed, 0 if empty.
 Else the kind to be recorded in the field)nbdoc")
-        .def("ReadMember", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; occ::handle<StepData_SelectMember> val{}; auto result = self.ReadMember(num, nump, mess, ach, val); return std::make_tuple(result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(Reads parameter <nump> of record <num> into a SelectMember,
+        .def("ReadMember", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; occ::handle<StepData_SelectMember> val{}; auto nanoocp_result = self.ReadMember(num, nump, mess, ach, val); return std::make_tuple(nanoocp_result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(Reads parameter <nump> of record <num> into a SelectMember,
 self-sufficient (no Description needed)
 If <val> is already created, it will be filled, as possible
 And if reading does not match its own description, the result
@@ -1337,15 +1337,15 @@ useful if a field is defined as a SelectMember, directly
 (SELECT with no Entity as member)
 But SelectType also manages SelectMember (for SELECT with
 some members as Entity, some other not))nbdoc")
-        .def("ReadField", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const occ::handle<StepData_PDescr> & descr, StepData_Field & fild) { occ::handle<Interface_Check> ach{}; auto result = self.ReadField(num, nump, mess, ach, descr, fild); return std::make_tuple(result, ach); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("descr").none(), nb::arg("fild"), R"nbdoc(reads parameter <nump> of record <num> into a Field,
+        .def("ReadField", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const occ::handle<StepData_PDescr> & descr, StepData_Field & fild) { occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.ReadField(num, nump, mess, ach, descr, fild); return std::make_tuple(nanoocp_result, ach); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("descr").none(), nb::arg("fild"), R"nbdoc(reads parameter <nump> of record <num> into a Field,
 controlled by a Parameter Descriptor (PDescr), which controls
 its allowed type(s) and value
 <ach> is filled if the read parameter does not match its
 description (but the field is read anyway)
 If the description is not defined, no control is done
 Returns True when done)nbdoc")
-        .def("ReadList", [](const StepData_StepReaderData &self, const int num, const occ::handle<StepData_ESDescr> & descr, StepData_FieldList & list) { occ::handle<Interface_Check> ach{}; auto result = self.ReadList(num, ach, descr, list); return std::make_tuple(result, ach); }, nb::arg("num"), nb::arg("descr").none(), nb::arg("list"), R"nbdoc(reads a list of fields controlled by an ESDescr)nbdoc")
-        .def("ReadAny", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const occ::handle<StepData_PDescr> & descr) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> val{}; auto result = self.ReadAny(num, nump, mess, ach, descr, val); return std::make_tuple(result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("descr").none(), R"nbdoc(Reads parameter <nump> of record <num> into a Transient Value
+        .def("ReadList", [](const StepData_StepReaderData &self, const int num, const occ::handle<StepData_ESDescr> & descr, StepData_FieldList & list) { occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.ReadList(num, ach, descr, list); return std::make_tuple(nanoocp_result, ach); }, nb::arg("num"), nb::arg("descr").none(), nb::arg("list"), R"nbdoc(reads a list of fields controlled by an ESDescr)nbdoc")
+        .def("ReadAny", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const occ::handle<StepData_PDescr> & descr) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> val{}; auto nanoocp_result = self.ReadAny(num, nump, mess, ach, descr, val); return std::make_tuple(nanoocp_result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("descr").none(), R"nbdoc(Reads parameter <nump> of record <num> into a Transient Value
 according to the type of the parameter :
 Named for Integer,Boolean,Logical,Enum,Real : SelectNamed
 Immediate Integer,Boolean,Logical,Enum,Real : SelectInt/Real
@@ -1361,44 +1361,44 @@ Warning : val is in out, hence it is possible to predefine a specific
 SelectMember then to fill it. If <val> is Null or if the
 result is not a SelectMember, val itself is returned a new ref
 For a Select with a Name, <val> must then be a SelectNamed)nbdoc")
-        .def("ReadXY", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; double X{}; double Y{}; auto result = self.ReadXY(num, nump, mess, ach, X, Y); return std::make_tuple(result, ach, X, Y); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a sub-list of
+        .def("ReadXY", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; double X{}; double Y{}; auto nanoocp_result = self.ReadXY(num, nump, mess, ach, X, Y); return std::make_tuple(nanoocp_result, ach, X, Y); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a sub-list of
 two Reals X,Y. Returns True if OK. Else, returns false and
 feeds Check with appropriate Fails (parameter not a sub-list,
 not two Reals in the sub-list) composed with "mess" which
 gives the name of the parameter)nbdoc")
-        .def("ReadXYZ", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; double X{}; double Y{}; double Z{}; auto result = self.ReadXYZ(num, nump, mess, ach, X, Y, Z); return std::make_tuple(result, ach, X, Y, Z); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a sub-list of
+        .def("ReadXYZ", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; double X{}; double Y{}; double Z{}; auto nanoocp_result = self.ReadXYZ(num, nump, mess, ach, X, Y, Z); return std::make_tuple(nanoocp_result, ach, X, Y, Z); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a sub-list of
 three Reals X,Y,Z. Return value and Check managed as by
 ReadXY (demands a sub-list of three Reals))nbdoc")
-        .def("ReadReal", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; double val{}; auto result = self.ReadReal(num, nump, mess, ach, val); return std::make_tuple(result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a single Real value.
+        .def("ReadReal", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; double val{}; auto nanoocp_result = self.ReadReal(num, nump, mess, ach, val); return std::make_tuple(nanoocp_result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a single Real value.
 Return value and Check managed as by ReadXY (demands a Real))nbdoc")
-        .def("ReadEntity", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const occ::handle<Standard_Type> & atype) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto result = self.ReadEntity(num, nump, mess, ach, atype, ent); return std::make_tuple(result, ach, ent); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("atype").none(), R"nbdoc(Reads parameter <nump> of record <num> as a single Entity.
+        .def("ReadEntity", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const occ::handle<Standard_Type> & atype) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto nanoocp_result = self.ReadEntity(num, nump, mess, ach, atype, ent); return std::make_tuple(nanoocp_result, ach, ent); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("atype").none(), R"nbdoc(Reads parameter <nump> of record <num> as a single Entity.
 Return value and Check managed as by ReadReal (demands a
 reference to an Entity). In Addition, demands read Entity
 to be Kind of a required Type <atype>.
 Remark that returned status is False and <ent> is Null if
 parameter is not an Entity, <ent> remains Not Null is parameter
 is an Entity but is not Kind of required type)nbdoc")
-        .def("ReadEntity", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, StepData_SelectType & sel) { occ::handle<Interface_Check> ach{}; auto result = self.ReadEntity(num, nump, mess, ach, sel); return std::make_tuple(result, ach); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("sel"), R"nbdoc(Same as above, but a SelectType checks Type Matching, and
+        .def("ReadEntity", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, StepData_SelectType & sel) { occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.ReadEntity(num, nump, mess, ach, sel); return std::make_tuple(nanoocp_result, ach); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("sel"), R"nbdoc(Same as above, but a SelectType checks Type Matching, and
 records the read Entity (see method Value from SelectType))nbdoc")
-        .def("ReadInteger", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; int val{}; auto result = self.ReadInteger(num, nump, mess, ach, val); return std::make_tuple(result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a single Integer.
+        .def("ReadInteger", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; int val{}; auto nanoocp_result = self.ReadInteger(num, nump, mess, ach, val); return std::make_tuple(nanoocp_result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a single Integer.
 Return value & Check managed as by ReadXY (demands an Integer))nbdoc")
-        .def("ReadBoolean", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; bool flag{}; auto result = self.ReadBoolean(num, nump, mess, ach, flag); return std::make_tuple(result, ach, flag); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a Boolean
+        .def("ReadBoolean", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; bool flag{}; auto nanoocp_result = self.ReadBoolean(num, nump, mess, ach, flag); return std::make_tuple(nanoocp_result, ach, flag); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a Boolean
 Return value and Check managed as by ReadReal (demands a
 Boolean enum, i.e. text ".T." for True or ".F." for False))nbdoc")
-        .def("ReadLogical", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; StepData_Logical flag{}; auto result = self.ReadLogical(num, nump, mess, ach, flag); return std::make_tuple(result, ach, flag); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a Logical
+        .def("ReadLogical", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; StepData_Logical flag{}; auto nanoocp_result = self.ReadLogical(num, nump, mess, ach, flag); return std::make_tuple(nanoocp_result, ach, flag); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a Logical
 Return value and Check managed as by ReadBoolean (demands a
 Logical enum, i.e. text ".T.", ".F.", or ".U."))nbdoc")
-        .def("ReadString", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; occ::handle<TCollection_HAsciiString> val{}; auto result = self.ReadString(num, nump, mess, ach, val); return std::make_tuple(result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a String (text
+        .def("ReadString", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; occ::handle<TCollection_HAsciiString> val{}; auto nanoocp_result = self.ReadString(num, nump, mess, ach, val); return std::make_tuple(nanoocp_result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(reads parameter <nump> of record <num> as a String (text
 between quotes, quotes are removed by the Read operation)
 Return value and Check managed as by ReadXY (demands a String))nbdoc")
         .def("FailEnumValue", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess) { occ::handle<Interface_Check> ach{}; self.FailEnumValue(num, nump, mess, ach); return ach; }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), R"nbdoc(Fills a check with a fail message if enumeration value does
 match parameter definition
 Just a help to centralize message definitions)nbdoc")
-        .def("ReadEnum", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const StepData_EnumTool & enumtool) { occ::handle<Interface_Check> ach{}; int val{}; auto result = self.ReadEnum(num, nump, mess, ach, enumtool, val); return std::make_tuple(result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("enumtool"), R"nbdoc(Reads parameter <nump> of record <num> as an Enumeration (text
+        .def("ReadEnum", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const StepData_EnumTool & enumtool) { occ::handle<Interface_Check> ach{}; int val{}; auto nanoocp_result = self.ReadEnum(num, nump, mess, ach, enumtool, val); return std::make_tuple(nanoocp_result, ach, val); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("enumtool"), R"nbdoc(Reads parameter <nump> of record <num> as an Enumeration (text
 between dots) and converts it to an integer value, by an
 EnumTool. Returns True if OK, false if : this parameter is not
 enumeration, or is not recognized by the EnumTool (with fail))nbdoc")
-        .def("ReadTypedParam", [](const StepData_StepReaderData &self, const int num, const int nump, const bool mustbetyped, const char *const mess, TCollection_AsciiString & typ) { occ::handle<Interface_Check> ach{}; int numr{}; int numrp{}; auto result = self.ReadTypedParam(num, nump, mustbetyped, mess, ach, numr, numrp, typ); return std::make_tuple(result, ach, numr, numrp); }, nb::arg("num"), nb::arg("nump"), nb::arg("mustbetyped"), nb::arg("mess"), nb::arg("typ"), R"nbdoc(Resolves a parameter which can be enclosed in a type def., as
+        .def("ReadTypedParam", [](const StepData_StepReaderData &self, const int num, const int nump, const bool mustbetyped, const char *const mess, TCollection_AsciiString & typ) { occ::handle<Interface_Check> ach{}; int numr{}; int numrp{}; auto nanoocp_result = self.ReadTypedParam(num, nump, mustbetyped, mess, ach, numr, numrp, typ); return std::make_tuple(nanoocp_result, ach, numr, numrp); }, nb::arg("num"), nb::arg("nump"), nb::arg("mustbetyped"), nb::arg("mess"), nb::arg("typ"), R"nbdoc(Resolves a parameter which can be enclosed in a type def., as
 TYPE(val). The parameter must then be read normally according
 its type. Parameter to be resolved is <nump> of record <num>
 <mustbetyped> True demands a typed parameter
@@ -1408,7 +1408,7 @@ mess and ach as usual
 = num,nump if no type, else numrp=1
 <typ> returns the recorded type, or empty string
 Remark : a non-typed list is considered as "non-typed")nbdoc")
-        .def("CheckDerived", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const bool errstat) { occ::handle<Interface_Check> ach{}; auto result = self.CheckDerived(num, nump, mess, ach, errstat); return std::make_tuple(result, ach); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("errstat") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Checks if parameter <nump> of record <num> is given as Derived
+        .def("CheckDerived", [](const StepData_StepReaderData &self, const int num, const int nump, const char *const mess, const bool errstat) { occ::handle<Interface_Check> ach{}; auto nanoocp_result = self.CheckDerived(num, nump, mess, ach, errstat); return std::make_tuple(nanoocp_result, ach); }, nb::arg("num"), nb::arg("nump"), nb::arg("mess"), nb::arg("errstat") = static_cast<std::decay_t<const bool>>(false), R"nbdoc(Checks if parameter <nump> of record <num> is given as Derived
 If this Check is successful (i.e. Param = "*"), returns True
 Else, fills <ach> with a Message which contains <mess> and
 returns False. According to <errstat>, this message is Warning
@@ -1448,7 +1448,7 @@ which are normally avoided (see also StepReaderData))nbdoc")
 FileRecognizer, stored and later used in Recognize
 Works only on data entities (skips header)
 <optimize : same as above)nbdoc")
-        .def("Recognize", [](StepData_StepReaderTool &self, const int num) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto result = self.Recognize(num, ach, ent); return std::make_tuple(result, ach, ent); }, nb::arg("num"), R"nbdoc(recognizes records, by asking either ReaderLib (default) or
+        .def("Recognize", [](StepData_StepReaderTool &self, const int num) { occ::handle<Interface_Check> ach{}; occ::handle<Standard_Transient> ent{}; auto nanoocp_result = self.Recognize(num, ach, ent); return std::make_tuple(nanoocp_result, ach, ent); }, nb::arg("num"), R"nbdoc(recognizes records, by asking either ReaderLib (default) or
 FileRecognizer (if defined) to do so. <ach> is to call
 RecognizeByLib)nbdoc")
         .def("PrepareHeader", static_cast<void (StepData_StepReaderTool::*)(const occ::handle<StepData_FileRecognizer> &)>(&StepData_StepReaderTool::PrepareHeader), nb::arg("reco").none(), R"nbdoc(bounds empty entities and sub-lists to header records
@@ -1459,7 +1459,7 @@ defined in the Header (not every type can be))nbdoc")
         .def("BeginRead", static_cast<void (StepData_StepReaderTool::*)(const occ::handle<Interface_InterfaceModel> &)>(&StepData_StepReaderTool::BeginRead), nb::arg("amodel").none(), R"nbdoc(fills model's header; that is, gives to it Header entities
 and commands their loading. Also fills StepModel's Global
 Check from StepReaderData's GlobalCheck)nbdoc")
-        .def("AnalyseRecord", [](StepData_StepReaderTool &self, const int num, const occ::handle<Standard_Transient> & anent) { occ::handle<Interface_Check> acheck{}; auto result = self.AnalyseRecord(num, anent, acheck); return std::make_tuple(result, acheck); }, nb::arg("num"), nb::arg("anent").none(), R"nbdoc(fills an entity, given record no; works by using a ReaderLib
+        .def("AnalyseRecord", [](StepData_StepReaderTool &self, const int num, const occ::handle<Standard_Transient> & anent) { occ::handle<Interface_Check> acheck{}; auto nanoocp_result = self.AnalyseRecord(num, anent, acheck); return std::make_tuple(nanoocp_result, acheck); }, nb::arg("num"), nb::arg("anent").none(), R"nbdoc(fills an entity, given record no; works by using a ReaderLib
 to load each entity, which must be a Transient
 Actually, returned value is True if no fail, False else)nbdoc")
         .def("EndRead", static_cast<void (StepData_StepReaderTool::*)(const occ::handle<Interface_InterfaceModel> &)>(&StepData_StepReaderTool::EndRead), nb::arg("amodel").none(), R"nbdoc(Ends file reading after reading all the entities

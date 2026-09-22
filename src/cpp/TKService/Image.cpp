@@ -412,10 +412,10 @@ Could be larger than needed to store packed row (extra bytes for alignment etc.)
         .def("DynamicType", static_cast<const occ::handle<Standard_Type> & (Image_AlienPixMap::*)() const>(&Image_AlienPixMap::DynamicType))
         .def_static("IsTopDownDefault", static_cast<bool (*)()>(&Image_AlienPixMap::IsTopDownDefault), R"nbdoc(Return default rows order used by underlying image library.)nbdoc")
         .def("Load", static_cast<bool (Image_AlienPixMap::*)(const TCollection_AsciiString &)>(&Image_AlienPixMap::Load), nb::arg("theFileName"), R"nbdoc(Read image data from file.)nbdoc")
-        .def("Load", [](Image_AlienPixMap &self, const nanoocp::TextInput &theStream, const TCollection_AsciiString & theFileName) { std::stringstream theStream_stream(theStream.text); auto result = self.Load(theStream_stream, theFileName); return result; }, nb::arg("theStream"), nb::arg("theFileName"), R"nbdoc(Read image data from stream.)nbdoc")
+        .def("Load", [](Image_AlienPixMap &self, const nanoocp::TextInput &theStream, const TCollection_AsciiString & theFileName) { std::stringstream theStream_stream(theStream.text); auto nanoocp_result = self.Load(theStream_stream, theFileName); return nanoocp_result; }, nb::arg("theStream"), nb::arg("theFileName"), R"nbdoc(Read image data from stream.)nbdoc")
         .def("Save", static_cast<bool (Image_AlienPixMap::*)(const TCollection_AsciiString &)>(&Image_AlienPixMap::Save), nb::arg("theFileName"), R"nbdoc(Write image data to file.
 @param[in] theFileName file name to save)nbdoc")
-        .def("Save__str", [](Image_AlienPixMap &self, const TCollection_AsciiString & theExtension) { std::ostringstream theStream_stream; auto result = self.Save(theStream_stream, theExtension); return std::make_tuple(result, nanoocp_stream_text(theStream_stream)); }, nb::arg("theExtension"), R"nbdoc(Save__str: the C++ overload Save(std::ostream &, const TCollection_AsciiString &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("Save__str", [](Image_AlienPixMap &self, const TCollection_AsciiString & theExtension) { std::ostringstream theStream_stream; auto nanoocp_result = self.Save(theStream_stream, theExtension); return std::make_tuple(nanoocp_result, nanoocp_stream_text(theStream_stream)); }, nb::arg("theExtension"), R"nbdoc(Save__str: the C++ overload Save(std::ostream &, const TCollection_AsciiString &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Write image data to stream.
 @param[out] theStream   stream where to write
 @param[in] theExtension image format)nbdoc")
@@ -525,7 +525,7 @@ It returns -1 if algorithm not initialized before.)nbdoc")
         .def("ReadCompressedImage", static_cast<occ::handle<Image_CompressedPixMap> (Image_Texture::*)(const occ::handle<Image_SupportedFormats> &) const>(&Image_Texture::ReadCompressedImage), nb::arg("theSupported").none(), R"nbdoc(Image reader without decoding data for formats supported natively by GPUs.)nbdoc")
         .def("ReadImage", static_cast<occ::handle<Image_PixMap> (Image_Texture::*)(const occ::handle<Image_SupportedFormats> &) const>(&Image_Texture::ReadImage), nb::arg("theSupported").none(), R"nbdoc(Image reader.)nbdoc")
         .def("WriteImage", static_cast<bool (Image_Texture::*)(const TCollection_AsciiString &)>(&Image_Texture::WriteImage), nb::arg("theFile"), R"nbdoc(Write image to specified file without decoding data.)nbdoc")
-        .def("WriteImage__str", [](Image_Texture &self, const TCollection_AsciiString & theFile) { std::ostringstream theStream_stream; auto result = self.WriteImage(theStream_stream, theFile); return std::make_tuple(result, nanoocp_stream_text(theStream_stream)); }, nb::arg("theFile"), R"nbdoc(WriteImage__str: the C++ overload WriteImage(std::ostream &, const TCollection_AsciiString &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
+        .def("WriteImage__str", [](Image_Texture &self, const TCollection_AsciiString & theFile) { std::ostringstream theStream_stream; auto nanoocp_result = self.WriteImage(theStream_stream, theFile); return std::make_tuple(nanoocp_result, nanoocp_stream_text(theStream_stream)); }, nb::arg("theFile"), R"nbdoc(WriteImage__str: the C++ overload WriteImage(std::ostream &, const TCollection_AsciiString &); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).
 Write image to specified stream without decoding data.)nbdoc")
         .def("DumpJson", [](const Image_Texture &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(@name hasher interface
 Dumps the content of me into the stream)nbdoc");
@@ -554,7 +554,7 @@ identical to 1.)nbdoc");
         .def("Open", static_cast<bool (Image_VideoRecorder::*)(const char *, const Image_VideoParams &)>(&Image_VideoRecorder::Open), nb::arg("theFileName"), nb::arg("theParams"), R"nbdoc(Open output stream - initialize recorder.
 @param[in] theFileName  video filename
 @param[in] theParams    video parameters)nbdoc")
-        .def("ChangeFrame", [](Image_VideoRecorder &self) { opencascade::handle<Image_PixMap> result(&(self.ChangeFrame())); return result; }, R"nbdoc(Access RGBA frame, should NOT be re-initialized outside.
+        .def("ChangeFrame", [](Image_VideoRecorder &self) { opencascade::handle<Image_PixMap> nanoocp_result(&(self.ChangeFrame())); return nanoocp_result; }, R"nbdoc(Access RGBA frame, should NOT be re-initialized outside.
 Note that image is expected to have upper-left origin.)nbdoc")
         .def("FrameCount", static_cast<int64_t (Image_VideoRecorder::*)() const>(&Image_VideoRecorder::FrameCount), R"nbdoc(Return current frame index.)nbdoc")
         .def("PushFrame", static_cast<bool (Image_VideoRecorder::*)()>(&Image_VideoRecorder::PushFrame), R"nbdoc(Push new frame, should be called after Open().)nbdoc");

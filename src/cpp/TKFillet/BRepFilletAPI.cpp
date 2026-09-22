@@ -340,7 +340,7 @@ Warning
 table of contours or if E does not belong to the contour of index IC.)nbdoc")
         .def("SetRadius", static_cast<void (BRepFilletAPI_MakeFillet::*)(const double, const int, const TopoDS_Edge &)>(&BRepFilletAPI_MakeFillet::SetRadius), nb::arg("Radius"), nb::arg("IC"), nb::arg("E"), R"nbdoc(Assigns Radius as the radius of the fillet on the edge E)nbdoc")
         .def("SetRadius", static_cast<void (BRepFilletAPI_MakeFillet::*)(const double, const int, const TopoDS_Vertex &)>(&BRepFilletAPI_MakeFillet::SetRadius), nb::arg("Radius"), nb::arg("IC"), nb::arg("V"))
-        .def("GetBounds", [](BRepFilletAPI_MakeFillet &self, const int IC, const TopoDS_Edge & E) { double F{}; double L{}; auto result = self.GetBounds(IC, E, F, L); return std::make_tuple(result, F, L); }, nb::arg("IC"), nb::arg("E"))
+        .def("GetBounds", [](BRepFilletAPI_MakeFillet &self, const int IC, const TopoDS_Edge & E) { double F{}; double L{}; auto nanoocp_result = self.GetBounds(IC, E, F, L); return std::make_tuple(nanoocp_result, F, L); }, nb::arg("IC"), nb::arg("E"))
         .def("GetLaw", static_cast<occ::handle<Law_Function> (BRepFilletAPI_MakeFillet::*)(const int, const TopoDS_Edge &)>(&BRepFilletAPI_MakeFillet::GetLaw), nb::arg("IC"), nb::arg("E"))
         .def("SetLaw", static_cast<void (BRepFilletAPI_MakeFillet::*)(const int, const TopoDS_Edge &, const occ::handle<Law_Function> &)>(&BRepFilletAPI_MakeFillet::SetLaw), nb::arg("IC"), nb::arg("E"), nb::arg("L").none())
         .def("SetFilletShape", static_cast<void (BRepFilletAPI_MakeFillet::*)(const ChFi3d_FilletShape)>(&BRepFilletAPI_MakeFillet::SetFilletShape), nb::arg("FShape"), R"nbdoc(Assigns FShape as the type of fillet shape built by this algorithm.)nbdoc")
