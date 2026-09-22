@@ -73,6 +73,8 @@ public:
   void Dump(Standard_OStream& theStream) const { theStream << "x"; }
   //! An std type without a caster that is not a stream: reported by name (DE_Wrapper::GlobalLoadMutex).
   static std::mutex& LoadMutex() { static std::mutex aMutex; return aMutex; }
+  //! A braced default (`= {}`): list-initialised, because static_cast from a braced-init-list is not C++.
+  void Braced(const gp_XYZ& theXYZ = {}) const { (void)theXYZ; }
   //! Mutable reference to a primitive -> getter + SetValue Python addition.
   double& Value(int theIndex) { (void)theIndex; return myValue; }
   //! Static and instance method with the same name -> Static_s.
@@ -822,9 +824,13 @@ def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
     unexpected = [d for d in dups if not (d[2][0] in width_ok and any(t in ("float", "int") for t in d[2][1]))
                   and not (d[0] in ("TCollection", "Standard", "Resource") and "str" in d[2][1])
                   and d[1] != "Standard_Mutex.Sentry"         # Sentry(Standard_Mutex&) / Sentry(Standard_Mutex*): the same call
-                  and (d[1], d[2][0]) != ("Graphic3d_Vertex", "Coord")]   # Coord(double&...) / Coord(float&...): width twins with out-params only
+                  and (d[1], d[2][0]) != ("Graphic3d_Vertex", "Coord")   # Coord(double&...) / Coord(float&...): width twins with out-params only
+                  # str-kind twins outside TCollection (decision 2026-09-21, unchanged): Add(const char*) / Add(AsciiString) /
+                  # Add(char) all append the same text, and XSControl_Utils::ToHString returns the same text as an
+                  # HAsciiString instead of an HExtendedString (a Draw helper class)
+                  and (d[1], d[2][0]) not in (("Interface_LineBuffer", "Add"), ("XSControl_Utils", "ToHString"))]
     assert unexpected == [], unexpected
-    assert len(dups) < 80        # 61 with TKService (2026-09-22)
+    assert len(dups) < 90        # 61 with TKService, 71 with TKXSBase (2026-09-22)
 
 
 def test_report_categories_are_complete_for_the_checked_in_reports():
@@ -916,3 +922,16 @@ def test_unsupported_std_types_are_reported_by_name(rules_ir):
     assert categorize(line) == "std"
     assert all("iostream type" not in r for r in rules_ir.report if "LoadMutex" in r)
     assert any("Dump" not in r or "iostream" not in r for r in rules_ir.report)   # the ostream& member is a stream, not skipped
+
+
+# Design.md 6 R-DEFAULT
+def test_a_braced_default_is_list_initialised(rules_ir):
+    """`= {}` in the header (XSAlgo_ShapeProcessor's DE_ShapeFixParameters, the ParameterMap of SetShapeFixParameters,
+    3 more in TKXSBase) must be emitted as std::decay_t<T>{} -- static_cast from a braced-init-list does not compile
+    ("expected expression", 2026-09-22)."""
+    assert _method(rules_ir, "Rules_Value", "Braced").params[0].default == "{ }"   # libclang spells the tokens
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert 'nb::arg("theXYZ") = std::decay_t<const gp_XYZ &>{ }' in cpp
+    assert "static_cast<std::decay_t<const gp_XYZ &>>({ })" not in cpp

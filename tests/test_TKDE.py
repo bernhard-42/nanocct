@@ -72,7 +72,8 @@ def test_the_work_session_stays_a_parameter():
     for cls in (DE_Provider, DE_Wrapper):
         assert not hasattr(cls, "Read__XSControl_WorkSession") and not hasattr(cls, "Write__XSControl_WorkSession")
     doc = DE_Wrapper.Read.__doc__
-    assert "theWS: XSControl_WorkSession | None" in doc and "-> tuple[bool, XSControl_WorkSession]" in doc
+    assert "theWS: nanoocp.XSControl.XSControl_WorkSession | None" in doc      # the type resolves since TKXSBase
+    assert "-> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]" in doc
     wrapper = DE_Wrapper()
     # no provider is registered, so DE_Wrapper::Read fails before it touches the session: it comes back unchanged (None)
     assert wrapper.Read("box.stp", TopoDS_Shape(), None) == (False, None)

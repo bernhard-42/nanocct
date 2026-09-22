@@ -13,6 +13,7 @@ NB_MODULE(_TKDE, m) {
     nb::module_::import_("nanoocp._TKernel");
     nb::module_::import_("nanoocp._TKMath");
     nb::module_::import_("nanoocp._TKBRep");
+    nb::module_::import_("nanoocp._TKLCAF");
     nb::module_ m_DE = m.def_submodule("DE", "OCCT package DE (toolkit TKDE)");
     m_DE.attr("__name__") = "nanoocp.DE";
     sys_modules["nanoocp._TKDE.DE"] = m_DE;

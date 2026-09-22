@@ -295,7 +295,15 @@ def main(argv: list[str]) -> int:
             manifest.setdefault("links", {})[tk_name] = extra_libs
             if len(extra_libs) > 0:
                 print(f"{tk_name}: links additionally {' '.join(extra_libs)} (types named in signatures)", file=sys.stderr)
+        # R-LINK: a toolkit whose types this one only *names* is a link dependency; it becomes an import as well when it
+        # precedes this toolkit in the canonical order (_TKXSBase imports _TKDE for XSAlgo_ShapeProcessor's
+        # DE_ShapeFixParameters default, which nanobind converts at .def time). A toolkit that comes *later* is never
+        # needed at registration time -- when this one was generated its classes were not in the manifest yet, so a base
+        # or default of such a type would have been skipped -- and importing it back would be a cycle.
+        position = {t: i for i, t in enumerate(_topo(tree, generated_toolkits))}
         depends = [d for d in tk.depends if d in generated_toolkits]
+        depends += [d for d in manifest.get("links", {}).get(tk_name, [])
+                    if d in generated_toolkits and d not in depends and position[d] < position[tk_name]]
         namespaces = {p: [tuple(ns) for ns in manifest["namespaces"].get(p, [])] for p in order}
         (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends, namespaces))   # every package of the toolkit
     ordered = _topo(tree, generated_toolkits)

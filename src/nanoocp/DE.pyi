@@ -10,6 +10,7 @@ import nanoocp.TCollection
 import nanoocp.TDocStd
 import nanoocp.TopAbs
 import nanoocp.TopoDS
+import nanoocp.XSControl
 import nanoocp.DE
 
 
@@ -423,7 +424,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
 
     @overload
-    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads a CAD file, according internal configuration
         @param[in] thePath path to the import CAD file
@@ -434,7 +435,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads streams according to internal configuration
         @param[in] theStreams streams to read from
@@ -465,7 +466,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads a CAD file, according internal configuration
         @param[in] thePath path to the import CAD file
@@ -476,7 +477,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads streams according to internal configuration
         @param[in] theStreams streams to read from
@@ -507,7 +508,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes a CAD file, according internal configuration
         @param[in] thePath path to the export CAD file
@@ -518,7 +519,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes streams according to internal configuration
         @param[in] theStreams streams to write to
@@ -549,7 +550,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes a CAD file, according internal configuration
         @param[in] thePath path to the export CAD file
@@ -560,7 +561,7 @@ class DE_Provider(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes streams according to internal configuration
         @param[in] theStreams streams to write to
@@ -677,7 +678,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads a CAD file, according internal configuration
         @param[in] thePath path to the import CAD file
@@ -698,7 +699,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads a CAD file, according internal configuration
         @param[in] thePath path to the import CAD file
@@ -719,7 +720,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads streams according to internal configuration
         @param[in] theStreams streams to read from
@@ -740,7 +741,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Read(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.ReadStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Reads streams according to internal configuration
         @param[in] theStreams streams to read from
@@ -761,7 +762,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes a CAD file, according internal configuration
         @param[in] thePath path to the export CAD file
@@ -782,7 +783,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, thePath: nanoocp.TCollection.TCollection_AsciiString, theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes a CAD file, according internal configuration
         @param[in] thePath path to the export CAD file
@@ -803,7 +804,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theDocument: nanoocp.TDocStd.TDocStd_Document | None, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes streams according to internal configuration
         @param[in] theStreams streams to write to
@@ -824,7 +825,7 @@ class DE_Wrapper(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: "XSControl_WorkSession" | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, "XSControl_WorkSession"]:
+    def Write(self, theStreams: nanoocp.NCollection.NCollection_List[nanoocp.DE.DE_Provider.WriteStreamNode], theShape: nanoocp.TopoDS.TopoDS_Shape, theWS: nanoocp.XSControl.XSControl_WorkSession | None, theProgress: nanoocp.Message.Message_ProgressRange = ...) -> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]:
         """
         Writes streams according to internal configuration
         @param[in] theStreams streams to write to

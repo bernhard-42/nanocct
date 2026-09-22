@@ -135,8 +135,13 @@ class Emitter:
                 parts.append(arg)
             else:
                 # cast to the parameter's value type: a `char` default written as 0 must become a
-                # 1-character str, an enum default written as an int must become the enum, etc.
-                parts.append(f'{arg} = static_cast<std::decay_t<{p.type}>>({p.default})')
+                # 1-character str, an enum default written as an int must become the enum, etc. A braced default
+                # (`= {}`: XSAlgo_ShapeProcessor's DE_ShapeFixParameters, the ParameterMap of SetShapeFixParameters)
+                # is list-initialised instead -- static_cast from a braced-init-list is not C++ (R-DEFAULT, 2026-09-22).
+                if p.default.startswith("{"):
+                    parts.append(f'{arg} = std::decay_t<{p.type}>{p.default}')
+                else:
+                    parts.append(f'{arg} = static_cast<std::decay_t<{p.type}>>({p.default})')
                 self._note_types(p.default)
         return "".join(", " + s for s in parts)
 
