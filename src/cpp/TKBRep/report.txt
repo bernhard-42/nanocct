@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKBRep: 452 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKBRep: 444 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # conversion: 1
 # field: 1
@@ -8,7 +8,7 @@
 # overload-collision: 19
 # override: 7
 # raw-pointer: 19
-# stream: 13
+# stream: 5
 # template: 116
 # undefined: 1
 conversion	BRepGraphInc	BRepGraphInc::ParityOrientation::operator TopAbs_Orientation: conversion operator to an unsupported type
@@ -333,17 +333,9 @@ raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::VertexRef>::operator->():
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireDef>::operator->(): return: dependent pointer/mutable reference result
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireRef>::operator->(): return: dependent pointer/mutable reference result
 raw-pointer	BRepGraphInc	BRepGraphInc_BitFlags::Blocks(): return: raw pointer to primitive
-stream	BinTools	BinTools::GetBool(Standard_IStream &, bool &): return: iostream type
-stream	BinTools	BinTools::GetExtChar(Standard_IStream &, char16_t &): return: iostream type
-stream	BinTools	BinTools::GetInteger(Standard_IStream &, int &): return: iostream type
-stream	BinTools	BinTools::GetReal(Standard_IStream &, double &): return: iostream type
-stream	BinTools	BinTools::GetShortReal(Standard_IStream &, float &): return: iostream type
-stream	BinTools	BinTools_Curve2dSet::ReadCurve2d(Standard_IStream &, occ::handle<Geom2d_Curve> &): return: iostream type
-stream	BinTools	BinTools_CurveSet::ReadCurve(Standard_IStream &, occ::handle<Geom_Curve> &): return: iostream type
 stream	BinTools	BinTools_IStream::BinTools_IStream(): param 'theStream': iostream type
 stream	BinTools	BinTools_IStream::Stream(): return: iostream type
 stream	BinTools	BinTools_OStream::BinTools_OStream(): param 'theStream': iostream type
-stream	BinTools	BinTools_SurfaceSet::ReadSurface(Standard_IStream &, occ::handle<Geom_Surface> &): return: iostream type
 stream	BinTools	operator<<(...): iostream type
 stream	BinTools	operator<<(...): iostream type
 template	BRepGraph	BRepGraph::EditorView::GenOps::ApplyModification: template member

@@ -1,0 +1,54 @@
+# nanoOCP generator report for TKBinL: 46 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# operator: 22
+# overload-collision: 4
+# override: 2
+# raw-pointer: 12
+# stream: 5
+# template: 1
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const Standard_GUID &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const TCollection_AsciiString &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const TCollection_ExtendedString &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const TDF_Label &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const bool): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const char *const): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const char): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const char16_t): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const double): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const float): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const int): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator<<(const uint8_t): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(Standard_GUID &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(TCollection_AsciiString &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(TCollection_ExtendedString &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(bool &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(char &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(char16_t &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(double &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(float &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(int &): operator has no Python equivalent
+operator	BinObjMgt	BinObjMgt_Persistent::operator>>(uint8_t &): operator has no Python equivalent
+overload-collision	BinObjMgt	BinObjMgt_Persistent::operator<<(const float): same Python signature as operator<<(const double) -> registered after it (width preference)
+overload-collision	BinObjMgt	BinObjMgt_Persistent::operator<<(const uint8_t): same Python signature as operator<<(const int) -> registered after it (width preference)
+overload-collision	BinObjMgt	BinObjMgt_Persistent::operator>>(float &): same Python signature as operator>>(double &) -> registered after it (width preference)
+overload-collision	BinObjMgt	BinObjMgt_Persistent::operator>>(uint8_t &): same Python signature as operator>>(int &) -> registered after it (width preference)
+override	BinObjMgt	BinObjMgt_Persistent::SetIStream(Standard_IStream &): overrides.toml [skip] methods
+override	BinObjMgt	BinObjMgt_Persistent::SetOStream(Standard_OStream &): overrides.toml [skip] methods
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::GetByteArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::GetCharArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::GetExtCharArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::GetIntArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::GetRealArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::GetShortRealArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::PutByteArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::PutCharArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::PutExtCharArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::PutIntArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::PutRealArray(): param 'theArray': raw pointer to primitive
+raw-pointer	BinObjMgt	BinObjMgt_Persistent::PutShortRealArray(): param 'theArray': raw pointer to primitive
+stream	BinObjMgt	BinObjMgt_Persistent::GetIStream(): return: iostream type
+stream	BinObjMgt	BinObjMgt_Persistent::GetOStream(): return: iostream type
+stream	BinObjMgt	BinObjMgt_Position::BinObjMgt_Position(): param 'theStream': iostream type
+stream	BinObjMgt	operator<<(...): iostream type
+stream	BinObjMgt	operator>>(...): iostream type
+template	BinMDataStd	BinMDataStd::SetAttributeID: template member

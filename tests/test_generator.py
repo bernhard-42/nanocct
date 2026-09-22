@@ -35,6 +35,7 @@ HEADER = """
 #include <NCollection_DynamicArray.hxx>
 #include <NCollection_List.hxx>
 #include <NCollection_Sequence.hxx>
+#include <NCollection_DataMap.hxx>
 #include <NCollection_DefineAlloc.hxx>
 #include <utility>
 #include <gp_Trsf.hxx>
@@ -59,6 +60,8 @@ public:
 
   //! Pure out-parameters -> returned as a tuple.
   void Coord(double& theX, double& theY) const { theX = 1.0; theY = 2.0; }
+  //! A chaining result (*this) next to an out-parameter is dropped: the lambda would copy self (BinObjMgt_Persistent::GetInteger).
+  const Rules_Value& GetOne(int& theV) const { theV = 1; return *this; }
   //! In/out parameter (listed in overrides [inout] by the test).
   void Transforms(double& theX) const { theX += 1.0; }
   //! Non-const reference to a class: mutated in place, stays a parameter.
@@ -324,6 +327,18 @@ protected:
   NCollection_Sequence<gp_Pnt> myItems;
 };
 
+//! 6a: a class deriving from a binder instantiation itself (BinObjMgt_RRelocationTable : NCollection_DataMap<int,
+//! handle<Standard_Transient>>): declared after the templates phase too, the base spelled as the manifest key.
+class Rules_Table : public NCollection_DataMap<int, double>
+{
+public:
+  int Tag() const { return myTag; }
+  void SetTag(const int theTag) { myTag = theTag; }
+
+private:
+  int myTag = 0;
+};
+
 //! Transient through a template base (SelectMgr_RectangularFrustum : SelectMgr_Frustum<4> : ... : Standard_Transient,
 //! BRepExtrema_TriangleSet : BVH_PrimitiveSet<double, 3>): both the instantiation and the derived class are Transient.
 template <class T>
@@ -412,7 +427,7 @@ def test_ir_classes_and_nesting(rules_ir):
     assert names[:14] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
                           "Rules_Algo", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2", "Rules_Alloc", "Rules_Arrays"]
     assert set(names[14:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
-                               "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_ViaTemplate",
+                               "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>"}   # alias instantiations, probe bases
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
@@ -429,6 +444,8 @@ def test_ir_out_parameters(rules_ir):
     handles = _method(rules_ir, "Rules_Value", "Handles")
     assert [(p.is_handle, p.is_out) for p in handles.params] == [(True, False), (True, True)]
     assert handles.params[0].class_name == "Rules_Thing"
+    one = _method(rules_ir, "Rules_Value", "GetOne")
+    assert one.result == "void" and [p.is_out for p in one.params] == [True]
 
 
 def test_ir_inout_from_override(monkeypatch, tmp_path_factory):
@@ -703,6 +720,11 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     templates_fn = cpp[cpp.index("void nanoocp_templates_Rules"):cpp.index("void nanoocp_define_Rules")]
     decl = 'nb::class_<Rules_PntSeq::Iterator, NCollection_Sequence<gp_Pnt>::Iterator> cls(m.attr("Rules_PntSeq"), "Iterator"'
     assert decl in templates_fn and templates_fn.index("bind_NCollection_Sequence<gp_Pnt>") < templates_fn.index(decl)
+    # 6a: a class deriving from the binder instantiation itself
+    table = by["Rules_Table"]
+    assert table.after_templates and table.bases == ["NCollection_DataMap<int, double>"] and "NCollection_DataMap<int, double>" in rules_ir.instances
+    decl = 'nb::class_<Rules_Table, NCollection_DataMap<int, double>> cls(m, "Rules_Table"'
+    assert decl in templates_fn and templates_fn.index("bind_NCollection_DataMap<int, double>") < templates_fn.index(decl)
 
 
 def test_ir_template_bases_of_instantiations(rules_ir):

@@ -62,6 +62,12 @@ headers = [
 # "Class::Name(<param types>)" one overload. Members declared but never defined in the OCCT libraries are detected
 # automatically, per overload (generator/symbols.py: nm on the toolkit library, compared by mangled name).
 methods = [
+    # Stream setters that *store* the reference (myOStream = &theStream): the lambda's std::stringstream would dangle after
+    # the call (R-STREAM-OUT/IN only cover streams used during the call; constructors are excluded for the same reason).
+    # The only two in OCCT outside constructors (grep "= &the.*Stream", 2026-09-22); Persistent::Write/Read take the stream
+    # per call and stay.
+    "BinObjMgt_Persistent::SetOStream",
+    "BinObjMgt_Persistent::SetIStream",
     # Template members whose body does not compile for the instantiation (Design.md 6c): IntPolyh_Array<T>::Dump() calls
     # (*this)[i].Dump() with no argument, but IntPolyh_Edge/Triangle::Dump take an int and IntPolyh_PointNormal has none.
     # Points, SectionLines and StartPoints (Dump() exists) keep it. Debug printf output, no Python use (2026-09-21).
@@ -117,6 +123,12 @@ binary_packages = [
     "BinTools",      # BinTools::Write/Read, BinTools_ShapeSet & co.: the binary BRep format (BinLDrivers etc. follow in Phase 2)
     "PCDM",          # PCDM_Reader::Read / PCDM_Writer::Write / PCDM::FileFormat: format-agnostic document streams, binary is the superset (XML decodes from bytes)
     "CDF",           # CDF_Application::Read(istream): same document streams
+    "BinLDrivers",   # the binary OCAF format (TKBinL): document storage/retrieval drivers, sections
+    "BinObjMgt",     # BinObjMgt_Persistent::Write/Read, BinObjMgt_Position
+    "BinMDF",        # attribute driver bases (no streams today, listed for consistency)
+    "BinMDataStd",
+    "BinMDocStd",
+    "BinMFunction",
 ]
 # Single members whose streams carry a document (binary or XML) inside a package whose other streams are text (DumpJson):
 # Class::method, every overload.

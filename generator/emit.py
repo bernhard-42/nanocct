@@ -426,9 +426,9 @@ class Emitter:
         for b in c.bases:
             if c.is_exception and b.startswith("std::"):
                 continue
-            if c.after_templates and b.endswith("::Iterator") and (b[:-len("::Iterator")] in self.ir.instances or (
-                    b[:-len("::Iterator")] in self.templates and not self.templates[b[:-len("::Iterator")]].get("skipped", False))):
-                continue                                # 6a: a binder instantiation's nested Iterator, registered in the templates phase
+            owner = b[:-len("::Iterator")] if b.endswith("::Iterator") else b
+            if c.after_templates and (owner in self.ir.instances or (owner in self.templates and not self.templates[owner].get("skipped", False))):
+                continue                                # 6a: a binder instantiation or its nested Iterator, registered in the templates phase
             if b not in self.known or b in skipped:     # skipped: a base of this package that was skipped just before (bases come first)
                 self.report.append(f"{c.name}: base class {b} is not bound ({'skipped' if b in skipped else 'package not generated'}) -> class skipped")
                 skip(c)
@@ -462,10 +462,10 @@ class Emitter:
             if c.name in skipped and c.template_key != "":
                 self.templates[c.template_key] = {"toolkit": "", "package": "", "name": "", "by": ir.name, "skipped": True}
         instances = self._instances()   # registers this package's NCollection instantiations in self.templates (defaults may use them)
-        for c in [c for c in classes if c.after_templates]:    # the Iterator base's owner may have been skipped just now
-            owners = [b[:-len("::Iterator")] for b in c.bases if b.endswith("::Iterator")]
+        for c in [c for c in classes if c.after_templates]:    # the binder base (or the Iterator's owner) may have been skipped just now
+            owners = [b[:-len("::Iterator")] if b.endswith("::Iterator") else b for b in c.bases]
             if any(self.templates.get(o, {}).get("skipped", False) for o in owners):
-                self.report.append(f"{c.name}: base class {owners[0]}::Iterator is not bound (instantiation skipped) -> class skipped")
+                self.report.append(f"{c.name}: base class {c.bases[0]} is not bound (instantiation skipped) -> class skipped")
                 skipped.add(c.name)
                 classes.remove(c)
         free_ops, module_fns = self._functions()

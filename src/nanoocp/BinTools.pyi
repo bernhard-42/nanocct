@@ -160,6 +160,21 @@ class BinTools:
     @staticmethod
     def PutExtChar(theValue: str) -> bytes: ...
 
+    @staticmethod
+    def GetReal(IS: BinaryIO) -> float: ...
+
+    @staticmethod
+    def GetShortReal(IS: BinaryIO) -> float: ...
+
+    @staticmethod
+    def GetInteger(IS: BinaryIO) -> int: ...
+
+    @staticmethod
+    def GetBool(IS: BinaryIO) -> bool: ...
+
+    @staticmethod
+    def GetExtChar(IS: BinaryIO) -> str: ...
+
     @overload
     @staticmethod
     def Write(theShape: nanoocp.TopoDS.TopoDS_Shape, theRange: nanoocp.Message.Message_ProgressRange = ...) -> bytes:
@@ -293,6 +308,14 @@ class BinTools_Curve2dSet:
     def WriteCurve2d(C: nanoocp.Geom2d.Geom2d_Curve | None, OS: BinTools_OStream) -> None:
         """Dumps the curve on the binary stream, that can be read back."""
 
+    @staticmethod
+    def ReadCurve2d(IS: BinaryIO) -> nanoocp.Geom2d.Geom2d_Curve:
+        """
+        Reads the curve from the stream. The curve is
+        assumed to have been written with the Write
+        method.
+        """
+
 class BinTools_CurveSet:
     """Stores a set of Curves from Geom in binary format."""
 
@@ -335,6 +358,14 @@ class BinTools_CurveSet:
         """
         Dumps the curve on the stream in binary format
         that can be read back.
+        """
+
+    @staticmethod
+    def ReadCurve(IS: BinaryIO) -> nanoocp.Geom.Geom_Curve:
+        """
+        Reads the curve from the stream. The curve is
+        assumed to have been written with the Write
+        method
         """
 
 class BinTools_IStream:
@@ -579,6 +610,13 @@ class BinTools_SurfaceSet:
         """
         Dumps the surface on the stream in binary
         format that can be read back.
+        """
+
+    @staticmethod
+    def ReadSurface(IS: BinaryIO) -> nanoocp.Geom.Geom_Surface:
+        """
+        Reads the surface from the stream. The surface is
+        assumed to have been written with the Write method.
         """
 
 class BinTools_ShapeSet(BinTools_ShapeSetBase):

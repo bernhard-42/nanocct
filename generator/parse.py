@@ -788,9 +788,18 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
                is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
                is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type))
-    returns_stream = _stream_kind(cursor.result_type) == StreamKind.OUT and any(p.stream == StreamKind.OUT for p in params)
+    result_stream = _stream_kind(cursor.result_type)
+    returns_stream = result_stream != StreamKind.NONE and any(p.stream == result_stream for p in params)
     if m.skip_reason is None and returns_stream:
-        m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""    # Standard_OStream& Print(x, Standard_OStream&): the stream itself, for chaining
+        # Standard_OStream& Print(x, Standard_OStream&), Standard_IStream& BinObjMgt_Persistent::Read(Standard_IStream&): the stream
+        # itself, for chaining (R-STREAM-OUT/IN)
+        m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
+    rc0 = cursor.result_type.get_canonical()
+    if m.skip_reason is None and any(p.is_out for p in params) and rc0.kind == TK.LVALUEREFERENCE \
+            and _type_spelling(rc0.get_pointee()).replace("const ", "") == cls_name:
+        # `const BinObjMgt_Persistent& GetInteger(int&)`: *this, for chaining. The out-param lambda would copy it (`auto result`),
+        # and copying a Persistent shares its raw buffers (abort at destruction). Dropped like the chained stream (R-OUT)
+        m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
         rc0 = cursor.result_type.get_canonical()
@@ -1070,6 +1079,16 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
                 key = f"{base_decl.semantic_parent.spelling}<{', '.join(instance_args(base_decl.semantic_parent.spelling, all_args))}>"
                 c.bases.append(f"{key}::Iterator")
+                c.after_templates = True
+                continue
+            if not _SUBST.active and base_decl.kind != K.NO_DECL_FOUND and base_decl.spelling in BINDERS:
+                # 6a: the base is a binder instantiation itself (BinObjMgt_RRelocationTable : NCollection_DataMap<int,
+                # handle<Standard_Transient>>, XmlObjMgt_SRelocationTable : NCollection_IndexedMap<handle<Standard_Transient>>):
+                # same treatment, the manifest key is the C++ spelling nanobind needs (defaults such as the hasher left out)
+                _note_instance(ch.type)
+                canon = ch.type.get_canonical()
+                all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+                c.bases.append(f"{base_decl.spelling}<{', '.join(instance_args(base_decl.spelling, all_args))}>")
                 c.after_templates = True
                 continue
             if not _SUBST.active and _is_plain_template_instance(ch.type):
