@@ -170,4 +170,12 @@ binary_packages = [
 binary_members = [
     "TDocStd_Application::Open",     # Open(istream&, doc) reads a binary or XML OCAF document
     "TDocStd_Application::SaveAs",   # SaveAs(doc, ostream&) writes one
+    # RWStl is genuinely mixed: STL exists as an ASCII and a binary format and the package writes and reads both.
+    # WriteAscii/ReadAsciiStream stay text; these five carry binary content (ReadStream and IsAscii sniff the format,
+    # so bytes is the superset there, as for PCDM).
+    "RWStl::WriteBinary",
+    "RWStl::ReadBinaryStream",
+    "RWStl::ReadStream",
+    "RWStl_Reader::ReadBinary",
+    "RWStl_Reader::IsAscii",
 ]

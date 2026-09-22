@@ -1483,6 +1483,9 @@
 "DESTEP_Parameters::WriteMode_StepSchema": "DESTEP",
 "DESTEP_Parameters::WriteMode_VertexMode": "DESTEP",
 "DESTEP_Provider": "DESTEP",
+"DESTL_ConfigurationNode": "DESTL",
+"DESTL_ConfigurationNode::RWStl_InternalSection": "DESTL",
+"DESTL_Provider": "DESTL",
 "DE_ConfigurationContext": "DE",
 "DE_ConfigurationNode": "DE",
 "DE_ConfigurationNode::DE_SectionGlobal": "DE",
@@ -3812,6 +3815,8 @@
 "RWHeaderSection_RWFileName": "RWHeaderSection",
 "RWHeaderSection_RWFileSchema": "RWHeaderSection",
 "RWHeaderSection_ReadWriteModule": "RWHeaderSection",
+"RWStl": "RWStl",
+"RWStl_Reader": "RWStl",
 "Resource_FormatType": "Resource",
 "Resource_LexicalCompare": "Resource",
 "Resource_Manager": "Resource",
@@ -5100,6 +5105,9 @@
 "StepVisual_TriangulatedFace": "StepVisual",
 "StepVisual_TriangulatedSurfaceSet": "StepVisual",
 "StepVisual_ViewVolume": "StepVisual",
+"StlAPI": "StlAPI",
+"StlAPI_Reader": "StlAPI",
+"StlAPI_Writer": "StlAPI",
 "Storage": "Storage",
 "Storage_BaseDriver": "Storage",
 "Storage_Bucket": "Storage",
@@ -11742,6 +11750,12 @@
 "name": "NCollection_Sequence__Handle_PCDM_Document",
 "by": "PCDM"
 },
+"NCollection_Sequence<opencascade::handle<Poly_Triangulation>>": {
+"toolkit": "TKDESTL",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_Poly_Triangulation",
+"by": "RWStl"
+},
 "NCollection_Sequence<opencascade::handle<PrsMgr_Presentation>>": {
 "toolkit": "TKV3d",
 "package": "NCollection",
@@ -12362,6 +12376,7 @@
 "DE": "TKDE",
 "DEIGES": "TKDEIGES",
 "DESTEP": "TKDESTEP",
+"DESTL": "TKDESTL",
 "Draft": "TKOffset",
 "DsgPrs": "TKV3d",
 "ElCLib": "TKMath",
@@ -12503,6 +12518,7 @@
 "RWStepRepr": "TKDESTEP",
 "RWStepShape": "TKDESTEP",
 "RWStepVisual": "TKDESTEP",
+"RWStl": "TKDESTL",
 "Resource": "TKernel",
 "SHMessage": "TKShHealing",
 "STEPCAFControl": "TKDESTEP",
@@ -12547,6 +12563,7 @@
 "StepToGeom": "TKDESTEP",
 "StepToTopoDS": "TKDESTEP",
 "StepVisual": "TKDESTEP",
+"StlAPI": "TKDESTL",
 "Storage": "TKernel",
 "Sweep": "TKPrim",
 "TColStd": "TKernel",
@@ -13003,6 +13020,11 @@
 "HeaderSection",
 "DESTEP",
 "StepTidy"
+],
+"TKDESTL": [
+"StlAPI",
+"RWStl",
+"DESTL"
 ]
 },
 "links": {
@@ -13019,6 +13041,9 @@
 ],
 "TKDEIGES": [],
 "TKDESTEP": [],
+"TKDESTL": [
+"TKXSBase"
+],
 "TKFeat": [],
 "TKFillet": [],
 "TKG2d": [],
@@ -13147,6 +13172,7 @@
 "DE": [],
 "DEIGES": [],
 "DESTEP": [],
+"DESTL": [],
 "Draft": [],
 "DsgPrs": [],
 "ElCLib": [],
@@ -13311,6 +13337,7 @@
 "RWStepRepr": [],
 "RWStepShape": [],
 "RWStepVisual": [],
+"RWStl": [],
 "Resource": [],
 "SHMessage": [],
 "STEPCAFControl": [],
@@ -13355,6 +13382,7 @@
 "StepToGeom": [],
 "StepToTopoDS": [],
 "StepVisual": [],
+"StlAPI": [],
 "Storage": [],
 "Sweep": [],
 "TColStd": [],

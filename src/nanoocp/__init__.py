@@ -28,6 +28,7 @@ import nanoocp._TKVCAF  # noqa: F401
 import nanoocp._TKXCAF  # noqa: F401
 import nanoocp._TKDEIGES  # noqa: F401
 import nanoocp._TKDESTEP  # noqa: F401
+import nanoocp._TKDESTL  # noqa: F401
 import nanoocp._TKFeat  # noqa: F401
 import nanoocp._TKFillet  # noqa: F401
 import nanoocp._TKHelix  # noqa: F401
