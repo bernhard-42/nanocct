@@ -18,6 +18,7 @@ import nanoocp._TKCAF  # noqa: F401
 import nanoocp._TKBinL  # noqa: F401
 import nanoocp._TKBin  # noqa: F401
 import nanoocp._TKBool  # noqa: F401
+import nanoocp._TKDE  # noqa: F401
 import nanoocp._TKFeat  # noqa: F401
 import nanoocp._TKFillet  # noqa: F401
 import nanoocp._TKHLR  # noqa: F401

@@ -11,8 +11,8 @@
 # raw-pointer: 84
 # rvalue: 5
 # static-rename: 16
-# std: 4
-# stream: 35
+# std: 7
+# stream: 32
 # template: 158
 # unbound-type: 7
 # undefined: 3
@@ -233,7 +233,10 @@ static-rename	Message	Message_ProgressIndicator::Start: static overloads renamed
 static-rename	Quantity	Quantity_Color::Name: static overloads renamed to Name_s (instance method of same name exists)
 static-rename	TCollection	TCollection_AsciiString::IsEqual: static overloads renamed to IsEqual_s (instance method of same name exists)
 static-rename	TCollection	TCollection_ExtendedString::IsEqual: static overloads renamed to IsEqual_s (instance method of same name exists)
+std	NCollection	NCollection_IncAllocator::IBlock::AvailableSize: field unsupported std type: std::atomic
+std	NCollection	NCollection_IncAllocator::IBlock::CurPointer: field unsupported std type: std::atomic
 std	OSD	OSD_OpenStream(...): param 'theFileBuf': std::basic_filebuf
+std	Standard	Standard_Type::Register(): param 'theInfo': unsupported std type: std::type_info
 std	TCollection	TCollection_ExtendedString::AssignCat(): param 'theStringView': std::basic_string_view of non-char
 std	TCollection	TCollection_ExtendedString::TCollection_ExtendedString(): param 'theStringView': std::basic_string_view of non-char
 std	TCollection	TCollection_ExtendedString::operator+=(): param 'theStringView': std::basic_string_view of non-char
@@ -243,8 +246,6 @@ stream	Message	Message_Messenger::StreamBuffer::Stream(): return: iostream type
 stream	Message	Message_Messenger::StreamBuffer::operator<<(): param '': iostream type
 stream	Message	Message_PrinterOStream::GetStream(): return: iostream type
 stream	Message	Message_PrinterOStream::SetConsoleTextColor(): param 'theOStream': iostream type
-stream	NCollection	NCollection_IncAllocator::IBlock::AvailableSize: field iostream type
-stream	NCollection	NCollection_IncAllocator::IBlock::CurPointer: field iostream type
 stream	OSD	OSD_CachedFileSystem::IsOpenIStream(): param 'theStream': iostream type
 stream	OSD	OSD_CachedFileSystem::IsOpenOStream(): param 'theStream': iostream type
 stream	OSD	OSD_CachedFileSystem::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOldStream': iostream type
@@ -266,7 +267,6 @@ stream	OSD	OSD_LocalFileSystem::OpenStreamBuffer(const TCollection_AsciiString &
 stream	OSD	OSD_StreamBuffer<std::iostream>::OSD_StreamBuffer<std::iostream>(const std::string &): param 'theBuffer': iostream type
 stream	OSD	OSD_StreamBuffer<std::istream>::OSD_StreamBuffer<std::istream>(const std::string &): param 'theBuffer': iostream type
 stream	OSD	OSD_StreamBuffer<std::ostream>::OSD_StreamBuffer<std::ostream>(const std::string &): param 'theBuffer': iostream type
-stream	Standard	Standard_Type::Register(): param 'theInfo': iostream type
 stream	Standard	operator<<(...): iostream type
 stream	Standard	operator<<(...): iostream type
 stream	TCollection	TCollection_AsciiString: friend operator<<(Standard_OStream &, const TCollection_AsciiString &): iostream type

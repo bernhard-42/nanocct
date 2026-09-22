@@ -21,6 +21,12 @@ inout = [
     "GeomConvert::C0BSplineToC1BSplineCurve",   # BS: split and re-concatenated, assigned back
     "Geom2dConvert::C0BSplineToC1BSplineCurve", # BS: same
     "*::ReadCompleteInfo",                 # handle<Storage_Data>& theData: used when non-null, created otherwise (Storage_BaseDriver, FSD_File, FSD_BinaryFile)
+    # handle<XSControl_WorkSession>& theWS of the DataExchange providers: documented @param[in], read by the call
+    # (personizeWS: theWS->NormAdaptor(), DESTEP_Provider.cxx:692-707) and replaced only when it is null (2026-09-22)
+    "DE_Provider::Read",
+    "DE_Provider::Write",
+    "DE_Wrapper::Read",
+    "DE_Wrapper::Write",
 ]
 
 # Classes never bound (internal helpers that happen to be public in a header).
@@ -141,6 +147,10 @@ binary_packages = [
     "XmlXCAFDrivers",
     "XmlMDataXtd",
     "XmlMNaming",
+    # DataExchange: the streams of DE carry raw CAD file content, not text -- DE_ValidationUtils::CreateContentBuffer
+    # reads 2048 bytes with reinterpret_cast<char*> from a stream the path overload opens with std::ios::binary
+    # (DE_ValidationUtils.cxx:317-339, :295), and DE_Wrapper::FindReadProvider probes the same content (.glb, binary STL).
+    "DE",
 ]
 # Single members whose streams carry a document (binary or XML) inside a package whose other streams are text (DumpJson):
 # Class::method, every overload.

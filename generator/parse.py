@@ -46,9 +46,11 @@ _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", [])) 
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
 
 _UNSUPPORTED_RE = re.compile(
-    r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf|"
-    r"locale|thread|mutex|atomic|type_info|exception_ptr)\b"
+    r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf)\b"
 )
+# Other std types nanobind has no caster for. Reported by name: "iostream type" was the message for these too until
+# 2026-09-22, which read as a stream in the report (DE_Wrapper::GlobalLoadMutex returns a std::mutex&).
+_UNSUPPORTED_STD_RE = re.compile(r"std::(__\w+::)?(locale|thread|mutex|atomic|type_info|exception_ptr)\b")
 # std templates nanobind casts (nanobind/stl/*.h, all included from nanoocp_common.h)
 _STD_TEMPLATES_OK = {"shared_ptr", "unique_ptr", "vector", "map", "unordered_map", "set", "unordered_set", "pair",
                      "optional", "function", "tuple", "array", "variant", "list", "basic_string", "basic_string_view"}
@@ -473,6 +475,9 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
     cs = canon.spelling
     if _UNSUPPORTED_RE.search(cs) is not None:
         return "iostream type"
+    std_type = _UNSUPPORTED_STD_RE.search(cs)
+    if std_type is not None:
+        return f"unsupported std type: std::{std_type.group(2)}"
     if canon.kind == TK.RVALUEREFERENCE:
         return "rvalue reference"
     if canon.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
@@ -592,6 +597,8 @@ def _stream_kind(t: cindex.Type) -> str:
     return ""
 
 
+# R-OPTIONAL-PTR applies to these reasons; "unsupported std type" is not among them (no OCCT API has an optional
+# std::mutex*/std::locale* parameter -- such a parameter would be reported instead of silently dropped).
 _OPTIONAL_PTR_REASONS = ("raw pointer to primitive", "void pointer", "pointer to incomplete type", "function pointer", "reference to pointer", "iostream type")
 
 

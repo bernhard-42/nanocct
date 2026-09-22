@@ -1448,6 +1448,17 @@
 "Convert_ParameterisationType": "Convert",
 "Convert_SphereToBSplineSurface": "Convert",
 "Convert_TorusToBSplineSurface": "Convert",
+"DE_ConfigurationContext": "DE",
+"DE_ConfigurationNode": "DE",
+"DE_ConfigurationNode::DE_SectionGlobal": "DE",
+"DE_Provider": "DE",
+"DE_Provider::ReadStreamNode": "DE",
+"DE_Provider::WriteStreamNode": "DE",
+"DE_ShapeFixConfigurationNode": "DE",
+"DE_ShapeFixParameters": "DE",
+"DE_ShapeFixParameters::FixMode": "DE",
+"DE_ValidationUtils": "DE",
+"DE_Wrapper": "DE",
 "Draft": "Draft",
 "Draft_EdgeInfo": "Draft",
 "Draft_ErrorStatus": "Draft",
@@ -5950,6 +5961,12 @@
 "by": "IMeshData",
 "skipped": true
 },
+"NCollection_DataMap<TCollection_AsciiString, NCollection_IndexedDataMap<TCollection_AsciiString, opencascade::handle<DE_ConfigurationNode>>>": {
+"toolkit": "TKDE",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_AsciiString__NCollection_IndexedDataMap__TCollection_AsciiString__Handle_DE_ConfigurationNode",
+"by": "DE"
+},
 "NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -6907,6 +6924,12 @@
 "name": "NCollection_IndexedDataMap__TCollection_AsciiString__Handle_Aspect_XRAction",
 "by": "Aspect"
 },
+"NCollection_IndexedDataMap<TCollection_AsciiString, opencascade::handle<DE_ConfigurationNode>>": {
+"toolkit": "TKDE",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__TCollection_AsciiString__Handle_DE_ConfigurationNode",
+"by": "DE"
+},
 "NCollection_IndexedDataMap<TopoDS_Shape, Bnd_Box>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -7305,6 +7328,18 @@
 "name": "NCollection_List__ChFiDS_Regul",
 "by": "ChFi3d"
 },
+"NCollection_List<DE_Provider::ReadStreamNode>": {
+"toolkit": "TKDE",
+"package": "NCollection",
+"name": "NCollection_List__DE_Provider_ReadStreamNode",
+"by": "DE"
+},
+"NCollection_List<DE_Provider::WriteStreamNode>": {
+"toolkit": "TKDE",
+"package": "NCollection",
+"name": "NCollection_List__DE_Provider_WriteStreamNode",
+"by": "DE"
+},
 "NCollection_List<HLRAlgo_BiPoint>": {
 "toolkit": "TKHLR",
 "package": "NCollection",
@@ -7382,6 +7417,12 @@
 "package": "NCollection",
 "name": "NCollection_List__Standard_GUID",
 "by": "TDF"
+},
+"NCollection_List<TCollection_AsciiString>": {
+"toolkit": "TKDE",
+"package": "NCollection",
+"name": "NCollection_List__TCollection_AsciiString",
+"by": "DE"
 },
 "NCollection_List<TCollection_ExtendedString>": {
 "toolkit": "TKLCAF",
@@ -8680,6 +8721,7 @@
 "Cocoa": "TKService",
 "Contap": "TKHLR",
 "Convert": "TKMath",
+"DE": "TKDE",
 "Draft": "TKOffset",
 "DsgPrs": "TKV3d",
 "ElCLib": "TKMath",
@@ -9159,7 +9201,45 @@
 "XmlDrivers",
 "XmlMDataXtd",
 "XmlMNaming"
+],
+"TKDE": [
+"DE"
 ]
+},
+"links": {
+"TKBO": [],
+"TKBRep": [],
+"TKBin": [],
+"TKBinL": [],
+"TKBool": [],
+"TKCAF": [],
+"TKCDF": [],
+"TKDE": [
+"TKLCAF",
+"TKXSBase"
+],
+"TKFeat": [],
+"TKFillet": [],
+"TKG2d": [],
+"TKG3d": [],
+"TKGeomAlgo": [],
+"TKGeomBase": [],
+"TKHLR": [],
+"TKHelix": [],
+"TKLCAF": [],
+"TKMath": [],
+"TKMesh": [],
+"TKOffset": [],
+"TKPrim": [],
+"TKService": [],
+"TKShHealing": [],
+"TKTopAlgo": [],
+"TKV3d": [],
+"TKVCAF": [],
+"TKXMesh": [],
+"TKXml": [],
+"TKXmlL": [],
+"TKernel": []
 },
 "namespaces": {
 "AIS": [],
@@ -9256,6 +9336,7 @@
 "Cocoa": [],
 "Contap": [],
 "Convert": [],
+"DE": [],
 "Draft": [],
 "DsgPrs": [],
 "ElCLib": [],

@@ -39,6 +39,7 @@ HEADER = """
 #include <NCollection_DefineAlloc.hxx>
 #include <utility>
 #include <gp_Trsf.hxx>
+#include <mutex>
 
 class Rules_Fwd;
 
@@ -70,6 +71,8 @@ public:
   void Handles(const occ::handle<Rules_Thing>& theIn, occ::handle<Rules_Thing>& theOut) const { theOut = theIn; }
   //! std::ostream& -> the text comes back as a str.
   void Dump(Standard_OStream& theStream) const { theStream << "x"; }
+  //! An std type without a caster that is not a stream: reported by name (DE_Wrapper::GlobalLoadMutex).
+  static std::mutex& LoadMutex() { static std::mutex aMutex; return aMutex; }
   //! Mutable reference to a primitive -> getter + SetValue Python addition.
   double& Value(int theIndex) { (void)theIndex; return myValue; }
   //! Static and instance method with the same name -> Static_s.
@@ -871,3 +874,45 @@ def test_incremental_run_refuses_to_rehome_an_instantiation(tmp_path):
     proc = subprocess.run(cmd + ["--allow-rehoming"], cwd=ROOT, capture_output=True, text=True)
     assert proc.returncode == 0 and "rehoming: NCollection_Array1<gp_Pnt2d>" in proc.stderr
     assert "NCollection_Array1<gp_Pnt2d>" in (tmp_path / "cpp" / "TKG2d" / "Geom2d.cpp").read_text()
+
+
+# Design.md 6 R-LINK
+def test_extra_link_libraries_from_the_emitted_includes(rules_ir):
+    """A toolkit module links every OCCT toolkit whose types it names, not only OCCT's own EXTERNLIB closure: the
+    handle caster instantiates typeid(T), so a forward-declared class of another toolkit (DE_Provider names
+    XSControl_WorkSession and TDocStd_Document, neither in TKDE's EXTERNLIB) leaves an undefined typeinfo symbol.
+    The Emitter records the include list it wrote; the toolkit's extra libraries are the owners of those headers
+    minus the link closure."""
+    tree = load_tree(OCCT_SRC, OCCT)
+    assert tree.toolkit_of_header["TDocStd_Document.hxx"] == "TKLCAF"
+    assert tree.toolkit_of_header["XSControl_WorkSession.hxx"] == "TKXSBase"
+    assert tree.toolkit_of_header["gp_Pnt.hxx"] == "TKMath"
+    closure = tree.link_closure("TKDE")                      # EXTERNLIB: TKernel, TKMath, TKBRep (transitively)
+    assert {"TKDE", "TKernel", "TKMath", "TKBRep"} <= closure
+    assert closure.isdisjoint({"TKLCAF", "TKXSBase"})        # what OCCT itself does not link
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    em.emit()
+    assert "Rules.hxx" in em.includes
+    assert "gp_Pnt.hxx" in em.includes                       # a parameter type's header, not one of the package's own
+    extra = sorted({tree.toolkit_of_header[h] for h in em.includes if h in tree.toolkit_of_header} - tree.link_closure("TKBRep"))
+    assert extra == []                                       # gp_Pnt is TKMath, already in TKBRep's closure
+    assert sorted({tree.toolkit_of_header[h] for h in em.includes if h in tree.toolkit_of_header}
+                  - tree.link_closure("TKernel")) == ["TKMath"]   # from TKernel's point of view gp_Pnt would be an extra library
+
+
+def test_generated_toolkits_cmake_declares_the_extra_link_libraries():
+    """The checked-in toolkits.cmake carries what the generator computed (R-LINK); TKDE is the first toolkit that needs it."""
+    cmake = (ROOT / "src" / "cpp" / "toolkits.cmake").read_text()
+    assert "set(NANOOCP_TKDE_EXTRA_LIBS TKLCAF TKXSBase)" in cmake
+    assert "${NANOOCP_${tk}_EXTRA_LIBS}" in (ROOT / "CMakeLists.txt").read_text()
+
+
+def test_unsupported_std_types_are_reported_by_name(rules_ir):
+    """An std type nanobind has no caster for is named in the report: a std::mutex& result read as "iostream type"
+    before 2026-09-22 (DE_Wrapper::GlobalLoadMutex, StdPrs_BRepFont::Mutex, SelectMgr_BVHThreadPool::BVHThread::BVHMutex)."""
+    line = next(r for r in rules_ir.report if "LoadMutex" in r)
+    assert line.endswith("unsupported std type: std::mutex")
+    assert categorize(line) == "std"
+    assert all("iostream type" not in r for r in rules_ir.report if "LoadMutex" in r)
+    assert any("Dump" not in r or "iostream" not in r for r in rules_ir.report)   # the ostream& member is a stream, not skipped

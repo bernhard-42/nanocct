@@ -5,7 +5,7 @@
 # overload-collision: 19
 # raw-pointer: 8
 # static-rename: 4
-# stream: 2
+# std: 2
 # template: 5
 # unbound-type: 1
 # undefined: 7
@@ -44,8 +44,8 @@ static-rename	AIS	AIS_ColorScale::FindColor: static overloads renamed to FindCol
 static-rename	Prs3d	Prs3d_ToolQuadric::TrianglesNb: static overloads renamed to TrianglesNb_s (instance method of same name exists)
 static-rename	Prs3d	Prs3d_ToolQuadric::VerticesNb: static overloads renamed to VerticesNb_s (instance method of same name exists)
 static-rename	StdPrs	StdPrs_ShapeTool::IsPlanarFace: static overloads renamed to IsPlanarFace_s (instance method of same name exists)
-stream	SelectMgr	SelectMgr_BVHThreadPool::BVHThread::BVHMutex(): return: iostream type
-stream	StdPrs	StdPrs_BRepFont::Mutex(): return: iostream type
+std	SelectMgr	SelectMgr_BVHThreadPool::BVHThread::BVHMutex(): return: unsupported std type: std::mutex
+std	StdPrs	StdPrs_BRepFont::Mutex(): return: unsupported std type: std::mutex
 template	Prs3d	Prs3d_Point: template (not bound)
 template	Select3D	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>>: the probe typedef did not compile
 template	Select3D	BVH_Box<double, 3>: template base BVH_BaseBox<double, 3, BVH_Box<double, 3>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)

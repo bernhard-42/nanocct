@@ -1,0 +1,19 @@
+# nanoOCP generator report for TKDE: 13 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# std: 1
+# stream: 4
+# template: 2
+# undefined: 6
+std	DE	DE_Wrapper::GlobalLoadMutex(): return: unsupported std type: std::mutex
+stream	DE	DE_Provider::ReadStreamNode::DE_Provider::ReadStreamNode(const TCollection_AsciiString &): param 'theStream': iostream type
+stream	DE	DE_Provider::ReadStreamNode::Stream: field iostream type
+stream	DE	DE_Provider::WriteStreamNode::DE_Provider::WriteStreamNode(const TCollection_AsciiString &): param 'theStream': iostream type
+stream	DE	DE_Provider::WriteStreamNode::Stream: field iostream type
+template	DE	DE_MultiPluginHolder: template (not bound)
+template	DE	DE_PluginHolder: template (not bound)
+undefined	DE	DE_ConfigurationNode::DE_ConfigurationNode(): declared in the header, no definition in libTKDE
+undefined	DE	DE_ConfigurationNode::DE_ConfigurationNode(const occ::handle<DE_ConfigurationNode> &): declared in the header, no definition in libTKDE
+undefined	DE	DE_Provider::DE_Provider(): declared in the header, no definition in libTKDE
+undefined	DE	DE_Provider::DE_Provider(const occ::handle<DE_ConfigurationNode> &): declared in the header, no definition in libTKDE
+undefined	DE	DE_ShapeFixConfigurationNode::DE_ShapeFixConfigurationNode(): declared in the header, no definition in libTKDE
+undefined	DE	DE_ShapeFixConfigurationNode::DE_ShapeFixConfigurationNode(const occ::handle<DE_ShapeFixConfigurationNode> &): declared in the header, no definition in libTKDE

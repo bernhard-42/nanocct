@@ -231,6 +231,7 @@ TColStd_HSequenceOfHAsciiString = nanoocp.NCollection.NCollection_HSequence[nano
 TColStd_HSequenceOfHExtendedString = nanoocp.NCollection.NCollection_HSequence[nanoocp.TCollection.TCollection_HExtendedString]
 TColStd_HSequenceOfInteger = nanoocp.NCollection.NCollection_HSequence[int]
 TColStd_HSequenceOfReal = nanoocp.NCollection.NCollection_HSequence[float]
+TColStd_ListOfAsciiString = nanoocp.NCollection.NCollection_List[nanoocp.TCollection.TCollection_AsciiString]
 TColStd_ListOfInteger = nanoocp.NCollection.NCollection_List[int]
 TColStd_ListOfReal = nanoocp.NCollection.NCollection_List[float]
 TColStd_ListOfTransient = nanoocp.NCollection.NCollection_List[nanoocp.Standard.Standard_Transient]

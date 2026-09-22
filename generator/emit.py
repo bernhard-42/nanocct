@@ -86,6 +86,7 @@ class Emitter:
         self.templates = known_templates      # canonical instance key -> {toolkit, package, name}; updated while emitting
         self.local = {c.name for c in ir.classes}
         self.report: list[str] = []
+        self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
         self._idents: set[str] = set()
 
@@ -821,6 +822,7 @@ class Emitter:
                 self.report.append(f"{ir.name}: extra headers not self-contained, {', '.join(needed)} included first")
                 extra = needed + extra
         includes += [f"#include <{h}>" for h in extra]
+        self.includes = ir.prelude + ir.headers + extra
         return includes
 
 

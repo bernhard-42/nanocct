@@ -31,10 +31,25 @@ class OcctTree:
     install: Path      # deps/occt-8.0.1
     toolkits: dict[str, Toolkit] = field(default_factory=dict)
     packages: dict[str, Package] = field(default_factory=dict)
+    toolkit_of_header: dict[str, str] = field(default_factory=dict)   # "TDocStd_Document.hxx" -> "TKLCAF"
 
     @property
     def include_dir(self) -> Path:
         return self.install / "include" / "opencascade"
+
+    def link_closure(self, toolkit: str) -> set[str]:
+        """The toolkit and everything it links transitively (EXTERNLIB.cmake); what the linker already sees."""
+        seen: set[str] = set()
+        todo = [toolkit]
+        while len(todo) > 0:
+            name = todo.pop()
+            if name in seen:
+                continue
+            seen.add(name)
+            tk = self.toolkits.get(name)
+            if tk is not None:
+                todo += tk.depends
+        return seen
 
 
 _SET_RE = re.compile(r"set\s*\(\s*(\w+)\s*(.*?)\)", re.S)
@@ -80,4 +95,7 @@ def load_tree(src: Path, install: Path) -> OcctTree:
             if ext.exists():
                 tk.depends = [d for d in _cmake_list(ext) if d.startswith("TK") and d != tk_name]
             tree.toolkits[tk_name] = tk
+    for pkg in tree.packages.values():
+        for header in pkg.headers:
+            tree.toolkit_of_header[header] = pkg.toolkit
     return tree

@@ -24,7 +24,9 @@ foreach(tk IN LISTS NANOOCP_TOOLKITS)
   else()
     target_compile_options(_${tk} PRIVATE -Wno-deprecated-declarations)
   endif()
-  target_link_libraries(_${tk} PRIVATE ${tk})
+  # ${tk} brings OCCT's own EXTERNLIB closure; NANOOCP_<tk>_EXTRA_LIBS adds the toolkits whose types the
+  # generated code names but OCCT does not link (typeinfo for the handle caster, Design.md 6 R-LINK).
+  target_link_libraries(_${tk} PRIVATE ${tk} ${NANOOCP_${tk}_EXTRA_LIBS})
   # dev builds: find the OCCT libraries where they are; wheels get relinked by delocate/auditwheel
   set_target_properties(_${tk} PROPERTIES INSTALL_RPATH "${NANOOCP_OCCT_DIR}/lib")
   install(TARGETS _${tk} LIBRARY DESTINATION nanoocp)
