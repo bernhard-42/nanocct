@@ -659,7 +659,8 @@ An exception is raised if the dimensions are different.)nbdoc")
 An exception is raised if the dimensions are different.)nbdoc")
         .def("__neg__", static_cast<math_Matrix (math_Matrix::*)() const>(&math_Matrix::operator-), nb::is_operator())
         .def("Dump", [](const math_Matrix &self) { std::ostringstream o_stream; self.Dump(o_stream); return nanoocp_stream_text(o_stream); }, R"nbdoc(Prints information on the current state of the object.
-Is used to redefine the operator <<.)nbdoc");
+Is used to redefine the operator <<.)nbdoc")
+        .def("__rmul__", [](const math_Matrix & Right, const double Left) { return Left * Right; }, nb::is_operator()) /* free operator* */;
     nanoocp_if_concrete<math_VectorBase<double>>(nb::borrow<nb::class_<math_VectorBase<double>>>(m.attr("math_Vector")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, const gp_XY & Other) { new (self) nanoocp_T(Other); }, nb::arg("Other"), R"nbdoc(Constructor for converting gp_XY to math_VectorBase)nbdoc")
         .def("__init__", [](nanoocp_T *self, const gp_XYZ & Other) { new (self) nanoocp_T(Other); }, nb::arg("Other"), R"nbdoc(Constructor for converting gp_XYZ to math_VectorBase)nbdoc")
@@ -770,7 +771,8 @@ The method optimizes memory usage:
 - If new size fits in stack buffer (<=32), uses stack allocation
 - If new size requires heap and was already on heap, resizes in place
 - Transitions between stack and heap as needed
-@param theSize new size of the vector)nbdoc");
+@param theSize new size of the vector)nbdoc")
+        .def("__rmul__", [](const math_VectorBase<double> & theRight, const double theLeft) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */;
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, math_VectorBase<double>>();
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, math_VectorBase<double>>();
     nanoocp_implicit_default_ctor<math>(nb::borrow<nb::class_<math>>(m.attr("math")));
@@ -1367,7 +1369,8 @@ The method optimizes memory usage:
 - If new size fits in stack buffer (<=32), uses stack allocation
 - If new size requires heap and was already on heap, resizes in place
 - Transitions between stack and heap as needed
-@param theSize new size of the vector)nbdoc");
+@param theSize new size of the vector)nbdoc")
+        .def("__rmul__", [](const math_VectorBase<int> & theRight, const int theLeft) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */;
     nb::implicitly_convertible<std::decay_t<const gp_XY &>, math_VectorBase<int>>();
     nb::implicitly_convertible<std::decay_t<const gp_XYZ &>, math_VectorBase<int>>();
     nb::borrow<nb::class_<math_FunctionSetRoot>>(m.attr("math_FunctionSetRoot"))

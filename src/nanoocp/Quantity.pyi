@@ -2074,6 +2074,30 @@ Quantity_NOC_YELLOWGREEN: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_N
 
 Quantity_NOC_WHITE: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_WHITE
 
+Quantity_NOC_BLUE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_BLUE1
+
+Quantity_NOC_CHARTREUSE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CHARTREUSE1
+
+Quantity_NOC_CYAN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_CYAN1
+
+Quantity_NOC_GOLD1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GOLD1
+
+Quantity_NOC_GREEN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_GREEN1
+
+Quantity_NOC_LIGHTCYAN1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_LIGHTCYAN1
+
+Quantity_NOC_MAGENTA1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_MAGENTA1
+
+Quantity_NOC_ORANGE1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGE1
+
+Quantity_NOC_ORANGERED1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_ORANGERED1
+
+Quantity_NOC_RED1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_RED1
+
+Quantity_NOC_TOMATO1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_TOMATO1
+
+Quantity_NOC_YELLOW1: Quantity_NameOfColor = Quantity_NameOfColor.Quantity_NOC_YELLOW1
+
 class Quantity_TypeOfColor(enum.IntEnum):
     """Identifies color definition systems."""
 
@@ -2985,8 +3009,12 @@ class NCollection_Vec3__float:
     def __imul__(self, theFactor: float) -> NCollection_Vec3__float:
         """Compute per-component multiplication by scale factor."""
 
+    @overload
     def __mul__(self, theFactor: float) -> NCollection_Vec3__float:
         """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __mul__(self, arg: NCollection_Vec3__float, /) -> NCollection_Vec3__float: ...
 
     def Multiplied(self, theFactor: float) -> NCollection_Vec3__float:
         """Compute per-component multiplication by scale factor."""
@@ -3014,8 +3042,12 @@ class NCollection_Vec3__float:
     def __itruediv__(self, theRight: NCollection_Vec3__float) -> NCollection_Vec3__float:
         """Compute per-component division."""
 
+    @overload
     def __truediv__(self, theInvFactor: float) -> NCollection_Vec3__float:
         """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: NCollection_Vec3__float, /) -> NCollection_Vec3__float: ...
 
     def Dot(self, theOther: NCollection_Vec3__float) -> float:
         """Computes the dot product."""
@@ -3061,6 +3093,10 @@ class NCollection_Vec3__float:
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: NCollection_Vec3__float, /) -> NCollection_Vec3__float: ...
+
+    def __sub__(self, arg: NCollection_Vec3__float, /) -> NCollection_Vec3__float: ...
 
 class NCollection_Vec4__float:
     """
@@ -3389,8 +3425,12 @@ class NCollection_Vec4__float:
     def Multiply(self, theFactor: float) -> None:
         """Compute per-component multiplication."""
 
+    @overload
     def __mul__(self, theFactor: float) -> NCollection_Vec4__float:
         """Compute per-component multiplication."""
+
+    @overload
+    def __mul__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...
 
     def Multiplied(self, theFactor: float) -> NCollection_Vec4__float:
         """Compute per-component multiplication."""
@@ -3421,8 +3461,16 @@ class NCollection_Vec4__float:
     def __itruediv__(self, theRight: NCollection_Vec4__float) -> NCollection_Vec4__float:
         """Compute per-component division."""
 
+    @overload
     def __truediv__(self, theInvFactor: float) -> NCollection_Vec4__float:
         """Compute per-component division by scale factor."""
 
+    @overload
+    def __truediv__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...
+
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...
+
+    def __sub__(self, arg: NCollection_Vec4__float, /) -> NCollection_Vec4__float: ...

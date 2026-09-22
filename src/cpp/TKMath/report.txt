@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKMath: 420 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 422 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 2
 # conversion: 18
@@ -13,7 +13,7 @@
 # rvalue: 3
 # static-rename: 4
 # std: 2
-# stream: 3
+# stream: 5
 # template: 220
 # undefined: 5
 array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
@@ -208,6 +208,8 @@ static-rename	gp	gp_QuaternionNLerp::Interpolate: static overloads renamed to In
 static-rename	gp	gp_QuaternionSLerp::Interpolate: static overloads renamed to Interpolate_s (instance method of same name exists)
 std	MathUtils	MathUtils::Polynomial::MathUtils::Polynomial(): param 'theCoeffs': std::initializer_list
 std	MathUtils	MathUtils::Rational::MathUtils::Rational(): param 'theNum': std::initializer_list
+stream	math	math_VectorBase<double>: friend operator<<(Standard_OStream &, const math_VectorBase<double> &): iostream type
+stream	math	math_VectorBase<int>: friend operator<<(Standard_OStream &, const math_VectorBase<int> &): iostream type
 stream	math	operator<<(...): iostream type
 stream	math	operator<<(...): iostream type
 stream	math	operator<<(...): iostream type

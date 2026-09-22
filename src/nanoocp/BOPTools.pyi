@@ -7,6 +7,7 @@ import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Geom
 import nanoocp.Geom2d
+import nanoocp.Graphic3d
 import nanoocp.IntPatch
 import nanoocp.IntTools
 import nanoocp.Message
@@ -1407,7 +1408,7 @@ class BVH_Traverse__double__3__BVH_BoxSet__double__3__bool(BVH_BaseTraverse__boo
         """
 
     @overload
-    def Select(self, theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+    def Select(self, theBVH: nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree | None) -> int:
         """
         Performs selection of the elements from the BVH tree by the
         rules defined in Accept/Reject methods.
@@ -1498,7 +1499,7 @@ class BVH_PairTraverse__double__3__BVH_BoxSet__double__3__double(nanoocp.IntPatc
         """
 
     @overload
-    def Select(self, theBVH1: "BVH_Tree<double, 3, BVH_BinaryTree>" | None, theBVH2: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+    def Select(self, theBVH1: nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree | None, theBVH2: nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree | None) -> int:
         """
         Performs selection of the elements from two BVH trees by the
         rules defined in Accept/Reject methods.

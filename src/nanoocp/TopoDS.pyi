@@ -1134,6 +1134,10 @@ class NCollection_ForwardRangeIterator__TopoDS_Iterator:
     @overload
     def __init__(self, theOther: NCollection_ForwardRangeIterator__TopoDS_Iterator) -> None: ...
 
+    def __eq__(self, arg: nanoocp.NCollection.NCollection_ForwardRangeSentinel, /) -> bool: ...
+
+    def __ne__(self, arg: nanoocp.NCollection.NCollection_ForwardRangeSentinel, /) -> bool: ...
+
 def Vertex(theShape: TopoDS_Shape) -> TopoDS_Vertex:
     """
     Casts shape theShape to the more specialized return type, Vertex.

@@ -11,6 +11,7 @@ import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Geom2d
 import nanoocp.GeomAbs
+import nanoocp.Graphic3d
 import nanoocp.IntAna
 import nanoocp.IntSurf
 import nanoocp.Intf
@@ -688,7 +689,7 @@ class BVH_PairTraverse__double__3__void__double(BVH_BaseTraverse__double):
         Returns true if the pair of elements is accepted, false otherwise.
         """
 
-    def Select(self, theBVH1: "BVH_Tree<double, 3, BVH_BinaryTree>" | None, theBVH2: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+    def Select(self, theBVH1: nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree | None, theBVH2: nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree | None) -> int:
         """
         Performs selection of the elements from two BVH trees by the
         rules defined in Accept/Reject methods.

@@ -7,6 +7,8 @@ from nanoocp._TKMath.gp import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "gp_Vec2f": ("nanoocp.BVH", "BVH_Vec2f"),
+    "gp_Vec3f": ("nanoocp.Quantity", "NCollection_Vec3__float"),
 }
 
 

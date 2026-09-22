@@ -174,15 +174,20 @@ def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | 
         target = ref.referenced
         if ref.kind == K.TYPE_REF and target.kind not in (K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL, K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
             continue                             # template parameters (Element_t(0) in NCollection_Vec3) are substituted, not qualified
-        # a type nested in a class is qualified too (`= Options()` inside BRepGraphInc_Populate); a value reference
-        # only when a namespace is involved (class members are handled above, other classes' members are written qualified)
-        qualified = _scope_qualified(target, need_namespace=ref.kind == K.DECL_REF_EXPR)
+        # a type nested in a class is qualified too (`= Options()` inside BRepGraphInc_Populate); so is a value reference into
+        # a class or namespace: the class's own members are handled above, a nested class sees the enclosing class's
+        # enumerators unqualified (`= IterationFilter_None` inside Font_TextFormatter::Iterator), a derived class its base's
+        qualified = _scope_qualified(target, need_namespace=False)
         if qualified is None:
             continue
         for i, tok in enumerate(expr):
             if tok == target.spelling and (i == 0 or expr[i - 1] != "::"):
                 expr[i] = qualified
     joined = _SUBST.apply(" ".join(expr))        # template parameters in defaults (Element_t(0)) while instantiating
+    # a functional cast whose type became a multi-word builtin (`T(0)` -> `unsigned long(0)` in NCollection_Vec3<unsigned long>)
+    # is not valid C++: spell it as a C-style cast, `(unsigned long)(0)`
+    joined = re.sub(r"\b((?:unsigned|signed|long|short|char|int|double|float)(?:\s+(?:unsigned|signed|long|short|char|int|double|float))+)\s*\(",
+                    r"(\1)(", joined)
     # the tokens are joined with spaces; tidy the spelling (`Message_ProgressRange ( )` -> `Message_ProgressRange()`)
     return joined.replace(" (", "(").replace("( ", "(").replace(" )", ")").replace(" ::", "::").replace(":: ", "::")
 
@@ -483,6 +488,14 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
             return None            # const char* / const char16_t* (Standard_ExtString) -> str, casters in nanoocp_common.h
         if pk in _PRIMITIVE_KINDS or pk == TK.POINTER:
             return "raw pointer to primitive"
+    if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind == TK.RECORD:
+        pointee = canon.get_pointee()
+        d = pointee.get_declaration()
+        # R-PTR-INCOMPLETE for references: `const AVStream&` (FFmpeg) and `XEvent&` (X11) in Media/Xw are forward-declared
+        # with no header anywhere; nanobind needs the complete type (typeid). Same test as for pointers above.
+        if d.kind != K.NO_DECL_FOUND and d.get_definition() is None and pointee.get_canonical().get_num_template_arguments() <= 0 \
+                and (_INCLUDE_DIR is None or not (_INCLUDE_DIR / f"{d.spelling}.hxx").exists()):
+            return "reference to incomplete type"
     if canon.kind == TK.MEMBERPOINTER:
         return "member pointer"
     it_base = canon
@@ -711,12 +724,19 @@ def py_safe(name: str) -> str:
 def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
     qual = f"{scope}::{cursor.spelling}" if scope is not None else cursor.spelling
     values: list[tuple[str, str]] = []
+    aliases: list[str] = []
+    seen: set[int] = set()
     for v in cursor.get_children():
         if v.kind == K.ENUM_CONSTANT_DECL:
             cpp = f"{qual}::{v.spelling}" if cursor.is_scoped_enum() else (f"{scope}::{v.spelling}" if scope is not None else v.spelling)
             values.append((py_safe(v.spelling), cpp))
+            # an enumerator repeating an earlier value is an alias in Python's enum.Enum: nanobind's export_values() iterates
+            # the enum class, which skips aliases, so the emitter exports them by name (OCCT's "old aliases": Font_FA_Bold)
+            if v.enum_value in seen:
+                aliases.append(py_safe(v.spelling))
+            seen.add(v.enum_value)
     return Enum(name=qual, py_name=cursor.spelling, values=values, is_scoped=cursor.is_scoped_enum(), doc=_doc(cursor), header=header,
-                is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("))
+                is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("), aliases=aliases)
 
 
 # Design.md 6 R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind)
@@ -1001,6 +1021,21 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.skipped.append(f"{c.name}: non-public base {_type_spelling(ch.type)} dropped; class not constructible")
                 c.constructible = False
                 continue
+            base_decl = ch.type.get_canonical().get_declaration()
+            if not _SUBST.active and base_decl.kind != K.NO_DECL_FOUND and base_decl.spelling == "Iterator" \
+                    and base_decl.semantic_parent is not None and base_decl.semantic_parent.spelling in BINDERS \
+                    and "Iterator" in BINDERS[base_decl.semantic_parent.spelling].get("nested", {}):
+                # 6a: the base is a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator derives from
+                # NCollection_Sequence<handle<Graphic3d_ClipPlane>>::Iterator): register the owner instantiation, spell the base
+                # with its manifest key and declare the class after the templates phase, where the base exists
+                owner_t = base_decl.semantic_parent.type
+                _note_instance(owner_t)
+                canon = owner_t.get_canonical()
+                all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+                key = f"{base_decl.semantic_parent.spelling}<{', '.join(instance_args(base_decl.semantic_parent.spelling, all_args))}>"
+                c.bases.append(f"{key}::Iterator")
+                c.after_templates = True
+                continue
             if not _SUBST.active and _is_plain_template_instance(ch.type):
                 # a template base is named as its instantiation is (canonical arguments, defaults spelled out), also when the
                 # header writes a typedef (BRepExtrema_TriangleSet : BVH_PrimitiveSet3d = BVH_PrimitiveSet<double, 3>)
@@ -1044,7 +1079,27 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.skipped.append(f"{c.name}::{ch.spelling}: field {reason}")
                 continue
             _note_instance(ch.type)                # a container-typed field needs its instantiation like a parameter does
-            c.fields.append(Field(name=ch.spelling, type=_type_spelling(ch.type), is_const=ch.type.is_const_qualified(), doc=_doc(ch)))
+            c.fields.append(Field(name=ch.spelling, type=_type_spelling(ch.type), is_const=ch.type.is_const_qualified(), doc=_doc(ch),
+                                  is_bitfield=ch.is_bitfield()))   # R-FIELD: `unsigned stick : 1` (Graphic3d_CStructure) has no pointer-to-member
+        elif ch.kind == K.FRIEND_DECL:
+            # R-FREE-OP: a hidden friend operator (`friend NCollection_Vec3 operator+(const NCollection_Vec3&, const NCollection_Vec3&)`
+            # in NCollection_Vec2/3/4, math_Matrix, BRepGraph_ItemId) is a free function found by ADL only; it is handed to the
+            # free-operator pass, which binds it as a (reflected) dunder on the class operand. Friend classes and non-operator
+            # friends are C++ access grants, not API.
+            for fr in ch.get_children():
+                if fr.kind != K.FUNCTION_DECL or not fr.spelling.startswith("operator") or fr.access_specifier != Access.PUBLIC:
+                    continue
+                params, reason = _params(fr, fr.spelling)
+                rk, rc = _result_kind(fr.result_type)
+                fn = Function(name=fr.spelling, params=params, result=_type_spelling(fr.result_type), result_kind=rk, result_class=rc,
+                              is_noexcept=_is_noexcept(fr), doc=_doc_with_deprecation(fr), header=c.header, is_operator=True,
+                              skip_reason=reason, qualified=fr.spelling,
+                              defined_in_header=fr.is_definition() or fr.get_definition() is not None or _SUBST.active, mangled=fr.mangled_name)
+                if fn.skip_reason is None:
+                    fn.skip_reason = _unsupported(fr.result_type, allow_out=False)
+                if fn.skip_reason is not None:
+                    c.skipped.append(f"{c.name}: friend {fn.name}({', '.join(p.type for p in params)}): {fn.skip_reason}")
+                c.friend_ops.append(fn)
         elif ch.kind == K.CONVERSION_FUNCTION:
             conv = _conversion(ch)
             if conv is None:

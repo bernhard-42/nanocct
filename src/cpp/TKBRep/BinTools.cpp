@@ -34,6 +34,7 @@ void nanoocp_declare_BinTools(nb::module_ &m) {
         .value("BinTools_FormatVersion_VERSION_4", BinTools_FormatVersion_VERSION_4)
         .value("BinTools_FormatVersion_CURRENT", BinTools_FormatVersion_CURRENT)
         .export_values();
+    m.attr("BinTools_FormatVersion_CURRENT") = m.attr("BinTools_FormatVersion").attr("BinTools_FormatVersion_CURRENT");
     m.attr("BinTools_FormatVersion_LOWER") = nb::int_(static_cast<long long>(BinTools_FormatVersion_LOWER));
     m.attr("BinTools_FormatVersion_UPPER") = nb::int_(static_cast<long long>(BinTools_FormatVersion_UPPER));
     nb::enum_<BinTools_ObjectType>(m, "BinTools_ObjectType", R"nbdoc(Enumeration defining objects identifiers in the shape read/write format.)nbdoc", nb::is_arithmetic())

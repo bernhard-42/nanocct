@@ -6,6 +6,7 @@ from typing import overload
 import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.Extrema
+import nanoocp.Graphic3d
 import nanoocp.IntPatch
 from nanoocp.IntPatch import (
     BVH_PairTraverse__double__3__void__double as BVH_PairTraverse__double__3__void__double
@@ -756,7 +757,7 @@ class BVH_Traverse__double__3__BRepExtrema_TriangleSet__double(nanoocp.IntPatch.
         """
 
     @overload
-    def Select(self, theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>" | None) -> int:
+    def Select(self, theBVH: nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree | None) -> int:
         """
         Performs selection of the elements from the BVH tree by the
         rules defined in Accept/Reject methods.

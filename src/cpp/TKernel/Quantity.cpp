@@ -541,6 +541,18 @@ The names come (mostly) from the X11 specification.)nbdoc", nb::is_arithmetic())
         .value("Quantity_NOC_YELLOWGREEN", Quantity_NOC_YELLOWGREEN)
         .value("Quantity_NOC_WHITE", Quantity_NOC_WHITE)
         .export_values();
+    m.attr("Quantity_NOC_BLUE1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_BLUE1");
+    m.attr("Quantity_NOC_CHARTREUSE1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_CHARTREUSE1");
+    m.attr("Quantity_NOC_CYAN1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_CYAN1");
+    m.attr("Quantity_NOC_GOLD1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_GOLD1");
+    m.attr("Quantity_NOC_GREEN1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_GREEN1");
+    m.attr("Quantity_NOC_LIGHTCYAN1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_LIGHTCYAN1");
+    m.attr("Quantity_NOC_MAGENTA1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_MAGENTA1");
+    m.attr("Quantity_NOC_ORANGE1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_ORANGE1");
+    m.attr("Quantity_NOC_ORANGERED1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_ORANGERED1");
+    m.attr("Quantity_NOC_RED1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_RED1");
+    m.attr("Quantity_NOC_TOMATO1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_TOMATO1");
+    m.attr("Quantity_NOC_YELLOW1") = m.attr("Quantity_NameOfColor").attr("Quantity_NOC_YELLOW1");
     nb::enum_<Quantity_TypeOfColor>(m, "Quantity_TypeOfColor", R"nbdoc(Identifies color definition systems.)nbdoc", nb::is_arithmetic())
         .value("Quantity_TOC_RGB", Quantity_TOC_RGB)
         .value("Quantity_TOC_sRGB", Quantity_TOC_sRGB)
@@ -944,7 +956,11 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<float> (*)() noexcept>(&NCollection_Vec3<float>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
-        .def("DumpJson", [](const NCollection_Vec3<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec3<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec3<float> & theLeft, const NCollection_Vec3<float> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec3<float> & theLeft, const NCollection_Vec3<float> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec3<float> & theLeft, const NCollection_Vec3<float> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec3<float> & theLeft, const NCollection_Vec3<float> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec3<float>>(nb::borrow<nb::class_<NCollection_Vec3<float>>>(m.attr("NCollection_Vec3__float")));
     nanoocp_if_concrete<NCollection_Vec4<float>>(nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -1034,7 +1050,11 @@ This method may be used for performance tricks.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<float> &self, const float theInvFactor) -> NCollection_Vec4<float> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<float> &self, const NCollection_Vec4<float> & theRight) -> NCollection_Vec4<float> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
         .def("__truediv__", static_cast<NCollection_Vec4<float> (NCollection_Vec4<float>::*)(const float) const>(&NCollection_Vec4<float>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
-        .def("DumpJson", [](const NCollection_Vec4<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec4<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec4<float> & theLeft, const NCollection_Vec4<float> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec4<float> & theLeft, const NCollection_Vec4<float> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec4<float> & theLeft, const NCollection_Vec4<float> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec4<float> & theLeft, const NCollection_Vec4<float> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec4<float>>(nb::borrow<nb::class_<NCollection_Vec4<float>>>(m.attr("NCollection_Vec4__float")));
 }
 

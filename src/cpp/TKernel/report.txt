@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKernel: 415 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKernel: 418 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
 # conversion: 7
@@ -12,7 +12,7 @@
 # rvalue: 5
 # static-rename: 16
 # std: 4
-# stream: 32
+# stream: 35
 # template: 163
 # unbound-type: 7
 # undefined: 3
@@ -256,6 +256,9 @@ stream	OSD	OSD_StreamBuffer<std::ostream>::OSD_StreamBuffer<std::ostream>(const 
 stream	Standard	Standard_Type::Register(): param 'theInfo': iostream type
 stream	Standard	operator<<(...): iostream type
 stream	Standard	operator<<(...): iostream type
+stream	TCollection	TCollection_AsciiString: friend operator<<(Standard_OStream &, const TCollection_AsciiString &): iostream type
+stream	TCollection	TCollection_AsciiString: friend operator>>(Standard_IStream &, TCollection_AsciiString &): iostream type
+stream	TCollection	TCollection_ExtendedString: friend operator<<(Standard_OStream &, const TCollection_ExtendedString &): iostream type
 template	Message	Message_Messenger::StreamBuffer::operator<<: template member
 template	Message	Message_ProgressScope: template (not bound)
 template	Message	Message_ProgressScope::Message_ProgressScope: template member

@@ -142,6 +142,24 @@ def test_list_iterator_is_nested_class():
     assert L.Iterator.__qualname__ == "NCollection_List__int.Iterator"
 
 
+def test_binder_iterators_are_python_iterators():
+    """R-ITER applies to the hand-written binder Iterator classes too (2026-09-22): __iter__ returns self, __next__ yields
+    Value() -- the element for List/Sequence, the key for Map, the value for DataMap."""
+    l = L()
+    for v in (3, 4):
+        l.Append(v)
+    it = L.Iterator(l)
+    assert iter(it) is it and list(it) == [3, 4] and list(it) == []           # exhausted, like a file
+    m = NCollection.NCollection_DataMap[int, float]()
+    m.Bind(1, 1.5)
+    m.Bind(2, 2.5)
+    assert sorted(NCollection.NCollection_DataMap[int, float].Iterator(m)) == [1.5, 2.5]
+    im = NCollection.NCollection_IndexedMap[float]()
+    im.Add(7.0)
+    im.Add(8.0)
+    assert list(NCollection.NCollection_IndexedMap[float].Iterator(im)) == [7.0, 8.0]
+
+
 # ------------------------------------------------------------------------------------------ Sequence
 from nanoocp import TCollection  # noqa: E402
 

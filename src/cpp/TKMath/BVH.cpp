@@ -206,7 +206,11 @@ void nanoocp_define_BVH(nb::module_ &m) {
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<int> (*)() noexcept>(&NCollection_Vec2<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
-        .def("DumpJson", [](const NCollection_Vec2<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec2<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec2<int> & theLeft, const NCollection_Vec2<int> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec2<int> & theLeft, const NCollection_Vec2<int> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec2<int> & theLeft, const NCollection_Vec2<int> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec2<int> & theLeft, const NCollection_Vec2<int> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec2<int>>(nb::borrow<nb::class_<NCollection_Vec2<int>>>(m.attr("BVH_Vec2i")));
     nanoocp_if_concrete<NCollection_Vec3<int>>(nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -273,7 +277,11 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<int> (*)() noexcept>(&NCollection_Vec3<int>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
-        .def("DumpJson", [](const NCollection_Vec3<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec3<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec3<int> & theLeft, const NCollection_Vec3<int> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec3<int> & theLeft, const NCollection_Vec3<int> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec3<int> & theLeft, const NCollection_Vec3<int> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec3<int> & theLeft, const NCollection_Vec3<int> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec3<int>>(nb::borrow<nb::class_<NCollection_Vec3<int>>>(m.attr("BVH_Vec3i")));
     nanoocp_if_concrete<NCollection_Vec4<int>>(nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -363,7 +371,11 @@ This method may be used for performance tricks.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<int> &self, const int theInvFactor) -> NCollection_Vec4<int> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<int> &self, const NCollection_Vec4<int> & theRight) -> NCollection_Vec4<int> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
         .def("__truediv__", static_cast<NCollection_Vec4<int> (NCollection_Vec4<int>::*)(const int) const>(&NCollection_Vec4<int>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
-        .def("DumpJson", [](const NCollection_Vec4<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec4<int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec4<int> & theLeft, const NCollection_Vec4<int> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec4<int> & theLeft, const NCollection_Vec4<int> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec4<int> & theLeft, const NCollection_Vec4<int> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec4<int> & theLeft, const NCollection_Vec4<int> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec4<int>>(nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i")));
     nanoocp_if_concrete<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -403,7 +415,11 @@ This method may be used for performance tricks.)nbdoc")
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
-        .def("DumpJson", [](const NCollection_Vec2<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec2<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")));
     nanoocp_if_concrete<NCollection_Vec2<double>>(nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -443,7 +459,11 @@ This method may be used for performance tricks.)nbdoc")
 This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec2<double> (*)() noexcept>(&NCollection_Vec2<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
-        .def("DumpJson", [](const NCollection_Vec2<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec2<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec2<double> & theLeft, const NCollection_Vec2<double> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec2<double> & theLeft, const NCollection_Vec2<double> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec2<double> & theLeft, const NCollection_Vec2<double> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec2<double> & theLeft, const NCollection_Vec2<double> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec2<double>>(nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d")));
     nanoocp_if_concrete<NCollection_Vec3<double>>(nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -510,7 +530,11 @@ This method may be used for performance tricks.)nbdoc")
         .def_static("DX", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
         .def_static("DY", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
         .def_static("DZ", static_cast<NCollection_Vec3<double> (*)() noexcept>(&NCollection_Vec3<double>::DZ), R"nbdoc(Construct DZ unit vector.)nbdoc")
-        .def("DumpJson", [](const NCollection_Vec3<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec3<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec3<double> & theLeft, const NCollection_Vec3<double> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec3<double> & theLeft, const NCollection_Vec3<double> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec3<double> & theLeft, const NCollection_Vec3<double> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec3<double> & theLeft, const NCollection_Vec3<double> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec3<double>>(nb::borrow<nb::class_<NCollection_Vec3<double>>>(m.attr("BVH_Vec3d")));
     nanoocp_if_concrete<NCollection_Vec4<double>>(nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
@@ -600,7 +624,11 @@ This method may be used for performance tricks.)nbdoc")
         .def("__itruediv__", [](NCollection_Vec4<double> &self, const double theInvFactor) -> NCollection_Vec4<double> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
         .def("__itruediv__", [](NCollection_Vec4<double> &self, const NCollection_Vec4<double> & theRight) -> NCollection_Vec4<double> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
         .def("__truediv__", static_cast<NCollection_Vec4<double> (NCollection_Vec4<double>::*)(const double) const>(&NCollection_Vec4<double>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
-        .def("DumpJson", [](const NCollection_Vec4<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
+        .def("DumpJson", [](const NCollection_Vec4<double> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec4<double> & theLeft, const NCollection_Vec4<double> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec4<double> & theLeft, const NCollection_Vec4<double> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec4<double> & theLeft, const NCollection_Vec4<double> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec4<double> & theLeft, const NCollection_Vec4<double> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec4<double>>(nb::borrow<nb::class_<NCollection_Vec4<double>>>(m.attr("BVH_Vec4d")));
     nanoocp_if_concrete<NCollection_Mat4<float>>(nb::borrow<nb::class_<NCollection_Mat4<float>>>(m.attr("BVH_Mat4f")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.

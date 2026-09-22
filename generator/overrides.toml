@@ -12,6 +12,7 @@ inout = [
     "gp_GTrsf::Transforms",
     "gp_GTrsf2d::Transforms",
     "*::InitFromJson",      # int& theStreamPos: the position to start reading at (1), advanced by the call (every class with DumpJson)
+    "Font_FontMgr::FindFont",   # Font_FontAspect& theFontAspect: the aspect to look for, replaced when an alias maps to another style (Font_FontMgr.cxx:1060, doc [in][out])
     # handle<T>& parameters that are read and replaced (GeomLib.cxx, GeomConvert.cxx, Geom2dConvert.cxx, 2026-09-21)
     "GeomLib::AdjustExtremity",            # Curve: converted to a BSpline, adjusted, assigned back
     "GeomLib::ExtendCurveToPoint",         # Curve: extended in place
@@ -48,6 +49,7 @@ namespaces = [
 # itself only includes from .cxx files under #ifdef.
 headers = [
     "OSD_WNT.hxx",          # Windows only (includes <windows.h>)
+    "WNT_Dword.hxx",        # Windows only (includes <windows.h>); WNT_Window/WNT_WClass guard themselves with _WIN32
     # OCCT 8.0.1 packaging bug: these public headers include GeomBndLib_InfiniteHelpers.pxx, a private file that
     # is not installed (GeomBndLib_Curve/Curve2d include GeomBndLib_Line/Line2d). BndLib_Add3dCurve etc. cover the use.
     "GeomBndLib_Line.hxx",
@@ -69,6 +71,9 @@ methods = [
     # BVH trees stays. The derived selectors (BRepExtrema_OverlapTool, IntPatch_BVHTraversal) call that one (2026-09-21).
     "BVH_PairTraverse<double, 3, void, double>::Select()",
     "BVH_PairTraverse<double, 2, void, double>::Select()",
+    # NCollection_Vec3<unsigned long> (Image_PixMapData dimensions): cwiseAbs() calls std::abs(unsigned long), which is
+    # ambiguous in C++ (no unsigned overload). Meaningless for an unsigned vector anyway (2026-09-22).
+    "NCollection_Vec3<unsigned long>::cwiseAbs",
 ]
 
 # NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical

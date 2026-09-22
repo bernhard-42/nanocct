@@ -536,6 +536,9 @@ Standard_NoSuchObject if there is no current sub-shape.)nbdoc")
     nb::implicitly_convertible<std::decay_t<const TopoDS_Shape &>, TopoDS_AlertWithShape>();
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<TopoDS_Iterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopoDS_Iterator>>>(m.attr("NCollection_ForwardRangeIterator__TopoDS_Iterator")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, TopoDS_Iterator * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopoDS_Iterator>>>(m.attr("NCollection_ForwardRangeIterator__TopoDS_Iterator"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<TopoDS_Iterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<TopoDS_Iterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<TopoDS_Iterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<TopoDS_Iterator>>>(m.attr("NCollection_ForwardRangeIterator__TopoDS_Iterator")));
     m.def("Vertex", static_cast<TopoDS_Vertex & (*)(TopoDS_Shape &)>(&TopoDS::Vertex), nb::rv_policy::copy, nb::arg("theShape"), R"nbdoc(Casts shape theShape to the more specialized return type, Vertex.
 @param theShape the shape to be cast

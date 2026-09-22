@@ -815,7 +815,7 @@ class TopOpeBRepDS_InterferenceIterator:
         conditions (if defined).
         """
 
-    def ChangeIterator(self) -> nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepDS.TopOpeBRepDS_Interference].Iterator: ...
+    def ChangeIterator(self) -> nanoocp.NCollection.NCollection_List__Handle_TopOpeBRepDS_Interference.Iterator: ...
 
 class TopOpeBRepDS_Surface:
     """A Geom surface and a tolerance."""
@@ -1433,7 +1433,7 @@ class TopOpeBRepDS_HDataStructure(nanoocp.Standard.Standard_Transient):
         some other shapes.
         """
 
-    def SameDomain(self, S: nanoocp.TopoDS.TopoDS_Shape) -> nanoocp.NCollection.NCollection_List[nanoocp.TopoDS.TopoDS_Shape].Iterator:
+    def SameDomain(self, S: nanoocp.TopoDS.TopoDS_Shape) -> nanoocp.NCollection.NCollection_List__TopoDS_Shape.Iterator:
         """
         Returns an iterator on the SameDomain shapes attached
         to the shape <S>.
@@ -1511,7 +1511,7 @@ class TopOpeBRepDS_HDataStructure(nanoocp.Standard.Standard_Transient):
 
     def MinMaxOnParameter(self, L: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepDS.TopOpeBRepDS_Interference]) -> tuple[float, float]: ...
 
-    def ScanInterfList(self, IT: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepDS.TopOpeBRepDS_Interference].Iterator, PDS: TopOpeBRepDS_Point) -> bool:
+    def ScanInterfList(self, IT: nanoocp.NCollection.NCollection_List__Handle_TopOpeBRepDS_Interference.Iterator, PDS: TopOpeBRepDS_Point) -> bool:
         """
         Search, among a list of interferences accessed by the iterator
         <IT>, a geometry <G> whose 3D point is identical to the 3D point
@@ -1521,7 +1521,7 @@ class TopOpeBRepDS_HDataStructure(nanoocp.Standard.Standard_Transient):
         interference accessing an identical 3D point.
         """
 
-    def GetGeometry(self, IT: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepDS.TopOpeBRepDS_Interference].Iterator, PDS: TopOpeBRepDS_Point) -> tuple[bool, int, TopOpeBRepDS_Kind]:
+    def GetGeometry(self, IT: nanoocp.NCollection.NCollection_List__Handle_TopOpeBRepDS_Interference.Iterator, PDS: TopOpeBRepDS_Point) -> tuple[bool, int, TopOpeBRepDS_Kind]:
         """
         Get the geometry of a DS point <PDS>.
         Search for it with ScanInterfList (previous method).
@@ -2253,7 +2253,7 @@ def FUN_ds_samRk(BDS: TopOpeBRepDS_DataStructure, Rk: int, LI: nanoocp.NCollecti
 def FDS_data(I: TopOpeBRepDS_Interference | None) -> tuple[TopOpeBRepDS_Kind, int, TopOpeBRepDS_Kind, int]: ...
 
 @overload
-def FDS_data(it: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepDS.TopOpeBRepDS_Interference].Iterator) -> tuple[bool, TopOpeBRepDS_Interference, TopOpeBRepDS_Kind, int, TopOpeBRepDS_Kind, int]: ...
+def FDS_data(it: nanoocp.NCollection.NCollection_List__Handle_TopOpeBRepDS_Interference.Iterator) -> tuple[bool, TopOpeBRepDS_Interference, TopOpeBRepDS_Kind, int, TopOpeBRepDS_Kind, int]: ...
 
 def FDS_Tdata(I: TopOpeBRepDS_Interference | None) -> tuple[nanoocp.TopAbs.TopAbs_ShapeEnum, int, nanoocp.TopAbs.TopAbs_ShapeEnum, int]: ...
 

@@ -261,6 +261,65 @@ private:
   gp_Pnt myP;
 };
 
+//! Visualization-era idioms (TKService, 2026-09-22): bit-fields, hidden friends, alias enumerators, references to headerless types.
+class Rules_NoHeader;
+//! An unscoped enum whose "old aliases" repeat earlier values (Font_FontAspect): exported by name, Python's Enum hides aliases.
+enum Rules_Aspect { Rules_Aspect_Regular = 0, Rules_Aspect_Bold, Rules_A_Regular = Rules_Aspect_Regular, Rules_A_Bold = Rules_Aspect_Bold };
+class Rules_Vis
+{
+public:
+  Rules_Vis() {}
+  enum Filter { Filter_None = 0, Filter_All = 1 };
+  //! A nested class whose constructor defaults to an enumerator of the enclosing class (Font_TextFormatter::Iterator).
+  class Iterator
+  {
+  public:
+    Iterator(const Rules_Vis& theOwner, Filter theFilter = Filter_None) { (void)theOwner; (void)theFilter; }
+  };
+  //! R-FIELD: bit-fields have no pointer-to-member (Graphic3d_CStructure).
+  unsigned stick : 1;
+  unsigned visible : 1;
+  int myPlain = 0;
+  //! R-PTR-INCOMPLETE for references: no Rules_NoHeader.hxx exists (const AVStream& in Media_CodecContext).
+  bool Init(const Rules_NoHeader& theStream) const { (void)theStream; return true; }
+  //! R-CHAR16 family: char32_t is a 1-character str (Font_FTFont::AdvanceX).
+  float Advance(char32_t theUChar) const { return static_cast<float>(theUChar); }
+  //! R-FREE-OP: a hidden friend operator (NCollection_Vec3) is bound as a dunder on the class operand.
+  friend Rules_Vis operator+(const Rules_Vis& theLeft, const Rules_Vis& theRight) { (void)theRight; return theLeft; }
+  //! R-COLLISION with R-WIDTH: out-parameter overloads differing only in width are one overload, no suffix (Graphic3d_Vertex::Coord).
+  void Coord(double& theX, double& theY) const { theX = 1.0; theY = 2.0; }
+  void Coord(float& theX, float& theY) const { theX = 1.0f; theY = 2.0f; }
+};
+//! A 6c instantiation whose default `T(0)` becomes a multi-word builtin (NCollection_Vec3<unsigned long>).
+template <class T>
+class Rules_TVec
+{
+public:
+  Rules_TVec(T theX = T(0)) : myX(theX) {}
+  T X() const { return myX; }
+private:
+  T myX;
+};
+typedef Rules_TVec<unsigned long> Rules_TVecUL;
+
+//! 6a: a nested class deriving from a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator) is
+//! declared after the templates phase, where the base exists.
+class Rules_PntSeq
+{
+public:
+  class Iterator : public NCollection_Sequence<gp_Pnt>::Iterator
+  {
+  public:
+    Iterator() = default;
+    Iterator(const Rules_PntSeq& theSeq) : NCollection_Sequence<gp_Pnt>::Iterator(theSeq.myItems) {}
+  };
+  Rules_PntSeq() {}
+  void Append(const gp_Pnt& theP) { myItems.Append(theP); }
+
+protected:
+  NCollection_Sequence<gp_Pnt> myItems;
+};
+
 //! A namespace named like the package is the package module itself.
 namespace Rules
 {
@@ -307,7 +366,8 @@ def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
     assert names[:14] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
                           "Rules_Algo", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2", "Rules_Alloc", "Rules_Arrays"]
-    assert set(names[14:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter"}   # alias instantiations, probe bases
+    assert set(names[14:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
+                               "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator"}   # alias instantiations, probe bases
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -405,7 +465,7 @@ def test_emitter_static_rename_and_collision(rules_ir):
     assert 'nb::arg("theIn").none()' in cpp and 'occ::handle<Rules_Thing> theOut{};' in cpp
     assert '.def("SetValue"' in cpp                         # Python addition for double& Value(i)
     assert "    .export_values();" in cpp                   # Mode exported into the class, Kind not
-    assert cpp.count(".export_values()") == 1
+    assert cpp.count(".export_values()") == 3            # Mode, Rules_Aspect, Rules_Vis::Filter
     assert '.def("Parameter", static_cast<double (Rules_Value::*)(const gp_Pnt &) const' in cpp     # no out-params: plain name
     assert '.def("Parameter__float"' in cpp                                                       # R-COLLISION suffix
     assert any("Parameter(const gp_Pnt &, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float" in r for r in em.report)
@@ -527,6 +587,54 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     assert '.def("PtrRef", [](Rules_Value &self) { auto result = self.PtrRef(); return result; }, nb::rv_policy::reference' in cpp
 
 
+def test_ir_and_emitter_visualization_idioms(rules_ir):
+    """Bit-fields, hidden friends, alias enumerators, headerless references, char32_t, multi-word casts, width twins with
+    out-parameters (found with TKService, 2026-09-22)."""
+    by = {c.name: c for c in rules_ir.classes}
+    vis = by["Rules_Vis"]
+    # R-FIELD bit-fields are fields with is_bitfield, bound through lambdas
+    assert [(f.name, f.is_bitfield) for f in vis.fields] == [("stick", True), ("visible", True), ("myPlain", False)]
+    # R-PTR-INCOMPLETE for references: Rules_NoHeader has no header -> skipped and reported
+    init = _method(rules_ir, "Rules_Vis", "Init")
+    assert init.skip_reason == "param 'theStream': reference to incomplete type"
+    assert "Rules_Vis::Init(): param 'theStream': reference to incomplete type" in vis.skipped
+    # char32_t -> str
+    assert _method(rules_ir, "Rules_Vis", "Advance").params[0].type == "char32_t"
+    # hidden friend operator collected on the class
+    assert [(f.name, f.is_operator, f.skip_reason) for f in vis.friend_ops] == [("operator+", True, None)]
+    # alias enumerators recorded
+    aspect = next(e for e in rules_ir.enums if e.py_name == "Rules_Aspect")
+    assert aspect.aliases == ["Rules_A_Regular", "Rules_A_Bold"]
+    # the nested class's default is qualified through the enclosing class
+    it = next(n for n in vis.nested if n.py_name == "Iterator")
+    assert it.ctors[0].params[1].default == "Rules_Vis::Filter_None"
+    # the multi-word functional cast is spelled as a C-style cast
+    tvec = by["Rules_TVec<unsigned long>"]
+    assert tvec.ctors[0].params[0].default == "(unsigned long)(0)"
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade",
+                 {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Vis": "Rules", "Rules_Vis::Filter": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert '.def_prop_rw("stick", [](const Rules_Vis &self) { return static_cast<unsigned int>(self.stick); }, [](Rules_Vis &self, unsigned int v) { self.stick = v; }, R"nbdoc(' in cpp
+    assert 'nanoocp_def_field(nb::borrow<nb::class_<Rules_Vis>>(m.attr("Rules_Vis")), "myPlain"' in cpp
+    assert '.def("__add__", [](const Rules_Vis & theLeft, const Rules_Vis & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */' in cpp
+    assert 'm.attr("Rules_A_Regular") = m.attr("Rules_Aspect").attr("Rules_A_Regular");' in cpp
+    assert 'm.attr("Rules_A_Bold") = m.attr("Rules_Aspect").attr("Rules_A_Bold");' in cpp
+    assert 'm.attr("Rules_Aspect_Bold") = ' not in cpp                # a first-value enumerator comes through export_values()
+    assert "static_cast<std::decay_t<Rules_Vis::Filter>>(Rules_Vis::Filter_None)" in cpp
+    assert "static_cast<std::decay_t<unsigned long>>((unsigned long)(0))" in cpp
+    # R-COLLISION with width twins: both Coord overloads keep the plain name, the double one first
+    assert cpp.count('.def("Coord", [](const Rules_Vis &self)') == 2 and "Coord__float__float" not in cpp
+    assert cpp.index("double theX{}; double theY{};") < cpp.index("float theX{}; float theY{};")
+    # 6a: the binder-Iterator-derived class is declared in the templates phase, after its base's instantiation
+    it = by["Rules_PntSeq::Iterator"]
+    assert it.after_templates and it.bases == ["NCollection_Sequence<gp_Pnt>::Iterator"]
+    assert "NCollection_Sequence<gp_Pnt>" in rules_ir.instances
+    templates_fn = cpp[cpp.index("void nanoocp_templates_Rules"):cpp.index("void nanoocp_define_Rules")]
+    decl = 'nb::class_<Rules_PntSeq::Iterator, NCollection_Sequence<gp_Pnt>::Iterator> cls(m.attr("Rules_PntSeq"), "Iterator"'
+    assert decl in templates_fn and templates_fn.index("bind_NCollection_Sequence<gp_Pnt>") < templates_fn.index(decl)
+
+
 def test_ir_template_bases_of_instantiations(rules_ir):
     by = {c.name: c for c in rules_ir.classes}
     # the alias instantiation's template base was instantiated through the probe re-parse and names the derived's base
@@ -608,12 +716,14 @@ def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
             seen[key] = seen.get(key, 0) + 1
             if seen[key] == 2:
                 dups.append((pyi.stem, owner, (name, types)))
-    width_ok = {"Abs", "Min", "Max", "Convert_LinearRGB_To_sRGB", "Convert_sRGB_To_LinearRGB", "Value", "SetValue", "ReSize", "__init__"}
+    width_ok = {"Abs", "Min", "Max", "Convert_LinearRGB_To_sRGB", "Convert_sRGB_To_LinearRGB", "Value", "SetValue", "ReSize", "__init__",
+                "SetWidth", "SetScale", "AddVertex", "SetCoord"}    # Graphic3d_AspectLine3d/AspectMarker3d/ArrayOfPrimitives/Vertex: double and float overloads
     unexpected = [d for d in dups if not (d[2][0] in width_ok and any(t in ("float", "int") for t in d[2][1]))
                   and not (d[0] in ("TCollection", "Standard", "Resource") and "str" in d[2][1])
-                  and d[1] != "Standard_Mutex.Sentry"]        # Sentry(Standard_Mutex&) / Sentry(Standard_Mutex*): the same call
+                  and d[1] != "Standard_Mutex.Sentry"         # Sentry(Standard_Mutex&) / Sentry(Standard_Mutex*): the same call
+                  and (d[1], d[2][0]) != ("Graphic3d_Vertex", "Coord")]   # Coord(double&...) / Coord(float&...): width twins with out-params only
     assert unexpected == [], unexpected
-    assert len(dups) < 60
+    assert len(dups) < 80        # 61 with TKService (2026-09-22)
 
 
 def test_report_categories_are_complete_for_the_checked_in_reports():

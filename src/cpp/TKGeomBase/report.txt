@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKGeomBase: 166 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomBase: 167 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # iterator: 1
 # namespace: 4
@@ -6,7 +6,7 @@
 # override: 4
 # raw-pointer: 75
 # static-rename: 8
-# stream: 3
+# stream: 4
 # template: 58
 # undefined: 8
 iterator	CPnts	CPnts_UniformDeflection: __iter__ added (More/Next/Value)
@@ -106,6 +106,7 @@ static-rename	GeomBndLib	GeomBndLib_Hyperbola2d::Box: static overloads renamed t
 static-rename	GeomBndLib	GeomBndLib_Hyperbola::Box: static overloads renamed to Box_s (instance method of same name exists)
 static-rename	GeomBndLib	GeomBndLib_Parabola2d::Box: static overloads renamed to Box_s (instance method of same name exists)
 static-rename	GeomBndLib	GeomBndLib_Parabola::Box: static overloads renamed to Box_s (instance method of same name exists)
+stream	Extrema	math_VectorBase<double>: friend operator<<(Standard_OStream &, const math_VectorBase<double> &): iostream type
 stream	GeomTools	GeomTools_UndefinedTypeHandler::ReadCurve(const int, Standard_IStream &, occ::handle<Geom_Curve> &): return: iostream type
 stream	GeomTools	GeomTools_UndefinedTypeHandler::ReadCurve2d(const int, Standard_IStream &, occ::handle<Geom2d_Curve> &): return: iostream type
 stream	GeomTools	GeomTools_UndefinedTypeHandler::ReadSurface(const int, Standard_IStream &, occ::handle<Geom_Surface> &): return: iostream type

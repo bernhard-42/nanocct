@@ -98,6 +98,7 @@ class Field:
     is_const: bool
     doc: str
     array_len: int = 0          # R-FIXED-ARRAY: a C array member T[N]; `type` is the element type; a list property
+    is_bitfield: bool = False   # R-FIELD: a bit-field (`unsigned stick : 1`) has no pointer-to-member; a property through lambdas
 
 
 @dataclass
@@ -110,6 +111,7 @@ class Enum:
     header: str
     is_anonymous: bool = False   # enum { A = 1, B = 2 }; -> integer constants, no Python enum type
     scope: tuple[str, ...] = ()  # Python attribute path of the enclosing C++ namespace, relative to the package module
+    aliases: list[str] = field(default_factory=list)   # R-ENUM: py names of enumerators repeating an earlier value (Font_FA_Bold = Font_FontAspect_Bold)
 
 
 @dataclass
@@ -125,6 +127,7 @@ class Class:
     scope: tuple[str, ...] = ()       # Python attribute path of the enclosing namespace(s)/class(es), relative to the package module
                                       # (scope + py_name = the full path; recorded in the manifest when parse.py_path cannot derive it)
     outer: str = ""                   # C++ name of the enclosing class for a nested class (declared after it)
+    after_templates: bool = False     # 6a: a base is a binder instantiation's nested Iterator -> declared in the templates phase, after it
     has_declared_ctor: bool = False   # any constructor at any access level (suppresses the implicit default ctor)
     template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
     constructible: bool = True        # False when operator new is not public (placement new impossible)
@@ -142,6 +145,7 @@ class Class:
     enums: list[Enum] = field(default_factory=list)
     nested: list[Class] = field(default_factory=list)  # public nested classes (flattened into PackageIR.classes by the parser)
     skipped: list[str] = field(default_factory=list)   # human readable report lines
+    friend_ops: list["Function"] = field(default_factory=list)   # R-FREE-OP: hidden-friend operators declared in the class body
 
 
 @dataclass

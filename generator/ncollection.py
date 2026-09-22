@@ -111,10 +111,11 @@ def deprecated_aliases(alias_dir: Path, args: list[str], templates: dict[str, di
         if canon.kind != cindex.TypeKind.RECORD or canon.get_num_template_arguments() <= 0:
             continue
         tmpl = canon.get_declaration().spelling
-        if tmpl not in BINDERS:
-            continue
-        all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
-        key = f"{tmpl}<{', '.join(instance_args(tmpl, all_args))}>"
+        if tmpl in BINDERS:
+            all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+            key = f"{tmpl}<{', '.join(instance_args(tmpl, all_args))}>"
+        else:
+            key = canon.spelling               # a 6c instantiation (Graphic3d_Vec3 = NCollection_Vec3<float>): manifest key = canonical spelling
         found = templates.get(key)
         if found is None or found.get("skipped", False):
             unbound += 1

@@ -523,7 +523,8 @@ Copy from another string.)nbdoc")
         .def("Swap", static_cast<void (NCollection_UtfString<char>::*)(NCollection_UtfString<char> &) noexcept>(&NCollection_UtfString<char>::Swap), nb::arg("theOther"), R"nbdoc(Exchange the data of two strings (without reallocating memory).)nbdoc")
         .def("__iadd__", [](NCollection_UtfString<char> &self, const NCollection_UtfString<char> & theAppend) -> NCollection_UtfString<char> & { self.operator+=(theAppend); return self; }, nb::rv_policy::reference, nb::arg("theAppend"), R"nbdoc(Join strings.)nbdoc", nb::is_operator())
         .def("__eq__", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::operator==), nb::arg("theCompare"), R"nbdoc(@name compare operators)nbdoc", nb::is_operator())
-        .def("__ne__", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::operator!=), nb::arg("theCompare"), nb::is_operator());
+        .def("__ne__", static_cast<bool (NCollection_UtfString<char>::*)(const NCollection_UtfString<char> &) const noexcept>(&NCollection_UtfString<char>::operator!=), nb::arg("theCompare"), nb::is_operator())
+        .def("__add__", [](const NCollection_UtfString<char> & theLeft, const NCollection_UtfString<char> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */;
     nb::implicitly_convertible<std::decay_t<const char *>, NCollection_UtfString<char>>();
     nb::implicitly_convertible<std::decay_t<const char16_t *>, NCollection_UtfString<char>>();
     nb::borrow<nb::class_<NCollection_WinHeapAllocator>>(m.attr("NCollection_WinHeapAllocator"))

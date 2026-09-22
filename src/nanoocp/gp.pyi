@@ -9118,3 +9118,9 @@ class NCollection_Lerp__gp_Trsf:
         with 0 pointing to first value and 1 to the second value.
         @param[out] theResult  interpolated value
         """
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.BVH
+import nanoocp.Quantity
+gp_Vec2f = nanoocp.BVH.BVH_Vec2f
+gp_Vec3f = nanoocp.Quantity.NCollection_Vec3__float

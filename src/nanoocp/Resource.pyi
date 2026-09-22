@@ -133,6 +133,16 @@ Resource_FormatType_GBK: Resource_FormatType = Resource_FormatType.Resource_Form
 
 Resource_FormatType_Big5: Resource_FormatType = Resource_FormatType.Resource_FormatType_Big5
 
+Resource_FormatType_ANSI: Resource_FormatType = Resource_FormatType.Resource_FormatType_ANSI
+
+Resource_SJIS: Resource_FormatType = Resource_FormatType.Resource_SJIS
+
+Resource_EUC: Resource_FormatType = Resource_FormatType.Resource_EUC
+
+Resource_ANSI: Resource_FormatType = Resource_FormatType.Resource_ANSI
+
+Resource_GB: Resource_FormatType = Resource_FormatType.Resource_GB
+
 class Resource_LexicalCompare:
     @overload
     def __init__(self) -> None: ...

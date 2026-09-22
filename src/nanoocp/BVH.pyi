@@ -3,6 +3,7 @@
 from typing import overload
 
 import nanoocp.Bnd
+import nanoocp.Graphic3d
 import nanoocp.NCollection
 import nanoocp.Quantity
 import nanoocp.Standard
@@ -134,11 +135,19 @@ class BVH_Vec2i:
     def __itruediv__(self, theRight: BVH_Vec2i) -> BVH_Vec2i:
         """Compute per-component division."""
 
+    @overload
     def __mul__(self, theFactor: int) -> BVH_Vec2i:
         """Compute per-component multiplication by scale factor."""
 
+    @overload
+    def __mul__(self, arg: BVH_Vec2i, /) -> BVH_Vec2i: ...
+
+    @overload
     def __truediv__(self, theInvFactor: int) -> BVH_Vec2i:
         """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: BVH_Vec2i, /) -> BVH_Vec2i: ...
 
     def Dot(self, theOther: BVH_Vec2i) -> int:
         """Computes the dot product."""
@@ -162,6 +171,10 @@ class BVH_Vec2i:
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: BVH_Vec2i, /) -> BVH_Vec2i: ...
+
+    def __sub__(self, arg: BVH_Vec2i, /) -> BVH_Vec2i: ...
 
 class BVH_Vec3i:
     """
@@ -307,8 +320,12 @@ class BVH_Vec3i:
     def __imul__(self, theFactor: int) -> BVH_Vec3i:
         """Compute per-component multiplication by scale factor."""
 
+    @overload
     def __mul__(self, theFactor: int) -> BVH_Vec3i:
         """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __mul__(self, arg: BVH_Vec3i, /) -> BVH_Vec3i: ...
 
     def Multiplied(self, theFactor: int) -> BVH_Vec3i:
         """Compute per-component multiplication by scale factor."""
@@ -336,8 +353,12 @@ class BVH_Vec3i:
     def __itruediv__(self, theRight: BVH_Vec3i) -> BVH_Vec3i:
         """Compute per-component division."""
 
+    @overload
     def __truediv__(self, theInvFactor: int) -> BVH_Vec3i:
         """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: BVH_Vec3i, /) -> BVH_Vec3i: ...
 
     def Dot(self, theOther: BVH_Vec3i) -> int:
         """Computes the dot product."""
@@ -383,6 +404,10 @@ class BVH_Vec3i:
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: BVH_Vec3i, /) -> BVH_Vec3i: ...
+
+    def __sub__(self, arg: BVH_Vec3i, /) -> BVH_Vec3i: ...
 
 class BVH_Vec4i:
     """
@@ -708,8 +733,12 @@ class BVH_Vec4i:
     def Multiply(self, theFactor: int) -> None:
         """Compute per-component multiplication."""
 
+    @overload
     def __mul__(self, theFactor: int) -> BVH_Vec4i:
         """Compute per-component multiplication."""
+
+    @overload
+    def __mul__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
 
     def Multiplied(self, theFactor: int) -> BVH_Vec4i:
         """Compute per-component multiplication."""
@@ -740,11 +769,19 @@ class BVH_Vec4i:
     def __itruediv__(self, theRight: BVH_Vec4i) -> BVH_Vec4i:
         """Compute per-component division."""
 
+    @overload
     def __truediv__(self, theInvFactor: int) -> BVH_Vec4i:
         """Compute per-component division by scale factor."""
 
+    @overload
+    def __truediv__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
+
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
+
+    def __sub__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
 
 class BVH_Vec2f:
     """
@@ -853,11 +890,19 @@ class BVH_Vec2f:
     def __itruediv__(self, theRight: BVH_Vec2f) -> BVH_Vec2f:
         """Compute per-component division."""
 
+    @overload
     def __mul__(self, theFactor: float) -> BVH_Vec2f:
         """Compute per-component multiplication by scale factor."""
 
+    @overload
+    def __mul__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
+
+    @overload
     def __truediv__(self, theInvFactor: float) -> BVH_Vec2f:
         """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
 
     def Dot(self, theOther: BVH_Vec2f) -> float:
         """Computes the dot product."""
@@ -881,6 +926,10 @@ class BVH_Vec2f:
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
+
+    def __sub__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
 
 class BVH_Vec2d:
     """
@@ -989,11 +1038,19 @@ class BVH_Vec2d:
     def __itruediv__(self, theRight: BVH_Vec2d) -> BVH_Vec2d:
         """Compute per-component division."""
 
+    @overload
     def __mul__(self, theFactor: float) -> BVH_Vec2d:
         """Compute per-component multiplication by scale factor."""
 
+    @overload
+    def __mul__(self, arg: BVH_Vec2d, /) -> BVH_Vec2d: ...
+
+    @overload
     def __truediv__(self, theInvFactor: float) -> BVH_Vec2d:
         """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: BVH_Vec2d, /) -> BVH_Vec2d: ...
 
     def Dot(self, theOther: BVH_Vec2d) -> float:
         """Computes the dot product."""
@@ -1017,6 +1074,10 @@ class BVH_Vec2d:
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: BVH_Vec2d, /) -> BVH_Vec2d: ...
+
+    def __sub__(self, arg: BVH_Vec2d, /) -> BVH_Vec2d: ...
 
 class BVH_Vec3d:
     """
@@ -1162,8 +1223,12 @@ class BVH_Vec3d:
     def __imul__(self, theFactor: float) -> BVH_Vec3d:
         """Compute per-component multiplication by scale factor."""
 
+    @overload
     def __mul__(self, theFactor: float) -> BVH_Vec3d:
         """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __mul__(self, arg: BVH_Vec3d, /) -> BVH_Vec3d: ...
 
     def Multiplied(self, theFactor: float) -> BVH_Vec3d:
         """Compute per-component multiplication by scale factor."""
@@ -1191,8 +1256,12 @@ class BVH_Vec3d:
     def __itruediv__(self, theRight: BVH_Vec3d) -> BVH_Vec3d:
         """Compute per-component division."""
 
+    @overload
     def __truediv__(self, theInvFactor: float) -> BVH_Vec3d:
         """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: BVH_Vec3d, /) -> BVH_Vec3d: ...
 
     def Dot(self, theOther: BVH_Vec3d) -> float:
         """Computes the dot product."""
@@ -1238,6 +1307,10 @@ class BVH_Vec3d:
 
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: BVH_Vec3d, /) -> BVH_Vec3d: ...
+
+    def __sub__(self, arg: BVH_Vec3d, /) -> BVH_Vec3d: ...
 
 class BVH_Vec4d:
     """
@@ -1563,8 +1636,12 @@ class BVH_Vec4d:
     def Multiply(self, theFactor: float) -> None:
         """Compute per-component multiplication."""
 
+    @overload
     def __mul__(self, theFactor: float) -> BVH_Vec4d:
         """Compute per-component multiplication."""
+
+    @overload
+    def __mul__(self, arg: BVH_Vec4d, /) -> BVH_Vec4d: ...
 
     def Multiplied(self, theFactor: float) -> BVH_Vec4d:
         """Compute per-component multiplication."""
@@ -1595,11 +1672,19 @@ class BVH_Vec4d:
     def __itruediv__(self, theRight: BVH_Vec4d) -> BVH_Vec4d:
         """Compute per-component division."""
 
+    @overload
     def __truediv__(self, theInvFactor: float) -> BVH_Vec4d:
         """Compute per-component division by scale factor."""
 
+    @overload
+    def __truediv__(self, arg: BVH_Vec4d, /) -> BVH_Vec4d: ...
+
     def DumpJson(self, theDepth: int = -1) -> object:
         """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: BVH_Vec4d, /) -> BVH_Vec4d: ...
+
+    def __sub__(self, arg: BVH_Vec4d, /) -> BVH_Vec4d: ...
 
 class BVH_Mat4f:
     """
@@ -1742,7 +1827,7 @@ class BVH_Mat4f:
         @param[in] theVec  the vector of values.
         """
 
-    def GetMat3(self) -> "NCollection_Mat3<float>":
+    def GetMat3(self) -> nanoocp.Graphic3d.NCollection_Mat3__float:
         """Return 3x3 sub-matrix."""
 
     def InitZero(self) -> None:
@@ -2081,7 +2166,7 @@ class BVH_Mat4d:
         @param[in] theVec  the vector of values.
         """
 
-    def GetMat3(self) -> "NCollection_Mat3<double>":
+    def GetMat3(self) -> nanoocp.Graphic3d.NCollection_Mat3__double:
         """Return 3x3 sub-matrix."""
 
     def InitZero(self) -> None:
@@ -2444,7 +2529,7 @@ class BVH_Builder3d(BVH_BuilderTransient):
     \\tparam N Vector dimension
     """
 
-    def Build(self, theSet: BVH_Set__double__3, theBVH: "BVH_Tree<double, 3, BVH_BinaryTree>", theBox: nanoocp.Bnd.BVH_Box__double__3) -> None:
+    def Build(self, theSet: BVH_Set__double__3, theBVH: nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree, theBox: nanoocp.Bnd.BVH_Box__double__3) -> None:
         """Builds BVH using specific algorithm."""
 
 class BitPredicate:
@@ -2542,7 +2627,7 @@ class BVH_PrimitiveSet3d(BVH_Object__double__3):
     def Box(self) -> nanoocp.Bnd.BVH_Box__double__3:
         """Returns AABB of primitive set."""
 
-    def BVH(self) -> "BVH_Tree<double, 3, BVH_BinaryTree>":
+    def BVH(self) -> nanoocp.Graphic3d.BVH_Tree__double__3__BVH_BinaryTree:
         """Returns BVH tree (and builds it if necessary)."""
 
     def Builder(self) -> BVH_Builder3d:

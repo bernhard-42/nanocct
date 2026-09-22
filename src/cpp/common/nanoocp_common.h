@@ -355,6 +355,35 @@ template <> struct type_caster<char16_t> {
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
+// Type caster for char32_t (Standard_Utf32Char: the code-point API of Font_FTFont, Font_TextFormatter, NCollection_UtfString):
+// a 1-character Python str, like char and char16_t (Design.md R-CHAR16).
+NAMESPACE_BEGIN(NB_NAMESPACE)
+NAMESPACE_BEGIN(detail)
+
+template <> struct type_caster<char32_t> {
+    NB_TYPE_CASTER(char32_t, const_name("str"))
+
+    bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
+        if (!str_check(src.ptr()) || PyUnicode_GetLength(src.ptr()) != 1)
+            return false;
+        Py_UCS4 c = PyUnicode_ReadChar(src.ptr(), 0);
+        if (c == (Py_UCS4) -1 && PyErr_Occurred()) {
+            PyErr_Clear();
+            return false;
+        }
+        value = static_cast<char32_t>(c);
+        return true;
+    }
+
+    static handle from_cpp(char32_t v, rv_policy, cleanup_list *) noexcept {
+        int byteorder = 0;                                          // native; PyUnicode_FromKindAndData is not in the stable ABI
+        return PyUnicode_DecodeUTF32(reinterpret_cast<const char *>(&v), sizeof(char32_t), nullptr, &byteorder);
+    }
+};
+
+NAMESPACE_END(detail)
+NAMESPACE_END(NB_NAMESPACE)
+
 // Type caster for opencascade::handle<T> (also occ::handle<T>), modeled on nanobind's shared_ptr
 // caster. The Python instance never owns the C++ object directly; a heap-allocated handle is attached
 // via keep_alive, so OCCT's intrusive reference count governs the lifetime on both sides.

@@ -1007,7 +1007,7 @@ class TopOpeBRep_FacesFiller:
         and computes curve point interference.
         """
 
-    def GetGeometry(self, IT: nanoocp.NCollection.NCollection_List[nanoocp.TopOpeBRepDS.TopOpeBRepDS_Interference].Iterator, VP: TopOpeBRep_VPointInter) -> tuple[bool, int, nanoocp.TopOpeBRepDS.TopOpeBRepDS_Kind]:
+    def GetGeometry(self, IT: nanoocp.NCollection.NCollection_List__Handle_TopOpeBRepDS_Interference.Iterator, VP: TopOpeBRep_VPointInter) -> tuple[bool, int, nanoocp.TopOpeBRepDS.TopOpeBRepDS_Kind]:
         """
         Get the geometry of a DS point <DSP>.
         Search for it with ScanInterfList (previous method).

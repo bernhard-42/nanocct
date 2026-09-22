@@ -334,6 +334,9 @@ class Emitter:
             # TopAbs_ShapeEnum); export_values() does the same on the module or class. Scoped enums stay nested.
             lines.append("    .export_values()")
         lines[-1] += ";"
+        if not e.is_scoped:
+            # export_values() skips alias enumerators (Python's Enum iteration hides them): export those by name
+            lines += [f'{scope}.attr("{py}") = {scope}.attr("{e.py_name}").attr("{py}");' for py in e.aliases]
         return lines
 
     # ---- NCollection template instances ---------------------------------------------------------
@@ -418,6 +421,9 @@ class Emitter:
         for b in c.bases:
             if c.is_exception and b.startswith("std::"):
                 continue
+            if c.after_templates and b.endswith("::Iterator") and (b[:-len("::Iterator")] in self.ir.instances or (
+                    b[:-len("::Iterator")] in self.templates and not self.templates[b[:-len("::Iterator")]].get("skipped", False))):
+                continue                                # 6a: a binder instantiation's nested Iterator, registered in the templates phase
             if b not in self.known or b in skipped:     # skipped: a base of this package that was skipped just before (bases come first)
                 self.report.append(f"{c.name}: base class {b} is not bound ({'skipped' if b in skipped else 'package not generated'}) -> class skipped")
                 skip(c)
@@ -451,6 +457,12 @@ class Emitter:
             if c.name in skipped and c.template_key != "":
                 self.templates[c.template_key] = {"toolkit": "", "package": "", "name": "", "by": ir.name, "skipped": True}
         instances = self._instances()   # registers this package's NCollection instantiations in self.templates (defaults may use them)
+        for c in [c for c in classes if c.after_templates]:    # the Iterator base's owner may have been skipped just now
+            owners = [b[:-len("::Iterator")] for b in c.bases if b.endswith("::Iterator")]
+            if any(self.templates.get(o, {}).get("skipped", False) for o in owners):
+                self.report.append(f"{c.name}: base class {owners[0]}::Iterator is not bound (instantiation skipped) -> class skipped")
+                skipped.add(c.name)
+                classes.remove(c)
         free_ops, module_fns = self._functions()
         declare: list[str] = []
         define: list[str] = []
@@ -462,8 +474,10 @@ class Emitter:
             self._note_types(k.cpp)
         for e in ir.enums:
             declare += ["    " + l for l in self._enum(e, self._attr(e.scope))]
+        deferred: list[str] = []      # classes deriving from a binder instantiation's nested Iterator: declared after the instantiations
         for c in classes:
-            if self._declare_class(c, declare, wrappers):
+            target = deferred if c.after_templates else declare
+            if self._declare_class(c, target, wrappers):
                 self._define_class(c, free_ops, define)
         conversions = self._conversions(classes)
         define += self._aliases(classes)
@@ -480,6 +494,7 @@ class Emitter:
             "",
             f"void nanoocp_templates_{ir.name}(nb::module_ &m) {{",
             *instances,
+            *deferred,
             "}",
             "",
             f"void nanoocp_define_{ir.name}(nb::module_ &m) {{",
@@ -509,7 +524,10 @@ class Emitter:
             self.report.append(f"{q}({self._sig(narrow.params)}): same Python signature as {q}({self._sig(wide.params)}) -> registered after it (width preference)")
         for fn, suffix in resolve_overload_collisions(plain):
             fn.suffix = suffix           # R-COLLISION applies to namespace functions too
-        for fn in plain + [f for f in self.ir.functions if f.is_operator]:
+        # R-FREE-OP: hidden friends, collected per class; an instantiation may be listed twice in ir.classes (the class
+        # ordering pass dedups by name), so take each class once
+        friend_ops = [f for c in {c.name: c for c in self.ir.classes}.values() for f in c.friend_ops]
+        for fn in plain + [f for f in self.ir.functions if f.is_operator] + friend_ops:
             if fn.skip_reason is not None:
                 continue
             if fn.is_operator:
@@ -689,6 +707,12 @@ class Emitter:
                     setter = f"[]({B} &self, const {A} &a) {{ std::copy(a.begin(), a.end(), std::begin(self.{f.name})); }}"
                     define.append(f'    {cls_expr}.def_prop_rw("{py_safe(f.name)}", {getter}, {setter}{", " + dd if dd is not None else ""});')
                 continue
+            if f.is_bitfield:              # R-FIELD bit-field: no pointer-to-member exists, read and write through lambdas
+                B = c.bound_type
+                getter = f"[](const {B} &self) {{ return static_cast<{f.type}>(self.{f.name}); }}"
+                setter = f"[]({B} &self, {f.type} v) {{ self.{f.name} = v; }}"
+                define.append(f'    {cls_expr}.def_prop_rw("{py_safe(f.name)}", {getter}, {setter}{", " + dd if dd is not None else ""});')
+                continue
             define.append(f'    nanoocp_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
         if len(body) == 0 and len(c.fields) == 0:
             return
@@ -807,6 +831,9 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
         return (getattr(m, "qualified", "") or m.name, getattr(m, "is_static", False),
                 tuple(_strip_ref(p.type) for p in m.params if (not p.is_out or p.is_inout) and p.stream != StreamKind.OUT))
 
+    def full_sig(m) -> tuple:     # every parameter, out-params included, scalar widths folded (R-WIDTH twins are one overload here)
+        return tuple((_width(p.type)[0], p.is_out and not p.is_inout, p.stream) for p in m.params)
+
     groups: dict[tuple, list] = {}
     for m in overloads:
         if m.skip_reason is None:
@@ -816,7 +843,10 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
         if m.skip_reason is not None:
             continue
         members = groups[py_sig(m)]
-        colliding = len(members) > 1 and any(p.is_out or p.stream == StreamKind.OUT for mm in members for p in mm.params)
+        # width twins (Graphic3d_Vertex::Coord(double&, double&, double&) / Coord(float&, float&, float&)) are the same
+        # overload from Python and do not make a collision by themselves; the wider one is registered first (R-WIDTH)
+        distinct = {full_sig(mm) for mm in members}
+        colliding = len(distinct) > 1 and any(p.is_out or p.stream == StreamKind.OUT for mm in members for p in mm.params)
         result.append((m, out_suffix(m.params) if colliding else ""))
     return result
 

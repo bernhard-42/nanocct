@@ -55,6 +55,8 @@ C++11 enum class is not used to allow implicit conversion to underlying type.)nb
           .value("SplitCommonVertex", ShapeProcess::SplitCommonVertex)
           .value("Last", ShapeProcess::Last)
           .export_values();
+      cls.attr("DirectFaces") = cls.attr("Operation").attr("DirectFaces");
+      cls.attr("Last") = cls.attr("Operation").attr("Last");
     }
     { nb::class_<ShapeProcess_Context, Standard_Transient> cls(m, "ShapeProcess_Context", R"nbdoc(Provides convenient interface to resource file
 Allows to load resource file and get values of

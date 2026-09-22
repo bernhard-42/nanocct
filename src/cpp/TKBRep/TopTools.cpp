@@ -21,6 +21,7 @@ void nanoocp_declare_TopTools(nb::module_ &m) {
         .value("TopTools_FormatVersion_VERSION_3", TopTools_FormatVersion_VERSION_3)
         .value("TopTools_FormatVersion_CURRENT", TopTools_FormatVersion_CURRENT)
         .export_values();
+    m.attr("TopTools_FormatVersion_CURRENT") = m.attr("TopTools_FormatVersion").attr("TopTools_FormatVersion_CURRENT");
     m.attr("TopTools_FormatVersion_LOWER") = nb::int_(static_cast<long long>(TopTools_FormatVersion_LOWER));
     m.attr("TopTools_FormatVersion_UPPER") = nb::int_(static_cast<long long>(TopTools_FormatVersion_UPPER));
     { nb::class_<TopTools> cls(m, "TopTools", R"nbdoc(The TopTools package provides utilities for the

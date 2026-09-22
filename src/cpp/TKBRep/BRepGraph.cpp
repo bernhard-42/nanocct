@@ -2205,6 +2205,28 @@ UINT32_MAX (invalid sentinel) always fails this check for any realistic count.)n
         .def("__sub__", static_cast<BRepGraph_NodeId (BRepGraph_NodeId::*)(const uint32_t) const>(&BRepGraph_NodeId::operator-), nb::arg("theOffset"), R"nbdoc(Retreat by offset.)nbdoc", nb::is_operator())
         .def("IsRemoved", static_cast<bool (BRepGraph_NodeId::*)(const BRepGraph &) const>(&BRepGraph_NodeId::IsRemoved), nb::arg("theGraph"), R"nbdoc(Return true if this node has been soft-removed in the given graph.)nbdoc")
         .def("IsOwned", static_cast<bool (BRepGraph_NodeId::*)(const BRepGraph &) const>(&BRepGraph_NodeId::IsOwned), nb::arg("theGraph"), R"nbdoc(Return true if this node has an active owner in the given graph.)nbdoc")
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Solid> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Compound> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CompSolid> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Product> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_NodeId & theLhs, const BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Occurrence> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
         .def("__hash__", [](const BRepGraph_NodeId &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_NodeId>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_NodeId>(nb::borrow<nb::class_<BRepGraph_NodeId>>(m.attr("BRepGraph_NodeId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_NodeId>>(m.attr("BRepGraph_NodeId")), "NodeKind", &BRepGraph_NodeId::NodeKind);
@@ -2534,6 +2556,20 @@ UINT32_MAX (invalid sentinel) always fails this check for any realistic count.)n
         .def("__sub__", static_cast<BRepGraph_RefId (BRepGraph_RefId::*)(const uint32_t) const>(&BRepGraph_RefId::operator-), nb::arg("theOffset"), R"nbdoc(Retreat by offset.)nbdoc", nb::is_operator())
         .def("IsRemoved", static_cast<bool (BRepGraph_RefId::*)(const BRepGraph &) const>(&BRepGraph_RefId::IsRemoved), nb::arg("theGraph"), R"nbdoc(Return true if this reference entry has been soft-removed in the given graph.)nbdoc")
         .def("IsOwned", static_cast<bool (BRepGraph_RefId::*)(const BRepGraph &) const>(&BRepGraph_RefId::IsOwned), nb::arg("theGraph"), R"nbdoc(Return true if this reference entry has an active owner in the given graph.)nbdoc")
+        .def("__eq__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Shell> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Face> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Wire> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Vertex> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Solid> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Child> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
+        .def("__eq__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence> & theRhs) { return theLhs == theRhs; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefId & theLhs, const BRepGraph_RefId::Typed<BRepGraph_RefId::Kind::Occurrence> & theRhs) { return theLhs != theRhs; }, nb::is_operator()) /* free operator!= */
         .def("__hash__", [](const BRepGraph_RefId &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RefId>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RefId>(nb::borrow<nb::class_<BRepGraph_RefId>>(m.attr("BRepGraph_RefId")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RefId>>(m.attr("BRepGraph_RefId")), "RefKind", &BRepGraph_RefId::RefKind);
@@ -2726,6 +2762,9 @@ UINT32_MAX (invalid sentinel) always fails this check for any realistic count.)n
         .def_static("Invalid", static_cast<BRepGraph_RefUID (*)()>(&BRepGraph_RefUID::Invalid))
         .def("IsValid", static_cast<bool (BRepGraph_RefUID::*)() const>(&BRepGraph_RefUID::IsValid), R"nbdoc(True if this UID has a valid kind and a non-zero counter.)nbdoc")
         .def("HashValue", static_cast<size_t (BRepGraph_RefUID::*)() const noexcept>(&BRepGraph_RefUID::HashValue))
+        .def("__eq__", [](const BRepGraph_RefUID & theLeft, const BRepGraph_RefUID & theRight) { return theLeft == theRight; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_RefUID & theLeft, const BRepGraph_RefUID & theRight) { return theLeft != theRight; }, nb::is_operator()) /* free operator!= */
+        .def("__lt__", [](const BRepGraph_RefUID & theLeft, const BRepGraph_RefUID & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */
         .def("__hash__", [](const BRepGraph_RefUID &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_RefUID>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_RefUID>(nb::borrow<nb::class_<BRepGraph_RefUID>>(m.attr("BRepGraph_RefUID")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_RefUID>>(m.attr("BRepGraph_RefUID")), "Kind", &BRepGraph_RefUID::Kind);
@@ -2739,6 +2778,9 @@ UINT32_MAX (invalid sentinel) always fails this check for any realistic count.)n
         .def("IsTopology", static_cast<bool (BRepGraph_UID::*)() const>(&BRepGraph_UID::IsTopology))
         .def("IsAssembly", static_cast<bool (BRepGraph_UID::*)() const>(&BRepGraph_UID::IsAssembly))
         .def("HashValue", static_cast<size_t (BRepGraph_UID::*)() const noexcept>(&BRepGraph_UID::HashValue), R"nbdoc(Hash value compatible with operator==.)nbdoc")
+        .def("__eq__", [](const BRepGraph_UID & theLeft, const BRepGraph_UID & theRight) { return theLeft == theRight; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_UID & theLeft, const BRepGraph_UID & theRight) { return theLeft != theRight; }, nb::is_operator()) /* free operator!= */
+        .def("__lt__", [](const BRepGraph_UID & theLeft, const BRepGraph_UID & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */
         .def("__hash__", [](const BRepGraph_UID &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_UID>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_UID>(nb::borrow<nb::class_<BRepGraph_UID>>(m.attr("BRepGraph_UID")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_UID>>(m.attr("BRepGraph_UID")), "Kind", &BRepGraph_UID::Kind);
@@ -2758,6 +2800,8 @@ UINT32_MAX (invalid sentinel) always fails this check for any realistic count.)n
         .def("RawKind", static_cast<uint8_t (BRepGraph_ItemId::*)() const noexcept>(&BRepGraph_ItemId::RawKind), R"nbdoc(Return item kind encoded in its own domain enum space.)nbdoc")
         .def("Kind", static_cast<uint8_t (BRepGraph_ItemId::*)() const noexcept>(&BRepGraph_ItemId::Kind), R"nbdoc(Return item kind encoded in its own domain enum space.)nbdoc")
         .def("Index", static_cast<uint32_t (BRepGraph_ItemId::*)() const noexcept>(&BRepGraph_ItemId::Index), R"nbdoc(Return item per-kind index.)nbdoc")
+        .def("__eq__", [](const BRepGraph_ItemId & theLeft, const BRepGraph_ItemId & theRight) { return theLeft == theRight; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_ItemId & theLeft, const BRepGraph_ItemId & theRight) { return theLeft != theRight; }, nb::is_operator()) /* free operator!= */
         .def("__hash__", [](const BRepGraph_ItemId &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_ItemId>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_ItemId>(nb::borrow<nb::class_<BRepGraph_ItemId>>(m.attr("BRepGraph_ItemId")));
     nb::implicitly_convertible<std::decay_t<const BRepGraph_NodeId>, BRepGraph_ItemId>();
@@ -2861,6 +2905,9 @@ SameRange/SameParameter are per-CoEdge - use the per-CoEdge cache directly.
         .def("RawKind", static_cast<uint8_t (BRepGraph_ItemUID::*)() const noexcept>(&BRepGraph_ItemUID::RawKind), R"nbdoc(Return item kind encoded in its own domain enum space.)nbdoc")
         .def("Counter", static_cast<size_t (BRepGraph_ItemUID::*)() const noexcept>(&BRepGraph_ItemUID::Counter), R"nbdoc(Return the graph-wide monotonic UID counter.)nbdoc")
         .def("HashValue", static_cast<size_t (BRepGraph_ItemUID::*)() const noexcept>(&BRepGraph_ItemUID::HashValue), R"nbdoc(Compute a hash value compatible with operator==.)nbdoc")
+        .def("__eq__", [](const BRepGraph_ItemUID & theLeft, const BRepGraph_ItemUID & theRight) { return theLeft == theRight; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const BRepGraph_ItemUID & theLeft, const BRepGraph_ItemUID & theRight) { return theLeft != theRight; }, nb::is_operator()) /* free operator!= */
+        .def("__lt__", [](const BRepGraph_ItemUID & theLeft, const BRepGraph_ItemUID & theRight) { return theLeft < theRight; }, nb::is_operator()) /* free operator< */
         .def("__hash__", [](const BRepGraph_ItemUID &self) { return static_cast<Py_ssize_t>(std::hash<BRepGraph_ItemUID>{}(self)); });
     nanoocp_implicit_copy_ctor<BRepGraph_ItemUID>(nb::borrow<nb::class_<BRepGraph_ItemUID>>(m.attr("BRepGraph_ItemUID")));
     nb::borrow<nb::class_<BRepGraph_CopyRemap>>(m.attr("BRepGraph_CopyRemap"))
@@ -6440,6 +6487,9 @@ Uses Mode::Lightweight; for full structural audit use Perform(theGraph, Mode::Au
     nanoocp_implicit_copy_ctor<NCollection_DefaultHasher<BRepGraph_ItemId>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_ItemId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_ItemId")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_CacheIterator")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_CacheIterator * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_CacheIterator"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_CacheIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_CacheIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_CacheIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_CacheIterator")));
     nanoocp_if_concrete<BRepGraph_MutGuard<BRepGraphInc::VertexDef>>(nb::borrow<nb::class_<BRepGraph_MutGuard<BRepGraphInc::VertexDef>>>(m.attr("BRepGraph_MutGuard__BRepGraphInc_VertexDef")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph & theGraph, BRepGraphInc_Storage & theStorage, BRepGraphInc::VertexDef * theEntity, const typename BRepGraphInc::VertexDef::TypeId theId) { new (self) nanoocp_T(theGraph, theStorage, theEntity, theId); }, nb::arg("theGraph"), nb::arg("theStorage"), nb::arg("theEntity"), nb::arg("theId"), R"nbdoc(Construct a guard over a mutable entity.
@@ -6803,15 +6853,27 @@ constructed in an inert state.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph_MutGuard<BRepGraphInc::ChildRef>>(nb::borrow<nb::class_<BRepGraph_MutGuard<BRepGraphInc::ChildRef>>>(m.attr("BRepGraph_MutGuard__BRepGraphInc_ChildRef")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_DefsIterator_DefsVertexOfEdge")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_DefsIterator::DefsVertexOfEdge * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_DefsIterator_DefsVertexOfEdge"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_DefsIterator_DefsVertexOfEdge")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_ChildExplorer * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RootProductIterator")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_RootProductIterator * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RootProductIterator"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RootProductIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RootProductIterator")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ParentExplorer")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_ParentExplorer * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ParentExplorer"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ParentExplorer")));
     nanoocp_implicit_default_ctor<NCollection_DefaultHasher<BRepGraph_NodeId>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_NodeId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_NodeId")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_NodeId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_NodeId"))
@@ -6830,15 +6892,27 @@ constructed in an inert state.)nbdoc");
     nanoocp_implicit_copy_ctor<NCollection_DefaultHasher<BRepGraph_ItemUID>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_ItemUID>>>(m.attr("NCollection_DefaultHasher__BRepGraph_ItemUID")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_LayerIterator")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_LayerIterator * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_LayerIterator"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_LayerIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_LayerIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_LayerIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_LayerIterator")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RefsIterator_RefsVertexOfEdge")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_RefsIterator::RefsVertexOfEdge * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RefsIterator_RefsVertexOfEdge"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RefsIterator_RefsVertexOfEdge")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_RelatedIterator * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator")));
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_SupplementIterator")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_SupplementIterator * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_SupplementIterator"))
+        .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
+        .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_SupplementIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_SupplementIterator")));
     m.attr("BRepGraph_DefsVertexOfEdge") = m.attr("BRepGraph_DefsIterator").attr("DefsVertexOfEdge");   // BRepGraph_DefsVertexOfEdge = BRepGraph_DefsIterator::DefsVertexOfEdge
     m.attr("BRepGraph_RefsVertexOfEdge") = m.attr("BRepGraph_RefsIterator").attr("RefsVertexOfEdge");   // BRepGraph_RefsVertexOfEdge = BRepGraph_RefsIterator::RefsVertexOfEdge

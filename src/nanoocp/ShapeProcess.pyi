@@ -115,6 +115,10 @@ class ShapeProcess:
 
     SplitCommonVertex: ShapeProcess.Operation = Operation.SplitCommonVertex
 
+    DirectFaces: ShapeProcess.Operation = Operation.DirectFaces
+
+    Last: ShapeProcess.Operation = Operation.Last
+
     @staticmethod
     def RegisterOperator(name: str, op: ShapeProcess_Operator | None) -> bool:
         """Registers operator to make it visible for Performer"""

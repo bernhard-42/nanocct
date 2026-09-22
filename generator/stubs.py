@@ -228,9 +228,16 @@ def main() -> int:
         bases = f"{kind}[{', '.join(spelled)}]"
         if kind == "NCollection_Shared":                 # NCollection_Shared<T> derives from T (+ Transient members)
             bases = f"{spelled[0]}, _NCollection_Shared_members"
-        text = _replace_class_block(text, inst["name"], f"class {inst['name']}({bases}): ...")
+        block = f"class {inst['name']}({bases}): ..."
+        if "class Iterator(Generic[" in (GENERIC / f"{kind}.pyi").read_text():
+            # the generic nested Iterator does not bind the outer arguments (Python nested classes share no type parameters):
+            # the concrete class gets a concrete Iterator, so NCollection_List__int.Iterator(...).Value() is int (6b)
+            n_it = 2 if kind in ("NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap") else 1
+            block = f"class {inst['name']}({bases}):\n    class Iterator({kind}.Iterator[{', '.join(spelled[:n_it])}]): ..."
+        text = _replace_class_block(text, inst["name"], block)
     header = ("from typing import Generic, Self, TypeVar, overload\nfrom collections.abc import Iterator\n"
-              "import nanoocp.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n\n")
+              "import nanoocp.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n"
+              "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n\n")   # the nested Iterator classes: a nested class cannot reuse the outer class's type variables
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
     nc.write_text(header + "".join(generic_parts) + "\n" + text)
@@ -253,7 +260,9 @@ def main() -> int:
         for _ in range(4):                    # nested instantiations: the generic argument may name a concrete class
             new = text
             for name, generic in generic_of.items():
-                new = re.sub(rf"\bnanoocp\.NCollection\.{re.escape(name)}\b", generic, new)
+                # a nested-class access (X.Iterator as a base class, Graphic3d_SequenceOfHClipPlane::Iterator) keeps the concrete
+                # name: ty rejects the nested class of a specialised generic (6b)
+                new = re.sub(rf"\bnanoocp\.NCollection\.{re.escape(name)}\b(?!\.)", generic, new)
             if new == text:
                 break
             text = new

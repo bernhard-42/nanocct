@@ -535,6 +535,8 @@ class math_Matrix:
         Is used to redefine the operator <<.
         """
 
+    def __rmul__(self, arg: float, /) -> math_Matrix: ...
+
 class math_NotSquare(nanoocp.Standard.Standard_DimensionError):
     pass
 
@@ -857,6 +859,8 @@ class math_Vector:
         - Transitions between stack and heap as needed
         @param theSize new size of the vector
         """
+
+    def __rmul__(self, arg: float, /) -> math_Vector: ...
 
 class math:
     @overload
@@ -2313,6 +2317,8 @@ class math_IntegerVector:
         - Transitions between stack and heap as needed
         @param theSize new size of the vector
         """
+
+    def __rmul__(self, arg: int, /) -> math_IntegerVector: ...
 
 class math_FunctionSetRoot:
     """

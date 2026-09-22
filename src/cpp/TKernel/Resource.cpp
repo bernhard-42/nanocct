@@ -52,6 +52,11 @@ from one of these non ASCII format to Unicode, and vice versa.)nbdoc", nb::is_ar
         .value("Resource_ANSI", Resource_ANSI)
         .value("Resource_GB", Resource_GB)
         .export_values();
+    m.attr("Resource_FormatType_ANSI") = m.attr("Resource_FormatType").attr("Resource_FormatType_ANSI");
+    m.attr("Resource_SJIS") = m.attr("Resource_FormatType").attr("Resource_SJIS");
+    m.attr("Resource_EUC") = m.attr("Resource_FormatType").attr("Resource_EUC");
+    m.attr("Resource_ANSI") = m.attr("Resource_FormatType").attr("Resource_ANSI");
+    m.attr("Resource_GB") = m.attr("Resource_FormatType").attr("Resource_GB");
     { nb::class_<Resource_LexicalCompare> cls(m, "Resource_LexicalCompare");
     }
     { nb::class_<Resource_Manager, Standard_Transient> cls(m, "Resource_Manager", R"nbdoc(Defines a resource structure and its management methods.)nbdoc");
