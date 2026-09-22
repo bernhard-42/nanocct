@@ -139,6 +139,8 @@ binary_packages = [
     "XmlLDrivers",
     "XmlDrivers",
     "XmlXCAFDrivers",
+    "XmlMDataXtd",
+    "XmlMNaming",
 ]
 # Single members whose streams carry a document (binary or XML) inside a package whose other streams are text (DumpJson):
 # Class::method, every overload.
