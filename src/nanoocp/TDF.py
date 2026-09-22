@@ -9,9 +9,11 @@ from nanoocp._TKLCAF.TDF import *  # noqa: F401,F403
 _ALIASES = {
     "TDF_AttributeDeltaList": ("nanoocp.NCollection", "NCollection_List__Handle_TDF_AttributeDelta"),
     "TDF_AttributeList": ("nanoocp.NCollection", "NCollection_List__Handle_TDF_Attribute"),
+    "TDF_AttributeSequence": ("nanoocp.NCollection", "NCollection_Sequence__Handle_TDF_Attribute"),
     "TDF_DeltaList": ("nanoocp.NCollection", "NCollection_List__Handle_TDF_Delta"),
     "TDF_IDList": ("nanoocp.NCollection", "NCollection_List__Standard_GUID"),
     "TDF_LabelList": ("nanoocp.NCollection", "NCollection_List__TDF_Label"),
+    "TDF_LabelSequence": ("nanoocp.NCollection", "NCollection_Sequence__TDF_Label"),
 }
 
 

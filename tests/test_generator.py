@@ -12,8 +12,8 @@ import pytest
 
 from generator import parse
 from generator.binders import BINDERS
-from generator.emit import Emitter, resolve_ctor_arities, resolve_overload_collisions
-from generator.model import Constructor, ConversionKind, Method, Param, ResultKind, StreamKind
+from generator.emit import Emitter, resolve_ctor_arities, resolve_overload_collisions, resolve_static_renames
+from generator.model import Class, Constructor, ConversionKind, Method, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
 from generator.report import CATEGORIES, categorize
 
@@ -952,3 +952,34 @@ def test_a_bitset_is_a_set_of_indices(rules_ir):
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("Flags"' in cpp and '.def("GetFlags"' in cpp
+
+
+# Design.md 6 R-STATIC-S
+def test_resolve_static_renames_follows_the_inheritance_chain():
+    """Python cannot hold a static and an instance method of one name, and nanobind refuses the second registration
+    across inheritance too: a def_static on a derived class finds the base's inherited instance method. The real case
+    is XCAFDoc_NoteBalloon (static Set only) : XCAFDoc_NoteComment : XCAFDoc_Note (instance Set) -- the import of
+    _TKXCAF aborted with "mismatched static/instance method flags in function overloads" (2026-09-22)."""
+    def cls(name, base, *methods):
+        return Class(name=name, py_name=name, bases=[base] if base != "" else [], header=f"{name}.hxx", doc="",
+                     is_transient=True, is_exception=False, is_abstract=False,
+                     methods=[Method(name=n, params=[], result="void", result_kind=ResultKind.VALUE, result_class="",
+                                     is_static=static, is_const=False, is_noexcept=False, doc="") for n, static in methods])
+    note = cls("XCAFDoc_Note", "TDF_Attribute", ("Set", False))
+    comment = cls("XCAFDoc_NoteComment", "XCAFDoc_Note", ("Set", True), ("Set", False))
+    balloon = cls("XCAFDoc_NoteBalloon", "XCAFDoc_NoteComment", ("Set", True))
+    renames = resolve_static_renames([note, comment, balloon])
+    assert renames["XCAFDoc_NoteComment"] == {"Set"}      # static and instance in the same class (the pre-2026-09-22 rule)
+    assert renames["XCAFDoc_NoteBalloon"] == {"Set"}      # only a static of its own: the instance Set is two levels up
+    assert renames["XCAFDoc_Note"] == set()               # declares no static Set, so it has nothing to rename
+    # the other direction: the base has the static, a descendant the instance -> the base's static is the one to rename
+    base = cls("Base", "", ("Get", True))
+    derived = cls("Derived", "Base", ("Get", False))
+    renames = resolve_static_renames([base, derived])
+    assert renames["Base"] == {"Get"} and renames["Derived"] == set()
+    # unrelated classes do not interact, and a skipped overload does not count
+    other = cls("Other", "", ("Set", True))
+    assert resolve_static_renames([note, other])["Other"] == set()
+    skipped = cls("Skipped", "XCAFDoc_Note", ("Set", True))
+    skipped.methods[0].skip_reason = "x"
+    assert resolve_static_renames([note, skipped])["Skipped"] == set()

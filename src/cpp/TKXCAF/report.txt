@@ -1,0 +1,38 @@
+# nanoOCP generator report for TKXCAF: 30 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# header: 1
+# iterator: 4
+# overload-collision: 3
+# static-rename: 19
+# template: 2
+# undefined: 1
+header	XCAFDoc	XCAFDoc: headers not self-contained, parsed with <TDF_Label.hxx> included first
+iterator	XCAFDoc	XCAFDoc_AssemblyGraph::Iterator: __iter__ added (More/Next/Current)
+iterator	XCAFDoc	XCAFDoc_AssemblyIterator: __iter__ added (More/Next/Current)
+iterator	XCAFPrs	XCAFPrs_DocumentExplorer: __iter__ added (More/Next/Current)
+iterator	XCAFPrs	XCAFPrs_DocumentIdIterator: __iter__ added (More/Next/Value)
+overload-collision	XCAFDoc	XCAFDoc_ClippingPlaneTool::GetCapping(const TDF_Label &, bool &): same Python signature as another overload after out-param removal -> bound as GetCapping__bool
+overload-collision	XCAFDoc	XCAFDoc_LayerTool::GetLayers(const TDF_Label &, occ::handle<NCollection_HSequence<TCollection_ExtendedString>> &): same Python signature as another overload after out-param removal -> bound as GetLayers__NCollection_HSequence__TCollection_ExtendedString
+overload-collision	XCAFDoc	XCAFDoc_LayerTool::GetLayers(const TopoDS_Shape &, occ::handle<NCollection_HSequence<TCollection_ExtendedString>> &): same Python signature as another overload after out-param removal -> bound as GetLayers__NCollection_HSequence__TCollection_ExtendedString
+static-rename	XCAFDoc	XCAFDoc_Area::Get: static overloads renamed to Get_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Area::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Centroid::Get: static overloads renamed to Get_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Centroid::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Color::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_ColorTool::GetColor: static overloads renamed to GetColor_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Datum::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_DimTol::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_LengthUnit::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Location::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Material::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_NoteBalloon::Set: static overloads renamed to Set_s (an instance method of that name is inherited or inherits it)
+static-rename	XCAFDoc	XCAFDoc_NoteBinData::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_NoteComment::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_ShapeTool::GetOneShape: static overloads renamed to GetOneShape_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_ShapeTool::IsSubShape: static overloads renamed to IsSubShape_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_VisMaterialTool::GetShapeMaterial: static overloads renamed to GetShapeMaterial_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Volume::Get: static overloads renamed to Get_s (instance method of same name exists)
+static-rename	XCAFDoc	XCAFDoc_Volume::Set: static overloads renamed to Set_s (instance method of same name exists)
+template	XCAFDoc	XCAFDoc_AssemblyTool::Traverse: template member
+template	XCAFDoc	XCAFDoc_AssemblyTool::Traverse: template member
+undefined	XCAFDoc	XCAFDoc_GeomTolerance::XCAFDoc_GeomTolerance(const occ::handle<XCAFDoc_GeomTolerance> &): declared in the header, no definition in libTKXCAF

@@ -86,6 +86,7 @@ class Emitter:
         self.templates = known_templates      # canonical instance key -> {toolkit, package, name}; updated while emitting
         self.local = {c.name for c in ir.classes}
         self.report: list[str] = []
+        self.static_renames: dict[str, set[str]] = {}   # R-STATIC-S across the inheritance chain; set by the caller
         self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
         self._idents: set[str] = set()
@@ -661,8 +662,12 @@ class Emitter:
                     ctor_body.append(self._ctor(c, k.params[:n], k.doc, type_name="nanoocp_T"))
                 else:
                     body.append(self._ctor(c, k.params[:n], k.doc))
+        # R-STATIC-S: the names whose statics get _s, computed over the whole inheritance chain by the caller;
+        # the fallback is this class alone (unit tests that build an Emitter directly)
         bound = [m for m in c.methods if m.skip_reason is None]
-        mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
+        mixed = self.static_renames.get(c.name)
+        if mixed is None:
+            mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
         for m in skip_const_twins(c.methods):       # R-CONST-TWIN
             self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}){' const' if m.is_const else ''}: const twin of a less const overload -> not bound")
         methods, demoted = order_by_width(c.methods)   # R-WIDTH: wider scalar overloads registered first
@@ -674,8 +679,10 @@ class Emitter:
             if suffix != "" and _py_name(m) is not None:      # operators without a Python spelling are reported as such
                 self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}): same Python signature as another overload "
                                    f"after out-param removal -> bound as {_py_name(m)}{'_s' if m.is_static and m.name in mixed else ''}{suffix}")
+        own_instance = {m.name for m in bound if not m.is_static}
         for name in sorted(mixed):
-            self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s (instance method of same name exists)")
+            where = "instance method of same name exists" if name in own_instance else "an instance method of that name is inherited or inherits it"
+            self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s ({where})")
         for m, _ in resolved:
             s = self._method(c, m, mixed)
             if s is not None:
@@ -829,6 +836,50 @@ class Emitter:
         includes += [f"#include <{h}>" for h in extra]
         self.includes = ir.prelude + ir.headers + extra
         return includes
+
+
+# Design.md 6 R-STATIC-S
+def resolve_static_renames(classes: list) -> dict[str, set[str]]:
+    """Per class, the method names whose *static* overloads must be suffixed `_s`.
+
+    Python cannot hold a static and an instance method of one name, and nanobind refuses the second registration with
+    "mismatched static/instance method flags in function overloads" -- **across the inheritance chain too**, because a
+    `def_static` on a derived class finds the base's inherited instance method (XCAFDoc_NoteBalloon declares only a
+    static Set while XCAFDoc_Note, two levels up, has an instance Set; the import of _TKXCAF aborted, 2026-09-22).
+    A name that is static somewhere and an instance method somewhere else in one chain is therefore renamed in *every*
+    class of that chain that declares it static -- also when the instance method is in a *descendant*, since that
+    descendant would inherit the static one.
+
+    Takes IR classes (name, bases, methods with is_static/skip_reason) and returns {class name: {method name}}.
+    """
+    by_name = {c.name: c for c in classes}
+    own_static: dict[str, set[str]] = {}
+    own_instance: dict[str, set[str]] = {}
+    for c in classes:
+        bound = [m for m in c.methods if m.skip_reason is None]
+        own_static[c.name] = {m.name for m in bound if m.is_static}
+        own_instance[c.name] = {m.name for m in bound if not m.is_static}
+
+    def chain(name: str) -> list[str]:
+        out: list[str] = []
+        while name in by_name and name not in out:
+            out.append(name)
+            bases = by_name[name].bases
+            name = bases[0] if len(bases) > 0 else ""     # R-MI: nanobind binds the first base only
+        return out
+
+    renames: dict[str, set[str]] = {c.name: set() for c in classes}
+    for c in classes:
+        names = chain(c.name)
+        statics: set[str] = set()
+        instances: set[str] = set()
+        for n in names:
+            statics |= own_static[n]
+            instances |= own_instance[n]
+        mixed = statics & instances
+        for n in names:                                   # every class of the chain that declares such a static
+            renames[n] |= mixed & own_static[n]
+    return renames
 
 
 # Design.md 6 R-COLLISION

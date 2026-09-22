@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 from .binders import BINDERS, instance_args
-from .emit import Emitter, emit_toolkit_module, write_package_shims
+from .emit import Emitter, emit_toolkit_module, resolve_static_renames, write_package_shims
 from .occt import load_tree
 from .ncollection import deprecated_aliases, template_docs
 from .parse import INCLUDE_PACKAGES, clang_args, configure_libclang, include_prelude, parse_package, py_path
@@ -250,6 +250,9 @@ def main(argv: list[str]) -> int:
                   "run cannot know whether a toolkit that was not regenerated would own these. Run a clean regeneration "
                   "(rm src/cpp/manifest.json, all toolkits) or pass --allow-rehoming.", file=sys.stderr)
             return 1
+    # R-STATIC-S is decided over the whole inheritance chain, so it needs every class of the run at once: a clean
+    # regeneration (the canonical state, 9) parses all toolkits in one process, so the chains are complete there.
+    static_renames = resolve_static_renames([c for _, irs in parsed for ir in irs for c in ir.classes])
     for tk_name, irs in parsed:
         tk = tree.toolkits[tk_name]
         tk_dir = cpp_root / tk_name
@@ -272,6 +275,7 @@ def main(argv: list[str]) -> int:
             em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
                          _topo(tree, generated_toolkits), paths,
                          prelude_check=lambda headers: include_prelude(headers, tree.include_dir, cargs))
+            em.static_renames = static_renames
             (tk_dir / f"{pkg.name}.cpp").write_text(em.emit())
             included.update(em.includes)
             for name in em.skipped:            # a class skipped at emit time (base not bound) must not reach the manifest: a later

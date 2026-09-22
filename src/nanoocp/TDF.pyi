@@ -2308,6 +2308,8 @@ import nanoocp.NCollection
 import nanoocp.TDF
 TDF_AttributeDeltaList = nanoocp.NCollection.NCollection_List[nanoocp.TDF.TDF_AttributeDelta]
 TDF_AttributeList = nanoocp.NCollection.NCollection_List[nanoocp.TDF.TDF_Attribute]
+TDF_AttributeSequence = nanoocp.NCollection.NCollection_Sequence[nanoocp.TDF.TDF_Attribute]
 TDF_DeltaList = nanoocp.NCollection.NCollection_List[nanoocp.TDF.TDF_Delta]
 TDF_IDList = nanoocp.NCollection.NCollection_List[nanoocp.Standard.Standard_GUID]
 TDF_LabelList = nanoocp.NCollection.NCollection_List[nanoocp.TDF.TDF_Label]
+TDF_LabelSequence = nanoocp.NCollection.NCollection_Sequence[nanoocp.TDF.TDF_Label]

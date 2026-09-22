@@ -28,6 +28,7 @@ import nanoocp._TKOffset  # noqa: F401
 import nanoocp._TKService  # noqa: F401
 import nanoocp._TKV3d  # noqa: F401
 import nanoocp._TKVCAF  # noqa: F401
+import nanoocp._TKXCAF  # noqa: F401
 import nanoocp._TKXMesh  # noqa: F401
 import nanoocp._TKXSBase  # noqa: F401
 import nanoocp._TKXmlL  # noqa: F401

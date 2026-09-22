@@ -32,6 +32,7 @@
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDF_LabelNode.hxx:34:1)": "TDF",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDocStd_FormatVersion.hxx:86:1)": "TDocStd",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TopTools_FormatVersion.hxx:31:1)": "TopTools",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/XCAFPrs_DocumentExplorer.hxx:31:1)": "XCAFPrs",
 "AIS": "AIS",
 "AIS_Animation": "AIS",
 "AIS_AnimationAxisRotation": "AIS",
@@ -4014,6 +4015,78 @@
 "WNT_OrientationType": "WNT",
 "Wasm_Window": "Wasm",
 "XBRepMesh_Factory": "XBRepMesh",
+"XCAFApp_Application": "XCAFApp",
+"XCAFDimTolObjects_AngularQualifier": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DatumModifWithValue": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DatumObject": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DatumSingleModif": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DatumTargetType": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DimensionFormVariance": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DimensionGrade": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DimensionModif": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DimensionObject": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DimensionQualifier": "XCAFDimTolObjects",
+"XCAFDimTolObjects_DimensionType": "XCAFDimTolObjects",
+"XCAFDimTolObjects_GeomToleranceMatReqModif": "XCAFDimTolObjects",
+"XCAFDimTolObjects_GeomToleranceModif": "XCAFDimTolObjects",
+"XCAFDimTolObjects_GeomToleranceObject": "XCAFDimTolObjects",
+"XCAFDimTolObjects_GeomToleranceType": "XCAFDimTolObjects",
+"XCAFDimTolObjects_GeomToleranceTypeValue": "XCAFDimTolObjects",
+"XCAFDimTolObjects_GeomToleranceZoneModif": "XCAFDimTolObjects",
+"XCAFDimTolObjects_ToleranceZoneAffectedPlane": "XCAFDimTolObjects",
+"XCAFDimTolObjects_Tool": "XCAFDimTolObjects",
+"XCAFDoc": "XCAFDoc",
+"XCAFDoc_Area": "XCAFDoc",
+"XCAFDoc_AssemblyGraph": "XCAFDoc",
+"XCAFDoc_AssemblyGraph::Iterator": "XCAFDoc",
+"XCAFDoc_AssemblyGraph::NodeType": "XCAFDoc",
+"XCAFDoc_AssemblyItemId": "XCAFDoc",
+"XCAFDoc_AssemblyItemRef": "XCAFDoc",
+"XCAFDoc_AssemblyIterator": "XCAFDoc",
+"XCAFDoc_AssemblyTool": "XCAFDoc",
+"XCAFDoc_Centroid": "XCAFDoc",
+"XCAFDoc_ClippingPlaneTool": "XCAFDoc",
+"XCAFDoc_Color": "XCAFDoc",
+"XCAFDoc_ColorTool": "XCAFDoc",
+"XCAFDoc_ColorType": "XCAFDoc",
+"XCAFDoc_Datum": "XCAFDoc",
+"XCAFDoc_DimTol": "XCAFDoc",
+"XCAFDoc_DimTolTool": "XCAFDoc",
+"XCAFDoc_Dimension": "XCAFDoc",
+"XCAFDoc_DocumentTool": "XCAFDoc",
+"XCAFDoc_Editor": "XCAFDoc",
+"XCAFDoc_GeomTolerance": "XCAFDoc",
+"XCAFDoc_GraphNode": "XCAFDoc",
+"XCAFDoc_LayerTool": "XCAFDoc",
+"XCAFDoc_LengthUnit": "XCAFDoc",
+"XCAFDoc_Location": "XCAFDoc",
+"XCAFDoc_Material": "XCAFDoc",
+"XCAFDoc_MaterialTool": "XCAFDoc",
+"XCAFDoc_Note": "XCAFDoc",
+"XCAFDoc_NoteBalloon": "XCAFDoc",
+"XCAFDoc_NoteBinData": "XCAFDoc",
+"XCAFDoc_NoteComment": "XCAFDoc",
+"XCAFDoc_NotesTool": "XCAFDoc",
+"XCAFDoc_ShapeMapTool": "XCAFDoc",
+"XCAFDoc_ShapeTool": "XCAFDoc",
+"XCAFDoc_View": "XCAFDoc",
+"XCAFDoc_ViewTool": "XCAFDoc",
+"XCAFDoc_VisMaterial": "XCAFDoc",
+"XCAFDoc_VisMaterialCommon": "XCAFDoc",
+"XCAFDoc_VisMaterialPBR": "XCAFDoc",
+"XCAFDoc_VisMaterialTool": "XCAFDoc",
+"XCAFDoc_Volume": "XCAFDoc",
+"XCAFNoteObjects_NoteObject": "XCAFNoteObjects",
+"XCAFPrs": "XCAFPrs",
+"XCAFPrs_AISObject": "XCAFPrs",
+"XCAFPrs_DocumentExplorer": "XCAFPrs",
+"XCAFPrs_DocumentIdIterator": "XCAFPrs",
+"XCAFPrs_DocumentNode": "XCAFPrs",
+"XCAFPrs_Driver": "XCAFPrs",
+"XCAFPrs_Style": "XCAFPrs",
+"XCAFPrs_Texture": "XCAFPrs",
+"XCAFView_Object": "XCAFView",
+"XCAFView_ProjectionType": "XCAFView",
 "XSAlgo": "XSAlgo",
 "XSAlgo_AlgoContainer": "XSAlgo",
 "XSAlgo_ShapeProcessor": "XSAlgo",
@@ -6455,6 +6528,18 @@
 "name": "NCollection_DataMap__Handle_TDF_Attribute__Handle_TDF_Attribute",
 "by": "TDF"
 },
+"NCollection_DataMap<opencascade::handle<XCAFDimTolObjects_GeomToleranceObject>, opencascade::handle<XCAFDimTolObjects_DatumObject>>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__Handle_XCAFDimTolObjects_GeomToleranceObject__Handle_XCAFDimTolObjects_DatumObject",
+"by": "XCAFDimTolObjects"
+},
+"NCollection_DataMap<opencascade::handle<XCAFDoc_VisMaterial>, opencascade::handle<XCAFDoc_VisMaterial>>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_DataMap__Handle_XCAFDoc_VisMaterial__Handle_XCAFDoc_VisMaterial",
+"by": "XCAFDoc"
+},
 "NCollection_DataMap<unsigned int, AIS_MouseGesture>": {
 "toolkit": "TKV3d",
 "package": "NCollection",
@@ -7050,6 +7135,12 @@
 "name": "NCollection_HSequence__TCollection_AsciiString",
 "by": "Storage"
 },
+"NCollection_HSequence<TCollection_ExtendedString>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_HSequence__TCollection_ExtendedString",
+"by": "XCAFDoc"
+},
 "NCollection_HSequence<TopoDS_Shape>": {
 "toolkit": "TKShHealing",
 "package": "NCollection",
@@ -7213,6 +7304,12 @@
 "name": "NCollection_IndexedDataMap__TCollection_AsciiString__Handle_Standard_Transient",
 "by": "IFSelect"
 },
+"NCollection_IndexedDataMap<TDF_Label, TopoDS_Shape>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__TDF_Label__TopoDS_Shape",
+"by": "XCAFDoc"
+},
 "NCollection_IndexedDataMap<TopoDS_Shape, Bnd_Box>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -7248,6 +7345,12 @@
 "package": "NCollection",
 "name": "NCollection_IndexedDataMap__TopoDS_Shape__TopoDS_Shape__TopTools_ShapeMapHasher",
 "by": "TopOpeBRepBuild"
+},
+"NCollection_IndexedDataMap<TopoDS_Shape, XCAFPrs_Style, TopTools_ShapeMapHasher>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_IndexedDataMap__TopoDS_Shape__XCAFPrs_Style__TopTools_ShapeMapHasher",
+"by": "XCAFPrs"
 },
 "NCollection_IndexedDataMap<TopoDS_Shape, double, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBO",
@@ -7297,6 +7400,12 @@
 "package": "NCollection",
 "name": "NCollection_IndexedMap__TCollection_AsciiString",
 "by": "NCollection"
+},
+"NCollection_IndexedMap<TDF_Label>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__TDF_Label",
+"by": "XCAFDoc"
 },
 "NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBRep",
@@ -8233,6 +8342,12 @@
 "name": "NCollection_Sequence__TCollection_ExtendedString",
 "by": "Storage"
 },
+"NCollection_Sequence<TDF_Label>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__TDF_Label",
+"by": "XCAFDoc"
+},
 "NCollection_Sequence<TopOpeBRep_Point2d>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -8244,6 +8359,24 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__TopoDS_Shape",
 "by": "ShapeExtend"
+},
+"NCollection_Sequence<XCAFDimTolObjects_DatumSingleModif>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__XCAFDimTolObjects_DatumSingleModif",
+"by": "XCAFDimTolObjects"
+},
+"NCollection_Sequence<XCAFDimTolObjects_DimensionModif>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__XCAFDimTolObjects_DimensionModif",
+"by": "XCAFDimTolObjects"
+},
+"NCollection_Sequence<XCAFDimTolObjects_GeomToleranceModif>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__XCAFDimTolObjects_GeomToleranceModif",
+"by": "XCAFDimTolObjects"
 },
 "NCollection_Sequence<bool>": {
 "toolkit": "TKTopAlgo",
@@ -8528,6 +8661,12 @@
 "name": "NCollection_Sequence__Handle_TCollection_HExtendedString",
 "by": "Message"
 },
+"NCollection_Sequence<opencascade::handle<TDF_Attribute>>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_TDF_Attribute",
+"by": "XCAFDoc"
+},
 "NCollection_Sequence<opencascade::handle<TDocStd_ApplicationDelta>>": {
 "toolkit": "TKLCAF",
 "package": "NCollection",
@@ -8575,6 +8714,24 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__Handle_V3d_View",
 "by": "V3d"
+},
+"NCollection_Sequence<opencascade::handle<XCAFDimTolObjects_DatumObject>>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_XCAFDimTolObjects_DatumObject",
+"by": "XCAFDimTolObjects"
+},
+"NCollection_Sequence<opencascade::handle<XCAFDimTolObjects_DimensionObject>>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_XCAFDimTolObjects_DimensionObject",
+"by": "XCAFDimTolObjects"
+},
+"NCollection_Sequence<opencascade::handle<XCAFDimTolObjects_GeomToleranceObject>>": {
+"toolkit": "TKXCAF",
+"package": "NCollection",
+"name": "NCollection_Sequence__Handle_XCAFDimTolObjects_GeomToleranceObject",
+"by": "XCAFDimTolObjects"
 },
 "NCollection_Shared<NCollection_Array1<BRepMesh_Vertex>>": {
 "toolkit": "TKMesh",
@@ -9187,6 +9344,12 @@
 "WNT": "TKService",
 "Wasm": "TKService",
 "XBRepMesh": "TKXMesh",
+"XCAFApp": "TKXCAF",
+"XCAFDimTolObjects": "TKXCAF",
+"XCAFDoc": "TKXCAF",
+"XCAFNoteObjects": "TKXCAF",
+"XCAFPrs": "TKXCAF",
+"XCAFView": "TKXCAF",
 "XSAlgo": "TKXSBase",
 "XSControl": "TKXSBase",
 "XSMessage": "TKXSBase",
@@ -9527,6 +9690,14 @@
 "XSAlgo",
 "LibCtl",
 "XSMessage"
+],
+"TKXCAF": [
+"XCAFApp",
+"XCAFDimTolObjects",
+"XCAFNoteObjects",
+"XCAFDoc",
+"XCAFPrs",
+"XCAFView"
 ]
 },
 "links": {
@@ -9559,6 +9730,7 @@
 "TKTopAlgo": [],
 "TKV3d": [],
 "TKVCAF": [],
+"TKXCAF": [],
 "TKXMesh": [],
 "TKXSBase": [
 "TKDE"
@@ -9850,6 +10022,12 @@
 "WNT": [],
 "Wasm": [],
 "XBRepMesh": [],
+"XCAFApp": [],
+"XCAFDimTolObjects": [],
+"XCAFDoc": [],
+"XCAFNoteObjects": [],
+"XCAFPrs": [],
+"XCAFView": [],
 "XSAlgo": [],
 "XSControl": [],
 "XSMessage": [],
