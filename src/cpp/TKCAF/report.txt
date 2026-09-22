@@ -1,0 +1,12 @@
+# nanoOCP generator report for TKCAF: 6 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# iterator: 1
+# raw-pointer: 2
+# static-rename: 2
+# template: 1
+iterator	TNaming	TNaming_IteratorOnShapesSet: __iter__ added (More/Next/Value)
+raw-pointer	TNaming	TNaming_RefShape::FirstUse(): param 'aPtr': reference to pointer
+raw-pointer	TNaming	TNaming_RefShape::FirstUse(): return: pointer to incomplete type
+static-rename	TDataXtd	TDataXtd_Constraint::Set: static overloads renamed to Set_s (instance method of same name exists)
+static-rename	TDataXtd	TDataXtd_Triangulation::Set: static overloads renamed to Set_s (instance method of same name exists)
+template	TNaming	NCollection_DataMap<TopoDS_Shape, TNaming_RefShape *, TopTools_ShapeMapHasher>: template argument TNaming_RefShape * is a raw pointer -> instantiation skipped

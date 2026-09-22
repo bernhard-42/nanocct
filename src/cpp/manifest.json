@@ -191,6 +191,7 @@
 "AppParCurves_MultiCurve": "AppParCurves",
 "AppParCurves_MultiPoint": "AppParCurves",
 "AppStdL_Application": "AppStdL",
+"AppStd_Application": "AppStd",
 "ApproxInt_KnotTools": "ApproxInt",
 "ApproxInt_SvSurfaces": "ApproxInt",
 "Approx_Curve2d": "Approx",
@@ -3435,6 +3436,21 @@
 "TDataStd_TreeNode": "TDataStd",
 "TDataStd_UAttribute": "TDataStd",
 "TDataStd_Variable": "TDataStd",
+"TDataXtd": "TDataXtd",
+"TDataXtd_Axis": "TDataXtd",
+"TDataXtd_Constraint": "TDataXtd",
+"TDataXtd_ConstraintEnum": "TDataXtd",
+"TDataXtd_Geometry": "TDataXtd",
+"TDataXtd_GeometryEnum": "TDataXtd",
+"TDataXtd_Pattern": "TDataXtd",
+"TDataXtd_PatternStd": "TDataXtd",
+"TDataXtd_Placement": "TDataXtd",
+"TDataXtd_Plane": "TDataXtd",
+"TDataXtd_Point": "TDataXtd",
+"TDataXtd_Position": "TDataXtd",
+"TDataXtd_Presentation": "TDataXtd",
+"TDataXtd_Shape": "TDataXtd",
+"TDataXtd_Triangulation": "TDataXtd",
 "TDocStd": "TDocStd",
 "TDocStd_Application": "TDocStd",
 "TDocStd_ApplicationDelta": "TDocStd",
@@ -3459,6 +3475,32 @@
 "TFunction_Iterator": "TFunction",
 "TFunction_Logbook": "TFunction",
 "TFunction_Scope": "TFunction",
+"TNaming": "TNaming",
+"TNaming_Builder": "TNaming",
+"TNaming_CopyShape": "TNaming",
+"TNaming_DeltaOnModification": "TNaming",
+"TNaming_DeltaOnRemoval": "TNaming",
+"TNaming_Evolution": "TNaming",
+"TNaming_Identifier": "TNaming",
+"TNaming_Iterator": "TNaming",
+"TNaming_IteratorOnShapesSet": "TNaming",
+"TNaming_Localizer": "TNaming",
+"TNaming_Name": "TNaming",
+"TNaming_NameType": "TNaming",
+"TNaming_NamedShape": "TNaming",
+"TNaming_Naming": "TNaming",
+"TNaming_NamingTool": "TNaming",
+"TNaming_NewShapeIterator": "TNaming",
+"TNaming_OldShapeIterator": "TNaming",
+"TNaming_RefShape": "TNaming",
+"TNaming_SameShapeIterator": "TNaming",
+"TNaming_Scope": "TNaming",
+"TNaming_Selector": "TNaming",
+"TNaming_ShapesSet": "TNaming",
+"TNaming_Tool": "TNaming",
+"TNaming_TranslateTool": "TNaming",
+"TNaming_Translator": "TNaming",
+"TNaming_UsedShapes": "TNaming",
 "TopAbs": "TopAbs",
 "TopAbs_Orientation": "TopAbs",
 "TopAbs_ShapeEnum": "TopAbs",
@@ -5509,6 +5551,12 @@
 "name": "NCollection_Array1__gp_Pnt",
 "by": "BSplCLib"
 },
+"NCollection_Array1<gp_Trsf>": {
+"toolkit": "TKCAF",
+"package": "NCollection",
+"name": "NCollection_Array1__gp_Trsf",
+"by": "TDataXtd"
+},
 "NCollection_Array1<gp_Vec2d>": {
 "toolkit": "TKG2d",
 "package": "NCollection",
@@ -5882,6 +5930,13 @@
 "package": "NCollection",
 "name": "NCollection_DataMap__TopoDS_Shape__NCollection_List__double__TopTools_ShapeMapHasher",
 "by": "ShapeAnalysis"
+},
+"NCollection_DataMap<TopoDS_Shape, TNaming_RefShape *, TopTools_ShapeMapHasher>": {
+"toolkit": "",
+"package": "",
+"name": "",
+"by": "TNaming",
+"skipped": true
 },
 "NCollection_DataMap<TopoDS_Shape, TopAbs_State, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBool",
@@ -7363,6 +7418,12 @@
 "name": "NCollection_List__Handle_TDF_Delta",
 "by": "TDocStd"
 },
+"NCollection_List<opencascade::handle<TNaming_NamedShape>>": {
+"toolkit": "TKCAF",
+"package": "NCollection",
+"name": "NCollection_List__Handle_TNaming_NamedShape",
+"by": "TNaming"
+},
 "NCollection_List<opencascade::handle<TopOpeBRepBuild_Loop>>": {
 "toolkit": "TKBool",
 "package": "NCollection",
@@ -7474,6 +7535,12 @@
 "package": "NCollection",
 "name": "NCollection_Map__Handle_TDF_Attribute",
 "by": "TDF"
+},
+"NCollection_Map<opencascade::handle<TNaming_NamedShape>>": {
+"toolkit": "TKCAF",
+"package": "NCollection",
+"name": "NCollection_Map__Handle_TNaming_NamedShape",
+"by": "TNaming"
 },
 "NCollection_Mat3<double>": {
 "toolkit": "TKService",
@@ -8397,6 +8464,7 @@
 "AppCont": "TKGeomBase",
 "AppDef": "TKGeomBase",
 "AppParCurves": "TKGeomBase",
+"AppStd": "TKCAF",
 "AppStdL": "TKLCAF",
 "Approx": "TKGeomBase",
 "ApproxInt": "TKGeomAlgo",
@@ -8588,8 +8656,10 @@
 "TCollection": "TKernel",
 "TDF": "TKLCAF",
 "TDataStd": "TKLCAF",
+"TDataXtd": "TKCAF",
 "TDocStd": "TKLCAF",
 "TFunction": "TKLCAF",
+"TNaming": "TKCAF",
 "TShort": "TKernel",
 "TopAbs": "TKG3d",
 "TopBas": "TKHLR",
@@ -8891,6 +8961,11 @@
 "TFunction",
 "TDocStd",
 "AppStdL"
+],
+"TKCAF": [
+"TDataXtd",
+"TNaming",
+"AppStd"
 ]
 },
 "namespaces": {
@@ -8903,6 +8978,7 @@
 "AppCont": [],
 "AppDef": [],
 "AppParCurves": [],
+"AppStd": [],
 "AppStdL": [],
 "Approx": [],
 "ApproxInt": [],
@@ -9131,8 +9207,10 @@
 "TCollection": [],
 "TDF": [],
 "TDataStd": [],
+"TDataXtd": [],
 "TDocStd": [],
 "TFunction": [],
+"TNaming": [],
 "TShort": [],
 "TopAbs": [],
 "TopBas": [],
