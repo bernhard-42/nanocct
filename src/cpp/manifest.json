@@ -3501,6 +3501,17 @@
 "TNaming_TranslateTool": "TNaming",
 "TNaming_Translator": "TNaming",
 "TNaming_UsedShapes": "TNaming",
+"TPrsStd_AISPresentation": "TPrsStd",
+"TPrsStd_AISViewer": "TPrsStd",
+"TPrsStd_AxisDriver": "TPrsStd",
+"TPrsStd_ConstraintDriver": "TPrsStd",
+"TPrsStd_ConstraintTools": "TPrsStd",
+"TPrsStd_Driver": "TPrsStd",
+"TPrsStd_DriverTable": "TPrsStd",
+"TPrsStd_GeometryDriver": "TPrsStd",
+"TPrsStd_NamedShapeDriver": "TPrsStd",
+"TPrsStd_PlaneDriver": "TPrsStd",
+"TPrsStd_PointDriver": "TPrsStd",
 "TopAbs": "TopAbs",
 "TopAbs_Orientation": "TopAbs",
 "TopAbs_ShapeEnum": "TopAbs",
@@ -8660,6 +8671,7 @@
 "TDocStd": "TKLCAF",
 "TFunction": "TKLCAF",
 "TNaming": "TKCAF",
+"TPrsStd": "TKVCAF",
 "TShort": "TKernel",
 "TopAbs": "TKG3d",
 "TopBas": "TKHLR",
@@ -8966,6 +8978,9 @@
 "TDataXtd",
 "TNaming",
 "AppStd"
+],
+"TKVCAF": [
+"TPrsStd"
 ]
 },
 "namespaces": {
@@ -9211,6 +9226,7 @@
 "TDocStd": [],
 "TFunction": [],
 "TNaming": [],
+"TPrsStd": [],
 "TShort": [],
 "TopAbs": [],
 "TopBas": [],
