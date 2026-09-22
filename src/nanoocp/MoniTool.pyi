@@ -1243,3 +1243,8 @@ class MoniTool_TypedValue(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+import nanoocp.TopTools
+MoniTool_DataMapOfShapeTransient = nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.Standard.Standard_Transient, nanoocp.TopTools.TopTools_ShapeMapHasher]

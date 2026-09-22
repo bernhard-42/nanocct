@@ -7,6 +7,7 @@ from nanoocp._TKXSBase.MoniTool import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "MoniTool_DataMapOfShapeTransient": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__Handle_Standard_Transient__TopTools_ShapeMapHasher"),
 }
 
 

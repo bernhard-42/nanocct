@@ -312,7 +312,7 @@ the recorded items will be used by Customise
 Warning : if <name> conflicts, the last recorded item is kept)nbdoc")
         .def("SessionItem", static_cast<occ::handle<Standard_Transient> (XSControl_Controller::*)(const char *const) const>(&XSControl_Controller::SessionItem), nb::arg("theName"), R"nbdoc(Returns an item given its name to record in a Session
 If <name> is unknown, returns a Null Handle)nbdoc")
-        .def("Customise", [](XSControl_Controller &self) { occ::handle<XSControl_WorkSession> WS{}; self.Customise(WS); return WS; }, R"nbdoc(Customises a WorkSession, by adding to it the recorded items (by AddSessionItem))nbdoc")
+        .def("Customise", [](XSControl_Controller &self, occ::handle<XSControl_WorkSession> WS) { self.Customise(WS); return WS; }, nb::arg("WS").none(), R"nbdoc(Customises a WorkSession, by adding to it the recorded items (by AddSessionItem))nbdoc")
         .def("AdaptorSession", static_cast<const NCollection_DataMap<TCollection_AsciiString, opencascade::handle<Standard_Transient>, NCollection_DefaultHasher<TCollection_AsciiString>> & (XSControl_Controller::*)() const>(&XSControl_Controller::AdaptorSession))
         .def_static("get_type_name", static_cast<const char * (*)()>(&XSControl_Controller::get_type_name))
         .def_static("get_type_descriptor", static_cast<const occ::handle<Standard_Type> & (*)()>(&XSControl_Controller::get_type_descriptor))

@@ -1,0 +1,38 @@
+# nanoOCP generator report for TKDESTEP: 28 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# header: 1
+# override: 2
+# raw-pointer: 12
+# rvalue: 3
+# stream: 1
+# template: 2
+# unbound-type: 2
+# undefined: 5
+header	StepToTopoDS	StepToTopoDS: headers not self-contained, parsed with <StepData_Factors.hxx> included first
+override	StepFile	step::parser: namespace skipped (overrides.toml [skip] namespaces)
+override	StepFile	step::scanner: namespace skipped (overrides.toml [skip] namespaces)
+raw-pointer	StepData	StepData_StepReaderData::ReadEnumParam(const int, const int, const char *const, occ::handle<Interface_Check> &): param 'text': reference to pointer
+raw-pointer	StepFile	StepFile_ReadData::GetArgDescription(): param 'theType': raw pointer to primitive
+raw-pointer	StepFile	StepFile_ReadData::GetFileNbR(): param 'theNbHead': raw pointer to primitive
+raw-pointer	StepFile	StepFile_ReadData::GetRecordDescription(): param 'theIdent': raw pointer to primitive
+raw-pointer	StepVisual	NCollection_Handle<NCollection_Array1<opencascade::handle<StepVisual_TessellatedItem>>>::get(): return: dependent pointer/mutable reference result
+raw-pointer	StepVisual	NCollection_Handle<NCollection_Array1<opencascade::handle<StepVisual_TessellatedItem>>>::get(): return: dependent pointer/mutable reference result
+raw-pointer	StepVisual	NCollection_Handle<NCollection_Array1<opencascade::handle<StepVisual_TessellatedItem>>>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	StepVisual	NCollection_Handle<NCollection_Array1<opencascade::handle<StepVisual_TessellatedItem>>>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	StepVisual	NCollection_Handle<NCollection_DynamicArray<opencascade::handle<NCollection_HSequence<int>>>>::get(): return: dependent pointer/mutable reference result
+raw-pointer	StepVisual	NCollection_Handle<NCollection_DynamicArray<opencascade::handle<NCollection_HSequence<int>>>>::get(): return: dependent pointer/mutable reference result
+raw-pointer	StepVisual	NCollection_Handle<NCollection_DynamicArray<opencascade::handle<NCollection_HSequence<int>>>>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	StepVisual	NCollection_Handle<NCollection_DynamicArray<opencascade::handle<NCollection_HSequence<int>>>>::operator->(): return: dependent pointer/mutable reference result
+rvalue	STEPCAFControl	STEPCAFControl_Reader::SetShapeFixParameters(): param 'theParameters': rvalue reference
+rvalue	STEPCAFControl	STEPCAFControl_Writer::SetShapeFixParameters(): param 'theParameters': rvalue reference
+rvalue	STEPControl	STEPControl_Writer::SetShapeFixParameters(): param 'theParameters': rvalue reference
+stream	StepFile	StepFile_Read(...): param 'theIStream': iostream type
+template	StepData	StepData_StepReaderData::ReadEntity: template member
+template	StepData	StepData_StepReaderData::ReadMember: template member
+unbound-type	StepVisual	NCollection_Handle<NCollection_Array1<opencascade::handle<StepVisual_TessellatedItem>>>: base class opencascade::handle<Standard_Transient> is not bound (package not generated) -> class skipped
+unbound-type	StepVisual	NCollection_Handle<NCollection_DynamicArray<opencascade::handle<NCollection_HSequence<int>>>>: base class opencascade::handle<Standard_Transient> is not bound (package not generated) -> class skipped
+undefined	STEPSelections	STEPSelections_Counter::POP(): declared in the header, no definition in libTKDESTEP
+undefined	STEPSelections	STEPSelections_Counter::POP2(): declared in the header, no definition in libTKDESTEP
+undefined	StepData	StepData_FreeFormEntity::StepData_FreeFormEntity(): declared in the header, no definition in libTKDESTEP
+undefined	StepData	StepData_UndefinedEntity::Super(): declared in the header, no definition in libTKDESTEP
+undefined	StepFEA	StepFEA_SymmetricTensor43d::SetFeaIsotropicSymmetricTensor43d(const occ::handle<NCollection_HArray1<double>> &): declared in the header, no definition in libTKDESTEP

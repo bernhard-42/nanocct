@@ -5085,3 +5085,8 @@ class Interface_UndefinedContent(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+Interface_Array1OfHAsciiString = nanoocp.NCollection.NCollection_Array1[nanoocp.TCollection.TCollection_HAsciiString]
+Interface_HArray1OfHAsciiString = nanoocp.NCollection.NCollection_HArray1[nanoocp.TCollection.TCollection_HAsciiString]

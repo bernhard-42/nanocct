@@ -264,7 +264,7 @@ class XSControl_Controller(nanoocp.Standard.Standard_Transient):
         If <name> is unknown, returns a Null Handle
         """
 
-    def Customise(self) -> XSControl_WorkSession:
+    def Customise(self, WS: XSControl_WorkSession | None) -> XSControl_WorkSession:
         """
         Customises a WorkSession, by adding to it the recorded items (by AddSessionItem)
         """

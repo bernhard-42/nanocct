@@ -7,6 +7,8 @@ from nanoocp._TKXSBase.Interface import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "Interface_Array1OfHAsciiString": ("nanoocp.NCollection", "NCollection_Array1__Handle_TCollection_HAsciiString"),
+    "Interface_HArray1OfHAsciiString": ("nanoocp.NCollection", "NCollection_HArray1__Handle_TCollection_HAsciiString"),
 }
 
 

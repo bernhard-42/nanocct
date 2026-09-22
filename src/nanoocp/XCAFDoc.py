@@ -7,6 +7,7 @@ from nanoocp._TKXCAF.XCAFDoc import *  # noqa: F401,F403
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
+    "XCAFDoc_DataMapOfShapeLabel": ("nanoocp.NCollection", "NCollection_DataMap__TopoDS_Shape__TDF_Label__TopTools_ShapeMapHasher"),
 }
 
 

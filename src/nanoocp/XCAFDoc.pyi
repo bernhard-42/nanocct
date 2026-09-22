@@ -21,8 +21,6 @@ import nanoocp.XCAFDimTolObjects
 import nanoocp.XCAFNoteObjects
 import nanoocp.XCAFView
 import nanoocp.gp
-import nanoocp.TopTools
-import nanoocp.XCAFDoc
 
 
 class XCAFDoc_ColorType(enum.IntEnum):
@@ -4681,3 +4679,9 @@ class XCAFDoc_Volume(nanoocp.TDataStd.TDataStd_Real):
 
 # C++ typedef aliases
 XCAFDoc_PartId = nanoocp.TCollection.TCollection_AsciiString
+
+# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
+import nanoocp.NCollection
+import nanoocp.TopTools
+import nanoocp.XCAFDoc
+XCAFDoc_DataMapOfShapeLabel = nanoocp.NCollection.NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TDF.TDF_Label, nanoocp.TopTools.TopTools_ShapeMapHasher]

@@ -27,6 +27,12 @@ inout = [
     "DE_Provider::Write",
     "DE_Wrapper::Read",
     "DE_Wrapper::Write",
+    "DESTEP_Provider::Read",     # the same personizeWS pattern in every format provider (DESTEP_Provider.cxx:692-707)
+    "DESTEP_Provider::Write",
+    # handle<XSControl_WorkSession>& WS of the controllers: the session to configure, dereferenced right away
+    # (WS->NamedItem("xst-model-roots"), STEPControl_Controller.cxx) and never replaced. Three overrides in scope
+    # (XSControl_Controller, STEPControl_Controller, IGESControl_Controller), all with the same contract.
+    "*::Customise",
 ]
 
 # Classes never bound (internal helpers that happen to be public in a header).
@@ -51,6 +57,10 @@ namespaces = [
     "Detail",       # BRepGraph_RefsIterator::Detail: same
     "Internal",     # MathLin::Internal: same
     "MurmurHash",   # opencascade::MurmurHash::MurmurHashUtils (Standard_HashUtils.lxx): the hash mixer behind std::hash, header-only
+    "step",         # the bison/flex STEP parser (step.tab.hxx: step::parser, step::scanner, basic_symbol, context, stack).
+                    # Generated internals with no Python meaning; the members of the basic_symbol<by_kind> instantiation are
+                    # also not exported from libTKDESTEP, so the nm check cannot see them (6c: instantiations have no symbols)
+                    # and _TKDESTEP failed to link. StepFile_Read(stream, model, ...) is the public entry point.
 ]
 # Headers not included in the package translation unit: platform-specific internals that OCCT
 # itself only includes from .cxx files under #ifdef.

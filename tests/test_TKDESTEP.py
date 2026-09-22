@@ -1,0 +1,195 @@
+"""Generated bindings for TKDESTEP (DataExchange, 42 packages, the largest toolkit in scope): STEP import and export.
+STEPControl_Reader/Writer for plain shapes -- CadQuery's path -- and STEPCAFControl_Reader/Writer for XCAF documents
+with colours, plus the StepBasic/StepGeom/StepShape/... entity classes the AP214 schema is made of."""
+import importlib
+import re
+from pathlib import Path
+
+import pytest
+
+from nanoocp import Message
+from nanoocp.BRepGProp import BRepGProp
+from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanoocp.GProp import GProp_GProps
+from nanoocp.IFSelect import IFSelect_RetDone
+from nanoocp.Interface import Interface_Static
+from nanoocp.NCollection import NCollection_HArray1, NCollection_Sequence
+from nanoocp.Quantity import Quantity_Color, Quantity_NameOfColor, Quantity_NOC_RED
+from nanoocp.STEPCAFControl import STEPCAFControl_Controller, STEPCAFControl_Reader, STEPCAFControl_Writer
+from nanoocp.STEPConstruct import STEPConstruct
+from nanoocp.STEPControl import STEPControl_AsIs, STEPControl_Reader, STEPControl_StepModelType, STEPControl_Writer
+from nanoocp.StepBasic import StepBasic_Product, StepBasic_SiUnitName
+from nanoocp.StepGeom import StepGeom_CartesianPoint
+from nanoocp.StepShape import StepShape_ManifoldSolidBrep
+from nanoocp.TCollection import TCollection_ExtendedString, TCollection_HAsciiString
+from nanoocp.TDF import TDF_Label
+from nanoocp.TopAbs import TopAbs_SOLID
+from nanoocp.XCAFApp import XCAFApp_Application
+from nanoocp.XCAFDoc import XCAFDoc_ColorCurv, XCAFDoc_ColorGen, XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
+
+REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDESTEP" / "report.txt"
+PACKAGES = ["STEPControl", "STEPCAFControl", "STEPConstruct", "STEPEdit", "STEPSelections", "StepBasic", "StepGeom",
+            "StepShape", "StepRepr", "StepVisual", "StepData", "StepDimTol", "StepKinematics", "StepElement",
+            "StepFEA", "StepAP203", "StepAP214", "StepAP242", "StepToGeom", "GeomToStep", "StepToTopoDS",
+            "TopoDSToStep", "HeaderSection", "APIHeaderSection", "DESTEP", "StepTidy"]
+
+
+@pytest.fixture(scope="module", autouse=True)
+def controller():
+    """STEPCAFControl_Controller::Init declares the STEP statics (write.step.schema and friends); without it
+    Interface_Static.SetCVal on a STEP name returns False (seen with TKXSBase)."""
+    STEPCAFControl_Controller.Init()
+
+
+@pytest.fixture
+def quiet_messenger():
+    """The readers and writers print transfer statistics unconditionally."""
+    printers = list(Message.Message.DefaultMessenger().Printers())
+    levels = [p.GetTraceLevel() for p in printers]
+    for p in printers:
+        p.SetTraceLevel(Message.Message_Fail)
+    yield
+    for p, level in zip(printers, levels):
+        p.SetTraceLevel(level)
+
+
+def _volume(shape) -> float:
+    properties = GProp_GProps()
+    BRepGProp.VolumeProperties(shape, properties)
+    return properties.Mass()
+
+
+@pytest.mark.parametrize("pkg", PACKAGES)
+def test_every_package_imports(pkg):
+    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+
+
+def test_the_step_statics_cadquery_sets():
+    """CadQuery's sequence (shapes.py:560-563) works once the controller declared the names."""
+    assert Interface_Static.IsPresent("write.step.schema")
+    assert Interface_Static.SetIVal("write.surfacecurve.mode", 1)
+    assert Interface_Static.SetIVal("write.precision.mode", 0)
+    assert Interface_Static.SetCVal("xstep.cascade.unit", "MM") and Interface_Static.CVal("xstep.cascade.unit") == "MM"
+    # an enum static: the schema names are AP214IS/AP203/AP214DIS/AP242DIS, "AP214" alone is rejected
+    assert Interface_Static.CVal("write.step.schema") == "AP214IS"
+    assert not Interface_Static.SetCVal("write.step.schema", "AP214")
+    assert Interface_Static.SetCVal("write.step.schema", "AP203") and Interface_Static.CVal("write.step.schema") == "AP203"
+    assert Interface_Static.SetCVal("write.step.schema", "AP214IS")
+
+
+def test_a_box_round_trips_through_a_step_file(tmp_path, quiet_messenger):
+    """The milestone: write a solid as AP214 and read it back with the same volume."""
+    box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
+    writer = STEPControl_Writer()
+    assert writer.Transfer(box, STEPControl_AsIs) == IFSelect_RetDone
+    path = tmp_path / "box.step"
+    assert writer.Write(str(path)) == IFSelect_RetDone
+    text = path.read_text()
+    assert text.startswith("ISO-10303-21;") and "MANIFOLD_SOLID_BREP" in text
+
+    reader = STEPControl_Reader()
+    assert reader.ReadFile(str(path)) == IFSelect_RetDone
+    assert reader.NbRootsForTransfer() == 1
+    assert reader.TransferRoots() == 1
+    result = reader.OneShape()
+    assert result.ShapeType() == TopAbs_SOLID
+    assert _volume(result) == pytest.approx(6.0)
+    assert reader.NbShapes() == 1 and reader.Shape(1).ShapeType() == TopAbs_SOLID
+
+
+def test_a_step_file_round_trips_in_memory(quiet_messenger):
+    """No file needed: the writer's ostream& is the returned text (R-STREAM-OUT) and the reader takes a text
+    file-like object (R-STREAM-IN; STEP is text, unlike the OCAF document streams)."""
+    import io
+    writer = STEPControl_Writer()
+    assert writer.Transfer(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), STEPControl_AsIs) == IFSelect_RetDone
+    status, text = writer.WriteStream()
+    assert status == IFSelect_RetDone and text.startswith("ISO-10303-21;") and len(text) > 10000
+    reader = STEPControl_Reader()
+    assert reader.ReadStream("in-memory", io.StringIO(text)) == IFSelect_RetDone
+    assert reader.NbRootsForTransfer() == 1 and reader.TransferRoots() == 1
+    assert _volume(reader.OneShape()) == pytest.approx(6.0)
+
+
+def test_the_reader_exposes_its_work_session_and_model(tmp_path, quiet_messenger):
+    box = BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape()
+    writer = STEPControl_Writer()
+    writer.Transfer(box, STEPControl_AsIs)
+    path = tmp_path / "cube.step"
+    writer.Write(str(path))
+    reader = STEPControl_Reader()
+    reader.ReadFile(str(path))
+    session = reader.WS()                                        # TKXSBase types, registered there
+    assert type(session).__name__ == "XSControl_WorkSession"
+    # STEPCAFControl_Controller::Init registered the CAF controller, which derives from STEPControl_Controller
+    assert type(session.NormAdaptor()).__name__ == "STEPCAFControl_Controller"
+    model = session.Model()
+    assert model.NbEntities() > 100
+    assert isinstance(reader.PrintCheckLoad__str(False, 0), str)  # ostream& -> returned str (R-STREAM-OUT, R-COLLISION)
+    assert STEPControl_StepModelType.STEPControl_AsIs is STEPControl_AsIs
+
+
+def test_an_xcaf_document_round_trips_with_its_colour(tmp_path, quiet_messenger):
+    """STEPCAFControl writes the XCAF document; OCCT maps a generic colour onto the entity's surface and curve
+    colours, so it comes back as XCAFDoc_ColorSurf/ColorCurv, not ColorGen."""
+    app = XCAFApp_Application.GetApplication()
+    doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
+    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    colors = XCAFDoc_DocumentTool.ColorTool(doc.Main())
+    label = shapes.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), False)
+    colors.SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
+
+    writer = STEPCAFControl_Writer()
+    assert writer.Transfer(doc, STEPControl_AsIs)
+    path = tmp_path / "assembly.step"
+    assert writer.Write(str(path)) == IFSelect_RetDone
+
+    reloaded = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
+    reader = STEPCAFControl_Reader()
+    assert reader.ReadFile(str(path)) == IFSelect_RetDone
+    assert reader.Transfer(reloaded)
+    shapes2 = XCAFDoc_DocumentTool.ShapeTool(reloaded.Main())
+    colors2 = XCAFDoc_DocumentTool.ColorTool(reloaded.Main())
+    free = NCollection_Sequence[TDF_Label]()
+    shapes2.GetFreeShapes(free)
+    assert free.Length() == 1
+    shape = shapes2.GetShape(free.Value(1))
+    assert _volume(shape) == pytest.approx(6.0)
+    labels = NCollection_Sequence[TDF_Label]()
+    colors2.GetColors(labels)
+    assert labels.Length() == 1
+    color = Quantity_Color()
+    assert not colors2.GetColor(shape, XCAFDoc_ColorGen, color)   # OCCT semantics, not an omission
+    assert colors2.GetColor(shape, XCAFDoc_ColorSurf, color)
+    assert color.Name() == Quantity_NameOfColor.Quantity_NOC_RED
+    assert colors2.GetColor(shape, XCAFDoc_ColorCurv, color)
+
+
+def test_the_entity_classes_of_the_schema():
+    """The AP214 entity classes are plain Transients; 1 040 of them carry the schema."""
+    point = StepGeom_CartesianPoint()
+    coordinates = NCollection_HArray1[float](1, 3)
+    for i, value in enumerate((1.0, 2.0, 3.0), start=1):
+        coordinates.SetValue(i, value)
+    point.Init(TCollection_HAsciiString("origin"), coordinates)
+    assert point.Name().ToCString() == "origin" and point.NbCoordinates() == 3
+    assert point.CoordinatesValue(2) == 2.0
+    product = StepBasic_Product()
+    assert product.DynamicType().Name() == "StepBasic_Product"
+    assert StepShape_ManifoldSolidBrep().DynamicType().Name() == "StepShape_ManifoldSolidBrep"
+    assert StepBasic_SiUnitName.StepBasic_sunMetre is not None
+    assert hasattr(STEPConstruct, "FindEntity")
+
+
+def test_report_categories():
+    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
+    counts: dict[str, int] = {}
+    for line in lines:
+        counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
+    assert counts == {"raw-pointer": 12, "undefined": 5, "rvalue": 3, "override": 2, "template": 2,
+                      "unbound-type": 2, "header": 1, "stream": 1}
+    assert len(lines) == 28                                       # 1 040 classes, 7 688 methods bound
+    # the bison/flex parser of step.tab.hxx is skipped wholesale (overrides.toml [skip] namespaces)
+    assert sum(re.search(r"\bstep\b", line) is not None and "namespace" in line for line in lines) == 2
+    # the rvalue lines are the && twins of bound const& overloads: SetShapeFixParameters, as in TKXSBase
+    assert all("SetShapeFixParameters" in line for line in lines if line.startswith("rvalue"))
