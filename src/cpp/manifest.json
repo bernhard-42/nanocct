@@ -28,6 +28,7 @@
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Poly_MeshPurpose.hxx:20:1)": "Poly",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Prs3d_DatumAttribute.hxx:40:1)": "Prs3d",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/Prs3d_DatumParts.hxx:46:1)": "Prs3d",
+"(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/RWGltf_WriterTrsfFormat.hxx:28:1)": "RWGltf",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDF_Attribute.lxx:22:1)": "TDF",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDF_LabelNode.hxx:34:1)": "TDF",
 "(unnamed enum at /Users/bernhard/Development/CAD/nanoOCP/deps/occt-8.0.1/include/opencascade/TDocStd_FormatVersion.hxx:86:1)": "TDocStd",
@@ -1464,6 +1465,9 @@
 "Convert_ParameterisationType": "Convert",
 "Convert_SphereToBSplineSurface": "Convert",
 "Convert_TorusToBSplineSurface": "Convert",
+"DEGLTF_ConfigurationNode": "DEGLTF",
+"DEGLTF_ConfigurationNode::RWGltf_InternalSection": "DEGLTF",
+"DEGLTF_Provider": "DEGLTF",
 "DEIGES_ConfigurationNode": "DEIGES",
 "DEIGES_Parameters": "DEIGES",
 "DEIGES_Parameters::ReadMode_BSplineContinuity": "DEIGES",
@@ -3950,6 +3954,30 @@
 "Quantity_Period": "Quantity",
 "Quantity_PeriodDefinitionError": "Quantity",
 "Quantity_TypeOfColor": "Quantity",
+"RWGltf_CafReader": "RWGltf",
+"RWGltf_CafWriter": "RWGltf",
+"RWGltf_CafWriter::Mesh": "RWGltf",
+"RWGltf_DracoParameters": "RWGltf",
+"RWGltf_GltfAccessor": "RWGltf",
+"RWGltf_GltfAccessorCompType": "RWGltf",
+"RWGltf_GltfAccessorLayout": "RWGltf",
+"RWGltf_GltfAlphaMode": "RWGltf",
+"RWGltf_GltfArrayType": "RWGltf",
+"RWGltf_GltfBufferView": "RWGltf",
+"RWGltf_GltfBufferViewTarget": "RWGltf",
+"RWGltf_GltfFace": "RWGltf",
+"RWGltf_GltfJsonParser": "RWGltf",
+"RWGltf_GltfLatePrimitiveArray": "RWGltf",
+"RWGltf_GltfMaterialMap": "RWGltf",
+"RWGltf_GltfOStreamWriter": "RWGltf",
+"RWGltf_GltfPrimArrayData": "RWGltf",
+"RWGltf_GltfPrimitiveMode": "RWGltf",
+"RWGltf_GltfRootElement": "RWGltf",
+"RWGltf_GltfSceneNodeMap": "RWGltf",
+"RWGltf_MaterialCommon": "RWGltf",
+"RWGltf_MaterialMetallicRoughness": "RWGltf",
+"RWGltf_TriangulationReader": "RWGltf",
+"RWGltf_WriterTrsfFormat": "RWGltf",
 "RWHeaderSection": "RWHeaderSection",
 "RWHeaderSection_GeneralModule": "RWHeaderSection",
 "RWHeaderSection_RWFileDescription": "RWHeaderSection",
@@ -8942,6 +8970,12 @@
 "name": "NCollection_DataMap__TopoDS_Shape__NCollection_List__double__TopTools_ShapeMapHasher",
 "by": "ShapeAnalysis"
 },
+"NCollection_DataMap<TopoDS_Shape, RWMesh_NodeAttributes, TopTools_ShapeMapHasher>": {
+"toolkit": "TKDEGLTF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TopoDS_Shape__RWMesh_NodeAttributes__TopTools_ShapeMapHasher",
+"by": "RWGltf"
+},
 "NCollection_DataMap<TopoDS_Shape, TDF_Label, TopTools_ShapeMapHasher>": {
 "toolkit": "TKDESTEP",
 "package": "NCollection",
@@ -8978,6 +9012,12 @@
 "package": "NCollection",
 "name": "NCollection_DataMap__TopoDS_Shape__double__TopTools_ShapeMapHasher",
 "by": "BRepOffset"
+},
+"NCollection_DataMap<TopoDS_Shape, gp_XYZ, TopTools_ShapeMapHasher>": {
+"toolkit": "TKDEGLTF",
+"package": "NCollection",
+"name": "NCollection_DataMap__TopoDS_Shape__gp_XYZ__TopTools_ShapeMapHasher",
+"by": "RWGltf"
 },
 "NCollection_DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>": {
 "toolkit": "TKBool",
@@ -9352,6 +9392,12 @@
 "package": "NCollection",
 "name": "NCollection_DynamicArray__TopAbs_Orientation",
 "by": "IMeshData"
+},
+"NCollection_DynamicArray<TopoDS_Face>": {
+"toolkit": "TKDEGLTF",
+"package": "NCollection",
+"name": "NCollection_DynamicArray__TopoDS_Face",
+"by": "RWGltf"
 },
 "NCollection_DynamicArray<TopoDS_Shape>": {
 "toolkit": "TKBRep",
@@ -10815,6 +10861,12 @@
 "name": "NCollection_IndexedMap__TopoDS_Shape",
 "by": "TopOpeBRepBuild"
 },
+"NCollection_IndexedMap<XCAFPrs_DocumentNode>": {
+"toolkit": "TKDEGLTF",
+"package": "NCollection",
+"name": "NCollection_IndexedMap__XCAFPrs_DocumentNode",
+"by": "RWGltf"
+},
 "NCollection_IndexedMap<const Graphic3d_CStructure *>": {
 "toolkit": "",
 "package": "",
@@ -11061,6 +11113,12 @@
 "package": "NCollection",
 "name": "NCollection_LinearVector__OpenGl_RaytraceMaterial",
 "by": "OpenGl"
+},
+"NCollection_LinearVector<Poly_Triangle>": {
+"toolkit": "TKDEGLTF",
+"package": "NCollection",
+"name": "NCollection_LinearVector__Poly_Triangle",
+"by": "RWGltf"
 },
 "NCollection_LinearVector<double>": {
 "toolkit": "TKernel",
@@ -11479,6 +11537,12 @@
 "by": "IMeshData",
 "skipped": true
 },
+"NCollection_Map<TCollection_AsciiString>": {
+"toolkit": "TKDEGLTF",
+"package": "NCollection",
+"name": "NCollection_Map__TCollection_AsciiString",
+"by": "RWGltf"
+},
 "NCollection_Map<TDF_Label>": {
 "toolkit": "TKLCAF",
 "package": "NCollection",
@@ -11737,6 +11801,12 @@
 "package": "NCollection",
 "name": "NCollection_Sequence__Quantity_Color",
 "by": "AIS"
+},
+"NCollection_Sequence<RWGltf_GltfPrimArrayData>": {
+"toolkit": "TKDEGLTF",
+"package": "NCollection",
+"name": "NCollection_Sequence__RWGltf_GltfPrimArrayData",
+"by": "RWGltf"
 },
 "NCollection_Sequence<ShapeFix_WireSegment>": {
 "toolkit": "TKShHealing",
@@ -12681,6 +12751,7 @@
 "Contap": "TKHLR",
 "Convert": "TKMath",
 "DE": "TKDE",
+"DEGLTF": "TKDEGLTF",
 "DEIGES": "TKDEIGES",
 "DESTEP": "TKDESTEP",
 "DESTL": "TKDESTL",
@@ -12813,6 +12884,7 @@
 "PrsDim": "TKV3d",
 "PrsMgr": "TKV3d",
 "Quantity": "TKernel",
+"RWGltf": "TKDEGLTF",
 "RWHeaderSection": "TKDESTEP",
 "RWMesh": "TKRWMesh",
 "RWStepAP203": "TKDESTEP",
@@ -13342,6 +13414,10 @@
 ],
 "TKRWMesh": [
 "RWMesh"
+],
+"TKDEGLTF": [
+"RWGltf",
+"DEGLTF"
 ]
 },
 "links": {
@@ -13354,6 +13430,9 @@
 "TKCDF": [],
 "TKDE": [
 "TKLCAF",
+"TKXSBase"
+],
+"TKDEGLTF": [
 "TKXSBase"
 ],
 "TKDEIGES": [],
@@ -13489,6 +13568,7 @@
 "Contap": [],
 "Convert": [],
 "DE": [],
+"DEGLTF": [],
 "DEIGES": [],
 "DESTEP": [],
 "DESTL": [],
@@ -13648,6 +13728,7 @@
 "PrsDim": [],
 "PrsMgr": [],
 "Quantity": [],
+"RWGltf": [],
 "RWHeaderSection": [],
 "RWMesh": [],
 "RWStepAP203": [],

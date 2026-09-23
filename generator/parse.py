@@ -88,8 +88,19 @@ def configure_libclang() -> str:
     return "pip libclang"
 
 
+# Third-party headers that an *installed* OCCT header includes, so the parse needs them on the include path just as
+# the build did: RWGltf_GltfJsonParser.hxx has `#include <rapidjson/document.h>` under HAVE_RAPIDJSON. deps/build-occt.sh
+# puts them next to the OCCT install (deps/rapidjson from deps/fetch-rapidjson.sh, Design.md 8.13); the list grows if
+# another one turns up. FreeType is not here: OCCT's headers only forward-declare its types.
+_THIRD_PARTY_INCLUDES = (("rapidjson", "include"),)
+
+
 def clang_args(tree: OcctTree) -> list[str]:
     args = ["-x", "c++", "-std=c++17", f"-I{tree.include_dir}", "-DHAVE_FREETYPE", "-DHAVE_RAPIDJSON"]
+    for parts in _THIRD_PARTY_INCLUDES:
+        candidate = tree.install.parent.joinpath(*parts)
+        if candidate.is_dir():
+            args.append(f"-I{candidate}")
     rd = _resource_dir()
     if rd is not None:
         args += ["-resource-dir", rd]
@@ -1320,6 +1331,14 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
     if tmpl_name in BINDERS or tmpl_name == "handle" or t.spelling.startswith("std::"):
         return None
     qualified = _qualified_template(canon.get_declaration())        # BRepGraph_NodeId::Typed for nested templates
+    # a template of a skipped namespace is third-party plumbing, not API: RWGltf_GltfJsonParser derives from
+    # rapidjson::GenericDocument, which dragged in the library's Writer, MemoryPoolAllocator, BasicOStreamWrapper and
+    # UTF8<char> -- and their defaults name protected constants, so the package did not compile (2026-09-22)
+    if any(part in _SKIP_NAMESPACES for part in qualified.split("::")[:-1]):
+        line = f"{qualified}: namespace skipped (overrides.toml [skip] namespaces)"
+        if line not in report:
+            report.append(line)
+        return None
     tmpl, param_lists = _find_class_template(tu, qualified)
     if tmpl is None:
         report.append(f"{what}: class template {qualified} not found in the translation unit")

@@ -996,3 +996,17 @@ def test_the_lambda_temporary_cannot_collide_with_a_parameter(rules_ir):
     cpp = em.emit()
     assert "auto nanoocp_result = " in cpp
     assert re.search(r"\bauto result\b", cpp) is None and re.search(r"> result\(", cpp) is None
+
+
+def test_third_party_include_paths_are_passed_to_clang():
+    """An installed OCCT header can include a third-party one: RWGltf_GltfJsonParser.hxx has
+    #include <rapidjson/document.h> under HAVE_RAPIDJSON, so the parse needs the same include path the build used
+    (deps/rapidjson from deps/fetch-rapidjson.sh). Without it the TKDEGLTF parse failed with "file not found"."""
+    tree = load_tree(OCCT_SRC, OCCT)
+    args = parse.clang_args(tree)
+    assert "-DHAVE_RAPIDJSON" in args
+    rapidjson = OCCT.parent / "rapidjson" / "include"
+    if rapidjson.is_dir():
+        assert f"-I{rapidjson}" in args
+        assert (rapidjson / "rapidjson" / "document.h").exists()
+    assert "${NANOOCP_RAPIDJSON_DIR}" in (ROOT / "CMakeLists.txt").read_text()   # ... and the C++ build too

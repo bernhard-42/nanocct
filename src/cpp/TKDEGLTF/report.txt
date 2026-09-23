@@ -1,0 +1,12 @@
+# nanoOCP generator report for TKDEGLTF: 7 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# override: 3
+# stream: 2
+# template: 2
+override	RWGltf	rapidjson::MemoryPoolAllocator: namespace skipped (overrides.toml [skip] namespaces)
+override	RWGltf	rapidjson::UTF8: namespace skipped (overrides.toml [skip] namespaces)
+override	RWGltf	rapidjson::Writer: namespace skipped (overrides.toml [skip] namespaces)
+stream	RWGltf	RWGltf_GltfJsonParser::SetStream(): param 'theStream': iostream type
+stream	RWGltf	RWGltf_GltfOStreamWriter::RWGltf_GltfOStreamWriter(): param 'theOStream': iostream type
+template	RWGltf	RWGltf_GltfJsonParser: template base rapidjson::GenericDocument<rapidjson::UTF8<char>, rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>, rapidjson::CrtAllocator> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
+template	RWGltf	RWGltf_GltfOStreamWriter: template base rapidjson::Writer<rapidjson::BasicOStreamWrapper<std::ostream>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)

@@ -1,7 +1,7 @@
 """OCCT package RWMesh (toolkit TKRWMesh)"""
 
 import enum
-from typing import TextIO, overload
+from typing import BinaryIO, overload
 
 import nanoocp.Image
 import nanoocp.Message
@@ -448,7 +448,7 @@ class RWMesh_CafReader(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def Perform(self, theStream: TextIO, theProgress: nanoocp.Message.Message_ProgressRange, theFile: nanoocp.TCollection.TCollection_AsciiString = ...) -> bool:
+    def Perform(self, theStream: BinaryIO, theProgress: nanoocp.Message.Message_ProgressRange, theFile: nanoocp.TCollection.TCollection_AsciiString = ...) -> bool:
         """Read the data from specified file."""
 
     def ExtraStatus(self) -> int:
@@ -473,7 +473,7 @@ class RWMesh_CafReader(nanoocp.Standard.Standard_Transient):
         """Open stream and pass it to ProbeHeader method."""
 
     @overload
-    def ProbeHeader(self, theStream: TextIO, theFile: nanoocp.TCollection.TCollection_AsciiString = ..., theProgress: nanoocp.Message.Message_ProgressRange = ...) -> bool:
+    def ProbeHeader(self, theStream: BinaryIO, theFile: nanoocp.TCollection.TCollection_AsciiString = ..., theProgress: nanoocp.Message.Message_ProgressRange = ...) -> bool:
         """
         Read the header data from specified file without reading entire model.
         The main purpose is collecting metadata and external references - for copying model into a new

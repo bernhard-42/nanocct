@@ -60,6 +60,9 @@ namespaces = [
     "Detail",       # BRepGraph_RefsIterator::Detail: same
     "Internal",     # MathLin::Internal: same
     "MurmurHash",   # opencascade::MurmurHash::MurmurHashUtils (Standard_HashUtils.lxx): the hash mixer behind std::hash, header-only
+    "rapidjson",    # the vendored JSON library (8.13): RWGltf_GltfJsonParser derives from rapidjson::GenericDocument,
+                    # which pulled its allocators, stream wrappers and UTF8<char> encoder into the RWGltf package.
+                    # Third-party implementation detail with no OCCT or Python meaning (2026-09-22).
     "step",         # the bison/flex STEP parser (step.tab.hxx: step::parser, step::scanner, basic_symbol, context, stack).
                     # Generated internals with no Python meaning; the members of the basic_symbol<by_kind> instantiation are
                     # also not exported from libTKDESTEP, so the nm check cannot see them (6c: instantiations have no symbols)
@@ -182,4 +185,11 @@ binary_members = [
     "RWStl::ReadStream",
     "RWStl_Reader::ReadBinary",
     "RWStl_Reader::IsAscii",
+    # The mesh readers are binary too, and for the same reason: RWMesh_CafReader::Perform(path) and ProbeHeader(path)
+    # open the file with std::ios_base::binary and hand that stream to the istream& overload
+    # (RWMesh_CafReader.hxx:187,225). glTF is the case in point -- .glb is binary and .gltf is JSON, and ProbeHeader
+    # sniffs which one it got, so bytes is the superset (2026-09-22; TKRWMesh had bound them as text).
+    "RWMesh_CafReader::Perform",
+    "RWMesh_CafReader::ProbeHeader",
+    "RWGltf_TriangulationReader::ReadStream",   # reads vertex/index arrays out of the glTF binary buffer
 ]

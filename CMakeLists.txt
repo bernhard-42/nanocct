@@ -10,6 +10,7 @@ find_package(nanobind CONFIG REQUIRED)
 
 # OCCT: the local build in deps/ by default (see deps/build-occt.sh)
 set(NANOOCP_OCCT_DIR "${CMAKE_SOURCE_DIR}/deps/occt-8.0.1" CACHE PATH "OCCT installation prefix")
+set(NANOOCP_RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/deps/rapidjson/include" CACHE PATH "RapidJSON headers (vendored)")
 find_package(OpenCASCADE REQUIRED PATHS "${NANOOCP_OCCT_DIR}/lib/cmake/opencascade" NO_DEFAULT_PATH)
 message(STATUS "nanoocp: OCCT ${OpenCASCADE_VERSION} from ${NANOOCP_OCCT_DIR}")
 
@@ -18,6 +19,12 @@ foreach(tk IN LISTS NANOOCP_TOOLKITS)
   file(GLOB tk_sources CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/cpp/${tk}/*.cpp")
   nanobind_add_module(_${tk} STABLE_ABI NB_DOMAIN nanoocp ${tk_sources})
   target_include_directories(_${tk} PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
+  # OCCT's exported targets define HAVE_RAPIDJSON but do not carry the include path, and an installed header
+  # includes it (RWGltf_GltfJsonParser.hxx -> rapidjson/document.h). Same vendored copy the OCCT build used
+  # (deps/fetch-rapidjson.sh, Design.md 8.13); header-only, so nothing extra is linked or shipped.
+  if(EXISTS "${NANOOCP_RAPIDJSON_DIR}")
+    target_include_directories(_${tk} PRIVATE "${NANOOCP_RAPIDJSON_DIR}")
+  endif()
   # deprecated OCCT members are bound on purpose (their deprecation message becomes the docstring, Design.md 6)
   if(MSVC)
     target_compile_options(_${tk} PRIVATE /wd4996)
