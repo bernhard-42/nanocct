@@ -638,7 +638,7 @@ The Python additions of 2c.
 
 ### Open
 
-- **8.1** `ModelingAlgorithms`, then Phase 2 and the font slice (the ordered plan is in section 9, "Next steps").
+- **8.1** **Finish Phase 2.** ~~`ModelingAlgorithms`~~ is complete (2026-09-21, 14 toolkits, `TKExpress` out of scope) and ~~the font slice~~ is obsolete — Visualization is bound as whole toolkits instead (decision 2026-09-22, 2). What is left of Phase 2 is `TKBinXCAF` and `TKXmlXCAF`, 18 headers each; the ordered plan is in 9, "Next steps". Moves to *Decided* when they land.
 - **8.2** Generator on Linux and Windows (libclang selection, MSVC/libstdc++ header discovery, platform-dependent `#ifdef`s in OCCT headers such as `OSD_*`).
 - **8.3** Decide whether to vendor the ~23 clang builtin headers so the pip `libclang` fallback works without a host clang. (The RapidJSON half of this question is **decided**, see 13.)
 - **8.4** Wheel bundling and CI matrix (the deployment target is set, 7).
