@@ -5,6 +5,7 @@ from typing import TextIO, overload
 
 import nanoocp.Geom2dAPI
 import nanoocp.GeomAPI
+import nanoocp.MeshVS
 import nanoocp.NCollection
 import nanoocp.Select3D
 import nanoocp.Standard
@@ -941,6 +942,9 @@ class gp_Pnt:
 
     @overload
     def __init__(self, theFrom: nanoocp.Select3D.Select3D_Pnt) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.MeshVS.MeshVS_Buffer) -> None: ...
 
     @overload
     def SetCoord(self, theIndex: int, theXi: float) -> None:

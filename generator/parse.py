@@ -932,12 +932,13 @@ def _conversion(cursor: cindex.Cursor) -> Conversion | None:
     canon = t.get_canonical()
     doc = _doc(cursor)
     explicit = cursor.is_explicit_method()
+    is_const = cursor.is_const_method()
     if canon.kind == TK.BOOL:
-        return Conversion(ConversionKind.BOOL, "bool", "", explicit, doc)
+        return Conversion(ConversionKind.BOOL, "bool", "", explicit, doc, is_const)
     if canon.kind in _INT_KINDS:
-        return Conversion(ConversionKind.INT, _type_spelling(t), "", explicit, doc)
+        return Conversion(ConversionKind.INT, _type_spelling(t), "", explicit, doc, is_const)
     if canon.kind in (TK.DOUBLE, TK.FLOAT, TK.LONGDOUBLE):
-        return Conversion(ConversionKind.FLOAT, _type_spelling(t), "", explicit, doc)
+        return Conversion(ConversionKind.FLOAT, _type_spelling(t), "", explicit, doc, is_const)
     if canon.kind == TK.ENUM:
         return None                              # no Python spelling for a conversion to an enum (BRepGraphInc_ParityOrientation)
     if canon.kind == TK.RECORD:

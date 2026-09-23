@@ -699,7 +699,9 @@ class Emitter:
             dunder = {ConversionKind.BOOL: "__bool__", ConversionKind.INT: "__int__", ConversionKind.FLOAT: "__float__"}.get(conv.kind)
             if dunder is not None:
                 self._note_types(conv.target)
-                body.append(f'.def("{dunder}", [](const {c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
+                # R-CONV-SCALAR: a non-const conversion operator needs a non-const self (MeshVS_Buffer::operator int&())
+                qual = "const " if conv.is_const else ""
+                body.append(f'.def("{dunder}", [{qual and ""}]({qual}{c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
         ir = self.ir
         if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
             # R-HASH: std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__

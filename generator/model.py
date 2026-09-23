@@ -90,6 +90,9 @@ class Conversion:
     target_class: str           # canonical class/enum name of T, "" for scalars
     is_explicit: bool
     doc: str
+    # operator T() is usually const, but not always (MeshVS_Buffer::operator double&()/int&()): a scalar dunder's
+    # lambda must then take a non-const self, or the static_cast does not compile (R-CONV-SCALAR)
+    is_const: bool = True
 
 
 @dataclass

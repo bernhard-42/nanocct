@@ -95,6 +95,11 @@ public:
   double OldLength() const { return myValue; }
   //! Conversion operator to a bound class.
   operator gp_Pnt() const { return gp_Pnt(); }
+  //! R-CONV-SCALAR: a **non-const** scalar conversion operator (MeshVS_Buffer::operator double&()/int&()); the
+  //! dunder's lambda must take a non-const self, or the static_cast does not compile.
+  operator double&() { return myValue; }
+  //! ... while a const one keeps the const self.
+  operator bool() const { return myValue != 0.0; }
   //! Const / non-const conversion twins (XmlObjMgt_Persistent::operator XmlObjMgt_Element&): one conversion.
   operator const gp_XYZ&() const { return myOrigin; }
   operator gp_XYZ&() { return myOrigin; }
@@ -557,6 +562,8 @@ def test_ir_deprecated_member_is_bound_with_note(rules_ir):
 def test_ir_conversion_operator_and_implicit_ctor(rules_ir):
     value = next(c for c in rules_ir.classes if c.name == "Rules_Value")
     assert [(k.kind, k.target_class, k.is_explicit) for k in value.conversions] == [(ConversionKind.CLASS, "gp_Pnt", False),
+                                                                                  (ConversionKind.FLOAT, "", False),    # operator double&(), non-const
+                                                                                  (ConversionKind.BOOL, "", False),
                                                                                   (ConversionKind.CLASS, "gp_XYZ", False), (ConversionKind.CLASS, "gp_XYZ", False)]
     implicit = [k for k in value.ctors if k.is_implicit]
     assert len(implicit) == 1 and implicit[0].params[0].type == "const gp_Pnt &"
@@ -695,6 +702,22 @@ class _FakeToolkit:
 class _FakeTree:
     """Just enough of OcctTree for _topo: the EXTERNLIB dependency edges."""
     def __init__(self, edges): self.toolkits = {t: _FakeToolkit(d) for t, d in edges.items()}
+
+
+def test_a_non_const_scalar_conversion_takes_a_non_const_self(rules_ir):
+    """R-CONV-SCALAR: `operator T()` is usually const, but not always — MeshVS_Buffer's `operator double&()` and
+    `operator int&()` are not, and the dunder's lambda was emitted with `const Rules_Value &self` regardless, so the
+    static_cast did not compile ("no matching conversion for static_cast from 'const MeshVS_Buffer' to 'double'",
+    2026-09-23). The IR records the operator's constness and the emitter follows it."""
+    value = next(c for c in rules_ir.classes if c.name == "Rules_Value")
+    by_kind = {k.kind: k for k in value.conversions}
+    assert by_kind[ConversionKind.FLOAT].is_const is False        # operator double&()
+    assert by_kind[ConversionKind.BOOL].is_const is True          # operator bool() const
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert '.def("__float__", [](Rules_Value &self) { return static_cast<double>(self); }' in cpp
+    assert '.def("__bool__", [](const Rules_Value &self) { return static_cast<bool>(self); }' in cpp
 
 
 def test_wrapping_base_edges_and_the_import_order():
