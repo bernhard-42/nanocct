@@ -45,3 +45,4 @@ import nanoocp._TKOpenGl  # noqa: F401
 import nanoocp._TKXMesh  # noqa: F401
 import nanoocp._TKXmlL  # noqa: F401
 import nanoocp._TKXml  # noqa: F401
+import nanoocp._TKXmlXCAF  # noqa: F401

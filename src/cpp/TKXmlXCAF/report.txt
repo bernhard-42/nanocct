@@ -1,0 +1,4 @@
+# nanoOCP generator report for TKXmlXCAF: 1 items not bound. Generated, do not edit.
+# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
+# raw-pointer: 1
+raw-pointer	XmlMXCAFDoc	XmlMXCAFDoc_LocationDriver::SetSharedLocations(): param 'theLocations': reference to pointer
