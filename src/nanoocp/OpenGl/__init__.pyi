@@ -360,14 +360,32 @@ class OpenGl_GlFunctions:
 class OpenGl_ArbDbg:
     """Debug context routines"""
 
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ArbDbg) -> None: ...
+
 class OpenGl_ArbFBO:
     """FBO is available on OpenGL 2.0+ hardware"""
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ArbFBO) -> None: ...
 
 class OpenGl_ArbFBOBlit:
     """
     FBO blit is available in OpenGL 3.0+.
     Moved out from OpenGl_ArbFBO since it is unavailable in OpenGL ES 2.0.
     """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ArbFBOBlit) -> None: ...
 
 class OpenGl_ArbIns:
     """
@@ -378,14 +396,32 @@ class OpenGl_ArbIns:
     which has been introduced in later OpenGL versions (OpenGL 3.3 or OpenGL ES 3.0).
     """
 
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ArbIns) -> None: ...
+
 class OpenGl_ArbSamplerObject:
     """
     Provide Sampler Object functionality (texture parameters stored independently from texture
     itself). Available since OpenGL 3.3+ (GL_ARB_sampler_objects extension) and OpenGL ES 3.0+.
     """
 
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ArbSamplerObject) -> None: ...
+
 class OpenGl_ArbTBO:
     """TBO is available on OpenGL 3.0+ and OpenGL ES 3.2+ hardware"""
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ArbTBO) -> None: ...
 
 class OpenGl_ArbTexBindless:
     """
@@ -394,6 +430,12 @@ class OpenGl_ArbTexBindless:
     shaders without first binding each texture to one of a limited number of
     texture image units.
     """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ArbTexBindless) -> None: ...
 
 class OpenGl_Element:
     """Base interface for drawable elements."""
@@ -726,6 +768,12 @@ class OpenGl_GlCore11Fwd:
     (global functions should not be used directly to achieve this effect!).
     """
 
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_GlCore11Fwd) -> None: ...
+
 class OpenGl_GlCore11:
     """
     OpenGL 1.1 core.
@@ -733,6 +781,12 @@ class OpenGl_GlCore11:
     The main purpose for these hint - to control visibility of functions per GL version
     (global functions should not be used directly to achieve this effect!).
     """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_GlCore11) -> None: ...
 
 class OpenGl_GlCore12(OpenGl_GlCore11Fwd):
     """OpenGL 1.2 core based on 1.1 version."""
@@ -6615,6 +6669,12 @@ class OpenGl_DepthPeeling(OpenGl_NamedResource):
 
 class OpenGl_ExtGS:
     """Geometry shader as extension is available on OpenGL 2.0+"""
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: OpenGl_ExtGS) -> None: ...
 
 class OpenGl_Flipper(OpenGl_Element):
     """

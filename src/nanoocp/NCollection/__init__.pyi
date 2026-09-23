@@ -786,6 +786,7 @@ import nanoocp.PrsMgr
 import nanoocp.Quantity
 import nanoocp.RWGltf
 import nanoocp.RWMesh
+import nanoocp.RWObj
 import nanoocp.STEPCAFControl
 import nanoocp.STEPSelections
 import nanoocp.Select3D
@@ -4214,6 +4215,8 @@ class NCollection_Array1__Handle_IGESDefs_TabularData(NCollection_Array1[nanoocp
 class NCollection_HArray1__Handle_IGESDefs_TabularData(NCollection_HArray1[nanoocp.IGESDefs.IGESDefs_TabularData]): ...
 class NCollection_Array1__Handle_IGESDimen_GeneralNote(NCollection_Array1[nanoocp.IGESDimen.IGESDimen_GeneralNote]): ...
 class NCollection_HArray1__Handle_IGESDimen_GeneralNote(NCollection_HArray1[nanoocp.IGESDimen.IGESDimen_GeneralNote]): ...
+class NCollection_DataMap__TCollection_AsciiString__RWObj_Material(NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.RWObj.RWObj_Material]):
+    class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_AsciiString, nanoocp.RWObj.RWObj_Material]): ...
 class NCollection_DataMap__TCollection_AsciiString__Handle_STEPCAFControl_ExternFile(NCollection_DataMap[nanoocp.TCollection.TCollection_AsciiString, nanoocp.STEPCAFControl.STEPCAFControl_ExternFile]):
     class Iterator(NCollection_DataMap.Iterator[nanoocp.TCollection.TCollection_AsciiString, nanoocp.STEPCAFControl.STEPCAFControl_ExternFile]): ...
 class NCollection_DataMap__TopoDS_Shape__TDF_Label__TopTools_ShapeMapHasher(NCollection_DataMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TDF.TDF_Label, nanoocp.TopTools.TopTools_ShapeMapHasher]):

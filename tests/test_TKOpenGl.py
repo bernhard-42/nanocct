@@ -102,10 +102,14 @@ def test_report_is_the_gl_entry_point_tables():
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
     assert counts["raw-pointer"] + counts["inheritance"] > 1500
     assert counts["raw-pointer"] == 766 and counts["inheritance"] == 767
-    assert len(lines) == 1587
+    assert len(lines) == 1577
     assert "misc" not in counts
     assert sum("of a base, not a method" in line for line in lines) == 755   # the re-exported GL entry points
+    # the ten GL function tables that derive protected from OpenGl_GlFunctions: the base's members are not bound,
+    # but the classes are constructible again since 2026-09-23 (it declares no operator new), which took their
+    # "no constructors" line out of the report -- 1 587 lines before
     assert sum("non-public base OpenGl_GlFunctions dropped" in line for line in lines) == 10
+    assert "not-constructible" not in counts
     # the GLES-only header is skipped explicitly (USE_GLES2=OFF)
     assert any("OpenGl_GLESExtensions.hxx: skipped" in line for line in lines)
 

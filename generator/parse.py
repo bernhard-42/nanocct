@@ -1025,6 +1025,22 @@ def _using_methods(using: cindex.Cursor, c: Class) -> None:
         c.methods.append(m)
 
 
+def _base_provides_operator_new(base_type, _depth: int = 0) -> bool:
+    """True when this base class declares a member operator new, or inherits one from its own bases.
+
+    Inheriting it through a non-public base makes the allocation function inaccessible in the derived class, so
+    `new Derived(...)` does not compile (Standard_DefineAlloc.hxx's DEFINE_STANDARD_ALLOC is the source in OCCT)."""
+    decl = base_type.get_canonical().get_declaration()
+    if decl is None or decl.kind == K.NO_DECL_FOUND or _depth > 8:
+        return False
+    for ch in decl.get_children():
+        if ch.kind == K.CXX_METHOD and ch.spelling == "operator new":
+            return True
+        if ch.kind == K.CXX_BASE_SPECIFIER and _base_provides_operator_new(ch.type, _depth + 1):
+            return True
+    return False
+
+
 def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") -> Class:
     cpp_name = _type_spelling(cursor.type)          # 'NCollection_Lerp<gp_Trsf>' for a specialization
     if cpp_name == "":                              # a class template walked for an alias instantiation (6c)
@@ -1090,8 +1106,17 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
     for ch in cursor.get_children():
         if ch.kind == K.CXX_BASE_SPECIFIER:
             if ch.access_specifier != Access.PUBLIC:
-                c.skipped.append(f"{c.name}: non-public base {_type_spelling(ch.type)} dropped; class not constructible")
-                c.constructible = False
+                # The base's members are not inherited publicly, so they are not bound. Construction is only lost when
+                # the base *provides* operator new (DEFINE_STANDARD_ALLOC): the inherited allocation function is then
+                # inaccessible and `new Derived(...)` is ill-formed even in C++ (Message_LazyProgressScope, verified
+                # with a compile test 2026-09-23). A base without one (RWObj_IShapeReceiver, OpenGl_GlFunctions) leaves
+                # the class constructible.
+                if _base_provides_operator_new(ch.type):
+                    c.skipped.append(f"{c.name}: non-public base {_type_spelling(ch.type)} provides operator new "
+                                     f"-> inaccessible, class not constructible")
+                    c.constructible = False
+                else:
+                    c.skipped.append(f"{c.name}: non-public base {_type_spelling(ch.type)} dropped; its members are not bound")
                 continue
             base_decl = ch.type.get_canonical().get_declaration()
             if not _SUBST.active and base_decl.kind != K.NO_DECL_FOUND and base_decl.spelling == "Iterator" \

@@ -29,6 +29,7 @@ import nanoocp._TKRWMesh  # noqa: F401
 import nanoocp._TKDEGLTF  # noqa: F401
 import nanoocp._TKXSBase  # noqa: F401
 import nanoocp._TKDEIGES  # noqa: F401
+import nanoocp._TKDEOBJ  # noqa: F401
 import nanoocp._TKDESTEP  # noqa: F401
 import nanoocp._TKDESTL  # noqa: F401
 import nanoocp._TKFeat  # noqa: F401

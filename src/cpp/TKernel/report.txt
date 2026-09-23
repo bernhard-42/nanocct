@@ -25,7 +25,7 @@ conversion	Quantity	NCollection_Vec4<float>::operator const type-parameter-0-0 *
 conversion	Quantity	NCollection_Vec4<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	TCollection	TCollection_AsciiString::operator basic_string_view: conversion operator to an unsupported type
 conversion	TCollection	TCollection_ExtendedString::operator basic_string_view: conversion operator to an unsupported type
-inheritance	Message	Message_LazyProgressScope: non-public base Message_ProgressScope dropped; class not constructible
+inheritance	Message	Message_LazyProgressScope: non-public base Message_ProgressScope provides operator new -> inaccessible, class not constructible
 iterator	NCollection	NCollection_UtfString<char>::Iterator(): return: return: STL-style iterator
 not-constructible	Message	Message_LazyProgressScope: operator new is not public -> no constructors
 not-constructible	NCollection	NCollection_ListNode: operator new is not public -> no constructors

@@ -62,7 +62,10 @@ def test_using_declarations_of_the_protected_options_base():
                  "HasWarning", "HasWarnings", "RunParallel", "SetFuzzyValue", "SetRunParallel", "SetUseOBB"):
         assert hasattr(BRepAlgoAPI.BRepAlgoAPI_Algo, name), name
     lines = REPORT.read_text().splitlines()
-    assert any(l.endswith("BRepAlgoAPI_Algo: non-public base BOPAlgo_Options dropped; class not constructible") for l in lines)
+    # BOPAlgo_Options has DEFINE_STANDARD_ALLOC, so its operator new is inherited inaccessibly through the protected
+    # base and BRepAlgoAPI_Algo cannot be constructed -- which costs nothing here, its own constructors are protected
+    assert any(l.endswith("BRepAlgoAPI_Algo: non-public base BOPAlgo_Options provides operator new -> inaccessible, "
+                          "class not constructible") for l in lines)
 
 
 def test_general_fuse_splitter_and_bop():

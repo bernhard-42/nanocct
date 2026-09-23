@@ -10,7 +10,7 @@
 # template: 8
 # undefined: 2
 inheritance	BOPTools	BVH_PrimitiveSet<double, 2>: additional base BVH_Set<double, 2> not declared (nanobind: single inheritance, offset-0 base only)
-inheritance	BRepAlgoAPI	BRepAlgoAPI_Algo: non-public base BOPAlgo_Options dropped; class not constructible
+inheritance	BRepAlgoAPI	BRepAlgoAPI_Algo: non-public base BOPAlgo_Options provides operator new -> inaccessible, class not constructible
 noncopyable	IntTools	IntTools_FClass2d: member TabClass of type NCollection_Sequence<CSLib_Class2d> is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)
 not-constructible	BRepAlgoAPI	BRepAlgoAPI_Algo: operator new is not public -> no constructors
 overload-collision	BOPDS	BOPDS_Interf::HasIndexNew(int &): same Python signature as another overload after out-param removal -> bound as HasIndexNew__int

@@ -1,10 +1,9 @@
-# nanoOCP generator report for TKOpenGl: 1587 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKOpenGl: 1577 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # conversion: 2
 # header: 1
 # inheritance: 767
 # iterator: 2
-# not-constructible: 10
 # overload-collision: 7
 # override: 1
 # raw-pointer: 766
@@ -16,12 +15,12 @@ conversion	OpenGl	NCollection_Vec3<float>::operator const type-parameter-0-0 *: 
 conversion	OpenGl	NCollection_Vec3<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 header	OpenGl	OpenGl: headers not self-contained, parsed with <Graphic3d_Buffer.hxx> included first
 inheritance	OpenGl	BVH_PrimitiveSet<float, 3>: additional base BVH_Set<float, 3> not declared (nanobind: single inheritance, offset-0 base only)
-inheritance	OpenGl	OpenGl_ArbDbg: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ArbDbg: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ArbDbg: using glDebugMessageCallback: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbDbg: using glDebugMessageControl: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbDbg: using glDebugMessageInsert: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbDbg: using glGetDebugMessageLog: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_ArbFBO: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ArbFBO: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ArbFBO: using glBindFramebuffer: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbFBO: using glBindRenderbuffer: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbFBO: using glBlitFramebuffer: data member of a base, not a method (not bound)
@@ -42,12 +41,12 @@ inheritance	OpenGl	OpenGl_ArbFBO: using glIsFramebuffer: data member of a base, 
 inheritance	OpenGl	OpenGl_ArbFBO: using glIsRenderbuffer: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbFBO: using glRenderbufferStorage: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbFBO: using glRenderbufferStorageMultisample: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_ArbFBOBlit: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ArbFBOBlit: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ArbFBOBlit: using glBlitFramebuffer: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_ArbIns: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ArbIns: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ArbIns: using glDrawArraysInstanced: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbIns: using glDrawElementsInstanced: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_ArbSamplerObject: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ArbSamplerObject: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ArbSamplerObject: using glBindSampler: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbSamplerObject: using glDeleteSamplers: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbSamplerObject: using glGenSamplers: data member of a base, not a method (not bound)
@@ -62,9 +61,9 @@ inheritance	OpenGl	OpenGl_ArbSamplerObject: using glSamplerParameterf: data memb
 inheritance	OpenGl	OpenGl_ArbSamplerObject: using glSamplerParameterfv: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbSamplerObject: using glSamplerParameteri: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbSamplerObject: using glSamplerParameteriv: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_ArbTBO: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ArbTBO: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ArbTBO: using glTexBuffer: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_ArbTexBindless: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ArbTexBindless: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ArbTexBindless: using glGetImageHandleARB: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbTexBindless: using glGetTextureHandleARB: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbTexBindless: using glGetTextureSamplerHandleARB: data member of a base, not a method (not bound)
@@ -81,9 +80,9 @@ inheritance	OpenGl	OpenGl_ArbTexBindless: using glUniformHandleui64ARB: data mem
 inheritance	OpenGl	OpenGl_ArbTexBindless: using glUniformHandleui64vARB: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbTexBindless: using glVertexAttribL1ui64ARB: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_ArbTexBindless: using glVertexAttribL1ui64vARB: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_ExtGS: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_ExtGS: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_ExtGS: using glProgramParameteriEXT: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_GlCore11: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_GlCore11: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_GlCore11: using glBitmap: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_GlCore11: using glCallList: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_GlCore11: using glCallLists: data member of a base, not a method (not bound)
@@ -123,7 +122,7 @@ inheritance	OpenGl	OpenGl_GlCore11: using glTexEnvi: data member of a base, not 
 inheritance	OpenGl	OpenGl_GlCore11: using glTexGenfv: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_GlCore11: using glTexGeni: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_GlCore11: using glVertexPointer: data member of a base, not a method (not bound)
-inheritance	OpenGl	OpenGl_GlCore11Fwd: non-public base OpenGl_GlFunctions dropped; class not constructible
+inheritance	OpenGl	OpenGl_GlCore11Fwd: non-public base OpenGl_GlFunctions dropped; its members are not bound
 inheritance	OpenGl	OpenGl_GlCore11Fwd: using glAlphaFunc: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_GlCore11Fwd: using glBindTexture: data member of a base, not a method (not bound)
 inheritance	OpenGl	OpenGl_GlCore11Fwd: using glBlendFunc: data member of a base, not a method (not bound)
@@ -784,16 +783,6 @@ inheritance	OpenGl	OpenGl_GlCore46: using glSpecializeShader: data member of a b
 inheritance	OpenGl	OpenGl_ShadowMapArray: additional base NCollection_Array1<opencascade::handle<OpenGl_ShadowMap>> not declared (nanobind: single inheritance, offset-0 base only)
 iterator	OpenGl	NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>: __iter__ added (More/Next/Value)
 iterator	OpenGl	OpenGl_ClippingIterator: __iter__ added (More/Next/Value)
-not-constructible	OpenGl	OpenGl_ArbDbg: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_ArbFBO: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_ArbFBOBlit: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_ArbIns: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_ArbSamplerObject: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_ArbTBO: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_ArbTexBindless: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_ExtGS: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_GlCore11: operator new is not public -> no constructors
-not-constructible	OpenGl	OpenGl_GlCore11Fwd: operator new is not public -> no constructors
 overload-collision	OpenGl	BVH_ObjectSet<float, 3>::Objects() const: const twin of a less const overload -> not bound
 overload-collision	OpenGl	NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>::Init(const NCollection_Array1<OpenGl_TextureSet::TextureSlot> &): const twin of a less const overload -> not bound
 overload-collision	OpenGl	NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>::Initialize(const NCollection_Array1<OpenGl_TextureSet::TextureSlot> &): const twin of a less const overload -> not bound

@@ -777,6 +777,20 @@ void nanoocp_define_OpenGl(nb::module_ &m) {
         .def_static("readGlVersion", []() { int theGlVerMajor{}; int theGlVerMinor{}; OpenGl_GlFunctions::readGlVersion(theGlVerMajor, theGlVerMinor); return std::make_tuple(theGlVerMajor, theGlVerMinor); }, R"nbdoc(Read OpenGL version.)nbdoc")
         .def("load", static_cast<void (OpenGl_GlFunctions::*)(OpenGl_Context &, bool)>(&OpenGl_GlFunctions::load), nb::arg("theCtx"), nb::arg("theIsCoreProfile"), R"nbdoc(Load functions.)nbdoc");
     nanoocp_implicit_copy_ctor<OpenGl_GlFunctions>(nb::borrow<nb::class_<OpenGl_GlFunctions>>(m.attr("OpenGl_GlFunctions")));
+    nanoocp_implicit_default_ctor<OpenGl_ArbDbg>(nb::borrow<nb::class_<OpenGl_ArbDbg>>(m.attr("OpenGl_ArbDbg")));
+    nanoocp_implicit_copy_ctor<OpenGl_ArbDbg>(nb::borrow<nb::class_<OpenGl_ArbDbg>>(m.attr("OpenGl_ArbDbg")));
+    nanoocp_implicit_default_ctor<OpenGl_ArbFBO>(nb::borrow<nb::class_<OpenGl_ArbFBO>>(m.attr("OpenGl_ArbFBO")));
+    nanoocp_implicit_copy_ctor<OpenGl_ArbFBO>(nb::borrow<nb::class_<OpenGl_ArbFBO>>(m.attr("OpenGl_ArbFBO")));
+    nanoocp_implicit_default_ctor<OpenGl_ArbFBOBlit>(nb::borrow<nb::class_<OpenGl_ArbFBOBlit>>(m.attr("OpenGl_ArbFBOBlit")));
+    nanoocp_implicit_copy_ctor<OpenGl_ArbFBOBlit>(nb::borrow<nb::class_<OpenGl_ArbFBOBlit>>(m.attr("OpenGl_ArbFBOBlit")));
+    nanoocp_implicit_default_ctor<OpenGl_ArbIns>(nb::borrow<nb::class_<OpenGl_ArbIns>>(m.attr("OpenGl_ArbIns")));
+    nanoocp_implicit_copy_ctor<OpenGl_ArbIns>(nb::borrow<nb::class_<OpenGl_ArbIns>>(m.attr("OpenGl_ArbIns")));
+    nanoocp_implicit_default_ctor<OpenGl_ArbSamplerObject>(nb::borrow<nb::class_<OpenGl_ArbSamplerObject>>(m.attr("OpenGl_ArbSamplerObject")));
+    nanoocp_implicit_copy_ctor<OpenGl_ArbSamplerObject>(nb::borrow<nb::class_<OpenGl_ArbSamplerObject>>(m.attr("OpenGl_ArbSamplerObject")));
+    nanoocp_implicit_default_ctor<OpenGl_ArbTBO>(nb::borrow<nb::class_<OpenGl_ArbTBO>>(m.attr("OpenGl_ArbTBO")));
+    nanoocp_implicit_copy_ctor<OpenGl_ArbTBO>(nb::borrow<nb::class_<OpenGl_ArbTBO>>(m.attr("OpenGl_ArbTBO")));
+    nanoocp_implicit_default_ctor<OpenGl_ArbTexBindless>(nb::borrow<nb::class_<OpenGl_ArbTexBindless>>(m.attr("OpenGl_ArbTexBindless")));
+    nanoocp_implicit_copy_ctor<OpenGl_ArbTexBindless>(nb::borrow<nb::class_<OpenGl_ArbTexBindless>>(m.attr("OpenGl_ArbTexBindless")));
     nb::borrow<nb::class_<OpenGl_Element>>(m.attr("OpenGl_Element"))
         .def("Render", static_cast<void (OpenGl_Element::*)(const occ::handle<OpenGl_Workspace> &) const>(&OpenGl_Element::Render), nb::arg("theWorkspace").none())
         .def("Release", static_cast<void (OpenGl_Element::*)(OpenGl_Context *)>(&OpenGl_Element::Release), nb::arg("theContext"), R"nbdoc(Release GPU resources.
@@ -885,6 +899,10 @@ The main use of this method is to track changes in statistics (e.g. in conjuncti
 IsEqual() method).
 @return TRUE if frame data has been changed so that the presentation should be updated)nbdoc");
     nanoocp_implicit_copy_ctor<OpenGl_FrameStats>(nb::borrow<nb::class_<OpenGl_FrameStats>>(m.attr("OpenGl_FrameStats")));
+    nanoocp_implicit_default_ctor<OpenGl_GlCore11Fwd>(nb::borrow<nb::class_<OpenGl_GlCore11Fwd>>(m.attr("OpenGl_GlCore11Fwd")));
+    nanoocp_implicit_copy_ctor<OpenGl_GlCore11Fwd>(nb::borrow<nb::class_<OpenGl_GlCore11Fwd>>(m.attr("OpenGl_GlCore11Fwd")));
+    nanoocp_implicit_default_ctor<OpenGl_GlCore11>(nb::borrow<nb::class_<OpenGl_GlCore11>>(m.attr("OpenGl_GlCore11")));
+    nanoocp_implicit_copy_ctor<OpenGl_GlCore11>(nb::borrow<nb::class_<OpenGl_GlCore11>>(m.attr("OpenGl_GlCore11")));
     nanoocp_implicit_default_ctor<OpenGl_GlCore12>(nb::borrow<nb::class_<OpenGl_GlCore12>>(m.attr("OpenGl_GlCore12")));
     nanoocp_implicit_copy_ctor<OpenGl_GlCore12>(nb::borrow<nb::class_<OpenGl_GlCore12>>(m.attr("OpenGl_GlCore12")));
     nanoocp_implicit_default_ctor<OpenGl_GlCore13>(nb::borrow<nb::class_<OpenGl_GlCore13>>(m.attr("OpenGl_GlCore13")));
@@ -2791,6 +2809,8 @@ Resets the active FBO to 0.)nbdoc")
         .def("FrontBackColorFbosOit", static_cast<const occ::handle<OpenGl_FrameBuffer> * (OpenGl_DepthPeeling::*)() const>(&OpenGl_DepthPeeling::FrontBackColorFbosOit), nb::rv_policy::reference, R"nbdoc(Returns additional buffers for ping-pong)nbdoc")
         .def("BlendBackFboOit", static_cast<const occ::handle<OpenGl_FrameBuffer> & (OpenGl_DepthPeeling::*)() const>(&OpenGl_DepthPeeling::BlendBackFboOit), R"nbdoc(Returns additional FBO for depth peeling)nbdoc");
     nanoocp_implicit_copy_ctor<OpenGl_DepthPeeling>(nb::borrow<nb::class_<OpenGl_DepthPeeling>>(m.attr("OpenGl_DepthPeeling")));
+    nanoocp_implicit_default_ctor<OpenGl_ExtGS>(nb::borrow<nb::class_<OpenGl_ExtGS>>(m.attr("OpenGl_ExtGS")));
+    nanoocp_implicit_copy_ctor<OpenGl_ExtGS>(nb::borrow<nb::class_<OpenGl_ExtGS>>(m.attr("OpenGl_ExtGS")));
     nb::borrow<nb::class_<OpenGl_Flipper>>(m.attr("OpenGl_Flipper"))
         .def(nb::init<const gp_Ax2 &>(), nb::arg("theReferenceSystem"), R"nbdoc(Construct rendering element to flip model-view matrix
 along the reference system to ensure up-Y, right-X orientation.

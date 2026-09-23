@@ -1479,6 +1479,9 @@
 "DEIGES_Parameters::WriteMode_PlaneMode": "DEIGES",
 "DEIGES_Parameters::WriteMode_PrecisionMode": "DEIGES",
 "DEIGES_Provider": "DEIGES",
+"DEOBJ_ConfigurationNode": "DEOBJ",
+"DEOBJ_ConfigurationNode::RWObj_InternalSection": "DEOBJ",
+"DEOBJ_Provider": "DEOBJ",
 "DESTEP_ConfigurationNode": "DESTEP",
 "DESTEP_Parameters": "DESTEP",
 "DESTEP_Parameters::AngleUnitMode": "DESTEP",
@@ -4000,6 +4003,18 @@
 "RWMesh_TriangulationReader::LoadingStatistic": "RWMesh",
 "RWMesh_TriangulationSource": "RWMesh",
 "RWMesh_VertexIterator": "RWMesh",
+"RWObj": "RWObj",
+"RWObj_CafReader": "RWObj",
+"RWObj_CafWriter": "RWObj",
+"RWObj_IShapeReceiver": "RWObj",
+"RWObj_Material": "RWObj",
+"RWObj_MtlReader": "RWObj",
+"RWObj_ObjMaterialMap": "RWObj",
+"RWObj_ObjWriterContext": "RWObj",
+"RWObj_Reader": "RWObj",
+"RWObj_SubMesh": "RWObj",
+"RWObj_SubMeshReason": "RWObj",
+"RWObj_TriangulationReader": "RWObj",
 "RWStl": "RWStl",
 "RWStl_Reader": "RWStl",
 "Resource_FormatType": "Resource",
@@ -8832,6 +8847,12 @@
 "name": "NCollection_DataMap__TCollection_AsciiString__NCollection_IndexedDataMap__TCollection_AsciiString__Handle_DE_ConfigurationNode",
 "by": "DE"
 },
+"NCollection_DataMap<TCollection_AsciiString, RWObj_Material>": {
+"toolkit": "TKDEOBJ",
+"package": "NCollection",
+"name": "NCollection_DataMap__TCollection_AsciiString__RWObj_Material",
+"by": "RWObj"
+},
 "NCollection_DataMap<TCollection_AsciiString, TCollection_AsciiString>": {
 "toolkit": "TKernel",
 "package": "NCollection",
@@ -12753,6 +12774,7 @@
 "DE": "TKDE",
 "DEGLTF": "TKDEGLTF",
 "DEIGES": "TKDEIGES",
+"DEOBJ": "TKDEOBJ",
 "DESTEP": "TKDESTEP",
 "DESTL": "TKDESTL",
 "Draft": "TKOffset",
@@ -12887,6 +12909,7 @@
 "RWGltf": "TKDEGLTF",
 "RWHeaderSection": "TKDESTEP",
 "RWMesh": "TKRWMesh",
+"RWObj": "TKDEOBJ",
 "RWStepAP203": "TKDESTEP",
 "RWStepAP214": "TKDESTEP",
 "RWStepAP242": "TKDESTEP",
@@ -13418,6 +13441,10 @@
 "TKDEGLTF": [
 "RWGltf",
 "DEGLTF"
+],
+"TKDEOBJ": [
+"RWObj",
+"DEOBJ"
 ]
 },
 "links": {
@@ -13436,6 +13463,9 @@
 "TKXSBase"
 ],
 "TKDEIGES": [],
+"TKDEOBJ": [
+"TKXSBase"
+],
 "TKDESTEP": [],
 "TKDESTL": [
 "TKXSBase"
@@ -13570,6 +13600,7 @@
 "DE": [],
 "DEGLTF": [],
 "DEIGES": [],
+"DEOBJ": [],
 "DESTEP": [],
 "DESTL": [],
 "Draft": [],
@@ -13731,6 +13762,11 @@
 "RWGltf": [],
 "RWHeaderSection": [],
 "RWMesh": [],
+"RWObj": [
+[
+"RWObj_Tools"
+]
+],
 "RWStepAP203": [],
 "RWStepAP214": [],
 "RWStepAP242": [],

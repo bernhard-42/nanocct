@@ -28,6 +28,7 @@ HEADER = """
 #include <Standard_Transient.hxx>
 #include <Standard_Handle.hxx>
 #include <Standard_Macro.hxx>
+#include <Standard_DefineAlloc.hxx>
 #include <Standard_OStream.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_XYZ.hxx>
@@ -183,6 +184,23 @@ public:
   using Rules_Options::Fuzzy;
   using Rules_Options::Flag;
   using Rules_Options::Dump;
+};
+
+//! A protected base that *provides* operator new (DEFINE_STANDARD_ALLOC, as Message_ProgressScope does): the
+//! allocation function is inherited inaccessibly, so `new Rules_LazyScope(...)` does not compile even in C++.
+class Rules_AllocOptions
+{
+public:
+  DEFINE_STANDARD_ALLOC
+  int Level() const { return 1; }
+};
+
+//! Message_LazyProgressScope : protected Message_ProgressScope -- bound, but with no constructor.
+class Rules_LazyScope : protected Rules_AllocOptions
+{
+public:
+  Rules_LazyScope() {}
+  using Rules_AllocOptions::Level;
 };
 
 //! R-USING: inherited constructors (using Base::Base) -- every base constructor except copy/move becomes one of the derived class.
@@ -436,9 +454,10 @@ def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None
 
 def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
-    assert names[:14] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
-                          "Rules_Algo", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2", "Rules_Alloc", "Rules_Arrays"]
-    assert set(names[14:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
+    assert names[:16] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
+                          "Rules_Algo", "Rules_AllocOptions", "Rules_LazyScope", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2",
+                          "Rules_Alloc", "Rules_Arrays"]
+    assert set(names[16:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>"}   # alias instantiations, probe bases
     thing = rules_ir.classes[0]
@@ -611,8 +630,10 @@ def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
 def test_ir_and_emitter_using_declarations(rules_ir):
     # R-USING: `using Rules_Options::X;` in a public section of Rules_Algo (protected base) re-exports the base's overloads
     algo = next(c for c in rules_ir.classes if c.name == "Rules_Algo")
-    assert algo.bases == [] and algo.constructible is False        # the non-public base is dropped (R-MI) and reported
-    assert "Rules_Algo: non-public base Rules_Options dropped; class not constructible" in algo.skipped
+    # the non-public base is dropped (R-MI) and reported; Rules_Options declares no operator new, so the class is
+    # still constructible -- only a base that provides one makes `new Derived` ill-formed (Rules_LazyScope below)
+    assert algo.bases == [] and algo.constructible is True
+    assert "Rules_Algo: non-public base Rules_Options dropped; its members are not bound" in algo.skipped
     via = sorted((m.name, len(m.params), m.via_using) for m in algo.methods)
     assert via == [("Dump", 1, "Rules_Options"), ("Flag", 0, "Rules_Options"), ("Flag", 1, "Rules_Options"),
                    ("Fuzzy", 0, "Rules_Options"), ("SetFuzzy", 1, "Rules_Options")]
@@ -633,6 +654,25 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     assert [[p.type for p in k.params] for k in inherit.ctors] == [["const gp_Pnt &"]] and not inherit.has_declared_ctor
     tail = cpp[cpp.index('m.attr("Rules_Inherit"))'):]
     assert "nanoocp_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::arg("thePnt")' in tail
+
+
+def test_ir_non_public_base_blocks_construction_only_when_it_provides_operator_new(rules_ir):
+    """A non-public base is always dropped (its members are not inherited publicly), but it only costs the class its
+    constructors when it *provides* operator new: the allocation function is then inherited inaccessibly and
+    `new Derived(...)` is ill-formed in C++ too (verified with a compile test on Message_LazyProgressScope, 2026-09-23).
+    Until TKDEOBJ every non-public base was taken to block construction, which cost RWObj_CafReader -- the OBJ reader
+    into an XDE document -- its public default constructor."""
+    by = {c.name: c for c in rules_ir.classes}
+    lazy, algo = by["Rules_LazyScope"], by["Rules_Algo"]
+    assert lazy.bases == [] and lazy.constructible is False
+    assert "Rules_LazyScope: non-public base Rules_AllocOptions provides operator new -> inaccessible, class not constructible" in lazy.skipped
+    assert algo.bases == [] and algo.constructible is True         # same shape, but Rules_Options has no operator new
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "Rules_LazyScope: operator new is not public -> no constructors" in em.report
+    assert "nb::init<>()" not in cpp.split('m.attr("Rules_LazyScope"))')[1].split(";")[0]
+    assert "nb::init<>()" in cpp.split('m.attr("Rules_Algo"))')[1].split(";")[0]   # ... while Rules_Algo keeps its
 
 
 def test_ir_noncopyable_detection_hidden_placement_new_arrays_and_std_out(rules_ir):

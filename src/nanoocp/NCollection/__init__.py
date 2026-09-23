@@ -263,6 +263,7 @@ NCollection_DataMap = _Template("NCollection_DataMap", "nanoocp.NCollection", {
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.Standard', 'Standard_Transient')): "NCollection_DataMap__TCollection_AsciiString__Handle_Standard_Transient",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.XmlMDF', 'XmlMDF_ADriver')): "NCollection_DataMap__TCollection_AsciiString__Handle_XmlMDF_ADriver",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.NCollection', 'NCollection_IndexedDataMap__TCollection_AsciiString__Handle_DE_ConfigurationNode')): "NCollection_DataMap__TCollection_AsciiString__NCollection_IndexedDataMap__TCollection_AsciiString__Handle_DE_ConfigurationNode",
+    (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.RWObj', 'RWObj_Material')): "NCollection_DataMap__TCollection_AsciiString__RWObj_Material",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.TCollection', 'TCollection_AsciiString')): "NCollection_DataMap__TCollection_AsciiString__TCollection_AsciiString",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('nanoocp.TopoDS', 'TopoDS_Shape')): "NCollection_DataMap__TCollection_AsciiString__TopoDS_Shape",
     (('nanoocp.TCollection', 'TCollection_AsciiString'), ('builtins', 'int')): "NCollection_DataMap__TCollection_AsciiString__int",
