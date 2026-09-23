@@ -28,6 +28,10 @@ import nanoocp._TKVCAF  # noqa: F401
 import nanoocp._TKXCAF  # noqa: F401
 import nanoocp._TKBinXCAF  # noqa: F401
 import nanoocp._TKDE  # noqa: F401
+import nanoocp._TKXmlL  # noqa: F401
+import nanoocp._TKXml  # noqa: F401
+import nanoocp._TKXmlXCAF  # noqa: F401
+import nanoocp._TKDECascade  # noqa: F401
 import nanoocp._TKRWMesh  # noqa: F401
 import nanoocp._TKDEGLTF  # noqa: F401
 import nanoocp._TKXSBase  # noqa: F401
@@ -44,6 +48,3 @@ import nanoocp._TKMeshVS  # noqa: F401
 import nanoocp._TKOffset  # noqa: F401
 import nanoocp._TKOpenGl  # noqa: F401
 import nanoocp._TKXMesh  # noqa: F401
-import nanoocp._TKXmlL  # noqa: F401
-import nanoocp._TKXml  # noqa: F401
-import nanoocp._TKXmlXCAF  # noqa: F401

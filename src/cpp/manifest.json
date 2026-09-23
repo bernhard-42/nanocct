@@ -1488,6 +1488,9 @@
 "Convert_ParameterisationType": "Convert",
 "Convert_SphereToBSplineSurface": "Convert",
 "Convert_TorusToBSplineSurface": "Convert",
+"DEBREP_ConfigurationNode": "DEBREP",
+"DEBREP_ConfigurationNode::DEBRep_InternalSection": "DEBREP",
+"DEBREP_Provider": "DEBREP",
 "DEGLTF_ConfigurationNode": "DEGLTF",
 "DEGLTF_ConfigurationNode::RWGltf_InternalSection": "DEGLTF",
 "DEGLTF_Provider": "DEGLTF",
@@ -1532,6 +1535,9 @@
 "DEVRML_ConfigurationNode::WriteMode_RepresentationType": "DEVRML",
 "DEVRML_ConfigurationNode::WriteMode_WriterVersion": "DEVRML",
 "DEVRML_Provider": "DEVRML",
+"DEXCAF_ConfigurationNode": "DEXCAF",
+"DEXCAF_ConfigurationNode::XCAFDoc_InternalSection": "DEXCAF",
+"DEXCAF_Provider": "DEXCAF",
 "DE_ConfigurationContext": "DE",
 "DE_ConfigurationNode": "DE",
 "DE_ConfigurationNode::DE_SectionGlobal": "DE",
@@ -13117,6 +13123,8 @@
 "Contap": "TKHLR",
 "Convert": "TKMath",
 "DE": "TKDE",
+"DEBREP": "TKDECascade",
+"DEBRepCascade": "TKDECascade",
 "DEGLTF": "TKDEGLTF",
 "DEIGES": "TKDEIGES",
 "DEOBJ": "TKDEOBJ",
@@ -13124,6 +13132,8 @@
 "DESTEP": "TKDESTEP",
 "DESTL": "TKDESTL",
 "DEVRML": "TKDEVRML",
+"DEXCAF": "TKDECascade",
+"DEXCAFCascade": "TKDECascade",
 "Draft": "TKOffset",
 "DsgPrs": "TKV3d",
 "ElCLib": "TKMath",
@@ -13822,6 +13832,12 @@
 "TKXmlXCAF": [
 "XmlXCAFDrivers",
 "XmlMXCAFDoc"
+],
+"TKDECascade": [
+"DEBRepCascade",
+"DEXCAFCascade",
+"DEBREP",
+"DEXCAF"
 ]
 },
 "links": {
@@ -13835,6 +13851,9 @@
 "TKCDF": [],
 "TKDE": [
 "TKLCAF",
+"TKXSBase"
+],
+"TKDECascade": [
 "TKXSBase"
 ],
 "TKDEGLTF": [
@@ -13984,6 +14003,8 @@
 "Contap": [],
 "Convert": [],
 "DE": [],
+"DEBREP": [],
+"DEBRepCascade": [],
 "DEGLTF": [],
 "DEIGES": [],
 "DEOBJ": [],
@@ -13991,6 +14012,8 @@
 "DESTEP": [],
 "DESTL": [],
 "DEVRML": [],
+"DEXCAF": [],
+"DEXCAFCascade": [],
 "Draft": [],
 "DsgPrs": [],
 "ElCLib": [],
