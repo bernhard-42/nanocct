@@ -1,6 +1,0 @@
-# nanoOCP generator report for TKRWMesh: 3 items not bound. Generated, do not edit.
-# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# undefined: 3
-undefined	RWMesh	RWMesh_CafReader::RWMesh_CafReader(): declared in the header, no definition in libTKRWMesh
-undefined	RWMesh	RWMesh_MaterialMap::RWMesh_MaterialMap(const TCollection_AsciiString &): declared in the header, no definition in libTKRWMesh
-undefined	RWMesh	RWMesh_TriangulationReader::RWMesh_TriangulationReader(): declared in the header, no definition in libTKRWMesh

@@ -1,6 +1,0 @@
-# nanoOCP generator report for TKDESTL: 2 items not bound. Generated, do not edit.
-# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# std: 1
-# undefined: 1
-std	RWStl	RWStl_Reader::ReadAscii(Standard_IStream &, Standard_ReadLineBuffer &): param 'theUntilPos': std::fpos
-undefined	RWStl	RWStl_Reader::RWStl_Reader(): declared in the header, no definition in libTKDESTL

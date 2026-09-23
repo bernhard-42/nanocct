@@ -16,6 +16,14 @@ wheel.py-api = "cp312"
 wheel.packages = ["src/nanoocp"]
 cmake.build-type = "Release"
 
+# The .py/.pyi shims under src/nanoocp are generated and therefore gitignored (Design.md 5.3), but they are the
+# package's Python surface and must go into the wheel. scikit-build-core's file selection honours .gitignore
+# (sdist.inclusion-mode "default"), and wheel.packages copying uses the same selection -- without this the wheel
+# holds only the 45 .so files, `nanoocp` degrades to a namespace package, its eager __init__ never runs and the
+# toolkits are never imported (found 2026-09-23: a missing NCollection accessor, then an abort under pytest).
+[tool.scikit-build.sdist]
+include = ["src/nanoocp/**/*.py", "src/nanoocp/**/*.pyi"]
+
 # macOS wheels are tagged macosx_11_0_arm64 like the OCCT build (deps/build-occt.sh sets 11.1); without this the
 # extension inherits the SDK's own minimum (measured: minos 26.0) and the wheel would not run on older systems.
 [[tool.scikit-build.overrides]]

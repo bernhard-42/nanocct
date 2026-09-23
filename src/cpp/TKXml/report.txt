@@ -1,4 +1,0 @@
-# nanoOCP generator report for TKXml: 1 items not bound. Generated, do not edit.
-# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# overload-collision: 1
-overload-collision	XmlMNaming	XmlMNaming_Shape1::Element() const: const twin of a less const overload -> not bound

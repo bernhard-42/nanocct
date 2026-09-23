@@ -1,9 +1,0 @@
-# nanoOCP generator report for TKDEOBJ: 4 items not bound. Generated, do not edit.
-# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# inheritance: 1
-# raw-pointer: 2
-# undefined: 1
-inheritance	RWObj	RWObj_CafReader: non-public base RWObj_IShapeReceiver dropped; its members are not bound
-raw-pointer	RWObj	ReadVec3(...): param 'theNext': reference to pointer
-raw-pointer	RWObj	ReadVec3(...): param 'theNext': reference to pointer
-undefined	RWObj	RWObj_Reader::RWObj_Reader(): declared in the header, no definition in libTKDEOBJ
