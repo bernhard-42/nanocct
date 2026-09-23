@@ -21,19 +21,47 @@ from .symbols import defined_symbols
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def _topo(tree, toolkits: list[str]) -> list[str]:
-    """Dependencies first (OCCT's EXTERNLIB order), restricted to the given toolkits."""
+def _topo(tree, toolkits: list[str], extra: dict[str, list[str]] | None = None) -> list[str]:
+    """Dependencies first (OCCT's EXTERNLIB order), restricted to the given toolkits.
+
+    `extra` adds edges EXTERNLIB does not have, for the *import* order only (see _wrapping_base_edges)."""
     out: list[str] = []
-    def visit(t: str) -> None:
+    extra = extra if extra is not None else {}
+    def visit(t: str, stack: tuple[str, ...] = ()) -> None:
         if t in out:
             return
-        for d in tree.toolkits[t].depends:
+        if t in stack:
+            raise SystemExit(f"cycle in the toolkit order: {' -> '.join(stack + (t,))}")
+        for d in list(tree.toolkits[t].depends) + extra.get(t, []):
             if d in toolkits:
-                visit(d)
+                visit(d, stack + (t,))
         out.append(t)
     for t in toolkits:
         visit(t)
     return out
+
+
+def _wrapping_base_edges(templates: dict, classes: dict[str, str], packages: dict[str, str]) -> dict[str, list[str]]:
+    """Import edges nanobind needs and EXTERNLIB does not have: {toolkit: [toolkits imported before it]}.
+
+    `NCollection_Shared<T>` derives from T (6a, BINDERS "wraps"), so the toolkit binding the wrapper must be imported
+    after the one binding T, or `nb_type_new` aborts the import with *"base type ... not known to nanobind"*. OCCT's
+    link graph does not have that edge: TKMesh binds `Shared<DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>>`
+    while TKBool binds the DataMap, and neither toolkit links the other. It worked until 2026-09-23 only because the
+    EXTERNLIB order happened to put TKBool first; adding TKBinXCAF reshuffled it and every `import nanoocp` failed."""
+    wrapping = {kind for kind, info in BINDERS.items() if info.get("wraps") is True}
+    owner = {key: entry["toolkit"] for key, entry in templates.items()
+             if isinstance(entry, dict) and "toolkit" in entry}
+    edges: dict[str, list[str]] = {}
+    for key, entry in templates.items():
+        kind = key.split("<")[0]
+        if kind not in wrapping or not isinstance(entry, dict) or "toolkit" not in entry:
+            continue
+        inner = key[len(kind) + 1:-1].strip()
+        base_toolkit = owner.get(inner) or packages.get(classes.get(inner, ""), None)   # an instantiation, or a plain class
+        if base_toolkit is not None and base_toolkit != entry["toolkit"]:
+            edges.setdefault(entry["toolkit"], []).append(base_toolkit)
+    return {t: sorted(set(d)) for t, d in edges.items()}
 
 
 def _package_order(irs: list, known: dict[str, str]) -> list[str]:
@@ -308,9 +336,19 @@ def main(argv: list[str]) -> int:
         depends = [d for d in tk.depends if d in generated_toolkits]
         depends += [d for d in manifest.get("links", {}).get(tk_name, [])
                     if d in generated_toolkits and d not in depends and position[d] < position[tk_name]]
+        # 6a: NCollection_Shared<T> derives from T, so the toolkit binding T must be *imported* before this module
+        # registers the wrapper. Ordering nanoocp/__init__.py is not enough -- another toolkit's import chain can
+        # reach this one first (_TKService imports _TKV3d for a cross-toolkit alias, _TKV3d imports _TKMesh, and
+        # _TKMesh registered a wrapper over a TKBool DataMap; 2026-09-23).
+        # ... and unlike R-LINK's, this edge is not filtered by the EXTERNLIB order: TKBool comes *after* TKMesh
+        # there, which is exactly the case the edge exists to repair. A cycle would make the eager order's _topo
+        # fail loudly, since it is given the same edges.
+        depends += [d for d in _wrapping_base_edges(templates, known, generated_pkgs).get(tk_name, [])
+                    if d in generated_toolkits and d not in depends and d != tk_name]
         namespaces = {p: [tuple(ns) for ns in manifest["namespaces"].get(p, [])] for p in order}
         (tk_dir / f"_{tk_name}.cpp").write_text(emit_toolkit_module(tk_name, order, depends, namespaces))   # every package of the toolkit
-    ordered = _topo(tree, generated_toolkits)
+    # the eager import order alone guarantees registration order, so it carries the base edges EXTERNLIB lacks
+    ordered = _topo(tree, generated_toolkits, _wrapping_base_edges(templates, known, generated_pkgs))
     # Python shims: one per generated package (+ deprecated typedef aliases), one per alias-only prefix
     aliases, unbound = deprecated_aliases(args.occt_src / "src" / "Deprecated" / "NCollectionAliases", clang_args(tree), templates)
     generated_packages = set(generated_pkgs)          # every generated package, with or without classes
@@ -327,6 +365,8 @@ def main(argv: list[str]) -> int:
         '"""nanoOCP: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'
         "# Generated by the nanoOCP generator. All toolkit modules are imported eagerly, in dependency order, so\n"
         "# that NCollection instantiations bound by a later toolkit into an earlier package are always present.\n"
+        "# The order also honours NCollection_Shared<T>: its toolkit is imported after T's, which OCCT's link graph\n"
+        "# does not imply (TKMesh wraps a TKBool DataMap).\n"
         + "".join(f"import nanoocp._{tk}  # noqa: F401\n" for tk in ordered))
     manifest_path.write_text(json.dumps({"classes": dict(sorted(known.items())), "templates": dict(sorted(templates.items())),
                                          "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"],

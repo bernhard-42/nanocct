@@ -30,6 +30,7 @@ NB_MODULE(_TKMesh, m) {
     nb::module_::import_("nanoocp._TKGeomBase");
     nb::module_::import_("nanoocp._TKG3d");
     nb::module_::import_("nanoocp._TKG2d");
+    nb::module_::import_("nanoocp._TKBool");
     nb::module_ m_IMeshData = m.def_submodule("IMeshData", "OCCT package IMeshData (toolkit TKMesh)");
     m_IMeshData.attr("__name__") = "nanoocp.IMeshData";
     sys_modules["nanoocp._TKMesh.IMeshData"] = m_IMeshData;
