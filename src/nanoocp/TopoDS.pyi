@@ -13,6 +13,7 @@ import nanoocp.Standard
 import nanoocp.TCollection
 import nanoocp.TopAbs
 import nanoocp.TopLoc
+import nanoocp.VrmlData
 
 
 class TopoDS_TShape(nanoocp.Standard.Standard_Transient):
@@ -214,6 +215,9 @@ class TopoDS_Shape:
 
     @overload
     def __init__(self, theFrom: nanoocp.BRepBuilderAPI.BRepBuilderAPI_MakeShape) -> None: ...
+
+    @overload
+    def __init__(self, theFrom: nanoocp.VrmlData.VrmlData_Scene) -> None: ...
 
     def IsNull(self) -> bool:
         """

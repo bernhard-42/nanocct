@@ -18,6 +18,8 @@ _ALIASES = {
     "TColgp_HArray1OfDir": ("nanoocp.NCollection", "NCollection_HArray1__gp_Dir"),
     "TColgp_HArray1OfPnt": ("nanoocp.NCollection", "NCollection_HArray1__gp_Pnt"),
     "TColgp_HArray1OfPnt2d": ("nanoocp.NCollection", "NCollection_HArray1__gp_Pnt2d"),
+    "TColgp_HArray1OfVec": ("nanoocp.NCollection", "NCollection_HArray1__gp_Vec"),
+    "TColgp_HArray1OfVec2d": ("nanoocp.NCollection", "NCollection_HArray1__gp_Vec2d"),
     "TColgp_HArray1OfXY": ("nanoocp.NCollection", "NCollection_HArray1__gp_XY"),
     "TColgp_HArray1OfXYZ": ("nanoocp.NCollection", "NCollection_HArray1__gp_XYZ"),
     "TColgp_HArray2OfPnt": ("nanoocp.NCollection", "NCollection_HArray2__gp_Pnt"),
