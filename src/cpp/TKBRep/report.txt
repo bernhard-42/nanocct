@@ -1,15 +1,16 @@
-# nanoOCP generator report for TKBRep: 444 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKBRep: 520 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # conversion: 1
 # field: 1
 # incomplete: 1
 # iterator: 148
 # operator: 126
-# overload-collision: 19
+# overload-collision: 25
 # override: 7
-# raw-pointer: 19
+# raw-pointer: 29
+# rvalue: 35
 # stream: 5
-# template: 116
+# template: 141
 # undefined: 1
 conversion	BRepGraphInc	BRepGraphInc::ParityOrientation::operator TopAbs_Orientation: conversion operator to an unsupported type
 field	BRepGraphInc	BRepGraphInc_Reconstruct::Cache::TempScope::myCache: field reference member (no pointer-to-member)
@@ -294,6 +295,12 @@ overload-collision	BRepGraph	BRepGraph::Editor() const: const twin of a less con
 overload-collision	BRepGraph	BRepGraph::LayerRegistry() const: const twin of a less const overload -> not bound
 overload-collision	BRepGraph	BRepGraph::Mesh() const: const twin of a less const overload -> not bound
 overload-collision	BRepGraph	BRepGraph::Shapes() const: const twin of a less const overload -> not bound
+overload-collision	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Contained(const BRepGraph_ItemId &) const: const twin of a less const overload -> not bound
+overload-collision	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Items() const: const twin of a less const overload -> not bound
+overload-collision	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::operator()(const BRepGraph_ItemId &) const: const twin of a less const overload -> not bound
+overload-collision	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Contained(const BRepGraph_NodeId &) const: const twin of a less const overload -> not bound
+overload-collision	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Items() const: const twin of a less const overload -> not bound
+overload-collision	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::operator()(const BRepGraph_NodeId &) const: const twin of a less const overload -> not bound
 overload-collision	BinTools	BinTools_IStream::ReadBools(bool &, bool &, bool &): same Python signature as another overload after out-param removal -> bound as ReadBools__bool__bool__bool
 overload-collision	BinTools	BinTools_IStream::ReadBools(bool &, bool &, bool &, bool &, bool &, bool &, bool &): same Python signature as another overload after out-param removal -> bound as ReadBools__bool__bool__bool__bool__bool__bool__bool
 overload-collision	BinTools	BinTools_IStream::operator>>(float &): same Python signature as operator>>(double &) -> registered after it (width preference)
@@ -332,7 +339,52 @@ raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::VertexDef>::operator->():
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::VertexRef>::operator->(): return: dependent pointer/mutable reference result
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireDef>::operator->(): return: dependent pointer/mutable reference result
 raw-pointer	BRepGraph	BRepGraph_MutGuard<BRepGraphInc::WireRef>::operator->(): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::ChangeSeek(const BRepGraph_ItemId &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Seek(const BRepGraph_ItemId &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::ChangeSeek(const BRepGraph_ItemUID &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Seek(const BRepGraph_ItemUID &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::ChangeSeek(const BRepGraph_NodeId &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Seek(const BRepGraph_NodeId &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::ChangeSeek(const BRepGraph_UID &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Seek(const BRepGraph_UID &): return: dependent pointer/mutable reference result
 raw-pointer	BRepGraphInc	BRepGraphInc_BitFlags::Blocks(): return: raw pointer to primitive
+raw-pointer	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::ChangeSeek(const BRepGraph_NodeId &): return: dependent pointer/mutable reference result
+raw-pointer	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Seek(const BRepGraph_NodeId &): return: dependent pointer/mutable reference result
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bind(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bind(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bind(const BRepGraph_ItemId &): param 'theItem': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bound(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bound(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bound(const BRepGraph_ItemId &): param 'theItem': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>(): param 'theHasher': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBind(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBind(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBind(const BRepGraph_ItemId &): param 'theItem': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBound(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBound(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBound(const BRepGraph_ItemId &): param 'theItem': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Add(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Added(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>(): param 'theHasher': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Add(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Added(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>(): param 'theHasher': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Add(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Added(): param 'theKey': rvalue reference
+rvalue	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>(): param 'theHasher': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Bind(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Bind(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Bind(const BRepGraph_NodeId &): param 'theItem': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Bound(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Bound(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Bound(const BRepGraph_NodeId &): param 'theItem': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>(): param 'theHasher': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryBind(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryBind(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryBind(const BRepGraph_NodeId &): param 'theItem': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryBound(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryBound(): param 'theKey': rvalue reference
+rvalue	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryBound(const BRepGraph_NodeId &): param 'theItem': rvalue reference
 stream	BinTools	BinTools_IStream::BinTools_IStream(): param 'theStream': iostream type
 stream	BinTools	BinTools_IStream::Stream(): return: iostream type
 stream	BinTools	BinTools_OStream::BinTools_OStream(): param 'theStream': iostream type
@@ -427,6 +479,26 @@ template	BRepGraph	BRepGraph_ReverseIterator::IdsOfRefs: template in namespace (
 template	BRepGraph	BRepGraph_ReverseIterator::LookupParentRefsOf: template in namespace (not bound)
 template	BRepGraph	BRepGraph_ReverseIterator::ParentRef: template in namespace (not bound)
 template	BRepGraph	BRepGraph_ReverseIterator::ParentsOf: template in namespace (not bound)
+template	BRepGraph	NCollection_FlatDataMap::Iterator: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Emplace: template member
+template	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Emplaced: template member
+template	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryEmplace: template member
+template	BRepGraph	NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryEmplaced: template member
+template	BRepGraph	NCollection_FlatMap::Iterator: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_FlatMap::Iterator: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_FlatMap::Iterator: nested class of a class template (alias instantiation)
+template	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Emplace: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Emplaced: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::TryEmplace: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::TryEmplaced: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Emplace: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Emplaced: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryEmplace: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryEmplaced: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Emplace: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Emplaced: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::TryEmplace: template member
+template	BRepGraph	NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::TryEmplaced: template member
 template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
 template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
 template	BRepGraph	NCollection_ForwardRangeIterator::PostfixProxy: nested class of a class template (alias instantiation)
@@ -447,6 +519,11 @@ template	BRepGraphInc	BRepGraphInc_Storage::SetGuarded: template member
 template	BRepGraphInc	BRepGraphInc_Storage::SetOwned: template member
 template	BRepGraphInc	BRepGraphInc_Storage::SetRemoved: template member
 template	BRepGraphInc	BRepGraph_RepId::Typed: nested class template
+template	BRepGraphInc	NCollection_FlatDataMap::Iterator: nested class of a class template (alias instantiation)
+template	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Emplace: template member
+template	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Emplaced: template member
+template	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryEmplace: template member
+template	BRepGraphInc	NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::TryEmplaced: template member
 template	BRepTools	BRepTools_History::BRepTools_History: template member
 template	BRepTools	BRepTools_History::Merge: template member
 template	BRepTools	BRepTools_ReShape::Merge: template member

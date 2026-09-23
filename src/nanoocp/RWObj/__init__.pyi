@@ -485,7 +485,7 @@ class RWObj_ObjWriterContext:
     def WriteNormal(self, theValue: nanoocp.Quantity.NCollection_Vec3__float) -> bool:
         """Writing a vector"""
 
-    def WriteTexCoord(self, theValue: nanoocp.BVH.BVH_Vec2f) -> bool:
+    def WriteTexCoord(self, theValue: nanoocp.Poly.NCollection_Vec2__float) -> bool:
         """Writing a vector"""
 
     def WriteGroup(self, theValue: nanoocp.TCollection.TCollection_AsciiString) -> bool:

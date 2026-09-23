@@ -38,6 +38,17 @@ the solver used in intersection algorithm and required values are calculated.
 if myUseSolver = false, u1, v1, u2, v2 are considered as "exact" intersection points on two
 surfaces and required values are calculated directly using u1, v1, u2, v2)nbdoc");
     }
+    { nb::class_<NCollection_LocalArray<double>> cls(m, "NCollection_LocalArray__double", R"nbdoc(Auxiliary class optimizing creation of array buffer
+(using stack allocation for small arrays).
+
+For trivially copyable types the fast memcpy / Standard::Reallocate path
+is used.  For non-trivially-copyable types (Handle, TopLoc_Location, etc.)
+the class uses placement new, move semantics, and explicit destructors
+while keeping Standard::Allocate / Standard::Free for heap management.
+
+Non-trivially-copyable types must be default-constructible and
+nothrow-move-constructible.)nbdoc");
+    }
 }
 
 void nanoocp_templates_ApproxInt(nb::module_ &m) {
@@ -69,6 +80,19 @@ At least one set from (thePntsXYZ, thePntsU1V1, thePntsU2V2) should exist.
         .def("TangencyOnSurf2", static_cast<bool (ApproxInt_SvSurfaces::*)(const double, const double, const double, const double, gp_Vec2d &)>(&ApproxInt_SvSurfaces::TangencyOnSurf2), nb::arg("u1"), nb::arg("v1"), nb::arg("u2"), nb::arg("v2"), nb::arg("Tg"))
         .def("SetUseSolver", static_cast<void (ApproxInt_SvSurfaces::*)(const bool)>(&ApproxInt_SvSurfaces::SetUseSolver), nb::arg("theUseSol"))
         .def("GetUseSolver", static_cast<bool (ApproxInt_SvSurfaces::*)() const>(&ApproxInt_SvSurfaces::GetUseSolver));
+    nanoocp_if_concrete<NCollection_LocalArray<double>>(nb::borrow<nb::class_<NCollection_LocalArray<double>>>(m.attr("NCollection_LocalArray__double")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); })
+        .def("__init__", [](nanoocp_T *self, const size_t theSize) { new (self) nanoocp_T(theSize); }, nb::arg("theSize")); });
+    nb::borrow<nb::class_<NCollection_LocalArray<double>>>(m.attr("NCollection_LocalArray__double"))
+        .def("Allocate", static_cast<void (NCollection_LocalArray<double>::*)(const size_t)>(&NCollection_LocalArray<double>::Allocate), nb::arg("theSize"))
+        .def("Reallocate", static_cast<void (NCollection_LocalArray<double>::*)(const size_t, bool)>(&NCollection_LocalArray<double>::Reallocate), nb::arg("theNewSize"), nb::arg("theToCopy") = static_cast<std::decay_t<bool>>(true), R"nbdoc(Reallocate the array to a new size.
+@param[in] theNewSize new number of elements
+@param[in] theToCopy  if true, existing elements are copied/moved to the new buffer)nbdoc")
+        .def("Size", static_cast<size_t (NCollection_LocalArray<double>::*)() const noexcept>(&NCollection_LocalArray<double>::Size))
+        .def("ToArray1", static_cast<NCollection_Array1<double> (NCollection_LocalArray<double>::*)() const>(&NCollection_LocalArray<double>::ToArray1), R"nbdoc(Returns a span as Array1 with shared memory.
+Modifying the local array or the array view may invalidate the shared buffer.
+@return array view of the local array data)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_LocalArray<double>>(nb::borrow<nb::class_<NCollection_LocalArray<double>>>(m.attr("NCollection_LocalArray__double")));
 }
 
 void nanoocp_conversions_ApproxInt(nb::module_ &m) {

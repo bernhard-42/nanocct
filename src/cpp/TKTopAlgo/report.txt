@@ -1,4 +1,4 @@
-# nanoOCP generator report for TKTopAlgo: 40 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKTopAlgo: 42 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 3
 # iterator: 6
@@ -6,7 +6,7 @@
 # overload-collision: 9
 # override: 1
 # raw-pointer: 5
-# template: 6
+# template: 8
 # undefined: 7
 array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &): param 'theCoeff': array
 array	BRepGProp	BRepGProp_Gauss::Compute(BRepGProp_Face &, BRepGProp_Domain &, const gp_Pnt &, const double): param 'theCoeff': array
@@ -38,6 +38,8 @@ raw-pointer	BRepTopAdaptor	BRepTopAdaptor_TopolTool::Edge(): return: void pointe
 template	BRepBuilderAPI	BRepBuilderAPI_BndBoxTreeSelector: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 template	BRepClass3d	BRepClass3d_BndBoxTreeSelectorLine: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 template	BRepClass3d	BRepClass3d_BndBoxTreeSelectorPoint: template base NCollection_UBTree<int, Bnd_Box>::Selector cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
+template	BRepClass3d	NCollection_UBTree::Selector: nested class of a class template (alias instantiation)
+template	BRepClass3d	NCollection_UBTree::TreeNode: nested class of a class template (alias instantiation)
 template	BRepGProp	math_Vector = math_VectorBase<double>: class template math_VectorBase not found in the translation unit
 template	BRepGProp	math_VectorBase: template (not bound)
 template	BRepLib	BRepLib::BuildPCurveForEdgesOnPlane: template member

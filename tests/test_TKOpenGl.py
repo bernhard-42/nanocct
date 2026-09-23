@@ -101,8 +101,13 @@ def test_report_is_the_gl_entry_point_tables():
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
     assert counts["raw-pointer"] + counts["inheritance"] > 1500
-    assert counts["raw-pointer"] == 766 and counts["inheritance"] == 767
-    assert len(lines) == 1577
+    assert counts["raw-pointer"] == 768 and counts["inheritance"] == 767
+    # 1 577 until 2026-09-23, when three instantiations reachable only through reference parameters arrived
+    # (NCollection_Vec2<unsigned int>, NCollection_Vec4<bool>, BVH_Box<float, 3>) and brought the boilerplate every
+    # Vec/Box instantiation reports: const twins, GetData/ChangeData, the template constructor, the pointer
+    # conversion operators, BVH_BaseBox as an uninstantiable template base -- plus the one cwiseAbs skip
+    assert len(lines) == 1597
+    assert sum("NCollection_Vec2<unsigned int>::cwiseAbs" in line for line in lines) == 1
     assert "misc" not in counts
     assert sum("of a base, not a method" in line for line in lines) == 755   # the re-exported GL entry points
     # the ten GL function tables that derive protected from OpenGl_GlFunctions: the base's members are not bound,

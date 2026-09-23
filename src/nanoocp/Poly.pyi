@@ -4,7 +4,6 @@ from collections.abc import Sequence
 import enum
 from typing import TextIO, overload
 
-import nanoocp.BVH
 import nanoocp.Bnd
 import nanoocp.NCollection
 import nanoocp.OSD
@@ -248,7 +247,7 @@ class Poly_ArrayOfUVNodes(NCollection_AliasedArray__):
     def __init__(self, theBegin: nanoocp.gp.gp_Pnt2d, theLength: int) -> None: ...
 
     @overload
-    def __init__(self, theBegin: nanoocp.BVH.BVH_Vec2f, theLength: int) -> None:
+    def __init__(self, theBegin: NCollection_Vec2__float, theLength: int) -> None:
         """
         Constructor wrapping pre-allocated C-array of values without copying them.
         """
@@ -2436,6 +2435,154 @@ class Poly_TriangulationParameters(nanoocp.Standard.Standard_Transient):
     def get_type_descriptor() -> nanoocp.Standard.Standard_Type: ...
 
     def DynamicType(self) -> nanoocp.Standard.Standard_Type: ...
+
+class NCollection_Vec2__float:
+    """
+    Defines the 2D-vector template.
+    The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor. Construct the zero vector."""
+
+    @overload
+    def __init__(self, theXY: float) -> None:
+        """Initialize ALL components of vector within specified value."""
+
+    @overload
+    def __init__(self, theX: float, theY: float) -> None:
+        """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Vec2__float) -> None: ...
+
+    @staticmethod
+    def Length() -> int:
+        """Returns the number of components."""
+
+    def SetValues(self, theX: float, theY: float) -> None:
+        """Assign new values to the vector."""
+
+    def xy(self) -> NCollection_Vec2__float:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def yx(self) -> NCollection_Vec2__float:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def x(self) -> float:
+        """Alias to 1st component as X coordinate in XY."""
+
+    def Setx(self, theValue: float) -> None:
+        """Python addition: sets the value x() returns by reference in C++."""
+
+    def y(self) -> float:
+        """Alias to 2nd component as Y coordinate in XY."""
+
+    def Sety(self, theValue: float) -> None:
+        """Python addition: sets the value y() returns by reference in C++."""
+
+    def IsEqual(self, theOther: NCollection_Vec2__float) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __eq__(self, theOther: NCollection_Vec2__float) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __ne__(self, theOther: NCollection_Vec2__float) -> bool:
+        """
+        Check this vector with another vector for non-equality (without tolerance!).
+        """
+
+    def __iadd__(self, theAdd: NCollection_Vec2__float) -> NCollection_Vec2__float:
+        """Compute per-component summary."""
+
+    def __isub__(self, theDec: NCollection_Vec2__float) -> NCollection_Vec2__float:
+        """Compute per-component subtraction."""
+
+    def __neg__(self) -> NCollection_Vec2__float:
+        """Unary -."""
+
+    @overload
+    def __imul__(self, theRight: NCollection_Vec2__float) -> NCollection_Vec2__float:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __imul__(self, theFactor: float) -> NCollection_Vec2__float:
+        """Compute per-component multiplication by scale factor."""
+
+    def Multiply(self, theFactor: float) -> None:
+        """Compute per-component multiplication by scale factor."""
+
+    def Multiplied(self, theFactor: float) -> NCollection_Vec2__float:
+        """Compute per-component multiplication by scale factor."""
+
+    def cwiseMin(self, theVec: NCollection_Vec2__float) -> NCollection_Vec2__float:
+        """Compute component-wise minimum of two vectors."""
+
+    def cwiseMax(self, theVec: NCollection_Vec2__float) -> NCollection_Vec2__float:
+        """Compute component-wise maximum of two vectors."""
+
+    def cwiseAbs(self) -> NCollection_Vec2__float:
+        """Compute component-wise modulus of the vector."""
+
+    def maxComp(self) -> float:
+        """Compute maximum component of the vector."""
+
+    def minComp(self) -> float:
+        """Compute minimum component of the vector."""
+
+    @overload
+    def __itruediv__(self, theInvFactor: float) -> NCollection_Vec2__float:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __itruediv__(self, theRight: NCollection_Vec2__float) -> NCollection_Vec2__float:
+        """Compute per-component division."""
+
+    @overload
+    def __mul__(self, theFactor: float) -> NCollection_Vec2__float:
+        """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __mul__(self, arg: NCollection_Vec2__float, /) -> NCollection_Vec2__float: ...
+
+    @overload
+    def __truediv__(self, theInvFactor: float) -> NCollection_Vec2__float:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: NCollection_Vec2__float, /) -> NCollection_Vec2__float: ...
+
+    def Dot(self, theOther: NCollection_Vec2__float) -> float:
+        """Computes the dot product."""
+
+    def Modulus(self) -> float:
+        """Computes the vector modulus (magnitude, length)."""
+
+    def SquareModulus(self) -> float:
+        """
+        Computes the square of vector modulus (magnitude, length).
+        This method may be used for performance tricks.
+        """
+
+    @staticmethod
+    def DX() -> NCollection_Vec2__float:
+        """Construct DX unit vector."""
+
+    @staticmethod
+    def DY() -> NCollection_Vec2__float:
+        """Construct DY unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> str:
+        """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: NCollection_Vec2__float, /) -> NCollection_Vec2__float: ...
+
+    def __sub__(self, arg: NCollection_Vec2__float, /) -> NCollection_Vec2__float: ...
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.NCollection

@@ -2515,7 +2515,7 @@ class Aspect_XRSession(nanoocp.Standard.Standard_Transient):
     def DisplayFrequency(self) -> float:
         """Return display frequency or 0 if unknown."""
 
-    def ProjectionFrustum(self, theEye: Aspect_Eye) -> "Aspect_FrustumLRBT<double>":
+    def ProjectionFrustum(self, theEye: Aspect_Eye) -> Aspect_FrustumLRBT__double:
         """
         Return projection frustum.
         @sa HasProjectionFrustums().
@@ -3185,22 +3185,22 @@ class Aspect_WindowInputListener:
     def Set3dMousePreciseInput(self, theIsQuadric: bool) -> None:
         """Set quadric acceleration flag."""
 
-    def Get3dMouseIsNoRotate(self) -> "NCollection_Vec3<bool>":
+    def Get3dMouseIsNoRotate(self) -> NCollection_Vec3__bool:
         """
         Return 3d mouse rotation axes (tilt/roll/spin) ignore flag; (FALSE, FALSE, FALSE) by default.
         """
 
-    def Change3dMouseIsNoRotate(self) -> "NCollection_Vec3<bool>":
+    def Change3dMouseIsNoRotate(self) -> NCollection_Vec3__bool:
         """
         Return 3d mouse rotation axes (tilt/roll/spin) ignore flag; (FALSE, FALSE, FALSE) by default.
         """
 
-    def Get3dMouseToReverse(self) -> "NCollection_Vec3<bool>":
+    def Get3dMouseToReverse(self) -> NCollection_Vec3__bool:
         """
         Return 3d mouse rotation axes (tilt/roll/spin) reverse flag; (TRUE, FALSE, FALSE) by default.
         """
 
-    def Change3dMouseToReverse(self) -> "NCollection_Vec3<bool>":
+    def Change3dMouseToReverse(self) -> NCollection_Vec3__bool:
         """
         Return 3d mouse rotation axes (tilt/roll/spin) reverse flag; (TRUE, FALSE, FALSE) by default.
         """
@@ -3218,6 +3218,279 @@ class Aspect_WindowInputListener:
 
     def update3dMouseKeys(self, theEvent: nanoocp.WNT.WNT_HIDSpaceMouse) -> bool:
         """Process 3d mouse input keys event."""
+
+class Aspect_FrustumLRBT__double:
+    """Structure defining frustum boundaries."""
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theOther: Aspect_FrustumLRBT__double) -> None: ...
+
+    def Multiply(self, theScale: float) -> None:
+        """Apply multiply factor."""
+
+    def Multiplied(self, theScale: float) -> Aspect_FrustumLRBT__double:
+        """Return multiplied frustum."""
+
+    @property
+    def Left(self) -> float: ...
+
+    @Left.setter
+    def Left(self, arg: float, /) -> None: ...
+
+    @property
+    def Right(self) -> float: ...
+
+    @Right.setter
+    def Right(self, arg: float, /) -> None: ...
+
+    @property
+    def Bottom(self) -> float: ...
+
+    @Bottom.setter
+    def Bottom(self, arg: float, /) -> None: ...
+
+    @property
+    def Top(self) -> float: ...
+
+    @Top.setter
+    def Top(self, arg: float, /) -> None: ...
+
+class NCollection_Vec3__bool:
+    """
+    Generic 3-components vector.
+    To be used as RGB color pixel or XYZ 3D-point.
+    The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor. Construct the zero vector."""
+
+    @overload
+    def __init__(self, theValue: bool) -> None:
+        """Initialize ALL components of vector within specified value."""
+
+    @overload
+    def __init__(self, theVec2: "NCollection_Vec2<bool>", theZ: bool = False) -> None:
+        """Constructor from 2-components vector + optional 3rd value."""
+
+    @overload
+    def __init__(self, theX: bool, theY: bool, theZ: bool) -> None:
+        """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Vec3__bool) -> None: ...
+
+    @staticmethod
+    def Length() -> int:
+        """Returns the number of components."""
+
+    @overload
+    def SetValues(self, theX: bool, theY: bool, theZ: bool) -> None: ...
+
+    @overload
+    def SetValues(self, theVec2: "NCollection_Vec2<bool>", theZ: bool) -> None:
+        """Assign new values to the vector."""
+
+    def xy(self) -> "NCollection_Vec2<bool>":
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def yx(self) -> "NCollection_Vec2<bool>":
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def xz(self) -> "NCollection_Vec2<bool>":
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def zx(self) -> "NCollection_Vec2<bool>":
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def yz(self) -> "NCollection_Vec2<bool>":
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def zy(self) -> "NCollection_Vec2<bool>":
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def xyz(self) -> NCollection_Vec3__bool:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def xzy(self) -> NCollection_Vec3__bool:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def yxz(self) -> NCollection_Vec3__bool:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def yzx(self) -> NCollection_Vec3__bool:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def zyx(self) -> NCollection_Vec3__bool:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def zxy(self) -> NCollection_Vec3__bool:
+        """@return 3 components by their names in specified order (in GLSL-style)"""
+
+    def x(self) -> bool:
+        """Alias to 1st component as X coordinate in XYZ."""
+
+    def Setx(self, theValue: bool) -> None:
+        """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> bool:
+        """Alias to 1st component as RED channel in RGB."""
+
+    def Setr(self, theValue: bool) -> None:
+        """Python addition: sets the value r() returns by reference in C++."""
+
+    def y(self) -> bool:
+        """Alias to 2nd component as Y coordinate in XYZ."""
+
+    def Sety(self, theValue: bool) -> None:
+        """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> bool:
+        """Alias to 2nd component as GREEN channel in RGB."""
+
+    def Setg(self, theValue: bool) -> None:
+        """Python addition: sets the value g() returns by reference in C++."""
+
+    def z(self) -> bool:
+        """Alias to 3rd component as Z coordinate in XYZ."""
+
+    def Setz(self, theValue: bool) -> None:
+        """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> bool:
+        """Alias to 3rd component as BLUE channel in RGB."""
+
+    def Setb(self, theValue: bool) -> None:
+        """Python addition: sets the value b() returns by reference in C++."""
+
+    def IsEqual(self, theOther: NCollection_Vec3__bool) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __eq__(self, theOther: NCollection_Vec3__bool) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __ne__(self, theOther: NCollection_Vec3__bool) -> bool:
+        """
+        Check this vector with another vector for non-equality (without tolerance!).
+        """
+
+    def __iadd__(self, theAdd: NCollection_Vec3__bool) -> NCollection_Vec3__bool:
+        """Compute per-component summary."""
+
+    def __neg__(self) -> NCollection_Vec3__bool:
+        """Unary -."""
+
+    def __isub__(self, theDec: NCollection_Vec3__bool) -> NCollection_Vec3__bool:
+        """Compute per-component subtraction."""
+
+    def Multiply(self, theFactor: bool) -> None:
+        """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __imul__(self, theRight: NCollection_Vec3__bool) -> NCollection_Vec3__bool:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __imul__(self, theFactor: bool) -> NCollection_Vec3__bool:
+        """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __mul__(self, theFactor: bool) -> NCollection_Vec3__bool:
+        """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __mul__(self, arg: NCollection_Vec3__bool, /) -> NCollection_Vec3__bool: ...
+
+    def Multiplied(self, theFactor: bool) -> NCollection_Vec3__bool:
+        """Compute per-component multiplication by scale factor."""
+
+    def cwiseMin(self, theVec: NCollection_Vec3__bool) -> NCollection_Vec3__bool:
+        """Compute component-wise minimum of two vectors."""
+
+    def cwiseMax(self, theVec: NCollection_Vec3__bool) -> NCollection_Vec3__bool:
+        """Compute component-wise maximum of two vectors."""
+
+    def cwiseAbs(self) -> NCollection_Vec3__bool:
+        """Compute component-wise modulus of the vector."""
+
+    def maxComp(self) -> bool:
+        """Compute maximum component of the vector."""
+
+    def minComp(self) -> bool:
+        """Compute minimum component of the vector."""
+
+    @overload
+    def __itruediv__(self, theInvFactor: bool) -> NCollection_Vec3__bool:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __itruediv__(self, theRight: NCollection_Vec3__bool) -> NCollection_Vec3__bool:
+        """Compute per-component division."""
+
+    @overload
+    def __truediv__(self, theInvFactor: bool) -> NCollection_Vec3__bool:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: NCollection_Vec3__bool, /) -> NCollection_Vec3__bool: ...
+
+    def Dot(self, theOther: NCollection_Vec3__bool) -> bool:
+        """Computes the dot product."""
+
+    def Modulus(self) -> bool:
+        """Computes the vector modulus (magnitude, length)."""
+
+    def SquareModulus(self) -> bool:
+        """
+        Computes the square of vector modulus (magnitude, length).
+        This method may be used for performance tricks.
+        """
+
+    def Normalize(self) -> None:
+        """Normalize the vector."""
+
+    def Normalized(self) -> NCollection_Vec3__bool:
+        """Normalize the vector."""
+
+    @staticmethod
+    def Cross(theVec1: NCollection_Vec3__bool, theVec2: NCollection_Vec3__bool) -> NCollection_Vec3__bool:
+        """Computes the cross product."""
+
+    @staticmethod
+    def GetLERP(theFrom: NCollection_Vec3__bool, theTo: NCollection_Vec3__bool, theT: bool) -> NCollection_Vec3__bool:
+        """
+        Compute linear interpolation between to vectors.
+        @param theT - interpolation coefficient 0..1;
+        @return interpolation result.
+        """
+
+    @staticmethod
+    def DX() -> NCollection_Vec3__bool:
+        """Construct DX unit vector."""
+
+    @staticmethod
+    def DY() -> NCollection_Vec3__bool:
+        """Construct DY unit vector."""
+
+    @staticmethod
+    def DZ() -> NCollection_Vec3__bool:
+        """Construct DZ unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> str:
+        """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: NCollection_Vec3__bool, /) -> NCollection_Vec3__bool: ...
+
+    def __sub__(self, arg: NCollection_Vec3__bool, /) -> NCollection_Vec3__bool: ...
 
 def Aspect_VKey2Modifier(theKey: int) -> int:
     """Return modifier flags for specified modifier key."""

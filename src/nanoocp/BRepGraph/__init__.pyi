@@ -5631,7 +5631,7 @@ class BRepGraph_CopyRemap:
     """
 
     @overload
-    def __init__(self, theSourceGraph: BRepGraph, theTargetGraph: BRepGraph, theItemRemap: "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>", theMode: BRepGraph_CopyRemap.Mode) -> None: ...
+    def __init__(self, theSourceGraph: BRepGraph, theTargetGraph: BRepGraph, theItemRemap: NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId, theMode: BRepGraph_CopyRemap.Mode) -> None: ...
 
     @overload
     def __init__(self, theSourceGraph: BRepGraph, theTargetGraph: BRepGraph, theMappingKind: BRepGraph_CopyRemap.MappingKind, theMode: BRepGraph_CopyRemap.Mode) -> None:
@@ -5672,7 +5672,7 @@ class BRepGraph_CopyRemap:
     def TargetGraphConst(self) -> BRepGraph:
         """Target graph as const."""
 
-    def Items(self) -> "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>":
+    def Items(self) -> NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId:
         """
         Source item id -> target item id map for copied definitions, refs, and reps.
         """
@@ -5770,7 +5770,7 @@ class BRepGraph_CacheRegistry:
         """Clear data in all registered cache services."""
 
     @overload
-    def CopyFreshCachesTo(self, theTargetGraph: BRepGraph, theItemRemap: "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>", theMode: BRepGraph_CopyRemap.Mode) -> None:
+    def CopyFreshCachesTo(self, theTargetGraph: BRepGraph, theItemRemap: NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId, theMode: BRepGraph_CopyRemap.Mode) -> None:
         """
         Ask registered cache services to copy fresh, remappable data into the target graph.
         """
@@ -7014,7 +7014,7 @@ class BRepGraph_ChildExplorer:
         Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
         """
 
-    def __next__(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
+    def __next__(self) -> BRepGraphInc_Instance__BRepGraph_NodeId:
         """Python addition: see __iter__."""
 
     def GetConfig(self) -> BRepGraph_ChildExplorer.Config:
@@ -7029,7 +7029,7 @@ class BRepGraph_ChildExplorer:
     def Next(self) -> None:
         """Advance to the next matching descendant."""
 
-    def Current(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
+    def Current(self) -> BRepGraphInc_Instance__BRepGraph_NodeId:
         """
         Current matching descendant node with accumulated location and orientation.
         """
@@ -8067,7 +8067,7 @@ class BRepGraph_ParentExplorer:
         Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.
         """
 
-    def __next__(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
+    def __next__(self) -> BRepGraphInc_Instance__BRepGraph_NodeId:
         """Python addition: see __iter__."""
 
     def GetConfig(self) -> BRepGraph_ParentExplorer.Config:
@@ -8082,7 +8082,7 @@ class BRepGraph_ParentExplorer:
     def Next(self) -> None:
         """Advance to the next matching parent."""
 
-    def Current(self) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId:
+    def Current(self) -> BRepGraphInc_Instance__BRepGraph_NodeId:
         """
         Current matching ancestor node with accumulated location and orientation.
         """
@@ -8179,7 +8179,7 @@ class BRepGraph_LayerRegistry:
         """Dispatch OnNodesModified to subscribed layers."""
 
     @overload
-    def CopyLayersTo(self, theTargetGraph: BRepGraph, theItemRemap: "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>", theMode: BRepGraph_CopyRemap.Mode) -> None:
+    def CopyLayersTo(self, theTargetGraph: BRepGraph, theItemRemap: NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId, theMode: BRepGraph_CopyRemap.Mode) -> None:
         """
         Ask every registered source layer to copy itself into the target graph.
         For Mode::Compact, layers are unregistered first and CopyTo creates fresh instances.
@@ -8606,7 +8606,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         @return true if the resolved NodeId is in the deleted set
         """
 
-    def DeletedNodes(self) -> "NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>":
+    def DeletedNodes(self) -> NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId:
         """
         Borrowed access to the full deleted set.
         @return reference to the deleted-node set
@@ -8619,7 +8619,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
         """
 
     @overload
-    def DeletedUids(self) -> "NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>":
+    def DeletedUids(self) -> NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID:
         """UID-keyed deleted set stored directly in this history."""
 
     @overload
@@ -8637,7 +8637,7 @@ class BRepGraph_LayerHistory(BRepGraph_Layer):
     def HasKnownInput(self, theUID: BRepGraph_ItemUID) -> bool:
         """Test whether @p theUID was registered as an operation input."""
 
-    def DeletedItemUids(self) -> "NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>":
+    def DeletedItemUids(self) -> NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID:
         """ItemUID-keyed deleted set stored directly in this history."""
 
     def NbRecords(self) -> int:
@@ -10452,7 +10452,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Vertex) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theVertexRef: BRepGraph_VertexRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex:
+        def Usage(theGraph: BRepGraph, theVertexRef: BRepGraph_VertexRefId) -> BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex:
             """
             Resolves a vertex reference id to a lightweight usage value.
             @param[in] theGraph     source graph
@@ -10462,7 +10462,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def Pnt(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex) -> nanoocp.gp.gp_Pnt:
+        def Pnt(theGraph: BRepGraph, theRef: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex) -> nanoocp.gp.gp_Pnt:
             """
             Returns the vertex 3D point with VertexUsage Location applied.
             @param[in] theGraph  source graph
@@ -10609,7 +10609,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def Curve(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.Geom.Geom_Curve:
+        def Curve(theGraph: BRepGraph, theRef: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.Geom.Geom_Curve:
             """
             Returns the transformed 3D curve handle via CoEdgeUsage (applies Location, may copy).
             @param[in] theGraph source graph
@@ -10629,7 +10629,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def CurveAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedCurve:
+        def CurveAdaptor(theGraph: BRepGraph, theRef: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedCurve:
             """
             Returns the 3D curve adaptor via CoEdgeUsage (applies edge-in-wire Location in Trsf).
             Falls back to CurveOnSurface when no 3D curve exists.
@@ -10735,7 +10735,7 @@ class BRepGraph_Tool:
             """
 
         @staticmethod
-        def CurveOnSurface(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge, theFace: BRepGraph_FaceId) -> nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface:
+        def CurveOnSurface(theGraph: BRepGraph, theRef: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge, theFace: BRepGraph_FaceId) -> nanoocp.Adaptor3d.Adaptor3d_CurveOnSurface:
             """
             Returns a CurveOnSurface adaptor built from a CoEdgeUsage and face.
             @param[in] theGraph source graph
@@ -10857,7 +10857,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def PCurveAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.Geom2dAdaptor.Geom2dAdaptor_Curve:
+        def PCurveAdaptor(theGraph: BRepGraph, theRef: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> nanoocp.Geom2dAdaptor.Geom2dAdaptor_Curve:
             """
             Returns a PCurve adaptor from a CoEdgeUsage.
             @param[in] theGraph source graph
@@ -10898,7 +10898,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Face) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theFaceRef: BRepGraph_FaceRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
+        def Usage(theGraph: BRepGraph, theFaceRef: BRepGraph_FaceRefId) -> BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
             """
             Resolves a face reference id to a lightweight usage value.
             @param[in] theGraph   source graph
@@ -10978,7 +10978,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def SurfaceAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
+        def SurfaceAdaptor(theGraph: BRepGraph, theRef: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
             """Returns a surface adaptor with FaceUsage Location applied."""
 
         @overload
@@ -11004,7 +11004,7 @@ class BRepGraph_Tool:
 
         @overload
         @staticmethod
-        def SurfaceAdaptor(theGraph: BRepGraph, theRef: nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face, theUFirst: float, theULast: float, theVFirst: float, theVLast: float) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
+        def SurfaceAdaptor(theGraph: BRepGraph, theRef: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face, theUFirst: float, theULast: float, theVFirst: float, theVLast: float) -> nanoocp.GeomAdaptor.GeomAdaptor_TransformedSurface:
             """
             Returns a surface adaptor with explicit UV bounds and FaceUsage Location applied.
             """
@@ -11067,7 +11067,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Wire) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theWireRef: BRepGraph_WireRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
+        def Usage(theGraph: BRepGraph, theWireRef: BRepGraph_WireRefId) -> BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
             """
             Resolves a wire reference id to a lightweight usage value.
             @param[in] theGraph   source graph
@@ -11170,7 +11170,7 @@ class BRepGraph_Tool:
         def __init__(self, theOther: BRepGraph_Tool.Shell) -> None: ...
 
         @staticmethod
-        def Usage(theGraph: BRepGraph, theShellRef: BRepGraph_ShellRefId) -> nanoocp.BRepGraphInc.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
+        def Usage(theGraph: BRepGraph, theShellRef: BRepGraph_ShellRefId) -> BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
             """
             Resolves a shell reference id to a lightweight usage value.
             @param[in] theGraph    source graph
@@ -12046,6 +12046,176 @@ class BRepGraph_Validate:
         @param[in] theGraph graph to validate (const, read-only)
         @param[in] theOptions validation profile/options
         @return validation result with all detected issues
+        """
+
+class NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId:
+    """
+    @brief High-performance hash map using open addressing with Robin Hood hashing.
+
+    NCollection_FlatDataMap is an alternative to NCollection_DataMap that provides
+    better cache locality and reduced memory allocation overhead by storing all
+    key-value pairs inline in a contiguous array.
+
+    Key features:
+    - Open addressing with linear probing (better cache locality)
+    - Robin Hood hashing (reduces probe sequence variance)
+    - Power-of-2 sizing for fast modulo operations
+    - No per-element allocations
+
+    Typical faster usage patterns:
+    - POD or small key/value types
+    - Performance-critical code paths
+    - Lookup-heavy workloads
+    - Full traversal / iteration-heavy workloads
+    - Stable-size maps with Reserve() called once before bulk Bind()
+
+    Container-specific implementation notes:
+    - UnBind() keeps probe clusters consistent using backward-shift compaction.
+
+    Relative to NCollection_DataMap:
+    - Bind()/UnBind() can be faster in many workloads thanks to contiguous storage and
+    no per-element node allocation.
+    - Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+    Limitations:
+    - Keys and values must be movable
+    - Higher memory usage at low load factors
+    - Iteration order is not insertion order
+    - Probe distance grows with collisions (bounded by table capacity)
+
+    @note This class is NOT thread-safe. External synchronization is required
+    for concurrent access from multiple threads.
+
+    @tparam TheKeyType   Type of keys
+    @tparam TheItemType  Type of values
+    @tparam Hasher       Hash and equality functor (default: NCollection_DefaultHasher)
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Default constructor"""
+
+    @overload
+    def __init__(self, theNbBuckets: int) -> None:
+        """
+        Constructor with initial capacity hint
+        @param theNbBuckets initial capacity (will be rounded up to power of 2)
+        """
+
+    @overload
+    def __init__(self, theHasher: NCollection_DefaultHasher__BRepGraph_ItemId, theNbBuckets: int = 0) -> None:
+        """
+        Constructor with custom hasher (copy).
+        @param theHasher custom hasher instance
+        @param theNbBuckets initial capacity hint
+        """
+
+    @overload
+    def __init__(self, theOther: NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId) -> None:
+        """Copy constructor"""
+
+    def Size(self) -> int:
+        """Returns number of elements."""
+
+    def Extent(self) -> int:
+        """
+        Returns number of elements (legacy int-returning API, convention shared with BaseMap).
+        """
+
+    def IsEmpty(self) -> bool:
+        """Returns true if map is empty"""
+
+    def Capacity(self) -> int:
+        """Returns current capacity"""
+
+    def IsBound(self, theKey: BRepGraph_ItemId) -> bool:
+        """Check if key exists"""
+
+    def Contained(self, theKey: BRepGraph_ItemId) -> tuple["std::__1::reference_wrapper<BRepGraph_ItemId const>", "std::__1::reference_wrapper<BRepGraph_ItemId>"] | None:
+        """
+        Contained returns optional pair of const key reference and mutable value reference.
+        Returns std::nullopt if the key is not found.
+        """
+
+    def Find(self, theKey: BRepGraph_ItemId) -> BRepGraph_ItemId:
+        """Find value by key, throws if not found"""
+
+    def ChangeFind(self, theKey: BRepGraph_ItemId) -> BRepGraph_ItemId:
+        """Find value by key (mutable), throws if not found"""
+
+    def __call__(self, theKey: BRepGraph_ItemId) -> BRepGraph_ItemId:
+        """Operator() for mutable access"""
+
+    def Bind(self, theKey: BRepGraph_ItemId, theItem: BRepGraph_ItemId) -> bool:
+        """
+        Bind key to value
+        @return true if key was newly added, false if existing key was updated
+        """
+
+    def TryBind(self, theKey: BRepGraph_ItemId, theItem: BRepGraph_ItemId) -> bool:
+        """
+        TryBind binds key to value only if key is not yet bound.
+        @param theKey key to add
+        @param theItem item to bind if key is not yet bound
+        @return true if key was newly added, false if key already existed
+        """
+
+    def Bound(self, theKey: BRepGraph_ItemId, theItem: BRepGraph_ItemId) -> BRepGraph_ItemId:
+        """
+        Bound binds key to value and returns reference to the value.
+        @param theKey key to add/update
+        @param theItem new item; overrides value previously bound to the key
+        @return reference to the value in the map
+        """
+
+    def TryBound(self, theKey: BRepGraph_ItemId, theItem: BRepGraph_ItemId) -> BRepGraph_ItemId:
+        """
+        TryBound binds key to value only if key is not yet bound.
+        @param theKey key to add
+        @param theItem item to bind if key is not yet bound
+        @return reference to existing or newly bound value
+        """
+
+    def UnBind(self, theKey: BRepGraph_ItemId) -> bool:
+        """
+        Remove key from map
+        @return true if key was found and removed
+        """
+
+    def Clear(self, doReleaseMemory: bool = False) -> None:
+        """
+        Clear all elements
+        @param doReleaseMemory if true, free the internal buffer
+        """
+
+    def Exchange(self, theOther: NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId) -> None:
+        """Exchange content with another map"""
+
+    def GetHasher(self) -> NCollection_DefaultHasher__BRepGraph_ItemId:
+        """Returns const reference to the hasher."""
+
+    def reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def Reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def begin(self) -> "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator":
+        """Returns iterator to first element"""
+
+    def end(self) -> "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator":
+        """Returns iterator past the end"""
+
+    def cbegin(self) -> "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator":
+        """Returns iterator to first element"""
+
+    def cend(self) -> "NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator":
+        """Returns iterator past the end"""
+
+    def Items(self) -> "NCollection_ItemsView::View<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>, NCollection_ItemsView::KeyValueRef<BRepGraph_ItemId, BRepGraph_ItemId, false>, NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::ItemsExtractor, false>":
+        """
+        Returns a view for key-value pair iteration.
+        Usage: for (auto [aKey, aValue] : aMap.Items())
         """
 
 class NCollection_DefaultHasher__BRepGraph_ItemId:
@@ -13336,6 +13506,42 @@ class NCollection_ForwardRangeIterator__BRepGraph_DefsIterator_DefsVertexOfEdge:
 
     def __ne__(self, arg: nanoocp.NCollection.NCollection_ForwardRangeSentinel, /) -> bool: ...
 
+class BRepGraphInc_Instance__BRepGraph_NodeId:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    @property
+    def DefId(self) -> BRepGraph_NodeId: ...
+
+    @DefId.setter
+    def DefId(self, arg: BRepGraph_NodeId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
 class NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer:
     """
     @brief STL input iterator that wraps an OCCT More()/Next() iterator.
@@ -13399,6 +13605,129 @@ class NCollection_ForwardRangeIterator__BRepGraph_ParentExplorer:
 
     def __ne__(self, arg: nanoocp.NCollection.NCollection_ForwardRangeSentinel, /) -> bool: ...
 
+class NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId:
+    """
+    @brief High-performance hash set using open addressing with Robin Hood hashing.
+
+    NCollection_FlatMap is an alternative to NCollection_Map that provides
+    better cache locality and reduced memory allocation overhead by storing all
+    keys inline in a contiguous array.
+
+    Key features:
+    - Open addressing with linear probing (better cache locality)
+    - Robin Hood hashing (reduces probe sequence variance)
+    - Power-of-2 sizing for fast modulo operations
+    - No per-element allocations
+
+    Typical faster usage patterns:
+    - POD or small key types
+    - Performance-critical code paths
+    - Lookup-heavy workloads (Contains()/Seek())
+    - Full traversal / iteration-heavy workloads
+    - Stable-size maps with Reserve() called once before bulk insert
+
+    Container-specific implementation notes:
+    - Remove() keeps probe clusters consistent using backward-shift compaction.
+
+    Relative to NCollection_Map:
+    - Add()/Remove() can be faster in many workloads thanks to contiguous storage and
+    no per-element node allocation.
+    - Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+    Limitations:
+    - Keys must be movable
+    - Higher memory usage at low load factors
+    - Iteration order is not insertion order
+    - Probe distance grows with collisions (bounded by table capacity)
+
+    @note This class is NOT thread-safe. External synchronization is required
+    for concurrent access from multiple threads.
+
+    @tparam TheKeyType Type of keys
+    @tparam Hasher     Hash and equality functor (default: NCollection_DefaultHasher)
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Default constructor"""
+
+    @overload
+    def __init__(self, theNbBuckets: int) -> None:
+        """Constructor with initial capacity hint"""
+
+    @overload
+    def __init__(self, theHasher: NCollection_DefaultHasher__BRepGraph_NodeId, theNbBuckets: int = 0) -> None:
+        """
+        Constructor with custom hasher (copy).
+        @param theHasher custom hasher instance
+        @param theNbBuckets initial capacity hint
+        """
+
+    @overload
+    def __init__(self, theOther: NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId) -> None:
+        """Copy constructor"""
+
+    def Size(self) -> int:
+        """Returns number of elements."""
+
+    def IsEmpty(self) -> bool:
+        """Returns true if map is empty"""
+
+    def Capacity(self) -> int:
+        """Returns current capacity"""
+
+    def Contains(self, theKey: BRepGraph_NodeId) -> bool:
+        """Check if key exists"""
+
+    def Contained(self, theKey: BRepGraph_NodeId) -> "std::__1::reference_wrapper<BRepGraph_NodeId const>" | None:
+        """
+        Contained returns optional const reference to the key in the map.
+        Returns std::nullopt if the key is not found.
+        """
+
+    def Add(self, theKey: BRepGraph_NodeId) -> bool:
+        """
+        Add key to set
+        @return true if key was newly added, false if already present
+        """
+
+    def Added(self, theKey: BRepGraph_NodeId) -> BRepGraph_NodeId:
+        """
+        Added: add a new key if not yet in the map, and return
+        reference to either newly added or previously existing key.
+        @param theKey key to add
+        @return const reference to the key in the map
+        """
+
+    def Remove(self, theKey: BRepGraph_NodeId) -> bool:
+        """
+        Remove key from set
+        @return true if key was found and removed
+        """
+
+    def Clear(self, doReleaseMemory: bool = False) -> None:
+        """Clear all elements"""
+
+    def Exchange(self, theOther: NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId) -> None:
+        """Exchange content with another map"""
+
+    def GetHasher(self) -> NCollection_DefaultHasher__BRepGraph_NodeId:
+        """Returns const reference to the hasher."""
+
+    def reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def Reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def begin(self) -> "NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator": ...
+
+    def end(self) -> "NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator": ...
+
+    def cbegin(self) -> "NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator": ...
+
+    def cend(self) -> "NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator": ...
+
 class NCollection_DefaultHasher__BRepGraph_NodeId:
     """
     Purpose:     The  DefaultHasher  is a  Hasher  that is used by
@@ -13421,6 +13750,129 @@ class NCollection_DefaultHasher__BRepGraph_NodeId:
     @overload
     def __call__(self, theK1: BRepGraph_NodeId, theK2: BRepGraph_NodeId) -> bool: ...
 
+class NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID:
+    """
+    @brief High-performance hash set using open addressing with Robin Hood hashing.
+
+    NCollection_FlatMap is an alternative to NCollection_Map that provides
+    better cache locality and reduced memory allocation overhead by storing all
+    keys inline in a contiguous array.
+
+    Key features:
+    - Open addressing with linear probing (better cache locality)
+    - Robin Hood hashing (reduces probe sequence variance)
+    - Power-of-2 sizing for fast modulo operations
+    - No per-element allocations
+
+    Typical faster usage patterns:
+    - POD or small key types
+    - Performance-critical code paths
+    - Lookup-heavy workloads (Contains()/Seek())
+    - Full traversal / iteration-heavy workloads
+    - Stable-size maps with Reserve() called once before bulk insert
+
+    Container-specific implementation notes:
+    - Remove() keeps probe clusters consistent using backward-shift compaction.
+
+    Relative to NCollection_Map:
+    - Add()/Remove() can be faster in many workloads thanks to contiguous storage and
+    no per-element node allocation.
+    - Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+    Limitations:
+    - Keys must be movable
+    - Higher memory usage at low load factors
+    - Iteration order is not insertion order
+    - Probe distance grows with collisions (bounded by table capacity)
+
+    @note This class is NOT thread-safe. External synchronization is required
+    for concurrent access from multiple threads.
+
+    @tparam TheKeyType Type of keys
+    @tparam Hasher     Hash and equality functor (default: NCollection_DefaultHasher)
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Default constructor"""
+
+    @overload
+    def __init__(self, theNbBuckets: int) -> None:
+        """Constructor with initial capacity hint"""
+
+    @overload
+    def __init__(self, theHasher: NCollection_DefaultHasher__BRepGraph_UID, theNbBuckets: int = 0) -> None:
+        """
+        Constructor with custom hasher (copy).
+        @param theHasher custom hasher instance
+        @param theNbBuckets initial capacity hint
+        """
+
+    @overload
+    def __init__(self, theOther: NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID) -> None:
+        """Copy constructor"""
+
+    def Size(self) -> int:
+        """Returns number of elements."""
+
+    def IsEmpty(self) -> bool:
+        """Returns true if map is empty"""
+
+    def Capacity(self) -> int:
+        """Returns current capacity"""
+
+    def Contains(self, theKey: BRepGraph_UID) -> bool:
+        """Check if key exists"""
+
+    def Contained(self, theKey: BRepGraph_UID) -> "std::__1::reference_wrapper<BRepGraph_UID const>" | None:
+        """
+        Contained returns optional const reference to the key in the map.
+        Returns std::nullopt if the key is not found.
+        """
+
+    def Add(self, theKey: BRepGraph_UID) -> bool:
+        """
+        Add key to set
+        @return true if key was newly added, false if already present
+        """
+
+    def Added(self, theKey: BRepGraph_UID) -> BRepGraph_UID:
+        """
+        Added: add a new key if not yet in the map, and return
+        reference to either newly added or previously existing key.
+        @param theKey key to add
+        @return const reference to the key in the map
+        """
+
+    def Remove(self, theKey: BRepGraph_UID) -> bool:
+        """
+        Remove key from set
+        @return true if key was found and removed
+        """
+
+    def Clear(self, doReleaseMemory: bool = False) -> None:
+        """Clear all elements"""
+
+    def Exchange(self, theOther: NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID) -> None:
+        """Exchange content with another map"""
+
+    def GetHasher(self) -> NCollection_DefaultHasher__BRepGraph_UID:
+        """Returns const reference to the hasher."""
+
+    def reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def Reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def begin(self) -> "NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator": ...
+
+    def end(self) -> "NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator": ...
+
+    def cbegin(self) -> "NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator": ...
+
+    def cend(self) -> "NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator": ...
+
 class NCollection_DefaultHasher__BRepGraph_UID:
     """
     Purpose:     The  DefaultHasher  is a  Hasher  that is used by
@@ -13442,6 +13894,129 @@ class NCollection_DefaultHasher__BRepGraph_UID:
 
     @overload
     def __call__(self, theK1: BRepGraph_UID, theK2: BRepGraph_UID) -> bool: ...
+
+class NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID:
+    """
+    @brief High-performance hash set using open addressing with Robin Hood hashing.
+
+    NCollection_FlatMap is an alternative to NCollection_Map that provides
+    better cache locality and reduced memory allocation overhead by storing all
+    keys inline in a contiguous array.
+
+    Key features:
+    - Open addressing with linear probing (better cache locality)
+    - Robin Hood hashing (reduces probe sequence variance)
+    - Power-of-2 sizing for fast modulo operations
+    - No per-element allocations
+
+    Typical faster usage patterns:
+    - POD or small key types
+    - Performance-critical code paths
+    - Lookup-heavy workloads (Contains()/Seek())
+    - Full traversal / iteration-heavy workloads
+    - Stable-size maps with Reserve() called once before bulk insert
+
+    Container-specific implementation notes:
+    - Remove() keeps probe clusters consistent using backward-shift compaction.
+
+    Relative to NCollection_Map:
+    - Add()/Remove() can be faster in many workloads thanks to contiguous storage and
+    no per-element node allocation.
+    - Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+    Limitations:
+    - Keys must be movable
+    - Higher memory usage at low load factors
+    - Iteration order is not insertion order
+    - Probe distance grows with collisions (bounded by table capacity)
+
+    @note This class is NOT thread-safe. External synchronization is required
+    for concurrent access from multiple threads.
+
+    @tparam TheKeyType Type of keys
+    @tparam Hasher     Hash and equality functor (default: NCollection_DefaultHasher)
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Default constructor"""
+
+    @overload
+    def __init__(self, theNbBuckets: int) -> None:
+        """Constructor with initial capacity hint"""
+
+    @overload
+    def __init__(self, theHasher: NCollection_DefaultHasher__BRepGraph_ItemUID, theNbBuckets: int = 0) -> None:
+        """
+        Constructor with custom hasher (copy).
+        @param theHasher custom hasher instance
+        @param theNbBuckets initial capacity hint
+        """
+
+    @overload
+    def __init__(self, theOther: NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID) -> None:
+        """Copy constructor"""
+
+    def Size(self) -> int:
+        """Returns number of elements."""
+
+    def IsEmpty(self) -> bool:
+        """Returns true if map is empty"""
+
+    def Capacity(self) -> int:
+        """Returns current capacity"""
+
+    def Contains(self, theKey: BRepGraph_ItemUID) -> bool:
+        """Check if key exists"""
+
+    def Contained(self, theKey: BRepGraph_ItemUID) -> "std::__1::reference_wrapper<BRepGraph_ItemUID const>" | None:
+        """
+        Contained returns optional const reference to the key in the map.
+        Returns std::nullopt if the key is not found.
+        """
+
+    def Add(self, theKey: BRepGraph_ItemUID) -> bool:
+        """
+        Add key to set
+        @return true if key was newly added, false if already present
+        """
+
+    def Added(self, theKey: BRepGraph_ItemUID) -> BRepGraph_ItemUID:
+        """
+        Added: add a new key if not yet in the map, and return
+        reference to either newly added or previously existing key.
+        @param theKey key to add
+        @return const reference to the key in the map
+        """
+
+    def Remove(self, theKey: BRepGraph_ItemUID) -> bool:
+        """
+        Remove key from set
+        @return true if key was found and removed
+        """
+
+    def Clear(self, doReleaseMemory: bool = False) -> None:
+        """Clear all elements"""
+
+    def Exchange(self, theOther: NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID) -> None:
+        """Exchange content with another map"""
+
+    def GetHasher(self) -> NCollection_DefaultHasher__BRepGraph_ItemUID:
+        """Returns const reference to the hasher."""
+
+    def reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def Reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def begin(self) -> "NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator": ...
+
+    def end(self) -> "NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator": ...
+
+    def cbegin(self) -> "NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator": ...
+
+    def cend(self) -> "NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator": ...
 
 class NCollection_DefaultHasher__BRepGraph_ItemUID:
     """
@@ -13506,6 +14081,186 @@ class NCollection_ForwardRangeIterator__BRepGraph_RefsIterator_RefsVertexOfEdge:
     def __eq__(self, arg: nanoocp.NCollection.NCollection_ForwardRangeSentinel, /) -> bool: ...
 
     def __ne__(self, arg: nanoocp.NCollection.NCollection_ForwardRangeSentinel, /) -> bool: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    @property
+    def DefId(self) -> BRepGraph_VertexId: ...
+
+    @DefId.setter
+    def DefId(self, arg: BRepGraph_VertexId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    @property
+    def DefId(self) -> BRepGraph_CoEdgeId: ...
+
+    @DefId.setter
+    def DefId(self, arg: BRepGraph_CoEdgeId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    @property
+    def DefId(self) -> BRepGraph_FaceId: ...
+
+    @DefId.setter
+    def DefId(self, arg: BRepGraph_FaceId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    @property
+    def DefId(self) -> BRepGraph_WireId: ...
+
+    @DefId.setter
+    def DefId(self, arg: BRepGraph_WireId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+
+class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
+    """
+    @brief Unified instance container template.
+
+    Bundles a typed definition id with location and orientation.
+
+    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell) -> None: ...
+
+    def IsValid(self) -> bool:
+        """Returns true if the instance references an existing definition id."""
+
+    @property
+    def DefId(self) -> BRepGraph_ShellId: ...
+
+    @DefId.setter
+    def DefId(self, arg: BRepGraph_ShellId, /) -> None: ...
+
+    @property
+    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+
+    @Location.setter
+    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+
+    @property
+    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+
+    @Orientation.setter
+    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
 
 class NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator:
     """

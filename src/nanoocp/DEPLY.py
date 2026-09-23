@@ -1,14 +1,12 @@
-"""OCCT package gp (toolkit TKMath)."""
+"""OCCT package DEPLY (toolkit TKDEPLY)."""
 import importlib as _importlib
 
-from nanoocp._TKMath import gp as _ext
-from nanoocp._TKMath.gp import *  # noqa: F401,F403
+from nanoocp._TKDEPLY import DEPLY as _ext
+from nanoocp._TKDEPLY.DEPLY import *  # noqa: F401,F403
 
 
 # deprecated NCollection typedef names -> (home module, bound name)
 _ALIASES = {
-    "gp_Vec2f": ("nanoocp.Poly", "NCollection_Vec2__float"),
-    "gp_Vec3f": ("nanoocp.Quantity", "NCollection_Vec3__float"),
 }
 
 

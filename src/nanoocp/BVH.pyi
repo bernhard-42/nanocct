@@ -5,6 +5,7 @@ from typing import overload
 import nanoocp.Bnd
 import nanoocp.Graphic3d
 import nanoocp.NCollection
+from nanoocp.Poly import NCollection_Vec2__float as BVH_Vec2f
 import nanoocp.Quantity
 import nanoocp.Standard
 import nanoocp.BVH
@@ -782,154 +783,6 @@ class BVH_Vec4i:
     def __add__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
 
     def __sub__(self, arg: BVH_Vec4i, /) -> BVH_Vec4i: ...
-
-class BVH_Vec2f:
-    """
-    Defines the 2D-vector template.
-    The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).
-    """
-
-    @overload
-    def __init__(self) -> None:
-        """Empty constructor. Construct the zero vector."""
-
-    @overload
-    def __init__(self, theXY: float) -> None:
-        """Initialize ALL components of vector within specified value."""
-
-    @overload
-    def __init__(self, theX: float, theY: float) -> None:
-        """Per-component constructor."""
-
-    @overload
-    def __init__(self, theOther: BVH_Vec2f) -> None: ...
-
-    @staticmethod
-    def Length() -> int:
-        """Returns the number of components."""
-
-    def SetValues(self, theX: float, theY: float) -> None:
-        """Assign new values to the vector."""
-
-    def xy(self) -> BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def yx(self) -> BVH_Vec2f:
-        """@return 2 components by their names in specified order (in GLSL-style)"""
-
-    def x(self) -> float:
-        """Alias to 1st component as X coordinate in XY."""
-
-    def Setx(self, theValue: float) -> None:
-        """Python addition: sets the value x() returns by reference in C++."""
-
-    def y(self) -> float:
-        """Alias to 2nd component as Y coordinate in XY."""
-
-    def Sety(self, theValue: float) -> None:
-        """Python addition: sets the value y() returns by reference in C++."""
-
-    def IsEqual(self, theOther: BVH_Vec2f) -> bool:
-        """
-        Check this vector with another vector for equality (without tolerance!).
-        """
-
-    def __eq__(self, theOther: BVH_Vec2f) -> bool:
-        """
-        Check this vector with another vector for equality (without tolerance!).
-        """
-
-    def __ne__(self, theOther: BVH_Vec2f) -> bool:
-        """
-        Check this vector with another vector for non-equality (without tolerance!).
-        """
-
-    def __iadd__(self, theAdd: BVH_Vec2f) -> BVH_Vec2f:
-        """Compute per-component summary."""
-
-    def __isub__(self, theDec: BVH_Vec2f) -> BVH_Vec2f:
-        """Compute per-component subtraction."""
-
-    def __neg__(self) -> BVH_Vec2f:
-        """Unary -."""
-
-    @overload
-    def __imul__(self, theRight: BVH_Vec2f) -> BVH_Vec2f:
-        """Compute per-component multiplication."""
-
-    @overload
-    def __imul__(self, theFactor: float) -> BVH_Vec2f:
-        """Compute per-component multiplication by scale factor."""
-
-    def Multiply(self, theFactor: float) -> None:
-        """Compute per-component multiplication by scale factor."""
-
-    def Multiplied(self, theFactor: float) -> BVH_Vec2f:
-        """Compute per-component multiplication by scale factor."""
-
-    def cwiseMin(self, theVec: BVH_Vec2f) -> BVH_Vec2f:
-        """Compute component-wise minimum of two vectors."""
-
-    def cwiseMax(self, theVec: BVH_Vec2f) -> BVH_Vec2f:
-        """Compute component-wise maximum of two vectors."""
-
-    def cwiseAbs(self) -> BVH_Vec2f:
-        """Compute component-wise modulus of the vector."""
-
-    def maxComp(self) -> float:
-        """Compute maximum component of the vector."""
-
-    def minComp(self) -> float:
-        """Compute minimum component of the vector."""
-
-    @overload
-    def __itruediv__(self, theInvFactor: float) -> BVH_Vec2f:
-        """Compute per-component division by scale factor."""
-
-    @overload
-    def __itruediv__(self, theRight: BVH_Vec2f) -> BVH_Vec2f:
-        """Compute per-component division."""
-
-    @overload
-    def __mul__(self, theFactor: float) -> BVH_Vec2f:
-        """Compute per-component multiplication by scale factor."""
-
-    @overload
-    def __mul__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
-
-    @overload
-    def __truediv__(self, theInvFactor: float) -> BVH_Vec2f:
-        """Compute per-component division by scale factor."""
-
-    @overload
-    def __truediv__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
-
-    def Dot(self, theOther: BVH_Vec2f) -> float:
-        """Computes the dot product."""
-
-    def Modulus(self) -> float:
-        """Computes the vector modulus (magnitude, length)."""
-
-    def SquareModulus(self) -> float:
-        """
-        Computes the square of vector modulus (magnitude, length).
-        This method may be used for performance tricks.
-        """
-
-    @staticmethod
-    def DX() -> BVH_Vec2f:
-        """Construct DX unit vector."""
-
-    @staticmethod
-    def DY() -> BVH_Vec2f:
-        """Construct DY unit vector."""
-
-    def DumpJson(self, theDepth: int = -1) -> str:
-        """Dumps the content of me into the stream"""
-
-    def __add__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
-
-    def __sub__(self, arg: BVH_Vec2f, /) -> BVH_Vec2f: ...
 
 class BVH_Vec2d:
     """
@@ -2651,7 +2504,7 @@ BVH_Vec4f = nanoocp.Quantity.NCollection_Vec4__float
 BVH_Array2i = nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec2i]
 BVH_Array3i = nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec3i]
 BVH_Array4i = nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec4i]
-BVH_Array2f = nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec2f]
+BVH_Array2f = nanoocp.NCollection.NCollection_LinearVector[nanoocp.Poly.NCollection_Vec2__float]
 BVH_Array3f = nanoocp.NCollection.NCollection_LinearVector[nanoocp.Quantity.NCollection_Vec3__float]
 BVH_Array4f = nanoocp.NCollection.NCollection_LinearVector[nanoocp.Quantity.NCollection_Vec4__float]
 BVH_Array2d = nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec2d]

@@ -47,7 +47,7 @@ class ApproxInt_KnotTools:
         """
 
     @staticmethod
-    def BuildCurvature(theCoords: "NCollection_LocalArray<double, 1024>", theDim: int, thePars: nanoocp.math.math_Vector, theCurv: nanoocp.NCollection.NCollection_Array1[float]) -> float:
+    def BuildCurvature(theCoords: NCollection_LocalArray__double, theDim: int, thePars: nanoocp.math.math_Vector, theCurv: nanoocp.NCollection.NCollection_Array1[float]) -> float:
         """Builds discrete curvature"""
 
     @staticmethod
@@ -85,3 +85,41 @@ class ApproxInt_SvSurfaces:
     def SetUseSolver(self, theUseSol: bool) -> None: ...
 
     def GetUseSolver(self) -> bool: ...
+
+class NCollection_LocalArray__double:
+    """
+    Auxiliary class optimizing creation of array buffer
+    (using stack allocation for small arrays).
+
+    For trivially copyable types the fast memcpy / Standard::Reallocate path
+    is used.  For non-trivially-copyable types (Handle, TopLoc_Location, etc.)
+    the class uses placement new, move semantics, and explicit destructors
+    while keeping Standard::Allocate / Standard::Free for heap management.
+
+    Non-trivially-copyable types must be default-constructible and
+    nothrow-move-constructible.
+    """
+
+    @overload
+    def __init__(self) -> None: ...
+
+    @overload
+    def __init__(self, theSize: int) -> None: ...
+
+    def Allocate(self, theSize: int) -> None: ...
+
+    def Reallocate(self, theNewSize: int, theToCopy: bool = True) -> None:
+        """
+        Reallocate the array to a new size.
+        @param[in] theNewSize new number of elements
+        @param[in] theToCopy  if true, existing elements are copied/moved to the new buffer
+        """
+
+    def Size(self) -> int: ...
+
+    def ToArray1(self) -> nanoocp.NCollection.NCollection_Array1[float]:
+        """
+        Returns a span as Array1 with shared memory.
+        Modifying the local array or the array view may invalidate the shared buffer.
+        @return array view of the local array data
+        """

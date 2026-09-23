@@ -635,6 +635,21 @@ def _fixed_array(t: cindex.Type) -> tuple[str, int, bool] | None:
     return _type_spelling(elem).replace("const ", "").strip(), canon.element_count, const
 
 
+def _is_empty_shared_ptr_default(param: cindex.Cursor, default: str | None) -> bool:
+    """A std::shared_ptr<T> parameter whose default is its own empty form -- `const std::shared_ptr<std::ostream>&
+    theStream = std::shared_ptr<std::ostream>()` (RWPly_PlyWriterContext::Open, "open the file yourself").
+
+    The type has no caster, but the default does not need one: R-OPTIONAL-PTR passes `nullptr`, which is that same
+    empty shared_ptr. Without this the whole method is skipped, and RWPly_PlyWriterContext -- whose every other member
+    needs an open stream -- is bound but unusable."""
+    if default is None:
+        return False
+    spelling = _type_spelling(param.type).removeprefix("const ").rstrip("& ").strip()
+    if not spelling.startswith("std::shared_ptr<"):
+        return False
+    return default.replace(" ", "") == spelling.replace(" ", "") + "()"
+
+
 def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members: set[str] | None = None,
             allow_streams: bool = True) -> tuple[list[Param], str | None]:
     """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
@@ -662,9 +677,13 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         name = py_safe(p.spelling)                 # R-KEYWORD: TDF_Attribute::Restore(const handle<TDF_Attribute>& with) -> with_
         if name == "":
             name = f"arg{i}"
-        if reason in _OPTIONAL_PTR_REASONS and p.type.get_canonical().kind == TK.POINTER and _default_expr(p, scope, members) in ("NULL", "nullptr", "0"):
+        if reason in _OPTIONAL_PTR_REASONS and (
+                p.type.get_canonical().kind == TK.POINTER and _default_expr(p, scope, members) in ("NULL", "nullptr", "0")
+                or _is_empty_shared_ptr_default(p, _default_expr(p, scope, members))):
             # R-OPTIONAL-PTR: an optional output/context pointer (BRepFill_AdvancedEvolved::IsDone(unsigned* theErrorCode = 0),
-            # BRep_Tool::CurveOnSurface(..., bool* theIsStored = NULL)) is dropped; the callee gets nullptr
+            # BRep_Tool::CurveOnSurface(..., bool* theIsStored = NULL)) is dropped; the callee gets nullptr -- and so is a
+            # std::shared_ptr<std::ostream> defaulted to its own empty form (RWPly_PlyWriterContext::Open), for which
+            # nullptr is exactly that default (shared_ptr's nullptr_t constructor)
             params.append(Param(name=name, type=_type_spelling(p.type), default=None, is_out=False, omitted=True))
             continue
         if reason == "array" and not _SUBST.active:
@@ -1270,8 +1289,13 @@ def _note_instance(t: cindex.Type) -> None:
         _instances_seen.setdefault(key, TemplateInstance(template=owner, args=instance_args(owner, args), key=key))
         return
     if decl.spelling not in BINDERS:
-        if not _SUBST.active and _is_plain_template_instance(t) and "type-parameter-" not in canon.spelling:
-            _template_uses.append(t)
+        # 6c: queue the *stripped, unqualified* declaration type. `t` may be `const NCollection_Vec4<uint8_t>&`, whose
+        # canonical kind is LVALUEREFERENCE, and _is_plain_template_instance would answer False for it -- an
+        # instantiation reachable only through a reference parameter was never instantiated, and the method bound with
+        # an unregistered type (RWPly_PlyWriterContext::WriteVertex, uncallable; found 2026-09-23). Most were masked by
+        # the same instantiation appearing as a field, a by-value parameter or a typedef somewhere else.
+        if not _SUBST.active and _is_plain_template_instance(decl.type) and "type-parameter-" not in canon.spelling:
+            _template_uses.append(decl.type)
         for i in range(canon.get_num_template_arguments()):   # NCollection_Iterator<NCollection_DynamicArray<T>>: the argument
             arg = canon.get_template_argument_type(i)
             if arg.kind != TK.INVALID:

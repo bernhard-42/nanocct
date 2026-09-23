@@ -1,18 +1,20 @@
-# nanoOCP generator report for TKOpenGl: 1577 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKOpenGl: 1597 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# conversion: 2
+# conversion: 4
 # header: 1
 # inheritance: 767
 # iterator: 2
-# overload-collision: 7
-# override: 1
-# raw-pointer: 766
+# overload-collision: 19
+# override: 2
+# raw-pointer: 768
 # rvalue: 1
 # static-rename: 1
-# template: 21
+# template: 24
 # undefined: 8
-conversion	OpenGl	NCollection_Vec3<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
-conversion	OpenGl	NCollection_Vec3<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	OpenGl	NCollection_Vec2<unsigned int>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	OpenGl	NCollection_Vec2<unsigned int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	OpenGl	NCollection_Vec4<bool>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	OpenGl	NCollection_Vec4<bool>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 header	OpenGl	OpenGl: headers not self-contained, parsed with <Graphic3d_Buffer.hxx> included first
 inheritance	OpenGl	BVH_PrimitiveSet<float, 3>: additional base BVH_Set<float, 3> not declared (nanobind: single inheritance, offset-0 base only)
 inheritance	OpenGl	OpenGl_ArbDbg: non-public base OpenGl_GlFunctions dropped; its members are not bound
@@ -783,16 +785,31 @@ inheritance	OpenGl	OpenGl_GlCore46: using glSpecializeShader: data member of a b
 inheritance	OpenGl	OpenGl_ShadowMapArray: additional base NCollection_Array1<opencascade::handle<OpenGl_ShadowMap>> not declared (nanobind: single inheritance, offset-0 base only)
 iterator	OpenGl	NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>: __iter__ added (More/Next/Value)
 iterator	OpenGl	OpenGl_ClippingIterator: __iter__ added (More/Next/Value)
+overload-collision	OpenGl	BVH_Box<float, 3>::CornerMax() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	BVH_Box<float, 3>::CornerMin() const: const twin of a less const overload -> not bound
 overload-collision	OpenGl	BVH_ObjectSet<float, 3>::Objects() const: const twin of a less const overload -> not bound
 overload-collision	OpenGl	NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>::Init(const NCollection_Array1<OpenGl_TextureSet::TextureSlot> &): const twin of a less const overload -> not bound
 overload-collision	OpenGl	NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>::Initialize(const NCollection_Array1<OpenGl_TextureSet::TextureSlot> &): const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec2<unsigned int>::x() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec2<unsigned int>::y() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::a() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::b() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::g() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::r() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::w() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::x() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::y() const: const twin of a less const overload -> not bound
+overload-collision	OpenGl	NCollection_Vec4<bool>::z() const: const twin of a less const overload -> not bound
 overload-collision	OpenGl	OpenGl_Context::CheckIsTransparent(const OpenGl_Aspects *, const occ::handle<Graphic3d_PresentationAttributes> &, float &, float &): same Python signature as another overload after out-param removal -> bound as CheckIsTransparent__float__float
 overload-collision	OpenGl	OpenGl_LayerList::Layer(const Graphic3d_ZLayerId) const: const twin of a less const overload -> not bound
 overload-collision	OpenGl	OpenGl_Material::operator!=(const OpenGl_Material &) const: const twin of a less const overload -> not bound
 overload-collision	OpenGl	OpenGl_Material::operator==(const OpenGl_Material &) const: const twin of a less const overload -> not bound
+override	OpenGl	NCollection_Vec2<unsigned int>::cwiseAbs(): overrides.toml [skip] methods
 override	OpenGl	OpenGl_GLESExtensions.hxx: skipped (overrides.toml [skip] headers)
-raw-pointer	OpenGl	NCollection_Vec3<float>::ChangeData(): return: dependent pointer/mutable reference result
-raw-pointer	OpenGl	NCollection_Vec3<float>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	OpenGl	NCollection_Vec2<unsigned int>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	OpenGl	NCollection_Vec2<unsigned int>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	OpenGl	NCollection_Vec4<bool>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	OpenGl	NCollection_Vec4<bool>::GetData(): return: dependent pointer/mutable reference result
 raw-pointer	OpenGl	OpenGl_Buffer::GetDataOffset(): return: raw pointer to primitive
 raw-pointer	OpenGl	OpenGl_Buffer::GetSubData(const occ::handle<OpenGl_Context> &, const int, const int): param 'theData': raw pointer to primitive
 raw-pointer	OpenGl	OpenGl_Buffer::GetSubData(const occ::handle<OpenGl_Context> &, const int, const int): param 'theData': raw pointer to primitive
@@ -1559,7 +1576,10 @@ raw-pointer	OpenGl	OpenGl_View::SetWindow(const occ::handle<Graphic3d_CView> &, 
 raw-pointer	OpenGl	OpenGl_Window::Init(const occ::handle<OpenGl_GraphicDriver> &, const occ::handle<Aspect_Window> &, const occ::handle<Aspect_Window> &): param 'theGContext': pointer to incomplete type
 rvalue	OpenGl	NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>::NCollection_Iterator<NCollection_Array1<OpenGl_TextureSet::TextureSlot>>(const NCollection_Array1<OpenGl_TextureSet::TextureSlot> &): param 'theOther': rvalue reference
 static-rename	OpenGl	OpenGl_Context::CheckExtension: static overloads renamed to CheckExtension_s (instance method of same name exists)
-template	OpenGl	NCollection_Vec3<float>::NCollection_Vec3<Element_t>: template member
+template	OpenGl	BVH_Box<float, 3>: base class BVH_BaseBox<float, 3, BVH_Box<float, 3>>: the probe typedef did not compile
+template	OpenGl	BVH_Box<float, 3>: template base BVH_BaseBox<float, 3, BVH_Box<float, 3>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
+template	OpenGl	NCollection_Vec2<unsigned int>::NCollection_Vec2<Element_t>: template member
+template	OpenGl	NCollection_Vec4<bool>::NCollection_Vec4<Element_t>: template member
 template	OpenGl	OpenGl::MatrixType: template in namespace (not bound)
 template	OpenGl	OpenGl::VectorType: template in namespace (not bound)
 template	OpenGl	OpenGl_BufferCompatT: template (not bound)

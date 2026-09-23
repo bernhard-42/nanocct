@@ -11,6 +11,7 @@
 #include <Bnd_Box.hxx>
 #include <IntCurveSurface_TransitionOnCurve.hxx>
 #include <IntCurvesFace_Intersector.hxx>
+#include <NCollection_BaseAllocator.hxx>
 #include <NCollection_IndexedMap.hxx>
 #include <NCollection_UBTree.hxx>
 #include <TopAbs_Orientation.hxx>
@@ -47,6 +48,45 @@ Provide access to the special UB tree to obtain fast search.)nbdoc");
     { nb::class_<BRepClass3d_SolidClassifier, BRepClass3d_SClassifier> cls(m, "BRepClass3d_SolidClassifier", R"nbdoc(Provides an algorithm to classify a point in a solid.)nbdoc");
     }
     { nb::class_<BRepClass3d_SolidPassiveClassifier> cls(m, "BRepClass3d_SolidPassiveClassifier");
+    }
+    { nb::class_<NCollection_UBTree<int, Bnd_Box>> cls(m, "NCollection_UBTree__int__Bnd_Box", R"nbdoc(The algorithm of unbalanced binary tree of overlapped bounding boxes.
+
+Once the tree of boxes  of geometric objects is constructed, the algorithm
+is capable of fast geometric selection of objects.  The tree can be easily
+updated by adding to it a new object with bounding box.
+
+The time of adding to the tree  of one object is O(log(N)), where N is the
+total number of  objects, so the time  of building a tree of  N objects is
+O(N(log(N)). The search time of one object is O(log(N)).
+
+Defining  various classes  inheriting NCollection_UBTree::Selector  we can
+perform various kinds of selection over the same b-tree object
+
+The object  may be of any  type allowing copying. Among  the best suitable
+solutions there can  be a pointer to an object,  handled object or integer
+index of object inside some  collection.  The bounding object may have any
+dimension  and  geometry. The  minimal  interface  of TheBndType  (besides
+public empty and copy constructor and operator =) used in UBTree algorithm
+is as the following:
+@code
+class MyBndType
+{
+public:
+inline void                   Add (const MyBndType& other);
+// Updates me with other bounding
+
+inline bool       IsOut (const MyBndType& other) const;
+// Classifies other bounding relatively me
+
+inline double          SquareExtent() const;
+// Computes the squared maximal linear extent of me.
+// (For box it is the squared diagonal of box)
+};
+@endcode
+To select objects you need to define a class derived from UBTree::Selector
+that  should  redefine  the  necessary  virtual methods  to  maintain  the
+selection condition.  The object  of this class  is also used  to retrieve
+selected objects after search.)nbdoc");
     }
 }
 
@@ -218,6 +258,33 @@ attached to the intersections.)nbdoc")
         .def("Intersector", static_cast<BRepClass3d_Intersector3d & (BRepClass3d_SolidPassiveClassifier::*)()>(&BRepClass3d_SolidPassiveClassifier::Intersector), nb::rv_policy::reference_internal, R"nbdoc(Returns the intersecting algorithm.)nbdoc")
         .def("State", static_cast<TopAbs_State (BRepClass3d_SolidPassiveClassifier::*)() const>(&BRepClass3d_SolidPassiveClassifier::State), R"nbdoc(Returns the current state of the point.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepClass3d_SolidPassiveClassifier>(nb::borrow<nb::class_<BRepClass3d_SolidPassiveClassifier>>(m.attr("BRepClass3d_SolidPassiveClassifier")));
+    nanoocp_if_concrete<NCollection_UBTree<int, Bnd_Box>>(nb::borrow<nb::class_<NCollection_UBTree<int, Bnd_Box>>>(m.attr("NCollection_UBTree__int__Bnd_Box")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const occ::handle<NCollection_BaseAllocator> & theAllocator) { new (self) nanoocp_T(theAllocator); }, nb::arg("theAllocator").none(), R"nbdoc(Constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_UBTree<int, Bnd_Box>>>(m.attr("NCollection_UBTree__int__Bnd_Box"))
+        .def("Add", static_cast<bool (NCollection_UBTree<int, Bnd_Box>::*)(const int &, const Bnd_Box &)>(&NCollection_UBTree<int, Bnd_Box>::Add), nb::arg("theObj"), nb::arg("theBnd"), R"nbdoc(Update the tree with a new object and its bounding box.
+@param theObj
+added object
+@param theBnd
+bounding box of the object.
+@return
+always True)nbdoc")
+        .def("Select", static_cast<int (NCollection_UBTree<int, Bnd_Box>::*)(NCollection_UBTree<int, Bnd_Box>::Selector &) const>(&NCollection_UBTree<int, Bnd_Box>::Select), nb::arg("theSelector"), R"nbdoc(Searches in the tree all objects conforming to the given selector.
+@return
+Number of objects accepted)nbdoc")
+        .def("Clear", static_cast<void (NCollection_UBTree<int, Bnd_Box>::*)(const occ::handle<NCollection_BaseAllocator> &)>(&NCollection_UBTree<int, Bnd_Box>::Clear), nb::arg("aNewAlloc").none() = static_cast<std::decay_t<const occ::handle<NCollection_BaseAllocator> &>>(nullptr), R"nbdoc(Clears the contents of the tree.
+@param aNewAlloc
+Optional:   a new allocator that will be used when the tree is rebuilt
+anew. This makes sense if the memory allocator needs re-initialisation
+(like NCollection_IncAllocator).  By default the previous allocator is
+kept.)nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_UBTree<int, Bnd_Box>::*)() const noexcept>(&NCollection_UBTree<int, Bnd_Box>::IsEmpty))
+        .def("Root", static_cast<const NCollection_UBTree<int, Bnd_Box>::TreeNode & (NCollection_UBTree<int, Bnd_Box>::*)() const noexcept>(&NCollection_UBTree<int, Bnd_Box>::Root), R"nbdoc(@return
+the root node of the tree)nbdoc")
+        .def("Allocator", static_cast<const occ::handle<NCollection_BaseAllocator> & (NCollection_UBTree<int, Bnd_Box>::*)() const noexcept>(&NCollection_UBTree<int, Bnd_Box>::Allocator), R"nbdoc(Recommended to be used only in sub-classes.
+@return
+Allocator object used in this instance of UBTree.)nbdoc");
+    nanoocp_implicit_copy_ctor<NCollection_UBTree<int, Bnd_Box>>(nb::borrow<nb::class_<NCollection_UBTree<int, Bnd_Box>>>(m.attr("NCollection_UBTree__int__Bnd_Box")));
 }
 
 void nanoocp_conversions_BRepClass3d(nb::module_ &m) {

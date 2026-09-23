@@ -2,7 +2,7 @@
 
 from collections.abc import Sequence
 import enum
-from typing import overload
+from typing import TextIO, overload
 
 import nanoocp.Aspect
 import nanoocp.BVH
@@ -14,10 +14,8 @@ import nanoocp.Image
 import nanoocp.Message
 import nanoocp.NCollection
 from nanoocp.OpenGl import OpenGl_Raytrace as OpenGl_Raytrace
+import nanoocp.Poly
 import nanoocp.Quantity
-from nanoocp.Quantity import (
-    NCollection_Vec3__float as NCollection_Vec3__float
-)
 import nanoocp.Standard
 import nanoocp.TCollection
 import nanoocp.TopLoc
@@ -2949,12 +2947,12 @@ class OpenGl_Context(nanoocp.Standard.Standard_Transient):
         @param[in] theIsFboSRgb flag indicating off-screen FBO is sRGB-ready
         """
 
-    def ColorMaskRGBA(self) -> "NCollection_Vec4<bool>":
+    def ColorMaskRGBA(self) -> NCollection_Vec4__bool:
         """
         Return cached flag indicating writing into color buffer is enabled or disabled (glColorMask).
         """
 
-    def SetColorMaskRGBA(self, theToWriteColor: "NCollection_Vec4<bool>") -> None:
+    def SetColorMaskRGBA(self, theToWriteColor: NCollection_Vec4__bool) -> None:
         """Enable/disable writing into color buffer (wrapper for glColorMask)."""
 
     def ColorMask(self) -> bool:
@@ -4171,7 +4169,7 @@ class OpenGl_ShaderProgram(OpenGl_NamedResource):
         """Wrapper for glVertexAttrib1f()"""
 
     @overload
-    def SetAttribute(self, theCtx: OpenGl_Context | None, theIndex: int, theValue: nanoocp.BVH.BVH_Vec2f) -> bool:
+    def SetAttribute(self, theCtx: OpenGl_Context | None, theIndex: int, theValue: nanoocp.Poly.NCollection_Vec2__float) -> bool:
         """Wrapper for glVertexAttrib2fv()"""
 
     @overload
@@ -4211,17 +4209,17 @@ class OpenGl_ShaderProgram(OpenGl_NamedResource):
         """
 
     @overload
-    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theValue: "NCollection_Vec2<unsigned int>") -> bool:
+    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theValue: NCollection_Vec2__unsigned_int) -> bool:
         """
         Specifies the value of the unsigned integer uniform 2D vector (uvec2).
         Wrapper for glUniform2uiv()
         """
 
     @overload
-    def SetUniform(self, theCtx: OpenGl_Context | None, theName: str, theCount: int, theValue: "NCollection_Vec2<unsigned int>") -> bool: ...
+    def SetUniform(self, theCtx: OpenGl_Context | None, theName: str, theCount: int, theValue: NCollection_Vec2__unsigned_int) -> bool: ...
 
     @overload
-    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theCount: int, theValue: "NCollection_Vec2<unsigned int>") -> bool:
+    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theCount: int, theValue: NCollection_Vec2__unsigned_int) -> bool:
         """
         Specifies the value of the uvec2 uniform array
         Wrapper for glUniform2uiv()
@@ -4235,7 +4233,7 @@ class OpenGl_ShaderProgram(OpenGl_NamedResource):
         """
 
     @overload
-    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theValue: nanoocp.BVH.BVH_Vec2f) -> bool:
+    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theValue: nanoocp.Poly.NCollection_Vec2__float) -> bool:
         """
         Specifies the value of the float uniform 2D vector.
         Wrapper for glUniform2fv()
@@ -4290,7 +4288,7 @@ class OpenGl_ShaderProgram(OpenGl_NamedResource):
         """
 
     @overload
-    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theCount: int, theData: nanoocp.BVH.BVH_Vec2f) -> bool:
+    def SetUniform(self, theCtx: OpenGl_Context | None, theLocation: int, theCount: int, theData: nanoocp.Poly.NCollection_Vec2__float) -> bool:
         """
         Specifies the value of the float2 uniform array
         Wrapper over glUniform2fv()
@@ -5481,7 +5479,7 @@ class BVH_Object__float__3(nanoocp.BVH.BVH_ObjectTransient):
     \\tparam N Vector dimension
     """
 
-    def Box(self) -> "BVH_Box<float, 3>":
+    def Box(self) -> BVH_Box__float__3:
         """Returns AABB of the geometric object."""
 
 class BVH_Set__float__3:
@@ -5493,11 +5491,11 @@ class BVH_Set__float__3:
     """
 
     @overload
-    def Box(self) -> "BVH_Box<float, 3>":
+    def Box(self) -> BVH_Box__float__3:
         """Returns AABB of the entire set of objects."""
 
     @overload
-    def Box(self, theIndex: int) -> "BVH_Box<float, 3>":
+    def Box(self, theIndex: int) -> BVH_Box__float__3:
         """Returns AABB of the given object."""
 
     def Size(self) -> int:
@@ -5521,7 +5519,7 @@ class BVH_PrimitiveSet__float__3(BVH_Object__float__3):
     \\tparam N Vector dimension
     """
 
-    def Box(self) -> "BVH_Box<float, 3>":
+    def Box(self) -> BVH_Box__float__3:
         """Returns AABB of primitive set."""
 
     def BVH(self) -> "BVH_Tree<float, 3, BVH_BinaryTree>":
@@ -5553,7 +5551,7 @@ class OpenGl_BVHTriangulation3f(BVH_PrimitiveSet__float__3):
     def Size(self) -> int:
         """Returns total number of triangles."""
 
-    def Box(self, theIndex: int) -> "BVH_Box<float, 3>":
+    def Box(self, theIndex: int) -> BVH_Box__float__3:
         """Returns AABB of the given triangle."""
 
     def Center(self, theIndex: int, theAxis: int) -> float:
@@ -5604,11 +5602,11 @@ class OpenGl_TriangleSet(OpenGl_BVHTriangulation3f):
         """Sets material index for entire triangle set."""
 
     @overload
-    def Box(self) -> "BVH_Box<float, 3>":
+    def Box(self) -> BVH_Box__float__3:
         """Returns AABB of primitive set."""
 
     @overload
-    def Box(self, theIndex: int) -> "BVH_Box<float, 3>":
+    def Box(self, theIndex: int) -> BVH_Box__float__3:
         """Returns AABB of the given triangle."""
 
     def Center(self, theIndex: int, theAxis: int) -> float:
@@ -5625,11 +5623,11 @@ class OpenGl_TriangleSet(OpenGl_BVHTriangulation3f):
     def Normals(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.Quantity.NCollection_Vec3__float], /) -> None: ...
 
     @property
-    def TexCrds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec2f]:
+    def TexCrds(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.Poly.NCollection_Vec2__float]:
         """Array of texture coords."""
 
     @TexCrds.setter
-    def TexCrds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec2f], /) -> None: ...
+    def TexCrds(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.Poly.NCollection_Vec2__float], /) -> None: ...
 
 class BVH_ObjectSet__float__3(BVH_Set__float__3):
     """
@@ -5654,7 +5652,7 @@ class BVH_ObjectSet__float__3(BVH_Set__float__3):
     def Size(self) -> int:
         """Return total number of objects."""
 
-    def Box(self, theIndex: int) -> "BVH_Box<float, 3>":
+    def Box(self, theIndex: int) -> BVH_Box__float__3:
         """Returns AABB of the given object."""
 
     def Center(self, theIndex: int, theAxis: int) -> float:
@@ -5687,7 +5685,7 @@ class BVH_Geometry__float__3(BVH_ObjectSet__float__3):
     def MarkDirty(self) -> None:
         """Marks geometry as outdated."""
 
-    def Box(self) -> "BVH_Box<float, 3>":
+    def Box(self) -> BVH_Box__float__3:
         """Returns AABB of the whole geometry."""
 
     def BVH(self) -> "BVH_Tree<float, 3, BVH_BinaryTree>":
@@ -7589,6 +7587,380 @@ class OpenGl_IndexBufferCompat(OpenGl_IndexBuffer):
         Data will NOT be copied by this method!
         """
 
+class NCollection_Vec4__bool:
+    """
+    Generic 4-components vector.
+    To be used as RGBA color vector or XYZW 3D-point with special W-component
+    for operations with projection / model view matrices.
+    Use this class for 3D-points carefully because declared W-component may
+    results in incorrect results if used without matrices.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor. Construct the zero vector."""
+
+    @overload
+    def __init__(self, theValue: bool) -> None:
+        """Initialize ALL components of vector within specified value."""
+
+    @overload
+    def __init__(self, theVec2: "NCollection_Vec2<bool>") -> None:
+        """Constructor from 2-components vector."""
+
+    @overload
+    def __init__(self, theVec3: nanoocp.Aspect.NCollection_Vec3__bool, theW: bool = False) -> None:
+        """Constructor from 3-components vector + optional 4th value."""
+
+    @overload
+    def __init__(self, theX: bool, theY: bool, theZ: bool, theW: bool) -> None:
+        """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Vec4__bool) -> None: ...
+
+    @staticmethod
+    def Length() -> int:
+        """Returns the number of components."""
+
+    @overload
+    def SetValues(self, theX: bool, theY: bool, theZ: bool, theW: bool) -> None:
+        """Assign new values to the vector."""
+
+    @overload
+    def SetValues(self, theVec3: nanoocp.Aspect.NCollection_Vec3__bool, theW: bool) -> None:
+        """Assign new values as 3-component vector and a 4-th value."""
+
+    def xy(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yx(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xz(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zx(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xw(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wx(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yz(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zy(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yw(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wy(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zw(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wz(self) -> "NCollection_Vec2<bool>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xyz(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xzy(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yxz(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yzx(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zyx(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zxy(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xyw(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xwy(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yxw(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def ywx(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wyx(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wxy(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xzw(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xwz(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zxw(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zwx(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wzx(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wxz(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yzw(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def ywz(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zyw(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zwy(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wzy(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wyz(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def rgb(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """@return RGB components as vector"""
+
+    def rbg(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """@return RGB components as vector"""
+
+    def grb(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """@return RGB components as vector"""
+
+    def gbr(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """@return RGB components as vector"""
+
+    def bgr(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """@return RGB components as vector"""
+
+    def brg(self) -> nanoocp.Aspect.NCollection_Vec3__bool:
+        """@return RGB components as vector"""
+
+    def x(self) -> bool:
+        """Alias to 1st component as X coordinate in XYZW."""
+
+    def Setx(self, theValue: bool) -> None:
+        """Python addition: sets the value x() returns by reference in C++."""
+
+    def r(self) -> bool:
+        """Alias to 1st component as RED channel in RGBA."""
+
+    def Setr(self, theValue: bool) -> None:
+        """Python addition: sets the value r() returns by reference in C++."""
+
+    def y(self) -> bool:
+        """Alias to 2nd component as Y coordinate in XYZW."""
+
+    def Sety(self, theValue: bool) -> None:
+        """Python addition: sets the value y() returns by reference in C++."""
+
+    def g(self) -> bool:
+        """Alias to 2nd component as GREEN channel in RGBA."""
+
+    def Setg(self, theValue: bool) -> None:
+        """Python addition: sets the value g() returns by reference in C++."""
+
+    def z(self) -> bool:
+        """Alias to 3rd component as Z coordinate in XYZW."""
+
+    def Setz(self, theValue: bool) -> None:
+        """Python addition: sets the value z() returns by reference in C++."""
+
+    def b(self) -> bool:
+        """Alias to 3rd component as BLUE channel in RGBA."""
+
+    def Setb(self, theValue: bool) -> None:
+        """Python addition: sets the value b() returns by reference in C++."""
+
+    def w(self) -> bool:
+        """Alias to 4th component as W coordinate in XYZW."""
+
+    def Setw(self, theValue: bool) -> None:
+        """Python addition: sets the value w() returns by reference in C++."""
+
+    def a(self) -> bool:
+        """Alias to 4th component as ALPHA channel in RGBA."""
+
+    def Seta(self, theValue: bool) -> None:
+        """Python addition: sets the value a() returns by reference in C++."""
+
+    def IsEqual(self, theOther: NCollection_Vec4__bool) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __eq__(self, theOther: NCollection_Vec4__bool) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __ne__(self, theOther: NCollection_Vec4__bool) -> bool:
+        """
+        Check this vector with another vector for non-equality (without tolerance!).
+        """
+
+    def __iadd__(self, theAdd: NCollection_Vec4__bool) -> NCollection_Vec4__bool:
+        """Compute per-component summary."""
+
+    def __neg__(self) -> NCollection_Vec4__bool:
+        """Unary -."""
+
+    def __isub__(self, theDec: NCollection_Vec4__bool) -> NCollection_Vec4__bool:
+        """Compute per-component subtraction."""
+
+    @overload
+    def __imul__(self, theRight: NCollection_Vec4__bool) -> NCollection_Vec4__bool: ...
+
+    @overload
+    def __imul__(self, theFactor: bool) -> NCollection_Vec4__bool:
+        """Compute per-component multiplication."""
+
+    def Multiply(self, theFactor: bool) -> None:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __mul__(self, theFactor: bool) -> NCollection_Vec4__bool:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __mul__(self, arg: NCollection_Vec4__bool, /) -> NCollection_Vec4__bool: ...
+
+    def Multiplied(self, theFactor: bool) -> NCollection_Vec4__bool:
+        """Compute per-component multiplication."""
+
+    def cwiseMin(self, theVec: NCollection_Vec4__bool) -> NCollection_Vec4__bool:
+        """Compute component-wise minimum of two vectors."""
+
+    def cwiseMax(self, theVec: NCollection_Vec4__bool) -> NCollection_Vec4__bool:
+        """Compute component-wise maximum of two vectors."""
+
+    def cwiseAbs(self) -> NCollection_Vec4__bool:
+        """Compute component-wise modulus of the vector."""
+
+    def maxComp(self) -> bool:
+        """Compute maximum component of the vector."""
+
+    def minComp(self) -> bool:
+        """Compute minimum component of the vector."""
+
+    def Dot(self, theOther: NCollection_Vec4__bool) -> bool:
+        """Computes the dot product."""
+
+    @overload
+    def __itruediv__(self, theInvFactor: bool) -> NCollection_Vec4__bool:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __itruediv__(self, theRight: NCollection_Vec4__bool) -> NCollection_Vec4__bool:
+        """Compute per-component division."""
+
+    @overload
+    def __truediv__(self, theInvFactor: bool) -> NCollection_Vec4__bool:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: NCollection_Vec4__bool, /) -> NCollection_Vec4__bool: ...
+
+    def DumpJson(self, theDepth: int = -1) -> str:
+        """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: NCollection_Vec4__bool, /) -> NCollection_Vec4__bool: ...
+
+    def __sub__(self, arg: NCollection_Vec4__bool, /) -> NCollection_Vec4__bool: ...
+
 class OpenGl_MatrixState__float:
     """Software implementation for OpenGL matrix stack."""
 
@@ -7620,6 +7992,151 @@ class OpenGl_MatrixState__float:
     def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
+class NCollection_Vec2__unsigned_int:
+    """
+    Defines the 2D-vector template.
+    The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor. Construct the zero vector."""
+
+    @overload
+    def __init__(self, theXY: int) -> None:
+        """Initialize ALL components of vector within specified value."""
+
+    @overload
+    def __init__(self, theX: int, theY: int) -> None:
+        """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Vec2__unsigned_int) -> None: ...
+
+    @staticmethod
+    def Length() -> int:
+        """Returns the number of components."""
+
+    def SetValues(self, theX: int, theY: int) -> None:
+        """Assign new values to the vector."""
+
+    def xy(self) -> NCollection_Vec2__unsigned_int:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def yx(self) -> NCollection_Vec2__unsigned_int:
+        """@return 2 components by their names in specified order (in GLSL-style)"""
+
+    def x(self) -> int:
+        """Alias to 1st component as X coordinate in XY."""
+
+    def Setx(self, theValue: int) -> None:
+        """Python addition: sets the value x() returns by reference in C++."""
+
+    def y(self) -> int:
+        """Alias to 2nd component as Y coordinate in XY."""
+
+    def Sety(self, theValue: int) -> None:
+        """Python addition: sets the value y() returns by reference in C++."""
+
+    def IsEqual(self, theOther: NCollection_Vec2__unsigned_int) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __eq__(self, theOther: NCollection_Vec2__unsigned_int) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __ne__(self, theOther: NCollection_Vec2__unsigned_int) -> bool:
+        """
+        Check this vector with another vector for non-equality (without tolerance!).
+        """
+
+    def __iadd__(self, theAdd: NCollection_Vec2__unsigned_int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component summary."""
+
+    def __isub__(self, theDec: NCollection_Vec2__unsigned_int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component subtraction."""
+
+    def __neg__(self) -> NCollection_Vec2__unsigned_int:
+        """Unary -."""
+
+    @overload
+    def __imul__(self, theRight: NCollection_Vec2__unsigned_int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __imul__(self, theFactor: int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component multiplication by scale factor."""
+
+    def Multiply(self, theFactor: int) -> None:
+        """Compute per-component multiplication by scale factor."""
+
+    def Multiplied(self, theFactor: int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component multiplication by scale factor."""
+
+    def cwiseMin(self, theVec: NCollection_Vec2__unsigned_int) -> NCollection_Vec2__unsigned_int:
+        """Compute component-wise minimum of two vectors."""
+
+    def cwiseMax(self, theVec: NCollection_Vec2__unsigned_int) -> NCollection_Vec2__unsigned_int:
+        """Compute component-wise maximum of two vectors."""
+
+    def maxComp(self) -> int:
+        """Compute maximum component of the vector."""
+
+    def minComp(self) -> int:
+        """Compute minimum component of the vector."""
+
+    @overload
+    def __itruediv__(self, theInvFactor: int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __itruediv__(self, theRight: NCollection_Vec2__unsigned_int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component division."""
+
+    @overload
+    def __mul__(self, theFactor: int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component multiplication by scale factor."""
+
+    @overload
+    def __mul__(self, arg: NCollection_Vec2__unsigned_int, /) -> NCollection_Vec2__unsigned_int: ...
+
+    @overload
+    def __truediv__(self, theInvFactor: int) -> NCollection_Vec2__unsigned_int:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: NCollection_Vec2__unsigned_int, /) -> NCollection_Vec2__unsigned_int: ...
+
+    def Dot(self, theOther: NCollection_Vec2__unsigned_int) -> int:
+        """Computes the dot product."""
+
+    def Modulus(self) -> int:
+        """Computes the vector modulus (magnitude, length)."""
+
+    def SquareModulus(self) -> int:
+        """
+        Computes the square of vector modulus (magnitude, length).
+        This method may be used for performance tricks.
+        """
+
+    @staticmethod
+    def DX() -> NCollection_Vec2__unsigned_int:
+        """Construct DX unit vector."""
+
+    @staticmethod
+    def DY() -> NCollection_Vec2__unsigned_int:
+        """Construct DY unit vector."""
+
+    def DumpJson(self, theDepth: int = -1) -> str:
+        """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: NCollection_Vec2__unsigned_int, /) -> NCollection_Vec2__unsigned_int: ...
+
+    def __sub__(self, arg: NCollection_Vec2__unsigned_int, /) -> NCollection_Vec2__unsigned_int: ...
+
 class BVH_Tree__float__3__BVH_QuadTree:
     """BVH tree with given arity (2 or 4)."""
 
@@ -7637,8 +8154,91 @@ class BVH_Builder__float__3(nanoocp.BVH.BVH_BuilderTransient):
     \\tparam N Vector dimension
     """
 
-    def Build(self, theSet: BVH_Set__float__3, theBVH: "BVH_Tree<float, 3, BVH_BinaryTree>", theBox: "BVH_Box<float, 3>") -> None:
+    def Build(self, theSet: BVH_Set__float__3, theBVH: "BVH_Tree<float, 3, BVH_BinaryTree>", theBox: BVH_Box__float__3) -> None:
         """Builds BVH using specific algorithm."""
+
+class BVH_Box__float__3:
+    """
+    Defines axis aligned bounding box (AABB) based on BVH vectors.
+    \\tparam T Numeric data type
+    \\tparam N Vector dimension
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Creates uninitialized bounding box."""
+
+    @overload
+    def __init__(self, thePoint: nanoocp.Quantity.NCollection_Vec3__float) -> None:
+        """Creates bounding box of given point."""
+
+    @overload
+    def __init__(self, theMinPoint: nanoocp.Quantity.NCollection_Vec3__float, theMaxPoint: nanoocp.Quantity.NCollection_Vec3__float) -> None:
+        """Creates bounding box from corner points."""
+
+    @overload
+    def __init__(self, theOther: BVH_Box__float__3) -> None: ...
+
+    def Clear(self) -> None:
+        """Clears bounding box."""
+
+    def IsValid(self) -> bool:
+        """Is bounding box valid?"""
+
+    def Add(self, thePoint: nanoocp.Quantity.NCollection_Vec3__float) -> None:
+        """Appends new point to the bounding box."""
+
+    def Combine(self, theBox: BVH_Box__float__3) -> None:
+        """Combines bounding box with another one."""
+
+    def CornerMin(self) -> nanoocp.Quantity.NCollection_Vec3__float:
+        """Returns minimum point of bounding box."""
+
+    def CornerMax(self) -> nanoocp.Quantity.NCollection_Vec3__float:
+        """Returns maximum point of bounding box."""
+
+    def Area(self) -> float:
+        """
+        Returns surface area of bounding box.
+        If the box is degenerated into line, returns the perimeter instead.
+        """
+
+    def Size(self) -> nanoocp.Quantity.NCollection_Vec3__float:
+        """Returns diagonal of bounding box."""
+
+    @overload
+    def Center(self) -> nanoocp.Quantity.NCollection_Vec3__float:
+        """Returns center of bounding box."""
+
+    @overload
+    def Center(self, theAxis: int) -> float:
+        """Returns center of bounding box along the given axis."""
+
+    def DumpJson(self, theDepth: int = -1) -> str:
+        """Dumps the content of me into the stream"""
+
+    def InitFromJson(self, theSStream: TextIO, theStreamPos: int) -> tuple[bool, int]:
+        """Inits the content of me from the stream"""
+
+    @overload
+    def IsOut(self, theOther: BVH_Box__float__3) -> bool:
+        """Checks if the Box is out of the other box."""
+
+    @overload
+    def IsOut(self, theMinPoint: nanoocp.Quantity.NCollection_Vec3__float, theMaxPoint: nanoocp.Quantity.NCollection_Vec3__float) -> bool:
+        """Checks if the Box is out of the other box defined by two points."""
+
+    @overload
+    def IsOut(self, thePoint: nanoocp.Quantity.NCollection_Vec3__float) -> bool:
+        """Checks if the Point is out of the box."""
+
+    @overload
+    def Contains(self, theOther: BVH_Box__float__3) -> tuple[bool, bool]:
+        """Checks if the Box fully contains the other box."""
+
+    @overload
+    def Contains(self, theMinPoint: nanoocp.Quantity.NCollection_Vec3__float, theMaxPoint: nanoocp.Quantity.NCollection_Vec3__float) -> tuple[bool, bool]:
+        """Checks if the Box is fully contains the other box."""
 
 class OpenGl_ShadowMapArray(nanoocp.Standard.Standard_Transient):
     """Array of shadow maps."""

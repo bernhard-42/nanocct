@@ -253,12 +253,12 @@ stream	OSD	OSD_CachedFileSystem::OpenOStream(const TCollection_AsciiString &, co
 stream	OSD	OSD_CachedFileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t, int64_t *): return: iostream type
 stream	OSD	OSD_FileSystem::IsOpenIStream(): param 'theStream': iostream type
 stream	OSD	OSD_FileSystem::IsOpenOStream(): param 'theStream': iostream type
-stream	OSD	OSD_FileSystem::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOldStream': iostream type
+stream	OSD	OSD_FileSystem::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t, const std::shared_ptr<std::istream> &): return: iostream type
 stream	OSD	OSD_FileSystem::OpenOStream(const TCollection_AsciiString &, const unsigned int): return: iostream type
 stream	OSD	OSD_FileSystem::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t, int64_t *): return: iostream type
 stream	OSD	OSD_FileSystemSelector::IsOpenIStream(): param 'theStream': iostream type
 stream	OSD	OSD_FileSystemSelector::IsOpenOStream(): param 'theStream': iostream type
-stream	OSD	OSD_FileSystemSelector::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t): param 'theOldStream': iostream type
+stream	OSD	OSD_FileSystemSelector::OpenIStream(const TCollection_AsciiString &, const unsigned int, const int64_t, const std::shared_ptr<std::istream> &): return: iostream type
 stream	OSD	OSD_FileSystemSelector::OpenOStream(const TCollection_AsciiString &, const unsigned int): return: iostream type
 stream	OSD	OSD_FileSystemSelector::OpenStreamBuffer(const TCollection_AsciiString &, const unsigned int, const int64_t, int64_t *): return: iostream type
 stream	OSD	OSD_LocalFileSystem::IsOpenIStream(): param 'theStream': iostream type

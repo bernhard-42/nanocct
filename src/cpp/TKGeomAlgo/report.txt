@@ -1,6 +1,7 @@
-# nanoOCP generator report for TKGeomAlgo: 81 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKGeomAlgo: 82 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 1
+# conversion: 1
 # header: 1
 # overload-collision: 30
 # override: 4
@@ -9,6 +10,7 @@
 # template: 3
 # undefined: 36
 array	IntImp	IntImp_ComputeTangence(...): param 'DPuv': array
+conversion	ApproxInt	NCollection_LocalArray<double>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 header	IntWalk	IntWalk: headers not self-contained, parsed with <IntSurf_LineOn2S.hxx> included first
 overload-collision	GccEnt	GccEnt::PositionFromString(const char *, GccEnt_Position &): same Python signature as another overload after out-param removal -> bound as PositionFromString__GccEnt_Position
 overload-collision	Geom2dAPI	Geom2dAPI_ProjectPointOnCurve::Parameter(const int, double &): same Python signature as another overload after out-param removal -> bound as Parameter__float

@@ -3,10 +3,10 @@
 import enum
 from typing import overload
 
-import nanoocp.BVH
 import nanoocp.Graphic3d
 import nanoocp.Image
 import nanoocp.NCollection
+import nanoocp.Poly
 import nanoocp.Standard
 import nanoocp.StdPrs
 import nanoocp.TCollection
@@ -126,19 +126,19 @@ class Font_Rect:
     def __init__(self, theOther: Font_Rect) -> None: ...
 
     @overload
-    def TopLeft(self) -> nanoocp.BVH.BVH_Vec2f: ...
+    def TopLeft(self) -> nanoocp.Poly.NCollection_Vec2__float: ...
 
     @overload
-    def TopLeft(self, theVec: nanoocp.BVH.BVH_Vec2f) -> nanoocp.BVH.BVH_Vec2f:
+    def TopLeft(self, theVec: nanoocp.Poly.NCollection_Vec2__float) -> nanoocp.Poly.NCollection_Vec2__float:
         """Top-left corner as vec2."""
 
-    def TopRight(self, theVec: nanoocp.BVH.BVH_Vec2f) -> nanoocp.BVH.BVH_Vec2f:
+    def TopRight(self, theVec: nanoocp.Poly.NCollection_Vec2__float) -> nanoocp.Poly.NCollection_Vec2__float:
         """Top-right corner as vec2."""
 
-    def BottomLeft(self, theVec: nanoocp.BVH.BVH_Vec2f) -> nanoocp.BVH.BVH_Vec2f:
+    def BottomLeft(self, theVec: nanoocp.Poly.NCollection_Vec2__float) -> nanoocp.Poly.NCollection_Vec2__float:
         """Bottom-left corner as vec2."""
 
-    def BottomRight(self, theVec: nanoocp.BVH.BVH_Vec2f) -> nanoocp.BVH.BVH_Vec2f:
+    def BottomRight(self, theVec: nanoocp.Poly.NCollection_Vec2__float) -> nanoocp.Poly.NCollection_Vec2__float:
         """Bottom-right corner as vec2."""
 
     def Width(self) -> float:
@@ -577,10 +577,10 @@ class Font_TextFormatter(nanoocp.Standard.Standard_Transient):
         Should not be called more than once after initialization!
         """
 
-    def TopLeft(self, theIndex: int) -> nanoocp.BVH.BVH_Vec2f:
+    def TopLeft(self, theIndex: int) -> nanoocp.Poly.NCollection_Vec2__float:
         """Deprecated in OCCT: BottomLeft should be used instead"""
 
-    def BottomLeft(self, theIndex: int) -> nanoocp.BVH.BVH_Vec2f:
+    def BottomLeft(self, theIndex: int) -> nanoocp.Poly.NCollection_Vec2__float:
         """Returns specific glyph rectangle."""
 
     def String(self) -> nanoocp.NCollection.NCollection_String:
@@ -657,7 +657,7 @@ class Font_TextFormatter(nanoocp.Standard.Standard_Transient):
     def BndBox(self, theBndBox: Font_Rect) -> None:
         """@param bounding box."""
 
-    def Corners(self) -> nanoocp.NCollection.NCollection_DynamicArray[nanoocp.BVH.BVH_Vec2f]:
+    def Corners(self) -> nanoocp.NCollection.NCollection_DynamicArray[nanoocp.Poly.NCollection_Vec2__float]:
         """
         Returns internal container of the top left corners of a formatted rectangles.
         """

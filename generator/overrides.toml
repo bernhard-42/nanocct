@@ -94,6 +94,11 @@ methods = [
     # per call and stay.
     "BinObjMgt_Persistent::SetOStream",
     "BinObjMgt_Persistent::SetIStream",
+    # std::abs(unsigned int) is ambiguous (float/double/long double candidates all convert), so cwiseAbs does not
+    # compile for an unsigned element type. OCCT never instantiates it -- a template member is only instantiated when
+    # used -- and binding the class is what forces it. NCollection_Vec2<unsigned int> arrived with the reference
+    # parameters of OpenGl_FrameBuffer (2026-09-23); the bool instantiations are fine, bool promotes to int.
+    "NCollection_Vec2<unsigned int>::cwiseAbs",
     # Template members whose body does not compile for the instantiation (Design.md 6c): IntPolyh_Array<T>::Dump() calls
     # (*this)[i].Dump() with no argument, but IntPolyh_Edge/Triangle::Dump take an int and IntPolyh_PointNormal has none.
     # Points, SectionLines and StartPoints (Dump() exists) keep it. Debug printf output, no Python use (2026-09-21).

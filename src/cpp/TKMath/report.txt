@@ -1,7 +1,7 @@
-# nanoOCP generator report for TKMath: 452 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKMath: 457 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
 # array: 2
-# conversion: 18
+# conversion: 20
 # field: 1
 # inheritance: 1
 # iterator: 7
@@ -9,12 +9,12 @@
 # not-constructible: 1
 # overload-collision: 74
 # override: 32
-# raw-pointer: 46
+# raw-pointer: 48
 # rvalue: 3
 # static-rename: 4
 # std: 2
 # stream: 27
-# template: 228
+# template: 229
 # undefined: 5
 array	MathPoly	MathPoly::GeneralPolyResult::ComplexRoots: field std::array of std::complex
 array	Poly	Poly_CoherentTriangulation::FindTriangle(const Poly_CoherentLink &): param 'pTri': array
@@ -36,6 +36,8 @@ conversion	BVH	NCollection_Vec4<float>::operator const type-parameter-0-0 *: con
 conversion	BVH	NCollection_Vec4<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	BVH	NCollection_Vec4<int>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	BVH	NCollection_Vec4<int>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	Poly	NCollection_Vec2<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	Poly	NCollection_Vec2<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 field	MathRoot	MathRoot::MultipleGetValueFn::mySamples: field reference member (no pointer-to-member)
 inheritance	BVH	BVH_PrimitiveSet<double, 3>: additional base BVH_Set<double, 3> not declared (nanobind: single inheritance, offset-0 base only)
 iterator	BVH	BVH::RadixSorter::Sort(): param 'theStart': STL-style iterator
@@ -55,8 +57,6 @@ overload-collision	BVH	NCollection_Mat4<double>::operator()(const size_t, const 
 overload-collision	BVH	NCollection_Mat4<float>::operator()(const size_t, const size_t) const: const twin of a less const overload -> not bound
 overload-collision	BVH	NCollection_Vec2<double>::x() const: const twin of a less const overload -> not bound
 overload-collision	BVH	NCollection_Vec2<double>::y() const: const twin of a less const overload -> not bound
-overload-collision	BVH	NCollection_Vec2<float>::x() const: const twin of a less const overload -> not bound
-overload-collision	BVH	NCollection_Vec2<float>::y() const: const twin of a less const overload -> not bound
 overload-collision	BVH	NCollection_Vec2<int>::x() const: const twin of a less const overload -> not bound
 overload-collision	BVH	NCollection_Vec2<int>::y() const: const twin of a less const overload -> not bound
 overload-collision	BVH	NCollection_Vec3<double>::b() const: const twin of a less const overload -> not bound
@@ -104,6 +104,8 @@ overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_Coher
 overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentNode>>::Initialize(const NCollection_DynamicArray<Poly_CoherentNode> &): const twin of a less const overload -> not bound
 overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Init(const NCollection_DynamicArray<Poly_CoherentTriangle> &): const twin of a less const overload -> not bound
 overload-collision	Poly	NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>::Initialize(const NCollection_DynamicArray<Poly_CoherentTriangle> &): const twin of a less const overload -> not bound
+overload-collision	Poly	NCollection_Vec2<float>::x() const: const twin of a less const overload -> not bound
+overload-collision	Poly	NCollection_Vec2<float>::y() const: const twin of a less const overload -> not bound
 overload-collision	Poly	Poly_ArrayOfNodes::SetValue(const size_t, const gp_Pnt &): same Python signature as SetValue(int, const gp_Pnt &) -> registered after it (width preference)
 overload-collision	Poly	Poly_ArrayOfNodes::Value(const size_t): same Python signature as Value(int) -> registered after it (width preference)
 overload-collision	Poly	Poly_ArrayOfUVNodes::SetValue(const size_t, const gp_Pnt2d &): same Python signature as SetValue(int, const gp_Pnt2d &) -> registered after it (width preference)
@@ -190,6 +192,8 @@ raw-pointer	MathUtils	RemoveDuplicateRoots(...): param 'theRoots': raw pointer t
 raw-pointer	MathUtils	SortRoots(...): param 'theRoots': raw pointer to primitive
 raw-pointer	Poly	NCollection_AliasedArray<>::changeValue(int): return: raw pointer to primitive
 raw-pointer	Poly	NCollection_AliasedArray<>::value(int): return: raw pointer to primitive
+raw-pointer	Poly	NCollection_Vec2<float>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	Poly	NCollection_Vec2<float>::GetData(): return: dependent pointer/mutable reference result
 raw-pointer	Poly	Poly_CoherentLink::GetAttribute(): return: void pointer
 raw-pointer	Poly	Poly_CoherentLink::SetAttribute(): param 'theAtt': void pointer
 raw-pointer	gp	gp_XYZ::ChangeData(): return: raw pointer to primitive
@@ -454,6 +458,7 @@ template	Poly	NCollection_AliasedArray<>::Value2: template member
 template	Poly	NCollection_AliasedArray<>::Value: template member
 template	Poly	NCollection_AliasedArray<>::Value: template member
 template	Poly	NCollection_List: template (not bound)
+template	Poly	NCollection_Vec2<float>::NCollection_Vec2<Element_t>: template member
 template	Poly	Poly::PolygonProperties: template member
 template	gp	gp_GTrsf::GetMat4: template member
 template	gp	gp_GTrsf::SetMat4: template member

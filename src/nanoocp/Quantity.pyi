@@ -3,7 +3,7 @@
 import enum
 from typing import TextIO, overload
 
-import nanoocp.BVH
+import nanoocp.Poly
 import nanoocp.Standard
 import nanoocp.TCollection
 
@@ -2878,7 +2878,7 @@ class NCollection_Vec3__float:
         """Initialize ALL components of vector within specified value."""
 
     @overload
-    def __init__(self, theVec2: nanoocp.BVH.BVH_Vec2f, theZ: float = 0.0) -> None:
+    def __init__(self, theVec2: nanoocp.Poly.NCollection_Vec2__float, theZ: float = 0.0) -> None:
         """Constructor from 2-components vector + optional 3rd value."""
 
     @overload
@@ -2899,25 +2899,25 @@ class NCollection_Vec3__float:
     def SetValues(self, theX: float, theY: float, theZ: float) -> None: ...
 
     @overload
-    def SetValues(self, theVec2: nanoocp.BVH.BVH_Vec2f, theZ: float) -> None:
+    def SetValues(self, theVec2: nanoocp.Poly.NCollection_Vec2__float, theZ: float) -> None:
         """Assign new values to the vector."""
 
-    def xy(self) -> nanoocp.BVH.BVH_Vec2f:
+    def xy(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
-    def yx(self) -> nanoocp.BVH.BVH_Vec2f:
+    def yx(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
-    def xz(self) -> nanoocp.BVH.BVH_Vec2f:
+    def xz(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
-    def zx(self) -> nanoocp.BVH.BVH_Vec2f:
+    def zx(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
-    def yz(self) -> nanoocp.BVH.BVH_Vec2f:
+    def yz(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
-    def zy(self) -> nanoocp.BVH.BVH_Vec2f:
+    def zy(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """@return 2 components by their names in specified order (in GLSL-style)"""
 
     def xyz(self) -> NCollection_Vec3__float:
@@ -3116,7 +3116,7 @@ class NCollection_Vec4__float:
         """Initialize ALL components of vector within specified value."""
 
     @overload
-    def __init__(self, theVec2: nanoocp.BVH.BVH_Vec2f) -> None:
+    def __init__(self, theVec2: nanoocp.Poly.NCollection_Vec2__float) -> None:
         """Constructor from 2-components vector."""
 
     @overload
@@ -3145,62 +3145,62 @@ class NCollection_Vec4__float:
     def SetValues(self, theVec3: NCollection_Vec3__float, theW: float) -> None:
         """Assign new values as 3-component vector and a 4-th value."""
 
-    def xy(self) -> nanoocp.BVH.BVH_Vec2f:
+    def xy(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def yx(self) -> nanoocp.BVH.BVH_Vec2f:
+    def yx(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def xz(self) -> nanoocp.BVH.BVH_Vec2f:
+    def xz(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def zx(self) -> nanoocp.BVH.BVH_Vec2f:
+    def zx(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def xw(self) -> nanoocp.BVH.BVH_Vec2f:
+    def xw(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def wx(self) -> nanoocp.BVH.BVH_Vec2f:
+    def wx(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def yz(self) -> nanoocp.BVH.BVH_Vec2f:
+    def yz(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def zy(self) -> nanoocp.BVH.BVH_Vec2f:
+    def zy(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def yw(self) -> nanoocp.BVH.BVH_Vec2f:
+    def yw(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def wy(self) -> nanoocp.BVH.BVH_Vec2f:
+    def wy(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def zw(self) -> nanoocp.BVH.BVH_Vec2f:
+    def zw(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """
 
-    def wz(self) -> nanoocp.BVH.BVH_Vec2f:
+    def wz(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         @return 2 of XYZW components in specified order as vector in GLSL-style
         """

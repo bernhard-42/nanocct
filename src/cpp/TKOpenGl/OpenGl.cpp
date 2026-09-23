@@ -204,6 +204,7 @@
 #include <Quantity_Color.hxx>
 #include <Quantity_ColorRGBA.hxx>
 #include <Standard_OStream.hxx>
+#include <Standard_SStream.hxx>
 #include <Standard_Transient.hxx>
 #include <Standard_Type.hxx>
 #include <TCollection_AsciiString.hxx>
@@ -739,7 +740,16 @@ data.
 Method Create() creates dummy identifier for this object which should NOT be passed to OpenGL
 functions.)nbdoc");
     }
+    { nb::class_<NCollection_Vec4<bool>> cls(m, "NCollection_Vec4__bool", R"nbdoc(Generic 4-components vector.
+To be used as RGBA color vector or XYZW 3D-point with special W-component
+for operations with projection / model view matrices.
+Use this class for 3D-points carefully because declared W-component may
+results in incorrect results if used without matrices.)nbdoc");
+    }
     { nb::class_<OpenGl_MatrixState<float>> cls(m, "OpenGl_MatrixState__float", R"nbdoc(Software implementation for OpenGL matrix stack.)nbdoc");
+    }
+    { nb::class_<NCollection_Vec2<unsigned int>> cls(m, "NCollection_Vec2__unsigned_int", R"nbdoc(Defines the 2D-vector template.
+The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).)nbdoc");
     }
     { nb::class_<BVH_Tree<float, 3, BVH_QuadTree>> cls(m, "BVH_Tree__float__3__BVH_QuadTree", R"nbdoc(BVH tree with given arity (2 or 4).)nbdoc");
     }
@@ -748,7 +758,10 @@ boxes (AABBs) of abstract objects.
 \tparam T Numeric data type
 \tparam N Vector dimension)nbdoc");
     }
-    m.attr("NCollection_Vec3__float") = nb::module_::import_("nanoocp._TKernel.Quantity").attr("NCollection_Vec3__float");
+    { nb::class_<BVH_Box<float, 3>> cls(m, "BVH_Box__float__3", R"nbdoc(Defines axis aligned bounding box (AABB) based on BVH vectors.
+\tparam T Numeric data type
+\tparam N Vector dimension)nbdoc");
+    }
 }
 
 void nanoocp_templates_OpenGl(nb::module_ &m) {
@@ -3126,6 +3139,100 @@ Data should be initialized by another method.)nbdoc")
 Initialize buffer with existing data.
 Data will NOT be copied by this method!)nbdoc");
     nanoocp_implicit_copy_ctor<OpenGl_BufferCompatT<OpenGl_IndexBuffer>>(nb::borrow<nb::class_<OpenGl_BufferCompatT<OpenGl_IndexBuffer>>>(m.attr("OpenGl_IndexBufferCompat")));
+    nanoocp_if_concrete<NCollection_Vec4<bool>>(nb::borrow<nb::class_<NCollection_Vec4<bool>>>(m.attr("NCollection_Vec4__bool")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const bool theValue) { new (self) nanoocp_T(theValue); }, nb::arg("theValue"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec2<bool> & theVec2) { new (self) nanoocp_T(theVec2); }, nb::arg("theVec2"), R"nbdoc(Constructor from 2-components vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_Vec3<bool> & theVec3, const bool theW) { new (self) nanoocp_T(theVec3, theW); }, nb::arg("theVec3"), nb::arg("theW") = static_cast<std::decay_t<const bool>>(bool(0)), R"nbdoc(Constructor from 3-components vector + optional 4th value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const bool theX, const bool theY, const bool theZ, const bool theW) { new (self) nanoocp_T(theX, theY, theZ, theW); }, nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Per-component constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_Vec4<bool>>>(m.attr("NCollection_Vec4__bool"))
+        .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec4<bool>::Length), R"nbdoc(Returns the number of components.)nbdoc")
+        .def("SetValues", static_cast<void (NCollection_Vec4<bool>::*)(const bool, const bool, const bool, const bool) noexcept>(&NCollection_Vec4<bool>::SetValues), nb::arg("theX"), nb::arg("theY"), nb::arg("theZ"), nb::arg("theW"), R"nbdoc(Assign new values to the vector.)nbdoc")
+        .def("SetValues", static_cast<void (NCollection_Vec4<bool>::*)(const NCollection_Vec3<bool> &, const bool) noexcept>(&NCollection_Vec4<bool>::SetValues), nb::arg("theVec3"), nb::arg("theW"), R"nbdoc(Assign new values as 3-component vector and a 4-th value.)nbdoc")
+        .def("xy", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xy), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yx", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::yx), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xz", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xz), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zx", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zx), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xw", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xw), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wx", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wx), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yz", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::yz), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zy", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zy), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yw", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::yw), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wy", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wy), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zw", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zw), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wz", static_cast<NCollection_Vec2<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wz), R"nbdoc(@return 2 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xyz", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xyz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xzy", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xzy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yxz", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::yxz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yzx", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::yzx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zyx", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zyx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zxy", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zxy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xyw", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xyw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xwy", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xwy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yxw", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::yxw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("ywx", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::ywx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wyx", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wyx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wxy", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wxy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xzw", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xzw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("xwz", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::xwz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zxw", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zxw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zwx", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zwx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wzx", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wzx), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wxz", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wxz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("yzw", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::yzw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("ywz", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::ywz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zyw", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zyw), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("zwy", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::zwy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wzy", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wzy), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("wyz", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::wyz), R"nbdoc(@return 3 of XYZW components in specified order as vector in GLSL-style)nbdoc")
+        .def("rgb", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::rgb), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("rbg", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::rbg), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("grb", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::grb), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("gbr", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::gbr), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("bgr", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::bgr), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("brg", static_cast<NCollection_Vec3<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::brg), R"nbdoc(@return RGB components as vector)nbdoc")
+        .def("x", [](NCollection_Vec4<bool> &self) -> bool { return self.x(); }, R"nbdoc(Alias to 1st component as X coordinate in XYZW.)nbdoc")
+        .def("Setx", [](NCollection_Vec4<bool> &self, bool theValue) { self.x() = theValue; }, nb::arg("theValue"), "Python addition: sets the value x() returns by reference in C++.")
+        .def("r", [](NCollection_Vec4<bool> &self) -> bool { return self.r(); }, R"nbdoc(Alias to 1st component as RED channel in RGBA.)nbdoc")
+        .def("Setr", [](NCollection_Vec4<bool> &self, bool theValue) { self.r() = theValue; }, nb::arg("theValue"), "Python addition: sets the value r() returns by reference in C++.")
+        .def("y", [](NCollection_Vec4<bool> &self) -> bool { return self.y(); }, R"nbdoc(Alias to 2nd component as Y coordinate in XYZW.)nbdoc")
+        .def("Sety", [](NCollection_Vec4<bool> &self, bool theValue) { self.y() = theValue; }, nb::arg("theValue"), "Python addition: sets the value y() returns by reference in C++.")
+        .def("g", [](NCollection_Vec4<bool> &self) -> bool { return self.g(); }, R"nbdoc(Alias to 2nd component as GREEN channel in RGBA.)nbdoc")
+        .def("Setg", [](NCollection_Vec4<bool> &self, bool theValue) { self.g() = theValue; }, nb::arg("theValue"), "Python addition: sets the value g() returns by reference in C++.")
+        .def("z", [](NCollection_Vec4<bool> &self) -> bool { return self.z(); }, R"nbdoc(Alias to 3rd component as Z coordinate in XYZW.)nbdoc")
+        .def("Setz", [](NCollection_Vec4<bool> &self, bool theValue) { self.z() = theValue; }, nb::arg("theValue"), "Python addition: sets the value z() returns by reference in C++.")
+        .def("b", [](NCollection_Vec4<bool> &self) -> bool { return self.b(); }, R"nbdoc(Alias to 3rd component as BLUE channel in RGBA.)nbdoc")
+        .def("Setb", [](NCollection_Vec4<bool> &self, bool theValue) { self.b() = theValue; }, nb::arg("theValue"), "Python addition: sets the value b() returns by reference in C++.")
+        .def("w", [](NCollection_Vec4<bool> &self) -> bool { return self.w(); }, R"nbdoc(Alias to 4th component as W coordinate in XYZW.)nbdoc")
+        .def("Setw", [](NCollection_Vec4<bool> &self, bool theValue) { self.w() = theValue; }, nb::arg("theValue"), "Python addition: sets the value w() returns by reference in C++.")
+        .def("a", [](NCollection_Vec4<bool> &self) -> bool { return self.a(); }, R"nbdoc(Alias to 4th component as ALPHA channel in RGBA.)nbdoc")
+        .def("Seta", [](NCollection_Vec4<bool> &self, bool theValue) { self.a() = theValue; }, nb::arg("theValue"), "Python addition: sets the value a() returns by reference in C++.")
+        .def("IsEqual", static_cast<bool (NCollection_Vec4<bool>::*)(const NCollection_Vec4<bool> &) const noexcept>(&NCollection_Vec4<bool>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
+        .def("__eq__", static_cast<bool (NCollection_Vec4<bool>::*)(const NCollection_Vec4<bool> &) const noexcept>(&NCollection_Vec4<bool>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_Vec4<bool>::*)(const NCollection_Vec4<bool> &) const noexcept>(&NCollection_Vec4<bool>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__iadd__", [](NCollection_Vec4<bool> &self, const NCollection_Vec4<bool> & theAdd) -> NCollection_Vec4<bool> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
+        .def("__neg__", static_cast<NCollection_Vec4<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
+        .def("__isub__", [](NCollection_Vec4<bool> &self, const NCollection_Vec4<bool> & theDec) -> NCollection_Vec4<bool> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
+        .def("__imul__", [](NCollection_Vec4<bool> &self, const NCollection_Vec4<bool> & theRight) -> NCollection_Vec4<bool> & { self.operator*=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("Multiply", static_cast<void (NCollection_Vec4<bool>::*)(const bool) noexcept>(&NCollection_Vec4<bool>::Multiply), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc")
+        .def("__imul__", [](NCollection_Vec4<bool> &self, const bool theFactor) -> NCollection_Vec4<bool> & { self.operator*=(theFactor); return self; }, nb::rv_policy::reference, nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("__mul__", static_cast<NCollection_Vec4<bool> (NCollection_Vec4<bool>::*)(const bool) const noexcept>(&NCollection_Vec4<bool>::operator*), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("Multiplied", static_cast<NCollection_Vec4<bool> (NCollection_Vec4<bool>::*)(const bool) const noexcept>(&NCollection_Vec4<bool>::Multiplied), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication.)nbdoc")
+        .def("cwiseMin", static_cast<NCollection_Vec4<bool> (NCollection_Vec4<bool>::*)(const NCollection_Vec4<bool> &) const noexcept>(&NCollection_Vec4<bool>::cwiseMin), nb::arg("theVec"), R"nbdoc(Compute component-wise minimum of two vectors.)nbdoc")
+        .def("cwiseMax", static_cast<NCollection_Vec4<bool> (NCollection_Vec4<bool>::*)(const NCollection_Vec4<bool> &) const noexcept>(&NCollection_Vec4<bool>::cwiseMax), nb::arg("theVec"), R"nbdoc(Compute component-wise maximum of two vectors.)nbdoc")
+        .def("cwiseAbs", static_cast<NCollection_Vec4<bool> (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::cwiseAbs), R"nbdoc(Compute component-wise modulus of the vector.)nbdoc")
+        .def("maxComp", static_cast<bool (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::maxComp), R"nbdoc(Compute maximum component of the vector.)nbdoc")
+        .def("minComp", static_cast<bool (NCollection_Vec4<bool>::*)() const noexcept>(&NCollection_Vec4<bool>::minComp), R"nbdoc(Compute minimum component of the vector.)nbdoc")
+        .def("Dot", static_cast<bool (NCollection_Vec4<bool>::*)(const NCollection_Vec4<bool> &) const noexcept>(&NCollection_Vec4<bool>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
+        .def("__itruediv__", [](NCollection_Vec4<bool> &self, const bool theInvFactor) -> NCollection_Vec4<bool> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("__itruediv__", [](NCollection_Vec4<bool> &self, const NCollection_Vec4<bool> & theRight) -> NCollection_Vec4<bool> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
+        .def("__truediv__", static_cast<NCollection_Vec4<bool> (NCollection_Vec4<bool>::*)(const bool) const>(&NCollection_Vec4<bool>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("DumpJson", [](const NCollection_Vec4<bool> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec4<bool> & theLeft, const NCollection_Vec4<bool> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec4<bool> & theLeft, const NCollection_Vec4<bool> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec4<bool> & theLeft, const NCollection_Vec4<bool> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec4<bool> & theLeft, const NCollection_Vec4<bool> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
+    nanoocp_implicit_copy_ctor<NCollection_Vec4<bool>>(nb::borrow<nb::class_<NCollection_Vec4<bool>>>(m.attr("NCollection_Vec4__bool")));
     nanoocp_if_concrete<OpenGl_MatrixState<float>>(nb::borrow<nb::class_<OpenGl_MatrixState<float>>>(m.attr("OpenGl_MatrixState__float")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Constructs matrix state object.)nbdoc"); });
     nb::borrow<nb::class_<OpenGl_MatrixState<float>>>(m.attr("OpenGl_MatrixState__float"))
@@ -3137,11 +3244,79 @@ Data will NOT be copied by this method!)nbdoc");
         .def("SetIdentity", static_cast<void (OpenGl_MatrixState<float>::*)()>(&OpenGl_MatrixState<float>::SetIdentity), R"nbdoc(Sets current matrix to identity.)nbdoc")
         .def("DumpJson", [](const OpenGl_MatrixState<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc");
     nanoocp_implicit_copy_ctor<OpenGl_MatrixState<float>>(nb::borrow<nb::class_<OpenGl_MatrixState<float>>>(m.attr("OpenGl_MatrixState__float")));
+    nanoocp_if_concrete<NCollection_Vec2<unsigned int>>(nb::borrow<nb::class_<NCollection_Vec2<unsigned int>>>(m.attr("NCollection_Vec2__unsigned_int")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const unsigned int theXY) { new (self) nanoocp_T(theXY); }, nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const unsigned int theX, const unsigned int theY) { new (self) nanoocp_T(theX, theY); }, nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_Vec2<unsigned int>>>(m.attr("NCollection_Vec2__unsigned_int"))
+        .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec2<unsigned int>::Length), R"nbdoc(Returns the number of components.)nbdoc")
+        .def("SetValues", static_cast<void (NCollection_Vec2<unsigned int>::*)(const unsigned int, const unsigned int) noexcept>(&NCollection_Vec2<unsigned int>::SetValues), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Assign new values to the vector.)nbdoc")
+        .def("xy", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)() const noexcept>(&NCollection_Vec2<unsigned int>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("yx", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)() const noexcept>(&NCollection_Vec2<unsigned int>::yx), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
+        .def("x", [](NCollection_Vec2<unsigned int> &self) -> unsigned int { return self.x(); }, R"nbdoc(Alias to 1st component as X coordinate in XY.)nbdoc")
+        .def("Setx", [](NCollection_Vec2<unsigned int> &self, unsigned int theValue) { self.x() = theValue; }, nb::arg("theValue"), "Python addition: sets the value x() returns by reference in C++.")
+        .def("y", [](NCollection_Vec2<unsigned int> &self) -> unsigned int { return self.y(); }, R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
+        .def("Sety", [](NCollection_Vec2<unsigned int> &self, unsigned int theValue) { self.y() = theValue; }, nb::arg("theValue"), "Python addition: sets the value y() returns by reference in C++.")
+        .def("IsEqual", static_cast<bool (NCollection_Vec2<unsigned int>::*)(const NCollection_Vec2<unsigned int> &) const noexcept>(&NCollection_Vec2<unsigned int>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
+        .def("__eq__", static_cast<bool (NCollection_Vec2<unsigned int>::*)(const NCollection_Vec2<unsigned int> &) const noexcept>(&NCollection_Vec2<unsigned int>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__ne__", static_cast<bool (NCollection_Vec2<unsigned int>::*)(const NCollection_Vec2<unsigned int> &) const noexcept>(&NCollection_Vec2<unsigned int>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
+        .def("__iadd__", [](NCollection_Vec2<unsigned int> &self, const NCollection_Vec2<unsigned int> & theAdd) -> NCollection_Vec2<unsigned int> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
+        .def("__isub__", [](NCollection_Vec2<unsigned int> &self, const NCollection_Vec2<unsigned int> & theDec) -> NCollection_Vec2<unsigned int> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
+        .def("__neg__", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)() const noexcept>(&NCollection_Vec2<unsigned int>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
+        .def("__imul__", [](NCollection_Vec2<unsigned int> &self, const NCollection_Vec2<unsigned int> & theRight) -> NCollection_Vec2<unsigned int> & { self.operator*=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
+        .def("Multiply", static_cast<void (NCollection_Vec2<unsigned int>::*)(const unsigned int) noexcept>(&NCollection_Vec2<unsigned int>::Multiply), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc")
+        .def("Multiplied", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)(const unsigned int) const noexcept>(&NCollection_Vec2<unsigned int>::Multiplied), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc")
+        .def("cwiseMin", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)(const NCollection_Vec2<unsigned int> &) const noexcept>(&NCollection_Vec2<unsigned int>::cwiseMin), nb::arg("theVec"), R"nbdoc(Compute component-wise minimum of two vectors.)nbdoc")
+        .def("cwiseMax", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)(const NCollection_Vec2<unsigned int> &) const noexcept>(&NCollection_Vec2<unsigned int>::cwiseMax), nb::arg("theVec"), R"nbdoc(Compute component-wise maximum of two vectors.)nbdoc")
+        .def("maxComp", static_cast<unsigned int (NCollection_Vec2<unsigned int>::*)() const noexcept>(&NCollection_Vec2<unsigned int>::maxComp), R"nbdoc(Compute maximum component of the vector.)nbdoc")
+        .def("minComp", static_cast<unsigned int (NCollection_Vec2<unsigned int>::*)() const noexcept>(&NCollection_Vec2<unsigned int>::minComp), R"nbdoc(Compute minimum component of the vector.)nbdoc")
+        .def("__imul__", [](NCollection_Vec2<unsigned int> &self, const unsigned int theFactor) -> NCollection_Vec2<unsigned int> & { self.operator*=(theFactor); return self; }, nb::rv_policy::reference, nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc", nb::is_operator())
+        .def("__itruediv__", [](NCollection_Vec2<unsigned int> &self, const unsigned int theInvFactor) -> NCollection_Vec2<unsigned int> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("__itruediv__", [](NCollection_Vec2<unsigned int> &self, const NCollection_Vec2<unsigned int> & theRight) -> NCollection_Vec2<unsigned int> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
+        .def("__mul__", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)(const unsigned int) const noexcept>(&NCollection_Vec2<unsigned int>::operator*), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc", nb::is_operator())
+        .def("__truediv__", static_cast<NCollection_Vec2<unsigned int> (NCollection_Vec2<unsigned int>::*)(const unsigned int) const>(&NCollection_Vec2<unsigned int>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
+        .def("Dot", static_cast<unsigned int (NCollection_Vec2<unsigned int>::*)(const NCollection_Vec2<unsigned int> &) const noexcept>(&NCollection_Vec2<unsigned int>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
+        .def("Modulus", static_cast<unsigned int (NCollection_Vec2<unsigned int>::*)() const noexcept>(&NCollection_Vec2<unsigned int>::Modulus), R"nbdoc(Computes the vector modulus (magnitude, length).)nbdoc")
+        .def("SquareModulus", static_cast<unsigned int (NCollection_Vec2<unsigned int>::*)() const noexcept>(&NCollection_Vec2<unsigned int>::SquareModulus), R"nbdoc(Computes the square of vector modulus (magnitude, length).
+This method may be used for performance tricks.)nbdoc")
+        .def_static("DX", static_cast<NCollection_Vec2<unsigned int> (*)() noexcept>(&NCollection_Vec2<unsigned int>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
+        .def_static("DY", static_cast<NCollection_Vec2<unsigned int> (*)() noexcept>(&NCollection_Vec2<unsigned int>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
+        .def("DumpJson", [](const NCollection_Vec2<unsigned int> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("__add__", [](const NCollection_Vec2<unsigned int> & theLeft, const NCollection_Vec2<unsigned int> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
+        .def("__sub__", [](const NCollection_Vec2<unsigned int> & theLeft, const NCollection_Vec2<unsigned int> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
+        .def("__mul__", [](const NCollection_Vec2<unsigned int> & theLeft, const NCollection_Vec2<unsigned int> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
+        .def("__truediv__", [](const NCollection_Vec2<unsigned int> & theLeft, const NCollection_Vec2<unsigned int> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
+    nanoocp_implicit_copy_ctor<NCollection_Vec2<unsigned int>>(nb::borrow<nb::class_<NCollection_Vec2<unsigned int>>>(m.attr("NCollection_Vec2__unsigned_int")));
     nanoocp_implicit_default_ctor<BVH_Tree<float, 3, BVH_QuadTree>>(nb::borrow<nb::class_<BVH_Tree<float, 3, BVH_QuadTree>>>(m.attr("BVH_Tree__float__3__BVH_QuadTree")));
     nanoocp_implicit_copy_ctor<BVH_Tree<float, 3, BVH_QuadTree>>(nb::borrow<nb::class_<BVH_Tree<float, 3, BVH_QuadTree>>>(m.attr("BVH_Tree__float__3__BVH_QuadTree")));
     nb::borrow<nb::class_<BVH_Builder<float, 3>>>(m.attr("BVH_Builder__float__3"))
         .def("Build", static_cast<void (BVH_Builder<float, 3>::*)(BVH_Set<float, 3> *, BVH_Tree<float, 3> *, const BVH_Box<float, 3> &) const>(&BVH_Builder<float, 3>::Build), nb::arg("theSet"), nb::arg("theBVH"), nb::arg("theBox"), R"nbdoc(Builds BVH using specific algorithm.)nbdoc");
     nanoocp_implicit_copy_ctor<BVH_Builder<float, 3>>(nb::borrow<nb::class_<BVH_Builder<float, 3>>>(m.attr("BVH_Builder__float__3")));
+    nanoocp_if_concrete<BVH_Box<float, 3>>(nb::borrow<nb::class_<BVH_Box<float, 3>>>(m.attr("BVH_Box__float__3")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Creates uninitialized bounding box.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const BVH_Box<float, 3>::BVH_VecNt & thePoint) { new (self) nanoocp_T(thePoint); }, nb::arg("thePoint"), R"nbdoc(Creates bounding box of given point.)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const BVH_Box<float, 3>::BVH_VecNt & theMinPoint, const BVH_Box<float, 3>::BVH_VecNt & theMaxPoint) { new (self) nanoocp_T(theMinPoint, theMaxPoint); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Creates bounding box from corner points.)nbdoc"); });
+    nb::borrow<nb::class_<BVH_Box<float, 3>>>(m.attr("BVH_Box__float__3"))
+        .def("Clear", static_cast<void (BVH_Box<float, 3>::*)() noexcept>(&BVH_Box<float, 3>::Clear), R"nbdoc(Clears bounding box.)nbdoc")
+        .def("IsValid", static_cast<bool (BVH_Box<float, 3>::*)() const noexcept>(&BVH_Box<float, 3>::IsValid), R"nbdoc(Is bounding box valid?)nbdoc")
+        .def("Add", static_cast<void (BVH_Box<float, 3>::*)(const BVH_Box<float, 3>::BVH_VecNt &)>(&BVH_Box<float, 3>::Add), nb::arg("thePoint"), R"nbdoc(Appends new point to the bounding box.)nbdoc")
+        .def("Combine", static_cast<void (BVH_Box<float, 3>::*)(const BVH_Box<float, 3> &)>(&BVH_Box<float, 3>::Combine), nb::arg("theBox"), R"nbdoc(Combines bounding box with another one.)nbdoc")
+        .def("CornerMin", static_cast<BVH_Box<float, 3>::BVH_VecNt & (BVH_Box<float, 3>::*)() noexcept>(&BVH_Box<float, 3>::CornerMin), nb::rv_policy::reference_internal, R"nbdoc(Returns minimum point of bounding box.)nbdoc")
+        .def("CornerMax", static_cast<BVH_Box<float, 3>::BVH_VecNt & (BVH_Box<float, 3>::*)() noexcept>(&BVH_Box<float, 3>::CornerMax), nb::rv_policy::reference_internal, R"nbdoc(Returns maximum point of bounding box.)nbdoc")
+        .def("Area", static_cast<float (BVH_Box<float, 3>::*)() const>(&BVH_Box<float, 3>::Area), R"nbdoc(Returns surface area of bounding box.
+If the box is degenerated into line, returns the perimeter instead.)nbdoc")
+        .def("Size", static_cast<BVH_Box<float, 3>::BVH_VecNt (BVH_Box<float, 3>::*)() const>(&BVH_Box<float, 3>::Size), R"nbdoc(Returns diagonal of bounding box.)nbdoc")
+        .def("Center", static_cast<BVH_Box<float, 3>::BVH_VecNt (BVH_Box<float, 3>::*)() const>(&BVH_Box<float, 3>::Center), R"nbdoc(Returns center of bounding box.)nbdoc")
+        .def("Center", static_cast<float (BVH_Box<float, 3>::*)(const int) const>(&BVH_Box<float, 3>::Center), nb::arg("theAxis"), R"nbdoc(Returns center of bounding box along the given axis.)nbdoc")
+        .def("DumpJson", [](const BVH_Box<float, 3> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
+        .def("InitFromJson", [](BVH_Box<float, 3> &self, const nanoocp::TextInput &theSStream, int theStreamPos) { std::stringstream theSStream_stream(theSStream.text); auto nanoocp_result = self.InitFromJson(theSStream_stream, theStreamPos); return std::make_tuple(nanoocp_result, theStreamPos); }, nb::arg("theSStream"), nb::arg("theStreamPos"), R"nbdoc(Inits the content of me from the stream)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<float, 3>::*)(const BVH_Box<float, 3> &) const>(&BVH_Box<float, 3>::IsOut), nb::arg("theOther"), R"nbdoc(Checks if the Box is out of the other box.)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<float, 3>::*)(const BVH_Box<float, 3>::BVH_VecNt &, const BVH_Box<float, 3>::BVH_VecNt &) const>(&BVH_Box<float, 3>::IsOut), nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is out of the other box defined by two points.)nbdoc")
+        .def("Contains", [](const BVH_Box<float, 3> &self, const BVH_Box<float, 3> & theOther) { bool hasOverlap{}; auto nanoocp_result = self.Contains(theOther, hasOverlap); return std::make_tuple(nanoocp_result, hasOverlap); }, nb::arg("theOther"), R"nbdoc(Checks if the Box fully contains the other box.)nbdoc")
+        .def("Contains", [](const BVH_Box<float, 3> &self, const BVH_Box<float, 3>::BVH_VecNt & theMinPoint, const BVH_Box<float, 3>::BVH_VecNt & theMaxPoint) { bool hasOverlap{}; auto nanoocp_result = self.Contains(theMinPoint, theMaxPoint, hasOverlap); return std::make_tuple(nanoocp_result, hasOverlap); }, nb::arg("theMinPoint"), nb::arg("theMaxPoint"), R"nbdoc(Checks if the Box is fully contains the other box.)nbdoc")
+        .def("IsOut", static_cast<bool (BVH_Box<float, 3>::*)(const BVH_Box<float, 3>::BVH_VecNt &) const>(&BVH_Box<float, 3>::IsOut), nb::arg("thePoint"), R"nbdoc(Checks if the Point is out of the box.)nbdoc");
+    nanoocp_implicit_copy_ctor<BVH_Box<float, 3>>(nb::borrow<nb::class_<BVH_Box<float, 3>>>(m.attr("BVH_Box__float__3")));
+    nb::implicitly_convertible<std::decay_t<const BVH_Box<float, 3>::BVH_VecNt &>, BVH_Box<float, 3>>();
     m.attr("OpenGl_Layer") = nb::module_::import_("nanoocp._TKService.Graphic3d").attr("Graphic3d_Layer");   // OpenGl_Layer = Graphic3d_Layer
     nb::borrow<nb::module_>(m.attr("OpenGl_Raytrace")).def("IsRaytracedGroup", static_cast<bool (*)(const OpenGl_Group *)>(&OpenGl_Raytrace::IsRaytracedGroup), nb::arg("theGroup"), R"nbdoc(Checks to see if the group contains ray-trace geometry.)nbdoc");
     nb::borrow<nb::module_>(m.attr("OpenGl_Raytrace")).def("IsRaytracedElement", static_cast<bool (*)(const OpenGl_ElementNode *)>(&OpenGl_Raytrace::IsRaytracedElement), nb::arg("theNode"), R"nbdoc(Checks to see if the element contains ray-trace geometry.)nbdoc");

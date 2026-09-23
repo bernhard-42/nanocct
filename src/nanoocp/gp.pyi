@@ -9127,7 +9127,7 @@ class NCollection_Lerp__gp_Trsf:
         """
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
-import nanoocp.BVH
+import nanoocp.Poly
 import nanoocp.Quantity
-gp_Vec2f = nanoocp.BVH.BVH_Vec2f
+gp_Vec2f = nanoocp.Poly.NCollection_Vec2__float
 gp_Vec3f = nanoocp.Quantity.NCollection_Vec3__float

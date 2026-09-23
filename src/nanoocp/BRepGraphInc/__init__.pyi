@@ -2797,10 +2797,10 @@ class BRepGraphInc_Storage:
         Used by identity copy to preserve shape reconstruction bindings.
         """
 
-    def CurrentShapes(self) -> "NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>":
+    def CurrentShapes(self) -> NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape__NCollection_DefaultHasher__BRepGraph_NodeId:
         """Return the generation-validated node-to-shape reconstruction cache."""
 
-    def ChangeCurrentShapes(self) -> "NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>":
+    def ChangeCurrentShapes(self) -> NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape__NCollection_DefaultHasher__BRepGraph_NodeId:
         """
         Return the mutable generation-validated node-to-shape reconstruction cache.
         """
@@ -2965,196 +2965,6 @@ class BRepGraphInc_Storage:
         Return true if any entity in any store has an active MutGuard.
         Used to assert no guards are active before Clear().
         """
-
-class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex:
-    """
-    @brief Unified instance container template.
-
-    Bundles a typed definition id with location and orientation.
-
-    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex) -> None: ...
-
-    def IsValid(self) -> bool:
-        """Returns true if the instance references an existing definition id."""
-
-    def __hash__(self) -> int: ...
-
-    @property
-    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_VertexId: ...
-
-    @DefId.setter
-    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_VertexId, /) -> None: ...
-
-    @property
-    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
-
-    @Location.setter
-    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
-
-    @property
-    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
-
-    @Orientation.setter
-    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
-
-class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge:
-    """
-    @brief Unified instance container template.
-
-    Bundles a typed definition id with location and orientation.
-
-    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge) -> None: ...
-
-    def IsValid(self) -> bool:
-        """Returns true if the instance references an existing definition id."""
-
-    def __hash__(self) -> int: ...
-
-    @property
-    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_CoEdgeId: ...
-
-    @DefId.setter
-    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_CoEdgeId, /) -> None: ...
-
-    @property
-    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
-
-    @Location.setter
-    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
-
-    @property
-    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
-
-    @Orientation.setter
-    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
-
-class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire:
-    """
-    @brief Unified instance container template.
-
-    Bundles a typed definition id with location and orientation.
-
-    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire) -> None: ...
-
-    def IsValid(self) -> bool:
-        """Returns true if the instance references an existing definition id."""
-
-    def __hash__(self) -> int: ...
-
-    @property
-    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_WireId: ...
-
-    @DefId.setter
-    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_WireId, /) -> None: ...
-
-    @property
-    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
-
-    @Location.setter
-    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
-
-    @property
-    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
-
-    @Orientation.setter
-    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
-
-class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face:
-    """
-    @brief Unified instance container template.
-
-    Bundles a typed definition id with location and orientation.
-
-    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face) -> None: ...
-
-    def IsValid(self) -> bool:
-        """Returns true if the instance references an existing definition id."""
-
-    def __hash__(self) -> int: ...
-
-    @property
-    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_FaceId: ...
-
-    @DefId.setter
-    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_FaceId, /) -> None: ...
-
-    @property
-    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
-
-    @Location.setter
-    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
-
-    @property
-    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
-
-    @Orientation.setter
-    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
-
-class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell:
-    """
-    @brief Unified instance container template.
-
-    Bundles a typed definition id with location and orientation.
-
-    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
-    """
-
-    @overload
-    def __init__(self) -> None: ...
-
-    @overload
-    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell) -> None: ...
-
-    def IsValid(self) -> bool:
-        """Returns true if the instance references an existing definition id."""
-
-    def __hash__(self) -> int: ...
-
-    @property
-    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_ShellId: ...
-
-    @DefId.setter
-    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_ShellId, /) -> None: ...
-
-    @property
-    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
-
-    @Location.setter
-    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
-
-    @property
-    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
-
-    @Orientation.setter
-    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
 
 class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid:
     """
@@ -3346,53 +3156,175 @@ class BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Produ
     @Orientation.setter
     def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
 
-class BRepGraphInc_Instance__BRepGraph_NodeId:
+class NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape__NCollection_DefaultHasher__BRepGraph_NodeId:
     """
-    @brief Unified instance container template.
+    @brief High-performance hash map using open addressing with Robin Hood hashing.
 
-    Bundles a typed definition id with location and orientation.
+    NCollection_FlatDataMap is an alternative to NCollection_DataMap that provides
+    better cache locality and reduced memory allocation overhead by storing all
+    key-value pairs inline in a contiguous array.
 
-    @tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).
+    Key features:
+    - Open addressing with linear probing (better cache locality)
+    - Robin Hood hashing (reduces probe sequence variance)
+    - Power-of-2 sizing for fast modulo operations
+    - No per-element allocations
+
+    Typical faster usage patterns:
+    - POD or small key/value types
+    - Performance-critical code paths
+    - Lookup-heavy workloads
+    - Full traversal / iteration-heavy workloads
+    - Stable-size maps with Reserve() called once before bulk Bind()
+
+    Container-specific implementation notes:
+    - UnBind() keeps probe clusters consistent using backward-shift compaction.
+
+    Relative to NCollection_DataMap:
+    - Bind()/UnBind() can be faster in many workloads thanks to contiguous storage and
+    no per-element node allocation.
+    - Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+    Limitations:
+    - Keys and values must be movable
+    - Higher memory usage at low load factors
+    - Iteration order is not insertion order
+    - Probe distance grows with collisions (bounded by table capacity)
+
+    @note This class is NOT thread-safe. External synchronization is required
+    for concurrent access from multiple threads.
+
+    @tparam TheKeyType   Type of keys
+    @tparam TheItemType  Type of values
+    @tparam Hasher       Hash and equality functor (default: NCollection_DefaultHasher)
     """
 
     @overload
-    def __init__(self) -> None: ...
+    def __init__(self) -> None:
+        """Default constructor"""
 
     @overload
-    def __init__(self, theOther: BRepGraphInc_Instance__BRepGraph_NodeId) -> None: ...
+    def __init__(self, theNbBuckets: int) -> None:
+        """
+        Constructor with initial capacity hint
+        @param theNbBuckets initial capacity (will be rounded up to power of 2)
+        """
 
-    def IsValid(self) -> bool:
-        """Returns true if the instance references an existing definition id."""
+    @overload
+    def __init__(self, theHasher: nanoocp.BRepGraph.NCollection_DefaultHasher__BRepGraph_NodeId, theNbBuckets: int = 0) -> None:
+        """
+        Constructor with custom hasher (copy).
+        @param theHasher custom hasher instance
+        @param theNbBuckets initial capacity hint
+        """
 
-    def __hash__(self) -> int: ...
+    @overload
+    def __init__(self, theOther: NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape__NCollection_DefaultHasher__BRepGraph_NodeId) -> None:
+        """Copy constructor"""
 
-    @property
-    def DefId(self) -> nanoocp.BRepGraph.BRepGraph_NodeId: ...
+    def Size(self) -> int:
+        """Returns number of elements."""
 
-    @DefId.setter
-    def DefId(self, arg: nanoocp.BRepGraph.BRepGraph_NodeId, /) -> None: ...
+    def Extent(self) -> int:
+        """
+        Returns number of elements (legacy int-returning API, convention shared with BaseMap).
+        """
 
-    @property
-    def Location(self) -> nanoocp.TopLoc.TopLoc_Location: ...
+    def IsEmpty(self) -> bool:
+        """Returns true if map is empty"""
 
-    @Location.setter
-    def Location(self, arg: nanoocp.TopLoc.TopLoc_Location, /) -> None: ...
+    def Capacity(self) -> int:
+        """Returns current capacity"""
 
-    @property
-    def Orientation(self) -> nanoocp.TopAbs.TopAbs_Orientation: ...
+    def IsBound(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId) -> bool:
+        """Check if key exists"""
 
-    @Orientation.setter
-    def Orientation(self, arg: nanoocp.TopAbs.TopAbs_Orientation, /) -> None: ...
+    def Contained(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId) -> tuple["std::__1::reference_wrapper<BRepGraph_NodeId const>", "std::__1::reference_wrapper<BRepGraphInc_Storage::CachedShape>"] | None:
+        """
+        Contained returns optional pair of const key reference and mutable value reference.
+        Returns std::nullopt if the key is not found.
+        """
 
-VertexInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex
+    def Find(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId) -> BRepGraphInc_Storage.CachedShape:
+        """Find value by key, throws if not found"""
 
-CoEdgeInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge
+    def ChangeFind(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId) -> BRepGraphInc_Storage.CachedShape:
+        """Find value by key (mutable), throws if not found"""
 
-WireInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire
+    def __call__(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId) -> BRepGraphInc_Storage.CachedShape:
+        """Operator() for mutable access"""
 
-FaceInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face
+    def Bind(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId, theItem: BRepGraphInc_Storage.CachedShape) -> bool:
+        """
+        Bind key to value
+        @return true if key was newly added, false if existing key was updated
+        """
 
-ShellInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell
+    def TryBind(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId, theItem: BRepGraphInc_Storage.CachedShape) -> bool:
+        """
+        TryBind binds key to value only if key is not yet bound.
+        @param theKey key to add
+        @param theItem item to bind if key is not yet bound
+        @return true if key was newly added, false if key already existed
+        """
+
+    def Bound(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId, theItem: BRepGraphInc_Storage.CachedShape) -> BRepGraphInc_Storage.CachedShape:
+        """
+        Bound binds key to value and returns reference to the value.
+        @param theKey key to add/update
+        @param theItem new item; overrides value previously bound to the key
+        @return reference to the value in the map
+        """
+
+    def TryBound(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId, theItem: BRepGraphInc_Storage.CachedShape) -> BRepGraphInc_Storage.CachedShape:
+        """
+        TryBound binds key to value only if key is not yet bound.
+        @param theKey key to add
+        @param theItem item to bind if key is not yet bound
+        @return reference to existing or newly bound value
+        """
+
+    def UnBind(self, theKey: nanoocp.BRepGraph.BRepGraph_NodeId) -> bool:
+        """
+        Remove key from map
+        @return true if key was found and removed
+        """
+
+    def Clear(self, doReleaseMemory: bool = False) -> None:
+        """
+        Clear all elements
+        @param doReleaseMemory if true, free the internal buffer
+        """
+
+    def Exchange(self, theOther: NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape__NCollection_DefaultHasher__BRepGraph_NodeId) -> None:
+        """Exchange content with another map"""
+
+    def GetHasher(self) -> nanoocp.BRepGraph.NCollection_DefaultHasher__BRepGraph_NodeId:
+        """Returns const reference to the hasher."""
+
+    def reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def Reserve(self, theN: int) -> None:
+        """Reserve capacity for at least theN elements"""
+
+    def begin(self) -> "NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator":
+        """Returns iterator to first element"""
+
+    def end(self) -> "NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator":
+        """Returns iterator past the end"""
+
+    def cbegin(self) -> "NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator":
+        """Returns iterator to first element"""
+
+    def cend(self) -> "NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator":
+        """Returns iterator past the end"""
+
+    def Items(self) -> "NCollection_ItemsView::View<NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>, NCollection_ItemsView::KeyValueRef<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, false>, NCollection_FlatDataMap<BRepGraph_NodeId, BRepGraphInc_Storage::CachedShape, NCollection_DefaultHasher<BRepGraph_NodeId>>::ItemsExtractor, false>":
+        """
+        Returns a view for key-value pair iteration.
+        Usage: for (auto [aKey, aValue] : aMap.Items())
+        """
 
 SolidInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Solid
 
@@ -3404,4 +3336,10 @@ CompSolidInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BR
 
 ProductInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Product
 
-NodeInstance: TypeAlias = BRepGraphInc_Instance__BRepGraph_NodeId
+# C++ typedef aliases
+VertexInstance = nanoocp.BRepGraph.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex
+CoEdgeInstance = nanoocp.BRepGraph.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge
+WireInstance = nanoocp.BRepGraph.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire
+FaceInstance = nanoocp.BRepGraph.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face
+ShellInstance = nanoocp.BRepGraph.BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell
+NodeInstance = nanoocp.BRepGraph.BRepGraphInc_Instance__BRepGraph_NodeId

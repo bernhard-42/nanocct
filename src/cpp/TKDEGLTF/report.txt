@@ -1,8 +1,9 @@
-# nanoOCP generator report for TKDEGLTF: 7 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKDEGLTF: 8 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# override: 3
+# override: 4
 # stream: 2
 # template: 2
+override	RWGltf	rapidjson::GenericValue: namespace skipped (overrides.toml [skip] namespaces)
 override	RWGltf	rapidjson::MemoryPoolAllocator: namespace skipped (overrides.toml [skip] namespaces)
 override	RWGltf	rapidjson::UTF8: namespace skipped (overrides.toml [skip] namespaces)
 override	RWGltf	rapidjson::Writer: namespace skipped (overrides.toml [skip] namespaces)

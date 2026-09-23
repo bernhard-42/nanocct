@@ -16,7 +16,6 @@ import nanoocp.TDocStd
 import nanoocp.TopoDS
 import nanoocp.XCAFDoc
 import nanoocp.XCAFPrs
-import nanoocp.BVH
 import nanoocp.RWGltf
 import nanoocp.TDF
 import nanoocp.TopTools
@@ -685,11 +684,11 @@ class RWGltf_CafWriter(nanoocp.Standard.Standard_Transient):
         def NormalsVec(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.Quantity.NCollection_Vec3__float], /) -> None: ...
 
         @property
-        def TexCoordsVec(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec2f]:
+        def TexCoordsVec(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.Poly.NCollection_Vec2__float]:
             """vector for mesh texture UV coordinates"""
 
         @TexCoordsVec.setter
-        def TexCoordsVec(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.BVH.BVH_Vec2f], /) -> None: ...
+        def TexCoordsVec(self, arg: nanoocp.NCollection.NCollection_LinearVector[nanoocp.Poly.NCollection_Vec2__float], /) -> None: ...
 
         @property
         def IndicesVec(self) -> nanoocp.NCollection.NCollection_LinearVector[nanoocp.Poly.Poly_Triangle]:

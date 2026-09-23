@@ -1577,6 +1577,46 @@ for hot-path release builds where the graph structure is already trusted.)nbdoc"
     }
     { nb::class_<BRepGraph_Validate::Options> cls(m.attr("BRepGraph_Validate"), "Options", R"nbdoc(Validation options.)nbdoc");
     }
+    { nb::class_<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>> cls(m, "NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId", R"nbdoc(@brief High-performance hash map using open addressing with Robin Hood hashing.
+
+NCollection_FlatDataMap is an alternative to NCollection_DataMap that provides
+better cache locality and reduced memory allocation overhead by storing all
+key-value pairs inline in a contiguous array.
+
+Key features:
+- Open addressing with linear probing (better cache locality)
+- Robin Hood hashing (reduces probe sequence variance)
+- Power-of-2 sizing for fast modulo operations
+- No per-element allocations
+
+Typical faster usage patterns:
+- POD or small key/value types
+- Performance-critical code paths
+- Lookup-heavy workloads
+- Full traversal / iteration-heavy workloads
+- Stable-size maps with Reserve() called once before bulk Bind()
+
+Container-specific implementation notes:
+- UnBind() keeps probe clusters consistent using backward-shift compaction.
+
+Relative to NCollection_DataMap:
+- Bind()/UnBind() can be faster in many workloads thanks to contiguous storage and
+no per-element node allocation.
+- Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+Limitations:
+- Keys and values must be movable
+- Higher memory usage at low load factors
+- Iteration order is not insertion order
+- Probe distance grows with collisions (bounded by table capacity)
+
+@note This class is NOT thread-safe. External synchronization is required
+for concurrent access from multiple threads.
+
+@tparam TheKeyType   Type of keys
+@tparam TheItemType  Type of values
+@tparam Hasher       Hash and equality functor (default: NCollection_DefaultHasher))nbdoc");
+    }
     { nb::class_<NCollection_DefaultHasher<BRepGraph_ItemId>> cls(m, "NCollection_DefaultHasher__BRepGraph_ItemId", R"nbdoc(Purpose:     The  DefaultHasher  is a  Hasher  that is used by
 default in NCollection maps.
 To compute the  hash code of the key  is used the
@@ -2066,6 +2106,12 @@ The host must outlive this iterator (guaranteed by range-for semantics).
 
 @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.)nbdoc");
     }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
     { nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>> cls(m, "NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer", R"nbdoc(@brief STL input iterator that wraps an OCCT More()/Next() iterator.
 
 Holds a non-owning pointer to the host iterator/explorer.
@@ -2087,6 +2133,45 @@ The host must outlive this iterator (guaranteed by range-for semantics).
 
 @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.)nbdoc");
     }
+    { nb::class_<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>> cls(m, "NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId", R"nbdoc(@brief High-performance hash set using open addressing with Robin Hood hashing.
+
+NCollection_FlatMap is an alternative to NCollection_Map that provides
+better cache locality and reduced memory allocation overhead by storing all
+keys inline in a contiguous array.
+
+Key features:
+- Open addressing with linear probing (better cache locality)
+- Robin Hood hashing (reduces probe sequence variance)
+- Power-of-2 sizing for fast modulo operations
+- No per-element allocations
+
+Typical faster usage patterns:
+- POD or small key types
+- Performance-critical code paths
+- Lookup-heavy workloads (Contains()/Seek())
+- Full traversal / iteration-heavy workloads
+- Stable-size maps with Reserve() called once before bulk insert
+
+Container-specific implementation notes:
+- Remove() keeps probe clusters consistent using backward-shift compaction.
+
+Relative to NCollection_Map:
+- Add()/Remove() can be faster in many workloads thanks to contiguous storage and
+no per-element node allocation.
+- Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+Limitations:
+- Keys must be movable
+- Higher memory usage at low load factors
+- Iteration order is not insertion order
+- Probe distance grows with collisions (bounded by table capacity)
+
+@note This class is NOT thread-safe. External synchronization is required
+for concurrent access from multiple threads.
+
+@tparam TheKeyType Type of keys
+@tparam Hasher     Hash and equality functor (default: NCollection_DefaultHasher))nbdoc");
+    }
     { nb::class_<NCollection_DefaultHasher<BRepGraph_NodeId>> cls(m, "NCollection_DefaultHasher__BRepGraph_NodeId", R"nbdoc(Purpose:     The  DefaultHasher  is a  Hasher  that is used by
 default in NCollection maps.
 To compute the  hash code of the key  is used the
@@ -2094,12 +2179,90 @@ global function HashCode.
 To compare two keys is used  the  global function
 IsEqual.)nbdoc");
     }
+    { nb::class_<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>> cls(m, "NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID", R"nbdoc(@brief High-performance hash set using open addressing with Robin Hood hashing.
+
+NCollection_FlatMap is an alternative to NCollection_Map that provides
+better cache locality and reduced memory allocation overhead by storing all
+keys inline in a contiguous array.
+
+Key features:
+- Open addressing with linear probing (better cache locality)
+- Robin Hood hashing (reduces probe sequence variance)
+- Power-of-2 sizing for fast modulo operations
+- No per-element allocations
+
+Typical faster usage patterns:
+- POD or small key types
+- Performance-critical code paths
+- Lookup-heavy workloads (Contains()/Seek())
+- Full traversal / iteration-heavy workloads
+- Stable-size maps with Reserve() called once before bulk insert
+
+Container-specific implementation notes:
+- Remove() keeps probe clusters consistent using backward-shift compaction.
+
+Relative to NCollection_Map:
+- Add()/Remove() can be faster in many workloads thanks to contiguous storage and
+no per-element node allocation.
+- Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+Limitations:
+- Keys must be movable
+- Higher memory usage at low load factors
+- Iteration order is not insertion order
+- Probe distance grows with collisions (bounded by table capacity)
+
+@note This class is NOT thread-safe. External synchronization is required
+for concurrent access from multiple threads.
+
+@tparam TheKeyType Type of keys
+@tparam Hasher     Hash and equality functor (default: NCollection_DefaultHasher))nbdoc");
+    }
     { nb::class_<NCollection_DefaultHasher<BRepGraph_UID>> cls(m, "NCollection_DefaultHasher__BRepGraph_UID", R"nbdoc(Purpose:     The  DefaultHasher  is a  Hasher  that is used by
 default in NCollection maps.
 To compute the  hash code of the key  is used the
 global function HashCode.
 To compare two keys is used  the  global function
 IsEqual.)nbdoc");
+    }
+    { nb::class_<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>> cls(m, "NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID", R"nbdoc(@brief High-performance hash set using open addressing with Robin Hood hashing.
+
+NCollection_FlatMap is an alternative to NCollection_Map that provides
+better cache locality and reduced memory allocation overhead by storing all
+keys inline in a contiguous array.
+
+Key features:
+- Open addressing with linear probing (better cache locality)
+- Robin Hood hashing (reduces probe sequence variance)
+- Power-of-2 sizing for fast modulo operations
+- No per-element allocations
+
+Typical faster usage patterns:
+- POD or small key types
+- Performance-critical code paths
+- Lookup-heavy workloads (Contains()/Seek())
+- Full traversal / iteration-heavy workloads
+- Stable-size maps with Reserve() called once before bulk insert
+
+Container-specific implementation notes:
+- Remove() keeps probe clusters consistent using backward-shift compaction.
+
+Relative to NCollection_Map:
+- Add()/Remove() can be faster in many workloads thanks to contiguous storage and
+no per-element node allocation.
+- Iteration is often faster due to contiguous slot scanning and reduced pointer chasing.
+
+Limitations:
+- Keys must be movable
+- Higher memory usage at low load factors
+- Iteration order is not insertion order
+- Probe distance grows with collisions (bounded by table capacity)
+
+@note This class is NOT thread-safe. External synchronization is required
+for concurrent access from multiple threads.
+
+@tparam TheKeyType Type of keys
+@tparam Hasher     Hash and equality functor (default: NCollection_DefaultHasher))nbdoc");
     }
     { nb::class_<NCollection_DefaultHasher<BRepGraph_ItemUID>> cls(m, "NCollection_DefaultHasher__BRepGraph_ItemUID", R"nbdoc(Purpose:     The  DefaultHasher  is a  Hasher  that is used by
 default in NCollection maps.
@@ -2121,6 +2284,36 @@ Holds a non-owning pointer to the host iterator/explorer.
 The host must outlive this iterator (guaranteed by range-for semantics).
 
 @tparam HostType OCCT iterator/explorer with More(), Next(), and a value accessor.)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
+    }
+    { nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>> cls(m, "BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell", R"nbdoc(@brief Unified instance container template.
+
+Bundles a typed definition id with location and orientation.
+
+@tparam TypedIdT typed definition id (e.g. BRepGraph_FaceId, BRepGraph_NodeId).)nbdoc");
     }
     { nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>> cls(m, "NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator", R"nbdoc(@brief STL input iterator that wraps an OCCT More()/Next() iterator.
 
@@ -6480,6 +6673,53 @@ Uses Mode::Lightweight; for full structural audit use Perform(theGraph, Mode::Au
         .def_static("Audit", static_cast<BRepGraph_Validate::Options (*)()>(&BRepGraph_Validate::Options::Audit), R"nbdoc(Build options for full-audit validation.)nbdoc");
     nanoocp_implicit_copy_ctor<BRepGraph_Validate::Options>(nb::borrow<nb::class_<BRepGraph_Validate::Options>>(m.attr("BRepGraph_Validate").attr("Options")));
     nanoocp_def_field(nb::borrow<nb::class_<BRepGraph_Validate::Options>>(m.attr("BRepGraph_Validate").attr("Options")), "ValidationMode", &BRepGraph_Validate::Options::ValidationMode, R"nbdoc(Default mode for regular validation calls.)nbdoc");
+    nanoocp_if_concrete<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>>(nb::borrow<nb::class_<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>>>(m.attr("NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const size_t theNbBuckets) { new (self) nanoocp_T(theNbBuckets); }, nb::arg("theNbBuckets"), R"nbdoc(Constructor with initial capacity hint
+@param theNbBuckets initial capacity (will be rounded up to power of 2))nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_DefaultHasher<BRepGraph_ItemId> & theHasher, const size_t theNbBuckets) { new (self) nanoocp_T(theHasher, theNbBuckets); }, nb::arg("theHasher"), nb::arg("theNbBuckets") = static_cast<std::decay_t<const size_t>>(0), R"nbdoc(Constructor with custom hasher (copy).
+@param theHasher custom hasher instance
+@param theNbBuckets initial capacity hint)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>>>(m.attr("NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId"))
+        .def("Size", static_cast<size_t (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Size), R"nbdoc(Returns number of elements.)nbdoc")
+        .def("Extent", static_cast<int (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Extent), R"nbdoc(Returns number of elements (legacy int-returning API, convention shared with BaseMap).)nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::IsEmpty), R"nbdoc(Returns true if map is empty)nbdoc")
+        .def("Capacity", static_cast<size_t (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Capacity), R"nbdoc(Returns current capacity)nbdoc")
+        .def("IsBound", static_cast<bool (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &) const>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::IsBound), nb::arg("theKey"), R"nbdoc(Check if key exists)nbdoc")
+        .def("Contained", static_cast<std::optional<std::pair<std::reference_wrapper<const BRepGraph_ItemId>, std::reference_wrapper<BRepGraph_ItemId>>> (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Contained), nb::arg("theKey"), R"nbdoc(Contained returns optional pair of const key reference and mutable value reference.
+Returns std::nullopt if the key is not found.)nbdoc")
+        .def("Find", static_cast<const BRepGraph_ItemId & (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &) const>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Find), nb::arg("theKey"), R"nbdoc(Find value by key, throws if not found)nbdoc")
+        .def("ChangeFind", static_cast<BRepGraph_ItemId & (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::ChangeFind), nb::rv_policy::reference_internal, nb::arg("theKey"), R"nbdoc(Find value by key (mutable), throws if not found)nbdoc")
+        .def("__call__", static_cast<BRepGraph_ItemId & (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::operator()), nb::rv_policy::reference_internal, nb::arg("theKey"), R"nbdoc(Operator() for mutable access)nbdoc", nb::is_operator())
+        .def("Bind", static_cast<bool (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &, const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bind), nb::arg("theKey"), nb::arg("theItem"), R"nbdoc(Bind key to value
+@return true if key was newly added, false if existing key was updated)nbdoc")
+        .def("TryBind", static_cast<bool (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &, const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBind), nb::arg("theKey"), nb::arg("theItem"), R"nbdoc(TryBind binds key to value only if key is not yet bound.
+@param theKey key to add
+@param theItem item to bind if key is not yet bound
+@return true if key was newly added, false if key already existed)nbdoc")
+        .def("Bound", static_cast<BRepGraph_ItemId & (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &, const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Bound), nb::rv_policy::reference_internal, nb::arg("theKey"), nb::arg("theItem"), R"nbdoc(Bound binds key to value and returns reference to the value.
+@param theKey key to add/update
+@param theItem new item; overrides value previously bound to the key
+@return reference to the value in the map)nbdoc")
+        .def("TryBound", static_cast<BRepGraph_ItemId & (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &, const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::TryBound), nb::rv_policy::reference_internal, nb::arg("theKey"), nb::arg("theItem"), R"nbdoc(TryBound binds key to value only if key is not yet bound.
+@param theKey key to add
+@param theItem item to bind if key is not yet bound
+@return reference to existing or newly bound value)nbdoc")
+        .def("UnBind", static_cast<bool (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const BRepGraph_ItemId &)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::UnBind), nb::arg("theKey"), R"nbdoc(Remove key from map
+@return true if key was found and removed)nbdoc")
+        .def("Clear", static_cast<void (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(bool)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Clear), nb::arg("doReleaseMemory") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Clear all elements
+@param doReleaseMemory if true, free the internal buffer)nbdoc")
+        .def("Exchange", static_cast<void (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>> &) noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Exchange), nb::arg("theOther"), R"nbdoc(Exchange content with another map)nbdoc")
+        .def("GetHasher", static_cast<const NCollection_DefaultHasher<BRepGraph_ItemId> & (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::GetHasher), R"nbdoc(Returns const reference to the hasher.)nbdoc")
+        .def("reserve", static_cast<void (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(size_t)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("Reserve", static_cast<void (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)(const size_t)>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("begin", static_cast<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::begin), R"nbdoc(Returns iterator to first element)nbdoc")
+        .def("end", static_cast<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::end), R"nbdoc(Returns iterator past the end)nbdoc")
+        .def("cbegin", static_cast<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::cbegin), R"nbdoc(Returns iterator to first element)nbdoc")
+        .def("cend", static_cast<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Iterator (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)() const noexcept>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::cend), R"nbdoc(Returns iterator past the end)nbdoc")
+        .def("Items", static_cast<NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::ItemsView (NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::*)()>(&NCollection_FlatDataMap<BRepGraph_ItemId, BRepGraph_ItemId, NCollection_DefaultHasher<BRepGraph_ItemId>>::Items), R"nbdoc(Returns a view for key-value pair iteration.
+Usage: for (auto [aKey, aValue] : aMap.Items()))nbdoc");
     nanoocp_implicit_default_ctor<NCollection_DefaultHasher<BRepGraph_ItemId>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_ItemId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_ItemId")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_ItemId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_ItemId"))
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<BRepGraph_ItemId>::*)(const BRepGraph_ItemId &) const noexcept>(&NCollection_DefaultHasher<BRepGraph_ItemId>::operator()), nb::arg("theKey"), nb::is_operator())
@@ -6857,6 +7097,13 @@ constructed in an inert state.)nbdoc");
         .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
         .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_DefsIterator::DefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_DefsIterator_DefsVertexOfEdge")));
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId>::Orientation);
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_ChildExplorer * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ChildExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ChildExplorer"))
@@ -6875,16 +7122,109 @@ constructed in an inert state.)nbdoc");
         .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
         .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_ParentExplorer>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_ParentExplorer")));
+    nanoocp_if_concrete<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>>(nb::borrow<nb::class_<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>>>(m.attr("NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const size_t theNbBuckets) { new (self) nanoocp_T(theNbBuckets); }, nb::arg("theNbBuckets"), R"nbdoc(Constructor with initial capacity hint)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_DefaultHasher<BRepGraph_NodeId> & theHasher, const size_t theNbBuckets) { new (self) nanoocp_T(theHasher, theNbBuckets); }, nb::arg("theHasher"), nb::arg("theNbBuckets") = static_cast<std::decay_t<const size_t>>(0), R"nbdoc(Constructor with custom hasher (copy).
+@param theHasher custom hasher instance
+@param theNbBuckets initial capacity hint)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>>>(m.attr("NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId"))
+        .def("Size", static_cast<size_t (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Size), R"nbdoc(Returns number of elements.)nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::IsEmpty), R"nbdoc(Returns true if map is empty)nbdoc")
+        .def("Capacity", static_cast<size_t (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Capacity), R"nbdoc(Returns current capacity)nbdoc")
+        .def("Contains", static_cast<bool (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(const BRepGraph_NodeId &) const>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Contains), nb::arg("theKey"), R"nbdoc(Check if key exists)nbdoc")
+        .def("Contained", static_cast<std::optional<std::reference_wrapper<const BRepGraph_NodeId>> (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(const BRepGraph_NodeId &) const>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Contained), nb::arg("theKey"), R"nbdoc(Contained returns optional const reference to the key in the map.
+Returns std::nullopt if the key is not found.)nbdoc")
+        .def("Add", static_cast<bool (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(const BRepGraph_NodeId &)>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Add), nb::arg("theKey"), R"nbdoc(Add key to set
+@return true if key was newly added, false if already present)nbdoc")
+        .def("Added", static_cast<const BRepGraph_NodeId & (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(const BRepGraph_NodeId &)>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Added), nb::arg("theKey"), R"nbdoc(Added: add a new key if not yet in the map, and return
+reference to either newly added or previously existing key.
+@param theKey key to add
+@return const reference to the key in the map)nbdoc")
+        .def("Remove", static_cast<bool (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(const BRepGraph_NodeId &)>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Remove), nb::arg("theKey"), R"nbdoc(Remove key from set
+@return true if key was found and removed)nbdoc")
+        .def("Clear", static_cast<void (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(bool)>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Clear), nb::arg("doReleaseMemory") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Clear all elements)nbdoc")
+        .def("Exchange", static_cast<void (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>> &) noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Exchange), nb::arg("theOther"), R"nbdoc(Exchange content with another map)nbdoc")
+        .def("GetHasher", static_cast<const NCollection_DefaultHasher<BRepGraph_NodeId> & (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::GetHasher), R"nbdoc(Returns const reference to the hasher.)nbdoc")
+        .def("reserve", static_cast<void (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(size_t)>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("Reserve", static_cast<void (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)(const size_t)>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("begin", static_cast<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::begin))
+        .def("end", static_cast<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::end))
+        .def("cbegin", static_cast<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::cbegin))
+        .def("cend", static_cast<NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::Iterator (NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_NodeId, NCollection_DefaultHasher<BRepGraph_NodeId>>::cend));
     nanoocp_implicit_default_ctor<NCollection_DefaultHasher<BRepGraph_NodeId>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_NodeId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_NodeId")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_NodeId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_NodeId"))
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<BRepGraph_NodeId>::*)(const BRepGraph_NodeId &) const noexcept>(&NCollection_DefaultHasher<BRepGraph_NodeId>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<BRepGraph_NodeId>::*)(const BRepGraph_NodeId &, const BRepGraph_NodeId &) const noexcept>(&NCollection_DefaultHasher<BRepGraph_NodeId>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
     nanoocp_implicit_copy_ctor<NCollection_DefaultHasher<BRepGraph_NodeId>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_NodeId>>>(m.attr("NCollection_DefaultHasher__BRepGraph_NodeId")));
+    nanoocp_if_concrete<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>>(nb::borrow<nb::class_<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>>>(m.attr("NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const size_t theNbBuckets) { new (self) nanoocp_T(theNbBuckets); }, nb::arg("theNbBuckets"), R"nbdoc(Constructor with initial capacity hint)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_DefaultHasher<BRepGraph_UID> & theHasher, const size_t theNbBuckets) { new (self) nanoocp_T(theHasher, theNbBuckets); }, nb::arg("theHasher"), nb::arg("theNbBuckets") = static_cast<std::decay_t<const size_t>>(0), R"nbdoc(Constructor with custom hasher (copy).
+@param theHasher custom hasher instance
+@param theNbBuckets initial capacity hint)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>>>(m.attr("NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID"))
+        .def("Size", static_cast<size_t (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Size), R"nbdoc(Returns number of elements.)nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::IsEmpty), R"nbdoc(Returns true if map is empty)nbdoc")
+        .def("Capacity", static_cast<size_t (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Capacity), R"nbdoc(Returns current capacity)nbdoc")
+        .def("Contains", static_cast<bool (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(const BRepGraph_UID &) const>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Contains), nb::arg("theKey"), R"nbdoc(Check if key exists)nbdoc")
+        .def("Contained", static_cast<std::optional<std::reference_wrapper<const BRepGraph_UID>> (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(const BRepGraph_UID &) const>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Contained), nb::arg("theKey"), R"nbdoc(Contained returns optional const reference to the key in the map.
+Returns std::nullopt if the key is not found.)nbdoc")
+        .def("Add", static_cast<bool (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(const BRepGraph_UID &)>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Add), nb::arg("theKey"), R"nbdoc(Add key to set
+@return true if key was newly added, false if already present)nbdoc")
+        .def("Added", static_cast<const BRepGraph_UID & (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(const BRepGraph_UID &)>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Added), nb::arg("theKey"), R"nbdoc(Added: add a new key if not yet in the map, and return
+reference to either newly added or previously existing key.
+@param theKey key to add
+@return const reference to the key in the map)nbdoc")
+        .def("Remove", static_cast<bool (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(const BRepGraph_UID &)>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Remove), nb::arg("theKey"), R"nbdoc(Remove key from set
+@return true if key was found and removed)nbdoc")
+        .def("Clear", static_cast<void (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(bool)>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Clear), nb::arg("doReleaseMemory") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Clear all elements)nbdoc")
+        .def("Exchange", static_cast<void (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>> &) noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Exchange), nb::arg("theOther"), R"nbdoc(Exchange content with another map)nbdoc")
+        .def("GetHasher", static_cast<const NCollection_DefaultHasher<BRepGraph_UID> & (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::GetHasher), R"nbdoc(Returns const reference to the hasher.)nbdoc")
+        .def("reserve", static_cast<void (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(size_t)>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("Reserve", static_cast<void (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)(const size_t)>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("begin", static_cast<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::begin))
+        .def("end", static_cast<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::end))
+        .def("cbegin", static_cast<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::cbegin))
+        .def("cend", static_cast<NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::Iterator (NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_UID, NCollection_DefaultHasher<BRepGraph_UID>>::cend));
     nanoocp_implicit_default_ctor<NCollection_DefaultHasher<BRepGraph_UID>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_UID>>>(m.attr("NCollection_DefaultHasher__BRepGraph_UID")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_UID>>>(m.attr("NCollection_DefaultHasher__BRepGraph_UID"))
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<BRepGraph_UID>::*)(const BRepGraph_UID &) const noexcept>(&NCollection_DefaultHasher<BRepGraph_UID>::operator()), nb::arg("theKey"), nb::is_operator())
         .def("__call__", static_cast<bool (NCollection_DefaultHasher<BRepGraph_UID>::*)(const BRepGraph_UID &, const BRepGraph_UID &) const noexcept>(&NCollection_DefaultHasher<BRepGraph_UID>::operator()), nb::arg("theK1"), nb::arg("theK2"), nb::is_operator());
     nanoocp_implicit_copy_ctor<NCollection_DefaultHasher<BRepGraph_UID>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_UID>>>(m.attr("NCollection_DefaultHasher__BRepGraph_UID")));
+    nanoocp_if_concrete<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>>(nb::borrow<nb::class_<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>>>(m.attr("NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
+        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Default constructor)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const size_t theNbBuckets) { new (self) nanoocp_T(theNbBuckets); }, nb::arg("theNbBuckets"), R"nbdoc(Constructor with initial capacity hint)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_DefaultHasher<BRepGraph_ItemUID> & theHasher, const size_t theNbBuckets) { new (self) nanoocp_T(theHasher, theNbBuckets); }, nb::arg("theHasher"), nb::arg("theNbBuckets") = static_cast<std::decay_t<const size_t>>(0), R"nbdoc(Constructor with custom hasher (copy).
+@param theHasher custom hasher instance
+@param theNbBuckets initial capacity hint)nbdoc")
+        .def("__init__", [](nanoocp_T *self, const NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>> & theOther) { new (self) nanoocp_T(theOther); }, nb::arg("theOther"), R"nbdoc(Copy constructor)nbdoc"); });
+    nb::borrow<nb::class_<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>>>(m.attr("NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID"))
+        .def("Size", static_cast<size_t (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Size), R"nbdoc(Returns number of elements.)nbdoc")
+        .def("IsEmpty", static_cast<bool (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::IsEmpty), R"nbdoc(Returns true if map is empty)nbdoc")
+        .def("Capacity", static_cast<size_t (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Capacity), R"nbdoc(Returns current capacity)nbdoc")
+        .def("Contains", static_cast<bool (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(const BRepGraph_ItemUID &) const>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Contains), nb::arg("theKey"), R"nbdoc(Check if key exists)nbdoc")
+        .def("Contained", static_cast<std::optional<std::reference_wrapper<const BRepGraph_ItemUID>> (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(const BRepGraph_ItemUID &) const>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Contained), nb::arg("theKey"), R"nbdoc(Contained returns optional const reference to the key in the map.
+Returns std::nullopt if the key is not found.)nbdoc")
+        .def("Add", static_cast<bool (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(const BRepGraph_ItemUID &)>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Add), nb::arg("theKey"), R"nbdoc(Add key to set
+@return true if key was newly added, false if already present)nbdoc")
+        .def("Added", static_cast<const BRepGraph_ItemUID & (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(const BRepGraph_ItemUID &)>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Added), nb::arg("theKey"), R"nbdoc(Added: add a new key if not yet in the map, and return
+reference to either newly added or previously existing key.
+@param theKey key to add
+@return const reference to the key in the map)nbdoc")
+        .def("Remove", static_cast<bool (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(const BRepGraph_ItemUID &)>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Remove), nb::arg("theKey"), R"nbdoc(Remove key from set
+@return true if key was found and removed)nbdoc")
+        .def("Clear", static_cast<void (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(bool)>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Clear), nb::arg("doReleaseMemory") = static_cast<std::decay_t<bool>>(false), R"nbdoc(Clear all elements)nbdoc")
+        .def("Exchange", static_cast<void (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>> &) noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Exchange), nb::arg("theOther"), R"nbdoc(Exchange content with another map)nbdoc")
+        .def("GetHasher", static_cast<const NCollection_DefaultHasher<BRepGraph_ItemUID> & (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::GetHasher), R"nbdoc(Returns const reference to the hasher.)nbdoc")
+        .def("reserve", static_cast<void (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(size_t)>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("Reserve", static_cast<void (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)(const size_t)>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Reserve), nb::arg("theN"), R"nbdoc(Reserve capacity for at least theN elements)nbdoc")
+        .def("begin", static_cast<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::begin))
+        .def("end", static_cast<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::end))
+        .def("cbegin", static_cast<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::cbegin))
+        .def("cend", static_cast<NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::Iterator (NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::*)() const noexcept>(&NCollection_FlatMap<BRepGraph_ItemUID, NCollection_DefaultHasher<BRepGraph_ItemUID>>::cend));
     nanoocp_implicit_default_ctor<NCollection_DefaultHasher<BRepGraph_ItemUID>>(nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_ItemUID>>>(m.attr("NCollection_DefaultHasher__BRepGraph_ItemUID")));
     nb::borrow<nb::class_<NCollection_DefaultHasher<BRepGraph_ItemUID>>>(m.attr("NCollection_DefaultHasher__BRepGraph_ItemUID"))
         .def("__call__", static_cast<size_t (NCollection_DefaultHasher<BRepGraph_ItemUID>::*)(const BRepGraph_ItemUID &) const noexcept>(&NCollection_DefaultHasher<BRepGraph_ItemUID>::operator()), nb::arg("theKey"), nb::is_operator())
@@ -6902,6 +7242,41 @@ constructed in an inert state.)nbdoc");
         .def("__eq__", [](const NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs == arg1; }, nb::is_operator()) /* free operator== */
         .def("__ne__", [](const NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge> & theLhs, NCollection_ForwardRangeSentinel arg1) { return theLhs != arg1; }, nb::is_operator()) /* free operator!= */;
     nanoocp_implicit_copy_ctor<NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RefsIterator::RefsVertexOfEdge>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RefsIterator_RefsVertexOfEdge")));
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Vertex")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Vertex>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_CoEdge")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::CoEdge>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Face")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Face>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Wire")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Wire>>::Orientation);
+    nanoocp_implicit_default_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")));
+    nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell"))
+        .def("IsValid", static_cast<bool (BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::*)() const>(&BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::IsValid), R"nbdoc(Returns true if the instance references an existing definition id.)nbdoc");
+    nanoocp_implicit_copy_ctor<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")));
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")), "DefId", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::DefId);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")), "Location", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::Location);
+    nanoocp_def_field(nb::borrow<nb::class_<BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>>>(m.attr("BRepGraphInc_Instance__BRepGraph_NodeId_Typed__BRepGraph_NodeId_Kind_Shell")), "Orientation", &BRepGraphInc::Instance<BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Shell>>::Orientation);
     nanoocp_if_concrete<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>(nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self, BRepGraph_RelatedIterator * theHost) { new (self) nanoocp_T(theHost); }, nb::arg("theHost"), R"nbdoc(Construct from a pointer to the host iterator.)nbdoc"); });
     nb::borrow<nb::class_<NCollection_ForwardRangeIterator<BRepGraph_RelatedIterator>>>(m.attr("NCollection_ForwardRangeIterator__BRepGraph_RelatedIterator"))

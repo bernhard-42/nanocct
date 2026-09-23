@@ -10,15 +10,17 @@ _ALIASES = {
     "Graphic3d_Mat4": ("nanoocp.BVH", "BVH_Mat4f"),
     "Graphic3d_Mat4d": ("nanoocp.BVH", "BVH_Mat4d"),
     "Graphic3d_SequenceOfGroup": ("nanoocp.NCollection", "NCollection_Sequence__Handle_Graphic3d_Group"),
-    "Graphic3d_Vec2": ("nanoocp.BVH", "BVH_Vec2f"),
+    "Graphic3d_Vec2": ("nanoocp.Poly", "NCollection_Vec2__float"),
     "Graphic3d_Vec2d": ("nanoocp.BVH", "BVH_Vec2d"),
     "Graphic3d_Vec2i": ("nanoocp.BVH", "BVH_Vec2i"),
+    "Graphic3d_Vec2u": ("nanoocp.OpenGl", "NCollection_Vec2__unsigned_int"),
     "Graphic3d_Vec3": ("nanoocp.Quantity", "NCollection_Vec3__float"),
     "Graphic3d_Vec3d": ("nanoocp.BVH", "BVH_Vec3d"),
     "Graphic3d_Vec3i": ("nanoocp.BVH", "BVH_Vec3i"),
     "Graphic3d_Vec4": ("nanoocp.Quantity", "NCollection_Vec4__float"),
     "Graphic3d_Vec4d": ("nanoocp.BVH", "BVH_Vec4d"),
     "Graphic3d_Vec4i": ("nanoocp.BVH", "BVH_Vec4i"),
+    "Graphic3d_Vec4ub": ("nanoocp.Graphic3d", "NCollection_Vec4__unsigned_char"),
 }
 
 

@@ -6,7 +6,6 @@ from typing import TextIO, overload
 
 import nanoocp.Aspect
 import nanoocp.BVH
-from nanoocp.BVH import BVH_Vec2f as NCollection_Vec2__float
 import nanoocp.Bnd
 from nanoocp.Bnd import BVH_Box__double__3 as Graphic3d_BndBox3d
 import nanoocp.Font
@@ -14,11 +13,8 @@ import nanoocp.Image
 import nanoocp.Media
 import nanoocp.NCollection
 import nanoocp.OSD
+import nanoocp.Poly
 import nanoocp.Quantity
-from nanoocp.Quantity import (
-    NCollection_Vec3__float as NCollection_Vec3__float,
-    NCollection_Vec4__float as NCollection_Vec4__float
-)
 import nanoocp.Standard
 import nanoocp.TCollection
 import nanoocp.TopLoc
@@ -2292,7 +2288,7 @@ class Graphic3d_ArrayOfPrimitives(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def AddVertex(self, theVertex: nanoocp.gp.gp_Pnt, theColor: "NCollection_Vec4<unsigned char>") -> int:
+    def AddVertex(self, theVertex: nanoocp.gp.gp_Pnt, theColor: NCollection_Vec4__unsigned_char) -> int:
         """
         Adds a vertice and vertex color in the vertex array.
         Warning: theColor is ignored when the hasVColors constructor parameter is FALSE
@@ -2422,7 +2418,7 @@ class Graphic3d_ArrayOfPrimitives(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def SetVertexColor(self, theIndex: int, theColor: "NCollection_Vec4<unsigned char>") -> None:
+    def SetVertexColor(self, theIndex: int, theColor: NCollection_Vec4__unsigned_char) -> None:
         """
         Change the vertex color in the array.
         @param[in] theIndex node index within [1, VertexNumberAllocated()] range
@@ -2501,7 +2497,7 @@ class Graphic3d_ArrayOfPrimitives(nanoocp.Standard.Standard_Transient):
         """
 
     @overload
-    def VertexColor(self, theIndex: int, theColor: "NCollection_Vec4<unsigned char>") -> None:
+    def VertexColor(self, theIndex: int, theColor: NCollection_Vec4__unsigned_char) -> None:
         """
         Returns the vertex color from the vertex table if defined.
         @param[in]  theIndex node index within [1, VertexNumber()] range
@@ -4295,7 +4291,7 @@ class Graphic3d_UniformVec2(Graphic3d_ValueInterface):
     """Describes specific value of custom uniform variable."""
 
     @overload
-    def __init__(self, theValue: nanoocp.BVH.BVH_Vec2f) -> None:
+    def __init__(self, theValue: nanoocp.Poly.NCollection_Vec2__float) -> None:
         """Creates new variable value."""
 
     @overload
@@ -4305,11 +4301,11 @@ class Graphic3d_UniformVec2(Graphic3d_ValueInterface):
         """Returns unique identifier of value type."""
 
     @property
-    def Value(self) -> nanoocp.BVH.BVH_Vec2f:
+    def Value(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """Value of custom uniform variable."""
 
     @Value.setter
-    def Value(self, arg: nanoocp.BVH.BVH_Vec2f, /) -> None: ...
+    def Value(self, arg: nanoocp.Poly.NCollection_Vec2__float, /) -> None: ...
 
 class Graphic3d_UniformVec3(Graphic3d_ValueInterface):
     """Describes specific value of custom uniform variable."""
@@ -4484,22 +4480,22 @@ class Graphic3d_TextureParams(nanoocp.Standard.Standard_Transient):
     def SetRotation(self, theAngleDegrees: float) -> None:
         """@param theAngleDegrees rotation angle."""
 
-    def Scale(self) -> nanoocp.BVH.BVH_Vec2f:
+    def Scale(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         Return scale factor; (1.0; 1.0) by default, which means no scaling.
         Complete transformation matrix: Rotation -> Translation -> Scale.
         """
 
-    def SetScale(self, theScale: nanoocp.BVH.BVH_Vec2f) -> None:
+    def SetScale(self, theScale: nanoocp.Poly.NCollection_Vec2__float) -> None:
         """@param theScale scale factor."""
 
-    def Translation(self) -> nanoocp.BVH.BVH_Vec2f:
+    def Translation(self) -> nanoocp.Poly.NCollection_Vec2__float:
         """
         Return translation vector; (0.0; 0.0), which means no translation.
         Complete transformation matrix: Rotation -> Translation -> Scale.
         """
 
-    def SetTranslation(self, theVec: nanoocp.BVH.BVH_Vec2f) -> None:
+    def SetTranslation(self, theVec: nanoocp.Poly.NCollection_Vec2__float) -> None:
         """@param theVec translation vector."""
 
     def GenMode(self) -> Graphic3d_TypeOfTextureMode:
@@ -4711,7 +4707,7 @@ class Graphic3d_ShaderProgram(nanoocp.Standard.Standard_Transient):
     def PushVariableFloat(self, theName: nanoocp.TCollection.TCollection_AsciiString, theValue: float) -> bool:
         """Pushes float uniform."""
 
-    def PushVariableVec2(self, theName: nanoocp.TCollection.TCollection_AsciiString, theValue: nanoocp.BVH.BVH_Vec2f) -> bool:
+    def PushVariableVec2(self, theName: nanoocp.TCollection.TCollection_AsciiString, theValue: nanoocp.Poly.NCollection_Vec2__float) -> bool:
         """Pushes vec2 uniform."""
 
     def PushVariableVec3(self, theName: nanoocp.TCollection.TCollection_AsciiString, theValue: nanoocp.Quantity.NCollection_Vec3__float) -> bool:
@@ -6923,7 +6919,7 @@ class Graphic3d_Camera(nanoocp.Standard.Standard_Transient):
     def IsCustomStereoFrustum(self) -> bool:
         """Return TRUE if custom stereo frustums are set."""
 
-    def SetCustomStereoFrustums(self, theFrustumL: "Aspect_FrustumLRBT<double>", theFrustumR: "Aspect_FrustumLRBT<double>") -> None:
+    def SetCustomStereoFrustums(self, theFrustumL: nanoocp.Aspect.Aspect_FrustumLRBT__double, theFrustumR: nanoocp.Aspect.Aspect_FrustumLRBT__double) -> None:
         """
         Set custom stereo frustums.
         These can be retrieved from APIs like OpenVR.
@@ -12313,6 +12309,356 @@ class Graphic3d_Layer(nanoocp.Standard.Standard_Transient):
     def DumpJson(self, theDepth: int = -1) -> str:
         """Dumps the content of me into the stream"""
 
+class NCollection_Vec4__unsigned_char:
+    """
+    Generic 4-components vector.
+    To be used as RGBA color vector or XYZW 3D-point with special W-component
+    for operations with projection / model view matrices.
+    Use this class for 3D-points carefully because declared W-component may
+    results in incorrect results if used without matrices.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor. Construct the zero vector."""
+
+    @overload
+    def __init__(self, theValue: int) -> None:
+        """Initialize ALL components of vector within specified value."""
+
+    @overload
+    def __init__(self, theVec2: "NCollection_Vec2<unsigned char>") -> None:
+        """Constructor from 2-components vector."""
+
+    @overload
+    def __init__(self, theVec3: "NCollection_Vec3<unsigned char>", theW: int = 0) -> None:
+        """Constructor from 3-components vector + optional 4th value."""
+
+    @overload
+    def __init__(self, theX: int, theY: int, theZ: int, theW: int) -> None:
+        """Per-component constructor."""
+
+    @overload
+    def __init__(self, theOther: NCollection_Vec4__unsigned_char) -> None: ...
+
+    @staticmethod
+    def Length() -> int:
+        """Returns the number of components."""
+
+    @overload
+    def SetValues(self, theX: int, theY: int, theZ: int, theW: int) -> None:
+        """Assign new values to the vector."""
+
+    @overload
+    def SetValues(self, theVec3: "NCollection_Vec3<unsigned char>", theW: int) -> None:
+        """Assign new values as 3-component vector and a 4-th value."""
+
+    def xy(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yx(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xz(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zx(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xw(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wx(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yz(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zy(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yw(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wy(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zw(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wz(self) -> "NCollection_Vec2<unsigned char>":
+        """
+        @return 2 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xyz(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xzy(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yxz(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yzx(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zyx(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zxy(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xyw(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xwy(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yxw(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def ywx(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wyx(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wxy(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xzw(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def xwz(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zxw(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zwx(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wzx(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wxz(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def yzw(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def ywz(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zyw(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def zwy(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wzy(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def wyz(self) -> "NCollection_Vec3<unsigned char>":
+        """
+        @return 3 of XYZW components in specified order as vector in GLSL-style
+        """
+
+    def rgb(self) -> "NCollection_Vec3<unsigned char>":
+        """@return RGB components as vector"""
+
+    def rbg(self) -> "NCollection_Vec3<unsigned char>":
+        """@return RGB components as vector"""
+
+    def grb(self) -> "NCollection_Vec3<unsigned char>":
+        """@return RGB components as vector"""
+
+    def gbr(self) -> "NCollection_Vec3<unsigned char>":
+        """@return RGB components as vector"""
+
+    def bgr(self) -> "NCollection_Vec3<unsigned char>":
+        """@return RGB components as vector"""
+
+    def brg(self) -> "NCollection_Vec3<unsigned char>":
+        """@return RGB components as vector"""
+
+    def x(self) -> int:
+        """Alias to 1st component as X coordinate in XYZW."""
+
+    def r(self) -> int:
+        """Alias to 1st component as RED channel in RGBA."""
+
+    def y(self) -> int:
+        """Alias to 2nd component as Y coordinate in XYZW."""
+
+    def g(self) -> int:
+        """Alias to 2nd component as GREEN channel in RGBA."""
+
+    def z(self) -> int:
+        """Alias to 3rd component as Z coordinate in XYZW."""
+
+    def b(self) -> int:
+        """Alias to 3rd component as BLUE channel in RGBA."""
+
+    def w(self) -> int:
+        """Alias to 4th component as W coordinate in XYZW."""
+
+    def a(self) -> int:
+        """Alias to 4th component as ALPHA channel in RGBA."""
+
+    def IsEqual(self, theOther: NCollection_Vec4__unsigned_char) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __eq__(self, theOther: NCollection_Vec4__unsigned_char) -> bool:
+        """
+        Check this vector with another vector for equality (without tolerance!).
+        """
+
+    def __ne__(self, theOther: NCollection_Vec4__unsigned_char) -> bool:
+        """
+        Check this vector with another vector for non-equality (without tolerance!).
+        """
+
+    def __iadd__(self, theAdd: NCollection_Vec4__unsigned_char) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component summary."""
+
+    def __neg__(self) -> NCollection_Vec4__unsigned_char:
+        """Unary -."""
+
+    def __isub__(self, theDec: NCollection_Vec4__unsigned_char) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component subtraction."""
+
+    @overload
+    def __imul__(self, theRight: NCollection_Vec4__unsigned_char) -> NCollection_Vec4__unsigned_char: ...
+
+    @overload
+    def __imul__(self, theFactor: int) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component multiplication."""
+
+    def Multiply(self, theFactor: int) -> None:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __mul__(self, theFactor: int) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component multiplication."""
+
+    @overload
+    def __mul__(self, arg: NCollection_Vec4__unsigned_char, /) -> NCollection_Vec4__unsigned_char: ...
+
+    def Multiplied(self, theFactor: int) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component multiplication."""
+
+    def cwiseMin(self, theVec: NCollection_Vec4__unsigned_char) -> NCollection_Vec4__unsigned_char:
+        """Compute component-wise minimum of two vectors."""
+
+    def cwiseMax(self, theVec: NCollection_Vec4__unsigned_char) -> NCollection_Vec4__unsigned_char:
+        """Compute component-wise maximum of two vectors."""
+
+    def cwiseAbs(self) -> NCollection_Vec4__unsigned_char:
+        """Compute component-wise modulus of the vector."""
+
+    def maxComp(self) -> int:
+        """Compute maximum component of the vector."""
+
+    def minComp(self) -> int:
+        """Compute minimum component of the vector."""
+
+    def Dot(self, theOther: NCollection_Vec4__unsigned_char) -> int:
+        """Computes the dot product."""
+
+    @overload
+    def __itruediv__(self, theInvFactor: int) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __itruediv__(self, theRight: NCollection_Vec4__unsigned_char) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component division."""
+
+    @overload
+    def __truediv__(self, theInvFactor: int) -> NCollection_Vec4__unsigned_char:
+        """Compute per-component division by scale factor."""
+
+    @overload
+    def __truediv__(self, arg: NCollection_Vec4__unsigned_char, /) -> NCollection_Vec4__unsigned_char: ...
+
+    def DumpJson(self, theDepth: int = -1) -> str:
+        """Dumps the content of me into the stream"""
+
+    def __add__(self, arg: NCollection_Vec4__unsigned_char, /) -> NCollection_Vec4__unsigned_char: ...
+
+    def __sub__(self, arg: NCollection_Vec4__unsigned_char, /) -> NCollection_Vec4__unsigned_char: ...
+
 class NCollection_Mat3__float:
     """
     3x3 Matrix class.
@@ -12874,18 +13220,22 @@ class NCollection_Mat3__double:
 
 # deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)
 import nanoocp.BVH
-import nanoocp.NCollection
-import nanoocp.Quantity
 import nanoocp.Graphic3d
+import nanoocp.NCollection
+import nanoocp.OpenGl
+import nanoocp.Poly
+import nanoocp.Quantity
 Graphic3d_Mat4 = nanoocp.BVH.BVH_Mat4f
 Graphic3d_Mat4d = nanoocp.BVH.BVH_Mat4d
 Graphic3d_SequenceOfGroup = nanoocp.NCollection.NCollection_Sequence[nanoocp.Graphic3d.Graphic3d_Group]
-Graphic3d_Vec2 = nanoocp.BVH.BVH_Vec2f
+Graphic3d_Vec2 = nanoocp.Poly.NCollection_Vec2__float
 Graphic3d_Vec2d = nanoocp.BVH.BVH_Vec2d
 Graphic3d_Vec2i = nanoocp.BVH.BVH_Vec2i
+Graphic3d_Vec2u = nanoocp.OpenGl.NCollection_Vec2__unsigned_int
 Graphic3d_Vec3 = nanoocp.Quantity.NCollection_Vec3__float
 Graphic3d_Vec3d = nanoocp.BVH.BVH_Vec3d
 Graphic3d_Vec3i = nanoocp.BVH.BVH_Vec3i
 Graphic3d_Vec4 = nanoocp.Quantity.NCollection_Vec4__float
 Graphic3d_Vec4d = nanoocp.BVH.BVH_Vec4d
 Graphic3d_Vec4i = nanoocp.BVH.BVH_Vec4i
+Graphic3d_Vec4ub = nanoocp.Graphic3d.NCollection_Vec4__unsigned_char

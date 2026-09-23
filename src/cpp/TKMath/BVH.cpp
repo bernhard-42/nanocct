@@ -67,9 +67,7 @@ for operations with projection / model view matrices.
 Use this class for 3D-points carefully because declared W-component may
 results in incorrect results if used without matrices.)nbdoc");
     }
-    { nb::class_<NCollection_Vec2<float>> cls(m, "BVH_Vec2f", R"nbdoc(Defines the 2D-vector template.
-The main target for this class - to handle raw low-level arrays (from/to graphic driver etc.).)nbdoc");
-    }
+    m.attr("BVH_Vec2f") = nb::module_::import_("nanoocp._TKMath.Poly").attr("NCollection_Vec2__float");
     m.attr("BVH_Vec3f") = nb::module_::import_("nanoocp._TKernel.Quantity").attr("NCollection_Vec3__float");
     m.attr("BVH_Vec4f") = nb::module_::import_("nanoocp._TKernel.Quantity").attr("NCollection_Vec4__float");
     { nb::class_<NCollection_Vec2<double>> cls(m, "BVH_Vec2d", R"nbdoc(Defines the 2D-vector template.
@@ -377,50 +375,6 @@ This method may be used for performance tricks.)nbdoc")
         .def("__mul__", [](const NCollection_Vec4<int> & theLeft, const NCollection_Vec4<int> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
         .def("__truediv__", [](const NCollection_Vec4<int> & theLeft, const NCollection_Vec4<int> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
     nanoocp_implicit_copy_ctor<NCollection_Vec4<int>>(nb::borrow<nb::class_<NCollection_Vec4<int>>>(m.attr("BVH_Vec4i")));
-    nanoocp_if_concrete<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
-        .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
-        .def("__init__", [](nanoocp_T *self, const float theXY) { new (self) nanoocp_T(theXY); }, nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")
-        .def("__init__", [](nanoocp_T *self, const float theX, const float theY) { new (self) nanoocp_T(theX, theY); }, nb::arg("theX"), nb::arg("theY"), R"nbdoc(Per-component constructor.)nbdoc"); });
-    nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f"))
-        .def_static("Length", static_cast<int (*)() noexcept>(&NCollection_Vec2<float>::Length), R"nbdoc(Returns the number of components.)nbdoc")
-        .def("SetValues", static_cast<void (NCollection_Vec2<float>::*)(const float, const float) noexcept>(&NCollection_Vec2<float>::SetValues), nb::arg("theX"), nb::arg("theY"), R"nbdoc(Assign new values to the vector.)nbdoc")
-        .def("xy", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::xy), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("yx", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::yx), R"nbdoc(@return 2 components by their names in specified order (in GLSL-style))nbdoc")
-        .def("x", [](NCollection_Vec2<float> &self) -> float { return self.x(); }, R"nbdoc(Alias to 1st component as X coordinate in XY.)nbdoc")
-        .def("Setx", [](NCollection_Vec2<float> &self, float theValue) { self.x() = theValue; }, nb::arg("theValue"), "Python addition: sets the value x() returns by reference in C++.")
-        .def("y", [](NCollection_Vec2<float> &self) -> float { return self.y(); }, R"nbdoc(Alias to 2nd component as Y coordinate in XY.)nbdoc")
-        .def("Sety", [](NCollection_Vec2<float> &self, float theValue) { self.y() = theValue; }, nb::arg("theValue"), "Python addition: sets the value y() returns by reference in C++.")
-        .def("IsEqual", static_cast<bool (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::IsEqual), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc")
-        .def("__eq__", static_cast<bool (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::operator==), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("__ne__", static_cast<bool (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::operator!=), nb::arg("theOther"), R"nbdoc(Check this vector with another vector for non-equality (without tolerance!).)nbdoc", nb::is_operator())
-        .def("__iadd__", [](NCollection_Vec2<float> &self, const NCollection_Vec2<float> & theAdd) -> NCollection_Vec2<float> & { self.operator+=(theAdd); return self; }, nb::rv_policy::reference, nb::arg("theAdd"), R"nbdoc(Compute per-component summary.)nbdoc", nb::is_operator())
-        .def("__isub__", [](NCollection_Vec2<float> &self, const NCollection_Vec2<float> & theDec) -> NCollection_Vec2<float> & { self.operator-=(theDec); return self; }, nb::rv_policy::reference, nb::arg("theDec"), R"nbdoc(Compute per-component subtraction.)nbdoc", nb::is_operator())
-        .def("__neg__", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::operator-), R"nbdoc(Unary -.)nbdoc", nb::is_operator())
-        .def("__imul__", [](NCollection_Vec2<float> &self, const NCollection_Vec2<float> & theRight) -> NCollection_Vec2<float> & { self.operator*=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component multiplication.)nbdoc", nb::is_operator())
-        .def("Multiply", static_cast<void (NCollection_Vec2<float>::*)(const float) noexcept>(&NCollection_Vec2<float>::Multiply), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc")
-        .def("Multiplied", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)(const float) const noexcept>(&NCollection_Vec2<float>::Multiplied), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc")
-        .def("cwiseMin", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::cwiseMin), nb::arg("theVec"), R"nbdoc(Compute component-wise minimum of two vectors.)nbdoc")
-        .def("cwiseMax", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::cwiseMax), nb::arg("theVec"), R"nbdoc(Compute component-wise maximum of two vectors.)nbdoc")
-        .def("cwiseAbs", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::cwiseAbs), R"nbdoc(Compute component-wise modulus of the vector.)nbdoc")
-        .def("maxComp", static_cast<float (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::maxComp), R"nbdoc(Compute maximum component of the vector.)nbdoc")
-        .def("minComp", static_cast<float (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::minComp), R"nbdoc(Compute minimum component of the vector.)nbdoc")
-        .def("__imul__", [](NCollection_Vec2<float> &self, const float theFactor) -> NCollection_Vec2<float> & { self.operator*=(theFactor); return self; }, nb::rv_policy::reference, nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc", nb::is_operator())
-        .def("__itruediv__", [](NCollection_Vec2<float> &self, const float theInvFactor) -> NCollection_Vec2<float> & { self.operator/=(theInvFactor); return self; }, nb::rv_policy::reference, nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
-        .def("__itruediv__", [](NCollection_Vec2<float> &self, const NCollection_Vec2<float> & theRight) -> NCollection_Vec2<float> & { self.operator/=(theRight); return self; }, nb::rv_policy::reference, nb::arg("theRight"), R"nbdoc(Compute per-component division.)nbdoc", nb::is_operator())
-        .def("__mul__", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)(const float) const noexcept>(&NCollection_Vec2<float>::operator*), nb::arg("theFactor"), R"nbdoc(Compute per-component multiplication by scale factor.)nbdoc", nb::is_operator())
-        .def("__truediv__", static_cast<NCollection_Vec2<float> (NCollection_Vec2<float>::*)(const float) const>(&NCollection_Vec2<float>::operator/), nb::arg("theInvFactor"), R"nbdoc(Compute per-component division by scale factor.)nbdoc", nb::is_operator())
-        .def("Dot", static_cast<float (NCollection_Vec2<float>::*)(const NCollection_Vec2<float> &) const noexcept>(&NCollection_Vec2<float>::Dot), nb::arg("theOther"), R"nbdoc(Computes the dot product.)nbdoc")
-        .def("Modulus", static_cast<float (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::Modulus), R"nbdoc(Computes the vector modulus (magnitude, length).)nbdoc")
-        .def("SquareModulus", static_cast<float (NCollection_Vec2<float>::*)() const noexcept>(&NCollection_Vec2<float>::SquareModulus), R"nbdoc(Computes the square of vector modulus (magnitude, length).
-This method may be used for performance tricks.)nbdoc")
-        .def_static("DX", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DX), R"nbdoc(Construct DX unit vector.)nbdoc")
-        .def_static("DY", static_cast<NCollection_Vec2<float> (*)() noexcept>(&NCollection_Vec2<float>::DY), R"nbdoc(Construct DY unit vector.)nbdoc")
-        .def("DumpJson", [](const NCollection_Vec2<float> &self, int theDepth) { std::ostringstream theOStream_stream; self.DumpJson(theOStream_stream, theDepth); return nanoocp_stream_text(theOStream_stream); }, nb::arg("theDepth") = static_cast<std::decay_t<int>>(- 1), R"nbdoc(Dumps the content of me into the stream)nbdoc")
-        .def("__add__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */
-        .def("__sub__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft - theRight; }, nb::is_operator()) /* free operator- */
-        .def("__mul__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft * theRight; }, nb::is_operator()) /* free operator* */
-        .def("__truediv__", [](const NCollection_Vec2<float> & theLeft, const NCollection_Vec2<float> & theRight) { return theLeft / theRight; }, nb::is_operator()) /* free operator/ */;
-    nanoocp_implicit_copy_ctor<NCollection_Vec2<float>>(nb::borrow<nb::class_<NCollection_Vec2<float>>>(m.attr("BVH_Vec2f")));
     nanoocp_if_concrete<NCollection_Vec2<double>>(nb::borrow<nb::class_<NCollection_Vec2<double>>>(m.attr("BVH_Vec2d")), [](auto &cls) { using nanoocp_T = typename std::decay_t<decltype(cls)>::Type; cls
         .def("__init__", [](nanoocp_T *self) { new (self) nanoocp_T(); }, R"nbdoc(Empty constructor. Construct the zero vector.)nbdoc")
         .def("__init__", [](nanoocp_T *self, const double theXY) { new (self) nanoocp_T(theXY); }, nb::arg("theXY"), R"nbdoc(Initialize ALL components of vector within specified value.)nbdoc")

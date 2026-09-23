@@ -348,7 +348,7 @@ class BRepClass3d_SolidExplorer:
 
     def Intersector(self, F: nanoocp.TopoDS.TopoDS_Face) -> nanoocp.IntCurvesFace.IntCurvesFace_Intersector: ...
 
-    def GetTree(self) -> "NCollection_UBTree<int, Bnd_Box>":
+    def GetTree(self) -> NCollection_UBTree__int__Bnd_Box:
         """Return UB-tree instance which is used for edge / vertex checks."""
 
     def GetMapEV(self) -> nanoocp.NCollection.NCollection_IndexedMap[nanoocp.TopoDS.TopoDS_Shape, nanoocp.TopTools.TopTools_ShapeMapHasher]:
@@ -425,3 +425,96 @@ class BRepClass3d_SolidPassiveClassifier:
 
     def State(self) -> nanoocp.TopAbs.TopAbs_State:
         """Returns the current state of the point."""
+
+class NCollection_UBTree__int__Bnd_Box:
+    """
+    The algorithm of unbalanced binary tree of overlapped bounding boxes.
+
+    Once the tree of boxes  of geometric objects is constructed, the algorithm
+    is capable of fast geometric selection of objects.  The tree can be easily
+    updated by adding to it a new object with bounding box.
+
+    The time of adding to the tree  of one object is O(log(N)), where N is the
+    total number of  objects, so the time  of building a tree of  N objects is
+    O(N(log(N)). The search time of one object is O(log(N)).
+
+    Defining  various classes  inheriting NCollection_UBTree::Selector  we can
+    perform various kinds of selection over the same b-tree object
+
+    The object  may be of any  type allowing copying. Among  the best suitable
+    solutions there can  be a pointer to an object,  handled object or integer
+    index of object inside some  collection.  The bounding object may have any
+    dimension  and  geometry. The  minimal  interface  of TheBndType  (besides
+    public empty and copy constructor and operator =) used in UBTree algorithm
+    is as the following:
+    @code
+    class MyBndType
+    {
+    public:
+    inline void                   Add (const MyBndType& other);
+    // Updates me with other bounding
+
+    inline bool       IsOut (const MyBndType& other) const;
+    // Classifies other bounding relatively me
+
+    inline double          SquareExtent() const;
+    // Computes the squared maximal linear extent of me.
+    // (For box it is the squared diagonal of box)
+    };
+    @endcode
+    To select objects you need to define a class derived from UBTree::Selector
+    that  should  redefine  the  necessary  virtual methods  to  maintain  the
+    selection condition.  The object  of this class  is also used  to retrieve
+    selected objects after search.
+    """
+
+    @overload
+    def __init__(self) -> None:
+        """Empty constructor."""
+
+    @overload
+    def __init__(self, theAllocator: nanoocp.NCollection.NCollection_BaseAllocator | None) -> None:
+        """Constructor."""
+
+    def Add(self, theObj: int, theBnd: nanoocp.Bnd.Bnd_Box) -> bool:
+        """
+        Update the tree with a new object and its bounding box.
+        @param theObj
+        added object
+        @param theBnd
+        bounding box of the object.
+        @return
+        always True
+        """
+
+    def Select(self, theSelector: "NCollection_UBTree<int, Bnd_Box>::Selector") -> int:
+        """
+        Searches in the tree all objects conforming to the given selector.
+        @return
+        Number of objects accepted
+        """
+
+    def Clear(self, aNewAlloc: nanoocp.NCollection.NCollection_BaseAllocator | None = None) -> None:
+        """
+        Clears the contents of the tree.
+        @param aNewAlloc
+        Optional:   a new allocator that will be used when the tree is rebuilt
+        anew. This makes sense if the memory allocator needs re-initialisation
+        (like NCollection_IncAllocator).  By default the previous allocator is
+        kept.
+        """
+
+    def IsEmpty(self) -> bool: ...
+
+    def Root(self) -> "NCollection_UBTree<int, Bnd_Box>::TreeNode":
+        """
+        @return
+        the root node of the tree
+        """
+
+    def Allocator(self) -> nanoocp.NCollection.NCollection_BaseAllocator:
+        """
+        Recommended to be used only in sub-classes.
+        @return
+        Allocator object used in this instance of UBTree.
+        """

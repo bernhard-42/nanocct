@@ -39,6 +39,7 @@ HEADER = """
 #include <NCollection_DataMap.hxx>
 #include <NCollection_DefineAlloc.hxx>
 #include <utility>
+#include <memory>
 #include <gp_Trsf.hxx>
 #include <bitset>
 #include <mutex>
@@ -256,6 +257,35 @@ public:
   double Steps(const int theN, std::pair<int, int>& theSteps) const { theSteps = {theN, theN}; return 1.0; }
 };
 
+//! 6c: an instantiation reachable ONLY through a reference parameter must still be instantiated. `const T&` has
+//! canonical kind LVALUEREFERENCE, so the plain-template check answered False for it and the method bound with a type
+//! nanobind never saw -- RWPly_PlyWriterContext::WriteVertex(..., const NCollection_Vec4<uint8_t>&) was uncallable
+//! (2026-09-23). Rules_TOnly<short> appears nowhere else: no typedef, no field, no by-value parameter.
+template <class T>
+class Rules_TOnly
+{
+public:
+  Rules_TOnly(T theV = T(0)) : myV(theV) {}
+  T Value() const { return myV; }
+
+private:
+  T myV;
+};
+
+//! R-OPTIONAL-PTR: a std::shared_ptr<T> parameter defaulted to its own empty form is dropped rather than skipping the
+//! whole method; nullptr is exactly that default (RWPly_PlyWriterContext::Open, whose every other member needs the
+//! stream it opens).
+class Rules_Sink
+{
+public:
+  Rules_Sink() {}
+  bool Take(const Rules_TOnly<short>& theOnly) const { return theOnly.Value() > 0; }
+  bool Open(const char* theName, const std::shared_ptr<std::ostream>& theStream = std::shared_ptr<std::ostream>()) const
+  {
+    return theName != nullptr && theStream == nullptr;
+  }
+};
+
 //! R-TEMPLATE-BASE: a template base of an alias instantiation is spelled only after substitution and instantiated through a
 //! probe typedef (BVH_PrimitiveSet<double, 3> : BVH_Object<double, 3>); a CRTP base with a template template parameter cannot
 //! be instantiated (BVH_Box<double, 3> : BVH_BaseBox<double, 3, BVH_Box>) and is dropped.
@@ -459,7 +489,8 @@ def test_ir_classes_and_nesting(rules_ir):
                           "Rules_Alloc", "Rules_Arrays"]
     assert set(names[16:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
-                               "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>"}   # alias instantiations, probe bases
+                               "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
+                               "Rules_TOnly<short>"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -654,6 +685,32 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     assert [[p.type for p in k.params] for k in inherit.ctors] == [["const gp_Pnt &"]] and not inherit.has_declared_ctor
     tail = cpp[cpp.index('m.attr("Rules_Inherit"))'):]
     assert "nanoocp_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::arg("thePnt")' in tail
+
+
+def test_ir_instantiation_reachable_only_through_a_reference_parameter(rules_ir):
+    """6c: `const Rules_TOnly<short>&` has canonical kind LVALUEREFERENCE, so the plain-template check has to run on the
+    stripped declaration type. Until 2026-09-23 it ran on the reference and answered False, and the method was bound
+    with a type nanobind never saw -- RWPly_PlyWriterContext::WriteVertex was a TypeError for every argument list, and
+    nothing reported it because the parameter itself is perfectly bindable."""
+    assert any(c.name == "Rules_TOnly<short>" for c in rules_ir.classes)
+    take = _method(rules_ir, "Rules_Sink", "Take")
+    assert take.skip_reason is None and [p.type for p in take.params] == ["const Rules_TOnly<short> &"]
+
+
+def test_ir_shared_ptr_parameter_with_its_own_empty_default_is_dropped(rules_ir):
+    """R-OPTIONAL-PTR: std::shared_ptr<std::ostream> has no caster, but a parameter defaulted to its own empty form
+    needs none -- the omitted parameter is passed as nullptr, which is that same empty shared_ptr. Without it the whole
+    method is skipped, and RWPly_PlyWriterContext (every other member of which needs an open stream) is bound but
+    unusable."""
+    open_ = _method(rules_ir, "Rules_Sink", "Open")
+    assert open_.skip_reason is None
+    assert [(p.name, p.omitted) for p in open_.params] == [("theName", False), ("theStream", True)]
+    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "self.Open(theName, nullptr)" in cpp              # the omitted stream is passed as nullptr
+    assert '.def("Open", [](const Rules_Sink &self, const char * theName)' in cpp   # ... and is gone from the signature
+    assert not any("Rules_Sink::Open" in r for r in em.report + rules_ir.report)
 
 
 def test_ir_non_public_base_blocks_construction_only_when_it_provides_operator_new(rules_ir):

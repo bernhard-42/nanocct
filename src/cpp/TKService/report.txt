@@ -1,23 +1,21 @@
-# nanoOCP generator report for TKService: 282 items not bound. Generated, do not edit.
+# nanoOCP generator report for TKService: 292 items not bound. Generated, do not edit.
 # Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py).
-# conversion: 8
+# conversion: 6
 # incomplete: 8
 # inheritance: 1
 # iterator: 2
 # operator: 2
-# overload-collision: 76
+# overload-collision: 90
 # override: 3
-# raw-pointer: 98
+# raw-pointer: 96
 # rvalue: 1
 # static-rename: 11
 # template: 66
 # undefined: 6
-conversion	Graphic3d	NCollection_Vec2<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
-conversion	Graphic3d	NCollection_Vec2<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
-conversion	Graphic3d	NCollection_Vec3<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
-conversion	Graphic3d	NCollection_Vec3<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
-conversion	Graphic3d	NCollection_Vec4<float>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
-conversion	Graphic3d	NCollection_Vec4<float>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	Aspect	NCollection_Vec3<bool>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	Aspect	NCollection_Vec3<bool>::operator type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	Graphic3d	NCollection_Vec4<unsigned char>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
+conversion	Graphic3d	NCollection_Vec4<unsigned char>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	Image	NCollection_Vec3<unsigned long>::operator const type-parameter-0-0 *: conversion operator to an unsupported type
 conversion	Image	NCollection_Vec3<unsigned long>::operator type-parameter-0-0 *: conversion operator to an unsupported type
 incomplete	Media	Media_CodecContext::Init(): param 'theStream': reference to incomplete type
@@ -36,6 +34,12 @@ operator	Graphic3d	operator|(Graphic3d_TransModeFlags, Graphic3d_TransModeFlags)
 overload-collision	Aspect	Aspect_GenId::Next(int &): same Python signature as another overload after out-param removal -> bound as Next__int
 overload-collision	Aspect	Aspect_VKeySet::HoldDuration(Aspect_VKey, double, double &): same Python signature as another overload after out-param removal -> bound as HoldDuration__float
 overload-collision	Aspect	Aspect_VKeySet::HoldDuration(Aspect_VKey, double, double &, double &): same Python signature as another overload after out-param removal -> bound as HoldDuration__float__float
+overload-collision	Aspect	NCollection_Vec3<bool>::b() const: const twin of a less const overload -> not bound
+overload-collision	Aspect	NCollection_Vec3<bool>::g() const: const twin of a less const overload -> not bound
+overload-collision	Aspect	NCollection_Vec3<bool>::r() const: const twin of a less const overload -> not bound
+overload-collision	Aspect	NCollection_Vec3<bool>::x() const: const twin of a less const overload -> not bound
+overload-collision	Aspect	NCollection_Vec3<bool>::y() const: const twin of a less const overload -> not bound
+overload-collision	Aspect	NCollection_Vec3<bool>::z() const: const twin of a less const overload -> not bound
 overload-collision	Graphic3d	BVH_Box<double, 4>::CornerMax() const: const twin of a less const overload -> not bound
 overload-collision	Graphic3d	BVH_Box<double, 4>::CornerMin() const: const twin of a less const overload -> not bound
 overload-collision	Graphic3d	BVH_Box<float, 4>::CornerMax() const: const twin of a less const overload -> not bound
@@ -63,6 +67,14 @@ overload-collision	Graphic3d	NCollection_Iterator<NCollection_Array1<opencascade
 overload-collision	Graphic3d	NCollection_Iterator<NCollection_Array1<opencascade::handle<Graphic3d_TextureMap>>>::Initialize(const NCollection_Array1<opencascade::handle<Graphic3d_TextureMap>> &): const twin of a less const overload -> not bound
 overload-collision	Graphic3d	NCollection_Mat3<double>::operator()(const size_t, const size_t) const: const twin of a less const overload -> not bound
 overload-collision	Graphic3d	NCollection_Mat3<float>::operator()(const size_t, const size_t) const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::a() const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::b() const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::g() const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::r() const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::w() const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::x() const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::y() const: const twin of a less const overload -> not bound
+overload-collision	Graphic3d	NCollection_Vec4<unsigned char>::z() const: const twin of a less const overload -> not bound
 overload-collision	Image	Image_AlienPixMap::Save(std::ostream &, const TCollection_AsciiString &): same Python signature as another overload after out-param removal -> bound as Save__str
 overload-collision	Image	Image_ColorBGR32::a_() const: const twin of a less const overload -> not bound
 overload-collision	Image	Image_ColorBGR32::b() const: const twin of a less const overload -> not bound
@@ -123,6 +135,8 @@ raw-pointer	Aspect	Aspect_NeutralWindow::SetNativeHandles(Aspect_Drawable, Aspec
 raw-pointer	Aspect	Aspect_OpenVRSession::SubmitEye(): param 'theTexture': void pointer
 raw-pointer	Aspect	Aspect_Window::NativeFBConfig(): return: pointer to incomplete type
 raw-pointer	Aspect	Aspect_XRSession::SubmitEye(): param 'theTexture': void pointer
+raw-pointer	Aspect	NCollection_Vec3<bool>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	Aspect	NCollection_Vec3<bool>::GetData(): return: dependent pointer/mutable reference result
 raw-pointer	Cocoa	Cocoa_Window::Cocoa_Window(): param 'theViewNS': pointer to incomplete type
 raw-pointer	Cocoa	Cocoa_Window::HView(): return: pointer to incomplete type
 raw-pointer	Cocoa	Cocoa_Window::NativeFBConfig(): return: pointer to incomplete type
@@ -148,12 +162,8 @@ raw-pointer	Graphic3d	NCollection_Mat3<double>::ChangeData(): return: dependent 
 raw-pointer	Graphic3d	NCollection_Mat3<double>::GetData(): return: dependent pointer/mutable reference result
 raw-pointer	Graphic3d	NCollection_Mat3<float>::ChangeData(): return: dependent pointer/mutable reference result
 raw-pointer	Graphic3d	NCollection_Mat3<float>::GetData(): return: dependent pointer/mutable reference result
-raw-pointer	Graphic3d	NCollection_Vec2<float>::ChangeData(): return: dependent pointer/mutable reference result
-raw-pointer	Graphic3d	NCollection_Vec2<float>::GetData(): return: dependent pointer/mutable reference result
-raw-pointer	Graphic3d	NCollection_Vec3<float>::ChangeData(): return: dependent pointer/mutable reference result
-raw-pointer	Graphic3d	NCollection_Vec3<float>::GetData(): return: dependent pointer/mutable reference result
-raw-pointer	Graphic3d	NCollection_Vec4<float>::ChangeData(): return: dependent pointer/mutable reference result
-raw-pointer	Graphic3d	NCollection_Vec4<float>::GetData(): return: dependent pointer/mutable reference result
+raw-pointer	Graphic3d	NCollection_Vec4<unsigned char>::ChangeData(): return: dependent pointer/mutable reference result
+raw-pointer	Graphic3d	NCollection_Vec4<unsigned char>::GetData(): return: dependent pointer/mutable reference result
 raw-pointer	Image	Image_AlienPixMap::Load(): param 'theData': raw pointer to primitive
 raw-pointer	Image	Image_AlienPixMap::Save(): param 'theBuffer': raw pointer to primitive
 raw-pointer	Image	Image_PixMap::ChangeData(): return: raw pointer to primitive
@@ -223,6 +233,8 @@ static-rename	Graphic3d	NCollection_Mat3<double>::Multiply: static overloads ren
 static-rename	Graphic3d	NCollection_Mat3<float>::Multiply: static overloads renamed to Multiply_s (instance method of same name exists)
 static-rename	Image	Image_PixMap::SizePixelBytes: static overloads renamed to SizePixelBytes_s (instance method of same name exists)
 template	Aspect	Aspect_FrustumLRBT: template (not bound)
+template	Aspect	Aspect_FrustumLRBT<double>::Aspect_FrustumLRBT<Elem_t>: template member
+template	Aspect	NCollection_Vec3<bool>::NCollection_Vec3<Element_t>: template member
 template	Graphic3d	BVH_Box<double, 3>: base class BVH_BaseBox<double, 3, BVH_Box<double, 3>>: the probe typedef did not compile
 template	Graphic3d	BVH_Box<double, 3>: template base BVH_BaseBox<double, 3, BVH_Box<double, 3>> cannot be instantiated -> dropped, its members are not inherited (R-TEMPLATE-BASE)
 template	Graphic3d	BVH_Box<double, 4>: base class BVH_BaseBox<double, 4, BVH_Box<double, 4>>: the probe typedef did not compile
@@ -277,9 +289,7 @@ template	Graphic3d	NCollection_Mat3<float>::ConvertFrom: template member
 template	Graphic3d	NCollection_Mat3<float>::Map(): param 'theData': raw pointer to primitive (template argument)
 template	Graphic3d	NCollection_Mat3<float>::Map(): param 'theData': raw pointer to primitive (template argument)
 template	Graphic3d	NCollection_Mat3<float>::NCollection_Mat3<Element_t>: template member
-template	Graphic3d	NCollection_Vec2<float>::NCollection_Vec2<Element_t>: template member
-template	Graphic3d	NCollection_Vec3<float>::NCollection_Vec3<Element_t>: template member
-template	Graphic3d	NCollection_Vec4<float>::NCollection_Vec4<Element_t>: template member
+template	Graphic3d	NCollection_Vec4<unsigned char>::NCollection_Vec4<Element_t>: template member
 template	Image	Image_PixMap::ChangeValue: template member
 template	Image	Image_PixMap::ChangeValueXY: template member
 template	Image	Image_PixMap::ChangeValueXYZ: template member
