@@ -2,6 +2,7 @@
 overload-collision resolver, the report categories, and the reproducibility of a regeneration against a previous one
 sources. No compiler is involved except the regeneration test's libclang parse (TKG2d, ~5 s)."""
 import filecmp
+import os
 import re
 import shutil
 import subprocess
@@ -1030,6 +1031,41 @@ def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
     assert cmp.diff_files == [], cmp.diff_files
     for shim in ("Geom2d.py", "Adaptor2d.py"):
         assert (tmp_path / "nanoocp" / shim).read_text() == (ROOT / "src" / "nanoocp" / shim).read_text()
+
+
+@pytest.mark.skipif(os.environ.get("NANOOCP_AB") != "1",
+                    reason="set NANOOCP_AB=1: a serial run costs the whole speedup the parallel one buys")
+def test_a_parallel_run_reproduces_a_serial_one_byte_for_byte(tmp_path):
+    """NANOOCP_JOBS>1 parses and emits in a pool, deriving the two inputs a package normally inherits from the packages
+    before it (Design.md 5.2): who already bound which instantiation, and the parser's cross-package state. This is the
+    check that the derivation is right -- six toolkits, because the interesting cases are cross-toolkit (an
+    instantiation owned by an earlier toolkit, a class deriving from one).
+
+    Off by default and on purpose: it has to run the generator *serially* to have something to compare against, which
+    is 43 s against the 15 s the parallel run takes -- spending the speedup to re-prove it. Run it after a change to
+    the parse or the emit phase, with NANOOCP_AB=1, and let the per-run known_elsewhere check (__main__) carry the
+    normal case. NANOOCP_JOBS=1 is the sequential path and 0 means "as many workers as cores", so the two halves are
+    pinned here rather than inherited from whatever the environment happens to say."""
+    toolkits = ["TKernel", "TKMath", "TKG2d", "TKG3d", "TKGeomBase", "TKBRep"]
+    flags = [f for tk in toolkits for f in ("--toolkit", tk)]
+    outs = {}
+    for name, env in (("serial", {"NANOOCP_JOBS": "1"}), ("parallel", {"NANOOCP_JOBS": "0"})):
+        outs[name] = tmp_path / name
+        subprocess.run([sys.executable, "-m", "generator", *flags, "--out", str(outs[name])],
+                       check=True, cwd=ROOT, capture_output=True, text=True, env={**os.environ, **env})
+    for sub in ("cpp", "nanoocp"):
+        left, right = outs["serial"] / sub, outs["parallel"] / sub
+        for a, b, _ in _walk_pairs(left, right):
+            assert a.read_bytes() == b.read_bytes(), f"{a.relative_to(left)} differs"
+
+
+def _walk_pairs(left: Path, right: Path):
+    """Every file under `left` with its counterpart under `right`; the two trees must hold the same names."""
+    l_files = sorted(f.relative_to(left) for f in left.rglob("*") if f.is_file())
+    r_files = sorted(f.relative_to(right) for f in right.rglob("*") if f.is_file())
+    assert l_files == r_files, f"different files: {set(l_files) ^ set(r_files)}"
+    for rel in l_files:
+        yield left / rel, right / rel, rel
 
 
 def test_incremental_run_refuses_to_rehome_an_instantiation(tmp_path):

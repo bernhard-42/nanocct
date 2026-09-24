@@ -89,7 +89,37 @@ class Emitter:
         self.static_renames: dict[str, set[str]] = {}   # R-STATIC-S across the inheritance chain; set by the caller
         self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
+        # PARALLEL EMIT (2026-09-24): ownership of a 6c instantiation is normally decided *by* emitting -- the first
+        # package to need it claims it ("if key in self.templates: return"). That makes the emit loop order-dependent
+        # and unparallelisable. plan() runs exactly the part of emit() that decides ownership, so the driver can run it
+        # over every package in emit order first; with preassigned=True the registry then already carries the owner in
+        # its "by" field and each package decides alone: emit the ones assigned to it, skip the rest.
+        # _emitted_instances keeps a package from emitting the same key twice, which the old first-come guard did implicitly.
+        self.preassigned = False
+        self._emitted_instances: set[str] = set()
         self._idents: set[str] = set()
+
+    def _owns(self, key: str) -> bool:
+        """Should this package emit the instantiation `key`? (with a preassigned registry: only if it is the owner)"""
+        if key in self._emitted_instances:
+            return False
+        entry = self.templates.get(key)
+        if entry is None:
+            return True
+        if self.preassigned:
+            return entry.get("by") == self.ir.name
+        return False
+
+    def _claim_template(self, c: Class) -> dict | None:
+        """6c: an un-aliased instantiation is bound by the first package that declares it; every later package aliases
+        the owner's class instead. Returns the owner's registry entry when this package has to alias, None when it owns
+        the class itself. The declare phase calls it to emit the alias; plan() calls it for the decision alone."""
+        found = self.templates.get(c.template_key)
+        if found is not None and found.get("by") != self.ir.name and not found.get("skipped", False):
+            return found
+        self.templates[c.template_key] = {"toolkit": self.toolkit_of[self.ir.name], "package": self.ir.name,
+                                          "name": c.py_name, "by": self.ir.name}
+        return None
 
     # ---- helpers -------------------------------------------------------------------------------
     @staticmethod
@@ -364,8 +394,9 @@ class Emitter:
 
         def bind(template: str, args: list[str]) -> None:
             key = f"{template}<{', '.join(args)}>"
-            if key in self.templates:
+            if not self._owns(key):
                 return
+            self._emitted_instances.add(key)
             for a in args:                                 # nested containers first
                 m = re.match(r"(NCollection_\w+)<(.+)>$", a)
                 if m is not None and m.group(1) in BINDERS:
@@ -462,9 +493,12 @@ class Emitter:
         d = _cpp_doc(c.doc)
         return f'    nanoocp_register_exception<{c.name}>(nanoocp_new_exception({self._attr(c.scope)}, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
 
-    def emit(self) -> str:
-        """The package's .cpp: declare (classes, enums, constants, submodules), templates (NCollection instantiations),
-        define (members, free functions, aliases), conversions (operator T() targets) -- one function per phase."""
+    def plan(self) -> tuple[list[Class], list[str]]:
+        """The first phase of emit(): which classes survive their bases (R-MI and 5.2) and which 6a instantiations this
+        package binds. Returns the surviving classes and the templates-phase lines.
+
+        Split out because it is also everything the *registry* needs before the declare phase, so assign_templates()
+        can run it without emitting anything."""
         ir = self.ir
         skipped = self.skipped
         classes = [c for c in self._ordered_classes() if self._base_ok(c, skipped)]
@@ -478,6 +512,31 @@ class Emitter:
                 self.report.append(f"{c.name}: base class {c.bases[0]} is not bound (instantiation skipped) -> class skipped")
                 skipped.add(c.name)
                 classes.remove(c)
+        return classes, instances
+
+    def assign_templates(self) -> None:
+        """Write every entry this package would put into the shared instantiation registry, without emitting anything.
+
+        A parallel emit needs the owner of every instantiation decided up front, and in the sequential loop that
+        decision *is* the emitting: `_instances()` binds what no earlier package has bound, and the declare phase
+        claims a 6c instantiation or aliases the package that got there first. So the driver runs this over every
+        package in emit order, sharing one registry, and the packages can then be emitted independently
+        (`preassigned=True`). It runs the real decisions rather than a copy of them.
+
+        The writes come out in the same order as in emit(): the declare phase interleaves them with the define phase,
+        which never writes to the registry. It must stay that way round -- claiming inside plan() would let
+        R-DEFAULT-UNBOUND see a class of the same package that emit() has not declared yet."""
+        classes, _ = self.plan()
+        for c in classes:
+            if c.template_key != "":
+                self._claim_template(c)
+
+    def emit(self) -> str:
+        """The package's .cpp: declare (classes, enums, constants, submodules), templates (NCollection instantiations),
+        define (members, free functions, aliases), conversions (operator T() targets) -- one function per phase."""
+        ir = self.ir
+        skipped = self.skipped
+        classes, instances = self.plan()
         free_ops, module_fns = self._functions()
         declare: list[str] = []
         define: list[str] = []
@@ -591,11 +650,10 @@ class Emitter:
         package already bound the instantiation, or the exception type. Returns whether the define phase applies."""
         self._note_types(*c.bases)
         if c.template_key != "":
-            found = self.templates.get(c.template_key)
-            if found is not None and found.get("by") != self.ir.name and not found.get("skipped", False):
+            found = self._claim_template(c)
+            if found is not None:
                 declare.append(f'    m.attr("{c.py_name}") = nb::module_::import_("nanoocp._{found["toolkit"]}.{found["package"]}").attr("{found["name"]}");')
                 return False
-            self.templates[c.template_key] = {"toolkit": self.toolkit_of[self.ir.name], "package": self.ir.name, "name": c.py_name, "by": self.ir.name}
         if c.is_exception:
             declare.append(self._exception(c))
             return False

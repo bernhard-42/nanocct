@@ -800,6 +800,10 @@ def _is_noexcept(cursor: cindex.Cursor) -> bool:
     return k in (cindex.ExceptionSpecificationKind.BASIC_NOEXCEPT, cindex.ExceptionSpecificationKind.DYNAMIC_NONE)
 
 
+# PARALLELISATION (2026-09-24): these two accumulate *across* packages, so a sequential run lets a late package profit
+# from what earlier ones discovered while a worker process only sees its own share -- which made one binding of 65000
+# differ (BRepClass3d_SolidExplorer::Intersector). carry_state()/collect_state() make them an explicit input/output so
+# a parallel driver can merge them at a barrier and re-parse to a fixpoint.
 _derives_cache: dict[tuple[str, str], bool] = {}
 _derives_stack: set[tuple[str, str]] = set()   # keys being resolved (recursion guard for CRTP bases)
 _template_bases: list[tuple[str, cindex.Type, str]] = []   # (derived class, base type, header): bases that are template instantiations
@@ -1358,6 +1362,20 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
 
 
 _instances_seen: dict[str, TemplateInstance] = {}    # filled while parsing a package (reset per package)
+
+
+def collect_state() -> dict:
+    """The cross-package state this process accumulated while parsing (see the note at _derives_cache)."""
+    return {"noncopyable": set(_DETECTED_NONCOPYABLE), "derives": dict(_derives_cache)}
+
+
+def carry_state(state: dict) -> None:
+    """Seed the cross-package state, so a parse sees what other packages (or processes) already found."""
+    _DETECTED_NONCOPYABLE.update(state.get("noncopyable", ()))
+    for k, v in state.get("derives", {}).items():
+        # a True was computed in a translation unit where the base was visible; never let a False overwrite it
+        if v or k not in _derives_cache:
+            _derives_cache[k] = v
 
 
 def _canonical_args(t: cindex.Type) -> str:

@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import multiprocessing as mp
+import os
 import platform
 import re
 import sys
@@ -17,6 +19,7 @@ from .emit import Emitter, emit_toolkit_module, resolve_static_renames, write_pa
 from .occt import load_tree
 from .ncollection import deprecated_aliases, template_docs
 from .parse import EXTRA_LINKS, INCLUDE_PACKAGES, PLATFORM_PACKAGES, clang_args, configure_libclang, include_prelude, parse_package, py_path
+from . import parallel as _parallel
 from .report import write_report
 from .symbols import defined_symbols, destructor_defined, unavailable_reason
 
@@ -174,6 +177,70 @@ def _rehoming_risks(tree, parsed: list[tuple[str, list]], templates_before: set[
     return risks
 
 
+def _default_jobs() -> int:
+    """One worker per core the process may use, which is the parallel generation's default (5.2).
+
+    `os.process_cpu_count()` honours what the process is actually allowed (CPU affinity, a container's quota, taskset)
+    and exists from Python 3.13; `os.cpu_count()` is the 3.12 fallback."""
+    count = getattr(os, "process_cpu_count", os.cpu_count)()
+    return count if count is not None else 1
+
+
+def _selected_packages(tree, tk_name: str, only: list[str] | None, this_platform: str) -> list | None:
+    """The packages of one toolkit this run generates, or None after printing why there are none.
+
+    Hoisted out of the parse loop because the parallel parse needs the whole job list, in this very order, before the
+    first package is parsed: that order is what decides who owns an instantiation (_known_elsewhere_sets)."""
+    pkgs = [p for p in tree.toolkits[tk_name].packages if only is None or p.name in only]
+    allowed = INCLUDE_PACKAGES.get(tk_name)          # a partial toolkit (the font slice: TKService -> Font, Graphic3d)
+    if allowed is not None:
+        missing = [n for n in allowed if n not in {p.name for p in tree.toolkits[tk_name].packages}]
+        if len(missing) > 0:
+            print(f"{tk_name}: overrides.toml [include] packages names unknown packages {missing}", file=sys.stderr)
+            return None
+        pkgs = [p for p in pkgs if p.name in allowed]
+    # overrides.toml [platform]: a package OCCT only compiles on its own platform (Cocoa). Skipped before the parse,
+    # so it costs nothing on the other platforms and cannot reach the link there.
+    for pkg in [p for p in pkgs if this_platform not in PLATFORM_PACKAGES.get(p.name, [this_platform])]:
+        print(f"{tk_name}/{pkg.name}: not built on {this_platform} "
+              f"(overrides.toml [platform]: {', '.join(PLATFORM_PACKAGES[pkg.name])})", file=sys.stderr)
+        pkgs.remove(pkg)
+    if len(pkgs) == 0:
+        print(f"{tk_name}: no packages selected", file=sys.stderr)
+        return None
+    return pkgs
+
+
+def _known_elsewhere_sets(selected: list[tuple[str, list]], classes_of: dict[tuple[str, str], list[str]],
+                          manifest_classes: dict[str, str]) -> dict[tuple[str, str], set[str]]:
+    """`known_elsewhere` for every package of the run, derived from a previous round's IRs instead of from the
+    sequential accumulation -- the one input a package's parse takes from the packages before it.
+
+    It replays what the sequential loop does to `known`: a package sees the classes of every earlier toolkit (folded in
+    at the end of each toolkit, the old entries of a regenerated package deleted first) plus the classes of the earlier
+    packages of its own toolkit. Only instantiation spellings are kept: `parse_package` looks the set up for nothing
+    else (measured 2026-09-24 -- 339 queries in a 45-toolkit run, every one a name containing `<`), and they are the
+    only names the rest of the pipeline cannot change under us, since R-UNDEFINED drops classes only by plain name.
+
+    With `classes_of` empty -- the first round, where nothing has been parsed yet -- every package gets what the
+    manifest alone gives it, so each one instantiates everything it uses. That round is what the ownership is then
+    derived from: the owner of an instantiation is the first package, in this order, that has it."""
+    known = {n: pk for n, pk in manifest_classes.items() if "<" in n}
+    out: dict[tuple[str, str], set[str]] = {}
+    for tk_name, pkgs in selected:
+        earlier: set[str] = set()                   # classes of the earlier packages of this toolkit
+        for pkg in pkgs:
+            out[(tk_name, pkg.name)] = {n for n, pk in known.items() if pk != pkg.name} | earlier
+            earlier |= {n for n in classes_of.get((tk_name, pkg.name), ()) if "<" in n}
+        for pkg in pkgs:                            # end of the toolkit: the sequential loop folds its packages into `known`
+            for n in [n for n, pk in known.items() if pk == pkg.name]:
+                del known[n]
+            for n in classes_of.get((tk_name, pkg.name), ()):
+                if "<" in n:
+                    known[n] = pkg.name
+    return out
+
+
 def main(argv: list[str]) -> int:
     started = time.perf_counter()
     ap = argparse.ArgumentParser(prog="generator")
@@ -209,32 +276,102 @@ def main(argv: list[str]) -> int:
     symbols_skipped: set[str] = set()   # the R-UNDEFINED skip reason, reported once per run
     this_platform = platform.system()    # overrides.toml [platform]
     timing = {"parse": 0.0, "emit": 0.0}   # wall time in the two phases, reported at the end
-    for tk_index, tk_name in enumerate(args.toolkit, start=1):
-        print(f"[parse {tk_index}/{len(args.toolkit)}] {tk_name}", file=sys.stderr)
-        tk = tree.toolkits[tk_name]
-        pkgs = [p for p in tk.packages if args.package is None or p.name in args.package]
-        allowed = INCLUDE_PACKAGES.get(tk_name)          # a partial toolkit (the font slice: TKService -> Font, Graphic3d)
-        if allowed is not None:
-            missing = [n for n in allowed if n not in {p.name for p in tk.packages}]
-            if len(missing) > 0:
-                print(f"{tk_name}: overrides.toml [include] packages names unknown packages {missing}", file=sys.stderr)
-                return 1
-            pkgs = [p for p in pkgs if p.name in allowed]
-        # overrides.toml [platform]: a package OCCT only compiles on its own platform (Cocoa). Skipped before the parse,
-        # so it costs nothing on the other platforms and cannot reach the link there.
-        for pkg in [p for p in pkgs if this_platform not in PLATFORM_PACKAGES.get(p.name, [this_platform])]:
-            print(f"{tk_name}/{pkg.name}: not built on {this_platform} "
-                  f"(overrides.toml [platform]: {', '.join(PLATFORM_PACKAGES[pkg.name])})", file=sys.stderr)
-            pkgs.remove(pkg)
-        if len(pkgs) == 0:
-            print(f"{tk_name}: no packages selected", file=sys.stderr)
+    per_toolkit: dict[str, dict[str, float]] = {}    # toolkit -> {"parse": s, "emit": s}, printed at the end
+    selected: list[tuple[str, list]] = []            # (toolkit, packages) in parse order, the order ownership follows
+    for tk_name in args.toolkit:
+        sel = _selected_packages(tree, tk_name, args.package, this_platform)
+        if sel is None:
             return 1
+        selected.append((tk_name, sel))
+    # PARALLEL PARSE (NANOOCP_JOBS>1): every package of every toolkit is parsed in one global pool before the
+    # sequential loop runs, which then takes the IRs from `prefetched` instead of parsing -- so everything after the
+    # parse is byte for byte the code path of a normal run. Two inputs a package normally inherits from the packages
+    # before it have to be derived instead, and both are derived by iterating:
+    #   * `known_elsewhere` (who already bound which instantiation), from the previous round's IRs;
+    #   * the parser's cross-package state (parse.collect_state), merged at the barrier.
+    # Round 1 runs with the manifest alone, so every package instantiates everything it uses and the first package in
+    # `selected` order that has an instantiation is its owner -- which is exactly the sequential rule. Round 2 parses
+    # again with that derived answer; the loop stops when neither the ownership nor the parser state moves any more.
+    prefetched: dict[tuple[str, str], object] = {}
+    derived_elsewhere: dict[tuple[str, str], set[str]] | None = None
+    # One worker per core by default: the work is CPU-bound libclang parses, and more of them keep paying off even on
+    # the efficiency cores (measured on an 18-core M5, 6P + 12E, 45 toolkits: 1 job 161.8 s, 10 jobs 40.9 s, 14 jobs
+    # 34.9 s, 18 jobs 29.9 s). `NANOOCP_JOBS` overrides it and **`NANOOCP_JOBS=1` is the sequential path**, which is
+    # what a byte-for-byte comparison is run against. Never more workers than packages: a `--package` run would
+    # otherwise pay for a pool of idle processes, each loading the OCCT tree.
+    env_jobs = os.environ.get("NANOOCP_JOBS", "")
+    requested = int(env_jobs) if env_jobs != "" else 0          # unset or 0: as many workers as cores
+    n_packages = sum(len(pkgs) for _, pkgs in selected)
+    jobs = max(1, min(requested if requested > 0 else _default_jobs(), n_packages))
+    if jobs > 1:
+        how = f"NANOOCP_JOBS={requested}" if requested > 0 else f"{_default_jobs()} cores, NANOOCP_JOBS=1 to go sequential"
+        print(f"parallel: {jobs} jobs over {n_packages} packages ({how})", file=sys.stderr)
+        t0 = time.perf_counter()
+        state = {"noncopyable": set(), "derives": {}}
+        elsewhere = _known_elsewhere_sets(selected, {}, known)      # round 1: the manifest alone
+        rounds = 0
+        with mp.Pool(jobs, initializer=_parallel.init, initargs=(tree.src, tree.install)) as pool:
+            while True:
+                rounds += 1
+                merged = {"noncopyable": set(state["noncopyable"]), "derives": dict(state["derives"])}
+                classes_of: dict[tuple[str, str], list[str]] = {}
+                prefetched.clear()
+                jobs_in = [(tk, pkg.name, sorted(elsewhere[(tk, pkg.name)]), state) for tk, pkgs in selected for pkg in pkgs]
+                for tk_name, pkg_name, ir, dt, st in pool.imap_unordered(_parallel.parse_one, jobs_in, chunksize=1):
+                    prefetched[(tk_name, pkg_name)] = ir
+                    classes_of[(tk_name, pkg_name)] = [c.name for c in ir.classes]
+                    per_toolkit.setdefault(tk_name, {"parse": 0.0, "emit": 0.0})["parse"] += dt
+                    merged["noncopyable"] |= st["noncopyable"]
+                    for k, v in st["derives"].items():
+                        if v or k not in merged["derives"]:
+                            merged["derives"][k] = v
+                derived = _known_elsewhere_sets(selected, classes_of, known)
+                # The fixpoint test is on the *inputs*: this round was given what its own result says it should have
+                # been given, so another round would repeat it exactly and these IRs are the answer.
+                stable = derived == elsewhere and merged == state
+                state, elsewhere = merged, derived
+                print(f"  round {rounds}: noncopyable {len(state['noncopyable'])}, derives {len(state['derives'])}, "
+                      f"instantiations {sum(1 for names in classes_of.values() for n in names if '<' in n)}"
+                      f"{' (stable)' if stable else ''}", file=sys.stderr)
+                if stable:
+                    break
+                if rounds >= 4:
+                    # Without the fixpoint the IRs were parsed with inputs the run has since revised, and there is no
+                    # reason left to believe they are what a sequential run produces. Two rounds have always sufficed.
+                    print("parallel parse: no fixpoint after 4 rounds; run without NANOOCP_JOBS", file=sys.stderr)
+                    return 1
+        derived_elsewhere = elsewhere
+        wall = time.perf_counter() - t0
+        cpu = sum(t["parse"] for t in per_toolkit.values())
+        print(f"parallel parse: {len(prefetched)} packages, {jobs} jobs, {rounds} round(s), wall {wall:.1f} s, "
+              f"cpu {cpu:.1f} s (speedup {cpu / wall:.2f}x)", file=sys.stderr)
+        timing["parse"] += wall
+
+    for tk_index, (tk_name, pkgs) in enumerate(selected, start=1):
+        print(f"[parse {tk_index}/{len(selected)}] {tk_name}", file=sys.stderr)
         irs = []
+        # Only the instantiation spellings: parse_package consults the set for nothing else, and _known_elsewhere_sets
+        # derives the same set for a parallel parse (the reasoning and the measurement are there).
         for pkg in pkgs:
-            bound_elsewhere = {n for n, pk in known.items() if pk != pkg.name} | {c.name for ir in irs for c in ir.classes}
+            bound_elsewhere = ({n for n, pk in known.items() if "<" in n and pk != pkg.name}
+                               | {c.name for ir in irs for c in ir.classes if "<" in c.name})
+            if (tk_name, pkg.name) in prefetched:
+                # What the pool was given, against what this loop would have handed the package: the derivation
+                # simulates this accumulation from the IRs, and this is the accumulation itself. They must agree, or
+                # the parallel parse decided ownership on an input the sequential run never had.
+                if derived_elsewhere[(tk_name, pkg.name)] != bound_elsewhere:
+                    only_derived = derived_elsewhere[(tk_name, pkg.name)] - bound_elsewhere
+                    only_here = bound_elsewhere - derived_elsewhere[(tk_name, pkg.name)]
+                    print(f"{tk_name}/{pkg.name}: the parallel parse was given a known_elsewhere this run does not "
+                          f"agree with (+{sorted(only_derived)[:3]} -{sorted(only_here)[:3]})", file=sys.stderr)
+                    return 1
+                irs.append(prefetched.pop((tk_name, pkg.name)))     # parsed by the pool above
+                continue
             _t0 = time.perf_counter()
             irs.append(parse_package(tree, pkg, known_elsewhere=bound_elsewhere))
-            timing["parse"] += time.perf_counter() - _t0
+            _dt = time.perf_counter() - _t0
+            timing["parse"] += _dt
+            per_toolkit.setdefault(tk_name, {"parse": 0.0, "emit": 0.0})["parse"] += _dt
         symbols = defined_symbols(args.occt, tk_name)
         if symbols is None:
             # once per run, not once per toolkit: 45 identical lines said nothing the first one did not
@@ -307,11 +444,10 @@ def main(argv: list[str]) -> int:
     # R-STATIC-S is decided over the whole inheritance chain, so it needs every class of the run at once: a clean
     # regeneration (the canonical state, 9) parses all toolkits in one process, so the chains are complete there.
     static_renames = resolve_static_renames([c for _, irs in parsed for ir in irs for c in ir.classes])
-    for tk_index, (tk_name, irs) in enumerate(parsed, start=1):
-        print(f"[emit {tk_index}/{len(parsed)}] {tk_name}", file=sys.stderr)
-        tk = tree.toolkits[tk_name]
-        tk_dir = cpp_root / tk_name
-        tk_dir.mkdir(parents=True, exist_ok=True)
+    # The emit order, hoisted out of the loop below: a parallel emit has to decide the instantiation ownership over
+    # every package before the first one is emitted, and this order is what decides it.
+    emit_order: list[tuple[str, list, list[str]]] = []      # (toolkit, its IRs in emit order, every package of the toolkit)
+    for tk_name, irs in parsed:
         # emit in runtime (declaration) order: template instances are bound in that order and an
         # HSequence<T> must find its Sequence<T> already registered. A partial run (--package) keeps the
         # stored order of the toolkit and appends packages not seen before.
@@ -321,7 +457,38 @@ def main(argv: list[str]) -> int:
         else:
             order = stored + [ir.name for ir in irs if ir.name not in stored]
         manifest["order"][tk_name] = order
-        irs = sorted(irs, key=lambda ir: order.index(ir.name))
+        emit_order.append((tk_name, sorted(irs, key=lambda ir: order.index(ir.name)), order))
+    # PARALLEL EMIT: who owns which instantiation is normally decided *by* emitting, first package to need it. So the
+    # decision is run first, over every package in emit order and against one shared registry (Emitter.assign_templates,
+    # which is the same code the sequential loop runs); every package then knows whether it owns a key or aliases it,
+    # and they can be emitted independently (Emitter.preassigned).
+    emitted: dict[tuple[str, str], tuple] = {}
+    if jobs > 1:
+        t0 = time.perf_counter()
+        for tk_name, irs, _ in emit_order:
+            for ir in irs:
+                Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
+                        _topo(tree, generated_toolkits), paths).assign_templates()
+        print(f"instantiation ownership derived for {len(templates)} keys in "
+              f"{time.perf_counter() - t0:.1f} s", file=sys.stderr)
+        todo_e = [(tk, ir.name, ir) for tk, irs, _ in emit_order for ir in irs]
+        t0 = time.perf_counter()
+        with mp.Pool(jobs, initializer=_parallel.init_emit,
+                     initargs=(tree.src, tree.install, known, templates, paths,
+                               _topo(tree, generated_toolkits), static_renames)) as pool:
+            for tk_name, pkg_name, text, rep, inc, skip, dt in pool.imap_unordered(_parallel.emit_one, todo_e, chunksize=1):
+                emitted[(tk_name, pkg_name)] = (text, rep, inc, skip)
+                per_toolkit.setdefault(tk_name, {"parse": 0.0, "emit": 0.0})["emit"] += dt
+        wall = time.perf_counter() - t0
+        cpu = sum(t["emit"] for t in per_toolkit.values())
+        print(f"parallel emit: {len(todo_e)} packages, {jobs} jobs, wall {wall:.1f} s, cpu {cpu:.1f} s "
+              f"(speedup {cpu / wall:.2f}x)", file=sys.stderr)
+        timing["emit"] += wall
+    for tk_index, (tk_name, irs, order) in enumerate(emit_order, start=1):
+        print(f"[emit {tk_index}/{len(emit_order)}] {tk_name}", file=sys.stderr)
+        tk = tree.toolkits[tk_name]
+        tk_dir = cpp_root / tk_name
+        tk_dir.mkdir(parents=True, exist_ok=True)
         pkgs = [tree.packages[ir.name] for ir in irs]
         report_entries: list[tuple[str, str]] = []            # (package, message) of everything not bound
         included: set[str] = set()                            # every OCCT header the emitted sources include (R-LINK)
@@ -331,9 +498,17 @@ def main(argv: list[str]) -> int:
                          _topo(tree, generated_toolkits), paths,
                          prelude_check=lambda headers: include_prelude(headers, tree.include_dir, cargs))
             em.static_renames = static_renames
-            _t0 = time.perf_counter()
-            _emitted = em.emit()
-            timing["emit"] += time.perf_counter() - _t0
+            if (tk_name, ir.name) in emitted:
+                _emitted, _rep, _inc, _skip = emitted.pop((tk_name, ir.name))
+                em.report[:] = _rep
+                em.includes[:] = _inc
+                em.skipped |= _skip
+            else:
+                _t0 = time.perf_counter()
+                _emitted = em.emit()
+                _dt = time.perf_counter() - _t0
+                timing["emit"] += _dt
+                per_toolkit.setdefault(tk_name, {"parse": 0.0, "emit": 0.0})["emit"] += _dt
             (tk_dir / f"{pkg.name}.cpp").write_text(_emitted)
             included.update(em.includes)
             for name in em.skipped:            # a class skipped at emit time (base not bound) must not reach the manifest: a later
@@ -409,6 +584,12 @@ def main(argv: list[str]) -> int:
                                          "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"],
                                          "links": dict(sorted(manifest.get("links", {}).items())),
                                          "namespaces": dict(sorted(manifest["namespaces"].items())), "paths": dict(sorted(paths.items()))}, indent=0) + "\n")
+    # per-toolkit cost: where the time goes, and what a dependency layering could at best overlap
+    if len(per_toolkit) > 1:
+        rows = sorted(per_toolkit.items(), key=lambda kv: -(kv[1]["parse"] + kv[1]["emit"]))
+        print("per-toolkit seconds (parse + emit):", file=sys.stderr)
+        for name, t in rows:
+            print(f"    {name:<14} {t['parse']:7.1f} {t['emit']:7.1f} {t['parse'] + t['emit']:7.1f}", file=sys.stderr)
     docs, warnings = template_docs(tree.include_dir, clang_args(tree))
     (cpp_root / "common").mkdir(parents=True, exist_ok=True)
     (cpp_root / "common" / "ncollection_docs.h").write_text(docs)
