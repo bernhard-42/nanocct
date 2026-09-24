@@ -14,9 +14,9 @@ import pytest
 from generator import parse
 from generator.binders import BINDERS
 from generator.emit import Emitter, resolve_ctor_arities, resolve_overload_collisions, resolve_static_renames
-from generator.model import Class, Constructor, ConversionKind, Method, Param, ResultKind, StreamKind
+from generator.model import Class, Constructor, ConversionKind, Method, PackageIR, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
-from generator.__main__ import _topo, _wrapping_base_edges
+from generator.__main__ import _topo, _base_import_edges
 from generator.report import CATEGORIES, categorize
 
 ROOT = Path(__file__).parents[1]
@@ -705,8 +705,19 @@ class _FakeToolkit:
 
 
 class _FakeTree:
-    """Just enough of OcctTree for _topo: the EXTERNLIB dependency edges."""
-    def __init__(self, edges): self.toolkits = {t: _FakeToolkit(d) for t, d in edges.items()}
+    """Just enough of OcctTree for _topo and _base_import_edges: the EXTERNLIB dependency edges and their closure."""
+    def __init__(self, edges):
+        self.toolkits = {t: _FakeToolkit(d) for t, d in edges.items()}
+        self._edges = edges
+
+    def link_closure(self, toolkit):
+        out, todo = set(), list(self._edges.get(toolkit, []))
+        while todo:
+            d = todo.pop()
+            if d not in out:
+                out.add(d)
+                todo += self._edges.get(d, [])
+        return out
 
 
 def test_a_non_const_scalar_conversion_takes_a_non_const_self(rules_ir):
@@ -725,12 +736,15 @@ def test_a_non_const_scalar_conversion_takes_a_non_const_self(rules_ir):
     assert '.def("__bool__", [](const Rules_Value &self) { return static_cast<bool>(self); }' in cpp
 
 
-def test_wrapping_base_edges_and_the_import_order():
-    """NCollection_Shared<T> derives from T (BINDERS "wraps"), so the toolkit binding T must be imported first or
-    nb_type_new aborts with "base type ... not known to nanobind". OCCT's link graph does not imply that edge:
-    TKMesh binds Shared<DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>> while TKBool binds the DataMap and
-    neither links the other. It only worked until 2026-09-23 because the EXTERNLIB order happened to put TKBool
-    first; adding TKBinXCAF reshuffled it and every `import nanoocp` aborted."""
+def test_base_import_edges_and_the_import_order():
+    """A class is registered only after its base, so the toolkit binding the derived class must import the one
+    binding the base or nb_type_new aborts with "base type ... not known to nanobind". OCCT's link graph implies
+    neither shape: TKMesh binds Shared<DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>> while TKBool binds the
+    DataMap (2026-09-23, every `import nanoocp` aborted after TKBinXCAF reshuffled the order), and
+    XmlObjMgt_RRelocationTable derives from a DataMap that TKBinL binds, which had no edge at all until 2026-09-24
+    and made `import nanoocp._TKXmlL` on its own abort."""
+    tree = _FakeTree({"TKernel": [], "TKBool": ["TKernel"], "TKMesh": ["TKernel"], "TKXmlL": ["TKernel"],
+                      "TKBinL": ["TKernel"], "TKMath": ["TKernel"], "TKX": ["TKMesh", "TKBool"]})
     templates = {
         "NCollection_DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>": {"toolkit": "TKBool"},
         "NCollection_Shared<NCollection_DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>>": {"toolkit": "TKMesh"},
@@ -739,14 +753,33 @@ def test_wrapping_base_edges_and_the_import_order():
         "NCollection_Sequence<gp_Pnt>": {"toolkit": "TKMath"},                     # not a wrapping kind: no edge
     }
     classes, packages = {"Standard_Mutex": "Standard"}, {"Standard": "TKernel"}
-    assert _wrapping_base_edges(templates, classes, packages) == {"TKMesh": ["TKBool"]}
+    tk_of = {"Standard": "TKernel"}
+    assert _base_import_edges(tree, [], templates, classes, packages, tk_of) == {"TKMesh": ["TKBool"]}
 
-    # a wrapper over a plain class resolves the owner through classes -> packages -> toolkit
+    # a wrapper over a plain class resolves the owner through classes -> packages -> toolkit -- but needs no edge
+    # when EXTERNLIB already brings it: TKMesh links TKernel, so the import is there without one
     templates["NCollection_Shared<Standard_Mutex>"] = {"toolkit": "TKMesh"}
-    assert _wrapping_base_edges(templates, classes, packages) == {"TKMesh": ["TKBool", "TKernel"]}
+    assert _base_import_edges(tree, [], templates, classes, packages, tk_of) == {"TKMesh": ["TKBool"]}
+    lonely = _FakeTree({"TKernel": [], "TKBool": ["TKernel"], "TKMesh": []})        # TKMesh links nothing
+    assert _base_import_edges(lonely, [], templates, classes, packages, tk_of)["TKMesh"] == ["TKBool", "TKernel"]
+
+    # a class deriving from an instantiation another toolkit binds (Class.after_templates) -- the shape that had no
+    # edge before 2026-09-24. The package does not bind it itself ("by" is another package), so the edge is needed.
+    templates["NCollection_DataMap<int, opencascade::handle<Standard_Transient>>"] = {"toolkit": "TKBinL", "by": "BinObjMgt"}
+    reloc = Class(name="XmlObjMgt_RRelocationTable", py_name="XmlObjMgt_RRelocationTable",
+                  header="XmlObjMgt_RRelocationTable.hxx", doc="", is_transient=False, is_exception=False,
+                  is_abstract=False,
+                  bases=["NCollection_DataMap<int, opencascade::handle<Standard_Transient>>"], after_templates=True)
+    ir = PackageIR(name="XmlObjMgt", toolkit="TKXmlL", headers=[])
+    ir.classes.append(reloc)
+    edges = _base_import_edges(tree, [("TKXmlL", [ir])], templates, classes, packages, tk_of)
+    assert edges["TKXmlL"] == ["TKBinL"]
+
+    # ... but not when this very package binds it: the templates phase runs before the declare phase
+    templates["NCollection_DataMap<int, opencascade::handle<Standard_Transient>>"]["by"] = "XmlObjMgt"
+    assert "TKXmlL" not in _base_import_edges(tree, [("TKXmlL", [ir])], templates, classes, packages, tk_of)
 
     # _topo without the edge is free to put TKMesh first; with it, TKBool comes first
-    tree = _FakeTree({"TKernel": [], "TKBool": ["TKernel"], "TKMesh": ["TKernel"], "TKX": ["TKMesh", "TKBool"]})
     toolkits = ["TKernel", "TKMesh", "TKBool", "TKX"]
     plain = _topo(tree, toolkits)
     assert plain.index("TKMesh") < plain.index("TKBool")

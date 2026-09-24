@@ -890,6 +890,18 @@ class Emitter:
                 elif td.scope != ():
                     self.report.append(f"{'::'.join(td.scope)}::{td.py_name} = {td.written}: type alias of an unbound type (not bound)")
                 continue
+            # A target in a *later* toolkit cannot be imported here: this module is half-initialised when that
+            # toolkit imports it back, so `import_("nanoocp._TKV3d.StdPrs")` raises "not a package" and the whole
+            # import fails. R-CONV already skips a forward conversion target for the same reason (_conversions
+            # above); do the same and report it. It cost `import nanoocp._TKV3d` on its own until 2026-09-24,
+            # which the eager import hid by always loading TKService first. Both names stay reachable as
+            # StdPrs_BRepFont / StdPrs_BRepTextBuilder.
+            order = self.toolkit_order
+            if pkg != self.ir.name and self.toolkit_of[pkg] in order and self.toolkit_of[self.ir.name] in order \
+                    and order.index(self.toolkit_of[pkg]) > order.index(self.toolkit_of[self.ir.name]):
+                self.report.append(f"{td.py_name} = {td.written}: target lives in a later toolkit "
+                                   f"({self.toolkit_of[pkg]}) -> the alias is not bound, use {td.target}")
+                continue
             attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
             src = (f'nb::module_::import_("nanoocp._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
             out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
@@ -1155,11 +1167,13 @@ NB_MODULE(_{toolkit}, m) {{
 
 def write_package_shims(py_root: Path, package: str, toolkit: str,
                         namespaces: list[tuple[str, ...]],
-                        accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None) -> None:
+                        accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None,
+                        homed_elsewhere: dict[str, str] | None = None,
+                        late_links: list[str] | None = None) -> None:
     """nanoocp/<package>.py, or for a package whose C++ code declares namespaces of its own (Geom2dEval_RepCurveDesc
     in package Geom2dEval) the Python package nanoocp/<package>/__init__.py with one module per namespace, so that
     `from nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc import Base` and the .pyi layout follow the C++ nesting."""
-    shim = emit_package_shim(package, toolkit, accessors)
+    shim = emit_package_shim(package, toolkit, accessors, homed_elsewhere, late_links)
     pkg_dir = py_root / package
     module_file = py_root / f"{package}.py"
     if len(namespaces) == 0:
@@ -1196,7 +1210,8 @@ def write_package_shims(py_root: Path, package: str, toolkit: str,
 
 
 def emit_package_shim(package: str, toolkit: str,
-                      accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None) -> str:
+                      accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None,
+                      homed_elsewhere: dict[str, str] | None = None, late_links: list[str] | None = None) -> str:
     """Python module nanoocp.<package>: it re-exports the package's extension submodule under the name a user
     writes. accessors (NCollection only): template -> {element type specs -> bound class name} for the
     NCollection_Xxx[T] spelling."""
@@ -1211,4 +1226,36 @@ def emit_package_shim(package: str, toolkit: str,
     head = f'''"""OCCT package {package} (toolkit {toolkit})."""
 from nanoocp._{toolkit}.{package} import *  # noqa: F401,F403
 '''
-    return f"{head}{accessor_block}"
+    # R-LINK forward case: this toolkit links one that comes *later* in the order, so its module cannot import it at
+    # registration time. Import it here, after the extension has initialised, or every member naming one of those
+    # types is uncallable -- which the eager import used to hide (Design.md 6a).
+    for late in late_links or []:
+        head += f"import nanoocp._{late}  # noqa: F401,E402  (R-LINK: linked but later in the order)\n"
+    # The completion table: `nanoocp.NCollection` is the one module other toolkits bind into (6a), so a name may
+    # belong to a toolkit this import has not loaded. The table says which, and __getattr__ loads just that one.
+    lazy_block = ""
+    if homed_elsewhere:
+        entries = "".join(f'    "{n}": "{tk}",\n' for n, tk in sorted(homed_elsewhere.items()))
+        lazy_block = f'''
+
+# Instantiations bound into this package by other toolkits (6a): name -> the toolkit that binds it. Importing
+# nanoocp does not load them, so an attribute that is missing here is one whose toolkit is not loaded yet.
+import importlib as _importlib  # noqa: E402
+import sys as _sys  # noqa: E402
+
+_BOUND_BY = {{
+{entries}}}
+
+
+def __getattr__(name):
+    toolkit = _BOUND_BY.get(name)
+    if toolkit is None:
+        raise AttributeError(f"module {{__name__!r}} has no attribute {{name!r}}")
+    _importlib.import_module("nanoocp._" + toolkit)                 # registers it into the extension submodule
+    return getattr(_sys.modules["nanoocp._{toolkit}.{package}"], name)
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_BOUND_BY))
+'''
+    return f"{head}{accessor_block}{lazy_block}"

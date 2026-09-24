@@ -19,25 +19,44 @@ class Template:
         self._specs = instances                                 # ((module, attr), ...) -> bound class name
         self._by_type: dict[tuple[Any, ...], Any] | None = None
 
-    def _resolve(self) -> dict[tuple[Any, ...], Any]:
-        if self._by_type is None:
-            home = importlib.import_module(self._module)
-            table: dict[tuple[Any, ...], Any] = {}
-            for specs, cls_name in self._specs.items():
-                # attr is dotted for a nested class or a class in a namespace (Geom2d_Curve.ResD1)
-                key = tuple(functools.reduce(getattr, attr.split("."), importlib.import_module(mod)) for mod, attr in specs)
-                table[key] = getattr(home, cls_name)
-            self._by_type = table
-        return self._by_type
+    @staticmethod
+    def _spec_of(cls: Any) -> tuple[str, str]:
+        """(module, attribute path) of a bound class, as the generated tables spell it."""
+        return (getattr(cls, "__module__", ""), getattr(cls, "__qualname__", getattr(cls, "__name__", "")))
 
     def __getitem__(self, item: Any) -> Any:
+        """NCollection_Array1[gp_Pnt] -> the bound class, importing only the toolkit that holds it.
+
+        Resolved per key on purpose: building the whole table would import every module the table mentions --
+        45 toolkits for the container kinds -- which is exactly the eager import this design removes."""
         key = item if isinstance(item, tuple) else (item,)
-        cls = self._resolve().get(key)
-        if cls is None:
+        cls_name = self._specs.get(tuple(self._spec_of(k) for k in key))
+        if cls_name is None:
+            # a class in a C++ namespace has __module__ nanoocp.<pkg>.<ns> while the table spells it
+            # ("nanoocp.<pkg>", "<ns>.<cls>"), so fall back to matching the resolved classes
+            for specs, name in self._specs.items():
+                if len(specs) == len(key) and all(self._lookup(m, a) is k for (m, a), k in zip(specs, key)):
+                    cls_name = name
+                    break
+        if cls_name is None:
             args = ", ".join(getattr(k, "__name__", repr(k)) for k in key)
             raise TypeError(f"{self._name}<{args}> is not bound by nanoocp (no bound OCCT signature uses it). "
                             f"Bound: {', '.join(sorted(self.bound()))}")
-        return cls
+        return getattr(importlib.import_module(self._module), cls_name)
+
+    @staticmethod
+    def _lookup(module: str, attr: str) -> Any:
+        try:
+            return functools.reduce(getattr, attr.split("."), importlib.import_module(module))
+        except (ImportError, AttributeError):
+            return None
+
+    def _resolve(self) -> dict[tuple[Any, ...], Any]:
+        """The whole table, for __iter__ only -- it imports every module the table mentions."""
+        if self._by_type is None:
+            self._by_type = {tuple(self._lookup(m, a) for m, a in specs): getattr(importlib.import_module(self._module), name)
+                             for specs, name in self._specs.items()}
+        return self._by_type
 
     def bound(self) -> list[str]:
         """Names of the bound instantiations, e.g. ['NCollection_Array1__double', ...]."""

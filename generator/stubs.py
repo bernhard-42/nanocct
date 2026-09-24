@@ -126,6 +126,13 @@ _STUBGEN = r"""
 import re, sys, importlib
 from pathlib import Path
 from nanobind.stubgen import StubGen
+# A stub must name every type a signature mentions, including types other toolkits register -- and since
+# nanoocp/__init__.py stopped importing eagerly (Design.md 6a) nothing else pulls them in, so a cross-toolkit
+# parameter would render as a bare name instead of nanoocp.<pkg>.<Class>. Load every toolkit first: stub
+# generation is the one place that deliberately wants all of them.
+import nanoocp
+for _tk in sys.argv[3].split(","):
+    importlib.import_module("nanoocp._" + _tk)
 mod = importlib.import_module(sys.argv[1])
 out = Path(sys.argv[2])
 sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out)   # recursive: C++ namespaces are submodules
@@ -148,10 +155,14 @@ out.write_text(text)
 """
 
 
+_ALL_TOOLKITS = ",".join(sorted({tk for tk, _ in _MANIFEST.get("packages", {}).items()} and
+                                 set(_MANIFEST.get("packages", {}).values())))
+
+
 def _stubgen(module: str, out: Path) -> None:
     """nanobind's stubgen through its API: the CLI needs a module __file__ for recursive mode, extension submodules
     have none. The stub of a namespace submodule lands next to out (<pkg>/__init__.pyi + <pkg>/<Namespace>.pyi)."""
-    subprocess.run([sys.executable, "-c", _STUBGEN, module, str(out)], check=True, cwd="/")
+    subprocess.run([sys.executable, "-c", _STUBGEN, module, str(out), _ALL_TOOLKITS], check=True, cwd="/")
     assert out.exists(), out
 
 
@@ -174,6 +185,14 @@ def main() -> int:
         for future in done:
             future.result()                       # the first failure is raised here, with its traceback
             print(f"stub {done[future].relative_to(ROOT)}", file=sys.stderr)
+    # nanoocp/__init__.pyi: the package is lazy at runtime (PEP 562 __getattr__), so a checker only knows
+    # `nanoocp.gp` exists if the stub says so. `import X as X` is the re-export form the typing spec requires.
+    pkgs = sorted({pkg for pkg, _ in toolkit_of.items()})
+    (SRC / "__init__.pyi").write_text(
+        '"""nanoOCP: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'
+        + "".join(f"import nanoocp.{p} as {p}\n" for p in pkgs)
+        + "\n__all__ = [\n" + "".join(f'    "{p}",\n' for p in pkgs) + "]\n")
+    print(f"stub src/nanoocp/__init__.pyi ({len(pkgs)} packages)", file=sys.stderr)
     # NCollection: generic container classes + instantiations as their subclasses
     nc = toolkit_of["NCollection"][1]
     text = nc.read_text()
