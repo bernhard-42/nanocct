@@ -6,6 +6,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 [ -d "$HERE/freetype-src" ] || { echo "missing $HERE/freetype-src" >&2; exit 1; }
+"$HERE/hide-freetype-symbols.sh"        # a no-op for MSVC, but keeps the three builds on one patched source tree
 
 W_SRC="$(cygpath -w "$HERE/freetype-src")"
 W_BUILD="$(cygpath -w "$HERE/freetype-build")"

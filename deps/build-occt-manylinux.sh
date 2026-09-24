@@ -20,6 +20,7 @@ docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE"
 
 [ -d "$HERE/occt-src/.git" ] || git clone --depth 1 --branch V8_0_1 https://github.com/Open-Cascade-SAS/OCCT.git "$HERE/occt-src"
 [ -d "$HERE/freetype-src/.git" ] || git clone --depth 1 --branch VER-2-14-3 https://gitlab.freedesktop.org/freetype/freetype.git "$HERE/freetype-src"
+"$HERE/hide-freetype-symbols.sh"        # FT_* must not leak out of libTKService
 [ -d "$HERE/rapidjson/include/rapidjson" ] || { echo "missing $HERE/rapidjson (run deps/fetch-rapidjson.sh)" >&2; exit 1; }
 
 # HOME: the mapped uid has no passwd entry in the container, so $HOME is empty and cmake tries to write //.cmake

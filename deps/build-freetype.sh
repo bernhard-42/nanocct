@@ -3,6 +3,7 @@
 # dependencies (no zlib/bzip2/png/harfbuzz/brotli) into deps/freetype.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"$HERE/hide-freetype-symbols.sh"        # FT_* must not leak out of libTKService
 cmake -S "$HERE/freetype-src" -B "$HERE/freetype-build" -G Ninja \
   -D CMAKE_C_COMPILER=/usr/bin/clang \
   -D CMAKE_OSX_DEPLOYMENT_TARGET=11.1 \
