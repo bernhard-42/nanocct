@@ -1,6 +1,6 @@
 """Static typing check for the NCollection_Xxx[T] spelling (run by mypy and ty, see tests/test_typing.py).
 Lines with a trailing `# error:` comment must be reported; everything else must pass."""
-from nanoocp import NCollection, Standard, TCollection, TColStd
+from nanoocp import NCollection, Standard, TCollection
 
 a = NCollection.NCollection_Array1[float](1, 4)
 a.SetValue(1, 0.5)
@@ -13,8 +13,6 @@ lower: int = a.Lower()
 
 concrete = NCollection.NCollection_Array1__double(1, 2)             # the runtime class of every [float] array
 generic: NCollection.NCollection_Array1[float] = concrete           # ... is a subclass of the generic spelling
-alias = TColStd.TColStd_Array1OfReal(1, 3)
-alias_value: float = alias.Value(1)
 
 h = NCollection.NCollection_HArray1[Standard.Standard_Persistent](1, 2)
 arr_base: NCollection.NCollection_Array1[Standard.Standard_Persistent] = h   # HArray1 is (statically and at runtime) an Array1
@@ -28,7 +26,6 @@ def total(arr: NCollection.NCollection_Array1[float]) -> float:    # accepts eve
 
 
 total(a)
-total(alias)
 
 a.SetValue(1, "x")            # error: str is not float
 bad: str = a.Value(1)         # error: float is not str

@@ -100,14 +100,14 @@ def test_materials_colors_and_vectors():
     assert m.Color().Name() == Quantity.Quantity_NOC_GOLDENROD3 and 0.0 < m.Shininess() < 1.0
     m.SetColor(Quantity.Quantity_Color(Quantity.Quantity_NOC_RED))
     assert m.Color().Name() == Quantity.Quantity_NOC_RED
-    Vec3 = Graphic3d.Graphic3d_Vec3                     # deprecated 8.0 typedef (src/Deprecated) of NCollection_Vec3<float>
-    assert Vec3 is Quantity.NCollection_Vec3__float
+    Vec3 = Quantity.NCollection_Vec3__float             # the 8.0 spelling; Graphic3d_Vec3 is a pre-8.0 alias and not bound
+    assert not hasattr(Graphic3d, "Graphic3d_Vec3")
     a, b = Vec3(1.0, 2.0, 3.0), Vec3(4.0, 5.0, 6.0)
     assert (a + b).z() == 9.0 and (b - a).x() == 3.0 and (a * b).y() == 10.0      # hidden friend operators (R-FREE-OP)
     a += b
     assert a.x() == 5.0 and a.Dot(b) == pytest.approx(20 + 35 + 54)
-    v4 = Graphic3d.Graphic3d_Vec4(1.0, 2.0, 3.0, 4.0)
-    assert (v4 / Graphic3d.Graphic3d_Vec4(1.0, 2.0, 3.0, 4.0)).w() == 1.0
+    v4 = Quantity.NCollection_Vec4__float(1.0, 2.0, 3.0, 4.0)
+    assert (v4 / Quantity.NCollection_Vec4__float(1.0, 2.0, 3.0, 4.0)).w() == 1.0
     assert Quantity.Quantity_Color(Quantity.Quantity_NOC_RED).Rgb().r() == 1.0  # Quantity_Color -> NCollection_Vec3<float>
 
 
@@ -158,7 +158,7 @@ def test_width_twins_with_out_parameters_keep_the_plain_name():
     v.SetCoord(4, 5, 6)
     assert v.X() == 4.0 and Graphic3d.Graphic3d_Vertex(0.0, 0.0, 0.0).Distance(v) == pytest.approx((16 + 25 + 36) ** 0.5)
     tri = Graphic3d.Graphic3d_ArrayOfTriangles(3)
-    assert tri.AddVertex(0.0, 0.0, 0.0) == 1 and tri.AddVertex(gp.gp_Pnt(1, 0, 0)) == 2 and tri.AddVertex(Graphic3d.Graphic3d_Vec3(0.0, 1.0, 0.0)) == 3
+    assert tri.AddVertex(0.0, 0.0, 0.0) == 1 and tri.AddVertex(gp.gp_Pnt(1, 0, 0)) == 2 and tri.AddVertex(Quantity.NCollection_Vec3__float(0.0, 1.0, 0.0)) == 3
     assert tri.VertexNumber() == 3 and tri.Vertice(2).X() == 1.0
 
 

@@ -1,5 +1,5 @@
 """NCollection containers: docstring extraction from the template headers, the coverage check against the BINDERS
-table (generator/binders.py), and the deprecated pre-8.0 typedef aliases (src/Deprecated/NCollectionAliases)."""
+table (generator/binders.py),."""
 from __future__ import annotations
 
 import re
@@ -89,37 +89,3 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
         out.append(f"}} // namespace {tmpl}")
     out += ["} // namespace nanoocp_doc", ""]
     return "\n".join(out), warnings
-
-
-def deprecated_aliases(alias_dir: Path, args: list[str], templates: dict[str, dict]) -> tuple[dict[str, dict[str, tuple[str, str]]], int]:
-    """OCCT 8 keeps the pre-8.0 typedef names (TColgp_Array1OfPnt = NCollection_Array1<gp_Pnt>) in
-    src/Deprecated/NCollectionAliases. Returns {prefix: {alias: (home package, bound name)}} for every typedef
-    whose instantiation is bound, plus the number of typedefs whose instantiation is not bound."""
-    headers = sorted(h.name for h in alias_dir.glob("*.hxx"))
-    text = "".join(f"#include <{h}>\n" for h in headers)
-    index = cindex.Index.create()
-    tu = index.parse("aliases.hxx", args=args + [f"-I{alias_dir}"], unsaved_files=[("aliases.hxx", text)],
-                     options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
-    result: dict[str, dict[str, tuple[str, str]]] = {}
-    unbound = 0
-    for cur in tu.cursor.get_children():
-        if cur.kind not in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL) or cur.location.file is None:
-            continue
-        if Path(cur.location.file.name).name not in headers:
-            continue
-        canon = cur.underlying_typedef_type.get_canonical()
-        if canon.kind != cindex.TypeKind.RECORD or canon.get_num_template_arguments() <= 0:
-            continue
-        tmpl = canon.get_declaration().spelling
-        if tmpl in BINDERS:
-            all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
-            key = f"{tmpl}<{', '.join(instance_args(tmpl, all_args))}>"
-        else:
-            key = canon.spelling               # a 6c instantiation (Graphic3d_Vec3 = NCollection_Vec3<float>): manifest key = canonical spelling
-        found = templates.get(key)
-        if found is None or found.get("skipped", False):
-            unbound += 1
-            continue
-        prefix = cur.spelling.split("_", 1)[0]
-        result.setdefault(prefix, {})[cur.spelling] = (found["package"], found["name"])
-    return result, unbound

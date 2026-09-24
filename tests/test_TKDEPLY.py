@@ -12,7 +12,8 @@ from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanoocp.BVH import BVH_Vec2f, BVH_Vec3i, BVH_Vec4i
 from nanoocp.DEPLY import DEPLY_ConfigurationNode, DEPLY_Provider
-from nanoocp.Graphic3d import Graphic3d_Vec3, Graphic3d_Vec4ub
+from nanoocp.Quantity import NCollection_Vec3__float as Vec3f          # Graphic3d_Vec3 is a pre-8.0 alias, not bound
+from nanoocp.Graphic3d import NCollection_Vec4__unsigned_char as Vec4ub
 from nanoocp.Message import Message_ProgressRange
 from nanoocp.NCollection import NCollection_IndexedDataMap
 from nanoocp.Quantity import Quantity_Color, Quantity_NOC_RED
@@ -77,7 +78,7 @@ def test_the_writer_context_writes_a_ply_by_hand(tmp_path):
     assert ctx.Open(TCollection_AsciiString(str(path))) and ctx.IsOpened()
     assert ctx.WriteHeader(3, 1, FileInfo())
 
-    normal, uv, red = Graphic3d_Vec3(0.0, 0.0, 1.0), BVH_Vec2f(0.0, 0.0), Graphic3d_Vec4ub(255, 0, 0, 255)
+    normal, uv, red = Vec3f(0.0, 0.0, 1.0), BVH_Vec2f(0.0, 0.0), Vec4ub(255, 0, 0, 255)
     for point in (gp_Pnt(0.0, 0.0, 0.0), gp_Pnt(1.0, 0.0, 0.0), gp_Pnt(0.0, 1.0, 0.0)):
         assert ctx.WriteVertex(point, normal, uv, red)
     assert ctx.NbWrittenVertices() == 3
@@ -95,7 +96,7 @@ def test_the_colour_parameter_is_a_bound_type(tmp_path):
     """NCollection_Vec4<uint8_t> reaches the bindings only as WriteVertex's `const&` parameter -- the case 6c did not
     instantiate until 2026-09-23, which made the method a TypeError for every argument list without any report line."""
     assert "theColor: nanoocp.Graphic3d.NCollection_Vec4__unsigned_char" in RWPly_PlyWriterContext.WriteVertex.__doc__
-    colour = Graphic3d_Vec4ub(1, 2, 3, 4)           # OCCT's own alias of it (Graphic3d_Vec.hxx)
+    colour = Vec4ub(1, 2, 3, 4)           # NCollection_Vec4<unsigned char>
     assert (colour.x(), colour.y(), colour.z(), colour.w()) == (1, 2, 3, 4)
 
 
@@ -104,7 +105,7 @@ def test_the_writer_context_writes_quads(tmp_path):
     ctx = RWPly_PlyWriterContext()
     assert ctx.Open(TCollection_AsciiString(str(path)))
     assert ctx.WriteHeader(4, 1, FileInfo())
-    normal, uv, white = Graphic3d_Vec3(0.0, 0.0, 1.0), BVH_Vec2f(0.0, 0.0), Graphic3d_Vec4ub(255, 255, 255, 255)
+    normal, uv, white = Vec3f(0.0, 0.0, 1.0), BVH_Vec2f(0.0, 0.0), Vec4ub(255, 255, 255, 255)
     for point in (gp_Pnt(0.0, 0.0, 0.0), gp_Pnt(1.0, 0.0, 0.0), gp_Pnt(1.0, 1.0, 0.0), gp_Pnt(0.0, 1.0, 0.0)):
         ctx.WriteVertex(point, normal, uv, white)
     assert ctx.WriteQuad(BVH_Vec4i(1, 2, 3, 4))

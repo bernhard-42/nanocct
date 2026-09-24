@@ -63,13 +63,12 @@ def test_explorer_iterator_and_shape_maps():
     assert kinds == [TopAbs.TopAbs_ShapeEnum.TopAbs_VERTEX, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE]
     # hashed containers keep a non-default hasher in their type: NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher>
     Map = NCollection.NCollection_IndexedMap[TopoDS.TopoDS_Shape, TopTools.TopTools_ShapeMapHasher]
-    assert Map is TopTools.TopTools_IndexedMapOfShape
     m = Map()
     TopExp.TopExp.MapShapes(c, m)
     assert m.Extent() == 3 and [s.ShapeType() for s in m][0] == TopAbs.TopAbs_ShapeEnum.TopAbs_COMPOUND
     lst = NCollection.NCollection_List[TopoDS.TopoDS_Shape]()
     lst.Append(v)
-    assert type(lst) is TopTools.TopTools_ListOfShape and v in lst
+    assert type(lst) is NCollection.NCollection_List__TopoDS_Shape and v in lst
 
 
 def test_brep_tool_and_adaptors():

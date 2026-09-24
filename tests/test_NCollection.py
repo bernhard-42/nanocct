@@ -78,11 +78,15 @@ def test_harray1_passes_as_array1_and_as_transient_handle():
         AH(1, 1).SetValue(1, h)                                # not a Standard_Persistent: rejected, no corruption
 
 
-def test_deprecated_typedef_alias():
-    assert TColStd.TColStd_Array1OfReal is A
-    a = TColStd.TColStd_Array1OfReal(1, 3)
+def test_the_pre_8_0_typedef_names_are_not_exposed():
+    """nanoOCP is an OCCT 8 binding: the pre-8.0 aliases of src/Deprecated/NCollectionAliases
+    (TColStd_Array1OfReal & co) are not bound -- the 8.0 spelling is the container itself
+    (decision 2026-09-24, Design.md 6a). 6c aliases that OCCT still declares as real classes stay."""
+    assert not hasattr(TColStd, "TColStd_Array1OfReal")
+    a = A(1, 3)
     a.Init(2.5)
     assert list(a) == [2.5, 2.5, 2.5]
+    assert TColStd.TColStd_PackedMapOfInteger is not None      # 6c: bound as a class, not an alias
 
 
 def test_docstrings_come_from_the_template_header():
@@ -200,11 +204,10 @@ def test_hsequence_is_a_sequence_with_transient_members():
     assert S(h).Length() == 2                                    # HSequence -> Sequence (copy constructor)
 
 
-def test_sequence_and_list_aliases():
+def test_sequence_and_list_have_no_pre_8_0_aliases():
     from nanoocp import TColStd
-    assert TColStd.TColStd_SequenceOfAsciiString is S
-    assert TColStd.TColStd_ListOfInteger is L
-    assert TColStd.TColStd_HSequenceOfAsciiString is HS
+    for gone in ("TColStd_SequenceOfAsciiString", "TColStd_ListOfInteger", "TColStd_HSequenceOfAsciiString"):
+        assert not hasattr(TColStd, gone)
 
 
 def test_occt_method_returning_a_container():

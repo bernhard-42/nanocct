@@ -1153,13 +1153,13 @@ NB_MODULE(_{toolkit}, m) {{
 """
 
 
-def write_package_shims(py_root: Path, package: str, toolkit: str | None, aliases: dict[str, tuple[str, str]],
+def write_package_shims(py_root: Path, package: str, toolkit: str,
                         namespaces: list[tuple[str, ...]],
                         accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None) -> None:
     """nanoocp/<package>.py, or for a package whose C++ code declares namespaces of its own (Geom2dEval_RepCurveDesc
     in package Geom2dEval) the Python package nanoocp/<package>/__init__.py with one module per namespace, so that
     `from nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc import Base` and the .pyi layout follow the C++ nesting."""
-    shim = emit_package_shim(package, toolkit, aliases, accessors)
+    shim = emit_package_shim(package, toolkit, accessors)
     pkg_dir = py_root / package
     module_file = py_root / f"{package}.py"
     if len(namespaces) == 0:
@@ -1167,7 +1167,6 @@ def write_package_shims(py_root: Path, package: str, toolkit: str | None, aliase
             shutil.rmtree(pkg_dir)                  # the package lost its namespaces (regeneration)
         module_file.write_text(shim)
         return
-    assert toolkit is not None
     module_file.unlink(missing_ok=True)
     (py_root / f"{package}.pyi").unlink(missing_ok=True)
     pkg_dir.mkdir(exist_ok=True)
@@ -1196,12 +1195,11 @@ def write_package_shims(py_root: Path, package: str, toolkit: str | None, aliase
             stale.unlink()
 
 
-def emit_package_shim(package: str, toolkit: str | None, aliases: dict[str, tuple[str, str]],
+def emit_package_shim(package: str, toolkit: str,
                       accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None) -> str:
-    """Python module nanoocp.<package>. toolkit=None: a pure alias module (prefix of deprecated typedefs
-    that is not a package in OCCT 8, e.g. TColgp). accessors (NCollection only): template -> {element type
-    specs -> bound class name} for the NCollection_Xxx[T] spelling."""
-    alias_lines = "".join(f'    "{a}": ("nanoocp.{pkg}", "{name}"),\n' for a, (pkg, name) in sorted(aliases.items()))
+    """Python module nanoocp.<package>: it re-exports the package's extension submodule under the name a user
+    writes. accessors (NCollection only): template -> {element type specs -> bound class name} for the
+    NCollection_Xxx[T] spelling."""
     accessor_block = ""
     if accessors is not None:
         parts = ["", "# NCollection_Xxx[T] -> bound class (Design.md 6a); tables generated from manifest.json",
@@ -1210,29 +1208,7 @@ def emit_package_shim(package: str, toolkit: str | None, aliases: dict[str, tupl
             entries = "".join(f"    {specs!r}: \"{name}\",\n" for specs, name in sorted(accessors[tmpl].items(), key=lambda kv: kv[1]))
             parts.append(f'{tmpl} = _Template("{tmpl}", "nanoocp.NCollection", {{\n{entries}}})')
         accessor_block = "\n".join(parts) + "\n"
-    if toolkit is None:
-        head = f'''"""OCCT pre-8.0 typedef names with prefix {package} (OCCT src/Deprecated/NCollectionAliases)."""
-import importlib as _importlib
-'''
-        fallback = '    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")'
-    else:
-        head = f'''"""OCCT package {package} (toolkit {toolkit})."""
-import importlib as _importlib
-
-from nanoocp._{toolkit} import {package} as _ext
+    head = f'''"""OCCT package {package} (toolkit {toolkit})."""
 from nanoocp._{toolkit}.{package} import *  # noqa: F401,F403
 '''
-        fallback = "    return getattr(_ext, name)   # NCollection instantiations bound into this package by other toolkits"
-    return f'''{head}
-{accessor_block}
-# deprecated NCollection typedef names -> (home module, bound name)
-_ALIASES = {{
-{alias_lines}}}
-
-
-def __getattr__(name):
-    target = _ALIASES.get(name)
-    if target is not None:
-        return getattr(_importlib.import_module(target[0]), target[1])
-{fallback}
-'''
+    return f"{head}{accessor_block}"

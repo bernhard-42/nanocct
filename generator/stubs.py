@@ -113,14 +113,6 @@ def _replace_class_block(text: str, name: str, replacement: str) -> str:
     return text[:m.start()] + replacement + "\n" + text[m.end():]
 
 
-def _aliases_of(shim: Path) -> dict[str, tuple[str, str]]:
-    """The _ALIASES table of a generated shim module (parsed, not imported)."""
-    for node in ast.parse(shim.read_text()).body:
-        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "_ALIASES" for t in node.targets):
-            return ast.literal_eval(node.value)
-    return {}
-
-
 def _shims() -> list[Path]:
     """nanoocp/<pkg>.py, or nanoocp/<pkg>/__init__.py for a package with C++ namespaces (Python sub-packages)."""
     return sorted([p for p in SRC.glob("*.py") if not p.name.startswith("_")] + list(SRC.glob("*/__init__.py")))
@@ -167,7 +159,7 @@ def main() -> int:
     classes, templates = _CLASSES, _MANIFEST["templates"]
     toolkit_of = {}
     for pkg_file in _shims():
-        m = re.search(r"from nanoocp\._(\w+) import (\w+) as _ext", pkg_file.read_text())
+        m = re.search(r"from nanoocp\._(\w+)\.(\w+) import \*", pkg_file.read_text())
         if m is not None:
             toolkit_of[m.group(2)] = (m.group(1), _stub_of(pkg_file))
     # One stub per package module, and they are 97 % of the run (measured 2026-09-24: 97.8 s of 100.8 s, 276 ms per
@@ -182,23 +174,6 @@ def main() -> int:
         for future in done:
             future.result()                       # the first failure is raised here, with its traceback
             print(f"stub {done[future].relative_to(ROOT)}", file=sys.stderr)
-    # deprecated typedef aliases (shim _ALIASES tables) -> explicit assignments in the stubs; alias-only
-    # modules (e.g. TColgp) get a stub of their own
-    for shim in _shims():
-        aliases = _aliases_of(shim)
-        if len(aliases) == 0:
-            continue
-        out = _stub_of(shim)
-        modules = sorted({mod for mod, _ in aliases.values()})
-        block = "\n# deprecated OCCT typedef names (src/Deprecated/NCollectionAliases)\n" + "".join(
-            f"import {mod}\n" for mod in modules) + "".join(
-            f"{alias} = {mod}.{name}\n" for alias, (mod, name) in sorted(aliases.items()))
-        text = out.read_text() if out.exists() else f'"""{shim.stem}: OCCT pre-8.0 typedef names."""\n'   # alias-only modules are never packages
-        marker = block.splitlines()[1]                       # an alias-only stub is not rewritten by stubgen: replace the old block
-        if marker in text:
-            text = text[:text.index(marker)]
-        out.write_text(text.rstrip("\n") + "\n" + block)
-
     # NCollection: generic container classes + instantiations as their subclasses
     nc = toolkit_of["NCollection"][1]
     text = nc.read_text()
