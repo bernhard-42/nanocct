@@ -237,7 +237,10 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="generator")
     ap.add_argument("--occt-src", type=Path, default=ROOT / "deps" / "occt-src")
     ap.add_argument("--occt", type=Path, default=ROOT / "deps" / "occt-8.0.1")
-    ap.add_argument("--toolkit", required=True, action="append", help="toolkit to generate (repeatable)")
+    # Takes a list -- `--toolkit TKernel TKMath TKG2d ...` -- and is still repeatable. The order is the caller's and
+    # it matters: instantiation ownership follows it, and so does the import order a toolkit's aliases depend on.
+    ap.add_argument("--toolkit", required=True, action="extend", nargs="+",
+                    help="toolkits to generate, in dependency order (repeatable, takes a list)")
     ap.add_argument("--package", action="append", default=None, help="restrict to these packages (default: all of the toolkit)")
     ap.add_argument("--out", type=Path, default=ROOT / "src")
     ap.add_argument("--allow-rehoming", action="store_true",

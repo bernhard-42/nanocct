@@ -38,3 +38,8 @@ reviews/
 /src/nanoocp/**/*.py
 /src/nanoocp/**/*.pyi
 !/src/nanoocp/_templates.py
+
+# staged trees the Makefile builds for stubs/test (deps/stage.sh)
+stage-mac/
+stage-ml/
+stage-win/

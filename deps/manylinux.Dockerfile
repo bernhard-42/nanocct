@@ -17,6 +17,10 @@ FROM quay.io/pypa/manylinux_2_28_x86_64
 # `auditwheel repair` needs --exclude for them when the wheels are built.
 RUN dnf -y -q install mesa-libGL-devel mesa-libEGL-devel libXext-devel libXmu-devel fontconfig-devel \
  && dnf -q clean all
+
+# xorg-x11-server-Xvfb: the viewer tests need a display (USE_XLIB=ON), so `xvfb-run` has to be in the image --
+# otherwise the suite can only run on the host, and Linux is meant to go through the container alone.
+RUN dnf -y -q install xorg-x11-server-Xvfb && dnf -q clean all
 # the image has no ninja, and powertools' is 1.8.2 (2018); the wheel is current
 RUN /opt/python/cp312-cp312/bin/pip install --no-cache-dir -q ninja \
  && ln -s /opt/python/cp312-cp312/bin/ninja /usr/local/bin/ninja
