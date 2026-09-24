@@ -253,19 +253,31 @@ def main() -> int:
         generic = _generic_or_none(inst["name"], templates)
         if generic is not None:
             generic_of[inst["name"]] = "nanoocp.NCollection." + generic
+    # One alternation for all ~800 names instead of one scan each: this loop used to do
+    # 370 files x 4 rounds x ~812 names = 1.2 million whole-file substitutions over 14.8 MB, and was 57% of stub
+    # generation (129.9 s of 226.8 s, macOS 2026-09-24). The trailing \b already prevents a shorter name from matching
+    # a prefix of a longer one (the names are separated by '_', a word character), and longest-first makes it explicit.
+    # A nested-class access (X.Iterator as a base class, Graphic3d_SequenceOfHClipPlane::Iterator) keeps the concrete
+    # name: ty rejects the nested class of a specialised generic (6b) -- hence the (?!\.).
+    generic_re = re.compile(r"\bnanoocp\.NCollection\.(" + "|".join(
+        re.escape(n) for n in sorted(generic_of, key=len, reverse=True)) + r")\b(?!\.)") if len(generic_of) > 0 else None
     for stub in sorted(SRC.rglob("*.pyi")):
         if stub == nc:
             continue
         text = stub.read_text()
-        for _ in range(4):                    # nested instantiations: the generic argument may name a concrete class
-            new = text
-            for name, generic in generic_of.items():
-                # a nested-class access (X.Iterator as a base class, Graphic3d_SequenceOfHClipPlane::Iterator) keeps the concrete
-                # name: ty rejects the nested class of a specialised generic (6b)
-                new = re.sub(rf"\bnanoocp\.NCollection\.{re.escape(name)}\b(?!\.)", generic, new)
+        # Each round resolves one level of nesting: the generic spelling of an instantiation names its arguments, and
+        # an argument is often another instantiation (NCollection_Sequence__NCollection_List__int ->
+        # NCollection_Sequence[NCollection_List__int], whose argument still has to be rewritten). The bound used to be
+        # a bare range(4), which would silently leave a concrete name behind if the nesting were ever deeper.
+        for _ in range(8):
+            if generic_re is None:
+                break
+            new = generic_re.sub(lambda m: generic_of[m.group(1)], text)
             if new == text:
                 break
             text = new
+        else:
+            raise RuntimeError(f"{stub}: the generic rewrite did not converge -- nesting deeper than expected")
         stub.write_text(_with_imports(text))
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)

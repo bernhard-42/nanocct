@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+import platform
 from pathlib import Path
 
 MODULES = ("FoundationClasses", "ModelingData", "ModelingAlgorithms", "Visualization",
@@ -35,7 +36,17 @@ class OcctTree:
 
     @property
     def include_dir(self) -> Path:
-        return self.install / "include" / "opencascade"
+        """Where the install keeps the headers. OCCT's own layout differs by platform: `<install>/inc` on Windows
+        (what its env.bat exports as CSF_OCCTIncludePath), `<install>/include/opencascade` elsewhere. The native
+        layout is checked first, because a staged copy of another platform's headers can sit in the other location
+        (it did on the Windows box, 2026-09-23) and silently parse the wrong OS's API."""
+        candidates = [self.install / "inc", self.install / "include" / "opencascade"]
+        if platform.system() != "Windows":
+            candidates.reverse()
+        for candidate in candidates:
+            if candidate.is_dir():
+                return candidate
+        return candidates[-1]
 
     def link_closure(self, toolkit: str) -> set[str]:
         """The toolkit and everything it links transitively (EXTERNLIB.cmake); what the linker already sees."""

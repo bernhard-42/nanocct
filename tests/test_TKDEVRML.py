@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import report
+
 from nanoocp import Message
 from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
@@ -157,13 +159,15 @@ def test_the_drawer_and_the_de_provider(tmp_path, meshed_box, quiet_messenger):
     assert path.read_text().startswith("#VRML")
 
 
-def test_report_is_twenty_seven_lines():
+def test_report_is_the_vrmldata_raw_pointers():
     """All 27 are in VrmlData, the VRML 2.0 DOM: the index arrays it hands out as `const int*&` into its own memory,
     VrmlData_InBuffer (which *holds* the istream it parses from), the two stream operators, and
     VrmlData_IndexedFaceSet::GetNormal -- declared Standard_EXPORT at VrmlData_IndexedFaceSet.hxx:180 and defined
     nowhere in OCCT, which the nm check caught before the linker did."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert len(lines) == 27
-    assert all(line.split("\t")[1] == "VrmlData" for line in lines)
+    all_lines, lines, undefined, _ = report("TKDEVRML")
+    assert len(lines) == 25
+    assert all(line.split("\t")[1] == "VrmlData" for line in all_lines)
     assert sum(line.startswith("raw-pointer") for line in lines) == 18
-    assert any("VrmlData_IndexedFaceSet::GetNormal" in line and line.startswith("undefined") for line in lines)
+    assert all("VrmlData_IndexedFaceSet::GetNormal" in line or "VrmlData_Node::VrmlData_Node()" in line
+               for line in undefined)

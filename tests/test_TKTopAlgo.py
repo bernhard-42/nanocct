@@ -4,6 +4,7 @@ enum of a skipped class is skipped with it (no alias, accessor entry or instanti
 import importlib
 import json
 import math
+import platform
 from pathlib import Path
 
 import pytest
@@ -144,11 +145,16 @@ def test_mesh_proximity_through_the_bvh_chain():
     overlap = BRepExtrema.BRepExtrema_ShapeProximity(a, c, 0.0)                                   # tolerance 0: overlap mode
     overlap.Perform()
     assert overlap.IsDone() and len(overlap.OverlapSubShapes1()) == 3                          # three faces of the unit cube overlap
-    overlap_tool = BRepExtrema.BRepExtrema_OverlapTool(tri, prox.ElementSet2())
-    assert [c.__name__ for c in type(overlap_tool).__mro__[1:3]] == ["BVH_PairTraverse__double__3__void__double", "BVH_BaseTraverse__double"]   # bound on demand by IntPatch
+    # BRepExtrema_OverlapTool's constructors, LoadTriangleSets and Perform carry no Standard_EXPORT, so on Windows
+    # they are absent from libTKTopAlgo and R-UNDEFINED leaves only the copy constructor -- the class is still bound
+    # and its template bases are still what this test is about (gauss, 2026-09-24).
+    overlap_tool = BRepExtrema.BRepExtrema_OverlapTool(tri, prox.ElementSet2()) if platform.system() != "Windows" \
+        else BRepExtrema.BRepExtrema_OverlapTool
+    bases = type(overlap_tool).__mro__[1:3] if platform.system() != "Windows" else overlap_tool.__mro__[1:3]
+    assert [c.__name__ for c in bases] == ["BVH_PairTraverse__double__3__void__double", "BVH_BaseTraverse__double"]   # bound on demand by IntPatch
     rows = read_report(REPORT)
     assert all(cat != "misc" for cat, _, _ in rows)
-    assert not any("ProxPnt_Status" in msg for _, _, msg in rows)
+    assert not any("ProxPnt_Status" in msg for cat, _, msg in rows if cat != "undefined")
 
 
 def test_collision_suffixes_and_undefined_members():

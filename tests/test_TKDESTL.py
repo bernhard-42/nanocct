@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import report
+
 from nanoocp import Message
 from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
@@ -104,8 +106,8 @@ def test_the_de_provider_and_the_abstract_reader():
         RWStl_Reader()
 
 
-def test_report_is_two_lines():
-    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert len(lines) == 2
-    assert lines[0].startswith("std\tRWStl\tRWStl_Reader::ReadAscii") and "std::fpos" in lines[0]
-    assert lines[1].startswith("undefined\tRWStl\tRWStl_Reader::RWStl_Reader()")
+def test_report_is_the_ascii_reader_and_the_ctor():
+    _, portable, undefined, _ = report("TKDESTL")
+    assert len(portable) == 1
+    assert portable[0].startswith("std\tRWStl\tRWStl_Reader::ReadAscii") and "std::fpos" in portable[0]
+    assert all("RWStl_Reader::RWStl_Reader()" in line for line in undefined)

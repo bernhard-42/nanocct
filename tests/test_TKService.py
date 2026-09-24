@@ -4,6 +4,7 @@ iteration, the enum aliases OCCT keeps for 7.x code, the in/out FindFont aspect.
 Image_AlienPixMap saves PPM only and the Media package is stubs (Design.md 2d)."""
 import importlib
 import io
+import platform
 import re
 from pathlib import Path
 
@@ -15,9 +16,16 @@ from nanoocp.NCollection import NCollection_Sequence, NCollection_String
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKService" / "report.txt"
 
 
-@pytest.mark.parametrize("pkg", ["Aspect", "Graphic3d", "Image", "Font", "Media", "Xw", "Wasm", "WNT", "Cocoa", "Shaders"])
+# Xw, Wasm and WNT are built everywhere -- OCCT exports symbols for all three on all three platforms (the counts are
+# in overrides.toml [platform]). Cocoa is the one package OCCT compiles on macOS only, so it is generated there only.
+@pytest.mark.parametrize("pkg", ["Aspect", "Graphic3d", "Image", "Font", "Media", "Xw", "Wasm", "WNT", "Shaders"])
 def test_every_package_imports(pkg):
     assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+
+
+@pytest.mark.skipif(platform.system() != "Darwin", reason="Cocoa is built on macOS only (overrides.toml [platform])")
+def test_cocoa_imports_on_macos():
+    assert importlib.import_module("nanoocp.Cocoa").__name__ == "nanoocp.Cocoa"
 
 
 @pytest.fixture
@@ -34,11 +42,16 @@ def quiet_messenger():
 
 def test_font_manager_finds_system_fonts_and_returns_the_aspect(quiet_messenger):
     mgr = Font.Font_FontMgr.GetInstance()
-    assert len(mgr.GetAvailableFonts()) > 0
-    font, aspect = mgr.FindFont(TCollection.TCollection_AsciiString("Helvetica"), Font.Font_FA_Regular)   # Font_FontAspect& is in/out
-    assert font is not None and font.FontName().ToCString() == "Helvetica" and aspect == Font.Font_FontAspect_Regular
-    assert font.FontPath(Font.Font_FA_Regular).ToCString().endswith(".ttc")
-    assert font.HasFontAspect(Font.Font_FA_Bold) is True
+    available = mgr.GetAvailableFonts()
+    assert len(available) > 0
+    # Which fonts a machine has is its own business: macOS ships Helvetica in a .ttc, AlmaLinux only DejaVu, and
+    # banach answered "Helvetica" with Arial (2026-09-23). Asking for a name the manager itself reports keeps the
+    # test about what it is meant to test -- the in/out Font_FontAspect& parameter and the path accessor.
+    wanted = next(f for f in available if f.HasFontAspect(Font.Font_FA_Regular))
+    name = wanted.FontName().ToCString()
+    font, aspect = mgr.FindFont(TCollection.TCollection_AsciiString(name), Font.Font_FA_Regular)   # Font_FontAspect& is in/out
+    assert font is not None and font.FontName().ToCString() == name and aspect == Font.Font_FontAspect_Regular
+    assert Path(font.FontPath(Font.Font_FA_Regular).ToCString()).is_file()
     fallback, aspect = mgr.FindFont(TCollection.TCollection_AsciiString("NoSuchFont-nanoOCP"), Font.Font_StrictLevel_Any, Font.Font_FA_Bold, False)
     assert fallback is not None and aspect == Font.Font_FontAspect_Bold           # the fallback keeps the requested aspect
     assert mgr.FindFont(TCollection.TCollection_AsciiString("NoSuchFont-nanoOCP"), Font.Font_StrictLevel_Strict, Font.Font_FA_Bold, False)[0] is None
@@ -105,11 +118,21 @@ def test_pixmap_pixel_access_and_ppm_save(tmp_path):
     px.SetPixelColor(1, 2, red)
     c = px.PixelColor(1, 2)
     assert (c.GetRGB().Red(), c.GetRGB().Green(), c.Alpha()) == (1.0, 0.0, 1.0) and px.PixelColor(0, 0).GetRGB().Red() == 0.0
+    # Image_AlienPixMap::InitCopy refuses a copy that would need a pixel-format conversion, and on Windows OCCT builds
+    # it on the Windows Imaging Component (Image_AlienPixMap.cxx:16 defines HAVE_WINCODEC when FreeImage is absent),
+    # whose InitTrash rewrites RGB to BGR -- so an RGB source can never be copied there. BGR is left alone by every
+    # backend, which makes the copy work on all three (gauss, 2026-09-24).
+    bgr = Image.Image_PixMap()
+    assert bgr.InitZero(Image.Image_Format_BGR, 4, 3)
     alien = Image.Image_AlienPixMap()
-    assert alien.InitCopy(px)
+    assert alien.InitCopy(bgr)
     out = tmp_path / "x.png"
     assert alien.Save(TCollection.TCollection_AsciiString(str(out)))
-    assert out.read_bytes().startswith(b"P6\n4 3\n")      # no FreeImage in this OCCT build: PPM whatever the extension (2d)
+    data = out.read_bytes()
+    if platform.system() == "Windows":
+        assert data.startswith(b"\x89PNG")                # WIC writes a real PNG
+    else:
+        assert data.startswith(b"P6\n4 3\n")              # no FreeImage and no WIC: PPM whatever the extension (2d)
 
 
 def test_clip_plane_sequence_iterator_is_declared_after_its_binder_base():

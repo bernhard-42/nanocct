@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import report
+
 from nanoocp.DE import (DE_ConfigurationContext, DE_ConfigurationNode, DE_Provider, DE_ShapeFixConfigurationNode,
                         DE_ShapeFixParameters, DE_ValidationUtils, DE_Wrapper)
 from nanoocp.NCollection import NCollection_Buffer
@@ -105,11 +107,15 @@ def test_the_abstract_bases_have_no_constructor():
     assert hasattr(DE_ConfigurationNode, "Register") and hasattr(DE_Wrapper, "Bind")
 
 
-def test_report_is_the_expected_thirteen_lines():
-    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert len(lines) == 13
+def test_report_is_the_expected_portable_lines():
+    _, lines, undefined, _ = report("TKDE")
+    assert len(lines) == 7
+    # every undefined entry is a constructor OCCT declares but does not define (Unix reports them, Windows exports
+    # nothing for them either, and a platform that defines them reports none): checked by content, not by count
+    assert all("DE_ConfigurationNode::" in line or "DE_Provider::" in line
+               or "DE_ShapeFixConfigurationNode::" in line for line in undefined)
     kinds = sorted(line.split("\t")[0] for line in lines)
-    assert kinds == ["std"] + ["stream"] * 4 + ["template"] * 2 + ["undefined"] * 6
+    assert kinds == ["std"] + ["stream"] * 4 + ["template"] * 2
     # the stream nodes hold a stream reference beyond the call, so the stream-based Read/Write overloads stay unusable (2d)
     assert sum("StreamNode" in line for line in lines) == 4
     assert sum("DE_PluginHolder" in line or "DE_MultiPluginHolder" in line for line in lines) == 2

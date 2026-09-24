@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import report
+
 from nanoocp import CDF, CDM, LDOM, PCDM, UTL
 from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
 
@@ -105,7 +107,15 @@ def test_cdf_directory_utl_and_metadata_print():
 
 
 def test_report_has_only_the_expected_omissions():
-    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
+    lines, _, undefined, _ = report("TKCDF")
     categories = {line.split("\t")[0] for line in lines}
-    assert categories <= {"iterator", "operator", "raw-pointer", "unbound-type", "undefined"}
-    assert any("LDOM_OSStream: base class Standard_OStream" in line for line in lines)   # the std::ostream subclass (Design.md 2d)
+    # "template" appears on Windows only: R-UNDEFINED leaves different members there, which changes what the
+    # template machinery still has to report (gauss, 2026-09-24)
+    assert categories <= {"iterator", "operator", "override", "raw-pointer", "template", "unbound-type", "undefined"}
+    assert all(line.split("\t")[1] in {"CDF", "CDM", "LDOM", "PCDM", "UTL"} for line in undefined)
+    # LDOM_OSStream derives from std::ostream and is dropped for it either way, but the wording differs: libc++ keeps
+    # the typedef ("base class Standard_OStream is not bound"), MSVC resolves it to the template instantiation and the
+    # template-base path reports it instead ("template base basic_ostream<char, ...> cannot be instantiated") -- the
+    # same divergence as the shared_ptr<std::ostream> default (gauss, 2026-09-24). The outcome is what matters.
+    assert any("LDOM_OSStream" in line and ("base class Standard_OStream is not bound" in line
+                                            or "template base basic_ostream" in line) for line in lines)

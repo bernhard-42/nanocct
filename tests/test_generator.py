@@ -1,5 +1,5 @@
 """Generator unit tests: the IR that parse_package builds from synthetic headers (one per Design.md 6 rule), the
-overload-collision resolver, the report categories, and the reproducibility of a regeneration against the checked-in
+overload-collision resolver, the report categories, and the reproducibility of a regeneration against a previous one
 sources. No compiler is involved except the regeneration test's libclang parse (TKG2d, ~5 s)."""
 import filecmp
 import re
@@ -632,11 +632,15 @@ def test_emitter_static_rename_and_collision(rules_ir):
 
 
 def test_ir_records_mangled_names(rules_ir):
-    # R-UNDEFINED compares libclang's mangling with nm's symbol list, per overload
+    # R-UNDEFINED compares libclang's mangling with the library's symbol list, per overload. The mangling is the
+    # platform's: Itanium on Unix, MSVC on Windows ("?Coord@Rules_Value@@QEBAXAEAN0@Z"), so the test asserts that the
+    # name is there and that the overloads are distinguished -- not one platform's spelling (gauss, 2026-09-24).
     coord = _method(rules_ir, "Rules_Value", "Coord")
-    assert coord.mangled.endswith("ZNK11Rules_Value5CoordERdS0_")
+    assert "Coord" in coord.mangled and "Rules_Value" in coord.mangled
     ctors = next(c for c in rules_ir.classes if c.name == "Rules_Ambiguous").ctors
-    assert [k.mangled.endswith(m) for k, m in zip(ctors, ["15Rules_AmbiguousC1Ei", "15Rules_AmbiguousC1Eii"])] == [True, True]
+    mangled = [k.mangled for k in ctors]
+    assert all("Rules_Ambiguous" in m for m in mangled)
+    assert len(set(mangled)) == len(mangled)          # the one-int and two-int overloads mangle differently
 
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
@@ -960,7 +964,7 @@ def test_resolve_overload_collisions_suffixes_by_out_params():
 
 
 def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
-    """Overloads with identical Python signatures in the checked-in stubs (nanobind takes the first registered) may only
+    """Overloads with identical Python signatures in the generated stubs (nanobind takes the first registered) may only
     be scalar-width twins (R-WIDTH, wider first) or the str-accepting kinds of TCollection (const char* / char /
     AsciiString / char16_t*); const twins and out-param collisions must be gone (R-CONST-TWIN, R-COLLISION)."""
     sig_re = re.compile(r"^(\s*)def (\w+)\((.*?)\)(?: -> (.*?))?:(?: \.\.\.)?$")
@@ -1012,8 +1016,9 @@ def test_report_categories_are_complete_for_the_checked_in_reports():
 
 
 def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
-    """The generator, run with the checked-in manifest, must reproduce src/cpp/TKG2d byte for byte (the reviewer's
-    'clean regeneration is canonical' check, automated for the smallest toolkit)."""
+    """The generator, run with the current manifest, must reproduce src/cpp/TKG2d byte for byte -- the 'clean
+    regeneration is canonical' check, automated for the smallest toolkit. Since 2026-09-23 the sources are not
+    tracked (Design.md 5.3), so this compares a fresh run against the working tree's, i.e. it tests idempotence."""
     (tmp_path / "cpp").mkdir()
     shutil.copy(ROOT / "src" / "cpp" / "manifest.json", tmp_path / "cpp" / "manifest.json")
     subprocess.run([sys.executable, "-m", "generator", "--toolkit", "TKG2d", "--out", str(tmp_path)], check=True, cwd=ROOT,

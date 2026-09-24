@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import ctypes
 import keyword
+import os
 import platform
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import tomllib
 from fnmatch import fnmatch
@@ -40,9 +42,21 @@ _INCLUDE_DIR: Path | None = None       # the OCCT include directory of the curre
 _NONCOPYABLE = set(_OVERRIDES.get("skip", {}).get("noncopyable", []))
 _SKIP_NAMESPACES = set(_OVERRIDES.get("skip", {}).get("namespaces", []))
 _SKIP_METHODS = set(_OVERRIDES.get("skip", {}).get("methods", []))
+# Classes bound without any constructor. On MSVC it is the *constructor* that stores the vptr, so it is the one
+# thing that needs the class's vtable -- and a vtable slot for a virtual OCCT declares without Standard_EXPORT
+# cannot be filled (measured on gauss 2026-09-24: placement new -> LNK2019, while binding the class, calling its
+# methods and nanobind's wrap_destruct<T> all link). Dropping the constructors therefore keeps the whole class.
+_SKIP_CONSTRUCTORS = set(_OVERRIDES.get("skip", {}).get("constructors", []))
+# nanobind builds a signature by recursing once per parameter, and MSVC gives up past ~38 with C1202, which no
+# flag raises (/constexpr:depth and /constexpr:steps both tested). 37 parameters compile, 40 do not.
+_MAX_PARAMS = int(_OVERRIDES.get("skip", {}).get("max_params", 0))
 _EXTRA_INSTANCES = list(_OVERRIDES.get("instantiate", {}).get("extra", []))
 _INCLUDE_HEADERS: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("headers", {})   # package -> the only headers to bind
 INCLUDE_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("packages", {})   # toolkit -> the only packages to generate
+# package -> the platform.system() values that build it; every other platform skips the package before parsing it
+PLATFORM_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("platform", {})
+# toolkit -> toolkits it must link although nothing in its signatures names them (R-LINK, overrides.toml [link] extra)
+EXTRA_LINKS: dict[str, list[str]] = _OVERRIDES.get("link", {}).get("extra", {})
 _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
 
@@ -68,10 +82,29 @@ def _resource_dir() -> str | None:
     return rd
 
 
+# Symbols the pip `clang` bindings register that an older libclang does not export. cindex registers *every* binding
+# on first use and raises LibclangError on the first miss, so the system library has to be probed before it is chosen:
+# Ubuntu 22.04 ships libclang 14, the wheel's bindings are 18.1.1, and `clang_CXXMethod_isDeleted` is missing there
+# ("undefined symbol", banach 2026-09-23). The last two are the generator's own extras (6c, R-USING), which have no
+# cindex wrapper -- if a library lacks them the run would fail later anyway.
+_LIBCLANG_REQUIRED_SYMBOLS = ("clang_CXXMethod_isDeleted", "clang_getSpecializedCursorTemplate",
+                              "clang_getNumOverloadedDecls", "clang_getOverloadedDecl")
+
+
+def _libclang_is_compatible(path: Path) -> bool:
+    """Whether this libclang exports what the installed cindex bindings and this generator need. Probed with ctypes
+    because cindex accepts a library file only once: a wrong choice cannot be taken back."""
+    try:
+        lib = ctypes.cdll.LoadLibrary(str(path))
+    except OSError:
+        return False
+    return all(hasattr(lib, name) for name in _LIBCLANG_REQUIRED_SYMBOLS)
+
+
 def configure_libclang() -> str:
     """Prefer the libclang shipped with the clang on PATH (same version as the SDK/stdlib it was
-    tested with); fall back to the pip 'libclang' wheel. Returns a description for logging. Idempotent: cindex
-    accepts the library file only before first use."""
+    tested with) *when it is new enough for the installed bindings*; fall back to the pip 'libclang' wheel. Returns a
+    description for logging. Idempotent: cindex accepts the library file only before first use."""
     if cindex.Config.loaded:
         return "libclang already loaded"
     rd = _resource_dir()
@@ -82,9 +115,12 @@ def configure_libclang() -> str:
                  "Windows": ["libclang.dll"]}[platform.system()]
         for pattern in names:
             hits = sorted(lib_dir.glob(pattern)) + sorted((lib_dir.parent / "bin").glob(pattern))
+            for hit in hits:
+                if _libclang_is_compatible(hit):
+                    cindex.Config.set_library_file(str(hit))
+                    return f"system libclang {hit}"
             if len(hits) > 0:
-                cindex.Config.set_library_file(str(hits[0]))
-                return f"system libclang {hits[0]}"
+                return f"pip libclang (system {hits[0]} is too old for the installed bindings)"
     return "pip libclang"
 
 
@@ -108,6 +144,20 @@ def clang_args(tree: OcctTree) -> list[str]:
         sdk = subprocess.run(["xcrun", "--show-sdk-path"], capture_output=True, text=True, check=True).stdout.strip()
         if sdk != "":
             args += ["-isysroot", sdk]
+    elif platform.system() == "Windows":
+        # libclang finds the MSVC toolchain and the Windows SDK by itself, but MSVC's STL refuses a clang older than
+        # its own vintage (yvals_core.h:899-917: "STL1000: Unexpected compiler version, expected Clang 19.0.0 or
+        # newer" against MSVC 14.44), and the pip libclang wheel is 18.1.1 -- the newest there is. This parse is not
+        # a compile: nothing is codegen'd and the STL headers are only read for declarations, so the documented
+        # opt-out applies (8.2, 2026-09-23).
+        args += ["-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"]
+    # An escape hatch for an environment libclang cannot work out by itself. It exists for the manylinux container,
+    # where the compiler is gcc-toolset-14 under /opt/rh but libclang's GCC detection only searches /usr/lib/gcc and
+    # would read the image's gcc 8 standard library instead (deps/manylinux.Dockerfile sets --gcc-install-dir).
+    extra = os.environ.get("NANOOCP_CLANG_ARGS", "").split()
+    if len(extra) > 0:
+        args += extra
+        print(f"clang args from NANOOCP_CLANG_ARGS: {' '.join(extra)}", file=sys.stderr)
     return args
 
 
@@ -370,7 +420,25 @@ def _type_spelling(t: cindex.Type) -> str:
     """Type as written in the header (keeps portable typedef names such as Standard_Size), except that
     types nested in a class are spelled fully qualified (the header may say 'D' inside gp_Dir). While a
     class template is walked for an alias instantiation, template parameters are substituted."""
-    return _SUBST.apply(_type_spelling_raw(t))
+    return _drop_ignored_const(_SUBST.apply(_type_spelling_raw(t)))
+
+
+# A dependent member type that names a reference: OCCT writes `const typename Container::const_reference Value() const`
+# (NCollection_Iterator.hxx:86, and :88 for reference). [dcl.ref]/1 ignores that const and gcc accepts the declaration
+# inside the template -- but our static_cast spells the type with the template argument substituted, and there gcc
+# refuses it while clang does not: "const qualifiers cannot be applied to C<X>::const_reference {aka const X&}"
+# (g++ 11.5, minimal case verified both ways on banach, 2026-09-23). The spelling is the only handle: while the
+# template is walked libclang reports the type as UNEXPOSED with no canonical type and no declaration, so nothing can
+# be asked about it. Hence the two conventional container typedef names, which are references by definition and are
+# the ones NCollection uses.
+_IGNORED_CONST_SUFFIXES = ("::reference", "::const_reference")
+
+
+def _drop_ignored_const(spelled: str) -> str:
+    if spelled.startswith("const typename ") and spelled.endswith(_IGNORED_CONST_SUFFIXES):
+        return spelled[len("const "):]
+    return spelled
+
 
 
 def _in_user_namespace(decl: cindex.Cursor) -> bool:
@@ -600,8 +668,16 @@ def _stream_kind(t: cindex.Type) -> str:
     decl = pointee.get_canonical().get_declaration()
     if decl.kind == K.NO_DECL_FOUND:
         return ""
+    # The MSVC STL declares its types inside `extern "C++" { }`, so the parent is a LINKAGE_SPEC with an empty
+    # spelling and the namespace sits above it; libc++ instead nests them in the inline namespace __1. Walk up
+    # through both, or every Dump/Write(ostream&) on Windows falls out as "iostream type" (TKCAF alone reported 24,
+    # 2026-09-23).
     parent = decl.semantic_parent
-    if parent is None or parent.kind != K.NAMESPACE or not (parent.spelling == "std" or parent.spelling.startswith("__")):
+    while parent is not None and parent.kind == K.LINKAGE_SPEC:
+        parent = parent.semantic_parent
+    if parent is None or parent.kind != K.NAMESPACE:
+        return ""
+    if not (parent.spelling == "std" or parent.spelling.startswith("__")):
         return ""
     if decl.spelling == "basic_ostream" and not pointee.is_const_qualified():
         return StreamKind.OUT
@@ -647,7 +723,15 @@ def _is_empty_shared_ptr_default(param: cindex.Cursor, default: str | None) -> b
     spelling = _type_spelling(param.type).removeprefix("const ").rstrip("& ").strip()
     if not spelling.startswith("std::shared_ptr<"):
         return False
-    return default.replace(" ", "") == spelling.replace(" ", "") + "()"
+    # The two sides cannot be compared as strings: the *type* is canonicalised through the standard library's typedefs
+    # while the default expression stays as written, and the libraries differ. libstdc++ (banach, 2026-09-23):
+    #     type    'const std::shared_ptr<std::basic_ostream<char, std::char_traits<char>>> &'
+    #     default 'std::shared_ptr < std::ostream >()'
+    # libc++ keeps `std::ostream` on both sides, which is why an equality test passed on macOS and silently skipped
+    # RWPly_PlyWriterContext::Open on Linux -- the exact "bound but unusable" outcome this rule exists to prevent.
+    # What matters is only that the default value-initialises an empty shared_ptr, so that is what is checked.
+    compact = default.replace(" ", "")
+    return compact.startswith("std::shared_ptr<") and compact.endswith(">()")
 
 
 def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members: set[str] | None = None,
@@ -893,6 +977,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         sig = f"{cls_name}::{name}({', '.join(p.type for p in params)})"
         if f"{cls_name}::{name}" in _SKIP_METHODS or sig in _SKIP_METHODS:
             m.skip_reason = "overrides.toml [skip] methods"
+    if m.skip_reason is None and 0 < _MAX_PARAMS < len(params):
+        m.skip_reason = f"{len(params)} parameters, more than overrides.toml [skip] max_params ({_MAX_PARAMS})"
     return m
 
 
@@ -1001,6 +1087,8 @@ def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
                        defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
                        mangled=ch.mangled_name)
+    if ctor.skip_reason is None and 0 < _MAX_PARAMS < len(params):
+        ctor.skip_reason = f"{len(params)} parameters, more than overrides.toml [skip] max_params ({_MAX_PARAMS})"
     if ctor.skip_reason is not None:
         c.skipped.append(f"{c.name}::{c.name}({', '.join(p.type for p in params)}): {ctor.skip_reason}")
     return ctor
@@ -1073,7 +1161,21 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
               is_transient=_derives_from(cursor, "Standard_Transient"),
               is_exception=_derives_from(cursor, "Standard_Failure"), is_abstract=cursor.is_abstract_record(),
               scope=tuple(path[:-1]), outer=outer, noncopyable=cpp_name in _NONCOPYABLE)
+    if cpp_name in _SKIP_CONSTRUCTORS:
+        c.constructible = False
+        c.not_constructible_reason = "overrides.toml [skip] constructors"
     members = _members(cursor)     # names usable unqualified inside the class (for default arguments)
+    # R-UNDEFINED for the destructor: nanobind instantiates wrap_destruct<T> for every bound class, so a ~T() that the
+    # header only declares must be in the library. On Unix it always is (default visibility); on Windows only when the
+    # class or the destructor carries Standard_EXPORT -- Storage_Bucket and Storage_BucketOfPersistent carry neither and
+    # were the two LNK2019 in the first Windows link of _TKernel (2026-09-23).
+    for ch in cursor.get_children():
+        # `~X() override = default;` is a definition but libclang reports neither is_definition() nor get_definition()
+        # for it (Message_PrinterToReport, Standard_Condition), so is_default_method() has to be asked separately
+        if ch.kind == K.DESTRUCTOR and not (ch.is_definition() or ch.get_definition() is not None
+                                            or ch.is_default_method() or ch.is_deleted_method()):
+            c.dtor_mangled = ch.mangled_name
+            break
     # a data member (any access) of a type that is only declared in the headers (BRepGraph_CacheMesh::Slot, defined in
     # the .cxx) makes the destructor uninstantiable -> nb::class_ cannot be formed
     for ch in cursor.get_children():

@@ -51,7 +51,7 @@ def write_report(path: Path, toolkit: str, entries: list[tuple[str, str]]) -> Co
     """entries: (package, message). Written sorted by category, package, message; returns the per-category counts."""
     rows = sorted((categorize(msg), pkg, msg) for pkg, msg in entries)
     counts: Counter[str] = Counter(cat for cat, _, _ in rows)
-    lines = [f"# nanoOCP generator report for {toolkit}: {len(rows)} items not bound. Generated, do not edit.",
+    lines = [f"# nanoOCP generator report for {toolkit}: {len(rows)} report lines. Generated, do not edit.",
              "# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py)."]
     lines += [f"# {cat}: {n}" for cat, n in sorted(counts.items())]
     lines += [f"{cat}\t{pkg}\t{msg}" for cat, pkg, msg in rows]

@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import report
+
 from nanoocp import Message
 from nanoocp.BRepGProp import BRepGProp
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
@@ -182,13 +184,15 @@ def test_the_entity_classes_of_the_schema():
 
 
 def test_report_categories():
-    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    counts: dict[str, int] = {}
-    for line in lines:
-        counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    assert counts == {"raw-pointer": 12, "undefined": 5, "rvalue": 3, "override": 2, "template": 2,
+    all_lines, lines, undefined, counts = report("TKDESTEP")
+    # raw-pointer fell from 12 to 9 and override rose to 4 on 2026-09-23, when StepFile_ReadData was skipped: its
+    # inline destructor calls the unexported ClearRecorder, so the class does not link on Windows (overrides.toml)
+    assert counts == {"raw-pointer": 9, "rvalue": 3, "override": 4, "template": 2,
                       "unbound-type": 2, "header": 1, "stream": 1}
-    assert len(lines) == 28                                       # 1 040 classes, 7 688 methods bound
+    assert len(lines) == 22
+    # which members R-UNDEFINED reports is the platform's business (macOS names four entities, Windows others), so
+    # only the package is asserted here; the portable categories above are what this test is really about
+    assert all(line.split("\t")[1].lower().startswith(("step", "rwstep", "apiheadersection")) for line in undefined)                                       # 1 040 classes, 7 688 methods bound
     # the bison/flex parser of step.tab.hxx is skipped wholesale (overrides.toml [skip] namespaces)
     assert sum(re.search(r"\bstep\b", line) is not None and "namespace" in line for line in lines) == 2
     # the rvalue lines are the && twins of bound const& overloads: SetShapeFixParameters, as in TKXSBase

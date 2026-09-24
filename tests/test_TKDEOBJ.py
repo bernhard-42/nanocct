@@ -7,15 +7,17 @@ from pathlib import Path
 
 import pytest
 
+from conftest import report
+
 from nanoocp import Message
 from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanoocp.DEOBJ import DEOBJ_ConfigurationNode, DEOBJ_Provider
 from nanoocp.Message import Message_ProgressRange
-from nanoocp.NCollection import NCollection_DataMap, NCollection_IndexedDataMap, NCollection_Sequence
+from nanoocp.NCollection import NCollection_IndexedDataMap, NCollection_Sequence
 from nanoocp.Quantity import Quantity_Color, Quantity_NOC_RED
-from nanoocp.RWObj import (RWObj, RWObj_CafReader, RWObj_CafWriter, RWObj_Material, RWObj_MtlReader, RWObj_Reader,
-                           RWObj_SubMesh, RWObj_SubMeshReason, RWObj_TriangulationReader)
+from nanoocp.RWObj import (RWObj, RWObj_CafReader, RWObj_CafWriter, RWObj_Reader, RWObj_SubMesh,
+                           RWObj_SubMeshReason, RWObj_TriangulationReader)
 from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
 from nanoocp.TDF import TDF_Label
 from nanoocp.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
@@ -81,12 +83,9 @@ def test_the_colour_becomes_an_mtl_sidecar(tmp_path, document, quiet_messenger):
     assert "newmtl mat_1" in mtl
     assert "Kd 1.000000 0.000000 0.000000" in mtl                 # the diffuse colour is the red of the document
 
-    # ... and RWObj_MtlReader reads it back. The folder is prepended verbatim, so it needs its separator
-    # (RWObj_MtlReader.cxx: theFolder + theFile).
-    materials = NCollection_DataMap[TCollection_AsciiString, RWObj_Material]()
-    assert RWObj_MtlReader(materials).Read(TCollection_AsciiString(str(tmp_path) + "/"), TCollection_AsciiString("box.mtl"))
-    assert [key.ToCString() for key in materials] == ["mat_1"]
-    assert materials.Find(TCollection_AsciiString("mat_1")).DiffuseColor.Red() == 1.0
+    # RWObj_MtlReader would read it back, but its destructor is declared and never exported, so nanobind cannot bind
+    # the class on Windows and it is skipped everywhere to keep the API platform-identical (overrides.toml [skip]).
+    # The writer's output is asserted above instead; RWObj_CafReader covers the reading path.
 
 
 def test_a_document_round_trips(tmp_path, document, quiet_messenger):
@@ -161,14 +160,15 @@ def test_the_de_provider(tmp_path, document, quiet_messenger):
     assert free.Length() == 1
 
 
-def test_report_is_four_lines():
+def test_report_is_the_expected_portable_lines():
     """RWObj_IShapeReceiver is the reader's internal callback interface (a Python subclass would need trampolines,
     roadmap 8.5); RWObj_Tools::ReadVec3 advances a `const char*&` cursor through the line being parsed; and
     RWObj_Reader is abstract, for which clang emits no complete-object constructor -- the nm check sees the
     declaration without a symbol."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert len(lines) == 4
+    _, lines, undefined, _ = report("TKDEOBJ")
+    assert len(lines) == 4        # 3 until RWObj_MtlReader was skipped (overrides.toml, 2026-09-23)
+    assert all("RWObj_Reader::RWObj_Reader()" in line for line in undefined)
     assert sum(line.startswith("raw-pointer") and "reference to pointer" in line for line in lines) == 2
     assert any("RWObj_CafReader: non-public base RWObj_IShapeReceiver dropped; its members are not bound" in line
                for line in lines)
-    assert any(line.startswith("undefined") and "RWObj_Reader::RWObj_Reader()" in line for line in lines)

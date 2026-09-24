@@ -44,7 +44,73 @@ classes = [
     "Standard_Static_Assert<true>",     # the specialisation behind the STANDARD_STATIC_ASSERT macro; no API
     "BOPTools_PairSelector<2>",         # OCCT bug: its virtual RejectNode builds a BVH_Box<double, 3> from 2D vectors, so the 2D
                                         # instantiation (BOPTools_Box2dPairSelector) cannot be instantiated in C++ either (2026-09-21)
+    # An unexported destructor of a class held *by value*: the holder's implicit destructor needs it, and every bound
+    # class needs its own destructor because nanobind instantiates wrap_destruct<T>. Nothing narrower exists here --
+    # a destructor is not optional (measured on gauss 2026-09-24: destroying through an outside pointer -> LNK2019).
+    "OpenGl_GraduatedTrihedron",         # its nested Axis, held by value, has an unexported ~Axis
+    # Classes with an unexported virtual where removing the constructors is *not* enough: MSVC still emits the vtable,
+    # so the slot still has to be filled. Measured on gauss 2026-09-24 -- with only their constructors skipped the
+    # build came back 41/45, and these were the four failures; the three in [skip] constructors below linked fine.
+    # For OpenGl_TriangleSet the reference is explicit: `[thunk]: OpenGl_TriangleSet::Box'adjustor{32}'`, an adjustor
+    # thunk from multiple inheritance, which is emitted with the second base's vtable and does not depend on
+    # construction at all. For the others the symbol comes from data (LNK2001, no referencing function) -- the vtable
+    # is emitted although nothing constructs the class, and I have not pinned down what pulls it in (nanobind's
+    # typeid-based type registration is the suspect; PCDM_DOMHeaderParser is not polymorphic-with-RTTI either and does
+    # link, so the RTTI story alone does not explain it).
+    "BinTools_ShapeWriter",              # the private virtual WriteShape
+    "ShapeAnalysis_BoxBndTreeSelector",  # Accept, Reject
+    "OpenGl_TriangleSet",                # Box, through an adjustor thunk (multiple inheritance)
+    # generateMesh is a protected inline virtual calling BRepMesh_Delaun::ProcessConstraints, itself inline and calling
+    # the unexported frontierAdjust/insertInternalEdges -- two levels of inlining reached through the vtable, which is
+    # emitted even with the constructors gone. BRepMesh_DelabellaBaseMeshAlgo inherits the slot without overriding it.
+    "BRepMesh_CustomBaseMeshAlgo",
+    "BRepMesh_DelabellaBaseMeshAlgo",
+    # ~StepFile_ReadData() is defined inline as { ClearRecorder(3); } (StepFile_ReadData.hxx:126) and ClearRecorder is
+    # not exported on Windows. nanobind instantiates wrap_destruct<T> for every bound class, so unlike the inline
+    # members above there is nothing narrower to skip -- the destructor is not optional. Internal STEP parser state;
+    # StepFile_Read(stream, model, ...) is the public entry point and stays bound.
+    "StepFile_ReadData",
+    # Storage_InternalData holds a Storage_BucketOfPersistent *by value* (Storage_InternalData.hxx:50), and that
+    # class's destructor is not exported on Windows -- so the implicit ~Storage_InternalData does not link, the same
+    # mechanism as OpenGl_GraduatedTrihedron::Axis above. Internal bookkeeping of the persistence layer.
+    "Storage_InternalData",
+    # Classes whose destructor OCCT declares but does not export: R-UNDEFINED's destructor check drops them on
+    # Windows by itself (nanobind instantiates wrap_destruct<T> for every bound class), which would leave the API
+    # depending on the platform that generated it. Listed here so all three drop them. 12 members in total, all
+    # internal: the OBJ material-file reader, two persistence buckets, a BRepGraph cache scope guard and a GL
+    # setter selector; the public readers and writers around them stay bound (2026-09-23).
+    "RWObj_MtlReader",
+    "Storage_Bucket",
+    "Storage_BucketOfPersistent",
+    "BRepGraphInc_Reconstruct::Cache::TempScope",
+    "OpenGl_VariableSetterSelector",
 ]
+# Classes bound without constructors: everything else about them stays, they just cannot be created from Python.
+#
+# On MSVC the constructor is what stores the vptr, so it is the only thing that needs the class's vtable -- and a
+# vtable slot cannot be filled for a virtual OCCT declares without Standard_EXPORT. Measured on gauss 2026-09-24 with
+# minimal cases: placement new -> LNK2019, while binding the class, calling its methods through a pointer and
+# nanobind's wrap_destruct<T> all link cleanly. So these classes do not have to be dropped, only their constructors.
+# Unix exports everything a header declares and never notices; the constructors go on every platform anyway, so the
+# API does not depend on which platform generated it.
+#
+# All of them are objects OCCT hands out rather than ones a caller builds: BVH selectors passed to a traversal, a GL
+# primitive owned by the driver, an XML header parser, a shape writer, two mesh-algorithm bases.
+# Measured, not predicted: of the eight candidates only these three link with the constructors removed. For the other
+# five MSVC emits the vtable anyway, so they stay in [skip] classes above -- see the note there.
+constructors = [
+    "PCDM_DOMHeaderParser",                  # startElement, endElement
+    "BRepClass3d_BndBoxTreeSelectorLine",    # Accept
+    "BRepClass3d_BndBoxTreeSelectorPoint",   # Accept
+]
+# A signature wider than this is skipped, method or constructor. nanobind builds the signature by recursing once per
+# parameter and MSVC then hits "fatal error C1202: recursive type or function dependency context too complex", which
+# no flag raises (/constexpr:depth2048 and /constexpr:steps100000000 both tested). Measured: 37 parameters compile,
+# 40 do not, so the cut sits between them. Exactly one signature in the whole tree is affected -- the 40-argument
+# StepData_EnumTool("e0","e1",...) convenience constructor; the class keeps its other members and AddDefinition()
+# builds the same table one value at a time.
+max_params = 38
+
 # Classes that are copy/move constructible on paper but whose copy or move does not compile. nanobind instantiates its
 # copy/move wrappers from the type traits (std::is_move_constructible has no hook), so such a class is bound through a
 # generated wrapper struct with deleted copy and move constructors, under the original name (R-NONCOPYABLE). The parser
@@ -112,6 +178,29 @@ methods = [
     # NCollection_Vec3<unsigned long> (Image_PixMapData dimensions): cwiseAbs() calls std::abs(unsigned long), which is
     # ambiguous in C++ (no unsigned overload). Meaningless for an unsigned vector anyway (2026-09-22).
     "NCollection_Vec3<unsigned long>::cwiseAbs",
+    # The same instantiation on Windows. `size_t` is `unsigned long` on LP64 (macOS, Linux) and `unsigned long long` on
+    # LLP64 (Windows), and these keys are canonical C++ spellings, so one type needs two entries -- the first port
+    # issue where the *override* had to grow rather than the generator (2026-09-23; MSVC offers six abs overloads,
+    # int/long/__int64/double/float/long double, and none of them wins). The `unsigned char` instantiations are fine
+    # everywhere: they promote to int, so abs(int) is an exact match.
+    "NCollection_Vec3<unsigned long long>::cwiseAbs",
+    "NCollection_Vec2<unsigned long long>::cwiseAbs",
+    # Inline members whose *body* calls something OCCT does not export on Windows. R-UNDEFINED skips the callee
+    # correctly, but an inline caller needs no symbol of its own, so it is bound and the compiler then emits the call
+    # into our object file -- LNK2019 (gauss, 2026-09-23). Unix exports everything a header declares, so none of this
+    # shows up there; the members are skipped on every platform anyway, to keep the API identical.
+    # Each entry names the inline member and, after the arrow, the unexported callee its body names.
+    "BRepGraph_UsagePath::operator==",       # -> IsEqual
+    "BRepMesh_EdgeDiscret::operator()",      # -> process
+    "BRepMesh_FaceChecker::operator()",      # -> perform
+    "BRepMesh_ModelHealer::operator()",      # -> process
+    "BRepMesh_Delaun::ProcessConstraints",   # -> insertInternalEdges, frontierAdjust
+    "BRepMesh_Delaun::Frontier",             # -> getEdgesByType
+    "BRepMesh_Delaun::InternalEdges",        # -> getEdgesByType
+    "BRepMesh_Delaun::FreeEdges",            # -> getEdgesByType
+    "LDOM_BasicAttribute::SetValue",         # -> the private LDOMString(LDOMBasicString, handle<LDOM_MemManager>)
+    "LDOM_BasicText::SetData",               # -> the same private constructor
+    "LDOM_MemManager::Hash",                 # -> the private static LDOM_MemManager::HashTable::Hash
 ]
 
 # NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical
@@ -145,6 +234,29 @@ extra = [
 [include]
 packages = {}
 headers = {}
+
+# Packages OCCT only compiles on their own platform: parsed there, skipped everywhere else (platform.system() values).
+# The list is short on purpose -- most of what *looks* platform specific is built everywhere, and skipping it
+# would throw away working bindings.
+# Exported symbols in TKService, measured on all three 2026-09-23 (nm -gU / nm -D / dumpbin /EXPORTS):
+#   Cocoa  macOS 25  Linux  0  Windows  0   <- the only one empty off its own platform, and empty on both others
+#   WNT    macOS  7  Linux 10  Windows 36   (WNT_HIDSpaceMouse, WNT_WClass: 9 methods bound on macOS)
+#   Xw     macOS 20  Linux 23  Windows 16   (the Linux build has USE_XLIB=OFF and exports them anyway)
+#   Wasm   macOS 23  Linux 26  Windows 20
+# Without the skip, Cocoa on Windows costs a parse and emits an empty shell (5 classes, 0 defs, 21 report lines);
+# and on a box with only the OCCT headers staged, R-UNDEFINED cannot strip it, so the build would fail to link.
+[platform]
+Cocoa = ["Darwin"]
+
+# Toolkits a module must link although nothing in its own signatures names them. R-LINK derives the link line from the
+# toolkits that own the headers the module includes, which misses a symbol reached *through* such a header. Nothing
+# notices on Unix -- the dynamic linker resolves it through OCCT's own dependencies -- but every Windows import library
+# has to be named explicitly, so there it is an LNK2019 (gauss, 2026-09-23):
+#   _TKService/Font.cpp includes Font_BRepFont.hxx for the deprecated Font_BRepFont alias; that header is really
+#   StdPrs_BRepFont.hxx, and StdPrs_BRepFont holds a Geom2dConvert_CompCurveToBSplineCurve *by value*
+#   (StdPrs_BRepFont.hxx:215), whose constructor lives in TKGeomBase.
+[link]
+extra = { TKService = ["TKGeomBase"] }
 
 # Packages whose stream parameters carry a binary format: a std::ostream& result is returned as bytes and a
 # std::istream& parameter takes a binary file-like object (io.BytesIO), instead of str / typing.TextIO (Design.md 6,

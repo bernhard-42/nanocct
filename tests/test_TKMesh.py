@@ -75,5 +75,9 @@ def test_detected_noncopyable_and_hidden_placement_new():
     assert tri.Edges() == ([1, 2, 3], [True, False, True]) and tri.myEdges == [1, 2, 3]
     tri.myOrientations = [False, False, False]
     assert tri.Edges()[1] == [False, False, False]
+    # GetSplitSteps carries no Standard_EXPORT, so it is absent from libTKMesh on Windows and R-UNDEFINED skips it
+    if not hasattr(BRepMesh.BRepMesh_ConeRangeSplitter, "GetSplitSteps"):
+        assert any("BRepMesh_ConeRangeSplitter::GetSplitSteps" in msg and "no definition in lib" in msg for msg in msgs)
+        return
     doc = BRepMesh.BRepMesh_ConeRangeSplitter.GetSplitSteps.__doc__
     assert "GetSplitSteps(self, theParameters: nanoocp.IMeshTools.IMeshTools_Parameters) -> tuple[tuple[float, float], tuple[int, int]]" in doc

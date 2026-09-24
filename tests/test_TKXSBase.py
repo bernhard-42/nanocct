@@ -6,6 +6,8 @@ import importlib
 
 import pytest
 
+from conftest import report
+
 from nanoocp.BRepGProp import BRepGProp
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanoocp.DE import DE_ShapeFixParameters, DE_Wrapper
@@ -147,12 +149,13 @@ def test_the_shape_process_flags_are_a_set_of_operations():
 
 
 def test_report_categories():
-    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert len(lines) == 48
+    _, lines, undefined, _ = report("TKXSBase")
+    assert all(any(k in line for k in ("IFSelect_", "MoniTool_Element::", "TransferBRep::")) for line in undefined)
+    assert len(lines) == 43
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    assert counts == {"raw-pointer": 19, "overload-collision": 9, "iterator": 5, "undefined": 5,
+    assert counts == {"raw-pointer": 19, "overload-collision": 9, "iterator": 5,
                       "rvalue": 3, "static-rename": 3, "template": 3, "conversion": 1}
     assert not any("bitset" in line for line in lines)                           # closed by R-BITSET (2026-09-22)
     # the rvalue lines are the && twins of bound const& overloads, so nothing is lost

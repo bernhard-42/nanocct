@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import report
+
 from nanoocp import Message
 from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
 from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
@@ -112,9 +114,11 @@ def test_node_attributes_and_the_name_format():
     assert len(list(RWMesh_NameFormat)) == 7
 
 
-def test_report_is_three_abstract_constructors():
+def test_report_is_only_abstract_constructors():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert len(lines) == 3 and all(line.startswith("undefined\tRWMesh") for line in lines)
+    _, portable, undefined, _ = report("TKRWMesh")
+    assert len(portable) == 0
+    assert all(line.startswith("undefined\tRWMesh") for line in undefined)
     # all three are abstract classes: clang emits no complete-object constructor for them
     for cls in (RWMesh_CafReader, RWMesh_TriangulationReader):
         with pytest.raises(TypeError, match="no constructor defined"):

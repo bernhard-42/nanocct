@@ -641,7 +641,8 @@ class Emitter:
             return f'nb::borrow<nb::class_<{cc.bound_type}>>({self._attr(cc.scope)}.attr("{cc.py_name}"))'
         implicit_default = False
         if not c.constructible:
-            self.report.append(f"{c.name}: operator new is not public -> no constructors")
+            why = c.not_constructible_reason if c.not_constructible_reason != "" else "operator new is not public"
+            self.report.append(f"{c.name}: {why} -> no constructors")
         if not c.is_abstract and c.constructible:
             declared, demoted = order_by_width([k for k in c.ctors if k.skip_reason is None])   # R-WIDTH
             for narrow, wide in demoted:
@@ -704,8 +705,20 @@ class Emitter:
                 body.append(f'.def("{dunder}", [{qual and ""}]({qual}{c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
         ir = self.ir
         if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
-            # R-HASH: std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__
-            body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
+            # R-HASH: std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__.
+            # OCCT writes those specialisations as one inline line forwarding to the class's own HashCode(), so when
+            # HashCode is not in the library the lambda below does not link even though it needs no symbol itself --
+            # the same trap as the inline members in overrides.toml [skip] methods, but this one is emitted by us, so
+            # there is nothing to list there (BRepGraph_UsagePath on Windows, LNK2019, 2026-09-23).
+            hash_code = next((m for m in c.methods if m.name == "HashCode"), None)
+            if hash_code is not None and hash_code.skip_reason == "declared but not defined in the library":
+                # worded so report.py's "undefined" pattern ("no definition in lib") matches it: the cause is a
+                # missing library symbol like any other R-UNDEFINED skip, and an uncategorised message lands in "misc",
+                # which the report tests reject on purpose
+                self.report.append(f"{c.name}::__hash__: std::hash forwards to HashCode, which has "
+                                   f"no definition in lib{ir.toolkit} -> not bound")
+            else:
+                body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
         cls_expr = cls_expr_of(c)
         if implicit_default:
             define.append(f'    nanoocp_implicit_default_ctor<{c.bound_type}>({cls_expr});')

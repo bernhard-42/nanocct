@@ -134,9 +134,14 @@ class Class:
     after_templates: bool = False     # 6a: a base is a binder instantiation's nested Iterator -> declared in the templates phase, after it
     has_declared_ctor: bool = False   # any constructor at any access level (suppresses the implicit default ctor)
     template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
-    constructible: bool = True        # False when operator new is not public (placement new impossible)
+    constructible: bool = True        # False when operator new is not public (placement new impossible),
+                                      # or when overrides.toml [skip] constructors lists the class
+    not_constructible_reason: str = ""   # what to report; "" means the operator new case
     unbindable: bool = False          # nb::class_ cannot be instantiated (member of incomplete type); reported, not bound
     noncopyable: bool = False         # bound through a wrapper struct with deleted copy/move (overrides.toml [skip] noncopyable)
+    dtor_mangled: str = ""            # a user-declared, not-inline destructor's linker symbol; "" when there is none to link
+                                      # (implicit or defined in the header). R-UNDEFINED checks it: nanobind instantiates
+                                      # wrap_destruct<T> for every bound class, so an unexported ~T() is a link error
 
     @property
     def bound_type(self) -> str:

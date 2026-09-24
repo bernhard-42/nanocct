@@ -6,17 +6,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import re
 import sys
+import time
 from pathlib import Path
 
 from .binders import BINDERS, instance_args
 from .emit import Emitter, emit_toolkit_module, resolve_static_renames, write_package_shims
 from .occt import load_tree
 from .ncollection import deprecated_aliases, template_docs
-from .parse import INCLUDE_PACKAGES, clang_args, configure_libclang, include_prelude, parse_package, py_path
+from .parse import EXTRA_LINKS, INCLUDE_PACKAGES, PLATFORM_PACKAGES, clang_args, configure_libclang, include_prelude, parse_package, py_path
 from .report import write_report
-from .symbols import defined_symbols
+from .symbols import defined_symbols, destructor_defined, unavailable_reason
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -173,6 +175,7 @@ def _rehoming_risks(tree, parsed: list[tuple[str, list]], templates_before: set[
 
 
 def main(argv: list[str]) -> int:
+    started = time.perf_counter()
     ap = argparse.ArgumentParser(prog="generator")
     ap.add_argument("--occt-src", type=Path, default=ROOT / "deps" / "occt-src")
     ap.add_argument("--occt", type=Path, default=ROOT / "deps" / "occt-8.0.1")
@@ -203,7 +206,11 @@ def main(argv: list[str]) -> int:
     cpp_root.mkdir(parents=True, exist_ok=True)
     py_root.mkdir(parents=True, exist_ok=True)
     parsed: list[tuple[str, list]] = []
-    for tk_name in args.toolkit:
+    symbols_skipped: set[str] = set()   # the R-UNDEFINED skip reason, reported once per run
+    this_platform = platform.system()    # overrides.toml [platform]
+    timing = {"parse": 0.0, "emit": 0.0}   # wall time in the two phases, reported at the end
+    for tk_index, tk_name in enumerate(args.toolkit, start=1):
+        print(f"[parse {tk_index}/{len(args.toolkit)}] {tk_name}", file=sys.stderr)
         tk = tree.toolkits[tk_name]
         pkgs = [p for p in tk.packages if args.package is None or p.name in args.package]
         allowed = INCLUDE_PACKAGES.get(tk_name)          # a partial toolkit (the font slice: TKService -> Font, Graphic3d)
@@ -213,16 +220,28 @@ def main(argv: list[str]) -> int:
                 print(f"{tk_name}: overrides.toml [include] packages names unknown packages {missing}", file=sys.stderr)
                 return 1
             pkgs = [p for p in pkgs if p.name in allowed]
+        # overrides.toml [platform]: a package OCCT only compiles on its own platform (Cocoa). Skipped before the parse,
+        # so it costs nothing on the other platforms and cannot reach the link there.
+        for pkg in [p for p in pkgs if this_platform not in PLATFORM_PACKAGES.get(p.name, [this_platform])]:
+            print(f"{tk_name}/{pkg.name}: not built on {this_platform} "
+                  f"(overrides.toml [platform]: {', '.join(PLATFORM_PACKAGES[pkg.name])})", file=sys.stderr)
+            pkgs.remove(pkg)
         if len(pkgs) == 0:
             print(f"{tk_name}: no packages selected", file=sys.stderr)
             return 1
         irs = []
         for pkg in pkgs:
             bound_elsewhere = {n for n, pk in known.items() if pk != pkg.name} | {c.name for ir in irs for c in ir.classes}
+            _t0 = time.perf_counter()
             irs.append(parse_package(tree, pkg, known_elsewhere=bound_elsewhere))
+            timing["parse"] += time.perf_counter() - _t0
         symbols = defined_symbols(args.occt, tk_name)
         if symbols is None:
-            print(f"{tk_name}: library symbols not checked (nm unavailable)", file=sys.stderr)
+            # once per run, not once per toolkit: 45 identical lines said nothing the first one did not
+            reason = unavailable_reason(tree.install, tk_name)
+            if reason not in symbols_skipped:
+                symbols_skipped.add(reason)
+                print(f"library symbols not checked ({reason})", file=sys.stderr)
         else:
             # R-UNDEFINED: per overload, by mangled name (GeomInt_WLApprox::Perform() next to three defined Perform overloads)
             for ir in irs:
@@ -246,6 +265,13 @@ def main(argv: list[str]) -> int:
                     k.is_copy and not k.defined_in_header and k.mangled not in symbols for k in c.ctors)]
                 for c in unlinkable:
                     ir.report.append(f"{c.name}: copy constructor declared in the header, no definition in lib{tk_name} -> class skipped")
+                    ir.classes.remove(c)
+                # the same for the destructor: nanobind's wrap_destruct<T> needs ~T(), so a declared-but-not-exported one
+                # is a link error for the whole class (Storage_Bucket on Windows, which has no Standard_EXPORT)
+                no_dtor = [c for c in ir.classes if "<" not in c.name and c.dtor_mangled != ""
+                           and not destructor_defined(c.dtor_mangled, symbols)]
+                for c in no_dtor:
+                    ir.report.append(f"{c.name}: destructor declared in the header, no definition in lib{tk_name} -> class skipped")
                     ir.classes.remove(c)
         for ir in irs:
             generated_pkgs[ir.name] = tk_name
@@ -281,7 +307,8 @@ def main(argv: list[str]) -> int:
     # R-STATIC-S is decided over the whole inheritance chain, so it needs every class of the run at once: a clean
     # regeneration (the canonical state, 9) parses all toolkits in one process, so the chains are complete there.
     static_renames = resolve_static_renames([c for _, irs in parsed for ir in irs for c in ir.classes])
-    for tk_name, irs in parsed:
+    for tk_index, (tk_name, irs) in enumerate(parsed, start=1):
+        print(f"[emit {tk_index}/{len(parsed)}] {tk_name}", file=sys.stderr)
         tk = tree.toolkits[tk_name]
         tk_dir = cpp_root / tk_name
         tk_dir.mkdir(parents=True, exist_ok=True)
@@ -304,14 +331,20 @@ def main(argv: list[str]) -> int:
                          _topo(tree, generated_toolkits), paths,
                          prelude_check=lambda headers: include_prelude(headers, tree.include_dir, cargs))
             em.static_renames = static_renames
-            (tk_dir / f"{pkg.name}.cpp").write_text(em.emit())
+            _t0 = time.perf_counter()
+            _emitted = em.emit()
+            timing["emit"] += time.perf_counter() - _t0
+            (tk_dir / f"{pkg.name}.cpp").write_text(_emitted)
             included.update(em.includes)
             for name in em.skipped:            # a class skipped at emit time (base not bound) must not reach the manifest: a later
                 known.pop(name, None)          # toolkit deriving from it would abort at import (nb_type_new: base type not known)
                 paths.pop(name, None)
             n_methods = sum(1 for c in ir.classes for m in c.methods if m.skip_reason is None)
+            # "report lines", not "not bound": the count is lines, and 258 of them across the 45 toolkits describe a
+            # member that *is* bound (R-WIDTH demotions, R-COLLISION renames, "__iter__ added"). A member with two
+            # unsupported parameters also contributes two lines (write_report does not de-duplicate).
             print(f"{tk_name}/{pkg.name}: {len(ir.classes)} classes, {len(ir.enums)} enums, {n_methods} methods, "
-                  f"{len(ir.functions)} free functions; not bound: {len(ir.report) + len(em.report)}", file=sys.stderr)
+                  f"{len(ir.functions)} free functions; report lines: {len(ir.report) + len(em.report)}", file=sys.stderr)
             for line in ir.report + em.report:
                 print(f"    - {line}", file=sys.stderr)
                 report_entries.append((pkg.name, line))
@@ -322,7 +355,8 @@ def main(argv: list[str]) -> int:
             # R-LINK: OCCT's EXTERNLIB is the link line OCCT itself needs; a header may forward-declare a class of
             # another toolkit (DE_Provider names XSControl_WorkSession and TDocStd_Document), and the handle caster
             # of that class needs its typeinfo -> link the owning toolkits too. A partial run sees only some packages.
-            extra_libs = sorted({tree.toolkit_of_header[h] for h in included if h in tree.toolkit_of_header}
+            extra_libs = sorted(({tree.toolkit_of_header[h] for h in included if h in tree.toolkit_of_header}
+                                 | set(EXTRA_LINKS.get(tk_name, [])))            # overrides.toml [link] extra
                                 - tree.link_closure(tk_name))
             manifest.setdefault("links", {})[tk_name] = extra_libs
             if len(extra_libs) > 0:
@@ -360,6 +394,9 @@ def main(argv: list[str]) -> int:
     for prefix, amap in sorted(aliases.items()):
         if prefix not in generated_packages:
             write_package_shims(py_root, prefix, None, amap, [])
+    total = time.perf_counter() - started
+    print(f"timing: parse {timing['parse']:.1f} s, emit {timing['emit']:.1f} s, other {total - timing['parse'] - timing['emit']:.1f} s"
+          f" (total {total:.1f} s)", file=sys.stderr)
     print(f"deprecated typedef aliases: {sum(len(a) for a in aliases.values())} resolved, {unbound} not bound yet", file=sys.stderr)
     (py_root / "__init__.py").write_text(
         '"""nanoOCP: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'

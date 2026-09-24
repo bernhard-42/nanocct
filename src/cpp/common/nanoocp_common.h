@@ -1,5 +1,20 @@
 // Shared by every generated nanoOCP translation unit.
 #pragma once
+// MSVC only: nanobind defines NB_INLINE as __forceinline, and MSVC's optimizer is superlinear in the size of a
+// function that expands it that often. A binding registration function is exactly that. Measured on gauss
+// (i7-8700, MSVC 14.44, 2026-09-23) for src/cpp/TKMath/math.cpp -- 531 .def calls in one function -- at the build's
+// own /O2 /Ob2 /Os:
+//     __forceinline (stock)   ~1677 s (in the parallel build; /O1 alone ran >8 min and was killed)
+//     inline                      16 s, and the object is SMALLER (6958 KB vs 9045 KB at /Od)
+// Upstream reports the same and names __forceinline as the trigger: 2 h 28 m -> 3 m 04 s
+// (https://github.com/wjakob/nanobind/discussions/791). nb_defs.h is #pragma once guarded, so pulling it in first and
+// redefining the macro here needs no patched or vendored nanobind. clang and gcc keep always_inline: neither has the
+// problem, and nanobind wants the hint for the binding layer's hot paths.
+#if defined(_MSC_VER)
+#  include <nanobind/nb_defs.h>
+#  undef NB_INLINE
+#  define NB_INLINE inline
+#endif
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/array.h>
 #include <nanobind/stl/function.h>

@@ -3,7 +3,8 @@
 # Mirrors ~/Development/CAD/ocp-build-system/local-build/02-build-occt-sdk.sh, minus conda:
 # FreeType is the static build from deps/build-freetype.sh and RapidJSON the vendored copy from
 # deps/fetch-rapidjson.sh (run both first), libc++ is the system one. OpenGL on since 2026-09-22
-# (macOS OpenGL.framework, Design.md 8.6a); X11 stays off -- it is the Linux half of that decision.
+# (macOS OpenGL.framework, Design.md 8.6a). X11 is off because macOS has none; Linux builds with USE_XLIB=ON,
+# OCCT's own default there (deps/build-occt-manylinux.sh).
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$HERE/occt-src"

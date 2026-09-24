@@ -11,7 +11,10 @@ find_package(nanobind CONFIG REQUIRED)
 # OCCT: the local build in deps/ by default (see deps/build-occt.sh)
 set(NANOOCP_OCCT_DIR "${CMAKE_SOURCE_DIR}/deps/occt-8.0.1" CACHE PATH "OCCT installation prefix")
 set(NANOOCP_RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/deps/rapidjson/include" CACHE PATH "RapidJSON headers (vendored)")
-find_package(OpenCASCADE REQUIRED PATHS "${NANOOCP_OCCT_DIR}/lib/cmake/opencascade" NO_DEFAULT_PATH)
+# OCCT's install layout differs by platform: lib/cmake/opencascade on Unix, cmake/ on Windows (2026-09-23)
+find_package(OpenCASCADE REQUIRED NO_DEFAULT_PATH PATHS
+             "${NANOOCP_OCCT_DIR}/lib/cmake/opencascade"
+             "${NANOOCP_OCCT_DIR}/cmake")
 message(STATUS "nanoocp: OCCT ${OpenCASCADE_VERSION} from ${NANOOCP_OCCT_DIR}")
 
 include("${CMAKE_SOURCE_DIR}/src/cpp/toolkits.cmake")   # generated: NANOOCP_TOOLKITS
