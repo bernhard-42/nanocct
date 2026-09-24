@@ -80,12 +80,12 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps occt freetype rapidjson generate compile stubs test delocate wheel \
-        clean_occt clean_freetype clean_rapidjson clean_deps clean_gen help
+.PHONY: all env deps occt freetype rapidjson generate compile stubs test raw_wheel delocate wheel \
+        clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
 	@echo "targets: env | deps (occt freetype rapidjson) | generate compile stubs test | wheel | all"
-	@echo "         clean_deps clean_occt clean_freetype clean_rapidjson clean_gen"
+	@echo "         clean_deps clean_occt clean_freetype clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
 # ---- environment ----------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ help:
 # cp312-abi3 wheel just the same (measured 2026-09-24), so the development interpreter can be the current one.
 env:
 ifeq ($(PLATFORM),linux)
-	$(CONTAINER) "$(ML_SYSPY) -m venv /work/.venv-ml && /work/.venv-ml/bin/pip install -q -U pip pytest mypy ty"
+	$(CONTAINER) "$(ML_SYSPY) -m venv /work/.venv-ml && /work/.venv-ml/bin/pip install -q -U pip pytest mypy ty build scikit-build-core nanobind"
 else
 	cd $(ROOT) && uv venv
 	@# --no-install-project: `uv sync` would build nanoocp itself, which needs generated sources that do not exist
@@ -132,7 +132,7 @@ rapidjson: clean_rapidjson
 
 freetype: clean_freetype
 ifeq ($(PLATFORM),macos)
-	$(DEPS)/build-freetype.sh
+	$(DEPS)/build-freetype-macos.sh
 else ifeq ($(PLATFORM),windows)
 	$(DEPS)/build-freetype-windows.sh
 else
@@ -143,7 +143,7 @@ occt: clean_occt
 	@test -d $(DEPS)/rapidjson || { echo "run 'make rapidjson' first"; exit 1; }
 ifeq ($(PLATFORM),macos)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
-	$(DEPS)/build-occt.sh
+	$(DEPS)/build-occt-macos.sh
 else ifeq ($(PLATFORM),windows)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
 	$(DEPS)/build-occt-windows.sh
@@ -224,11 +224,56 @@ else
 endif
 
 # ---- packaging ------------------------------------------------------------------------------------------------
-# Not implemented yet (State.md 8.4): bundling the OCCT libraries per platform with delocate / auditwheel
-# (excluding libGL, libEGL and libX11, which belong to the host) / delvewheel, and the CI matrix around it.
+# A built wheel is not portable: the extension modules find the OCCT libraries through an rpath into deps/, so the
+# wheel works only on the machine that built it. The repair step copies those libraries in and rewrites the
+# references to point inside the wheel (State.md 8.4). Each platform has its own tool, and each leaves the
+# system's own libraries alone -- OpenGL and X11 belong to the host, never to the wheel (Design.md 7).
+#
+# The CI matrix that would run this on every push is a separate, later step (State.md 8.17).
 
-delocate:
+DIST_DIR := $(ROOT)/dist
+RAW_DIR  := $(DIST_DIR)/unrepaired
+
+# The tag has to match what OCCT was built against (deps/build-occt-macos.sh sets 11.1). Without this the wheel is
+# tagged macosx_11_0 and delocate warns that it will not in fact run on 11.0.
+MACOS_TARGET := 11.1
+OCCT_BIN_WIN := $(DEPS)/occt-8.0.1/win64/vc14/bin
 
 wheel: delocate
+
+# The unrepaired wheel: correct Python surface, but linked against deps/.
+raw_wheel: clean_dist
+ifeq ($(PLATFORM),macos)
+	cd $(ROOT) && MACOSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) \
+	    uv build --wheel --no-build-isolation --python $(PY) -o $(RAW_DIR)
+else ifeq ($(PLATFORM),windows)
+	@# uv rather than `python -m build`: the venv carries the backend (scikit-build-core), not a build frontend.
+	@# --python is not optional. Without it uv picks its own interpreter for the build environment and the build
+	@# fails with "No module named 'scikit_build_core'" although the venv has it (measured on gauss 2026-09-24,
+	@# where VIRTUAL_ENV is unset; macOS happened to resolve it, which is exactly why both are explicit now).
+	cd $(ROOT) && uv build --wheel --no-build-isolation --python "$(WIN_PY)" -o $(RAW_DIR)
+else
+	$(CONTAINER) "cd /work && $(ML_PY) -m build --wheel --no-isolation -o /work/dist/unrepaired \
+	    -C cmake.define.NANOOCP_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
+	    -C cmake.define.NANOOCP_RAPIDJSON_DIR=/work/deps/rapidjson/include"
+endif
+	@ls -lh $(RAW_DIR)
+
+# The repair. Named `delocate` after the macOS tool because that is what the step is, on every platform.
+delocate: raw_wheel
+ifeq ($(PLATFORM),macos)
+	MACOSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) $(ROOT)/.venv/bin/delocate-wheel -w $(DIST_DIR) $(RAW_DIR)/*.whl
+else ifeq ($(PLATFORM),windows)
+	@# delvewheel cannot read a DLL search path from the binary the way rpath gives it on Unix, so it is told.
+	cd $(ROOT) && "$(WIN_PY)" -m delvewheel repair --add-path "$(OCCT_BIN_WIN)" -w $(DIST_DIR) $(RAW_DIR)/*.whl
+else
+	@# LD_LIBRARY_PATH for the same reason: the OCCT .so files name each other by SONAME and carry no RUNPATH.
+	$(CONTAINER) "LD_LIBRARY_PATH=/work/deps/occt-8.0.1-manylinux/lib auditwheel repair \
+	    --plat manylinux_2_28_x86_64 -w /work/dist /work/dist/unrepaired/*.whl"
+endif
+	@echo "repaired wheel:" && ls -lh $(DIST_DIR)/*.whl
+
+clean_dist:
+	rm -rf $(DIST_DIR)
 
 all: generate compile stubs test wheel

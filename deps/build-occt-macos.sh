@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build OCCT 8.0.1 (V8_0_1 tag, sources in deps/occt-src) with Apple clang into deps/occt-8.0.1.
 # Mirrors ~/Development/CAD/ocp-build-system/local-build/02-build-occt-sdk.sh, minus conda:
-# FreeType is the static build from deps/build-freetype.sh and RapidJSON the vendored copy from
+# FreeType is the static build from deps/build-freetype-macos.sh and RapidJSON the vendored copy from
 # deps/fetch-rapidjson.sh (run both first), libc++ is the system one. OpenGL on since 2026-09-22
 # (macOS OpenGL.framework, State.md 8.6a). X11 is off because macOS has none; Linux builds with USE_XLIB=ON,
 # OCCT's own default there (deps/build-occt-manylinux.sh).
@@ -43,4 +43,26 @@ cmake -S "$SRC" -B "$BUILD" -G Ninja \
 
 ninja -C "$BUILD" -j "$CPUS"
 ninja -C "$BUILD" install
+
+# Give every installed dylib an @loader_path rpath so it can find its siblings (State.md 8.4).
+#
+# OCCT names each dependency @rpath/libTKX.8.0.dylib but installs no LC_RPATH on the libraries themselves. At
+# runtime that is invisible: the extension module carries the rpath and dyld resolves the whole load chain
+# through it. It breaks any tool that walks the graph statically -- delocate stops with "Could not find all
+# dependencies" as soon as it reaches libTKBO, because on its own that library has nowhere to look, and it
+# offers no flag for extra search paths (only --executable-path and --ignore-missing-dependencies, which would
+# silently drop them). One rpath pointing at its own directory makes each library self-contained.
+#
+# Done here rather than with -D CMAKE_INSTALL_RPATH=@loader_path because this is verified and a rebuild is not
+# needed to apply it to an existing install. Adding an rpath twice is an error, so each library is checked first.
+added=0
+for f in "$PREFIX"/lib/libTK*.dylib; do
+    [ -L "$f" ] && continue                      # version aliases point at the real file, which is fixed below
+    if ! otool -l "$f" | grep -A2 LC_RPATH | grep -q '@loader_path'; then
+        install_name_tool -add_rpath @loader_path "$f"
+        added=$((added + 1))
+    fi
+done
+echo "rpath: @loader_path added to $added libraries"
+
 echo "OCCT installed to $PREFIX"

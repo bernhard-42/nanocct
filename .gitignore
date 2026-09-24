@@ -17,7 +17,6 @@ deps/rapidjson-src/
 deps/rapidjson/
 deps/rapidjson-1.1.0.tar.gz
 deps/rapidjson-1.1.0-718.patch
-poc/build/
 .mypy_cache/
 .ruff_cache/
 
@@ -43,3 +42,6 @@ reviews/
 stage-mac/
 stage-ml/
 stage-win/
+
+# built and repaired wheels (make wheel); the repaired one carries the bundled OCCT libraries, ~44 MB
+dist/

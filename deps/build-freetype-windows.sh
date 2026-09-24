@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build FreeType (sources in deps/freetype-src) as a static library with no optional dependencies into deps/freetype,
-# with MSVC. The Windows counterpart of deps/build-freetype.sh, same flags; see deps/build-occt-windows.sh for why
+# with MSVC. The Windows counterpart of deps/build-freetype-macos.sh, same flags; see deps/build-occt-windows.sh for why
 # preparation runs in Git Bash and the compile in cmd.exe.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

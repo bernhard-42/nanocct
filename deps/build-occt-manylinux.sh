@@ -1,8 +1,8 @@
 #!/bin/bash
 # Build FreeType and OCCT 8.0.1 for Linux inside the manylinux_2_28 container (deps/manylinux.Dockerfile), so the
 # result runs against glibc 2.28 while being compiled by gcc 14. This is the Linux counterpart of
-# deps/build-occt-windows.sh; deps/build-occt-linux.sh builds against the host toolchain instead and is only useful
-# for a development box.
+# deps/build-occt-windows.sh, and it is the only Linux build: the container is the Linux platform (Design.md 7),
+# so there is one Linux environment and it is the one CI will use.
 #
 # AlmaLinux's default CMAKE_INSTALL_LIBDIR is lib64; it is forced to lib so the paths match the other platforms.
 #
@@ -34,7 +34,7 @@ cmake -S deps/freetype-src -B deps/freetype-build-ml -G Ninja \
   -D FT_DISABLE_HARFBUZZ=TRUE -D FT_DISABLE_BROTLI=TRUE
 ninja -C deps/freetype-build-ml install
 
-# the same OCCT flags as deps/build-occt.sh and deps/build-occt-windows.sh, so the three installs stay comparable
+# the same OCCT flags as deps/build-occt-macos.sh and deps/build-occt-windows.sh, so the three installs stay comparable
 cmake -S deps/occt-src -B deps/occt-build-ml -G Ninja \
   -D CMAKE_BUILD_TYPE=Release \
   -D INSTALL_DIR="$PREFIX" \

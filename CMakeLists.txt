@@ -8,7 +8,7 @@ execute_process(COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
                 OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE nanobind_ROOT)
 find_package(nanobind CONFIG REQUIRED)
 
-# OCCT: the local build in deps/ by default (see deps/build-occt.sh)
+# OCCT: the local build in deps/ by default (see deps/build-occt-macos.sh)
 set(NANOOCP_OCCT_DIR "${CMAKE_SOURCE_DIR}/deps/occt-8.0.1" CACHE PATH "OCCT installation prefix")
 set(NANOOCP_RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/deps/rapidjson/include" CACHE PATH "RapidJSON headers (vendored)")
 # OCCT's install layout differs by platform: lib/cmake/opencascade on Unix, cmake/ on Windows (2026-09-23)

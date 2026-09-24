@@ -21,7 +21,7 @@ SRC="$HERE/rapidjson-src"
 PREFIX="$HERE/rapidjson"
 
 # the two rm -rf below are built from $HERE: refuse to run if that is not the deps directory of a checkout
-[ -f "$HERE/build-occt.sh" ] || { echo "not the nanoOCP deps directory: $HERE" >&2; exit 1; }
+[ -f "$HERE/build-occt-macos.sh" ] || { echo "not the nanoOCP deps directory: $HERE" >&2; exit 1; }
 
 [ -f "$TARBALL" ] || curl -fsSL -o "$TARBALL" "$TARBALL_URL"
 [ -f "$PATCH" ] || curl -fsSL -o "$PATCH" "$PATCH_URL"

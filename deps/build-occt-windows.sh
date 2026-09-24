@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build OCCT 8.0.1 on Windows with MSVC into deps/occt-8.0.1, mirroring deps/build-occt.sh flag for flag.
+# Build OCCT 8.0.1 on Windows with MSVC into deps/occt-8.0.1, mirroring deps/build-occt-macos.sh flag for flag.
 #
 # The split follows the user's rule for this project (2026-09-23): **preparation in Git Bash, compilation with MSVC in
 # cmd.exe**. Bash locates the toolchain and writes a .bat; cmd.exe runs `vcvars64.bat` and then cmake/ninja. Importing
@@ -24,7 +24,7 @@ W_RJ="$(cygpath -w "$HERE/rapidjson")"
 BAT="$HERE/_build_occt.bat"
 
 # USE_XLIB is off here because Windows has no X11 (it uses WGL, which USE_OPENGL=ON
-# brings in by itself. Everything else matches build-occt.sh exactly, so the two installs are comparable.
+# brings in by itself. Everything else matches build-occt-macos.sh exactly, so the two installs are comparable.
 cat > "$BAT" <<BAT
 @echo off
 for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do set "VS_PATH=%%i"
