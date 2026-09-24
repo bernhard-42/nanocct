@@ -1070,7 +1070,7 @@ def _walk_pairs(left: Path, right: Path):
 
 def test_incremental_run_refuses_to_rehome_an_instantiation(tmp_path):
     """An incremental run that would bind an instantiation an earlier, not regenerated toolkit could own in a clean run
-    fails loudly (Design.md 9); --allow-rehoming overrides. Simulated by dropping NCollection_Array1<gp_Pnt2d> (owned by
+    fails loudly (State.md 9); --allow-rehoming overrides. Simulated by dropping NCollection_Array1<gp_Pnt2d> (owned by
     TKMath/BSplCLib) from a copy of the manifest and regenerating TKG2d, which uses it."""
     import json
     (tmp_path / "cpp").mkdir()

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build OCCT 8.0.1 on Linux with gcc into deps/occt-8.0.1. The Linux counterpart of deps/build-occt.sh, same OCCT
-# flags, so the three installs are comparable (Design.md 8.2). Two deliberate differences from the macOS script:
+# flags, so the three installs are comparable (State.md 8.2). Two deliberate differences from the macOS script:
 #
 #  - FreeType is the distribution's (libfreetype-dev, found through pkg-config), not the static build from
 #    deps/build-freetype.sh. OCCT only needs a FreeType to link against here; the static one exists on macOS and

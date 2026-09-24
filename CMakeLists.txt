@@ -24,7 +24,7 @@ foreach(tk IN LISTS NANOOCP_TOOLKITS)
   target_include_directories(_${tk} PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
   # OCCT's exported targets define HAVE_RAPIDJSON but do not carry the include path, and an installed header
   # includes it (RWGltf_GltfJsonParser.hxx -> rapidjson/document.h). Same vendored copy the OCCT build used
-  # (deps/fetch-rapidjson.sh, Design.md 8.13); header-only, so nothing extra is linked or shipped.
+  # (deps/fetch-rapidjson.sh, State.md 8.13); header-only, so nothing extra is linked or shipped.
   if(EXISTS "${NANOOCP_RAPIDJSON_DIR}")
     target_include_directories(_${tk} PRIVATE "${NANOOCP_RAPIDJSON_DIR}")
   endif()

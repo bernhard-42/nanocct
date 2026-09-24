@@ -126,7 +126,7 @@ def configure_libclang() -> str:
 
 # Third-party headers that an *installed* OCCT header includes, so the parse needs them on the include path just as
 # the build did: RWGltf_GltfJsonParser.hxx has `#include <rapidjson/document.h>` under HAVE_RAPIDJSON. deps/build-occt.sh
-# puts them next to the OCCT install (deps/rapidjson from deps/fetch-rapidjson.sh, Design.md 8.13); the list grows if
+# puts them next to the OCCT install (deps/rapidjson from deps/fetch-rapidjson.sh, State.md 8.13); the list grows if
 # another one turns up. FreeType is not here: OCCT's headers only forward-declare its types.
 _THIRD_PARTY_INCLUDES = (("rapidjson", "include"),)
 

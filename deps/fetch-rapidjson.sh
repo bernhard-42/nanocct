@@ -1,6 +1,6 @@
 #!/bin/bash
 # Vendor RapidJSON into deps/rapidjson at a pinned tag, so OCCT's glTF reader/writer (TKDEGLTF) compiles against the
-# same headers on every platform instead of whatever /opt/homebrew/opt/rapidjson happens to hold (Design.md 8.13).
+# same headers on every platform instead of whatever /opt/homebrew/opt/rapidjson happens to hold (State.md 8.13).
 # RapidJSON is header-only: there is nothing to build and nothing extra in the wheel, the headers *are* the library.
 #
 # v1.1.0 (2016) is the last release. The two-commit patch is the one Homebrew applies and therefore what nanoOCP has

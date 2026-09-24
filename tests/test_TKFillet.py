@@ -1,5 +1,5 @@
 """Generated bindings for TKFillet: BRepFilletAPI_MakeFillet/MakeChamfer, ChFi2d, the Blend* function classes. Predictions from
-Design.md 9 confirmed: ChFiKPart needs ChFiDS_ChamfMode.hxx as prelude (R-PRELUDE); `using Blend_FuncInv::Set` un-hides the base
+State.md 9 confirmed: ChFiKPart needs ChFiDS_ChamfMode.hxx as prelude (R-PRELUDE); `using Blend_FuncInv::Set` un-hides the base
 overload next to the derived class's own (R-USING)."""
 import importlib
 from pathlib import Path

@@ -1,6 +1,6 @@
 """Generated bindings for TKShHealing: ShapeAnalysis, ShapeFix, ShapeUpgrade, ShapeCustom, ShapeBuild, ShapeExtend — the healing
 packages build123d uses (ShapeAnalysis_FreeBounds, ShapeFix_Shape, ShapeUpgrade_UnifySameDomain). The last two container
-instantiations build123d constructs directly (HSequence/Sequence<TopoDS_Shape>, Design.md 8.7) arrive with this toolkit."""
+instantiations build123d constructs directly (HSequence/Sequence<TopoDS_Shape>, State.md 8.7) arrive with this toolkit."""
 import importlib
 import math
 from pathlib import Path

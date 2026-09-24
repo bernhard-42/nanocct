@@ -425,7 +425,7 @@ def main(argv: list[str]) -> int:
         for line in rehomed:
             print(f"rehoming: {line}", file=sys.stderr)
         if not args.allow_rehoming:
-            print("Instantiations are owned by the first package that needs them in a clean run (Design.md 9); an incremental "
+            print("Instantiations are owned by the first package that needs them in a clean run (State.md 9); an incremental "
                   "run cannot know whether a toolkit that was not regenerated would own these. Run a clean regeneration "
                   "(rm src/cpp/manifest.json, all toolkits) or pass --allow-rehoming.", file=sys.stderr)
             return 1
