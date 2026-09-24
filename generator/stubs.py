@@ -10,9 +10,11 @@ import json
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from .binders import BINDERS
+from .parallel import jobs_from_env
 from .parse import py_path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -168,9 +170,18 @@ def main() -> int:
         m = re.search(r"from nanoocp\._(\w+) import (\w+) as _ext", pkg_file.read_text())
         if m is not None:
             toolkit_of[m.group(2)] = (m.group(1), _stub_of(pkg_file))
-    for pkg, (tk, out) in sorted(toolkit_of.items()):
-        _stubgen(f"nanoocp._{tk}.{pkg}", out)
-        print(f"stub {out.relative_to(ROOT)}", file=sys.stderr)
+    # One stub per package module, and they are 97 % of the run (measured 2026-09-24: 97.8 s of 100.8 s, 276 ms per
+    # module and flat). Each already runs in a subprocess of its own and writes one file nothing else touches, so they
+    # just have to be started at the same time; a thread per subprocess is enough, the work is all in the children.
+    # Everything below this loop reads the files it wrote and stays sequential.
+    modules = sorted(toolkit_of.items())
+    jobs, how = jobs_from_env(len(modules))
+    print(f"stubs: {len(modules)} modules, {jobs} job{'' if jobs == 1 else 's'} ({how})", file=sys.stderr)
+    with ThreadPoolExecutor(jobs) as pool:
+        done = {pool.submit(_stubgen, f"nanoocp._{tk}.{pkg}", out): out for pkg, (tk, out) in modules}
+        for future in done:
+            future.result()                       # the first failure is raised here, with its traceback
+            print(f"stub {done[future].relative_to(ROOT)}", file=sys.stderr)
     # deprecated typedef aliases (shim _ALIASES tables) -> explicit assignments in the stubs; alias-only
     # modules (e.g. TColgp) get a stub of their own
     for shim in _shims():

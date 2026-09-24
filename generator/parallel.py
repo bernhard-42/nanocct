@@ -1,4 +1,7 @@
-"""The worker side of the parallel generation (2026-09-24): whole packages parsed and emitted in separate processes.
+"""The parallel side of the generator (2026-09-24): how many workers to use, and the callables they run.
+
+`jobs_from_env` is the one place that decides the worker count, for the package pools here and for the stub
+subprocesses in `stubs.py`.
 
 Lives in its own module because macOS spawns workers rather than forking them: a spawned child re-imports the
 module holding the callable, and functions defined in `generator/__main__.py` are unreachable that way
@@ -9,11 +12,35 @@ built from -- which is what makes this possible at all.
 """
 from __future__ import annotations
 
+import os
 import time
 from pathlib import Path
 
 from .occt import load_tree
 from .parse import carry_state, collect_state, configure_libclang, parse_package
+
+
+def default_jobs() -> int:
+    """One worker per core the process may use.
+
+    `os.process_cpu_count()` honours what the process is actually allowed (CPU affinity, a container's quota,
+    taskset) and exists from Python 3.13; `os.cpu_count()` is the 3.12 fallback."""
+    count = getattr(os, "process_cpu_count", os.cpu_count)()
+    return count if count is not None else 1
+
+
+def jobs_from_env(n_items: int) -> tuple[int, str]:
+    """How many workers to run `n_items` independent units on, and a one-line explanation for the log.
+
+    `NANOOCP_JOBS` sets it; **unset or 0 means one worker per core**, and **1 is the sequential path** -- which is
+    what a byte-for-byte comparison is run against. Never more workers than items, so a one-package run does not pay
+    for a pool of idle processes."""
+    env = os.environ.get("NANOOCP_JOBS", "")
+    requested = int(env) if env != "" else 0
+    jobs = max(1, min(requested if requested > 0 else default_jobs(), max(1, n_items)))
+    how = f"NANOOCP_JOBS={requested}" if requested > 0 else f"{default_jobs()} cores, NANOOCP_JOBS=1 to go sequential"
+    return jobs, how
+
 
 _TREE = None
 

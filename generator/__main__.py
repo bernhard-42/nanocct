@@ -177,15 +177,6 @@ def _rehoming_risks(tree, parsed: list[tuple[str, list]], templates_before: set[
     return risks
 
 
-def _default_jobs() -> int:
-    """One worker per core the process may use, which is the parallel generation's default (5.2).
-
-    `os.process_cpu_count()` honours what the process is actually allowed (CPU affinity, a container's quota, taskset)
-    and exists from Python 3.13; `os.cpu_count()` is the 3.12 fallback."""
-    count = getattr(os, "process_cpu_count", os.cpu_count)()
-    return count if count is not None else 1
-
-
 def _selected_packages(tree, tk_name: str, only: list[str] | None, this_platform: str) -> list | None:
     """The packages of one toolkit this run generates, or None after printing why there are none.
 
@@ -299,12 +290,9 @@ def main(argv: list[str]) -> int:
     # 34.9 s, 18 jobs 29.9 s). `NANOOCP_JOBS` overrides it and **`NANOOCP_JOBS=1` is the sequential path**, which is
     # what a byte-for-byte comparison is run against. Never more workers than packages: a `--package` run would
     # otherwise pay for a pool of idle processes, each loading the OCCT tree.
-    env_jobs = os.environ.get("NANOOCP_JOBS", "")
-    requested = int(env_jobs) if env_jobs != "" else 0          # unset or 0: as many workers as cores
     n_packages = sum(len(pkgs) for _, pkgs in selected)
-    jobs = max(1, min(requested if requested > 0 else _default_jobs(), n_packages))
+    jobs, how = _parallel.jobs_from_env(n_packages)
     if jobs > 1:
-        how = f"NANOOCP_JOBS={requested}" if requested > 0 else f"{_default_jobs()} cores, NANOOCP_JOBS=1 to go sequential"
         print(f"parallel: {jobs} jobs over {n_packages} packages ({how})", file=sys.stderr)
         t0 = time.perf_counter()
         state = {"noncopyable": set(), "derives": {}}
