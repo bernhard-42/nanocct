@@ -2,7 +2,13 @@
 
 nanobind registers one concrete class per C++ instantiation (NCollection_Array1__gp_Pnt); the Template
 objects below map Python element types to those classes so that NCollection_Array1[gp_Pnt] reads like
-the OCCT documentation's NCollection_Array1<gp_Pnt>. The generator writes the tables (nanoocp/NCollection.py)."""
+the OCCT documentation's NCollection_Array1<gp_Pnt>. The generator writes the tables, into the one module
+that homes every instantiation (nanoocp/NCollection/__init__.py).
+
+A table key is the (__module__, __qualname__) of each element type, which is what the lookup compares against,
+so `py_path()` in the generator and `_spec_of()` here have to agree on how a type is spelled -- including the
+nested classes, whose __module__ nanobind reports as the *package* with a dotted __qualname__
+(nanoocp.Geom, "Geom_Curve.ResD1"). test_every_table_key_is_how_the_class_spells_itself locks that down."""
 from __future__ import annotations
 
 import functools
@@ -31,13 +37,6 @@ class Template:
         45 toolkits for the container kinds -- which is exactly the eager import this design removes."""
         key = item if isinstance(item, tuple) else (item,)
         cls_name = self._specs.get(tuple(self._spec_of(k) for k in key))
-        if cls_name is None:
-            # a class in a C++ namespace has __module__ nanoocp.<pkg>.<ns> while the table spells it
-            # ("nanoocp.<pkg>", "<ns>.<cls>"), so fall back to matching the resolved classes
-            for specs, name in self._specs.items():
-                if len(specs) == len(key) and all(self._lookup(m, a) is k for (m, a), k in zip(specs, key)):
-                    cls_name = name
-                    break
         if cls_name is None:
             args = ", ".join(getattr(k, "__name__", repr(k)) for k in key)
             raise TypeError(f"{self._name}<{args}> is not bound by nanoocp (no bound OCCT signature uses it). "

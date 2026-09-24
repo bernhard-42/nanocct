@@ -2,6 +2,7 @@
 import pytest
 
 from nanoocp import NCollection, Standard, TColStd
+from nanoocp._templates import Template
 
 A = NCollection.NCollection_Array1__double                         # every instantiation lives in nanoocp.NCollection (Design.md 6a)
 AH = NCollection.NCollection_Array1__Handle_Standard_Persistent
@@ -375,3 +376,21 @@ def test_linear_vector():
     a.ChangeValue(0).SetValues(4.0, 5.0, 6.0)                                 # reference_internal for class elements
     assert a.Value(0).x() == 4.0
     assert type(MathRoot.MultipleResult().Roots) is NCollection.NCollection_DynamicArray[float]   # container-typed field
+
+
+def test_every_table_key_is_how_the_class_spells_itself():
+    """The accessor lookup is a single dict hit on (__module__, __qualname__), so every key the generator writes
+    must be exactly what the bound class reports. `py_path()` and `Template._spec_of()` are the two halves of that
+    agreement; nothing catches them drifting apart except this, because a key that no longer matches degrades
+    silently into "not bound" for a type that is bound. Nested classes are the interesting case: nanobind gives
+    them the *package* as __module__ and a dotted __qualname__ (nanoocp.Geom, "Geom_Curve.ResD1")."""
+    specs = {spec for t in vars(NCollection).values() if isinstance(t, Template) for key in t._specs for spec in key}
+    assert len(specs) > 400, f"only {len(specs)} element types in the tables; did they stop being generated?"
+    wrong = {}
+    for module, attr in specs:
+        cls = Template._lookup(module, attr)
+        if cls is None or Template._spec_of(cls) != (module, attr):
+            wrong[(module, attr)] = None if cls is None else Template._spec_of(cls)
+    assert wrong == {}, "table keys that the class itself spells differently:\n" + \
+        "\n".join(f"  {k} -> {v}" for k, v in sorted(wrong.items(), key=lambda kv: str(kv[0])))
+    assert len([s for s in specs if "." in s[1]]) > 0, "no nested-class element type left to exercise the dotted form"
