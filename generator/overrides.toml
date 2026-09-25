@@ -332,4 +332,5 @@ binary_members = [
 [views]
 classes = [
     "Poly_Triangulation",
+    "Poly_PolygonOnTriangulation",
 ]

@@ -26,6 +26,11 @@ from .symbols import defined_symbols, destructor_defined, unavailable_reason
 ROOT = Path(__file__).resolve().parent.parent
 
 
+# The one package nanoOCP writes by hand rather than generating: src/cpp/AddOns, built by CMakeLists outside
+# the toolkit loop and imported as nanoocp.AddOns (extension _AddOns). It is a package, never a toolkit.
+HANDWRITTEN_PACKAGE = "AddOns"
+
+
 def _topo(tree, toolkits: list[str], extra: dict[str, list[str]] | None = None) -> list[str]:
     """Dependencies first (OCCT's EXTERNLIB order), restricted to the given toolkits.
 
@@ -591,6 +596,12 @@ def main(argv: list[str]) -> int:
     # src/Deprecated/NCollectionAliases) are NOT exposed -- nanoOCP is an OCCT 8 binding and code using it is
     # expected to spell the 8.0 names (decision 2026-09-24, Design.md 6a).
     generated_packages = set(generated_pkgs)          # every generated package, with or without classes
+    # nanoocp.AddOns is hand-written (src/cpp/AddOns, built by CMakeLists outside the toolkit loop). Its shim and
+    # its entry in _PACKAGES are generated like any other package's, so `make clean_gen` stays correct and
+    # `import nanoocp; nanoocp.AddOns` resolves through the same lazy __getattr__ (State.md 8.10b). It must NOT
+    # reach generated_pkgs: that goes into the manifest, an incremental run reads it back into
+    # generated_toolkits, and _topo then looks for a toolkit OCCT has never heard of (KeyError: 'AddOns').
+    generated_packages.add(HANDWRITTEN_PACKAGE)
     accessors = _accessors(known, templates)
     # 6a: which toolkit binds each instantiation that lives in a package other than its own. Only `NCollection`
     # receives them (every 6c instantiation is bound by the package that declares it), so only that shim needs the
@@ -607,7 +618,7 @@ def main(argv: list[str]) -> int:
                   for tk, extras in manifest.get("links", {}).items()}
     for pk in sorted(generated_packages):
         namespaces = [tuple(ns) for ns in manifest["namespaces"].get(pk, [])]
-        tk = generated_pkgs[pk]
+        tk = HANDWRITTEN_PACKAGE if pk == HANDWRITTEN_PACKAGE else generated_pkgs[pk]
         write_package_shims(py_root, pk, tk, namespaces,
                             accessors if pk == "NCollection" else None,
                             homed_elsewhere.get(pk), late_links.get(tk))

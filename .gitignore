@@ -31,10 +31,13 @@ reviews/
 # ephemeral build input that every platform must produce for itself. OCCT's headers are platform-dependent --
 # WNT_Window.hxx is behind `#if defined(_WIN32)`, so a macOS generation produces no WNT_Window at all -- one
 # generation platform cannot serve the others, and the .so/.pyd files are the product, not the C++ or the reports.
-# Four files under src/ are hand-written and stay tracked: src/cpp/common/nanoocp_common.h,
-# src/cpp/common/nanoocp_ncollection.h, src/nanoocp/_templates.py and src/nanoocp/py.typed.
+# A few files under src/ are hand-written and stay tracked: src/cpp/common/*.h (nanoocp_common.h,
+# nanoocp_ncollection.h, nanoocp_views.h), the whole of src/cpp/AddOns/ (nanoOCP's own additions, not a
+# binding of anything -- State.md 8.10b), src/nanoocp/_templates.py and src/nanoocp/py.typed.
+# `make clean_gen` removes only src/cpp/TK*, so src/cpp/AddOns survives a regeneration.
 # Everything below is rebuilt in minutes by `python -m generator`.
 /src/cpp/**/*.cpp
+!/src/cpp/AddOns/*.cpp
 /src/cpp/**/report.txt
 /src/cpp/manifest.json
 /src/cpp/toolkits.cmake

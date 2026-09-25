@@ -75,3 +75,19 @@ template <> inline void nanoocp_def_views<Poly_Triangulation>(nb::class_<Poly_Tr
         "Python addition: zero-copy (NbNodes, 3) float32 view of the normals, or None when HasNormals() is "
         "false. Always float32: OCCT stores normals as NCollection_Vec3<float> whatever the node precision.");
 }
+
+// ---- Poly_PolygonOnTriangulation ----------------------------------------------------------------------------
+// An edge's polyline as indices into the face triangulation's nodes: NCollection_Array1<int>, contiguous,
+// reachable through public ChangeNodeArray(). The indices are OCCT's, i.e. 1-based.
+#include <Poly_PolygonOnTriangulation.hxx>
+
+template <> inline void nanoocp_def_views<Poly_PolygonOnTriangulation>(
+    nb::class_<Poly_PolygonOnTriangulation> cls) {
+    cls.def("NodesArray", [](Poly_PolygonOnTriangulation &self) {
+            const size_t n = (size_t) self.NbNodes();
+            return nb::ndarray<nb::numpy, int32_t, nb::ndim<1>>(
+                n == 0 ? nullptr : (void *) &self.ChangeNodeArray().ChangeFirst(), { n }, nb::handle());
+        }, nb::rv_policy::reference_internal,
+        "Python addition: zero-copy (NbNodes,) int32 view of the node indices.\n\n"
+        "The indices are OCCT's, i.e. 1-based into the face triangulation's NodesArray().");
+}
