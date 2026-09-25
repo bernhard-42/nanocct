@@ -69,3 +69,46 @@ def test_binary_stream_is_bytes(tmp_path):
     assert (tmp_path / "e.bin").read_bytes() == data
     assert BinTools.BinTools.Write.__doc__.splitlines()[0].endswith("-> bytes")
     assert "theStream: typing.BinaryIO" in BinTools.BinTools.Read.__doc__
+
+
+# ---- R-STR: OCCT's "print me" operator<< as __str__ (roadmap 8.14) ----------------------------------------------
+
+def test_print_operator_is_str():
+    """`operator<<(Standard_OStream&, const T&)` -- free, hidden friend or the member form -- renders exactly what OCCT
+    prints, which for these classes is their Dump(); repr() stays nanobind's default."""
+    from nanoocp.math import math_IntegerVector, math_Matrix, math_Vector
+    from nanoocp.TDF import TDF_Data
+
+    m = math_Matrix(1, 2, 1, 2, 3.0)
+    assert str(m) == m.Dump() and str(m).startswith("math_Matrix of RowNumber = 2 and ColNumber = 2")
+    assert repr(m).startswith("<nanoocp.math.math_Matrix object at ")
+    v = math_Vector(1, 3, 2.0)
+    assert str(v) == v.Dump()                                          # the friend of math_VectorBase<double>
+    assert str(math_IntegerVector(1, 2, 7)).startswith("math_Vector of Length = 2")   # ... and of math_VectorBase<int>
+    label = TDF_Data().Root()
+    assert str(label) == label.Dump()                                  # member `operator<<(Standard_OStream&) const`
+
+
+def test_print_operator_where_there_was_no_text_method():
+    """IntRes2d_Transition has no Dump or Print, so its operator<< is its only text form."""
+    from nanoocp.IntRes2d import IntRes2d_Transition
+
+    assert str(IntRes2d_Transition()).startswith("   Position : ")
+
+
+def test_operators_that_are_not_print_me_stay_unbound():
+    """BinTools' operator<<(ostream&, const gp_Pnt&) writes binary doubles and belongs to another package's class;
+    BinObjMgt_Persistent's is its binary Write; Standard_Failure is a Python exception whose str() is its message."""
+    from conftest import report
+    from nanoocp.BinObjMgt import BinObjMgt_Persistent
+
+    assert "__str__" not in vars(gp.gp_Pnt) and "__str__" not in vars(gp.gp_Trsf)
+    assert "__str__" not in vars(BinObjMgt_Persistent)
+    lines = report("TKBRep")[0] + report("TKBinL")[0] + report("TKernel")[0] + report("TKLCAF")[0]
+    reasons = [line for line in lines if "not bound as __str__" in line]
+    assert all(line.startswith("stream\t") for line in reasons)
+    assert sum("operand gp_Pnt is not a class of this package" in line or "operand gp_Trsf is not a class" in line
+               for line in reasons) == 2
+    assert any("BinObjMgt_Persistent &): not bound as __str__: binary stream" in line for line in reasons)
+    assert any("const Standard_Failure &): not bound as __str__: exception class" in line for line in reasons)
+    assert sum("member operator<<(Standard_OStream&) is bound as __str__ already" in line for line in reasons) == 3

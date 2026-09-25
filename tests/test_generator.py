@@ -419,6 +419,7 @@ public:
   float Advance(char32_t theUChar) const { return static_cast<float>(theUChar); }
   //! R-FREE-OP: a hidden friend operator (NCollection_Vec3) is bound as a dunder on the class operand.
   friend Rules_Vis operator+(const Rules_Vis& theLeft, const Rules_Vis& theRight) { (void)theRight; return theLeft; }
+  friend Standard_OStream& operator<<(Standard_OStream& theStream, const Rules_Vis& theVis) { (void)theVis; return theStream << "vis"; }   // R-STR
   //! R-COLLISION with R-WIDTH: out-parameter overloads differing only in width are one overload, no suffix (Graphic3d_Vertex::Coord).
   void Coord(double& theX, double& theY) const { theX = 1.0; theY = 2.0; }
   void Coord(float& theX, float& theY) const { theX = 1.0f; theY = 2.0f; }
@@ -1011,7 +1012,10 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     # char32_t -> str
     assert _method(rules_ir, "Rules_Vis", "Advance").params[0].type == "char32_t"
     # hidden friend operator collected on the class
-    assert [(f.name, f.is_operator, f.skip_reason) for f in vis.friend_ops] == [("operator+", True, None)]
+    assert [(f.name, f.is_operator, f.skip_reason) for f in vis.friend_ops] == [("operator+", True, None), ("operator<<", True, None)]
+    # R-STR: the print-me friend is kept, its chained stream result dropped, the stream parameter an output stream
+    shift = vis.friend_ops[1]
+    assert shift.result == "void" and shift.params[0].stream == StreamKind.OUT
     # alias enumerators recorded
     aspect = next(e for e in rules_ir.enums if e.py_name == "Rules_Aspect")
     assert aspect.aliases == ["Rules_A_Regular", "Rules_A_Bold"]
@@ -1029,6 +1033,8 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     assert '.def_prop_rw("stick", [](const Rules_Vis &self) { return static_cast<unsigned int>(self.stick); }, [](Rules_Vis &self, unsigned int v) { self.stick = v; }, R"nbdoc(' in cpp
     assert 'nanoocp_def_field(nb::borrow<nb::class_<Rules_Vis>>(m.attr("Rules_Vis")), "myPlain"' in cpp
     assert '.def("__add__", [](const Rules_Vis & theLeft, const Rules_Vis & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */' in cpp
+    assert ('.def("__str__", [](const Rules_Vis & theVis) { std::ostringstream nanoocp_stream; nanoocp_stream << theVis; '
+            'return nanoocp_stream_text(nanoocp_stream); }) /* free operator<< (R-STR) */') in cpp
     assert 'm.attr("Rules_A_Regular") = m.attr("Rules_Aspect").attr("Rules_A_Regular");' in cpp
     assert 'm.attr("Rules_A_Bold") = m.attr("Rules_Aspect").attr("Rules_A_Bold");' in cpp
     assert 'm.attr("Rules_Aspect_Bold") = ' not in cpp                # a first-value enumerator comes through export_values()

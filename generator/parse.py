@@ -705,6 +705,17 @@ def _stream_kind(t: cindex.Type) -> str:
     return ""
 
 
+# Design.md 6 R-STR
+def _is_print_operator(name: str, params: list[Param], result_type: cindex.Type) -> bool:
+    """`Standard_OStream& operator<<(Standard_OStream&, const T&)`, free or hidden friend: OCCT's "print me" idiom. The
+    stream is the first operand, so it is no member of T in Python terms; it becomes T.__str__ (emit._free_operator),
+    with the chained stream result dropped like R-STREAM-OUT does for methods. Whether it really prints T -- and not,
+    as BinTools' operator<<(ostream&, const gp_Pnt&) does, write binary doubles for another package's class -- is
+    decided by the emitter, which knows the class, its header and the package's stream kind."""
+    return (name == "operator<<" and len(params) == 2 and params[0].stream == StreamKind.OUT
+            and _stream_kind(result_type) == StreamKind.OUT)
+
+
 # R-OPTIONAL-PTR applies to these reasons; "unsupported std type" is not among them (no OCCT API has an optional
 # std::mutex*/std::locale* parameter -- such a parameter would be reported instead of silently dropped).
 _OPTIONAL_PTR_REASONS = ("raw pointer to primitive", "void pointer", "pointer to incomplete type", "function pointer", "reference to pointer", "iostream type")
@@ -960,10 +971,12 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         # itself, for chaining (R-STREAM-OUT/IN)
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     rc0 = cursor.result_type.get_canonical()
-    if m.skip_reason is None and any(p.is_out for p in params) and rc0.kind == TK.LVALUEREFERENCE \
+    if m.skip_reason is None and (any(p.is_out for p in params) or m.is_operator and any(p.stream != StreamKind.NONE for p in params)) \
+            and rc0.kind == TK.LVALUEREFERENCE \
             and _type_spelling(rc0.get_pointee()).replace("const ", "") == cls_name:
         # `const BinObjMgt_Persistent& GetInteger(int&)`: *this, for chaining. The out-param lambda would copy it (`auto result`),
         # and copying a Persistent shares its raw buffers (abort at destruction). Dropped like the chained stream (R-OUT)
+        # -- and so is `VrmlData_Scene& operator<<(Standard_IStream&)`, the scene's reader, whose *this would be copied the same way (R-STR)
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
@@ -1363,7 +1376,9 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                               is_noexcept=_is_noexcept(fr), doc=_doc_with_deprecation(fr), header=c.header, is_operator=True,
                               skip_reason=reason, qualified=fr.spelling,
                               defined_in_header=fr.is_definition() or fr.get_definition() is not None or _SUBST.active, mangled=fr.mangled_name)
-                if fn.skip_reason is None:
+                if fn.skip_reason is None and _is_print_operator(fn.name, params, fr.result_type):
+                    fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
+                elif fn.skip_reason is None:
                     fn.skip_reason = _unsupported(fr.result_type, allow_out=False)
                 if fn.skip_reason is not None:
                     c.skipped.append(f"{c.name}: friend {fn.name}({', '.join(p.type for p in params)}): {fn.skip_reason}")
@@ -1819,7 +1834,9 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                               is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
                               qualified=f"{ns}{cur.spelling}", scope=scope,
                               defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name)
-                if fn.skip_reason is None:
+                if fn.skip_reason is None and _is_print_operator(fn.name, params, cur.result_type):
+                    fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
+                elif fn.skip_reason is None:
                     fn.skip_reason = _unsupported(cur.result_type, allow_out=False)
                 if fn.skip_reason is not None:
                     ir.report.append(f"{fn.name}(...): {fn.skip_reason}")

@@ -54,11 +54,19 @@ def _strip_ref(t: str) -> str:
     return s
 
 
-# Design.md 6 R-OPERATOR, R-IOP
+# Design.md 6 R-OPERATOR, R-IOP, R-STR
 def _py_name(m: Method) -> str | None:
     """Python attribute name for a method; None when the operator has no Python counterpart."""
     if not m.is_operator:
         return py_safe(m.name)
+    if m.name == "operator<<" and len(m.params) == 1 and not m.params[0].binary:
+        # R-STR, member forms: `Standard_OStream& operator<<(Standard_OStream&) const` prints *this (TDF_Label, TDF_Attribute,
+        # CDM_MetaData: `{ return Dump(anOS); }`) -> __str__; `VrmlData_Scene& operator<<(Standard_IStream&)` reads a scene
+        # -> Read(TextIO), a named method, because __lshift__ would read as a bit shift
+        if m.params[0].stream == StreamKind.OUT:
+            return "__str__"
+        if m.params[0].stream == StreamKind.IN:
+            return "Read"
     if m.name in _INPLACE_OPS:
         return _INPLACE_OPS[m.name]
     entry = _BINARY_OPS.get(m.name)
@@ -85,6 +93,7 @@ class Emitter:
         self.toolkit_of = toolkit_of          # package -> toolkit
         self.templates = known_templates      # canonical instance key -> {toolkit, package, name}; updated while emitting
         self.local = {c.name for c in ir.classes}
+        self._class_named = {c.name: c for c in ir.classes}   # R-STR: the class a free print operator belongs to
         self.report: list[str] = []
         self.static_renames: dict[str, set[str]] = {}   # R-STATIC-S across the inheritance chain; set by the caller
         self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
@@ -349,6 +358,30 @@ class Emitter:
         else:
             fn = f"nb::init<{self._sig(params)}>()"
         return f".def({fn}{self._extras(doc, params, False, False)})"
+
+    # Design.md 6 R-STR
+    def _print_operator(self, fn: Function) -> tuple[str, str] | str:
+        """`operator<<(Standard_OStream&, const T&)` as T.__str__, or the reason it is not one. It is OCCT's print-me idiom
+        only when it is declared in T's own header (X.hxx or its X.lxx) and the stream is text: BinTools declares
+        operator<<(ostream&, const gp_Pnt&) in BinTools_ShapeSetBase.hxx and writes binary doubles with it, and
+        BinObjMgt_Persistent's operator<< is its binary Write. An exception class has str() already (its message)."""
+        stream, obj = fn.params
+        target = obj.class_name if obj.class_name != "" else _strip_ref(obj.type)
+        cls = self._class_named.get(target)
+        if cls is None:
+            return f"operand {target} is not a class of this package"
+        if stream.binary:
+            return "binary stream ([stream] binary_packages), not a text rendering"
+        if fn.header != cls.header:
+            return f"declared in {fn.header}, not in {cls.header}"
+        if cls.is_exception:
+            return "exception class: str() is its message already"
+        if any(m.skip_reason is None and _py_name(m) == "__str__" for m in cls.methods):
+            return "the member operator<<(Standard_OStream&) is bound as __str__ already"
+        self._note_types(obj.type)
+        lam = (f"[]({obj.type} {obj.name}) {{ std::ostringstream nanoocp_stream; nanoocp_stream << {obj.name}; "
+               f"return nanoocp_stream_text(nanoocp_stream); }}")
+        return cls.name, f'.def("__str__", {lam}) /* free {fn.name} (R-STR) */'
 
     # Design.md 6 R-FREE-OP
     def _free_operator(self, fn: Function) -> tuple[str, str] | None:
@@ -621,6 +654,13 @@ class Emitter:
                 if key in seen_ops:
                     continue
                 seen_ops.add(key)
+                if fn.name == "operator<<" and len(fn.params) == 2 and fn.params[0].stream == StreamKind.OUT:
+                    printed = self._print_operator(fn)          # R-STR
+                    if isinstance(printed, str):
+                        self.report.append(f"{fn.name}({self._sig(fn.params)}): not bound as __str__: {printed}")
+                    else:
+                        free_ops.setdefault(printed[0], []).append(printed[1])
+                    continue
                 r = self._free_operator(fn)
                 if r is None:
                     self.report.append(f"{fn.name}({self._sig(fn.params)}): free operator not mapped")
