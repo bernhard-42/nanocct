@@ -96,6 +96,28 @@ def test_docstrings_come_from_the_template_header():
     assert "Python addition" in A.__len__.__doc__
 
 
+# R-DEPRECATED (Design.md 6) in the hand-written binders: NCollection_Map is the only one of the 15 templates whose
+# header carries Standard_DEPRECATED, on all 11 set operations. The note came only from the generated path until
+# 2026-09-25, so these two assertions are what keeps ncollection.py reading the availability attribute.
+DEPRECATED_MAP_MEMBERS = ("Union", "Unite", "HasIntersection", "Intersection", "Intersect",
+                          "Subtraction", "Subtract", "Difference", "Differ", "IsEqual", "Contains")
+
+
+@pytest.mark.parametrize("name", DEPRECATED_MAP_MEMBERS)
+def test_deprecated_map_member_says_so_in_its_docstring(name):
+    doc = getattr(NCollection.NCollection_Map__int, name).__doc__
+    assert "Deprecated in OCCT: This method will be removed right after 7.9. release." in doc
+
+
+def test_the_undeprecated_contains_overload_keeps_its_own_docstring():
+    # Contains(theKey) is not deprecated and Contains(theOther) is; they share a Python name, so the binder gives the
+    # deprecated one its own docstring constant and nanobind renders the two overloads separately
+    blocks = NCollection.NCollection_Map__int.Contains.__doc__.split("``Contains(self, ")
+    assert len(blocks) == 3                                                    # the signature header plus one per overload
+    assert "Deprecated in OCCT" not in blocks[1]                               # theKey: int
+    assert "Deprecated in OCCT" in blocks[2]                                   # theOther: NCollection_Map__int
+
+
 def test_template_accessor_spelling():
     assert NCollection.NCollection_Array1[float] is A                                  # double -> float
     assert NCollection.NCollection_Array1[Standard.Standard_Persistent] is AH          # handle<X> -> X

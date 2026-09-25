@@ -324,7 +324,7 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
     c.def("Add", [](M &self, const K &k) { return self.Add(k); }, nb::arg("theKey"), D::Add)
      .def("Added", [](M &self, const K &k) -> const K & { return self.Added(k); }, nb::arg("theKey"), D::Added)
      .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
-     .def("Contains", [](const M &self, const M &other) { return self.Contains(other); }, nb::arg("theOther"), D::Contains)
+     .def("Contains", [](const M &self, const M &other) { return self.Contains(other); }, nb::arg("theOther"), D::Contains_deprecated)
      .def("Remove", [](M &self, const K &k) { return self.Remove(k); }, nb::arg("theKey"), D::Remove)
      .def("IsEqual", [](const M &self, const M &other) { return self.IsEqual(other); }, nb::arg("theOther"), D::IsEqual)
      .def("Union", [](M &self, const M &a, const M &b) { self.Union(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Union)

@@ -10,7 +10,7 @@ from clang.cindex import AccessSpecifier as Access
 from clang.cindex import CursorKind as K
 
 from .binders import BINDERS, instance_args
-from .parse import _canonical_args, _doc
+from .parse import _canonical_args, _deprecation_message, _doc_with_deprecation
 
 _OP_NAMES = {"operator()": "op_call", "operator[]": "op_index", "operator=": "op_assign", "operator==": "op_eq",
              "operator!=": "op_ne", "operator+=": "op_iadd", "operator new": "op_new", "operator delete": "op_delete",
@@ -31,29 +31,41 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
     for tmpl, info in BINDERS.items():
         tu = index.parse(str(include_dir / f"{tmpl}.hxx"), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
         docs: dict[str, str] = {}
+        # overloads share one docstring constant (first non-empty wins). When they disagree about deprecation the
+        # shared one must stay undeprecated for the sake of the others, so the deprecated overload gets a constant
+        # of its own (<name>_deprecated) and the binder points that overload at it -- nanobind renders a docstring
+        # per overload as soon as they differ. Design.md 6 R-DEPRECATED.
+        deprecated_docs: dict[str, str] = {}      # member name -> doc of its first deprecated overload
+        plain_docs: dict[str, str] = {}           # member name -> doc of its first overload that is not deprecated
         class_doc = ""
         nested: dict[str, dict[str, str]] = {}          # nested class (Iterator) -> member docs
         for cur in tu.cursor.get_children():
             if cur.kind != K.CLASS_TEMPLATE or cur.spelling != tmpl:
                 continue
-            class_doc = _doc(cur)
+            class_doc = _doc_with_deprecation(cur)
             for ch in cur.get_children():
                 if ch.access_specifier != Access.PUBLIC:
                     continue
                 if ch.kind in (K.CXX_METHOD, K.CONSTRUCTOR, K.FUNCTION_TEMPLATE):
                     is_ctor = ch.kind == K.CONSTRUCTOR or ch.spelling.startswith(tmpl + "<")   # constructor templates
                     name = "ctor" if is_ctor else ch.spelling
-                    d = _doc(ch)
+                    d = _doc_with_deprecation(ch)
                     if name not in docs or (docs[name] == "" and d != ""):
                         docs[name] = d
+                    target = plain_docs if _deprecation_message(ch) is None else deprecated_docs
+                    if name not in target or (target[name] == "" and d != ""):
+                        target[name] = d
                     if not is_ctor and ch.spelling not in info["members"] and ch.spelling not in info["skipped"]:
                         warnings.append(f"{tmpl}::{ch.spelling}: public member neither bound nor listed as skipped")
                 elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition() and ch.spelling in info.get("nested", {}):
-                    nd = nested.setdefault(ch.spelling, {"class_doc": _doc(ch)})
+                    nd = nested.setdefault(ch.spelling, {"class_doc": _doc_with_deprecation(ch)})
                     for m in ch.get_children():
                         if m.access_specifier == Access.PUBLIC and m.kind in (K.CXX_METHOD, K.CONSTRUCTOR):
                             nm = "ctor" if m.kind == K.CONSTRUCTOR else m.spelling
-                            nd.setdefault(nm, _doc(m))
+                            nd.setdefault(nm, _doc_with_deprecation(m))
+        for name in sorted(set(deprecated_docs) & set(plain_docs)):
+            docs[name] = plain_docs[name]                             # the shared constant follows the undeprecated overload
+            docs[f"{name}_deprecated"] = deprecated_docs[name]        # whatever the order of the two in the header
         # public members inherited from non-template base classes (NCollection_BaseList::Extent, ...)
         for base in info.get("bases", []):
             btu = index.parse(str(include_dir / f"{base}.hxx"), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
@@ -61,7 +73,7 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
                 if cur.kind == K.CLASS_DECL and cur.spelling == base and cur.is_definition():
                     for m in cur.get_children():
                         if m.access_specifier == Access.PUBLIC and m.kind == K.CXX_METHOD:
-                            docs.setdefault(m.spelling, _doc(m))
+                            docs.setdefault(m.spelling, _doc_with_deprecation(m))
                             if m.spelling not in info["members"] and m.spelling not in info["skipped"]:
                                 warnings.append(f"{tmpl}::{m.spelling} (from {base}): public member neither bound nor listed as skipped")
         # some nested iterators are typedefs of a separate template (List::Iterator = NCollection_TListIterator)
@@ -69,10 +81,10 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
             stu = index.parse(str(include_dir / f"{source}.hxx"), args=args, options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
             for cur in stu.cursor.get_children():
                 if cur.kind == K.CLASS_TEMPLATE and cur.spelling == source:
-                    nd = nested.setdefault(nested_name, {"class_doc": _doc(cur)})
+                    nd = nested.setdefault(nested_name, {"class_doc": _doc_with_deprecation(cur)})
                     for m in cur.get_children():
                         if m.access_specifier == Access.PUBLIC and m.kind in (K.CXX_METHOD, K.CONSTRUCTOR):
-                            nd.setdefault("ctor" if m.kind == K.CONSTRUCTOR else m.spelling, _doc(m))
+                            nd.setdefault("ctor" if m.kind == K.CONSTRUCTOR else m.spelling, _doc_with_deprecation(m))
         for name in info["members"]:
             if name not in docs and name not in ("get_type_name", "get_type_descriptor", "DynamicType"):
                 warnings.append(f"{tmpl}::{name}: bound by the binder but not found in the header")
