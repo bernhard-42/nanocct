@@ -110,14 +110,19 @@ def test_the_bytes_are_an_ocaf_xml_document(application):
 
 def test_the_file_form_is_the_same_bytes_and_needs_the_xml_extension(tmp_path, application, quiet_messenger):
     """The extension rule of TKBinXCAF holds here too: the XCAF formats want it on the path, unlike BinLOcaf/BinOcaf,
-    which append their own."""
+    which append their own. As there, the status SaveAs leaves behind is uninitialised and therefore not asserted --
+    see test_the_file_form_is_the_same_bytes_and_needs_the_xbf_extension for the measurement."""
     doc = _assembly_document(application)
     path = tmp_path / "product.xml"
     assert application.SaveAs(doc, TCollection_ExtendedString(str(path))) == PCDM_SS_OK
     assert path.read_bytes() == application.SaveAs(doc)[1]
 
-    with pytest.raises(ValueError, match="is not a valid PCDM_StoreStatus"):
-        application.SaveAs(doc, TCollection_ExtendedString(str(tmp_path / "no-extension")))
+    no_extension = tmp_path / "no-extension"
+    try:
+        application.SaveAs(doc, TCollection_ExtendedString(str(no_extension)))
+    except ValueError:
+        pass                                    # uninitialised status, out of the enum's range this time
+    assert not no_extension.exists(), "XmlXCAF wrote a file for a path without the .xml extension"
 
 
 def test_the_format_is_detected_from_the_bytes(application):

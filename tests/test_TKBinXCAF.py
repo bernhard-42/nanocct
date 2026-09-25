@@ -103,15 +103,26 @@ def test_a_product_structure_round_trips_through_bytes(application):
 
 def test_the_file_form_is_the_same_bytes_and_needs_the_xbf_extension(tmp_path, application, quiet_messenger):
     """OCCT semantics worth knowing: unlike BinLOcaf/BinOcaf, which append their .cbfl/.cbf, BinXCAF requires the
-    extension on the path -- without it SaveAs reports "folder  does not exist" and leaves the status uninitialised,
-    which surfaces in Python as a ValueError out of the PCDM_StoreStatus enum (as TKBinL's CDF_Store case does)."""
+    extension on the path -- without it SaveAs reports "folder  does not exist" and writes nothing.
+
+    What it does NOT do is return a usable status: it leaves the status variable uninitialised, so the value that
+    reaches Python is whatever was on the stack. This test used to assert the ValueError that PCDM_StoreStatus
+    raises for an out-of-range value, which passed on macOS, on host Linux and on Windows and failed in the
+    manylinux container, where the first call happened to land on PCDM_SS_UserBreak -- a valid enumerator.
+    Measured 2026-09-24: eight identical calls gave PCDM_SS_UserBreak then 2821076856 seven times in the
+    container, 2430944776 then 4294967295 on the host. The file not being written is the only defined outcome,
+    so that is what is asserted; the status is deliberately not inspected."""
     doc = _assembly_document(application)
     path = tmp_path / "product.xbf"
     assert application.SaveAs(doc, TCollection_ExtendedString(str(path))) == PCDM_SS_OK
     assert path.read_bytes() == application.SaveAs(doc)[1]
 
-    with pytest.raises(ValueError, match="is not a valid PCDM_StoreStatus"):
-        application.SaveAs(doc, TCollection_ExtendedString(str(tmp_path / "no-extension")))
+    no_extension = tmp_path / "no-extension"
+    try:
+        application.SaveAs(doc, TCollection_ExtendedString(str(no_extension)))
+    except ValueError:
+        pass                                    # the uninitialised status was out of the enum's range this time
+    assert not no_extension.exists(), "BinXCAF wrote a file for a path without the .xbf extension"
 
 
 def test_the_format_is_detected_from_the_bytes(application):

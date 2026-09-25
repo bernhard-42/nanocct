@@ -21,10 +21,29 @@ from generator.report import CATEGORIES, categorize
 
 ROOT = Path(__file__).parents[1]
 OCCT_SRC = ROOT / "deps" / "occt-src"
-OCCT = ROOT / "deps" / "occt-8.0.1"
+# Both halves of finding the install were platform-specific, and both made these tests skip silently rather than
+# fail (measured 2026-09-24, the first run of the suite outside macOS: 38 of them skipped on Linux *and* on
+# Windows, each reporting "local OCCT build not present" while the build sat next to them):
+#   - the prefix is deps/occt-8.0.1 on macOS and Windows, deps/occt-8.0.1-manylinux in the container;
+#   - the headers are <install>/inc on Windows and <install>/include/opencascade elsewhere, which is why the
+#     probe goes through OcctTree.include_dir instead of spelling one of them out.
+def _occt_install() -> Path:
+    for prefix in (ROOT / "deps" / "occt-8.0.1", ROOT / "deps" / "occt-8.0.1-manylinux"):
+        if (OcctTree(src=OCCT_SRC, install=prefix).include_dir / "Standard_Transient.hxx").exists():
+            return prefix
+    return ROOT / "deps" / "occt-8.0.1"
 
-pytestmark = pytest.mark.skipif(not (OCCT / "include" / "opencascade" / "Standard_Transient.hxx").exists(),
-                                reason="local OCCT build (deps/occt-8.0.1) not present")
+
+OCCT = _occt_install()
+OCCT_INC = OcctTree(src=OCCT_SRC, install=OCCT).include_dir    # <install>/inc on Windows, else include/opencascade
+
+pytestmark = pytest.mark.skipif(not (OcctTree(src=OCCT_SRC, install=OCCT).include_dir / "Standard_Transient.hxx").exists(),
+                                reason="no local OCCT build (deps/occt-8.0.1[-manylinux]) -- run 'make occt'")
+
+# Every generator subprocess below must be told which OCCT to parse, for the same reason OCCT is resolved above:
+# the default is deps/occt-8.0.1, which does not exist in the container, and the run then dies with
+# "fatal error: 'Adaptor2d_Curve2d.hxx' file not found" instead of producing anything to compare.
+GEN = [sys.executable, "-m", "generator", "--occt", str(OCCT)]
 
 HEADER = """
 #include <Standard_Transient.hxx>
@@ -605,7 +624,7 @@ def test_ir_container_instantiation_registered(rules_ir):
 
 
 def test_emitter_static_rename_and_collision(rules_ir):
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def_static("Length_s"' in cpp and '.def("Length"' in cpp
@@ -648,7 +667,7 @@ def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
              "Rules_TTransient<double>": "Rules"}
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
+    em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
                  ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     # R-CTOR-AMBIGUOUS: Rules_Ambiguous(5) is ambiguous in C++ -> nb::init<>() plus the two-argument form, no implicit conversion from int
@@ -682,7 +701,7 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     assert via == [("Dump", 1, "Rules_Options"), ("Flag", 0, "Rules_Options"), ("Flag", 1, "Rules_Options"),
                    ("Fuzzy", 0, "Rules_Options"), ("SetFuzzy", 1, "Rules_Options")]
     assert all(m.defined_in_header for m in algo.methods)           # the symbol belongs to the base's library: no nm check here
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     start = cpp.index('m.attr("Rules_Algo"))')
@@ -729,7 +748,7 @@ def test_a_non_const_scalar_conversion_takes_a_non_const_self(rules_ir):
     by_kind = {k.kind: k for k in value.conversions}
     assert by_kind[ConversionKind.FLOAT].is_const is False        # operator double&()
     assert by_kind[ConversionKind.BOOL].is_const is True          # operator bool() const
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("__float__", [](Rules_Value &self) { return static_cast<double>(self); }' in cpp
@@ -809,7 +828,7 @@ def test_ir_shared_ptr_parameter_with_its_own_empty_default_is_dropped(rules_ir)
     open_ = _method(rules_ir, "Rules_Sink", "Open")
     assert open_.skip_reason is None
     assert [(p.name, p.omitted) for p in open_.params] == [("theName", False), ("theStream", True)]
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert "self.Open(theName, nullptr)" in cpp              # the omitted stream is passed as nullptr
@@ -828,7 +847,7 @@ def test_ir_non_public_base_blocks_construction_only_when_it_provides_operator_n
     assert lazy.bases == [] and lazy.constructible is False
     assert "Rules_LazyScope: non-public base Rules_AllocOptions provides operator new -> inaccessible, class not constructible" in lazy.skipped
     assert algo.bases == [] and algo.constructible is True         # same shape, but Rules_Options has no operator new
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert "Rules_LazyScope: operator new is not public -> no constructors" in em.report
@@ -869,7 +888,7 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     # R-PTR-INCOMPLETE: Rules_Fwd is only forward-declared, but Rules_Fwd.hxx exists in the include directory
     fwd = _method(rules_ir, "Rules_Value", "Fwd")
     assert fwd.skip_reason is None and fwd.result_class_name == "Rules_Fwd"
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("Optional", [](const Rules_Value &self, const int theA) { auto nanoocp_result = self.Optional(theA, nullptr); return nanoocp_result; }, nb::arg("theA")' in cpp
@@ -908,7 +927,7 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     # the multi-word functional cast is spelled as a C-style cast
     tvec = by["Rules_TVec<unsigned long>"]
     assert tvec.ctors[0].params[0].default == "(unsigned long)(0)"
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade",
+    em = Emitter(rules_ir, OCCT_INC,
                  {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Vis": "Rules", "Rules_Vis::Filter": "Rules",
                   "Rules_TTransient<int>": "Rules", "Rules_TTransient<double>": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
@@ -1055,7 +1074,7 @@ def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
     tracked (Design.md 5.3), so this compares a fresh run against the working tree's, i.e. it tests idempotence."""
     (tmp_path / "cpp").mkdir()
     shutil.copy(ROOT / "src" / "cpp" / "manifest.json", tmp_path / "cpp" / "manifest.json")
-    subprocess.run([sys.executable, "-m", "generator", "--toolkit", "TKG2d", "--out", str(tmp_path)], check=True, cwd=ROOT,
+    subprocess.run([*GEN, "--toolkit", "TKG2d", "--out", str(tmp_path)], check=True, cwd=ROOT,
                    capture_output=True, text=True)
     generated = tmp_path / "cpp" / "TKG2d"
     checked_in = ROOT / "src" / "cpp" / "TKG2d"
@@ -1084,7 +1103,7 @@ def test_a_parallel_run_reproduces_a_serial_one_byte_for_byte(tmp_path):
     outs = {}
     for name, env in (("serial", {"NANOOCP_JOBS": "1"}), ("parallel", {"NANOOCP_JOBS": "0"})):
         outs[name] = tmp_path / name
-        subprocess.run([sys.executable, "-m", "generator", *flags, "--out", str(outs[name])],
+        subprocess.run([*GEN, *flags, "--out", str(outs[name])],
                        check=True, cwd=ROOT, capture_output=True, text=True, env={**os.environ, **env})
     for sub in ("cpp", "nanoocp"):
         left, right = outs["serial"] / sub, outs["parallel"] / sub
@@ -1111,7 +1130,7 @@ def test_incremental_run_refuses_to_rehome_an_instantiation(tmp_path):
     assert manifest["templates"]["NCollection_Array1<gp_Pnt2d>"]["toolkit"] == "TKMath"
     del manifest["templates"]["NCollection_Array1<gp_Pnt2d>"]
     (tmp_path / "cpp" / "manifest.json").write_text(json.dumps(manifest))
-    cmd = [sys.executable, "-m", "generator", "--toolkit", "TKG2d", "--out", str(tmp_path)]
+    cmd = [*GEN, "--toolkit", "TKG2d", "--out", str(tmp_path)]
     proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
     assert proc.returncode == 1
     assert "rehoming: NCollection_Array1<gp_Pnt2d> is newly bound by TKG2d/" in proc.stderr
@@ -1137,7 +1156,7 @@ def test_extra_link_libraries_from_the_emitted_includes(rules_ir):
     closure = tree.link_closure("TKDE")                      # EXTERNLIB: TKernel, TKMath, TKBRep (transitively)
     assert {"TKDE", "TKernel", "TKMath", "TKBRep"} <= closure
     assert closure.isdisjoint({"TKLCAF", "TKXSBase"})        # what OCCT itself does not link
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     em.emit()
     assert "Rules.hxx" in em.includes
@@ -1171,7 +1190,7 @@ def test_a_braced_default_is_list_initialised(rules_ir):
     3 more in TKXSBase) must be emitted as std::decay_t<T>{} -- static_cast from a braced-init-list does not compile
     ("expected expression", 2026-09-22)."""
     assert _method(rules_ir, "Rules_Value", "Braced").params[0].default == "{ }"   # libclang spells the tokens
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert 'nb::arg("theXYZ") = std::decay_t<const gp_XYZ &>{ }' in cpp
@@ -1185,7 +1204,7 @@ def test_a_bitset_is_a_set_of_indices(rules_ir):
     assert all("bitset" not in line for line in rules_ir.report), [l for l in rules_ir.report if "bitset" in l]
     assert _method(rules_ir, "Rules_Value", "Flags").skip_reason is None
     assert _method(rules_ir, "Rules_Value", "GetFlags").skip_reason is None
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("Flags"' in cpp and '.def("GetFlags"' in cpp
@@ -1228,7 +1247,7 @@ def test_the_lambda_temporary_cannot_collide_with_a_parameter(rules_ir):
     result)); when such a parameter is an out-parameter of a non-void method, a bare `result` for the C++ return value
     is a redefinition in the same lambda (TKDEIGES did not compile, 2026-09-22). Generated temporaries carry the
     nanoocp_ prefix, which no OCCT name uses."""
-    em = Emitter(rules_ir, OCCT / "include" / "opencascade", {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert "auto nanoocp_result = " in cpp
