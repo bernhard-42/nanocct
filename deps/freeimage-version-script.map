@@ -1,0 +1,16 @@
+/* The export list of libFreeImage.so, passed to ld as --version-script (deps/build-freeimage-manylinux.sh).
+ *
+ * -fvisibility=hidden is not enough on Linux. Measured 2026-09-25 in the manylinux_2_28 image (gcc 14), the
+ * shared library still exported three kinds of non-FreeImage symbol:
+ *   W  std::deque/std::vector template instantiations -- libstdc++'s headers force default visibility on them;
+ *   T  _ZSt21ios_base_library_initv, _ZSt28__throw_bad_array_new_lengthv -- gcc-toolset links its
+ *      libstdc++_nonshared.a statically into every shared object, with default visibility;
+ *   V  the typeinfo of FREE_IMAGE_FORMAT -- thrown and caught inside FreeImage only (JPEGTransform.cpp:80
+ *      throws, catch(...) at :378), so hiding it changes nothing.
+ * macOS has none of these, which is why the same assertion passed there. A link-time export list leaves the
+ * dependency unmodified, like deps/occt-version-script.map does for FreeType.
+ */
+{
+  global: FreeImage_*;
+  local: *;
+};

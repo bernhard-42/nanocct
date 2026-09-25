@@ -280,6 +280,7 @@ RAW_DIR  := $(DIST_DIR)/unrepaired
 # tagged macosx_11_0 and delocate warns that it will not in fact run on 11.0.
 MACOS_TARGET := 11.1
 OCCT_BIN_WIN := $(DEPS)/occt-8.0.1/win64/vc14/bin
+FREEIMAGE_BIN_WIN := $(DEPS)/freeimage/bin
 
 wheel: delocate
 
@@ -306,8 +307,9 @@ delocate: raw_wheel
 ifeq ($(PLATFORM),macos)
 	MACOSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) $(ROOT)/.venv/bin/delocate-wheel -w $(DIST_DIR) $(RAW_DIR)/*.whl
 else ifeq ($(PLATFORM),windows)
-	@# delvewheel cannot read a DLL search path from the binary the way rpath gives it on Unix, so it is told.
-	cd $(ROOT) && "$(WIN_PY)" -m delvewheel repair --add-path "$(OCCT_BIN_WIN)" -w $(DIST_DIR) $(RAW_DIR)/*.whl
+	@# delvewheel cannot read a DLL search path from the binary the way rpath gives it on Unix, so it is told --
+	@# both directories, ';'-separated (delvewheel repair --help): FreeImage.dll lives in its own install, not in OCCT's.
+	cd $(ROOT) && "$(WIN_PY)" -m delvewheel repair --add-path "$(OCCT_BIN_WIN);$(FREEIMAGE_BIN_WIN)" -w $(DIST_DIR) $(RAW_DIR)/*.whl
 else
 	@# LD_LIBRARY_PATH for the same reason: the OCCT .so files name each other by SONAME and carry no RUNPATH.
 	$(CONTAINER) "LD_LIBRARY_PATH=/work/deps/occt-8.0.1-manylinux/lib auditwheel repair \

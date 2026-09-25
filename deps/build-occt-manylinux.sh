@@ -6,6 +6,18 @@
 # deps/build-freetype-manylinux.sh first, exactly as the other two platforms expect `make freetype` before
 # `make occt`.
 #
+# FreeImage is named twice, because OCCT asks for it twice. Its configure step (adm/cmake/3rdparty_macro.cmake)
+# searches for CSF_FreeImagePlus, which is lowercase "freeimage", unless 3RDPARTY_FREEIMAGE_LIBRARY_freeimage already
+# names an existing file -- and the library is libFreeImage.so, which a case-sensitive filesystem does not match
+# (macOS's does, so the macOS script gets away with the generic name). The link step then takes the file name from
+# 3RDPARTY_FREEIMAGE_LIBRARY (adm/cmake/occt_macros.cmake, PROCESS_CSF_LIBRARIES).
+#
+# The OCCT libraries get a RUNPATH to FreeImage ($ORIGIN-relative, so it holds in the container and on the host). An
+# extension module finds the OCCT libraries through its own RUNPATH only because it NEEDs each of them directly; a
+# RUNPATH does not reach the dependencies of a dependency, so libTKService's NEEDED libFreeImage.so had no search path
+# at all (measured on banach 2026-09-25: "libFreeImage.so: cannot open shared object file"). macOS never saw this:
+# there libTKService records FreeImage by its absolute install name. auditwheel follows the RUNPATH when it bundles.
+#
 # AlmaLinux's default CMAKE_INSTALL_LIBDIR is lib64; it is forced to lib so the paths match the other platforms.
 #
 # Usage: deps/build-occt-manylinux.sh [install-prefix]     (default: deps/occt-8.0.1-manylinux)
@@ -24,7 +36,7 @@ docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE"
 "$HERE/fetch-occt-src.sh"
 [ -d "$HERE/rapidjson/include/rapidjson" ] || { echo "missing $HERE/rapidjson (run deps/fetch-rapidjson.sh)" >&2; exit 1; }
 [ -f "$HERE/freetype-ml/lib/libfreetype.a" ] || { echo "missing $HERE/freetype-ml (run 'make freetype')" >&2; exit 1; }
-[ -f "$HERE/freeimage-ml/lib/libFreeImage.a" ] || { echo "missing $HERE/freeimage-ml (run 'make freeimage')" >&2; exit 1; }
+[ -f "$HERE/freeimage-ml/lib/libFreeImage.so" ] || { echo "missing $HERE/freeimage-ml (run 'make freeimage')" >&2; exit 1; }
 
 # HOME: the mapped uid has no passwd entry in the container, so $HOME is empty and cmake tries to write //.cmake
 docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$ROOT:/work" -w /work "$IMAGE" bash -euo pipefail -c '
@@ -40,12 +52,15 @@ cmake -S deps/occt-src -B deps/occt-build-ml -G Ninja \
   -D 3RDPARTY_FREETYPE_INCLUDE_DIR_ft2build=/work/deps/freetype-ml/include/freetype2 \
   -D 3RDPARTY_FREETYPE_INCLUDE_DIR_freetype2=/work/deps/freetype-ml/include/freetype2 \
   -D 3RDPARTY_FREEIMAGE_DIR=/work/deps/freeimage-ml \
-  -D 3RDPARTY_FREEIMAGE_LIBRARY=/work/deps/freeimage-ml/lib/libfreeimage.so \
+  -D 3RDPARTY_FREEIMAGE_LIBRARY=/work/deps/freeimage-ml/lib/libFreeImage.so \
   -D 3RDPARTY_FREEIMAGE_LIBRARY_DIR=/work/deps/freeimage-ml/lib \
+  -D 3RDPARTY_FREEIMAGE_LIBRARY_freeimage=/work/deps/freeimage-ml/lib/libFreeImage.so \
+  -D 3RDPARTY_FREEIMAGE_LIBRARY_DIR_freeimage=/work/deps/freeimage-ml/lib \
   -D 3RDPARTY_FREEIMAGE_INCLUDE_DIR=/work/deps/freeimage-ml/include \
   -D 3RDPARTY_RAPIDJSON_DIR=/work/deps/rapidjson \
   -D USE_VTK=OFF -D USE_TBB=OFF -D USE_TK=OFF \
   -D CMAKE_SHARED_LINKER_FLAGS="-Wl,--version-script=/work/deps/occt-version-script.map" \
+  -D "CMAKE_INSTALL_RPATH=\$ORIGIN/../../freeimage-ml/lib" \
   -D USE_FREETYPE=ON -D USE_FREEIMAGE=ON -D USE_OPENGL=ON -D USE_GLES2=OFF -D USE_XLIB=ON \
   -D USE_RAPIDJSON=ON -D USE_FFMPEG=OFF \
   -D BUILD_CPP_STANDARD=C++17 \

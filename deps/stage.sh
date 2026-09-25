@@ -31,16 +31,22 @@ echo "stage: $n extension modules from $BUILD into $STAGE"
 # to nanoocp/__init__.py; the staged tree needs its own, or `make stubs` and `make test` fail with "DLL load
 # failed while importing _TKBO" (2026-09-24 -- they always would have, but every run until then had set the
 # directory by hand). sitecustomize is imported by `site` at startup, so it is in place before any nanoocp import.
+# FreeImage.dll is not in OCCT's bin directory but in its own install (deps/freeimage/bin), and TKService links it,
+# so without that second directory every toolkit above TKernel fails to load (measured on gauss 2026-09-25, the first
+# Windows build since FreeImage: "DLL load failed while importing _TKBinXCAF").
 if ls "$STAGE/nanoocp"/*.pyd >/dev/null 2>&1; then
     OCCT_BIN="$ROOT/deps/occt-8.0.1/win64/vc14/bin"
+    FREEIMAGE_BIN="$ROOT/deps/freeimage/bin"
     [ -d "$OCCT_BIN" ] || { echo "stage: no $OCCT_BIN -- run 'make occt' first" >&2; exit 1; }
-    W_OCCT_BIN="$(cygpath -w "$OCCT_BIN" 2>/dev/null || echo "$OCCT_BIN")"
+    [ -f "$FREEIMAGE_BIN/FreeImage.dll" ] || { echo "stage: no $FREEIMAGE_BIN/FreeImage.dll -- run 'make freeimage' first" >&2; exit 1; }
     {   echo "import os"
-        echo "_occt = r\"$W_OCCT_BIN\""
-        echo "if os.path.isdir(_occt):"
-        echo "    os.add_dll_directory(_occt)"
+        for d in "$OCCT_BIN" "$FREEIMAGE_BIN"; do
+            w="$(cygpath -w "$d" 2>/dev/null || echo "$d")"
+            echo "if os.path.isdir(r\"$w\"):"
+            echo "    os.add_dll_directory(r\"$w\")"
+            echo "stage: sitecustomize.py -> os.add_dll_directory($w)" >&2
+        done
     } > "$STAGE/sitecustomize.py"
-    echo "stage: sitecustomize.py -> os.add_dll_directory($W_OCCT_BIN)"
 fi
 # Put the staged tree on the venv's sys.path with a .pth, the same mechanism an editable install uses, so that
 # `import nanoocp` works anywhere in the venv without PYTHONPATH. It must stay the ONLY copy: nanobind registers

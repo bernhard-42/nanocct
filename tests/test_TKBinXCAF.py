@@ -19,7 +19,7 @@ from nanoocp.GProp import GProp_GProps
 from nanoocp.NCollection import NCollection_Sequence
 from nanoocp.PCDM import PCDM_ReadWriter, PCDM_RS_OK, PCDM_SS_OK
 from nanoocp.Quantity import Quantity_Color, Quantity_NOC_RED
-from nanoocp.Standard import Standard_Failure, Standard_GUID
+from nanoocp.Standard import Standard_Failure, Standard_GUID, Standard_OutOfRange
 from nanoocp.TCollection import TCollection_ExtendedString
 from nanoocp.TDataStd import TDataStd_Name
 from nanoocp.TDF import TDF_Label
@@ -122,6 +122,11 @@ def test_the_file_form_is_the_same_bytes_and_needs_the_xbf_extension(tmp_path, a
         application.SaveAs(doc, TCollection_ExtendedString(str(no_extension)))
     except ValueError:
         pass                                    # the uninitialised status was out of the enum's range this time
+    except Standard_OutOfRange:
+        # Windows only, and only when a *directory* on the path has a dot (C:\...\.agent-scratch\tmp\...):
+        # TDocStd_PathParser::Parse takes the extension from the last '.' of the whole path, and its _WIN32 branch
+        # then splits out of range (TDocStd_PathParser.cxx:29-52). The Unix branch copes; measured 2026-09-25.
+        pass
     assert not no_extension.exists(), "BinXCAF wrote a file for a path without the .xbf extension"
 
 

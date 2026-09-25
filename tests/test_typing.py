@@ -30,7 +30,10 @@ def test_type_checker_reports_exactly_the_marked_lines(checker, check):
     if checker == "mypy":
         cmd = [sys.executable, "-m", "mypy", "--no-error-summary", "--hide-error-context", str(check)]
     else:
-        cmd = [sys.executable, "-m", "ty", "check", "--output-format", "concise", str(check)]
+        # --python: ty does not take its environment from the interpreter that runs it (mypy does) -- it looks for
+        # VIRTUAL_ENV, then ./.venv, then `python` on PATH. The manylinux container's venv is .venv-ml, so ty fell back
+        # to the system Python 3.12 and could not resolve numpy (check_views.py, measured on banach 2026-09-25).
+        cmd = [sys.executable, "-m", "ty", "check", "--python", sys.executable, "--output-format", "concise", str(check)]
     assert _reported_lines(cmd, check) == _expected(check)
 
 

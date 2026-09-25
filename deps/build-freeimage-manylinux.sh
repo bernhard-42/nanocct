@@ -5,7 +5,8 @@
 # flags: shared, position-independent, hidden visibility, and the four codecs FreeImage can drop out of the box
 # switched off. See build-freeimage-macos.sh for why it has to be shared (a static FreeImage never registers its
 # plugins, because the auto-initialiser is compiled out and OCCT never calls FreeImage_Initialise) and why no
-# source patch is needed to keep the bundled codecs' symbols in.
+# source patch is needed to keep the bundled codecs' symbols in. Unlike macOS, Linux also needs a link-time export
+# list (deps/freeimage-version-script.map): the visibility flags leave libstdc++ symbols exported here.
 #
 # AlmaLinux's default CMAKE_INSTALL_LIBDIR is lib64; it is forced to lib so the paths match the other platforms.
 set -euo pipefail
@@ -22,7 +23,8 @@ cmake -S /work/deps/freeimage-src -B /work/deps/freeimage-build-ml -G Ninja \
   -D FREEIMAGE_STATIC=OFF -D BUILD_SHARED_LIBS=ON -D BUILD_TESTS=OFF \
   -D BUILD_WEBP=OFF -D BUILD_OPENEXR=OFF -D BUILD_LIBRAWLITE=OFF -D BUILD_JXR=OFF \
   -D CMAKE_C_VISIBILITY_PRESET=hidden -D CMAKE_CXX_VISIBILITY_PRESET=hidden \
-  -D CMAKE_VISIBILITY_INLINES_HIDDEN=ON
+  -D CMAKE_VISIBILITY_INLINES_HIDDEN=ON \
+  -D CMAKE_SHARED_LINKER_FLAGS="-Wl,--version-script=/work/deps/freeimage-version-script.map"
 ninja -C /work/deps/freeimage-build-ml install
 
 # The same assertion as on macOS: nothing but FreeImage own API may be exported, so a bundled libpng or zlib
