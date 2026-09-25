@@ -25,9 +25,12 @@ BAT="$HERE/_build_occt.bat"
 
 # USE_XLIB is off here because Windows has no X11 (it uses WGL, which USE_OPENGL=ON
 # brings in by itself. Everything else matches build-occt-macos.sh exactly, so the two installs are comparable.
+# The backticks are escaped because the heredoc below is unquoted (it has to expand $W_* ): unescaped, bash
+# runs vswhere itself while generating the .bat and writes an empty `for /f ... in ()`, so VS_PATH is never
+# set and the build stops with "no Visual Studio found" (2026-09-24, found by a build from a bare tree).
 cat > "$BAT" <<BAT
 @echo off
-for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do set "VS_PATH=%%i"
+for /f "usebackq delims=" %%i in (\`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath\`) do set "VS_PATH=%%i"
 if not defined VS_PATH echo no Visual Studio found & exit /b 1
 call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat" >nul || exit /b 1
 cmake -S "$W_SRC" -B "$W_BUILD" -G Ninja ^

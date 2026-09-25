@@ -26,6 +26,22 @@ n=$(find "$STAGE/nanoocp" -maxdepth 1 -type f \( -name '*.abi3.so' -o -name '*.p
 [ "$n" -gt 0 ] || { echo "stage: no extension modules in $BUILD" >&2; exit 1; }
 echo "stage: $n extension modules from $BUILD into $STAGE"
 
+# Windows: the extension modules find the OCCT DLLs through os.add_dll_directory and nothing else -- Python has
+# ignored PATH for extension modules since 3.8. The wheel gets this from delvewheel, which prepends the same call
+# to nanoocp/__init__.py; the staged tree needs its own, or `make stubs` and `make test` fail with "DLL load
+# failed while importing _TKBO" (2026-09-24 -- they always would have, but every run until then had set the
+# directory by hand). sitecustomize is imported by `site` at startup, so it is in place before any nanoocp import.
+if ls "$STAGE/nanoocp"/*.pyd >/dev/null 2>&1; then
+    OCCT_BIN="$ROOT/deps/occt-8.0.1/win64/vc14/bin"
+    [ -d "$OCCT_BIN" ] || { echo "stage: no $OCCT_BIN -- run 'make occt' first" >&2; exit 1; }
+    W_OCCT_BIN="$(cygpath -w "$OCCT_BIN" 2>/dev/null || echo "$OCCT_BIN")"
+    {   echo "import os"
+        echo "_occt = r\"$W_OCCT_BIN\""
+        echo "if os.path.isdir(_occt):"
+        echo "    os.add_dll_directory(_occt)"
+    } > "$STAGE/sitecustomize.py"
+    echo "stage: sitecustomize.py -> os.add_dll_directory($W_OCCT_BIN)"
+fi
 # Put the staged tree on the venv's sys.path with a .pth, the same mechanism an editable install uses, so that
 # `import nanoocp` works anywhere in the venv without PYTHONPATH. It must stay the ONLY copy: nanobind registers
 # its types per NB_DOMAIN, and a wheel-installed nanoocp beside this one aborts the import with "Critical nanobind

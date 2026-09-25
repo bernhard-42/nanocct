@@ -20,7 +20,15 @@ RUN dnf -y -q install mesa-libGL-devel mesa-libEGL-devel libXext-devel libXmu-de
 
 # xorg-x11-server-Xvfb: the viewer tests need a display (USE_XLIB=ON), so `xvfb-run` has to be in the image --
 # otherwise the suite can only run on the host, and Linux is meant to go through the container alone.
-RUN dnf -y -q install xorg-x11-server-Xvfb && dnf -q clean all
+#
+# mesa-dri-drivers and libglvnd-glx are what make that display usable: mesa-libGL-devel above satisfies the *link*,
+# but without the swrast driver and the GLX vendor library the X server has no GLX extension and OCCT stops with
+# "OpenGl_GraphicDriver, GLX extension is unavailable" / "couldn't find compatible Visual (RGBA, double-buffered)".
+# Found 2026-09-24, the first time `make test` ran inside the container rather than on the host: 3 failed there and
+# the same three passed on the host, which has llvmpipe. With these, Xvfb reports "direct rendering: Yes" on
+# llvmpipe and test_TKOpenGl passes. glx-utils is only `glxinfo`, kept because it turns this diagnosis into one
+# command.
+RUN dnf -y -q install xorg-x11-server-Xvfb mesa-dri-drivers libglvnd-glx glx-utils && dnf -q clean all
 # the image has no ninja, and powertools' is 1.8.2 (2018); the wheel is current
 RUN /opt/python/cp312-cp312/bin/pip install --no-cache-dir -q ninja \
  && ln -s /opt/python/cp312-cp312/bin/ninja /usr/local/bin/ninja

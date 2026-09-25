@@ -1,8 +1,10 @@
 #!/bin/bash
-# Build FreeType and OCCT 8.0.1 for Linux inside the manylinux_2_28 container (deps/manylinux.Dockerfile), so the
-# result runs against glibc 2.28 while being compiled by gcc 14. This is the Linux counterpart of
+# Build OCCT 8.0.1 for Linux inside the manylinux_2_28 container (deps/manylinux.Dockerfile), so the result runs
+# against glibc 2.28 while being compiled by gcc 14. This is the Linux counterpart of deps/build-occt-macos.sh and
 # deps/build-occt-windows.sh, and it is the only Linux build: the container is the Linux platform (Design.md 7),
-# so there is one Linux environment and it is the one CI will use.
+# so there is one Linux environment and it is the one CI will use. FreeType comes from
+# deps/build-freetype-manylinux.sh first, exactly as the other two platforms expect `make freetype` before
+# `make occt`.
 #
 # AlmaLinux's default CMAKE_INSTALL_LIBDIR is lib64; it is forced to lib so the paths match the other platforms.
 #
@@ -18,22 +20,14 @@ IMAGE=nanoocp-manylinux
 
 docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE"
 
-[ -d "$HERE/occt-src/.git" ] || git clone --depth 1 --branch V8_0_1 https://github.com/Open-Cascade-SAS/OCCT.git "$HERE/occt-src"
-[ -d "$HERE/freetype-src/.git" ] || git clone --depth 1 --branch VER-2-14-3 https://gitlab.freedesktop.org/freetype/freetype.git "$HERE/freetype-src"
-"$HERE/hide-freetype-symbols.sh"        # FT_* must not leak out of libTKService
+# One place pins the tags, so the container and the host cannot drift apart (both scripts are idempotent).
+"$HERE/fetch-occt-src.sh"
 [ -d "$HERE/rapidjson/include/rapidjson" ] || { echo "missing $HERE/rapidjson (run deps/fetch-rapidjson.sh)" >&2; exit 1; }
+[ -f "$HERE/freetype-ml/lib/libfreetype.a" ] || { echo "missing $HERE/freetype-ml (run 'make freetype')" >&2; exit 1; }
 
 # HOME: the mapped uid has no passwd entry in the container, so $HOME is empty and cmake tries to write //.cmake
 docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$ROOT:/work" -w /work "$IMAGE" bash -euo pipefail -c '
 PREFIX="/work/'"$PREFIX_REL"'"
-cmake -S deps/freetype-src -B deps/freetype-build-ml -G Ninja \
-  -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/work/deps/freetype-ml \
-  -D CMAKE_INSTALL_LIBDIR=lib \
-  -D CMAKE_POSITION_INDEPENDENT_CODE=ON -D BUILD_SHARED_LIBS=OFF \
-  -D FT_DISABLE_ZLIB=TRUE -D FT_DISABLE_BZIP2=TRUE -D FT_DISABLE_PNG=TRUE \
-  -D FT_DISABLE_HARFBUZZ=TRUE -D FT_DISABLE_BROTLI=TRUE
-ninja -C deps/freetype-build-ml install
-
 # the same OCCT flags as deps/build-occt-macos.sh and deps/build-occt-windows.sh, so the three installs stay comparable
 cmake -S deps/occt-src -B deps/occt-build-ml -G Ninja \
   -D CMAKE_BUILD_TYPE=Release \

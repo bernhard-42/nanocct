@@ -63,10 +63,18 @@ TOOLKITS := TKernel TKMath TKG2d TKG3d TKGeomBase TKBRep TKGeomAlgo TKTopAlgo TK
             TKRWMesh TKDEGLTF TKDEOBJ TKDEPLY TKDEVRML TKBinXCAF TKXmlXCAF TKDECascade
 TK_FLAGS := --toolkit $(TOOLKITS)
 
+# The development interpreter, pinned so the three machines are the same one. It is NOT the wheel's floor: that
+# is `requires-python = ">=3.12"` and `wheel.py-api = "cp312"`, which say what a *user* can install. Until
+# 2026-09-24 nothing pinned this and the three had drifted apart -- macOS 3.14.7, Linux 3.12.13, Windows 3.12.12 --
+# so the suite ran on a different Python depending on which box you were on. Exercising the 3.12 floor is a job
+# for the CI matrix (State.md 8.17), not for whichever interpreter a machine happens to pick.
+PY_VERSION := 3.14
+CPTAG      := cp$(subst .,,$(PY_VERSION))
+
 # Per-platform plumbing. CONTAINER runs a command inside the manylinux image with the repository at /work.
 CONTAINER  := $(DEPS)/run-manylinux.sh
 ML_PY      := /work/.venv-ml/bin/python
-ML_SYSPY   := /opt/python/cp312-cp312/bin/python
+ML_SYSPY   := /opt/python/$(CPTAG)-$(CPTAG)/bin/python
 WIN_PY     := $(ROOT)/.venv/Scripts/python.exe
 PY         := $(ROOT)/.venv/bin/python
 ifeq ($(PLATFORM),macos)
@@ -80,24 +88,29 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps occt freetype rapidjson generate compile stubs test raw_wheel delocate wheel \
+.PHONY: all env deps sources occt freetype rapidjson generate compile stubs test raw_wheel delocate wheel \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
-	@echo "targets: env | deps (occt freetype rapidjson) | generate compile stubs test | wheel | all"
+	@echo "targets: env | deps (sources rapidjson freetype occt) | generate compile stubs test | wheel | all"
 	@echo "         clean_deps clean_occt clean_freetype clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
 # ---- environment ----------------------------------------------------------------------------------------------
-# The venv every other target uses. No Python is pinned: `requires-python = ">=3.12"` is the floor (emit.py uses
-# PEP 701 f-strings, so 3.10 fails at import), and 3.12 is what the *wheel* targets -- Py_LIMITED_API=0x030C0000
-# makes the extension loadable on 3.12 and everything after, whatever built it. Building on 3.14 produces a
-# cp312-abi3 wheel just the same (measured 2026-09-24), so the development interpreter can be the current one.
+# The venv every other target uses, on PY_VERSION. Building on 3.14 still produces a cp312-abi3 wheel, because
+# Py_LIMITED_API=0x030C0000 makes the extension loadable on 3.12 and everything after whatever built it
+# (measured 2026-09-24) -- so pinning the development interpreter forward costs no compatibility.
 env:
 ifeq ($(PLATFORM),linux)
-	$(CONTAINER) "$(ML_SYSPY) -m venv /work/.venv-ml && /work/.venv-ml/bin/pip install -q -U pip pytest mypy ty build scikit-build-core nanobind"
+	@# uv here too, against the same pyproject dev group as the other platforms. The hand-written pip list this
+	@# replaces had drifted: it was missing libclang, so `make generate` died with "No module named 'clang'"
+	@# the first time a Linux tree was built by `make env` (2026-09-24). UV_PROJECT_ENVIRONMENT points uv at
+	@# .venv-ml instead of .venv, and `uv venv` replaces an existing environment -- `python -m venv` does not,
+	@# which is why pinning the interpreter looked like a no-op until this was measured.
+	$(CONTAINER) "cd /work && UV_PROJECT_ENVIRONMENT=/work/.venv-ml uv venv -p $(ML_SYSPY) /work/.venv-ml \
+	    && UV_PROJECT_ENVIRONMENT=/work/.venv-ml uv sync --no-install-project"
 else
-	cd $(ROOT) && uv venv
+	cd $(ROOT) && uv venv -p $(PY_VERSION)
 	@# --no-install-project: `uv sync` would build nanoocp itself, which needs generated sources that do not exist
 	@# yet on a fresh clone. The venv here carries the tooling (libclang, nanobind, pytest, mypy, ty); the extension
 	@# modules come from `make compile`, and are imported from the staged tree rather than installed.
@@ -130,17 +143,25 @@ clean_deps: clean_occt clean_freetype clean_rapidjson
 rapidjson: clean_rapidjson
 	$(DEPS)/fetch-rapidjson.sh
 
+# The upstream sources, cloned at a pinned tag if they are not there yet (both scripts are idempotent, so the
+# clean_* targets above may delete the builds without touching the checkouts -- a clone of OCCT is 144 MB).
+sources:
+	$(DEPS)/fetch-occt-src.sh
+	$(DEPS)/fetch-freetype-src.sh
+
 freetype: clean_freetype
+	$(DEPS)/fetch-freetype-src.sh
 ifeq ($(PLATFORM),macos)
 	$(DEPS)/build-freetype-macos.sh
 else ifeq ($(PLATFORM),windows)
 	$(DEPS)/build-freetype-windows.sh
 else
-	@echo "linux: FreeType is built inside the container as part of 'make occt' (deps/build-occt-manylinux.sh)"
+	$(DEPS)/build-freetype-manylinux.sh
 endif
 
 occt: clean_occt
 	@test -d $(DEPS)/rapidjson || { echo "run 'make rapidjson' first"; exit 1; }
+	$(DEPS)/fetch-occt-src.sh
 ifeq ($(PLATFORM),macos)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
 	$(DEPS)/build-occt-macos.sh
@@ -148,7 +169,10 @@ else ifeq ($(PLATFORM),windows)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
 	$(DEPS)/build-occt-windows.sh
 else
-	$(CONTAINER) /work/deps/build-occt-manylinux.sh
+	@# On the host, not through $(CONTAINER): the script starts its own container (as build-freetype-manylinux.sh
+	@# does). Run through run-manylinux.sh it would be docker inside docker -- "docker: command not found",
+	@# which is what `make occt` did on Linux until 2026-09-24, when a build from a bare tree first reached it.
+	$(DEPS)/build-occt-manylinux.sh
 endif
 
 deps: clean_deps rapidjson freetype occt
@@ -253,7 +277,7 @@ else ifeq ($(PLATFORM),windows)
 	@# where VIRTUAL_ENV is unset; macOS happened to resolve it, which is exactly why both are explicit now).
 	cd $(ROOT) && uv build --wheel --no-build-isolation --python "$(WIN_PY)" -o $(RAW_DIR)
 else
-	$(CONTAINER) "cd /work && $(ML_PY) -m build --wheel --no-isolation -o /work/dist/unrepaired \
+	$(CONTAINER) "cd /work && uv build --wheel --no-build-isolation --python $(ML_PY) -o /work/dist/unrepaired \
 	    -C cmake.define.NANOOCP_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
 	    -C cmake.define.NANOOCP_RAPIDJSON_DIR=/work/deps/rapidjson/include"
 endif
