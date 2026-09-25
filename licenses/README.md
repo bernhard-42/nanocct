@@ -14,7 +14,7 @@ nanoOCP's own code is Apache-2.0 (`../LICENSE`). Everything in this directory is
 
 ## The rule
 
-**A licence belongs here when its code ends up in the wheel.** Build-time-only tools do not: `scikit-build-core`, `cmake`, `ninja`, `libclang` and the generator's own dependencies shape the build but ship nothing, so they are not listed.
+**A licence belongs here when its code ends up in the wheel.** Build-time-only tools do not: `scikit-build-core`, `cmake`, `ninja`, `libclang` and the generator's own dependencies shape the build but ship nothing, so they are not listed. Neither do runtime dependencies we merely *import*: `numpy` is declared in `pyproject.toml` but installed by the user's resolver under its own licence, and none of its code is in our wheel.
 
 When a dependency is added or removed, this table and `../NOTICE` change with it, in the same commit. `pyproject.toml`'s `license-files` globs `licenses/*.txt`, so a new file is picked up automatically — which means a *missing* file is the failure mode to watch for, not a stale one.
 

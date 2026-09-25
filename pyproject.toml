@@ -3,7 +3,11 @@ name = "nanoocp"
 version = "0.1.0"
 description = "nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API"
 requires-python = ">=3.12"
-dependencies = []
+# numpy is the return type of the zero-copy array views (State.md 8.10): the consumer applies numpy
+# operations to the OCCT arrays, so handing back a buffer object would only be np.asarray'd on arrival.
+# Capped at <3: the 1 -> 2 transition was breaking and the same is expected of 2 -> 3, so the cap is the
+# high-risk case CLAUDE.md asks for rather than a reflex. Matches build123d's own "numpy >= 2, < 3".
+dependencies = ["numpy>=2,<3"]
 # PEP 639: an SPDX expression for nanoOCP's own code, plus every licence text the wheel must carry.
 # The wheel bundles OCCT (LGPL-2.1 with the OCCT exception) and, inside it, FreeType, RapidJSON and
 # nanobind -- licenses/README.md says which and why, NOTICE gives the attributions those licences require.
