@@ -67,9 +67,9 @@ def test_normals_rejects_a_wrong_shape(meshed):
 
 
 def test_edge_segments_are_consecutive_point_pairs(meshed):
-    seg, per_edge = AddOns.Tessellator.EdgeSegments(meshed)
+    seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(meshed)
     assert seg.ndim == 2 and seg.shape[1] == 3 and seg.dtype == np.float64
-    assert per_edge.dtype == np.int32
+    assert per_edge.dtype == np.int32 and edge_types.dtype == np.int32
     # two endpoints per segment, and the counts account for every point
     assert len(seg) == 2 * int(per_edge.sum())
     # consecutive pairs share a point: segment i's end is segment i+1's start, within one edge.
@@ -84,7 +84,29 @@ def test_edge_segments_are_consecutive_point_pairs(meshed):
         pytest.skip("no edge with more than one segment")
 
 
+def test_edge_types_align_with_the_counts_and_match_BRepAdaptor(meshed):
+    """One type per kept edge, and it is BRepAdaptor_Curve's -- the value ocp-tessellate records.
+
+    The type has to come out of the helper because the helper is what decides which edges are kept: it
+    skips an edge with no ancestor face, no triangulation or no polygon on it, and a Python loop over the
+    edge map cannot tell which those were without redoing those lookups.
+    """
+    from nanoocp import BRepAdaptor
+
+    _seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(meshed)
+    assert len(edge_types) == len(per_edge) > 0
+
+    # a sphere's edges all survive, so the two orders can be compared directly
+    m = NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher()
+    TopExp.TopExp.MapShapes(meshed, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)
+    assert m.Extent() == len(edge_types)
+    expected = [BRepAdaptor.BRepAdaptor_Curve(TopoDS.Edge(m.FindKey(i))).GetType().value
+                for i in range(1, m.Extent() + 1)]
+    assert list(edge_types) == expected
+
+
 def test_edge_segments_needs_a_mesh():
     """An unmeshed shape has no triangulation, so every edge is skipped rather than raising."""
-    seg, per_edge = AddOns.Tessellator.EdgeSegments(BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape())
-    assert len(per_edge) == 0 and len(seg) == 0
+    seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(
+        BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape())
+    assert len(per_edge) == 0 and len(seg) == 0 and len(edge_types) == 0

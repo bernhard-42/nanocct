@@ -23,8 +23,10 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 
+#include <BRepAdaptor_Curve.hxx>
 #include <BRepGProp_Face.hxx>
 #include <BRep_Tool.hxx>
+#include <GeomAbs_CurveType.hxx>
 #include <NCollection_IndexedDataMap.hxx>
 #include <NCollection_IndexedMap.hxx>
 #include <NCollection_List.hxx>
@@ -100,8 +102,15 @@ nb::ndarray<nb::numpy, double, nb::ndim<2>> NormalsFromSurface(
 //! per-item Python overhead never amortises. Vectorising *inside* one edge saved almost nothing -- 33 370
 //! edges took 221 ms from Python against pure Python's 274 ms, while the same shape's faces went 4.9 s -> 0.49 s.
 //!
-//! @return (segments, segments_per_edge): (2 * S, 3) float64 of segment endpoints, flattened as the
-//!         tessellator expects, and (E,) int32 counts per edge that produced any.
+//! The curve type comes along because the caller cannot compute it afterwards: which edges were skipped is
+//! decided here, so a Python loop over the edge map could not be aligned with the counts without redoing the
+//! triangulation and polygon lookups this function exists to avoid. It is BRepAdaptor_Curve::GetType, the
+//! same value ocp-tessellate records as edge_types, and it costs ~25 ms over the 33 388 edges of a real
+//! assembly against ~350 ms for the whole extraction.
+//!
+//! @return (segments, segments_per_edge, edge_types): (2 * S, 3) float64 of segment endpoints, flattened as
+//!         the tessellator expects, and two (E,) int32 arrays -- segments per edge, and GeomAbs_CurveType
+//!         per edge -- for the edges that were not skipped, in edge-map order.
 nb::object EdgeSegments(const TopoDS_Shape &theShape)
 {
     using ShapeMap  = NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher>;
@@ -115,6 +124,7 @@ nb::object EdgeSegments(const TopoDS_Shape &theShape)
 
     std::vector<double> aPts;
     std::vector<int32_t> aPerEdge;
+    std::vector<int32_t> aTypes;
     for (int i = 1; i <= anEdges.Extent(); ++i)
     {
         const TopoDS_Edge &anEdge = TopoDS::Edge(anEdges.FindKey(i));
@@ -131,19 +141,28 @@ nb::object EdgeSegments(const TopoDS_Shape &theShape)
             continue;
         const occ::handle<Poly_PolygonOnTriangulation> aPoly =
             BRep_Tool::PolygonOnTriangulation(anEdge, aTri, aLoc);
-        if (aPoly.IsNull() || aPoly->NbNodes() < 2)
+        if (aPoly.IsNull())
             continue;
+
+        // A polygon of fewer than two nodes yields no segment but is still an edge that was kept:
+        // ocp-tessellate records its type and a count of zero, and the three arrays have to stay aligned.
+        // A degenerated edge reaches this point -- it has no 3D curve, but it has a pcurve, so
+        // BRepAdaptor_Curve falls back to Adaptor3d_CurveOnSurface rather than throwing.
+        aTypes.push_back(static_cast<int32_t>(BRepAdaptor_Curve(anEdge).GetType()));
 
         const gp_Trsf &aTrsf = aLoc.Transformation();
         const int aNb = aPoly->NbNodes();
-        gp_Pnt aPrev = aTri->Node(aPoly->Node(1)).Transformed(aTrsf);
-        for (int j = 2; j <= aNb; ++j)
+        if (aNb >= 2)
         {
-            const gp_Pnt aCur = aTri->Node(aPoly->Node(j)).Transformed(aTrsf);
-            aPts.insert(aPts.end(), { aPrev.X(), aPrev.Y(), aPrev.Z(), aCur.X(), aCur.Y(), aCur.Z() });
-            aPrev = aCur;
+            gp_Pnt aPrev = aTri->Node(aPoly->Node(1)).Transformed(aTrsf);
+            for (int j = 2; j <= aNb; ++j)
+            {
+                const gp_Pnt aCur = aTri->Node(aPoly->Node(j)).Transformed(aTrsf);
+                aPts.insert(aPts.end(), { aPrev.X(), aPrev.Y(), aPrev.Z(), aCur.X(), aCur.Y(), aCur.Z() });
+                aPrev = aCur;
+            }
         }
-        aPerEdge.push_back(aNb - 1);
+        aPerEdge.push_back(aNb >= 1 ? aNb - 1 : 0);
     }
 
     const size_t aNbPts = aPts.size() / 3;
@@ -155,9 +174,14 @@ nb::object EdgeSegments(const TopoDS_Shape &theShape)
     std::copy(aPerEdge.begin(), aPerEdge.end(), anOutCnt);
     nb::capsule aCntOwner(anOutCnt, [](void *p) noexcept { delete[] static_cast<int32_t *>(p); });
 
+    int32_t *anOutTyp = new int32_t[aTypes.size()];
+    std::copy(aTypes.begin(), aTypes.end(), anOutTyp);
+    nb::capsule aTypOwner(anOutTyp, [](void *p) noexcept { delete[] static_cast<int32_t *>(p); });
+
     return nb::make_tuple(
         nb::ndarray<nb::numpy, double, nb::ndim<2>>(anOutPts, { aNbPts, 3 }, aPtsOwner),
-        nb::ndarray<nb::numpy, int32_t, nb::ndim<1>>(anOutCnt, { aPerEdge.size() }, aCntOwner));
+        nb::ndarray<nb::numpy, int32_t, nb::ndim<1>>(anOutCnt, { aPerEdge.size() }, aCntOwner),
+        nb::ndarray<nb::numpy, int32_t, nb::ndim<1>>(anOutTyp, { aTypes.size() }, aTypOwner));
 }
 
 } // namespace
@@ -187,7 +211,9 @@ NB_MODULE(_AddOns, m) {
 
     m_Tess.def("EdgeSegments", &EdgeSegments, nb::arg("theShape"),
                "Every edge's polyline for a whole shape, as consecutive point pairs.\n\n"
-               "Returns (segments, segments_per_edge): an (2*S, 3) float64 array of endpoints and an (E,) "
-               "int32 array of per-edge segment counts. Edges with no ancestor face, no triangulation or no "
-               "polygon on it are skipped, so the counts align with the segments. Mesh the shape first.");
+               "Returns (segments, segments_per_edge, edge_types): an (2*S, 3) float64 array of endpoints "
+               "and two (E,) int32 arrays, the segment count and the GeomAbs_CurveType of each edge that "
+               "was kept. Edges with no ancestor face, no triangulation or no polygon on it are skipped, so "
+               "all three align. The type is returned here because which edges were skipped is decided "
+               "here. Mesh the shape first.");
 }
