@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .model import Class, Constructor, ConversionKind, Enum, Function, Method, PackageIR, Param, ResultKind, StreamKind, TemplateInstance
 from .ncollection import BINDERS
-from .parse import _py_identifier, py_path, py_safe
+from .parse import VIEW_CLASSES, _py_identifier, py_path, py_safe
 
 # C++ operator -> (binary python name, unary python name, reflected python name)
 _BINARY_OPS = {
@@ -88,6 +88,7 @@ class Emitter:
         self.report: list[str] = []
         self.static_renames: dict[str, set[str]] = {}   # R-STATIC-S across the inheritance chain; set by the caller
         self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
+        self.needs_views = False              # R-VIEW: this package binds a class from overrides.toml [views]
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
         # R-UNHASHABLE: classes whose bound __eq__ compares against their own type, filled while free operators are
         # mapped (the member ones are found in _define_class). A free operator== against something else -- the
@@ -757,6 +758,13 @@ class Emitter:
             if s is not None:
                 body.append(s)
         body += free_ops.get(c.name, [])
+        if c.name in VIEW_CLASSES:
+            # R-VIEW (Design.md 2c, State.md 8.10): zero-copy numpy accessors, defined per class in
+            # src/cpp/common/nanoocp_views.h. Listed in overrides.toml [views] because which class gets which
+            # view is data, not a shape the generator could detect.
+            self.report.append(f"{c.name}: zero-copy numpy views added (nanoocp_def_views)")
+            self.needs_views = True
+            define.append(f"    nanoocp_def_views<{c.bound_type}>({cls_expr_of(c)});")
         getter = self._iter_getter(c)
         if getter is not None:       # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own Python iterator
             self.report.append(f"{c.name}: __iter__ added (More/Next/{getter})")
@@ -932,6 +940,8 @@ class Emitter:
         includes = [f"#include <{h}>" for h in ir.prelude + ir.headers]
         if with_ncollection:
             includes.insert(0, '#include "nanoocp_ncollection.h"')
+        if self.needs_views:
+            includes.insert(0, '#include "nanoocp_views.h"')
         extra = [f"{ident}.hxx" for ident in sorted(self._idents)
                  if f"{ident}.hxx" not in ir.headers and (self.include_dir / f"{ident}.hxx").exists()]
         if self.prelude_check is not None and len(extra) > 0:

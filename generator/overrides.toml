@@ -321,3 +321,15 @@ binary_members = [
     "RWObj_Reader::Read",
     "RWObj_Reader::Probe",
 ]
+
+# Classes that get zero-copy numpy accessors (State.md 8.10, R-VIEW). The emitter appends
+#     nanoocp_def_views<Class>(cls);
+# to the class's define phase and includes src/cpp/common/nanoocp_views.h, where the accessors themselves are a
+# template specialisation -- one per class, because every case has runtime branches a config file cannot carry
+# (Poly_Triangulation's dtype follows IsDoublePrecision(); Image_PixMap's rows are padded, so its view needs a
+# stride from SizeRowBytes()). A name listed here without a specialisation does not link, and
+# tests/test_generator.py asserts the two lists agree so it fails at generation instead.
+[views]
+classes = [
+    "Poly_Triangulation",
+]
