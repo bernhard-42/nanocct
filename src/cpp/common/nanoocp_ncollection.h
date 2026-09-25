@@ -6,6 +6,7 @@
 // additions, never replacements.
 #pragma once
 #include "nanoocp_common.h"
+#include "nanoocp_elem_view.h"
 #include "ncollection_docs.h"
 
 #include <nanobind/make_iterator.h>
@@ -77,6 +78,23 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
      .def("__len__", [](const Cls &self) { return self.Length(); }, "Python addition: alias to Length.")
      .def("__iter__", [](const Cls &self) { return nb::make_iterator(nb::type<Cls>(), "iterator", self.begin(), self.end()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values from Lower() to Upper().");
+    // R-VIEW (State.md 8.10a): a packed POD element type also gets a zero-copy numpy view of the whole
+    // array, so the per-element __getitem__ loop above never has to be the way large data reaches Python.
+    // Not every instantiation qualifies -- a handle, a string, a TopoDS_Shape has nothing to view.
+    if constexpr (nanoocp::view_elem<T>::supported)
+        c.def("ValuesArray", [](Cls &self) {
+            const size_t n = (size_t) self.Size();
+            const size_t shape[1] = { n };
+            return nanoocp::elem_view<T>(n == 0 ? nullptr : (void *) &self.ChangeFirst(), shape);
+        }, nb::rv_policy::reference_internal,
+        "Python addition: zero-copy numpy view of the whole array (R-VIEW).\n\n"
+        "Shape (Size(),) for a scalar element type and (Size(), k) for a k-component one -- (N, 3) for "
+        "gp_Pnt, (N, 2) for gp_Pnt2d, (N, 3) int32 for Poly_Triangle. Index 0 of the view is Lower(), "
+        "whatever Lower() is; the view has no notion of OCCT's index base.\n\n"
+        "Writes go straight into the array, except for gp_Dir and gp_Dir2d, whose view is read-only "
+        "because a raw write could store a direction that is not of unit length -- use SetValue() there.\n\n"
+        "The view keeps this object alive, but an array built over a caller's buffer (IsDeletable() is "
+        "false) points into memory this object does not own and cannot keep alive either.");
     if constexpr (std::is_class_v<T>) {
         // mutable references only make sense for class element types (a double& cannot be exposed)
         c.def("ChangeFirst", [](Cls &self) -> T & { return self.ChangeFirst(); }, nb::rv_policy::reference_internal, D::ChangeFirst)
@@ -519,6 +537,20 @@ template <typename T, typename Cls, typename... Extra> void def_array2_members(n
      // Python additions: a[(row, col)]
      .def("__getitem__", [](const Cls &self, std::pair<int, int> rc) -> const T & { return self.Value(rc.first, rc.second); }, nb::arg("theRowCol"), "Python addition: a[(row, col)] -> Value(row, col).")
      .def("__setitem__", [](Cls &self, std::pair<int, int> rc, const T &v) { self.SetValue(rc.first, rc.second, v); }, nb::arg("theRowCol"), nb::arg("theItem"), "Python addition: a[(row, col)] = item -> SetValue.");
+    // R-VIEW: the 2-D shape, which shadows the flat one inherited from the Array1 binding. Measured, not
+    // assumed: NCollection_Array2 allocates one contiguous buffer and addresses it row-major --
+    // `(theRow - myLowerRow) * mySizeCol + (theCol - myLowerCol)` (NCollection_Array2.hxx:306).
+    if constexpr (nanoocp::view_elem<T>::supported)
+        c.def("ValuesArray", [](Cls &self) {
+            const size_t shape[2] = { (size_t) self.NbRows(), (size_t) self.NbColumns() };
+            return nanoocp::elem_view<T>(
+                self.Size() == 0 ? nullptr : (void *) &self.ChangeValue(self.LowerRow(), self.LowerCol()),
+                shape);
+        }, nb::rv_policy::reference_internal,
+        "Python addition: zero-copy numpy view of the whole array (R-VIEW).\n\n"
+        "Shape (NbRows(), NbColumns()) for a scalar element type and (NbRows(), NbColumns(), k) for a "
+        "k-component one. Row-major, matching OCCT's own addressing; index (0, 0) is "
+        "(LowerRow(), LowerCol()). Writes go straight into the array.");
     if constexpr (std::is_class_v<T>) {
         c.def("ChangeValue", [](Cls &self, const int r, const int cc) -> T & { return self.ChangeValue(r, cc); }, nb::rv_policy::reference_internal, nb::arg("theRow"), nb::arg("theCol"), D::ChangeValue)
          .def("ChangeAt", [](Cls &self, const size_t r, const size_t cc) -> T & { return self.ChangeAt(r, cc); }, nb::rv_policy::reference_internal, nb::arg("theRow"), nb::arg("theCol"), D::ChangeAt);

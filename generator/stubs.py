@@ -113,6 +113,56 @@ def _with_imports(text: str) -> str:
     return "".join(lines)
 
 
+def _with_numpy_imports(text: str) -> str:
+    """Add the numpy imports a hand-written `nb::sig` needs.
+
+    nanobind's stubgen adds `import numpy` / `from numpy.typing import NDArray` for the signatures it infers
+    itself, but not for the ones given as a literal `nb::sig` string -- and the zero-copy accessors that can
+    return None have to give theirs by hand, because their C++ return type is `nb::object` (R-VIEW). Without
+    this, Image.pyi says `-> NDArray | None` with nothing importing NDArray.
+    """
+    add = []
+    if re.search(r"\bNDArray\b", text) and "from numpy.typing import NDArray" not in text:
+        add.append("from numpy.typing import NDArray\n")
+    if re.search(r"\bnumpy\.", text) and re.search(r"^import numpy$", text, re.M) is None:
+        add.insert(0, "import numpy\n")
+
+    typing_import = re.search(r"^from typing import (.+)$", text, re.M)
+    if "Annotated[" in text and typing_import is not None and "Annotated" not in typing_import.group(1).split(", "):
+        names = sorted({*typing_import.group(1).split(", "), "Annotated"}, key=str.lower)
+        text = text[:typing_import.start()] + "from typing import " + ", ".join(names) + text[typing_import.end():]
+    if len(add) == 0:
+        return text
+
+    lines = text.splitlines(keepends=True)
+    at = next((i for i, line in enumerate(lines) if line.startswith("import nanoocp.")), None)
+    if at is None:                            # no nanoocp imports: after the docstring and its blank line
+        at = 1
+        while at < len(lines) and lines[at].strip() != "":
+            at += 1
+        at += 1
+    else:                                     # nanobind's own place, with a blank line before the block
+        add.append("\n")
+    lines[at:at] = add
+    return "".join(lines)
+
+
+def _view_accessor(text: str, name: str) -> str | None:
+    """The `ValuesArray` line stubgen generated for a concrete container class, if it has one.
+
+    The zero-copy accessor (R-VIEW) exists only for element types that are a packed run of numpy scalars,
+    and its dtype is that scalar -- so it cannot live on the generic `NCollection_Array1(Generic[_T])` stub,
+    which would promise it for an array of TopoDS_Shape too. Everything else about a concrete class collapses
+    into the generic base; this one line is lifted out first, which keeps the exact dtype without a second
+    copy of the element table that `src/cpp/common/nanoocp_elem_view.h` already holds.
+    """
+    m = re.search(rf"^class {re.escape(name)}\b.*?(?=^\S|\Z)", text, re.S | re.M)
+    if m is None:
+        return None
+    sig = re.search(r"^    def ValuesArray\(self\) -> [^:\n]+", m.group(0), re.M)
+    return None if sig is None else sig.group(0) + ": ..."
+
+
 def _replace_class_block(text: str, name: str, replacement: str) -> str:
     """Replace the top-level `class name...` block (up to the next top-level statement) in a stub."""
     m = re.search(rf"^class {re.escape(name)}\b.*?(?=^\S|\Z)", text, re.S | re.M)
@@ -241,19 +291,29 @@ def main() -> int:
         bases = f"{kind}[{', '.join(spelled)}]"
         if kind == "NCollection_Shared":                 # NCollection_Shared<T> derives from T (+ Transient members)
             bases = f"{spelled[0]}, _NCollection_Shared_members"
-        block = f"class {inst['name']}({bases}): ..."
+        body = []
         if "class Iterator(Generic[" in (GENERIC / f"{kind}.pyi").read_text():
             # the generic nested Iterator does not bind the outer arguments (Python nested classes share no type parameters):
             # the concrete class gets a concrete Iterator, so NCollection_List__int.Iterator(...).Value() is int (6b)
             n_it = 2 if kind in ("NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap") else 1
-            block = f"class {inst['name']}({bases}):\n    class Iterator({kind}.Iterator[{', '.join(spelled[:n_it])}]): ..."
+            body.append(f"    class Iterator({kind}.Iterator[{', '.join(spelled[:n_it])}]): ...")
+        view = _view_accessor(text, inst["name"])
+        if view is None and kind.startswith("NCollection_HArray"):
+            # stubgen does not repeat an inherited member, and NCollection_HArray1<T> inherits ValuesArray
+            # from NCollection_Array1<T>. In the stub the H class derives from the *generic* Array1, which
+            # cannot carry it (see _view_accessor), so the sibling's line is copied across.
+            view = _view_accessor(text, inst["name"].replace("_HArray", "_Array", 1))
+        if view is not None:
+            body.append(view)
+        block = (f"class {inst['name']}({bases}): ..." if len(body) == 0
+                 else f"class {inst['name']}({bases}):\n" + "\n".join(body))
         text = _replace_class_block(text, inst["name"], block)
     header = ("from typing import Generic, Self, TypeVar, overload\nfrom collections.abc import Iterator\n"
               "import nanoocp.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n"
               "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n\n")   # the nested Iterator classes: a nested class cannot reuse the outer class's type variables
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
-    nc.write_text(_unhashable_ignore(header + "".join(generic_parts) + "\n" + text))
+    nc.write_text(_unhashable_ignore(_with_numpy_imports(header + "".join(generic_parts) + "\n" + text)))
     # OCCT signatures: the generic spelling instead of the concrete class (nanoocp.NCollection.NCollection_Array1__double
     # -> nanoocp.NCollection.NCollection_Array1[float]), so that a value typed NCollection_Array1[float] (what
     # NCollection_Array1[float](...) produces statically) is accepted as an argument. The concrete class derives from
@@ -291,7 +351,7 @@ def main() -> int:
             text = new
         else:
             raise RuntimeError(f"{stub}: the generic rewrite did not converge -- nesting deeper than expected")
-        stub.write_text(_unhashable_ignore(_with_imports(text)))
+        stub.write_text(_unhashable_ignore(_with_numpy_imports(_with_imports(text))))
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)
     return 0

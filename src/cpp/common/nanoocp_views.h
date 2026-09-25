@@ -18,6 +18,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 
+#include <stdexcept>
+
 namespace nb = nanobind;
 
 //! Declared, never defined: a class listed in overrides.toml [views] without a specialisation below is a link
@@ -60,6 +62,7 @@ template <> inline void nanoocp_def_views<Poly_Triangulation>(nb::class_<Poly_Tr
                 self.InternalUVNodes().IsDoublePrecision() ? nb::dtype<double>() : nb::dtype<float>()),
                 nb::rv_policy::reference_internal, nb::find(&self));
         }, nb::rv_policy::reference_internal,
+        nb::sig("def UVNodesArray(self) -> NDArray | None"),
         "Python addition: zero-copy (NbNodes, 2) view of the UV nodes, or None when HasUVNodes() is false.")
        .def("NormalsArray", [](Poly_Triangulation &self) -> nb::object {
             // Unlike the nodes and UV nodes, the normals are NOT an aliased array: InternalNormals() is an
@@ -72,6 +75,7 @@ template <> inline void nanoocp_def_views<Poly_Triangulation>(nb::class_<Poly_Tr
                 n == 0 ? nullptr : (void *) &self.InternalNormals().ChangeFirst(), { n, 3 }, nb::handle()),
                 nb::rv_policy::reference_internal, nb::find(&self));
         }, nb::rv_policy::reference_internal,
+        nb::sig("def NormalsArray(self) -> Annotated[NDArray[numpy.float32], dict(shape=(None, None))] | None"),
         "Python addition: zero-copy (NbNodes, 3) float32 view of the normals, or None when HasNormals() is "
         "false. Always float32: OCCT stores normals as NCollection_Vec3<float> whatever the node precision.");
 }
@@ -90,4 +94,105 @@ template <> inline void nanoocp_def_views<Poly_PolygonOnTriangulation>(
         }, nb::rv_policy::reference_internal,
         "Python addition: zero-copy (NbNodes,) int32 view of the node indices.\n\n"
         "The indices are OCCT's, i.e. 1-based into the face triangulation's NodesArray().");
+}
+
+// ---- Image_PixMap --------------------------------------------------------------------------------------
+// Two things make this the case that justifies the "how" being C++ rather than more TOML.
+//
+// Rows are padded. SizeRowBytes() is not always SizeX() * SizePixelBytes() -- measured, a FreeImage-loaded
+// 5-pixel-wide RGB image has SizeRowBytes 16, not 15 -- so a shape-only view silently shears the image and
+// the row stride has to come from SizeRowBytes().
+//
+// Rows may also run bottom-up. OCCT hides that behind Row(i): myTopRowPtr points at the *top* row and
+// TopToDown is +1 or (size_t)-1, so Row(i) walks downwards either way (Image_PixMapData.hxx:95, :186).
+// The view does the same -- it starts at Row(0) and takes a signed row stride -- so view[y, x] is
+// PixelColor(x, y) whatever IsTopDown() says, instead of disagreeing with the class's own accessors.
+#include <Image_PixMap.hxx>
+
+template <> inline void nanoocp_def_views<Image_PixMap>(nb::class_<Image_PixMap> cls) {
+    cls.def("DataArray", [](Image_PixMap &self) -> nb::object {
+            if (self.IsEmpty())
+                return nb::none();
+
+            nb::dlpack::dtype dt{};
+            size_t channels = 0;
+            const auto set = [&dt, &channels](nb::dlpack::dtype_code theCode, uint8_t theBits, size_t theN) {
+                dt = nb::dlpack::dtype{ (uint8_t) theCode, theBits, 1 };
+                channels = theN;
+            };
+            using C = nb::dlpack::dtype_code;
+            switch (self.Format()) {
+                case Image_Format_Gray:        set(C::UInt, 8, 1); break;
+                case Image_Format_Alpha:       set(C::UInt, 8, 1); break;
+                case Image_Format_RGB:         set(C::UInt, 8, 3); break;
+                case Image_Format_BGR:         set(C::UInt, 8, 3); break;
+                case Image_Format_RGB32:       set(C::UInt, 8, 4); break;
+                case Image_Format_BGR32:       set(C::UInt, 8, 4); break;
+                case Image_Format_RGBA:        set(C::UInt, 8, 4); break;
+                case Image_Format_BGRA:        set(C::UInt, 8, 4); break;
+                case Image_Format_Gray16:      set(C::UInt, 16, 1); break;
+                case Image_Format_GrayF:       set(C::Float, 32, 1); break;
+                case Image_Format_AlphaF:      set(C::Float, 32, 1); break;
+                case Image_Format_RGF:         set(C::Float, 32, 2); break;
+                case Image_Format_RGBF:        set(C::Float, 32, 3); break;
+                case Image_Format_BGRF:        set(C::Float, 32, 3); break;
+                case Image_Format_RGBAF:       set(C::Float, 32, 4); break;
+                case Image_Format_BGRAF:       set(C::Float, 32, 4); break;
+                case Image_Format_GrayF_half:  set(C::Float, 16, 1); break;
+                case Image_Format_RGF_half:    set(C::Float, 16, 2); break;
+                case Image_Format_RGBAF_half:  set(C::Float, 16, 4); break;
+                case Image_Format_UNKNOWN:     break;
+            }
+            if (channels == 0)
+                return nb::none();                              // Image_Format_UNKNOWN
+
+            // Both checks turn a layout assumption into an error the caller can read, rather than an array
+            // that is quietly wrong. Neither has fired; they exist because a format table can go stale.
+            const size_t itemsize = dt.bits / 8;
+            if (self.SizePixelBytes() != itemsize * channels)
+                throw std::runtime_error("DataArray: SizePixelBytes() disagrees with the pixel format");
+            if (self.SizeRowBytes() % itemsize != 0)
+                throw std::runtime_error("DataArray: SizeRowBytes() is not a whole number of components");
+
+            const size_t shape[3] = { self.SizeY(), self.SizeX(), channels };
+            const int64_t strides[3] = {
+                (int64_t) (self.SizeRowBytes() / itemsize) * (int64_t) (ptrdiff_t) self.TopDownInc(),
+                (int64_t) channels, 1 };
+            return nb::cast(nb::ndarray<nb::numpy>(self.ChangeRow(0), 3, shape, nb::handle(), strides, dt),
+                            nb::rv_policy::reference_internal, nb::find(&self));
+        }, nb::rv_policy::reference_internal,
+        nb::sig("def DataArray(self) -> NDArray | None"),
+        "Python addition: zero-copy (SizeY, SizeX, channels) view of the pixels, or None when the pixmap is "
+        "empty or its Image_Format is UNKNOWN.\n\n"
+        "The dtype and the channel count follow Format(): uint8 for the 8-bit formats, uint16 for Gray16, "
+        "float32 for the F formats and float16 for the half ones. Channel *order* follows it too and is not "
+        "normalised -- BGR stays BGR.\n\n"
+        "Row order is top-down, matching Row() and PixelColor(), even when IsTopDown() is false: the view "
+        "then has a negative row stride, which is a view and costs nothing. Rows are padded, so it is "
+        "strided rather than contiguous whenever SizeRowBytes() exceeds SizeX() * SizePixelBytes().\n\n"
+        "Writes go straight into the pixmap.");
+}
+
+// ---- NCollection_Buffer --------------------------------------------------------------------------------
+// A plain byte buffer, and until it had a view the class was unusable from Python: Data()/ChangeData() are
+// raw pointers, so nothing was bound but Size() and IsEmpty(). FSD_Base64::Decode *returns* one of these,
+// which made that method unusable too. Graphic3d_Buffer derives from it and inherits the accessor; its
+// elements are interleaved vertex attributes, so reshaping the bytes to (NbElements, Stride) and slicing by
+// AttributeOffset() is the caller's business -- the buffer itself does not know a single element type.
+#include <NCollection_Buffer.hxx>
+
+template <> inline void nanoocp_def_views<NCollection_Buffer>(nb::class_<NCollection_Buffer> cls) {
+    cls.def("DataArray", [](NCollection_Buffer &self) -> nb::object {
+            if (self.IsEmpty())
+                return nb::none();
+            return nb::cast(nb::ndarray<nb::numpy, uint8_t, nb::ndim<1>>(
+                                self.ChangeData(), { self.Size() }, nb::handle()),
+                            nb::rv_policy::reference_internal, nb::find(&self));
+        }, nb::rv_policy::reference_internal,
+        nb::sig("def DataArray(self) -> NDArray | None"),
+        "Python addition: zero-copy (Size(),) uint8 view of the buffer, or None when no buffer is allocated "
+        "(IsEmpty()). Measured: a buffer constructed with size 0 *is* allocated -- the allocator returns a "
+        "non-null pointer for 0 bytes -- so that case is a zero-length array, and only Free() gives None.\n\n"
+        "Writes go straight into the buffer. Reinterpreting the bytes as something else is numpy's job "
+        "(`view(numpy.float32)`, `reshape(NbElements, Stride)` for a Graphic3d_Buffer).");
 }
