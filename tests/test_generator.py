@@ -168,6 +168,41 @@ private:
   gp_Pnt* myPtr = nullptr;
 };
 
+//! R-UNHASHABLE: a value __eq__ and no std::hash -> the class must be made unhashable, or `a == b` would hold
+//! while `hash(a) != hash(b)` and a dict/set lookup by an equal value would fail silently.
+class Rules_Eq
+{
+public:
+  Rules_Eq(const double theV = 0.0) : myV(theV) {}
+  bool operator==(const Rules_Eq& theOther) const { return myV == theOther.myV; }
+  bool operator!=(const Rules_Eq& theOther) const { return !(*this == theOther); }
+
+private:
+  double myV;
+};
+
+//! The same through a friend operator== (NCollection_Vec3): the rule must see the free form too.
+class Rules_FriendEq
+{
+public:
+  Rules_FriendEq(const double theV = 0.0) : myV(theV) {}
+  friend bool operator==(const Rules_FriendEq& theL, const Rules_FriendEq& theR) { return theL.myV == theR.myV; }
+
+private:
+  double myV;
+};
+
+//! ... but an operator== against *another* type is not value equality (the NCollection_ForwardRangeIterator /
+//! NCollection_ForwardRangeSentinel pair): same-type `==` still falls back to identity, so the identity hash is
+//! consistent and the class must stay hashable.
+struct Rules_Sentinel {};
+class Rules_SentinelEq
+{
+public:
+  Rules_SentinelEq() {}
+  friend bool operator==(const Rules_SentinelEq& theL, Rules_Sentinel) { (void)theL; return true; }
+};
+
 //! Constructors whose one-argument call is ambiguous in C++ (IntPolyh_Array<T>): the first is bound with no argument.
 class Rules_Ambiguous
 {
@@ -510,10 +545,11 @@ def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None
 
 def test_ir_classes_and_nesting(rules_ir):
     names = [c.name for c in rules_ir.classes]
-    assert names[:16] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
+    assert names[:20] == ["Rules_Thing", "Rules_Value", "Rules_Value::Nested", "Rules_Eq", "Rules_FriendEq", "Rules_Sentinel", "Rules_SentinelEq",
+                          "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
                           "Rules_Algo", "Rules_AllocOptions", "Rules_LazyScope", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2",
                           "Rules_Alloc", "Rules_Arrays"]
-    assert set(names[16:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
+    assert set(names[20:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
                                "Rules_TOnly<short>"}   # alias instantiations, probe bases, the reference-only instantiation
@@ -649,6 +685,26 @@ def test_emitter_static_rename_and_collision(rules_ir):
     assert cpp.count("nanoocp_def_iter<") == 1 and "nanoocp_def_iter<Rules_Iter>" in cpp
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
     assert any("Rules_Value::Length: static overloads renamed to Length_s" in r for r in em.report)
+
+
+def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):
+    """R-UNHASHABLE (8.11, 2026-09-25): a class with a value __eq__ and no hash gets __hash__ = None.
+
+    nanobind never touches tp_hash and Python's "__eq__ makes __hash__ None" rule fires only at type creation, so
+    without this the class keeps object.__hash__ and an equal value does not find its entry in a dict or set.
+    """
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    for name in ("Rules_Eq", "Rules_FriendEq"):                      # member and friend operator== alike
+        assert f'nb::borrow<nb::class_<{name}>>(m.attr("{name}")).attr("__hash__") = nb::none();' in cpp
+        assert f"{name}: __hash__ = None added (value __eq__ without a hash)" in em.report
+    # the sentinel pair is not value equality: same-type == falls back to identity, so the identity hash is fine
+    assert 'nb::class_<Rules_SentinelEq>>(m.attr("Rules_SentinelEq")).attr("__hash__")' not in cpp
+    assert not any(r.startswith("Rules_SentinelEq: __hash__") for r in em.report)
+    # a class with no operator== at all is untouched
+    assert 'nb::class_<Rules_Value>>(m.attr("Rules_Value")).attr("__hash__")' not in cpp
+    assert cpp.count('.attr("__hash__") = nb::none();') == 2
 
 
 def test_ir_records_mangled_names(rules_ir):

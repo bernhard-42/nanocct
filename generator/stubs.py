@@ -85,6 +85,14 @@ def _split_args(text: str) -> list[str]:
     return out
 
 
+def _unhashable_ignore(text: str) -> str:
+    """R-UNHASHABLE: stubgen writes `__hash__: None = None` for the nb::none() attribute. mypy rejects that as an
+    incompatible override of object.__hash__ -- and rejects `ClassVar[None]` and a `-> None` method just the same --
+    so the line needs the suppression typeshed itself puts on every unhashable class in builtins.pyi. ty accepts all
+    the spellings; keeping stubgen's own avoids having to add a typing import to every stub that has one."""
+    return re.sub(r"^(\s*__hash__: None = None)$", r"\1  # type: ignore[assignment]", text, flags=re.M)
+
+
 def _with_imports(text: str) -> str:
     """Add `import nanoocp.<pkg>` for every nanoocp.<pkg>.X reference the generic spellings introduced."""
     used = set(re.findall(r"\bnanoocp\.(\w+)\.", text))
@@ -245,7 +253,7 @@ def main() -> int:
               "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n\n")   # the nested Iterator classes: a nested class cannot reuse the outer class's type variables
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
-    nc.write_text(header + "".join(generic_parts) + "\n" + text)
+    nc.write_text(_unhashable_ignore(header + "".join(generic_parts) + "\n" + text))
     # OCCT signatures: the generic spelling instead of the concrete class (nanoocp.NCollection.NCollection_Array1__double
     # -> nanoocp.NCollection.NCollection_Array1[float]), so that a value typed NCollection_Array1[float] (what
     # NCollection_Array1[float](...) produces statically) is accepted as an argument. The concrete class derives from
@@ -283,7 +291,7 @@ def main() -> int:
             text = new
         else:
             raise RuntimeError(f"{stub}: the generic rewrite did not converge -- nesting deeper than expected")
-        stub.write_text(_with_imports(text))
+        stub.write_text(_unhashable_ignore(_with_imports(text)))
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)
     return 0

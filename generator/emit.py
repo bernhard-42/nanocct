@@ -89,6 +89,10 @@ class Emitter:
         self.static_renames: dict[str, set[str]] = {}   # R-STATIC-S across the inheritance chain; set by the caller
         self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
+        # R-UNHASHABLE: classes whose bound __eq__ compares against their own type, filled while free operators are
+        # mapped (the member ones are found in _define_class). A free operator== against something else -- the
+        # NCollection_ForwardRangeIterator/Sentinel pair -- is not value equality and must not land here.
+        self.value_eq: set[str] = set()
         # PARALLEL EMIT (2026-09-24): ownership of a 6c instantiation is normally decided *by* emitting -- the first
         # package to need it claims it ("if key in self.templates: return"). That makes the emit loop order-dependent
         # and unparallelisable. plan() runs exactly the part of emit() that decides ownership, so the driver can run it
@@ -353,6 +357,8 @@ class Emitter:
         sym = fn.name[len("operator"):]
         self._note_types(fn.result, a.type, b.type)
         if ta in self.local:
+            if fn.name == "operator==" and tb == ta:
+                self.value_eq.add(ta)
             lam = f"[]({a.type} {a.name}, {b.type} {b.name}) {{ return {a.name} {sym} {b.name}; }}"
             return ta, f'.def("{binary}", {lam}, nb::is_operator()) /* free {fn.name} */'
         if tb in self.local and reflected is not None:
@@ -695,6 +701,7 @@ class Emitter:
         dunders, __hash__, fields, implicit conversions, __iter__."""
         body: list[str] = []
         ctor_body: list[str] = []     # constructors of a 6c instantiation: guarded at compile time (abstractness is not visible in the template)
+        unhashable = False            # R-UNHASHABLE: emitted after the body, as a statement of its own
         def cls_expr_of(cc: Class) -> str:
             return f'nb::borrow<nb::class_<{cc.bound_type}>>({self._attr(cc.scope)}.attr("{cc.py_name}"))'
         implicit_default = False
@@ -777,6 +784,14 @@ class Emitter:
                                    f"no definition in lib{ir.toolkit} -> not bound")
             else:
                 body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
+        elif c.name in self.value_eq or any(m.name == "operator==" and len(m.params) == 1
+                                            and _strip_ref(m.params[0].type) == c.name for m in bound):
+            # R-UNHASHABLE (Design.md 6): the class has a value __eq__ and OCCT gives no hash for it. nanobind never
+            # touches tp_hash, and Python's "define __eq__ -> __hash__ becomes None" rule fires only at type creation,
+            # so the class would keep object.__hash__ and `a == b` with `hash(a) != hash(b)` would make a dict or set
+            # lookup by an equal value fail silently. Python's own answer for such a class is to be unhashable.
+            self.report.append(f"{c.name}: __hash__ = None added (value __eq__ without a hash)")
+            unhashable = True
         cls_expr = cls_expr_of(c)
         if implicit_default:
             define.append(f'    nanoocp_implicit_default_ctor<{c.bound_type}>({cls_expr});')
@@ -790,6 +805,10 @@ class Emitter:
             define.append(f'    {cls_expr}')
             define += ["        " + b for b in body]
             define[-1] += ";"
+        if unhashable:
+            # after the body: nb::none() is an attribute assignment, not a .def, and setting it last keeps it
+            # independent of whatever the chain above did
+            define.append(f'    {cls_expr}.attr("__hash__") = nb::none();')
         # R-IMPLICIT-COPY: the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
         # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
         if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):

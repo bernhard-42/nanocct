@@ -71,6 +71,30 @@ def test_extended_string_round_trip():
     assert e2.ToExtString() == "x€" and e2.Search("€") == 2
 
 
+def test_value_eq_without_a_hash_is_unhashable():
+    """R-UNHASHABLE (State.md 8.11, closed 2026-09-25): a class with a value __eq__ and no hash must be unhashable.
+
+    nanobind never touches tp_hash, and Python's "define __eq__ and __hash__ becomes None" rule fires only at type
+    creation -- a .def() after it does not trigger it. So without the explicit nb::none() these classes kept
+    object.__hash__ and `a == b` held while `hash(a) != hash(b)`, which makes a dict or set lookup by an equal value
+    miss without raising. Python's own answer for such a class is to be unhashable, which at least fails loudly.
+    """
+    from nanoocp import Bnd, Quantity, TopExp, TopLoc
+    a, b = Bnd.Bnd_Range(0.0, 1.0), Bnd.Bnd_Range(0.0, 1.0)
+    assert a == b and Bnd.Bnd_Range.__hash__ is None
+    with pytest.raises(TypeError, match="unhashable type"):
+        hash(a)
+    with pytest.raises(TypeError, match="unhashable type"):
+        {a: 1}                                                                  # noqa: B018 -- the point is the raise
+    assert Quantity.Quantity_Date.__hash__ is None                              # a plain value class
+    assert Quantity.NCollection_Vec3__float.__hash__ is None                    # and a 6c instantiation (owned by Quantity)
+    # a class OCCT *does* give a hash keeps it, value equality and all (the .lxx specialisation above)
+    assert TopLoc.TopLoc_Location.__hash__ is not None
+    # the ForwardRangeIterator/Sentinel pair is deliberately left alone: its only __eq__ takes the sentinel, so
+    # iterator-to-iterator == already falls back to identity and the identity hash is consistent with it
+    assert TopExp.NCollection_ForwardRangeIterator__TopExp_Explorer.__hash__ is not None
+
+
 def test_lxx_hash_and_free_functions_are_bound():
     """OCCT keeps std::hash<TCollection_AsciiString> and TopLoc_Location's ShallowDump in the .lxx part of the header;
     those file-scope declarations belong to the package since 2026-09-22 (they were missed before: equal strings hashed
