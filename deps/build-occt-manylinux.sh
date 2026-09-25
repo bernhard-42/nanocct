@@ -24,6 +24,7 @@ docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE"
 "$HERE/fetch-occt-src.sh"
 [ -d "$HERE/rapidjson/include/rapidjson" ] || { echo "missing $HERE/rapidjson (run deps/fetch-rapidjson.sh)" >&2; exit 1; }
 [ -f "$HERE/freetype-ml/lib/libfreetype.a" ] || { echo "missing $HERE/freetype-ml (run 'make freetype')" >&2; exit 1; }
+[ -f "$HERE/freeimage-ml/lib/libFreeImage.a" ] || { echo "missing $HERE/freeimage-ml (run 'make freeimage')" >&2; exit 1; }
 
 # HOME: the mapped uid has no passwd entry in the container, so $HOME is empty and cmake tries to write //.cmake
 docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$ROOT:/work" -w /work "$IMAGE" bash -euo pipefail -c '
@@ -32,15 +33,20 @@ PREFIX="/work/'"$PREFIX_REL"'"
 cmake -S deps/occt-src -B deps/occt-build-ml -G Ninja \
   -D CMAKE_BUILD_TYPE=Release \
   -D INSTALL_DIR="$PREFIX" \
-  -D CMAKE_PREFIX_PATH="/work/deps/freetype-ml;/work/deps/rapidjson" \
+  -D CMAKE_PREFIX_PATH="/work/deps/freetype-ml;/work/deps/freeimage-ml;/work/deps/rapidjson" \
   -D 3RDPARTY_FREETYPE_DIR=/work/deps/freetype-ml \
   -D 3RDPARTY_FREETYPE_LIBRARY=/work/deps/freetype-ml/lib/libfreetype.a \
   -D 3RDPARTY_FREETYPE_LIBRARY_DIR=/work/deps/freetype-ml/lib \
   -D 3RDPARTY_FREETYPE_INCLUDE_DIR_ft2build=/work/deps/freetype-ml/include/freetype2 \
   -D 3RDPARTY_FREETYPE_INCLUDE_DIR_freetype2=/work/deps/freetype-ml/include/freetype2 \
+  -D 3RDPARTY_FREEIMAGE_DIR=/work/deps/freeimage-ml \
+  -D 3RDPARTY_FREEIMAGE_LIBRARY=/work/deps/freeimage-ml/lib/libfreeimage.so \
+  -D 3RDPARTY_FREEIMAGE_LIBRARY_DIR=/work/deps/freeimage-ml/lib \
+  -D 3RDPARTY_FREEIMAGE_INCLUDE_DIR=/work/deps/freeimage-ml/include \
   -D 3RDPARTY_RAPIDJSON_DIR=/work/deps/rapidjson \
   -D USE_VTK=OFF -D USE_TBB=OFF -D USE_TK=OFF \
-  -D USE_FREETYPE=ON -D USE_OPENGL=ON -D USE_GLES2=OFF -D USE_XLIB=ON \
+  -D CMAKE_SHARED_LINKER_FLAGS="-Wl,--version-script=/work/deps/occt-version-script.map" \
+  -D USE_FREETYPE=ON -D USE_FREEIMAGE=ON -D USE_OPENGL=ON -D USE_GLES2=OFF -D USE_XLIB=ON \
   -D USE_RAPIDJSON=ON -D USE_FFMPEG=OFF \
   -D BUILD_CPP_STANDARD=C++17 \
   -D BUILD_RELEASE_DISABLE_EXCEPTIONS=OFF \

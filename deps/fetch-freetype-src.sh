@@ -1,9 +1,9 @@
 #!/bin/bash
 # Clone the FreeType sources into deps/freetype-src at the pinned tag, if they are not there yet.
 #
-# macOS and Windows build FreeType statically because they have no system FreeType to link against (3.2), and
-# deps/hide-freetype-symbols.sh patches this tree before the build so FT_* stays inside libTKService. Both need
-# the sources present; until 2026-09-24 only the manylinux container cloned them.
+# macOS and Windows build FreeType statically because they have no system FreeType to link against (3.2).
+# The tree is used unmodified: FT_* is kept inside libTKService at link time instead (deps/occt-unexported-symbols.txt).
+# Until 2026-09-24 only the manylinux container cloned these sources.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TAG=VER-2-14-3

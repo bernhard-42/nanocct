@@ -111,7 +111,7 @@ def test_materials_colors_and_vectors():
     assert Quantity.Quantity_Color(Quantity.Quantity_NOC_RED).Rgb().r() == 1.0  # Quantity_Color -> NCollection_Vec3<float>
 
 
-def test_pixmap_pixel_access_and_ppm_save(tmp_path):
+def test_pixmap_pixel_access_and_image_io(tmp_path):
     px = Image.Image_PixMap()
     assert px.InitZero(Image.Image_Format_RGB, 4, 3) and (px.Width(), px.Height(), px.SizeBytes()) == (4, 3, 36)
     red = Quantity.Quantity_ColorRGBA(Quantity.Quantity_Color(1.0, 0.0, 0.0, Quantity.Quantity_TOC_RGB), 1.0)
@@ -126,13 +126,17 @@ def test_pixmap_pixel_access_and_ppm_save(tmp_path):
     assert bgr.InitZero(Image.Image_Format_BGR, 4, 3)
     alien = Image.Image_AlienPixMap()
     assert alien.InitCopy(bgr)
-    out = tmp_path / "x.png"
-    assert alien.Save(TCollection.TCollection_AsciiString(str(out)))
-    data = out.read_bytes()
-    if platform.system() == "Windows":
-        assert data.startswith(b"\x89PNG")                # WIC writes a real PNG
-    else:
-        assert data.startswith(b"P6\n4 3\n")              # no FreeImage and no WIC: PPM whatever the extension (2d)
+    # Since FreeImage (State.md 8.9, 2026-09-25) every platform writes the format the extension names and can read
+    # it back. Before that, macOS and Linux wrote a PPM under *any* extension and returned true while doing it, and
+    # Load() failed for everything including that PPM; only Windows, on WIC, behaved.
+    for ext, magic in (("png", b"\x89PNG"), ("bmp", b"BM"), ("tiff", b"II*\x00"), ("ppm", b"P6")):
+        out = tmp_path / f"x.{ext}"
+        assert alien.Save(TCollection.TCollection_AsciiString(str(out))), ext
+        assert out.read_bytes().startswith(magic), ext
+        back = Image.Image_AlienPixMap()
+        assert back.Load(TCollection.TCollection_AsciiString(str(out))), ext
+        assert (back.Width(), back.Height()) == (4, 3), ext
+    assert alien.AdjustGamma(2.2)                        # FreeImage-only; returned false on every platform before
 
 
 def test_clip_plane_sequence_iterator_is_declared_after_its_binder_base():

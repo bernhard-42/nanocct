@@ -6,7 +6,9 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 [ -d "$HERE/freetype-src" ] || { echo "missing $HERE/freetype-src" >&2; exit 1; }
-"$HERE/hide-freetype-symbols.sh"        # a no-op for MSVC, but keeps the three builds on one patched source tree
+# FT_* is kept out of libTKService at link time now (deps/occt-unexported-symbols.txt), not by patching
+# FreeType's own header: a dependency we do not modify needs no re-check at every bump and no
+# "modified copy" line in NOTICE. deps/hide-freetype-symbols.sh was removed on 2026-09-25.
 
 W_SRC="$(cygpath -w "$HERE/freetype-src")"
 W_BUILD="$(cygpath -w "$HERE/freetype-build")"

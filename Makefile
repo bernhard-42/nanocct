@@ -88,12 +88,12 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps sources occt freetype rapidjson generate compile stubs test raw_wheel delocate wheel \
+.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype occt) | generate compile stubs test | wheel | all"
-	@echo "         clean_deps clean_occt clean_freetype clean_rapidjson clean_gen clean_dist"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | all"
+	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
 # ---- environment ----------------------------------------------------------------------------------------------
@@ -132,13 +132,18 @@ ifeq ($(PLATFORM),linux)
 	rm -rf $(DEPS)/freetype-build-ml $(DEPS)/freetype-ml
 endif
 
+clean_freeimage:
+	rm -rf $(DEPS)/freeimage-build $(DEPS)/freeimage
+	rm -rf $(DEPS)/freeimage-build-ml $(DEPS)/freeimage-ml
+
 clean_rapidjson:
 	rm -rf $(DEPS)/rapidjson $(DEPS)/rapidjson-src $(DEPS)/rapidjson-1.1.0.tar.gz
 
-clean_deps: clean_occt clean_freetype clean_rapidjson
+clean_deps: clean_occt clean_freetype clean_freeimage clean_rapidjson
 
-# deps/occt-src and deps/freetype-src are the *sources* and are deliberately not cleaned: fetching OCCT again is a
-# long download, and the FreeType tree carries the visibility patch (deps/hide-freetype-symbols.sh).
+# deps/occt-src, deps/freetype-src and deps/freeimage-src are the *sources* and are deliberately not cleaned:
+# fetching OCCT again is a long download, and re-cloning the other two is pointless --
+# neither tree is patched (since 2026-09-25): symbols are kept in at link time and by -fvisibility=hidden.
 
 rapidjson: clean_rapidjson
 	$(DEPS)/fetch-rapidjson.sh
@@ -148,6 +153,7 @@ rapidjson: clean_rapidjson
 sources:
 	$(DEPS)/fetch-occt-src.sh
 	$(DEPS)/fetch-freetype-src.sh
+	$(DEPS)/fetch-freeimage-src.sh
 
 freetype: clean_freetype
 	$(DEPS)/fetch-freetype-src.sh
@@ -159,14 +165,26 @@ else
 	$(DEPS)/build-freetype-manylinux.sh
 endif
 
+freeimage: clean_freeimage
+	$(DEPS)/fetch-freeimage-src.sh
+ifeq ($(PLATFORM),macos)
+	$(DEPS)/build-freeimage-macos.sh
+else ifeq ($(PLATFORM),windows)
+	$(DEPS)/build-freeimage-windows.sh
+else
+	$(DEPS)/build-freeimage-manylinux.sh
+endif
+
 occt: clean_occt
 	@test -d $(DEPS)/rapidjson || { echo "run 'make rapidjson' first"; exit 1; }
 	$(DEPS)/fetch-occt-src.sh
 ifeq ($(PLATFORM),macos)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
+	@test -d $(DEPS)/freeimage || { echo "run 'make freeimage' first"; exit 1; }
 	$(DEPS)/build-occt-macos.sh
 else ifeq ($(PLATFORM),windows)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
+	@test -d $(DEPS)/freeimage || { echo "run 'make freeimage' first"; exit 1; }
 	$(DEPS)/build-occt-windows.sh
 else
 	@# On the host, not through $(CONTAINER): the script starts its own container (as build-freetype-manylinux.sh
@@ -175,7 +193,7 @@ else
 	$(DEPS)/build-occt-manylinux.sh
 endif
 
-deps: clean_deps rapidjson freetype occt
+deps: clean_deps rapidjson freetype freeimage occt
 
 # ---- the development loop -------------------------------------------------------------------------------------
 

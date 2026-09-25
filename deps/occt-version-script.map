@@ -1,0 +1,27 @@
+/* Symbols that must not be re-exported from the OCCT shared libraries, passed to ld as
+ * --version-script (Linux). The Mach-O counterpart is deps/occt-unexported-symbols.txt.
+ *
+ * FreeType is linked statically into libTKService and would otherwise re-export ~220 FT_* symbols. ELF has one
+ * flat namespace, so a process that loads another FreeType -- matplotlib, Pillow and Qt all bundle one -- can
+ * bind OCCT's calls to that one instead (CadQuery/ocp-build-system#54). On Linux the second copy is not even
+ * hypothetical: libTKService needs libfontconfig.so.1, whose own DT_NEEDED names libfreetype.so.6, so OCCT
+ * puts a second FreeType in the process by itself.
+ *
+ * Until 2026-09-25 this was done by patching FreeType's own header (deps/hide-freetype-symbols.sh, removed):
+ * the same effect, but it modified a dependency, which has to be re-checked at every bump and declared in
+ * NOTICE as a modified copy. Doing it at link time leaves the dependency pristine.
+ *
+ * "global: *" keeps everything else exported -- OCCT's own API is what these libraries are for. Only the
+ * patterns under "local:" are hidden. Measured against the unpatched static libfreetype.a: FT_*, FTC_* and
+ * TT_* and nothing else.
+ *
+ * FreeImage needs nothing here: it is a shared library built with -fvisibility=hidden, so it exports only its
+ * own FreeImage_* API and none of its bundled codecs (deps/build-freeimage-manylinux.sh).
+ */
+{
+  global: *;
+  local:
+    FT_*;
+    FTC_*;
+    TT_*;
+};

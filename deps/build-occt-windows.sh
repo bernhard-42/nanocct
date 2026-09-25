@@ -12,7 +12,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-for d in occt-src freetype rapidjson; do
+for d in occt-src freetype freeimage rapidjson; do
   [ -d "$HERE/$d" ] || { echo "missing $HERE/$d (see the header of this script)" >&2; exit 1; }
 done
 
@@ -20,6 +20,7 @@ W_SRC="$(cygpath -w "$HERE/occt-src")"
 W_BUILD="$(cygpath -w "$HERE/occt-build")"
 W_PREFIX="$(cygpath -w "$HERE/occt-8.0.1")"
 W_FT="$(cygpath -w "$HERE/freetype")"
+W_FI="$(cygpath -w "$HERE/freeimage")"
 W_RJ="$(cygpath -w "$HERE/rapidjson")"
 BAT="$HERE/_build_occt.bat"
 
@@ -42,9 +43,12 @@ cmake -S "$W_SRC" -B "$W_BUILD" -G Ninja ^
   -D 3RDPARTY_FREETYPE_LIBRARY="$W_FT\lib\freetype.lib" ^
   -D 3RDPARTY_FREETYPE_INCLUDE_DIR_ft2build="$W_FT\include\freetype2" ^
   -D 3RDPARTY_FREETYPE_INCLUDE_DIR_freetype2="$W_FT\include\freetype2" ^
+  -D 3RDPARTY_FREEIMAGE_DIR="$W_FI" ^
+  -D 3RDPARTY_FREEIMAGE_LIBRARY="$W_FI\lib\FreeImage.lib" ^
+  -D 3RDPARTY_FREEIMAGE_INCLUDE_DIR="$W_FI\include" ^
   -D 3RDPARTY_RAPIDJSON_DIR="$W_RJ" ^
   -D USE_VTK=OFF -D USE_TBB=OFF -D USE_TK=OFF ^
-  -D USE_FREETYPE=ON -D USE_OPENGL=ON -D USE_GLES2=OFF -D USE_XLIB=OFF ^
+  -D USE_FREETYPE=ON -D USE_FREEIMAGE=ON -D USE_OPENGL=ON -D USE_GLES2=OFF -D USE_XLIB=OFF ^
   -D USE_RAPIDJSON=ON -D USE_FFMPEG=OFF ^
   -D BUILD_CPP_STANDARD=C++17 ^
   -D BUILD_RELEASE_DISABLE_EXCEPTIONS=OFF ^

@@ -4,6 +4,11 @@ version = "0.1.0"
 description = "nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API"
 requires-python = ">=3.12"
 dependencies = []
+# PEP 639: an SPDX expression for nanoOCP's own code, plus every licence text the wheel must carry.
+# The wheel bundles OCCT (LGPL-2.1 with the OCCT exception) and, inside it, FreeType, RapidJSON and
+# nanobind -- licenses/README.md says which and why, NOTICE gives the attributions those licences require.
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "licenses/*.txt", "licenses/README.md"]
 
 [build-system]
 requires = ["scikit-build-core>=1.0", "nanobind>=3.1.0"]

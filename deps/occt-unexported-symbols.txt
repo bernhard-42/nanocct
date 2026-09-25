@@ -1,0 +1,18 @@
+# Symbols that must not be re-exported from the OCCT libraries, passed to ld as
+# -unexported_symbols_list (macOS). One glob per line, Mach-O spelling (leading underscore).
+#
+# FreeType is linked statically into libTKService and would otherwise re-export ~220 FT_* symbols. ELF and
+# Mach-O both have a flat namespace, so a process that loads another FreeType -- matplotlib, Pillow and Qt all
+# bundle one, and on Linux OCCT itself pulls a second one in through fontconfig -- can bind OCCT's calls to
+# that one instead (CadQuery/ocp-build-system#54).
+#
+# Until 2026-09-25 this was done by patching FreeType's own header (deps/hide-freetype-symbols.sh, removed):
+# the same effect, but it modified a dependency, which has to be re-checked at every bump and has to be
+# declared in NOTICE as a modified copy. Doing it at link time leaves the dependency pristine.
+#
+# FreeImage needs nothing here: it is a shared library built with -fvisibility=hidden, so it exports only its
+# own FreeImage_* API and none of its bundled codecs (deps/build-freeimage-macos.sh).
+# Measured against the unpatched static libfreetype.a: 203 _FT_*, 15 _FTC_*, 2 _TT_* and nothing else.
+_FT_*
+_FTC_*
+_TT_*

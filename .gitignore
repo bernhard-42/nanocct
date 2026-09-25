@@ -13,6 +13,11 @@ deps/freetype-src/
 deps/freetype-build/
 deps/freetype/
 deps/freetype-2.14.3.tar.xz
+deps/freeimage-src/
+deps/freeimage-build/
+deps/freeimage/
+deps/freeimage-build-ml/
+deps/freeimage-ml/
 deps/rapidjson-src/
 deps/rapidjson/
 deps/rapidjson-1.1.0.tar.gz

@@ -1,0 +1,15 @@
+Imath / OpenEXR "Half" (the half-float type)
+
+    SPDX-License-Identifier: BSD-3-Clause
+    Copyright Contributors to the OpenEXR Project.
+    Primary original authors: Florian Kainz <kainz@ilm.com>, Rod Bogart <rgb@ilm.com>
+
+This is the only part of OpenEXR that nanoOCP ships. FreeImage is built with BUILD_OPENEXR=OFF, but
+Source/OpenEXR/Half is added to its CMake target unconditionally -- FreeImage's own half-float pixel type
+(FIT_RGBAF16) needs it -- so one object, half.cpp.o, is compiled into libFreeImage. The EXR codec itself is not.
+
+NOTE: this file is a pointer, not the licence text. The FreeImage source tree carries only the SPDX identifier
+above in Source/OpenEXR/Half/half.cpp; it ships no LICENSE file for OpenEXR. The full BSD-3-Clause text as the
+OpenEXR project publishes it should be pasted in here before this wheel is distributed publicly:
+
+    https://github.com/AcademySoftwareFoundation/openexr/blob/main/LICENSE.md

@@ -1,0 +1,112 @@
+nanoOCP
+Copyright 2026 The nanoOCP authors
+
+This product includes software developed by third parties. The full text of each
+licence is in the `licenses/` directory of this distribution, which is shipped
+inside the wheel as well as the source tree.
+
+
+Open CASCADE Technology
+-----------------------
+
+This software makes use of or is based on facilities provided by the Open
+CASCADE Technology software (https://dev.opencascade.org). The generated
+bindings incorporate material from OCCT header files, and the binary
+distribution bundles the OCCT shared libraries themselves.
+
+OCCT is licensed under the GNU Lesser General Public License version 2.1 with
+the Open CASCADE exception version 1.0:
+
+    licenses/OCCT-LGPL-2.1.txt
+    licenses/OCCT-LGPL-exception.txt
+
+The exception permits distributing object code that incorporates material from
+OCCT header files under terms of our choice, provided this notice is given.
+The bundled OCCT libraries remain under the LGPL: they are dynamic libraries,
+so a recipient may replace them with a modified version.
+
+The OCCT version used is pinned in `deps/fetch-occt-src.sh` (tag V8_0_1) and its
+complete corresponding source is available from
+https://github.com/Open-Cascade-SAS/OCCT at that tag.
+
+
+FreeImage
+---------
+
+Copyright the FreeImage project contributors (https://freeimage.sourceforge.net).
+
+FreeImage is bundled as a shared library (`libFreeImage.dylib` / `.so` / `.dll`) and gives OCCT its image
+codecs: without it, reading an image file fails on every platform but Windows and writing produces a PPM under
+whatever extension is asked for. It is used under the **FreeImage Public License version 1.0**, the permissive
+branch of the three it offers (the others are GPL-2.0-or-later and GPL-3.0-or-later, neither of which is
+compatible with distributing this wheel under Apache-2.0):
+
+    licenses/FreeImage-FIPL.txt
+
+The FIPL is an MPL-1.1 derivative. Its sections 3.6 and 3.7 permit distributing the executable form inside a
+larger work under a licence of our choice, provided the licence text travels with it and this notice says where
+the source is. **nanoOCP does not modify FreeImage.** Its complete corresponding source is the tag pinned in
+`deps/fetch-freeimage-src.sh` (3.19.15) at https://github.com/danoli3/FreeImage.
+
+FreeImage vendors the codecs it uses, so the following are compiled into that one library. It is built with
+BUILD_WEBP, BUILD_OPENEXR, BUILD_LIBRAWLITE and BUILD_JXR off, so libwebp, the OpenEXR codec, LibRaw (the only
+CDDL component) and jxrlib are **not** included; JBIG-KIT is not vendored by FreeImage at all.
+
+    zlib                    licenses/zlib.txt
+    libpng                  licenses/libpng.txt
+    libjpeg (IJG)           licenses/libjpeg-IJG.txt
+    libtiff                 licenses/libtiff.txt
+    OpenJPEG (BSD-2)        licenses/OpenJPEG-BSD-2-Clause.txt
+    Imath "Half" (BSD-3)    licenses/Imath-Half-BSD-3-Clause.txt
+
+None of those symbols are exported: the library is built with -fvisibility=hidden and exports only its own
+FreeImage_* API, so a libpng or zlib elsewhere in the process cannot be bound to FreeImage's copy, or the
+reverse.
+
+
+FreeType
+--------
+
+Portions of this software are copyright (C) 1996-2026 The FreeType Project
+(https://freetype.org). All rights reserved.
+
+FreeType 2.14.3 is **used unmodified** and statically linked into the bundled OCCT
+visualization library (libTKService); it is not a separate file in this distribution. Its symbols are kept from
+being re-exported at link time (deps/occt-unexported-symbols.txt), not by patching FreeType. It is used under
+the FreeType License (FTL), the permissive of the two licences FreeType offers:
+
+    licenses/FreeType-FTL.txt
+
+Its complete corresponding source is available from
+https://gitlab.freedesktop.org/freetype/freetype at the tag pinned in
+`deps/fetch-freetype-src.sh`.
+
+
+RapidJSON
+---------
+
+Copyright (C) 2015 THL A29 Limited, a Tencent company, and Milo Yip.
+
+RapidJSON is a header-only library, compiled into the bundled OCCT data-exchange
+code. It is used under the MIT License:
+
+    licenses/RapidJSON.txt
+
+Only the headers are used. The `bin/jsonchecker/` directory, which RapidJSON
+distributes under the problematic JSON licence, is not used and not shipped.
+
+
+nanobind
+--------
+
+Copyright (c) 2022 Wenzel Jakob. All rights reserved.
+
+nanobind's runtime is compiled into every extension module in this
+distribution. It is used under a 3-clause BSD licence:
+
+    licenses/nanobind-BSD-3-Clause.txt
+
+nanobind vendors tsl::robin_map, copyright (c) 2017 Thibaut Goetghebuer-Planchon,
+used under the MIT License:
+
+    licenses/robin_map-MIT.txt
