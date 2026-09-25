@@ -263,10 +263,22 @@ def test_a_buffer_views_as_bytes_and_None_only_when_unallocated():
     assert b.IsEmpty() is True and b.DataArray() is None
 
 
-def test_the_buffer_view_makes_FSD_Base64_usable():
+def test_base64_goes_both_ways_now():
+    """R-VIEW made Decode's result readable; R-BYTES made Encode callable. Before the two, base64 went
+    nowhere: Decode returned an NCollection_Buffer with no data access, and Encode was unbindable.
+    """
+    import base64
+
     from nanoocp import FSD
 
-    assert bytes(FSD.FSD_Base64.Decode("SGVsbG8h", 8).DataArray()) == b"Hello!"
+    encoded = FSD.FSD_Base64.Encode(b"Hello, nanoOCP!").ToCString()
+    assert encoded == base64.b64encode(b"Hello, nanoOCP!").decode()
+    assert bytes(FSD.FSD_Base64.Decode(encoded, len(encoded)).DataArray()) == b"Hello, nanoOCP!"
+    assert FSD.FSD_Base64.Encode(b"").ToCString() == ""
+
+    payload = bytes(range(256)) * 100                    # 25 600 bytes, well past one base64 block
+    enc = FSD.FSD_Base64.Encode(payload).ToCString()
+    assert bytes(FSD.FSD_Base64.Decode(enc, len(enc)).DataArray()) == payload
 
 
 def test_Graphic3d_Buffer_inherits_the_accessor():

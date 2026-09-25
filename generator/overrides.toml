@@ -329,6 +329,17 @@ binary_members = [
 # (Poly_Triangulation's dtype follows IsDoublePrecision(); Image_PixMap's rows are padded, so its view needs a
 # stride from SizeRowBytes()). A name listed here without a specialisation does not link, and
 # tests/test_generator.py asserts the two lists agree so it fails at generation instead.
+# R-BYTES: methods where a `const uint8_t*` parameter and the length that follows it are one `bytes`
+# parameter. Listed rather than inferred -- "the next integer is the length" is a convention, not a type --
+# so every entry here has been read in the header. Class::method, every overload; an overload whose buffer
+# is an *output* (a non-const uint8_t* / char*) is unaffected and stays unbound.
+[bytes]
+members = [
+    "FSD_Base64::Encode",     # Encode(const uint8_t* theData, size_t theDataLen) -> TCollection_AsciiString.
+                              # Its Decode counterpart was already bound and returns an NCollection_Buffer,
+                              # which R-VIEW made readable (8.10a); without this, base64 only went one way.
+]
+
 [views]
 classes = [
     "Poly_Triangulation",

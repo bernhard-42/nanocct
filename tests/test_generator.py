@@ -101,6 +101,11 @@ public:
   void Braced(const gp_XYZ& theXYZ = {}) const { (void)theXYZ; }
   //! std::bitset<N> is a set of flag indices in Python (R-BITSET); its size is a non-type template argument.
   void Flags(const std::bitset<4>& theFlags) const { (void)theFlags; }
+  //! R-BYTES: a const uint8_t* input buffer followed by its length.
+  static int Pack(const uint8_t* theData, const size_t theLen) { (void)theData; return (int)theLen; }
+  //! Its first parameter is an *output* buffer, so R-BYTES must leave this one unbound.
+  static int Unpack(uint8_t* theOut, const size_t theOutLen, const uint8_t* theData, const size_t theLen)
+  { (void)theOut; (void)theOutLen; (void)theData; return (int)theLen; }
   std::bitset<4> GetFlags() const { return std::bitset<4>(); }
   //! Mutable reference to a primitive -> getter + SetValue Python addition.
   double& Value(int theIndex) { (void)theIndex; return myValue; }
@@ -536,6 +541,11 @@ def rules_ir(tmp_path_factory) -> parse.PackageIR:
     return _parse_rules(tmp_path_factory.mktemp("occt"))
 
 
+def rules_ir_of(tmp_path_factory, name: str) -> parse.PackageIR:
+    """A fresh parse, for the tests that monkeypatch an override (the module-scoped fixture is cached)."""
+    return _parse_rules(tmp_path_factory.mktemp(name))
+
+
 def _method(ir: parse.PackageIR, cls: str, name: str, nparams: int | None = None) -> Method:
     c = next(c for c in ir.classes if c.name == cls)
     hits = [m for m in c.methods if m.name == name and (nparams is None or len(m.params) == nparams)]
@@ -577,6 +587,34 @@ def test_ir_inout_from_override(monkeypatch, tmp_path_factory):
     ir = _parse_rules(tmp_path_factory.mktemp("occt2"))
     tr = _method(ir, "Rules_Value", "Transforms")
     assert (tr.params[0].is_out, tr.params[0].is_inout) == (True, True)
+
+
+def test_ir_and_emitter_bytes_buffer_from_override(monkeypatch, tmp_path_factory):
+    """R-BYTES: `const uint8_t*` + the length that follows it is one `bytes` parameter, for listed members.
+
+    Without the override the whole method is unbindable -- a raw pointer to a primitive -- which is what kept
+    FSD_Base64::Encode out. With it, only the *input* form is bound: an overload whose buffer is an output
+    (a non-const uint8_t*) cannot be expressed as `bytes` and stays unbound.
+    """
+    plain = _method(rules_ir_of(tmp_path_factory, "occt_bytes_off"), "Rules_Value", "Pack")
+    assert plain.skip_reason == "param 'theData': raw pointer to primitive"
+
+    monkeypatch.setattr(parse, "_BYTES_MEMBERS", {"Rules_Value::Pack", "Rules_Value::Unpack"})
+    ir = rules_ir_of(tmp_path_factory, "occt_bytes_on")
+    pack = _method(ir, "Rules_Value", "Pack")
+    assert pack.skip_reason is None
+    assert (pack.params[0].is_bytes, pack.params[0].bytes_of) == (True, "")
+    assert (pack.params[1].is_bytes, pack.params[1].bytes_of) == (False, "theData")
+    unpack = _method(ir, "Rules_Value", "Unpack")
+    assert unpack.skip_reason == "param 'theOut': raw pointer to primitive"
+
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "const nb::bytes &theData" in cpp
+    assert "(const uint8_t *) theData.c_str()" in cpp and "theData.size()" in cpp
+    assert 'nb::arg("theData")' in cpp and 'nb::arg("theLen")' not in cpp      # the length is gone from the signature
+    assert '.def_static("Unpack"' not in cpp
 
 
 def test_header_allowlist_override(monkeypatch, tmp_path_factory):

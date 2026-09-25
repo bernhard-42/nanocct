@@ -61,6 +61,7 @@ EXTRA_LINKS: dict[str, list[str]] = _OVERRIDES.get("link", {}).get("extra", {})
 VIEW_CLASSES: set[str] = set(_OVERRIDES.get("views", {}).get("classes", []))
 _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
+_BYTES_MEMBERS = set(_OVERRIDES.get("bytes", {}).get("members", []))              # R-BYTES: `const uint8_t*` + length -> one `bytes` parameter
 
 _UNSUPPORTED_RE = re.compile(
     r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf)\b"
@@ -553,6 +554,22 @@ def _is_cstring(t: cindex.Type) -> bool:
     return pointee.kind in (TK.CHAR_S, TK.CHAR_U) and pointee.is_const_qualified()
 
 
+_INTEGRAL_KINDS = (TK.INT, TK.UINT, TK.LONG, TK.ULONG, TK.LONGLONG, TK.ULONGLONG, TK.SHORT, TK.USHORT)
+
+
+def _is_const_byte_ptr(t: cindex.Type) -> bool:
+    """`const uint8_t*` / `const Standard_Byte*` -- the input half of OCCT's buffer pairs (R-BYTES).
+
+    Only the const form: a non-const `uint8_t*` is an output buffer the caller is expected to size and own
+    (FSD_Base64::Encode's first overload, FSD_Base64::Decode's), which `bytes` cannot express.
+    """
+    canon = t.get_canonical()
+    if canon.kind != TK.POINTER:
+        return False
+    pointee = canon.get_pointee()
+    return pointee.is_const_qualified() and pointee.get_canonical().kind == TK.UCHAR
+
+
 def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
     canon = t.get_canonical()
     cs = canon.spelling
@@ -745,9 +762,21 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
     # same personizeWS(theWS) body, and forgetting one only shows up as four overload collisions in its report)
     inout = any(fnmatch(qualified, pattern) for pattern in _INOUT)
     binary = qualified in _BINARY_MEMBERS                                              # R-STREAM-OUT/IN: a document stream in a text package
+    # R-BYTES: a `const uint8_t*` parameter immediately followed by its length is one `bytes` parameter.
+    # Listed rather than inferred, because "the next integer is the length" is a convention and not a type:
+    # every entry has been read. Without it the whole method is unbindable (raw pointer to primitive), which
+    # is what kept FSD_Base64::Encode out while its Decode counterpart was bound and, for want of a buffer
+    # view, useless.
+    args = list(cursor.get_arguments())
+    bytes_role: dict[int, str] = {}
+    if qualified in _BYTES_MEMBERS:
+        for j in range(len(args) - 1):
+            if _is_const_byte_ptr(args[j].type) and args[j + 1].type.get_canonical().kind in _INTEGRAL_KINDS:
+                bytes_role[j] = ""                                        # the buffer itself
+                bytes_role[j + 1] = py_safe(args[j].spelling) or f"arg{j}"   # its length, dropped
     if members is None:
         members = set()
-    for i, p in enumerate(cursor.get_arguments()):
+    for i, p in enumerate(args):
         stream = _stream_kind(p.type) if allow_streams else StreamKind.NONE
         reason = _unsupported(p.type, allow_out=True) if stream == StreamKind.NONE else None
         if reason is None and "type-parameter-" in _type_spelling(p.type):
@@ -781,6 +810,10 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
                 params.append(Param(name=name, type=elem, default=None, is_out=not const, array_len=n, class_name=_class_behind(elem_t),
                                     out_py="list" if not const else ""))
                 continue
+        if i in bytes_role:                    # R-BYTES
+            params.append(Param(name=name, type=_type_spelling(p.type), default=None, is_out=False,
+                                is_bytes=bytes_role[i] == "", bytes_of=bytes_role[i]))
+            continue
         if reason is not None:
             return params, f"param '{p.spelling}': {reason}"
         is_out = _is_out_param(p.type)
