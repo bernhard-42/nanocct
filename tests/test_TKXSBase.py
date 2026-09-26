@@ -39,14 +39,14 @@ def test_interface_static_is_what_cadquery_sets():
     """CadQuery writes STEP after Interface_Static.SetIVal_s/SetCVal_s (shapes.py:560-563); in nanoOCP the names carry
     no _s (R-STATIC-S: no instance method of that name). A parameter must be declared before it can be set -- the STEP
     names come from STEPControl_Controller::Init (TKDESTEP), so this test declares its own."""
-    assert Interface_Static.SetIVal("nanoocp.undeclared", 1) is False
-    assert Interface_Static.Init("nanoocp", "nanoocp.test.int", "i", "0")        # char type, 1-character str (R-CHAR)
-    assert Interface_Static.Init("nanoocp", "nanoocp.test.unit", "t", "MM")
-    assert Interface_Static.SetIVal("nanoocp.test.int", 42) and Interface_Static.IVal("nanoocp.test.int") == 42
-    assert Interface_Static.SetCVal("nanoocp.test.unit", "INCH") and Interface_Static.CVal("nanoocp.test.unit") == "INCH"
-    assert Interface_Static.IsPresent("nanoocp.test.int") and Interface_Static.IsSet("nanoocp.test.int")
-    assert Interface_Static.Static("nanoocp.test.int").Type() is not None
-    assert Interface_Static.Items().Length() >= 2
+    assert Interface_Static.SetIVal_s("nanoocp.undeclared", 1) is False
+    assert Interface_Static.Init_s("nanoocp", "nanoocp.test.int", "i", "0")        # char type, 1-character str (R-CHAR)
+    assert Interface_Static.Init_s("nanoocp", "nanoocp.test.unit", "t", "MM")
+    assert Interface_Static.SetIVal_s("nanoocp.test.int", 42) and Interface_Static.IVal_s("nanoocp.test.int") == 42
+    assert Interface_Static.SetCVal_s("nanoocp.test.unit", "INCH") and Interface_Static.CVal_s("nanoocp.test.unit") == "INCH"
+    assert Interface_Static.IsPresent_s("nanoocp.test.int") and Interface_Static.IsSet_s("nanoocp.test.int")
+    assert Interface_Static.Static_s("nanoocp.test.int").Type() is not None
+    assert Interface_Static.Items_s().Length() >= 2
 
 
 def test_return_status_enum():
@@ -144,19 +144,19 @@ def test_the_shape_process_flags_are_a_set_of_operations():
     box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
     processed = processor.ProcessShape(box, {ShapeProcess.FixShape}, Message_ProgressRange())
     properties = GProp_GProps()
-    BRepGProp.VolumeProperties(processed, properties)
+    BRepGProp.VolumeProperties_s(processed, properties)
     assert properties.Mass() == pytest.approx(6.0)                               # a clean box survives unchanged
 
 
 def test_report_categories():
     _, lines, undefined, _ = report("TKXSBase")
     assert all(any(k in line for k in ("IFSelect_", "MoniTool_Element::", "TransferBRep::")) for line in undefined)
-    assert len(lines) == 43
+    assert len(lines) == 40
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
     assert counts == {"raw-pointer": 19, "overload-collision": 9, "iterator": 5,
-                      "rvalue": 3, "static-rename": 3, "template": 3, "conversion": 1}
+                      "rvalue": 3, "template": 3, "conversion": 1}
     assert not any("bitset" in line for line in lines)                           # closed by R-BITSET (2026-09-22)
     # the rvalue lines are the && twins of bound const& overloads, so nothing is lost
     assert all("SetShapeFixParameters" in line for line in lines if line.startswith("rvalue"))

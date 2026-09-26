@@ -39,14 +39,14 @@ def test_standard_attributes_static_set_and_find(doc):
     label = doc.Main().FindChild(1, True)
     name = TDataStd.TDataStd_Name.Set_s(label, TCollection_ExtendedString("part"))
     assert type(name) is TDataStd.TDataStd_Name and name.Get().ToExtString() == "part"
-    found, attr = label.FindAttribute(TDataStd.TDataStd_Name.GetID())
+    found, attr = label.FindAttribute(TDataStd.TDataStd_Name.GetID_s())
     assert found is True and type(attr) is TDataStd.TDataStd_Name and attr.Get().ToExtString() == "part"
-    assert label.FindAttribute(TDataStd.TDataStd_Real.GetID())[0] is False
+    assert label.FindAttribute(TDataStd.TDataStd_Real.GetID_s())[0] is False
     integer = TDataStd.TDataStd_Integer.Set_s(label, 42)
     real = TDataStd.TDataStd_Real.Set_s(label, 2.5)
     assert (integer.Get(), real.Get(), label.NbAttributes()) == (42, 2.5, 3)
     assert [type(a).__name__ for a in TDF.TDF_AttributeIterator(label)] == ["TDataStd_Name", "TDataStd_Integer", "TDataStd_Real"]
-    array = TDataStd.TDataStd_RealArray.Set(label, 1, 3)               # no instance Set of that name: plain Set
+    array = TDataStd.TDataStd_RealArray.Set_s(label, 1, 3)               # no instance Set of that name: plain Set
     array.SetValue(2, 7.5)
     assert [array.Value(k) for k in range(1, 4)] == [0.0, 7.5, 0.0]
 
@@ -55,17 +55,17 @@ def test_label_entries_children_equality_and_hash(doc):
     main = doc.Main()
     child = main.FindChild(1, True)
     entry = TCollection_AsciiString()
-    TDF.TDF_Tool.Entry(child, entry)                                    # TCollection_AsciiString& filled in place (R-REF-CLASS)
+    TDF.TDF_Tool.Entry_s(child, entry)                                    # TCollection_AsciiString& filled in place (R-REF-CLASS)
     assert entry.ToCString() == "0:1:1"
     found = TDF.TDF_Label()
-    TDF.TDF_Tool.Label(doc.GetData(), TCollection_AsciiString("0:1:1"), found, False)
+    TDF.TDF_Tool.Label_s(doc.GetData(), TCollection_AsciiString("0:1:1"), found, False)
     assert found == child and found != main and not found.IsNull() and TDF.TDF_Label().IsNull()
     assert hash(found) == hash(child) and {child: "c"}[found] == "c"     # std::hash<TDF_Label> lives in TDF_Label.lxx
     main.FindChild(2, True)
     main.FindChild(3, True)
     assert [c.Tag() for c in TDF.TDF_ChildIterator(main)] == [1, 2, 3]
     TDataStd.TDataStd_Integer.Set_s(child, 1)
-    assert [type(a).__name__ for a in TDF.TDF_ChildIDIterator(main, TDataStd.TDataStd_Integer.GetID())] == ["TDataStd_Integer"]
+    assert [type(a).__name__ for a in TDF.TDF_ChildIDIterator(main, TDataStd.TDataStd_Integer.GetID_s())] == ["TDataStd_Integer"]
     assert child.Father() == main and child.Root().IsRoot() and child.Data() is doc.GetData()
 
 
@@ -84,17 +84,17 @@ def test_undo_redo(doc):
 
 def test_tree_nodes_and_functions(doc):
     label = doc.Main().FindChild(1, True)
-    node = TDataStd.TDataStd_TreeNode.Set(label)
-    node.Append(TDataStd.TDataStd_TreeNode.Set(doc.Main().FindChild(2, True)))
+    node = TDataStd.TDataStd_TreeNode.Set_s(label)
+    node.Append(TDataStd.TDataStd_TreeNode.Set_s(doc.Main().FindChild(2, True)))
     assert [t.Label().Tag() for t in TDataStd.TDataStd_ChildNodeIterator(node)] == [2]
-    fn = TFunction.TFunction_Function.Set(label, TDataStd.TDataStd_Integer.GetID())
-    assert fn.GetDriverGUID() == TDataStd.TDataStd_Integer.GetID()
+    fn = TFunction.TFunction_Function.Set_s(label, TDataStd.TDataStd_Integer.GetID_s())
+    assert fn.GetDriverGUID() == TDataStd.TDataStd_Integer.GetID_s()
 
 
 def test_dumps_are_str(doc):
     label = doc.Main().FindChild(1, True)
     assert label.Dump().startswith("0:1:1\t")                            # Dump(Standard_OStream&) -> str (R-STREAM-OUT)
-    assert TDF.TDF_Tool.DeepDump(doc.GetData()).startswith("Dump of a TDF_Data.")
+    assert TDF.TDF_Tool.DeepDump_s(doc.GetData()).startswith("Dump of a TDF_Data.")
     assert '"className": "TDocStd_Document"' in doc.DumpJson()
 
 
@@ -121,5 +121,5 @@ def test_keyword_parameter_names_are_suffixed():
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     categories = {line.split("\t")[0] for line in lines}
-    assert categories <= {"iterator", "not-constructible", "operator", "overload-collision", "raw-pointer", "static-rename", "stream", "template"}
+    assert categories <= {"iterator", "not-constructible", "operator", "overload-collision", "raw-pointer", "stream", "template"}
     assert any("TDF_Label::FindAttribute: template member" in line for line in lines)    # the non-template overload downcasts (2d)

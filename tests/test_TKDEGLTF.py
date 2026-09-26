@@ -28,7 +28,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEGLTF" / "report.txt"
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -39,18 +39,18 @@ def quiet_messenger():
 
 @pytest.fixture
 def document():
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
     BRepMesh_IncrementalMesh(box, 0.1)                            # glTF exports triangulations
     label = shapes.AddShape(box, False)
-    XCAFDoc_DocumentTool.ColorTool(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
+    XCAFDoc_DocumentTool.ColorTool_s(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
     return doc
 
 
 def _empty_document():
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     return app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
 
 
@@ -91,11 +91,11 @@ def test_a_document_round_trips(tmp_path, document, quiet_messenger):
     reader = RWGltf_CafReader()
     reader.SetDocument(reloaded)
     assert reader.Perform(TCollection_AsciiString(str(path)), Message_ProgressRange())
-    shapes = XCAFDoc_DocumentTool.ShapeTool(reloaded.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main())
     free = NCollection_Sequence[TDF_Label]()
     shapes.GetFreeShapes(free)
     assert free.Length() == 1
-    shape = shapes.GetShape(free.Value(1))
+    shape = shapes.GetShape_s(free.Value(1))
     assert shape.ShapeType() == TopAbs_COMPOUND                   # a mesh, not the original solid
     assert sum(1 for _ in TopExp_Explorer(shape, TopAbs_FACE)) == 6
 
@@ -123,7 +123,7 @@ def test_both_flavours_read_from_memory_as_bytes(tmp_path, document, quiet_messe
         assert reader.Perform(io.BytesIO(path.read_bytes()), Message_ProgressRange(),
                               TCollection_AsciiString(str(path))), name
         free = NCollection_Sequence[TDF_Label]()
-        XCAFDoc_DocumentTool.ShapeTool(reloaded.Main()).GetFreeShapes(free)
+        XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main()).GetFreeShapes(free)
         assert free.Length() == 1, name
     assert RWGltf_CafReader().ProbeHeader(io.BytesIO(written["box.glb"].read_bytes()),
                                           TCollection_AsciiString(str(written["box.glb"])))

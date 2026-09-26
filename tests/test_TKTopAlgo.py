@@ -55,23 +55,23 @@ def test_makers_conversion_operator_and_explorer():
 def test_global_properties_check_and_transform():
     wire, face = _rectangle()
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.SurfaceProperties(face, props)                  # static, no _s: no instance method of that name
+    BRepGProp.BRepGProp.SurfaceProperties_s(face, props)                  # static, no _s: no instance method of that name
     assert props.Mass() == pytest.approx(50.0)
     c = props.CentreOfMass()
     assert (c.X(), c.Y(), c.Z()) == pytest.approx((5.0, 2.5, 0.0))
     lin = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.LinearProperties(wire, lin)
+    BRepGProp.BRepGProp.LinearProperties_s(wire, lin)
     assert lin.Mass() == pytest.approx(30.0)
     circ = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(gp.gp_Circ(gp.gp_Ax2(gp.gp_Pnt(0, 0, 0), gp.gp_Dir(0, 0, 1)), 2.0)).Edge()
     lin2 = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.LinearProperties(circ, lin2)
+    BRepGProp.BRepGProp.LinearProperties_s(circ, lin2)
     assert lin2.Mass() == pytest.approx(4 * math.pi)
     assert BRepCheck.BRepCheck_Analyzer(face).IsValid()
     t = gp.gp_Trsf()
     t.SetTranslation(gp.gp_Vec(100, 0, 0))
     moved = BRepBuilderAPI.BRepBuilderAPI_Transform(face, t, True).Shape()
     props2 = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.SurfaceProperties(moved, props2)
+    BRepGProp.BRepGProp.SurfaceProperties_s(moved, props2)
     assert props2.CentreOfMass().X() == pytest.approx(105.0)
     # BRepGProp_Domain iterates the face's edges (R-ITER, More/Next/Value)
     assert len(list(BRepGProp.BRepGProp_Domain(face))) == 4
@@ -85,12 +85,12 @@ def test_extrema_bounding_box_and_classifiers():
     p = dss.PointOnShape1(1)
     assert (p.X(), p.Y(), p.Z()) == pytest.approx((10.0, 2.5, 0.0))
     box = Bnd.Bnd_Box()
-    BRepBndLib.BRepBndLib.Add(face, box)
-    xmin, ymin, zmin, xmax, ymax, zmax = box.Get__float__float__float__float__float__float()     # R-COLLISION suffix
+    BRepBndLib.BRepBndLib.Add_s(face, box)
+    xmin, ymin, zmin, xmax, ymax, zmax = box.Get()     # R-COLLISION suffix
     assert xmin <= 0 < 10 <= xmax and ymin <= 0 < 5 <= ymax and zmin <= 0 <= zmax
     # R-FIXED-ARRAY: Bnd_OBB::GetVertex(gp_Pnt theP[8]) returns the 8 corners as a list
     obb = Bnd.Bnd_OBB()
-    BRepBndLib.BRepBndLib.AddOBB(face, obb)
+    BRepBndLib.BRepBndLib.AddOBB_s(face, obb)
     ok, corners = obb.GetVertex()
     assert ok and len(corners) == 8 and all(type(p) is gp.gp_Pnt for p in corners)
     assert sorted({round(p.X(), 6) for p in corners}) == [0.0, 10.0] and sorted({round(p.Y(), 6) for p in corners}) == [0.0, 5.0]
@@ -122,7 +122,7 @@ def test_mesh_proximity_through_the_bvh_chain():
     b = BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(3, 0, 0), gp.gp_Pnt(4, 1, 1)).Shape()
     BRepMesh.BRepMesh_IncrementalMesh(a, 0.1)
     BRepMesh.BRepMesh_IncrementalMesh(b, 0.1)
-    prox = BRepExtrema.BRepExtrema_ShapeProximity(a, b, Precision.Precision.Infinite())   # infinite tolerance: proximity-value mode
+    prox = BRepExtrema.BRepExtrema_ShapeProximity(a, b, Precision.Precision.Infinite_s())   # infinite tolerance: proximity-value mode
     prox.Perform()
     assert prox.IsDone() and prox.Proximity() == pytest.approx(3.0)                           # OCP 7.9.3 gives the same numbers
     assert (prox.ProximityPoint1().X(), prox.ProximityPoint2().X()) == pytest.approx((1.0, 4.0))
@@ -160,13 +160,13 @@ def test_mesh_proximity_through_the_bvh_chain():
 def test_collision_suffixes_and_undefined_members():
     # R-COLLISION: three FindAPointInTheFace overloads that differ only in their double& out-parameters
     names = [n for n in dir(BRepClass3d.BRepClass3d_SolidExplorer) if n.startswith("FindAPointInTheFace")]
-    assert names == ["FindAPointInTheFace", "FindAPointInTheFace__float", "FindAPointInTheFace__float__float",
-                     "FindAPointInTheFace__float__float__float"]
+    assert names == ["FindAPointInTheFace_s", "FindAPointInTheFace_s__float", "FindAPointInTheFace_s__float__float",
+                     "FindAPointInTheFace_s__float__float__float"]
     # R-OUT-HANDLE + R-COLLISION: GetUKnots(UMin, UMax, handle<HArray1<double>>&) next to GetUKnots(UMin, UMax, Array1&)
     doc = BRepGProp.BRepGProp_Face.GetUKnots__NCollection_HArray1__double.__doc__
     assert doc.startswith("GetUKnots__NCollection_HArray1__double(self, theUMin: float, theUMax: float) -> "
                           "nanoocp.NCollection.NCollection_HArray1__double")
-    assert hasattr(BRepLib.BRepLib, "BuildPCurveForEdgeOnPlane__Geom2d_Curve__bool")
+    assert hasattr(BRepLib.BRepLib, "BuildPCurveForEdgeOnPlane_s__Geom2d_Curve__bool")
     # R-CONST-TWIN: BRepClass_Edge::Edge() const / Edge() -> only the non-const one
     assert BRepClass.BRepClass_Edge.Edge.__doc__.count("Edge(self") == 1
     # R-UNDEFINED per overload: MAT2d_CutCurve::Perform(handle<Geom2d_Curve>, MAT_Side) has no symbol in libTKTopAlgo

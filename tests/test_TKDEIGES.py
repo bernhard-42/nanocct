@@ -32,12 +32,12 @@ PACKAGES = ["IGESControl", "IGESCAFControl", "IGESData", "IGESBasic", "IGESGeom"
 
 @pytest.fixture(scope="module", autouse=True)
 def controller():
-    IGESControl_Controller.Init()
+    IGESControl_Controller.Init_s()
 
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -48,7 +48,7 @@ def quiet_messenger():
 
 def _volume(shape) -> float:
     properties = GProp_GProps()
-    BRepGProp.VolumeProperties(shape, properties)
+    BRepGProp.VolumeProperties_s(shape, properties)
     return properties.Mass()
 
 
@@ -59,8 +59,8 @@ def test_every_package_imports(pkg):
 
 def test_a_solid_round_trips_in_brep_mode(tmp_path, quiet_messenger):
     """write.iges.brep.mode = 1 keeps the solid; the IGES default (0) writes trimmed surfaces."""
-    assert Interface_Static.IsPresent("write.iges.brep.mode")
-    assert Interface_Static.SetIVal("write.iges.brep.mode", 1)
+    assert Interface_Static.IsPresent_s("write.iges.brep.mode")
+    assert Interface_Static.SetIVal_s("write.iges.brep.mode", 1)
     writer = IGESControl_Writer("MM", 1)
     assert writer.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape())
     writer.ComputeModel()
@@ -80,7 +80,7 @@ def test_a_solid_round_trips_in_brep_mode(tmp_path, quiet_messenger):
 
 
 def test_faces_mode_writes_surfaces(tmp_path, quiet_messenger):
-    assert Interface_Static.SetIVal("write.iges.brep.mode", 0)
+    assert Interface_Static.SetIVal_s("write.iges.brep.mode", 0)
     writer = IGESControl_Writer("MM", 0)
     writer.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape())
     writer.ComputeModel()
@@ -90,7 +90,7 @@ def test_faces_mode_writes_surfaces(tmp_path, quiet_messenger):
     assert reader.ReadFile(str(path)) == IFSelect_RetDone
     reader.TransferRoots()
     assert sum(1 for _ in TopExp_Explorer(reader.OneShape(), TopAbs_FACE)) == 6
-    Interface_Static.SetIVal("write.iges.brep.mode", 1)
+    Interface_Static.SetIVal_s("write.iges.brep.mode", 1)
 
 
 def test_the_writer_streams_but_the_reader_does_not(tmp_path, quiet_messenger):
@@ -98,7 +98,7 @@ def test_the_writer_streams_but_the_reader_does_not(tmp_path, quiet_messenger):
     file's bytes. Reading back in memory is not possible: IFSelect_WorkLibrary::ReadStream is a stub returning 1
     (IFSelect_WorkLibrary.cxx:118) and only StepSelect_WorkLibrary overrides it, so IGES always answers RetFail --
     OCCT behaviour, not an omission."""
-    Interface_Static.SetIVal("write.iges.brep.mode", 1)
+    Interface_Static.SetIVal_s("write.iges.brep.mode", 1)
     writer = IGESControl_Writer("MM", 1)
     writer.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape())
     writer.ComputeModel()
@@ -127,9 +127,9 @@ def test_the_reader_exposes_its_model(tmp_path, quiet_messenger):
 
 
 def test_an_xcaf_document_round_trips(tmp_path, quiet_messenger):
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     shapes.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), False)
     writer = IGESCAFControl_Writer()
     assert writer.Transfer(doc)
@@ -139,7 +139,7 @@ def test_an_xcaf_document_round_trips(tmp_path, quiet_messenger):
     reader = IGESCAFControl_Reader()
     assert reader.ReadFile(str(path)) == IFSelect_RetDone
     assert reader.Transfer(reloaded)
-    assert _volume(XCAFDoc_DocumentTool.ShapeTool(reloaded.Main()).GetShape(
+    assert _volume(XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main()).GetShape_s(
         reloaded.Main().FindChild(1).FindChild(1))) == pytest.approx(6.0)
 
 

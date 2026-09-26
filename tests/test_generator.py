@@ -13,7 +13,7 @@ import pytest
 
 from generator import parse
 from generator.binders import BINDERS
-from generator.emit import Emitter, resolve_ctor_arities, resolve_overload_collisions, resolve_static_renames
+from generator.emit import Emitter, resolve_ctor_arities, resolve_overload_collisions
 from generator.model import Class, Constructor, ConversionKind, Method, PackageIR, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
 from generator.__main__ import _topo, _base_import_edges
@@ -109,7 +109,7 @@ public:
   std::bitset<4> GetFlags() const { return std::bitset<4>(); }
   //! Mutable reference to a primitive -> getter + SetValue Python addition.
   double& Value(int theIndex) { (void)theIndex; return myValue; }
-  //! Static and instance method with the same name -> Static_s.
+  //! Static and instance method with the same name: every static is Name_s anyway (R-STATIC-S).
   static double Length(const gp_Pnt& theP) { return theP.X(); }
   double Length() const { return myValue; }
   //! Overloads that collide after out-param removal: the scalar one wins.
@@ -698,11 +698,14 @@ def test_ir_container_instantiation_registered(rules_ir):
     assert _method(rules_ir, "Rules_Value", "Iter").skip_reason is None
 
 
-def test_emitter_static_rename_and_collision(rules_ir):
+def test_emitter_static_suffix_and_collision(rules_ir):
     em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def_static("Length_s"' in cpp and '.def("Length"' in cpp
+    # R-STATIC-S: every static gets _s, also without an instance method of the same name (OCP's rule, 2026-09-26)
+    statics = re.findall(r'\.def_static\("([^"]+)"', cpp)
+    assert len(statics) > 0 and all(re.match(r"^\w+_s(__\w+)?$", n) is not None for n in statics), statics
     assert 'nb::arg("theIn").none()' in cpp and 'occ::handle<Rules_Thing> theOut{};' in cpp
     assert '.def("SetValue"' in cpp                         # Python addition for double& Value(i)
     assert "    .export_values();" in cpp                   # Mode exported into the class, Kind not
@@ -723,7 +726,6 @@ def test_emitter_static_rename_and_collision(rules_ir):
     # R-ITER: More/Next/Value -> __iter__/__next__ through nanoocp_def_iter; Rules_Value (no More) gets none
     assert cpp.count("nanoocp_def_iter<") == 1 and "nanoocp_def_iter<Rules_Iter>" in cpp
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
-    assert any("Rules_Value::Length: static overloads renamed to Length_s" in r for r in em.report)
 
 
 def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):
@@ -1116,6 +1118,25 @@ def test_resolve_overload_collisions_suffixes_by_out_params():
     assert len(resolve_overload_collisions([sk])) == 0
 
 
+def test_resolve_overload_collisions_components_before_the_aggregate():
+    """gp_Pnt::Coord(double&, double&, double&) next to const gp_XYZ& Coord(): the component form takes the plain name, the
+    class form is suffixed with its type (2026-09-26), so Coord() means the same on gp_Pnt as on gp_Dir/gp_Vec."""
+    def m(name, params, result="void", result_py="", result_class_name=""):
+        return Method(name=name, params=params, result=result, result_kind=ResultKind.VALUE, result_class="", is_static=False,
+                      is_const=True, is_noexcept=False, doc="", result_py=result_py, result_class_name=result_class_name)
+    out = Param(name="x", type="double &", default=None, is_out=True, out_py="float")
+    xyz = m("Coord", [], "const gp_XYZ &", "gp_XYZ", "gp_XYZ")
+    comps = m("Coord", [out, out, out])
+    assert resolve_overload_collisions([comps, xyz]) == [(comps, ""), (xyz, "__gp_XYZ")]
+    # not when the component form returns something besides its out-parameters (HasEdge(int&) -> (bool, int))
+    has = m("HasEdge", [Param(name="e", type="int &", default=None, is_out=True, out_py="int")], "bool")
+    assert resolve_overload_collisions([m("HasEdge", [], "bool", "bool"), has])[1][1] == "__int"
+    # not for a single number, nor when the plain overload returns a scalar
+    assert resolve_overload_collisions([m("P", [out]), m("P", [], "gp_XYZ", "gp_XYZ", "gp_XYZ")])[0][1] == "__float"
+    assert resolve_overload_collisions([m("Q", [out, out]), m("Q", [], "double", "float")])[0][1] == "__float__float"
+
+
+
 def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
     """Overloads with identical Python signatures in the generated stubs (nanobind takes the first registered) may only
     be scalar-width twins (R-WIDTH, wider first) or the str-accepting kinds of TCollection (const char* / char /
@@ -1143,7 +1164,7 @@ def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
             seen[key] = seen.get(key, 0) + 1
             if seen[key] == 2:
                 dups.append((pyi.stem, owner, (name, types)))
-    width_ok = {"Abs", "Min", "Max", "Convert_LinearRGB_To_sRGB", "Convert_sRGB_To_LinearRGB", "Value", "SetValue", "ReSize", "__init__",
+    width_ok = {"Abs", "Min", "Max", "Convert_LinearRGB_To_sRGB_s", "Convert_sRGB_To_LinearRGB_s", "Value", "SetValue", "ReSize", "__init__",
                 "SetWidth", "SetScale", "AddVertex", "SetCoord"}    # Graphic3d_AspectLine3d/AspectMarker3d/ArrayOfPrimitives/Vertex: double and float overloads
     unexpected = [d for d in dups if not (d[2][0] in width_ok and any(t in ("float", "int") for t in d[2][1]))
                   and not (d[0] in ("TCollection", "Standard", "Resource") and "str" in d[2][1])
@@ -1308,37 +1329,6 @@ def test_a_bitset_is_a_set_of_indices(rules_ir):
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("Flags"' in cpp and '.def("GetFlags"' in cpp
-
-
-# Design.md 6 R-STATIC-S
-def test_resolve_static_renames_follows_the_inheritance_chain():
-    """Python cannot hold a static and an instance method of one name, and nanobind refuses the second registration
-    across inheritance too: a def_static on a derived class finds the base's inherited instance method. The real case
-    is XCAFDoc_NoteBalloon (static Set only) : XCAFDoc_NoteComment : XCAFDoc_Note (instance Set) -- the import of
-    _TKXCAF aborted with "mismatched static/instance method flags in function overloads" (2026-09-22)."""
-    def cls(name, base, *methods):
-        return Class(name=name, py_name=name, bases=[base] if base != "" else [], header=f"{name}.hxx", doc="",
-                     is_transient=True, is_exception=False, is_abstract=False,
-                     methods=[Method(name=n, params=[], result="void", result_kind=ResultKind.VALUE, result_class="",
-                                     is_static=static, is_const=False, is_noexcept=False, doc="") for n, static in methods])
-    note = cls("XCAFDoc_Note", "TDF_Attribute", ("Set", False))
-    comment = cls("XCAFDoc_NoteComment", "XCAFDoc_Note", ("Set", True), ("Set", False))
-    balloon = cls("XCAFDoc_NoteBalloon", "XCAFDoc_NoteComment", ("Set", True))
-    renames = resolve_static_renames([note, comment, balloon])
-    assert renames["XCAFDoc_NoteComment"] == {"Set"}      # static and instance in the same class (the pre-2026-09-22 rule)
-    assert renames["XCAFDoc_NoteBalloon"] == {"Set"}      # only a static of its own: the instance Set is two levels up
-    assert renames["XCAFDoc_Note"] == set()               # declares no static Set, so it has nothing to rename
-    # the other direction: the base has the static, a descendant the instance -> the base's static is the one to rename
-    base = cls("Base", "", ("Get", True))
-    derived = cls("Derived", "Base", ("Get", False))
-    renames = resolve_static_renames([base, derived])
-    assert renames["Base"] == {"Get"} and renames["Derived"] == set()
-    # unrelated classes do not interact, and a skipped overload does not count
-    other = cls("Other", "", ("Set", True))
-    assert resolve_static_renames([note, other])["Other"] == set()
-    skipped = cls("Skipped", "XCAFDoc_Note", ("Set", True))
-    skipped.methods[0].skip_reason = "x"
-    assert resolve_static_renames([note, skipped])["Skipped"] == set()
 
 
 # Design.md 6 R-OUT

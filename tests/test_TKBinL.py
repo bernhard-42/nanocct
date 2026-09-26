@@ -21,7 +21,7 @@ def test_every_package_imports(pkg):
 @pytest.fixture
 def app():
     app = TDocStd.TDocStd_Application()
-    BinLDrivers.BinLDrivers.DefineFormat(app)           # registers BinLOcaf without resource files
+    BinLDrivers.BinLDrivers.DefineFormat_s(app)           # registers BinLOcaf without resource files
     return app
 
 
@@ -41,9 +41,9 @@ def test_save_to_bytes_and_reload(app):
     status, again = app.Open(io.BytesIO(data))           # Open(istream&, handle<TDocStd_Document>&) -> (status, doc)
     assert status == PCDM.PCDM_RS_OK and type(again) is TDocStd.TDocStd_Document
     label = again.Main().FindChild(1, False)
-    assert label.FindAttribute(TDataStd.TDataStd_Name.GetID())[1].Get().ToExtString() == "part"
-    assert label.FindAttribute(TDataStd.TDataStd_Integer.GetID())[1].Get() == 42
-    assert label.FindAttribute(TDataStd.TDataStd_Real.GetID())[1].Get() == 2.5
+    assert label.FindAttribute(TDataStd.TDataStd_Name.GetID_s())[1].Get().ToExtString() == "part"
+    assert label.FindAttribute(TDataStd.TDataStd_Integer.GetID_s())[1].Get() == 42
+    assert label.FindAttribute(TDataStd.TDataStd_Real.GetID_s())[1].Get() == 2.5
     with pytest.raises(TypeError):                       # a text file-like is not a binary stream
         app.Open(io.StringIO(data.decode("latin-1")))
 
@@ -59,9 +59,9 @@ def test_save_to_file_matches_the_bytes(app, tmp_path):
     # the document is open in this application under that path: OCCT refuses to retrieve it a second time
     assert app.Open(TCollection_ExtendedString(str(path))) == (PCDM.PCDM_RS_AlreadyRetrieved, None)
     other = TDocStd.TDocStd_Application()
-    BinLDrivers.BinLDrivers.DefineFormat(other)
+    BinLDrivers.BinLDrivers.DefineFormat_s(other)
     status, again = other.Open(TCollection_ExtendedString(str(path)))
-    assert status == PCDM.PCDM_RS_OK and again.Main().FindChild(1).FindAttribute(TDataStd.TDataStd_Integer.GetID())[1].Get() == 42
+    assert status == PCDM.PCDM_RS_OK and again.Main().FindChild(1).FindAttribute(TDataStd.TDataStd_Integer.GetID_s())[1].Get() == 42
 
 
 def test_save_without_a_defined_format_fails(app):
@@ -70,7 +70,7 @@ def test_save_without_a_defined_format_fails(app):
 
 
 def test_drivers_and_relocation_tables():
-    drivers = BinLDrivers.BinLDrivers.AttributeDrivers(None)                 # handle<Message_Messenger>& -> None
+    drivers = BinLDrivers.BinLDrivers.AttributeDrivers_s(None)                 # handle<Message_Messenger>& -> None
     assert type(drivers) is BinMDF.BinMDF_ADriverTable
     table = BinObjMgt.BinObjMgt_RRelocationTable()                           # derives from NCollection_DataMap[int, Standard_Transient]
     assert table.IsEmpty() and table.Extent() == 0 and table.GetHeaderData() is None

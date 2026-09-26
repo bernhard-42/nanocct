@@ -201,15 +201,3 @@ def get(mod, cls: str | None, name: str):
         return None
     owner = mod if cls is None else getattr(mod, cls, None)
     return None if owner is None else getattr(owner, name, None)
-
-
-def rtti(mod, cls: str) -> None:
-    """OCP's RTTI statics get_type_name_s / get_type_descriptor_s, from the class's OWN get_type_name /
-    get_type_descriptor -- an inherited one would report the base class (Geom_Line -> Geom_Curve)."""
-    obj = getattr(mod, cls, None) if mod is not None else None
-    if not isinstance(obj, type):
-        return
-    own = vars(obj)
-    for plain in ("get_type_name", "get_type_descriptor"):
-        if plain + "_s" not in own and plain in own:
-            setattr(obj, plain + "_s", staticmethod(own[plain]))

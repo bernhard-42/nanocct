@@ -18,7 +18,7 @@ def test_every_package_imports(pkg):
 
 def _volume(shape: TopoDS.TopoDS_Shape) -> float:
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.VolumeProperties(shape, props)
+    BRepGProp.BRepGProp.VolumeProperties_s(shape, props)
     return props.Mass()
 
 
@@ -27,7 +27,7 @@ def test_feature_prism_cut_and_fuse():
     top = None
     for f in TopExp.TopExp_Explorer(box, TopAbs.TopAbs_FACE):
         props = GProp.GProp_GProps()
-        BRepGProp.BRepGProp.SurfaceProperties(f, props)
+        BRepGProp.BRepGProp.SurfaceProperties_s(f, props)
         if math.isclose(props.CentreOfMass().Z(), 10.0):
             top = TopoDS.Face(f)
     wire = BRepBuilderAPI.BRepBuilderAPI_MakePolygon(gp.gp_Pnt(4, 4, 10), gp.gp_Pnt(6, 4, 10), gp.gp_Pnt(6, 6, 10), gp.gp_Pnt(4, 6, 10), True).Wire()

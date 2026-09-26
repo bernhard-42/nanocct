@@ -25,7 +25,7 @@ def test_every_package_imports(pkg):
 @pytest.fixture
 def app():
     app = TDocStd.TDocStd_Application()
-    BinDrivers.BinDrivers.DefineFormat(app)                 # BinOcaf, without resource files
+    BinDrivers.BinDrivers.DefineFormat_s(app)                 # BinOcaf, without resource files
     return app
 
 
@@ -34,7 +34,7 @@ def _document(app):
     label = doc.Main().FindChild(1, True)
     TNaming.TNaming_Builder(label).Generated(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape())
     TDataStd.TDataStd_Name.Set_s(label, TCollection_ExtendedString("box"))
-    TDataXtd.TDataXtd_Point.Set(doc.Main().FindChild(2, True), gp.gp_Pnt(1.0, 2.0, 3.0))
+    TDataXtd.TDataXtd_Point.Set_s(doc.Main().FindChild(2, True), gp.gp_Pnt(1.0, 2.0, 3.0))
     return doc
 
 
@@ -45,14 +45,14 @@ def test_document_with_a_shape_round_trips_through_bytes(app):
     status, again = app.Open(io.BytesIO(data))
     assert status == PCDM.PCDM_RS_OK
     label = again.Main().FindChild(1)
-    found, named = label.FindAttribute(TNaming.TNaming_NamedShape.GetID())
+    found, named = label.FindAttribute(TNaming.TNaming_NamedShape.GetID_s())
     assert found and named.Get().ShapeType() == TopAbs_SOLID
     props = GProp_GProps()
-    BRepGProp.VolumeProperties(named.Get(), props)
+    BRepGProp.VolumeProperties_s(named.Get(), props)
     assert props.Mass() == pytest.approx(6.0)
-    assert label.FindAttribute(TDataStd.TDataStd_Name.GetID())[1].Get().ToExtString() == "box"
+    assert label.FindAttribute(TDataStd.TDataStd_Name.GetID_s())[1].Get().ToExtString() == "box"
     point = gp.gp_Pnt()
-    assert TDataXtd.TDataXtd_Geometry.Point(again.Main().FindChild(2), point) and (point.X(), point.Y(), point.Z()) == (1.0, 2.0, 3.0)
+    assert TDataXtd.TDataXtd_Geometry.Point_s(again.Main().FindChild(2), point) and (point.X(), point.Y(), point.Z()) == (1.0, 2.0, 3.0)
 
 
 def test_file_form_and_binlocaf_reader_compatibility(app, tmp_path):
@@ -61,9 +61,9 @@ def test_file_form_and_binlocaf_reader_compatibility(app, tmp_path):
     assert app.SaveAs(doc, TCollection_ExtendedString(str(path))) == PCDM.PCDM_SS_OK
     assert path.read_bytes() == app.SaveAs(doc)[1]
     other = TDocStd.TDocStd_Application()
-    BinDrivers.BinDrivers.DefineFormat(other)
+    BinDrivers.BinDrivers.DefineFormat_s(other)
     status, again = other.Open(TCollection_ExtendedString(str(path)))
-    assert status == PCDM.PCDM_RS_OK and again.Main().FindChild(1).IsAttribute(TNaming.TNaming_NamedShape.GetID())
+    assert status == PCDM.PCDM_RS_OK and again.Main().FindChild(1).IsAttribute(TNaming.TNaming_NamedShape.GetID_s())
 
 
 def test_storage_driver_options_and_named_shape_driver():
@@ -71,7 +71,7 @@ def test_storage_driver_options_and_named_shape_driver():
     assert driver.IsWithTriangles() is False and driver.IsWithNormals() is False
     driver.SetWithTriangles(None, True)                     # handle<Message_Messenger>& first
     assert driver.IsWithTriangles() is True
-    table = BinDrivers.BinDrivers.AttributeDrivers(None)
+    table = BinDrivers.BinDrivers.AttributeDrivers_s(None)
     assert type(table) is BinMDF.BinMDF_ADriverTable
     type_id, named_driver = table.GetDriver(TNaming.TNaming_NamedShape().DynamicType())   # GetDriver(type, handle&) -> (id, driver)
     assert type_id == 0 and type(named_driver) is BinMNaming.BinMNaming_NamedShapeDriver

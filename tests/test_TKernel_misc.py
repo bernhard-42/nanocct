@@ -44,15 +44,15 @@ def test_transient_string_is_handle_managed():
 
 
 def test_precision_and_color():
-    assert Precision.Precision.Confusion() == 1e-7
+    assert Precision.Precision.Confusion_s() == 1e-7
     c = Quantity.Quantity_Color(1.0, 0.0, 0.0, Quantity.Quantity_TypeOfColor.Quantity_TOC_RGB)
     assert (c.Red(), c.Green(), c.Blue()) == (1.0, 0.0, 0.0)
-    assert Quantity.Quantity_Color.StringName(c.Name()) == "RED"
+    assert Quantity.Quantity_Color.StringName_s(c.Name()) == "RED"
 
 
 def test_singletons_are_transient_handles():
-    assert type(Message.Message.DefaultMessenger()).__name__ == "Message_Messenger"
-    a = NCollection.NCollection_BaseAllocator.CommonBaseAllocator()
+    assert type(Message.Message.DefaultMessenger_s()).__name__ == "Message_Messenger"
+    a = NCollection.NCollection_BaseAllocator.CommonBaseAllocator_s()
     assert a.GetRefCount() >= 1
 
 
@@ -127,10 +127,10 @@ def test_messages_are_collected_not_subclassed():
         with pytest.raises(TypeError, match="no constructor defined"):
             Sub()
 
-    messenger = Message.DefaultMessenger()
+    messenger = Message.DefaultMessenger_s()
     saved = list(messenger.Printers())              # restored afterwards: the default messenger is process-wide
     try:
-        messenger.RemovePrinters(Message_PrinterOStream.get_type_descriptor())
+        messenger.RemovePrinters(Message_PrinterOStream.get_type_descriptor_s())
         printer = Message_PrinterToReport()
         messenger.AddPrinter(printer)
         messenger.Send(TCollection_AsciiString("first warning"), Message_Warning)
@@ -140,7 +140,7 @@ def test_messages_are_collected_not_subclassed():
         assert report.GetAlerts(Message_Fail).Size() == 1
         assert report.Dump(Message_Warning) == "first warning\n"
     finally:
-        messenger.RemovePrinters(Message_PrinterToReport.get_type_descriptor())
-        messenger.RemovePrinters(Message_PrinterOStream.get_type_descriptor())
+        messenger.RemovePrinters(Message_PrinterToReport.get_type_descriptor_s())
+        messenger.RemovePrinters(Message_PrinterOStream.get_type_descriptor_s())
         for saved_printer in saved:
             messenger.AddPrinter(saved_printer)

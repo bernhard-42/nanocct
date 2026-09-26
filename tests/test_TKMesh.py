@@ -22,7 +22,7 @@ def test_every_package_imports(pkg):
 def _triangles(shape: TopoDS.TopoDS_Shape) -> int:
     total = 0
     for f in TopExp.TopExp_Explorer(shape, TopAbs.TopAbs_FACE):
-        tri = BRep.BRep_Tool.Triangulation(TopoDS.Face(f), TopLoc.TopLoc_Location())
+        tri = BRep.BRep_Tool.Triangulation_s(TopoDS.Face(f), TopLoc.TopLoc_Location())
         total += 0 if tri is None else tri.NbTriangles()
     return total
 

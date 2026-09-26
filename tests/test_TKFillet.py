@@ -20,7 +20,7 @@ def test_every_package_imports(pkg):
 
 def _volume(shape: TopoDS.TopoDS_Shape) -> float:
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.VolumeProperties(shape, props)
+    BRepGProp.BRepGProp.VolumeProperties_s(shape, props)
     return props.Mass()
 
 

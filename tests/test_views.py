@@ -19,7 +19,7 @@ def triangulation():
     shape = BRepPrimAPI.BRepPrimAPI_MakeSphere(10.0).Shape()
     BRepMesh.BRepMesh_IncrementalMesh(shape, 0.05, False, 0.1, True)
     ex = TopExp.TopExp_Explorer(shape, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE)
-    tri = BRep.BRep_Tool.Triangulation(TopoDS.Face(ex.Current()), TopLoc.TopLoc_Location())
+    tri = BRep.BRep_Tool.Triangulation_s(TopoDS.Face(ex.Current()), TopLoc.TopLoc_Location())
     assert tri is not None and tri.NbNodes() > 100
     return tri
 
@@ -68,7 +68,7 @@ def test_the_view_keeps_the_triangulation_alive():
     shape = BRepPrimAPI.BRepPrimAPI_MakeSphere(5.0).Shape()
     BRepMesh.BRepMesh_IncrementalMesh(shape, 0.5, False, 0.1, True)
     ex = TopExp.TopExp_Explorer(shape, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE)
-    tri = BRep.BRep_Tool.Triangulation(TopoDS.Face(ex.Current()), TopLoc.TopLoc_Location())
+    tri = BRep.BRep_Tool.Triangulation_s(TopoDS.Face(ex.Current()), TopLoc.TopLoc_Location())
     nodes = tri.NodesArray()
     expected = np.array(nodes)                      # a real copy, for comparison
     del tri, ex, shape
@@ -247,8 +247,8 @@ def test_an_empty_pixmap_has_no_view():
 
 def test_a_buffer_views_as_bytes_and_None_only_when_unallocated():
     """Before this the class was unusable: Data()/ChangeData() are raw pointers, so nothing was bound but
-    Size() and IsEmpty() -- which also made FSD_Base64.Decode, whose result *is* one of these, unusable."""
-    b = NCollection.NCollection_Buffer(NCollection.NCollection_BaseAllocator.CommonBaseAllocator())
+    Size() and IsEmpty() -- which also made FSD_Base64.Decode_s, whose result *is* one of these, unusable."""
+    b = NCollection.NCollection_Buffer(NCollection.NCollection_BaseAllocator.CommonBaseAllocator_s())
     assert b.Allocate(8) is True
     v = b.DataArray()
     assert v.shape == (8,) and v.dtype == np.uint8 and not v.flags["OWNDATA"]
@@ -258,7 +258,7 @@ def test_a_buffer_views_as_bytes_and_None_only_when_unallocated():
     # A buffer of size 0 is still *allocated* -- the allocator hands back a non-null pointer for 0 bytes --
     # so it is a zero-length array. Only Free() makes it None.
     assert NCollection.NCollection_Buffer(
-        NCollection.NCollection_BaseAllocator.CommonBaseAllocator()).DataArray().shape == (0,)
+        NCollection.NCollection_BaseAllocator.CommonBaseAllocator_s()).DataArray().shape == (0,)
     b.Free()
     assert b.IsEmpty() is True and b.DataArray() is None
 
@@ -271,14 +271,14 @@ def test_base64_goes_both_ways_now():
 
     from nanoocp import FSD
 
-    encoded = FSD.FSD_Base64.Encode(b"Hello, nanoOCP!").ToCString()
+    encoded = FSD.FSD_Base64.Encode_s(b"Hello, nanoOCP!").ToCString()
     assert encoded == base64.b64encode(b"Hello, nanoOCP!").decode()
-    assert bytes(FSD.FSD_Base64.Decode(encoded, len(encoded)).DataArray()) == b"Hello, nanoOCP!"
-    assert FSD.FSD_Base64.Encode(b"").ToCString() == ""
+    assert bytes(FSD.FSD_Base64.Decode_s(encoded, len(encoded)).DataArray()) == b"Hello, nanoOCP!"
+    assert FSD.FSD_Base64.Encode_s(b"").ToCString() == ""
 
     payload = bytes(range(256)) * 100                    # 25 600 bytes, well past one base64 block
-    enc = FSD.FSD_Base64.Encode(payload).ToCString()
-    assert bytes(FSD.FSD_Base64.Decode(enc, len(enc)).DataArray()) == payload
+    enc = FSD.FSD_Base64.Encode_s(payload).ToCString()
+    assert bytes(FSD.FSD_Base64.Decode_s(enc, len(enc)).DataArray()) == payload
 
 
 def test_Graphic3d_Buffer_inherits_the_accessor():

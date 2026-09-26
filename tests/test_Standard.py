@@ -36,7 +36,7 @@ def test_transient_identity_and_refcount():
     assert t.GetRefCount() == 1
     assert t.DynamicType().Name() == "Standard_Transient"
     assert t.IsKind("Standard_Transient") is True
-    assert Standard.Standard_Transient.get_type_descriptor().Name() == "Standard_Transient"
+    assert Standard.Standard_Transient.get_type_descriptor_s().Name() == "Standard_Transient"
 
 
 def test_free_functions():

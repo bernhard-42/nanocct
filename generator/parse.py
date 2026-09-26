@@ -971,7 +971,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_static=cursor.is_static_method(),
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
                is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
-               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type))
+               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
+               result_py=_out_py_type(cursor.result_type) if cursor.result_type.kind != TK.VOID else "")
     result_stream = _stream_kind(cursor.result_type)
     returns_stream = result_stream != StreamKind.NONE and any(p.stream == result_stream for p in params)
     if m.skip_reason is None and returns_stream:

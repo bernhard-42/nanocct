@@ -1,5 +1,5 @@
 """Generated bindings for TKDEVRML (DataExchange: Vrml, VrmlData, VrmlAPI, VrmlConverter, DEVRML): VRML, the last
-DataExchange format toolkit. It brings VrmlAPI.Write, one of the calls build123d and CadQuery make, and it is the
+DataExchange format toolkit. It brings VrmlAPI.Write_s, one of the calls build123d and CadQuery make, and it is the
 only format so far with two generations side by side -- `Vrml` is the VRML 1.0 node set that prints itself, `VrmlData`
 the VRML 2.0 DOM that parses and converts."""
 import importlib
@@ -32,7 +32,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEVRML" / "report.txt"
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -49,10 +49,10 @@ def meshed_box():
 
 
 def _document(box):
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
-    label = XCAFDoc_DocumentTool.ShapeTool(doc.Main()).AddShape(box, False)
-    XCAFDoc_DocumentTool.ColorTool(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
+    label = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main()).AddShape(box, False)
+    XCAFDoc_DocumentTool.ColorTool_s(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
     return doc
 
 
@@ -62,13 +62,13 @@ def test_every_package_imports(pkg):
 
 
 def test_the_package_function_is_build123d_s_call(tmp_path, meshed_box, quiet_messenger):
-    """VrmlAPI.Write(shape, file, version) -- OCP spells it VrmlAPI.Write_s; here the static has no instance twin."""
+    """VrmlAPI.Write_s(shape, file, version) -- OCP spells it VrmlAPI.Write_s; here the static has no instance twin."""
     path = tmp_path / "box.wrl"
-    assert VrmlAPI.Write(meshed_box, str(path), 2)
+    assert VrmlAPI.Write_s(meshed_box, str(path), 2)
     assert path.read_text().splitlines()[0] == "#VRML V2.0 utf8"
 
     older = tmp_path / "box1.wrl"
-    assert VrmlAPI.Write(meshed_box, str(older), 1)
+    assert VrmlAPI.Write_s(meshed_box, str(older), 1)
     assert older.read_text().splitlines()[0] == "#VRML V1.0 ascii"
 
 
@@ -102,7 +102,7 @@ def test_the_caf_reader_reads_a_file_and_bytes(tmp_path, meshed_box, quiet_messe
     path = tmp_path / "doc.wrl"
     VrmlAPI_Writer().WriteDoc(_document(meshed_box), str(path), 1.0)
 
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     reader = VrmlAPI_CafReader()
     reader.SetDocument(app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF")))
     assert reader.Perform(TCollection_AsciiString(str(path)), Message_ProgressRange())

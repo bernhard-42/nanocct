@@ -35,15 +35,15 @@ def box():
 
 def _volume(shape):
     props = GProp_GProps()
-    BRepGProp.VolumeProperties(shape, props)
+    BRepGProp.VolumeProperties_s(shape, props)
     return props.Mass()
 
 
 def _document(box):
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
-    label = XCAFDoc_DocumentTool.ShapeTool(doc.Main()).AddShape(box, False)
-    XCAFDoc_DocumentTool.ColorTool(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorSurf)
+    label = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main()).AddShape(box, False)
+    XCAFDoc_DocumentTool.ColorTool_s(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorSurf)
     return doc
 
 
@@ -75,7 +75,7 @@ def test_a_shape_round_trips_through_brep(tmp_path, box):
 
 def test_the_brep_flavour_is_binary_by_default(tmp_path, box):
     """DEBREP_ConfigurationNode's InternalParameters.WriteBinary is True (DEBREP_ConfigurationNode.hxx:91), so the
-    provider writes the *binary* BRep format -- unlike BRepTools.Write, which writes ASCII. The struct is reachable,
+    provider writes the *binary* BRep format -- unlike BRepTools.Write_s, which writes ASCII. The struct is reachable,
     so the flavour is a flag, not a rebuild."""
     node = DEBREP_ConfigurationNode()
     assert node.InternalParameters.WriteBinary is True
@@ -114,11 +114,11 @@ def test_the_wrapper_dispatches_documents(tmp_path, box):
     assert wrapper.Write(TCollection_AsciiString(str(path)), _document(box))
     assert path.read_bytes()[:7] == b"BINFILE"                    # the BinXCAF document of TKBinXCAF
 
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     reloaded = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
     assert wrapper.Read(TCollection_AsciiString(str(path)), reloaded)
     free = NCollection_Sequence[TDF_Label]()
-    XCAFDoc_DocumentTool.ShapeTool(reloaded.Main()).GetFreeShapes(free)
+    XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main()).GetFreeShapes(free)
     assert free.Length() == 1
 
 

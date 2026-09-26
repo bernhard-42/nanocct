@@ -55,7 +55,7 @@ def test_ldom_parse_error_is_reported():
 def test_ldom_writer_optional_encoding_and_str_result():
     """LDOM_XmlWriter(const char* theEncoding = nullptr): the default is reachable (R-CSTR-NULL) and equals None; the
     ostream& of Write() comes back as str (R-STREAM-OUT)."""
-    doc = LDOM.LDOM_Document.createDocument("root")
+    doc = LDOM.LDOM_Document.createDocument_s("root")
     item = doc.createElement("item")
     item.setAttribute("id", "7")
     item.appendChild(doc.createTextNode("hello"))
@@ -80,12 +80,12 @@ def test_pcdm_format_detection_from_bytes():
     same entry points read binary and XML OCAF documents. The XML header is detected by PCDM::FileDriverType (PCDM.cxx:82)
     and the format by the `document` element's attribute (PCDM_ReadWriter.cxx:211-233)."""
     xml = b'<?xml version="1.0" encoding="UTF-8"?>\n<document format="XmlOcaf" xmlns="http://www.opencascade.org/OCAF/XML"><info/></document>\n'
-    fmt, data = PCDM.PCDM_ReadWriter.FileFormat(io.BytesIO(xml))       # handle<Storage_Data>& out: null (None) on the XML path
+    fmt, data = PCDM.PCDM_ReadWriter.FileFormat_s(io.BytesIO(xml))       # handle<Storage_Data>& out: null (None) on the XML path
     assert fmt.ToExtString() == "XmlOcaf" and data is None
-    assert PCDM.PCDM.FileDriverType(io.BytesIO(xml)) == (PCDM.PCDM_TOFD_XmlFile, None)
-    assert PCDM.PCDM.FileDriverType(io.BytesIO(b"garbage")) == (PCDM.PCDM_TOFD_Unknown, None)
+    assert PCDM.PCDM.FileDriverType_s(io.BytesIO(xml)) == (PCDM.PCDM_TOFD_XmlFile, None)
+    assert PCDM.PCDM.FileDriverType_s(io.BytesIO(b"garbage")) == (PCDM.PCDM_TOFD_Unknown, None)
     with pytest.raises(TypeError):                                         # a text file-like falls through (typing.BinaryIO)
-        PCDM.PCDM.FileDriverType(io.StringIO(xml.decode()))
+        PCDM.PCDM.FileDriverType_s(io.StringIO(xml.decode()))
     assert "theIStream: typing.BinaryIO" in CDF.CDF_Application.Read.__doc__
     assert "-> bytes" in PCDM.PCDM_StorageDriver.Write.__doc__
 
@@ -102,7 +102,7 @@ def test_pcdm_reader_filter():
 def test_cdf_directory_utl_and_metadata_print():
     directory = CDF.CDF_Directory()
     assert directory.IsEmpty() and directory.Length() == 0
-    assert UTL.UTL.Extension(TCollection_ExtendedString("doc.xbf")).ToExtString() == "xbf"
+    assert UTL.UTL.Extension_s(TCollection_ExtendedString("doc.xbf")).ToExtString() == "xbf"
     assert "Print(self) -> str" in CDM.CDM_MetaData.Print.__doc__                  # Print(Standard_OStream&) -> str
 
 

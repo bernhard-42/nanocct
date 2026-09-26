@@ -39,14 +39,14 @@ PACKAGES = ["STEPControl", "STEPCAFControl", "STEPConstruct", "STEPEdit", "STEPS
 @pytest.fixture(scope="module", autouse=True)
 def controller():
     """STEPCAFControl_Controller::Init declares the STEP statics (write.step.schema and friends); without it
-    Interface_Static.SetCVal on a STEP name returns False (seen with TKXSBase)."""
-    STEPCAFControl_Controller.Init()
+    Interface_Static.SetCVal_s on a STEP name returns False (seen with TKXSBase)."""
+    STEPCAFControl_Controller.Init_s()
 
 
 @pytest.fixture
 def quiet_messenger():
     """The readers and writers print transfer statistics unconditionally."""
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -57,7 +57,7 @@ def quiet_messenger():
 
 def _volume(shape) -> float:
     properties = GProp_GProps()
-    BRepGProp.VolumeProperties(shape, properties)
+    BRepGProp.VolumeProperties_s(shape, properties)
     return properties.Mass()
 
 
@@ -68,15 +68,15 @@ def test_every_package_imports(pkg):
 
 def test_the_step_statics_cadquery_sets():
     """CadQuery's sequence (shapes.py:560-563) works once the controller declared the names."""
-    assert Interface_Static.IsPresent("write.step.schema")
-    assert Interface_Static.SetIVal("write.surfacecurve.mode", 1)
-    assert Interface_Static.SetIVal("write.precision.mode", 0)
-    assert Interface_Static.SetCVal("xstep.cascade.unit", "MM") and Interface_Static.CVal("xstep.cascade.unit") == "MM"
+    assert Interface_Static.IsPresent_s("write.step.schema")
+    assert Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
+    assert Interface_Static.SetIVal_s("write.precision.mode", 0)
+    assert Interface_Static.SetCVal_s("xstep.cascade.unit", "MM") and Interface_Static.CVal_s("xstep.cascade.unit") == "MM"
     # an enum static: the schema names are AP214IS/AP203/AP214DIS/AP242DIS, "AP214" alone is rejected
-    assert Interface_Static.CVal("write.step.schema") == "AP214IS"
-    assert not Interface_Static.SetCVal("write.step.schema", "AP214")
-    assert Interface_Static.SetCVal("write.step.schema", "AP203") and Interface_Static.CVal("write.step.schema") == "AP203"
-    assert Interface_Static.SetCVal("write.step.schema", "AP214IS")
+    assert Interface_Static.CVal_s("write.step.schema") == "AP214IS"
+    assert not Interface_Static.SetCVal_s("write.step.schema", "AP214")
+    assert Interface_Static.SetCVal_s("write.step.schema", "AP203") and Interface_Static.CVal_s("write.step.schema") == "AP203"
+    assert Interface_Static.SetCVal_s("write.step.schema", "AP214IS")
 
 
 def test_a_box_round_trips_through_a_step_file(tmp_path, quiet_messenger):
@@ -134,10 +134,10 @@ def test_the_reader_exposes_its_work_session_and_model(tmp_path, quiet_messenger
 def test_an_xcaf_document_round_trips_with_its_colour(tmp_path, quiet_messenger):
     """STEPCAFControl writes the XCAF document; OCCT maps a generic colour onto the entity's surface and curve
     colours, so it comes back as XCAFDoc_ColorSurf/ColorCurv, not ColorGen."""
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
-    colors = XCAFDoc_DocumentTool.ColorTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
+    colors = XCAFDoc_DocumentTool.ColorTool_s(doc.Main())
     label = shapes.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), False)
     colors.SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
 
@@ -150,12 +150,12 @@ def test_an_xcaf_document_round_trips_with_its_colour(tmp_path, quiet_messenger)
     reader = STEPCAFControl_Reader()
     assert reader.ReadFile(str(path)) == IFSelect_RetDone
     assert reader.Transfer(reloaded)
-    shapes2 = XCAFDoc_DocumentTool.ShapeTool(reloaded.Main())
-    colors2 = XCAFDoc_DocumentTool.ColorTool(reloaded.Main())
+    shapes2 = XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main())
+    colors2 = XCAFDoc_DocumentTool.ColorTool_s(reloaded.Main())
     free = NCollection_Sequence[TDF_Label]()
     shapes2.GetFreeShapes(free)
     assert free.Length() == 1
-    shape = shapes2.GetShape(free.Value(1))
+    shape = shapes2.GetShape_s(free.Value(1))
     assert _volume(shape) == pytest.approx(6.0)
     labels = NCollection_Sequence[TDF_Label]()
     colors2.GetColors(labels)
@@ -180,7 +180,7 @@ def test_the_entity_classes_of_the_schema():
     assert product.DynamicType().Name() == "StepBasic_Product"
     assert StepShape_ManifoldSolidBrep().DynamicType().Name() == "StepShape_ManifoldSolidBrep"
     assert StepBasic_SiUnitName.StepBasic_sunMetre is not None
-    assert hasattr(STEPConstruct, "FindEntity")
+    assert hasattr(STEPConstruct, "FindEntity_s")
 
 
 def test_report_categories():

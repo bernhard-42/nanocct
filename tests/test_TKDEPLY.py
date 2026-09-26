@@ -29,7 +29,7 @@ FileInfo = NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_Ascii
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -39,12 +39,12 @@ def quiet_messenger():
 
 
 def _document():
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
     box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
     BRepMesh_IncrementalMesh(box, 0.1)                            # PLY exports triangulations
-    label = XCAFDoc_DocumentTool.ShapeTool(doc.Main()).AddShape(box, False)
-    XCAFDoc_DocumentTool.ColorTool(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
+    label = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main()).AddShape(box, False)
+    XCAFDoc_DocumentTool.ColorTool_s(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
     return doc
 
 
@@ -125,7 +125,7 @@ def test_the_de_provider_writes_but_cannot_read(tmp_path, quiet_messenger):
     assert provider.Write(TCollection_AsciiString(str(path)), _document(), Message_ProgressRange())
     assert path.read_text().startswith("ply\n")
 
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     empty = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
     assert provider.Read(TCollection_AsciiString(str(path)), empty, Message_ProgressRange()) is False
 

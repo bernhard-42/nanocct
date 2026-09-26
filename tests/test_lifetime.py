@@ -170,7 +170,7 @@ def test_imeshdata_objects_outliving_their_model():
 
 LDOM_DOC = """
 from nanoocp import LDOM
-doc = LDOM.LDOM_Document.createDocument("root")
+doc = LDOM.LDOM_Document.createDocument_s("root")
 element = doc.getDocumentElement()
 """
 
@@ -472,7 +472,7 @@ def test_a_result_that_is_self_does_not_leak():
     check -- so R-RESULT uses nanoocp::KeepOwnerUnlessSelf (found by this test, 8.18)."""
     out = _ok(_run("""
         from nanoocp import LDOM
-        doc = LDOM.LDOM_Document.createDocument("root")
+        doc = LDOM.LDOM_Document.createDocument_s("root")
         manager = doc.getDocumentElement().getOwnerDocument()
         print(manager.Self() is manager)
     """))

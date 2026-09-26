@@ -34,7 +34,6 @@ rt = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(rt)
 
 OCP_VERSION = "8.0.1.0"
-RTTI = ("get_type_name", "get_type_descriptor")
 PRIMITIVES = {"float", "int", "bool", "str"}
 
 
@@ -191,7 +190,6 @@ def main() -> dict[str, str]:
             mv = mod_var(pkg)
             owner = mv if is_module else f"{mv}.{cname}"
             cls_arg = "None" if is_module else repr(cname)
-            own = {} if is_module else vars(obj)
             for name, info in sorted(cm.items()):
                 if info["kind"] == "property":
                     getter, setter = getattr(obj, name, None), getattr(obj, "Set" + name, None)
@@ -205,25 +203,30 @@ def main() -> dict[str, str]:
                     continue
                 is_static = name.endswith("_s")
                 plain = name[:-2] if is_static else name
-                if is_static and (name in own or (is_module and hasattr(obj, name))):
-                    continue                          # nanoocp kept the suffix (R-STATIC-S)
-                target = getattr(obj, plain, None)
+                # nanoocp suffixes every class static like OCP (R-STATIC-S, 2026-09-26), so a class member keeps its OCP
+                # name; only a namespace function (a module owner here: OCP's class, nanoocp's package) is plain
+                source = plain if is_module else name
+                if is_module and hasattr(obj, name):
+                    continue                          # the module has the OCP spelling itself
+                target = getattr(obj, source, None)
                 if target is None or not callable(target) or isinstance(target, type):
                     continue
                 ocp = rt.ocp_overloads(info["sigs"])
                 nano = nano_sigs(target)
-                if not is_static and not rt.differs(ocp, [([p for p, _, _ in ps], r) for ps, r in nano]):
-                    continue
+                if source == name and not rt.differs(ocp, [([p for p, _, _ in ps], r) for ps, r in nano]):
+                    continue                          # same name, same signatures: nothing to adapt
                 arities = sorted({n for o in ocp for n in range(o.required, len(o.names) + 1)})
                 plans = {n: plan(ocp, nano, n) for n in arities}
                 o_id = f"_o{counter}"
                 counter += 1
-                phase1.append(f"{o_id} = _rt.get({mv}, {cls_arg}, {plain!r})")
+                phase1.append(f"{o_id} = _rt.get({mv}, {cls_arg}, {source!r})")
                 wrap = (lambda f: f) if is_module else ((lambda f: f"staticmethod({f})") if is_static else (lambda f: f))
                 bound = not is_static and not is_module
                 cond = f"{o_id} is not None"
                 if len(arities) > 0 and all(p is not None for p in plans.values()):
                     identity = all(len(p[1]) == 0 and p[3] == "r" and p[0] == list(range(n)) for n, p in plans.items())
+                    if identity and source == name:
+                        continue                      # the signatures differ only in ways the call does not see
                     if identity and is_static:
                         phase2 += guarded(cond, [f"{owner}.{name} = {wrap(o_id)}"])
                         stats["alias"] += 1
@@ -243,9 +246,6 @@ def main() -> dict[str, str]:
                     counter += 1
                     phase2 += guarded(cond, emit_direct(fid, o_id, call, shapes, bound) + [f"{owner}.{name} = {wrap(fid)}"])
                     stats["direct + dynamic fallback"] += 1
-            if not is_module and any(plain in own for plain in RTTI):
-                phase2.append(f"_rt.rtti({mv}, {cname!r})")    # the default: OCP's RTTI `_s` names, from the class's OWN statics
-                stats["rtti classes"] += 1
 
     files: dict[str, str] = {}
     tail = ["", "# The originals and module references are needed only while patching. Kept as globals they hold nanobind",

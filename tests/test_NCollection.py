@@ -235,7 +235,7 @@ def test_sequence_and_list_have_no_pre_8_0_aliases():
 
 def test_occt_method_returning_a_container():
     from nanoocp import Message
-    printers = Message.Message.DefaultMessenger().Printers()
+    printers = Message.Message.DefaultMessenger_s().Printers()
     assert type(printers).__name__ == "NCollection_Sequence__Handle_Message_Printer"
     assert len(printers) >= 1
 

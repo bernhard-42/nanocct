@@ -33,8 +33,8 @@ def _compound() -> tuple[TopoDS.TopoDS_Compound, TopoDS.TopoDS_Vertex, TopoDS.To
 def test_shapes_copy_equality_and_hash():
     c, v, e = _compound()
     assert v.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_VERTEX and not v.IsNull()
-    assert BRep.BRep_Tool.Pnt(v).Coord__float__float__float() == (1.0, 2.0, 3.0)
-    assert BRep.BRep_Tool.Tolerance(v) == 1e-7
+    assert BRep.BRep_Tool.Pnt_s(v).Coord() == (1.0, 2.0, 3.0)
+    assert BRep.BRep_Tool.Tolerance_s(v) == 1e-7
     s = TopoDS.TopoDS_Shape(v)                                     # implicit copy constructor; sub-class converts, as in C++
     assert type(s) is TopoDS.TopoDS_Shape and s.IsSame(v) and s == v
     assert hash(s) == hash(v)                                      # __hash__ from OCCT's std::hash<TopoDS_Shape>
@@ -64,7 +64,7 @@ def test_explorer_iterator_and_shape_maps():
     # hashed containers keep a non-default hasher in their type: NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher>
     Map = NCollection.NCollection_IndexedMap[TopoDS.TopoDS_Shape, TopTools.TopTools_ShapeMapHasher]
     m = Map()
-    TopExp.TopExp.MapShapes(c, m)
+    TopExp.TopExp.MapShapes_s(c, m)
     assert m.Extent() == 3 and [s.ShapeType() for s in m][0] == TopAbs.TopAbs_ShapeEnum.TopAbs_COMPOUND
     lst = NCollection.NCollection_List[TopoDS.TopoDS_Shape]()
     lst.Append(v)
@@ -73,9 +73,9 @@ def test_explorer_iterator_and_shape_maps():
 
 def test_brep_tool_and_adaptors():
     c, v, e = _compound()
-    curve, first, last = BRep.BRep_Tool.Curve(e)                    # handle + two double& out-params
+    curve, first, last = BRep.BRep_Tool.Curve_s(e)                    # handle + two double& out-params
     assert type(curve) is Geom.Geom_Line and first == -2e100 and last == 2e100
-    assert BRep.BRep_Tool.Degenerated(e) is False
+    assert BRep.BRep_Tool.Degenerated_s(e) is False
     # Parameter(V, E) -> double (throws) and Parameter(V, E, double&) -> bool collide after out-param removal: the
     # scalar-returning overload without out-params wins
     b = BRep.BRep_Builder()
@@ -87,28 +87,28 @@ def test_brep_tool_and_adaptors():
     b.Add(free_edge, on_edge)
     b.Range(free_edge, 0.0, 2.0)
     b.UpdateVertex(on_edge, 2.0, free_edge, 1e-7)                   # the vertex's parameter on the edge
-    assert BRep.BRep_Tool.Parameter(on_edge, free_edge) == 2.0
+    assert BRep.BRep_Tool.Parameter_s(on_edge, free_edge) == 2.0
     with pytest.raises(Standard.Standard_NoSuchObject):
-        BRep.BRep_Tool.Parameter(v, free_edge)                      # v is not a vertex of that edge
+        BRep.BRep_Tool.Parameter_s(v, free_edge)                      # v is not a vertex of that edge
     ad = BRepAdaptor.BRepAdaptor_Curve(e)
     assert ad.GetType() == GeomAbs.GeomAbs_CurveType.GeomAbs_Line
     assert ad.Line().Direction().Coord() == (1.0, 0.0, 0.0)
     props = BRepLProp.BRepLProp_CLProps(ad, 2.0, 1, 1e-9)
-    assert props.Value().Coord__float__float__float() == (2.0, 0.0, 0.0)
+    assert props.Value().Coord() == (2.0, 0.0, 0.0)
 
 
 def test_brep_and_binary_round_trip():
     c, v, e = _compound()
     d = tempfile.mkdtemp()
     path = os.path.join(d, "c.brep")
-    assert BRepTools.BRepTools.Write(c, path) is True
+    assert BRepTools.BRepTools.Write_s(c, path) is True
     back = TopoDS.TopoDS_Shape()
-    assert BRepTools.BRepTools.Read(back, path, BRep.BRep_Builder()) is True
+    assert BRepTools.BRepTools.Read_s(back, path, BRep.BRep_Builder()) is True
     assert back.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_COMPOUND and back.NbChildren() == 2
     binary = os.path.join(d, "c.bin")
-    assert BinTools.BinTools.Write(c, binary) is True
+    assert BinTools.BinTools.Write_s(c, binary) is True
     back2 = TopoDS.TopoDS_Shape()
-    assert BinTools.BinTools.Read(back2, binary) is True and back2.NbChildren() == 2
+    assert BinTools.BinTools.Read_s(back2, binary) is True and back2.NbChildren() == 2
 
 
 def test_unbindable_classes_are_reported_not_bound():
@@ -144,7 +144,7 @@ def test_handle_parameters_accept_none():
     e = TopoDS.TopoDS_Edge()
     b.MakeEdge(e)
     b.UpdateEdge(e, None, TopLoc.TopLoc_Location(), 1e-6)          # handle<Geom_Curve>& C = null: an edge without 3D curve
-    assert BRep.BRep_Tool.Degenerated(e) is False
+    assert BRep.BRep_Tool.Degenerated_s(e) is False
 
 
 def test_handle_out_parameters_are_returned():
@@ -156,15 +156,15 @@ def test_handle_out_parameters_are_returned():
     plane = Geom.Geom_Plane(gp.gp_Pnt(), gp.gp_Dir(0.0, 0.0, 1.0))
     b.UpdateEdge(e, Geom2d.Geom2d_Line(gp.gp_Pnt2d(), gp.gp_Dir2d(1.0, 0.0)), plane, TopLoc.TopLoc_Location(), 1e-7)
     loc = TopLoc.TopLoc_Location()
-    curve2d, surface, first, last = BRep.BRep_Tool.CurveOnSurface(e, loc)   # C, S (out), L (in place), First, Last (out)
+    curve2d, surface, first, last = BRep.BRep_Tool.CurveOnSurface_s(e, loc)   # C, S (out), L (in place), First, Last (out)
     assert isinstance(curve2d, Geom2d.Geom2d_Line) and surface is plane
     assert (first, last) == (0.0, 2.0)
-    sigs = [l for l in BRep.BRep_Tool.CurveOnSurface.__doc__.splitlines() if l.startswith("CurveOnSurface(")]
+    sigs = [l for l in BRep.BRep_Tool.CurveOnSurface_s.__doc__.splitlines() if l.startswith("CurveOnSurface_s(")]
     assert len(sigs) == 4                                                    # all four C++ overloads, no collision
     # the two with `bool* theIsStored = nullptr` are bound without that parameter (R-OPTIONAL-PTR)
-    assert sigs[0] == "CurveOnSurface(E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]"
+    assert sigs[0] == "CurveOnSurface_s(E: nanoocp.TopoDS.TopoDS_Edge, F: nanoocp.TopoDS.TopoDS_Face) -> tuple[nanoocp.Geom2d.Geom2d_Curve, float, float]"
     assert sigs[2].endswith("L: nanoocp.TopLoc.TopLoc_Location) -> tuple[nanoocp.Geom2d.Geom2d_Curve, nanoocp.Geom.Geom_Surface, float, float]")
-    c2, f0, l0 = BRep.BRep_Tool.CurveOnSurface(e, plane, TopLoc.TopLoc_Location())
+    c2, f0, l0 = BRep.BRep_Tool.CurveOnSurface_s(e, plane, TopLoc.TopLoc_Location())
     assert isinstance(c2, Geom2d.Geom2d_Line) and (f0, l0) == (0.0, 2.0)
 
 

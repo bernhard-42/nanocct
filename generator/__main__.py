@@ -15,7 +15,7 @@ import time
 from pathlib import Path
 
 from .binders import BINDERS, instance_args
-from .emit import Emitter, emit_toolkit_module, resolve_static_renames, write_package_shims
+from .emit import Emitter, emit_toolkit_module, write_package_shims
 from .occt import load_tree
 from .ncollection import template_docs
 from .parse import EXTRA_LINKS, INCLUDE_PACKAGES, PLATFORM_PACKAGES, clang_args, configure_libclang, include_prelude, parse_package, py_path
@@ -469,9 +469,6 @@ def main(argv: list[str]) -> int:
                   "run cannot know whether a toolkit that was not regenerated would own these. Run a clean regeneration "
                   "(rm src/cpp/manifest.json, all toolkits) or pass --allow-rehoming.", file=sys.stderr)
             return 1
-    # R-STATIC-S is decided over the whole inheritance chain, so it needs every class of the run at once: a clean
-    # regeneration (the canonical state, 9) parses all toolkits in one process, so the chains are complete there.
-    static_renames = resolve_static_renames([c for _, irs in parsed for ir in irs for c in ir.classes])
     # The emit order, hoisted out of the loop below: a parallel emit has to decide the instantiation ownership over
     # every package before the first one is emitted, and this order is what decides it.
     emit_order: list[tuple[str, list, list[str]]] = []      # (toolkit, its IRs in emit order, every package of the toolkit)
@@ -503,7 +500,7 @@ def main(argv: list[str]) -> int:
         t0 = time.perf_counter()
         with mp.Pool(jobs, initializer=_parallel.init_emit,
                      initargs=(tree.src, tree.install, known, templates, paths,
-                               _topo(tree, generated_toolkits), static_renames)) as pool:
+                               _topo(tree, generated_toolkits))) as pool:
             for tk_name, pkg_name, text, rep, inc, skip, dt in pool.imap_unordered(_parallel.emit_one, todo_e, chunksize=1):
                 emitted[(tk_name, pkg_name)] = (text, rep, inc, skip)
                 per_toolkit.setdefault(tk_name, {"parse": 0.0, "emit": 0.0})["emit"] += dt
@@ -525,7 +522,6 @@ def main(argv: list[str]) -> int:
             em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
                          _topo(tree, generated_toolkits), paths,
                          prelude_check=lambda headers: include_prelude(headers, tree.include_dir, cargs))
-            em.static_renames = static_renames
             if (tk_name, ir.name) in emitted:
                 _emitted, _rep, _inc, _skip = emitted.pop((tk_name, ir.name))
                 em.report[:] = _rep

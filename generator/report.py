@@ -26,7 +26,6 @@ CATEGORIES: list[tuple[str, str]] = [
     ("operator", r"operator has no Python equivalent|free operator not mapped"),
     ("conversion", r"conversion (operator|skipped)"),
     ("overload-collision", r"same Python signature as|ambiguous with another constructor|const twin of a less const overload"),
-    ("static-rename", r"renamed to \w+_s"),
     ("namespace", r"anonymous namespace|namespace skipped"),
     ("unbound-type", r"unbound type|is not bound|not known"),
     ("incomplete", r"incomplete type"),

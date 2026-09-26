@@ -20,8 +20,8 @@ def test_every_package_imports(pkg):
 
 def _bbox(shape):
     box = Bnd.Bnd_Box()
-    BRepBndLib.BRepBndLib.Add(shape, box)
-    l = box.Get()
+    BRepBndLib.BRepBndLib.Add_s(shape, box)
+    l = box.Get__Bnd_Box_Limits()
     return l.Xmin, l.Ymin, l.Xmax, l.Ymax
 
 
@@ -34,14 +34,14 @@ def test_text_to_brep_like_build123d():
     comp = TopoDS.Compound(shape)
     assert sum(1 for _ in TopExp.TopExp_Explorer(comp, TopAbs.TopAbs_FACE)) == 3          # H, the i stem, the i dot
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.SurfaceProperties(comp, props)
+    BRepGProp.BRepGProp.SurfaceProperties_s(comp, props)
     assert 20 < props.Mass() < 60
     xmin, ymin, xmax, ymax = _bbox(comp)
     assert xmin >= 0 and ymin == pytest.approx(0, abs=1e-6) and 5 < ymax < 10 and xmax > 5       # bottom-left aligned, ~10 units high
     centered = builder.Perform(font, NCollection_String("Hi"), gp.gp_Ax3(), Graphic3d.Graphic3d_HTA_CENTER, Graphic3d.Graphic3d_VTA_CENTER)
     cxmin, cymin, cxmax, cymax = _bbox(centered)
     assert cxmin < 0 < cxmax and cymin < 0 < cymax and cxmax - cxmin == pytest.approx(xmax - xmin, abs=1e-6)
-    single = StdPrs.StdPrs_BRepFont.FindAndCreate(TCollection_AsciiString("Helvetica"), Font.Font_FA_Regular, 5.0)
+    single = StdPrs.StdPrs_BRepFont.FindAndCreate_s(TCollection_AsciiString("Helvetica"), Font.Font_FA_Regular, 5.0)
     assert single is not None and single.PointSize() == pytest.approx(font.PointSize() / 2, rel=1e-6)
     single.SetCompositeCurveMode(False)                                                          # build123d's single-stroke branch
 

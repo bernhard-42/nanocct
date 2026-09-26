@@ -38,7 +38,7 @@ RETRIEVAL_GUID = "f78ff497-a779-11d5-aab4-0050044b1af1"
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -49,18 +49,18 @@ def quiet_messenger():
 
 @pytest.fixture
 def application():
-    app = XCAFApp_Application.GetApplication()
-    XmlXCAFDrivers.DefineFormat(app)                              # build123d spells it XmlXCAFDrivers.DefineFormat_s
+    app = XCAFApp_Application.GetApplication_s()
+    XmlXCAFDrivers.DefineFormat_s(app)                              # build123d spells it XmlXCAFDrivers.DefineFormat_s
     return app
 
 
 def _assembly_document(app):
     """The same document TKBinXCAF's test saves: a named, coloured box referenced once from an assembly."""
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("XmlXCAF"))
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     part = shapes.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), False)
     TDataStd_Name.Set_s(part, TCollection_ExtendedString("the box"))
-    XCAFDoc_DocumentTool.ColorTool(doc.Main()).SetColor(part, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorSurf)
+    XCAFDoc_DocumentTool.ColorTool_s(doc.Main()).SetColor(part, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorSurf)
 
     assembly = shapes.NewShape()
     TDataStd_Name.Set_s(assembly, TCollection_ExtendedString("assembly"))
@@ -82,23 +82,23 @@ def test_a_product_structure_round_trips_through_xml_bytes(application):
 
     read_status, reloaded = application.Open(io.BytesIO(data))
     assert read_status == PCDM_RS_OK
-    shapes = XCAFDoc_DocumentTool.ShapeTool(reloaded.Main())
-    colors = XCAFDoc_DocumentTool.ColorTool(reloaded.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main())
+    colors = XCAFDoc_DocumentTool.ColorTool_s(reloaded.Main())
 
     labels = NCollection_Sequence[TDF_Label]()
     shapes.GetShapes(labels)
     assert labels.Length() == 2
 
     part, assembly = labels.Value(1), labels.Value(2)
-    solid = shapes.GetShape(part)
+    solid = shapes.GetShape_s(part)
     assert solid.ShapeType() == TopAbs_SOLID
     props = GProp_GProps()
-    BRepGProp.VolumeProperties(solid, props)
+    BRepGProp.VolumeProperties_s(solid, props)
     assert props.Mass() == pytest.approx(6.0)
 
     colour = Quantity_Color()
     assert colors.GetColor(solid, XCAFDoc_ColorSurf, colour) and colour.Name() == Quantity_NOC_RED
-    assert shapes.IsAssembly(assembly) and shapes.GetShape(assembly).ShapeType() == TopAbs_COMPOUND
+    assert shapes.IsAssembly_s(assembly) and shapes.GetShape_s(assembly).ShapeType() == TopAbs_COMPOUND
 
 
 def test_the_bytes_are_an_ocaf_xml_document(application):
@@ -132,24 +132,24 @@ def test_the_file_form_is_the_same_bytes_and_needs_the_xml_extension(tmp_path, a
 
 def test_the_format_is_detected_from_the_bytes(application):
     _, data = application.SaveAs(_assembly_document(application))
-    fmt, _storage = PCDM_ReadWriter.FileFormat(io.BytesIO(data))
+    fmt, _storage = PCDM_ReadWriter.FileFormat_s(io.BytesIO(data))
     assert fmt.ToExtString() == "XmlXCAF"
 
 
 def test_the_drivers_and_the_factory():
     """XmlXCAFDrivers has DefineFormat and Factory only -- no AttributeDrivers static, which BinXCAFDrivers does have.
     The table is reached through the storage/retrieval driver instead."""
-    assert sorted(n for n in dir(XmlXCAFDrivers) if not n.startswith("_")) == ["DefineFormat", "Factory"]
+    assert sorted(n for n in dir(XmlXCAFDrivers) if not n.startswith("_")) == ["DefineFormat_s", "Factory_s"]
     # the XML storage driver writes a copyright line into the document, so its constructor takes one
     assert XmlXCAFDrivers_DocumentStorageDriver(TCollection_ExtendedString("nanoOCP")) is not None
     assert XmlXCAFDrivers_DocumentRetrievalDriver() is not None
 
-    storage = XmlXCAFDrivers.Factory(Standard_GUID(STORAGE_GUID))
-    retrieval = XmlXCAFDrivers.Factory(Standard_GUID(RETRIEVAL_GUID))
+    storage = XmlXCAFDrivers.Factory_s(Standard_GUID(STORAGE_GUID))
+    retrieval = XmlXCAFDrivers.Factory_s(Standard_GUID(RETRIEVAL_GUID))
     assert storage.DynamicType().Name() == "XmlXCAFDrivers_DocumentStorageDriver"
     assert retrieval.DynamicType().Name() == "XmlXCAFDrivers_DocumentRetrievalDriver"
     with pytest.raises(Standard_Failure, match="unknown GUID"):
-        XmlXCAFDrivers.Factory(Standard_GUID("ad696002-5b34-11d1-b5ba-00a0c9064368"))
+        XmlXCAFDrivers.Factory_s(Standard_GUID("ad696002-5b34-11d1-b5ba-00a0c9064368"))
 
 
 @pytest.mark.parametrize("driver, attribute", [
@@ -161,7 +161,7 @@ def test_the_drivers_and_the_factory():
     (XmlMXCAFDoc_LocationDriver, "XCAFDoc_Location"),
 ])
 def test_each_attribute_driver_names_the_attribute_it_persists(driver, attribute):
-    assert driver(Message.Message.DefaultMessenger()).SourceType().Name() == attribute
+    assert driver(Message.Message.DefaultMessenger_s()).SourceType().Name() == attribute
 
 
 def test_the_driver_set_matches_the_binary_one():

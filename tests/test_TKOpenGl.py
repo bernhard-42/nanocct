@@ -25,7 +25,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKOpenGl" / "report.txt"
 @pytest.fixture
 def quiet_messenger():
     """A context without a drawable prints GL errors; the test asserts the return values instead."""
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)

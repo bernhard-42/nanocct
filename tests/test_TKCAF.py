@@ -42,11 +42,11 @@ def test_named_shape_generated_and_found(doc, box):
     named = builder.NamedShape()
     assert named.Evolution() == TNaming.TNaming_PRIMITIVE and named.IsEmpty() is False
     assert named.Get().ShapeType() == TopAbs_SOLID and named.Get().IsSame(box)
-    assert TNaming.TNaming_Tool.GetShape(named).IsSame(box) and TNaming.TNaming_Tool.CurrentShape(named).IsSame(box)
-    found, attr = label.FindAttribute(TNaming.TNaming_NamedShape.GetID())
+    assert TNaming.TNaming_Tool.GetShape_s(named).IsSame(box) and TNaming.TNaming_Tool.CurrentShape_s(named).IsSame(box)
+    found, attr = label.FindAttribute(TNaming.TNaming_NamedShape.GetID_s())
     assert found is True and type(attr) is TNaming.TNaming_NamedShape
-    assert TNaming.TNaming_Tool.HasLabel(doc.Main(), box) is True
-    where, transdef = TNaming.TNaming_Tool.Label(doc.Main(), box)         # int& TransDef out-param (R-OUT)
+    assert TNaming.TNaming_Tool.HasLabel_s(doc.Main(), box) is True
+    where, transdef = TNaming.TNaming_Tool.Label_s(doc.Main(), box)         # int& TransDef out-param (R-OUT)
     assert where == label and transdef == 0
 
 
@@ -76,8 +76,8 @@ def test_selector_selects_a_named_face(doc, box):
     selector = TNaming.TNaming_Selector(doc.Main().FindChild(4, True))
     assert selector.Select(faces[3], box) is True
     assert selector.NamedShape().Evolution() == TNaming.TNaming_SELECTED
-    assert TNaming.TNaming_Tool.GetShape(selector.NamedShape()).IsSame(faces[3])
-    identified, named = TNaming.TNaming_Selector.IsIdentified(doc.Main().FindChild(4), faces[3])   # handle& out-param
+    assert TNaming.TNaming_Tool.GetShape_s(selector.NamedShape()).IsSame(faces[3])
+    identified, named = TNaming.TNaming_Selector.IsIdentified_s(doc.Main().FindChild(4), faces[3])   # handle& out-param
     assert identified is True and type(named) is TNaming.TNaming_NamedShape
 
 
@@ -87,23 +87,23 @@ def test_named_shape_undo(doc, box):
     doc.NewCommand()
     TNaming.TNaming_Builder(label).Generated(box)
     doc.CommitCommand()
-    assert label.IsAttribute(TNaming.TNaming_NamedShape.GetID()) is True
+    assert label.IsAttribute(TNaming.TNaming_NamedShape.GetID_s()) is True
     doc.Undo()
-    assert label.IsAttribute(TNaming.TNaming_NamedShape.GetID()) is False
+    assert label.IsAttribute(TNaming.TNaming_NamedShape.GetID_s()) is False
 
 
 def test_tdataxtd_point_shape_triangulation(doc, box):
     label = doc.Main().FindChild(1, True)
-    assert type(TDataXtd.TDataXtd_Point.Set(label, gp.gp_Pnt(1.0, 2.0, 3.0))) is TDataXtd.TDataXtd_Point
+    assert type(TDataXtd.TDataXtd_Point.Set_s(label, gp.gp_Pnt(1.0, 2.0, 3.0))) is TDataXtd.TDataXtd_Point
     point = gp.gp_Pnt()
-    assert TDataXtd.TDataXtd_Geometry.Point(label, point) is True         # gp_Pnt& filled in place (R-REF-CLASS)
+    assert TDataXtd.TDataXtd_Geometry.Point_s(label, point) is True         # gp_Pnt& filled in place (R-REF-CLASS)
     assert (point.X(), point.Y(), point.Z()) == (1.0, 2.0, 3.0)
     other = doc.Main().FindChild(2, True)
-    TDataXtd.TDataXtd_Shape.Set(other, box)
-    assert TDataXtd.TDataXtd_Shape.Get(other).IsSame(box)
+    TDataXtd.TDataXtd_Shape.Set_s(other, box)
+    assert TDataXtd.TDataXtd_Shape.Get_s(other).IsSame(box)
     BRepMesh_IncrementalMesh(box, 0.1)
     face = TopoDS.Face(TopExp_Explorer(box, TopAbs_FACE).Current())
-    triangulation = BRep_Tool.Triangulation(face, TopLoc_Location())
+    triangulation = BRep_Tool.Triangulation_s(face, TopLoc_Location())
     attr = TDataXtd.TDataXtd_Triangulation.Set_s(label, triangulation)      # static Set collides with the instance Set (R-STATIC-S)
     assert (attr.NbNodes(), attr.NbTriangles()) == (4, 2)
 
@@ -116,5 +116,5 @@ def test_appstd_application_is_a_tdocstd_application():
 
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert {line.split("\t")[0] for line in lines} <= {"iterator", "raw-pointer", "static-rename", "template"}
+    assert {line.split("\t")[0] for line in lines} <= {"iterator", "raw-pointer", "template"}
     assert any("TNaming_RefShape *" in line for line in lines)              # the internal shape->RefShape map (2d)

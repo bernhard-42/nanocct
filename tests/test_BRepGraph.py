@@ -35,12 +35,12 @@ def test_typed_ids_and_iterators():
     assert len(ids) == 1 and type(ids[0]) is BRepGraph.BRepGraph_EdgeId   # BRepGraph_NodeId::Typed<BRepGraph_NodeId::Kind::Edge>
     eid = ids[0]
     assert eid.IsValid() and eid.Index == 0
-    assert not BRepGraph.BRepGraph_EdgeId.Invalid().IsValid()
+    assert not BRepGraph.BRepGraph_EdgeId.Invalid_s().IsValid()
     node = BRepGraph.BRepGraph_NodeId(eid)                         # operator BRepGraph_NodeId() -> constructor of the target
     assert node.NodeKind == BRepGraph.BRepGraph_NodeId.Kind.Edge
-    assert BRepGraph.BRepGraph_EdgeId.FromNodeId(node) == eid
+    assert BRepGraph.BRepGraph_EdgeId.FromNodeId_s(node) == eid
     assert hash(node) == hash(BRepGraph.BRepGraph_NodeId(eid))    # std::hash<BRepGraph_NodeId>
-    assert hash(eid) == hash(ids[0]) and {eid: 1}[BRepGraph.BRepGraph_EdgeId.FromNodeId(node)] == 1   # partial std::hash<Typed<K>>
+    assert hash(eid) == hash(ids[0]) and {eid: 1}[BRepGraph.BRepGraph_EdgeId.FromNodeId_s(node)] == 1   # partial std::hash<Typed<K>>
     assert g.Shapes().Shape(eid).IsSame(e)                         # implicit EdgeId -> NodeId conversion at the call
     guard = g.Editor().Edges().Mut(eid)                            # BRepGraph_MutGuard<BRepGraphInc::EdgeDef>: instantiated from the signature (6c)
     assert type(guard).__name__ == "BRepGraph_MutGuard__BRepGraphInc_EdgeDef" and guard.Id() == eid
@@ -50,12 +50,12 @@ def test_tool_and_ref_iterators():
     g, e = _edge_graph()
     eid = BRepGraph.BRepGraph_EdgeIterator(g).CurrentId()
     Edge, Vertex = BRepGraph.BRepGraph_Tool.Edge, BRepGraph.BRepGraph_Tool.Vertex   # nested static-only classes
-    assert Edge.Range(g, eid) == (0.0, 1.0)                        # std::pair -> tuple
-    assert type(Edge.Curve(g, eid)) is Geom.Geom_Line
-    assert Edge.Degenerated(g, eid) is False
-    start, end = Edge.StartVertexId(g, eid), Edge.EndVertexId(g, eid)
+    assert Edge.Range_s(g, eid) == (0.0, 1.0)                        # std::pair -> tuple
+    assert type(Edge.Curve_s(g, eid)) is Geom.Geom_Line
+    assert Edge.Degenerated_s(g, eid) is False
+    start, end = Edge.StartVertexId_s(g, eid), Edge.EndVertexId_s(g, eid)
     assert type(start) is BRepGraph.BRepGraph_VertexRefId and start != end
-    assert Vertex.Pnt(g, start).Coord__float__float__float() == (0.0, 0.0, 0.0) and Vertex.Pnt(g, end).Coord__float__float__float() == (1.0, 0.0, 0.0)
+    assert Vertex.Pnt_s(g, start).Coord() == (0.0, 0.0, 0.0) and Vertex.Pnt_s(g, end).Coord() == (1.0, 0.0, 0.0)
     refs = 0
     rit = BRepGraph.BRepGraph_RefsVertexOfEdge(g, eid)             # BRepGraph_RefsIterator::RefsOfParent<VertexOfEdgeTraits>
     while rit.More():

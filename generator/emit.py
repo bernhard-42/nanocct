@@ -95,7 +95,6 @@ class Emitter:
         self.local = {c.name for c in ir.classes}
         self._class_named = {c.name: c for c in ir.classes}   # R-STR: the class a free print operator belongs to
         self.report: list[str] = []
-        self.static_renames: dict[str, set[str]] = {}   # R-STATIC-S across the inheritance chain; set by the caller
         self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
         self.needs_views = False              # R-VIEW: this package binds a class from overrides.toml [views]
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
@@ -278,7 +277,7 @@ class Emitter:
         return f"[]({', '.join(lam_params)}) {{ {' '.join(body)} }}"
 
     # Design.md 6 R-STATIC-S, R-RESULT, R-REF-PRIMITIVE
-    def _method(self, cls: Class, m: Method, mixed: set[str]) -> str | None:
+    def _method(self, cls: Class, m: Method) -> str | None:
         if m.skip_reason is not None:
             return None
         unbound = self._unbound_default(m.params)
@@ -289,12 +288,14 @@ class Emitter:
         if py is None:
             self.report.append(f"{cls.name}::{m.name}({self._sig(m.params)}): operator has no Python equivalent")
             return None
-        if m.is_static and m.name in mixed:
-            py += "_s"          # Python cannot overload a static with an instance method of the same name
+        if m.is_static:
+            py += "_s"          # R-STATIC-S: every static method, OCP's rule -- a static and an instance method never share a name
         doc = m.doc
         if m.suffix != "":      # R-COLLISION: the suffix names the returned out-parameters that distinguish the overload
             py += m.suffix
-            doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).\n{m.doc}"
+            what = ("the suffix lists its returned out-parameters" if out_suffix(m.params) != ""
+                    else f"the suffix names its result; {_py_name(m)}{'_s' if m.is_static else ''}() returns the components")
+            doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); {what} (nanoOCP R-COLLISION).\n{m.doc}"
         self._note_types(m.result, *(p.type for p in m.params))
         self._note_types(m.result_class_name, *(p.class_name for p in m.params))   # the class behind a typedef (IMeshData::IFaceHandle = handle<IMeshData_Face>): its header must be included
         T = cls.name                       # member pointers name the class itself ...
@@ -793,12 +794,7 @@ class Emitter:
                     ctor_body.append(self._ctor(c, k.params[:n], k.doc, type_name="nanoocp_T"))
                 else:
                     body.append(self._ctor(c, k.params[:n], k.doc))
-        # R-STATIC-S: the names whose statics get _s, computed over the whole inheritance chain by the caller;
-        # the fallback is this class alone (unit tests that build an Emitter directly)
         bound = [m for m in c.methods if m.skip_reason is None]
-        mixed = self.static_renames.get(c.name)
-        if mixed is None:
-            mixed = {m.name for m in bound if m.is_static} & {m.name for m in bound if not m.is_static}
         for m in skip_const_twins(c.methods):       # R-CONST-TWIN
             self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}){' const' if m.is_const else ''}: const twin of a less const overload -> not bound")
         methods, demoted = order_by_width(c.methods)   # R-WIDTH: wider scalar overloads registered first
@@ -809,13 +805,9 @@ class Emitter:
             m.suffix = suffix
             if suffix != "" and _py_name(m) is not None:      # operators without a Python spelling are reported as such
                 self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}): same Python signature as another overload "
-                                   f"after out-param removal -> bound as {_py_name(m)}{'_s' if m.is_static and m.name in mixed else ''}{suffix}")
-        own_instance = {m.name for m in bound if not m.is_static}
-        for name in sorted(mixed):
-            where = "instance method of same name exists" if name in own_instance else "an instance method of that name is inherited or inherits it"
-            self.report.append(f"{c.name}::{name}: static overloads renamed to {name}_s ({where})")
+                                   f"after out-param removal -> bound as {_py_name(m)}{'_s' if m.is_static else ''}{suffix}")
         for m, _ in resolved:
-            s = self._method(c, m, mixed)
+            s = self._method(c, m)
             if s is not None:
                 body.append(s)
         body += free_ops.get(c.name, [])
@@ -1019,50 +1011,6 @@ class Emitter:
         return includes
 
 
-# Design.md 6 R-STATIC-S
-def resolve_static_renames(classes: list) -> dict[str, set[str]]:
-    """Per class, the method names whose *static* overloads must be suffixed `_s`.
-
-    Python cannot hold a static and an instance method of one name, and nanobind refuses the second registration with
-    "mismatched static/instance method flags in function overloads" -- **across the inheritance chain too**, because a
-    `def_static` on a derived class finds the base's inherited instance method (XCAFDoc_NoteBalloon declares only a
-    static Set while XCAFDoc_Note, two levels up, has an instance Set; the import of _TKXCAF aborted, 2026-09-22).
-    A name that is static somewhere and an instance method somewhere else in one chain is therefore renamed in *every*
-    class of that chain that declares it static -- also when the instance method is in a *descendant*, since that
-    descendant would inherit the static one.
-
-    Takes IR classes (name, bases, methods with is_static/skip_reason) and returns {class name: {method name}}.
-    """
-    by_name = {c.name: c for c in classes}
-    own_static: dict[str, set[str]] = {}
-    own_instance: dict[str, set[str]] = {}
-    for c in classes:
-        bound = [m for m in c.methods if m.skip_reason is None]
-        own_static[c.name] = {m.name for m in bound if m.is_static}
-        own_instance[c.name] = {m.name for m in bound if not m.is_static}
-
-    def chain(name: str) -> list[str]:
-        out: list[str] = []
-        while name in by_name and name not in out:
-            out.append(name)
-            bases = by_name[name].bases
-            name = bases[0] if len(bases) > 0 else ""     # R-MI: nanobind binds the first base only
-        return out
-
-    renames: dict[str, set[str]] = {c.name: set() for c in classes}
-    for c in classes:
-        names = chain(c.name)
-        statics: set[str] = set()
-        instances: set[str] = set()
-        for n in names:
-            statics |= own_static[n]
-            instances |= own_instance[n]
-        mixed = statics & instances
-        for n in names:                                   # every class of the chain that declares such a static
-            renames[n] |= mixed & own_static[n]
-    return renames
-
-
 # Design.md 6 R-COLLISION
 def out_suffix(params: list[Param]) -> str:
     """'__float__float' for the removed out-parameters of an overload (streams: str, or bytes in a binary package); '' when
@@ -1076,8 +1024,15 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
     """Overloads that become indistinguishable once out-params are dropped (Python has no dispatch on results) are told
     apart by a suffix naming the removed out-parameters' Python types: gp_Pnt::Coord(double&, double&, double&) is bound
     as Coord__float__float__float, GeomAPI_IntCS::Parameters(int, double&, double&, double&) as Parameters__float__float__float
-    next to Parameters__float__float__float__float; an overload without out-parameters keeps the plain name (gp_Pnt::Coord()
-    -> gp_XYZ, as in C++). The suffix is unique within a group because C++ overloads cannot share a parameter list.
+    next to Parameters__float__float__float__float; an overload without out-parameters keeps the plain name
+    (BOPDS_PaveBlock::HasEdge() -> bool next to HasEdge__int -> (bool, int)), with the one exception below. The suffix is
+    unique within a group because C++ overloads cannot share a parameter list.
+
+    Components before the aggregate (2026-09-26): when the group is exactly one `void` overload returning two or more
+    numbers through its out-parameters and one overload returning a class by value (gp_Pnt::Coord(double&, double&,
+    double&) next to const gp_XYZ& Coord(); Bnd_Box::Get, Graphic3d_CLight::Position), the component form takes the
+    plain name and the class form is suffixed with its type: Coord() -> (x, y, z), Coord__gp_XYZ() -> gp_XYZ. Coord()
+    then means the same on gp_Pnt as on gp_Dir and gp_Vec, which have no gp_XYZ Coord() -- their aggregate is XYZ().
     Takes Methods or Functions (name, params, skip_reason, optionally is_static). Returns (overload, suffix) for every
     overload that is not skipped, in header order; the suffix is '' outside collision groups."""
     def py_sig(m) -> tuple:
@@ -1091,6 +1046,21 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
     for m in overloads:
         if m.skip_reason is None:
             groups.setdefault(py_sig(m), []).append(m)
+    components_first: dict[int, str] = {}     # id(overload) -> its suffix under the components-before-aggregate rule
+    for members in groups.values():
+        valued = [mm for mm in members if out_suffix(mm.params) == ""]
+        outs = [mm for mm in members if out_suffix(mm.params) != ""]
+        numbers = [p for mm in outs for p in mm.params if p.is_out and not p.is_inout]
+        if (len(valued) == 1 and len({full_sig(mm) for mm in outs}) == 1          # width twins are one overload
+                and all(getattr(mm, "result", "") == "void" for mm in outs)
+                and all(p.stream == StreamKind.NONE for mm in outs for p in mm.params)
+                and len(numbers) >= 2 * len(outs) and all(p.out_py in ("float", "int") for p in numbers)
+                and getattr(valued[0], "result_class_name", "") != ""
+                and getattr(valued[0], "result_py", "") not in ("", "float", "int", "bool", "str")
+                and getattr(valued[0], "result_kind", ResultKind.VALUE) == ResultKind.VALUE):
+            components_first[id(valued[0])] = "__" + valued[0].result_py
+            for mm in outs:
+                components_first[id(mm)] = ""
     result: list[tuple[object, str]] = []
     for m in overloads:
         if m.skip_reason is not None:
@@ -1100,7 +1070,10 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
         # overload from Python and do not make a collision by themselves; the wider one is registered first (R-WIDTH)
         distinct = {full_sig(mm) for mm in members}
         colliding = len(distinct) > 1 and any(p.is_out or p.stream == StreamKind.OUT for mm in members for p in mm.params)
-        result.append((m, out_suffix(m.params) if colliding else ""))
+        if colliding and id(m) in components_first:
+            result.append((m, components_first[id(m)]))
+        else:
+            result.append((m, out_suffix(m.params) if colliding else ""))
     return result
 
 

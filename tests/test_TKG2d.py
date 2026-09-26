@@ -25,7 +25,7 @@ def _circle(radius: float = 2.0) -> Geom2d.Geom2d_Circle:
 def test_transient_curves_and_polymorphic_handles():
     c = _circle()
     assert c.Radius() == 2.0
-    assert c.Value(math.pi / 2).Coord__float__float() == pytest.approx((0.0, 2.0))
+    assert c.Value(math.pi / 2).Coord() == pytest.approx((0.0, 2.0))
     t = Geom2d.Geom2d_TrimmedCurve(c, 0.0, math.pi)
     assert (t.FirstParameter(), t.LastParameter()) == (0.0, math.pi)
     assert type(t.BasisCurve()) is Geom2d.Geom2d_Circle           # handle<Geom2d_Curve> comes back as the dynamic type
@@ -36,14 +36,14 @@ def test_transient_curves_and_polymorphic_handles():
 def test_class_typed_out_params_are_mutated_in_place():
     p, v = gp.gp_Pnt2d(), gp.gp_Vec2d()
     _circle().D1(math.pi / 2, p, v)                                # gp_Pnt2d& / gp_Vec2d& stay parameters (Design.md 6)
-    assert p.Coord__float__float() == pytest.approx((0.0, 2.0))
+    assert p.Coord() == pytest.approx((0.0, 2.0))
     assert v.Coord() == pytest.approx((-2.0, 0.0))
 
 
 def test_nested_result_struct():
     r = _circle().EvalD1(0.0)                                      # OCCT 8: struct Geom2d_Curve::ResD1 { Point; D1; }
     assert type(r) is Geom2d.Geom2d_Curve.ResD1
-    assert r.Point.Coord__float__float() == (2.0, 0.0)
+    assert r.Point.Coord() == (2.0, 0.0)
     assert r.D1.Coord() == pytest.approx((0.0, 2.0))
     assert Geom2d.Geom2d_Curve.ResD1.__qualname__ == "Geom2d_Curve.ResD1"
     empty = Geom2d.Geom2d_Curve.ResD3()                            # nested structs are constructible and writable
@@ -62,13 +62,13 @@ def _bezier() -> Geom2d.Geom2d_BezierCurve:
 def test_bezier_from_ncollection_array():
     bz = _bezier()
     assert (bz.Degree(), bz.NbPoles()) == (2, 3)
-    assert bz.Value(0.5).Coord__float__float() == (1.0, 0.5)
+    assert bz.Value(0.5).Coord() == (1.0, 0.5)
     assert bz.Poles().Length() == 3                                # const Array1& result
     assert not hasattr(bz, "Poles_s")
     # the deprecated out-into-array overload is bound too, with OCCT's message as the docstring's first line (Design.md 6 R-DEPRECATED)
     poles = NCollection.NCollection_Array1[gp.gp_Pnt2d](1, 3)
     bz.Poles(poles)
-    assert poles[3].Coord__float__float() == bz.Pole(3).Coord__float__float()
+    assert poles[3].Coord() == bz.Pole(3).Coord()
     assert "Deprecated in OCCT: use Poles() returning const reference instead" in bz.Poles.__doc__
 
 
@@ -105,9 +105,9 @@ def test_eval_representation_descriptor_round_trip():
     back = bz.EvalRepresentation()
     assert type(back) is Full and back.GetKind() == Base.Kind.Full
     assert type(back.Representation) is Geom2d.Geom2d_Circle
-    assert bz.EvalD1(0.0).Point.Coord__float__float() == (2.0, 0.0)              # evaluation now goes through the representation
+    assert bz.EvalD1(0.0).Point.Coord() == (2.0, 0.0)              # evaluation now goes through the representation
     bz.ClearEvalRepresentation()
-    assert bz.Value(0.0).Coord__float__float() == (0.0, 0.0)
+    assert bz.Value(0.0).Coord() == (0.0, 0.0)
 
 
 def test_package_named_namespace_folds_into_the_package():
@@ -119,7 +119,7 @@ def test_package_named_namespace_folds_into_the_package():
     res = ev.EvaluateGridD1(params)
     assert type(res) is NCollection.NCollection_Array1[Geom2dGridEval.CurveD1]
     assert res.Length() == 3
-    assert res.Value(2).Point.Coord__float__float() == pytest.approx((0.0, 2.0))
+    assert res.Value(2).Point.Coord() == pytest.approx((0.0, 2.0))
     assert [r.D1.Coord() for r in res][2] == pytest.approx((0.0, -2.0))
 
 

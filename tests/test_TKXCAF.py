@@ -31,31 +31,31 @@ def test_every_package_imports(pkg):
 
 @pytest.fixture
 def doc():
-    app = XCAFApp_Application.GetApplication()                       # OCP: GetApplication_s
+    app = XCAFApp_Application.GetApplication_s()                       # OCP: GetApplication_s
     return app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
 
 
 def test_the_document_tools_build123d_uses(doc):
     """build123d calls XCAFDoc_DocumentTool.ShapeTool_s/ColorTool_s/LayerTool_s/MaterialTool_s/SetLengthUnit_s;
-    none of them has an instance method of that name, so nanoOCP keeps the plain OCCT name (R-STATIC-S, 8b)."""
-    assert type(XCAFDoc_DocumentTool.ShapeTool(doc.Main())).__name__ == "XCAFDoc_ShapeTool"
-    assert type(XCAFDoc_DocumentTool.ColorTool(doc.Main())).__name__ == "XCAFDoc_ColorTool"
-    assert type(XCAFDoc_DocumentTool.LayerTool(doc.Main())).__name__ == "XCAFDoc_LayerTool"
-    assert type(XCAFDoc_DocumentTool.MaterialTool(doc.Main())).__name__ == "XCAFDoc_MaterialTool"
-    for name in ("ShapeTool_s", "ColorTool_s", "LayerTool_s", "MaterialTool_s", "SetLengthUnit_s"):
+    every static carries _s in nanoOCP as in OCP (R-STATIC-S, 2026-09-26), so the plain names do not exist."""
+    assert type(XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())).__name__ == "XCAFDoc_ShapeTool"
+    assert type(XCAFDoc_DocumentTool.ColorTool_s(doc.Main())).__name__ == "XCAFDoc_ColorTool"
+    assert type(XCAFDoc_DocumentTool.LayerTool_s(doc.Main())).__name__ == "XCAFDoc_LayerTool"
+    assert type(XCAFDoc_DocumentTool.MaterialTool_s(doc.Main())).__name__ == "XCAFDoc_MaterialTool"
+    for name in ("ShapeTool", "ColorTool", "LayerTool", "MaterialTool", "SetLengthUnit"):
         assert not hasattr(XCAFDoc_DocumentTool, name)
-    XCAFDoc_DocumentTool.SetLengthUnit(doc, 0.001)
-    assert XCAFDoc_DocumentTool.GetLengthUnit(doc) == (True, 0.001)   # double& -> returned (R-OUT)
+    XCAFDoc_DocumentTool.SetLengthUnit_s(doc, 0.001)
+    assert XCAFDoc_DocumentTool.GetLengthUnit_s(doc) == (True, 0.001)   # double& -> returned (R-OUT)
 
 
 def test_a_shape_with_a_name_and_a_colour(doc):
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
-    colors = XCAFDoc_DocumentTool.ColorTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
+    colors = XCAFDoc_DocumentTool.ColorTool_s(doc.Main())
     box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
     label = shapes.AddShape(box, False)
     TDataStd_Name.Set_s(label, TCollection_ExtendedString("the box"))
-    assert shapes.IsShape(label) and shapes.IsSimpleShape(label)
-    assert shapes.GetShape(label).ShapeType() == TopAbs_SOLID
+    assert shapes.IsShape_s(label) and shapes.IsSimpleShape_s(label)
+    assert shapes.GetShape_s(label).ShapeType() == TopAbs_SOLID
     labels = NCollection_Sequence[TDF_Label]()
     shapes.GetShapes(labels)                                          # class reference filled in place (R-REF-CLASS)
     assert labels.Length() == 1 and labels.Value(1).Tag() == label.Tag()
@@ -68,20 +68,20 @@ def test_a_shape_with_a_name_and_a_colour(doc):
     assert XCAFDoc_ColorTool.GetColor_s(color_label, color)           # the static twin keeps _s (an instance GetColor exists)
     assert color.Name() == Quantity_NameOfColor.Quantity_NOC_RED
     assert list(XCAFDoc_ColorType)[:2] == [XCAFDoc_ColorType.XCAFDoc_ColorGen, XCAFDoc_ColorType.XCAFDoc_ColorSurf]
-    assert XCAFDoc.ColorRefGUID(XCAFDoc_ColorGen).IsNotSame(XCAFDoc.MaterialRefGUID())
+    assert XCAFDoc.ColorRefGUID_s(XCAFDoc_ColorGen).IsNotSame(XCAFDoc.MaterialRefGUID_s())
 
 
 def test_an_assembly_with_a_component(doc):
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     box = shapes.AddShape(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), False)
     assembly = shapes.NewShape()
     trsf = gp_Trsf()
     trsf.SetTranslation(gp_Vec(10.0, 0.0, 0.0))
     component = shapes.AddComponent(assembly, box, TopLoc_Location(trsf))
-    assert shapes.IsAssembly(assembly) and shapes.IsComponent(component)
-    assert XCAFDoc_ShapeTool.IsReference(component)                   # OCP: IsReference_s; no instance twin here
+    assert shapes.IsAssembly_s(assembly) and shapes.IsComponent_s(component)
+    assert XCAFDoc_ShapeTool.IsReference_s(component)                   # OCP: IsReference_s; no instance twin here
     referred = TDF_Label()
-    assert XCAFDoc_ShapeTool.GetReferredShape(component, referred)    # OCP: GetReferredShape_s
+    assert XCAFDoc_ShapeTool.GetReferredShape_s(component, referred)    # OCP: GetReferredShape_s
     assert referred.Tag() == box.Tag()
     free = NCollection_Sequence[TDF_Label]()
     shapes.GetFreeShapes(free)
@@ -90,7 +90,7 @@ def test_an_assembly_with_a_component(doc):
 
 def test_the_document_iterators(doc):
     """R-ITER: the assembly iterator and the presentation explorer are their own Python iterators."""
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     box = shapes.AddShape(BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape(), False)
     assembly = shapes.NewShape()
     shapes.AddComponent(assembly, box, TopLoc_Location())
@@ -115,9 +115,6 @@ def test_report_categories():
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    assert counts == {"static-rename": 19, "iterator": 4, "overload-collision": 3, "template": 2, "header": 1,
-                      "undefined": 1}
-    assert any("XCAFDoc_NoteBalloon::Set: static overloads renamed to Set_s (an instance method of that name is "
-               "inherited or inherits it)" in line for line in lines)
+    assert counts == {"iterator": 4, "overload-collision": 3, "template": 2, "header": 1, "undefined": 1}
     # the two template lines are XCAFDoc_AssemblyTool::Traverse (a visitor template); the iterators are the way in (2d)
     assert sum("XCAFDoc_AssemblyTool::Traverse" in line for line in lines) == 2

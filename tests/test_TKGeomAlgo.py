@@ -67,7 +67,7 @@ def test_2d_intersection_and_gcc_constraints():
     # GccAna: circles of radius 1 tangent to two lines through the origin (x and y axis) -> 4 solutions, centres at (+-1, +-1)
     l1 = gp.gp_Lin2d(gp.gp_Pnt2d(0, 0), gp.gp_Dir2d(1, 0))
     l2 = gp.gp_Lin2d(gp.gp_Pnt2d(0, 0), gp.gp_Dir2d(0, 1))
-    solver = GccAna.GccAna_Circ2d2TanRad(GccEnt.GccEnt.Unqualified(l1), GccEnt.GccEnt.Unqualified(l2), 1.0, 1e-9)
+    solver = GccAna.GccAna_Circ2d2TanRad(GccEnt.GccEnt.Unqualified_s(l1), GccEnt.GccEnt.Unqualified_s(l2), 1.0, 1e-9)
     assert solver.IsDone() and solver.NbSolutions() == 4
     centres = sorted((round(c.Location().X()), round(c.Location().Y())) for c in (solver.ThisSolution(i) for i in range(1, 5)))
     assert centres == [(-1, -1), (-1, 1), (1, -1), (1, 1)]

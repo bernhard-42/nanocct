@@ -54,9 +54,9 @@ def test_configuration_context_reads_a_resource_string():
 
 
 def test_wrapper_configuration():
-    global_wrapper = DE_Wrapper.GlobalWrapper()
+    global_wrapper = DE_Wrapper.GlobalWrapper_s()
     assert isinstance(global_wrapper, DE_Wrapper)
-    assert DE_Wrapper.GlobalWrapper() is global_wrapper                          # the same Transient comes back (handle caster)
+    assert DE_Wrapper.GlobalWrapper_s() is global_wrapper                          # the same Transient comes back (handle caster)
     own = DE_Wrapper()
     assert own is not global_wrapper and own.Nodes().Extent() == 0
     text = own.Save()
@@ -85,14 +85,14 @@ def test_the_work_session_stays_a_parameter():
 def test_content_buffer_reads_bytes():
     """DE is a binary-stream package (overrides.toml [stream] binary_packages): CreateContentBuffer reads 2048 raw
     bytes for the format probe (DE_ValidationUtils.cxx:317-339), the path overload opens std::ios::binary."""
-    assert "theStream: typing.BinaryIO" in DE_ValidationUtils.CreateContentBuffer.__doc__
-    ok, buffer = DE_ValidationUtils.CreateContentBuffer(io.BytesIO(b"ISO-10303-21;\nHEADER;\x00\xff"))
+    assert "theStream: typing.BinaryIO" in DE_ValidationUtils.CreateContentBuffer_s.__doc__
+    ok, buffer = DE_ValidationUtils.CreateContentBuffer_s(io.BytesIO(b"ISO-10303-21;\nHEADER;\x00\xff"))
     assert ok and isinstance(buffer, NCollection_Buffer) and buffer.Size() == 2048
     assert DE_Wrapper().FindReadProvider("box.stp", io.BytesIO(b"ISO-10303-21;")) == (False, None)
     with pytest.raises(TypeError):
-        DE_ValidationUtils.CreateContentBuffer(io.StringIO("ISO-10303-21;"))     # a text file-like falls through
-    assert DE_ValidationUtils.CreateContentBuffer("does-not-exist.stp") == (False, None)
-    assert DE_ValidationUtils.ValidateFileForReading("does-not-exist.stp", "ctx") is False
+        DE_ValidationUtils.CreateContentBuffer_s(io.StringIO("ISO-10303-21;"))     # a text file-like falls through
+    assert DE_ValidationUtils.CreateContentBuffer_s("does-not-exist.stp") == (False, None)
+    assert DE_ValidationUtils.ValidateFileForReading_s("does-not-exist.stp", "ctx") is False
 
 
 def test_the_abstract_bases_have_no_constructor():

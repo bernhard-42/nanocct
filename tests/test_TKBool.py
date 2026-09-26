@@ -21,13 +21,13 @@ def test_every_package_imports(pkg):
 
 def _area(shape: TopoDS.TopoDS_Shape) -> float:
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.SurfaceProperties(shape, props)
+    BRepGProp.BRepGProp.SurfaceProperties_s(shape, props)
     return props.Mass()
 
 
 def _volume(shape: TopoDS.TopoDS_Shape) -> float:
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.VolumeProperties(shape, props)
+    BRepGProp.BRepGProp.VolumeProperties_s(shape, props)
     return props.Mass()
 
 
@@ -36,11 +36,11 @@ def _square(z: float) -> TopoDS.TopoDS_Wire:
 
 
 def test_fill_loft_and_pipes():
-    shell = BRepFill.BRepFill.Shell(_square(0), _square(2))              # ruled loft between two wires
+    shell = BRepFill.BRepFill.Shell_s(_square(0), _square(2))              # ruled loft between two wires
     assert _area(shell) == pytest.approx(8.0) and sum(1 for _ in TopExp.TopExp_Explorer(shell, TopAbs.TopAbs_FACE)) == 4
     e1 = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(gp.gp_Pnt(0, 0, 0), gp.gp_Pnt(1, 0, 0)).Edge()
     e2 = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(gp.gp_Pnt(0, 0, 1), gp.gp_Pnt(1, 0, 1)).Edge()
-    assert _area(BRepFill.BRepFill.Face(e1, e2)) == pytest.approx(1.0)
+    assert _area(BRepFill.BRepFill.Face_s(e1, e2)) == pytest.approx(1.0)
     spine = BRepBuilderAPI.BRepBuilderAPI_MakeWire(BRepBuilderAPI.BRepBuilderAPI_MakeEdge(gp.gp_Pnt(0, 0, 0), gp.gp_Pnt(0, 0, 5)).Edge()).Wire()
     circle = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(gp.gp_Circ(gp.gp_Ax2(gp.gp_Pnt(0, 0, 0), gp.gp_Dir(0, 0, 1)), 1.0)).Edge()
     profile = BRepBuilderAPI.BRepBuilderAPI_MakeWire(circle).Wire()
@@ -50,8 +50,8 @@ def test_fill_loft_and_pipes():
     shell.Add(profile)
     shell.Build()
     assert shell.MakeSolid() and _volume(shell.Shape()) == pytest.approx(math.pi * 5, rel=1e-6)
-    assert BRepAlgo.BRepAlgo.IsValid(pipe.Shape())
-    joined = BRepAlgo.BRepAlgo.ConcatenateWire(_square(0), GeomAbs.GeomAbs_C1, 1e-3)
+    assert BRepAlgo.BRepAlgo.IsValid_s(pipe.Shape())
+    joined = BRepAlgo.BRepAlgo.ConcatenateWire_s(_square(0), GeomAbs.GeomAbs_C1, 1e-3)
     assert sum(1 for _ in TopExp.TopExp_Explorer(joined, TopAbs.TopAbs_EDGE)) == 4
 
 

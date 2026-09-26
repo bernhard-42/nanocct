@@ -26,7 +26,7 @@ def test_helix_length_and_curve():
     builder.Perform()
     assert builder.ErrorStatus() == 0
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.LinearProperties(builder.Shape(), props)
+    BRepGProp.BRepGProp.LinearProperties_s(builder.Shape(), props)
     assert props.Mass() == pytest.approx(3 * math.sqrt((2 * math.pi) ** 2 + 1), rel=1e-4)      # approximated helix
     assert sum(1 for _ in TopExp.TopExp_Explorer(builder.Shape(), TopAbs.TopAbs_EDGE)) == 3
     curve = HelixGeom.HelixGeom_HelixCurve()

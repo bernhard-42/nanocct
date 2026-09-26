@@ -17,7 +17,8 @@ What it does, all inside --work (never in the build123d checkout, never in any e
                resolver takes them instead of PyPI's.
    Before running, each venv is asked where `OCP` comes from, so a baseline that silently got the shim (or the
    reverse) fails here instead of producing a perfect "parity".
-3. `python -m pytest tests -q -p no:cacheprovider --junitxml=...` in each copy, both sides in parallel.
+3. `python -m pytest tests -q -p no:cacheprovider --junitxml=... --rootdir <copy> -c <copy>/pyproject.toml` in each
+   copy, both sides in parallel.
 4. The two JUnit files compared per test ID (classname::name): outcome counts per side, IDs present on one side only,
    and every ID whose outcome differs. Exit status 0 only if the ID sets are equal and no outcome differs.
 
@@ -83,7 +84,7 @@ def make_venv(venv: Path, python: str, packages: list[str], reuse: bool) -> Path
     exe = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
     if reuse and exe.exists():
         return exe
-    run(["uv", "venv", "-q", "-p", python, str(venv)])
+    run(["uv", "venv", "-q", "--clear", "-p", python, str(venv)])   # a rerun: uv refuses an existing venv without --clear
     run(["uv", "pip", "install", "-q", "-p", str(exe), *packages])
     return exe
 
@@ -95,8 +96,13 @@ def clean_env(copy: Path) -> dict[str, str]:
 
 
 def run_suite(exe: Path, copy: Path, junit: Path, log: Path) -> int:
+    # rootdir and config pinned to the copy: its pyproject.toml has no pytest section, so pytest would search upwards
+    # and, with --work inside this repository (`make shim-parity`: build/shim-parity), take nanoOCP's own pyproject.toml
+    # -- its settings (pythonpath = ".") and a rootdir that puts the side's path into every test ID, so the two sides
+    # had no ID in common (2026-09-26)
     with log.open("w") as out:
-        return subprocess.run([str(exe), "-m", "pytest", "tests", "-q", "-p", "no:cacheprovider", f"--junitxml={junit}"],
+        return subprocess.run([str(exe), "-m", "pytest", "tests", "-q", "-p", "no:cacheprovider", f"--junitxml={junit}",
+                               "--rootdir", str(copy), "-c", str(copy / "pyproject.toml")],
                               cwd=copy, env=clean_env(copy), stdout=out, stderr=subprocess.STDOUT).returncode
 
 

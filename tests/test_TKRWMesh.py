@@ -28,7 +28,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKRWMesh" / "report.txt"
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -105,12 +105,12 @@ def test_node_attributes_and_the_name_format():
     assert attributes.Name.ToCString() == "the box"
     assert attributes.RawName.ToCString() == ""
 
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     doc = app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     label = shapes.AddShape(BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape(), False)
     TDataStd_Name.Set_s(label, TCollection_ExtendedString("product"))
-    assert RWMesh.FormatName(RWMesh_NameFormat_Product, label, label).ToCString() == "product"
+    assert RWMesh.FormatName_s(RWMesh_NameFormat_Product, label, label).ToCString() == "product"
     assert len(list(RWMesh_NameFormat)) == 7
 
 

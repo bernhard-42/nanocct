@@ -81,10 +81,10 @@ def test_the_tool_builds_the_presentation_aspects():
     """MeshVS_Tool turns a drawer into the Graphic3d aspects the builders hand to the presentation."""
     drawer = MeshVS_Drawer()
     drawer.SetColor(MeshVS_DrawerAttribute.MeshVS_DA_InteriorColor, Quantity_Color(Quantity_NOC_RED))
-    assert MeshVS_Tool.CreateAspectFillArea3d(drawer) is not None
-    assert MeshVS_Tool.CreateAspectLine3d(drawer) is not None
-    assert MeshVS_Tool.CreateAspectMarker3d(drawer) is not None
-    assert MeshVS_Tool.CreateAspectText3d(drawer) is not None
+    assert MeshVS_Tool.CreateAspectFillArea3d_s(drawer) is not None
+    assert MeshVS_Tool.CreateAspectLine3d_s(drawer) is not None
+    assert MeshVS_Tool.CreateAspectMarker3d_s(drawer) is not None
+    assert MeshVS_Tool.CreateAspectText3d_s(drawer) is not None
 
 
 def test_the_small_value_types():

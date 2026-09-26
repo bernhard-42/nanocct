@@ -62,20 +62,19 @@ def parse_one(job):
 
 # ---- parallel emit -------------------------------------------------------------------------------------------------
 # Everything the emitter reads is complete before the first emit: `known` and `paths` are filled in the parse loop,
-# `templates` has had every owner decided by the driver's assign_templates() pass, and `static_renames` is computed
-# from all parsed classes. So they go into the pool initializer once instead of being pickled per package
+# `templates` has had every owner decided by the driver's assign_templates() pass. So they go into the pool
+# initializer once instead of being pickled per package
 # (6250 + 1125 entries, 355 jobs).
 _EMIT = {}
 
 
-def init_emit(src, install, known, templates, paths, toolkit_order, static_renames):
+def init_emit(src, install, known, templates, paths, toolkit_order):
     global _TREE
     configure_libclang()
     _TREE = load_tree(src, install)
     from .parse import clang_args, include_prelude
     cargs = clang_args(_TREE)
     _EMIT.update(known=known, templates=templates, paths=paths, toolkit_order=toolkit_order,
-                 static_renames=static_renames,
                  toolkit_of={name: pk.toolkit for name, pk in _TREE.packages.items()},
                  prelude=lambda headers: include_prelude(headers, _TREE.include_dir, cargs))
 
@@ -86,7 +85,6 @@ def emit_one(job):
     tk_name, pkg_name, ir = job
     em = Emitter(ir, _TREE.include_dir, _EMIT["known"], _EMIT["toolkit_of"], dict(_EMIT["templates"]),
                  _EMIT["toolkit_order"], _EMIT["paths"], prelude_check=_EMIT["prelude"])
-    em.static_renames = _EMIT["static_renames"]
     em.preassigned = True                       # the owner of every instantiation is already recorded
     t0 = time.perf_counter()
     text = em.emit()

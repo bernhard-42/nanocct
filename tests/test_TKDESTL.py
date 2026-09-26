@@ -25,7 +25,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDESTL" / "report.txt"
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -67,7 +67,7 @@ def test_rwstl_reads_and_writes_a_triangulation(tmp_path, meshed_box, quiet_mess
     writer.SetASCIIMode(False)
     path = tmp_path / "box.stl"
     writer.Write(meshed_box, str(path))
-    mesh = RWStl.ReadFile(str(path))
+    mesh = RWStl.ReadFile_s(str(path))
     assert isinstance(mesh, Poly_Triangulation)
     assert (mesh.NbTriangles(), mesh.NbNodes()) == (12, 8)
 
@@ -80,20 +80,20 @@ def test_the_binary_flavour_is_bytes_and_the_ascii_one_is_str(tmp_path, meshed_b
     writer.SetASCIIMode(False)
     path = tmp_path / "box.stl"
     writer.Write(meshed_box, str(path))
-    mesh = RWStl.ReadFile(str(path))
+    mesh = RWStl.ReadFile_s(str(path))
 
-    ok, data = RWStl.WriteBinary(mesh)
+    ok, data = RWStl.WriteBinary_s(mesh)
     assert ok and isinstance(data, bytes)
     assert data == path.read_bytes()                              # byte-identical to the file form
-    ok, text = RWStl.WriteAscii(mesh)
+    ok, text = RWStl.WriteAscii_s(mesh)
     assert ok and isinstance(text, str) and text.startswith("solid ")
 
-    assert RWStl.ReadBinaryStream(io.BytesIO(data)).NbTriangles() == 12
-    assert RWStl.ReadAsciiStream(io.StringIO(text)).NbTriangles() == 12
-    assert RWStl.ReadStream(io.BytesIO(data)).NbTriangles() == 12              # the sniffing overload: binary ...
-    assert RWStl.ReadStream(io.BytesIO(text.encode())).NbTriangles() == 12     # ... and ASCII, both as bytes
+    assert RWStl.ReadBinaryStream_s(io.BytesIO(data)).NbTriangles() == 12
+    assert RWStl.ReadAsciiStream_s(io.StringIO(text)).NbTriangles() == 12
+    assert RWStl.ReadStream_s(io.BytesIO(data)).NbTriangles() == 12              # the sniffing overload: binary ...
+    assert RWStl.ReadStream_s(io.BytesIO(text.encode())).NbTriangles() == 12     # ... and ASCII, both as bytes
     with pytest.raises(TypeError):
-        RWStl.ReadBinaryStream(io.StringIO(text))                 # a text file-like falls through
+        RWStl.ReadBinaryStream_s(io.StringIO(text))                 # a text file-like falls through
     assert "theStream: typing.BinaryIO" in RWStl_Reader.ReadBinary.__doc__
 
 

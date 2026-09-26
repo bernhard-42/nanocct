@@ -20,7 +20,7 @@ def test_every_package_imports(pkg):
 
 def _volume(shape: TopoDS.TopoDS_Shape) -> float:
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.VolumeProperties(shape, props)
+    BRepGProp.BRepGProp.VolumeProperties_s(shape, props)
     return props.Mass()
 
 
@@ -57,7 +57,7 @@ def test_using_declarations_of_the_protected_options_base():
     assert fuse.FuzzyValue() == pytest.approx(1e-5) and fuse.RunParallel() is True
     assert isinstance(fuse.GetReport(), Message.Message_Report)
     assert fuse.DumpErrors() == ""                                                          # R-STREAM-OUT through the using
-    assert fuse.HasError(BOPAlgo.BOPAlgo_AlertBOPNotSet.get_type_descriptor()) is False
+    assert fuse.HasError(BOPAlgo.BOPAlgo_AlertBOPNotSet.get_type_descriptor_s()) is False
     for name in ("Clear", "ClearWarnings", "DumpErrors", "DumpWarnings", "FuzzyValue", "GetReport", "HasError", "HasErrors",
                  "HasWarning", "HasWarnings", "RunParallel", "SetFuzzyValue", "SetRunParallel", "SetUseOBB"):
         assert hasattr(BRepAlgoAPI.BRepAlgoAPI_Algo, name), name

@@ -32,11 +32,11 @@ def _edges() -> NCollection.NCollection_HSequence:
 def test_connect_edges_to_wires_build123d_style():
     edges = _edges()
     assert len(edges) == 4 and isinstance(edges, NCollection.NCollection_Sequence[TopoDS.TopoDS_Shape])
-    wires = ShapeAnalysis.ShapeAnalysis_FreeBounds.ConnectEdgesToWires(edges, 1e-7, False)     # static, no _s; handle returned
+    wires = ShapeAnalysis.ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges, 1e-7, False)     # static, no _s; handle returned
     assert type(wires).__name__ == "NCollection_HSequence__TopoDS_Shape" and len(wires) == 1
     assert wires.Value(1).ShapeType() == TopAbs.TopAbs_WIRE
     # the deprecated overload with the handle<HSequence>& out-parameter carries the R-COLLISION suffix and returns it too
-    dep = ShapeAnalysis.ShapeAnalysis_FreeBounds.ConnectEdgesToWires__NCollection_HSequence__TopoDS_Shape
+    dep = ShapeAnalysis.ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s__NCollection_HSequence__TopoDS_Shape
     assert "the suffix lists its returned out-parameters (nanoOCP R-COLLISION)" in dep.__doc__
     assert "Deprecated in OCCT: Use ConnectEdgesToWires() returning handle by value" in dep.__doc__
     assert len(dep(edges, 1e-7, False)) == 1
@@ -49,7 +49,7 @@ def test_connect_edges_to_wires_build123d_style():
     face = BRepBuilderAPI.BRepBuilderAPI_MakeFace(wire, True).Face()
     saw = ShapeAnalysis.ShapeAnalysis_Wire(wire, face, 1e-7)
     assert saw.CheckClosed() is False and saw.NbEdges() == 4
-    assert ShapeAnalysis.ShapeAnalysis.OuterWire(face).IsSame(wire)               # namespace-like static class, no _s
+    assert ShapeAnalysis.ShapeAnalysis.OuterWire_s(face).IsSame(wire)               # namespace-like static class, no _s
     edge = TopoDS.Edge(next(iter(TopExp.TopExp_Explorer(wire, TopAbs.TopAbs_EDGE))))
     assert ShapeAnalysis.ShapeAnalysis_Edge().IsClosed3d(edge) is False
     assert ShapeAnalysis.ShapeAnalysis_ShapeTolerance().Tolerance(face, 0) == pytest.approx(1e-7)
@@ -70,9 +70,9 @@ def test_shape_fix_and_upgrade():
     sda = ShapeUpgrade.ShapeUpgrade_ShapeDivideAngle(math.pi / 2, cyl)
     sda.Perform()
     assert sum(1 for _ in TopExp.TopExp_Explorer(sda.Result(), TopAbs.TopAbs_FACE)) == 6
-    scaled = ShapeCustom.ShapeCustom.ScaleShape(box, 2.0)
+    scaled = ShapeCustom.ShapeCustom.ScaleShape_s(box, 2.0)
     props = GProp.GProp_GProps()
-    BRepGProp.BRepGProp.VolumeProperties(scaled, props)
+    BRepGProp.BRepGProp.VolumeProperties_s(scaled, props)
     assert props.Mass() == pytest.approx(48.0)
 
 
@@ -94,11 +94,11 @@ def test_shape_process_operations_are_a_set_of_flags():
     """R-BITSET: ShapeProcess::OperationsFlags is a std::bitset indexed by ShapeProcess::Operation, so Python passes
     the set of enumerators. The name-taking Perform overload stays reachable because the caster rejects a str."""
     from nanoocp.ShapeProcess import ShapeProcess, ShapeProcess_Context
-    assert ShapeProcess.ToOperationFlag("FixShape") == (ShapeProcess.FixShape, True)
-    assert ShapeProcess.ToOperationFlag("no-such-operation")[1] is False
-    overloads = [l for l in ShapeProcess.Perform.__doc__.splitlines() if l.startswith("Perform(")]
+    assert ShapeProcess.ToOperationFlag_s("FixShape") == (ShapeProcess.FixShape, True)
+    assert ShapeProcess.ToOperationFlag_s("no-such-operation")[1] is False
+    overloads = [l for l in ShapeProcess.Perform_s.__doc__.splitlines() if l.startswith("Perform_s(")]
     assert len(overloads) == 2
     assert any("seq: str" in l for l in overloads) and any("theOperations: set[int]" in l for l in overloads)
     context = ShapeProcess_Context()
-    assert ShapeProcess.Perform(context, set()) is False                    # nothing to do, no operator performed
-    assert ShapeProcess.Perform(context, "no-such-sequence") is False       # the str overload is still selected
+    assert ShapeProcess.Perform_s(context, set()) is False                    # nothing to do, no operator performed
+    assert ShapeProcess.Perform_s(context, "no-such-sequence") is False       # the str overload is still selected

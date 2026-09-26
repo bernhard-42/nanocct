@@ -70,6 +70,7 @@ class Method:
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
     is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring
     suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
+    result_py: str = ""               # R-COLLISION: the result's suffix spelling (gp_XYZ), for a class value next to its components
     via_using: str = ""               # R-USING: the base class whose member a `using Base::name;` re-exports on this class
     force_lambda: bool = False        # bound through a lambda even without out-parameters (R-PTR-REF: a T*& result returned as T*)
 

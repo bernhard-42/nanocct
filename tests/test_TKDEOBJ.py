@@ -30,7 +30,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEOBJ" / "report.txt"
 
 @pytest.fixture
 def quiet_messenger():
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -40,18 +40,18 @@ def quiet_messenger():
 
 
 def _empty_document():
-    app = XCAFApp_Application.GetApplication()
+    app = XCAFApp_Application.GetApplication_s()
     return app.NewDocument__TDocStd_Document(TCollection_ExtendedString("BinXCAF"))
 
 
 @pytest.fixture
 def document():
     doc = _empty_document()
-    shapes = XCAFDoc_DocumentTool.ShapeTool(doc.Main())
+    shapes = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
     BRepMesh_IncrementalMesh(box, 0.1)                            # OBJ exports triangulations
     label = shapes.AddShape(box, False)
-    XCAFDoc_DocumentTool.ColorTool(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
+    XCAFDoc_DocumentTool.ColorTool_s(doc.Main()).SetColor(label, Quantity_Color(Quantity_NOC_RED), XCAFDoc_ColorGen)
     return doc
 
 
@@ -96,7 +96,7 @@ def test_a_document_round_trips(tmp_path, document, quiet_messenger):
     assert reader.Perform(TCollection_AsciiString(str(path)), Message_ProgressRange())
 
     free = NCollection_Sequence[TDF_Label]()
-    XCAFDoc_DocumentTool.ShapeTool(reloaded.Main()).GetFreeShapes(free)
+    XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main()).GetFreeShapes(free)
     assert free.Length() == 1
     shape = reader.SingleShape()
     assert shape.ShapeType() == TopAbs_COMPOUND                   # a mesh, not the original solid
@@ -138,7 +138,7 @@ def test_the_triangulation_reader_reads_and_probes_a_stream(tmp_path, document, 
 
 def test_the_package_function_reads_a_triangulation(tmp_path, document, quiet_messenger):
     path = _write(document, tmp_path / "box.obj")
-    triangulation = RWObj.ReadFile(str(path), Message_ProgressRange())
+    triangulation = RWObj.ReadFile_s(str(path), Message_ProgressRange())
     assert (triangulation.NbNodes(), triangulation.NbTriangles()) == (24, 12)
 
 
@@ -156,7 +156,7 @@ def test_the_de_provider(tmp_path, document, quiet_messenger):
     reloaded = _empty_document()
     assert DEOBJ_Provider(node).Read(TCollection_AsciiString(str(path)), reloaded, Message_ProgressRange())
     free = NCollection_Sequence[TDF_Label]()
-    XCAFDoc_DocumentTool.ShapeTool(reloaded.Main()).GetFreeShapes(free)
+    XCAFDoc_DocumentTool.ShapeTool_s(reloaded.Main()).GetFreeShapes(free)
     assert free.Length() == 1
 
 

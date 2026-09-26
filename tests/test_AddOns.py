@@ -22,7 +22,7 @@ def meshed():
 
 def _first_face(shape):
     m = NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher()
-    TopExp.TopExp.MapShapes(shape, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE, m)
+    TopExp.TopExp.MapShapes_s(shape, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE, m)
     return TopoDS.Face(m.FindKey(1))
 
 
@@ -34,8 +34,8 @@ def test_the_package_is_not_pretending_to_be_occt():
 
 def test_normals_from_surface_matches_the_per_node_loop(meshed):
     face = _first_face(meshed)
-    tri = BRep.BRep_Tool.Triangulation(face, TopLoc.TopLoc_Location())
-    u_min, u_max, v_min, v_max = BRepTools.BRepTools.UVBounds(face)
+    tri = BRep.BRep_Tool.Triangulation_s(face, TopLoc.TopLoc_Location())
+    u_min, u_max, v_min, v_max = BRepTools.BRepTools.UVBounds_s(face)
     uv = np.ascontiguousarray(np.clip(np.asarray(tri.UVNodesArray()), [u_min, v_min], [u_max, v_max]))
 
     bulk = AddOns.Tessellator.NormalsFromSurface(face, uv)
@@ -54,8 +54,8 @@ def test_normals_from_surface_matches_the_per_node_loop(meshed):
 
 def test_normals_reverse_flag_negates(meshed):
     face = _first_face(meshed)
-    tri = BRep.BRep_Tool.Triangulation(face, TopLoc.TopLoc_Location())
-    u_min, u_max, v_min, v_max = BRepTools.BRepTools.UVBounds(face)
+    tri = BRep.BRep_Tool.Triangulation_s(face, TopLoc.TopLoc_Location())
+    u_min, u_max, v_min, v_max = BRepTools.BRepTools.UVBounds_s(face)
     uv = np.ascontiguousarray(np.clip(np.asarray(tri.UVNodesArray()), [u_min, v_min], [u_max, v_max]))
     assert np.allclose(AddOns.Tessellator.NormalsFromSurface(face, uv, True),
                        -AddOns.Tessellator.NormalsFromSurface(face, uv, False))
@@ -98,7 +98,7 @@ def test_edge_types_align_with_the_counts_and_match_BRepAdaptor(meshed):
 
     # a sphere's edges all survive, so the two orders can be compared directly
     m = NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher()
-    TopExp.TopExp.MapShapes(meshed, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)
+    TopExp.TopExp.MapShapes_s(meshed, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)
     assert m.Extent() == len(edge_types)
     expected = [BRepAdaptor.BRepAdaptor_Curve(TopoDS.Edge(m.FindKey(i))).GetType().value
                 for i in range(1, m.Extent() + 1)]

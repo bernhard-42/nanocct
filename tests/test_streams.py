@@ -20,36 +20,36 @@ def test_dump_json_round_trip():
     assert text == '"gp_Pnt": [1, 2, 3]'
     p = gp.gp_Pnt()
     done, pos = p.InitFromJson(io.StringIO(text), 1)                   # InitFromJson(const Standard_SStream&, int& pos): pos is in/out, starts at 1
-    assert done and p.Coord__float__float__float() == (1.0, 2.0, 3.0) and pos > 1
+    assert done and p.Coord() == (1.0, 2.0, 3.0) and pos > 1
     box = Bnd.Bnd_Box()
     box.Add(gp.gp_Pnt(1.0, 2.0, 3.0))
     assert box.DumpJson() == '"CornerMin": [1, 2, 3], "CornerMax": [1, 2, 3], "Gap": 0, "Flags": 0'
-    assert TopAbs.TopAbs.Print(TopAbs.TopAbs_ShapeEnum.TopAbs_FACE) == "FACE"   # Standard_OStream& Print(x, Standard_OStream&): the stream result is dropped
+    assert TopAbs.TopAbs.Print_s(TopAbs.TopAbs_ShapeEnum.TopAbs_FACE) == "FACE"   # Standard_OStream& Print(x, Standard_OStream&): the stream result is dropped
 
 
 def test_brep_text_streams_and_path_overloads():
     e = _edge()
-    text = BRepTools.BRepTools.Write(e)                                # Write(shape, Standard_OStream&) -> str
+    text = BRepTools.BRepTools.Write_s(e)                                # Write(shape, Standard_OStream&) -> str
     assert text.startswith("DBRep_DrawableShape") or "CASCADE Topology" in text
     back = TopoDS.TopoDS_Shape()
-    BRepTools.BRepTools.Read(back, io.StringIO(text), BRep.BRep_Builder())          # Read(shape, Standard_IStream&, builder)
+    BRepTools.BRepTools.Read_s(back, io.StringIO(text), BRep.BRep_Builder())          # Read(shape, Standard_IStream&, builder)
     assert back.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE
     path = os.path.join(tempfile.mkdtemp(), "e.brep")
     with open(path, "w") as f:
         f.write(text)
     from_path = TopoDS.TopoDS_Shape()
-    assert BRepTools.BRepTools.Read(from_path, path, BRep.BRep_Builder()) is True   # the file-path overload stays reachable
+    assert BRepTools.BRepTools.Read_s(from_path, path, BRep.BRep_Builder()) is True   # the file-path overload stays reachable
     assert from_path.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE
     with open(path) as f:                                              # any object with read()
         from_file = TopoDS.TopoDS_Shape()
-        BRepTools.BRepTools.Read(from_file, f, BRep.BRep_Builder())
+        BRepTools.BRepTools.Read_s(from_file, f, BRep.BRep_Builder())
     assert from_file.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE
     with pytest.raises(TypeError):
-        BRepTools.BRepTools.Read(from_file, 42, BRep.BRep_Builder())   # neither a path nor a file-like object
+        BRepTools.BRepTools.Read_s(from_file, 42, BRep.BRep_Builder())   # neither a path nor a file-like object
 
 
 def test_geomtools_write():
-    text = GeomTools.GeomTools.Write(Geom.Geom_Circle(gp.gp_Ax2(), 2.0))
+    text = GeomTools.GeomTools.Write_s(Geom.Geom_Circle(gp.gp_Ax2(), 2.0))
     assert text.split()[0] == "2"                                      # curve type code of a circle in the BRep geometry format
 
 
@@ -57,18 +57,18 @@ def test_binary_stream_is_bytes(tmp_path):
     # the BinTools package carries a binary format (overrides.toml [stream] binary_packages): bytes out, BinaryIO in
     from nanoocp import BinTools
     edge = _edge()
-    data = BinTools.BinTools.Write(edge)
+    data = BinTools.BinTools.Write_s(edge)
     assert isinstance(data, bytes) and data.startswith(b"\nOpen CASCADE Topology")
     back = TopoDS.TopoDS_Shape()
-    BinTools.BinTools.Read(back, io.BytesIO(data))
+    BinTools.BinTools.Read_s(back, io.BytesIO(data))
     assert back.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE
     with pytest.raises(TypeError):                                     # a text file-like object does not match
-        BinTools.BinTools.Read(back, io.StringIO("x"))
+        BinTools.BinTools.Read_s(back, io.StringIO("x"))
     path = str(tmp_path / "e.bin")                                     # the bytes equal the file form
-    assert BinTools.BinTools.Write(edge, path) is True
+    assert BinTools.BinTools.Write_s(edge, path) is True
     assert (tmp_path / "e.bin").read_bytes() == data
-    assert BinTools.BinTools.Write.__doc__.splitlines()[0].endswith("-> bytes")
-    assert "theStream: typing.BinaryIO" in BinTools.BinTools.Read.__doc__
+    assert BinTools.BinTools.Write_s.__doc__.splitlines()[0].endswith("-> bytes")
+    assert "theStream: typing.BinaryIO" in BinTools.BinTools.Read_s.__doc__
 
 
 # ---- R-STR: OCCT's "print me" operator<< as __str__ (roadmap 8.14) ----------------------------------------------

@@ -31,7 +31,7 @@ def test_cocoa_imports_on_macos():
 @pytest.fixture
 def quiet_messenger():
     """OCCT's fallback-font warning is unconditional (Font_FontMgr.cxx:1114): raise the printers' trace level for the test."""
-    printers = list(Message.Message.DefaultMessenger().Printers())
+    printers = list(Message.Message.DefaultMessenger_s().Printers())
     levels = [p.GetTraceLevel() for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
@@ -41,7 +41,7 @@ def quiet_messenger():
 
 
 def test_font_manager_finds_system_fonts_and_returns_the_aspect(quiet_messenger):
-    mgr = Font.Font_FontMgr.GetInstance()
+    mgr = Font.Font_FontMgr.GetInstance_s()
     available = mgr.GetAvailableFonts()
     assert len(available) > 0
     # Which fonts a machine has is its own business: macOS ships Helvetica in a .ttc, AlmaLinux only DejaVu, and
@@ -75,7 +75,7 @@ def test_freetype_font_metrics_and_code_points():
     assert font.FindAndInit(TCollection.TCollection_AsciiString("Helvetica"), Font.Font_FA_Regular, params) is True
     assert font.IsValid() and font.PointSize() == 24 and font.Ascender() > 0 > font.Descender()
     assert font.HasSymbol("A") and font.AdvanceX("A", "V") > 0 and font.AdvanceX("W", "W") > font.AdvanceX("i", "i")
-    assert Font.Font_FTFont.IsCharFromCJK("漢") and not Font.Font_FTFont.IsCharFromCJK("A")
+    assert Font.Font_FTFont.IsCharFromCJK_s("漢") and not Font.Font_FTFont.IsCharFromCJK_s("A")
     with pytest.raises(TypeError):
         font.HasSymbol(65)                     # a code point is a 1-character str, not an int
     with pytest.raises(TypeError):
@@ -163,7 +163,7 @@ def test_width_twins_with_out_parameters_keep_the_plain_name():
     assert v.X() == 4.0 and Graphic3d.Graphic3d_Vertex(0.0, 0.0, 0.0).Distance(v) == pytest.approx((16 + 25 + 36) ** 0.5)
     tri = Graphic3d.Graphic3d_ArrayOfTriangles(3)
     assert tri.AddVertex(0.0, 0.0, 0.0) == 1 and tri.AddVertex(gp.gp_Pnt(1, 0, 0)) == 2 and tri.AddVertex(Quantity.NCollection_Vec3__float(0.0, 1.0, 0.0)) == 3
-    assert tri.VertexNumber() == 3 and tri.Vertice(2).X() == 1.0
+    assert tri.VertexNumber() == 3 and tri.Vertice__gp_Pnt(2).X() == 1.0 and tri.Vertice(2) == (1.0, 0.0, 0.0)
 
 
 def test_report_lists_the_platform_and_codec_gaps():

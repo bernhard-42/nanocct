@@ -15,13 +15,14 @@ def test_value_class_ctor_and_accessors():
     p = gp.gp_Pnt(1.0, 2.0, 3.0)
     assert (p.X(), p.Y(), p.Z()) == (1.0, 2.0, 3.0)
     assert p.Coord(2) == 2.0
-    assert gp.gp_Pnt().Coord__float__float__float() == (0.0, 0.0, 0.0)
+    assert gp.gp_Pnt().Coord() == (0.0, 0.0, 0.0)
 
 
 def test_out_params_become_tuple():
     p = gp.gp_Pnt(1.0, 2.0, 3.0)
-    assert p.Coord__float__float__float() == (1.0, 2.0, 3.0)                       # Coord(double&, double&, double&) const: R-COLLISION suffix
-    assert type(p.Coord()) is gp.gp_XYZ and p.Coord().X() == 1.0                # Coord() -> const gp_XYZ&, as in C++
+    assert p.Coord() == (1.0, 2.0, 3.0)                       # Coord(double&, double&, double&) const: the components first
+    assert type(p.Coord__gp_XYZ()) is gp.gp_XYZ and p.Coord__gp_XYZ().X() == 1.0   # const gp_XYZ& Coord(): suffixed (R-COLLISION)
+    assert gp.gp_Dir(0.0, 0.0, 1.0).Coord() == (0.0, 0.0, 1.0)                     # the same Coord() as on gp_Dir, which has only XYZ()
 
 
 def test_inout_override_keeps_inputs():
@@ -66,8 +67,8 @@ def test_enums():
 
 
 def test_static_methods_and_static_only_class():
-    assert gp.gp.Origin().Coord__float__float__float() == (0.0, 0.0, 0.0)
-    assert gp.gp.DZ().Coord() == (0.0, 0.0, 1.0)
+    assert gp.gp.Origin_s().Coord() == (0.0, 0.0, 0.0)
+    assert gp.gp.DZ_s().Coord() == (0.0, 0.0, 1.0)
 
 
 def test_static_overload_of_instance_method_is_suffixed():
