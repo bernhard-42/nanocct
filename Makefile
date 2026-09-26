@@ -323,13 +323,14 @@ clean_dist:
 # ---- OCP compatibility shim ---------------------------------------------------------------------------------------
 # cadquery-ocp-novtk 8.0.1.0.0: `import OCP.*` on top of nanoocp (shim/). A pure-Python py3-none-any wheel built by
 # shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to nanoocp's.
+# Generation reads nanoocp's own signatures, so the staged tree must be importable -- found the way `make test` finds it.
 shim:
 ifeq ($(PLATFORM),macos)
 	$(PY) $(ROOT)/shim/build_wheel.py $(DIST_DIR)
 else ifeq ($(PLATFORM),windows)
-	"$(WIN_PY)" $(ROOT)/shim/build_wheel.py $(DIST_DIR)
+	cd $(ROOT) && PYTHONPATH="$(STAGE_DIR)" "$(WIN_PY)" shim/build_wheel.py $(DIST_DIR)
 else
-	$(CONTAINER) "$(ML_PY) /work/shim/build_wheel.py /work/dist"
+	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml $(ML_PY) shim/build_wheel.py /work/dist"
 endif
 
 all: generate compile stubs test wheel shim

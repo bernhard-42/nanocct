@@ -165,10 +165,16 @@ def main() -> dict[str, str]:
     counter = 0
 
     def mod_var(pkg: str) -> str:
+        # A package another platform does not build (Cocoa is macOS-only, overrides.toml [platform]) must not break
+        # `import OCP` there: the wheel is py3-none-any, generated on one platform and installed on all three.
         if pkg not in mods:
             mods[pkg] = f"m_{pkg}"
-            head.append(f"import nanoocp.{pkg} as m_{pkg}")
+            head.append(f"m_{pkg} = _rt.module({pkg!r})")
         return mods[pkg]
+
+    def guarded(cond: str, lines: list[str]) -> list[str]:
+        """Every patch runs only if its originals exist HERE: members differ by platform (R-UNDEFINED on Windows)."""
+        return [f"if {cond}:"] + [("    " + line) if line != "" else "" for line in lines] + [""]
 
     for pkg in sorted(members):
         try:
@@ -182,7 +188,9 @@ def main() -> dict[str, str]:
             if obj is None or not (isinstance(obj, type) or isinstance(obj, types.ModuleType)):
                 continue
             is_module = isinstance(obj, types.ModuleType)
-            owner = mod_var(pkg) if is_module else f"{mod_var(pkg)}.{cname}"
+            mv = mod_var(pkg)
+            owner = mv if is_module else f"{mv}.{cname}"
+            cls_arg = "None" if is_module else repr(cname)
             own = {} if is_module else vars(obj)
             for name, info in sorted(cm.items()):
                 if info["kind"] == "property":
@@ -190,8 +198,9 @@ def main() -> dict[str, str]:
                     if not is_module and callable(getter) and callable(setter) and not isinstance(getter, property):
                         g, s = f"_o{counter}", f"_o{counter + 1}"
                         counter += 2
-                        phase1 += [f"{g} = {owner}.{name}", f"{s} = {owner}.Set{name}"]
-                        phase2.append(f"{owner}.{name} = property(lambda self, g={g}: g(self), lambda self, v, s={s}: s(self, v))")
+                        phase1 += [f"{g} = _rt.get({mv}, {cls_arg}, {name!r})", f"{s} = _rt.get({mv}, {cls_arg}, {'Set' + name!r})"]
+                        phase2 += guarded(f"{g} is not None and {s} is not None",
+                                          [f"{owner}.{name} = property(lambda self, g={g}: g(self), lambda self, v, s={s}: s(self, v))"])
                         stats["property"] += 1
                     continue
                 is_static = name.endswith("_s")
@@ -209,35 +218,34 @@ def main() -> dict[str, str]:
                 plans = {n: plan(ocp, nano, n) for n in arities}
                 o_id = f"_o{counter}"
                 counter += 1
-                phase1.append(f"{o_id} = {owner}.{plain}")
+                phase1.append(f"{o_id} = _rt.get({mv}, {cls_arg}, {plain!r})")
                 wrap = (lambda f: f) if is_module else ((lambda f: f"staticmethod({f})") if is_static else (lambda f: f))
                 bound = not is_static and not is_module
+                cond = f"{o_id} is not None"
                 if len(arities) > 0 and all(p is not None for p in plans.values()):
                     identity = all(len(p[1]) == 0 and p[3] == "r" and p[0] == list(range(n)) for n, p in plans.items())
                     if identity and is_static:
-                        phase2.append(f"{owner}.{name} = {wrap(o_id)}")
+                        phase2 += guarded(cond, [f"{owner}.{name} = {wrap(o_id)}"])
                         stats["alias"] += 1
                         continue
                     fid = f"_p{counter}"
                     counter += 1
-                    phase2 += emit_function(fid, o_id, plans, bound) + [f"{owner}.{name} = {wrap(fid)}", ""]
+                    phase2 += guarded(cond, emit_function(fid, o_id, plans, bound) + [f"{owner}.{name} = {wrap(fid)}"])
                     stats["specialised"] += 1
                 else:
                     call = f"_rt.dynamic_from({o_id}, {info['sigs']!r}, {bound})"
                     shapes = direct_shapes(ocp, nano, arities)
                     if shapes is None:
-                        phase2.append(f"{owner}.{name} = {wrap(call)}")
+                        phase2 += guarded(cond, [f"{owner}.{name} = {wrap(call)}"])
                         stats["dynamic"] += 1
                         continue
                     fid = f"_p{counter}"
                     counter += 1
-                    phase2 += emit_direct(fid, o_id, call, shapes, bound) + [f"{owner}.{name} = {wrap(fid)}", ""]
+                    phase2 += guarded(cond, emit_direct(fid, o_id, call, shapes, bound) + [f"{owner}.{name} = {wrap(fid)}"])
                     stats["direct + dynamic fallback"] += 1
-            if not is_module:
-                for plain in RTTI:
-                    if plain in own and plain + "_s" not in own:
-                        phase2.append(f"{owner}.{plain}_s = staticmethod(vars({owner})[{plain!r}])")
-                        stats["rtti"] += 1
+            if not is_module and any(plain in own for plain in RTTI):
+                phase2.append(f"_rt.rtti({mv}, {cname!r})")    # the default: OCP's RTTI `_s` names, from the class's OWN statics
+                stats["rtti classes"] += 1
 
     files: dict[str, str] = {}
     tail = ["", "# The originals and module references are needed only while patching. Kept as globals they hold nanobind",
