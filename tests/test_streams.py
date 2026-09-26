@@ -90,10 +90,17 @@ def test_print_operator_is_str():
 
 
 def test_print_operator_where_there_was_no_text_method():
-    """IntRes2d_Transition has no Dump or Print, so its operator<< is its only text form."""
+    """IntRes2d_Transition has no Dump or Print, so its operator<< is its only text form. The operator carries no
+    Standard_EXPORT (IntRes2d_Transition.lxx:19), so the Windows DLL does not export it and R-UNDEFINED skips it there
+    -- C++ could not call it on Windows either (measured on gauss 2026-09-25)."""
+    from conftest import report
     from nanoocp.IntRes2d import IntRes2d_Transition
 
-    assert str(IntRes2d_Transition()).startswith("   Position : ")
+    if "__str__" in vars(IntRes2d_Transition):
+        assert str(IntRes2d_Transition()).startswith("   Position : ")
+    else:
+        assert any("operator<<(std::ostream &, IntRes2d_Transition &): declared in the header, no definition in libTKGeomAlgo"
+                   in line for line in report("TKGeomAlgo")[2])
 
 
 def test_operators_that_are_not_print_me_stay_unbound():
@@ -107,8 +114,11 @@ def test_operators_that_are_not_print_me_stay_unbound():
     lines = report("TKBRep")[0] + report("TKBinL")[0] + report("TKernel")[0] + report("TKLCAF")[0]
     reasons = [line for line in lines if "not bound as __str__" in line]
     assert all(line.startswith("stream\t") for line in reasons)
-    assert sum("operand gp_Pnt is not a class of this package" in line or "operand gp_Trsf is not a class" in line
-               for line in reasons) == 2
+    # BinTools' two operators carry no Standard_EXPORT: on Windows R-UNDEFINED skips them before R-STR sees them
+    for operand in ("gp_Pnt", "gp_Trsf"):
+        assert any(f"operand {operand} is not a class of this package" in line for line in reasons) or \
+            any(f"operator<<(Standard_OStream &, const {operand} &): declared in the header, no definition in libTKBRep" in line
+                for line in report("TKBRep")[2])
     assert any("BinObjMgt_Persistent &): not bound as __str__: binary stream" in line for line in reasons)
     assert any("const Standard_Failure &): not bound as __str__: exception class" in line for line in reasons)
     assert sum("member operator<<(Standard_OStream&) is bound as __str__ already" in line for line in reasons) == 3

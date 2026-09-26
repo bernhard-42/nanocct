@@ -112,3 +112,35 @@ def test_lxx_hash_and_free_functions_are_bound():
     assert hash(loc) == hash(TopLoc.TopLoc_Location()) and TopLoc.ShallowDump(loc).startswith("TopLoc_Location")
     m = math.math_Matrix(1, 2, 1, 2, 1.0)
     assert (2.0 * m)(1, 1) == 2.0                                               # friend operator*(double, math_Matrix) defined in the .lxx
+
+
+def test_messages_are_collected_not_subclassed():
+    """Design.md 2d: Python cannot subclass Message_Printer/Message_ProgressIndicator (no trampolines, 8.5 not
+    planned), but OCCT's own Message_PrinterToReport collects messages for reading back."""
+    from nanoocp.Message import (Message, Message_Fail, Message_Printer, Message_PrinterOStream, Message_PrinterToReport,
+                                 Message_ProgressIndicator, Message_Warning)
+    from nanoocp.TCollection import TCollection_AsciiString
+
+    for base in (Message_Printer, Message_ProgressIndicator):
+        class Sub(base):
+            pass
+        with pytest.raises(TypeError, match="no constructor defined"):
+            Sub()
+
+    messenger = Message.DefaultMessenger()
+    saved = list(messenger.Printers())              # restored afterwards: the default messenger is process-wide
+    try:
+        messenger.RemovePrinters(Message_PrinterOStream.get_type_descriptor())
+        printer = Message_PrinterToReport()
+        messenger.AddPrinter(printer)
+        messenger.Send(TCollection_AsciiString("first warning"), Message_Warning)
+        messenger.Send(TCollection_AsciiString("a failure"), Message_Fail)
+        report = printer.Report()
+        assert [a.GetMessageKey() for a in report.GetAlerts(Message_Warning)] == ["first warning"]
+        assert report.GetAlerts(Message_Fail).Size() == 1
+        assert report.Dump(Message_Warning) == "first warning\n"
+    finally:
+        messenger.RemovePrinters(Message_PrinterToReport.get_type_descriptor())
+        messenger.RemovePrinters(Message_PrinterOStream.get_type_descriptor())
+        for saved_printer in saved:
+            messenger.AddPrinter(saved_printer)
