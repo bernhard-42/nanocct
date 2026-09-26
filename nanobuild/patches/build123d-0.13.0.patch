@@ -1,0 +1,2514 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -33,7 +33,7 @@
+ ]
+ 
+ dependencies = [
+-    "cadquery-ocp-novtk >= 8.0, < 8.1",
++    "nanoocp >= 0.1, < 0.2",
+     "typing_extensions >= 4.16.0, < 5",
+     "numpy >= 2, < 3",
+     "svgpathtools >= 1.5.1, < 2",
+@@ -85,10 +85,8 @@
+     "wheel",
+ ]
+ 
+-# typing stubs for the OCP CAD kernel
+-stubs = [
+-    "cadquery-ocp-stubs >= 8.0, < 8.1",
+-]
++# typing stubs: nanoocp ships its own
++stubs = []
+ 
+ # dependencies to build the docs
+ docs = [
+--- a/src/build123d/build_common.py
++++ b/src/build123d/build_common.py
+@@ -55,7 +55,7 @@
+ from math import cos, pi, sqrt
+ from typing import Any, Generic, Type, TypeVar, cast
+ 
+-from OCP.Standard import Standard_ConstructionError
++from nanoocp.Standard import Standard_ConstructionError
+ from typing_extensions import Self, deprecated
+ 
+ from build123d.build_enums import Align, Mode, Select
+--- a/src/build123d/build_enums.py
++++ b/src/build123d/build_enums.py
+@@ -32,7 +32,7 @@
+ from enum import Enum, IntEnum, auto, unique
+ from typing import TypeAlias
+ 
+-from OCP.GccEnt import (
++from nanoocp.GccEnt import (
+     GccEnt_enclosed,
+     GccEnt_enclosing,
+     GccEnt_outside,
+--- a/src/build123d/exporters.py
++++ b/src/build123d/exporters.py
+@@ -47,17 +47,17 @@
+ from ezdxf import zoom
+ from ezdxf.colors import RGB, aci2rgb
+ from ezdxf.math import Vec2
+-from OCP.BRepLib import BRepLib
+-from OCP.BRepTools import BRepTools_WireExplorer
+-from OCP.Geom import Geom_BezierCurve, Geom_BSplineCurve
+-from OCP.GeomConvert import GeomConvert
+-from OCP.GeomConvert import GeomConvert_BSplineCurveToBezierCurve
+-from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt, gp_Vec, gp_XYZ
+-from OCP.HLRAlgo import HLRAlgo_Projector
+-from OCP.HLRBRep import HLRBRep_Algo, HLRBRep_HLRToShape
+-from OCP.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
+-from OCP.TopExp import TopExp_Explorer
+-from OCP.TopoDS import TopoDS
++from nanoocp.BRepLib import BRepLib
++from nanoocp.BRepTools import BRepTools_WireExplorer
++from nanoocp.Geom import Geom_BezierCurve, Geom_BSplineCurve
++from nanoocp.GeomConvert import GeomConvert
++from nanoocp.GeomConvert import GeomConvert_BSplineCurveToBezierCurve
++from nanoocp.gp import gp_Ax2, gp_Dir, gp_Pnt, gp_Vec, gp_XYZ
++from nanoocp.HLRAlgo import HLRAlgo_Projector
++from nanoocp.HLRBRep import HLRBRep_Algo, HLRBRep_HLRToShape
++from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
++from nanoocp.TopExp import TopExp_Explorer
++import nanoocp.TopoDS as TopoDS
+ from typing_extensions import Self, sentinel
+ 
+ from build123d.build_enums import Unit, GeomType
+--- a/src/build123d/exporters3d.py
++++ b/src/build123d/exporters3d.py
+@@ -38,33 +38,33 @@
+ from pathlib import Path
+ from typing import BinaryIO, cast
+ 
+-import OCP.TopAbs as ta
++import nanoocp.TopAbs as ta
+ import requests
+ from anytree import PreOrderIter
+-from OCP.APIHeaderSection import APIHeaderSection_MakeHeader
+-from OCP.BRepMesh import BRepMesh_IncrementalMesh
+-from OCP.BRepTools import BRepTools
+-from OCP.IFSelect import IFSelect_ReturnStatus
+-from OCP.IGESControl import IGESControl_Controller
+-from OCP.Interface import Interface_Static
+-from OCP.Message import Message, Message_Gravity, Message_ProgressRange
+-from OCP.RWGltf import RWGltf_CafWriter
+-from OCP.STEPCAFControl import STEPCAFControl_Controller, STEPCAFControl_Writer
+-from OCP.STEPControl import STEPControl_Controller, STEPControl_StepModelType
+-from OCP.StlAPI import StlAPI_Writer
+-from OCP.TCollection import (
++from nanoocp.APIHeaderSection import APIHeaderSection_MakeHeader
++from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
++from nanoocp.BRepTools import BRepTools
++from nanoocp.IFSelect import IFSelect_ReturnStatus
++from nanoocp.IGESControl import IGESControl_Controller
++from nanoocp.Interface import Interface_Static
++from nanoocp.Message import Message, Message_Gravity, Message_ProgressRange
++from nanoocp.RWGltf import RWGltf_CafWriter
++from nanoocp.STEPCAFControl import STEPCAFControl_Controller, STEPCAFControl_Writer
++from nanoocp.STEPControl import STEPControl_Controller, STEPControl_StepModelType
++from nanoocp.StlAPI import StlAPI_Writer
++from nanoocp.TCollection import (
+     TCollection_AsciiString,
+     TCollection_ExtendedString,
+     TCollection_HAsciiString,
+ )
+-from OCP.collections import IndexedDataMap_TCollection_AsciiString_TCollection_AsciiString
+-from OCP.TDataStd import TDataStd_Name
+-from OCP.TDF import TDF_Label
+-from OCP.TDocStd import TDocStd_Document
+-from OCP.TopExp import TopExp_Explorer
+-from OCP.XCAFApp import XCAFApp_Application
+-from OCP.XCAFDoc import XCAFDoc_ColorType, XCAFDoc_DocumentTool, XCAFDoc_ShapeTool
+-from OCP.XSControl import XSControl_WorkSession
++from nanoocp.NCollection import NCollection_IndexedDataMap
++from nanoocp.TDataStd import TDataStd_Name
++from nanoocp.TDF import TDF_Label
++from nanoocp.TDocStd import TDocStd_Document
++from nanoocp.TopExp import TopExp_Explorer
++from nanoocp.XCAFApp import XCAFApp_Application
++from nanoocp.XCAFDoc import XCAFDoc_ColorType, XCAFDoc_DocumentTool, XCAFDoc_ShapeTool
++from nanoocp.XSControl import XSControl_WorkSession
+ 
+ from threejs_materials import PbrProperties, inject_materials
+ 
+@@ -107,7 +107,7 @@
+     application = XCAFApp_Application.GetApplication_s()
+ 
+     # Create and initialize a new document
+-    application.NewDocument(TCollection_ExtendedString("MDTV-XCAF"), doc)
++    doc = application.NewDocument(TCollection_ExtendedString("MDTV-XCAF"))
+     application.InitDocument(doc)
+ 
+     XCAFDoc_DocumentTool.SetLengthUnit_s(doc, 1 / UNITS_PER_METER[unit])
+@@ -249,10 +249,10 @@
+         bool: write status
+     """
+     if isinstance(file_path, (PathLike | str | bytes)):
+-        file_path = fsdecode(file_path)
++        return_value = BRepTools.Write_s(to_export.wrapped, fsdecode(file_path))
+     else:
+-        file_path = cast(BytesIO, file_path)
+-    return_value = BRepTools.Write_s(to_export.wrapped, file_path)
++        cast(BytesIO, file_path).write(BRepTools.Write_s(to_export.wrapped).encode())
++        return_value = None
+ 
+     return True if return_value is None else return_value
+ 
+@@ -321,7 +321,7 @@
+     writer.SetParallel(True)
+     # Textures need UVs in the gltf export
+     writer.SetForcedUVExport(True)
+-    index_map = IndexedDataMap_TCollection_AsciiString_TCollection_AsciiString()
++    index_map = NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_AsciiString]()
+     progress = Message_ProgressRange()
+ 
+     messenger = Message.DefaultMessenger_s()
+@@ -436,8 +436,9 @@
+     if isinstance(file_path, (PathLike, str, bytes)):
+         status = writer.Write(fsdecode(file_path))
+     else:
+-        # need to cast for type checker because BinaryIO is OK but OCP doesn't know
+-        status = writer.WriteStream(cast(BytesIO, file_path))
++        # WriteStream returns the STEP text; the caller's stream is binary
++        status, text = writer.WriteStream()
++        cast(BytesIO, file_path).write(text.encode())
+ 
+     success = status == IFSelect_ReturnStatus.IFSelect_RetDone
+     if not success:
+@@ -487,7 +488,7 @@
+ 
+     writer = StlAPI_Writer()
+ 
+-    writer.ASCIIMode = ascii_format
++    writer.SetASCIIMode(ascii_format)
+     return writer.Write(to_export.wrapped, str(output_path))
+ 
+ 
+--- a/src/build123d/geometry.py
++++ b/src/build123d/geometry.py
+@@ -57,15 +57,15 @@
+ import numpy as np
+ import webcolors  # type: ignore
+ from typing_extensions import deprecated
+-from OCP.Bnd import Bnd_Box, Bnd_OBB
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepBndLib import BRepBndLib
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_Transform
+-from OCP.BRepGProp import BRepGProp, BRepGProp_Face  # used for mass calculation
+-from OCP.BRepTools import BRepTools
+-from OCP.Geom import Geom_BoundedSurface, Geom_ElementarySurface, Geom_Line, Geom_Plane
+-from OCP.GeomAPI import GeomAPI_IntCS, GeomAPI_IntSS, GeomAPI_ProjectPointOnSurf
+-from OCP.gp import (
++from nanoocp.Bnd import Bnd_Box, Bnd_OBB
++from nanoocp.BRep import BRep_Tool
++from nanoocp.BRepBndLib import BRepBndLib
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_Transform
++from nanoocp.BRepGProp import BRepGProp, BRepGProp_Face  # used for mass calculation
++from nanoocp.BRepTools import BRepTools
++from nanoocp.Geom import Geom_BoundedSurface, Geom_ElementarySurface, Geom_Line, Geom_Plane
++from nanoocp.GeomAPI import GeomAPI_IntCS, GeomAPI_IntSS, GeomAPI_ProjectPointOnSurf
++from nanoocp.gp import (
+     gp_Ax1,
+     gp_Ax2,
+     gp_Ax3,
+@@ -82,11 +82,12 @@
+ )
+ 
+ # properties used to store mass calculation result
+-from OCP.GProp import GProp_GProps
+-from OCP.Quantity import Quantity_Color, Quantity_ColorRGBA, Quantity_TypeOfColor
+-from OCP.TopAbs import TopAbs_ShapeEnum
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import TopoDS, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex
++from nanoocp.GProp import GProp_GProps
++from nanoocp.Quantity import Quantity_Color, Quantity_ColorRGBA, Quantity_TypeOfColor
++from nanoocp.TopAbs import TopAbs_ShapeEnum
++from nanoocp.TopLoc import TopLoc_Location
++from nanoocp.TopoDS import TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex
++import nanoocp.TopoDS as TopoDS
+ 
+ from build123d.build_enums import Align, Align2D, Align3D, Extrinsic, Intrinsic
+ 
+@@ -711,7 +712,7 @@
+                 raise ValueError(f"Invalid edge argument: {edge}")
+ 
+             topods_edge: TopoDS_Edge = edge.wrapped  # type: ignore[annotation-unchecked]
+-            curve = BRep_Tool.Curve_s(topods_edge, float(), float())
++            curve = BRep_Tool.Curve_s(topods_edge)[0]
+             param_min, _ = BRep_Tool.Range_s(topods_edge)
+             origin_pnt = gp_Pnt()
+             tangent_vec = gp_Vec()
+--- a/src/build123d/importers.py
++++ b/src/build123d/importers.py
+@@ -37,22 +37,22 @@
+ from typing import Literal, TextIO
+ 
+ import svgpathtools
+-from OCP.Bnd import Bnd_Box
+-from OCP.BRep import BRep_Builder
+-from OCP.BRepBndLib import BRepBndLib
+-from OCP.BRepTools import BRepTools
+-from OCP.gp import gp_Trsf
+-from OCP.Quantity import Quantity_ColorRGBA
+-from OCP.RWStl import RWStl
+-from OCP.STEPCAFControl import STEPCAFControl_Reader
+-from OCP.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+-from OCP.TDataStd import TDataStd_Name
+-from OCP.collections import Sequence_TDF_Label
+-from OCP.TDF import TDF_Label
+-from OCP.TDocStd import TDocStd_Document
+-from OCP.TopAbs import TopAbs_FACE
+-from OCP.TopExp import TopExp_Explorer
+-from OCP.TopoDS import (
++from nanoocp.Bnd import Bnd_Box
++from nanoocp.BRep import BRep_Builder
++from nanoocp.BRepBndLib import BRepBndLib
++from nanoocp.BRepTools import BRepTools
++from nanoocp.gp import gp_Trsf
++from nanoocp.Quantity import Quantity_ColorRGBA
++from nanoocp.RWStl import RWStl
++from nanoocp.STEPCAFControl import STEPCAFControl_Reader
++from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
++from nanoocp.TDataStd import TDataStd_Name
++from nanoocp.NCollection import NCollection_Sequence
++from nanoocp.TDF import TDF_Label
++from nanoocp.TDocStd import TDocStd_Document
++from nanoocp.TopAbs import TopAbs_FACE
++from nanoocp.TopExp import TopExp_Explorer
++from nanoocp.TopoDS import (
+     TopoDS_Compound,
+     TopoDS_Edge,
+     TopoDS_Face,
+@@ -62,7 +62,7 @@
+     TopoDS_Vertex,
+     TopoDS_Wire,
+ )
+-from OCP.XCAFDoc import (
++from nanoocp.XCAFDoc import (
+     XCAFDoc_ColorCurv,
+     XCAFDoc_ColorGen,
+     XCAFDoc_ColorSurf,
+@@ -147,11 +147,10 @@
+     def get_name(label: TDF_Label) -> str:
+         """Extract name and format"""
+         name = ""
+-        std_name = TDataStd_Name()
+-        if label.IsAttribute(TDataStd_Name.GetID_s()) and label.FindAttribute(
+-            TDataStd_Name.GetID_s(), std_name
+-        ):
+-            name = TCollection_AsciiString(std_name.Get()).ToCString()
++        if label.IsAttribute(TDataStd_Name.GetID_s()):
++            found, std_name = label.FindAttribute(TDataStd_Name.GetID_s())
++            if found:
++                name = TCollection_AsciiString(std_name.Get()).ToCString()
+         # Remove characters that cause ocp_vscode to fail
+         clean_name = "".join(ch for ch in name if unicodedata.category(ch)[0] != "C")
+         return clean_name.translate(str.maketrans(" .()", "____"))
+@@ -206,7 +205,7 @@
+ 
+     def build_assembly(parent_tdf_label: TDF_Label | None = None) -> list[Shape]:
+         """Recursively extract object into an assembly"""
+-        sub_tdf_labels = Sequence_TDF_Label()
++        sub_tdf_labels = NCollection_Sequence[TDF_Label]()
+         if parent_tdf_label is None:
+             shape_tool.GetFreeShapes(sub_tdf_labels)
+         else:
+--- a/src/build123d/mesher.py
++++ b/src/build123d/mesher.py
+@@ -93,23 +93,24 @@
+ from typing import Literal
+ from uuid import UUID
+ 
+-import OCP.TopAbs as ta
++import nanoocp.TopAbs as ta
+ from lib3mf import Lib3MF
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepBuilderAPI import (
++from nanoocp.BRep import BRep_Tool
++from nanoocp.BRepBuilderAPI import (
+     BRepBuilderAPI_MakeFace,
+     BRepBuilderAPI_MakePolygon,
+     BRepBuilderAPI_MakeSolid,
+     BRepBuilderAPI_Sewing,
+ )
+-from OCP.BRepGProp import BRepGProp
+-from OCP.BRepMesh import BRepMesh_IncrementalMesh
+-from OCP.gp import gp_Pnt
+-from OCP.GProp import GProp_GProps
+-from OCP.TopAbs import TopAbs_ShapeEnum
+-from OCP.TopExp import TopExp_Explorer
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import TopoDS, TopoDS_Compound, TopoDS_Shell
++from nanoocp.BRepGProp import BRepGProp
++from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
++from nanoocp.gp import gp_Pnt
++from nanoocp.GProp import GProp_GProps
++from nanoocp.TopAbs import TopAbs_ShapeEnum
++from nanoocp.TopExp import TopExp_Explorer
++from nanoocp.TopLoc import TopLoc_Location
++from nanoocp.TopoDS import TopoDS_Compound, TopoDS_Shell
++import nanoocp.TopoDS as TopoDS
+ 
+ from build123d.build_enums import MeshType, Unit
+ from build123d.geometry import TOLERANCE, Color
+--- a/src/build123d/operations_generic.py
++++ b/src/build123d/operations_generic.py
+@@ -33,8 +33,8 @@
+ from math import radians, tan
+ from typing import TypeAlias, cast
+ 
+-from OCP.Standard import Standard_ConstructionError, Standard_Failure
+-from OCP.StdFail import StdFail_NotDone
++from nanoocp.Standard import Standard_ConstructionError, Standard_Failure
++from nanoocp.StdFail import StdFail_NotDone
+ from typing_extensions import deprecated
+ 
+ from build123d.build_common import (
+--- a/src/build123d/persistence.py
++++ b/src/build123d/persistence.py
+@@ -33,10 +33,10 @@
+ import io
+ import struct
+ 
+-from OCP.BinTools import BinTools
+-from OCP.gp import gp_Quaternion, gp_Trsf, gp_Vec
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import (
++from nanoocp.BinTools import BinTools
++from nanoocp.gp import gp_Quaternion, gp_Trsf, gp_Vec
++from nanoocp.TopLoc import TopLoc_Location
++from nanoocp.TopoDS import (
+     TopoDS_Compound,
+     TopoDS_CompSolid,
+     TopoDS_Edge,
+@@ -58,10 +58,7 @@
+     if shape is None:
+         return None
+ 
+-    bio = io.BytesIO()
+-    BinTools.Write_s(shape, bio)
+-    buffer = bio.getvalue()
+-    return buffer
++    return BinTools.Write_s(shape)
+ 
+ 
+ def deserialize_shape(buffer: bytes) -> TopoDS_Shape:
+--- a/src/build123d/text.py
++++ b/src/build123d/text.py
+@@ -23,7 +23,7 @@
+     TTLibFileIsCollectionError,
+     ttCollection,
+ )
+-from OCP.Font import (
++from nanoocp.Font import (
+     Font_FA_Bold,
+     Font_FA_BoldItalic,
+     Font_FA_Italic,
+@@ -31,8 +31,9 @@
+     Font_FontMgr,
+     Font_SystemFont,
+ )
+-from OCP.TCollection import TCollection_AsciiString
+-from OCP.collections import Sequence_TCollection_HAsciiString
++from nanoocp.TCollection import TCollection_AsciiString
++from nanoocp.NCollection import NCollection_Sequence
++from nanoocp.TCollection import TCollection_HAsciiString
+ 
+ from build123d.build_enums import FontStyle
+ 
+@@ -87,7 +88,7 @@
+         self.manager = Font_FontMgr.GetInstance_s()
+ 
+         # Check if OCP manager is already initialized. "singleline" alias is canary
+-        aliases = Sequence_TCollection_HAsciiString()
++        aliases = NCollection_Sequence[TCollection_HAsciiString]()
+         self.manager.GetAllAliases(aliases)
+         aliases = [aliases.Value(i).ToCString() for i in range(1, aliases.Length() + 1)]
+ 
+@@ -135,7 +136,7 @@
+ 
+     def find_font(self, name: str, style: FontStyle) -> Font_SystemFont:
+         """Find font in FontManager library by name and style"""
+-        return self.manager.FindFont(TCollection_AsciiString(name), FONT_ASPECT[style])
++        return self.manager.FindFont(TCollection_AsciiString(name), FONT_ASPECT[style])[0]
+ 
+     def register_font(
+         self, path: str, override: bool = False, single_stroke=False
+--- a/src/build123d/topology/composite.py
++++ b/src/build123d/topology/composite.py
+@@ -63,11 +63,11 @@
+ 
+ from bd_materials import FinishedMaterial
+ 
+-import OCP.TopAbs as ta
+-from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+-from OCP.Font import Font_SystemFont
+-from OCP.gp import gp_Ax3
+-from OCP.Graphic3d import (
++import nanoocp.TopAbs as ta
++from nanoocp.BRepAlgoAPI import BRepAlgoAPI_Fuse
++from nanoocp.Font import Font_SystemFont
++from nanoocp.gp import gp_Ax3
++from nanoocp.Graphic3d import (
+     Graphic3d_HTA_LEFT,
+     Graphic3d_HTA_CENTER,
+     Graphic3d_HTA_RIGHT,
+@@ -76,16 +76,16 @@
+     Graphic3d_VTA_TOP,
+     Graphic3d_VTA_TOPFIRSTLINE,
+ )
+-from OCP.GProp import GProp_GProps
+-from OCP.NCollection import NCollection_String
+-from OCP.StdPrs import StdPrs_BRepTextBuilder as Font_BRepTextBuilder, StdPrs_BRepFont
+-from OCP.TopAbs import TopAbs_ShapeEnum
+-from OCP.TopoDS import (
+-    TopoDS,
++from nanoocp.GProp import GProp_GProps
++from nanoocp.NCollection import NCollection_String
++from nanoocp.StdPrs import StdPrs_BRepTextBuilder as Font_BRepTextBuilder, StdPrs_BRepFont
++from nanoocp.TopAbs import TopAbs_ShapeEnum
++from nanoocp.TopoDS import (
+     TopoDS_Builder,
+     TopoDS_Compound,
+     TopoDS_Iterator,
+ )
++import nanoocp.TopoDS as TopoDS
+ from anytree import PreOrderIter
+ from build123d.build_enums import Align, CenterOf, FontStyle, Select, TextAlign, Unit
+ from build123d.geometry import (
+--- a/src/build123d/topology/constrained_lines.py
++++ b/src/build123d/topology/constrained_lines.py
+@@ -33,13 +33,13 @@
+ from typing import overload, TYPE_CHECKING, Callable, TypeVar
+ from typing import cast as tcast
+ 
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepAdaptor import BRepAdaptor_Curve
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeVertex
+-from OCP.BRepLib import BRepLib
+-from OCP.GCPnts import GCPnts_AbscissaPoint
+-from OCP.Geom import Geom_Plane
+-from OCP.Geom2d import (
++from nanoocp.BRep import BRep_Tool
++from nanoocp.BRepAdaptor import BRepAdaptor_Curve
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeVertex
++from nanoocp.BRepLib import BRepLib
++from nanoocp.GCPnts import GCPnts_AbscissaPoint
++from nanoocp.Geom import Geom_Plane
++from nanoocp.Geom2d import (
+     Geom2d_CartesianPoint,
+     Geom2d_Circle,
+     Geom2d_Curve,
+@@ -47,9 +47,9 @@
+     Geom2d_Point,
+     Geom2d_TrimmedCurve,
+ )
+-from OCP.Geom2dAdaptor import Geom2dAdaptor_Curve
+-from OCP.Geom2dAPI import Geom2dAPI_ProjectPointOnCurve, Geom2dAPI_InterCurveCurve
+-from OCP.Geom2dGcc import (
++from nanoocp.Geom2dAdaptor import Geom2dAdaptor_Curve
++from nanoocp.Geom2dAPI import Geom2dAPI_ProjectPointOnCurve, Geom2dAPI_InterCurveCurve
++from nanoocp.Geom2dGcc import (
+     Geom2dGcc_Circ2d2TanOn,
+     Geom2dGcc_Circ2d2TanRad,
+     Geom2dGcc_Circ2d3Tan,
+@@ -59,9 +59,9 @@
+     Geom2dGcc_Lin2d2Tan,
+     Geom2dGcc_QualifiedCurve,
+ )
+-from OCP.GeomAbs import GeomAbs_CurveType
+-from OCP.GeomAPI import GeomAPI
+-from OCP.gp import (
++from nanoocp.GeomAbs import GeomAbs_CurveType
++from nanoocp.GeomAPI import GeomAPI
++from nanoocp.gp import (
+     gp_Ax2d,
+     gp_Ax3,
+     gp_Circ2d,
+@@ -73,9 +73,9 @@
+     gp_Pnt2d,
+     gp_Vec2d,
+ )
+-from OCP.IntAna2d import IntAna2d_AnaIntersection
+-from OCP.Standard import Standard_ConstructionError, Standard_Failure
+-from OCP.TopoDS import TopoDS_Edge
++from nanoocp.IntAna2d import IntAna2d_AnaIntersection
++from nanoocp.Standard import Standard_ConstructionError, Standard_Failure
++from nanoocp.TopoDS import TopoDS_Edge
+ 
+ from build123d.build_enums import Sagitta, Tangency
+ from build123d.geometry import Axis, TOLERANCE, Vector, VectorLike
+@@ -124,7 +124,7 @@
+     """Convert a TopoDS_Edge into 2d curve & extract properties"""
+ 
+     # 1) Underlying curve + range (also retrieve location to be safe)
+-    hcurve3d = BRep_Tool.Curve_s(edge, float(), float())
++    hcurve3d = BRep_Tool.Curve_s(edge)[0]
+     first, last = BRep_Tool.Range_s(edge)
+ 
+     # 2) Convert to 2D on Plane.XY (Z-up frame at origin)
+--- a/src/build123d/topology/history.py
++++ b/src/build123d/topology/history.py
+@@ -40,20 +40,21 @@
+ from collections.abc import Callable, Iterable
+ from typing import Protocol
+ 
+-import OCP.TopAbs as ta
+-from OCP.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_Sewing
+-from OCP.BRepTools import BRepTools_History
+-from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+-from OCP.TopExp import TopExp
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import TopoDS_Shape
+-from OCP.collections import (
+-    DataMap_TopoDS_Shape_TopoDS_Shape_TopTools_ShapeMapHasher,
+-    IndexedMap_TopoDS_Shape_TopTools_ShapeMapHasher,
+-    List_TopoDS_Shape,
+-    Map_TopoDS_Shape_TopTools_ShapeMapHasher,
++import nanoocp.TopAbs as ta
++from nanoocp.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_Sewing
++from nanoocp.BRepTools import BRepTools_History
++from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++from nanoocp.TopExp import TopExp
++from nanoocp.TopLoc import TopLoc_Location
++from nanoocp.TopoDS import TopoDS_Shape
++from nanoocp.NCollection import (
++    NCollection_DataMap,
++    NCollection_IndexedMap,
++    NCollection_List,
++    NCollection_Map,
+ )
++from nanoocp.TopTools import TopTools_ShapeMapHasher
+ from typing_extensions import Self
+ 
+ from .kernel import list_shapes
+@@ -67,12 +68,12 @@
+     """The history interface every BRepBuilderAPI_MakeShape descendant has."""
+ 
+     # pylint: disable=invalid-name,missing-function-docstring
+-    def Generated(self, shape: TopoDS_Shape, /) -> List_TopoDS_Shape: ...
+-    def Modified(self, shape: TopoDS_Shape, /) -> List_TopoDS_Shape: ...
++    def Generated(self, shape: TopoDS_Shape, /) -> NCollection_List[TopoDS_Shape]: ...
++    def Modified(self, shape: TopoDS_Shape, /) -> NCollection_List[TopoDS_Shape]: ...
+ 
+ 
+ def _answers(
+-    query: Callable[[TopoDS_Shape], List_TopoDS_Shape], shape: TopoDS_Shape
++    query: Callable[[TopoDS_Shape], NCollection_List[TopoDS_Shape]], shape: TopoDS_Shape
+ ) -> list[TopoDS_Shape]:
+     """What an algorithm says about one sub-shape, or nothing if it will not say."""
+     # OCP binds each OCCT failure straight to Exception, with no common base:
+@@ -86,7 +87,7 @@
+ 
+ def tracked_subshapes(shapes: Iterable[TopoDS_Shape]) -> list[TopoDS_Shape]:
+     """Every distinct vertex, edge, face and solid of the given shapes."""
+-    found = IndexedMap_TopoDS_Shape_TopTools_ShapeMapHasher()
++    found = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
+     for shape in shapes:
+         if shape is None or shape.IsNull():
+             continue
+@@ -161,7 +162,7 @@
+         """
+         inputs = list(inputs)
+         history = cls(before=inputs)
+-        present = Map_TopoDS_Shape_TopTools_ShapeMapHasher()
++        present = NCollection_Map[TopoDS_Shape, TopTools_ShapeMapHasher]()
+         for sub in tracked_subshapes([result]):
+             present.Add(sub)
+         for sub in tracked_subshapes(inputs):
+@@ -187,7 +188,7 @@
+         """
+         inputs = list(inputs)
+         history = cls(before=inputs)
+-        present = Map_TopoDS_Shape_TopTools_ShapeMapHasher()
++        present = NCollection_Map[TopoDS_Shape, TopTools_ShapeMapHasher]()
+         for sub in tracked_subshapes([sewing.SewedShape()]):
+             present.Add(sub)
+         for sub in tracked_subshapes(inputs):
+@@ -211,7 +212,7 @@
+         """
+         history = cls(before=[before])
+         identity = TopLoc_Location()
+-        placed = DataMap_TopoDS_Shape_TopoDS_Shape_TopTools_ShapeMapHasher()
++        placed = NCollection_DataMap[TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher]()
+         for sub in tracked_subshapes([after]):
+             placed.Bind(sub.Located(identity), sub)
+         for sub in tracked_subshapes([before]):
+@@ -341,9 +342,9 @@
+     """
+ 
+     def __init__(self, history: ShapeHistory, inputs: Iterable[TopoDS_Shape]):
+-        self.untouched = Map_TopoDS_Shape_TopTools_ShapeMapHasher()
+-        self.modified_from = DataMap_TopoDS_Shape_TopoDS_Shape_TopTools_ShapeMapHasher()
+-        self.generated_from = DataMap_TopoDS_Shape_TopoDS_Shape_TopTools_ShapeMapHasher()
++        self.untouched = NCollection_Map[TopoDS_Shape, TopTools_ShapeMapHasher]()
++        self.modified_from = NCollection_DataMap[TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher]()
++        self.generated_from = NCollection_DataMap[TopoDS_Shape, TopoDS_Shape, TopTools_ShapeMapHasher]()
+         for sub in tracked_subshapes(inputs):
+             self.untouched.Add(sub)
+             for shape in history.modified(sub):
+--- a/src/build123d/topology/kernel.py
++++ b/src/build123d/topology/kernel.py
+@@ -29,11 +29,11 @@
+ 
+ from __future__ import annotations
+ 
+-from OCP.TopoDS import TopoDS_Shape
+-from OCP.collections import List_TopoDS_Shape
++from nanoocp.TopoDS import TopoDS_Shape
++from nanoocp.NCollection import NCollection_List
+ 
+ 
+-def list_shapes(shapes: List_TopoDS_Shape) -> list[TopoDS_Shape]:
++def list_shapes(shapes: NCollection_List[TopoDS_Shape]) -> list[TopoDS_Shape]:
+     """A kernel list as a Python list.
+ 
+     Iterating a ``List_TopoDS_Shape`` through its Python protocol costs
+@@ -41,7 +41,7 @@
+     from the front costs microseconds.
+     """
+     found: list[TopoDS_Shape] = []
+-    remaining = List_TopoDS_Shape()
++    remaining = NCollection_List[TopoDS_Shape]()
+     remaining.Assign(shapes)
+     while not remaining.IsEmpty():
+         found.append(remaining.First())
+--- a/src/build123d/topology/one_d.py
++++ b/src/build123d/topology/one_d.py
+@@ -63,15 +63,15 @@
+ from typing import overload
+ 
+ import numpy as np
+-import OCP.TopAbs as ta
+-from OCP.BOPAlgo import BOPAlgo_Splitter
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepAdaptor import BRepAdaptor_CompCurve, BRepAdaptor_Curve
+-from OCP.BRepAlgoAPI import (
++import nanoocp.TopAbs as ta
++from nanoocp.BOPAlgo import BOPAlgo_Splitter
++from nanoocp.BRep import BRep_Tool
++from nanoocp.BRepAdaptor import BRepAdaptor_CompCurve, BRepAdaptor_Curve
++from nanoocp.BRepAlgoAPI import (
+     BRepAlgoAPI_Common,
+     BRepAlgoAPI_Section,
+ )
+-from OCP.BRepBuilderAPI import (
++from nanoocp.BRepBuilderAPI import (
+     BRepBuilderAPI_DisconnectedWire,
+     BRepBuilderAPI_EmptyWire,
+     BRepBuilderAPI_MakeEdge,
+@@ -82,28 +82,28 @@
+     BRepBuilderAPI_NonManifoldWire,
+     BRepBuilderAPI_Transform,
+ )
+-from OCP.BRepExtrema import BRepExtrema_DistShapeShape, BRepExtrema_SupportType
+-from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet2d
+-from OCP.BRepGProp import BRepGProp, BRepGProp_Face
+-from OCP.BRepLib import BRepLib, BRepLib_FindSurface
+-from OCP.BRepLProp import BRepLProp
+-from OCP.BRepOffset import BRepOffset_MakeOffset
+-from OCP.BRepOffsetAPI import BRepOffsetAPI_MakeOffset
+-from OCP.BRepProj import BRepProj_Projection
+-from OCP.BRepTools import BRepTools, BRepTools_WireExplorer
+-from OCP.Extrema import Extrema_ExtPC
+-from OCP.GC import (
++from nanoocp.BRepExtrema import BRepExtrema_DistShapeShape, BRepExtrema_SupportType
++from nanoocp.BRepFilletAPI import BRepFilletAPI_MakeFillet2d
++from nanoocp.BRepGProp import BRepGProp, BRepGProp_Face
++from nanoocp.BRepLib import BRepLib, BRepLib_FindSurface
++from nanoocp.BRepLProp import BRepLProp
++from nanoocp.BRepOffset import BRepOffset_MakeOffset
++from nanoocp.BRepOffsetAPI import BRepOffsetAPI_MakeOffset
++from nanoocp.BRepProj import BRepProj_Projection
++from nanoocp.BRepTools import BRepTools, BRepTools_WireExplorer
++from nanoocp.Extrema import Extrema_ExtPC
++from nanoocp.GC import (
+     GC_MakeArcOfCircle,
+     GC_MakeArcOfEllipse,
+     GC_MakeArcOfHyperbola,
+     GC_MakeArcOfParabola,
+ )
+-from OCP.GCPnts import (
++from nanoocp.GCPnts import (
+     GCPnts_AbscissaPoint,
+     GCPnts_QuasiUniformDeflection,
+     GCPnts_UniformDeflection,
+ )
+-from OCP.Geom import (
++from nanoocp.Geom import (
+     Geom_BezierCurve,
+     Geom_BSplineCurve,
+     Geom_ConicalSurface,
+@@ -113,13 +113,13 @@
+     Geom_Surface,
+     Geom_TrimmedCurve,
+ )
+-from OCP.Geom2d import (
++from nanoocp.Geom2d import (
+     Geom2d_Curve,
+     Geom2d_Line,
+     Geom2d_TrimmedCurve,
+ )
+-from OCP.Geom2dAPI import Geom2dAPI_InterCurveCurve
+-from OCP.GeomAbs import (
++from nanoocp.Geom2dAPI import Geom2dAPI_InterCurveCurve
++from nanoocp.GeomAbs import (
+     GeomAbs_C0,
+     GeomAbs_C1,
+     GeomAbs_C2,
+@@ -130,20 +130,20 @@
+     GeomAbs_G2,
+     GeomAbs_JoinType,
+ )
+-from OCP.GeomAdaptor import GeomAdaptor_Curve
+-from OCP.GeomAPI import (
++from nanoocp.GeomAdaptor import GeomAdaptor_Curve
++from nanoocp.GeomAPI import (
+     GeomAPI_Interpolate,
+     GeomAPI_PointsToBSpline,
+     GeomAPI_ProjectPointOnCurve,
+ )
+-from OCP.GeomConvert import GeomConvert_CompCurveToBSplineCurve
+-from OCP.GeomFill import (
++from nanoocp.GeomConvert import GeomConvert_CompCurveToBSplineCurve
++from nanoocp.GeomFill import (
+     GeomFill_CorrectedFrenet,
+     GeomFill_Frenet,
+     GeomFill_TrihedronLaw,
+ )
+-from OCP.GeomProjLib import GeomProjLib
+-from OCP.gp import (
++from nanoocp.GeomProjLib import GeomProjLib
++from nanoocp.gp import (
+     gp_Ax1,
+     gp_Ax2,
+     gp_Ax3,
+@@ -158,30 +158,25 @@
+     gp_Trsf,
+     gp_Vec,
+ )
+-from OCP.GProp import GProp_GProps
+-from OCP.HLRAlgo import HLRAlgo_Projector
+-from OCP.HLRBRep import HLRBRep_Algo, HLRBRep_HLRToShape
+-from OCP.ShapeAnalysis import ShapeAnalysis_FreeBounds
+-from OCP.ShapeFix import ShapeFix_Shape, ShapeFix_Wireframe
+-from OCP.Standard import Standard_ConstructionError
+-from OCP.collections import (
+-    Array1_double,
+-    Array1_gp_Pnt,
+-    Array1_gp_Vec,
+-    Array1_int,
+-    HArray1_bool,
+-    HArray1_double,
+-    HArray1_gp_Pnt,
+-    HSequence_TopoDS_Shape,
+-    IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher,
+-    IndexedMap_TopoDS_Shape_TopTools_ShapeMapHasher,
+-    List_TopoDS_Shape,
++from nanoocp.GProp import GProp_GProps
++from nanoocp.HLRAlgo import HLRAlgo_Projector
++from nanoocp.HLRBRep import HLRBRep_Algo, HLRBRep_HLRToShape
++from nanoocp.ShapeAnalysis import ShapeAnalysis_FreeBounds
++from nanoocp.ShapeFix import ShapeFix_Shape, ShapeFix_Wireframe
++from nanoocp.Standard import Standard_ConstructionError
++from nanoocp.NCollection import (
++    NCollection_Array1,
++    NCollection_HArray1,
++    NCollection_HSequence,
++    NCollection_IndexedDataMap,
++    NCollection_IndexedMap,
++    NCollection_List,
+ )
+-from OCP.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
+-from OCP.TopExp import TopExp, TopExp_Explorer
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import (
+-    TopoDS,
++from nanoocp.TopTools import TopTools_ShapeMapHasher
++from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
++from nanoocp.TopExp import TopExp, TopExp_Explorer
++from nanoocp.TopLoc import TopLoc_Location
++from nanoocp.TopoDS import (
+     TopoDS_Compound,
+     TopoDS_Edge,
+     TopoDS_Face,
+@@ -189,6 +184,7 @@
+     TopoDS_Vertex,
+     TopoDS_Wire,
+ )
++import nanoocp.TopoDS as TopoDS
+ from scipy.optimize import minimize_scalar
+ from scipy.spatial import ConvexHull
+ from typing_extensions import Self
+@@ -1754,12 +1750,12 @@
+         cntl_gp_pnts = [Vector(cntl_pnt).to_pnt() for cntl_pnt in cntl_pnts]
+ 
+         # The poles are stored in an OCCT Array object
+-        poles = Array1_gp_Pnt(1, len(cntl_gp_pnts))
++        poles = NCollection_Array1[gp_Pnt](1, len(cntl_gp_pnts))
+         for i, cntl_gp_pnt in enumerate(cntl_gp_pnts):
+             poles.SetValue(i + 1, cntl_gp_pnt)
+ 
+         if weights:
+-            pole_weights = Array1_double(1, len(weights))
++            pole_weights = NCollection_Array1[float](1, len(weights))
+             for i, weight in enumerate(weights):
+                 pole_weights.SetValue(i + 1, float(weight))
+             bezier_curve = Geom_BezierCurve(poles, pole_weights)
+@@ -2510,7 +2506,7 @@
+         point_vectors = [Vector(point) for point in points]
+         if tangents:
+             tangent_vectors = tuple(Vector(v) for v in tangents)
+-        pnts = HArray1_gp_Pnt(1, len(point_vectors))
++        pnts = NCollection_HArray1[gp_Pnt](1, len(point_vectors))
+         for i, point in enumerate(point_vectors):
+             pnts.SetValue(i + 1, point.to_pnt())
+ 
+@@ -2523,7 +2519,7 @@
+                     "(plus one if periodic), or none specified. Parameter count: "
+                     f"{len(parameters)}, point count: {len(point_vectors)}"
+                 )
+-            parameters_array = HArray1_double(1, len(parameters))
++            parameters_array = NCollection_HArray1[float](1, len(parameters))
+             for p_index, p_value in enumerate(parameters):
+                 parameters_array.SetValue(p_index + 1, p_value)
+ 
+@@ -2544,8 +2540,8 @@
+                     )
+ 
+                 # Specify a tangent for each interpolation point:
+-                tangents_array = Array1_gp_Vec(1, len(tangent_vectors))
+-                tangent_enabled_array = HArray1_bool(
++                tangents_array = NCollection_Array1[gp_Vec](1, len(tangent_vectors))
++                tangent_enabled_array = NCollection_HArray1[bool](
+                     1, len(tangent_vectors)
+                 )
+                 for t_index, t_value in enumerate(tangent_vectors):
+@@ -2606,21 +2602,21 @@
+                 unique_knots.append(knot)
+                 multiplicities.append(1)
+ 
+-        poles_array = Array1_gp_Pnt(1, len(point_vectors))
++        poles_array = NCollection_Array1[gp_Pnt](1, len(point_vectors))
+         for index, point in enumerate(point_vectors, start=1):
+             poles_array.SetValue(index, point.to_pnt())
+ 
+-        knots_array = Array1_double(1, len(unique_knots))
++        knots_array = NCollection_Array1[float](1, len(unique_knots))
+         for index, knot in enumerate(unique_knots, start=1):
+             knots_array.SetValue(index, float(knot))
+ 
+-        multiplicities_array = Array1_int(1, len(multiplicities))
++        multiplicities_array = NCollection_Array1[int](1, len(multiplicities))
+         for index, multiplicity in enumerate(multiplicities, start=1):
+             multiplicities_array.SetValue(index, multiplicity)
+ 
+         weights_list = list(weights) if weights is not None else []
+         if weights_list:
+-            weights_array = Array1_double(1, len(weights_list))
++            weights_array = NCollection_Array1[float](1, len(weights_list))
+             for index, weight in enumerate(weights_list, start=1):
+                 weights_array.SetValue(index, float(weight))
+             spline_geom = Geom_BSplineCurve(
+@@ -2672,7 +2668,7 @@
+         Returns:
+             Edge: spline
+         """
+-        pnts = HArray1_gp_Pnt(1, len(points))
++        pnts = NCollection_HArray1[gp_Pnt](1, len(points))
+         for i, point in enumerate(points):
+             pnts.SetValue(i + 1, Vector(point).to_pnt())
+ 
+@@ -2803,7 +2799,7 @@
+         u_end: float = self.param_at(1)
+ 
+         curve_original = tcast(
+-            Geom_BSplineCurve, BRep_Tool.Curve_s(self.wrapped, u_start, u_end)
++            Geom_BSplineCurve, BRep_Tool.Curve_s(self.wrapped)[0]
+         )
+         n_poles = curve_original.NbPoles()
+         poles = [curve_original.Pole(i + 1) for i in range(n_poles)]
+@@ -2821,9 +2817,7 @@
+         extended_edge = Edge.make_spline(pnts, tangents=tangents)
+         assert extended_edge.wrapped is not None
+ 
+-        geom_curve = BRep_Tool.Curve_s(
+-            extended_edge.wrapped, extended_edge.param_at(0), extended_edge.param_at(1)
+-        )
++        geom_curve = BRep_Tool.Curve_s(extended_edge.wrapped)[0]
+         snapped_geom_curve = GeomProjLib.Project_s(geom_curve, geom_surface)
+         if snapped_geom_curve is None:
+             raise RuntimeError("Failed to snap extended edge to surface")
+@@ -2870,21 +2864,9 @@
+         pln_shape = BRepBuilderAPI_MakeFace(plane.wrapped).Face()
+         edge_surface = BRep_Tool.Surface_s(pln_shape)
+ 
+-        self_2d_curve: Geom2d_Curve = BRep_Tool.CurveOnPlane_s(
+-            self.wrapped,
+-            edge_surface,
+-            TopLoc_Location(),
+-            self.param_at(0),
+-            self.param_at(1),
+-        )
++        self_2d_curve: Geom2d_Curve = BRep_Tool.CurveOnPlane_s(self.wrapped, edge_surface, TopLoc_Location())[0]
+         if other is not None and other.wrapped is not None:
+-            edge_2d_curve: Geom2d_Curve = BRep_Tool.CurveOnPlane_s(
+-                other.wrapped,
+-                edge_surface,
+-                TopLoc_Location(),
+-                other.param_at(0),
+-                other.param_at(1),
+-            )
++            edge_2d_curve: Geom2d_Curve = BRep_Tool.CurveOnPlane_s(other.wrapped, edge_surface, TopLoc_Location())[0]
+             intersector = Geom2dAPI_InterCurveCurve(
+                 self_2d_curve, edge_2d_curve, tolerance
+             )
+@@ -3255,7 +3237,7 @@
+         # end points.
+ 
+         # Extract the normalized parameter using OCCT GeomAPI_ProjectPointOnCurve
+-        curve = BRep_Tool.Curve_s(self.wrapped, float(), float())
++        curve = BRep_Tool.Curve_s(self.wrapped)[0]
+         projector = GeomAPI_ProjectPointOnCurve(pnt.to_pnt(), curve)
+         param = projector.LowerDistanceParameter()
+         # Note that for some periodic curves the LowerDistanceParameter might
+@@ -3368,7 +3350,7 @@
+         if reconstruct:
+             first: float = self.param_at(0)
+             last: float = self.param_at(1)
+-            curve = BRep_Tool.Curve_s(self._wrapped, first, last)
++            curve = BRep_Tool.Curve_s(self._wrapped)[0]
+             first = curve.ReversedParameter(first)
+             last = curve.ReversedParameter(last)
+             topods_edge = BRepBuilderAPI_MakeEdge(curve.Reversed(), last, first).Edge()
+@@ -3407,11 +3389,7 @@
+         # Rebuild the edge
+         trimmed_edge = Edge(
+             BRepBuilderAPI_MakeEdge(
+-                BRep_Tool.Curve_s(
+-                    self.wrapped,
+-                    comp_curve_start.FirstParameter(),
+-                    comp_curve_start.LastParameter(),
+-                ),
++                BRep_Tool.Curve_s(self.wrapped)[0],
+                 *sorted([parm_start, parm_end]),
+             ).Edge()
+         )
+@@ -3449,9 +3427,7 @@
+         self_copy = copy.deepcopy(self)
+         assert self_copy.wrapped is not None
+ 
+-        new_curve = BRep_Tool.Curve_s(
+-            self_copy.wrapped, self.param_at(0), self.param_at(1)
+-        )
++        new_curve = BRep_Tool.Curve_s(self_copy.wrapped)[0]
+ 
+         # Create an adaptor for the curve
+         adaptor_curve = GeomAdaptor_Curve(new_curve)
+@@ -3741,7 +3717,7 @@
+             edges = placed_edges
+ 
+         wire_builder = BRepBuilderAPI_MakeWire()
+-        combined_edges = List_TopoDS_Shape()
++        combined_edges = NCollection_List[TopoDS_Shape]()
+         for edge in edges:
+             if edge.wrapped is not None:
+                 combined_edges.Append(edge.wrapped)
+@@ -3777,14 +3753,13 @@
+             ShapeList[Wire]: Wires
+         """
+ 
+-        edges_in = HSequence_TopoDS_Shape()
+-        wires_out = HSequence_TopoDS_Shape()
++        edges_in = NCollection_HSequence[TopoDS_Shape]()
+ 
+         for edge in [e for w in wires for e in w.edges()]:
+             if edge.wrapped is not None:
+                 edges_in.Append(edge.wrapped)
+ 
+-        ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False, wires_out)
++        wires_out = ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False)
+ 
+         wires = ShapeList()
+         for i in range(wires_out.Length()):
+@@ -4068,7 +4043,7 @@
+         unchamfered_face = _make_topods_face_from_wires(self.wrapped)
+         chamfer_builder = BRepFilletAPI_MakeFillet2d(unchamfered_face)
+ 
+-        vertex_edge_map = IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++        vertex_edge_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+         TopExp.MapShapesAndAncestors_s(
+             unchamfered_face, ta.TopAbs_VERTEX, ta.TopAbs_EDGE, vertex_edge_map
+         )
+@@ -4357,10 +4332,10 @@
+             closest_topods_edge = tcast(
+                 TopoDS_Edge, downcast(extrema.SupportOnShape2(1))
+             )
+-            closest_topods_edge_param = extrema.ParOnEdgeS2(1)[0]
++            closest_topods_edge_param = extrema.ParOnEdgeS2(1)
+         elif supp_type == BRepExtrema_SupportType.BRepExtrema_IsVertex:
+             v_hit = tcast(TopoDS_Vertex, downcast(extrema.SupportOnShape2(1)))
+-            vertex_edge_map = IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++            vertex_edge_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+             TopExp.MapShapesAndAncestors_s(
+                 self.wrapped, ta.TopAbs_VERTEX, ta.TopAbs_EDGE, vertex_edge_map
+             )
+@@ -4657,7 +4632,7 @@
+                 wire_explorer.Next()
+                 continue
+             param_min, param_max = BRep_Tool.Range_s(topods_edge)
+-            new_curve = BRep_Tool.Curve_s(topods_edge, float(), float())
++            new_curve = BRep_Tool.Curve_s(topods_edge)[0]
+             trimmed_curve = Geom_TrimmedCurve(new_curve, param_min, param_max)
+ 
+             # Append this edge's trimmed curve into the composite spline.
+@@ -4739,13 +4714,12 @@
+ 
+     """
+ 
+-    edges_in = HSequence_TopoDS_Shape()
+-    wires_out = HSequence_TopoDS_Shape()
++    edges_in = NCollection_HSequence[TopoDS_Shape]()
+ 
+     for edge in edges:
+         if edge.wrapped is not None:
+             edges_in.Append(edge.wrapped)
+-    ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False, wires_out)
++    wires_out = ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False)
+ 
+     wires: ShapeList[Wire] = ShapeList()
+     for i in range(wires_out.Length()):
+@@ -4882,8 +4856,8 @@
+     """
+     curve = BRepAdaptor_Curve(edge)
+     first, last = curve.FirstParameter(), curve.LastParameter()
+-    pcurve1 = BRep_Tool.CurveOnSurface_s(edge, face1, first, last)
+-    pcurve2 = BRep_Tool.CurveOnSurface_s(edge, face2, first, last)
++    pcurve1 = BRep_Tool.CurveOnSurface_s(edge, face1)[0]
++    pcurve2 = BRep_Tool.CurveOnSurface_s(edge, face2)[0]
+     reversed_in_face2 = (
+         _edge_as_bounded_by(face2, edge).Orientation()
+         == TopAbs_Orientation.TopAbs_REVERSED
+@@ -4942,7 +4916,7 @@
+         raise ValueError("edge has no valid parent")
+ 
+     # make a edge --> faces mapping
+-    edge_face_map = IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++    edge_face_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+     TopExp.MapShapesAndAncestors_s(
+         parent.wrapped, ta.TopAbs_EDGE, ta.TopAbs_FACE, edge_face_map
+     )
+@@ -4958,7 +4932,7 @@
+     relocation = relocation_between(parent_edge, edge.wrapped)
+ 
+     # Query the map and select only unique faces
+-    unique_face_map = IndexedMap_TopoDS_Shape_TopTools_ShapeMapHasher()
++    unique_face_map = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
+     for face in list_shapes(edge_face_map.FindFromKey(parent_edge)):
+         unique_face_map.Add(face)
+     return [
+--- a/src/build123d/topology/shape_core.py
++++ b/src/build123d/topology/shape_core.py
+@@ -71,17 +71,17 @@
+ from typing import overload
+ 
+ import numpy as np
+-import OCP.GeomAbs as ga
+-import OCP.TopAbs as ta
++import nanoocp.GeomAbs as ga
++import nanoocp.TopAbs as ta
+ from anytree import NodeMixin, RenderTree
+ from IPython.lib.pretty import RepresentationPrinter, pretty
+-from OCP.Bnd import Bnd_OBB
+-from OCP.BOPAlgo import BOPAlgo_GlueEnum
+-from OCP.BRep import BRep_TEdge, BRep_Tool
+-from OCP.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
+-from OCP.GCPnts import GCPnts_AbscissaPoint
+-from OCP.GeomAdaptor import GeomAdaptor_Curve
+-from OCP.BRepAlgoAPI import (
++from nanoocp.Bnd import Bnd_OBB
++from nanoocp.BOPAlgo import BOPAlgo_GlueEnum
++from nanoocp.BRep import BRep_TEdge, BRep_Tool
++from nanoocp.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
++from nanoocp.GCPnts import GCPnts_AbscissaPoint
++from nanoocp.GeomAdaptor import GeomAdaptor_Curve
++from nanoocp.BRepAlgoAPI import (
+     BRepAlgoAPI_BooleanOperation,
+     BRepAlgoAPI_Common,
+     BRepAlgoAPI_Cut,
+@@ -89,7 +89,7 @@
+     BRepAlgoAPI_Section,
+     BRepAlgoAPI_Splitter,
+ )
+-from OCP.BRepBuilderAPI import (
++from nanoocp.BRepBuilderAPI import (
+     BRepBuilderAPI_Copy,
+     BRepBuilderAPI_GTransform,
+     BRepBuilderAPI_MakeFace,
+@@ -100,28 +100,27 @@
+     BRepBuilderAPI_Transform,
+     BRepBuilderAPI_Transformed,
+ )
+-from OCP.BRepCheck import BRepCheck_Analyzer
+-from OCP.BRepExtrema import BRepExtrema_DistShapeShape
+-from OCP.BRepGProp import BRepGProp, BRepGProp_Face
+-from OCP.BRepIntCurveSurface import BRepIntCurveSurface_Inter
+-from OCP.BRepMesh import BRepMesh_IncrementalMesh
+-from OCP.BRepPrimAPI import BRepPrimAPI_MakeHalfSpace
+-from OCP.BRepTools import BRepTools
+-from OCP.gce import gce_MakeLin
+-from OCP.GeomAPI import GeomAPI_ProjectPointOnSurf
+-from OCP.GeomLib import GeomLib_IsPlanarSurface
+-from OCP.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec, gp_XYZ
+-from OCP.GProp import GProp_GProps
+-from OCP.ShapeAnalysis import ShapeAnalysis_Curve
+-from OCP.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
+-from OCP.ShapeFix import ShapeFix_Shape
+-from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+-from OCP.Standard import Standard_Failure
+-from OCP.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
+-from OCP.TopExp import TopExp, TopExp_Explorer
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import (
+-    TopoDS,
++from nanoocp.BRepCheck import BRepCheck_Analyzer
++from nanoocp.BRepExtrema import BRepExtrema_DistShapeShape
++from nanoocp.BRepGProp import BRepGProp, BRepGProp_Face
++from nanoocp.BRepIntCurveSurface import BRepIntCurveSurface_Inter
++from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
++from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeHalfSpace
++from nanoocp.BRepTools import BRepTools
++from nanoocp.gce import gce_MakeLin
++from nanoocp.GeomAPI import GeomAPI_ProjectPointOnSurf
++from nanoocp.GeomLib import GeomLib_IsPlanarSurface
++from nanoocp.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec, gp_XYZ
++from nanoocp.GProp import GProp_GProps
++from nanoocp.ShapeAnalysis import ShapeAnalysis_Curve
++from nanoocp.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
++from nanoocp.ShapeFix import ShapeFix_Shape
++from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++from nanoocp.Standard import Standard_Failure
++from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
++from nanoocp.TopExp import TopExp, TopExp_Explorer
++from nanoocp.TopLoc import TopLoc_Location
++from nanoocp.TopoDS import (
+     TopoDS_Builder,
+     TopoDS_Compound,
+     TopoDS_Edge,
+@@ -133,9 +132,9 @@
+     TopoDS_Vertex,
+     TopoDS_Wire,
+ )
+-from OCP.collections import IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher
+-from OCP.collections import List_TopoDS_Shape
+-from OCP.TopTools import TopTools_ShapeMapHasher
++import nanoocp.TopoDS as TopoDS
++from nanoocp.NCollection import NCollection_IndexedDataMap, NCollection_List
++from nanoocp.TopTools import TopTools_ShapeMapHasher
+ from typing_extensions import Self
+ 
+ from bd_materials import FinishedMaterial, resolve as resolve_material
+@@ -529,7 +528,7 @@
+ 
+             # Create an empty indexed data map to store the edges and their corresponding faces.
+             shape_map = (
+-                IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++                NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+             )
+ 
+             # Fill the map with edges and their associated faces in the given shape. Each edge in
+@@ -2225,7 +2224,7 @@
+         if keep in [Keep.INSIDE, Keep.OUTSIDE]:
+             raise ValueError(f"{keep} is invalid")
+ 
+-        shape_list = List_TopoDS_Shape()
++        shape_list = NCollection_List[TopoDS_Shape]()
+         shape_list.Append(self.wrapped)
+ 
+         # Define the splitting tool
+@@ -2234,7 +2233,7 @@
+             if isinstance(tool, Plane)
+             else tool.wrapped
+         )
+-        tool_list = List_TopoDS_Shape()
++        tool_list = NCollection_List[TopoDS_Shape]()
+         tool_list.Append(trim_tool)
+ 
+         # Create the splitter algorithm
+@@ -2787,12 +2786,12 @@
+         # The base of the operation
+         base = args[0] if isinstance(args, (list, tuple)) else args
+ 
+-        arg = List_TopoDS_Shape()
++        arg = NCollection_List[TopoDS_Shape]()
+         for obj in args:
+             if obj._wrapped is not None:
+                 arg.Append(obj._wrapped)
+ 
+-        tool = List_TopoDS_Shape()
++        tool = NCollection_List[TopoDS_Shape]()
+         for obj in tools:
+             if obj._wrapped is not None:
+                 tool.Append(obj._wrapped)
+@@ -3206,7 +3205,7 @@
+     if peer_type == "Vertex":
+         vertex_neighbors: dict[Shape, set[Shape]] = {peer: set() for peer in peers}
+         vertex_edge_map = (
+-            IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++            NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+         )
+         TopExp.MapShapesAndAncestors_s(
+             parent.wrapped,
+@@ -3234,7 +3233,7 @@
+                     if neighbor is not None and neighbor != vertex_peer:
+                         vertex_neighbors[vertex_peer].add(neighbor)
+     else:
+-        connector_peer_map = IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++        connector_peer_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+         TopExp.MapShapesAndAncestors_s(
+             parent.wrapped,
+             connector_enum_lut[peer_type],
+@@ -4042,11 +4041,11 @@
+     """
+     args = list(args)
+     tools = list(tools)
+-    arg = List_TopoDS_Shape()
++    arg = NCollection_List[TopoDS_Shape]()
+     for obj in args:
+         arg.Append(obj)
+ 
+-    tool = List_TopoDS_Shape()
++    tool = NCollection_List[TopoDS_Shape]()
+     for obj in tools:
+         tool.Append(obj)
+ 
+--- a/src/build123d/topology/three_d.py
++++ b/src/build123d/topology/three_d.py
+@@ -60,21 +60,21 @@
+ 
+ from bd_materials import FinishedMaterial
+ 
+-import OCP.TopAbs as ta
+-from OCP.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Cut
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeSolid
+-from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+-from OCP.BRepExtrema import BRepExtrema_DistShapeShape
+-from OCP.BRepFeat import BRepFeat_MakeDPrism
+-from OCP.BRepFilletAPI import BRepFilletAPI_MakeChamfer, BRepFilletAPI_MakeFillet
+-from OCP.BRepGProp import BRepGProp_Face
+-from OCP.BRepOffset import BRepOffset_MakeOffset, BRepOffset_Skin
+-from OCP.BRepOffsetAPI import (
++import nanoocp.TopAbs as ta
++from nanoocp.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Cut
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeSolid
++from nanoocp.BRepClass3d import BRepClass3d_SolidClassifier
++from nanoocp.BRepExtrema import BRepExtrema_DistShapeShape
++from nanoocp.BRepFeat import BRepFeat_MakeDPrism
++from nanoocp.BRepFilletAPI import BRepFilletAPI_MakeChamfer, BRepFilletAPI_MakeFillet
++from nanoocp.BRepGProp import BRepGProp_Face
++from nanoocp.BRepOffset import BRepOffset_MakeOffset, BRepOffset_Skin
++from nanoocp.BRepOffsetAPI import (
+     BRepOffsetAPI_DraftAngle,
+     BRepOffsetAPI_MakePipeShell,
+     BRepOffsetAPI_MakeThickSolid,
+ )
+-from OCP.BRepPrimAPI import (
++from nanoocp.BRepPrimAPI import (
+     BRepPrimAPI_MakeBox,
+     BRepPrimAPI_MakeCone,
+     BRepPrimAPI_MakeCylinder,
+@@ -83,16 +83,15 @@
+     BRepPrimAPI_MakeTorus,
+     BRepPrimAPI_MakeWedge,
+ )
+-from OCP.GeomAbs import GeomAbs_Intersection, GeomAbs_JoinType
+-from OCP.gp import gp_Ax2, gp_Pnt, gp_Vec
+-from OCP.GProp import GProp_GProps
+-from OCP.LocOpe import LocOpe_DPrism
+-from OCP.ShapeFix import ShapeFix_Solid
+-from OCP.Standard import Standard_Failure, Standard_TypeMismatch
+-from OCP.StdFail import StdFail_NotDone
+-from OCP.TopExp import TopExp, TopExp_Explorer
+-from OCP.TopoDS import (
+-    TopoDS,
++from nanoocp.GeomAbs import GeomAbs_Intersection, GeomAbs_JoinType
++from nanoocp.gp import gp_Ax2, gp_Pnt, gp_Vec
++from nanoocp.GProp import GProp_GProps
++from nanoocp.LocOpe import LocOpe_DPrism
++from nanoocp.ShapeFix import ShapeFix_Solid
++from nanoocp.Standard import Standard_Failure, Standard_TypeMismatch
++from nanoocp.StdFail import StdFail_NotDone
++from nanoocp.TopExp import TopExp, TopExp_Explorer
++from nanoocp.TopoDS import (
+     TopoDS_Compound,
+     TopoDS_Face,
+     TopoDS_Shape,
+@@ -100,10 +99,9 @@
+     TopoDS_Solid,
+     TopoDS_Wire,
+ )
+-from OCP.collections import (
+-    IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher,
+-    List_TopoDS_Shape,
+-)
++import nanoocp.TopoDS as TopoDS
++from nanoocp.NCollection import NCollection_IndexedDataMap, NCollection_List
++from nanoocp.TopTools import TopTools_ShapeMapHasher
+ 
+ from build123d.build_enums import (
+     CenterOf,
+@@ -250,7 +248,7 @@
+         native_edges = [e.wrapped for e in edge_list]
+ 
+         # make a edge --> faces mapping
+-        edge_face_map = IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++        edge_face_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+         TopExp.MapShapesAndAncestors_s(
+             self.wrapped, ta.TopAbs_EDGE, ta.TopAbs_FACE, edge_face_map
+         )
+@@ -413,7 +411,7 @@
+             Kind.INTERSECTION: GeomAbs_JoinType.GeomAbs_Intersection,
+         }
+ 
+-        occ_faces_list = List_TopoDS_Shape()
++        occ_faces_list = NCollection_List[TopoDS_Shape]()
+         for face in faces:
+             occ_faces_list.Append(face.wrapped)
+ 
+@@ -657,7 +655,7 @@
+             Kind.TANGENT: GeomAbs_JoinType.GeomAbs_Tangent,
+         }
+ 
+-        occ_faces_list = List_TopoDS_Shape()
++        occ_faces_list = NCollection_List[TopoDS_Shape]()
+         for face in openings:
+             occ_faces_list.Append(face.wrapped)
+ 
+--- a/src/build123d/topology/two_d.py
++++ b/src/build123d/topology/two_d.py
+@@ -65,28 +65,28 @@
+ from typing import cast as tcast
+ from typing import overload
+ 
+-import OCP.TopAbs as ta
+-from OCP.BRep import BRep_Builder, BRep_Tool
+-from OCP.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
+-from OCP.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Section
+-from OCP.BRepBuilderAPI import (
++import nanoocp.TopAbs as ta
++from nanoocp.BRep import BRep_Builder, BRep_Tool
++from nanoocp.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
++from nanoocp.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Section
++from nanoocp.BRepBuilderAPI import (
+     BRepBuilderAPI_MakeEdge,
+     BRepBuilderAPI_MakeFace,
+     BRepBuilderAPI_MakeWire,
+ )
+-from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+-from OCP.BRepExtrema import BRepExtrema_DistShapeShape
+-from OCP.BRepFeat import BRepFeat_SplitShape
+-from OCP.BRepFill import BRepFill
+-from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet2d
+-from OCP.BRepGProp import BRepGProp, BRepGProp_Face
+-from OCP.BRepLProp import BRepLProp_SLProps
+-from OCP.BRepIntCurveSurface import BRepIntCurveSurface_Inter
+-from OCP.BRepOffsetAPI import BRepOffsetAPI_MakeFilling, BRepOffsetAPI_MakePipeShell
+-from OCP.BRepPrimAPI import BRepPrimAPI_MakeRevol
+-from OCP.BRepTools import BRepTools, BRepTools_ReShape, BRepTools_WireExplorer
+-from OCP.gce import gce_MakeLin
+-from OCP.Geom import (
++from nanoocp.BRepClass3d import BRepClass3d_SolidClassifier
++from nanoocp.BRepExtrema import BRepExtrema_DistShapeShape
++from nanoocp.BRepFeat import BRepFeat_SplitShape
++from nanoocp.BRepFill import BRepFill
++from nanoocp.BRepFilletAPI import BRepFilletAPI_MakeFillet2d
++from nanoocp.BRepGProp import BRepGProp, BRepGProp_Face
++from nanoocp.BRepLProp import BRepLProp_SLProps
++from nanoocp.BRepIntCurveSurface import BRepIntCurveSurface_Inter
++from nanoocp.BRepOffsetAPI import BRepOffsetAPI_MakeFilling, BRepOffsetAPI_MakePipeShell
++from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeRevol
++from nanoocp.BRepTools import BRepTools, BRepTools_ReShape, BRepTools_WireExplorer
++from nanoocp.gce import gce_MakeLin
++from nanoocp.Geom import (
+     Geom_BezierSurface,
+     Geom_BSplineCurve,
+     Geom_OffsetSurface,
+@@ -94,40 +94,39 @@
+     Geom_Surface,
+     Geom_TrimmedCurve,
+ )
+-from OCP.GeomAbs import GeomAbs_C0, GeomAbs_CurveType, GeomAbs_G1, GeomAbs_G2
+-from OCP.GeomAdaptor import GeomAdaptor_Surface
+-from OCP.GeomAPI import (
++from nanoocp.GeomAbs import GeomAbs_C0, GeomAbs_CurveType, GeomAbs_G1, GeomAbs_G2
++from nanoocp.GeomAdaptor import GeomAdaptor_Surface
++from nanoocp.GeomAPI import (
+     GeomAPI_ExtremaCurveCurve,
+     GeomAPI_PointsToBSplineSurface,
+     GeomAPI_ProjectPointOnSurf,
+ )
+-from OCP.GeomLib import GeomLib_IsPlanarSurface
+-from OCP.GeomProjLib import GeomProjLib
+-from OCP.gp import gp_Ax1, gp_Ax3, gp_Dir, gp_Pln, gp_Pnt, gp_Vec
+-from OCP.GProp import GProp_GProps
+-from OCP.Precision import Precision
+-from OCP.ShapeAnalysis import ShapeAnalysis_Edge
+-from OCP.ShapeFix import ShapeFix_Solid, ShapeFix_Wire
+-from OCP.Standard import (
++from nanoocp.GeomLib import GeomLib_IsPlanarSurface
++from nanoocp.GeomProjLib import GeomProjLib
++from nanoocp.gp import gp_Ax1, gp_Ax3, gp_Dir, gp_Pln, gp_Pnt, gp_Vec
++from nanoocp.GProp import GProp_GProps
++from nanoocp.Precision import Precision
++from nanoocp.ShapeAnalysis import ShapeAnalysis_Edge
++from nanoocp.ShapeFix import ShapeFix_Solid, ShapeFix_Wire
++from nanoocp.Standard import (
+     Standard_ConstructionError,
+     Standard_Failure,
+     Standard_NoSuchObject,
+     Standard_TypeMismatch,
+ )
+-from OCP.StdFail import StdFail_NotDone
+-from OCP.collections import (
+-    Array1_double,
+-    Array1_gp_Pnt,
+-    Array1_int,
+-    HArray2_double,
+-    HArray2_gp_Pnt,
+-    IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher,
+-    List_TopoDS_Shape,
+-    Sequence_TopoDS_Shape,
++from nanoocp.StdFail import StdFail_NotDone
++from nanoocp.NCollection import (
++    NCollection_Array1,
++    NCollection_HArray2,
++    NCollection_IndexedDataMap,
++    NCollection_List,
++    NCollection_Sequence,
+ )
+-from OCP.TopAbs import TopAbs_Orientation
+-from OCP.TopExp import TopExp
+-from OCP.TopoDS import TopoDS, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid
++from nanoocp.TopTools import TopTools_ShapeMapHasher
++from nanoocp.TopAbs import TopAbs_Orientation
++from nanoocp.TopExp import TopExp
++from nanoocp.TopoDS import TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid
++import nanoocp.TopoDS as TopoDS
+ from ocp_gordon import interpolate_curve_network
+ from typing_extensions import Self
+ 
+@@ -266,7 +265,7 @@
+ 
+         """
+ 
+-        def get(los: List_TopoDS_Shape) -> list:
++        def get(los: NCollection_List[TopoDS_Shape]) -> list:
+             """Return objects from List_TopoDS_Shape as list"""
+             shapes = []
+             for _ in range(los.Size()):
+@@ -319,7 +318,7 @@
+         # Process the perimeter
+         if not perimeter.is_closed:
+             raise ValueError("perimeter must be a closed Wire or Edge")
+-        perimeter_edges = Sequence_TopoDS_Shape()
++        perimeter_edges = NCollection_Sequence[TopoDS_Shape]()
+         seams = [seam for face in self.faces() for seam in face.seams]
+         for perimeter_edge in perimeter.edges():
+             if not perimeter_edge:
+@@ -788,7 +787,7 @@
+         surface_handle = BRep_Tool.Surface_s(self.wrapped)
+         first_param: float = wrapped_edge.param_at(0)
+         last_param: float = wrapped_edge.param_at(1)
+-        curve_handle = BRep_Tool.Curve_s(wrapped_edge.wrapped, first_param, last_param)
++        curve_handle = BRep_Tool.Curve_s(wrapped_edge.wrapped)[0]
+         proj_curve_handle = GeomProjLib.Project_s(curve_handle, surface_handle)
+         if proj_curve_handle is None:
+             raise RuntimeError(
+@@ -1280,7 +1279,7 @@
+ 
+         def uv_edge(native_edge) -> Edge:
+             first, last = BRep_Tool.Range_s(native_edge, self.wrapped)
+-            pcurve = BRep_Tool.CurveOnSurface_s(native_edge, self.wrapped, first, last)
++            pcurve = BRep_Tool.CurveOnSurface_s(native_edge, self.wrapped)[0]
+             edge_builder = BRepBuilderAPI_MakeEdge(pcurve, xy_surface, first, last)
+             if not edge_builder.IsDone():  # pragma: no cover
+                 raise ValueError("Unable to convert pcurve to a planar edge")
+@@ -1378,13 +1377,13 @@
+         ):
+             raise ValueError("A weight must be provided for each control point")
+ 
+-        points_ = HArray2_gp_Pnt(1, len(points), 1, len(points[0]))
++        points_ = NCollection_HArray2[gp_Pnt](1, len(points), 1, len(points[0]))
+         for i, row_points in enumerate(points):
+             for j, point in enumerate(row_points):
+                 points_.SetValue(i + 1, j + 1, Vector(point).to_pnt())
+ 
+         if weights:
+-            weights_ = HArray2_double(1, len(weights), 1, len(weights[0]))
++            weights_ = NCollection_HArray2[float](1, len(weights), 1, len(weights[0]))
+             for i, row_weights in enumerate(weights):
+                 for j, weight in enumerate(row_weights):
+                     weights_.SetValue(i + 1, j + 1, float(weight))
+@@ -1428,15 +1427,15 @@
+         def create_zero_length_bspline_curve(
+             point: gp_Pnt, degree: int = 1
+         ) -> Geom_BSplineCurve:
+-            control_points = Array1_gp_Pnt(1, 2)
++            control_points = NCollection_Array1[gp_Pnt](1, 2)
+             control_points.SetValue(1, point)
+             control_points.SetValue(2, point)
+ 
+-            knots = Array1_double(1, 2)
++            knots = NCollection_Array1[float](1, 2)
+             knots.SetValue(1, 0.0)
+             knots.SetValue(2, 1.0)
+ 
+-            multiplicities = Array1_int(1, 2)
++            multiplicities = NCollection_Array1[int](1, 2)
+             multiplicities.SetValue(1, degree + 1)
+             multiplicities.SetValue(2, degree + 1)
+ 
+@@ -1455,7 +1454,7 @@
+                 raise ValueError("input Edge cannot be empty")
+ 
+             adaptor = BRepAdaptor_Curve(shape.wrapped)
+-            curve = BRep_Tool.Curve_s(shape.wrapped, 0, 1)
++            curve = BRep_Tool.Curve_s(shape.wrapped)[0]
+             if not (
+                 (adaptor.IsPeriodic() and adaptor.IsClosed())
+                 or adaptor.GetType() == GeomAbs_CurveType.GeomAbs_BSplineCurve
+@@ -1679,7 +1678,7 @@
+         Returns:
+             Face: a potentially non-planar face defined by points
+         """
+-        points_ = HArray2_gp_Pnt(1, len(points), 1, len(points[0]))
++        points_ = NCollection_HArray2[gp_Pnt](1, len(points), 1, len(points[0]))
+ 
+         for i, point_row in enumerate(points):
+             for j, point in enumerate(point_row):
+@@ -2010,7 +2009,7 @@
+ 
+         chamfer_builder = BRepFilletAPI_MakeFillet2d(self.wrapped)
+ 
+-        vertex_edge_map = IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++        vertex_edge_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+         TopExp.MapShapesAndAncestors_s(
+             self.wrapped, ta.TopAbs_VERTEX, ta.TopAbs_EDGE, vertex_edge_map
+         )
+@@ -2818,7 +2817,7 @@
+             trimmed_first.position_at(0) - trimmed_last.position_at(1)
+         ).length
+         wire_builder = BRepBuilderAPI_MakeWire()
+-        combined_edges = List_TopoDS_Shape()
++        combined_edges = NCollection_List[TopoDS_Shape]()
+         for edge in wrapped_edges:
+             combined_edges.Append(edge.wrapped)
+         wire_builder.Add(combined_edges)
+--- a/src/build123d/topology/utils.py
++++ b/src/build123d/topology/utils.py
+@@ -57,18 +57,17 @@
+ 
+ from collections.abc import Iterable
+ 
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace
+-from OCP.BRepLib import BRepLib_FindSurface
+-from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
+-from OCP.BRepPrimAPI import BRepPrimAPI_MakePrism
+-from OCP.ShapeFix import ShapeFix_Face, ShapeFix_Shape
+-from OCP.TopAbs import TopAbs_ShapeEnum
+-from OCP.TopExp import TopExp_Explorer
+-from OCP.collections import List_TopoDS_Shape
+-from OCP.TopoDS import (
+-    TopoDS,
++from nanoocp.BRep import BRep_Tool
++from nanoocp.BRepAlgoAPI import BRepAlgoAPI_Cut
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeFace
++from nanoocp.BRepLib import BRepLib_FindSurface
++from nanoocp.BRepOffsetAPI import BRepOffsetAPI_ThruSections
++from nanoocp.BRepPrimAPI import BRepPrimAPI_MakePrism
++from nanoocp.ShapeFix import ShapeFix_Face, ShapeFix_Shape
++from nanoocp.TopAbs import TopAbs_ShapeEnum
++from nanoocp.TopExp import TopExp_Explorer
++from nanoocp.NCollection import NCollection_List
++from nanoocp.TopoDS import (
+     TopoDS_Compound,
+     TopoDS_Face,
+     TopoDS_Shape,
+@@ -77,6 +76,7 @@
+     TopoDS_Edge,
+     TopoDS_Wire,
+ )
++import nanoocp.TopoDS as TopoDS
+ from build123d.geometry import TOLERANCE, BoundBox, Vector, VectorLike
+ 
+ from .shape_core import (
+@@ -311,13 +311,13 @@
+         ShapeList[Edge]: new edges
+     """
+     # Create a list of combined object edges
+-    combined_topo_edges = List_TopoDS_Shape()
++    combined_topo_edges = NCollection_List[TopoDS_Shape]()
+     for edge in combined.edges():
+         if edge.wrapped is not None:
+             combined_topo_edges.Append(edge.wrapped)
+ 
+     # Create a list of original object edges
+-    original_topo_edges = List_TopoDS_Shape()
++    original_topo_edges = NCollection_List[TopoDS_Shape]()
+     for edge in [e for obj in objects for e in obj.edges()]:
+         if edge.wrapped is not None:
+             original_topo_edges.Append(edge.wrapped)
+--- a/src/build123d/topology/zero_d.py
++++ b/src/build123d/topology/zero_d.py
+@@ -59,16 +59,19 @@
+ 
+ from collections.abc import Iterable
+ 
+-import OCP.TopAbs as ta
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepAdaptor import BRepAdaptor_Curve2d
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeVertex
+-from OCP.BRepTools import BRepTools
+-from OCP.IntTools import IntTools_FClass2d
+-from OCP.TopExp import TopExp, TopExp_Explorer
+-from OCP.collections import IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher
+-from OCP.TopoDS import TopoDS, TopoDS_Face, TopoDS_Vertex, TopoDS_Edge
+-from OCP.gp import gp_Pnt, gp_Pnt2d, gp_Vec2d
++import nanoocp.TopAbs as ta
++from nanoocp.BRep import BRep_Tool
++from nanoocp.BRepAdaptor import BRepAdaptor_Curve2d
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeVertex
++from nanoocp.BRepTools import BRepTools
++from nanoocp.IntTools import IntTools_FClass2d
++from nanoocp.TopExp import TopExp, TopExp_Explorer
++from nanoocp.NCollection import NCollection_IndexedDataMap, NCollection_List
++from nanoocp.TopoDS import TopoDS_Shape
++from nanoocp.TopTools import TopTools_ShapeMapHasher
++from nanoocp.TopoDS import TopoDS_Face, TopoDS_Vertex, TopoDS_Edge
++import nanoocp.TopoDS as TopoDS
++from nanoocp.gp import gp_Pnt, gp_Pnt2d, gp_Vec2d
+ from build123d.geometry import (
+     TOLERANCE,
+     Matrix,
+@@ -263,7 +266,7 @@
+                 "this vertex was not selected from a shape, so there is nothing "
+                 "to classify it against - take it from a face or solid"
+             )
+-        vertex_edge_map = IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher()
++        vertex_edge_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+         TopExp.MapShapesAndAncestors_s(
+             parent.wrapped, ta.TopAbs_VERTEX, ta.TopAbs_EDGE, vertex_edge_map
+         )
+--- a/tests/test_direct_api/test_axis.py
++++ b/tests/test_direct_api/test_axis.py
+@@ -31,7 +31,7 @@
+ import unittest
+ 
+ import numpy as np
+-from OCP.gp import gp_Ax1, gp_Dir, gp_Pnt
++from nanoocp.gp import gp_Ax1, gp_Dir, gp_Pnt
+ from build123d.geometry import Axis, Location, Plane, Vector
+ from build123d.topology import Edge, Vertex
+ 
+--- a/tests/test_direct_api/test_bound_box.py
++++ b/tests/test_direct_api/test_bound_box.py
+@@ -28,11 +28,11 @@
+ 
+ import unittest
+ 
+-from OCP.Bnd import Bnd_Box
++from nanoocp.Bnd import Bnd_Box
+ from build123d.geometry import BoundBox, Vector
+ from build123d.topology import Solid, Vertex
+ 
+-from OCP.TopoDS import TopoDS_Shape
++from nanoocp.TopoDS import TopoDS_Shape
+ 
+ 
+ class TestBoundBox(unittest.TestCase):
+--- a/tests/test_direct_api/test_cad_objects.py
++++ b/tests/test_direct_api/test_cad_objects.py
+@@ -29,8 +29,8 @@
+ import math
+ import unittest
+ 
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
+-from OCP.gp import gp, gp_Ax2, gp_Circ, gp_Elips, gp_Pnt
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
++from nanoocp.gp import gp, gp_Ax2, gp_Circ, gp_Elips, gp_Pnt
+ from build123d.build_enums import CenterOf
+ from build123d.geometry import Plane, Vector
+ from build123d.topology import Edge, Face, Wire
+--- a/tests/test_direct_api/test_color.py
++++ b/tests/test_direct_api/test_color.py
+@@ -32,7 +32,7 @@
+ 
+ import numpy as np
+ import pytest
+-from OCP.Quantity import Quantity_ColorRGBA
++from nanoocp.Quantity import Quantity_ColorRGBA
+ 
+ from build123d.geometry import Color
+ 
+--- a/tests/test_direct_api/test_constrained_arcs.py
++++ b/tests/test_direct_api/test_constrained_arcs.py
+@@ -29,8 +29,8 @@
+ import platform
+ 
+ import pytest
+-from OCP.BRep import BRep_Tool
+-from OCP.gp import gp_Ax2d, gp_Circ2d, gp_Dir2d, gp_Pnt2d
++from nanoocp.BRep import BRep_Tool
++from nanoocp.gp import gp_Ax2d, gp_Circ2d, gp_Dir2d, gp_Pnt2d
+ 
+ from build123d.build_enums import GeomType, LengthMode, Sagitta, Tangency
+ from build123d.build_line import BuildLine
+@@ -125,7 +125,7 @@
+     )
+     assert len(tan2_rad_edges) == 4
+ 
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_rad_edges)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_rad_edges)
+ 
+ 
+ def test_tan2_rad_arcs_2():
+@@ -135,7 +135,7 @@
+ 
+     tan2_rad_edges = Edge.make_constrained_arcs(e1, e2, radius=0.5)
+     assert len(tan2_rad_edges) == 1
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_rad_edges)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_rad_edges)
+ 
+ 
+ def test_tan2_rad_arcs_3():
+@@ -153,7 +153,7 @@
+     )
+     assert len(tan2_rad_edges) == 2
+ 
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_rad_edges)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_rad_edges)
+ 
+ 
+ def test_tan2_rad_arcs_4():
+@@ -163,7 +163,7 @@
+     tan2_rad_edges = Edge.make_constrained_arcs((0, 0.5), e1, radius=0.5)
+     assert len(tan2_rad_edges) == 1
+ 
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_rad_edges)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_rad_edges)
+ 
+ 
+ def test_tan2_rad_arcs_5():
+@@ -184,7 +184,7 @@
+         center_on=c3_center_on,
+     )
+     assert len(tan2_on_edge) == 1
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_on_edge)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_on_edge)
+ 
+ 
+ def test_tan2_center_on_2():
+@@ -193,7 +193,7 @@
+         (0, 3), (5, 0), center_on=Line((0, -5), (0, 5))
+     )
+     assert len(tan2_on_edge) == 1
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_on_edge)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_on_edge)
+ 
+ 
+ def test_tan2_center_on_3():
+@@ -202,7 +202,7 @@
+         Line((-5, 3), (5, 3)), (5, 0), center_on=Line((0, -5), (0, 5))
+     )
+     assert len(tan2_on_edge) == 1
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_on_edge)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_on_edge)
+ 
+ 
+ def test_tan2_center_on_4():
+@@ -211,7 +211,7 @@
+         Line((-5, 3), (5, 3)), (5, 0), center_on=Axis.Y
+     )
+     assert len(tan2_on_edge) == 1
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan2_on_edge)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan2_on_edge)
+ 
+ 
+ def test_tan2_center_on_5():
+@@ -262,7 +262,7 @@
+     assert len(arcs) >= 2  # be permissive across kernels; typically 4
+     # At least confirms BOTH path is covered and multiple solutions iterate
+ 
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in arcs)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in arcs)
+ 
+ 
+ def test_tan2_center_on_sagitta_long_is_longer_than_short():
+@@ -289,7 +289,7 @@
+     assert len(long_arc) == 2
+     assert long_arc[0].length > short_arc[0].length
+     assert all(
+-        BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in short_arc + long_arc
++        BRep_Tool.Curve_s(e.wrapped)[0] for e in short_arc + long_arc
+     )
+ 
+ 
+@@ -367,7 +367,7 @@
+     # Expect at least 2 arcs (often 4); asserts loop over multiple i values
+     assert len(arcs) >= 2
+ 
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in arcs)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in arcs)
+ 
+ 
+ def test_tan_center_on_1():
+@@ -376,7 +376,7 @@
+     tan_center = Edge.make_constrained_arcs((c5, Tangency.UNQUALIFIED), center=(2, 1))
+     assert len(tan_center) == 1
+     assert tan_center[0].is_closed
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan_center)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan_center)
+ 
+ 
+ def test_tan_center_on_2():
+@@ -384,7 +384,7 @@
+     tan_center = Edge.make_constrained_arcs(Axis.X, center=(2, 1, 5))
+     assert len(tan_center) == 1
+     assert tan_center[0].is_closed
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan_center)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan_center)
+ 
+ 
+ def test_tan_center_on_3():
+@@ -393,7 +393,7 @@
+     tan_center = Edge.make_constrained_arcs(l1, center=(2, 0))
+     assert len(tan_center) == 1
+     assert tan_center[0].is_closed
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan_center)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan_center)
+ 
+ 
+ def test_pnt_center_1():
+@@ -401,12 +401,12 @@
+     pnt_center = Edge.make_constrained_arcs((-2.5, 1.5), center=(-2, 1))
+     assert len(pnt_center) == 1
+     assert pnt_center[0].is_closed
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in pnt_center)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in pnt_center)
+ 
+     pnt_center = Edge.make_constrained_arcs((-2.5, 1.5), center=Vertex(-2, 1))
+     assert len(pnt_center) == 1
+     assert pnt_center[0].is_closed
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in pnt_center)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in pnt_center)
+ 
+ 
+ def test_tan_cen_arcs_center_equals_point_returns_empty():
+@@ -433,7 +433,7 @@
+     )
+     assert len(tan_rad_on) == 1
+     assert tan_rad_on[0].is_closed
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan_rad_on)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan_rad_on)
+ 
+ 
+ def test_tan_rad_center_on_2():
+@@ -442,7 +442,7 @@
+     tan_rad_on = Edge.make_constrained_arcs(c1, radius=1, center_on=Axis.X)
+     assert len(tan_rad_on) == 1
+     assert tan_rad_on[0].is_closed
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan_rad_on)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan_rad_on)
+ 
+ 
+ def test_tan_rad_center_on_3():
+@@ -474,7 +474,7 @@
+ 
+     tan3b = Edge.make_constrained_arcs(c5, c6, c7, sagitta=Sagitta.BOTH)
+     assert len(tan3b) == 2
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in tan3b)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in tan3b)
+ 
+ 
+ def test_tan3_2():
+@@ -574,7 +574,7 @@
+         for i in range(4)
+     )
+     assert all(
+-        BRep_Tool.Curve_s(e.wrapped, float(), float())
++        BRep_Tool.Curve_s(e.wrapped)[0]
+         for e in [egg_bottom, egg_top, egg_right, egg_left]
+     )
+ 
+--- a/tests/test_direct_api/test_constrained_lines.py
++++ b/tests/test_direct_api/test_constrained_lines.py
+@@ -29,8 +29,8 @@
+ import math
+ 
+ import pytest
+-from OCP.BRep import BRep_Tool
+-from OCP.gp import gp_Pnt2d
++from nanoocp.BRep import BRep_Tool
++from nanoocp.gp import gp_Pnt2d
+ 
+ from build123d import Axis, Edge, Plane, Tangency, Vector
+ from build123d.build_enums import GeomType
+@@ -95,7 +95,7 @@
+         # Tangent lines should not intersect the circle interior
+         dmin = c1.distance_to(ln)
+         assert dmin >= -1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_two_constrained_circles_tangents2(unit_circle):
+@@ -112,7 +112,7 @@
+         # Tangent lines should not intersect the circle interior
+         dmin = c1.distance_to(ln)
+         assert dmin >= -1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_curve_and_point_tangent(unit_circle):
+@@ -127,7 +127,7 @@
+         # It should also touch the circle at exactly one point
+         dist_to_circle = unit_circle.distance_to(ln)
+         assert math.isclose(dist_to_circle, 0.0, abs_tol=TOLERANCE)
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_invalid_tangent_raises(unit_circle):
+@@ -162,7 +162,7 @@
+         unit_circle, Axis((0, -2), (1, 0)), 0, edge_factory=Edge
+     )
+     assert len(lines) == 0
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_oriented_tangents_with_y_axis(unit_circle):
+@@ -173,7 +173,7 @@
+     # They should roughly touch the circle (tangent distance ≈ 0)
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_oriented_constrained_tangents_with_y_axis(unit_circle):
+@@ -184,7 +184,7 @@
+     assert len(lines) == 1
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_invalid_oriented_tangent_raises(unit_circle):
+@@ -218,7 +218,7 @@
+     assert len(lines) == 4
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_make_constrained_lines1(unit_circle):
+@@ -226,7 +226,7 @@
+     assert len(lines) == 2
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_make_constrained_lines3(unit_circle):
+@@ -235,7 +235,7 @@
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+         assert abs((ln @ 1).Y) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_make_constrained_lines4(unit_circle):
+@@ -244,7 +244,7 @@
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+         assert abs((ln @ 1).X) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_make_constrained_lines5(unit_circle):
+@@ -254,7 +254,7 @@
+     assert len(lines) == 1
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_make_constrained_lines6(unit_circle):
+@@ -264,7 +264,7 @@
+     assert len(lines) == 1
+     for ln in lines:
+         assert unit_circle.distance_to(ln) < 1e-6
+-    assert all(BRep_Tool.Curve_s(e.wrapped, float(), float()) for e in lines)
++    assert all(BRep_Tool.Curve_s(e.wrapped)[0] for e in lines)
+ 
+ 
+ def test_make_constrained_lines_raises(unit_circle):
+--- a/tests/test_direct_api/test_edge.py
++++ b/tests/test_direct_api/test_edge.py
+@@ -49,8 +49,8 @@
+ from build123d.operations_generic import fillet
+ from build123d.operations_part import extrude
+ from build123d.topology import Curve, Edge, Face, Shell, Wire, Vertex
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_Sewing
+-from OCP.GeomProjLib import GeomProjLib
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_Sewing
++from nanoocp.GeomProjLib import GeomProjLib
+ 
+ 
+ class TestEdge(unittest.TestCase):
+--- a/tests/test_direct_api/test_face.py
++++ b/tests/test_direct_api/test_face.py
+@@ -33,12 +33,12 @@
+ import unittest
+ from unittest.mock import MagicMock, PropertyMock, patch
+ 
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace
+-from OCP.gp import gp_Ax3, gp_Dir, gp_Pnt
+-from OCP.Geom import Geom_RectangularTrimmedSurface
+-from OCP.GeomAPI import GeomAPI_ExtremaCurveCurve
+-from OCP.Geom import Geom_CylindricalSurface, Geom_OffsetSurface
+-from OCP.StdFail import StdFail_NotDone
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeFace
++from nanoocp.gp import gp_Ax3, gp_Dir, gp_Pnt
++from nanoocp.Geom import Geom_RectangularTrimmedSurface
++from nanoocp.GeomAPI import GeomAPI_ExtremaCurveCurve
++from nanoocp.Geom import Geom_CylindricalSurface, Geom_OffsetSurface
++from nanoocp.StdFail import StdFail_NotDone
+ 
+ from build123d.build_common import GridLocations, Locations, PolarLocations
+ from build123d.build_enums import (
+--- a/tests/test_direct_api/test_functions.py
++++ b/tests/test_direct_api/test_functions.py
+@@ -48,7 +48,7 @@
+     _make_topods_face_from_wires,
+     unwrapped_shapetype,
+ )
+-from OCP.TopAbs import TopAbs_ShapeEnum
++from nanoocp.TopAbs import TopAbs_ShapeEnum
+ 
+ 
+ class TestFunctions(unittest.TestCase):
+--- a/tests/test_direct_api/test_geom_equal.py
++++ b/tests/test_direct_api/test_geom_equal.py
+@@ -361,27 +361,26 @@
+ 
+     def test_different_knot_values(self):
+         """BSplines with different internal knot positions have different shapes."""
+-        from OCP.Geom import Geom_BSplineCurve
+-        from OCP.collections import Array1_gp_Pnt
+-        from OCP.collections import Array1_double, Array1_int
+-        from OCP.gp import gp_Pnt
+-        from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
++        from nanoocp.Geom import Geom_BSplineCurve
++        from nanoocp.NCollection import NCollection_Array1
++        from nanoocp.gp import gp_Pnt
++        from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
+ 
+         # 5 poles for degree 3 with one internal knot
+-        poles = Array1_gp_Pnt(1, 5)
++        poles = NCollection_Array1[gp_Pnt](1, 5)
+         poles.SetValue(1, gp_Pnt(0, 0, 0))
+         poles.SetValue(2, gp_Pnt(1, 2, 0))
+         poles.SetValue(3, gp_Pnt(2, 2, 0))
+         poles.SetValue(4, gp_Pnt(3, 2, 0))
+         poles.SetValue(5, gp_Pnt(4, 0, 0))
+ 
+-        mults = Array1_int(1, 3)
++        mults = NCollection_Array1[int](1, 3)
+         mults.SetValue(1, 4)
+         mults.SetValue(2, 1)  # Internal knot
+         mults.SetValue(3, 4)
+ 
+         # Internal knot at 0.5
+-        knots1 = Array1_double(1, 3)
++        knots1 = NCollection_Array1[float](1, 3)
+         knots1.SetValue(1, 0.0)
+         knots1.SetValue(2, 0.5)
+         knots1.SetValue(3, 1.0)
+@@ -389,7 +388,7 @@
+         e1 = Edge(BRepBuilderAPI_MakeEdge(curve1).Edge())
+ 
+         # Internal knot at 0.3 - different position changes shape!
+-        knots2 = Array1_double(1, 3)
++        knots2 = NCollection_Array1[float](1, 3)
+         knots2.SetValue(1, 0.0)
+         knots2.SetValue(2, 0.3)
+         knots2.SetValue(3, 1.0)
+@@ -403,14 +402,13 @@
+ 
+     def test_different_multiplicities(self):
+         """BSplines with same poles/knots but different multiplicities have different shapes."""
+-        from OCP.Geom import Geom_BSplineCurve
+-        from OCP.collections import Array1_gp_Pnt
+-        from OCP.collections import Array1_double, Array1_int
+-        from OCP.gp import gp_Pnt
+-        from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
++        from nanoocp.Geom import Geom_BSplineCurve
++        from nanoocp.NCollection import NCollection_Array1
++        from nanoocp.gp import gp_Pnt
++        from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
+ 
+         # Same 7 poles for both curves
+-        poles = Array1_gp_Pnt(1, 7)
++        poles = NCollection_Array1[gp_Pnt](1, 7)
+         poles.SetValue(1, gp_Pnt(0, 0, 0))
+         poles.SetValue(2, gp_Pnt(1, 2, 0))
+         poles.SetValue(3, gp_Pnt(2, 1, 0))
+@@ -420,14 +418,14 @@
+         poles.SetValue(7, gp_Pnt(6, 0, 0))
+ 
+         # Same 4 knots for both curves
+-        knots = Array1_double(1, 4)
++        knots = NCollection_Array1[float](1, 4)
+         knots.SetValue(1, 0.0)
+         knots.SetValue(2, 0.33)
+         knots.SetValue(3, 0.67)
+         knots.SetValue(4, 1.0)
+ 
+         # Multiplicities [4, 1, 2, 4] - sum = 11 = 7 + 3 + 1
+-        mults1 = Array1_int(1, 4)
++        mults1 = NCollection_Array1[int](1, 4)
+         mults1.SetValue(1, 4)
+         mults1.SetValue(2, 1)
+         mults1.SetValue(3, 2)
+@@ -436,7 +434,7 @@
+         e1 = Edge(BRepBuilderAPI_MakeEdge(curve1).Edge())
+ 
+         # Multiplicities [4, 2, 1, 4] - same sum, swapped internal mults
+-        mults2 = Array1_int(1, 4)
++        mults2 = NCollection_Array1[int](1, 4)
+         mults2.SetValue(1, 4)
+         mults2.SetValue(2, 2)
+         mults2.SetValue(3, 1)
+@@ -452,27 +450,26 @@
+ 
+     def test_rational_bspline_different_weights(self):
+         """Rational BSplines with different weights."""
+-        from OCP.Geom import Geom_BSplineCurve
+-        from OCP.collections import Array1_gp_Pnt
+-        from OCP.collections import Array1_double, Array1_int
+-        from OCP.gp import gp_Pnt
+-        from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
+-
+-        poles = Array1_gp_Pnt(1, 4)
++        from nanoocp.Geom import Geom_BSplineCurve
++        from nanoocp.NCollection import NCollection_Array1
++        from nanoocp.gp import gp_Pnt
++        from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
++
++        poles = NCollection_Array1[gp_Pnt](1, 4)
+         poles.SetValue(1, gp_Pnt(0, 0, 0))
+         poles.SetValue(2, gp_Pnt(1, 1, 0))
+         poles.SetValue(3, gp_Pnt(2, 1, 0))
+         poles.SetValue(4, gp_Pnt(3, 0, 0))
+ 
+-        knots = Array1_double(1, 2)
++        knots = NCollection_Array1[float](1, 2)
+         knots.SetValue(1, 0.0)
+         knots.SetValue(2, 1.0)
+-        mults = Array1_int(1, 2)
++        mults = NCollection_Array1[int](1, 2)
+         mults.SetValue(1, 4)
+         mults.SetValue(2, 4)
+ 
+         # Weights [1, 2, 2, 1]
+-        weights1 = Array1_double(1, 4)
++        weights1 = NCollection_Array1[float](1, 4)
+         weights1.SetValue(1, 1.0)
+         weights1.SetValue(2, 2.0)
+         weights1.SetValue(3, 2.0)
+@@ -481,7 +478,7 @@
+         e1 = Edge(BRepBuilderAPI_MakeEdge(curve1).Edge())
+ 
+         # Weights [1, 3, 3, 1]
+-        weights2 = Array1_double(1, 4)
++        weights2 = NCollection_Array1[float](1, 4)
+         weights2.SetValue(1, 1.0)
+         weights2.SetValue(2, 3.0)
+         weights2.SetValue(3, 3.0)
+--- a/tests/test_direct_api/test_history.py
++++ b/tests/test_direct_api/test_history.py
+@@ -29,10 +29,11 @@
+ 
+ import unittest
+ 
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_Sewing
+-from OCP.BRepPrimAPI import BRepPrimAPI_MakePrism
+-from OCP.collections import List_TopoDS_Shape
+-from OCP.gp import gp_Vec
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_Sewing
++from nanoocp.BRepPrimAPI import BRepPrimAPI_MakePrism
++from nanoocp.NCollection import NCollection_List
++from nanoocp.TopoDS import TopoDS_Shape
++from nanoocp.gp import gp_Vec
+ 
+ from build123d.build_enums import Align, GeomType, Select
+ from build123d.geometry import Axis, Plane, Pos
+@@ -179,7 +180,7 @@
+     def test_helpers(self):
+         subs = tracked_subshapes([self.box.wrapped, None])
+         self.assertEqual(len(subs), 8 + 12 + 6 + 1)
+-        kernel_list = List_TopoDS_Shape()
++        kernel_list = NCollection_List[TopoDS_Shape]()
+         for face in self.box.faces():
+             kernel_list.Append(face.wrapped)
+         self.assertEqual(len(list_shapes(kernel_list)), 6)
+--- a/tests/test_direct_api/test_intersection.py
++++ b/tests/test_direct_api/test_intersection.py
+@@ -1037,8 +1037,8 @@
+ 
+         Early return when compound has no elements.
+         """
+-        from OCP.TopoDS import TopoDS_Compound
+-        from OCP.BRep import BRep_Builder
++        from nanoocp.TopoDS import TopoDS_Compound
++        from nanoocp.BRep import BRep_Builder
+ 
+         # Create an actual empty OCCT compound (has wrapped but no children)
+         builder = BRep_Builder()
+@@ -1052,8 +1052,8 @@
+ 
+     def test_empty_compound_intersect_with_face(self):
+         """Empty Compound.intersect(Face) returns None."""
+-        from OCP.TopoDS import TopoDS_Compound
+-        from OCP.BRep import BRep_Builder
++        from nanoocp.TopoDS import TopoDS_Compound
++        from nanoocp.BRep import BRep_Builder
+ 
+         # Create an actual empty OCCT compound
+         builder = BRep_Builder()
+--- a/tests/test_direct_api/test_location.py
++++ b/tests/test_direct_api/test_location.py
+@@ -32,7 +32,7 @@
+ import unittest
+ from random import uniform
+ 
+-from OCP.gp import (
++from nanoocp.gp import (
+     gp_Ax1,
+     gp_Dir,
+     gp_EulerSequence,
+--- a/tests/test_direct_api/test_matrix.py
++++ b/tests/test_direct_api/test_matrix.py
+@@ -30,7 +30,7 @@
+ import math
+ import unittest
+ 
+-from OCP.gp import gp_Ax1, gp_Dir, gp_Pnt, gp_Trsf
++from nanoocp.gp import gp_Ax1, gp_Dir, gp_Pnt, gp_Trsf
+ from build123d.geometry import Axis, Matrix, Vector
+ 
+ 
+--- a/tests/test_direct_api/test_plane.py
++++ b/tests/test_direct_api/test_plane.py
+@@ -32,11 +32,11 @@
+ import random
+ import unittest
+ 
+-from OCP.gp import gp_Ax2
+-from OCP.TopoDS import TopoDS_Builder, TopoDS_CompSolid
++from nanoocp.gp import gp_Ax2
++from nanoocp.TopoDS import TopoDS_Builder, TopoDS_CompSolid
+ import numpy as np
+-from OCP.BRepGProp import BRepGProp
+-from OCP.GProp import GProp_GProps
++from nanoocp.BRepGProp import BRepGProp
++from nanoocp.GProp import GProp_GProps
+ from build123d.build_common import Locations
+ from build123d.build_enums import Align, GeomType, Mode
+ from build123d.build_part import BuildPart
+--- a/tests/test_direct_api/test_shape.py
++++ b/tests/test_direct_api/test_shape.py
+@@ -33,7 +33,7 @@
+ from unittest.mock import PropertyMock, patch
+ 
+ import numpy as np
+-from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
++from nanoocp.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
+ from anytree import PreOrderIter
+ from build123d.build_enums import CenterOf, GeomType, Keep
+ from build123d.geometry import (
+@@ -813,7 +813,7 @@
+                 self.assertIsInstance(caller.cast(solid), Solid)
+ 
+     def test_unregistered_type_is_reported(self):
+-        from OCP.TopoDS import TopoDS_Shape
++        from nanoocp.TopoDS import TopoDS_Shape
+ 
+         registered = dict(Shape.shape_constructors)
+         try:
+@@ -824,7 +824,7 @@
+             Shape.shape_constructors.update(registered)
+ 
+     def test_registry_covers_every_wrapped_type(self):
+-        import OCP.TopAbs as ta
++        import nanoocp.TopAbs as ta
+ 
+         expected = {
+             ta.TopAbs_VERTEX,
+--- a/tests/test_direct_api/test_solid.py
++++ b/tests/test_direct_api/test_solid.py
+@@ -48,8 +48,8 @@
+     Wire,
+ )
+ import build123d
+-from OCP.BRepOffsetAPI import BRepOffsetAPI_DraftAngle
+-from OCP.StdFail import StdFail_NotDone
++from nanoocp.BRepOffsetAPI import BRepOffsetAPI_DraftAngle
++from nanoocp.StdFail import StdFail_NotDone
+ 
+ 
+ class TestSolid(unittest.TestCase):
+--- a/tests/test_direct_api/test_vector.py
++++ b/tests/test_direct_api/test_vector.py
+@@ -31,7 +31,7 @@
+ import math
+ import unittest
+ 
+-from OCP.gp import gp_Vec, gp_XYZ
++from nanoocp.gp import gp_Vec, gp_XYZ
+ from build123d.geometry import Axis, Location, Plane, Pos, Vector
+ from build123d.topology import Solid, Vertex
+ 
+--- a/tests/test_direct_api/test_wire.py
++++ b/tests/test_direct_api/test_wire.py
+@@ -42,12 +42,12 @@
+ from build123d.objects_sketch import Circle, Rectangle, RectangleRounded, RegularPolygon
+ from build123d.operations_generic import fillet
+ from build123d.topology import Edge, Face, Vertex, Wire
+-from OCP.BRepAdaptor import BRepAdaptor_CompCurve
+-from OCP.BRepBuilderAPI import (
++from nanoocp.BRepAdaptor import BRepAdaptor_CompCurve
++from nanoocp.BRepBuilderAPI import (
+     BRepBuilderAPI_EmptyWire,
+     BRepBuilderAPI_NonManifoldWire,
+ )
+-from OCP.gp import gp_Pnt
++from nanoocp.gp import gp_Pnt
+ 
+ 
+ class TestWire(unittest.TestCase):
+--- a/tests/test_exporters3d.py
++++ b/tests/test_exporters3d.py
+@@ -40,7 +40,7 @@
+ 
+ import pytest
+ import requests
+-from OCP.Standard import Standard_Failure
++from nanoocp.Standard import Standard_Failure
+ 
+ from build123d.build_common import GridLocations
+ from build123d.build_enums import Unit
+--- a/tests/test_importers.py
++++ b/tests/test_importers.py
+@@ -10,7 +10,7 @@
+ from unittest.mock import MagicMock, patch
+ 
+ import pytest
+-from OCP.TopoDS import TopoDS_Edge
++from nanoocp.TopoDS import TopoDS_Edge
+ 
+ from build123d import (
+     BuildLine,
+--- a/tests/test_materials.py
++++ b/tests/test_materials.py
+@@ -40,13 +40,14 @@
+     wood,
+ )
+ from bd_materials.core import Range
+-from OCP.Message import Message_ProgressRange
+-from OCP.RWGltf import RWGltf_CafReader
+-from OCP.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+-from OCP.TDataStd import TDataStd_Name
+-from OCP.collections import Sequence_TDF_Label
+-from OCP.TDocStd import TDocStd_Document
+-from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_VisMaterialPBR
++from nanoocp.Message import Message_ProgressRange
++from nanoocp.RWGltf import RWGltf_CafReader
++from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
++from nanoocp.TDataStd import TDataStd_Name
++from nanoocp.NCollection import NCollection_Sequence
++from nanoocp.TDF import TDF_Label
++from nanoocp.TDocStd import TDocStd_Document
++from nanoocp.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_VisMaterialPBR
+ 
+ from build123d.build_constants import G_PER_LB
+ from build123d.build_enums import Unit
+@@ -346,12 +347,12 @@
+ 
+ def gltf_shape_names(doc: TDocStd_Document) -> list[str]:
+     """Names of the free shapes (the glTF nodes) in an XCAF document."""
+-    labels = Sequence_TDF_Label()
++    labels = NCollection_Sequence[TDF_Label]()
+     XCAFDoc_DocumentTool.ShapeTool_s(doc.Main()).GetFreeShapes(labels)
+     names = []
+     for i in range(1, labels.Length() + 1):
+-        name = TDataStd_Name()
+-        if labels.Value(i).FindAttribute(TDataStd_Name.GetID_s(), name):
++        found, name = labels.Value(i).FindAttribute(TDataStd_Name.GetID_s())
++        if found:
+             names.append(name.Get().ToExtString())
+     return names
+ 
+@@ -372,7 +373,7 @@
+ def gltf_pbr_materials(doc: TDocStd_Document) -> list[XCAFDoc_VisMaterialPBR]:
+     """Metallic-roughness material definitions in an XCAF document."""
+     tool = XCAFDoc_DocumentTool.VisMaterialTool_s(doc.Main())
+-    labels = Sequence_TDF_Label()
++    labels = NCollection_Sequence[TDF_Label]()
+     tool.GetMaterials(labels)
+     return [
+         tool.GetMaterial_s(labels.Value(i)).PbrMaterial()
+--- a/tests/test_text.py
++++ b/tests/test_text.py
+@@ -14,7 +14,7 @@
+ from unittest.mock import patch
+ 
+ from fontTools.ttLib import TTCollection, TTFont
+-from OCP.TCollection import TCollection_AsciiString
++from nanoocp.TCollection import TCollection_AsciiString
+ 
+ from build123d import available_fonts, FontStyle
+ from build123d.text import FONT_ASPECT, FontInfo, FontManager
+--- a/tests/test_topo_explore.py
++++ b/tests/test_topo_explore.py
+@@ -1,11 +1,11 @@
+ from typing import Optional
+ import unittest
+ 
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
+-from OCP.GProp import GProp_GProps
+-from OCP.BRepGProp import BRepGProp
+-from OCP.gp import gp_Pnt, gp_Pln
+-from OCP.TopoDS import TopoDS_Face, TopoDS_Shape
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
++from nanoocp.GProp import GProp_GProps
++from nanoocp.BRepGProp import BRepGProp
++from nanoocp.gp import gp_Pnt, gp_Pln
++from nanoocp.TopoDS import TopoDS_Face, TopoDS_Shape
+ from build123d.build_enums import ContinuityLevel, GeomType, SortBy
+ 
+ from build123d.objects_part import Box

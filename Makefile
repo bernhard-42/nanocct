@@ -88,11 +88,11 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity \
+.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity nanobuild \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all | shim-parity"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all | shim-parity | nanobuild"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
@@ -344,5 +344,13 @@ ifeq ($(PLATFORM),macos)
 else
 	@echo "shim-parity runs on macOS only so far (see shim/parity.py)"; exit 1
 endif
+
+# ---- nanoocp-enabled packages -------------------------------------------------------------------------------------
+# build123d 0.13.0, ocpsvg 0.7.0, ocp_gordon 0.3.1 and ocp_tessellate 3.5.3 as sdists from PyPI (sha256-verified),
+# patched to import nanoocp instead of OCP (nanobuild/patches, tracked). Output: build/nanobuild/src/<pkg>-<version>,
+# ready for `uv pip install dist/nanoocp-*.whl build/nanobuild/src/*` into a fresh venv. Pure source work, so it runs
+# on the host on every platform.
+nanobuild:
+	$(ROOT)/nanobuild/nanobuild.sh
 
 all: generate compile stubs test wheel shim

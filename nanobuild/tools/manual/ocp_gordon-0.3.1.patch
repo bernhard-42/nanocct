@@ -1,0 +1,38 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -18,7 +18,7 @@
+     "Topic :: Software Development :: Libraries :: Python Modules",
+ ]
+ dependencies = [
+-    "cadquery_ocp_proxy >= 8.0, < 8.1",
++    "nanoocp >= 0.1, < 0.2",
+     "numpy >= 2, < 3",
+     "scipy",
+ ]
+@@ -43,13 +43,10 @@
+ [project.optional-dependencies]
+ test = [
+     "pytest",
+-    "cadquery_ocp_novtk >=8.0, < 8.1",
+ ]
+ 
+-# typing stubs for the OCP CAD kernel
+-stubs = [
+-    "cadquery-ocp-stubs >=8.0, <8.1",
+-]
++# typing stubs: nanoocp ships its own
++stubs = []
+ 
+ [tool.setuptools.packages.find]
+ where = ["src_py"]
+--- a/src_py/ocp_gordon/internal/bspline_algorithms.py
++++ b/src_py/ocp_gordon/internal/bspline_algorithms.py
+@@ -939,7 +939,7 @@
+                 degree, knots, param_val, False, degree + 1, knots.Length() - degree
+             )
+             BSplCLib.EvalBsplineBasis_s(
+-                deriv_order, degree + 1, knots, param_val, int(), bspl_basis
++                deriv_order, degree + 1, knots, param_val, bspl_basis
+             )
+             for j in range(degree + 1):
+                 col_idx = span_idx - degree - 1 + j

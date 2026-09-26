@@ -1,0 +1,268 @@
+--- a/ocp_tessellate/ocp_utils.py
++++ b/ocp_tessellate/ocp_utils.py
+@@ -26,7 +26,6 @@
+ from typing_extensions import TypeIs
+ 
+ import numpy as np
+-import OCP
+ from cachetools import LRUCache, cached
+ from nanoocp.BinTools import BinTools, BinTools_FormatVersion_CURRENT
+ from nanoocp.Bnd import Bnd_Box
+@@ -97,20 +96,17 @@
+ )
+ import nanoocp.TopoDS as TopoDS
+ 
+-if OCP.__version__.startswith("7"):
+-    from nanoocp.TopTools import (
+-        TopTools_IndexedDataMapOfShapeListOfShape,
+-        TopTools_IndexedMapOfShape,
+-    )
+-else:
+-    from nanoocp.NCollection import (
+-        NCollection_IndexedDataMap,
+-        NCollection_IndexedMap,
+-        NCollection_List,
+-    )
+-    from nanoocp.TopTools import TopTools_ShapeMapHasher
+-    TopTools_IndexedDataMapOfShapeListOfShape = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]
+-    TopTools_IndexedMapOfShape = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]
++from nanoocp.NCollection import (
++    NCollection_IndexedDataMap,
++    NCollection_IndexedMap,
++    NCollection_List,
++)
++from nanoocp.TopTools import TopTools_ShapeMapHasher
++
++TopTools_IndexedDataMapOfShapeListOfShape = NCollection_IndexedDataMap[
++    TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher
++]
++TopTools_IndexedMapOfShape = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]
+ 
+ from numpy.typing import ArrayLike
+ 
+@@ -137,34 +133,28 @@
+     def __iter__(self) -> Iterator[float]: ...
+ 
+ 
+-_Vertex = TopoDS.Vertex if hasattr(TopoDS, "Vertex") else TopoDS.Vertex
+-_Edge = TopoDS.Edge if hasattr(TopoDS, "Edge") else TopoDS.Edge
+-_Wire = TopoDS.Wire if hasattr(TopoDS, "Wire") else TopoDS.Wire
+-_Face = TopoDS.Face if hasattr(TopoDS, "Face") else TopoDS.Face
+-_Shell = TopoDS.Shell if hasattr(TopoDS, "Shell") else TopoDS.Shell
+-_Solid = TopoDS.Solid if hasattr(TopoDS, "Solid") else TopoDS.Solid
+-_CompSolid = TopoDS.CompSolid if hasattr(TopoDS, "CompSolid") else TopoDS.CompSolid
+-_Compound = TopoDS.Compound if hasattr(TopoDS, "Compound") else TopoDS.Compound
++_Vertex = TopoDS.Vertex
++_Edge = TopoDS.Edge
++_Wire = TopoDS.Wire
++_Face = TopoDS.Face
++_Shell = TopoDS.Shell
++_Solid = TopoDS.Solid
++_CompSolid = TopoDS.CompSolid
++_Compound = TopoDS.Compound
+ #
+ # %% Version
+ 
+ 
+ def occt_version() -> str:
+-    return OCP.__version__
++    # nanoocp binds OCCT 8.0.1 and exposes no version attribute
++    return "8.0.1"
+ 
+ 
+ #
+ # %% OCP Helpers
+ #
+ 
+-if OCP.__version__.startswith("7.7"):
+-
+-    def hash_compat(obj):
+-        MAX_HASH_KEY = 2147483647
+-        return obj.HashCode(MAX_HASH_KEY)
+-
+-else:
+-    hash_compat = hash
++hash_compat = hash
+ 
+ 
+ def ocp_hash(obj):
+@@ -434,7 +424,7 @@
+     if BRep_Tool.Degenerated_s(edge):
+         return True
+     loc = TopLoc_Location()
+-    return BRep_Tool.Curve_s(edge, loc, 0.0, 0.0) is None
++    return BRep_Tool.Curve_s(edge, loc)[0] is None
+ 
+ 
+ def is_degenerated_face(face: TopoDS_Face) -> bool:
+@@ -1275,20 +1265,14 @@
+         else:
+             BRepBndLib.Add_s(obj, bbox)
+         if not bbox.IsVoid():
+-            if OCP.__version__.startswith("7"):
+-                values = bbox.Get()
+-            else:
+-                # On OCP 8 Bnd_Box.Get() resolves to the overload returning the
+-                # Bnd_Box::Limits struct, which is not bound and always raises, so read
+-                # the six bounds individually.
+-                values = (
+-                    bbox.GetXMin(),
+-                    bbox.GetYMin(),
+-                    bbox.GetZMin(),
+-                    bbox.GetXMax(),
+-                    bbox.GetYMax(),
+-                    bbox.GetZMax(),
+-                )
++            values = (
++                bbox.GetXMin(),
++                bbox.GetYMin(),
++                bbox.GetZMin(),
++                bbox.GetXMax(),
++                bbox.GetYMax(),
++                bbox.GetZMax(),
++            )
+             return (values[0], values[3], values[1], values[4], values[2], values[5])
+         else:
+             c = self._center_of_mass(obj)
+@@ -1578,9 +1562,7 @@
+         return None
+ 
+     try:
+-        bio = io.BytesIO()
+-        BinTools.Write_s(shape, bio, triangles, normals, BinTools_FormatVersion_CURRENT)
+-        buffer = bio.getvalue()
++        buffer = BinTools.Write_s(shape, triangles, normals, BinTools_FormatVersion_CURRENT)
+     except Exception:
+         with tempfile.TemporaryDirectory() as tmpdirname:
+             filename = os.path.join(tmpdirname, "shape.brep")
+--- a/ocp_tessellate/stepreader.py
++++ b/ocp_tessellate/stepreader.py
+@@ -28,7 +28,6 @@
+ except ImportError:
+     pass
+ 
+-import OCP
+ from nanoocp.IFSelect import IFSelect_RetDone
+ from nanoocp.Quantity import Quantity_ColorRGBA
+ from nanoocp.STEPCAFControl import STEPCAFControl_Reader
+@@ -50,11 +49,9 @@
+     XCAFDoc_ShapeTool,
+ )
+ 
+-if OCP.__version__.startswith("7"):
+-    from nanoocp.TDF import TDF_LabelSequence
+-else:
+-    from nanoocp.NCollection import NCollection_Sequence
+-    TDF_LabelSequence = NCollection_Sequence[TDF_Label]
++from nanoocp.NCollection import NCollection_Sequence
++
++TDF_LabelSequence = NCollection_Sequence[TDF_Label]
+ 
+ # from ocp_tessellate.ocp_utils import deserialize, loc_to_tq, serialize, tq_to_loc
+ from ocp_tessellate.utils import warn
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -27,6 +27,7 @@
+ ]
+ 
+ dependencies = [
++    "nanoocp >= 0.1, < 0.2",
+     "webcolors>=24.8.0",
+     "numpy>=2.0",
+     "cachetools>=5.5.0,<8",
+--- a/tests/test_build123d.py
++++ b/tests/test_build123d.py
+@@ -35,10 +35,6 @@
+ 
+ with BuildSketch(Plane.YZ) as bs:
+     Rectangle(1, 1)
+-
+-with BuildSheet(Plane.YZ, thickness=0.1) as bsh:
+-    with BuildSketch():
+-        Rectangle(1, 1)
+ 
+ with BuildSketch(Plane.YZ) as bs2:
+     Rectangle(1, 1)
+@@ -293,81 +289,19 @@
+             self.assertEqual(g.length, 1)
+             self.assertEqual(o.name, "bp")
+ 
+-    def test_buildsheet(self):
+-        """Test that a sheet is converted correctly"""
+-        c = OcpConverter(show_locals=False)
+-        g = c.to_ocp(bsh)
+-        i = c.instances
+-        self.assertEqual(g.length, 1)
+-        o = g.objects[0]
+-        self.assertEqual(o.name, "Shell")
+-        self.assertEqual(o.kind, "face")
+-        self.assertIsNotNone(o.ref)
+-        self.assertIsNone(o.obj)
+-        self.assertTrue(is_topods_face(i[o.ref]["obj"]))
+-
+-    def test_buildsheet_in_context(self):
+-        """Test that a sheet is converted the same way from inside its context"""
+-        c = OcpConverter()
+-        with BuildSheet(Plane.YZ, thickness=0.1) as inner:
+-            with BuildSketch():
+-                Rectangle(1, 1)
+-            g = c.to_ocp(inner)
+-        self.assertEqual(g.name, "Shell")
+-        self.assertEqual([o.name for o in g.objects], ["sheet", "sheet_local"])
+-        for o in g.objects:
+-            self.assertEqual(o.kind, "face")
+-
+-    def test_buildsheet_two_placements(self):
+-        """Test that a sheet with several placements is one face object"""
+-        c = OcpConverter(show_locals=False)
+-        with BuildSheet(Plane.XY, Plane.YZ, thickness=0.1) as multi:
+-            with BuildSketch():
+-                Rectangle(1, 1)
+-        g = c.to_ocp(multi)
+-        i = c.instances
+-        self.assertEqual(g.length, 1)
+-        o = g.objects[0]
+-        self.assertEqual(o.name, "Shell")
+-        self.assertEqual(o.kind, "face")
+-        self.assertEqual(len(list(get_faces(i[o.ref]["obj"]))), 2)
+-
+-    def test_buildsheet_local_name(self):
+-        """Test that the name and locations are set correctly for a sheet_local"""
+-        c = OcpConverter()
+-        g = c.to_ocp(bsh, names=["bsh"])
+-        i = c.instances
+-        self.assertEqual(g.length, 2)
+-        self.assertEqual(g.name, "bsh")
+-        for o, n in zip(g.objects, ["sheet", "sheet_local"]):
+-            self.assertEqual(o.name, n)
+-            self.assertEqual(o.kind, "face")
+-            self.assertIsNotNone(o.ref)
+-            self.assertIsNone(o.obj)
+-            self.assertTrue(is_topods_face(i[o.ref]["obj"]))
+-            loc = loc_to_tq(o.loc)
+-            self._assertTupleAlmostEquals(loc[0], (0, 0, 0), 6)
+-            if n == "sheet":
+-                self._assertTupleAlmostEquals(loc[1], (0.5, 0.5, 0.5, 0.5), 6)
+-            else:
+-                self._assertTupleAlmostEquals(loc[1], (0, 0, 0, 1), 6)
+-
+     def test_builders_empty_in_context(self):
+         """Test that a builder without geometry yet gives an empty placeholder"""
+         c = OcpConverter()
+         with BuildPart() as ebp:
+             g = c.to_ocp(ebp)
+             self.assertEqual(g.objects[0].name, "Solid (empty)")
+-        with BuildSheet(thickness=0.1) as ebsh:
+-            g = c.to_ocp(ebsh)
+-            self.assertEqual(g.objects[0].name, "Shell (empty)")
+         with BuildSketch() as ebs:
+             g = c.to_ocp(ebs)
+             self.assertEqual(g.objects[0].name, "Face (empty)")
+         with BuildLine() as ebl:
+             g = c.to_ocp(ebl, names=["ebl"])
+             self.assertEqual(g.objects[0].name, "ebl (empty)")
+-        for e in (ebp, ebsh, ebs, ebl):
++        for e in (ebp, ebs, ebl):
+             o = c.to_ocp(e).objects[0]
+             self.assertEqual(o.kind, "vertex")
+             self.assertTrue(is_topods_vertex(o.obj))

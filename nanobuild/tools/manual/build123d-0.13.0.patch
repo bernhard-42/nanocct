@@ -1,0 +1,166 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -33,7 +33,7 @@
+ ]
+ 
+ dependencies = [
+-    "cadquery-ocp-novtk >= 8.0, < 8.1",
++    "nanoocp >= 0.1, < 0.2",
+     "typing_extensions >= 4.16.0, < 5",
+     "numpy >= 2, < 3",
+     "svgpathtools >= 1.5.1, < 2",
+@@ -85,10 +85,8 @@
+     "wheel",
+ ]
+ 
+-# typing stubs for the OCP CAD kernel
+-stubs = [
+-    "cadquery-ocp-stubs >= 8.0, < 8.1",
+-]
++# typing stubs: nanoocp ships its own
++stubs = []
+ 
+ # dependencies to build the docs
+ docs = [
+--- a/src/build123d/exporters3d.py
++++ b/src/build123d/exporters3d.py
+@@ -107,7 +107,7 @@
+     application = XCAFApp_Application.GetApplication_s()
+ 
+     # Create and initialize a new document
+-    application.NewDocument(TCollection_ExtendedString("MDTV-XCAF"), doc)
++    doc = application.NewDocument(TCollection_ExtendedString("MDTV-XCAF"))
+     application.InitDocument(doc)
+ 
+     XCAFDoc_DocumentTool.SetLengthUnit_s(doc, 1 / UNITS_PER_METER[unit])
+@@ -249,10 +249,10 @@
+         bool: write status
+     """
+     if isinstance(file_path, (PathLike | str | bytes)):
+-        file_path = fsdecode(file_path)
++        return_value = BRepTools.Write_s(to_export.wrapped, fsdecode(file_path))
+     else:
+-        file_path = cast(BytesIO, file_path)
+-    return_value = BRepTools.Write_s(to_export.wrapped, file_path)
++        cast(BytesIO, file_path).write(BRepTools.Write_s(to_export.wrapped).encode())
++        return_value = None
+ 
+     return True if return_value is None else return_value
+ 
+@@ -436,8 +436,9 @@
+     if isinstance(file_path, (PathLike, str, bytes)):
+         status = writer.Write(fsdecode(file_path))
+     else:
+-        # need to cast for type checker because BinaryIO is OK but OCP doesn't know
+-        status = writer.WriteStream(cast(BytesIO, file_path))
++        # WriteStream returns the STEP text; the caller's stream is binary
++        status, text = writer.WriteStream()
++        cast(BytesIO, file_path).write(text.encode())
+ 
+     success = status == IFSelect_ReturnStatus.IFSelect_RetDone
+     if not success:
+@@ -487,7 +488,7 @@
+ 
+     writer = StlAPI_Writer()
+ 
+-    writer.ASCIIMode = ascii_format
++    writer.SetASCIIMode(ascii_format)
+     return writer.Write(to_export.wrapped, str(output_path))
+ 
+ 
+--- a/src/build123d/importers.py
++++ b/src/build123d/importers.py
+@@ -148,11 +148,10 @@
+     def get_name(label: TDF_Label) -> str:
+         """Extract name and format"""
+         name = ""
+-        std_name = TDataStd_Name()
+-        if label.IsAttribute(TDataStd_Name.GetID_s()) and label.FindAttribute(
+-            TDataStd_Name.GetID_s(), std_name
+-        ):
+-            name = TCollection_AsciiString(std_name.Get()).ToCString()
++        if label.IsAttribute(TDataStd_Name.GetID_s()):
++            found, std_name = label.FindAttribute(TDataStd_Name.GetID_s())
++            if found:
++                name = TCollection_AsciiString(std_name.Get()).ToCString()
+         # Remove characters that cause ocp_vscode to fail
+         clean_name = "".join(ch for ch in name if unicodedata.category(ch)[0] != "C")
+         return clean_name.translate(str.maketrans(" .()", "____"))
+--- a/src/build123d/persistence.py
++++ b/src/build123d/persistence.py
+@@ -58,10 +58,7 @@
+     if shape is None:
+         return None
+ 
+-    bio = io.BytesIO()
+-    BinTools.Write_s(shape, bio)
+-    buffer = bio.getvalue()
+-    return buffer
++    return BinTools.Write_s(shape)
+ 
+ 
+ def deserialize_shape(buffer: bytes) -> TopoDS_Shape:
+--- a/src/build123d/text.py
++++ b/src/build123d/text.py
+@@ -136,7 +136,7 @@
+ 
+     def find_font(self, name: str, style: FontStyle) -> Font_SystemFont:
+         """Find font in FontManager library by name and style"""
+-        return self.manager.FindFont(TCollection_AsciiString(name), FONT_ASPECT[style])
++        return self.manager.FindFont(TCollection_AsciiString(name), FONT_ASPECT[style])[0]
+ 
+     def register_font(
+         self, path: str, override: bool = False, single_stroke=False
+--- a/src/build123d/topology/one_d.py
++++ b/src/build123d/topology/one_d.py
+@@ -3755,13 +3755,12 @@
+         """
+ 
+         edges_in = NCollection_HSequence[TopoDS_Shape]()
+-        wires_out = NCollection_HSequence[TopoDS_Shape]()
+ 
+         for edge in [e for w in wires for e in w.edges()]:
+             if edge.wrapped is not None:
+                 edges_in.Append(edge.wrapped)
+ 
+-        ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False, wires_out)
++        wires_out = ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False)
+ 
+         wires = ShapeList()
+         for i in range(wires_out.Length()):
+@@ -4334,7 +4333,7 @@
+             closest_topods_edge = tcast(
+                 TopoDS_Edge, downcast(extrema.SupportOnShape2(1))
+             )
+-            closest_topods_edge_param = extrema.ParOnEdgeS2(1)[0]
++            closest_topods_edge_param = extrema.ParOnEdgeS2(1)
+         elif supp_type == BRepExtrema_SupportType.BRepExtrema_IsVertex:
+             v_hit = tcast(TopoDS_Vertex, downcast(extrema.SupportOnShape2(1)))
+             vertex_edge_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+@@ -4717,12 +4716,11 @@
+     """
+ 
+     edges_in = NCollection_HSequence[TopoDS_Shape]()
+-    wires_out = NCollection_HSequence[TopoDS_Shape]()
+ 
+     for edge in edges:
+         if edge.wrapped is not None:
+             edges_in.Append(edge.wrapped)
+-    ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False, wires_out)
++    wires_out = ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges_in, tol, False)
+ 
+     wires: ShapeList[Wire] = ShapeList()
+     for i in range(wires_out.Length()):
+--- a/tests/test_materials.py
++++ b/tests/test_materials.py
+@@ -351,8 +351,8 @@
+     XCAFDoc_DocumentTool.ShapeTool_s(doc.Main()).GetFreeShapes(labels)
+     names = []
+     for i in range(1, labels.Length() + 1):
+-        name = TDataStd_Name()
+-        if labels.Value(i).FindAttribute(TDataStd_Name.GetID_s(), name):
++        found, name = labels.Value(i).FindAttribute(TDataStd_Name.GetID_s())
++        if found:
+             names.append(name.Get().ToExtString())
+     return names
+ 

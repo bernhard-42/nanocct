@@ -1,0 +1,992 @@
+--- a/examples/build123d_face_ext.py
++++ b/examples/build123d_face_ext.py
+@@ -2,12 +2,12 @@
+ # This file extends the class build123d.Face to include gorden_surface()
+ 
+ from build123d import Edge, Face, ShapeList  # type: ignore
+-from OCP.Geom import Geom_Curve, Geom_BSplineCurve, Geom_BSplineSurface
+-from OCP.GeomConvert import GeomConvert
+-from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
+-from OCP.BRep import BRep_Tool
+-from OCP.TopoDS import TopoDS_Face
+-from OCP.Precision import Precision
++from nanoocp.Geom import Geom_Curve, Geom_BSplineCurve, Geom_BSplineSurface
++from nanoocp.GeomConvert import GeomConvert
++from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
++from nanoocp.BRep import BRep_Tool
++from nanoocp.TopoDS import TopoDS_Face
++from nanoocp.Precision import Precision
+ 
+ # Import our Gordon interpolation module
+ import sys
+@@ -26,7 +26,7 @@
+ def convert_edge_to_bspline(edge: Edge) -> Geom_BSplineCurve:
+     if edge.wrapped is None:
+         raise ValueError("Edge cannot be empty")
+-    curve = BRep_Tool.Curve_s(edge.wrapped, 0, 1)
++    curve = BRep_Tool.Curve_s(edge.wrapped)[0]
+     return GeomConvert.CurveToBSplineCurve_s(curve)
+ 
+ def convert_bspline_surface_to_face(surface: Geom_BSplineSurface) -> Face:
+@@ -76,12 +76,12 @@
+         for edge in profiles:
+             if edge.wrapped is None:
+                 raise ValueError("error")
+-            ocp_profiles.append(BRep_Tool.Curve_s(edge.wrapped, 0, 1))
++            ocp_profiles.append(BRep_Tool.Curve_s(edge.wrapped)[0])
+ 
+         for edge in guides:
+             if edge.wrapped is None:
+                 raise ValueError("error")
+-            ocp_guides.append(BRep_Tool.Curve_s(edge.wrapped, 0, 1))
++            ocp_guides.append(BRep_Tool.Curve_s(edge.wrapped)[0])
+ 
+         gordon_bspline_surface = interpolate_curve_network(
+             ocp_profiles, ocp_guides, tolerance=tolerance
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -18,7 +18,7 @@
+     "Topic :: Software Development :: Libraries :: Python Modules",
+ ]
+ dependencies = [
+-    "cadquery_ocp_proxy >= 8.0, < 8.1",
++    "nanoocp >= 0.1, < 0.2",
+     "numpy >= 2, < 3",
+     "scipy",
+ ]
+@@ -43,13 +43,10 @@
+ [project.optional-dependencies]
+ test = [
+     "pytest",
+-    "cadquery_ocp_novtk >=8.0, < 8.1",
+ ]
+ 
+-# typing stubs for the OCP CAD kernel
+-stubs = [
+-    "cadquery-ocp-stubs >=8.0, <8.1",
+-]
++# typing stubs: nanoocp ships its own
++stubs = []
+ 
+ [tool.setuptools.packages.find]
+ where = ["src_py"]
+--- a/src_py/ocp_gordon/internal/approx_result.py
++++ b/src_py/ocp_gordon/internal/approx_result.py
+@@ -5,7 +5,7 @@
+ Created: 2020-07-15 Martin Siggel <Martin.Siggel@dlr.de>
+ """
+ 
+-from OCP.Geom import Geom_BSplineCurve
++from nanoocp.Geom import Geom_BSplineCurve
+ 
+ class ApproxResult:
+     """
+--- a/src_py/ocp_gordon/internal/bspline_algorithms.py
++++ b/src_py/ocp_gordon/internal/bspline_algorithms.py
+@@ -11,28 +11,23 @@
+ import math
+ 
+ import numpy as np
+-from OCP.BSplCLib import BSplCLib
+-from OCP.Geom import (
++from nanoocp.BSplCLib import BSplCLib
++from nanoocp.Geom import (
+     Geom_BSplineCurve,
+     Geom_BSplineSurface,
+     Geom_Curve,
+     Geom_TrimmedCurve,
+ )
+-from OCP.Geom2dAPI import Geom2dAPI_Interpolate, Geom2dAPI_ProjectPointOnCurve
+-from OCP.GeomAbs import GeomAbs_C2
+-from OCP.GeomConvert import GeomConvert, GeomConvert_ApproxCurve
+-from OCP.gp import gp_Pnt, gp_Pnt2d
+-from OCP.math import math_Matrix
+-from OCP.Precision import Precision
+-from OCP.collections import (
+-    Array1_gp_Pnt,
+-    Array2_gp_Pnt,
+-    HArray1_gp_Pnt,
+-    HArray1_gp_Pnt2d,
+-    Array1_int,
+-    Array1_double,
+-    HArray1_int,
+-    HArray1_double,
++from nanoocp.Geom2dAPI import Geom2dAPI_Interpolate, Geom2dAPI_ProjectPointOnCurve
++from nanoocp.GeomAbs import GeomAbs_C2
++from nanoocp.GeomConvert import GeomConvert, GeomConvert_ApproxCurve
++from nanoocp.gp import gp_Pnt, gp_Pnt2d
++from nanoocp.math import math_Matrix
++from nanoocp.Precision import Precision
++from nanoocp.NCollection import (
++    NCollection_Array1,
++    NCollection_Array2,
++    NCollection_HArray1,
+ )
+ 
+ from .approx_result import ApproxResult
+@@ -133,7 +128,7 @@
+         return result
+ 
+     @staticmethod
+-    def is_u_dir_closed(points: Array2_gp_Pnt, tolerance: float) -> bool:
++    def is_u_dir_closed(points: NCollection_Array2[gp_Pnt], tolerance: float) -> bool:
+         u_dir_closed = True
+         ulo = points.LowerRow()
+         uhi = points.UpperRow()
+@@ -147,7 +142,7 @@
+         return u_dir_closed
+ 
+     @staticmethod
+-    def is_v_dir_closed(points: Array2_gp_Pnt, tolerance: float) -> bool:
++    def is_v_dir_closed(points: NCollection_Array2[gp_Pnt], tolerance: float) -> bool:
+         v_dir_closed = True
+         vlo = points.LowerCol()
+         vhi = points.UpperCol()
+@@ -224,7 +219,7 @@
+ 
+     @staticmethod
+     def compute_params_bspline_curve(
+-        points: HArray1_gp_Pnt, alpha: float = 0.5
++        points: NCollection_HArray1[gp_Pnt], alpha: float = 0.5
+     ) -> list[float]:
+         """
+         Computes parameters of a B-spline curve at given points.
+@@ -454,7 +449,7 @@
+         return max_scale if max_scale > 0 else 1.0
+ 
+     @staticmethod
+-    def _scale_array2_of_pnt(points: Array2_gp_Pnt) -> float:
++    def _scale_array2_of_pnt(points: NCollection_Array2[gp_Pnt]) -> float:
+         """
+         Returns the scale of the point matrix.
+         Matches the C++ scale(const TColgp_Array2OfPnt& points) function.
+@@ -468,7 +463,7 @@
+         return the_scale
+ 
+     @staticmethod
+-    def _scale_array1_of_pnt(points: Array1_gp_Pnt) -> float:
++    def _scale_array1_of_pnt(points: NCollection_Array1[gp_Pnt]) -> float:
+         """
+         Returns the scale of the point list by searching for the largest distance between two points.
+         Matches the C++ scale(const TColgp_Array1OfPnt& points) function.
+@@ -487,8 +482,8 @@
+         obj: (
+             Geom_BSplineCurve
+             | list[Geom_BSplineCurve]
+-            | Array2_gp_Pnt
+-            | Array1_gp_Pnt
++            | NCollection_Array2[gp_Pnt]
++            | NCollection_Array1[gp_Pnt]
+         ),
+     ) -> float:
+         """
+@@ -499,9 +494,9 @@
+             return BSplineAlgorithms._scale_curve(obj)
+         elif isinstance(obj, list):  # Assuming list of Geom_BSplineCurve
+             return BSplineAlgorithms._scale_curve_list(obj)
+-        elif isinstance(obj, Array2_gp_Pnt):
++        elif isinstance(obj, NCollection_Array2[gp_Pnt]):
+             return BSplineAlgorithms._scale_array2_of_pnt(obj)
+-        elif isinstance(obj, Array1_gp_Pnt):
++        elif isinstance(obj, NCollection_Array1[gp_Pnt]):
+             return BSplineAlgorithms._scale_array1_of_pnt(obj)
+         else:
+             raise TypeError("Unsupported type for scale function")
+@@ -628,7 +623,7 @@
+             raise error("parameter sizes dont match")
+ 
+         # create a B-spline as a function for reparametrization
+-        old_parameters_pnts = HArray1_gp_Pnt2d(1, len(old_parameters))
++        old_parameters_pnts = NCollection_HArray1[gp_Pnt2d](1, len(old_parameters))
+         for parameter_idx in range(len(old_parameters)):
+             occIdx = parameter_idx + 1
+             old_parameters_pnts.SetValue(
+@@ -681,7 +676,7 @@
+         for kink in kinks:
+             bisect.insort_left(parameters, kink)
+ 
+-        points = HArray1_gp_Pnt(1, len(parameters))
++        points = NCollection_HArray1[gp_Pnt](1, len(parameters))
+         for i in range(1, len(parameters) + 1):
+             oldParameter = reparametrizing_spline.Value(parameters[i - 1]).X()
+             points.SetValue(i, spline.Value(oldParameter))
+@@ -745,7 +740,7 @@
+ 
+         # Get current knots
+         n_knots = spline.NbKnots()
+-        knots_array = Array1_double(1, n_knots)
++        knots_array = NCollection_Array1[float](1, n_knots)
+         for i in range(1, n_knots + 1):
+             old_knot = spline.Knot(i)
+             new_knot = a * old_knot + b
+@@ -753,14 +748,14 @@
+ 
+         # Create new spline with transformed knots
+         n_poles = spline.NbPoles()
+-        poles = Array1_gp_Pnt(1, n_poles)
+-        weights = Array1_double(1, n_poles)
++        poles = NCollection_Array1[gp_Pnt](1, n_poles)
++        weights = NCollection_Array1[float](1, n_poles)
+ 
+         for i in range(1, n_poles + 1):
+             poles.SetValue(i, spline.Pole(i))
+             weights.SetValue(i, spline.Weight(i))
+ 
+-        mult_array = Array1_int(1, n_knots)
++        mult_array = NCollection_Array1[int](1, n_knots)
+         for i in range(1, n_knots + 1):
+             mult_array.SetValue(i, spline.Multiplicity(i))
+ 
+@@ -912,8 +907,8 @@
+     @staticmethod
+     def bspline_basis_mat(
+         degree: int,
+-        knots: Array1_double,
+-        params: Array1_double,
++        knots: NCollection_Array1[float],
++        params: NCollection_Array1[float],
+         deriv_order: int = 0,
+     ) -> np.ndarray:
+         """
+@@ -944,7 +939,7 @@
+                 degree, knots, param_val, False, degree + 1, knots.Length() - degree
+             )
+             BSplCLib.EvalBsplineBasis_s(
+-                deriv_order, degree + 1, knots, param_val, int(), bspl_basis
++                deriv_order, degree + 1, knots, param_val, bspl_basis
+             )
+             for j in range(degree + 1):
+                 col_idx = span_idx - degree - 1 + j
+@@ -956,7 +951,7 @@
+         return basis_mat
+ 
+     @staticmethod
+-    def max_distance_of_bounding_box(points: Array1_gp_Pnt) -> float:
++    def max_distance_of_bounding_box(points: NCollection_Array1[gp_Pnt]) -> float:
+         """
+         Compute maximum distance between points in bounding box.
+ 
+@@ -974,7 +969,7 @@
+         return max_distance
+ 
+     @staticmethod
+-    def is_closed(points: HArray1_gp_Pnt, c2_continuous: bool = False) -> bool:
++    def is_closed(points: NCollection_HArray1[gp_Pnt], c2_continuous: bool = False) -> bool:
+         """
+         Check if points form a closed curve.
+ 
+@@ -993,7 +988,7 @@
+         )
+ 
+     @staticmethod
+-    def to_array(vector: list[float]) -> HArray1_double:
++    def to_array(vector: list[float]) -> NCollection_HArray1[float]:
+         """
+         Convert a Python list to an HArray1_double.
+ 
+@@ -1003,13 +998,13 @@
+         Returns:
+             TColStd_HArray1OfReal handle
+         """
+-        array = HArray1_double(1, len(vector))
++        array = NCollection_HArray1[float](1, len(vector))
+         for i, value in enumerate(vector, 1):
+             array.SetValue(i, value)
+         return array
+ 
+     @staticmethod
+-    def to_array_int(vector: list[int]) -> HArray1_int:
++    def to_array_int(vector: list[int]) -> NCollection_HArray1[int]:
+         """
+         Convert Python list to TColStd_HArray1OfInteger.
+ 
+@@ -1019,22 +1014,22 @@
+         Returns:
+             TColStd_HArray1OfInteger handle
+         """
+-        array = HArray1_int(1, len(vector))
++        array = NCollection_HArray1[int](1, len(vector))
+         for i, value in enumerate(vector, 1):
+             array.SetValue(i, value)
+         return array
+ 
+     @staticmethod
+     def _pnt_array2_get_column(
+-        matrix: Array2_gp_Pnt, col_index: int
+-    ) -> HArray1_gp_Pnt:
++        matrix: NCollection_Array2[gp_Pnt], col_index: int
++    ) -> NCollection_HArray1[gp_Pnt]:
+         """
+         Extracts a column from an Array2_gp_Pnt as an HArray1_gp_Pnt.
+         Matches the C++ array2GetColumn helper function.
+         """
+         lower_row = matrix.LowerRow()
+         upper_row = matrix.UpperRow()
+-        col_vector = HArray1_gp_Pnt(lower_row, upper_row)
++        col_vector = NCollection_HArray1[gp_Pnt](lower_row, upper_row)
+ 
+         for row_idx in range(lower_row, upper_row + 1):
+             col_vector.SetValue(row_idx, matrix.Value(row_idx, col_index))
+@@ -1042,15 +1037,15 @@
+ 
+     @staticmethod
+     def _pnt_array2_get_row(
+-        matrix: Array2_gp_Pnt, row_index: int
+-    ) -> HArray1_gp_Pnt:
++        matrix: NCollection_Array2[gp_Pnt], row_index: int
++    ) -> NCollection_HArray1[gp_Pnt]:
+         """
+         Extracts a row from an Array2_gp_Pnt as an HArray1_gp_Pnt.
+         Matches the C++ array2GetRow helper function.
+         """
+         lower_col = matrix.LowerCol()
+         upper_col = matrix.UpperCol()
+-        row_vector = HArray1_gp_Pnt(lower_col, upper_col)
++        row_vector = NCollection_HArray1[gp_Pnt](lower_col, upper_col)
+ 
+         for col_idx in range(lower_col, upper_col + 1):
+             row_vector.SetValue(col_idx, matrix.Value(row_index, col_idx))
+@@ -1058,7 +1053,7 @@
+ 
+     @staticmethod
+     def compute_params_bspline_surf(
+-        points: Array2_gp_Pnt, alpha: float = 0.5
++        points: NCollection_Array2[gp_Pnt], alpha: float = 0.5
+     ) -> tuple[list[float], list[float]]:
+         """
+         Computes parameters for a B-spline surface in both u and v directions.
+--- a/src_py/ocp_gordon/internal/bspline_approx_interp.py
++++ b/src_py/ocp_gordon/internal/bspline_approx_interp.py
+@@ -8,14 +8,10 @@
+ import math
+ 
+ import numpy as np
+-from OCP.BSplCLib import BSplCLib  # For KnotSequence
+-from OCP.Geom import Geom_BSplineCurve, Geom_Curve
+-from OCP.gp import gp_Pnt, gp_Vec
+-from OCP.collections import (
+-    Array1_gp_Pnt,
+-    Array1_int,
+-    Array1_double,
+-)
++from nanoocp.BSplCLib import BSplCLib  # For KnotSequence
++from nanoocp.Geom import Geom_BSplineCurve, Geom_Curve
++from nanoocp.gp import gp_Pnt, gp_Vec
++from nanoocp.NCollection import NCollection_Array1
+ 
+ from .approx_result import ApproxResult
+ from .bspline_algorithms import BSplineAlgorithms  # For bspline_basis_mat, scale, etc.
+@@ -39,12 +35,12 @@
+ 
+     def __init__(
+         self,
+-        points: Array1_gp_Pnt,
++        points: NCollection_Array1[gp_Pnt],
+         n_control_points: int,
+         degree: int = 3,
+         continuous_if_closed: bool = False,
+     ):
+-        self.m_pnts = Array1_gp_Pnt(1, points.Length())
++        self.m_pnts = NCollection_Array1[gp_Pnt](1, points.Length())
+         for i in range(points.Lower(), points.Upper() + 1):
+             self.m_pnts.SetValue(i, points(i))
+ 
+@@ -68,7 +64,7 @@
+         if with_kink:
+             self.m_index_of_kinks.append(point_index)
+ 
+-    def _max_distance_of_bounding_box(self, points: Array1_gp_Pnt) -> float:
++    def _max_distance_of_bounding_box(self, points: NCollection_Array1[gp_Pnt]) -> float:
+         if points.Length() == 0:
+             return 0.0
+ 
+@@ -171,11 +167,11 @@
+         knots_list, mults_list = self._compute_knots(self.m_ncp, params)
+ 
+         # Convert to OCP arrays
+-        knots_array = Array1_double(1, len(knots_list))
++        knots_array = NCollection_Array1[float](1, len(knots_list))
+         for i, k in enumerate(knots_list, 1):
+             knots_array.SetValue(i, k)
+ 
+-        mults_array = Array1_int(1, len(mults_list))
++        mults_array = NCollection_Array1[int](1, len(mults_list))
+         for i, m in enumerate(mults_list, 1):
+             mults_array.SetValue(i, m)
+ 
+@@ -195,11 +191,11 @@
+ 
+         knots_list, mults_list = self._compute_knots(self.m_ncp, params)
+ 
+-        knots_array = Array1_double(1, len(knots_list))
++        knots_array = NCollection_Array1[float](1, len(knots_list))
+         for i, k in enumerate(knots_list, 1):
+             knots_array.SetValue(i, k)
+ 
+-        mults_array = Array1_int(1, len(mults_list))
++        mults_array = NCollection_Array1[int](1, len(mults_list))
+         for i, m in enumerate(mults_list, 1):
+             mults_array.SetValue(i, m)
+ 
+@@ -290,14 +286,14 @@
+         n_ctr_pnts: int,
+         contin_cons: int,
+         params: list[float],
+-        flat_knots: Array1_double,
++        flat_knots: NCollection_Array1[float],
+     ) -> np.ndarray:
+         continuity_entries = np.zeros((contin_cons, n_ctr_pnts))
+ 
+         # Need to convert single float to Array1_double for bspline_basis_mat.
+-        continuity_params1 = Array1_double(1, 1)
++        continuity_params1 = NCollection_Array1[float](1, 1)
+         continuity_params1.SetValue(1, params[0])
+-        continuity_params2 = Array1_double(1, 1)
++        continuity_params2 = NCollection_Array1[float](1, 1)
+         continuity_params2.SetValue(1, params[len(params) - 1])
+ 
+         diff1_1 = BSplineAlgorithms.bspline_basis_mat(
+@@ -335,12 +331,12 @@
+     def _solve(
+         self,
+         params: list[float],
+-        knots: Array1_double,
+-        mults: Array1_int,
++        knots: NCollection_Array1[float],
++        mults: NCollection_Array1[int],
+     ) -> ApproxResult:
+         # compute flat knots
+         n_flat_knots = BSplCLib.KnotSequenceLength_s(mults, self.m_degree, False)
+-        flat_knots_array = Array1_double(1, n_flat_knots)
++        flat_knots_array = NCollection_Array1[float](1, n_flat_knots)
+         BSplCLib.KnotSequence_s(knots, mults, flat_knots_array)
+ 
+         n_approximated = len(self.m_index_of_approximated)
+@@ -380,7 +376,7 @@
+ 
+         if n_approximated > 0:
+             app_params_list = [params[idx] for idx in self.m_index_of_approximated]
+-            app_params_array = Array1_double(1, n_approximated)
++            app_params_array = NCollection_Array1[float](1, n_approximated)
+             for i, p in enumerate(app_params_list, 1):
+                 app_params_array.SetValue(i, p)
+ 
+@@ -406,7 +402,7 @@
+                 interp_params_list = [
+                     params[idx] for idx in self.m_index_of_interpolated
+                 ]
+-                interp_params_array = Array1_double(1, n_interpolated)
++                interp_params_array = NCollection_Array1[float](1, n_interpolated)
+                 for i, p in enumerate(interp_params_list, 1):
+                     interp_params_array.SetValue(i, p)
+ 
+@@ -442,7 +438,7 @@
+         except np.linalg.LinAlgError:
+             raise error("Singular Matrix", ErrorCode.MATH_ERROR)
+ 
+-        poles = Array1_gp_Pnt(1, n_ctr_pnts)
++        poles = NCollection_Array1[gp_Pnt](1, n_ctr_pnts)
+         for i in range(n_ctr_pnts):
+             pnt = gp_Pnt(cp_full[i][0], cp_full[i][1], cp_full[i][2])
+             poles.SetValue(i + 1, pnt)
+--- a/src_py/ocp_gordon/internal/curve_network_sorter.py
++++ b/src_py/ocp_gordon/internal/curve_network_sorter.py
+@@ -14,7 +14,7 @@
+ 
+ 
+ import numpy as np
+-from OCP.Geom import Geom_BSplineCurve, Geom_Curve
++from nanoocp.Geom import Geom_BSplineCurve, Geom_Curve
+ 
+ from .error import error
+ 
+--- a/src_py/ocp_gordon/internal/curves_to_surface.py
++++ b/src_py/ocp_gordon/internal/curves_to_surface.py
+@@ -6,19 +6,19 @@
+ """
+ 
+ 
+-from OCP.Geom import (
++from nanoocp.Geom import (
+     Geom_BSplineCurve,
+     Geom_BSplineSurface,
+     Geom_Curve,
+     Geom_TrimmedCurve,
+ )
+-from OCP.GeomConvert import GeomConvert
+-from OCP.collections import (
+-    Array2_gp_Pnt,
+-    HArray1_gp_Pnt,
+-    Array1_int,
+-    Array1_double,
++from nanoocp.GeomConvert import GeomConvert
++from nanoocp.NCollection import (
++    NCollection_Array1,
++    NCollection_Array2,
++    NCollection_HArray1,
+ )
++from nanoocp.gp import gp_Pnt
+ 
+ from .bspline_algorithms import BSplineAlgorithms
+ from .error import ErrorCode, error  # Import ErrorCode
+@@ -172,7 +172,7 @@
+ 
+         # Array2_gp_Pnt(RowMin, RowMax, ColMin, ColMax)
+         # Rows correspond to poles in U direction, Columns correspond to splines (V direction)
+-        control_points_matrix = Array2_gp_Pnt(1, num_poles_u, 1, num_splines)
++        control_points_matrix = NCollection_Array2[gp_Pnt](1, num_poles_u, 1, num_splines)
+ 
+         for spline_idx, spline in enumerate(self._compatible_splines, 1):
+             for pole_idx in range(1, num_poles_u + 1):
+@@ -242,12 +242,12 @@
+         # C++ uses Handle(TColgp_HArray2OfPnt) cpSurf;
+         # Python equivalent: a list of lists or a numpy array, then convert to Array2_gp_Pnt.
+         # Or directly use HArray1_gp_Pnt for interpolation points.
+-        cp_surf = Array2_gp_Pnt()
++        cp_surf = NCollection_Array2[gp_Pnt]()
+         interp_spline = None
+ 
+         # C++ uses Handle(TColgp_HArray1OfPnt) for these interpolation points.
+         # This array will hold the poles for a given U index across all V curves.
+-        interp_points_v_dir = HArray1_gp_Pnt(1, n_curves)
++        interp_points_v_dir = NCollection_HArray1[gp_Pnt](1, n_curves)
+ 
+         # C++ iterates from cpUIdx = 1 to numControlPointsU
+         for cp_u_idx in range(1, num_control_points_u + 1):
+@@ -286,14 +286,14 @@
+                 knots_v_list = []
+                 for i in range(1, interp_spline.NbKnots() + 1):
+                     knots_v_list.append(interp_spline.Knot(i))
+-                knots_v = Array1_double(1, len(knots_v_list))
++                knots_v = NCollection_Array1[float](1, len(knots_v_list))
+                 for i, k in enumerate(knots_v_list, 1):
+                     knots_v.SetValue(i, k)
+ 
+                 mults_v_list = []
+                 for i in range(1, interp_spline.NbKnots() + 1):
+                     mults_v_list.append(interp_spline.Multiplicity(i))
+-                mults_v = Array1_int(1, len(mults_v_list))
++                mults_v = NCollection_Array1[int](1, len(mults_v_list))
+                 for i, m in enumerate(mults_v_list, 1):
+                     mults_v.SetValue(i, m)
+ 
+@@ -302,7 +302,7 @@
+                 # cpSurf = new TColgp_HArray2OfPnt(1, static_cast<Standard_Integer>(numControlPointsU), 1, interpSpline->NbPoles());
+                 # Python equivalent: Array2_gp_Pnt(RowMin, RowMax, ColMin, ColMax)
+                 # Rows = U direction (num_control_points_u), Cols = V direction (interpSpline.NbPoles())
+-                cp_surf = Array2_gp_Pnt(
++                cp_surf = NCollection_Array2[gp_Pnt](
+                     1, num_control_points_u, 1, interp_spline.NbPoles()
+                 )
+ 
+@@ -322,14 +322,14 @@
+         knots_u_list = []
+         for i in range(1, first_curve.NbKnots() + 1):
+             knots_u_list.append(first_curve.Knot(i))
+-        knots_u = Array1_double(1, len(knots_u_list))
++        knots_u = NCollection_Array1[float](1, len(knots_u_list))
+         for i, k in enumerate(knots_u_list, 1):
+             knots_u.SetValue(i, k)
+ 
+         mults_u_list = []
+         for i in range(1, first_curve.NbKnots() + 1):
+             mults_u_list.append(first_curve.Multiplicity(i))
+-        mults_u = Array1_int(1, len(mults_u_list))
++        mults_u = NCollection_Array1[int](1, len(mults_u_list))
+         for i, m in enumerate(mults_u_list, 1):
+             mults_u.SetValue(i, m)
+ 
+--- a/src_py/ocp_gordon/internal/gordon_surface_builder.py
++++ b/src_py/ocp_gordon/internal/gordon_surface_builder.py
+@@ -5,13 +5,9 @@
+ that combines skinning surfaces and tensor product surfaces.
+ """
+ 
+-from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface
+-from OCP.gp import gp_Pnt
+-from OCP.collections import (
+-    Array2_gp_Pnt,
+-    Array1_int,
+-    Array1_double,
+-)
++from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from nanoocp.gp import gp_Pnt
++from nanoocp.NCollection import NCollection_Array1, NCollection_Array2
+ 
+ from .bspline_algorithms import BSplineAlgorithms, SurfaceDirection
+ from .curves_to_surface import CurvesToSurface
+@@ -100,7 +96,7 @@
+     # Due to circular import issues, these two functions are implemented directly in this file instead of being imported from bspline_algorithms.py
+     @staticmethod
+     def _points_to_surface_internal(
+-        points: Array2_gp_Pnt,
++        points: NCollection_Array2[gp_Pnt],
+         u_params: list[float],
+         v_params: list[float],
+         make_u_closed: bool,
+@@ -153,8 +149,8 @@
+ 
+             sorted_knots = sorted(list(all_knots))
+ 
+-            common_knots = Array1_double(1, len(sorted_knots))
+-            common_mults = Array1_int(1, len(sorted_knots))
++            common_knots = NCollection_Array1[float](1, len(sorted_knots))
++            common_mults = NCollection_Array1[int](1, len(sorted_knots))
+             for idx, knot in enumerate(sorted_knots, 1):
+                 max_mult = 0
+                 for surf in result_surfaces:
+@@ -177,8 +173,8 @@
+ 
+             sorted_knots = sorted(list(all_knots))
+ 
+-            common_knots = Array1_double(1, len(sorted_knots))
+-            common_mults = Array1_int(1, len(sorted_knots))
++            common_knots = NCollection_Array1[float](1, len(sorted_knots))
++            common_mults = NCollection_Array1[int](1, len(sorted_knots))
+             for idx, knot in enumerate(sorted_knots, 1):
+                 max_mult = 0
+                 for surf in result_surfaces:
+@@ -244,7 +240,7 @@
+         # Create intersection points array
+         n_u_params = len(intersection_params_spline_u)
+         n_v_params = len(intersection_params_spline_v)
+-        intersection_points = Array2_gp_Pnt(1, n_u_params, 1, n_v_params)
++        intersection_points = NCollection_Array2[gp_Pnt](1, n_u_params, 1, n_v_params)
+ 
+         # Use splines in u-direction to get intersection points
+         for spline_idx in range(len(profiles)):
+--- a/src_py/ocp_gordon/internal/interpolate_curve_network.py
++++ b/src_py/ocp_gordon/internal/interpolate_curve_network.py
+@@ -6,8 +6,8 @@
+ """
+ 
+ import numpy as np
+-from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface, Geom_Curve
+-from OCP.Precision import Precision
++from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface, Geom_Curve
++from nanoocp.Precision import Precision
+ 
+ from .bspline_algorithms import BSplineAlgorithms
+ from .curve_network_sorter import (
+--- a/src_py/ocp_gordon/internal/intersect_bsplines.py
++++ b/src_py/ocp_gordon/internal/intersect_bsplines.py
+@@ -3,8 +3,8 @@
+ from typing import Callable, TypedDict
+ 
+ import numpy as np
+-from OCP.Geom import Geom_BSplineCurve, Geom_Curve
+-from OCP.gp import gp_Pnt, gp_Vec
++from nanoocp.Geom import Geom_BSplineCurve, Geom_Curve
++from nanoocp.gp import gp_Pnt, gp_Vec
+ from scipy.optimize import minimize_scalar
+ 
+ from .misc import (
+--- a/src_py/ocp_gordon/internal/misc.py
++++ b/src_py/ocp_gordon/internal/misc.py
+@@ -3,15 +3,11 @@
+ from typing import cast
+ 
+ import numpy as np
+-from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface
+-from OCP.GeomConvert import GeomConvert_CompCurveToBSplineCurve
+-from OCP.gp import gp_Pnt
+-from OCP.Precision import Precision
+-from OCP.collections import (
+-    Array1_gp_Pnt,
+-    Array1_int,
+-    Array1_double,
+-)
++from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from nanoocp.GeomConvert import GeomConvert_CompCurveToBSplineCurve
++from nanoocp.gp import gp_Pnt
++from nanoocp.Precision import Precision
++from nanoocp.NCollection import NCollection_Array1
+ from scipy.optimize import minimize
+ 
+ # This file implements some missing classes/functions for OCP
+@@ -320,23 +316,23 @@
+     for obj in objs:
+         # Get poles
+         NbPoles = len(obj["poles"])
+-        poles = Array1_gp_Pnt(1, NbPoles)
++        poles = NCollection_Array1[gp_Pnt](1, NbPoles)
+         for i in range(NbPoles):
+             poles.SetValue(i + 1, gp_Pnt(*obj["poles"][i]))
+ 
+         # Get weights
+-        weights = Array1_double(1, NbPoles)
++        weights = NCollection_Array1[float](1, NbPoles)
+         for i in range(NbPoles):
+             weights.SetValue(i + 1, obj["weights"][i])
+ 
+         # Get knots
+         NbKnots = len(obj["knots"])
+-        knot_array = Array1_double(1, NbKnots)
++        knot_array = NCollection_Array1[float](1, NbKnots)
+         for i in range(NbKnots):
+             knot_array.SetValue(i + 1, obj["knots"][i])
+ 
+         # Get multiplicities
+-        mult_array = Array1_int(1, NbKnots)
++        mult_array = NCollection_Array1[int](1, NbKnots)
+         for i in range(NbKnots):
+             mult_array.SetValue(i + 1, obj["mults"][i])
+ 
+--- a/src_py/ocp_gordon/internal/points_to_bspline_interpolation.py
++++ b/src_py/ocp_gordon/internal/points_to_bspline_interpolation.py
+@@ -7,16 +7,11 @@
+ """
+ 
+ import numpy as np
+-from OCP.Geom import Geom_BSplineCurve, Geom_TrimmedCurve
+-from OCP.GeomConvert import GeomConvert
+-from OCP.BSplCLib import BSplCLib
+-from OCP.collections import (
+-    Array1_gp_Pnt,
+-    HArray1_gp_Pnt,
+-    Array1_double,
+-    Array1_int,
+-)
+-from OCP.gp import gp_Pnt
++from nanoocp.Geom import Geom_BSplineCurve, Geom_TrimmedCurve
++from nanoocp.GeomConvert import GeomConvert
++from nanoocp.BSplCLib import BSplCLib
++from nanoocp.NCollection import NCollection_Array1, NCollection_HArray1
++from nanoocp.gp import gp_Pnt
+ 
+ from .bspline_algorithms import BSplineAlgorithms
+ 
+@@ -30,7 +25,7 @@
+     """
+     
+     def __init__(self,
+-                 points: HArray1_gp_Pnt,
++                 points: NCollection_HArray1[gp_Pnt],
+                  parameters: list[float] | None = None,
+                  max_degree: int = 3,
+                  continuous_if_closed: bool = False):
+@@ -140,7 +135,7 @@
+         if self.needs_shifting():
+             n_ctrl_pnts += 1
+         
+-        poles = Array1_gp_Pnt(1, n_ctrl_pnts)
++        poles = NCollection_Array1[gp_Pnt](1, n_ctrl_pnts)
+         
+         # Fill control points from solution
+         for i in range(n_params):
+@@ -170,8 +165,8 @@
+         occ_knots = BSplineAlgorithms.to_array(knots)
+         knotsLen = BSplCLib.KnotsLength_s(occ_knots)
+ 
+-        occ_unique_knots = Array1_double(1, knotsLen)
+-        occ_multiplicities = Array1_int(1, knotsLen)
++        occ_unique_knots = NCollection_Array1[float](1, knotsLen)
++        occ_multiplicities = NCollection_Array1[int](1, knotsLen)
+         BSplCLib.Knots_s(occ_knots, occ_unique_knots, occ_multiplicities)
+ 
+         # print(f'params={params}')
+--- a/tests/test_bspline_algorithms.py
++++ b/tests/test_bspline_algorithms.py
+@@ -1,7 +1,7 @@
+ import math
+ 
+ import pytest
+-from OCP.Geom import (
++from nanoocp.Geom import (
+     Geom_BSplineCurve,
+     Geom_BSplineSurface,
+     Geom_Circle,
+@@ -9,15 +9,19 @@
+     Geom_Ellipse,
+     Geom_TrimmedCurve,
+ )
+-from OCP.GeomAPI import GeomAPI_ProjectPointOnCurve
+-from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+-from OCP.Precision import Precision
+-from OCP.collections import (
+-    Array1_gp_Pnt as TColgp_Array1OfPnt,
+-    Array2_gp_Pnt as TColgp_Array2OfPnt,
+-    HArray1_gp_Pnt as TColgp_HArray1OfPnt,
++from nanoocp.GeomAPI import GeomAPI_ProjectPointOnCurve
++from nanoocp.gp import gp_Ax2, gp_Dir, gp_Pnt
++from nanoocp.Precision import Precision
++from nanoocp.NCollection import (
++    NCollection_Array1,
++    NCollection_Array2,
++    NCollection_HArray1,
+ )
+-from OCP.collections import Array1_int as TColStd_Array1OfInteger, Array1_double as TColStd_Array1OfReal
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++TColgp_Array2OfPnt = NCollection_Array2[gp_Pnt]
++TColgp_HArray1OfPnt = NCollection_HArray1[gp_Pnt]
++TColStd_Array1OfInteger = NCollection_Array1[int]
++TColStd_Array1OfReal = NCollection_Array1[float]
+ 
+ from ocp_gordon.internal.bspline_algorithms import (
+     BSplineAlgorithms,
+--- a/tests/test_bspline_approx_interp.py
++++ b/tests/test_bspline_approx_interp.py
+@@ -1,7 +1,9 @@
+ import pytest
+-from OCP.Geom import Geom_BSplineCurve
+-from OCP.collections import Array1_gp_Pnt as TColgp_Array1OfPnt
+-from OCP.gp import gp_Pnt
++from nanoocp.Geom import Geom_BSplineCurve
++from nanoocp.NCollection import NCollection_Array1
++from nanoocp.gp import gp_Pnt
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++from nanoocp.gp import gp_Pnt
+ import math
+ 
+ from ocp_gordon.internal.bspline_approx_interp import BSplineApproxInterp
+--- a/tests/test_curve_network_sorter.py
++++ b/tests/test_curve_network_sorter.py
+@@ -1,13 +1,12 @@
+ 
+ import numpy as np
+ import pytest
+-from OCP.Geom import Geom_BSplineCurve
+-from OCP.gp import gp_Pnt
+-from OCP.collections import (
+-    Array1_gp_Pnt as TColgp_Array1OfPnt,
+-    Array1_int as TColStd_Array1OfInteger,
+-    Array1_double as TColStd_Array1OfReal,
+-)
++from nanoocp.Geom import Geom_BSplineCurve
++from nanoocp.gp import gp_Pnt
++from nanoocp.NCollection import NCollection_Array1
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++TColStd_Array1OfInteger = NCollection_Array1[int]
++TColStd_Array1OfReal = NCollection_Array1[float]
+ 
+ # Import the CurveNetworkSorter from the internal module
+ from ocp_gordon.internal.curve_network_sorter import CurveNetworkSorter
+--- a/tests/test_curves_to_surface.py
++++ b/tests/test_curves_to_surface.py
+@@ -1,12 +1,11 @@
+ import pytest
+ 
+-from OCP.gp import gp_Pnt
+-from OCP.collections import (
+-    Array1_gp_Pnt as TColgp_Array1OfPnt,
+-    Array1_double as TColStd_Array1OfReal,
+-    Array1_int as TColStd_Array1OfInteger,
+-)
+-from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from nanoocp.gp import gp_Pnt
++from nanoocp.NCollection import NCollection_Array1
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++TColStd_Array1OfReal = NCollection_Array1[float]
++TColStd_Array1OfInteger = NCollection_Array1[int]
++from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
+ 
+ from ocp_gordon.internal.curves_to_surface import CurvesToSurface, clamp_bspline
+ 
+--- a/tests/test_gordon_surface_builder.py
++++ b/tests/test_gordon_surface_builder.py
+@@ -1,12 +1,11 @@
+ import pytest
+ 
+-from OCP.gp import gp_Pnt
+-from OCP.collections import (
+-    Array1_gp_Pnt as TColgp_Array1OfPnt,
+-    Array1_double as TColStd_Array1OfReal,
+-    Array1_int as TColStd_Array1OfInteger,
+-)
+-from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from nanoocp.gp import gp_Pnt
++from nanoocp.NCollection import NCollection_Array1
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++TColStd_Array1OfReal = NCollection_Array1[float]
++TColStd_Array1OfInteger = NCollection_Array1[int]
++from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
+ 
+ from ocp_gordon.internal.gordon_surface_builder import GordonSurfaceBuilder
+ from ocp_gordon.internal.error import error, ErrorCode
+--- a/tests/test_interpolate_curve_network.py
++++ b/tests/test_interpolate_curve_network.py
+@@ -3,16 +3,15 @@
+ import pytest
+ 
+ # Import actual OCP dependencies
+-from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface
+-from OCP.GeomAbs import GeomAbs_Shape
+-from OCP.GeomAPI import GeomAPI_Interpolate, GeomAPI_PointsToBSpline
+-from OCP.gp import gp_Pnt
+-from OCP.collections import (
+-    Array1_gp_Pnt as TColgp_Array1OfPnt,
+-    HArray1_gp_Pnt as TColgp_HArray1OfPnt,
+-    Array1_int as TColStd_Array1OfInteger,
+-    Array1_double as TColStd_Array1OfReal,
+-)
++from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from nanoocp.GeomAbs import GeomAbs_Shape
++from nanoocp.GeomAPI import GeomAPI_Interpolate, GeomAPI_PointsToBSpline
++from nanoocp.gp import gp_Pnt
++from nanoocp.NCollection import NCollection_Array1, NCollection_HArray1
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++TColgp_HArray1OfPnt = NCollection_HArray1[gp_Pnt]
++TColStd_Array1OfInteger = NCollection_Array1[int]
++TColStd_Array1OfReal = NCollection_Array1[float]
+ 
+ # Import actual internal dependencies
+ from ocp_gordon.internal.interpolate_curve_network import (
+--- a/tests/test_intersect_bsplines.py
++++ b/tests/test_intersect_bsplines.py
+@@ -8,12 +8,13 @@
+ import math
+ 
+ import pytest
+-from OCP.Geom import Geom_BSplineCurve, Geom_Circle
+-from OCP.GeomAbs import GeomAbs_Shape
+-from OCP.GeomAPI import GeomAPI_PointsToBSpline
+-from OCP.GeomConvert import GeomConvert
+-from OCP.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf
+-from OCP.collections import Array1_gp_Pnt as TColgp_Array1OfPnt
++from nanoocp.Geom import Geom_BSplineCurve, Geom_Circle
++from nanoocp.GeomAbs import GeomAbs_Shape
++from nanoocp.GeomAPI import GeomAPI_PointsToBSpline
++from nanoocp.GeomConvert import GeomConvert
++from nanoocp.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf
++from nanoocp.NCollection import NCollection_Array1
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
+ 
+ # Import the module to test
+ from ocp_gordon.internal.intersect_bsplines import (
+--- a/tests/test_misc.py
++++ b/tests/test_misc.py
+@@ -2,10 +2,11 @@
+ import pytest
+ import math
+ 
+-from OCP.gp import gp_Pnt, gp_Vec
+-from OCP.Geom import Geom_Curve, Geom_BSplineCurve
+-from OCP.collections import Array1_gp_Pnt as TColgp_Array1OfPnt
+-from OCP.GeomAPI import GeomAPI_PointsToBSpline
++from nanoocp.gp import gp_Pnt, gp_Vec
++from nanoocp.Geom import Geom_Curve, Geom_BSplineCurve
++from nanoocp.NCollection import NCollection_Array1
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++from nanoocp.GeomAPI import GeomAPI_PointsToBSpline
+ 
+ from ocp_gordon.internal.misc import (
+     math_Vector,
+--- a/tests/test_points_to_bspline_interpolation.py
++++ b/tests/test_points_to_bspline_interpolation.py
+@@ -1,11 +1,10 @@
+ import pytest
+ import numpy as np
+-from OCP.gp import gp_Pnt
+-from OCP.collections import (
+-    HArray1_gp_Pnt as TColgp_HArray1OfPnt,
+-    Array1_gp_Pnt as TColgp_Array1OfPnt,
+-)
+-from OCP.Geom import Geom_BSplineCurve
++from nanoocp.gp import gp_Pnt
++from nanoocp.NCollection import NCollection_Array1, NCollection_HArray1
++TColgp_HArray1OfPnt = NCollection_HArray1[gp_Pnt]
++TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
++from nanoocp.Geom import Geom_BSplineCurve
+ 
+ from ocp_gordon.internal.points_to_bspline_interpolation import (
+     PointsToBSplineInterpolation,
