@@ -247,7 +247,14 @@ class Emitter:
             body.append(f"opencascade::handle<{m.result_class}> nanoocp_result({callee});")
             results.append("nanoocp_result")
         elif m.result_kind == ResultKind.REF_TRANSIENT:
-            body.append(f"opencascade::handle<{m.result_class}> nanoocp_result(&({callee}));")
+            # R-RESULT for `T&` to a Transient: a reference count of 0 means no handle owns the object -- it is a member held by
+            # value (BRepAdaptor_Curve::Curve() -> its GeomAdaptor_Curve) or static storage. Wrapping it in a handle as is lets
+            # the last Python reference delete memory that was never allocated on its own ("pointer being freed was not
+            # allocated", found by build123d's SVG exporter, 2026-09-25). Such an object gets one permanent reference, so no
+            # handle can ever delete it; the owner is kept alive by keep_alive<0, 1> (_method). Handle-owned objects are unchanged.
+            body.append(f"auto &nanoocp_ref = {callee}; "
+                        f"if (nanoocp_ref.GetRefCount() == 0) const_cast<std::remove_const_t<std::remove_reference_t<decltype(nanoocp_ref)>> &>(nanoocp_ref).IncrementRefCounter(); "
+                        f"opencascade::handle<{m.result_class}> nanoocp_result(&nanoocp_ref);")
             results.append("nanoocp_result")
         elif m.result != "void":
             body.append(f"auto nanoocp_result = {callee};")
@@ -301,6 +308,8 @@ class Emitter:
             # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY, R-CSTR-NULL need a lambda too
             defn = "def_static" if m.is_static else "def"
             ptr_policy = policy if m.result_kind == ResultKind.PTR_CLASS else ""     # a lambda copies class results (auto)
+            if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
+                ptr_policy += ", nb::keep_alive<0, 1>()"                           # R-RESULT: the member lives as long as its owner
             return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:

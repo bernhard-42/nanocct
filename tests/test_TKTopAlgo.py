@@ -186,3 +186,20 @@ def test_medial_axis_of_a_rectangle():
     graph = locus.Graph()
     assert graph.NumberOfArcs() == 5 and graph.NumberOfBasicElts() == 4
     assert hasattr(MAT.MAT_ListOfBisector, "__iter__") and hasattr(MAT.MAT_ListOfEdge, "__iter__")
+
+
+def test_a_reference_to_a_member_transient_is_never_deleted_by_python():
+    """R-RESULT: BRepAdaptor_Curve::Curve() returns `const GeomAdaptor_Curve&`, a Transient member held by value. Wrapped
+    in a handle as is, the last Python reference deleted it ("pointer being freed was not allocated", found by build123d's
+    SVG exporter). Such a member now gets a permanent reference, and the owner is kept alive by the returned object."""
+    import gc
+    from nanoocp.BRepAdaptor import BRepAdaptor_Curve
+    from nanoocp.GC import GC_MakeCircle
+
+    edge = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(GC_MakeCircle(gp.gp_Ax2(), 1.0).Value()).Edge()
+    adaptor = BRepAdaptor_Curve(edge)
+    for _ in range(200):
+        adaptor.Curve().Curve().Copy()               # each temporary GeomAdaptor_Curve reference dies at once
+    member = BRepAdaptor_Curve(edge).Curve()          # the owner is a temporary: keep_alive<0, 1> holds it
+    gc.collect()
+    assert member.FirstParameter() == 0.0 and math.isclose(member.LastParameter(), 2 * math.pi)
