@@ -88,11 +88,11 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel \
+.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | all"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
@@ -320,4 +320,16 @@ endif
 clean_dist:
 	rm -rf $(DIST_DIR)
 
-all: generate compile stubs test wheel
+# ---- OCP compatibility shim ---------------------------------------------------------------------------------------
+# cadquery-ocp-novtk 8.0.1.0.0: `import OCP.*` on top of nanoocp (shim/). A pure-Python py3-none-any wheel built by
+# shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to nanoocp's.
+shim:
+ifeq ($(PLATFORM),macos)
+	$(PY) $(ROOT)/shim/build_wheel.py $(DIST_DIR)
+else ifeq ($(PLATFORM),windows)
+	"$(WIN_PY)" $(ROOT)/shim/build_wheel.py $(DIST_DIR)
+else
+	$(CONTAINER) "$(ML_PY) /work/shim/build_wheel.py /work/dist"
+endif
+
+all: generate compile stubs test wheel shim
