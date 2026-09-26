@@ -8,6 +8,7 @@ from enum import StrEnum
 class ResultKind(StrEnum):
     """How a method's result is handed to Python (parse._result_kind, emit._method); Design.md 4.2 and 6."""
     VALUE = "value"                    # copied (nanobind default), also void
+    VALUE_TRANSIENT = "value_transient"  # T by value with T Transient: moved into handle<T>(new T(...)), like a constructor
     PTR_TRANSIENT = "ptr_transient"    # T* with T Transient: wrapped in a handle<T>, never owned by nanobind
     REF_TRANSIENT = "ref_transient"    # T& with T Transient: same
     PTR_CLASS = "ptr_class"            # T* other class: rv_policy::reference

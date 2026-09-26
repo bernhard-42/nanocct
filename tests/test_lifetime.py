@@ -20,8 +20,8 @@ The call sites are real generated ones, one per row, named in each test. Where t
 design** — `rv_policy::reference` has no keep_alive, so the result dangles once its owner is collected — the test asserts
 the safe outcome and is marked `xfail(strict=False)`: the finding stays visible in every run (and an AddressSanitizer
 build names the use-after-free, State.md 8.18) without making the suite depend on what freed memory happens to contain.
-Two bugs the tests found are `xfail(strict=True)`: they flip to a failure the moment a fix lands, so the marker has to go
-with it.
+Two bugs these tests found (a Transient returned by value, a `*this` result keeping itself alive) are fixed; their
+tests are ordinary ones now.
 """
 from __future__ import annotations
 
@@ -466,10 +466,10 @@ def test_mutable_reference_free_function_is_a_copy():
 
 # ---- bugs these tests found (xfail strict: remove the marker with the fix) ---------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason="bug (State.md 8.18): R-RESULT's keep_alive<0, 1> on a `T&` that is `*this` makes the "
-                                       "object keep itself alive -- nanobind's keep_alive_py has no nurse == patient check")
 def test_a_result_that_is_self_does_not_leak():
-    """LDOM_MemManager::Self() and FSD_File::PutInteger() return `*this` (chaining); the result is the same Python object."""
+    """LDOM_MemManager::Self() and FSD_File::PutInteger() return `*this` (chaining); the result is the same Python object.
+    A plain keep_alive<0, 1> made it keep itself alive for ever -- nanobind's keep_alive_py has no nurse == patient
+    check -- so R-RESULT uses nanoocp::KeepOwnerUnlessSelf (found by this test, 8.18)."""
     out = _ok(_run("""
         from nanoocp import LDOM
         doc = LDOM.LDOM_Document.createDocument("root")
@@ -479,11 +479,10 @@ def test_a_result_that_is_self_does_not_leak():
     assert out == ["True"]
 
 
-@pytest.mark.xfail(strict=True, reason="bug (State.md 8.18): a Transient returned by value is owned by nanobind (count 0); "
-                                       "a handle made from it deletes memory nanobind owns")
 def test_a_transient_returned_by_value_survives_a_handle():
     """Geom2dGcc_QualifiedCurve::Qualified() returns `Geom2dAdaptor_Curve` by value; Adaptor2d_OffsetCurve takes
-    `const handle<Adaptor2d_Curve2d>&` and keeps it. Dropping the offset curve drops the last handle."""
+    `const handle<Adaptor2d_Curve2d>&` and keeps it. Dropping the offset curve drops the last handle. A nanobind-owned
+    copy (count 0) was deleted by that handle, so R-RESULT moves the value into a handle (found by this test, 8.18)."""
     out = _ok(_run("""
         from nanoocp import Adaptor2d, GccEnt, Geom2d, Geom2dAdaptor, Geom2dGcc, gp
         line = Geom2d.Geom2d_Line(gp.gp_Pnt2d(0, 0), gp.gp_Dir2d(1, 0))

@@ -660,6 +660,14 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
 def _result_kind(t: cindex.Type) -> tuple[str, str]:
     """How a returned pointer/reference must be treated (see Design.md section 6)."""
     canon = t.get_canonical()
+    if canon.kind == TK.RECORD:
+        # R-RESULT for `T` by value, T Transient (Geom2dGcc_QualifiedCurve::Qualified() -> Geom2dAdaptor_Curve): a nanobind-
+        # owned copy has a reference count of 0, and the first handle<T> parameter it is passed to deletes it when that
+        # handle goes (8.18). It is moved to the heap into a handle instead, as every Transient constructor does.
+        decl = canon.get_declaration()
+        if decl.kind in (K.CLASS_DECL, K.STRUCT_DECL) and _derives_from(decl, "Standard_Transient"):
+            return ResultKind.VALUE_TRANSIENT, _type_spelling(t).replace("const ", "").strip()
+        return ResultKind.VALUE, ""
     if canon.kind not in (TK.POINTER, TK.LVALUEREFERENCE):
         return ResultKind.VALUE, ""
     pointee = canon.get_pointee()

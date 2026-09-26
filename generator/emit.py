@@ -256,6 +256,11 @@ class Emitter:
                         f"if (nanoocp_ref.GetRefCount() == 0) const_cast<std::remove_const_t<std::remove_reference_t<decltype(nanoocp_ref)>> &>(nanoocp_ref).IncrementRefCounter(); "
                         f"opencascade::handle<{m.result_class}> nanoocp_result(&nanoocp_ref);")
             results.append("nanoocp_result")
+        elif m.result_kind == ResultKind.VALUE_TRANSIENT:
+            # R-RESULT for `T` by value, T Transient: never a nanobind-owned copy (reference count 0, deleted by the first
+            # handle it meets); the prvalue initialises a heap object held by a handle, as in every Transient constructor
+            body.append(f"opencascade::handle<{m.result_class}> nanoocp_result(new {m.result_class}({callee}));")
+            results.append("nanoocp_result")
         elif m.result != "void":
             body.append(f"auto nanoocp_result = {callee};")
             results.append("nanoocp_result")
@@ -297,7 +302,7 @@ class Emitter:
         if m.result_kind == ResultKind.REF_PRIMITIVE:
             return self._ref_primitive(cls, m, py)
         has_out = any(p.is_out or p.stream != StreamKind.NONE for p in m.params)
-        wrap = m.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT)   # never let nanobind own a Transient
+        wrap = m.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT, ResultKind.VALUE_TRANSIENT)   # never let nanobind own a Transient
         policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
@@ -309,7 +314,8 @@ class Emitter:
             defn = "def_static" if m.is_static else "def"
             ptr_policy = policy if m.result_kind == ResultKind.PTR_CLASS else ""     # a lambda copies class results (auto)
             if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
-                ptr_policy += ", nb::keep_alive<0, 1>()"                           # R-RESULT: the member lives as long as its owner
+                # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18)
+                ptr_policy += ", nb::call_policy<nanoocp::KeepOwnerUnlessSelf>()"
             return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:
@@ -695,8 +701,10 @@ class Emitter:
                 py += fn.suffix
                 doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).\n{fn.doc}"
                 self.report.append(f"{qualified}({self._sig(fn.params)}): same Python signature as another overload after out-param removal -> bound as {py}")
-            if any(p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in fn.params):
-                # out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL need the lambda too
+            if fn.result_kind == ResultKind.VALUE_TRANSIENT or any(
+                    p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in fn.params):
+                # out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL need the lambda too,
+                # and so does a Transient returned by value (R-RESULT: into a handle, never a nanobind-owned copy)
                 as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
                                    result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=doc)
                 ptr_policy = policy if fn.result_kind == ResultKind.PTR_CLASS else ""
@@ -746,7 +754,7 @@ class Emitter:
             return None
         for name in ("Value", "Current"):
             get = live.get((name, 0))
-            if get is not None and get.result_kind == ResultKind.VALUE and get.result != "void":
+            if get is not None and get.result_kind in (ResultKind.VALUE, ResultKind.VALUE_TRANSIENT) and get.result != "void":
                 return name
         return None
 
@@ -821,7 +829,10 @@ class Emitter:
         getter = self._iter_getter(c)
         if getter is not None:       # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own Python iterator
             self.report.append(f"{c.name}: __iter__ added (More/Next/{getter})")
-            define.append(f'    nanoocp_def_iter<{c.bound_type}>({cls_expr_of(c)}, []({c.bound_type} &self) {{ return self.{getter}(); }});')
+            get = next(m for m in c.methods if m.name == getter and len(m.params) == 0 and not m.is_static and m.skip_reason is None)
+            value = (f"opencascade::handle<{get.result_class}>(new {get.result_class}(self.{getter}()))"   # R-RESULT: never a nanobind-owned Transient
+                     if get.result_kind == ResultKind.VALUE_TRANSIENT else f"self.{getter}()")
+            define.append(f'    nanoocp_def_iter<{c.bound_type}>({cls_expr_of(c)}, []({c.bound_type} &self) {{ return {value}; }});')
         for conv in c.conversions:          # operator bool/int/double() -> Python dunder; class targets: see _conversions
             dunder = {ConversionKind.BOOL: "__bool__", ConversionKind.INT: "__int__", ConversionKind.FLOAT: "__float__"}.get(conv.kind)
             if dunder is not None:

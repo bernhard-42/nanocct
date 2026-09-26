@@ -256,6 +256,17 @@ struct BinaryInput {
 struct OptionalCString {
     const char *ptr = nullptr;
 };
+// R-RESULT: nb::keep_alive<0, 1> for a `T&` Transient member result, except when the result is self. A method returning
+// *this (LDOM_MemManager::Self(), FSD_File::PutInteger()) hands back the same Python object, and nanobind's keep_alive_py
+// has no nurse == patient check (nb_type.cpp, nanobind 3.1.0): the object would hold a reference to itself that the
+// garbage collector cannot see, and would never be freed ("nanobind: leaked instances", State.md 8.18).
+struct KeepOwnerUnlessSelf {
+    static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
+    static void postcall(PyObject **args, size_t, PyObject *&ret) {
+        if (ret != nullptr && ret != args[0])
+            nb::keep_alive_obj(ret, args[0]);   // the result (nurse) keeps self (patient) alive
+    }
+};
 }
 
 NAMESPACE_BEGIN(NB_NAMESPACE)
@@ -516,6 +527,12 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
             Td *ptr = caster.operator Td *();
             if constexpr (has_mi_traits<Td>::value)      // stored pointer is the offset-0 base subobject
                 ptr = static_cast<Td *>(reinterpret_cast<typename mi_traits<Td>::base *>(static_cast<void *>(ptr)));
+            // A reference count of 0 means no handle owns the object: nanobind does (a by-value copy, a member reached
+            // through a field). A handle made from it would delete that memory when it goes, whatever C++ does with it
+            // (8.18). Every Transient nanoocp creates is handle-held (constructors, R-RESULT), so this is a gap in the
+            // bindings; refusing the argument turns a crash into a TypeError.
+            if (ptr != nullptr && ptr->GetRefCount() == 0)
+                return false;
             value = opencascade::handle<T>(ptr);
             return true;
         }
@@ -524,7 +541,7 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
             if (PyType_IsSubtype(Py_TYPE(src.ptr()), (PyTypeObject *) e.py_type)) {
                 Standard_Transient *t = e.to_transient(inst_ptr<void>(src));
                 Td *ptr = dynamic_cast<Td *>(t);
-                if (ptr == nullptr) return false;
+                if (ptr == nullptr || ptr->GetRefCount() == 0) return false;   // count 0: see above
                 value = opencascade::handle<T>(ptr);
                 return true;
             }
