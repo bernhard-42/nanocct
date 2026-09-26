@@ -88,11 +88,11 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim \
+.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all | shim-parity"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
@@ -331,6 +331,18 @@ else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && PYTHONPATH="$(STAGE_DIR)" "$(WIN_PY)" shim/build_wheel.py $(DIST_DIR)
 else
 	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml $(ML_PY) shim/build_wheel.py /work/dist"
+endif
+
+# build123d's own suite through the shim against the real OCP, test by test (shim/parity.py; State.md 8.18). Opt-in and
+# not part of `all`: two venvs and two full build123d runs side by side, 9.3 min on the M5 (2026-09-26). Needs the wheels of `make wheel shim` in
+# DIST_DIR and a build123d checkout (BUILD123D), which it only reads (`git archive HEAD`); everything else goes to
+# build/shim-parity. Host-only for now: on Linux the wheels live in the container's world (State.md 8.17).
+BUILD123D ?= $(HOME)/Development/CAD/build123d
+shim-parity:
+ifeq ($(PLATFORM),macos)
+	$(PY) $(ROOT)/shim/parity.py --build123d $(BUILD123D) --dist $(DIST_DIR) --work $(ROOT)/build/shim-parity --python $(PY_VERSION)
+else
+	@echo "shim-parity runs on macOS only so far (see shim/parity.py)"; exit 1
 endif
 
 all: generate compile stubs test wheel shim
