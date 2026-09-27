@@ -600,8 +600,8 @@ def main(argv: list[str]) -> int:
     generated_packages.add(HANDWRITTEN_PACKAGE)
     accessors = _accessors(known, templates)
     # 6a: which toolkit binds each instantiation that lives in a package other than its own. Only `NCollection`
-    # receives them (every 6c instantiation is bound by the package that declares it), so only that shim needs the
-    # completion table -- but it is derived, not assumed, so a second such package would get one too.
+    # receives them (every 6c instantiation is bound by the package that declares it), so only that shim imports
+    # those toolkits eagerly -- but it is derived, not assumed, so a second such package would do the same.
     homed_elsewhere: dict[str, dict[str, str]] = {}
     for entry in templates.values():
         if entry.get("skipped", False) or not entry.get("package") or not entry.get("toolkit"):
@@ -618,8 +618,8 @@ def main(argv: list[str]) -> int:
         write_package_shims(py_root, pk, tk, namespaces,
                             accessors if pk == "NCollection" else None,
                             homed_elsewhere.get(pk), late_links.get(tk))
-    print(f"6a: {sum(len(v) for v in homed_elsewhere.values())} instantiations reachable through "
-          f"{len(homed_elsewhere)} lazy package table(s); late R-LINK imports: "
+    print(f"6a: {sum(len(v) for v in homed_elsewhere.values())} instantiations bound from other toolkits into "
+          f"{len(homed_elsewhere)} package(s), imported eagerly; late R-LINK imports: "
           f"{ {k: v for k, v in late_links.items() if v} }", file=sys.stderr)
     total = time.perf_counter() - started
     print(f"timing: parse {timing['parse']:.1f} s, emit {timing['emit']:.1f} s, other {total - timing['parse'] - timing['emit']:.1f} s"
@@ -630,8 +630,8 @@ def main(argv: list[str]) -> int:
         "# (and what its registration needs), which is 14 ms rather than the 172 ms and 179 MB that importing all 45\n"
         "# toolkit modules cost. Each extension module already imports its own dependencies -- EXTERNLIB, the R-LINK\n"
         "# extras that precede it and the R-IMPORT-BASE edges -- so registration order holds without a list here.\n"
-        "# The one module other toolkits bind into is nanoocp.NCollection, and its shim resolves those names\n"
-        "# through a generated table (Design.md 6a).\n"
+        "# The one module other toolkits bind into is nanoocp.NCollection, and importing it loads every toolkit\n"
+        "# that binds an instantiation into it (Design.md 6a).\n"
         "\n"
         "# `import nanoocp` then `nanoocp.gp.gp_Pnt` works: PEP 562 module __getattr__ imports the package on first\n"
         "# access. This is the one place that mechanism earns its keep -- a submodule that genuinely exists, resolved\n"

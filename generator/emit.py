@@ -1254,16 +1254,9 @@ def emit_package_shim(package: str, toolkit: str,
                       accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None,
                       homed_elsewhere: dict[str, str] | None = None, late_links: list[str] | None = None) -> str:
     """Python module nanoocp.<package>: it re-exports the package's extension submodule under the name a user
-    writes. accessors (NCollection only): template -> {element type specs -> bound class name} for the
+    writes. homed_elsewhere: instantiations other toolkits bind into this package (6a) -> those toolkits are
+    imported eagerly. accessors (NCollection only): template -> {element type specs -> bound class name} for the
     NCollection_Xxx[T] spelling."""
-    accessor_block = ""
-    if accessors is not None:
-        parts = ["", "# NCollection_Xxx[T] -> bound class (Design.md 6a); tables generated from manifest.json",
-                 "from nanoocp._templates import Template as _Template", ""]
-        for tmpl in sorted(accessors):
-            entries = "".join(f"    {specs!r}: \"{name}\",\n" for specs, name in sorted(accessors[tmpl].items(), key=lambda kv: kv[1]))
-            parts.append(f'{tmpl} = _Template("{tmpl}", "nanoocp.NCollection", {{\n{entries}}})')
-        accessor_block = "\n".join(parts) + "\n"
     head = f'''"""OCCT package {package} (toolkit {toolkit})."""
 from nanoocp._{toolkit}.{package} import *  # noqa: F401,F403
 '''
@@ -1272,31 +1265,33 @@ from nanoocp._{toolkit}.{package} import *  # noqa: F401,F403
     # types is uncallable -- which the eager import used to hide (Design.md 6a).
     for late in late_links or []:
         head += f"import nanoocp._{late}  # noqa: F401,E402  (R-LINK: linked but later in the order)\n"
-    # The completion table: `nanoocp.NCollection` is the one module other toolkits bind into (6a), so a name may
-    # belong to a toolkit this import has not loaded. The table says which, and __getattr__ loads just that one.
-    lazy_block = ""
+    # Eager (6a): other toolkits bind their instantiations into this package -- `nanoocp.NCollection` is the one --
+    # and loading their element types does not load them (215 of 799 instantiations, 2026-09-27), so importing the
+    # package imports every toolkit that binds into it. Afterwards each instantiation is an ordinary attribute.
+    eager_block = ""
     if homed_elsewhere:
-        entries = "".join(f'    "{n}": "{tk}",\n' for n, tk in sorted(homed_elsewhere.items()))
-        lazy_block = f'''
+        eager_block = ("\n# Instantiations bound into this package by other toolkits (Design.md 6a): importing the package loads\n"
+                       "# every toolkit that binds one, so each of them is an ordinary attribute afterwards.\n"
+                       + "".join(f"import nanoocp._{tk}  # noqa: E402,F401\n" for tk in sorted(set(homed_elsewhere.values())))
+                       + f"from nanoocp._{toolkit}.{package} import *  # noqa: E402,F401,F403  (again: now with every instantiation)\n")
+    accessor_block = ""
+    if accessors is not None:
+        own = f"nanoocp.{package}"
+        modules = sorted({mod for table in accessors.values() for specs in table for mod, _ in specs} - {"builtins", own})
+        alias = {m: "_m_" + m.split(".", 1)[1].replace(".", "_") for m in modules}
 
-# Instantiations bound into this package by other toolkits (6a): name -> the toolkit that binds it. Importing
-# nanoocp does not load them, so an attribute that is missing here is one whose toolkit is not loaded yet.
-import importlib as _importlib  # noqa: E402
-import sys as _sys  # noqa: E402
+        def spell(mod: str, qual: str) -> str:
+            return qual if mod in ("builtins", own) else f"{alias[mod]}.{qual}"
 
-_BOUND_BY = {{
-{entries}}}
-
-
-def __getattr__(name):
-    toolkit = _BOUND_BY.get(name)
-    if toolkit is None:
-        raise AttributeError(f"module {{__name__!r}} has no attribute {{name!r}}")
-    _importlib.import_module("nanoocp._" + toolkit)                 # registers it into the extension submodule
-    return getattr(_sys.modules["nanoocp._{toolkit}.{package}"], name)
-
-
-def __dir__():
-    return sorted(set(globals()) | set(_BOUND_BY))
-'''
-    return f"{head}{accessor_block}{lazy_block}"
+        parts = ["", "# NCollection_Xxx[T] -> the bound class (Design.md 6a): one generic class per template, keyed by the",
+                 "# element types as Python passes them to __class_getitem__ (the type, or a tuple for several)",
+                 "from nanoocp._templates import Generic as _Generic  # noqa: E402"]
+        parts += [f"import {m} as {alias[m]}  # noqa: E402" for m in modules]
+        for tmpl in sorted(accessors):
+            parts += ["", "", f"class {tmpl}(_Generic):", "    _instances = {"]
+            for specs, name in sorted(accessors[tmpl].items(), key=lambda kv: kv[1]):
+                key = spell(*specs[0]) if len(specs) == 1 else "(" + ", ".join(spell(*sp) for sp in specs) + ")"
+                parts.append(f"        {key}: {name},")
+            parts.append("    }")
+        accessor_block = "\n".join(parts) + "\n"
+    return f"{head}{eager_block}{accessor_block}"

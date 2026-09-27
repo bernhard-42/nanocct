@@ -27,17 +27,17 @@ from pathlib import Path
 
 import nanoocp.all  # noqa: F401  every toolkit, so every name in the map resolves
 import nanoocp.NCollection as NCOLLECTION
-from nanoocp._templates import Template
+from nanoocp._templates import Generic
 
 LINE_LIMIT = 88
 
 # concrete instantiation name -> (template name, the element types' (module, qualname)), the reverse of the tables
-# behind NCollection_Array1[gp_Pnt] (nanoocp/_templates.py)
+# behind NCollection_Array1[gp_Pnt] (nanoocp/_templates.py): a key is the element type, or a tuple of them
 GENERIC: dict[str, tuple[str, tuple[tuple[str, str], ...]]] = {}
-for _tname, _tmpl in vars(NCOLLECTION).items():
-    if isinstance(_tmpl, Template):
-        for _specs, _concrete in _tmpl._specs.items():
-            GENERIC.setdefault(_concrete, (_tname, _specs))
+for _tmpl in Generic.__subclasses__():
+    for _key, _concrete in _tmpl._instances.items():
+        _types = _key if isinstance(_key, tuple) else (_key,)
+        GENERIC.setdefault(_concrete.__name__, (_tmpl.__name__, tuple((t.__module__, t.__qualname__) for t in _types)))
 
 
 def generic_spelling(concrete: str, need: list[tuple[str, str]]) -> str:

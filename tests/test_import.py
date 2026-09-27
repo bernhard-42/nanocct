@@ -77,23 +77,26 @@ def test_importing_one_package_does_not_load_every_toolkit():
     assert loaded <= 4, f"importing nanoocp.gp loaded {loaded} toolkit extensions; it needs _TKernel and _TKMath"
 
 
-def test_the_ncollection_completion_table_loads_its_toolkit_on_demand():
-    """`nanoocp.NCollection` is the one module other toolkits bind into (6a), so its shim resolves those names
-    through a generated table and imports the binding toolkit on first access."""
+def test_ncollection_loads_every_toolkit_that_binds_into_it():
+    """`nanoocp.NCollection` is the one module other toolkits bind into (6a), and loading an instantiation's element
+    types does not load the toolkit that binds it (215 of 799 instantiations, 2026-09-27) -- so importing the
+    package loads each of those toolkits, and every instantiation is an ordinary attribute afterwards: no module
+    __getattr__, no completion table. The other packages stay lazy: importing gp does not import NCollection."""
     out = _import("import re, sys\n"
+                  "import nanoocp.gp\n"
+                  "gp_alone = 'nanoocp.NCollection' in sys.modules\n"
                   "from nanoocp import NCollection\n"
-                  "before = len([m for m in sys.modules if re.fullmatch(r'nanoocp\\._TK\\w+', m)])\n"
-                  "cls = NCollection.NCollection_List__TopoDS_Shape\n"
-                  "after = len([m for m in sys.modules if re.fullmatch(r'nanoocp\\._TK\\w+', m)])\n"
-                  "print(cls.__name__, before, after)")
+                  "loaded = len([m for m in sys.modules if re.fullmatch(r'nanoocp\\._TK\\w+', m)])\n"
+                  "print(gp_alone, loaded, 'NCollection_List__TopoDS_Shape' in vars(NCollection), hasattr(NCollection, '__getattr__'))")
     assert out.returncode == 0, out.stderr
-    name, before, after = out.stdout.strip().splitlines()[-1].split()
-    assert name == "NCollection_List__TopoDS_Shape"
-    assert int(after) > int(before), "the class was already loaded; the table resolved nothing"
+    gp_alone, loaded, in_dict, has_getattr = out.stdout.strip().splitlines()[-1].split()
+    assert gp_alone == "False", "importing nanoocp.gp imported nanoocp.NCollection, and with it most toolkits"
+    assert in_dict == "True" and has_getattr == "False"
+    assert 30 <= int(loaded) < len(_toolkits()), f"import nanoocp.NCollection loaded {loaded} toolkits (37 on 2026-09-27)"
 
 
 def test_a_missing_name_still_raises_attribute_error():
-    """The completion table must not turn a typo into an import of something."""
+    """A misspelt name is an AttributeError, not an import attempt."""
     out = _import("from nanoocp import NCollection\n"
                   "try:\n"
                   "    NCollection.NCollection_NoSuchThing\n"
