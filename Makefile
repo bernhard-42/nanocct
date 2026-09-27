@@ -350,7 +350,25 @@ endif
 # patched to import nanoocp instead of OCP (nanobuild/patches, tracked). Output: build/nanobuild/src/<pkg>-<version>,
 # ready for `uv pip install dist/nanoocp-*.whl build/nanobuild/src/*` into a fresh venv. Pure source work, so it runs
 # on the host on every platform.
+# Then a complete test environment in _scratch/.venv (Python 3.14, untracked): recreated on every run, with the nanoocp
+# wheel from DIST_DIR (`make wheel` first -- the wheel is what gets tested, not the staged tree) and the four patched
+# packages. Activation lasts one shell, so it shares the line with the install.
+SCRATCH := $(ROOT)/_scratch
+ifeq ($(PLATFORM),windows)
+  SCRATCH_ACTIVATE := $(SCRATCH)/.venv/Scripts/activate
+else
+  SCRATCH_ACTIVATE := $(SCRATCH)/.venv/bin/activate
+endif
 nanobuild:
 	$(ROOT)/nanobuild/nanobuild.sh
+	@wheels=$$(ls $(DIST_DIR)/nanoocp-*.whl 2>/dev/null); \
+	if [ -z "$$wheels" ]; then echo "nanobuild: no nanoocp wheel in $(DIST_DIR) -- run 'make wheel' first" >&2; exit 1; fi; \
+	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "nanobuild: more than one nanoocp wheel in $(DIST_DIR): $$wheels" >&2; exit 1; fi
+	mkdir -p $(SCRATCH)
+	rm -rf $(SCRATCH)/.venv
+	uv venv -p 3.14 $(SCRATCH)/.venv
+	@# shell globs, not make's wildcard function: make expands the whole recipe before its first line has created build/nanobuild/src
+	. $(SCRATCH_ACTIVATE) && uv pip install $(DIST_DIR)/nanoocp-*.whl $(ROOT)/build/nanobuild/src/*
+	@echo "nanobuild: test environment ready -- source $(SCRATCH_ACTIVATE)"
 
 all: generate compile stubs test wheel shim
