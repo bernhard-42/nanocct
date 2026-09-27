@@ -124,7 +124,7 @@ def test_unbindable_classes_are_reported_not_bound():
 
 
 def test_occt_iterators_are_python_iterators():
-    # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own iterator, like a file object
+    # R-ITER (Design.md 2c): More()/Next()/Value() classes are iterable and exhausted afterwards, like a file object
     c, v, e = _compound()
     ex = TopExp.TopExp_Explorer(c, TopAbs.TopAbs_ShapeEnum.TopAbs_VERTEX)
     found = [s for s in ex]

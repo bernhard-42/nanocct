@@ -16,6 +16,7 @@
 #  define NB_INLINE inline
 #endif
 #include <nanobind/nanobind.h>
+#include <nanobind/make_iterator.h>
 #include <nanobind/stl/array.h>
 #include <nanobind/stl/function.h>
 #include <nanobind/stl/list.h>
@@ -136,16 +137,27 @@ template <typename T, typename F> void nanoocp_if_concrete(nb::class_<T> cls, F 
         f(cls);
 }
 
+// R-ITER through nb::make_iterator, like the containers: a hand-written __next__ ended every loop with a thrown
+// nb::stop_iteration, a C++ exception that cost ~8 us per loop however short (2026-09-27: a TopExp_Explorer over
+// 6 faces took 8.5 us against 0.47 us for a More()/Next() loop). make_iterator ends without one. The cursor
+// advances the object itself, so it is exhausted afterwards, like a file; the element is copied out before Next().
+template <typename T, typename Get> struct nanoocp_iter_cursor {
+    T *obj;                                   // nullptr: the end sentinel
+    Get get;
+    bool done() const { return obj == nullptr || !obj->More(); }
+    bool operator==(const nanoocp_iter_cursor &o) const { return done() == o.done(); }
+    bool operator!=(const nanoocp_iter_cursor &o) const { return !(*this == o); }
+    nanoocp_iter_cursor &operator++() { obj->Next(); return *this; }
+    auto operator*() const { return get(*obj); }    // by value: Current() may be a reference that Next() changes
+};
+
 template <typename T, typename Get> void nanoocp_def_iter(nb::class_<T> cls, Get get) {
-    cls.def("__iter__", [](T &self) -> T & { return self; }, nb::rv_policy::reference,
-            "Python addition: iterate with More()/Next(), yielding Value() (or Current()); the object is its own iterator.");
-    cls.def("__next__", [get](T &self) {
-        if (!self.More())
-            throw nb::stop_iteration();
-        auto value = get(self);
-        self.Next();
-        return value;
-    }, "Python addition: see __iter__.");
+    cls.def("__iter__", [get](T &self) {
+        using Cursor = nanoocp_iter_cursor<T, Get>;
+        return nb::make_iterator<nb::rv_policy::move>(nb::type<T>(), "iterator", Cursor{&self, get}, Cursor{nullptr, get});
+    }, nb::keep_alive<0, 1>(),
+    "Python addition: iterate with More()/Next(), yielding Value() (or Current()); the iterator advances the object "
+    "itself, so it is exhausted afterwards.");
 }
 
 // The implicit default constructor of a class that declares none: bound only when it exists (a reference

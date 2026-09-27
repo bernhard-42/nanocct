@@ -170,13 +170,14 @@ def test_list_iterator_is_nested_class():
 
 
 def test_binder_iterators_are_python_iterators():
-    """R-ITER applies to the hand-written binder Iterator classes too (2026-09-22): __iter__ returns self, __next__ yields
-    Value() -- the element for List/Sequence, the key for Map, the value for DataMap."""
+    """R-ITER applies to the hand-written binder Iterator classes too (2026-09-22): iterating yields Value() -- the
+    element for List/Sequence, the key for Map, the value for DataMap -- and advances the Iterator itself, so it is
+    exhausted afterwards, like a file (nb::make_iterator since 2026-09-27, not a __next__ on the object)."""
     l = L()
     for v in (3, 4):
         l.Append(v)
     it = L.Iterator(l)
-    assert iter(it) is it and list(it) == [3, 4] and list(it) == []           # exhausted, like a file
+    assert list(it) == [3, 4] and list(it) == [] and it.More() is False         # exhausted, like a file
     m = NCollection.NCollection_DataMap[int, float]()
     m.Bind(1, 1.5)
     m.Bind(2, 2.5)
