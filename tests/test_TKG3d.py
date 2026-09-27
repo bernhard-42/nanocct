@@ -5,15 +5,15 @@ import math
 
 import pytest
 
-from nanoocp import Adaptor3d, Geom, GeomAdaptor, GeomAbs, GeomGridEval, GeomHash, NCollection, Standard, TopAbs, gp
-from nanoocp.GeomEval.GeomEval_RepSurfaceDesc import Base as SurfaceBase, Full as SurfaceFull
+from OCP3x import Adaptor3d, Geom, GeomAdaptor, GeomAbs, GeomGridEval, GeomHash, NCollection, Standard, TopAbs, gp
+from OCP3x.GeomEval.GeomEval_RepSurfaceDesc import Base as SurfaceBase, Full as SurfaceFull
 
 PACKAGES = ["Geom", "GeomAdaptor", "AdvApprox", "Adaptor3d", "TopAbs", "GeomGridEval", "GeomHash", "GeomEval"]
 
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def _circle(radius: float = 2.0) -> Geom.Geom_Circle:
@@ -103,7 +103,7 @@ def test_topabs_static_class_and_enums():
 
 
 def test_surface_descriptor_namespace():
-    assert SurfaceBase.__module__ == "nanoocp.GeomEval.GeomEval_RepSurfaceDesc"
+    assert SurfaceBase.__module__ == "OCP3x.GeomEval.GeomEval_RepSurfaceDesc"
     desc = SurfaceFull()
     assert desc.GetKind() == SurfaceBase.Kind.Full
     assert _bspline().EvalRepresentation() is None

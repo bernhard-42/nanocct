@@ -3,7 +3,7 @@ import importlib
 
 import pytest
 
-from nanoocp import Message, NCollection, OSD, Precision, Quantity, TCollection
+from OCP3x import Message, NCollection, OSD, Precision, Quantity, TCollection
 
 PACKAGES = ["FSD", "OSD", "Plugin", "Quantity", "Resource", "Standard", "StdFail", "Storage", "TColStd", "TCollection",
             "TShort", "Units", "UnitsAPI", "UnitsMethods", "NCollection", "Message", "FlexLexer", "Precision"]
@@ -11,8 +11,8 @@ PACKAGES = ["FSD", "OSD", "Plugin", "Quantity", "Resource", "Standard", "StdFail
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    m = importlib.import_module(f"nanoocp.{pkg}")
-    assert m.__name__ == f"nanoocp.{pkg}"
+    m = importlib.import_module(f"OCP3x.{pkg}")
+    assert m.__name__ == f"OCP3x.{pkg}"
 
 
 def test_ascii_string():
@@ -61,7 +61,7 @@ def test_static_suffix_rule_in_tcollection():
 
 
 def test_extended_string_round_trip():
-    from nanoocp import TCollection
+    from OCP3x import TCollection
     e = TCollection.TCollection_ExtendedString("héllo €", True)               # from UTF-8
     assert e.Length() == 7
     assert e.ToExtString() == "héllo €"                                       # const char16_t* -> str (UTF-16 caster)
@@ -79,7 +79,7 @@ def test_value_eq_without_a_hash_is_unhashable():
     object.__hash__ and `a == b` held while `hash(a) != hash(b)`, which makes a dict or set lookup by an equal value
     miss without raising. Python's own answer for such a class is to be unhashable, which at least fails loudly.
     """
-    from nanoocp import Bnd, Quantity, TopExp, TopLoc
+    from OCP3x import Bnd, Quantity, TopExp, TopLoc
     a, b = Bnd.Bnd_Range(0.0, 1.0), Bnd.Bnd_Range(0.0, 1.0)
     assert a == b and Bnd.Bnd_Range.__hash__ is None
     with pytest.raises(TypeError, match="unhashable type"):
@@ -99,7 +99,7 @@ def test_lxx_hash_and_free_functions_are_bound():
     """OCCT keeps std::hash<TCollection_AsciiString> and TopLoc_Location's ShallowDump in the .lxx part of the header;
     those file-scope declarations belong to the package since 2026-09-22 (they were missed before: equal strings hashed
     by identity)."""
-    from nanoocp import TopLoc, math
+    from OCP3x import TopLoc, math
     a, b = TCollection.TCollection_AsciiString("abc"), TCollection.TCollection_AsciiString("abc")
     assert a == b and hash(a) == hash(b) and {a: 1}[b] == 1
     assert hash(a) != hash(TCollection.TCollection_AsciiString("abd"))
@@ -117,9 +117,9 @@ def test_lxx_hash_and_free_functions_are_bound():
 def test_messages_are_collected_not_subclassed():
     """Design.md 2d: Python cannot subclass Message_Printer/Message_ProgressIndicator (no trampolines, 8.5 not
     planned), but OCCT's own Message_PrinterToReport collects messages for reading back."""
-    from nanoocp.Message import (Message, Message_Fail, Message_Printer, Message_PrinterOStream, Message_PrinterToReport,
+    from OCP3x.Message import (Message, Message_Fail, Message_Printer, Message_PrinterOStream, Message_PrinterToReport,
                                  Message_ProgressIndicator, Message_Warning)
-    from nanoocp.TCollection import TCollection_AsciiString
+    from OCP3x.TCollection import TCollection_AsciiString
 
     for base in (Message_Printer, Message_ProgressIndicator):
         class Sub(base):

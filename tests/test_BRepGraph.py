@@ -2,7 +2,7 @@
 (BRepGraph_NodeId::Typed<Kind::Edge>), iterators of templates nested in namespaces; all instantiated by rule 6c."""
 import pytest
 
-from nanoocp import BRep, BRepGraph, Geom, TopAbs, TopoDS, gp
+from OCP3x import BRep, BRepGraph, Geom, TopAbs, TopoDS, gp
 
 
 def _edge_graph() -> tuple[BRepGraph.BRepGraph, TopoDS.TopoDS_Edge]:

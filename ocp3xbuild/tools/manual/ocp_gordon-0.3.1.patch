@@ -5,7 +5,7 @@
  ]
  dependencies = [
 -    "cadquery_ocp_proxy >= 8.0, < 8.1",
-+    "nanoocp >= 0.1, < 0.2",
++    "ocp3x >= 0.1, < 0.2",
      "numpy >= 2, < 3",
      "scipy",
  ]
@@ -20,7 +20,7 @@
 -stubs = [
 -    "cadquery-ocp-stubs >=8.0, <8.1",
 -]
-+# typing stubs: nanoocp ships its own
++# typing stubs: OCP3x ships its own
 +stubs = []
  
  [tool.setuptools.packages.find]

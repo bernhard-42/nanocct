@@ -1,6 +1,6 @@
 """Make an instrumented copy of the shim's OCP package that records every call site the shim adapts.
 
-    python nanobuild/tools/trace_shim.py <OCP dir of the built shim> <output dir>
+    python ocp3xbuild/tools/trace_shim.py <OCP dir of the built shim> <output dir>
     OCP_TRACE=calls.jsonl PYTHONPATH=<output dir>:<package sources> python -m pytest tests
 
 Every phase-2 assignment of the generated OCP/_patches.py is wrapped, so a run of a package's suite through the shim
@@ -15,7 +15,7 @@ import shutil
 import sys
 from pathlib import Path
 
-TRACE_MODULE = '''"""Call-site recorder of the instrumented shim (nanobuild/tools/trace_shim.py). Writes $OCP_TRACE at exit."""
+TRACE_MODULE = '''"""Call-site recorder of the instrumented shim (ocp3xbuild/tools/trace_shim.py). Writes $OCP_TRACE at exit."""
 import atexit
 import json
 import os

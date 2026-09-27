@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanoocp import BRepPrimAPI, HLRAlgo, HLRBRep, HLRTopoBRep, Intrv, TopAbs, TopExp, gp
+from OCP3x import BRepPrimAPI, HLRAlgo, HLRBRep, HLRTopoBRep, Intrv, TopAbs, TopExp, gp
 
 PACKAGES = ["HLRTopoBRep", "HLRBRep", "HLRAlgo", "HLRAppli", "Intrv", "TopBas", "TopCnx", "Contap"]
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKHLR" / "report.txt"
@@ -15,7 +15,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKHLR" / "report.txt"
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_hidden_line_removal_of_a_box():

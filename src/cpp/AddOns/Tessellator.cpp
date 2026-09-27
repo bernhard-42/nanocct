@@ -1,4 +1,4 @@
-// nanoocp.AddOns.Tessellator -- bulk helpers for tessellation (State.md 8.10b, Design.md R-ADDON).
+// OCP3x.AddOns.Tessellator -- bulk helpers for tessellation (State.md 8.10b, Design.md R-ADDON).
 //
 // Why it exists. Zero-copy views (R-VIEW) bring the *data* side of tessellation to the speed
 // of a C++ extension -- measured against ocp-addons' NativeTessellator, vertices/triangles/UVs and their
@@ -175,7 +175,7 @@ nb::object EdgeSegments(const TopoDS_Shape &theShape)
 
 } // namespace
 
-void nanoocp_def_Tessellator(nb::module_ &m)
+void ocp3x_def_Tessellator(nb::module_ &m)
 {
     m.def("NormalsFromSurface", &NormalsFromSurface,
           nb::arg("theFace"), nb::arg("theUV"), nb::arg("theReverse") = false,

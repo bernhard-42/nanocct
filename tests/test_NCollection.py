@@ -1,10 +1,10 @@
 """Hand-written NCollection binders (Design.md 6a), all 15 kinds, instantiated by the generator."""
 import pytest
 
-from nanoocp import NCollection, Standard, TColStd
-from nanoocp._templates import Generic
+from OCP3x import NCollection, Standard, TColStd
+from OCP3x._templates import Generic
 
-A = NCollection.NCollection_Array1__double                         # every instantiation lives in nanoocp.NCollection (Design.md 6a)
+A = NCollection.NCollection_Array1__double                         # every instantiation lives in OCP3x.NCollection (Design.md 6a)
 AH = NCollection.NCollection_Array1__Handle_Standard_Persistent
 H = NCollection.NCollection_HArray1__Handle_Standard_Persistent
 
@@ -80,7 +80,7 @@ def test_harray1_passes_as_array1_and_as_transient_handle():
 
 
 def test_the_pre_8_0_typedef_names_are_not_exposed():
-    """nanoOCP is an OCCT 8 binding: the pre-8.0 aliases of src/Deprecated/NCollectionAliases
+    """OCP3x is an OCCT 8 binding: the pre-8.0 aliases of src/Deprecated/NCollectionAliases
     (TColStd_Array1OfReal & co) are not bound -- the 8.0 spelling is the container itself
     (decision 2026-09-24, Design.md 6a). 6c aliases that OCCT still declares as real classes stay."""
     assert not hasattr(TColStd, "TColStd_Array1OfReal")
@@ -189,7 +189,7 @@ def test_binder_iterators_are_python_iterators():
 
 
 # ------------------------------------------------------------------------------------------ Sequence
-from nanoocp import TCollection  # noqa: E402
+from OCP3x import TCollection  # noqa: E402
 
 S = NCollection.NCollection_Sequence[TCollection.TCollection_AsciiString]
 HS = NCollection.NCollection_HSequence[TCollection.TCollection_AsciiString]
@@ -229,13 +229,13 @@ def test_hsequence_is_a_sequence_with_transient_members():
 
 
 def test_sequence_and_list_have_no_pre_8_0_aliases():
-    from nanoocp import TColStd
+    from OCP3x import TColStd
     for gone in ("TColStd_SequenceOfAsciiString", "TColStd_ListOfInteger", "TColStd_HSequenceOfAsciiString"):
         assert not hasattr(TColStd, gone)
 
 
 def test_occt_method_returning_a_container():
-    from nanoocp import Message
+    from OCP3x import Message
     printers = Message.Message.DefaultMessenger_s().Printers()
     assert type(printers).__name__ == "NCollection_Sequence__Handle_Message_Printer"
     assert len(printers) >= 1
@@ -381,7 +381,7 @@ def test_shared_is_the_wrapped_type_plus_transient():
 
 
 def test_linear_vector():
-    from nanoocp import BVH, MathRoot, NCollection
+    from OCP3x import BVH, MathRoot, NCollection
     v = NCollection.NCollection_LinearVector[float]()                          # OCCT 8 contiguous vector, 0-based, size_t indices
     v.Append(1.5)
     v.Append(2.5)
@@ -451,7 +451,7 @@ def test_generic_relations_are_exactly_the_cpp_bases():
 
 
 def test_isinstance_against_the_generic_classes():
-    from nanoocp.gp import gp_Pnt
+    from OCP3x.gp import gp_Pnt
     a = NCollection.NCollection_Array1[gp_Pnt](1, 3)
     h = NCollection.NCollection_HArray1[float](1, 3)
     a2 = NCollection.NCollection_Array2[float](1, 2, 1, 2)
@@ -471,9 +471,9 @@ def test_isinstance_against_the_generic_classes():
 
 
 def test_generic_subscription_errors():
-    from nanoocp.gp import gp_Pnt
-    from nanoocp.TopoDS import TopoDS_Shape
-    from nanoocp.TopTools import TopTools_ShapeMapHasher
+    from OCP3x.gp import gp_Pnt
+    from OCP3x.TopoDS import TopoDS_Shape
+    from OCP3x.TopTools import TopTools_ShapeMapHasher
     with pytest.raises(TypeError, match=r"NCollection_Array1\[gp_Pnt, gp_Pnt\] is not bound"):
         NCollection.NCollection_Array1[gp_Pnt, gp_Pnt]
     with pytest.raises(TypeError, match=r"NCollection_DataMap\[int\] is not bound"):

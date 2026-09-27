@@ -9,15 +9,15 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import PCDM, TDataStd, TDocStd, XmlLDrivers, XmlMDF, XmlObjMgt
-from nanoocp.TCollection import TCollection_ExtendedString
+from OCP3x import PCDM, TDataStd, TDocStd, XmlLDrivers, XmlMDF, XmlObjMgt
+from OCP3x.TCollection import TCollection_ExtendedString
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKXmlL" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["XmlLDrivers", "XmlMDF", "XmlMDataStd", "XmlMDocStd", "XmlMFunction", "XmlObjMgt"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 @pytest.fixture
@@ -65,10 +65,10 @@ def test_xml_file_form_and_format_detection(app, tmp_path):
 
 def test_storage_driver_writes_bytes_directly(app):
     doc = _document(app)
-    driver = XmlLDrivers.XmlLDrivers_DocumentStorageDriver(TCollection_ExtendedString("nanoOCP test"))
+    driver = XmlLDrivers.XmlLDrivers_DocumentStorageDriver(TCollection_ExtendedString("OCP3x test"))
     data = driver.Write(doc)                                  # Write(doc, ostream&, range) -> bytes, like the app-level SaveAs
     assert isinstance(data, bytes) and driver.GetStoreStatus() == PCDM.PCDM_SS_OK
-    assert b"nanoOCP test" in data                            # the copyright goes into the info section
+    assert b"OCP3x test" in data                            # the copyright goes into the info section
     assert type(XmlLDrivers.XmlLDrivers.AttributeDrivers_s(None)) is XmlMDF.XmlMDF_ADriverTable
 
 

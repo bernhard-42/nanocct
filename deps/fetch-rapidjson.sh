@@ -3,7 +3,7 @@
 # same headers on every platform instead of whatever /opt/homebrew/opt/rapidjson happens to hold (State.md 8.13).
 # RapidJSON is header-only: there is nothing to build and nothing extra in the wheel, the headers *are* the library.
 #
-# v1.1.0 (2016) is the last release. The two-commit patch is the one Homebrew applies and therefore what nanoOCP has
+# v1.1.0 (2016) is the last release. The two-commit patch is the one Homebrew applies and therefore what OCP3x has
 # been built and tested against: it removes a GenericStringRef::operator= that falls off the end without returning and
 # declares it deleted instead (upstream issue #718). Both downloads are verified against their sha256.
 set -euo pipefail
@@ -21,7 +21,7 @@ SRC="$HERE/rapidjson-src"
 PREFIX="$HERE/rapidjson"
 
 # the two rm -rf below are built from $HERE: refuse to run if that is not the deps directory of a checkout
-[ -f "$HERE/build-occt-macos.sh" ] || { echo "not the nanoOCP deps directory: $HERE" >&2; exit 1; }
+[ -f "$HERE/build-occt-macos.sh" ] || { echo "not the OCP3x deps directory: $HERE" >&2; exit 1; }
 
 [ -f "$TARBALL" ] || curl -fsSL -o "$TARBALL" "$TARBALL_URL"
 [ -f "$PATCH" ] || curl -fsSL -o "$PATCH" "$PATCH_URL"

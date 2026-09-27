@@ -10,18 +10,18 @@ import pytest
 
 from conftest import report
 
-from nanoocp.DE import (DE_ConfigurationContext, DE_ConfigurationNode, DE_Provider, DE_ShapeFixConfigurationNode,
+from OCP3x.DE import (DE_ConfigurationContext, DE_ConfigurationNode, DE_Provider, DE_ShapeFixConfigurationNode,
                         DE_ShapeFixParameters, DE_ValidationUtils, DE_Wrapper)
-from nanoocp.NCollection import NCollection_Buffer
-from nanoocp.TCollection import TCollection_AsciiString
-from nanoocp.TopAbs import TopAbs_ShapeEnum
-from nanoocp.TopoDS import TopoDS_Shape
+from OCP3x.NCollection import NCollection_Buffer
+from OCP3x.TCollection import TCollection_AsciiString
+from OCP3x.TopAbs import TopAbs_ShapeEnum
+from OCP3x.TopoDS import TopoDS_Shape
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDE" / "report.txt"
 
 
 def test_package_imports():
-    assert importlib.import_module("nanoocp.DE").__name__ == "nanoocp.DE"
+    assert importlib.import_module("OCP3x.DE").__name__ == "OCP3x.DE"
 
 
 def test_shape_fix_parameters_is_a_plain_struct():
@@ -74,8 +74,8 @@ def test_the_work_session_stays_a_parameter():
     for cls in (DE_Provider, DE_Wrapper):
         assert not hasattr(cls, "Read__XSControl_WorkSession") and not hasattr(cls, "Write__XSControl_WorkSession")
     doc = DE_Wrapper.Read.__doc__
-    assert "theWS: nanoocp.XSControl.XSControl_WorkSession | None" in doc      # the type resolves since TKXSBase
-    assert "-> tuple[bool, nanoocp.XSControl.XSControl_WorkSession]" in doc
+    assert "theWS: OCP3x.XSControl.XSControl_WorkSession | None" in doc      # the type resolves since TKXSBase
+    assert "-> tuple[bool, OCP3x.XSControl.XSControl_WorkSession]" in doc
     wrapper = DE_Wrapper()
     # no provider is registered, so DE_Wrapper::Read fails before it touches the session: it comes back unchanged (None)
     assert wrapper.Read("box.stp", TopoDS_Shape(), None) == (False, None)

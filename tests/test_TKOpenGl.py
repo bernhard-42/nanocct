@@ -1,6 +1,6 @@
 """Generated bindings for TKOpenGl (Visualization: the OpenGl package): OCCT's OpenGL graphic driver. With it a
 V3d_Viewer has a real driver, so AIS_InteractiveContext.Display() works instead of dereferencing a null one -- the
-single biggest limitation nanoOCP carried until 2026-09-22. Rendering to an image still needs a drawable, which a
+single biggest limitation OCP3x carried until 2026-09-22. Rendering to an image still needs a drawable, which a
 virtual window does not provide on macOS; the test pins that boundary down."""
 import importlib
 import platform
@@ -10,14 +10,14 @@ import pytest
 
 from conftest import report
 
-from nanoocp import Message
-from nanoocp.AIS import AIS_InteractiveContext, AIS_Shape
-from nanoocp.Aspect import Aspect_DisplayConnection, Aspect_NeutralWindow
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.Graphic3d import Graphic3d_BT_RGB
-from nanoocp.Image import Image_PixMap
-from nanoocp.OpenGl import OpenGl_Caps, OpenGl_Context, OpenGl_GraphicDriver
-from nanoocp.V3d import V3d_Viewer
+from OCP3x import Message
+from OCP3x.AIS import AIS_InteractiveContext, AIS_Shape
+from OCP3x.Aspect import Aspect_DisplayConnection, Aspect_NeutralWindow
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.Graphic3d import Graphic3d_BT_RGB
+from OCP3x.Image import Image_PixMap
+from OCP3x.OpenGl import OpenGl_Caps, OpenGl_Context, OpenGl_GraphicDriver
+from OCP3x.V3d import V3d_Viewer
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKOpenGl" / "report.txt"
 
@@ -52,8 +52,8 @@ def offscreen_window(display, width, height):
     Xw_Window makes a real window instead, which is never mapped, so nothing appears either.
     """
     if platform.system() == "Linux":
-        Xw = pytest.importorskip("nanoocp.Xw")
-        return Xw.Xw_Window(display, "nanoOCP test", 100, 100, width, height)
+        Xw = pytest.importorskip("OCP3x.Xw")
+        return Xw.Xw_Window(display, "OCP3x test", 100, 100, width, height)
     window = Aspect_NeutralWindow()
     window.SetVirtual(True)
     window.SetSize(width, height)
@@ -74,7 +74,7 @@ def driver(display):
 
 @pytest.mark.parametrize("pkg", ["OpenGl", "Textures"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_the_driver_constructs_and_initialises(driver):
@@ -171,9 +171,9 @@ def test_a_real_window_renders_the_box(quiet_messenger):
         root.update()
         # Cocoa is only generated on macOS (overrides.toml [platform]), so the module itself is absent elsewhere --
         # importing it at the top of the file would fail collection of the whole module on Linux and Windows.
-        Cocoa = pytest.importorskip("nanoocp.Cocoa", reason="Cocoa is built on macOS only")
+        Cocoa = pytest.importorskip("OCP3x.Cocoa", reason="Cocoa is built on macOS only")
         try:
-            window = Cocoa.Cocoa_Window("nanoOCP test", 100, 100, 400, 300)
+            window = Cocoa.Cocoa_Window("OCP3x test", 100, 100, 400, 300)
         except Exception as exc:                                  # no window server
             pytest.skip(f"Cocoa_Window unavailable: {type(exc).__name__}: {exc}")
         driver = OpenGl_GraphicDriver(Aspect_DisplayConnection())

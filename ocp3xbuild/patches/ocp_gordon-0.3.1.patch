@@ -10,12 +10,12 @@
 -from OCP.BRep import BRep_Tool
 -from OCP.TopoDS import TopoDS_Face
 -from OCP.Precision import Precision
-+from nanoocp.Geom import Geom_Curve, Geom_BSplineCurve, Geom_BSplineSurface
-+from nanoocp.GeomConvert import GeomConvert
-+from nanoocp.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
-+from nanoocp.BRep import BRep_Tool
-+from nanoocp.TopoDS import TopoDS_Face
-+from nanoocp.Precision import Precision
++from OCP3x.Geom import Geom_Curve, Geom_BSplineCurve, Geom_BSplineSurface
++from OCP3x.GeomConvert import GeomConvert
++from OCP3x.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace
++from OCP3x.BRep import BRep_Tool
++from OCP3x.TopoDS import TopoDS_Face
++from OCP3x.Precision import Precision
  
  # Import our Gordon interpolation module
  import sys
@@ -50,7 +50,7 @@
  ]
  dependencies = [
 -    "cadquery_ocp_proxy >= 8.0, < 8.1",
-+    "nanoocp >= 0.1, < 0.2",
++    "ocp3x >= 0.1, < 0.2",
      "numpy >= 2, < 3",
      "scipy",
  ]
@@ -65,7 +65,7 @@
 -stubs = [
 -    "cadquery-ocp-stubs >=8.0, <8.1",
 -]
-+# typing stubs: nanoocp ships its own
++# typing stubs: OCP3x ships its own
 +stubs = []
  
  [tool.setuptools.packages.find]
@@ -77,7 +77,7 @@
  """
  
 -from OCP.Geom import Geom_BSplineCurve
-+from nanoocp.Geom import Geom_BSplineCurve
++from OCP3x.Geom import Geom_BSplineCurve
  
  class ApproxResult:
      """
@@ -89,8 +89,8 @@
  import numpy as np
 -from OCP.BSplCLib import BSplCLib
 -from OCP.Geom import (
-+from nanoocp.BSplCLib import BSplCLib
-+from nanoocp.Geom import (
++from OCP3x.BSplCLib import BSplCLib
++from OCP3x.Geom import (
      Geom_BSplineCurve,
      Geom_BSplineSurface,
      Geom_Curve,
@@ -111,13 +111,13 @@
 -    Array1_double,
 -    HArray1_int,
 -    HArray1_double,
-+from nanoocp.Geom2dAPI import Geom2dAPI_Interpolate, Geom2dAPI_ProjectPointOnCurve
-+from nanoocp.GeomAbs import GeomAbs_C2
-+from nanoocp.GeomConvert import GeomConvert, GeomConvert_ApproxCurve
-+from nanoocp.gp import gp_Pnt, gp_Pnt2d
-+from nanoocp.math import math_Matrix
-+from nanoocp.Precision import Precision
-+from nanoocp.NCollection import (
++from OCP3x.Geom2dAPI import Geom2dAPI_Interpolate, Geom2dAPI_ProjectPointOnCurve
++from OCP3x.GeomAbs import GeomAbs_C2
++from OCP3x.GeomConvert import GeomConvert, GeomConvert_ApproxCurve
++from OCP3x.gp import gp_Pnt, gp_Pnt2d
++from OCP3x.math import math_Matrix
++from OCP3x.Precision import Precision
++from OCP3x.NCollection import (
 +    NCollection_Array1,
 +    NCollection_Array2,
 +    NCollection_HArray1,
@@ -369,10 +369,10 @@
 -    Array1_int,
 -    Array1_double,
 -)
-+from nanoocp.BSplCLib import BSplCLib  # For KnotSequence
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_Curve
-+from nanoocp.gp import gp_Pnt, gp_Vec
-+from nanoocp.NCollection import NCollection_Array1
++from OCP3x.BSplCLib import BSplCLib  # For KnotSequence
++from OCP3x.Geom import Geom_BSplineCurve, Geom_Curve
++from OCP3x.gp import gp_Pnt, gp_Vec
++from OCP3x.NCollection import NCollection_Array1
  
  from .approx_result import ApproxResult
  from .bspline_algorithms import BSplineAlgorithms  # For bspline_basis_mat, scale, etc.
@@ -496,7 +496,7 @@
  
  import numpy as np
 -from OCP.Geom import Geom_BSplineCurve, Geom_Curve
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_Curve
++from OCP3x.Geom import Geom_BSplineCurve, Geom_Curve
  
  from .error import error
  
@@ -507,7 +507,7 @@
  
  
 -from OCP.Geom import (
-+from nanoocp.Geom import (
++from OCP3x.Geom import (
      Geom_BSplineCurve,
      Geom_BSplineSurface,
      Geom_Curve,
@@ -519,13 +519,13 @@
 -    HArray1_gp_Pnt,
 -    Array1_int,
 -    Array1_double,
-+from nanoocp.GeomConvert import GeomConvert
-+from nanoocp.NCollection import (
++from OCP3x.GeomConvert import GeomConvert
++from OCP3x.NCollection import (
 +    NCollection_Array1,
 +    NCollection_Array2,
 +    NCollection_HArray1,
  )
-+from nanoocp.gp import gp_Pnt
++from OCP3x.gp import gp_Pnt
  
  from .bspline_algorithms import BSplineAlgorithms
  from .error import ErrorCode, error  # Import ErrorCode
@@ -609,9 +609,9 @@
 -    Array1_int,
 -    Array1_double,
 -)
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
-+from nanoocp.gp import gp_Pnt
-+from nanoocp.NCollection import NCollection_Array1, NCollection_Array2
++from OCP3x.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from OCP3x.gp import gp_Pnt
++from OCP3x.NCollection import NCollection_Array1, NCollection_Array2
  
  from .bspline_algorithms import BSplineAlgorithms, SurfaceDirection
  from .curves_to_surface import CurvesToSurface
@@ -663,8 +663,8 @@
  import numpy as np
 -from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface, Geom_Curve
 -from OCP.Precision import Precision
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface, Geom_Curve
-+from nanoocp.Precision import Precision
++from OCP3x.Geom import Geom_BSplineCurve, Geom_BSplineSurface, Geom_Curve
++from OCP3x.Precision import Precision
  
  from .bspline_algorithms import BSplineAlgorithms
  from .curve_network_sorter import (
@@ -676,8 +676,8 @@
  import numpy as np
 -from OCP.Geom import Geom_BSplineCurve, Geom_Curve
 -from OCP.gp import gp_Pnt, gp_Vec
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_Curve
-+from nanoocp.gp import gp_Pnt, gp_Vec
++from OCP3x.Geom import Geom_BSplineCurve, Geom_Curve
++from OCP3x.gp import gp_Pnt, gp_Vec
  from scipy.optimize import minimize_scalar
  
  from .misc import (
@@ -696,11 +696,11 @@
 -    Array1_int,
 -    Array1_double,
 -)
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
-+from nanoocp.GeomConvert import GeomConvert_CompCurveToBSplineCurve
-+from nanoocp.gp import gp_Pnt
-+from nanoocp.Precision import Precision
-+from nanoocp.NCollection import NCollection_Array1
++from OCP3x.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from OCP3x.GeomConvert import GeomConvert_CompCurveToBSplineCurve
++from OCP3x.gp import gp_Pnt
++from OCP3x.Precision import Precision
++from OCP3x.NCollection import NCollection_Array1
  from scipy.optimize import minimize
  
  # This file implements some missing classes/functions for OCP
@@ -748,11 +748,11 @@
 -    Array1_int,
 -)
 -from OCP.gp import gp_Pnt
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_TrimmedCurve
-+from nanoocp.GeomConvert import GeomConvert
-+from nanoocp.BSplCLib import BSplCLib
-+from nanoocp.NCollection import NCollection_Array1, NCollection_HArray1
-+from nanoocp.gp import gp_Pnt
++from OCP3x.Geom import Geom_BSplineCurve, Geom_TrimmedCurve
++from OCP3x.GeomConvert import GeomConvert
++from OCP3x.BSplCLib import BSplCLib
++from OCP3x.NCollection import NCollection_Array1, NCollection_HArray1
++from OCP3x.gp import gp_Pnt
  
  from .bspline_algorithms import BSplineAlgorithms
  
@@ -792,7 +792,7 @@
  
  import pytest
 -from OCP.Geom import (
-+from nanoocp.Geom import (
++from OCP3x.Geom import (
      Geom_BSplineCurve,
      Geom_BSplineSurface,
      Geom_Circle,
@@ -807,10 +807,10 @@
 -    Array1_gp_Pnt as TColgp_Array1OfPnt,
 -    Array2_gp_Pnt as TColgp_Array2OfPnt,
 -    HArray1_gp_Pnt as TColgp_HArray1OfPnt,
-+from nanoocp.GeomAPI import GeomAPI_ProjectPointOnCurve
-+from nanoocp.gp import gp_Ax2, gp_Dir, gp_Pnt
-+from nanoocp.Precision import Precision
-+from nanoocp.NCollection import (
++from OCP3x.GeomAPI import GeomAPI_ProjectPointOnCurve
++from OCP3x.gp import gp_Ax2, gp_Dir, gp_Pnt
++from OCP3x.Precision import Precision
++from OCP3x.NCollection import (
 +    NCollection_Array1,
 +    NCollection_Array2,
 +    NCollection_HArray1,
@@ -831,11 +831,11 @@
 -from OCP.Geom import Geom_BSplineCurve
 -from OCP.collections import Array1_gp_Pnt as TColgp_Array1OfPnt
 -from OCP.gp import gp_Pnt
-+from nanoocp.Geom import Geom_BSplineCurve
-+from nanoocp.NCollection import NCollection_Array1
-+from nanoocp.gp import gp_Pnt
++from OCP3x.Geom import Geom_BSplineCurve
++from OCP3x.NCollection import NCollection_Array1
++from OCP3x.gp import gp_Pnt
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
-+from nanoocp.gp import gp_Pnt
++from OCP3x.gp import gp_Pnt
  import math
  
  from ocp_gordon.internal.bspline_approx_interp import BSplineApproxInterp
@@ -852,9 +852,9 @@
 -    Array1_int as TColStd_Array1OfInteger,
 -    Array1_double as TColStd_Array1OfReal,
 -)
-+from nanoocp.Geom import Geom_BSplineCurve
-+from nanoocp.gp import gp_Pnt
-+from nanoocp.NCollection import NCollection_Array1
++from OCP3x.Geom import Geom_BSplineCurve
++from OCP3x.gp import gp_Pnt
++from OCP3x.NCollection import NCollection_Array1
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
 +TColStd_Array1OfInteger = NCollection_Array1[int]
 +TColStd_Array1OfReal = NCollection_Array1[float]
@@ -873,12 +873,12 @@
 -    Array1_int as TColStd_Array1OfInteger,
 -)
 -from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface
-+from nanoocp.gp import gp_Pnt
-+from nanoocp.NCollection import NCollection_Array1
++from OCP3x.gp import gp_Pnt
++from OCP3x.NCollection import NCollection_Array1
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
 +TColStd_Array1OfReal = NCollection_Array1[float]
 +TColStd_Array1OfInteger = NCollection_Array1[int]
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from OCP3x.Geom import Geom_BSplineCurve, Geom_BSplineSurface
  
  from ocp_gordon.internal.curves_to_surface import CurvesToSurface, clamp_bspline
  
@@ -894,12 +894,12 @@
 -    Array1_int as TColStd_Array1OfInteger,
 -)
 -from OCP.Geom import Geom_BSplineCurve, Geom_BSplineSurface
-+from nanoocp.gp import gp_Pnt
-+from nanoocp.NCollection import NCollection_Array1
++from OCP3x.gp import gp_Pnt
++from OCP3x.NCollection import NCollection_Array1
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
 +TColStd_Array1OfReal = NCollection_Array1[float]
 +TColStd_Array1OfInteger = NCollection_Array1[int]
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from OCP3x.Geom import Geom_BSplineCurve, Geom_BSplineSurface
  
  from ocp_gordon.internal.gordon_surface_builder import GordonSurfaceBuilder
  from ocp_gordon.internal.error import error, ErrorCode
@@ -919,11 +919,11 @@
 -    Array1_int as TColStd_Array1OfInteger,
 -    Array1_double as TColStd_Array1OfReal,
 -)
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_BSplineSurface
-+from nanoocp.GeomAbs import GeomAbs_Shape
-+from nanoocp.GeomAPI import GeomAPI_Interpolate, GeomAPI_PointsToBSpline
-+from nanoocp.gp import gp_Pnt
-+from nanoocp.NCollection import NCollection_Array1, NCollection_HArray1
++from OCP3x.Geom import Geom_BSplineCurve, Geom_BSplineSurface
++from OCP3x.GeomAbs import GeomAbs_Shape
++from OCP3x.GeomAPI import GeomAPI_Interpolate, GeomAPI_PointsToBSpline
++from OCP3x.gp import gp_Pnt
++from OCP3x.NCollection import NCollection_Array1, NCollection_HArray1
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
 +TColgp_HArray1OfPnt = NCollection_HArray1[gp_Pnt]
 +TColStd_Array1OfInteger = NCollection_Array1[int]
@@ -943,12 +943,12 @@
 -from OCP.GeomConvert import GeomConvert
 -from OCP.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf
 -from OCP.collections import Array1_gp_Pnt as TColgp_Array1OfPnt
-+from nanoocp.Geom import Geom_BSplineCurve, Geom_Circle
-+from nanoocp.GeomAbs import GeomAbs_Shape
-+from nanoocp.GeomAPI import GeomAPI_PointsToBSpline
-+from nanoocp.GeomConvert import GeomConvert
-+from nanoocp.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf
-+from nanoocp.NCollection import NCollection_Array1
++from OCP3x.Geom import Geom_BSplineCurve, Geom_Circle
++from OCP3x.GeomAbs import GeomAbs_Shape
++from OCP3x.GeomAPI import GeomAPI_PointsToBSpline
++from OCP3x.GeomConvert import GeomConvert
++from OCP3x.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf
++from OCP3x.NCollection import NCollection_Array1
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
  
  # Import the module to test
@@ -963,11 +963,11 @@
 -from OCP.Geom import Geom_Curve, Geom_BSplineCurve
 -from OCP.collections import Array1_gp_Pnt as TColgp_Array1OfPnt
 -from OCP.GeomAPI import GeomAPI_PointsToBSpline
-+from nanoocp.gp import gp_Pnt, gp_Vec
-+from nanoocp.Geom import Geom_Curve, Geom_BSplineCurve
-+from nanoocp.NCollection import NCollection_Array1
++from OCP3x.gp import gp_Pnt, gp_Vec
++from OCP3x.Geom import Geom_Curve, Geom_BSplineCurve
++from OCP3x.NCollection import NCollection_Array1
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
-+from nanoocp.GeomAPI import GeomAPI_PointsToBSpline
++from OCP3x.GeomAPI import GeomAPI_PointsToBSpline
  
  from ocp_gordon.internal.misc import (
      math_Vector,
@@ -982,11 +982,11 @@
 -    Array1_gp_Pnt as TColgp_Array1OfPnt,
 -)
 -from OCP.Geom import Geom_BSplineCurve
-+from nanoocp.gp import gp_Pnt
-+from nanoocp.NCollection import NCollection_Array1, NCollection_HArray1
++from OCP3x.gp import gp_Pnt
++from OCP3x.NCollection import NCollection_Array1, NCollection_HArray1
 +TColgp_HArray1OfPnt = NCollection_HArray1[gp_Pnt]
 +TColgp_Array1OfPnt = NCollection_Array1[gp_Pnt]
-+from nanoocp.Geom import Geom_BSplineCurve
++from OCP3x.Geom import Geom_BSplineCurve
  
  from ocp_gordon.internal.points_to_bspline_interpolation import (
      PointsToBSplineInterpolation,

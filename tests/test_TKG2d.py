@@ -6,16 +6,16 @@ import sys
 
 import pytest
 
-from nanoocp import Adaptor2d, Geom2d, Geom2dAdaptor, Geom2dEval, Geom2dGridEval, Geom2dHash, GeomAbs, NCollection, Standard, gp
-from nanoocp.Geom2dEval import Geom2dEval_RepCurveDesc
-from nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc import Base, Full, Map1d
+from OCP3x import Adaptor2d, Geom2d, Geom2dAdaptor, Geom2dEval, Geom2dGridEval, Geom2dHash, GeomAbs, NCollection, Standard, gp
+from OCP3x.Geom2dEval import Geom2dEval_RepCurveDesc
+from OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc import Base, Full, Map1d
 
 PACKAGES = ["Geom2d", "Adaptor2d", "Geom2dAdaptor", "Geom2dHash", "Geom2dGridEval", "Geom2dEval"]
 
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def _circle(radius: float = 2.0) -> Geom2d.Geom2d_Circle:
@@ -82,10 +82,10 @@ def test_adaptor_and_abstract_base():
 
 
 def test_namespace_is_a_python_module():
-    assert Geom2dEval_RepCurveDesc.__name__ == "nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc"
-    assert sys.modules["nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc"] is Geom2dEval_RepCurveDesc   # the shim, not the extension
+    assert Geom2dEval_RepCurveDesc.__name__ == "OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc"
+    assert sys.modules["OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc"] is Geom2dEval_RepCurveDesc   # the shim, not the extension
     assert Geom2dEval.Geom2dEval_RepCurveDesc is Geom2dEval_RepCurveDesc
-    assert Base.__module__ == "nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc"
+    assert Base.__module__ == "OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc"
     assert Base.__qualname__ == "Base"
     assert Full().GetKind() == Base.Kind.Full                      # enum nested in a class nested in a namespace
     assert isinstance(Full(), Base)
@@ -111,7 +111,7 @@ def test_eval_representation_descriptor_round_trip():
 
 
 def test_package_named_namespace_folds_into_the_package():
-    assert Geom2dGridEval.CurveD1.__module__ == "nanoocp.Geom2dGridEval"    # namespace Geom2dGridEval == package
+    assert Geom2dGridEval.CurveD1.__module__ == "OCP3x.Geom2dGridEval"    # namespace Geom2dGridEval == package
     ev = Geom2dGridEval.Geom2dGridEval_Circle(_circle())
     params = NCollection.NCollection_Array1[float](1, 3)
     for i, u in enumerate((0.0, math.pi / 2, math.pi), start=1):

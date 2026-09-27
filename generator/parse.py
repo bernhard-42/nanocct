@@ -57,7 +57,7 @@ INCLUDE_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("pack
 PLATFORM_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("platform", {})
 # toolkit -> toolkits it must link although nothing in its signatures names them (R-LINK, overrides.toml [link] extra)
 EXTRA_LINKS: dict[str, list[str]] = _OVERRIDES.get("link", {}).get("extra", {})
-# classes with zero-copy numpy accessors; the "how" is a nanoocp_def_views<T> specialisation (R-VIEW, 8.10)
+# classes with zero-copy numpy accessors; the "how" is a ocp3x_def_views<T> specialisation (R-VIEW, 8.10)
 VIEW_CLASSES: set[str] = set(_OVERRIDES.get("views", {}).get("classes", []))
 _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
@@ -69,7 +69,7 @@ _UNSUPPORTED_RE = re.compile(
 # Other std types nanobind has no caster for. Reported by name: "iostream type" was the message for these too until
 # 2026-09-22, which read as a stream in the report (DE_Wrapper::GlobalLoadMutex returns a std::mutex&).
 _UNSUPPORTED_STD_RE = re.compile(r"std::(__\w+::)?(locale|thread|mutex|atomic|type_info|exception_ptr)\b")
-# std templates nanobind casts (nanobind/stl/*.h, all included from nanoocp_common.h)
+# std templates nanobind casts (nanobind/stl/*.h, all included from ocp3x_common.h)
 _STD_TEMPLATES_OK = {"shared_ptr", "unique_ptr", "vector", "map", "unordered_map", "set", "unordered_set", "pair",
                      "optional", "function", "tuple", "array", "variant", "list", "basic_string", "basic_string_view",
                      "bitset"}   # R-BITSET: set[int] of the set bits' indices (its size is a non-type argument, kind INVALID)
@@ -157,10 +157,10 @@ def clang_args(tree: OcctTree) -> list[str]:
     # An escape hatch for an environment libclang cannot work out by itself. It exists for the manylinux container,
     # where the compiler is gcc-toolset-14 under /opt/rh but libclang's GCC detection only searches /usr/lib/gcc and
     # would read the image's gcc 8 standard library instead (deps/manylinux.Dockerfile sets --gcc-install-dir).
-    extra = os.environ.get("NANOOCP_CLANG_ARGS", "").split()
+    extra = os.environ.get("OCP3X_CLANG_ARGS", "").split()
     if len(extra) > 0:
         args += extra
-        print(f"clang args from NANOOCP_CLANG_ARGS: {' '.join(extra)}", file=sys.stderr)
+        print(f"clang args from OCP3X_CLANG_ARGS: {' '.join(extra)}", file=sys.stderr)
     return args
 
 
@@ -516,7 +516,7 @@ def _py_identifier(cpp_name: str) -> str:
 
 
 def py_path(cpp_name: str, package: str, paths: dict[str, str] | None = None) -> str:
-    """Python attribute path of a bound C++ type relative to nanoocp.<package>: nested classes and namespaces keep
+    """Python attribute path of a bound C++ type relative to OCP3x.<package>: nested classes and namespaces keep
     their C++ nesting (gp_Dir::D -> gp_Dir.D, Geom2dEval_RepCurveDesc::Base -> Geom2dEval_RepCurveDesc.Base);
     a namespace named like the package is the package module itself (Geom2dGridEval::CurveD1 -> CurveD1). paths
     (manifest) records the exceptions the name alone cannot tell: a *class* named like its package keeps its name
@@ -600,7 +600,7 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
         if pk == TK.VOID:
             return "void pointer"
         if pk in (TK.CHAR_S, TK.CHAR_U, TK.CHAR16) and pointee.is_const_qualified():
-            return None            # const char* / const char16_t* (Standard_ExtString) -> str, casters in nanoocp_common.h
+            return None            # const char* / const char16_t* (Standard_ExtString) -> str, casters in ocp3x_common.h
         if pk in _PRIMITIVE_KINDS or pk == TK.POINTER:
             return "raw pointer to primitive"
     if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind == TK.RECORD:
@@ -687,7 +687,7 @@ def _result_kind(t: cindex.Type) -> tuple[str, str]:
 # Design.md 6 R-STREAM-OUT, R-STREAM-IN
 def _stream_kind(t: cindex.Type) -> str:
     """'out' for a mutable std::ostream& (Dump, DumpJson, Print, Write: the text is returned as a str), 'in' for a
-    std::istream& or a std::stringstream (const or not: InitFromJson, Read: a text file-like object is read into a stringstream, nanoocp::TextInput), else ''."""
+    std::istream& or a std::stringstream (const or not: InitFromJson, Read: a text file-like object is read into a stringstream, OCP3x::TextInput), else ''."""
     canon = t.get_canonical()
     if canon.kind != TK.LVALUEREFERENCE:
         return ""
@@ -839,7 +839,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         _note_instance(p.type)
         default = _default_expr(p, scope, members)
         # R-CSTR-NULL: nanobind's const char* caster rejects None, so a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
-        # STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)) would be unreachable -> nanoocp::OptionalCString, `str | None = None`
+        # STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)) would be unreachable -> OCP3x::OptionalCString, `str | None = None`
         cstr_none = _is_cstring(p.type) and default in ("NULL", "nullptr", "0")
         params.append(Param(name=name, type=_type_spelling(p.type), default="nullptr" if cstr_none else default, is_out=is_out, is_inout=is_out and inout,
                             class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
@@ -1790,8 +1790,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 continue
             if ns == "" and cur.semantic_parent is not None and cur.semantic_parent.kind == K.NAMESPACE:
                 ns = _qualified_template(cur.semantic_parent) + "::"     # `template <> struct std::hash<X>` written at file scope
-            # a namespace named like the package is the package module itself (TopoDS::Vertex -> nanoocp.TopoDS.Vertex);
-            # every other namespace becomes a submodule (Geom2dEval_RepCurveDesc::Base -> nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base)
+            # a namespace named like the package is the package module itself (TopoDS::Vertex -> OCP3x.TopoDS.Vertex);
+            # every other namespace becomes a submodule (Geom2dEval_RepCurveDesc::Base -> OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc.Base)
             ns_parts = [part for part in (ns.rstrip(":").split("::") if ns != "" else []) if not part.startswith("__")]   # std::__1 -> std
             if "" in ns_parts:
                 ir.report.append(f"{header}: {cur.spelling}: anonymous namespace (not bound)")
@@ -1898,13 +1898,13 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 break
             spellings = sorted({b for _, b, _ in todo})
             probe = Path(td) / f"{pkg.name}__probe.hxx"
-            probe.write_text(umbrella.read_text() + "".join(f"using nanoocp_probe_{i} = {b};\n" for i, b in enumerate(spellings)))
+            probe.write_text(umbrella.read_text() + "".join(f"using ocp3x_probe_{i} = {b};\n" for i, b in enumerate(spellings)))
             tu2 = index.parse(str(probe), args=args)
-            probes = {cur.spelling: cur for cur in tu2.cursor.get_children() if cur.kind == K.TYPE_ALIAS_DECL and cur.spelling.startswith("nanoocp_probe_")}
+            probes = {cur.spelling: cur for cur in tu2.cursor.get_children() if cur.kind == K.TYPE_ALIAS_DECL and cur.spelling.startswith("ocp3x_probe_")}
             _dependent_bases.clear()
             for i, b in enumerate(spellings):
                 seen_uses.add(b)
-                cur = probes.get(f"nanoocp_probe_{i}")
+                cur = probes.get(f"ocp3x_probe_{i}")
                 derived_names = [d for d, bb, _ in todo if bb == b]
                 inst = None
                 if cur is not None:

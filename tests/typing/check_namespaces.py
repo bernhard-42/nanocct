@@ -1,8 +1,8 @@
 """Static typing check for nested classes and C++ namespaces (run by mypy and ty, see tests/test_typing.py).
 Lines with a trailing `# error:` comment must be reported; everything else must pass."""
-import nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc
-from nanoocp import Geom, Geom2d, Geom2dEval, Geom2dGridEval, GeomGridEval, NCollection, gp
-from nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc import Base, Full
+import OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc
+from OCP3x import Geom, Geom2d, Geom2dEval, Geom2dGridEval, GeomGridEval, NCollection, gp
+from OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc import Base, Full
 
 circle = Geom2d.Geom2d_Circle(gp.gp_Ax2d(), 2.0)
 r: Geom2d.Geom2d_Curve.ResD1 = circle.EvalD1(0.0)                  # nested struct
@@ -13,7 +13,7 @@ poles = NCollection.NCollection_Array1[gp.gp_Pnt2d](1, 3)
 bezier = Geom2d.Geom2d_BezierCurve(poles)                           # NCollection_Array1[T] accepted where OCCT wants the array
 desc: Base | None = bezier.EvalRepresentation()                     # class in a namespace, null handle -> None
 kind: Base.Kind = Full().GetKind()
-same: nanoocp.Geom2dEval.Geom2dEval_RepCurveDesc.Base = Full()
+same: OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc.Base = Full()
 also: Geom2dEval.Geom2dEval_RepCurveDesc.Base = Full()
 wrong: Full = Base()                                                # error: Base is not Full
 

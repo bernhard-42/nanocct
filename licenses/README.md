@@ -1,6 +1,6 @@
 # Third-party licences
 
-nanoOCP's own code is Apache-2.0 (`../LICENSE`). Everything in this directory is the verbatim licence text of something the **binary distribution bundles or compiles in** — not of a build-time-only tool. `../NOTICE` says what each one covers and where its source is; this file records how the list is kept honest.
+OCP3x's own code is Apache-2.0 (`../LICENSE`). Everything in this directory is the verbatim licence text of something the **binary distribution bundles or compiles in** — not of a build-time-only tool. `../NOTICE` says what each one covers and where its source is; this file records how the list is kept honest.
 
 | File | Component | How it reaches the wheel |
 |---|---|---|

@@ -7,15 +7,15 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import BinLDrivers, BinMDF, BinObjMgt, PCDM, TDataStd, TDocStd
-from nanoocp.TCollection import TCollection_ExtendedString
+from OCP3x import BinLDrivers, BinMDF, BinObjMgt, PCDM, TDataStd, TDocStd
+from OCP3x.TCollection import TCollection_ExtendedString
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKBinL" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["BinLDrivers", "BinMDF", "BinMDataStd", "BinMDocStd", "BinMFunction", "BinObjMgt"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 @pytest.fixture

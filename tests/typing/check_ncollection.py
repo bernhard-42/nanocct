@@ -1,6 +1,6 @@
 """Static typing check for the NCollection_Xxx[T] spelling (run by mypy and ty, see tests/test_typing.py).
 Lines with a trailing `# error:` comment must be reported; everything else must pass."""
-from nanoocp import NCollection, Standard, TCollection
+from OCP3x import NCollection, Standard, TCollection
 
 a = NCollection.NCollection_Array1[float](1, 4)
 a.SetValue(1, 0.5)

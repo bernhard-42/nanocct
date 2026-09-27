@@ -10,8 +10,8 @@ import pytest
 
 from conftest import report
 
-from nanoocp import CDF, CDM, LDOM, PCDM, UTL
-from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+from OCP3x import CDF, CDM, LDOM, PCDM, UTL
+from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKCDF" / "report.txt"
 
@@ -20,7 +20,7 @@ XML = '<?xml version="1.0"?>\n<root a="1"><child b="two">text</child><child/><!-
 
 @pytest.mark.parametrize("pkg", ["CDM", "PCDM", "CDF", "UTL", "LDOM"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_ldom_parse_from_a_text_file_like_and_navigate():

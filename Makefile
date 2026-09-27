@@ -1,4 +1,4 @@
-# nanoOCP — one entry point for building it yourself, on macOS, Linux and Windows.
+# OCP3x — one entry point for building it yourself, on macOS, Linux and Windows.
 #
 #   make deps        fetch and build OCCT, FreeType and RapidJSON from scratch (long: OCCT is ~4 min on an M5)
 #   make all         generate -> compile -> stubs -> test -> wheel
@@ -13,7 +13,7 @@
 #   Windows  runs under Git Bash and reaches MSVC by importing vcvars64 in a generated .bat — never PowerShell.
 #            Start it from a real session: launched over ssh, cl.exe fails sporadically with 0xC0000142.
 #
-# Every step orchestrates its own parallelism (ninja -j, NANOOCP_JOBS = one worker per core), so the targets
+# Every step orchestrates its own parallelism (ninja -j, OCP3X_JOBS = one worker per core), so the targets
 # themselves are serial.
 .NOTPARALLEL:
 .DEFAULT_GOAL := all
@@ -32,7 +32,7 @@ ifeq ($(wildcard $(ROOT)/Makefile),)
   $(error ROOT=$(ROOT) does not contain this Makefile -- refusing to run)
 endif
 ifeq ($(wildcard $(ROOT)/generator/__main__.py),)
-  $(error ROOT=$(ROOT) is not the nanoOCP tree -- refusing to run)
+  $(error ROOT=$(ROOT) is not the OCP3x tree -- refusing to run)
 endif
 
 DEPS    := $(ROOT)/deps
@@ -88,11 +88,11 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity nanobuild \
+.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity ocp3xbuild \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all | shim-parity | nanobuild"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all | shim-parity | ocp3xbuild"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
@@ -111,7 +111,7 @@ ifeq ($(PLATFORM),linux)
 	    && UV_PROJECT_ENVIRONMENT=/work/.venv-ml uv sync --no-install-project"
 else
 	cd $(ROOT) && uv venv -p $(PY_VERSION)
-	@# --no-install-project: `uv sync` would build nanoocp itself, which needs generated sources that do not exist
+	@# --no-install-project: `uv sync` would build OCP3x itself, which needs generated sources that do not exist
 	@# yet on a fresh clone. The venv here carries the tooling (libclang, nanobind, pytest, mypy, ty); the extension
 	@# modules come from `make compile`, and are imported from the staged tree rather than installed.
 	cd $(ROOT) && uv sync --no-install-project
@@ -197,19 +197,19 @@ deps: clean_deps rapidjson freetype freeimage occt
 
 # ---- the development loop -------------------------------------------------------------------------------------
 
-# Only the generated files. src/cpp/common/nanoocp_common.h and nanoocp_ncollection.h are hand-written and tracked,
-# as are src/nanoocp/_templates.py and py.typed -- never `rm -rf src/cpp`, which once cost a whole Windows build.
+# Only the generated files. src/cpp/common/ocp3x_common.h and ocp3x_ncollection.h are hand-written and tracked,
+# as are src/OCP3x/_templates.py and py.typed -- never `rm -rf src/cpp`, which once cost a whole Windows build.
 clean_gen:
 	rm -rf $(ROOT)/src/cpp/TK*
 	rm -f  $(ROOT)/src/cpp/manifest.json $(ROOT)/src/cpp/toolkits.cmake $(ROOT)/src/cpp/common/ncollection_docs.h
-	find $(ROOT)/src/nanoocp -mindepth 1 \( -name '_templates.py' -o -name 'py.typed' \) -prune -o -print0 \
+	find $(ROOT)/src/OCP3x -mindepth 1 \( -name '_templates.py' -o -name 'py.typed' \) -prune -o -print0 \
 	    | xargs -0 rm -rf
 	@# The staged tree holds a copy of what was just removed, and the .pth keeps it importable -- without this,
-	@# `import nanoocp` would go on working after a clean and quietly serve the previous build.
+	@# `import OCP3x` would go on working after a clean and quietly serve the previous build.
 	rm -rf $(STAGE_DIR)
-	rm -f $(wildcard $(ROOT)/.venv/lib/python3.*/site-packages/_nanoocp_dev.pth)
+	rm -f $(wildcard $(ROOT)/.venv/lib/python3.*/site-packages/_ocp3x_dev.pth)
 
-# $(PY), never `uv run`: uv syncs the project before running, which builds nanoocp -- and that needs the generated
+# $(PY), never `uv run`: uv syncs the project before running, which builds OCP3x -- and that needs the generated
 # sources this step is about to produce. On a fresh clone it fails on the missing src/cpp/toolkits.cmake.
 generate: clean_gen
 ifeq ($(PLATFORM),macos)
@@ -227,19 +227,19 @@ endif
 compile:
 ifeq ($(PLATFORM),macos)
 	cd $(ROOT) && cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=Release \
-	    -DPython_EXECUTABLE=$(ROOT)/.venv/bin/python -DNANOOCP_RAPIDJSON_DIR=$(DEPS)/rapidjson/include
+	    -DPython_EXECUTABLE=$(ROOT)/.venv/bin/python -DOCP3X_RAPIDJSON_DIR=$(DEPS)/rapidjson/include
 	cd $(ROOT) && cmake --build $(BUILD_DIR)
 	$(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 	@# Exactly one copy of the extension modules may be in a process: nanobind registers its types per domain, and
-	@# a wheel-installed nanoocp next to the staged one aborts the import with "Critical nanobind error".
-	cd $(ROOT) && uv pip uninstall -q nanoocp 2>/dev/null || true
+	@# a wheel-installed OCP3x next to the staged one aborts the import with "Critical nanobind error".
+	cd $(ROOT) && uv pip uninstall -q ocp3x 2>/dev/null || true
 else ifeq ($(PLATFORM),windows)
-	cd $(ROOT) && ./deps/build-nanoocp-windows.sh
+	cd $(ROOT) && ./deps/build-OCP3x-windows.sh
 	$(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 else
 	$(CONTAINER) "cmake -S /work -B /work/build-ml -G Ninja -DCMAKE_BUILD_TYPE=Release \
-	    -DPython_EXECUTABLE=$(ML_PY) -DNANOOCP_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
-	    -DNANOOCP_RAPIDJSON_DIR=/work/deps/rapidjson/include"
+	    -DPython_EXECUTABLE=$(ML_PY) -DOCP3X_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
+	    -DOCP3X_RAPIDJSON_DIR=/work/deps/rapidjson/include"
 	$(CONTAINER) "ninja -k 0 -C /work/build-ml"
 	$(CONTAINER) "/work/deps/stage.sh build-ml stage-ml"
 endif
@@ -297,8 +297,8 @@ else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && uv build --wheel --no-build-isolation --python "$(WIN_PY)" -o $(RAW_DIR)
 else
 	$(CONTAINER) "cd /work && uv build --wheel --no-build-isolation --python $(ML_PY) -o /work/dist/unrepaired \
-	    -C cmake.define.NANOOCP_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
-	    -C cmake.define.NANOOCP_RAPIDJSON_DIR=/work/deps/rapidjson/include"
+	    -C cmake.define.OCP3X_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
+	    -C cmake.define.OCP3X_RAPIDJSON_DIR=/work/deps/rapidjson/include"
 endif
 	@ls -lh $(RAW_DIR)
 
@@ -321,9 +321,9 @@ clean_dist:
 	rm -rf $(DIST_DIR)
 
 # ---- OCP compatibility shim ---------------------------------------------------------------------------------------
-# cadquery-ocp-novtk 8.0.1.0.0: `import OCP.*` on top of nanoocp (shim/). A pure-Python py3-none-any wheel built by
-# shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to nanoocp's.
-# Generation reads nanoocp's own signatures, so the staged tree must be importable -- found the way `make test` finds it.
+# cadquery-ocp-novtk 8.0.1.0.0: `import OCP.*` on top of OCP3x (shim/). A pure-Python py3-none-any wheel built by
+# shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to OCP3x's.
+# Generation reads OCP3x's own signatures, so the staged tree must be importable -- found the way `make test` finds it.
 shim:
 ifeq ($(PLATFORM),macos)
 	$(PY) $(ROOT)/shim/build_wheel.py $(DIST_DIR)
@@ -345,12 +345,12 @@ else
 	@echo "shim-parity runs on macOS only so far (see shim/parity.py)"; exit 1
 endif
 
-# ---- nanoocp-enabled packages -------------------------------------------------------------------------------------
+# ---- OCP3x-enabled packages -------------------------------------------------------------------------------------
 # build123d 0.13.0, ocpsvg 0.7.0, ocp_gordon 0.3.1 and ocp_tessellate 3.5.3 as sdists from PyPI (sha256-verified),
-# patched to import nanoocp instead of OCP (nanobuild/patches, tracked). Output: build/nanobuild/src/<pkg>-<version>,
-# ready for `uv pip install dist/nanoocp-*.whl build/nanobuild/src/*` into a fresh venv. Pure source work, so it runs
+# patched to import OCP3x instead of OCP (ocp3xbuild/patches, tracked). Output: build/ocp3xbuild/src/<pkg>-<version>,
+# ready for `uv pip install dist/ocp3x-*.whl build/ocp3xbuild/src/*` into a fresh venv. Pure source work, so it runs
 # on the host on every platform.
-# Then a complete test environment in _scratch/.venv (Python 3.14, untracked): recreated on every run, with the nanoocp
+# Then a complete test environment in _scratch/.venv (Python 3.14, untracked): recreated on every run, with the OCP3x
 # wheel from DIST_DIR (`make wheel` first -- the wheel is what gets tested, not the staged tree) and the four patched
 # packages. Activation lasts one shell, so it shares the line with the install.
 SCRATCH := $(ROOT)/_scratch
@@ -359,16 +359,16 @@ ifeq ($(PLATFORM),windows)
 else
   SCRATCH_ACTIVATE := $(SCRATCH)/.venv/bin/activate
 endif
-nanobuild:
-	$(ROOT)/nanobuild/nanobuild.sh
-	@wheels=$$(ls $(DIST_DIR)/nanoocp-*.whl 2>/dev/null); \
-	if [ -z "$$wheels" ]; then echo "nanobuild: no nanoocp wheel in $(DIST_DIR) -- run 'make wheel' first" >&2; exit 1; fi; \
-	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "nanobuild: more than one nanoocp wheel in $(DIST_DIR): $$wheels" >&2; exit 1; fi
+ocp3xbuild:
+	$(ROOT)/ocp3xbuild/ocp3xbuild.sh
+	@wheels=$$(ls $(DIST_DIR)/ocp3x-*.whl 2>/dev/null); \
+	if [ -z "$$wheels" ]; then echo "ocp3xbuild: no OCP3x wheel in $(DIST_DIR) -- run 'make wheel' first" >&2; exit 1; fi; \
+	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "ocp3xbuild: more than one OCP3x wheel in $(DIST_DIR): $$wheels" >&2; exit 1; fi
 	mkdir -p $(SCRATCH)
 	rm -rf $(SCRATCH)/.venv
 	uv venv -p 3.14 $(SCRATCH)/.venv
-	@# shell globs, not make's wildcard function: make expands the whole recipe before its first line has created build/nanobuild/src
-	. $(SCRATCH_ACTIVATE) && uv pip install $(DIST_DIR)/nanoocp-*.whl $(ROOT)/build/nanobuild/src/*
-	@echo "nanobuild: test environment ready -- source $(SCRATCH_ACTIVATE)"
+	@# shell globs, not make's wildcard function: make expands the whole recipe before its first line has created build/ocp3xbuild/src
+	. $(SCRATCH_ACTIVATE) && uv pip install $(DIST_DIR)/ocp3x-*.whl $(ROOT)/build/ocp3xbuild/src/*
+	@echo "ocp3xbuild: test environment ready -- source $(SCRATCH_ACTIVATE)"
 
 all: generate compile stubs test wheel shim

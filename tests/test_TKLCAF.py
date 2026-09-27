@@ -6,15 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import AppStdL, PCDM, TDF, TDataStd, TDocStd, TFunction
-from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+from OCP3x import AppStdL, PCDM, TDF, TDataStd, TDocStd, TFunction
+from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKLCAF" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["TDF", "TDataStd", "TFunction", "TDocStd", "AppStdL"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 @pytest.fixture
@@ -105,7 +105,7 @@ def test_save_without_a_storage_driver_and_stream_kinds(doc):
     app = TDocStd.TDocStd_Application()
     status, data = app.SaveAs(doc)
     assert status == PCDM.PCDM_SS_Failure and data == b""
-    assert "-> tuple[nanoocp.PCDM.PCDM_StoreStatus, bytes]" in TDocStd.TDocStd_Application.SaveAs.__doc__
+    assert "-> tuple[OCP3x.PCDM.PCDM_StoreStatus, bytes]" in TDocStd.TDocStd_Application.SaveAs.__doc__
     assert "theIStream: typing.BinaryIO" in TDocStd.TDocStd_Application.Open.__doc__
     assert "DumpJson(self, theDepth: int = -1) -> str" in TDocStd.TDocStd_Document.DumpJson.__doc__
     # SaveAs(doc, ostream&, ExtendedString& theStatusMessage, range) collides with SaveAs(doc, path, range) after the

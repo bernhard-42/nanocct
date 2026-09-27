@@ -1,22 +1,22 @@
-"""Generate the OCP shim's Python modules from the OCP spec and nanoocp's own signatures. Needs nanoocp importable.
+"""Generate the OCP shim's Python modules from the OCP spec and OCP3x's own signatures. Needs OCP3x importable.
 
     python shim/generate.py            (normally called by build_wheel.py)
 
 Input: ocp-8.0.1.0.0.json (names per OCP module) and ocp-8.0.1.0.0-members.json (every member's OCP signatures), both
 from shim/extract_spec.py. Output, as {path: text}:
 
-- OCP/__init__.py        loads every nanoocp toolkit, then OCP/_patches.py (importing a toolkit AFTER its base classes
+- OCP/__init__.py        loads every OCP3x toolkit, then OCP/_patches.py (importing a toolkit AFTER its base classes
                          were patched aborts nanobind -- measured 2026-09-25, cause unknown)
 - OCP/_patches.py        every adaptation, decided here and not at call time. Phase 1 takes the ORIGINAL callables,
                          phase 2 assigns: a subclass never wraps its base's wrapper. Per member and argument count:
                          an alias where only OCP's `_s` name is missing; a specialised function with fixed argument
-                         indices, fill and result shape where one OCP overload and one nanoocp overload decide it; the
+                         indices, fill and result shape where one OCP overload and one OCP3x overload decide it; the
                          dynamic adapter of OCP/_rt.py where only the argument types at call time can.
-- OCP/<pkg>/__init__.py  `from nanoocp.<pkg> import ...` of the names OCP exposes there (OCP.collections: aliases).
+- OCP/<pkg>/__init__.py  `from OCP3x.<pkg> import ...` of the names OCP exposes there (OCP.collections: aliases).
 
-This is monkey-patching of nanoocp, the one deliberate exception to the project rule, confined to this throwaway shim
+This is monkey-patching of OCP3x, the one deliberate exception to the project rule, confined to this throwaway shim
 (the user's decision, 2026-09-25): a subclass would break isinstance() for objects C++ returns, and nanobind's
-metaclass cannot be subclassed to repair that. nanoocp is untouched unless `OCP` is imported.
+metaclass cannot be subclassed to repair that. OCP3x is untouched unless `OCP` is imported.
 """
 import importlib
 import importlib.util
@@ -26,7 +26,7 @@ import types
 from collections import Counter
 from pathlib import Path
 
-import nanoocp.all  # noqa: F401  every toolkit, as at runtime
+import OCP3x.all  # noqa: F401  every toolkit, as at runtime
 
 HERE = Path(__file__).parent
 _spec = importlib.util.spec_from_file_location("ocp_shim_rt", HERE / "OCP" / "_rt.py")
@@ -51,7 +51,7 @@ def nano_sigs(fn) -> list[tuple[list[tuple[str, str, bool]], str]]:
 
 
 def shape_expr(nt: int | None, ocp_ret: str) -> str | None:
-    """Python expression turning nanoocp's result `r` into OCP's; None when the shapes cannot be matched statically."""
+    """Python expression turning OCP3x's result `r` into OCP's; None when the shapes cannot be matched statically."""
     if ocp_ret == "None":
         return "None"
     ot = tuple_len(ocp_ret)
@@ -65,7 +65,7 @@ def shape_expr(nt: int | None, ocp_ret: str) -> str | None:
 
 
 def plan(ocp: list, nano: list, n: int):
-    """How a call with n arguments (self excluded) maps onto nanoocp, decided statically -- or None if it cannot be."""
+    """How a call with n arguments (self excluded) maps onto OCP3x, decided statically -- or None if it cannot be."""
     fits = [o for o in ocp if o.fits(n)]
     if len(fits) != 1:
         return None
@@ -81,7 +81,7 @@ def plan(ocp: list, nano: list, n: int):
         return None
     ps, nret = cands[0]
     if kept != [p for p, _, _ in ps][:len(kept)]:
-        return None                                  # nanoocp takes them in another order: positional passing is wrong
+        return None                                  # OCP3x takes them in another order: positional passing is wrong
     nt = tuple_len(nret)
     if len(drop) > 0 and (nt is None and len(drop) > 1 or nt is not None and len(drop) > nt):
         return None
@@ -98,8 +98,8 @@ def plan(ocp: list, nano: list, n: int):
 
 def direct_shapes(ocp: list, nano: list, arities: list[int]) -> dict[int, str] | None:
     """For a member whose overload only the argument types decide: when every argument count has ONE OCP return shape
-    and nanoocp returns one shape, the call can go straight through with a fixed result shape; only a TypeError
-    (an OCP-style call nanoocp does not take) needs the dynamic adapter. None when the shape depends on the overload."""
+    and OCP3x returns one shape, the call can go straight through with a fixed result shape; only a TypeError
+    (an OCP-style call OCP3x does not take) needs the dynamic adapter. None when the shape depends on the overload."""
     nshapes = {tuple_len(r) for _, r in nano}
     if len(nshapes) != 1 or len(arities) == 0:
         return None
@@ -156,7 +156,7 @@ def main() -> dict[str, str]:
     names_spec = json.loads((HERE / "ocp-8.0.1.0.0.json").read_text())["modules"]
     members = json.loads((HERE / "ocp-8.0.1.0.0-members.json").read_text())
     stats: Counter = Counter()
-    head = ['"""Generated by shim/generate.py from OCP 8.0.1 and nanoocp\'s signatures. Do not edit."""',
+    head = ['"""Generated by shim/generate.py from OCP 8.0.1 and OCP3x\'s signatures. Do not edit."""',
             "from OCP import _rt", ""]
     phase1: list[str] = []
     phase2: list[str] = []
@@ -177,7 +177,7 @@ def main() -> dict[str, str]:
 
     for pkg in sorted(members):
         try:
-            nmod = importlib.import_module(f"nanoocp.{pkg}")
+            nmod = importlib.import_module(f"OCP3x.{pkg}")
         except ImportError:
             continue
         for cname, cm in sorted(members[pkg].items()):
@@ -203,8 +203,8 @@ def main() -> dict[str, str]:
                     continue
                 is_static = name.endswith("_s")
                 plain = name[:-2] if is_static else name
-                # nanoocp suffixes every class static like OCP (R-STATIC-S, 2026-09-26), so a class member keeps its OCP
-                # name; only a namespace function (a module owner here: OCP's class, nanoocp's package) is plain
+                # OCP3x suffixes every class static like OCP (R-STATIC-S, 2026-09-26), so a class member keeps its OCP
+                # name; only a namespace function (a module owner here: OCP's class, OCP3x's package) is plain
                 source = plain if is_module else name
                 if is_module and hasattr(obj, name):
                     continue                          # the module has the OCP spelling itself
@@ -257,12 +257,12 @@ def main() -> dict[str, str]:
     files["OCP/_patches.py"] = "\n".join(head + ["", "# phase 1: the original callables"] + phase1
                                          + ["", "# phase 2: OCP's conventions"] + phase2 + tail) + "\n"
     files["OCP/__init__.py"] = (
-        '"""OCP 8.0.1 API on nanoocp (cadquery-ocp-novtk compatibility wheel). Generated by shim/generate.py."""\n'
+        '"""OCP 8.0.1 API on OCP3x (cadquery-ocp-novtk compatibility wheel). Generated by shim/generate.py."""\n'
         f'__version__ = "{OCP_VERSION}"\n\n'
-        "import nanoocp.all  # noqa: F401  every toolkit BEFORE patching: importing one after its bases were patched aborts nanobind\n"
+        "import OCP3x.all  # noqa: F401  every toolkit BEFORE patching: importing one after its bases were patched aborts nanobind\n"
         "from OCP import _patches  # noqa: F401,E402\n")
     # the modules
-    nc = importlib.import_module("nanoocp.NCollection")
+    nc = importlib.import_module("OCP3x.NCollection")
     table: dict[str, str] = {}
     for n in dir(nc):
         if n.startswith("NCollection_") and "__" in n:
@@ -270,24 +270,24 @@ def main() -> dict[str, str]:
             for key in (args, args.replace("Handle_", ""), args.replace("Handle_", "").replace("NCollection_", "")):
                 table.setdefault(kind + "_" + key.replace("__", "_"), n)
     for pkg, v in sorted(names_spec.items()):
-        doc = f'"""OCP.{pkg} on nanoocp. Generated by shim/generate.py."""\n'
+        doc = f'"""OCP.{pkg} on OCP3x. Generated by shim/generate.py."""\n'
         if pkg == "collections":
             pairs = [(table[o], o) for o in v["names"] if o in table]
-            body = "".join(f"from nanoocp.NCollection import {a} as {b}\n" for a, b in pairs)
+            body = "".join(f"from OCP3x.NCollection import {a} as {b}\n" for a, b in pairs)
             stats["collections"] += len(pairs)
         else:
             try:
-                nmod = importlib.import_module(f"nanoocp.{pkg}")
+                nmod = importlib.import_module(f"OCP3x.{pkg}")
             except ImportError:
                 files[f"OCP/{pkg}/__init__.py"] = doc
-                stats["module without nanoocp counterpart"] += 1
+                stats["module without OCP3x counterpart"] += 1
                 continue
             present = [n for n in v["names"] if hasattr(nmod, n)]
             body = ""
             if pkg in v["names"] and not hasattr(nmod, pkg):     # OCP.TopoDS.TopoDS; but BRepGProp.BRepGProp is a class
-                body += f"import nanoocp.{pkg} as {pkg}  # OCP.{pkg}.{pkg}: the namespace is the package module\n"
+                body += f"import OCP3x.{pkg} as {pkg}  # OCP.{pkg}.{pkg}: the namespace is the package module\n"
             if present:
-                body += f"from nanoocp.{pkg} import (\n" + "".join(f"    {n},\n" for n in present) + ")\n"
+                body += f"from OCP3x.{pkg} import (\n" + "".join(f"    {n},\n" for n in present) + ")\n"
             stats["names"] += len(present)
         files[f"OCP/{pkg}/__init__.py"] = doc + body
     print("generated:", dict(sorted(stats.items())), file=sys.stderr)

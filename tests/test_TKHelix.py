@@ -6,14 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import BRepGProp, GProp, HelixBRep, HelixGeom, NCollection, TopAbs, TopExp, gp
+from OCP3x import BRepGProp, GProp, HelixBRep, HelixGeom, NCollection, TopAbs, TopExp, gp
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKHelix" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["HelixBRep", "HelixGeom"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_helix_length_and_curve():

@@ -13,7 +13,7 @@ What it does, all inside --work (never in the build123d checkout, never in any e
    setuptools-scm collects package data from git, so an install from an archive loses the fonts; the suite imports
    it from the copy through PYTHONPATH=<copy>/src instead.
      baseline  the real `cadquery-ocp-novtk` from PyPI, as the dependency list says;
-     shim      nanoocp's wheel and the shim wheel (which *is* cadquery-ocp-novtk 8.0.1.0.0), given as files so the
+     shim      OCP3x's wheel and the shim wheel (which *is* cadquery-ocp-novtk 8.0.1.0.0), given as files so the
                resolver takes them instead of PyPI's.
    Before running, each venv is asked where `OCP` comes from, so a baseline that silently got the shim (or the
    reverse) fails here instead of producing a perfect "parity".
@@ -97,7 +97,7 @@ def clean_env(copy: Path) -> dict[str, str]:
 
 def run_suite(exe: Path, copy: Path, junit: Path, log: Path) -> int:
     # rootdir and config pinned to the copy: its pyproject.toml has no pytest section, so pytest would search upwards
-    # and, with --work inside this repository (`make shim-parity`: build/shim-parity), take nanoOCP's own pyproject.toml
+    # and, with --work inside this repository (`make shim-parity`: build/shim-parity), take OCP3x's own pyproject.toml
     # -- its settings (pythonpath = ".") and a rootdir that puts the side's path into every test ID, so the two sides
     # had no ID in common (2026-09-26)
     with log.open("w") as out:
@@ -123,13 +123,13 @@ def outcomes(junit: Path) -> dict[str, str]:
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="shim/parity.py", description=__doc__.split("\n\n")[0])
     ap.add_argument("--build123d", type=Path, default=Path.home() / "Development" / "CAD" / "build123d")
-    ap.add_argument("--dist", type=Path, default=ROOT / "dist", help="where nanoocp's and the shim's wheels are")
+    ap.add_argument("--dist", type=Path, default=ROOT / "dist", help="where OCP3x's and the shim's wheels are")
     ap.add_argument("--work", type=Path, default=ROOT / "build" / "shim-parity")
     ap.add_argument("--python", default="3.14")
     ap.add_argument("--reuse-venvs", action="store_true", help="keep existing venvs in --work (after a first full run)")
     args = ap.parse_args(argv)
 
-    nanoocp_whl, shim_whl = one_wheel(args.dist, "nanoocp-*.whl"), one_wheel(args.dist, "cadquery_ocp_novtk-*.whl")
+    ocp3x_whl, shim_whl = one_wheel(args.dist, "ocp3x-*.whl"), one_wheel(args.dist, "cadquery_ocp_novtk-*.whl")
     work = args.work.resolve()
     work.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
@@ -139,7 +139,7 @@ def main(argv: list[str]) -> int:
     for copy in copies.values():
         commit = extract(args.build123d, copy)
     deps, plugins = requirements(copies["baseline"])
-    packages = {"baseline": [*deps, *plugins], "shim": [str(nanoocp_whl), str(shim_whl), *deps, *plugins]}
+    packages = {"baseline": [*deps, *plugins], "shim": [str(ocp3x_whl), str(shim_whl), *deps, *plugins]}
     exes = {side: make_venv(work / side / "venv", args.python, packages[side], args.reuse_venvs) for side in SIDES}
 
     origin = {}
@@ -159,7 +159,7 @@ def main(argv: list[str]) -> int:
     only = {side: sorted(set(results[side]) - set(results[other])) for side, other in (SIDES, SIDES[::-1])}
     differ = sorted(t for t in set(results["baseline"]) & set(results["shim"]) if results["baseline"][t] != results["shim"][t])
     summary = {
-        "build123d_commit": commit, "python": args.python, "nanoocp_wheel": nanoocp_whl.name, "shim_wheel": shim_whl.name,
+        "build123d_commit": commit, "python": args.python, "ocp3x_wheel": ocp3x_whl.name, "shim_wheel": shim_whl.name,
         "ocp": origin, "pytest_exit": codes, "counts": {side: dict(Counter(results[side].values())) for side in SIDES},
         "ids": {side: len(results[side]) for side in SIDES}, "only_in": only,
         "differing": {t: {side: results[side][t] for side in SIDES} for t in differ},

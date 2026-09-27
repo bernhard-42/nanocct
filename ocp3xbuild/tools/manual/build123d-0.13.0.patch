@@ -5,7 +5,7 @@
  
  dependencies = [
 -    "cadquery-ocp-novtk >= 8.0, < 8.1",
-+    "nanoocp >= 0.1, < 0.2",
++    "ocp3x >= 0.1, < 0.2",
      "typing_extensions >= 4.16.0, < 5",
      "numpy >= 2, < 3",
      "svgpathtools >= 1.5.1, < 2",
@@ -17,7 +17,7 @@
 -stubs = [
 -    "cadquery-ocp-stubs >= 8.0, < 8.1",
 -]
-+# typing stubs: nanoocp ships its own
++# typing stubs: OCP3x ships its own
 +stubs = []
  
  # dependencies to build the docs
@@ -91,26 +91,26 @@
 @@ -94,6 +94,7 @@
  from uuid import UUID
  
- import nanoocp.TopAbs as ta
+ import OCP3x.TopAbs as ta
 +import numpy as np
  from lib3mf import Lib3MF
- from nanoocp.BRep import BRep_Tool
- from nanoocp.BRepBuilderAPI import (
+ from OCP3x.BRep import BRep_Tool
+ from OCP3x.BRepBuilderAPI import (
 @@ -104,7 +105,7 @@
  )
- from nanoocp.BRepGProp import BRepGProp
- from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
--from nanoocp.gp import gp_Pnt
-+from nanoocp.gp import gp_Pnt, gp_TrsfForm
- from nanoocp.GProp import GProp_GProps
- from nanoocp.TopAbs import TopAbs_ShapeEnum
- from nanoocp.TopExp import TopExp_Explorer
+ from OCP3x.BRepGProp import BRepGProp
+ from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
+-from OCP3x.gp import gp_Pnt
++from OCP3x.gp import gp_Pnt, gp_TrsfForm
+ from OCP3x.GProp import GProp_GProps
+ from OCP3x.TopAbs import TopAbs_ShapeEnum
+ from OCP3x.TopExp import TopExp_Explorer
 @@ -291,20 +292,22 @@
              # Triangulate the face
              poly_triangulation = BRep_Tool.Triangulation_s(facet.wrapped, loc)
              trsf = loc.Transformation()
 -            # Store the vertices in the triangulated face
-+            # Store the vertices in the triangulated face: one zero-copy view (nanoOCP),
++            # Store the vertices in the triangulated face: one zero-copy view (OCP3x),
 +            # transformed only for a located face
              node_count = poly_triangulation.NbNodes()
 -            for i in range(1, node_count + 1):
@@ -163,15 +163,15 @@
 --- a/src/build123d/topology/history.py
 +++ b/src/build123d/topology/history.py
 @@ -44,7 +44,8 @@
- from nanoocp.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
- from nanoocp.BRepBuilderAPI import BRepBuilderAPI_Sewing
- from nanoocp.BRepTools import BRepTools_History
--from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
-+# OCCT #1541 workaround; back to nanoocp.ShapeUpgrade once OCCT is fixed
-+from nanoocp.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
- from nanoocp.TopExp import TopExp
- from nanoocp.TopLoc import TopLoc_Location
- from nanoocp.TopoDS import TopoDS_Shape
+ from OCP3x.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
+ from OCP3x.BRepBuilderAPI import BRepBuilderAPI_Sewing
+ from OCP3x.BRepTools import BRepTools_History
+-from OCP3x.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++# OCCT #1541 workaround; back to OCP3x.ShapeUpgrade once OCCT is fixed
++from OCP3x.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
+ from OCP3x.TopExp import TopExp
+ from OCP3x.TopLoc import TopLoc_Location
+ from OCP3x.TopoDS import TopoDS_Shape
 --- a/src/build123d/topology/one_d.py
 +++ b/src/build123d/topology/one_d.py
 @@ -3754,13 +3754,12 @@
@@ -215,21 +215,21 @@
 --- a/src/build123d/topology/shape_core.py
 +++ b/src/build123d/topology/shape_core.py
 @@ -110,12 +110,13 @@
- from nanoocp.gce import gce_MakeLin
- from nanoocp.GeomAPI import GeomAPI_ProjectPointOnSurf
- from nanoocp.GeomLib import GeomLib_IsPlanarSurface
--from nanoocp.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec, gp_XYZ
-+from nanoocp.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_TrsfForm, gp_Vec, gp_XYZ
- from nanoocp.GProp import GProp_GProps
- from nanoocp.ShapeAnalysis import ShapeAnalysis_Curve
- from nanoocp.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
- from nanoocp.ShapeFix import ShapeFix_Shape
--from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
-+# OCCT #1541 workaround; back to nanoocp.ShapeUpgrade once OCCT is fixed
-+from nanoocp.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
- from nanoocp.Standard import Standard_Failure
- from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
- from nanoocp.TopExp import TopExp, TopExp_Explorer
+ from OCP3x.gce import gce_MakeLin
+ from OCP3x.GeomAPI import GeomAPI_ProjectPointOnSurf
+ from OCP3x.GeomLib import GeomLib_IsPlanarSurface
+-from OCP3x.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec, gp_XYZ
++from OCP3x.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_TrsfForm, gp_Vec, gp_XYZ
+ from OCP3x.GProp import GProp_GProps
+ from OCP3x.ShapeAnalysis import ShapeAnalysis_Curve
+ from OCP3x.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
+ from OCP3x.ShapeFix import ShapeFix_Shape
+-from OCP3x.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++# OCCT #1541 workaround; back to OCP3x.ShapeUpgrade once OCCT is fixed
++from OCP3x.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
+ from OCP3x.Standard import Standard_Failure
+ from OCP3x.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
+ from OCP3x.TopExp import TopExp, TopExp_Explorer
 @@ -2338,30 +2339,17 @@
              trsf = loc.Transformation()
              reverse = face.wrapped.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
@@ -258,7 +258,7 @@
 -                )
 -                for t in poly.Triangles()
 -            ]
-+            # add vertices: one zero-copy view (nanoOCP), transformed only for a located face
++            # add vertices: one zero-copy view (OCP3x), transformed only for a located face
 +            nodes = poly.NodesArray()
 +            if trsf.Form() != gp_TrsfForm.gp_Identity:
 +                m = np.array([[trsf.Value(r, c) for c in range(1, 5)] for r in range(1, 4)])
@@ -281,7 +281,7 @@
 -            for i in range(1, nb_nodes + 1):
 -                p = node_arr.Value(i)
 -                coords[i - 1] = (p.X(), p.Y(), p.Z())
-+            coords = poly.NodesArray()  # zero-copy view (nanoOCP)
++            coords = poly.NodesArray()  # zero-copy view (OCP3x)
              transformed = coords @ rot.T + trans
              all_vertices.extend(Vector(row[0], row[1], row[2]) for row in transformed)
  
@@ -292,7 +292,7 @@
 -            for i in range(1, nb_nodes + 1):
 -                d = poly.Normal(i)
 -                norm_coords[i - 1] = (d.X(), d.Y(), d.Z())
-+            # zero-copy float32 view (nanoOCP), normalised as poly.Normal(i) does by returning a gp_Dir
++            # zero-copy float32 view (OCP3x), normalised as poly.Normal(i) does by returning a gp_Dir
 +            norm_coords = poly.NormalsArray().astype(np.float64)
 +            norm_coords /= np.linalg.norm(norm_coords, axis=1, keepdims=True)
              rotated_normals = norm_coords @ rot.T * reverse_factor
@@ -307,7 +307,7 @@
 -                for i in range(1, nb_nodes + 1):
 -                    uv_pnt = uv_arr.Value(i)
 -                    uv_raw[i - 1] = (uv_pnt.X(), uv_pnt.Y())
-+                uv_raw = poly.UVNodesArray()  # zero-copy view (nanoOCP)
++                uv_raw = poly.UVNodesArray()  # zero-copy view (OCP3x)
  
                  uv_min = uv_raw.min(axis=0)
                  uv_max = uv_raw.max(axis=0)

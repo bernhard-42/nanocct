@@ -1,19 +1,19 @@
 #!/bin/bash
 # Fetch build123d and the three packages it builds on as sdists from PyPI, verify each against its sha256, and apply
-# the nanoocp patch from nanobuild/patches: the result is four source trees that import nanoocp instead of OCP.
+# the OCP3x patch from ocp3xbuild/patches: the result is four source trees that import OCP3x instead of OCP.
 #
-#   make nanobuild                       (or: nanobuild/nanobuild.sh)
+#   make ocp3xbuild                       (or: ocp3xbuild/ocp3xbuild.sh)
 #   uv venv -p 3.14 /path/to/venv
-#   VIRTUAL_ENV=/path/to/venv uv pip install dist/nanoocp-*.whl build/nanobuild/src/*
+#   VIRTUAL_ENV=/path/to/venv uv pip install dist/ocp3x-*.whl build/ocp3xbuild/src/*
 #
-# The patches carry the port (imports, OCP's `_s` statics, out-parameters that nanoocp returns, streams, the
-# dependency on nanoocp instead of cadquery-ocp-novtk / cadquery-ocp-proxy), including each package's own tests,
-# so every tree can run its suite against nanoocp. The trees are rebuilt from the verified sdist on every run.
+# The patches carry the port (imports, OCP's `_s` statics, out-parameters that OCP3x returns, streams, the
+# dependency on OCP3x instead of cadquery-ocp-novtk / cadquery-ocp-proxy), including each package's own tests,
+# so every tree can run its suite against OCP3x. The trees are rebuilt from the verified sdist on every run.
 #
-# nanobuild/patches/<pkg>.patch is the one complete patch per package, and the only thing applied here. It is generated
-# by nanobuild/tools/regen.sh -- edit nanobuild/tools/manual/<pkg>.patch (the hand-made part, an input), never patches/.
+# ocp3xbuild/patches/<pkg>.patch is the one complete patch per package, and the only thing applied here. It is generated
+# by ocp3xbuild/tools/regen.sh -- edit ocp3xbuild/tools/manual/<pkg>.patch (the hand-made part, an input), never patches/.
 #
-# How a patch is made (nanobuild/tools, each with its usage in the docstring): tools/port.py does the mechanical part
+# How a patch is made (ocp3xbuild/tools, each with its usage in the docstring): tools/port.py does the mechanical part
 # from the shim's name map and lists the rest as TODOs, tools/fix_outargs.py the ignored BRep_Tool out-arguments;
 # tools/trace_shim.py records the call sites the shim adapts while the package's suite runs through it; the rest is
 # hand work driven by native test runs. tools/mkpatch.py writes the patch, tools/junit_cmp.py checks parity against
@@ -30,12 +30,12 @@ PACKAGES=(
     "build123d-0.13.0 97c5577a777ff7219714b10f70f253c7109e84bb3ec621eea5d4597b4c7656b4 https://files.pythonhosted.org/packages/4b/6c/47b531b579d5238e4627b5113375d8f7a7145a24b3447413be318422ee71/build123d-0.13.0.tar.gz"
 )
 
-OUT="$ROOT/build/nanobuild"
+OUT="$ROOT/build/ocp3xbuild"
 SDIST="$OUT/sdist"
 SRC="$OUT/src"
 
-# the rm -rf below is built from $ROOT: refuse to run if that is not a nanoOCP checkout
-[ -f "$ROOT/generator/__main__.py" ] && [ -f "$HERE/nanobuild.sh" ] || { echo "not a nanoOCP checkout: $ROOT" >&2; exit 1; }
+# the rm -rf below is built from $ROOT: refuse to run if that is not an OCP3x checkout
+[ -f "$ROOT/generator/__main__.py" ] && [ -f "$HERE/ocp3xbuild.sh" ] || { echo "not an OCP3x checkout: $ROOT" >&2; exit 1; }
 
 mkdir -p "$SDIST" "$SRC"
 for entry in "${PACKAGES[@]}"; do
@@ -50,9 +50,9 @@ for entry in "${PACKAGES[@]}"; do
     tar -xzf "$tarball" -C "$SRC"
     [ -d "$SRC/$pkg" ] || { echo "$tarball did not unpack to $pkg" >&2; exit 1; }
     patch -p1 --forward --quiet -d "$SRC/$pkg" < "$patch_file"
-    if grep -rqE '^\s*(from OCP[. ]|import OCP)' --include='*.py' "$SRC/$pkg"; then
+    if grep -rqE '^\s*(from OCP[. ]|import OCP([. ,]|$))' --include='*.py' "$SRC/$pkg"; then
         echo "$pkg still imports OCP after patching:" >&2
-        grep -rnE '^\s*(from OCP[. ]|import OCP)' --include='*.py' "$SRC/$pkg" >&2
+        grep -rnE '^\s*(from OCP[. ]|import OCP([. ,]|$))' --include='*.py' "$SRC/$pkg" >&2
         exit 1
     fi
     echo "$pkg: patched ($(grep -c '^+++ ' "$patch_file") files) -> $SRC/$pkg"

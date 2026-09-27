@@ -18,13 +18,13 @@ Ctrl-C in the terminal, or closing the Tk control window, ends it.
 
 import tkinter as tk
 
-from nanoocp.AIS import AIS_InteractiveContext, AIS_Shape, AIS_Shaded
-from nanoocp.Aspect import Aspect_DisplayConnection
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.Cocoa import Cocoa_Window
-from nanoocp.Quantity import Quantity_Color, Quantity_NOC_STEELBLUE, Quantity_TOC_sRGB
-from nanoocp.V3d import V3d_Viewer, V3d_XposYnegZpos
-from nanoocp.OpenGl import OpenGl_GraphicDriver
+from OCP3x.AIS import AIS_InteractiveContext, AIS_Shape, AIS_Shaded
+from OCP3x.Aspect import Aspect_DisplayConnection
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.Cocoa import Cocoa_Window
+from OCP3x.Quantity import Quantity_Color, Quantity_NOC_STEELBLUE, Quantity_TOC_sRGB
+from OCP3x.V3d import V3d_Viewer, V3d_XposYnegZpos
+from OCP3x.OpenGl import OpenGl_GraphicDriver
 
 WIDTH, HEIGHT = 900, 700
 FRAME_MS = 16                      # ~60 Hz
@@ -33,7 +33,7 @@ FRAME_MS = 16                      # ~60 Hz
 def main() -> None:
     # 1. the NSApplication, courtesy of tkinter. Keep the Tk window: closing it stops the loop.
     root = tk.Tk()
-    root.title("nanoOCP control")
+    root.title("OCP3x control")
     root.geometry("300x80+1050+100")
     tk.Label(root, text="OCCT window is open.\nClose this window to quit.").pack(padx=10, pady=10)
     root.update()

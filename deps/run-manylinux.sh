@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run a command inside the nanoOCP manylinux_2_28 container (deps/manylinux.Dockerfile), with the repository mounted
+# Run a command inside the OCP3x manylinux_2_28 container (deps/manylinux.Dockerfile), with the repository mounted
 # at /work. Everything the Linux build does -- generate, compile, test, and later `auditwheel repair` -- goes through
 # here, so there is one Linux environment and it is the same one CI uses.
 #
@@ -11,7 +11,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
-IMAGE=nanoocp-manylinux
+IMAGE=OCP3x-manylinux
 
 docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE" > /dev/null
 

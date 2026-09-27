@@ -1,1 +1,1 @@
-"""nanoOCP binding generator: OCCT headers -> nanobind C++ via libclang."""
+"""OCP3x binding generator: OCCT headers -> nanobind C++ via libclang."""

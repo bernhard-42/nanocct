@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanoocp import Blend, BlendFunc, BRepBuilderAPI, BRepCheck, BRepFilletAPI, BRepGProp, BRepPrimAPI, ChFi2d, ChFiDS, GProp, TopAbs, TopExp, TopoDS, gp
+from OCP3x import Blend, BlendFunc, BRepBuilderAPI, BRepCheck, BRepFilletAPI, BRepGProp, BRepPrimAPI, ChFi2d, ChFiDS, GProp, TopAbs, TopExp, TopoDS, gp
 
 PACKAGES = ["ChFiDS", "ChFi2d", "ChFi3d", "ChFiKPart", "Blend", "BRepBlend", "BlendFunc", "BRepFilletAPI", "FilletSurf"]
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKFillet" / "report.txt"
@@ -15,7 +15,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKFillet" / "report.txt"
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def _volume(shape: TopoDS.TopoDS_Shape) -> float:
@@ -49,7 +49,7 @@ def test_fillet_and_chamfer_of_a_cube():
 def test_using_unhides_base_overloads_and_prelude():
     # R-USING: BlendFunc_ConstRadInv declares Set(R, Choix) and `using Blend_FuncInv::Set` for Set(OnFirst, COnSurf)
     sigs = [l for l in BlendFunc.BlendFunc_ConstRadInv.Set.__doc__.splitlines() if l.startswith("Set(")]
-    assert sigs == ["Set(self, OnFirst: bool, COnSurf: nanoocp.Adaptor2d.Adaptor2d_Curve2d | None) -> None", "Set(self, R: float, Choix: int) -> None"]
+    assert sigs == ["Set(self, OnFirst: bool, COnSurf: OCP3x.Adaptor2d.Adaptor2d_Curve2d | None) -> None", "Set(self, R: float, Choix: int) -> None"]
     assert [l for l in Blend.Blend_FuncInv.Set.__doc__.splitlines() if l.startswith("Set(")] == sigs[:1]
     rows = read_report(REPORT)
     assert all(cat != "misc" for cat, _, _ in rows)

@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import Aspect, Font, Graphic3d, Image, Message, Quantity, TCollection, gp
-from nanoocp.NCollection import NCollection_Sequence, NCollection_String
+from OCP3x import Aspect, Font, Graphic3d, Image, Message, Quantity, TCollection, gp
+from OCP3x.NCollection import NCollection_Sequence, NCollection_String
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKService" / "report.txt"
 
@@ -20,12 +20,12 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKService" / "report.txt"
 # in overrides.toml [platform]). Cocoa is the one package OCCT compiles on macOS only, so it is generated there only.
 @pytest.mark.parametrize("pkg", ["Aspect", "Graphic3d", "Image", "Font", "Media", "Xw", "Wasm", "WNT", "Shaders"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 @pytest.mark.skipif(platform.system() != "Darwin", reason="Cocoa is built on macOS only (overrides.toml [platform])")
 def test_cocoa_imports_on_macos():
-    assert importlib.import_module("nanoocp.Cocoa").__name__ == "nanoocp.Cocoa"
+    assert importlib.import_module("OCP3x.Cocoa").__name__ == "OCP3x.Cocoa"
 
 
 @pytest.fixture
@@ -52,9 +52,9 @@ def test_font_manager_finds_system_fonts_and_returns_the_aspect(quiet_messenger)
     font, aspect = mgr.FindFont(TCollection.TCollection_AsciiString(name), Font.Font_FA_Regular)   # Font_FontAspect& is in/out
     assert font is not None and font.FontName().ToCString() == name and aspect == Font.Font_FontAspect_Regular
     assert Path(font.FontPath(Font.Font_FA_Regular).ToCString()).is_file()
-    fallback, aspect = mgr.FindFont(TCollection.TCollection_AsciiString("NoSuchFont-nanoOCP"), Font.Font_StrictLevel_Any, Font.Font_FA_Bold, False)
+    fallback, aspect = mgr.FindFont(TCollection.TCollection_AsciiString("NoSuchFont-OCP3x"), Font.Font_StrictLevel_Any, Font.Font_FA_Bold, False)
     assert fallback is not None and aspect == Font.Font_FontAspect_Bold           # the fallback keeps the requested aspect
-    assert mgr.FindFont(TCollection.TCollection_AsciiString("NoSuchFont-nanoOCP"), Font.Font_StrictLevel_Strict, Font.Font_FA_Bold, False)[0] is None
+    assert mgr.FindFont(TCollection.TCollection_AsciiString("NoSuchFont-OCP3x"), Font.Font_StrictLevel_Strict, Font.Font_FA_Bold, False)[0] is None
 
 
 def test_enum_aliases_are_exported_like_the_first_spelling():

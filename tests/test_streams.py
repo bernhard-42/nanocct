@@ -6,7 +6,7 @@ import tempfile
 
 import pytest
 
-from nanoocp import BRep, BRepTools, Bnd, Geom, GeomTools, TopAbs, TopoDS, gp
+from OCP3x import BRep, BRepTools, Bnd, Geom, GeomTools, TopAbs, TopoDS, gp
 
 
 def _edge() -> TopoDS.TopoDS_Edge:
@@ -55,7 +55,7 @@ def test_geomtools_write():
 
 def test_binary_stream_is_bytes(tmp_path):
     # the BinTools package carries a binary format (overrides.toml [stream] binary_packages): bytes out, BinaryIO in
-    from nanoocp import BinTools
+    from OCP3x import BinTools
     edge = _edge()
     data = BinTools.BinTools.Write_s(edge)
     assert isinstance(data, bytes) and data.startswith(b"\nOpen CASCADE Topology")
@@ -76,12 +76,12 @@ def test_binary_stream_is_bytes(tmp_path):
 def test_print_operator_is_str():
     """`operator<<(Standard_OStream&, const T&)` -- free, hidden friend or the member form -- renders exactly what OCCT
     prints, which for these classes is their Dump(); repr() stays nanobind's default."""
-    from nanoocp.math import math_IntegerVector, math_Matrix, math_Vector
-    from nanoocp.TDF import TDF_Data
+    from OCP3x.math import math_IntegerVector, math_Matrix, math_Vector
+    from OCP3x.TDF import TDF_Data
 
     m = math_Matrix(1, 2, 1, 2, 3.0)
     assert str(m) == m.Dump() and str(m).startswith("math_Matrix of RowNumber = 2 and ColNumber = 2")
-    assert repr(m).startswith("<nanoocp.math.math_Matrix object at ")
+    assert repr(m).startswith("<OCP3x.math.math_Matrix object at ")
     v = math_Vector(1, 3, 2.0)
     assert str(v) == v.Dump()                                          # the friend of math_VectorBase<double>
     assert str(math_IntegerVector(1, 2, 7)).startswith("math_Vector of Length = 2")   # ... and of math_VectorBase<int>
@@ -94,7 +94,7 @@ def test_print_operator_where_there_was_no_text_method():
     Standard_EXPORT (IntRes2d_Transition.lxx:19), so the Windows DLL does not export it and R-UNDEFINED skips it there
     -- C++ could not call it on Windows either (measured on gauss 2026-09-25)."""
     from conftest import report
-    from nanoocp.IntRes2d import IntRes2d_Transition
+    from OCP3x.IntRes2d import IntRes2d_Transition
 
     if "__str__" in vars(IntRes2d_Transition):
         assert str(IntRes2d_Transition()).startswith("   Position : ")
@@ -107,7 +107,7 @@ def test_operators_that_are_not_print_me_stay_unbound():
     """BinTools' operator<<(ostream&, const gp_Pnt&) writes binary doubles and belongs to another package's class;
     BinObjMgt_Persistent's is its binary Write; Standard_Failure is a Python exception whose str() is its message."""
     from conftest import report
-    from nanoocp.BinObjMgt import BinObjMgt_Persistent
+    from OCP3x.BinObjMgt import BinObjMgt_Persistent
 
     assert "__str__" not in vars(gp.gp_Pnt) and "__str__" not in vars(gp.gp_Trsf)
     assert "__str__" not in vars(BinObjMgt_Persistent)

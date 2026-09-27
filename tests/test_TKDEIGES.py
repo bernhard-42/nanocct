@@ -7,22 +7,22 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import Message
-from nanoocp.BRepGProp import BRepGProp
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.GProp import GProp_GProps
-from nanoocp.IFSelect import IFSelect_RetDone, IFSelect_RetFail
-from nanoocp.IGESCAFControl import IGESCAFControl_Reader, IGESCAFControl_Writer
-from nanoocp.IGESControl import IGESControl_Controller, IGESControl_Reader, IGESControl_Writer
-from nanoocp.IGESGeom import IGESGeom_CircularArc, IGESGeom_Point
-from nanoocp.IGESSolid import IGESSolid_Block
-from nanoocp.Interface import Interface_Static
-from nanoocp.TCollection import TCollection_ExtendedString
-from nanoocp.TopAbs import TopAbs_FACE, TopAbs_SOLID
-from nanoocp.TopExp import TopExp_Explorer
-from nanoocp.XCAFApp import XCAFApp_Application
-from nanoocp.XCAFDoc import XCAFDoc_DocumentTool
-from nanoocp.gp import gp_XYZ
+from OCP3x import Message
+from OCP3x.BRepGProp import BRepGProp
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.GProp import GProp_GProps
+from OCP3x.IFSelect import IFSelect_RetDone, IFSelect_RetFail
+from OCP3x.IGESCAFControl import IGESCAFControl_Reader, IGESCAFControl_Writer
+from OCP3x.IGESControl import IGESControl_Controller, IGESControl_Reader, IGESControl_Writer
+from OCP3x.IGESGeom import IGESGeom_CircularArc, IGESGeom_Point
+from OCP3x.IGESSolid import IGESSolid_Block
+from OCP3x.Interface import Interface_Static
+from OCP3x.TCollection import TCollection_ExtendedString
+from OCP3x.TopAbs import TopAbs_FACE, TopAbs_SOLID
+from OCP3x.TopExp import TopExp_Explorer
+from OCP3x.XCAFApp import XCAFApp_Application
+from OCP3x.XCAFDoc import XCAFDoc_DocumentTool
+from OCP3x.gp import gp_XYZ
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEIGES" / "report.txt"
 PACKAGES = ["IGESControl", "IGESCAFControl", "IGESData", "IGESBasic", "IGESGeom", "IGESSolid", "IGESDimen",
@@ -54,7 +54,7 @@ def _volume(shape) -> float:
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_a_solid_round_trips_in_brep_mode(tmp_path, quiet_messenger):

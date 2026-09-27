@@ -7,17 +7,17 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp.AIS import AIS_InteractiveObject
-from nanoocp.MeshVS import (MeshVS_BP_Mesh, MeshVS_Buffer, MeshVS_DMF_Shading, MeshVS_DMF_WireFrame, MeshVS_DataSource,
+from OCP3x.AIS import AIS_InteractiveObject
+from OCP3x.MeshVS import (MeshVS_BP_Mesh, MeshVS_Buffer, MeshVS_DMF_Shading, MeshVS_DMF_WireFrame, MeshVS_DataSource,
                             MeshVS_DrawerAttribute, MeshVS_Drawer, MeshVS_EntityType, MeshVS_Mesh, MeshVS_MeshPrsBuilder,
                             MeshVS_SelectionModeFlags, MeshVS_Tool, MeshVS_TwoColors, MeshVS_TwoNodes)
-from nanoocp.Quantity import Quantity_Color, Quantity_NOC_BLUE, Quantity_NOC_RED
+from OCP3x.Quantity import Quantity_Color, Quantity_NOC_BLUE, Quantity_NOC_RED
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKMeshVS" / "report.txt"
 
 
 def test_the_package_imports():
-    assert importlib.import_module("nanoocp.MeshVS").__name__ == "nanoocp.MeshVS"
+    assert importlib.import_module("OCP3x.MeshVS").__name__ == "OCP3x.MeshVS"
 
 
 def test_the_drawer_holds_the_four_attribute_kinds():

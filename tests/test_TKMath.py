@@ -3,8 +3,8 @@ import importlib
 
 import pytest
 
-from nanoocp import Bnd, ElCLib, MathUtils, NCollection, Poly, TopLoc, gp
-from nanoocp import math as occ_math
+from OCP3x import Bnd, ElCLib, MathUtils, NCollection, Poly, TopLoc, gp
+from OCP3x import math as occ_math
 
 PACKAGES = ["math", "MathUtils", "MathPoly", "MathLin", "MathOpt", "MathRoot", "MathInteg", "MathSys", "ElCLib", "ElSLib",
             "BSplCLib", "BSplSLib", "PLib", "GeomAbs", "gp", "Poly", "CSLib", "Convert", "Bnd", "BVH", "TopLoc"]
@@ -12,7 +12,7 @@ PACKAGES = ["math", "MathUtils", "MathPoly", "MathLin", "MathOpt", "MathRoot", "
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_nested_struct_in_std_optional():
@@ -66,7 +66,7 @@ def test_toploc_and_math():
 
 
 def test_other_alias_instantiations():
-    from nanoocp import BVH, Bnd, TColStd
+    from OCP3x import BVH, Bnd, TColStd
     vec = BVH.BVH_Vec3d(1.0, 2.0, 3.0)                                  # BVH::VectorType<double, 3>::Type -> NCollection_Vec3<double>
     assert (vec.x(), vec.y(), vec.z()) == (1.0, 2.0, 3.0) and vec.Dot(BVH.BVH_Vec3d(1.0, 0.0, 0.0)) == 1.0
     b = Bnd.Bnd_B3d()
@@ -85,7 +85,7 @@ def test_namespace_constants_and_anonymous_enums():
 
 
 def test_namespace_functions():
-    from nanoocp import MathLin
+    from OCP3x import MathLin
     assert MathUtils.DepressCubic(3.0, 3.0, 1.0) == (0.0, 0.0, 1.0)     # namespace MathUtils == package: module function; double& -> tuple
     a = occ_math.math_Matrix(1, 2, 1, 2, 0.0)
     a.SetDiag(2.0)
@@ -94,14 +94,14 @@ def test_namespace_functions():
     r = MathLin.LeastSquares(a, b)                                      # theMethod defaults to LeastSquaresMethod::QR (qualified by the generator)
     assert r.IsDone() and (r.Solution.Value(1), r.Solution.Value(2)) == (1.5, 1.5)
     assert MathLin.LeastSquares(a, b, MathLin.LeastSquaresMethod.SVD).Solution.Value(2) == pytest.approx(1.5)
-    assert not hasattr(MathLin, "Internal") and not hasattr(importlib.import_module("nanoocp.MathSys"), "detail")   # overrides [skip] namespaces
-    from nanoocp import BVH
+    assert not hasattr(MathLin, "Internal") and not hasattr(importlib.import_module("OCP3x.MathSys"), "detail")   # overrides [skip] namespaces
+    from OCP3x import BVH
     assert isinstance(BVH.BVH_Constants_MaxTreeDepth, int)              # anonymous enum -> integer constant
 
 
 def test_glob_opt_min_through_noncopyable_wrapper():
     import math
-    from nanoocp import Extrema, Geom, GeomAdaptor
+    from OCP3x import Extrema, Geom, GeomAdaptor
     circle = GeomAdaptor.GeomAdaptor_Curve(Geom.Geom_Circle(gp.gp_Ax2(), 1.0))
     line = GeomAdaptor.GeomAdaptor_Curve(Geom.Geom_Line(gp.gp_Pnt(0.0, 3.0, 0.0), gp.gp_Dir(1.0, 0.0, 0.0)), -5.0, 5.0)
     func = Extrema.Extrema_GlobOptFuncCCC0(circle, line)               # a math_MultipleVarFunction (squared distance)
@@ -122,7 +122,7 @@ def test_glob_opt_min_through_noncopyable_wrapper():
 
 
 def test_primitive_reference_accessors_get_setters():
-    from nanoocp import Poly
+    from OCP3x import Poly
     a = occ_math.math_Matrix(1, 2, 1, 2, 0.0)
     a.SetValue(1, 2, 5.0)                                              # Python addition for double& Value(Row, Col)
     a[(2, 1)] = 7.0                                                    # ... and __setitem__ for double& operator()(Row, Col)

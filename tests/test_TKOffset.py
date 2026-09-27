@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanoocp import BRepBuilderAPI, BRepCheck, BRepGProp, BRepOffset, BRepOffsetAPI, BRepPrimAPI, Draft, GProp, GeomAbs, NCollection, TopAbs, TopExp, TopoDS, gp
+from OCP3x import BRepBuilderAPI, BRepCheck, BRepGProp, BRepOffset, BRepOffsetAPI, BRepPrimAPI, Draft, GProp, GeomAbs, NCollection, TopAbs, TopExp, TopoDS, gp
 
 PACKAGES = ["BRepOffsetAPI", "Draft", "BRepOffset", "BiTgte"]
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKOffset" / "report.txt"
@@ -16,7 +16,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKOffset" / "report.txt"
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def _volume(shape: TopoDS.TopoDS_Shape) -> float:
@@ -67,6 +67,6 @@ def test_loft_pipe_and_wire_offset():
 
 def test_optional_pointer_parameters_are_dropped():
     # R-OPTIONAL-PTR: BRepFill_AdvancedEvolved::IsDone(unsigned int* theErrorCode = 0) had no binding at all before
-    from nanoocp import BRepFill
+    from OCP3x import BRepFill
     assert BRepFill.BRepFill_AdvancedEvolved().IsDone() is False
     assert "IsDone(self) -> bool" in BRepFill.BRepFill_AdvancedEvolved.IsDone.__doc__

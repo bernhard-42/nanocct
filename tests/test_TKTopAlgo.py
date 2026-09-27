@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanoocp import (BRepBuilderAPI, BRepCheck, BRepClass, BRepClass3d, BRepExtrema, BRepGProp, BRepLib, BRepMAT2d, BRepPrimAPI, BRepTopAdaptor,
+from OCP3x import (BRepBuilderAPI, BRepCheck, BRepClass, BRepClass3d, BRepExtrema, BRepGProp, BRepLib, BRepMAT2d, BRepPrimAPI, BRepTopAdaptor,
                      GProp, MAT, MAT2d, NCollection, Bnd, BRepBndLib, Standard, StdFail, TopAbs, TopExp, TopoDS, gp)
 
 PACKAGES = ["IntCurvesFace", "MAT", "MAT2d", "Bisector", "BRepMAT2d", "BRepCheck", "BRepBndLib", "BRepExtrema", "BRepClass",
@@ -20,7 +20,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKTopAlgo" / "report.txt"
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def _rectangle() -> tuple[TopoDS.TopoDS_Wire, TopoDS.TopoDS_Face]:
@@ -104,7 +104,7 @@ def test_noncopyable_wrappers():
     # are bound through the wrapper struct of overrides.toml [skip] noncopyable, under their own names (R-NONCOPYABLE)
     _, face = _rectangle()
     fc = BRepTopAdaptor.BRepTopAdaptor_FClass2d(face, 1e-7)
-    assert type(fc).__name__ == "BRepTopAdaptor_FClass2d" and type(fc).__module__ == "nanoocp.BRepTopAdaptor"
+    assert type(fc).__name__ == "BRepTopAdaptor_FClass2d" and type(fc).__module__ == "OCP3x.BRepTopAdaptor"
     assert fc.PerformInfinitePoint() == TopAbs.TopAbs_OUT
     assert fc.Perform(gp.gp_Pnt2d(50, 2.5)) == TopAbs.TopAbs_OUT
     assert fc.Perform(gp.gp_Pnt2d(5, 2.5)) == TopAbs.TopAbs_ON             # what OCCT computes here (OCP 7.9.3 agrees), not IN
@@ -117,7 +117,7 @@ def test_mesh_proximity_through_the_bvh_chain():
     # R-TEMPLATE-BASE: BRepExtrema_ProximityDistTool : BVH_Distance<...> : BVH_Traverse<...> : BVH_BaseTraverse<double>,
     # BRepExtrema_TriangleSet : BVH_PrimitiveSet3d : BVH_Object<double, 3> (+ BVH_Set, second base dropped), OverlapTool :
     # BVH_PairTraverse -- all instantiated from the templates; the nested enum ProxPnt_Status and its alias come with them
-    from nanoocp import Bnd, BRepMesh, Precision
+    from OCP3x import Bnd, BRepMesh, Precision
     a = BRepPrimAPI.BRepPrimAPI_MakeBox(1, 1, 1).Shape()
     b = BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(3, 0, 0), gp.gp_Pnt(4, 1, 1)).Shape()
     BRepMesh.BRepMesh_IncrementalMesh(a, 0.1)
@@ -133,7 +133,7 @@ def test_mesh_proximity_through_the_bvh_chain():
     assert type(tri.Box()) is Bnd.BVH_Box__double__3 and tri.Box().CornerMax().x() == pytest.approx(1.0)   # BVH_Box<double, 3>, bound on demand by Bnd
     # Transient through the template base (BVH_Object<double, 3> : Standard_Transient behind the BVH_PrimitiveSet3d typedef): the
     # constructors return handles -- until 2026-09-22 they were placement-new __init__s and BRepExtrema_TriangleSet() raised TypeError
-    from nanoocp import NCollection, Standard, TopAbs, TopExp
+    from OCP3x import NCollection, Standard, TopAbs, TopExp
     faces = NCollection.NCollection_DynamicArray[TopoDS.TopoDS_Shape]()
     for f in TopExp.TopExp_Explorer(a, TopAbs.TopAbs_FACE):
         faces.Append(f)
@@ -165,7 +165,7 @@ def test_collision_suffixes_and_undefined_members():
     # R-OUT-HANDLE + R-COLLISION: GetUKnots(UMin, UMax, handle<HArray1<double>>&) next to GetUKnots(UMin, UMax, Array1&)
     doc = BRepGProp.BRepGProp_Face.GetUKnots__NCollection_HArray1__double.__doc__
     assert doc.startswith("GetUKnots__NCollection_HArray1__double(self, theUMin: float, theUMax: float) -> "
-                          "nanoocp.NCollection.NCollection_HArray1__double")
+                          "OCP3x.NCollection.NCollection_HArray1__double")
     assert hasattr(BRepLib.BRepLib, "BuildPCurveForEdgeOnPlane_s__Geom2d_Curve__bool")
     # R-CONST-TWIN: BRepClass_Edge::Edge() const / Edge() -> only the non-const one
     assert BRepClass.BRepClass_Edge.Edge.__doc__.count("Edge(self") == 1
@@ -193,8 +193,8 @@ def test_a_reference_to_a_member_transient_is_never_deleted_by_python():
     in a handle as is, the last Python reference deleted it ("pointer being freed was not allocated", found by build123d's
     SVG exporter). Such a member now gets a permanent reference, and the owner is kept alive by the returned object."""
     import gc
-    from nanoocp.BRepAdaptor import BRepAdaptor_Curve
-    from nanoocp.GC import GC_MakeCircle
+    from OCP3x.BRepAdaptor import BRepAdaptor_Curve
+    from OCP3x.GC import GC_MakeCircle
 
     edge = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(GC_MakeCircle(gp.gp_Ax2(), 1.0).Value()).Edge()
     adaptor = BRepAdaptor_Curve(edge)

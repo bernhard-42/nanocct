@@ -2,7 +2,7 @@
 
 The rule is that array data which can get large crosses to Python as a view, never as a per-element loop.
 Which classes get views is data (`overrides.toml [views]`); how each one builds its view is a
-`nanoocp_def_views<T>` specialisation in `src/cpp/common/nanoocp_views.h`, because every case has runtime
+`ocp3x_def_views<T>` specialisation in `src/cpp/common/ocp3x_views.h`, because every case has runtime
 branches a config file cannot carry.
 """
 import gc
@@ -10,7 +10,7 @@ import gc
 import numpy as np
 import pytest
 
-from nanoocp import (BRep, BRepMesh, BRepPrimAPI, Image, NCollection, Poly, Quantity, TopAbs,
+from OCP3x import (BRep, BRepMesh, BRepPrimAPI, Image, NCollection, Poly, Quantity, TopAbs,
                      TopExp, TopLoc, TopoDS, gp)
 
 
@@ -78,7 +78,7 @@ def test_the_view_keeps_the_triangulation_alive():
 
 
 def test_every_class_listed_in_overrides_has_a_specialisation():
-    """A name in [views] without a nanoocp_def_views<T> specialisation is a link error; this turns it into a
+    """A name in [views] without a ocp3x_def_views<T> specialisation is a link error; this turns it into a
     generation-time one, which is the failure the developer can act on.
 
     The override file is read directly rather than through `generator.parse`, which imports libclang: the
@@ -90,15 +90,15 @@ def test_every_class_listed_in_overrides_has_a_specialisation():
 
     root = Path(__file__).parents[1]
     classes = tomllib.loads((root / "generator" / "overrides.toml").read_text())["views"]["classes"]
-    header = (root / "src" / "cpp" / "common" / "nanoocp_views.h").read_text()
+    header = (root / "src" / "cpp" / "common" / "ocp3x_views.h").read_text()
     assert len(classes) > 0
     for name in classes:
-        assert f"nanoocp_def_views<{name}>" in header, name
+        assert f"ocp3x_def_views<{name}>" in header, name
 
 
 # ---------------------------------------------------------------------------------------------------------
 # The generic containers (8.10a): NCollection_Array1/Array2 and their H- variants, for every element type
-# that is a packed run of numpy scalars. The table lives in src/cpp/common/nanoocp_elem_view.h and asserts
+# that is a packed run of numpy scalars. The table lives in src/cpp/common/ocp3x_elem_view.h and asserts
 # its own layout assumptions at compile time.
 
 def test_a_scalar_array_views_as_a_1d_array():
@@ -269,11 +269,11 @@ def test_base64_goes_both_ways_now():
     """
     import base64
 
-    from nanoocp import FSD
+    from OCP3x import FSD
 
-    encoded = FSD.FSD_Base64.Encode_s(b"Hello, nanoOCP!").ToCString()
-    assert encoded == base64.b64encode(b"Hello, nanoOCP!").decode()
-    assert bytes(FSD.FSD_Base64.Decode_s(encoded, len(encoded)).DataArray()) == b"Hello, nanoOCP!"
+    encoded = FSD.FSD_Base64.Encode_s(b"Hello, OCP3x!").ToCString()
+    assert encoded == base64.b64encode(b"Hello, OCP3x!").decode()
+    assert bytes(FSD.FSD_Base64.Decode_s(encoded, len(encoded)).DataArray()) == b"Hello, OCP3x!"
     assert FSD.FSD_Base64.Encode_s(b"").ToCString() == ""
 
     payload = bytes(range(256)) * 100                    # 25 600 bytes, well past one base64 block
@@ -284,7 +284,7 @@ def test_base64_goes_both_ways_now():
 def test_Graphic3d_Buffer_inherits_the_accessor():
     """Its elements are interleaved vertex attributes, so the buffer itself has no single element type:
     reshaping to (NbElements, Stride) and slicing by AttributeOffset() is the caller's business."""
-    from nanoocp import Graphic3d
+    from OCP3x import Graphic3d
 
     assert hasattr(Graphic3d.Graphic3d_Buffer, "DataArray")
 

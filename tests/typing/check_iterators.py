@@ -1,6 +1,6 @@
 """Binder Iterator classes are Python iterators (R-ITER); a class deriving from one (Graphic3d_SequenceOfHClipPlane::Iterator) too."""
-from nanoocp.Graphic3d import Graphic3d_ClipPlane, Graphic3d_SequenceOfHClipPlane
-from nanoocp.NCollection import NCollection_DataMap, NCollection_DataMap__int__double, NCollection_List, NCollection_List__int
+from OCP3x.Graphic3d import Graphic3d_ClipPlane, Graphic3d_SequenceOfHClipPlane
+from OCP3x.NCollection import NCollection_DataMap, NCollection_DataMap__int__double, NCollection_List, NCollection_List__int
 
 lst = NCollection_List[int]()
 it = NCollection_List__int.Iterator(lst)

@@ -1,37 +1,117 @@
+--- a/ocp_tessellate/cad_objects.py
++++ b/ocp_tessellate/cad_objects.py
+@@ -2,8 +2,8 @@
+ from typing import Callable
+ 
+ import imagesize
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import TopoDS_Shape
++from OCP3x.TopLoc import TopLoc_Location
++from OCP3x.TopoDS import TopoDS_Shape
+ 
+ from ocp_tessellate.defaults import get_default
+ from ocp_tessellate.ocp_utils import (
 --- a/ocp_tessellate/ocp_utils.py
 +++ b/ocp_tessellate/ocp_utils.py
-@@ -26,7 +26,6 @@
+@@ -26,32 +26,31 @@
  from typing_extensions import TypeIs
  
  import numpy as np
 -import OCP
  from cachetools import LRUCache, cached
- from nanoocp.BinTools import BinTools, BinTools_FormatVersion_CURRENT
- from nanoocp.Bnd import Bnd_Box
-@@ -97,20 +96,17 @@
+-from OCP.BinTools import BinTools, BinTools_FormatVersion_CURRENT
+-from OCP.Bnd import Bnd_Box
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepAdaptor import (
++from OCP3x.BinTools import BinTools, BinTools_FormatVersion_CURRENT
++from OCP3x.Bnd import Bnd_Box
++from OCP3x.BRep import BRep_Tool
++from OCP3x.BRepAdaptor import (
+     BRepAdaptor_CompCurve,
+     BRepAdaptor_Curve,
+     BRepAdaptor_Surface,
  )
- import nanoocp.TopoDS as TopoDS
+-from OCP.BRepExtrema import BRepExtrema_DistShapeShape
+-from OCP.BRepBndLib import BRepBndLib
+-from OCP.BRepBuilderAPI import (
++from OCP3x.BRepExtrema import BRepExtrema_DistShapeShape
++from OCP3x.BRepBndLib import BRepBndLib
++from OCP3x.BRepBuilderAPI import (
+     BRepBuilderAPI_Copy,
+     BRepBuilderAPI_MakeEdge,
+     BRepBuilderAPI_MakeFace,
+     BRepBuilderAPI_MakeVertex,
+     BRepBuilderAPI_FindPlane,
+ )
+-from OCP.BRepGProp import BRepGProp, BRepGProp_Face
+-from OCP.BRepTools import BRepTools
+-from OCP.GCPnts import GCPnts_AbscissaPoint
+-from OCP.GeomAbs import GeomAbs_CurveType
+-from OCP.Geom import Geom_Plane
+-from OCP.GeomLib import GeomLib_IsPlanarSurface
+-from OCP.gp import (
++from OCP3x.BRepGProp import BRepGProp, BRepGProp_Face
++from OCP3x.BRepTools import BRepTools
++from OCP3x.GCPnts import GCPnts_AbscissaPoint
++from OCP3x.GeomAbs import GeomAbs_CurveType
++from OCP3x.Geom import Geom_Plane
++from OCP3x.GeomLib import GeomLib_IsPlanarSurface
++from OCP3x.gp import (
+     gp_Ax1,
+     gp_Ax2,
+     gp_Ax3,
+@@ -64,9 +63,9 @@
+     gp_Vec,
+     gp_Lin,
+ )
+-from OCP.GProp import GProp_GProps
+-from OCP.Quantity import Quantity_ColorRGBA, Quantity_TypeOfColor
+-from OCP.TopAbs import (
++from OCP3x.GProp import GProp_GProps
++from OCP3x.Quantity import Quantity_ColorRGBA, Quantity_TypeOfColor
++from OCP3x.TopAbs import (
+     TopAbs_COMPOUND,
+     TopAbs_COMPSOLID,
+     TopAbs_EDGE,
+@@ -78,12 +77,11 @@
+     TopAbs_Orientation,
+ )
  
+-from OCP.TopExp import TopExp
+-from OCP.TopLoc import TopLoc_Location
++from OCP3x.TopExp import TopExp
++from OCP3x.TopLoc import TopLoc_Location
+ 
+ # Bounding Box
+-from OCP.TopoDS import (
+-    TopoDS,
++from OCP3x.TopoDS import (
+     TopoDS_Builder,
+     TopoDS_Compound,
+     TopoDS_CompSolid,
+@@ -96,17 +94,19 @@
+     TopoDS_Vertex,
+     TopoDS_Wire,
+ )
+-
 -if OCP.__version__.startswith("7"):
--    from nanoocp.TopTools import (
+-    from OCP.TopTools import (
 -        TopTools_IndexedDataMapOfShapeListOfShape,
 -        TopTools_IndexedMapOfShape,
 -    )
 -else:
--    from nanoocp.NCollection import (
--        NCollection_IndexedDataMap,
--        NCollection_IndexedMap,
--        NCollection_List,
+-    from OCP.collections import (
+-        IndexedDataMap_TopoDS_Shape_List_TopoDS_Shape_TopTools_ShapeMapHasher as TopTools_IndexedDataMapOfShapeListOfShape,
+-        IndexedMap_TopoDS_Shape_TopTools_ShapeMapHasher as TopTools_IndexedMapOfShape,
 -    )
--    from nanoocp.TopTools import TopTools_ShapeMapHasher
--    TopTools_IndexedDataMapOfShapeListOfShape = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]
--    TopTools_IndexedMapOfShape = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]
-+from nanoocp.NCollection import (
++import OCP3x.TopoDS as TopoDS
++
++from OCP3x.NCollection import (
 +    NCollection_IndexedDataMap,
 +    NCollection_IndexedMap,
 +    NCollection_List,
 +)
-+from nanoocp.TopTools import TopTools_ShapeMapHasher
++from OCP3x.TopTools import TopTools_ShapeMapHasher
 +
 +TopTools_IndexedDataMapOfShapeListOfShape = NCollection_IndexedDataMap[
 +    TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher
@@ -40,18 +120,18 @@
  
  from numpy.typing import ArrayLike
  
-@@ -137,34 +133,28 @@
+@@ -133,34 +133,28 @@
      def __iter__(self) -> Iterator[float]: ...
  
  
--_Vertex = TopoDS.Vertex if hasattr(TopoDS, "Vertex") else TopoDS.Vertex
--_Edge = TopoDS.Edge if hasattr(TopoDS, "Edge") else TopoDS.Edge
--_Wire = TopoDS.Wire if hasattr(TopoDS, "Wire") else TopoDS.Wire
--_Face = TopoDS.Face if hasattr(TopoDS, "Face") else TopoDS.Face
--_Shell = TopoDS.Shell if hasattr(TopoDS, "Shell") else TopoDS.Shell
--_Solid = TopoDS.Solid if hasattr(TopoDS, "Solid") else TopoDS.Solid
--_CompSolid = TopoDS.CompSolid if hasattr(TopoDS, "CompSolid") else TopoDS.CompSolid
--_Compound = TopoDS.Compound if hasattr(TopoDS, "Compound") else TopoDS.Compound
+-_Vertex = TopoDS.Vertex if hasattr(TopoDS, "Vertex") else TopoDS.Vertex_s
+-_Edge = TopoDS.Edge if hasattr(TopoDS, "Edge") else TopoDS.Edge_s
+-_Wire = TopoDS.Wire if hasattr(TopoDS, "Wire") else TopoDS.Wire_s
+-_Face = TopoDS.Face if hasattr(TopoDS, "Face") else TopoDS.Face_s
+-_Shell = TopoDS.Shell if hasattr(TopoDS, "Shell") else TopoDS.Shell_s
+-_Solid = TopoDS.Solid if hasattr(TopoDS, "Solid") else TopoDS.Solid_s
+-_CompSolid = TopoDS.CompSolid if hasattr(TopoDS, "CompSolid") else TopoDS.CompSolid_s
+-_Compound = TopoDS.Compound if hasattr(TopoDS, "Compound") else TopoDS.Compound_s
 +_Vertex = TopoDS.Vertex
 +_Edge = TopoDS.Edge
 +_Wire = TopoDS.Wire
@@ -66,7 +146,7 @@
  
  def occt_version() -> str:
 -    return OCP.__version__
-+    # nanoocp binds OCCT 8.0.1 and exposes no version attribute
++    # OCP3x binds OCCT 8.0.1 and exposes no version attribute
 +    return "8.0.1"
  
  
@@ -86,7 +166,7 @@
  
  
  def ocp_hash(obj):
-@@ -434,7 +424,7 @@
+@@ -430,7 +424,7 @@
      if BRep_Tool.Degenerated_s(edge):
          return True
      loc = TopLoc_Location()
@@ -95,7 +175,7 @@
  
  
  def is_degenerated_face(face: TopoDS_Face) -> bool:
-@@ -860,7 +850,7 @@
+@@ -856,7 +850,7 @@
          start = gp_Pnt(*start)
      if isinstance(end, (list, tuple)):
          end = gp_Pnt(*end)
@@ -104,7 +184,7 @@
  
  
  def circle(
-@@ -1071,7 +1061,7 @@
+@@ -1067,7 +1061,7 @@
  
  def get_axis_coord(axis: gp_Ax1) -> AxisCoord:
      return {
@@ -113,7 +193,7 @@
          "z_dir": axis.Direction().Coord(),
      }
  
-@@ -1275,20 +1265,14 @@
+@@ -1271,20 +1265,14 @@
          else:
              BRepBndLib.Add_s(obj, bbox)
          if not bbox.IsVoid():
@@ -142,7 +222,7 @@
              return (values[0], values[3], values[1], values[4], values[2], values[5])
          else:
              c = self._center_of_mass(obj)
-@@ -1578,9 +1562,7 @@
+@@ -1574,9 +1562,7 @@
          return None
  
      try:
@@ -155,24 +235,49 @@
              filename = os.path.join(tmpdirname, "shape.brep")
 --- a/ocp_tessellate/stepreader.py
 +++ b/ocp_tessellate/stepreader.py
-@@ -28,7 +28,6 @@
+@@ -28,20 +28,19 @@
  except ImportError:
      pass
  
 -import OCP
- from nanoocp.IFSelect import IFSelect_RetDone
- from nanoocp.Quantity import Quantity_ColorRGBA
- from nanoocp.STEPCAFControl import STEPCAFControl_Reader
-@@ -50,11 +49,9 @@
+-from OCP.IFSelect import IFSelect_RetDone
+-from OCP.Quantity import Quantity_ColorRGBA
+-from OCP.STEPCAFControl import STEPCAFControl_Reader
+-from OCP.STEPControl import STEPControl_Reader
+-from OCP.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+-from OCP.TDataStd import TDataStd_Name
+-from OCP.TDF import TDF_ChildIterator, TDF_Label
+-from OCP.TDocStd import TDocStd_Document
+-from OCP.TopAbs import TopAbs_COMPOUND, TopAbs_COMPSOLID, TopAbs_FACE, TopAbs_SOLID
+-from OCP.TopExp import TopExp_Explorer
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import TopoDS_Shape
+-from OCP.XCAFDoc import (
++from OCP3x.IFSelect import IFSelect_RetDone
++from OCP3x.Quantity import Quantity_ColorRGBA
++from OCP3x.STEPCAFControl import STEPCAFControl_Reader
++from OCP3x.STEPControl import STEPControl_Reader
++from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
++from OCP3x.TDataStd import TDataStd_Name
++from OCP3x.TDF import TDF_ChildIterator, TDF_Label
++from OCP3x.TDocStd import TDocStd_Document
++from OCP3x.TopAbs import TopAbs_COMPOUND, TopAbs_COMPSOLID, TopAbs_FACE, TopAbs_SOLID
++from OCP3x.TopExp import TopExp_Explorer
++from OCP3x.TopLoc import TopLoc_Location
++from OCP3x.TopoDS import TopoDS_Shape
++from OCP3x.XCAFDoc import (
+     XCAFDoc_ColorCurv,
+     XCAFDoc_ColorGen,
+     XCAFDoc_ColorSurf,
+@@ -50,10 +49,9 @@
      XCAFDoc_ShapeTool,
  )
  
 -if OCP.__version__.startswith("7"):
--    from nanoocp.TDF import TDF_LabelSequence
+-    from OCP.TDF import TDF_LabelSequence
 -else:
--    from nanoocp.NCollection import NCollection_Sequence
--    TDF_LabelSequence = NCollection_Sequence[TDF_Label]
-+from nanoocp.NCollection import NCollection_Sequence
+-    from OCP.collections import Sequence_TDF_Label as TDF_LabelSequence
++from OCP3x.NCollection import NCollection_Sequence
 +
 +TDF_LabelSequence = NCollection_Sequence[TDF_Label]
  
@@ -180,26 +285,42 @@
  from ocp_tessellate.utils import warn
 --- a/ocp_tessellate/tessellator.py
 +++ b/ocp_tessellate/tessellator.py
-@@ -23,9 +23,9 @@
- from nanoocp.TopoDS import TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex
+@@ -20,24 +20,24 @@
+ import sys
+ from typing import Iterable, Sequence
+ 
+-from OCP.TopoDS import TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex
++from OCP3x.TopoDS import TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex
  import numpy as np
  from cachetools import LRUCache, cached
-+from nanoocp import AddOns
- from nanoocp.BRep import BRep_Tool
- from nanoocp.BRepAdaptor import BRepAdaptor_Curve
--from nanoocp.BRepGProp import BRepGProp_Face
- from nanoocp.BRepTools import BRepTools
- from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
- from nanoocp.GCPnts import (
-@@ -34,7 +34,7 @@
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepAdaptor import BRepAdaptor_Curve
+-from OCP.BRepGProp import BRepGProp_Face
+-from OCP.BRepTools import BRepTools
+-from OCP.BRepMesh import BRepMesh_IncrementalMesh
+-from OCP.GCPnts import (
++from OCP3x import AddOns
++from OCP3x.BRep import BRep_Tool
++from OCP3x.BRepAdaptor import BRepAdaptor_Curve
++from OCP3x.BRepTools import BRepTools
++from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
++from OCP3x.GCPnts import (
+     GCPnts_QuasiUniformDeflection,
+     GCPnts_UniformDeflection,
  )
  
  # pylint: disable=no-name-in-module,import-error
--from nanoocp.gp import gp_Pnt, gp_Vec
-+from nanoocp.gp import gp_Pnt, gp_TrsfForm, gp_Vec
- from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_SOLID
- from nanoocp.TopExp import TopExp_Explorer
- from nanoocp.TopLoc import TopLoc_Location
+-from OCP.gp import gp_Pnt, gp_Vec
+-from OCP.TopAbs import TopAbs_Orientation, TopAbs_SOLID
+-from OCP.TopExp import TopExp_Explorer
+-from OCP.TopLoc import TopLoc_Location
++from OCP3x.gp import gp_Pnt, gp_TrsfForm, gp_Vec
++from OCP3x.TopAbs import TopAbs_Orientation, TopAbs_SOLID
++from OCP3x.TopExp import TopExp_Explorer
++from OCP3x.TopLoc import TopLoc_Location
+ from numpy.typing import NDArray
+ 
+ from .ocp_utils import (
 @@ -51,6 +51,7 @@
      is_line,
      make_compound,
@@ -226,9 +347,9 @@
 +        uvs: list[NDArray[np.float64]] = []
 +        offset = 0
 +
-+        # nanoOCP: the per-node and per-triangle loops run on zero-copy views of the triangulation
++        # OCP3x: the per-node and per-triangle loops run on zero-copy views of the triangulation
 +        # (NodesArray, TrianglesArray, UVNodesArray) and the per-node BRepGProp_Face.Normal loop in C++
-+        # (nanoocp.AddOns.Tessellator.NormalsFromSurface: the same clamped evaluation, the same
++        # (OCP3x.AddOns.Tessellator.NormalsFromSurface: the same clamped evaluation, the same
 +        # normalisation, the same reversal for an INTERNAL face). Same faces, same order, same outputs.
          for ind, face in enumerate(get_faces(self.shape)):
              trace.face(f"{self.shape_id}/faces/faces_{ind}", face)
@@ -429,7 +550,7 @@
 +            for ind, (edge, _face) in enumerate(get_edges(self.shape, True)):
 +                trace.edge(f"{self.shape_id}/edges/edges_{ind}", edge)
 +
-+        # nanoOCP: the per-edge polyline walk in C++ (nanoocp.AddOns.Tessellator.EdgeSegments) -- the same edge
++        # OCP3x: the per-edge polyline walk in C++ (OCP3x.AddOns.Tessellator.EdgeSegments) -- the same edge
 +        # map, the same ancestor face, the same skips (no face, no triangulation, no polygon on it), so the point
 +        # pairs, the segment counts and the GeomAbs_CurveType of each kept edge align as before
 +        segments, per_edge, types = AddOns.Tessellator.EdgeSegments(self.shape)
@@ -449,13 +570,28 @@
          for i in range(1, discretizer.NbPoints() + 1)
      ]
  
+--- a/ocp_tessellate/types.py
++++ b/ocp_tessellate/types.py
+@@ -6,9 +6,9 @@
+ 
+ import numpy as np
+ from numpy.typing import NDArray
+-from OCP.gp import gp_Vec
+-from OCP.TopLoc import TopLoc_Location
+-from OCP.TopoDS import TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex
++from OCP3x.gp import gp_Vec
++from OCP3x.TopLoc import TopLoc_Location
++from OCP3x.TopoDS import TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex
+ 
+ from ocp_tessellate.utils import Color
+ 
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -27,6 +27,7 @@
  ]
  
  dependencies = [
-+    "nanoocp >= 0.1, < 0.2",
++    "ocp3x >= 0.1, < 0.2",
      "webcolors>=24.8.0",
      "numpy>=2.0",
      "cachetools>=5.5.0,<8",
@@ -555,3 +691,24 @@
              o = c.to_ocp(e).objects[0]
              self.assertEqual(o.kind, "vertex")
              self.assertTrue(is_topods_vertex(o.obj))
+--- a/tests/test_empty.py
++++ b/tests/test_empty.py
+@@ -3,14 +3,14 @@
+ import unittest
+ 
+ from build123d import *
+-from OCP.gp import gp_Pnt
+-from OCP.BRep import BRep_Builder
+-from OCP.BRepBuilderAPI import (
++from OCP3x.gp import gp_Pnt
++from OCP3x.BRep import BRep_Builder
++from OCP3x.BRepBuilderAPI import (
+     BRepBuilderAPI_MakeEdge,
+     BRepBuilderAPI_MakeFace,
+     BRepBuilderAPI_MakePolygon,
+ )
+-from OCP.TopoDS import TopoDS_Compound, TopoDS_Face
++from OCP3x.TopoDS import TopoDS_Compound, TopoDS_Face
+ 
+ from ocp_tessellate.convert import OcpConverter, tessellate_group
+ from ocp_tessellate.ocp_utils import *

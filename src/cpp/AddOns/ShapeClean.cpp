@@ -1,4 +1,4 @@
-// nanoocp.AddOns.ShapeClean -- a workaround for an OCCT bug, not an addition. It is removed again once OCCT is fixed.
+// OCP3x.AddOns.ShapeClean -- a workaround for an OCCT bug, not an addition. It is removed again once OCCT is fixed.
 //
 // The bug (OCCT issue #1541, open, unfixed on master 3d097a0328). ShapeUpgrade_UnifySameDomain::UnionPCurves hands
 // the pcurves of a circle's arcs, in chain order, to Geom2dConvert::ConcatC1, which joins them with
@@ -21,9 +21,9 @@
 //   5. compose the three histories.
 //
 // Removal: the class carries OCCT's name and the members build123d uses, with OCCT's signatures, so reverting is
-// changing the import back to nanoocp.ShapeUpgrade. tests/test_AddOns.py holds the canary that fails once OCCT
+// changing the import back to OCP3x.ShapeUpgrade. tests/test_AddOns.py holds the canary that fails once OCCT
 // produces a valid shape on the reproducer -- that is the signal to delete this file (Design.md R-ADDON).
-#include "nanoocp_common.h"
+#include "ocp3x_common.h"
 
 #include <BRepAdaptor_Curve.hxx>
 #include <BRepAdaptor_Curve2d.hxx>
@@ -69,7 +69,7 @@
 
 namespace nb = nanobind;
 
-namespace nanoocp_addons {
+namespace ocp3x_addons {
 
 using ShapeMap        = NCollection_Map<TopoDS_Shape, TopTools_ShapeMapHasher>;
 using IndexedShapeMap = NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher>;
@@ -507,12 +507,12 @@ private:
     occ::handle<BRepTools_History> myHistory;
 };
 
-} // namespace nanoocp_addons
+} // namespace ocp3x_addons
 
-void nanoocp_def_ShapeClean(nb::module_ &m)
+void ocp3x_def_ShapeClean(nb::module_ &m)
 {
-    using Cls = nanoocp_addons::ShapeUpgrade_UnifySameDomain;
-    // Signatures, defaults and docstrings as nanoocp.ShapeUpgrade.ShapeUpgrade_UnifySameDomain binds them.
+    using Cls = ocp3x_addons::ShapeUpgrade_UnifySameDomain;
+    // Signatures, defaults and docstrings as OCP3x.ShapeUpgrade.ShapeUpgrade_UnifySameDomain binds them.
     nb::class_<Cls>(m, "ShapeUpgrade_UnifySameDomain",
                     "ShapeUpgrade_UnifySameDomain with OCCT issue #1541 worked around: a full circle made of two or "
                     "more arcs on a non-planar face is merged with correctly concatenated pcurves instead of an "

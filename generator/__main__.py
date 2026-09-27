@@ -1,7 +1,7 @@
 """CLI: python -m generator --toolkit TKMath --package gp [--package ...]
 
 Writes src/cpp/<toolkit>/<package>.cpp, src/cpp/<toolkit>/_<toolkit>.cpp, src/cpp/toolkits.cmake and
-src/nanoocp/<package>.py. Prints a report of everything that was not bound and why."""
+src/OCP3x/<package>.py. Prints a report of everything that was not bound and why."""
 from __future__ import annotations
 
 import argparse
@@ -26,8 +26,8 @@ from .symbols import defined_symbols, destructor_defined, unavailable_reason
 ROOT = Path(__file__).resolve().parent.parent
 
 
-# The one package nanoOCP writes by hand rather than generating: src/cpp/AddOns, built by CMakeLists outside
-# the toolkit loop and imported as nanoocp.AddOns (extension _AddOns). It is a package, never a toolkit.
+# The one package OCP3x writes by hand rather than generating: src/cpp/AddOns, built by CMakeLists outside
+# the toolkit loop and imported as OCP3x.AddOns (extension _AddOns). It is a package, never a toolkit.
 HANDWRITTEN_PACKAGE = "AddOns"
 
 
@@ -62,10 +62,10 @@ def _base_import_edges(tree, parsed: list, templates: dict, classes: dict[str, s
     * `NCollection_Shared<T>` derives from T (6a, BINDERS "wraps"): TKMesh binds `Shared<DataMap<TopoDS_Shape, int,
       TopTools_ShapeMapHasher>>` while TKBool binds the DataMap, and neither toolkit links the other. It worked until
       2026-09-23 only because the EXTERNLIB order happened to put TKBool first; adding TKBinXCAF reshuffled it and
-      every `import nanoocp` failed.
+      every `import OCP3x` failed.
     * a class deriving from an instantiation another toolkit binds (`Class.after_templates`, 6a): `XmlObjMgt_RRelocationTable`
       derives from `NCollection_DataMap<int, handle<Standard_Transient>>`, which TKBinL binds. Until 2026-09-24 this
-      shape had no edge at all, and `import nanoocp._TKXmlL` on its own aborted -- invisible while nanoocp/__init__.py
+      shape had no edge at all, and `import OCP3x._TKXmlL` on its own aborted -- invisible while OCP3x/__init__.py
       imported every toolkit in an order that happened to work."""
     wrapping = {kind for kind, info in BINDERS.items() if info.get("wraps") is True}
     owner = {key: entry["toolkit"] for key, entry in templates.items()
@@ -150,9 +150,9 @@ def _element_spec(arg: str, known: dict[str, str], templates: dict[str, dict]) -
         arg = m.group(1)
     inst = templates.get(arg)                    # template instantiations first: their Python name is the alias
     if inst is not None and not inst.get("skipped", False):
-        return (f"nanoocp.{inst['package']}", inst["name"])
+        return (f"OCP3x.{inst['package']}", inst["name"])
     if arg in known and "<" not in arg:
-        return (f"nanoocp.{known[arg]}", py_path(arg, known[arg], _paths))     # dotted for nested classes / namespaces
+        return (f"OCP3x.{known[arg]}", py_path(arg, known[arg], _paths))     # dotted for nested classes / namespaces
     return None
 
 
@@ -287,7 +287,7 @@ def main(argv: list[str]) -> int:
     print(configure_libclang(), file=sys.stderr)
     tree = load_tree(args.occt_src, args.occt)
     cpp_root = args.out / "cpp"
-    py_root = args.out / "nanoocp"
+    py_root = args.out / "OCP3x"
     # manifest: C++ class -> package, for every class bound by earlier runs (base-class checks across toolkits)
     manifest_path = cpp_root / "manifest.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
@@ -314,7 +314,7 @@ def main(argv: list[str]) -> int:
         if sel is None:
             return 1
         selected.append((tk_name, sel))
-    # PARALLEL PARSE (NANOOCP_JOBS>1): every package of every toolkit is parsed in one global pool before the
+    # PARALLEL PARSE (OCP3X_JOBS>1): every package of every toolkit is parsed in one global pool before the
     # sequential loop runs, which then takes the IRs from `prefetched` instead of parsing -- so everything after the
     # parse is byte for byte the code path of a normal run. Two inputs a package normally inherits from the packages
     # before it have to be derived instead, and both are derived by iterating:
@@ -327,7 +327,7 @@ def main(argv: list[str]) -> int:
     derived_elsewhere: dict[tuple[str, str], set[str]] | None = None
     # One worker per core by default: the work is CPU-bound libclang parses, and more of them keep paying off even on
     # the efficiency cores (measured on an 18-core M5, 6P + 12E, 45 toolkits: 1 job 161.8 s, 10 jobs 40.9 s, 14 jobs
-    # 34.9 s, 18 jobs 29.9 s). `NANOOCP_JOBS` overrides it and **`NANOOCP_JOBS=1` is the sequential path**, which is
+    # 34.9 s, 18 jobs 29.9 s). `OCP3X_JOBS` overrides it and **`OCP3X_JOBS=1` is the sequential path**, which is
     # what a byte-for-byte comparison is run against. Never more workers than packages: a `--package` run would
     # otherwise pay for a pool of idle processes, each loading the OCCT tree.
     n_packages = sum(len(pkgs) for _, pkgs in selected)
@@ -366,7 +366,7 @@ def main(argv: list[str]) -> int:
                 if rounds >= 4:
                     # Without the fixpoint the IRs were parsed with inputs the run has since revised, and there is no
                     # reason left to believe they are what a sequential run produces. Two rounds have always sufficed.
-                    print("parallel parse: no fixpoint after 4 rounds; run without NANOOCP_JOBS", file=sys.stderr)
+                    print("parallel parse: no fixpoint after 4 rounds; run without OCP3X_JOBS", file=sys.stderr)
                     return 1
         derived_elsewhere = elsewhere
         wall = time.perf_counter() - t0
@@ -570,7 +570,7 @@ def main(argv: list[str]) -> int:
         depends += [d for d in manifest.get("links", {}).get(tk_name, [])
                     if d in generated_toolkits and d not in depends and position[d] < position[tk_name]]
         # 6a: NCollection_Shared<T> derives from T, so the toolkit binding T must be *imported* before this module
-        # registers the wrapper. Ordering nanoocp/__init__.py is not enough -- another toolkit's import chain can
+        # registers the wrapper. Ordering OCP3x/__init__.py is not enough -- another toolkit's import chain can
         # reach this one first (_TKService imports _TKV3d for a cross-toolkit alias, _TKV3d imports _TKMesh, and
         # _TKMesh registered a wrapper over a TKBool DataMap; 2026-09-23).
         # ... and unlike R-LINK's, this edge is not filtered by the EXTERNLIB order: TKBool comes *after* TKMesh
@@ -589,12 +589,12 @@ def main(argv: list[str]) -> int:
                     _base_import_edges(tree, parsed, templates, known, generated_pkgs,
                                        {n: pk.toolkit for n, pk in tree.packages.items()}))
     # Python shims: one per generated package. The pre-8.0 typedef names (TColgp_Array1OfPnt & co, OCCT's
-    # src/Deprecated/NCollectionAliases) are NOT exposed -- nanoOCP is an OCCT 8 binding and code using it is
+    # src/Deprecated/NCollectionAliases) are NOT exposed -- OCP3x is an OCCT 8 binding and code using it is
     # expected to spell the 8.0 names (decision 2026-09-24, Design.md 6a).
     generated_packages = set(generated_pkgs)          # every generated package, with or without classes
-    # nanoocp.AddOns is hand-written (src/cpp/AddOns, built by CMakeLists outside the toolkit loop). Its shim and
+    # OCP3x.AddOns is hand-written (src/cpp/AddOns, built by CMakeLists outside the toolkit loop). Its shim and
     # its entry in _PACKAGES are generated like any other package's, so `make clean_gen` stays correct and
-    # `import nanoocp; nanoocp.AddOns` resolves through the same lazy __getattr__ (State.md 8.10b). It must NOT
+    # `import OCP3x; OCP3x.AddOns` resolves through the same lazy __getattr__ (State.md 8.10b). It must NOT
     # reach generated_pkgs: that goes into the manifest, an incremental run reads it back into
     # generated_toolkits, and _topo then looks for a toolkit OCCT has never heard of (KeyError: 'AddOns').
     generated_packages.add(HANDWRITTEN_PACKAGE)
@@ -625,15 +625,15 @@ def main(argv: list[str]) -> int:
     print(f"timing: parse {timing['parse']:.1f} s, emit {timing['emit']:.1f} s, other {total - timing['parse'] - timing['emit']:.1f} s"
           f" (total {total:.1f} s)", file=sys.stderr)
     (py_root / "__init__.py").write_text(
-        '"""nanoOCP: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'
-        "# Generated by the nanoOCP generator. Nothing is imported here: `import nanoocp.gp` pulls in _TKMath alone\n"
+        '"""OCP3x: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'
+        "# Generated by the OCP3x generator. Nothing is imported here: `import OCP3x.gp` pulls in _TKMath alone\n"
         "# (and what its registration needs), which is 14 ms rather than the 172 ms and 179 MB that importing all 45\n"
         "# toolkit modules cost. Each extension module already imports its own dependencies -- EXTERNLIB, the R-LINK\n"
         "# extras that precede it and the R-IMPORT-BASE edges -- so registration order holds without a list here.\n"
-        "# The one module other toolkits bind into is nanoocp.NCollection, and importing it loads every toolkit\n"
+        "# The one module other toolkits bind into is OCP3x.NCollection, and importing it loads every toolkit\n"
         "# that binds an instantiation into it (Design.md 6a).\n"
         "\n"
-        "# `import nanoocp` then `nanoocp.gp.gp_Pnt` works: PEP 562 module __getattr__ imports the package on first\n"
+        "# `import OCP3x` then `OCP3x.gp.gp_Pnt` works: PEP 562 module __getattr__ imports the package on first\n"
         "# access. This is the one place that mechanism earns its keep -- a submodule that genuinely exists, resolved\n"
         "# lazily in a single file, rather than the per-shim fallback that used to paper over a stale star import.\n"
         "import importlib as _importlib\n"
@@ -654,27 +654,27 @@ def main(argv: list[str]) -> int:
         "\n"
         "\n"
         "__all__ = sorted(_PACKAGES)\n")
-    # `import nanoocp.all` loads every toolkit, in dependency order: on macOS Gatekeeper verifies each dylib the
+    # `import OCP3x.all` loads every toolkit, in dependency order: on macOS Gatekeeper verifies each dylib the
     # first time it is loaded, so warming all of them once after installing a wheel is cheaper than paying for it
     # scattered through a session (the user's practice with the OCP wheel). It is *not* needed for DE_Wrapper:
-    # nanoOCP does not bind DE_PluginHolder<T> (R-TEMPLATE-SKIP), so a provider is registered by an explicit
+    # OCP3x does not bind DE_PluginHolder<T> (R-TEMPLATE-SKIP), so a provider is registered by an explicit
     # `wrapper.Bind(DEBREP_ConfigurationNode())` whatever has been imported -- measured 2026-09-24.
     (py_root / "all.py").write_text(
-        '''"""Load every nanoOCP toolkit: `import nanoocp.all`.
+        '''"""Load every OCP3x toolkit: `import OCP3x.all`.
 
-Importing nanoocp itself loads nothing, and `import nanoocp.gp` loads only what gp needs. Use this module when you
+Importing OCP3x itself loads nothing, and `import OCP3x.gp` loads only what gp needs. Use this module when you
 want all of it at once:
 
 * after installing a wheel on macOS, so Gatekeeper verifies the OCCT libraries once rather than during your work;
 * whenever you would rather have everything to hand than think about which package you need.
 
-It is *not* required for `DE_Wrapper`: nanoOCP does not bind `DE_PluginHolder<T>`, so a format provider is
+It is *not* required for `DE_Wrapper`: OCP3x does not bind `DE_PluginHolder<T>`, so a format provider is
 registered by an explicit `wrapper.Bind(DEBREP_ConfigurationNode())` regardless of what has been imported.
 
-Generated by the nanoOCP generator; the order is the dependency order (Design.md 5.1, 6a).
+Generated by the OCP3x generator; the order is the dependency order (Design.md 5.1, 6a).
 """
 '''
-        + "".join(f"import nanoocp._{tk}  # noqa: F401\n" for tk in ordered)
+        + "".join(f"import OCP3x._{tk}  # noqa: F401\n" for tk in ordered)
         + "\nTOOLKITS = (\n" + "".join(f'    "{tk}",\n' for tk in ordered) + ")\n")
     manifest_path.write_text(json.dumps({"classes": dict(sorted(known.items())), "templates": dict(sorted(templates.items())),
                                          "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"],
@@ -693,11 +693,11 @@ Generated by the nanoOCP generator; the order is the dependency order (Design.md
         print(f"    - {w}", file=sys.stderr)
     links = {tk: libs for tk, libs in sorted(manifest.get("links", {}).items()) if len(libs) > 0}
     (cpp_root / "toolkits.cmake").write_text(
-        "# Generated by the nanoOCP generator. Do not edit.\n"
-        "# Order = link order: every toolkit after its dependencies.\nset(NANOOCP_TOOLKITS "
+        "# Generated by the OCP3x generator. Do not edit.\n"
+        "# Order = link order: every toolkit after its dependencies.\nset(OCP3X_TOOLKITS "
         + " ".join(_topo(tree, generated_toolkits)) + ")\n"
         + "# Toolkits whose types a module names although OCCT's own EXTERNLIB does not link them (R-LINK):\n"
-        + "".join(f"set(NANOOCP_{tk}_EXTRA_LIBS {' '.join(libs)})\n" for tk, libs in links.items()))
+        + "".join(f"set(OCP3X_{tk}_EXTRA_LIBS {' '.join(libs)})\n" for tk, libs in links.items()))
     return 0
 
 

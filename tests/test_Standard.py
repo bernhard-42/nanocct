@@ -1,7 +1,7 @@
 """Generated bindings for OCCT package Standard (toolkit TKernel): exceptions, Transient, free functions."""
 import pytest
 
-from nanoocp import Standard, StdFail, gp
+from OCP3x import Standard, StdFail, gp
 
 
 def test_exception_hierarchy_mirrors_occt():

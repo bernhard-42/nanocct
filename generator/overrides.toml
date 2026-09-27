@@ -323,8 +323,8 @@ binary_members = [
 ]
 
 # Classes that get zero-copy numpy accessors (State.md 8.10, R-VIEW). The emitter appends
-#     nanoocp_def_views<Class>(cls);
-# to the class's define phase and includes src/cpp/common/nanoocp_views.h, where the accessors themselves are a
+#     ocp3x_def_views<Class>(cls);
+# to the class's define phase and includes src/cpp/common/ocp3x_views.h, where the accessors themselves are a
 # template specialisation -- one per class, because every case has runtime branches a config file cannot carry
 # (Poly_Triangulation's dtype follows IsDoublePrecision(); Image_PixMap's rows are padded, so its view needs a
 # stride from SizeRowBytes()). A name listed here without a specialisation does not link, and

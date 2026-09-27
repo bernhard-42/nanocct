@@ -10,22 +10,22 @@ import pytest
 
 from conftest import report
 
-from nanoocp import Message
-from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.DEVRML import DEVRML_ConfigurationNode, DEVRML_Provider
-from nanoocp.Message import Message_ProgressRange
-from nanoocp.NCollection import NCollection_DataMap__Handle_TopoDS_TShape__Handle_VrmlData_Appearance as AppearanceMap
-from nanoocp.Quantity import Quantity_Color, Quantity_NOC_RED
-from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
-from nanoocp.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
-from nanoocp.TopExp import TopExp_Explorer
-from nanoocp.Vrml import Vrml_Cone, Vrml_Material
-from nanoocp.VrmlAPI import VrmlAPI, VrmlAPI_CafReader, VrmlAPI_RepresentationOfShape, VrmlAPI_Writer
-from nanoocp.VrmlConverter import VrmlConverter_Drawer
-from nanoocp.VrmlData import VrmlData_Scene, VrmlData_ShapeConvert, VrmlData_StatusOK
-from nanoocp.XCAFApp import XCAFApp_Application
-from nanoocp.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
+from OCP3x import Message
+from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.DEVRML import DEVRML_ConfigurationNode, DEVRML_Provider
+from OCP3x.Message import Message_ProgressRange
+from OCP3x.NCollection import NCollection_DataMap__Handle_TopoDS_TShape__Handle_VrmlData_Appearance as AppearanceMap
+from OCP3x.Quantity import Quantity_Color, Quantity_NOC_RED
+from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+from OCP3x.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
+from OCP3x.TopExp import TopExp_Explorer
+from OCP3x.Vrml import Vrml_Cone, Vrml_Material
+from OCP3x.VrmlAPI import VrmlAPI, VrmlAPI_CafReader, VrmlAPI_RepresentationOfShape, VrmlAPI_Writer
+from OCP3x.VrmlConverter import VrmlConverter_Drawer
+from OCP3x.VrmlData import VrmlData_Scene, VrmlData_ShapeConvert, VrmlData_StatusOK
+from OCP3x.XCAFApp import XCAFApp_Application
+from OCP3x.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEVRML" / "report.txt"
 
@@ -58,7 +58,7 @@ def _document(box):
 
 @pytest.mark.parametrize("pkg", ["Vrml", "VrmlData", "VrmlAPI", "VrmlConverter", "DEVRML"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_the_package_function_is_build123d_s_call(tmp_path, meshed_box, quiet_messenger):

@@ -1,5 +1,5 @@
-nanoOCP
-Copyright 2026 The nanoOCP authors
+OCP3x
+Copyright 2026 The OCP3x authors
 
 This product includes software developed by third parties. The full text of each
 licence is in the `licenses/` directory of this distribution, which is shipped
@@ -45,7 +45,7 @@ compatible with distributing this wheel under Apache-2.0):
 
 The FIPL is an MPL-1.1 derivative. Its sections 3.6 and 3.7 permit distributing the executable form inside a
 larger work under a licence of our choice, provided the licence text travels with it and this notice says where
-the source is. **nanoOCP does not modify FreeImage.** Its complete corresponding source is the tag pinned in
+the source is. **OCP3x does not modify FreeImage.** Its complete corresponding source is the tag pinned in
 `deps/fetch-freeimage-src.sh` (3.19.15) at https://github.com/danoli3/FreeImage.
 
 FreeImage vendors the codecs it uses, so the following are compiled into that one library. It is built with

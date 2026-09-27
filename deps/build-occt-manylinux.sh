@@ -28,7 +28,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 PREFIX_REL="${1:-deps/occt-8.0.1-manylinux}"
-IMAGE=nanoocp-manylinux
+IMAGE=OCP3x-manylinux
 
 docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE"
 

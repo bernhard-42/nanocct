@@ -32,13 +32,13 @@ def default_jobs() -> int:
 def jobs_from_env(n_items: int) -> tuple[int, str]:
     """How many workers to run `n_items` independent units on, and a one-line explanation for the log.
 
-    `NANOOCP_JOBS` sets it; **unset or 0 means one worker per core**, and **1 is the sequential path** -- which is
+    `OCP3X_JOBS` sets it; **unset or 0 means one worker per core**, and **1 is the sequential path** -- which is
     what a byte-for-byte comparison is run against. Never more workers than items, so a one-package run does not pay
     for a pool of idle processes."""
-    env = os.environ.get("NANOOCP_JOBS", "")
+    env = os.environ.get("OCP3X_JOBS", "")
     requested = int(env) if env != "" else 0
     jobs = max(1, min(requested if requested > 0 else default_jobs(), max(1, n_items)))
-    how = f"NANOOCP_JOBS={requested}" if requested > 0 else f"{default_jobs()} cores, NANOOCP_JOBS=1 to go sequential"
+    how = f"OCP3X_JOBS={requested}" if requested > 0 else f"{default_jobs()} cores, OCP3X_JOBS=1 to go sequential"
     return jobs, how
 
 

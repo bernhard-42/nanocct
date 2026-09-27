@@ -1,7 +1,7 @@
 """Runtime support for the NCollection_Xxx[T] spelling of container instantiations (Design.md 6a).
 
 nanobind registers one concrete class per C++ instantiation (NCollection_Array1__gp_Pnt). The generated
-nanoocp/NCollection/__init__.py declares one small class per template, a subclass of `Generic` below, whose
+OCP3x/NCollection/__init__.py declares one small class per template, a subclass of `Generic` below, whose
 `_instances` table maps the Python element types to those classes, so that NCollection_Array1[gp_Pnt] reads like
 the OCCT documentation's NCollection_Array1<gp_Pnt> and *is* NCollection_Array1__gp_Pnt.
 
@@ -34,7 +34,7 @@ class Generic(metaclass=abc.ABCMeta):
             return cls._instances[params]
         except KeyError:
             args = ", ".join(getattr(p, "__name__", repr(p)) for p in (params if isinstance(params, tuple) else (params,)))
-            raise TypeError(f"{cls.__name__}[{args}] is not bound by nanoocp (no bound OCCT signature uses it)") from None
+            raise TypeError(f"{cls.__name__}[{args}] is not bound by OCP3x (no bound OCCT signature uses it)") from None
 
     @classmethod
     def __subclasshook__(cls, sub: type) -> Any:

@@ -1,6 +1,6 @@
-"""nanoocp.AddOns -- the additions that are not a 1:1 binding of OCCT (State.md 8.10b).
+"""OCP3x.AddOns -- the additions that are not a 1:1 binding of OCCT (State.md 8.10b).
 
-Everything else in nanoOCP mirrors an OCCT class. These do not, so they live in their own package: a reader
+Everything else in OCP3x mirrors an OCCT class. These do not, so they live in their own package: a reader
 of `AddOns.Tessellator.NormalsFromSurface(...)` can see at a glance that it is ours.
 
 Both helpers exist because a zero-copy view cannot express them. A view moves data that is already there;
@@ -9,7 +9,7 @@ these *compute*, one OCCT call per node or per edge, and that loop has to stay o
 import numpy as np
 import pytest
 
-from nanoocp import (AddOns, BRep, BRepMesh, BRepPrimAPI, BRepTools, NCollection, TopAbs, TopExp,
+from OCP3x import (AddOns, BRep, BRepMesh, BRepPrimAPI, BRepTools, NCollection, TopAbs, TopExp,
                      TopLoc, TopoDS, gp)
 
 
@@ -27,8 +27,8 @@ def _first_face(shape):
 
 
 def test_the_package_is_not_pretending_to_be_occt():
-    assert AddOns.Tessellator.__name__ == "nanoocp.AddOns.Tessellator"
-    import nanoocp.AddOns.Tessellator as T           # importable as a module path, not only as an attribute
+    assert AddOns.Tessellator.__name__ == "OCP3x.AddOns.Tessellator"
+    import OCP3x.AddOns.Tessellator as T           # importable as a module path, not only as an attribute
     assert T is AddOns.Tessellator
 
 
@@ -41,7 +41,7 @@ def test_normals_from_surface_matches_the_per_node_loop(meshed):
     bulk = AddOns.Tessellator.NormalsFromSurface(face, uv)
     assert bulk.shape == (tri.NbNodes(), 3) and bulk.dtype == np.float64
 
-    from nanoocp import BRepGProp
+    from OCP3x import BRepGProp
     prop = BRepGProp.BRepGProp_Face(face)
     p, n = gp.gp_Pnt(), gp.gp_Vec()
     for i in (0, len(uv) // 2, len(uv) - 1):
@@ -91,7 +91,7 @@ def test_edge_types_align_with_the_counts_and_match_BRepAdaptor(meshed):
     skips an edge with no ancestor face, no triangulation or no polygon on it, and a Python loop over the
     edge map cannot tell which those were without redoing those lookups.
     """
-    from nanoocp import BRepAdaptor
+    from OCP3x import BRepAdaptor
 
     _seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(meshed)
     assert len(edge_types) == len(per_edge) > 0
@@ -119,7 +119,7 @@ def test_edge_segments_needs_a_mesh():
 # spherical faces makes those arcs a closed chain, whose pcurves ShapeUpgrade_UnifySameDomain concatenates starting at
 # the wrong junction.
 
-from nanoocp import (BRepAdaptor, BRepAlgoAPI, BRepCheck, BRepGProp, GeomAbs, GProp, ShapeUpgrade,  # noqa: E402
+from OCP3x import (BRepAdaptor, BRepAlgoAPI, BRepCheck, BRepGProp, GeomAbs, GProp, ShapeUpgrade,  # noqa: E402
                      TopTools)
 
 _EDGE, _FACE, _VERTEX = (TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE,
@@ -164,18 +164,18 @@ def _volume(shape):
 
 def test_occt_still_breaks_the_closed_circle(closed_circle_cut):
     """The canary. When this fails, OCCT has fixed #1541: switch build123d back to
-    nanoocp.ShapeUpgrade.ShapeUpgrade_UnifySameDomain and delete AddOns.ShapeClean (Design.md R-ADDON)."""
+    OCP3x.ShapeUpgrade.ShapeUpgrade_UnifySameDomain and delete AddOns.ShapeClean (Design.md R-ADDON)."""
     result = _unify(_OCCT, closed_circle_cut).Shape()
     broken = not BRepCheck.BRepCheck_Analyzer(result).IsValid() or _max_edge_tolerance(result) > 1e-3
     assert broken, ("OCCT issue #1541 looks fixed: ShapeUpgrade_UnifySameDomain now cleans the closed-circle "
-                    "reproducer correctly. Remove nanoocp.AddOns.ShapeClean and its use in nanobuild's build123d patch.")
+                    "reproducer correctly. Remove OCP3x.AddOns.ShapeClean and its use in ocp3xbuild's build123d patch.")
 
 
 def test_shape_clean_carries_the_occt_name_and_signatures():
     """Reverting is an import change only if every member build123d calls is spelled as OCCT's binding spells it."""
     assert _ADDON.__name__ == _OCCT.__name__ == "ShapeUpgrade_UnifySameDomain"
-    assert _ADDON.__module__ == "nanoocp.AddOns.ShapeClean" and _ADDON is not _OCCT
-    import nanoocp.AddOns.ShapeClean as S
+    assert _ADDON.__module__ == "OCP3x.AddOns.ShapeClean" and _ADDON is not _OCCT
+    import OCP3x.AddOns.ShapeClean as S
     assert S is AddOns.ShapeClean
     for member in ("__init__", "AllowInternalEdges", "Build", "Shape", "History"):
         ours = getattr(_ADDON, member).__nb_signature__
@@ -239,7 +239,7 @@ def test_shape_clean_over_random_orientations():
     """The failure depends on where the sphere's seam falls. Rotate the sphere at random with its centre outside the
     box: OCCT breaks some of these cuts, the AddOn none."""
     import random
-    from nanoocp import BRepBuilderAPI
+    from OCP3x import BRepBuilderAPI
 
     rng = random.Random(7)
     occt_broken = 0

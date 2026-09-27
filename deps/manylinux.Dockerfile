@@ -1,4 +1,4 @@
-# The Linux build environment for nanoOCP: PyPA's manylinux_2_28 (AlmaLinux 8.10, glibc 2.28, gcc 14.2.1, cmake 4.4.3,
+# The Linux build environment for OCP3x: PyPA's manylinux_2_28 (AlmaLinux 8.10, glibc 2.28, gcc 14.2.1, cmake 4.4.3,
 # auditwheel 6.8.2) plus the two things it does not ship. A modern compiler against an old glibc/libstdc++ baseline is
 # exactly what a wheel needs, and it is the same image GitHub Actions uses, so the local build and CI are one thing.
 #
@@ -41,5 +41,5 @@ RUN dnf -y -q --enablerepo=appstream install clang && dnf -q clean all
 
 # libclang picks the newest GCC it finds under /usr/lib/gcc, which in this image is gcc 8 -- but everything is compiled
 # with gcc-toolset-14, whose libstdc++ headers live outside that tree. Without this the generator would read gcc 8's
-# standard library while the build uses gcc 14's. parse.clang_args() appends NANOOCP_CLANG_ARGS verbatim.
-ENV NANOOCP_CLANG_ARGS="--gcc-install-dir=/opt/rh/gcc-toolset-14/root/usr/lib/gcc/x86_64-redhat-linux/14"
+# standard library while the build uses gcc 14's. parse.clang_args() appends OCP3X_CLANG_ARGS verbatim.
+ENV OCP3X_CLANG_ARGS="--gcc-install-dir=/opt/rh/gcc-toolset-14/root/usr/lib/gcc/x86_64-redhat-linux/14"

@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanoocp import BRepAlgo, BRepBuilderAPI, BRepFill, BRepGProp, BRepPrimAPI, BRepProj, GProp, GeomAbs, NCollection, TopAbs, TopExp, TopOpeBRepDS, TopOpeBRepTool, TopoDS, gp
+from OCP3x import BRepAlgo, BRepBuilderAPI, BRepFill, BRepGProp, BRepPrimAPI, BRepProj, GProp, GeomAbs, NCollection, TopAbs, TopExp, TopOpeBRepDS, TopOpeBRepTool, TopoDS, gp
 
 PACKAGES = ["TopOpeBRep", "TopOpeBRepDS", "TopOpeBRepBuild", "TopOpeBRepTool", "BRepAlgo", "BRepFill", "BRepProj"]
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKBool" / "report.txt"
@@ -16,7 +16,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKBool" / "report.txt"
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def _area(shape: TopoDS.TopoDS_Shape) -> float:
@@ -72,7 +72,7 @@ def test_topopebrep_free_functions_and_iterator_typedef():
     hds = TopOpeBRepDS.TopOpeBRepDS_HDataStructure()
     it = hds.SameDomain(BRepPrimAPI.BRepPrimAPI_MakeBox(1, 1, 1).Shape())
     assert type(it) is NCollection.NCollection_List__TopoDS_Shape.Iterator and it.More() is False
-    assert "-> nanoocp.NCollection.NCollection_List__TopoDS_Shape.Iterator" in TopOpeBRepDS.TopOpeBRepDS_HDataStructure.SameDomain.__doc__
+    assert "-> OCP3x.NCollection.NCollection_List__TopoDS_Shape.Iterator" in TopOpeBRepDS.TopOpeBRepDS_HDataStructure.SameDomain.__doc__
     assert not hasattr(TopOpeBRepDS, "NCollection_TListIterator__TopoDS_Shape")
     # R-COLLISION on free functions with out-parameters
     assert hasattr(TopOpeBRepTool, "FUN_tool_closedS__bool__float__bool__float") and hasattr(TopOpeBRepTool, "FUN_tool_closedS__bool__float__float")

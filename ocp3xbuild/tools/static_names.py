@@ -1,10 +1,10 @@
-"""Bring `Cls.Static(...)` calls in Python sources to nanoocp's names, in place: `Cls.Name` -> `Cls.Name_s` (and
+"""Bring `Cls.Static(...)` calls in Python sources to OCP3x's names, in place: `Cls.Name` -> `Cls.Name_s` (and
 `Cls.Name__suffix` -> `Cls.Name_s__suffix`) wherever the class has the suffixed static and no plain member of that name.
 
-    python nanobuild/tools/static_names.py <file or directory>...
+    python ocp3xbuild/tools/static_names.py <file or directory>...
 
-For code written against nanoocp before 2026-09-26, when only colliding statics carried `_s` (R-STATIC-S), and for the
-hand-written lines of a nanobuild patch. Decided by the live build, nanoocp must be importable. String literals are
+For code written against OCP3x before 2026-09-26, when only colliding statics carried `_s` (R-STATIC-S), and for the
+hand-written lines of a ocp3xbuild patch. Decided by the live build, OCP3x must be importable. String literals are
 searched too, so `mock.patch("pkg.module.BRep_Tool.Surface")` is renamed with the call it patches. A static called
 through an instance (`shape_tool.GetShape(label)`) is not recognised: the owner is not a class name.
 """
@@ -15,14 +15,14 @@ import sys
 import tokenize
 from pathlib import Path
 
-import nanoocp.all  # noqa: F401  every toolkit, so every class is known
+import OCP3x.all  # noqa: F401  every toolkit, so every class is known
 
 CLASSES: dict[str, list[type]] = {}     # short name -> every bound class of that name (nested classes can share one)
 
 
 def _collect(owner, depth: int) -> None:
     for name, obj in vars(owner).items():
-        if inspect.isclass(obj) and getattr(obj, "__module__", "").startswith("nanoocp"):
+        if inspect.isclass(obj) and getattr(obj, "__module__", "").startswith("OCP3x"):
             seen = CLASSES.setdefault(name, [])
             if obj not in seen:
                 seen.append(obj)
@@ -31,10 +31,10 @@ def _collect(owner, depth: int) -> None:
 
 
 for _name, _mod in list(sys.modules.items()):
-    if _name.startswith("nanoocp.") and _mod is not None:
+    if _name.startswith("OCP3x.") and _mod is not None:
         _collect(_mod, 0)
 
-# every `A.B` pair, overlapping, so `nanoocp.BRep.BRep_Tool.Surface` yields (BRep, BRep_Tool) and (BRep_Tool, Surface)
+# every `A.B` pair, overlapping, so `OCP3x.BRep.BRep_Tool.Surface` yields (BRep, BRep_Tool) and (BRep_Tool, Surface)
 PAIR = re.compile(r"(?<!\w)(?=([A-Za-z_]\w*)\.([A-Za-z_]\w*)\b)")
 
 

@@ -2,7 +2,7 @@
 the last toolkit in scope. With them `DE_Wrapper` dispatches `.brep` and the OCAF documents by extension, next to
 STEP, IGES and the mesh formats -- OCCT's native formats stop being the exception.
 
-It is also the one toolkit that links libraries nanoOCP does not bind: TKStd, TKStdL, TKTObj, TKBinTObj and
+It is also the one toolkit that links libraries OCP3x does not bind: TKStd, TKStdL, TKTObj, TKBinTObj and
 TKXmlTObj are needed by the providers' implementations but named in no header, so they come along on the link line
 and have no Python module (8.15)."""
 import importlib
@@ -10,20 +10,20 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp.BRepGProp import BRepGProp
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.DE import DE_Wrapper
-from nanoocp.DEBREP import DEBREP_ConfigurationNode, DEBREP_Provider
-from nanoocp.DEXCAF import DEXCAF_ConfigurationNode, DEXCAF_Provider
-from nanoocp.GProp import GProp_GProps
-from nanoocp.Message import Message_ProgressRange
-from nanoocp.NCollection import NCollection_Sequence
-from nanoocp.Quantity import Quantity_Color, Quantity_NOC_RED
-from nanoocp.TCollection import TCollection_AsciiString, TCollection_ExtendedString
-from nanoocp.TDF import TDF_Label
-from nanoocp.TopoDS import TopoDS_Shape
-from nanoocp.XCAFApp import XCAFApp_Application
-from nanoocp.XCAFDoc import XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
+from OCP3x.BRepGProp import BRepGProp
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.DE import DE_Wrapper
+from OCP3x.DEBREP import DEBREP_ConfigurationNode, DEBREP_Provider
+from OCP3x.DEXCAF import DEXCAF_ConfigurationNode, DEXCAF_Provider
+from OCP3x.GProp import GProp_GProps
+from OCP3x.Message import Message_ProgressRange
+from OCP3x.NCollection import NCollection_Sequence
+from OCP3x.Quantity import Quantity_Color, Quantity_NOC_RED
+from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+from OCP3x.TDF import TDF_Label
+from OCP3x.TopoDS import TopoDS_Shape
+from OCP3x.XCAFApp import XCAFApp_Application
+from OCP3x.XCAFDoc import XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDECascade" / "report.txt"
 
@@ -50,7 +50,7 @@ def _document(box):
 @pytest.mark.parametrize("pkg", ["DEBREP", "DEXCAF", "DEBRepCascade", "DEXCAFCascade"])
 def test_every_package_imports(pkg):
     """DEBRepCascade and DEXCAFCascade hold no classes -- they are OCCT's alias packages -- but still get a shim."""
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_the_configuration_nodes():
@@ -141,7 +141,7 @@ def test_the_linked_but_unbound_toolkits_have_no_module(package):
     them, but no type of theirs appears in a header, so they are linked and not bound. This is the link-vs-import
     distinction R-LINK rests on, seen from the other side."""
     with pytest.raises(ModuleNotFoundError):
-        importlib.import_module(f"nanoocp.{package}")
+        importlib.import_module(f"OCP3x.{package}")
 
 
 def test_report_is_empty():

@@ -1,8 +1,8 @@
 // Which array element types can be viewed as numpy scalars, and how (R-VIEW, State.md 8.10a).
 //
-// Separate from nanoocp_views.h because this half is about the *element*, not the container: the same table
-// serves NCollection_Array1/Array2/HArray1/HArray2 (nanoocp_ncollection.h) and anything else holding a
-// packed array of these types. nanoocp_views.h is per-class and pulls in that class's OCCT header; this one
+// Separate from ocp3x_views.h because this half is about the *element*, not the container: the same table
+// serves NCollection_Array1/Array2/HArray1/HArray2 (ocp3x_ncollection.h) and anything else holding a
+// packed array of these types. ocp3x_views.h is per-class and pulls in that class's OCCT header; this one
 // only needs the small value types.
 //
 // The table is asserted, not assumed. Every entry static_asserts that the type really is N packed scalars
@@ -30,7 +30,7 @@
 
 namespace nb = nanobind;
 
-namespace nanoocp {
+namespace OCP3x {
 
 //! Not viewable unless specialised below: a class element, a handle, a string, anything with a vtable.
 template <class T> struct view_elem { static constexpr bool supported = false; };
@@ -39,7 +39,7 @@ template <class T> struct view_elem { static constexpr bool supported = false; }
 //! @param S the numpy scalar it decomposes into
 //! @param N how many of them (1 = a plain scalar array, no trailing dimension)
 //! @param W false when a raw write could leave the value invalid, which makes the view read-only
-#define NANOOCP_VIEW_ELEM(T, S, N, W)                                                              \
+#define OCP3X_VIEW_ELEM(T, S, N, W)                                                              \
     template <> struct view_elem<T> {                                                              \
         using scalar = S;                                                                          \
         static constexpr size_t components = N;                                                    \
@@ -51,36 +51,36 @@ template <class T> struct view_elem { static constexpr bool supported = false; }
         static_assert(!std::is_polymorphic_v<T>, #T " has a vtable");                              \
     };
 
-NANOOCP_VIEW_ELEM(double, double, 1, true)
-NANOOCP_VIEW_ELEM(float, float, 1, true)
-NANOOCP_VIEW_ELEM(int32_t, int32_t, 1, true)
-NANOOCP_VIEW_ELEM(bool, bool, 1, true)
-NANOOCP_VIEW_ELEM(uint8_t, uint8_t, 1, true)
+OCP3X_VIEW_ELEM(double, double, 1, true)
+OCP3X_VIEW_ELEM(float, float, 1, true)
+OCP3X_VIEW_ELEM(int32_t, int32_t, 1, true)
+OCP3X_VIEW_ELEM(bool, bool, 1, true)
+OCP3X_VIEW_ELEM(uint8_t, uint8_t, 1, true)
 
-NANOOCP_VIEW_ELEM(gp_Pnt, double, 3, true)
-NANOOCP_VIEW_ELEM(gp_XYZ, double, 3, true)
-NANOOCP_VIEW_ELEM(gp_Vec, double, 3, true)
-NANOOCP_VIEW_ELEM(gp_Pnt2d, double, 2, true)
-NANOOCP_VIEW_ELEM(gp_XY, double, 2, true)
-NANOOCP_VIEW_ELEM(gp_Vec2d, double, 2, true)
+OCP3X_VIEW_ELEM(gp_Pnt, double, 3, true)
+OCP3X_VIEW_ELEM(gp_XYZ, double, 3, true)
+OCP3X_VIEW_ELEM(gp_Vec, double, 3, true)
+OCP3X_VIEW_ELEM(gp_Pnt2d, double, 2, true)
+OCP3X_VIEW_ELEM(gp_XY, double, 2, true)
+OCP3X_VIEW_ELEM(gp_Vec2d, double, 2, true)
 
 // A gp_Dir is normalised by construction and every OCCT setter keeps it so; a raw write through a view
 // could leave a direction of length 0.3 in the array, which is not a gp_Dir. Read-only, therefore --
 // SetValue() is the way to change one.
-NANOOCP_VIEW_ELEM(gp_Dir, double, 3, false)
-NANOOCP_VIEW_ELEM(gp_Dir2d, double, 2, false)
+OCP3X_VIEW_ELEM(gp_Dir, double, 3, false)
+OCP3X_VIEW_ELEM(gp_Dir2d, double, 2, false)
 
 // Three 1-based node indices, the same layout Poly_Triangulation's TrianglesArray() views.
-NANOOCP_VIEW_ELEM(Poly_Triangle, int32_t, 3, true)
+OCP3X_VIEW_ELEM(Poly_Triangle, int32_t, 3, true)
 
-#undef NANOOCP_VIEW_ELEM
+#undef OCP3X_VIEW_ELEM
 
 //! A view over `theShape` elements starting at `theFirst`, with the element's components as a trailing
 //! dimension when it has more than one -- (N,) for double, (N, 3) for gp_Pnt, (rows, cols, 3) for an
 //! Array2 of gp_Pnt. Writability follows the element's entry in the table above.
 //!
 //! The array is created with no owner: the caller's `nb::rv_policy::reference_internal` on the `.def()` is
-//! what ties it to the object, as in nanoocp_views.h. nanobind copies the shape, so the local is fine.
+//! what ties it to the object, as in ocp3x_views.h. nanobind copies the shape, so the local is fine.
 //!
 //! @param theFirst  address of element 0, or nullptr when the array is empty
 //! @param theShape  the leading dimensions -- one for Array1, two for Array2
@@ -101,4 +101,4 @@ auto elem_view(void *theFirst, const size_t (&theShape)[NDim]) {
         return nb::ndarray<nb::numpy, const S>(theFirst, ndim, shape, nb::handle());
 }
 
-} // namespace nanoocp
+} // namespace OCP3x

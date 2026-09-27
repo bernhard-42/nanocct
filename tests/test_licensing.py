@@ -1,6 +1,6 @@
 """The wheel must carry a licence for everything it bundles (Design.md 7).
 
-nanoOCP's own code is Apache-2.0, but the binary distribution also ships OCCT, and inside it FreeType,
+OCP3x's own code is Apache-2.0, but the binary distribution also ships OCCT, and inside it FreeType,
 RapidJSON and nanobind. Each of those licences requires its text and its attribution to travel with the
 binary; the OCCT exception in particular is conditional on a "prominent notice in supporting documentation
 to this code that it makes use of or is based on facilities provided by the Open CASCADE Technology
@@ -59,7 +59,7 @@ def test_notice_carries_the_attributions_the_licences_require():
     assert "FreeImage Public License" in notice and "github.com/danoli3/FreeImage" in notice
     # no dependency is modified, and the notice must not claim otherwise for the two that used to be in doubt
     assert "FreeType 2.14.3 is **used unmodified**" in notice
-    assert "nanoOCP does not modify FreeImage" in notice
+    assert "OCP3x does not modify FreeImage" in notice
 
 
 def test_licences_cover_what_is_actually_bundled_and_nothing_build_only():

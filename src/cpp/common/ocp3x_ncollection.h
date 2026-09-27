@@ -5,8 +5,8 @@
 // the generated ncollection_docs.h. Python protocol methods (__len__, __iter__, __setitem__) are
 // additions, never replacements.
 #pragma once
-#include "nanoocp_common.h"
-#include "nanoocp_elem_view.h"
+#include "ocp3x_common.h"
+#include "ocp3x_elem_view.h"
 #include "ncollection_docs.h"
 
 #include <nanobind/make_iterator.h>
@@ -28,9 +28,9 @@
 #include <NCollection_Map.hxx>
 #include <NCollection_Sequence.hxx>
 
-#define NANOOCP_DOC(tmpl, member) nanoocp_doc::tmpl::member
+#define OCP3X_DOC(tmpl, member) ocp3x_doc::tmpl::member
 
-namespace nanoocp {
+namespace OCP3x {
 
 // T has operator== (needed by NCollection_List::Contains / Remove(item); gp_Pnt has none, TopoDS_Shape has)
 template <typename T, typename = void> struct has_equal : std::false_type {};
@@ -51,7 +51,7 @@ void def_elem(C &&c, const char *name, F &&f, Args &&...args) {
 // A the NCollection_Array1<T> it is (or derives from).
 template <typename T, typename Cls, typename... Extra> void def_array1_members(nb::class_<Cls, Extra...> &c) {
     using A = NCollection_Array1<T>;
-    namespace D = nanoocp_doc::NCollection_Array1;
+    namespace D = ocp3x_doc::NCollection_Array1;
     c.def("Init", [](Cls &self, const T &v) { self.Init(v); }, nb::arg("theValue"), D::Init)
      .def("Size", [](const Cls &self) { return self.Size(); }, D::Size)
      .def("Length", [](const Cls &self) { return self.Length(); }, D::Length)
@@ -81,11 +81,11 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
     // R-VIEW (State.md 8.10a): a packed POD element type also gets a zero-copy numpy view of the whole
     // array, so the per-element __getitem__ loop above never has to be the way large data reaches Python.
     // Not every instantiation qualifies -- a handle, a string, a TopoDS_Shape has nothing to view.
-    if constexpr (nanoocp::view_elem<T>::supported)
+    if constexpr (OCP3x::view_elem<T>::supported)
         c.def("ValuesArray", [](Cls &self) {
             const size_t n = (size_t) self.Size();
             const size_t shape[1] = { n };
-            return nanoocp::elem_view<T>(n == 0 ? nullptr : (void *) &self.ChangeFirst(), shape);
+            return OCP3x::elem_view<T>(n == 0 ? nullptr : (void *) &self.ChangeFirst(), shape);
         }, nb::rv_policy::reference_internal,
         "Python addition: zero-copy numpy view of the whole array (R-VIEW).\n\n"
         "Shape (Size(),) for a scalar element type and (Size(), k) for a k-component one -- (N, 3) for "
@@ -105,7 +105,7 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
 }
 
 // Standard_Transient members of a multiple-inheritance type S bound with base B (offset 0): the lambdas
-// take B& and static_cast to S& (adjusting downcast), see mi_traits in nanoocp_common.h
+// take B& and static_cast to S& (adjusting downcast), see mi_traits in ocp3x_common.h
 template <typename S, typename B, typename... Extra> void def_transient_members(nb::class_<S, B, Extra...> &c) {
     c.def("GetRefCount", [](const B &b) { return static_cast<const S &>(b).GetRefCount(); }, "Get the reference counter of this object (Standard_Transient).")
      .def("DynamicType", [](const B &b) { return static_cast<const S &>(b).DynamicType(); }, "Returns a type descriptor about this object (Standard_Transient).")
@@ -113,12 +113,12 @@ template <typename S, typename B, typename... Extra> void def_transient_members(
      .def("IsKind", [](const B &b, const char *n) { return static_cast<const S &>(b).IsKind(n); }, nb::arg("theTypeName"), "Standard_Transient::IsKind")
      .def_static("get_type_name_s", []() { return S::get_type_name(); })
      .def_static("get_type_descriptor_s", []() { return S::get_type_descriptor(); });
-    nanoocp_register_mi<S>(c);
+    ocp3x_register_mi<S>(c);
 }
 
 template <typename T> void bind_NCollection_Array1(nb::module_ &m, const char *name) {
     using A = NCollection_Array1<T>;
-    namespace D = nanoocp_doc::NCollection_Array1;
+    namespace D = ocp3x_doc::NCollection_Array1;
     nb::class_<A> c(m, name, D::class_doc);
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const int, const int>(), nb::arg("theLower"), nb::arg("theUpper"), D::ctor)
@@ -130,7 +130,7 @@ template <typename T> void bind_NCollection_Array1(nb::module_ &m, const char *n
 template <typename T> void bind_NCollection_HArray1(nb::module_ &m, const char *name) {
     using A = NCollection_Array1<T>;
     using H = NCollection_HArray1<T>;
-    namespace D = nanoocp_doc::NCollection_HArray1;
+    namespace D = ocp3x_doc::NCollection_HArray1;
     // base = Array1<T> (offset 0): the whole Array1 API is inherited with an exact pointer; the
     // Standard_Transient part (non-zero offset) goes through def_transient_members / the MI registry
     nb::class_<H, A> c(m, name, D::class_doc);
@@ -148,7 +148,7 @@ template <typename T> void bind_NCollection_HArray1(nb::module_ &m, const char *
 template <typename T> void bind_NCollection_List(nb::module_ &m, const char *name) {
     using L = NCollection_List<T>;
     using It = typename L::Iterator;
-    namespace D = nanoocp_doc::NCollection_List;
+    namespace D = ocp3x_doc::NCollection_List;
     nb::class_<L> c(m, name, D::class_doc);
     nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
         .def(nb::init<>(), D::Iterator::ctor)
@@ -158,7 +158,7 @@ template <typename T> void bind_NCollection_List(nb::module_ &m, const char *nam
         .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
         .def("Value", [](const It &self) -> const T & { return self.Value(); }, D::Iterator::Value);
     def_elem<T>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), "ChangeValue", [](It &self) -> T & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
-    nanoocp_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    ocp3x_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const opencascade::handle<NCollection_BaseAllocator> &>(), nb::arg("theAllocator").none(), D::ctor)
      .def(nb::init<const L &>(), nb::arg("theOther"), D::ctor)
@@ -202,7 +202,7 @@ template <typename T> void bind_NCollection_List(nb::module_ &m, const char *nam
 template <typename T, typename Cls, typename... Extra> void def_sequence_members(nb::class_<Cls, Extra...> &c) {
     using S = NCollection_Sequence<T>;
     using It = typename S::Iterator;
-    namespace D = nanoocp_doc::NCollection_Sequence;
+    namespace D = ocp3x_doc::NCollection_Sequence;
     // size_t overloads duplicate the int ones (Python cannot tell them apart): int only; At/ChangeAt are size_t-only
     c.def("Length", [](const Cls &self) { return self.Length(); }, D::Length)
      .def("Size", [](const Cls &self) { return self.Size(); }, D::Size)
@@ -251,7 +251,7 @@ template <typename T, typename Cls, typename... Extra> void def_sequence_members
 template <typename T> void bind_NCollection_Sequence(nb::module_ &m, const char *name) {
     using S = NCollection_Sequence<T>;
     using It = typename S::Iterator;
-    namespace D = nanoocp_doc::NCollection_Sequence;
+    namespace D = ocp3x_doc::NCollection_Sequence;
     nb::class_<S> c(m, name, D::class_doc);
     nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
         .def(nb::init<>(), D::Iterator::ctor)
@@ -260,7 +260,7 @@ template <typename T> void bind_NCollection_Sequence(nb::module_ &m, const char 
         .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
         .def("Value", [](const It &self) -> const T & { return self.Value(); }, D::Iterator::Value);
     def_elem<T>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), "ChangeValue", [](It &self) -> T & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
-    nanoocp_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    ocp3x_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const opencascade::handle<NCollection_BaseAllocator> &>(), nb::arg("theAllocator").none(), D::ctor)
      .def(nb::init<const S &>(), nb::arg("theOther"), D::ctor);
@@ -270,7 +270,7 @@ template <typename T> void bind_NCollection_Sequence(nb::module_ &m, const char 
 template <typename T> void bind_NCollection_HSequence(nb::module_ &m, const char *name) {
     using S = NCollection_Sequence<T>;
     using H = NCollection_HSequence<T>;
-    namespace D = nanoocp_doc::NCollection_HSequence;
+    namespace D = ocp3x_doc::NCollection_HSequence;
     nb::class_<H, S> c(m, name, D::class_doc);       // base = Sequence<T> (offset 0), see HArray1
     c.def(nb::new_([]() { return opencascade::handle<H>(new H()); }), D::ctor)
      .def(nb::new_([](const S &s) { return opencascade::handle<H>(new H(s)); }), nb::arg("theOther"), D::ctor)
@@ -286,8 +286,8 @@ inline const opencascade::handle<NCollection_BaseAllocator> null_allocator = nul
 struct BaseMapDocs {
     const char *ctor, *NbBuckets, *Extent, *Length, *Size, *IsEmpty, *Allocator, *Exchange, *Assign, *ReSize, *Clear;
 };
-#define NANOOCP_BASEMAP_DOCS(D) \
-    nanoocp::BaseMapDocs{D::ctor, D::NbBuckets, D::Extent, D::Length, D::Size, D::IsEmpty, D::Allocator, D::Exchange, D::Assign, D::ReSize, D::Clear}
+#define OCP3X_BASEMAP_DOCS(D) \
+    OCP3x::BaseMapDocs{D::ctor, D::NbBuckets, D::Extent, D::Length, D::Size, D::IsEmpty, D::Allocator, D::Exchange, D::Assign, D::ReSize, D::Clear}
 
 template <typename M, typename... Extra> void def_basemap_members(nb::class_<M, Extra...> &c, const BaseMapDocs &D) {
     c.def(nb::init<>(), D.ctor)
@@ -326,7 +326,7 @@ template <typename M, typename It, typename Get> auto key_iterator(nb::handle sc
 template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_Map(nb::module_ &m, const char *name) {
     using M = NCollection_Map<K, H>;
     using It = typename M::Iterator;
-    namespace D = nanoocp_doc::NCollection_Map;
+    namespace D = ocp3x_doc::NCollection_Map;
     nb::class_<M> c(m, name, D::class_doc);
     nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
         .def(nb::init<>(), D::Iterator::ctor)
@@ -337,8 +337,8 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
         .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
         .def("Value", [](const It &self) -> const K & { return self.Value(); }, D::Iterator::Value)
         .def("Key", [](const It &self) -> const K & { return self.Key(); }, D::Iterator::Key);
-    nanoocp_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
-    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    ocp3x_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    def_basemap_members(c, OCP3X_BASEMAP_DOCS(D));
     c.def("Add", [](M &self, const K &k) { return self.Add(k); }, nb::arg("theKey"), D::Add)
      .def("Added", [](M &self, const K &k) -> const K & { return self.Added(k); }, nb::arg("theKey"), D::Added)
      .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
@@ -364,7 +364,7 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
 template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_DataMap(nb::module_ &m, const char *name) {
     using M = NCollection_DataMap<K, V, H>;
     using It = typename M::Iterator;
-    namespace D = nanoocp_doc::NCollection_DataMap;
+    namespace D = ocp3x_doc::NCollection_DataMap;
     nb::class_<M> c(m, name, D::class_doc);
     nb::class_<It> it(c, "Iterator", D::Iterator::class_doc);
     it.def(nb::init<>(), D::Iterator::ctor)
@@ -375,9 +375,9 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
       .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
       .def("Value", [](const It &self) -> const V & { return self.Value(); }, D::Iterator::Value)
       .def("Key", [](const It &self) -> const K & { return self.Key(); }, D::Iterator::Key);
-    nanoocp_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    ocp3x_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     def_elem<V>(it, "ChangeValue", [](It &self) -> V & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
-    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    def_basemap_members(c, OCP3X_BASEMAP_DOCS(D));
     c.def("Bind", [](M &self, const K &k, const V &v) { return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
      .def("TryBind", [](M &self, const K &k, const V &v) { return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
      .def("IsBound", [](const M &self, const K &k) { return self.IsBound(k); }, nb::arg("theKey"), D::IsBound)
@@ -414,7 +414,7 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
 template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_IndexedMap(nb::module_ &m, const char *name) {
     using M = NCollection_IndexedMap<K, H>;
     using It = typename M::Iterator;
-    namespace D = nanoocp_doc::NCollection_IndexedMap;
+    namespace D = ocp3x_doc::NCollection_IndexedMap;
     nb::class_<M> c(m, name, D::class_doc);
     nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
         .def(nb::init<>(), D::Iterator::ctor)
@@ -424,8 +424,8 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
         .def("Value", [](const It &self) -> const K & { return self.Value(); }, D::Iterator::Value)
         .def("Index", [](const It &self) { return self.Index(); }, D::Iterator::Index)
         .def("IsEqual", [](const It &self, const It &o) { return self.IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
-    nanoocp_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
-    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    ocp3x_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    def_basemap_members(c, OCP3X_BASEMAP_DOCS(D));
     c.def("Add", [](M &self, const K &k) { return self.Add(k); }, nb::arg("theKey"), D::Add)
      .def("Added", [](M &self, const K &k) -> const K & { return self.Added(k); }, nb::arg("theKey"), D::Added)
      .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
@@ -448,7 +448,7 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
 template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_IndexedDataMap(nb::module_ &m, const char *name) {
     using M = NCollection_IndexedDataMap<K, V, H>;
     using It = typename M::Iterator;
-    namespace D = nanoocp_doc::NCollection_IndexedDataMap;
+    namespace D = ocp3x_doc::NCollection_IndexedDataMap;
     nb::class_<M> c(m, name, D::class_doc);
     nb::class_<It> it(c, "Iterator", D::Iterator::class_doc);
     it.def(nb::init<>(), D::Iterator::ctor)
@@ -459,9 +459,9 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
       .def("Key", [](const It &self) -> const K & { return self.Key(); }, D::Iterator::Key)
       .def("Index", [](const It &self) { return self.Index(); }, D::Iterator::Index)
       .def("IsEqual", [](const It &self, const It &o) { return self.IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
-    nanoocp_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    ocp3x_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     def_elem<V>(it, "ChangeValue", [](It &self) -> V & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
-    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    def_basemap_members(c, OCP3X_BASEMAP_DOCS(D));
     c.def("Add", [](M &self, const K &k, const V &v) { return self.Add(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Add)
      .def("TryBind", [](M &self, const K &k, const V &v) { return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
      .def("Bind", [](M &self, const K &k, const V &v) { return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
@@ -503,7 +503,7 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
 // NCollection_Array2<T> (derives from NCollection_Array1<T>, whose binding it inherits) / HArray2
 template <typename T, typename Cls, typename... Extra> void def_array2_members(nb::class_<Cls, Extra...> &c) {
     using A2 = NCollection_Array2<T>;
-    namespace D = nanoocp_doc::NCollection_Array2;
+    namespace D = ocp3x_doc::NCollection_Array2;
     c.def_static("BeginPosition_s", [](int r1, int r2, int c1, int c2) { return A2::BeginPosition(r1, r2, c1, c2); },
                  nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), D::BeginPosition)
      .def_static("LastPosition_s", [](int r1, int r2, int c1, int c2) { return A2::LastPosition(r1, r2, c1, c2); },
@@ -540,10 +540,10 @@ template <typename T, typename Cls, typename... Extra> void def_array2_members(n
     // R-VIEW: the 2-D shape, which shadows the flat one inherited from the Array1 binding. Measured, not
     // assumed: NCollection_Array2 allocates one contiguous buffer and addresses it row-major --
     // `(theRow - myLowerRow) * mySizeCol + (theCol - myLowerCol)` (NCollection_Array2.hxx:306).
-    if constexpr (nanoocp::view_elem<T>::supported)
+    if constexpr (OCP3x::view_elem<T>::supported)
         c.def("ValuesArray", [](Cls &self) {
             const size_t shape[2] = { (size_t) self.NbRows(), (size_t) self.NbColumns() };
-            return nanoocp::elem_view<T>(
+            return OCP3x::elem_view<T>(
                 self.Size() == 0 ? nullptr : (void *) &self.ChangeValue(self.LowerRow(), self.LowerCol()),
                 shape);
         }, nb::rv_policy::reference_internal,
@@ -559,7 +559,7 @@ template <typename T, typename Cls, typename... Extra> void def_array2_members(n
 
 template <typename T> void bind_NCollection_Array2(nb::module_ &m, const char *name) {
     using A2 = NCollection_Array2<T>;
-    namespace D = nanoocp_doc::NCollection_Array2;
+    namespace D = ocp3x_doc::NCollection_Array2;
     nb::class_<A2, NCollection_Array1<T>> c(m, name, D::class_doc);
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const int, const int, const int, const int>(), nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), D::ctor)
@@ -571,7 +571,7 @@ template <typename T> void bind_NCollection_Array2(nb::module_ &m, const char *n
 template <typename T> void bind_NCollection_HArray2(nb::module_ &m, const char *name) {
     using A2 = NCollection_Array2<T>;
     using H = NCollection_HArray2<T>;
-    namespace D = nanoocp_doc::NCollection_HArray2;
+    namespace D = ocp3x_doc::NCollection_HArray2;
     nb::class_<H, A2> c(m, name, D::class_doc);      // base = Array2<T> (offset 0), see HArray1
     c.def(nb::new_([](int r1, int r2, int c1, int c2) { return opencascade::handle<H>(new H(r1, r2, c1, c2)); }),
           nb::arg("theRowLow"), nb::arg("theRowUpp"), nb::arg("theColLow"), nb::arg("theColUpp"), D::ctor)
@@ -587,7 +587,7 @@ template <typename T> void bind_NCollection_HArray2(nb::module_ &m, const char *
 // NCollection_DynamicArray<T> (0-based)
 template <typename T> void bind_NCollection_DynamicArray(nb::module_ &m, const char *name) {
     using V = NCollection_DynamicArray<T>;
-    namespace D = nanoocp_doc::NCollection_DynamicArray;
+    namespace D = ocp3x_doc::NCollection_DynamicArray;
     nb::class_<V> c(m, name, D::class_doc);
     c.def(nb::init<const int>(), nb::arg("theIncrement") = 256, D::ctor)
      .def(nb::init<const int, const opencascade::handle<NCollection_BaseAllocator> &>(), nb::arg("theIncrement"), nb::arg("theAlloc").none(), D::ctor)
@@ -628,7 +628,7 @@ template <typename T> void bind_NCollection_DynamicArray(nb::module_ &m, const c
 // Data()/begin()/end() (raw element pointers) are not bound.
 template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const char *name) {
     using V = NCollection_LinearVector<T>;
-    namespace D = nanoocp_doc::NCollection_LinearVector;
+    namespace D = ocp3x_doc::NCollection_LinearVector;
     nb::class_<V> c(m, name, D::class_doc);
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const size_t>(), nb::arg("theCapacity"), D::ctor)
@@ -676,7 +676,7 @@ template <typename K1, typename K2, typename H1 = NCollection_DefaultHasher<K1>,
 void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
     using M = NCollection_DoubleMap<K1, K2, H1, H2>;
     using It = typename M::Iterator;
-    namespace D = nanoocp_doc::NCollection_DoubleMap;
+    namespace D = ocp3x_doc::NCollection_DoubleMap;
     nb::class_<M> c(m, name, D::class_doc);
     nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
         .def(nb::init<>(), D::Iterator::ctor)
@@ -688,8 +688,8 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
         .def("Key1", [](const It &self) -> const K1 & { return self.Key1(); }, D::Iterator::Key1)
         .def("Key2", [](const It &self) -> const K2 & { return self.Key2(); }, D::Iterator::Key2)
         .def("Value", [](const It &self) -> const K2 & { return self.Value(); }, D::Iterator::Value);
-    nanoocp_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
-    def_basemap_members(c, NANOOCP_BASEMAP_DOCS(D));
+    ocp3x_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    def_basemap_members(c, OCP3X_BASEMAP_DOCS(D));
     c.def("Bind", [](M &self, const K1 &a, const K2 &b) { self.Bind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::Bind)
      .def("TryBind", [](M &self, const K1 &a, const K2 &b) { return self.TryBind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::TryBind)
      .def("AreBound", [](const M &self, const K1 &a, const K2 &b) { return self.AreBound(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::AreBound)
@@ -726,7 +726,7 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
 // the Transient part is bound through adjusting downcasts.
 template <typename T> void bind_NCollection_Shared(nb::module_ &m, const char *name) {
     using S = NCollection_Shared<T>;
-    namespace D = nanoocp_doc::NCollection_Shared;
+    namespace D = ocp3x_doc::NCollection_Shared;
     nb::class_<S, T> c(m, name, D::class_doc);
     if constexpr (std::is_default_constructible_v<T>)
         c.def(nb::new_([]() { return opencascade::handle<S>(new S()); }), D::ctor);
@@ -735,4 +735,4 @@ template <typename T> void bind_NCollection_Shared(nb::module_ &m, const char *n
     def_transient_members<S, T>(c);
 }
 
-} // namespace nanoocp
+} // namespace OCP3x

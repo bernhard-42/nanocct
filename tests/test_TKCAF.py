@@ -6,22 +6,22 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import AppStd, TDataXtd, TDF, TDocStd, TNaming, TopoDS, gp
-from nanoocp.BRep import BRep_Tool
-from nanoocp.BRepBuilderAPI import BRepBuilderAPI_Transform
-from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.TCollection import TCollection_ExtendedString
-from nanoocp.TopAbs import TopAbs_FACE, TopAbs_SOLID
-from nanoocp.TopExp import TopExp_Explorer
-from nanoocp.TopLoc import TopLoc_Location
+from OCP3x import AppStd, TDataXtd, TDF, TDocStd, TNaming, TopoDS, gp
+from OCP3x.BRep import BRep_Tool
+from OCP3x.BRepBuilderAPI import BRepBuilderAPI_Transform
+from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.TCollection import TCollection_ExtendedString
+from OCP3x.TopAbs import TopAbs_FACE, TopAbs_SOLID
+from OCP3x.TopExp import TopExp_Explorer
+from OCP3x.TopLoc import TopLoc_Location
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKCAF" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["TDataXtd", "TNaming", "AppStd"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 @pytest.fixture

@@ -31,9 +31,9 @@ reviews/
 # ephemeral build input that every platform must produce for itself. OCCT's headers are platform-dependent --
 # WNT_Window.hxx is behind `#if defined(_WIN32)`, so a macOS generation produces no WNT_Window at all -- one
 # generation platform cannot serve the others, and the .so/.pyd files are the product, not the C++ or the reports.
-# A few files under src/ are hand-written and stay tracked: src/cpp/common/*.h (nanoocp_common.h,
-# nanoocp_ncollection.h, nanoocp_views.h), the whole of src/cpp/AddOns/ (nanoOCP's own additions, not a
-# binding of anything -- State.md 8.10b), src/nanoocp/_templates.py and src/nanoocp/py.typed.
+# A few files under src/ are hand-written and stay tracked: src/cpp/common/*.h (ocp3x_common.h,
+# ocp3x_ncollection.h, ocp3x_views.h), the whole of src/cpp/AddOns/ (OCP3x's own additions, not a
+# binding of anything -- State.md 8.10b), src/OCP3x/_templates.py and src/OCP3x/py.typed.
 # `make clean_gen` removes only src/cpp/TK*, so src/cpp/AddOns survives a regeneration.
 # Everything below is rebuilt in minutes by `python -m generator`.
 /src/cpp/**/*.cpp
@@ -42,9 +42,9 @@ reviews/
 /src/cpp/manifest.json
 /src/cpp/toolkits.cmake
 /src/cpp/common/ncollection_docs.h
-/src/nanoocp/**/*.py
-/src/nanoocp/**/*.pyi
-!/src/nanoocp/_templates.py
+/src/OCP3x/**/*.py
+/src/OCP3x/**/*.pyi
+!/src/OCP3x/_templates.py
 
 # staged trees the Makefile builds for stubs/test (deps/stage.sh)
 stage-mac/
@@ -54,5 +54,5 @@ stage-win/
 # built and repaired wheels (make wheel); the repaired one carries the bundled OCCT libraries, ~44 MB
 dist/
 
-# the user's local test area; `make nanobuild` recreates _scratch/.venv there
+# the user's local test area; `make ocp3xbuild` recreates _scratch/.venv there
 _scratch/

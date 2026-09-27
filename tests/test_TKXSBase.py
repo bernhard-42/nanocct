@@ -8,22 +8,22 @@ import pytest
 
 from conftest import report
 
-from nanoocp.BRepGProp import BRepGProp
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.DE import DE_ShapeFixParameters, DE_Wrapper
-from nanoocp.IFSelect import (IFSelect_RetDone, IFSelect_RetError, IFSelect_ReturnStatus, IFSelect_SessionPilot,
+from OCP3x.BRepGProp import BRepGProp
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.DE import DE_ShapeFixParameters, DE_Wrapper
+from OCP3x.IFSelect import (IFSelect_RetDone, IFSelect_RetError, IFSelect_ReturnStatus, IFSelect_SessionPilot,
                               IFSelect_WorkSession)
-from nanoocp.Interface import (Interface_Check, Interface_CheckIterator, Interface_EntityIterator, Interface_MSG,
+from OCP3x.Interface import (Interface_Check, Interface_CheckIterator, Interface_EntityIterator, Interface_MSG,
                                Interface_Static)
-from nanoocp.GProp import GProp_GProps
-from nanoocp.Message import Message_ProgressRange
-from nanoocp.MoniTool import MoniTool_AttrList
-from nanoocp.ShapeProcess import ShapeProcess
-from nanoocp.Standard import Standard_DomainError
-from nanoocp.Transfer import Transfer_ActorOfTransientProcess, Transfer_FinderProcess, Transfer_TransientProcess
-from nanoocp.TransferBRep import TransferBRep_ShapeBinder
-from nanoocp.XSAlgo import XSAlgo_ShapeProcessor
-from nanoocp.XSControl import XSControl_Reader, XSControl_WorkSession
+from OCP3x.GProp import GProp_GProps
+from OCP3x.Message import Message_ProgressRange
+from OCP3x.MoniTool import MoniTool_AttrList
+from OCP3x.ShapeProcess import ShapeProcess
+from OCP3x.Standard import Standard_DomainError
+from OCP3x.Transfer import Transfer_ActorOfTransientProcess, Transfer_FinderProcess, Transfer_TransientProcess
+from OCP3x.TransferBRep import TransferBRep_ShapeBinder
+from OCP3x.XSAlgo import XSAlgo_ShapeProcessor
+from OCP3x.XSControl import XSControl_Reader, XSControl_WorkSession
 from pathlib import Path
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKXSBase" / "report.txt"
@@ -32,20 +32,20 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKXSBase" / "report.txt"
 @pytest.mark.parametrize("pkg", ["Interface", "Transfer", "IFGraph", "IFSelect", "TransferBRep", "XSControl",
                                  "XSAlgo", "MoniTool"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_interface_static_is_what_cadquery_sets():
-    """CadQuery writes STEP after Interface_Static.SetIVal_s/SetCVal_s (shapes.py:560-563); in nanoOCP the names carry
+    """CadQuery writes STEP after Interface_Static.SetIVal_s/SetCVal_s (shapes.py:560-563); in OCP3x the names carry
     no _s (R-STATIC-S: no instance method of that name). A parameter must be declared before it can be set -- the STEP
     names come from STEPControl_Controller::Init (TKDESTEP), so this test declares its own."""
-    assert Interface_Static.SetIVal_s("nanoocp.undeclared", 1) is False
-    assert Interface_Static.Init_s("nanoocp", "nanoocp.test.int", "i", "0")        # char type, 1-character str (R-CHAR)
-    assert Interface_Static.Init_s("nanoocp", "nanoocp.test.unit", "t", "MM")
-    assert Interface_Static.SetIVal_s("nanoocp.test.int", 42) and Interface_Static.IVal_s("nanoocp.test.int") == 42
-    assert Interface_Static.SetCVal_s("nanoocp.test.unit", "INCH") and Interface_Static.CVal_s("nanoocp.test.unit") == "INCH"
-    assert Interface_Static.IsPresent_s("nanoocp.test.int") and Interface_Static.IsSet_s("nanoocp.test.int")
-    assert Interface_Static.Static_s("nanoocp.test.int").Type() is not None
+    assert Interface_Static.SetIVal_s("OCP3x.undeclared", 1) is False
+    assert Interface_Static.Init_s("OCP3x", "OCP3x.test.int", "i", "0")        # char type, 1-character str (R-CHAR)
+    assert Interface_Static.Init_s("OCP3x", "OCP3x.test.unit", "t", "MM")
+    assert Interface_Static.SetIVal_s("OCP3x.test.int", 42) and Interface_Static.IVal_s("OCP3x.test.int") == 42
+    assert Interface_Static.SetCVal_s("OCP3x.test.unit", "INCH") and Interface_Static.CVal_s("OCP3x.test.unit") == "INCH"
+    assert Interface_Static.IsPresent_s("OCP3x.test.int") and Interface_Static.IsSet_s("OCP3x.test.int")
+    assert Interface_Static.Static_s("OCP3x.test.int").Type() is not None
     assert Interface_Static.Items_s().Length() >= 2
 
 
@@ -95,14 +95,14 @@ def test_the_shape_processor_takes_the_de_parameters():
     not link it (R-LINK)."""
     processor = XSAlgo_ShapeProcessor(DE_ShapeFixParameters())
     assert type(processor).__name__ == "XSAlgo_ShapeProcessor"
-    assert "nanoocp._TKDE" in Path(__file__).parents[1].joinpath("src/cpp/TKXSBase/_TKXSBase.cpp").read_text()
+    assert "OCP3x._TKDE" in Path(__file__).parents[1].joinpath("src/cpp/TKXSBase/_TKXSBase.cpp").read_text()
     assert hasattr(XSControl_Reader, "SetShapeFixParameters")
 
 
 def test_the_work_session_closes_tkde_signatures():
     """TKDE's Read/Write name XSControl_WorkSession; until this toolkit the stubs spelled it as an unresolved string."""
-    assert "nanoocp.XSControl.XSControl_WorkSession" in DE_Wrapper.Read.__doc__
-    assert '"XSControl_WorkSession"' not in Path(__file__).parents[1].joinpath("src/nanoocp/DE.pyi").read_text()
+    assert "OCP3x.XSControl.XSControl_WorkSession" in DE_Wrapper.Read.__doc__
+    assert '"XSControl_WorkSession"' not in Path(__file__).parents[1].joinpath("src/OCP3x/DE.pyi").read_text()
 
 
 def test_the_string_out_parameters_have_named_alternatives():
@@ -117,7 +117,7 @@ def test_the_string_out_parameters_have_named_alternatives():
 
 
 def test_session_pilot():
-    pilot = IFSelect_SessionPilot("nanoocp> ")
+    pilot = IFSelect_SessionPilot("OCP3x> ")
     assert pilot.Session() is None                                               # no session until SetSession (1:1)
     session = IFSelect_WorkSession()
     pilot.SetSession(session)

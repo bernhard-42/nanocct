@@ -1,11 +1,11 @@
 """Rewrite OCP's ignored First/Last out-arguments of the BRep_Tool curve accessors, in place.
 
-    python nanobuild/tools/fix_outargs.py <directory>...
+    python ocp3xbuild/tools/fix_outargs.py <directory>...
 
 OCP binds `BRep_Tool::Curve(E, First&, Last&)` (and CurveOnSurface(E, F, First&, Last&), CurveOnPlane(E, S, L,
-First&, Last&)) returning only the curve: whatever is passed for First/Last is discarded. nanoocp returns them
+First&, Last&)) returning only the curve: whatever is passed for First/Last is discarded. OCP3x returns them
 (R-OUT): `curve, first, last = BRep_Tool.Curve_s(E)`. So `BRep_Tool.Curve_s(e, a, b)` becomes
-`BRep_Tool.Curve_s(e)[0]` -- the same value, whatever a and b were. The names are the same in OCP and nanoocp
+`BRep_Tool.Curve_s(e)[0]` -- the same value, whatever a and b were. The names are the same in OCP and OCP3x
 (R-STATIC-S), so it can run before or after port.py.
 """
 import ast

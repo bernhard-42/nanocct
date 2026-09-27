@@ -5,15 +5,15 @@ Graphic3d_Structure's constructor (checked), in C++ as in Python."""
 import importlib
 from pathlib import Path
 
-from nanoocp import AIS, Quantity, TDataXtd, TDocStd, TNaming, TPrsStd, V3d, gp
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.TCollection import TCollection_ExtendedString
+from OCP3x import AIS, Quantity, TDataXtd, TDocStd, TNaming, TPrsStd, V3d, gp
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.TCollection import TCollection_ExtendedString
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKVCAF" / "report.txt"
 
 
 def test_package_imports():
-    assert importlib.import_module("nanoocp.TPrsStd").__name__ == "nanoocp.TPrsStd"
+    assert importlib.import_module("OCP3x.TPrsStd").__name__ == "OCP3x.TPrsStd"
 
 
 def _document():

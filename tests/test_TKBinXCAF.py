@@ -8,26 +8,26 @@ from pathlib import Path
 
 import pytest
 
-from nanoocp import Message
-from nanoocp.BinMXCAFDoc import (BinMXCAFDoc_AssemblyItemRefDriver, BinMXCAFDoc_CentroidDriver, BinMXCAFDoc_ColorDriver,
+from OCP3x import Message
+from OCP3x.BinMXCAFDoc import (BinMXCAFDoc_AssemblyItemRefDriver, BinMXCAFDoc_CentroidDriver, BinMXCAFDoc_ColorDriver,
                                  BinMXCAFDoc_DatumDriver, BinMXCAFDoc_GraphNodeDriver, BinMXCAFDoc_LocationDriver)
-from nanoocp.BinXCAFDrivers import (BinXCAFDrivers, BinXCAFDrivers_DocumentRetrievalDriver,
+from OCP3x.BinXCAFDrivers import (BinXCAFDrivers, BinXCAFDrivers_DocumentRetrievalDriver,
                                     BinXCAFDrivers_DocumentStorageDriver)
-from nanoocp.BRepGProp import BRepGProp
-from nanoocp.BRepPrimAPI import BRepPrimAPI_MakeBox
-from nanoocp.GProp import GProp_GProps
-from nanoocp.NCollection import NCollection_Sequence
-from nanoocp.PCDM import PCDM_ReadWriter, PCDM_RS_OK, PCDM_SS_OK
-from nanoocp.Quantity import Quantity_Color, Quantity_NOC_RED
-from nanoocp.Standard import Standard_Failure, Standard_GUID, Standard_OutOfRange
-from nanoocp.TCollection import TCollection_ExtendedString
-from nanoocp.TDataStd import TDataStd_Name
-from nanoocp.TDF import TDF_Label
-from nanoocp.TopAbs import TopAbs_COMPOUND, TopAbs_SOLID
-from nanoocp.TopLoc import TopLoc_Location
-from nanoocp.XCAFApp import XCAFApp_Application
-from nanoocp.XCAFDoc import XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
-from nanoocp.gp import gp_Trsf, gp_Vec
+from OCP3x.BRepGProp import BRepGProp
+from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
+from OCP3x.GProp import GProp_GProps
+from OCP3x.NCollection import NCollection_Sequence
+from OCP3x.PCDM import PCDM_ReadWriter, PCDM_RS_OK, PCDM_SS_OK
+from OCP3x.Quantity import Quantity_Color, Quantity_NOC_RED
+from OCP3x.Standard import Standard_Failure, Standard_GUID, Standard_OutOfRange
+from OCP3x.TCollection import TCollection_ExtendedString
+from OCP3x.TDataStd import TDataStd_Name
+from OCP3x.TDF import TDF_Label
+from OCP3x.TopAbs import TopAbs_COMPOUND, TopAbs_SOLID
+from OCP3x.TopLoc import TopLoc_Location
+from OCP3x.XCAFApp import XCAFApp_Application
+from OCP3x.XCAFDoc import XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
+from OCP3x.gp import gp_Trsf, gp_Vec
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKBinXCAF" / "report.txt"
 STORAGE_GUID = "a78ff496-a779-11d5-aab4-0050044b1af1"      # BinXCAFDrivers.cxx:27-28
@@ -70,7 +70,7 @@ def _assembly_document(app):
 
 @pytest.mark.parametrize("pkg", ["BinXCAFDrivers", "BinMXCAFDoc"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"nanoocp.{pkg}").__name__ == f"nanoocp.{pkg}"
+    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
 
 
 def test_a_product_structure_round_trips_through_bytes(application):

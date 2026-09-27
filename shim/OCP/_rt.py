@@ -1,4 +1,4 @@
-"""Runtime helpers of the OCP shim (cadquery-ocp 8.0.1 API on nanoocp); the generated OCP/_patches.py calls them.
+"""Runtime helpers of the OCP shim (cadquery-ocp 8.0.1 API on OCP3x); the generated OCP/_patches.py calls them.
 
 Most members are adapted by generated code specialised at build time (shim/generate.py). What stays dynamic lives
 here: the signature parsing the generator shares, fill() for out-arguments OCP expects to be filled, and dynamic()
@@ -91,7 +91,7 @@ def nano_overloads(fn) -> list[tuple[list[str], str]]:
 # ---- the call adapter -------------------------------------------------------------------------------------------
 
 def fill(dropped: list, values: tuple) -> None:
-    """OCP fills caller-provided out-arguments; nanoocp returns them. Copy each returned value into the argument the
+    """OCP fills caller-provided out-arguments; OCP3x returns them. Copy each returned value into the argument the
     caller holds: streams by write(), containers by Assign, OCAF attributes by Restore. Primitive placeholders are left alone."""
     for arg, value in zip(dropped, values):
         if value is None or arg is None or isinstance(arg, (int, float, bool, str)):
@@ -118,7 +118,7 @@ def shape(result, ocp_ret: str | None):
         if not isinstance(result, tuple):
             return (result,)
         if n < len(result):
-            return result[len(result) - n:]           # OCP returns only the out-values, nanoocp (result, *outs)
+            return result[len(result) - n:]           # OCP returns only the out-values, OCP3x (result, *outs)
         return result
     if isinstance(result, tuple) and len(result) > 0:
         return result[0]
@@ -148,7 +148,7 @@ def dynamic(fn, ocp: list[Overload], nano: list[tuple[list[str], str]], bound: b
                     outs = result if isinstance(result, tuple) else (result,)
                     fill(dropped, outs[len(outs) - len(dropped):])
                     return shape(result, o.ret)
-            # names that differ between OCP and nanoocp (TDF_Label.FindAttribute: GUID/Attribute vs anID): out-parameters
+            # names that differ between OCP and OCP3x (TDF_Label.FindAttribute: GUID/Attribute vs anID): out-parameters
             # are trailing in practice, so drop from the end
             for k in range(1, len(rest) + 1):
                 try:
@@ -176,7 +176,7 @@ def differs(ocp: list[Overload], nano: list[tuple[list[str], str]]) -> bool:
         if o.ret.startswith("tuple["):
             return True                                  # OCP's tuple shape
     if any(r.startswith("tuple[") for _, r in nano) and not all(o.ret.startswith("tuple[") for o in ocp):
-        return True                                      # nanoocp returns (result, *outs) where OCP returns the result
+        return True                                      # OCP3x returns (result, *outs) where OCP returns the result
     return False
 
 
@@ -188,9 +188,9 @@ def dynamic_from(fn, sigs: list[str], bound: bool):
 # ---- helpers the generated OCP/_patches.py uses so that one py3-none-any wheel works on every platform ----------
 
 def module(pkg: str):
-    """nanoocp.<pkg>, or None where this platform does not build it (Cocoa off macOS)."""
+    """OCP3x.<pkg>, or None where this platform does not build it (Cocoa off macOS)."""
     try:
-        return importlib.import_module(f"nanoocp.{pkg}")
+        return importlib.import_module(f"OCP3x.{pkg}")
     except ImportError:
         return None
 
