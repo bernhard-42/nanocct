@@ -33,7 +33,7 @@ def _compound() -> tuple[TopoDS.TopoDS_Compound, TopoDS.TopoDS_Vertex, TopoDS.To
 def test_shapes_copy_equality_and_hash():
     c, v, e = _compound()
     assert v.ShapeType() == TopAbs.TopAbs_ShapeEnum.TopAbs_VERTEX and not v.IsNull()
-    assert BRep.BRep_Tool.Pnt_s(v).Coord() == (1.0, 2.0, 3.0)
+    assert BRep.BRep_Tool.Pnt_s(v).Coord__float__float__float() == (1.0, 2.0, 3.0)
     assert BRep.BRep_Tool.Tolerance_s(v) == 1e-7
     s = TopoDS.TopoDS_Shape(v)                                     # implicit copy constructor; sub-class converts, as in C++
     assert type(s) is TopoDS.TopoDS_Shape and s.IsSame(v) and s == v
@@ -94,7 +94,7 @@ def test_brep_tool_and_adaptors():
     assert ad.GetType() == GeomAbs.GeomAbs_CurveType.GeomAbs_Line
     assert ad.Line().Direction().Coord() == (1.0, 0.0, 0.0)
     props = BRepLProp.BRepLProp_CLProps(ad, 2.0, 1, 1e-9)
-    assert props.Value().Coord() == (2.0, 0.0, 0.0)
+    assert props.Value().Coord__float__float__float() == (2.0, 0.0, 0.0)
 
 
 def test_brep_and_binary_round_trip():

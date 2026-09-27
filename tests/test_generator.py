@@ -1118,23 +1118,21 @@ def test_resolve_overload_collisions_suffixes_by_out_params():
     assert len(resolve_overload_collisions([sk])) == 0
 
 
-def test_resolve_overload_collisions_components_before_the_aggregate():
-    """gp_Pnt::Coord(double&, double&, double&) next to const gp_XYZ& Coord(): the component form takes the plain name, the
-    class form is suffixed with its type (2026-09-26), so Coord() means the same on gp_Pnt as on gp_Dir/gp_Vec."""
-    def m(name, params, result="void", result_py="", result_class_name=""):
+def test_resolve_overload_collisions_no_exception_for_an_aggregate():
+    """gp_Pnt::Coord(double&, double&, double&) next to const gp_XYZ& Coord(): the overload without out-parameters keeps
+    the plain name as for every other group -- Coord() -> gp_XYZ, Coord__float__float__float() -> (x, y, z). The
+    components-before-the-aggregate exception of 2026-09-26 was withdrawn on 2026-09-27: a name is derived from the
+    header by the rule alone."""
+    def m(name, params, result="void", result_class_name=""):
         return Method(name=name, params=params, result=result, result_kind=ResultKind.VALUE, result_class="", is_static=False,
-                      is_const=True, is_noexcept=False, doc="", result_py=result_py, result_class_name=result_class_name)
+                      is_const=True, is_noexcept=False, doc="", result_class_name=result_class_name)
     out = Param(name="x", type="double &", default=None, is_out=True, out_py="float")
-    xyz = m("Coord", [], "const gp_XYZ &", "gp_XYZ", "gp_XYZ")
+    xyz = m("Coord", [], "const gp_XYZ &", "gp_XYZ")
     comps = m("Coord", [out, out, out])
-    assert resolve_overload_collisions([comps, xyz]) == [(comps, ""), (xyz, "__gp_XYZ")]
-    # not when the component form returns something besides its out-parameters (HasEdge(int&) -> (bool, int))
-    has = m("HasEdge", [Param(name="e", type="int &", default=None, is_out=True, out_py="int")], "bool")
-    assert resolve_overload_collisions([m("HasEdge", [], "bool", "bool"), has])[1][1] == "__int"
-    # not for a single number, nor when the plain overload returns a scalar
-    assert resolve_overload_collisions([m("P", [out]), m("P", [], "gp_XYZ", "gp_XYZ", "gp_XYZ")])[0][1] == "__float"
-    assert resolve_overload_collisions([m("Q", [out, out]), m("Q", [], "double", "float")])[0][1] == "__float__float"
-
+    assert resolve_overload_collisions([comps, xyz]) == [(comps, "__float__float__float"), (xyz, "")]
+    lim = m("Get", [], "Bnd_Box::Limits", "Bnd_Box::Limits")
+    six = m("Get", [out] * 6)
+    assert resolve_overload_collisions([six, lim]) == [(six, "__float" * 6), (lim, "")]
 
 
 def test_stub_duplicate_signatures_are_only_width_or_string_kinds():

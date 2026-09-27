@@ -55,7 +55,7 @@ def test_tool_and_ref_iterators():
     assert Edge.Degenerated_s(g, eid) is False
     start, end = Edge.StartVertexId_s(g, eid), Edge.EndVertexId_s(g, eid)
     assert type(start) is BRepGraph.BRepGraph_VertexRefId and start != end
-    assert Vertex.Pnt_s(g, start).Coord() == (0.0, 0.0, 0.0) and Vertex.Pnt_s(g, end).Coord() == (1.0, 0.0, 0.0)
+    assert Vertex.Pnt_s(g, start).Coord__float__float__float() == (0.0, 0.0, 0.0) and Vertex.Pnt_s(g, end).Coord__float__float__float() == (1.0, 0.0, 0.0)
     refs = 0
     rit = BRepGraph.BRepGraph_RefsVertexOfEdge(g, eid)             # BRepGraph_RefsIterator::RefsOfParent<VertexOfEdgeTraits>
     while rit.More():

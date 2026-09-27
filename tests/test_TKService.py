@@ -163,7 +163,7 @@ def test_width_twins_with_out_parameters_keep_the_plain_name():
     assert v.X() == 4.0 and Graphic3d.Graphic3d_Vertex(0.0, 0.0, 0.0).Distance(v) == pytest.approx((16 + 25 + 36) ** 0.5)
     tri = Graphic3d.Graphic3d_ArrayOfTriangles(3)
     assert tri.AddVertex(0.0, 0.0, 0.0) == 1 and tri.AddVertex(gp.gp_Pnt(1, 0, 0)) == 2 and tri.AddVertex(Quantity.NCollection_Vec3__float(0.0, 1.0, 0.0)) == 3
-    assert tri.VertexNumber() == 3 and tri.Vertice__gp_Pnt(2).X() == 1.0 and tri.Vertice(2) == (1.0, 0.0, 0.0)
+    assert tri.VertexNumber() == 3 and tri.Vertice(2).X() == 1.0 and tri.Vertice__float__float__float(2) == (1.0, 0.0, 0.0)
 
 
 def test_report_lists_the_platform_and_codec_gaps():

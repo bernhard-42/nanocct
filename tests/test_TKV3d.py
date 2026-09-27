@@ -21,7 +21,7 @@ def test_every_package_imports(pkg):
 def _bbox(shape):
     box = Bnd.Bnd_Box()
     BRepBndLib.BRepBndLib.Add_s(shape, box)
-    l = box.Get__Bnd_Box_Limits()
+    l = box.Get()
     return l.Xmin, l.Ymin, l.Xmax, l.Ymax
 
 

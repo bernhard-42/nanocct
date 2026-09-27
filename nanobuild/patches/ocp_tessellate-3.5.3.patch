@@ -175,6 +175,24 @@
  
  
  def is_degenerated_face(face: TopoDS_Face) -> bool:
+@@ -856,7 +850,7 @@
+         start = gp_Pnt(*start)
+     if isinstance(end, (list, tuple)):
+         end = gp_Pnt(*end)
+-    return BRepBuilderAPI_MakeEdge(gp_Pnt(*start.Coord()), gp_Pnt(*end.Coord())).Edge()
++    return BRepBuilderAPI_MakeEdge(gp_Pnt(start.XYZ()), gp_Pnt(end.XYZ())).Edge()
+ 
+ 
+ def circle(
+@@ -1067,7 +1061,7 @@
+ 
+ def get_axis_coord(axis: gp_Ax1) -> AxisCoord:
+     return {
+-        "origin": axis.Location().Coord(),
++        "origin": axis.Location().Coord__float__float__float(),
+         "z_dir": axis.Direction().Coord(),
+     }
+ 
 @@ -1271,20 +1265,14 @@
          else:
              BRepBndLib.Add_s(obj, bbox)
@@ -303,6 +321,60 @@
  from numpy.typing import NDArray
  
  from .ocp_utils import (
+@@ -292,7 +292,7 @@
+                 # add vertices
+                 flat: list[float] = []
+                 for i in range(1, poly.NbNodes() + 1):
+-                    flat.extend(poly.Node(i).Transformed(Trsf).Coord())
++                    flat.extend(poly.Node(i).Transformed(Trsf).Coord__float__float__float())
+                 self.vertices.extend(flat)
+ 
+                 # add triangles
+@@ -339,7 +339,7 @@
+                             scale_v = d1_v.Magnitude()  # physical length per unit of v
+ 
+                             for i in range(1, poly.NbNodes() + 1):
+-                                u, v = poly.UVNode(i).Coord()
++                                u, v = poly.UVNode(i).Coord__float__float()
+                                 un = min(max(u, u_min), u_max)
+                                 vn = min(max(v, v_min), v_max)
+                                 prop.Normal(un, vn, p_buf, n_buf)
+@@ -364,7 +364,7 @@
+                             # Use raw parametric UVs, matching OCCT's RWGltf_CafWriter
+                             # V is flipped (1-v) per glTF convention (top-left origin)
+                             for i in range(1, poly.NbNodes() + 1):
+-                                u, v = poly.UVNode(i).Coord()
++                                u, v = poly.UVNode(i).Coord__float__float()
+                                 un = min(max(u, u_min), u_max)
+                                 vn = min(max(v, v_min), v_max)
+                                 prop.Normal(un, vn, p_buf, n_buf)
+@@ -380,7 +380,7 @@
+                         self.uvs.extend(uvs_flat)
+                     else:
+                         for i in range(1, poly.NbNodes() + 1):
+-                            u, v = poly.UVNode(i).Coord()
++                            u, v = poly.UVNode(i).Coord__float__float()
+                             un = min(max(u, u_min), u_max)
+                             vn = min(max(v, v_min), v_max)
+                             prop.Normal(un, vn, p_buf, n_buf)
+@@ -452,7 +452,7 @@
+             transf = loc.Transformation()
+             v1: Coords | None = None
+             for j in nrange:
+-                v2: Coords = triangle.Node(index(j)).Transformed(transf).Coord()
++                v2: Coords = triangle.Node(index(j)).Transformed(transf).Coord__float__float__float()
+                 if v1 is not None:
+                     edges.extend((v1, v2))
+                 v1 = v2
+@@ -668,7 +668,7 @@
+         return np.empty((0, 2, 3), dtype=np.float32)
+ 
+     points: list[Coords] = [
+-        curve_adaptator.Value(discretizer.Parameter(i)).Coord()
++        curve_adaptator.Value(discretizer.Parameter(i)).Coord__float__float__float()
+         for i in range(1, discretizer.NbPoints() + 1)
+     ]
+ 
 --- a/ocp_tessellate/types.py
 +++ b/ocp_tessellate/types.py
 @@ -6,9 +6,9 @@

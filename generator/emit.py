@@ -293,9 +293,7 @@ class Emitter:
         doc = m.doc
         if m.suffix != "":      # R-COLLISION: the suffix names the returned out-parameters that distinguish the overload
             py += m.suffix
-            what = ("the suffix lists its returned out-parameters" if out_suffix(m.params) != ""
-                    else f"the suffix names its result; {_py_name(m)}{'_s' if m.is_static else ''}() returns the components")
-            doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); {what} (nanoOCP R-COLLISION).\n{m.doc}"
+            doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); the suffix lists its returned out-parameters (nanoOCP R-COLLISION).\n{m.doc}"
         self._note_types(m.result, *(p.type for p in m.params))
         self._note_types(m.result_class_name, *(p.class_name for p in m.params))   # the class behind a typedef (IMeshData::IFaceHandle = handle<IMeshData_Face>): its header must be included
         T = cls.name                       # member pointers name the class itself ...
@@ -1025,14 +1023,9 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
     apart by a suffix naming the removed out-parameters' Python types: gp_Pnt::Coord(double&, double&, double&) is bound
     as Coord__float__float__float, GeomAPI_IntCS::Parameters(int, double&, double&, double&) as Parameters__float__float__float
     next to Parameters__float__float__float__float; an overload without out-parameters keeps the plain name
-    (BOPDS_PaveBlock::HasEdge() -> bool next to HasEdge__int -> (bool, int)), with the one exception below. The suffix is
-    unique within a group because C++ overloads cannot share a parameter list.
-
-    Components before the aggregate (2026-09-26): when the group is exactly one `void` overload returning two or more
-    numbers through its out-parameters and one overload returning a class by value (gp_Pnt::Coord(double&, double&,
-    double&) next to const gp_XYZ& Coord(); Bnd_Box::Get, Graphic3d_CLight::Position), the component form takes the
-    plain name and the class form is suffixed with its type: Coord() -> (x, y, z), Coord__gp_XYZ() -> gp_XYZ. Coord()
-    then means the same on gp_Pnt as on gp_Dir and gp_Vec, which have no gp_XYZ Coord() -- their aggregate is XYZ().
+    (BOPDS_PaveBlock::HasEdge() -> bool next to HasEdge__int -> (bool, int); gp_Pnt::Coord() -> gp_XYZ next to
+    Coord__float__float__float), without exception -- the name is derivable from the header alone. The suffix is unique
+    within a group because C++ overloads cannot share a parameter list.
     Takes Methods or Functions (name, params, skip_reason, optionally is_static). Returns (overload, suffix) for every
     overload that is not skipped, in header order; the suffix is '' outside collision groups."""
     def py_sig(m) -> tuple:
@@ -1046,21 +1039,6 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
     for m in overloads:
         if m.skip_reason is None:
             groups.setdefault(py_sig(m), []).append(m)
-    components_first: dict[int, str] = {}     # id(overload) -> its suffix under the components-before-aggregate rule
-    for members in groups.values():
-        valued = [mm for mm in members if out_suffix(mm.params) == ""]
-        outs = [mm for mm in members if out_suffix(mm.params) != ""]
-        numbers = [p for mm in outs for p in mm.params if p.is_out and not p.is_inout]
-        if (len(valued) == 1 and len({full_sig(mm) for mm in outs}) == 1          # width twins are one overload
-                and all(getattr(mm, "result", "") == "void" for mm in outs)
-                and all(p.stream == StreamKind.NONE for mm in outs for p in mm.params)
-                and len(numbers) >= 2 * len(outs) and all(p.out_py in ("float", "int") for p in numbers)
-                and getattr(valued[0], "result_class_name", "") != ""
-                and getattr(valued[0], "result_py", "") not in ("", "float", "int", "bool", "str")
-                and getattr(valued[0], "result_kind", ResultKind.VALUE) == ResultKind.VALUE):
-            components_first[id(valued[0])] = "__" + valued[0].result_py
-            for mm in outs:
-                components_first[id(mm)] = ""
     result: list[tuple[object, str]] = []
     for m in overloads:
         if m.skip_reason is not None:
@@ -1070,10 +1048,7 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
         # overload from Python and do not make a collision by themselves; the wider one is registered first (R-WIDTH)
         distinct = {full_sig(mm) for mm in members}
         colliding = len(distinct) > 1 and any(p.is_out or p.stream == StreamKind.OUT for mm in members for p in mm.params)
-        if colliding and id(m) in components_first:
-            result.append((m, components_first[id(m)]))
-        else:
-            result.append((m, out_suffix(m.params) if colliding else ""))
+        result.append((m, out_suffix(m.params) if colliding else ""))
     return result
 
 

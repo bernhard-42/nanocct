@@ -44,21 +44,21 @@ def test_gcpnts_and_lprops():
     assert ap.IsDone() and ap.Parameter() == pytest.approx(math.pi / 2)
     lp = GeomLProp.GeomLProp_CLProps(_circle(), 0.0, 2, 1e-9)         # alias of GeomLProp_CLPropsBase<...> (6c)
     assert lp.Curvature() == pytest.approx(1.0)
-    assert lp.Value().Coord() == (1.0, 0.0, 0.0)
+    assert lp.Value().Coord__float__float__float() == (1.0, 0.0, 0.0)
 
 
 def test_extrema_alias_instantiations():
     ext = Extrema.Extrema_ExtPC(gp.gp_Pnt(5.0, 0.0, 0.0), GeomAdaptor.GeomAdaptor_Curve(_circle()))   # Extrema_GGExtPC<Adaptor3d_Curve, ...>
     assert ext.IsDone() and ext.NbExt() == 2
     assert sorted(ext.SquareDistance(i) for i in (1, 2)) == [16.0, 36.0]
-    assert ext.Point(1).Value().Coord() == pytest.approx((1.0, 0.0, 0.0))
+    assert ext.Point(1).Value().Coord__float__float__float() == pytest.approx((1.0, 0.0, 0.0))
     line = Geom.Geom_Line(gp.gp_Pnt(0.0, 5.0, 0.0), gp.gp_Dir(1.0, 0.0, 0.0))
     ecc = Extrema.Extrema_ExtCC(GeomAdaptor.GeomAdaptor_Curve(_circle()), GeomAdaptor.GeomAdaptor_Curve(line))
     assert ecc.IsDone() and ecc.SquareDistance(1) == pytest.approx(16.0)
     p1, p2 = Extrema.Extrema_POnCurv(), Extrema.Extrema_POnCurv()     # class-typed out-params, mutated in place
     ecc.Points(1, p1, p2)
-    assert p1.Value().Coord() == pytest.approx((0.0, 1.0, 0.0))
-    assert p2.Value().Coord() == pytest.approx((0.0, 5.0, 0.0))
+    assert p1.Value().Coord__float__float__float() == pytest.approx((0.0, 1.0, 0.0))
+    assert p2.Value().Coord__float__float__float() == pytest.approx((0.0, 5.0, 0.0))
     assert ExtremaPC.THE_DEFAULT_TOLERANCE > 0.0                       # namespace ExtremaPC == package
     assert ExtremaPC.Config().Tolerance == ExtremaPC.THE_DEFAULT_TOLERANCE
 
@@ -66,13 +66,13 @@ def test_extrema_alias_instantiations():
 def test_bndlib_geomconvert_intana():
     box = Bnd.Bnd_Box()
     BndLib.BndLib_Add3dCurve.Add_s(GeomAdaptor.GeomAdaptor_Curve(_circle()), 1e-6, box)
-    assert box.Get() == pytest.approx((-1.0, -1.0, 0.0, 1.0, 1.0, 0.0), abs=1e-5)
+    assert box.Get__float__float__float__float__float__float() == pytest.approx((-1.0, -1.0, 0.0, 1.0, 1.0, 0.0), abs=1e-5)
     assert not hasattr(GeomBndLib, "GeomBndLib_Curve")                 # header skipped (uninstalled .pxx), see overrides.toml
     assert GeomBndLib.GeomBndLib_Circle.Box_s(gp.gp_Circ(gp.gp_Ax2(), 2.0), 1e-6).CornerMax().X() == pytest.approx(2.0, abs=1e-5)
     bs = GeomConvert.GeomConvert.CurveToBSplineCurve_s(_circle())
     assert type(bs) is Geom.Geom_BSplineCurve and bs.NbPoles() == 6
     ia = IntAna.IntAna_IntConicQuad(gp.gp_Lin(gp.gp_Pnt(0.0, 0.0, -5.0), gp.gp_Dir(0.0, 0.0, 1.0)), gp.gp_Pln(), 1e-9)
-    assert ia.IsDone() and ia.NbPoints() == 1 and ia.Point(1).Coord() == (0.0, 0.0, 0.0)
+    assert ia.IsDone() and ia.NbPoints() == 1 and ia.Point(1).Coord__float__float__float() == (0.0, 0.0, 0.0)
 
 
 def test_conversion_operators():

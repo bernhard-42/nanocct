@@ -86,7 +86,7 @@ def test_extrema_bounding_box_and_classifiers():
     assert (p.X(), p.Y(), p.Z()) == pytest.approx((10.0, 2.5, 0.0))
     box = Bnd.Bnd_Box()
     BRepBndLib.BRepBndLib.Add_s(face, box)
-    xmin, ymin, zmin, xmax, ymax, zmax = box.Get()     # R-COLLISION suffix
+    xmin, ymin, zmin, xmax, ymax, zmax = box.Get__float__float__float__float__float__float()     # R-COLLISION suffix
     assert xmin <= 0 < 10 <= xmax and ymin <= 0 < 5 <= ymax and zmin <= 0 <= zmax
     # R-FIXED-ARRAY: Bnd_OBB::GetVertex(gp_Pnt theP[8]) returns the 8 corners as a list
     obb = Bnd.Bnd_OBB()

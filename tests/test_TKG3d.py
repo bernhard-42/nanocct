@@ -35,15 +35,15 @@ def _bspline() -> Geom.Geom_BSplineCurve:
 
 def test_curves():
     c = _circle()
-    assert c.Value(math.pi / 2).Coord() == pytest.approx((0.0, 2.0, 0.0))
+    assert c.Value(math.pi / 2).Coord__float__float__float() == pytest.approx((0.0, 2.0, 0.0))
     t = Geom.Geom_TrimmedCurve(c, 0.0, math.pi / 2)
-    assert t.EndPoint().Coord() == pytest.approx((0.0, 2.0, 0.0))
+    assert t.EndPoint().Coord__float__float__float() == pytest.approx((0.0, 2.0, 0.0))
     assert type(t.BasisCurve()) is Geom.Geom_Circle
     copy = c.Copy()                                                # handle<Geom_Geometry> -> dynamic type
     assert type(copy) is Geom.Geom_Circle and copy is not c
     bs = _bspline()
     assert (bs.Degree(), bs.NbPoles(), bs.Knots().Length()) == (2, 3, 2)
-    assert bs.Value(0.5).Coord() == (1.0, 0.5, 0.0)
+    assert bs.Value(0.5).Coord__float__float__float() == (1.0, 0.5, 0.0)
     assert type(bs.EvalD2(0.5)) is Geom.Geom_Curve.ResD2
 
 
@@ -51,7 +51,7 @@ def test_surfaces_and_nested_result_structs():
     s = Geom.Geom_SphericalSurface(gp.gp_Ax3(), 1.0)
     r = s.EvalD1(0.0, 0.0)                                         # Geom_Surface::ResD1 { Point; D1U; D1V }
     assert type(r) is Geom.Geom_Surface.ResD1
-    assert r.Point.Coord() == (1.0, 0.0, 0.0)
+    assert r.Point.Coord__float__float__float() == (1.0, 0.0, 0.0)
     assert r.D1U.Coord() == pytest.approx((0.0, 1.0, 0.0))
     assert r.D1V.Coord() == pytest.approx((0.0, 0.0, 1.0))
     poles = NCollection.NCollection_Array2[gp.gp_Pnt](1, 2, 1, 2)
@@ -59,12 +59,12 @@ def test_surfaces_and_nested_result_structs():
         for j in (1, 2):
             poles.SetValue(i, j, gp.gp_Pnt(i, j, 0.0))
     bz = Geom.Geom_BezierSurface(poles)
-    assert bz.Value(0.5, 0.5).Coord() == (1.5, 1.5, 0.0)
+    assert bz.Value(0.5, 0.5).Coord__float__float__float() == (1.5, 1.5, 0.0)
     ext = Geom.Geom_SurfaceOfLinearExtrusion(_circle(), gp.gp_Dir(0.0, 0.0, 1.0))
-    assert ext.Value(0.0, 3.0).Coord() == (2.0, 0.0, 3.0)
+    assert ext.Value(0.0, 3.0).Coord__float__float__float() == (2.0, 0.0, 3.0)
     assert type(ext.BasisCurve()) is Geom.Geom_Circle
     rev = Geom.Geom_SurfaceOfRevolution(Geom.Geom_Line(gp.gp_Pnt(1.0, 0.0, 0.0), gp.gp_Dir(0.0, 0.0, 1.0)), gp.gp_Ax1())
-    assert rev.Value(math.pi / 2, 1.0).Coord() == pytest.approx((0.0, 1.0, 1.0))
+    assert rev.Value(math.pi / 2, 1.0).Coord__float__float__float() == pytest.approx((0.0, 1.0, 1.0))
 
 
 def test_typedef_aliases_of_nested_classes():
