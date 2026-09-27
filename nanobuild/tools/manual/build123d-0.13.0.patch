@@ -160,6 +160,18 @@
  
      def register_font(
          self, path: str, override: bool = False, single_stroke=False
+--- a/src/build123d/topology/history.py
++++ b/src/build123d/topology/history.py
+@@ -44,7 +44,8 @@
+ from nanoocp.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
+ from nanoocp.BRepBuilderAPI import BRepBuilderAPI_Sewing
+ from nanoocp.BRepTools import BRepTools_History
+-from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++# OCCT #1541 workaround; back to nanoocp.ShapeUpgrade once OCCT is fixed
++from nanoocp.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
+ from nanoocp.TopExp import TopExp
+ from nanoocp.TopLoc import TopLoc_Location
+ from nanoocp.TopoDS import TopoDS_Shape
 --- a/src/build123d/topology/one_d.py
 +++ b/src/build123d/topology/one_d.py
 @@ -3754,13 +3754,12 @@
@@ -202,7 +214,7 @@
      for i in range(wires_out.Length()):
 --- a/src/build123d/topology/shape_core.py
 +++ b/src/build123d/topology/shape_core.py
-@@ -110,7 +110,7 @@
+@@ -110,12 +110,13 @@
  from nanoocp.gce import gce_MakeLin
  from nanoocp.GeomAPI import GeomAPI_ProjectPointOnSurf
  from nanoocp.GeomLib import GeomLib_IsPlanarSurface
@@ -211,7 +223,14 @@
  from nanoocp.GProp import GProp_GProps
  from nanoocp.ShapeAnalysis import ShapeAnalysis_Curve
  from nanoocp.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
-@@ -2338,30 +2338,17 @@
+ from nanoocp.ShapeFix import ShapeFix_Shape
+-from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++# OCCT #1541 workaround; back to nanoocp.ShapeUpgrade once OCCT is fixed
++from nanoocp.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
+ from nanoocp.Standard import Standard_Failure
+ from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
+ from nanoocp.TopExp import TopExp, TopExp_Explorer
+@@ -2338,30 +2339,17 @@
              trsf = loc.Transformation()
              reverse = face.wrapped.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
  
@@ -253,7 +272,7 @@
  
              offset += poly.NbNodes()
  
-@@ -2450,21 +2437,16 @@
+@@ -2450,21 +2438,16 @@
              trans = np.array([tr.X(), tr.Y(), tr.Z()])
  
              # Vertices — bulk extract via MapNodeArray + numpy transform
@@ -279,7 +298,7 @@
              rotated_normals = norm_coords @ rot.T * reverse_factor
              all_normals.extend(
                  Vector(row[0], row[1], row[2]) for row in rotated_normals
-@@ -2472,11 +2454,7 @@
+@@ -2472,11 +2455,7 @@
  
              # UV coordinates — bulk extract via MapUVNodeArray + numpy normalize
              if poly.HasUVNodes():

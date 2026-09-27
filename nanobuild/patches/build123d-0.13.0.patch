@@ -581,7 +581,7 @@
      # 2) Convert to 2D on Plane.XY (Z-up frame at origin)
 --- a/src/build123d/topology/history.py
 +++ b/src/build123d/topology/history.py
-@@ -40,20 +40,21 @@
+@@ -40,20 +40,22 @@
  from collections.abc import Callable, Iterable
  from typing import Protocol
  
@@ -602,7 +602,8 @@
 +from nanoocp.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
 +from nanoocp.BRepBuilderAPI import BRepBuilderAPI_Sewing
 +from nanoocp.BRepTools import BRepTools_History
-+from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++# OCCT #1541 workaround; back to nanoocp.ShapeUpgrade once OCCT is fixed
++from nanoocp.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
 +from nanoocp.TopExp import TopExp
 +from nanoocp.TopLoc import TopLoc_Location
 +from nanoocp.TopoDS import TopoDS_Shape
@@ -616,7 +617,7 @@
  from typing_extensions import Self
  
  from .kernel import list_shapes
-@@ -67,12 +68,12 @@
+@@ -67,12 +69,12 @@
      """The history interface every BRepBuilderAPI_MakeShape descendant has."""
  
      # pylint: disable=invalid-name,missing-function-docstring
@@ -632,7 +633,7 @@
  ) -> list[TopoDS_Shape]:
      """What an algorithm says about one sub-shape, or nothing if it will not say."""
      # OCP binds each OCCT failure straight to Exception, with no common base:
-@@ -86,7 +87,7 @@
+@@ -86,7 +88,7 @@
  
  def tracked_subshapes(shapes: Iterable[TopoDS_Shape]) -> list[TopoDS_Shape]:
      """Every distinct vertex, edge, face and solid of the given shapes."""
@@ -641,7 +642,7 @@
      for shape in shapes:
          if shape is None or shape.IsNull():
              continue
-@@ -161,7 +162,7 @@
+@@ -161,7 +163,7 @@
          """
          inputs = list(inputs)
          history = cls(before=inputs)
@@ -650,7 +651,7 @@
          for sub in tracked_subshapes([result]):
              present.Add(sub)
          for sub in tracked_subshapes(inputs):
-@@ -187,7 +188,7 @@
+@@ -187,7 +189,7 @@
          """
          inputs = list(inputs)
          history = cls(before=inputs)
@@ -659,7 +660,7 @@
          for sub in tracked_subshapes([sewing.SewedShape()]):
              present.Add(sub)
          for sub in tracked_subshapes(inputs):
-@@ -211,7 +212,7 @@
+@@ -211,7 +213,7 @@
          """
          history = cls(before=[before])
          identity = TopLoc_Location()
@@ -668,7 +669,7 @@
          for sub in tracked_subshapes([after]):
              placed.Bind(sub.Located(identity), sub)
          for sub in tracked_subshapes([before]):
-@@ -341,9 +342,9 @@
+@@ -341,9 +343,9 @@
      """
  
      def __init__(self, history: ShapeHistory, inputs: Iterable[TopoDS_Shape]):
@@ -1179,7 +1180,7 @@
      BRepBuilderAPI_Copy,
      BRepBuilderAPI_GTransform,
      BRepBuilderAPI_MakeFace,
-@@ -100,28 +100,27 @@
+@@ -100,28 +100,28 @@
      BRepBuilderAPI_Transform,
      BRepBuilderAPI_Transformed,
  )
@@ -1220,7 +1221,8 @@
 +from nanoocp.ShapeAnalysis import ShapeAnalysis_Curve
 +from nanoocp.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
 +from nanoocp.ShapeFix import ShapeFix_Shape
-+from nanoocp.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
++# OCCT #1541 workaround; back to nanoocp.ShapeUpgrade once OCCT is fixed
++from nanoocp.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
 +from nanoocp.Standard import Standard_Failure
 +from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_ShapeEnum
 +from nanoocp.TopExp import TopExp, TopExp_Explorer
@@ -1229,7 +1231,7 @@
      TopoDS_Builder,
      TopoDS_Compound,
      TopoDS_Edge,
-@@ -133,9 +132,9 @@
+@@ -133,9 +133,9 @@
      TopoDS_Vertex,
      TopoDS_Wire,
  )
@@ -1242,7 +1244,7 @@
  from typing_extensions import Self
  
  from bd_materials import FinishedMaterial, resolve as resolve_material
-@@ -529,7 +528,7 @@
+@@ -529,7 +529,7 @@
  
              # Create an empty indexed data map to store the edges and their corresponding faces.
              shape_map = (
@@ -1251,7 +1253,7 @@
              )
  
              # Fill the map with edges and their associated faces in the given shape. Each edge in
-@@ -2225,7 +2224,7 @@
+@@ -2225,7 +2225,7 @@
          if keep in [Keep.INSIDE, Keep.OUTSIDE]:
              raise ValueError(f"{keep} is invalid")
  
@@ -1260,7 +1262,7 @@
          shape_list.Append(self.wrapped)
  
          # Define the splitting tool
-@@ -2234,7 +2233,7 @@
+@@ -2234,7 +2234,7 @@
              if isinstance(tool, Plane)
              else tool.wrapped
          )
@@ -1269,7 +1271,7 @@
          tool_list.Append(trim_tool)
  
          # Create the splitter algorithm
-@@ -2339,30 +2338,17 @@
+@@ -2339,30 +2339,17 @@
              trsf = loc.Transformation()
              reverse = face.wrapped.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
  
@@ -1311,7 +1313,7 @@
  
              offset += poly.NbNodes()
  
-@@ -2451,21 +2437,16 @@
+@@ -2451,21 +2438,16 @@
              trans = np.array([tr.X(), tr.Y(), tr.Z()])
  
              # Vertices — bulk extract via MapNodeArray + numpy transform
@@ -1337,7 +1339,7 @@
              rotated_normals = norm_coords @ rot.T * reverse_factor
              all_normals.extend(
                  Vector(row[0], row[1], row[2]) for row in rotated_normals
-@@ -2473,11 +2454,7 @@
+@@ -2473,11 +2455,7 @@
  
              # UV coordinates — bulk extract via MapUVNodeArray + numpy normalize
              if poly.HasUVNodes():
@@ -1350,7 +1352,7 @@
  
                  uv_min = uv_raw.min(axis=0)
                  uv_max = uv_raw.max(axis=0)
-@@ -2787,12 +2764,12 @@
+@@ -2787,12 +2765,12 @@
          # The base of the operation
          base = args[0] if isinstance(args, (list, tuple)) else args
  
@@ -1365,7 +1367,7 @@
          for obj in tools:
              if obj._wrapped is not None:
                  tool.Append(obj._wrapped)
-@@ -3206,7 +3183,7 @@
+@@ -3206,7 +3184,7 @@
      if peer_type == "Vertex":
          vertex_neighbors: dict[Shape, set[Shape]] = {peer: set() for peer in peers}
          vertex_edge_map = (
@@ -1374,7 +1376,7 @@
          )
          TopExp.MapShapesAndAncestors_s(
              parent.wrapped,
-@@ -3234,7 +3211,7 @@
+@@ -3234,7 +3212,7 @@
                      if neighbor is not None and neighbor != vertex_peer:
                          vertex_neighbors[vertex_peer].add(neighbor)
      else:
@@ -1383,7 +1385,7 @@
          TopExp.MapShapesAndAncestors_s(
              parent.wrapped,
              connector_enum_lut[peer_type],
-@@ -4042,11 +4019,11 @@
+@@ -4042,11 +4020,11 @@
      """
      args = list(args)
      tools = list(tools)

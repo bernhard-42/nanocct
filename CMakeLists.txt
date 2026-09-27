@@ -44,14 +44,18 @@ endforeach()
 
 # nanoocp._AddOns: hand-written, not generated and not a binding of an OCCT toolkit, so it is built outside the
 # loop above and tracked in git (src/cpp/AddOns, kept by .gitignore and untouched by `make clean_gen`). It holds
-# the helpers that zero-copy views cannot express because they are computations rather than data -- State.md 8.10b.
-nanobind_add_module(_AddOns STABLE_ABI NB_DOMAIN nanoocp "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/_AddOns.cpp")
+# the helpers that zero-copy views cannot express because they are computations rather than data -- State.md 8.10b --
+# and, rarely, a workaround for an OCCT bug that is not fixed upstream (Design.md R-ADDON).
+nanobind_add_module(_AddOns STABLE_ABI NB_DOMAIN nanoocp "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/_AddOns.cpp"
+                    "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/Tessellator.cpp"
+                    "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/ShapeClean.cpp")
 target_include_directories(_AddOns PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
 if(MSVC)
   target_compile_options(_AddOns PRIVATE /wd4996)
 else()
   target_compile_options(_AddOns PRIVATE -Wno-deprecated-declarations)
 endif()
-target_link_libraries(_AddOns PRIVATE TKTopAlgo TKBRep TKMath TKernel)   # BRepGProp_Face lives in TKTopAlgo
+# BRepGProp_Face lives in TKTopAlgo; ShapeClean needs ShapeUpgrade (TKShHealing) and Geom2dConvert (TKGeomBase)
+target_link_libraries(_AddOns PRIVATE TKShHealing TKTopAlgo TKGeomBase TKBRep TKG2d TKG3d TKMath TKernel)
 set_target_properties(_AddOns PROPERTIES INSTALL_RPATH "${NANOOCP_OCCT_DIR}/lib")
 install(TARGETS _AddOns LIBRARY DESTINATION nanoocp)
