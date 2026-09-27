@@ -180,52 +180,267 @@
  from ocp_tessellate.utils import warn
 --- a/ocp_tessellate/tessellator.py
 +++ b/ocp_tessellate/tessellator.py
-@@ -292,7 +292,7 @@
-                 # add vertices
-                 flat: list[float] = []
-                 for i in range(1, poly.NbNodes() + 1):
+@@ -23,9 +23,9 @@
+ from nanoocp.TopoDS import TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex
+ import numpy as np
+ from cachetools import LRUCache, cached
++from nanoocp import AddOns
+ from nanoocp.BRep import BRep_Tool
+ from nanoocp.BRepAdaptor import BRepAdaptor_Curve
+-from nanoocp.BRepGProp import BRepGProp_Face
+ from nanoocp.BRepTools import BRepTools
+ from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
+ from nanoocp.GCPnts import (
+@@ -34,7 +34,7 @@
+ )
+ 
+ # pylint: disable=no-name-in-module,import-error
+-from nanoocp.gp import gp_Pnt, gp_Vec
++from nanoocp.gp import gp_Pnt, gp_TrsfForm, gp_Vec
+ from nanoocp.TopAbs import TopAbs_Orientation, TopAbs_SOLID
+ from nanoocp.TopExp import TopExp_Explorer
+ from nanoocp.TopLoc import TopLoc_Location
+@@ -51,6 +51,7 @@
+     is_line,
+     make_compound,
+ )
++from . import trace as trace_module
+ from .trace import Trace
+ from .types import (
+     ConvertedVertices,
+@@ -264,22 +265,21 @@
+ 
+     def tessellate(self, trace: Trace):
+         assert self.shape is not None, "compute() sets the shape"
+-        # global buffers
+-        p_buf = gp_Pnt()
+-        n_buf = gp_Vec()
+         loc_buf = TopLoc_Location()
+-
+-        offset = -1
+-
+-        # every line below is selected for performance. Do not introduce functions to "beautify" the code
++        vertices: list[NDArray[np.float64]] = []
++        triangles: list[NDArray[np.int64]] = []
++        normals: list[NDArray[np.float64]] = []
++        uvs: list[NDArray[np.float64]] = []
++        offset = 0
++
++        # nanoOCP: the per-node and per-triangle loops run on zero-copy views of the triangulation
++        # (NodesArray, TrianglesArray, UVNodesArray) and the per-node BRepGProp_Face.Normal loop in C++
++        # (nanoocp.AddOns.Tessellator.NormalsFromSurface: the same clamped evaluation, the same
++        # normalisation, the same reversal for an INTERNAL face). Same faces, same order, same outputs.
+         for ind, face in enumerate(get_faces(self.shape)):
+             trace.face(f"{self.shape_id}/faces/faces_{ind}", face)
+-            if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
+-                i1, i2 = 2, 1
+-            else:
+-                i1, i2 = 1, 2
+-
+-            internal = face.Orientation() == TopAbs_Orientation.TopAbs_INTERNAL
++            orientation = face.Orientation()
++            internal = orientation == TopAbs_Orientation.TopAbs_INTERNAL
+ 
+             poly = BRep_Tool.Triangulation_s(face, loc_buf)
+             if poly is not None:
+@@ -287,30 +287,24 @@
+                 # triangulation, or it desynchronizes from triangles_per_face
+                 self.face_types.append(get_face_type(face))
+ 
+-                Trsf = loc_buf.Transformation()
+-
+-                # add vertices
+-                flat: list[float] = []
+-                for i in range(1, poly.NbNodes() + 1):
 -                    flat.extend(poly.Node(i).Transformed(Trsf).Coord())
-+                    flat.extend(poly.Node(i).Transformed(Trsf).Coord__float__float__float())
-                 self.vertices.extend(flat)
+-                self.vertices.extend(flat)
+-
+-                # add triangles
+-                flat: list[int] = []
+-                for i in range(1, poly.NbTriangles() + 1):
+-                    coord: TriangleIndices = poly.Triangle(i).Get()
+-                    flat.extend((
+-                        coord[0] + offset,
+-                        coord[i1] + offset,
+-                        coord[i2] + offset,
+-                    ))
+-                self.triangles.extend(flat)
++                # vertices: one view, transformed only when the face is located
++                nodes = poly.NodesArray()
++                trsf = loc_buf.Transformation()
++                if trsf.Form() != gp_TrsfForm.gp_Identity:
++                    m = np.array([[trsf.Value(r, c) for c in range(1, 5)] for r in range(1, 4)])
++                    nodes = nodes @ m[:, :3].T + m[:, 3]
++                vertices.append(nodes.ravel())
++
++                # triangles: OCCT's indices are 1-based, the flat buffer is 0-based
++                tris = poly.TrianglesArray()
++                if orientation == TopAbs_Orientation.TopAbs_REVERSED:
++                    tris = tris[:, [0, 2, 1]]
++                triangles.append((tris + (offset - 1)).ravel())
+                 self.triangles_per_face.append(poly.NbTriangles())
  
-                 # add triangles
-@@ -339,7 +339,7 @@
+                 # add normals (and UVs if requested)
+                 if poly.HasUVNodes():
+-                    prop = BRepGProp_Face(face)
+-                    normals_flat: list[float] = []
++                    uv = poly.UVNodesArray()
+ 
+                     # Parametric bounds of the face. The tessellation can store a
+                     # node's UV one ULP outside these bounds at a parametric
+@@ -320,10 +314,10 @@
+                     # like 3, 6, 12, 24 ...). Clamp the UV used for the normal to
+                     # the face domain to keep the evaluation on the correct side.
+                     u_min, u_max, v_min, v_max = BRepTools.UVBounds_s(face)
++                    clamped = np.ascontiguousarray(np.clip(uv, (u_min, v_min), (u_max, v_max)))
++                    normals.append(AddOns.Tessellator.NormalsFromSurface(face, clamped, internal).ravel())
+ 
+                     if self.compute_uvs:
+-                        uvs_flat: list[float] = []
+-
+                         if self.normalize_uvs:
+                             # Compute physical scale per parameter unit at face center
+                             # to preserve aspect ratio and consistent tile size across faces.
+@@ -337,64 +331,35 @@
+                             surf.D1(u_mid, v_mid, d1_p, d1_u, d1_v)
+                             scale_u = d1_u.Magnitude()  # physical length per unit of u
                              scale_v = d1_v.Magnitude()  # physical length per unit of v
- 
-                             for i in range(1, poly.NbNodes() + 1):
+-
+-                            for i in range(1, poly.NbNodes() + 1):
 -                                u, v = poly.UVNode(i).Coord()
-+                                u, v = poly.UVNode(i).Coord__float__float()
-                                 un = min(max(u, u_min), u_max)
-                                 vn = min(max(v, v_min), v_max)
-                                 prop.Normal(un, vn, p_buf, n_buf)
-@@ -364,7 +364,7 @@
+-                                un = min(max(u, u_min), u_max)
+-                                vn = min(max(v, v_min), v_max)
+-                                prop.Normal(un, vn, p_buf, n_buf)
+-                                if n_buf.SquareMagnitude() > 0:
+-                                    n_buf.Normalize()
+-                                normals_flat.extend(
+-                                    n_buf.Reversed().Coord()
+-                                    if internal
+-                                    else n_buf.Coord()
+-                                )
+-                                uvs_flat.append(
+-                                    (u - u_min) * scale_u / self.bbox_max_dim
+-                                    if scale_u > 1e-10
+-                                    else 0.5
+-                                )
+-                                uvs_flat.append(
+-                                    (v - v_min) * scale_v / self.bbox_max_dim
+-                                    if scale_v > 1e-10
+-                                    else 0.5
+-                                )
++                            us = (
++                                (uv[:, 0] - u_min) * scale_u / self.bbox_max_dim
++                                if scale_u > 1e-10
++                                else np.full(len(uv), 0.5)
++                            )
++                            vs = (
++                                (uv[:, 1] - v_min) * scale_v / self.bbox_max_dim
++                                if scale_v > 1e-10
++                                else np.full(len(uv), 0.5)
++                            )
+                         else:
                              # Use raw parametric UVs, matching OCCT's RWGltf_CafWriter
                              # V is flipped (1-v) per glTF convention (top-left origin)
-                             for i in range(1, poly.NbNodes() + 1):
+-                            for i in range(1, poly.NbNodes() + 1):
 -                                u, v = poly.UVNode(i).Coord()
-+                                u, v = poly.UVNode(i).Coord__float__float()
-                                 un = min(max(u, u_min), u_max)
-                                 vn = min(max(v, v_min), v_max)
-                                 prop.Normal(un, vn, p_buf, n_buf)
-@@ -380,7 +380,7 @@
-                         self.uvs.extend(uvs_flat)
-                     else:
-                         for i in range(1, poly.NbNodes() + 1):
+-                                un = min(max(u, u_min), u_max)
+-                                vn = min(max(v, v_min), v_max)
+-                                prop.Normal(un, vn, p_buf, n_buf)
+-                                if n_buf.SquareMagnitude() > 0:
+-                                    n_buf.Normalize()
+-                                normals_flat.extend(
+-                                    n_buf.Reversed().Coord()
+-                                    if internal
+-                                    else n_buf.Coord()
+-                                )
+-                                uvs_flat.append(u)
+-                                uvs_flat.append(1.0 - v)
+-                        self.uvs.extend(uvs_flat)
+-                    else:
+-                        for i in range(1, poly.NbNodes() + 1):
 -                            u, v = poly.UVNode(i).Coord()
-+                            u, v = poly.UVNode(i).Coord__float__float()
-                             un = min(max(u, u_min), u_max)
-                             vn = min(max(v, v_min), v_max)
-                             prop.Normal(un, vn, p_buf, n_buf)
-@@ -452,7 +452,7 @@
-             transf = loc.Transformation()
-             v1: Coords | None = None
-             for j in nrange:
+-                            un = min(max(u, u_min), u_max)
+-                            vn = min(max(v, v_min), v_max)
+-                            prop.Normal(un, vn, p_buf, n_buf)
+-                            if n_buf.SquareMagnitude() > 0:
+-                                n_buf.Normalize()
+-                            normals_flat.extend(
+-                                n_buf.Reversed().Coord() if internal else n_buf.Coord()
+-                            )
+-
+-                    self.normals.extend(normals_flat)
++                            us = uv[:, 0]
++                            vs = 1.0 - uv[:, 1]
++                        uvs.append(np.column_stack((us, vs)).ravel())
+ 
+                 offset += poly.NbNodes()
+             else:
+                 print(f"face {ind} ignored")
++
++        # the flat buffers the getters read (np.asarray(..., dtype=np.float32) etc.), kept as float64 until then
++        if vertices:
++            self.vertices = np.concatenate([np.asarray(self.vertices, dtype=np.float64), *vertices])
++            self.triangles = np.concatenate([np.asarray(self.triangles, dtype=np.int64), *triangles])
++        if normals:
++            self.normals = np.concatenate([np.asarray(self.normals, dtype=np.float64), *normals])
++        if uvs:
++            self.uvs = np.concatenate([np.asarray(self.uvs, dtype=np.float64), *uvs])
+ 
+     def _compute_missing_normals(self) -> NDArray[np.float32]:
+         vertices = np.asarray(self.vertices).reshape(-1, 3)
+@@ -426,38 +391,19 @@
+ 
+     def compute_edges(self, trace: Trace):
+         assert self.shape is not None, "compute() sets the shape"
+-        for ind, (edge, face) in enumerate(get_edges(self.shape, True)):
+-            trace.edge(f"{self.shape_id}/edges/edges_{ind}", edge)
+-
+-            edges: list[Coords] = []  # point pairs, flattened
+-            loc = TopLoc_Location()
+-            triangle = BRep_Tool.Triangulation_s(face, loc)
+-            poly = BRep_Tool.PolygonOnTriangulation_s(edge, triangle, loc)
+-
+-            if poly is None:
+-                continue
+-
+-            # edge_types must only grow for edges that produced a polygon,
+-            # or it desynchronizes from segments_per_edge
+-            self.edge_types.append(get_edge_type(edge))
+-
+-            if hasattr(poly, "Node"):  # OCCT > 7.5
+-                nrange = range(1, poly.NbNodes() + 1)
+-                index = poly.Node
+-            else:  # OCCT == 7.5
+-                indices = poly.Nodes()
+-                nrange = range(indices.Lower(), indices.Upper() + 1)
+-                index = indices.Value
+-
+-            transf = loc.Transformation()
+-            v1: Coords | None = None
+-            for j in nrange:
 -                v2: Coords = triangle.Node(index(j)).Transformed(transf).Coord()
-+                v2: Coords = triangle.Node(index(j)).Transformed(transf).Coord__float__float__float()
-                 if v1 is not None:
-                     edges.extend((v1, v2))
-                 v1 = v2
-@@ -668,7 +668,7 @@
+-                if v1 is not None:
+-                    edges.extend((v1, v2))
+-                v1 = v2
+-            self.edges.extend(edges)
+-            self.segments_per_edge.append(len(edges) // 2)
++        if trace_module.DEBUG:
++            # the trace records every (edge, face) pair; EdgeSegments walks them in C++
++            for ind, (edge, _face) in enumerate(get_edges(self.shape, True)):
++                trace.edge(f"{self.shape_id}/edges/edges_{ind}", edge)
++
++        # nanoOCP: the per-edge polyline walk in C++ (nanoocp.AddOns.Tessellator.EdgeSegments) -- the same edge
++        # map, the same ancestor face, the same skips (no face, no triangulation, no polygon on it), so the point
++        # pairs, the segment counts and the GeomAbs_CurveType of each kept edge align as before
++        segments, per_edge, types = AddOns.Tessellator.EdgeSegments(self.shape)
++        if len(segments) > 0:
++            self.edges = segments  # (2 * segments, 3) point pairs
++        self.segments_per_edge.extend(per_edge.tolist())
++        self.edge_types.extend(types.tolist())
+ 
+         if len(self.edges) == 0:
+             self._compute_missing_edges()
+@@ -668,7 +614,7 @@
          return np.empty((0, 2, 3), dtype=np.float32)
  
      points: list[Coords] = [

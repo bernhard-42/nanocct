@@ -70,7 +70,7 @@
  
 --- a/src/build123d/importers.py
 +++ b/src/build123d/importers.py
-@@ -148,11 +148,10 @@
+@@ -147,11 +147,10 @@
      def get_name(label: TDF_Label) -> str:
          """Extract name and format"""
          name = ""
@@ -86,6 +86,55 @@
          # Remove characters that cause ocp_vscode to fail
          clean_name = "".join(ch for ch in name if unicodedata.category(ch)[0] != "C")
          return clean_name.translate(str.maketrans(" .()", "____"))
+--- a/src/build123d/mesher.py
++++ b/src/build123d/mesher.py
+@@ -94,6 +94,7 @@
+ from uuid import UUID
+ 
+ import nanoocp.TopAbs as ta
++import numpy as np
+ from lib3mf import Lib3MF
+ from nanoocp.BRep import BRep_Tool
+ from nanoocp.BRepBuilderAPI import (
+@@ -104,7 +105,7 @@
+ )
+ from nanoocp.BRepGProp import BRepGProp
+ from nanoocp.BRepMesh import BRepMesh_IncrementalMesh
+-from nanoocp.gp import gp_Pnt
++from nanoocp.gp import gp_Pnt, gp_TrsfForm
+ from nanoocp.GProp import GProp_GProps
+ from nanoocp.TopAbs import TopAbs_ShapeEnum
+ from nanoocp.TopExp import TopExp_Explorer
+@@ -291,20 +292,22 @@
+             # Triangulate the face
+             poly_triangulation = BRep_Tool.Triangulation_s(facet.wrapped, loc)
+             trsf = loc.Transformation()
+-            # Store the vertices in the triangulated face
++            # Store the vertices in the triangulated face: one zero-copy view (nanoOCP),
++            # transformed only for a located face
+             node_count = poly_triangulation.NbNodes()
+-            for i in range(1, node_count + 1):
+-                gp_pnt = poly_triangulation.Node(i).Transformed(trsf)
+-                pnt = (gp_pnt.X(), gp_pnt.Y(), gp_pnt.Z())
+-                ocp_mesh_vertices.append(pnt)
++            nodes = poly_triangulation.NodesArray()
++            if trsf.Form() != gp_TrsfForm.gp_Identity:
++                m = np.array([[trsf.Value(r, c) for c in range(1, 5)] for r in range(1, 4)])
++                nodes = nodes @ m[:, :3].T + m[:, 3]
++            ocp_mesh_vertices.extend(map(tuple, nodes.tolist()))
+ 
+             # Store the triangles from the triangulated faces
+             if not facet:
+                 continue
+             facet_reversed = facet.wrapped.Orientation() == ta.TopAbs_REVERSED
+             order = [1, 3, 2] if facet_reversed else [1, 2, 3]
+-            for tri in poly_triangulation.Triangles():
+-                triangles.append([tri.Value(i) + offset - 1 for i in order])
++            tris = poly_triangulation.TrianglesArray()[:, [i - 1 for i in order]] + (offset - 1)
++            triangles.extend(tris.tolist())
+             offset += node_count
+         return ocp_mesh_vertices, triangles
+ 
 --- a/src/build123d/persistence.py
 +++ b/src/build123d/persistence.py
 @@ -58,10 +58,7 @@
@@ -113,7 +162,7 @@
          self, path: str, override: bool = False, single_stroke=False
 --- a/src/build123d/topology/one_d.py
 +++ b/src/build123d/topology/one_d.py
-@@ -3755,13 +3755,12 @@
+@@ -3754,13 +3754,12 @@
          """
  
          edges_in = NCollection_HSequence[TopoDS_Shape]()
@@ -128,7 +177,7 @@
  
          wires = ShapeList()
          for i in range(wires_out.Length()):
-@@ -4334,7 +4333,7 @@
+@@ -4333,7 +4332,7 @@
              closest_topods_edge = tcast(
                  TopoDS_Edge, downcast(extrema.SupportOnShape2(1))
              )
@@ -137,7 +186,7 @@
          elif supp_type == BRepExtrema_SupportType.BRepExtrema_IsVertex:
              v_hit = tcast(TopoDS_Vertex, downcast(extrema.SupportOnShape2(1)))
              vertex_edge_map = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
-@@ -4717,12 +4716,11 @@
+@@ -4716,12 +4715,11 @@
      """
  
      edges_in = NCollection_HSequence[TopoDS_Shape]()
@@ -151,6 +200,98 @@
  
      wires: ShapeList[Wire] = ShapeList()
      for i in range(wires_out.Length()):
+--- a/src/build123d/topology/shape_core.py
++++ b/src/build123d/topology/shape_core.py
+@@ -110,7 +110,7 @@
+ from nanoocp.gce import gce_MakeLin
+ from nanoocp.GeomAPI import GeomAPI_ProjectPointOnSurf
+ from nanoocp.GeomLib import GeomLib_IsPlanarSurface
+-from nanoocp.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec, gp_XYZ
++from nanoocp.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_TrsfForm, gp_Vec, gp_XYZ
+ from nanoocp.GProp import GProp_GProps
+ from nanoocp.ShapeAnalysis import ShapeAnalysis_Curve
+ from nanoocp.ShapeCustom import ShapeCustom, ShapeCustom_RestrictionParameters
+@@ -2338,30 +2338,17 @@
+             trsf = loc.Transformation()
+             reverse = face.wrapped.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+ 
+-            # add vertices
+-            vertices += [
+-                Vector(v.X(), v.Y(), v.Z())
+-                for v in (
+-                    poly.Node(i).Transformed(trsf) for i in range(1, poly.NbNodes() + 1)
+-                )
+-            ]
+-            # add triangles
+-            triangles += [
+-                (
+-                    (
+-                        t.Value(1) + offset - 1,
+-                        t.Value(3) + offset - 1,
+-                        t.Value(2) + offset - 1,
+-                    )
+-                    if reverse
+-                    else (
+-                        t.Value(1) + offset - 1,
+-                        t.Value(2) + offset - 1,
+-                        t.Value(3) + offset - 1,
+-                    )
+-                )
+-                for t in poly.Triangles()
+-            ]
++            # add vertices: one zero-copy view (nanoOCP), transformed only for a located face
++            nodes = poly.NodesArray()
++            if trsf.Form() != gp_TrsfForm.gp_Identity:
++                m = np.array([[trsf.Value(r, c) for c in range(1, 5)] for r in range(1, 4)])
++                nodes = nodes @ m[:, :3].T + m[:, 3]
++            vertices += [Vector(x, y, z) for x, y, z in nodes.tolist()]
++            # add triangles: one zero-copy view, OCCT's 1-based indices shifted to the offset
++            tris = poly.TrianglesArray() + (offset - 1)
++            if reverse:
++                tris = tris[:, [0, 2, 1]]
++            triangles += [tuple(t) for t in tris.tolist()]
+ 
+             offset += poly.NbNodes()
+ 
+@@ -2450,21 +2437,16 @@
+             trans = np.array([tr.X(), tr.Y(), tr.Z()])
+ 
+             # Vertices — bulk extract via MapNodeArray + numpy transform
+-            node_arr = poly.MapNodeArray()
+-            coords = np.empty((nb_nodes, 3))
+-            for i in range(1, nb_nodes + 1):
+-                p = node_arr.Value(i)
+-                coords[i - 1] = (p.X(), p.Y(), p.Z())
++            coords = poly.NodesArray()  # zero-copy view (nanoOCP)
+             transformed = coords @ rot.T + trans
+             all_vertices.extend(Vector(row[0], row[1], row[2]) for row in transformed)
+ 
+             # Normals — bulk extract + numpy rotate (no translation)
+             if not poly.HasNormals():
+                 poly.ComputeNormals()
+-            norm_coords = np.empty((nb_nodes, 3))
+-            for i in range(1, nb_nodes + 1):
+-                d = poly.Normal(i)
+-                norm_coords[i - 1] = (d.X(), d.Y(), d.Z())
++            # zero-copy float32 view (nanoOCP), normalised as poly.Normal(i) does by returning a gp_Dir
++            norm_coords = poly.NormalsArray().astype(np.float64)
++            norm_coords /= np.linalg.norm(norm_coords, axis=1, keepdims=True)
+             rotated_normals = norm_coords @ rot.T * reverse_factor
+             all_normals.extend(
+                 Vector(row[0], row[1], row[2]) for row in rotated_normals
+@@ -2472,11 +2454,7 @@
+ 
+             # UV coordinates — bulk extract via MapUVNodeArray + numpy normalize
+             if poly.HasUVNodes():
+-                uv_arr = poly.MapUVNodeArray()
+-                uv_raw = np.empty((nb_nodes, 2))
+-                for i in range(1, nb_nodes + 1):
+-                    uv_pnt = uv_arr.Value(i)
+-                    uv_raw[i - 1] = (uv_pnt.X(), uv_pnt.Y())
++                uv_raw = poly.UVNodesArray()  # zero-copy view (nanoOCP)
+ 
+                 uv_min = uv_raw.min(axis=0)
+                 uv_max = uv_raw.max(axis=0)
 --- a/tests/test_materials.py
 +++ b/tests/test_materials.py
 @@ -351,8 +351,8 @@
