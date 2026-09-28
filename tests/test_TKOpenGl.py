@@ -3,6 +3,7 @@ V3d_Viewer has a real driver, so AIS_InteractiveContext.Display() works instead 
 single biggest limitation nanocct carried until 2026-09-22. Rendering to an image still needs a drawable, which a
 virtual window does not provide on macOS; the test pins that boundary down."""
 import importlib
+import os
 import platform
 from pathlib import Path
 
@@ -32,6 +33,15 @@ def quiet_messenger():
     yield
     for p, level in zip(printers, levels):
         p.SetTraceLevel(level)
+
+
+# GitHub's macOS runners are virtual machines without a GPU, and OCCT asks for an accelerated context by default
+# (NSOpenGLPFAAccelerated, OpenGl_Window_1.mm), so every test that creates a GL context fails there with
+# "OpenGl_Window::CreateWindow: NSOpenGLContext creation failed" (the first CI run, 2026-09-28). Skipped on that runner
+# only: locally, and on the other platforms, these tests run. The driver itself constructs there, so its test stays.
+needs_gl_context = pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS") == "true" and platform.system() == "Darwin",
+    reason="GitHub's macOS runner has no GPU, so OCCT's accelerated NSOpenGLContext cannot be created there")
 
 
 @pytest.fixture
@@ -86,6 +96,7 @@ def test_the_driver_constructs_and_initialises(driver):
     assert isinstance(caps.contextDebug, bool)                    # a bit-field, bound through def_prop_rw (R-FIELD)
 
 
+@needs_gl_context
 def test_displaying_a_shape_no_longer_segfaults(driver, display, quiet_messenger):
     """Until TKOpenGl was generated, V3d_Viewer(None) was the only viewer available and anything that builds a
     Graphic3d_Structure -- AIS_InteractiveContext.Display, TPrsStd_AISPresentation.Display -- dereferenced the null
@@ -106,6 +117,7 @@ def test_displaying_a_shape_no_longer_segfaults(driver, display, quiet_messenger
     view.Redraw()                                                 # no crash, whatever the GL surface can do
 
 
+@needs_gl_context
 @pytest.mark.skipif(platform.system() == "Linux",
                     reason="a virtual Aspect_NeutralWindow has no X window, and OCCT's X11 path then aborts the "
                            "process through Xlib's default error handler (BadWindow) instead of raising")
@@ -156,6 +168,7 @@ def test_report_is_the_gl_entry_point_tables():
     assert any("OpenGl_GLESExtensions.hxx: skipped" in line for line in lines)
 
 
+@needs_gl_context
 def test_a_real_window_renders_the_box(quiet_messenger):
     """The whole point of the driver: a rendered image. macOS needs an NSApplication before Cocoa_Window can create
     its NSWindow (OCCT raises Aspect_WindowDefinitionError otherwise), and tkinter's Tk() creates one -- no PyObjC
