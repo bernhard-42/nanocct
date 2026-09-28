@@ -26,11 +26,7 @@
 # do is baked into the image instead.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(cd "$HERE/.." && pwd)"
 PREFIX_REL="${1:-deps/occt-8.0.1-manylinux}"
-IMAGE=OCP3x-manylinux
-
-docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE"
 
 # One place pins the tags, so the container and the host cannot drift apart (both scripts are idempotent).
 "$HERE/fetch-occt-src.sh"
@@ -38,8 +34,10 @@ docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE"
 [ -f "$HERE/freetype-ml/lib/libfreetype.a" ] || { echo "missing $HERE/freetype-ml (run 'make freetype')" >&2; exit 1; }
 [ -f "$HERE/freeimage-ml/lib/libFreeImage.so" ] || { echo "missing $HERE/freeimage-ml (run 'make freeimage')" >&2; exit 1; }
 
-# HOME: the mapped uid has no passwd entry in the container, so $HOME is empty and cmake tries to write //.cmake
-docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$ROOT:/work" -w /work "$IMAGE" bash -euo pipefail -c '
+# Through run-manylinux.sh like the FreeType and FreeImage builds, so the image and its architecture are named in one
+# place (until 2026-09-28 this script ran its own `docker build`/`docker run`, and the rename to OCP3x broke both).
+"$HERE/run-manylinux.sh" '
+set -euo pipefail
 PREFIX="/work/'"$PREFIX_REL"'"
 # the same OCCT flags as deps/build-occt-macos.sh and deps/build-occt-windows.sh, so the three installs stay comparable
 cmake -S deps/occt-src -B deps/occt-build-ml -G Ninja \

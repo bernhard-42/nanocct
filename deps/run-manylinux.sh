@@ -11,9 +11,15 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
-IMAGE=OCP3x-manylinux
+# The image follows the host's architecture: manylinux_2_28_x86_64 on x86_64, manylinux_2_28_aarch64 on arm64
+# (deps/manylinux.Dockerfile takes it as ARCH). One image per architecture, so a box that has built both keeps both.
+# Lowercase: docker rejects a repository name with capitals ("invalid reference format: ... must be lowercase",
+# which the rename to OCP3x ran into on 2026-09-28).
+ARCH="$(uname -m)"
+if [ "$ARCH" = "arm64" ]; then ARCH=aarch64; fi          # macOS spells it arm64, the manylinux images aarch64
+IMAGE="ocp3x-manylinux-$ARCH"
 
-docker build -q -t "$IMAGE" -f "$HERE/manylinux.Dockerfile" "$HERE" > /dev/null
+docker build -q -t "$IMAGE" --build-arg ARCH="$ARCH" -f "$HERE/manylinux.Dockerfile" "$HERE" > /dev/null
 
 tty_flags=()
 if [ -t 0 ] && [ $# -eq 0 ]; then tty_flags=(-it); fi

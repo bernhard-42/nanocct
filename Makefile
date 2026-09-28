@@ -18,10 +18,15 @@
 .NOTPARALLEL:
 .DEFAULT_GOAL := wheels
 
-ROOT    := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Set the root working folder and test dependencies
+#
 # Every clean target builds its paths from ROOT, so an empty or wrong ROOT would aim `rm -rf` at the filesystem
 # root. Refuse to run instead of trusting the expansion -- including when ROOT is overridden on the command line.
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+ROOT    := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+
 ifeq ($(strip $(ROOT)),)
   $(error ROOT is empty -- refusing to run: the clean targets would expand to /)
 endif
@@ -53,21 +58,33 @@ else
   $(error unsupported platform '$(UNAME_S)')
 endif
 
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Toolkits
+#
 # The 45 toolkits in scope, hand-sorted in dependency order (Design.md 2). The order is not cosmetic: instantiation
 # ownership follows it, and a toolkit that aliases another's instantiation must be imported after it. Update the
 # list when OCCT adds a toolkit -- an audit of TOOLKITS.cmake against the manifest is what once found TKDECascade
 # missing (State.md 8.15).
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 TOOLKITS := TKernel TKMath TKG2d TKG3d TKGeomBase TKBRep TKGeomAlgo TKTopAlgo TKPrim TKShHealing TKBO TKBool \
             TKHLR TKHelix TKMesh TKFillet TKOffset TKFeat TKXMesh TKService TKV3d TKOpenGl TKMeshVS TKCDF \
             TKLCAF TKCAF TKVCAF TKBinL TKBin TKXmlL TKXml TKDE TKXSBase TKXCAF TKDEIGES TKDESTEP TKDESTL \
             TKRWMesh TKDEGLTF TKDEOBJ TKDEPLY TKDEVRML TKBinXCAF TKXmlXCAF TKDECascade
 TK_FLAGS := --toolkit $(TOOLKITS)
 
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Build variables
+#
 # The development interpreter, pinned so the three machines are the same one. It is NOT the wheel's floor: that
 # is `requires-python = ">=3.12"` and `wheel.py-api = "cp312"`, which say what a *user* can install. Until
 # 2026-09-24 nothing pinned this and the three had drifted apart -- macOS 3.14.7, Linux 3.12.13, Windows 3.12.12 --
 # so the suite ran on a different Python depending on which box you were on. Exercising the 3.12 floor is a job
 # for the CI matrix (State.md 8.17), not for whichever interpreter a machine happens to pick.
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 PY_VERSION := 3.14
 CPTAG      := cp$(subst .,,$(PY_VERSION))
 
@@ -75,6 +92,8 @@ CPTAG      := cp$(subst .,,$(PY_VERSION))
 CONTAINER  := $(DEPS)/run-manylinux.sh
 ML_PY      := /work/.venv-ml/bin/python
 ML_SYSPY   := /opt/python/$(CPTAG)-$(CPTAG)/bin/python
+# the wheel's platform tag follows the host, as the container image does (deps/run-manylinux.sh): x86_64 or aarch64
+ML_PLAT    := manylinux_2_28_$(shell uname -m)
 WIN_PY     := $(ROOT)/.venv/Scripts/python.exe
 PY         := $(ROOT)/.venv/bin/python
 ifeq ($(PLATFORM),macos)
@@ -91,15 +110,25 @@ endif
 .PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity ocp3xbuild \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Help
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 help:
 	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | wheels | shim-parity | ocp3xbuild"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
-# ---- environment ----------------------------------------------------------------------------------------------
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Create the build environment
+#
 # The venv every other target uses, on PY_VERSION. Building on 3.14 still produces a cp312-abi3 wheel, because
 # Py_LIMITED_API=0x030C0000 makes the extension loadable on 3.12 and everything after whatever built it
 # (measured 2026-09-24) -- so pinning the development interpreter forward costs no compatibility.
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 env:
 ifeq ($(PLATFORM),linux)
 	@# uv here too, against the same pyproject dev group as the other platforms. The hand-written pip list this
@@ -116,6 +145,11 @@ else
 	@# modules come from `make compile`, and are imported from the staged tree rather than installed.
 	cd $(ROOT) && uv sync --no-install-project
 endif
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Clean dependencies
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 # ---- dependencies ---------------------------------------------------------------------------------------------
 # `make deps` builds them in the order OCCT needs: FreeType and RapidJSON first, then OCCT against both.
@@ -141,9 +175,15 @@ clean_rapidjson:
 
 clean_deps: clean_occt clean_freetype clean_freeimage clean_rapidjson
 
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Build dependencies
+#
 # deps/occt-src, deps/freetype-src and deps/freeimage-src are the *sources* and are deliberately not cleaned:
 # fetching OCCT again is a long download, and re-cloning the other two is pointless --
 # neither tree is patched (since 2026-09-25): symbols are kept in at link time and by -fvisibility=hidden.
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 
 rapidjson: clean_rapidjson
 	$(DEPS)/fetch-rapidjson.sh
@@ -195,7 +235,10 @@ endif
 
 deps: clean_deps rapidjson freetype freeimage occt
 
-# ---- the development loop -------------------------------------------------------------------------------------
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Generate the OCCT bindings
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 # Only the generated files. src/cpp/common/ocp3x_common.h and ocp3x_ncollection.h are hand-written and tracked,
 # as are src/OCP3x/_templates.py and py.typed -- never `rm -rf src/cpp`, which once cost a whole Windows build.
@@ -209,6 +252,7 @@ clean_gen:
 	rm -rf $(STAGE_DIR)
 	rm -f $(wildcard $(ROOT)/.venv/lib/python3.*/site-packages/_ocp3x_dev.pth)
 
+
 # $(PY), never `uv run`: uv syncs the project before running, which builds OCP3x -- and that needs the generated
 # sources this step is about to produce. On a fresh clone it fails on the missing src/cpp/toolkits.cmake.
 generate: clean_gen
@@ -219,6 +263,11 @@ else ifeq ($(PLATFORM),windows)
 else
 	$(CONTAINER) "$(ML_PY) -m generator --occt /work/deps/occt-8.0.1-manylinux --occt-src /work/deps/occt-src $(TK_FLAGS)"
 endif
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Compile the OCCT bindings
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 # cmake + ninja directly rather than `uv sync`, so the build reports progress ([12/45] Building CXX object ...)
 # instead of sitting behind a spinner for a minute and a half, and so the three platforms have the same shape:
@@ -234,7 +283,7 @@ ifeq ($(PLATFORM),macos)
 	@# a wheel-installed OCP3x next to the staged one aborts the import with "Critical nanobind error".
 	cd $(ROOT) && uv pip uninstall -q ocp3x 2>/dev/null || true
 else ifeq ($(PLATFORM),windows)
-	cd $(ROOT) && ./deps/build-OCP3x-windows.sh
+	cd $(ROOT) && ./deps/build-ocp3x-windows.sh
 	$(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 else
 	$(CONTAINER) "cmake -S /work -B /work/build-ml -G Ninja -DCMAKE_BUILD_TYPE=Release \
@@ -243,6 +292,11 @@ else
 	$(CONTAINER) "ninja -k 0 -C /work/build-ml"
 	$(CONTAINER) "/work/deps/stage.sh build-ml stage-ml"
 endif
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Build stubs
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 stubs:
 ifeq ($(PLATFORM),macos)
@@ -256,6 +310,11 @@ else
 	$(CONTAINER) "/work/deps/stage.sh build-ml stage-ml"
 endif
 
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Execute test
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 test:
 ifeq ($(PLATFORM),macos)
 	cd $(ROOT) && $(PY) -m pytest tests -q -p no:cacheprovider
@@ -265,13 +324,35 @@ else
 	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml xvfb-run -a $(ML_PY) -m pytest tests -q -p no:cacheprovider"
 endif
 
-# ---- packaging ------------------------------------------------------------------------------------------------
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Clean distribution files
+#
+# cadquery-ocp-novtk 8.0.1.0.0+shim: `import OCP.*` on top of OCP3x (shim/). A pure-Python py3-none-any wheel built by
+# shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to OCP3x's.
+# Generation reads OCP3x's own signatures, so the staged tree must be importable -- found the way `make test` finds it.
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+shim:
+ifeq ($(PLATFORM),macos)
+	$(PY) $(ROOT)/shim/build_wheel.py $(DIST_DIR)
+else ifeq ($(PLATFORM),windows)
+	cd $(ROOT) && PYTHONPATH="$(STAGE_DIR)" "$(WIN_PY)" shim/build_wheel.py $(DIST_DIR)
+else
+	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml $(ML_PY) shim/build_wheel.py /work/dist"
+endif
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Packaging - create wheels
+#
 # A built wheel is not portable: the extension modules find the OCCT libraries through an rpath into deps/, so the
 # wheel works only on the machine that built it. The repair step copies those libraries in and rewrites the
 # references to point inside the wheel (State.md 8.4). Each platform has its own tool, and each leaves the
 # system's own libraries alone -- OpenGL and X11 belong to the host, never to the wheel (Design.md 7).
-#
-# The CI matrix that would run this on every push is a separate, later step (State.md 8.17).
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+# CI runs exactly these targets: .github/workflows/build-wheels.yml (State.md 8.17).
 
 DIST_DIR := $(ROOT)/dist
 RAW_DIR  := $(DIST_DIR)/unrepaired
@@ -282,7 +363,21 @@ MACOS_TARGET := 11.1
 OCCT_BIN_WIN := $(DEPS)/occt-8.0.1/win64/vc14/bin
 FREEIMAGE_BIN_WIN := $(DEPS)/freeimage/bin
 
-wheel: delocate
+# The repair. Named `delocate` after the macOS tool because that is what the step is, on every platform.
+delocate: raw_wheel
+ifeq ($(PLATFORM),macos)
+	MACOSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) $(ROOT)/.venv/bin/delocate-wheel -w $(DIST_DIR) $(RAW_DIR)/*.whl
+else ifeq ($(PLATFORM),windows)
+	@# delvewheel cannot read a DLL search path from the binary the way rpath gives it on Unix, so it is told --
+	@# both directories, ';'-separated (delvewheel repair --help): FreeImage.dll lives in its own install, not in OCCT's.
+	cd $(ROOT) && "$(WIN_PY)" -m delvewheel repair --add-path "$(OCCT_BIN_WIN);$(FREEIMAGE_BIN_WIN)" -w $(DIST_DIR) $(RAW_DIR)/*.whl
+else
+	@# LD_LIBRARY_PATH for the same reason: the OCCT .so files name each other by SONAME and carry no RUNPATH.
+	$(CONTAINER) "LD_LIBRARY_PATH=/work/deps/occt-8.0.1-manylinux/lib auditwheel repair \
+	    --plat $(ML_PLAT) -w /work/dist /work/dist/unrepaired/*.whl"
+endif
+	@echo "repaired wheel:" && ls -lh $(DIST_DIR)/*.whl
+
 
 # The unrepaired wheel: correct Python surface, but linked against deps/.
 raw_wheel: clean_dist
@@ -302,42 +397,32 @@ else
 endif
 	@ls -lh $(RAW_DIR)
 
-# The repair. Named `delocate` after the macOS tool because that is what the step is, on every platform.
-delocate: raw_wheel
-ifeq ($(PLATFORM),macos)
-	MACOSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) $(ROOT)/.venv/bin/delocate-wheel -w $(DIST_DIR) $(RAW_DIR)/*.whl
-else ifeq ($(PLATFORM),windows)
-	@# delvewheel cannot read a DLL search path from the binary the way rpath gives it on Unix, so it is told --
-	@# both directories, ';'-separated (delvewheel repair --help): FreeImage.dll lives in its own install, not in OCCT's.
-	cd $(ROOT) && "$(WIN_PY)" -m delvewheel repair --add-path "$(OCCT_BIN_WIN);$(FREEIMAGE_BIN_WIN)" -w $(DIST_DIR) $(RAW_DIR)/*.whl
-else
-	@# LD_LIBRARY_PATH for the same reason: the OCCT .so files name each other by SONAME and carry no RUNPATH.
-	$(CONTAINER) "LD_LIBRARY_PATH=/work/deps/occt-8.0.1-manylinux/lib auditwheel repair \
-	    --plat manylinux_2_28_x86_64 -w /work/dist /work/dist/unrepaired/*.whl"
-endif
-	@echo "repaired wheel:" && ls -lh $(DIST_DIR)/*.whl
+
+wheel: delocate
+
+
+wheels: generate compile stubs test wheel shim
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Clean distribution files
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 clean_dist:
 	rm -rf $(DIST_DIR)
 
-# ---- OCP compatibility shim ---------------------------------------------------------------------------------------
-# cadquery-ocp-novtk 8.0.1.0.0+shim: `import OCP.*` on top of OCP3x (shim/). A pure-Python py3-none-any wheel built by
-# shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to OCP3x's.
-# Generation reads OCP3x's own signatures, so the staged tree must be importable -- found the way `make test` finds it.
-shim:
-ifeq ($(PLATFORM),macos)
-	$(PY) $(ROOT)/shim/build_wheel.py $(DIST_DIR)
-else ifeq ($(PLATFORM),windows)
-	cd $(ROOT) && PYTHONPATH="$(STAGE_DIR)" "$(WIN_PY)" shim/build_wheel.py $(DIST_DIR)
-else
-	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml $(ML_PY) shim/build_wheel.py /work/dist"
-endif
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Parity tests
+#
 # build123d's and ocp-tessellate's own suites through the shim against the real OCP, test by test (shim/parity.py;
 # State.md 8.18). Opt-in and not part of `wheels`: two venvs and the suites side by side, ~6 min on the M5. Needs the
 # wheels of `make wheels` in DIST_DIR, a build123d checkout (BUILD123D), which it only reads (`git archive HEAD`), and
 # the ocp_tessellate sdist ocp3xbuild/ocp3xbuild.sh fetches into build/ocp3xbuild/sdist; everything else goes to
 # build/shim-parity. Host-only for now: on Linux the wheels live in the container's world (State.md 8.17).
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
 BUILD123D ?= $(HOME)/Development/CAD/build123d
 shim-parity:
 ifeq ($(PLATFORM),macos)
@@ -346,7 +431,10 @@ else
 	@echo "shim-parity runs on macOS only so far (see shim/parity.py)"; exit 1
 endif
 
-# ---- OCP3x-enabled packages -------------------------------------------------------------------------------------
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Create OCP3x-enabled packages
+#
 # build123d 0.13.0, ocpsvg 0.7.0, ocp_gordon 0.3.1 and ocp_tessellate 3.5.3 as sdists from PyPI (sha256-verified),
 # patched to import OCP3x instead of OCP (ocp3xbuild/patches, tracked). Output: build/ocp3xbuild/src/<pkg>-<version>,
 # ready for `uv pip install dist/ocp3x-*.whl build/ocp3xbuild/src/*` into a fresh venv. Pure source work, so it runs
@@ -354,6 +442,8 @@ endif
 # Then a complete test environment in _scratch/.venv (Python 3.14, untracked): recreated on every run, with the OCP3x
 # wheel from DIST_DIR (`make wheel` first -- the wheel is what gets tested, not the staged tree) and the four patched
 # packages. Activation lasts one shell, so it shares the line with the install.
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 SCRATCH := $(ROOT)/_scratch
 ifeq ($(PLATFORM),windows)
   SCRATCH_ACTIVATE := $(SCRATCH)/.venv/Scripts/activate
@@ -371,5 +461,3 @@ ocp3xbuild:
 	@# shell globs, not make's wildcard function: make expands the whole recipe before its first line has created build/ocp3xbuild/src
 	. $(SCRATCH_ACTIVATE) && uv pip install $(DIST_DIR)/ocp3x-*.whl $(ROOT)/build/ocp3xbuild/src/*
 	@echo "ocp3xbuild: test environment ready -- source $(SCRATCH_ACTIVATE)"
-
-wheels: generate compile stubs test wheel shim

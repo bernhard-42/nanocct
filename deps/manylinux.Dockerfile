@@ -5,7 +5,10 @@
 # Deliberately NOT installed: freetype-devel. The image's is 2.9.1 (2018) and macOS and Windows build FreeType from
 # source as a static library, so the container does the same -- the three OCCT builds stay comparable and the wheel
 # carries no system FreeType.
-FROM quay.io/pypa/manylinux_2_28_x86_64
+# ARCH is x86_64 or aarch64; deps/run-manylinux.sh passes the host's.
+ARG ARCH=x86_64
+FROM quay.io/pypa/manylinux_2_28_${ARCH}
+ARG ARCH
 
 # X11 and GLX: OCCT's own default on Linux is USE_XLIB=ON (its CMakeLists.txt:389 turns it off only for Apple and the
 # no-Xlib platforms), and we follow it -- with OFF, OCCT goes through EGL, Xw_Window is a stub, and the viewer does not
@@ -42,4 +45,4 @@ RUN dnf -y -q --enablerepo=appstream install clang && dnf -q clean all
 # libclang picks the newest GCC it finds under /usr/lib/gcc, which in this image is gcc 8 -- but everything is compiled
 # with gcc-toolset-14, whose libstdc++ headers live outside that tree. Without this the generator would read gcc 8's
 # standard library while the build uses gcc 14's. parse.clang_args() appends OCP3X_CLANG_ARGS verbatim.
-ENV OCP3X_CLANG_ARGS="--gcc-install-dir=/opt/rh/gcc-toolset-14/root/usr/lib/gcc/x86_64-redhat-linux/14"
+ENV OCP3X_CLANG_ARGS="--gcc-install-dir=/opt/rh/gcc-toolset-14/root/usr/lib/gcc/${ARCH}-redhat-linux/14"
