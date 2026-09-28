@@ -4,7 +4,7 @@ absent at runtime.
 import numpy as np
 from numpy.typing import NDArray
 
-from OCP3x import Image, NCollection, Poly
+from nanocct import Image, NCollection, Poly
 
 # The container accessor is on the concrete class, not on the generic one: its dtype is the element's.
 pnts = NCollection.NCollection_Array1__gp_Pnt(1, 3)

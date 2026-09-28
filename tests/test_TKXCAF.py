@@ -6,27 +6,27 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.NCollection import NCollection_Sequence
-from OCP3x.Quantity import Quantity_Color, Quantity_NameOfColor, Quantity_NOC_RED
-from OCP3x.TCollection import TCollection_ExtendedString
-from OCP3x.TDataStd import TDataStd_Name
-from OCP3x.TDF import TDF_Label
-from OCP3x.TopAbs import TopAbs_SOLID
-from OCP3x.TopLoc import TopLoc_Location
-from OCP3x.XCAFApp import XCAFApp_Application
-from OCP3x.XCAFDoc import (XCAFDoc, XCAFDoc_AssemblyIterator, XCAFDoc_ColorGen, XCAFDoc_ColorTool,
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.NCollection import NCollection_Sequence
+from nanocct.Quantity import Quantity_Color, Quantity_NameOfColor, Quantity_NOC_RED
+from nanocct.TCollection import TCollection_ExtendedString
+from nanocct.TDataStd import TDataStd_Name
+from nanocct.TDF import TDF_Label
+from nanocct.TopAbs import TopAbs_SOLID
+from nanocct.TopLoc import TopLoc_Location
+from nanocct.XCAFApp import XCAFApp_Application
+from nanocct.XCAFDoc import (XCAFDoc, XCAFDoc_AssemblyIterator, XCAFDoc_ColorGen, XCAFDoc_ColorTool,
                              XCAFDoc_ColorType, XCAFDoc_DocumentTool, XCAFDoc_Note, XCAFDoc_NoteBalloon,
                              XCAFDoc_NoteComment, XCAFDoc_ShapeTool)
-from OCP3x.XCAFPrs import XCAFPrs_DocumentExplorer, XCAFPrs_DocumentExplorerFlags_None
-from OCP3x.gp import gp_Trsf, gp_Vec
+from nanocct.XCAFPrs import XCAFPrs_DocumentExplorer, XCAFPrs_DocumentExplorerFlags_None
+from nanocct.gp import gp_Trsf, gp_Vec
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKXCAF" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["XCAFApp", "XCAFDoc", "XCAFPrs", "XCAFView", "XCAFDimTolObjects", "XCAFNoteObjects"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def doc():
 
 def test_the_document_tools_build123d_uses(doc):
     """build123d calls XCAFDoc_DocumentTool.ShapeTool_s/ColorTool_s/LayerTool_s/MaterialTool_s/SetLengthUnit_s;
-    every static carries _s in OCP3x as in OCP (R-STATIC-S, 2026-09-26), so the plain names do not exist."""
+    every static carries _s in nanocct as in OCP (R-STATIC-S, 2026-09-26), so the plain names do not exist."""
     assert type(XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())).__name__ == "XCAFDoc_ShapeTool"
     assert type(XCAFDoc_DocumentTool.ColorTool_s(doc.Main())).__name__ == "XCAFDoc_ColorTool"
     assert type(XCAFDoc_DocumentTool.LayerTool_s(doc.Main())).__name__ == "XCAFDoc_LayerTool"

@@ -1,6 +1,6 @@
-"""Compare two pytest JUnit files test by test: the parity check of a ocp3xbuild package against the real OCP.
+"""Compare two pytest JUnit files test by test: the parity check of a nanocctbuild package against the real OCP.
 
-    python ocp3xbuild/tools/junit_cmp.py <baseline.xml> <candidate.xml>
+    python nanocctbuild/tools/junit_cmp.py <baseline.xml> <candidate.xml>
 
 Prints the outcome counts of both runs and every test id whose outcome differs (`-` = missing in that run).
 Run both suites serially: under pytest-xdist build123d's glTF and font tests interfere through the shared cwd.

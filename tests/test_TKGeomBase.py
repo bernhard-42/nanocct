@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import (GC, GCE2d, BndLib, Bnd, Extrema, ExtremaPC, GCPnts, Geom, Geom2d, GeomAdaptor, GeomConvert, GeomLProp,
+from nanocct import (GC, GCE2d, BndLib, Bnd, Extrema, ExtremaPC, GCPnts, Geom, Geom2d, GeomAdaptor, GeomConvert, GeomLProp,
                      GeomBndLib, GeomLib, GeomTools, IntAna, gce, gp)
 
 PACKAGES = ["ProjLib", "GeomProjLib", "GCPnts", "CPnts", "Approx", "AppParCurves", "FEmTool", "AppCont", "Extrema", "ExtremaPC",
@@ -17,7 +17,7 @@ PACKAGES = ["ProjLib", "GeomProjLib", "GCPnts", "CPnts", "Approx", "AppParCurves
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def _circle(radius: float = 1.0) -> Geom.Geom_Circle:
@@ -95,7 +95,7 @@ def test_handle_inout_parameters_keep_the_input_and_return_the_result():
     assert isinstance(extended, Geom.Geom_BSplineCurve)
     assert extended.LastParameter() == pytest.approx(2.0) and seg.LastParameter() == 1.0   # the Python object is unchanged
     assert GeomLib.GeomLib.ExtendCurveToPoint_s.__doc__.splitlines()[0].startswith(
-        "ExtendCurveToPoint_s(Curve: OCP3x.Geom.Geom_BoundedCurve | None, Point:")
+        "ExtendCurveToPoint_s(Curve: nanocct.Geom.Geom_BoundedCurve | None, Point:")
 
 
 def test_handle_out_parameter_with_stream():

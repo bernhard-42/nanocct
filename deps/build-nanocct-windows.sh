@@ -9,7 +9,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 W_ROOT="$(cygpath -w "$ROOT")"
-BAT="$ROOT/_build_OCP3x.bat"
+BAT="$ROOT/_build_nanocct.bat"
 cat > "$BAT" <<BAT
 @echo off
 for /f "usebackq delims=" %%i in (\`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath\`) do set "VS_PATH=%%i"
@@ -18,8 +18,8 @@ call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat" >nul || exit /b 1
 cmake -S "$W_ROOT" -B "$W_ROOT\build-win" -G Ninja ^
   -D CMAKE_BUILD_TYPE=Release ^
   -D Python_EXECUTABLE="$W_ROOT\.venv\Scripts\python.exe" ^
-  -D OCP3X_OCCT_DIR="$W_ROOT\deps\occt-8.0.1" ^
-  -D OCP3X_RAPIDJSON_DIR="$W_ROOT\deps\rapidjson\include" || exit /b 1
+  -D NANOCCT_OCCT_DIR="$W_ROOT\deps\occt-8.0.1" ^
+  -D NANOCCT_RAPIDJSON_DIR="$W_ROOT\deps\rapidjson\include" || exit /b 1
 ninja -k 0 -C "$W_ROOT\build-win" || exit /b 1
 echo BUILD_OK
 BAT

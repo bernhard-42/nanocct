@@ -2,7 +2,7 @@
 //
 // The rule: array data that can get large crosses to Python as a view, never as a per-element loop. The
 // generator decides *which* classes get views -- overrides.toml [views] classes -- and emits
-// `ocp3x_def_views<T>(cls);`; this header decides *how*, one specialisation per class.
+// `nanocct_def_views<T>(cls);`; this header decides *how*, one specialisation per class.
 //
 // Why the "how" is C++ and not more TOML: every case has runtime branches that a config file cannot express.
 // Poly_Triangulation's dtype depends on IsDoublePrecision(); its UV nodes and normals may be absent;
@@ -25,7 +25,7 @@ namespace nb = nanobind;
 //! Declared, never defined: a class listed in overrides.toml [views] without a specialisation below is a link
 //! error rather than a silently missing accessor. generator/tests assert the two lists agree, so it normally
 //! fails at generation instead.
-template <class T> void ocp3x_def_views(nb::class_<T> cls);
+template <class T> void nanocct_def_views(nb::class_<T> cls);
 
 // ---- Poly_Triangulation ------------------------------------------------------------------------------------
 // Nodes are one contiguous allocation (Poly_ArrayOfNodes : NCollection_AliasedArray, a single
@@ -34,7 +34,7 @@ template <class T> void ocp3x_def_views(nb::class_<T> cls);
 // sizeof(Poly_Triangle) == 12, three int32 and no vtable.
 #include <Poly_Triangulation.hxx>
 
-template <> inline void ocp3x_def_views<Poly_Triangulation>(nb::class_<Poly_Triangulation> cls) {
+template <> inline void nanocct_def_views<Poly_Triangulation>(nb::class_<Poly_Triangulation> cls) {
     cls.def("NodesArray", [](Poly_Triangulation &self) {
             const size_t n = (size_t) self.NbNodes();
             size_t shape[2] = { n, 3 };
@@ -85,7 +85,7 @@ template <> inline void ocp3x_def_views<Poly_Triangulation>(nb::class_<Poly_Tria
 // reachable through public ChangeNodeArray(). The indices are OCCT's, i.e. 1-based.
 #include <Poly_PolygonOnTriangulation.hxx>
 
-template <> inline void ocp3x_def_views<Poly_PolygonOnTriangulation>(
+template <> inline void nanocct_def_views<Poly_PolygonOnTriangulation>(
     nb::class_<Poly_PolygonOnTriangulation> cls) {
     cls.def("NodesArray", [](Poly_PolygonOnTriangulation &self) {
             const size_t n = (size_t) self.NbNodes();
@@ -109,7 +109,7 @@ template <> inline void ocp3x_def_views<Poly_PolygonOnTriangulation>(
 // PixelColor(x, y) whatever IsTopDown() says, instead of disagreeing with the class's own accessors.
 #include <Image_PixMap.hxx>
 
-template <> inline void ocp3x_def_views<Image_PixMap>(nb::class_<Image_PixMap> cls) {
+template <> inline void nanocct_def_views<Image_PixMap>(nb::class_<Image_PixMap> cls) {
     cls.def("DataArray", [](Image_PixMap &self) -> nb::object {
             if (self.IsEmpty())
                 return nb::none();
@@ -181,7 +181,7 @@ template <> inline void ocp3x_def_views<Image_PixMap>(nb::class_<Image_PixMap> c
 // AttributeOffset() is the caller's business -- the buffer itself does not know a single element type.
 #include <NCollection_Buffer.hxx>
 
-template <> inline void ocp3x_def_views<NCollection_Buffer>(nb::class_<NCollection_Buffer> cls) {
+template <> inline void nanocct_def_views<NCollection_Buffer>(nb::class_<NCollection_Buffer> cls) {
     cls.def("DataArray", [](NCollection_Buffer &self) -> nb::object {
             if (self.IsEmpty())
                 return nb::none();

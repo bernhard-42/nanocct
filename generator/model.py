@@ -21,7 +21,7 @@ class StreamKind(StrEnum):
     """A std::ostream& / std::istream& parameter (Design.md 6)."""
     NONE = ""
     OUT = "out"      # std::ostream&: dropped from the signature, the written text is returned as a str
-    IN = "in"        # std::istream& / Standard_SStream&: a text file-like object (typing.TextIO, OCP3x::TextInput), never a str
+    IN = "in"        # std::istream& / Standard_SStream&: a text file-like object (typing.TextIO, nanocct::TextInput), never a str
 
 
 class ConversionKind(StrEnum):
@@ -46,7 +46,7 @@ class Param:
     binary: bool = False    # the stream carries a binary format (overrides.toml [stream] binary_packages): bytes / typing.BinaryIO instead of str / typing.TextIO
     out_py: str = ""        # Python type name of a removed out-parameter (float, int, bool, str, an enum or class name): the R-COLLISION suffix
     omitted: bool = False   # R-OPTIONAL-PTR: a pointer parameter with a null default, dropped from the signature; the callee gets nullptr
-    cstr_none: bool = False # R-CSTR-NULL: a const char* parameter with a null default: `str | None = None` (OCP3x::OptionalCString caster)
+    cstr_none: bool = False # R-CSTR-NULL: a const char* parameter with a null default: `str | None = None` (nanocct::OptionalCString caster)
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
     is_bytes: bool = False  # R-BYTES: a `const uint8_t*` input buffer, taken as `bytes`; the length parameter that follows it is dropped
     bytes_of: str = ""      # R-BYTES: this parameter is that buffer's length and is dropped; the value is the bytes parameter's name
@@ -149,7 +149,7 @@ class Class:
     @property
     def bound_type(self) -> str:
         """The C++ type nb::class_ is instantiated with: the class itself, or its non-copyable wrapper."""
-        return f"ocp3x_wrap_{self.py_name}" if self.noncopyable else self.name
+        return f"nanocct_wrap_{self.py_name}" if self.noncopyable else self.name
     ctors: list[Constructor] = field(default_factory=list)
     methods: list[Method] = field(default_factory=list)
     fields: list[Field] = field(default_factory=list)

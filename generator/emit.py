@@ -213,8 +213,8 @@ class Emitter:
         if cls is not None and not m.is_static:
             lam_params.append(f"{'const ' if m.is_const else ''}{self_type if self_type is not None else cls} &self")
         lam_params += [f"const nb::bytes &{p.name}" if p.is_bytes                                    # R-BYTES
-                       else f"const OCP3x::{'BinaryInput' if p.binary else 'TextInput'} &{p.name}" if p.stream == StreamKind.IN
-                       else f"OCP3x::OptionalCString {p.name}" if p.cstr_none                              # R-CSTR-NULL: str or None
+                       else f"const nanocct::{'BinaryInput' if p.binary else 'TextInput'} &{p.name}" if p.stream == StreamKind.IN
+                       else f"nanocct::OptionalCString {p.name}" if p.cstr_none                              # R-CSTR-NULL: str or None
                        else f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0     # R-FIXED-ARRAY in: a sequence of N
                        else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
         body: list[str] = [f"{p.type} {p.name}[{p.array_len}]{{}};" if p.array_len > 0 else f"{_strip_ref(p.type)} {p.name}{{}};"
@@ -222,7 +222,7 @@ class Emitter:
         # R-FIXED-ARRAY: a const T[N] parameter is copied from the std::array into a C array for the call
         body += [f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0]
         # streams: an ostream& parameter becomes a returned str; an istream&/stringstream parameter takes a text file-like
-        # object (OCP3x::TextInput caster in ocp3x_common.h: typing.TextIO, never a str -- that would collide with the
+        # object (nanocct::TextInput caster in nanocct_common.h: typing.TextIO, never a str -- that would collide with the
         # file-path overloads such as BRepTools::Read(shape, path, builder))
         body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == StreamKind.OUT]
         body += [f"std::stringstream {p.name}_stream({p.name}.{'data' if p.binary else 'text'});" for p in m.params if p.stream == StreamKind.IN]
@@ -243,33 +243,33 @@ class Emitter:
         # is a redefinition when such a parameter is an out-parameter of a non-void method (2026-09-22)
         results: list[str] = []
         if m.result_kind == ResultKind.PTR_TRANSIENT:
-            body.append(f"opencascade::handle<{m.result_class}> ocp3x_result({callee});")
-            results.append("ocp3x_result")
+            body.append(f"opencascade::handle<{m.result_class}> nanocct_result({callee});")
+            results.append("nanocct_result")
         elif m.result_kind == ResultKind.REF_TRANSIENT:
             # R-RESULT for `T&` to a Transient: a reference count of 0 means no handle owns the object -- it is a member held by
             # value (BRepAdaptor_Curve::Curve() -> its GeomAdaptor_Curve) or static storage. Wrapping it in a handle as is lets
             # the last Python reference delete memory that was never allocated on its own ("pointer being freed was not
             # allocated", found by build123d's SVG exporter, 2026-09-25). Such an object gets one permanent reference, so no
             # handle can ever delete it; the owner is kept alive by keep_alive<0, 1> (_method). Handle-owned objects are unchanged.
-            body.append(f"auto &ocp3x_ref = {callee}; "
-                        f"if (ocp3x_ref.GetRefCount() == 0) const_cast<std::remove_const_t<std::remove_reference_t<decltype(ocp3x_ref)>> &>(ocp3x_ref).IncrementRefCounter(); "
-                        f"opencascade::handle<{m.result_class}> ocp3x_result(&ocp3x_ref);")
-            results.append("ocp3x_result")
+            body.append(f"auto &nanocct_ref = {callee}; "
+                        f"if (nanocct_ref.GetRefCount() == 0) const_cast<std::remove_const_t<std::remove_reference_t<decltype(nanocct_ref)>> &>(nanocct_ref).IncrementRefCounter(); "
+                        f"opencascade::handle<{m.result_class}> nanocct_result(&nanocct_ref);")
+            results.append("nanocct_result")
         elif m.result_kind == ResultKind.VALUE_TRANSIENT:
             # R-RESULT for `T` by value, T Transient: never a nanobind-owned copy (reference count 0, deleted by the first
             # handle it meets); the prvalue initialises a heap object held by a handle, as in every Transient constructor
-            body.append(f"opencascade::handle<{m.result_class}> ocp3x_result(new {m.result_class}({callee}));")
-            results.append("ocp3x_result")
+            body.append(f"opencascade::handle<{m.result_class}> nanocct_result(new {m.result_class}({callee}));")
+            results.append("nanocct_result")
         elif m.result != "void":
-            body.append(f"auto ocp3x_result = {callee};")
-            results.append("ocp3x_result")
+            body.append(f"auto nanocct_result = {callee};")
+            results.append("nanocct_result")
         else:
             body.append(f"{callee};")
         for p in outs:
             if p.array_len > 0:                # R-FIXED-ARRAY out: N values back as a list
                 body.append(f"std::array<{p.type}, {p.array_len}> {p.name}_out; std::copy(std::begin({p.name}), std::end({p.name}), {p.name}_out.begin());")
         results += [f"{p.name}_out" if p.array_len > 0 else p.name for p in outs]
-        results += [f"ocp3x_stream_{'bytes' if p.binary else 'text'}({p.name}_stream)" for p in m.params if p.stream == StreamKind.OUT]
+        results += [f"nanocct_stream_{'bytes' if p.binary else 'text'}({p.name}_stream)" for p in m.params if p.stream == StreamKind.OUT]
         if len(results) == 1:
             body.append(f"return {results[0]};")
         elif len(results) > 1:
@@ -293,7 +293,7 @@ class Emitter:
         doc = m.doc
         if m.suffix != "":      # R-COLLISION: the suffix names the returned out-parameters that distinguish the overload
             py += m.suffix
-            doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); the suffix lists its returned out-parameters (OCP3x R-COLLISION).\n{m.doc}"
+            doc = f"{py}: the C++ overload {m.name}({self._sig(m.params)}); the suffix lists its returned out-parameters (nanocct R-COLLISION).\n{m.doc}"
         self._note_types(m.result, *(p.type for p in m.params))
         self._note_types(m.result_class_name, *(p.class_name for p in m.params))   # the class behind a typedef (IMeshData::IFaceHandle = handle<IMeshData_Face>): its header must be included
         T = cls.name                       # member pointers name the class itself ...
@@ -314,7 +314,7 @@ class Emitter:
             ptr_policy = policy if m.result_kind == ResultKind.PTR_CLASS else ""     # a lambda copies class results (auto)
             if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
                 # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18)
-                ptr_policy += ", nb::call_policy<OCP3x::KeepOwnerUnlessSelf>()"
+                ptr_policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"
             return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:
@@ -353,7 +353,7 @@ class Emitter:
         return "\n        ".join(lines)
 
     def _ctor(self, cls: Class, params: list[Param], doc: str, type_name: str | None = None) -> str:
-        """type_name: a dependent alias of the bound type (inside ocp3x_if_concrete's generic lambda), so that `new T(...)` is
+        """type_name: a dependent alias of the bound type (inside nanocct_if_concrete's generic lambda), so that `new T(...)` is
         only instantiated when the class is concrete."""
         self._note_types(*(p.type for p in params))
         self._note_types(*(p.class_name for p in params))
@@ -361,7 +361,7 @@ class Emitter:
         special = any(p.omitted or p.array_len > 0 or p.cstr_none for p in params)     # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL: nb::init cannot drop or convert
         ins = [p for p in params if not p.omitted]
         lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0
-                               else f"OCP3x::OptionalCString {p.name}" if p.cstr_none else f"{p.type} {p.name}" for p in ins)
+                               else f"nanocct::OptionalCString {p.name}" if p.cstr_none else f"{p.type} {p.name}" for p in ins)
         pre = " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
         call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else f"{p.name}.ptr" if p.cstr_none else p.name for p in params)
         if cls.is_transient:
@@ -393,8 +393,8 @@ class Emitter:
         if any(m.skip_reason is None and _py_name(m) == "__str__" for m in cls.methods):
             return "the member operator<<(Standard_OStream&) is bound as __str__ already"
         self._note_types(obj.type)
-        lam = (f"[]({obj.type} {obj.name}) {{ std::ostringstream ocp3x_stream; ocp3x_stream << {obj.name}; "
-               f"return ocp3x_stream_text(ocp3x_stream); }}")
+        lam = (f"[]({obj.type} {obj.name}) {{ std::ostringstream nanocct_stream; nanocct_stream << {obj.name}; "
+               f"return nanocct_stream_text(nanocct_stream); }}")
         return cls.name, f'.def("__str__", {lam}) /* free {fn.name} (R-STR) */'
 
     # Design.md 6 R-FREE-OP
@@ -445,7 +445,7 @@ class Emitter:
     # ---- NCollection template instances ---------------------------------------------------------
     def _instances(self) -> list[str]:
         """Second registration phase: bind every NCollection instantiation this package's signatures use and
-        that no earlier package/run has bound, into OCP3x.NCollection (its module object exists as soon as
+        that no earlier package/run has bound, into nanocct.NCollection (its module object exists as soon as
         TKernel is imported, which every toolkit does first)."""
         lines: list[str] = []
         generated = set(self.known.values())
@@ -477,11 +477,11 @@ class Emitter:
                 self.report.append(f"{key}: template argument {pointers[0]} is a raw pointer -> instantiation skipped")
                 self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
                 return
-            home = "NCollection"                            # every instantiation lives in OCP3x.NCollection
+            home = "NCollection"                            # every instantiation lives in nanocct.NCollection
             if home not in generated:
                 home = self.ir.name
             name = _py_identifier(key)
-            scope = "m" if home == self.ir.name else f'nb::module_::import_("OCP3x._{self.toolkit_of[home]}.{home}")'
+            scope = "m" if home == self.ir.name else f'nb::module_::import_("nanocct._{self.toolkit_of[home]}.{home}")'
             lines.append(f'    {{ nb::module_ home = {scope}; {BINDERS[template]["binder"]}<{", ".join(args)}>(home, "{name}"); }}')
             self.templates[key] = {"toolkit": self.toolkit_of[self.ir.name], "package": home, "name": name, "by": self.ir.name}
             self._note_types(*args)
@@ -543,13 +543,13 @@ class Emitter:
             b = occt_bases[0]
             pkg = self.known[b]
             # sibling packages are looked up through the extension submodule (registered in sys.modules
-            # before any package is declared), never through the OCP3x.<pkg> shim: importing the shim
+            # before any package is declared), never through the nanocct.<pkg> shim: importing the shim
             # while the toolkit module is still initialising would freeze a half-filled namespace
             attrs = "".join(f'.attr("{a}")' for a in py_path(b, pkg, self.paths).split("."))
-            base = (f'nb::module_::import_("OCP3x._{self.toolkit_of[pkg]}.{pkg}"){attrs}.ptr()'
+            base = (f'nb::module_::import_("nanocct._{self.toolkit_of[pkg]}.{pkg}"){attrs}.ptr()'
                     if pkg != self.ir.name else f'm{attrs}.ptr()')
         d = _cpp_doc(c.doc)
-        return f'    ocp3x_register_exception<{c.name}>(ocp3x_new_exception({self._attr(c.scope)}, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
+        return f'    nanocct_register_exception<{c.name}>(nanocct_new_exception({self._attr(c.scope)}, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
 
     def plan(self) -> tuple[list[Class], list[str]]:
         """The first phase of emit(): which classes survive their bases (R-MI and 5.2) and which 6a instantiations this
@@ -614,27 +614,27 @@ class Emitter:
         conversions = self._conversions(classes)
         define += self._aliases(classes)
         out = [
-            f"// Generated by the OCP3x generator from OCCT package {ir.name} (toolkit {ir.toolkit}). Do not edit.",
-            '#include "ocp3x_common.h"',
+            f"// Generated by the nanocct generator from OCCT package {ir.name} (toolkit {ir.toolkit}). Do not edit.",
+            '#include "nanocct_common.h"',
             *self._includes(len(instances) > 0),
             "",
             *(wrappers + [""] if len(wrappers) > 0 else []),
 
-            f"void ocp3x_declare_{ir.name}(nb::module_ &m) {{",
+            f"void nanocct_declare_{ir.name}(nb::module_ &m) {{",
             *declare,
             "}",
             "",
-            f"void ocp3x_templates_{ir.name}(nb::module_ &m) {{",
+            f"void nanocct_templates_{ir.name}(nb::module_ &m) {{",
             *instances,
             *deferred,
             "}",
             "",
-            f"void ocp3x_define_{ir.name}(nb::module_ &m) {{",
+            f"void nanocct_define_{ir.name}(nb::module_ &m) {{",
             *define,
             *module_fns,
             "}",
             "",
-            f"void ocp3x_conversions_{ir.name}(nb::module_ &m) {{",
+            f"void nanocct_conversions_{ir.name}(nb::module_ &m) {{",
             *conversions,
             "}",
             "",
@@ -698,7 +698,7 @@ class Emitter:
             py, doc = py_safe(fn.name), fn.doc
             if fn.suffix != "":
                 py += fn.suffix
-                doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (OCP3x R-COLLISION).\n{fn.doc}"
+                doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (nanocct R-COLLISION).\n{fn.doc}"
                 self.report.append(f"{qualified}({self._sig(fn.params)}): same Python signature as another overload after out-param removal -> bound as {py}")
             if fn.result_kind == ResultKind.VALUE_TRANSIENT or any(
                     p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in fn.params):
@@ -719,7 +719,7 @@ class Emitter:
         if c.template_key != "":
             found = self._claim_template(c)
             if found is not None:
-                declare.append(f'    m.attr("{c.py_name}") = nb::module_::import_("OCP3x._{found["toolkit"]}.{found["package"]}").attr("{found["name"]}");')
+                declare.append(f'    m.attr("{c.py_name}") = nb::module_::import_("nanocct._{found["toolkit"]}.{found["package"]}").attr("{found["name"]}");')
                 return False
         if c.is_exception:
             declare.append(self._exception(c))
@@ -789,7 +789,7 @@ class Emitter:
                 if n < len(k.params):
                     self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): a call with all arguments is ambiguous with another constructor in C++ -> bound with the first {n}")
                 if c.template_key != "":
-                    ctor_body.append(self._ctor(c, k.params[:n], k.doc, type_name="ocp3x_T"))
+                    ctor_body.append(self._ctor(c, k.params[:n], k.doc, type_name="nanocct_T"))
                 else:
                     body.append(self._ctor(c, k.params[:n], k.doc))
         bound = [m for m in c.methods if m.skip_reason is None]
@@ -811,18 +811,18 @@ class Emitter:
         body += free_ops.get(c.name, [])
         if c.name in VIEW_CLASSES:
             # R-VIEW (Design.md 2c, State.md 8.10): zero-copy numpy accessors, defined per class in
-            # src/cpp/common/ocp3x_views.h. Listed in overrides.toml [views] because which class gets which
+            # src/cpp/common/nanocct_views.h. Listed in overrides.toml [views] because which class gets which
             # view is data, not a shape the generator could detect.
-            self.report.append(f"{c.name}: zero-copy numpy views added (ocp3x_def_views)")
+            self.report.append(f"{c.name}: zero-copy numpy views added (nanocct_def_views)")
             self.needs_views = True
-            define.append(f"    ocp3x_def_views<{c.bound_type}>({cls_expr_of(c)});")
+            define.append(f"    nanocct_def_views<{c.bound_type}>({cls_expr_of(c)});")
         getter = self._iter_getter(c)
         if getter is not None:       # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own Python iterator
             self.report.append(f"{c.name}: __iter__ added (More/Next/{getter})")
             get = next(m for m in c.methods if m.name == getter and len(m.params) == 0 and not m.is_static and m.skip_reason is None)
             value = (f"opencascade::handle<{get.result_class}>(new {get.result_class}(self.{getter}()))"   # R-RESULT: never a nanobind-owned Transient
                      if get.result_kind == ResultKind.VALUE_TRANSIENT else f"self.{getter}()")
-            define.append(f'    ocp3x_def_iter<{c.bound_type}>({cls_expr_of(c)}, []({c.bound_type} &self) {{ return {value}; }});')
+            define.append(f'    nanocct_def_iter<{c.bound_type}>({cls_expr_of(c)}, []({c.bound_type} &self) {{ return {value}; }});')
         for conv in c.conversions:          # operator bool/int/double() -> Python dunder; class targets: see _conversions
             dunder = {ConversionKind.BOOL: "__bool__", ConversionKind.INT: "__int__", ConversionKind.FLOAT: "__float__"}.get(conv.kind)
             if dunder is not None:
@@ -856,11 +856,11 @@ class Emitter:
             unhashable = True
         cls_expr = cls_expr_of(c)
         if implicit_default:
-            define.append(f'    ocp3x_implicit_default_ctor<{c.bound_type}>({cls_expr});')
+            define.append(f'    nanocct_implicit_default_ctor<{c.bound_type}>({cls_expr});')
         if len(ctor_body) > 0:
             # a template instantiation may be abstract through pure virtuals of its bases (BVH_PrimitiveSet<double, 3> via BVH_Set):
             # libclang cannot tell inside the template, the compiler can (R-TEMPLATE-BASE)
-            define.append(f"    ocp3x_if_concrete<{c.bound_type}>({cls_expr}, [](auto &cls) {{ using ocp3x_T = typename std::decay_t<decltype(cls)>::Type; cls")
+            define.append(f"    nanocct_if_concrete<{c.bound_type}>({cls_expr}, [](auto &cls) {{ using nanocct_T = typename std::decay_t<decltype(cls)>::Type; cls")
             define += ["        " + b for b in ctor_body]
             define[-1] += "; });"
         if len(body) > 0:
@@ -874,7 +874,7 @@ class Emitter:
         # R-IMPLICIT-COPY: the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
         # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
         if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
-            define.append(f'    ocp3x_implicit_copy_ctor<{c.bound_type}>({cls_expr});')
+            define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}>({cls_expr});')
         for f in c.fields:                 # R-FIELD: read/write when the field type is copy-assignable (decided at compile time), else read-only
             self._note_types(f.type)
             dd = _cpp_doc(f.doc)
@@ -893,7 +893,7 @@ class Emitter:
                 setter = f"[]({B} &self, {f.type} v) {{ self.{f.name} = v; }}"
                 define.append(f'    {cls_expr}.def_prop_rw("{py_safe(f.name)}", {getter}, {setter}{", " + dd if dd is not None else ""});')
                 continue
-            define.append(f'    ocp3x_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
+            define.append(f'    nanocct_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
         if len(body) == 0 and len(c.fields) == 0:
             return
         # R-IMPLICIT-CONV: C++ implicit conversions (non-explicit converting constructors) apply in Python too
@@ -936,8 +936,8 @@ class Emitter:
                     self.report.append(f"{c.name}::operator {conv.target}(): target lives in a later toolkit ({self.toolkit_of[pkg]}) -> conversion skipped")
                     continue
                 attrs = "".join(f'.attr("{a}")' for a in path.split("."))
-                target = (f'nb::module_::import_("OCP3x._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
-                helper = "ocp3x_conversion_handle" if conv.kind == ConversionKind.HANDLE else "ocp3x_conversion"
+                target = (f'nb::module_::import_("nanocct._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+                helper = "nanocct_conversion_handle" if conv.kind == ConversionKind.HANDLE else "nanocct_conversion"
                 conversions.append(f'    {helper}<{c.name}, {conv.target}>({target}, {"false" if conv.is_explicit else "true"});')
                 self._note_types(conv.target)
         return conversions
@@ -955,14 +955,14 @@ class Emitter:
             inst = self.templates.get(td.target)
             if inst is not None and not inst.get("skipped", False) and inst["package"] != "":
                 # alias of a bound NCollection instantiation (BVH_Array3d = NCollection_LinearVector<NCollection_Vec3<double>>)
-                out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = nb::module_::import_("OCP3x._{self.toolkit_of[inst["package"]]}.{inst["package"]}").attr("{inst["name"]}");   // {td.py_name} = {td.written}')
+                out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = nb::module_::import_("nanocct._{self.toolkit_of[inst["package"]]}.{inst["package"]}").attr("{inst["name"]}");   // {td.py_name} = {td.written}')
                 continue
             pkg = self.known.get(td.target)
             if pkg is not None and "<" in td.target and td.target not in self.skipped:
                 # alias of a 6c instantiation bound by an earlier package under its mangled name (BVH_Box3d = BVH_Box<double, 3>,
                 # bound on demand by Bnd before BVH's typedef): an attribute alias like any other (R-ALIAS)
                 attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
-                src = (f'nb::module_::import_("OCP3x._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+                src = (f'nb::module_::import_("nanocct._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
                 out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
                 continue
             if pkg is None or "<" in td.target or td.target in self.skipped:
@@ -972,9 +972,9 @@ class Emitter:
                     self.report.append(f"{'::'.join(td.scope)}::{td.py_name} = {td.written}: type alias of an unbound type (not bound)")
                 continue
             # A target in a *later* toolkit cannot be imported here: this module is half-initialised when that
-            # toolkit imports it back, so `import_("OCP3x._TKV3d.StdPrs")` raises "not a package" and the whole
+            # toolkit imports it back, so `import_("nanocct._TKV3d.StdPrs")` raises "not a package" and the whole
             # import fails. R-CONV already skips a forward conversion target for the same reason (_conversions
-            # above); do the same and report it. It cost `import OCP3x._TKV3d` on its own until 2026-09-24,
+            # above); do the same and report it. It cost `import nanocct._TKV3d` on its own until 2026-09-24,
             # which the eager import hid by always loading TKService first. Both names stay reachable as
             # StdPrs_BRepFont / StdPrs_BRepTextBuilder.
             order = self.toolkit_order
@@ -984,7 +984,7 @@ class Emitter:
                                    f"({self.toolkit_of[pkg]}) -> the alias is not bound, use {td.target}")
                 continue
             attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
-            src = (f'nb::module_::import_("OCP3x._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
+            src = (f'nb::module_::import_("nanocct._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
             out.append(f'    {self._attr(td.scope)}.attr("{td.py_name}") = {src};   // {td.py_name} = {td.written}')
         return out
 
@@ -993,9 +993,9 @@ class Emitter:
         ir = self.ir
         includes = [f"#include <{h}>" for h in ir.prelude + ir.headers]
         if with_ncollection:
-            includes.insert(0, '#include "ocp3x_ncollection.h"')
+            includes.insert(0, '#include "nanocct_ncollection.h"')
         if self.needs_views:
-            includes.insert(0, '#include "ocp3x_views.h"')
+            includes.insert(0, '#include "nanocct_views.h"')
         extra = [f"{ident}.hxx" for ident in sorted(self._idents)
                  if f"{ident}.hxx" not in ir.headers and (self.include_dir / f"{ident}.hxx").exists()]
         if self.prelude_check is not None and len(extra) > 0:
@@ -1159,31 +1159,31 @@ def resolve_ctor_arities(ctors: list[Constructor]) -> list[tuple[Constructor, in
 
 
 def emit_toolkit_module(toolkit: str, packages: list[str], depends: list[str], namespaces: dict[str, list[tuple[str, ...]]]) -> str:
-    decls = "\n".join(f"void ocp3x_declare_{p}(nb::module_ &);\nvoid ocp3x_templates_{p}(nb::module_ &);\nvoid ocp3x_define_{p}(nb::module_ &);\n"
-                      f"void ocp3x_conversions_{p}(nb::module_ &);" for p in packages)
-    imports = "\n".join(f'    nb::module_::import_("OCP3x._{d}");' for d in depends)
+    decls = "\n".join(f"void nanocct_declare_{p}(nb::module_ &);\nvoid nanocct_templates_{p}(nb::module_ &);\nvoid nanocct_define_{p}(nb::module_ &);\n"
+                      f"void nanocct_conversions_{p}(nb::module_ &);" for p in packages)
+    imports = "\n".join(f'    nb::module_::import_("nanocct._{d}");' for d in depends)
     subs = "\n".join(
         f'    nb::module_ m_{p} = m.def_submodule("{p}", "OCCT package {p} (toolkit {toolkit})");\n'
-        f'    m_{p}.attr("__name__") = "OCP3x.{p}";\n'
-        f'    sys_modules["OCP3x._{toolkit}.{p}"] = m_{p};'
+        f'    m_{p}.attr("__name__") = "nanocct.{p}";\n'
+        f'    sys_modules["nanocct._{toolkit}.{p}"] = m_{p};'
         for p in packages)
     # C++ namespaces (submodules created by the declare phase) are importable by their dotted name, like packages.
-    # nanobind registers a submodule under <parent __name__>.<name>, i.e. OCP3x.<pkg>.<ns>: that key belongs to
-    # the Python shim module (OCP3x/<pkg>/<ns>.py) and is removed again, or `import OCP3x.<pkg>.<ns>` would
+    # nanobind registers a submodule under <parent __name__>.<name>, i.e. nanocct.<pkg>.<ns>: that key belongs to
+    # the Python shim module (nanocct/<pkg>/<ns>.py) and is removed again, or `import nanocct.<pkg>.<ns>` would
     # find the extension submodule without ever importing the package shim.
-    declares = "\n".join(f"    ocp3x_declare_{p}(m_{p});" + "".join(
-        f'\n    sys_modules["OCP3x._{toolkit}.{p}.{".".join(ns)}"] = m_{p}{"".join(f".attr(\"{a}\")" for a in ns)};'
-        f'\n    sys_modules.attr("pop")("OCP3x.{p}.{".".join(ns)}", nb::none());'
+    declares = "\n".join(f"    nanocct_declare_{p}(m_{p});" + "".join(
+        f'\n    sys_modules["nanocct._{toolkit}.{p}.{".".join(ns)}"] = m_{p}{"".join(f".attr(\"{a}\")" for a in ns)};'
+        f'\n    sys_modules.attr("pop")("nanocct.{p}.{".".join(ns)}", nb::none());'
         for ns in namespaces.get(p, [])) for p in packages)
-    templates = "\n".join(f"    ocp3x_templates_{p}(m_{p});" for p in packages)
-    defines = "\n".join(f"    ocp3x_define_{p}(m_{p});" for p in packages)
-    conversions = "\n".join(f"    ocp3x_conversions_{p}(m_{p});" for p in packages)
+    templates = "\n".join(f"    nanocct_templates_{p}(m_{p});" for p in packages)
+    defines = "\n".join(f"    nanocct_define_{p}(m_{p});" for p in packages)
+    conversions = "\n".join(f"    nanocct_conversions_{p}(m_{p});" for p in packages)
     if toolkit == "TKernel":
-        translator = '    ocp3x_install_exception_translator(m_Standard.attr("Standard_Failure").ptr());'
+        translator = '    nanocct_install_exception_translator(m_Standard.attr("Standard_Failure").ptr());'
     else:
-        translator = "    ocp3x_install_exception_translator(nullptr);"
-    return f"""// Generated by the OCP3x generator: extension module for OCCT toolkit {toolkit}. Do not edit.
-#include "ocp3x_common.h"
+        translator = "    nanocct_install_exception_translator(nullptr);"
+    return f"""// Generated by the nanocct generator: extension module for OCCT toolkit {toolkit}. Do not edit.
+#include "nanocct_common.h"
 
 {decls}
 
@@ -1211,9 +1211,9 @@ def write_package_shims(py_root: Path, package: str, toolkit: str,
                         accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None,
                         homed_elsewhere: dict[str, str] | None = None,
                         late_links: list[str] | None = None) -> None:
-    """OCP3x/<package>.py, or for a package whose C++ code declares namespaces of its own (Geom2dEval_RepCurveDesc
-    in package Geom2dEval) the Python package OCP3x/<package>/__init__.py with one module per namespace, so that
-    `from OCP3x.Geom2dEval.Geom2dEval_RepCurveDesc import Base` and the .pyi layout follow the C++ nesting."""
+    """nanocct/<package>.py, or for a package whose C++ code declares namespaces of its own (Geom2dEval_RepCurveDesc
+    in package Geom2dEval) the Python package nanocct/<package>/__init__.py with one module per namespace, so that
+    `from nanocct.Geom2dEval.Geom2dEval_RepCurveDesc import Base` and the .pyi layout follow the C++ nesting."""
     shim = emit_package_shim(package, toolkit, accessors, homed_elsewhere, late_links)
     pkg_dir = py_root / package
     module_file = py_root / f"{package}.py"
@@ -1228,8 +1228,8 @@ def write_package_shims(py_root: Path, package: str, toolkit: str,
     top = sorted({ns[0] for ns in namespaces})
     files: dict[Path, str] = {}
     # absolute imports: `from . import X` would keep the extension submodule that the star import above already bound
-    files[pkg_dir / "__init__.py"] = (shim + "\n# C++ namespaces of the package (Python modules OCP3x.<package>.<namespace>)\n"
-                                      + "".join(f"import OCP3x.{package}.{n}  # noqa: E402,F401\n" for n in top))
+    files[pkg_dir / "__init__.py"] = (shim + "\n# C++ namespaces of the package (Python modules nanocct.<package>.<namespace>)\n"
+                                      + "".join(f"import nanocct.{package}.{n}  # noqa: E402,F401\n" for n in top))
     for ns in namespaces:
         has_children = any(len(other) == len(ns) + 1 and other[:len(ns)] == ns for other in namespaces)
         target = pkg_dir.joinpath(*ns)
@@ -1241,8 +1241,8 @@ def write_package_shims(py_root: Path, package: str, toolkit: str,
         children = sorted(other[-1] for other in namespaces if len(other) == len(ns) + 1 and other[:len(ns)] == ns)
         files[target] = (
             f'"""C++ namespace {"::".join(ns)} (OCCT package {package}, toolkit {toolkit})."""\n'
-            f'from OCP3x._{toolkit}.{package}.{".".join(ns)} import *  # noqa: F401,F403\n'
-            + "".join(f'import OCP3x.{package}.{".".join(ns)}.{n}  # noqa: E402,F401\n' for n in children))
+            f'from nanocct._{toolkit}.{package}.{".".join(ns)} import *  # noqa: F401,F403\n'
+            + "".join(f'import nanocct.{package}.{".".join(ns)}.{n}  # noqa: E402,F401\n' for n in children))
     for target, text in files.items():
         target.write_text(text)
     for stale in pkg_dir.rglob("*.py"):             # namespace modules of an earlier run; stubs (.pyi) are left alone
@@ -1253,30 +1253,30 @@ def write_package_shims(py_root: Path, package: str, toolkit: str,
 def emit_package_shim(package: str, toolkit: str,
                       accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None,
                       homed_elsewhere: dict[str, str] | None = None, late_links: list[str] | None = None) -> str:
-    """Python module OCP3x.<package>: it re-exports the package's extension submodule under the name a user
+    """Python module nanocct.<package>: it re-exports the package's extension submodule under the name a user
     writes. homed_elsewhere: instantiations other toolkits bind into this package (6a) -> those toolkits are
     imported eagerly. accessors (NCollection only): template -> {element type specs -> bound class name} for the
     NCollection_Xxx[T] spelling."""
     head = f'''"""OCCT package {package} (toolkit {toolkit})."""
-from OCP3x._{toolkit}.{package} import *  # noqa: F401,F403
+from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
 '''
     # R-LINK forward case: this toolkit links one that comes *later* in the order, so its module cannot import it at
     # registration time. Import it here, after the extension has initialised, or every member naming one of those
     # types is uncallable -- which the eager import used to hide (Design.md 6a).
     for late in late_links or []:
-        head += f"import OCP3x._{late}  # noqa: F401,E402  (R-LINK: linked but later in the order)\n"
-    # Eager (6a): other toolkits bind their instantiations into this package -- `OCP3x.NCollection` is the one --
+        head += f"import nanocct._{late}  # noqa: F401,E402  (R-LINK: linked but later in the order)\n"
+    # Eager (6a): other toolkits bind their instantiations into this package -- `nanocct.NCollection` is the one --
     # and loading their element types does not load them (215 of 799 instantiations, 2026-09-27), so importing the
     # package imports every toolkit that binds into it. Afterwards each instantiation is an ordinary attribute.
     eager_block = ""
     if homed_elsewhere:
         eager_block = ("\n# Instantiations bound into this package by other toolkits (Design.md 6a): importing the package loads\n"
                        "# every toolkit that binds one, so each of them is an ordinary attribute afterwards.\n"
-                       + "".join(f"import OCP3x._{tk}  # noqa: E402,F401\n" for tk in sorted(set(homed_elsewhere.values())))
-                       + f"from OCP3x._{toolkit}.{package} import *  # noqa: E402,F401,F403  (again: now with every instantiation)\n")
+                       + "".join(f"import nanocct._{tk}  # noqa: E402,F401\n" for tk in sorted(set(homed_elsewhere.values())))
+                       + f"from nanocct._{toolkit}.{package} import *  # noqa: E402,F401,F403  (again: now with every instantiation)\n")
     accessor_block = ""
     if accessors is not None:
-        own = f"OCP3x.{package}"
+        own = f"nanocct.{package}"
         modules = sorted({mod for table in accessors.values() for specs in table for mod, _ in specs} - {"builtins", own})
         alias = {m: "_m_" + m.split(".", 1)[1].replace(".", "_") for m in modules}
 
@@ -1285,7 +1285,7 @@ from OCP3x._{toolkit}.{package} import *  # noqa: F401,F403
 
         parts = ["", "# NCollection_Xxx[T] -> the bound class (Design.md 6a): one generic class per template, keyed by the",
                  "# element types as Python passes them to __class_getitem__ (the type, or a tuple for several)",
-                 "from OCP3x._templates import Generic as _Generic  # noqa: E402"]
+                 "from nanocct._templates import Generic as _Generic  # noqa: E402"]
         parts += [f"import {m} as {alias[m]}  # noqa: E402" for m in modules]
         for tmpl in sorted(accessors):
             parts += ["", "", f"class {tmpl}(_Generic):", "    _instances = {"]

@@ -7,21 +7,21 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import Message
-from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.BVH import BVH_Vec2f, BVH_Vec3i, BVH_Vec4i
-from OCP3x.DEPLY import DEPLY_ConfigurationNode, DEPLY_Provider
-from OCP3x.Quantity import NCollection_Vec3__float as Vec3f          # Graphic3d_Vec3 is a pre-8.0 alias, not bound
-from OCP3x.Graphic3d import NCollection_Vec4__unsigned_char as Vec4ub
-from OCP3x.Message import Message_ProgressRange
-from OCP3x.NCollection import NCollection_IndexedDataMap
-from OCP3x.Quantity import Quantity_Color, Quantity_NOC_RED
-from OCP3x.RWPly import RWPly_CafWriter, RWPly_PlyWriterContext
-from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
-from OCP3x.XCAFApp import XCAFApp_Application
-from OCP3x.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
-from OCP3x.gp import gp_Pnt
+from nanocct import Message
+from nanocct.BRepMesh import BRepMesh_IncrementalMesh
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.BVH import BVH_Vec2f, BVH_Vec3i, BVH_Vec4i
+from nanocct.DEPLY import DEPLY_ConfigurationNode, DEPLY_Provider
+from nanocct.Quantity import NCollection_Vec3__float as Vec3f          # Graphic3d_Vec3 is a pre-8.0 alias, not bound
+from nanocct.Graphic3d import NCollection_Vec4__unsigned_char as Vec4ub
+from nanocct.Message import Message_ProgressRange
+from nanocct.NCollection import NCollection_IndexedDataMap
+from nanocct.Quantity import Quantity_Color, Quantity_NOC_RED
+from nanocct.RWPly import RWPly_CafWriter, RWPly_PlyWriterContext
+from nanocct.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+from nanocct.XCAFApp import XCAFApp_Application
+from nanocct.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
+from nanocct.gp import gp_Pnt
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEPLY" / "report.txt"
 FileInfo = NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_AsciiString]
@@ -50,7 +50,7 @@ def _document():
 
 @pytest.mark.parametrize("pkg", ["RWPly", "DEPLY"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def test_the_caf_writer_writes_an_ascii_ply(tmp_path, quiet_messenger):
@@ -95,7 +95,7 @@ def test_the_writer_context_writes_a_ply_by_hand(tmp_path):
 def test_the_colour_parameter_is_a_bound_type(tmp_path):
     """NCollection_Vec4<uint8_t> reaches the bindings only as WriteVertex's `const&` parameter -- the case 6c did not
     instantiate until 2026-09-23, which made the method a TypeError for every argument list without any report line."""
-    assert "theColor: OCP3x.Graphic3d.NCollection_Vec4__unsigned_char" in RWPly_PlyWriterContext.WriteVertex.__doc__
+    assert "theColor: nanocct.Graphic3d.NCollection_Vec4__unsigned_char" in RWPly_PlyWriterContext.WriteVertex.__doc__
     colour = Vec4ub(1, 2, 3, 4)           # NCollection_Vec4<unsigned char>
     assert (colour.x(), colour.y(), colour.z(), colour.w()) == (1, 2, 3, 4)
 

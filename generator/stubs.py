@@ -18,7 +18,7 @@ from .parallel import jobs_from_env
 from .parse import py_path
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "src" / "OCP3x"
+SRC = ROOT / "src" / "nanocct"
 GENERIC = ROOT / "generator" / "stubs"
 
 _SCALARS = {"double": "float", "int": "int", "bool": "bool", "std::string": "str"}
@@ -28,7 +28,7 @@ _CLASSES: dict[str, str] = _MANIFEST["classes"]
 
 
 def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> str | None:
-    """Stub spelling of a template argument: float for double, OCP3x.<pkg>.X for a class or handle<X>,
+    """Stub spelling of a template argument: float for double, nanocct.<pkg>.X for a class or handle<X>,
     the bound class for a nested instantiation."""
     if arg in _SCALARS:
         return _SCALARS[arg]
@@ -37,14 +37,14 @@ def _type_arg(arg: str, classes: dict[str, str], templates: dict[str, dict]) -> 
         arg = m.group(1)
     inst = templates.get(arg)                    # template instantiations first: their Python name is the alias
     if inst is not None and not inst.get("skipped", False):
-        return f"OCP3x.{inst['package']}.{inst['name']}"
+        return f"nanocct.{inst['package']}.{inst['name']}"
     if arg in classes and "<" not in arg:
-        return f"OCP3x.{classes[arg]}.{py_path(arg, classes[arg], _PATHS)}"
+        return f"nanocct.{classes[arg]}.{py_path(arg, classes[arg], _PATHS)}"
     return None
 
 
 def _generic_spelling(concrete: str, templates: dict[str, dict]) -> str:
-    """OCP3x.NCollection.NCollection_Map__int -> NCollection_Map[int] (what NCollection_Map[int] denotes statically)."""
+    """nanocct.NCollection.NCollection_Map__int -> NCollection_Map[int] (what NCollection_Map[int] denotes statically)."""
     name = concrete.rsplit(".", 1)[-1]
     for key, inst in templates.items():
         if inst.get("name") == name:
@@ -94,14 +94,14 @@ def _unhashable_ignore(text: str) -> str:
 
 
 def _with_imports(text: str) -> str:
-    """Add `import OCP3x.<pkg>` for every OCP3x.<pkg>.X reference the generic spellings introduced."""
-    used = set(re.findall(r"\bOCP3x\.(\w+)\.", text))
-    imported = set(re.findall(r"^import OCP3x\.(\w+)$", text, re.M)) | set(re.findall(r"^from OCP3x\.(\w+) import", text, re.M))
+    """Add `import nanocct.<pkg>` for every nanocct.<pkg>.X reference the generic spellings introduced."""
+    used = set(re.findall(r"\bnanocct\.(\w+)\.", text))
+    imported = set(re.findall(r"^import nanocct\.(\w+)$", text, re.M)) | set(re.findall(r"^from nanocct\.(\w+) import", text, re.M))
     missing = sorted(used - imported)
     if len(missing) == 0:
         return text
     lines = text.splitlines(keepends=True)
-    anchors = [i for i, line in enumerate(lines) if line.startswith("import OCP3x.")]
+    anchors = [i for i, line in enumerate(lines) if line.startswith("import nanocct.")]
     if len(anchors) > 0:
         at = anchors[-1] + 1
     else:                                     # after the module docstring (first line) and a blank
@@ -109,7 +109,7 @@ def _with_imports(text: str) -> str:
         while at < len(lines) and lines[at].strip() != "":
             at += 1
         at += 1
-    lines[at:at] = [f"import OCP3x.{m}\n" for m in missing]
+    lines[at:at] = [f"import nanocct.{m}\n" for m in missing]
     return "".join(lines)
 
 
@@ -135,8 +135,8 @@ def _with_numpy_imports(text: str) -> str:
         return text
 
     lines = text.splitlines(keepends=True)
-    at = next((i for i, line in enumerate(lines) if line.startswith("import OCP3x.")), None)
-    if at is None:                            # no OCP3x imports: after the docstring and its blank line
+    at = next((i for i, line in enumerate(lines) if line.startswith("import nanocct.")), None)
+    if at is None:                            # no nanocct imports: after the docstring and its blank line
         at = 1
         while at < len(lines) and lines[at].strip() != "":
             at += 1
@@ -154,7 +154,7 @@ def _view_accessor(text: str, name: str) -> str | None:
     and its dtype is that scalar -- so it cannot live on the generic `NCollection_Array1(Generic[_T])` stub,
     which would promise it for an array of TopoDS_Shape too. Everything else about a concrete class collapses
     into the generic base; this one line is lifted out first, which keeps the exact dtype without a second
-    copy of the element table that `src/cpp/common/ocp3x_elem_view.h` already holds.
+    copy of the element table that `src/cpp/common/nanocct_elem_view.h` already holds.
     """
     m = re.search(rf"^class {re.escape(name)}\b.*?(?=^\S|\Z)", text, re.S | re.M)
     if m is None:
@@ -172,7 +172,7 @@ def _replace_class_block(text: str, name: str, replacement: str) -> str:
 
 
 def _shims() -> list[Path]:
-    """OCP3x/<pkg>.py, or OCP3x/<pkg>/__init__.py for a package with C++ namespaces (Python sub-packages)."""
+    """nanocct/<pkg>.py, or nanocct/<pkg>/__init__.py for a package with C++ namespaces (Python sub-packages)."""
     return sorted([p for p in SRC.glob("*.py") if not p.name.startswith("_")] + list(SRC.glob("*/__init__.py")))
 
 
@@ -185,18 +185,18 @@ import re, sys, importlib
 from pathlib import Path
 from nanobind.stubgen import StubGen
 # A stub must name every type a signature mentions, including types other toolkits register -- and since
-# OCP3x/__init__.py stopped importing eagerly (Design.md 6a) nothing else pulls them in, so a cross-toolkit
-# parameter would render as a bare name instead of OCP3x.<pkg>.<Class>. Load every toolkit first: stub
+# nanocct/__init__.py stopped importing eagerly (Design.md 6a) nothing else pulls them in, so a cross-toolkit
+# parameter would render as a bare name instead of nanocct.<pkg>.<Class>. Load every toolkit first: stub
 # generation is the one place that deliberately wants all of them.
-import OCP3x
+import nanocct
 for _tk in sys.argv[3].split(","):
-    importlib.import_module("OCP3x._" + _tk)
+    importlib.import_module("nanocct._" + _tk)
 mod = importlib.import_module(sys.argv[1])
 out = Path(sys.argv[2])
 sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out)   # recursive: C++ namespaces are submodules
 sg.put(mod)
 text = sg.get()
-# stubgen binds an imported class as "from OCP3x.GC import GC_MakeSegment2d as GCE2d_MakeSegment", which a stub
+# stubgen binds an imported class as "from nanocct.GC import GC_MakeSegment2d as GCE2d_MakeSegment", which a stub
 # does not re-export (typing spec: only the `X as X` form does; ty enforces it), and by __name__, which is wrong for
 # a nested class (using CurveD1 = Geom_Curve::ResD1): re-bind such aliases as assignments by module + __qualname__
 fixes = []
@@ -239,7 +239,7 @@ def main() -> int:
     classes, templates = _CLASSES, _MANIFEST["templates"]
     toolkit_of = {}
     for pkg_file in _shims():
-        m = re.search(r"from OCP3x\._(\w+)\.(\w+) import \*", pkg_file.read_text())
+        m = re.search(r"from nanocct\._(\w+)\.(\w+) import \*", pkg_file.read_text())
         if m is not None:
             toolkit_of[m.group(2)] = (m.group(1), _stub_of(pkg_file))
     # One stub per package module, and they are 97 % of the run (measured 2026-09-24: 97.8 s of 100.8 s, 276 ms per
@@ -250,18 +250,18 @@ def main() -> int:
     jobs, how = jobs_from_env(len(modules))
     print(f"stubs: {len(modules)} modules, {jobs} job{'' if jobs == 1 else 's'} ({how})", file=sys.stderr)
     with ThreadPoolExecutor(jobs) as pool:
-        done = {pool.submit(_stubgen, f"OCP3x._{tk}.{pkg}", out): out for pkg, (tk, out) in modules}
+        done = {pool.submit(_stubgen, f"nanocct._{tk}.{pkg}", out): out for pkg, (tk, out) in modules}
         for future in done:
             future.result()                       # the first failure is raised here, with its traceback
             print(f"stub {done[future].relative_to(ROOT)}", file=sys.stderr)
-    # OCP3x/__init__.pyi: the package is lazy at runtime (PEP 562 __getattr__), so a checker only knows
-    # `OCP3x.gp` exists if the stub says so. `import X as X` is the re-export form the typing spec requires.
+    # nanocct/__init__.pyi: the package is lazy at runtime (PEP 562 __getattr__), so a checker only knows
+    # `nanocct.gp` exists if the stub says so. `import X as X` is the re-export form the typing spec requires.
     pkgs = sorted({pkg for pkg, _ in toolkit_of.items()})
     (SRC / "__init__.pyi").write_text(
-        '"""OCP3x: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'
-        + "".join(f"import OCP3x.{p} as {p}\n" for p in pkgs)
+        '"""nanocct: nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API."""\n'
+        + "".join(f"import nanocct.{p} as {p}\n" for p in pkgs)
         + "\n__all__ = [\n" + "".join(f'    "{p}",\n' for p in pkgs) + "]\n")
-    print(f"stub src/OCP3x/__init__.pyi ({len(pkgs)} packages)", file=sys.stderr)
+    print(f"stub src/nanocct/__init__.pyi ({len(pkgs)} packages)", file=sys.stderr)
     # NCollection: generic container classes + instantiations as their subclasses
     nc = toolkit_of["NCollection"][1]
     text = nc.read_text()
@@ -320,13 +320,13 @@ def main() -> int:
                  else f"class {inst['name']}({bases}):\n" + "\n".join(body))
         text = _replace_class_block(text, inst["name"], block)
     header = ("from typing import Generic, Self, TypeVar, overload\nfrom collections.abc import Iterator\n"
-              "import OCP3x.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n"
+              "import nanocct.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n"
               "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n\n")   # the nested Iterator classes: a nested class cannot reuse the outer class's type variables
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
     nc.write_text(_unhashable_ignore(_with_numpy_imports(header + "".join(generic_parts) + "\n" + text)))
-    # OCCT signatures: the generic spelling instead of the concrete class (OCP3x.NCollection.NCollection_Array1__double
-    # -> OCP3x.NCollection.NCollection_Array1[float]), so that a value typed NCollection_Array1[float] (what
+    # OCCT signatures: the generic spelling instead of the concrete class (nanocct.NCollection.NCollection_Array1__double
+    # -> nanocct.NCollection.NCollection_Array1[float]), so that a value typed NCollection_Array1[float] (what
     # NCollection_Array1[float](...) produces statically) is accepted as an argument. The concrete class derives from
     # the generic one, so the rewrite is sound for parameters and results alike; the NCollection stub itself keeps the
     # concrete names (they are its class definitions).
@@ -336,14 +336,14 @@ def main() -> int:
             continue
         generic = _generic_or_none(inst["name"], templates)
         if generic is not None:
-            generic_of[inst["name"]] = "OCP3x.NCollection." + generic
+            generic_of[inst["name"]] = "nanocct.NCollection." + generic
     # One alternation for all ~800 names instead of one scan each: this loop used to do
     # 370 files x 4 rounds x ~812 names = 1.2 million whole-file substitutions over 14.8 MB, and was 57% of stub
     # generation (129.9 s of 226.8 s, macOS 2026-09-24). The trailing \b already prevents a shorter name from matching
     # a prefix of a longer one (the names are separated by '_', a word character), and longest-first makes it explicit.
     # A nested-class access (X.Iterator as a base class, Graphic3d_SequenceOfHClipPlane::Iterator) keeps the concrete
     # name: ty rejects the nested class of a specialised generic (6b) -- hence the (?!\.).
-    generic_re = re.compile(r"\bOCP3x\.NCollection\.(" + "|".join(
+    generic_re = re.compile(r"\bnanocct\.NCollection\.(" + "|".join(
         re.escape(n) for n in sorted(generic_of, key=len, reverse=True)) + r")\b(?!\.)") if len(generic_of) > 0 else None
     for stub in sorted(SRC.rglob("*.pyi")):
         if stub == nc:

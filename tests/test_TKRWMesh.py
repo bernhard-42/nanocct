@@ -8,20 +8,20 @@ import pytest
 
 from conftest import report
 
-from OCP3x import Message
-from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.RWMesh import (RWMesh, RWMesh_CafReader, RWMesh_CoordinateSystem,
+from nanocct import Message
+from nanocct.BRepMesh import BRepMesh_IncrementalMesh
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.RWMesh import (RWMesh, RWMesh_CafReader, RWMesh_CoordinateSystem,
                             RWMesh_CoordinateSystemConverter, RWMesh_CoordinateSystem_negZfwd_posYup,
                             RWMesh_CoordinateSystem_posYfwd_posZup, RWMesh_EdgeIterator, RWMesh_FaceIterator,
                             RWMesh_NameFormat, RWMesh_NameFormat_Product, RWMesh_NodeAttributes,
                             RWMesh_TriangulationReader, RWMesh_VertexIterator)
-from OCP3x.TCollection import TCollection_ExtendedString
-from OCP3x.TDataStd import TDataStd_Name
-from OCP3x.TopAbs import TopAbs_FACE
-from OCP3x.XCAFApp import XCAFApp_Application
-from OCP3x.XCAFDoc import XCAFDoc_DocumentTool
-from OCP3x.gp import gp_XYZ
+from nanocct.TCollection import TCollection_ExtendedString
+from nanocct.TDataStd import TDataStd_Name
+from nanocct.TopAbs import TopAbs_FACE
+from nanocct.XCAFApp import XCAFApp_Application
+from nanocct.XCAFDoc import XCAFDoc_DocumentTool
+from nanocct.gp import gp_XYZ
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKRWMesh" / "report.txt"
 
@@ -45,7 +45,7 @@ def meshed_box():
 
 
 def test_package_imports():
-    assert importlib.import_module("OCP3x.RWMesh").__name__ == "OCP3x.RWMesh"
+    assert importlib.import_module("nanocct.RWMesh").__name__ == "nanocct.RWMesh"
 
 
 def test_the_face_iterator_hands_out_the_triangulation(meshed_box):

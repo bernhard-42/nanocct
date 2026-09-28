@@ -9,16 +9,16 @@ import pytest
 
 from conftest import report
 
-from OCP3x import Message
-from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.DESTL import DESTL_ConfigurationNode, DESTL_Provider
-from OCP3x.Poly import Poly_Triangulation
-from OCP3x.RWStl import RWStl, RWStl_Reader
-from OCP3x.StlAPI import StlAPI_Reader, StlAPI_Writer
-from OCP3x.TopAbs import TopAbs_FACE
-from OCP3x.TopExp import TopExp_Explorer
-from OCP3x.TopoDS import TopoDS_Shape
+from nanocct import Message
+from nanocct.BRepMesh import BRepMesh_IncrementalMesh
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.DESTL import DESTL_ConfigurationNode, DESTL_Provider
+from nanocct.Poly import Poly_Triangulation
+from nanocct.RWStl import RWStl, RWStl_Reader
+from nanocct.StlAPI import StlAPI_Reader, StlAPI_Writer
+from nanocct.TopAbs import TopAbs_FACE
+from nanocct.TopExp import TopExp_Explorer
+from nanocct.TopoDS import TopoDS_Shape
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDESTL" / "report.txt"
 
@@ -43,7 +43,7 @@ def meshed_box():
 
 @pytest.mark.parametrize("pkg", ["StlAPI", "RWStl", "DESTL"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def test_stl_api_writer_is_build123d_s_call(tmp_path, meshed_box, quiet_messenger):

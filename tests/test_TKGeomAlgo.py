@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import GCE2d, GccAna, GccEnt, Geom, Geom2dAPI, GeomAPI, GeomInt, IntPatch, IntPolyh, IntWalk, NCollection, Standard, gp
+from nanocct import GCE2d, GccAna, GccEnt, Geom, Geom2dAPI, GeomAPI, GeomInt, IntPatch, IntPolyh, IntWalk, NCollection, Standard, gp
 
 PACKAGES = ["Hatch", "GeomInt", "IntStart", "IntWalk", "IntImp", "IntCurveSurface", "IntSurf", "IntPatch", "Geom2dInt",
             "IntImpParGen", "IntRes2d", "IntCurve", "TopTrans", "Intf", "ApproxInt", "GccAna", "GccEnt", "GccInt", "HatchGen",
@@ -18,7 +18,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKGeomAlgo" / "report.txt"
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def _points() -> NCollection.NCollection_Array1:
@@ -95,7 +95,7 @@ def test_ambiguous_constructors_bound_with_unambiguous_arity():
 
 def test_prelude_header_and_per_overload_undefined_members():
     # IntWalk_PWalking.hxx names handle<IntSurf_LineOn2S> without including or declaring it (R-PRELUDE)
-    assert IntWalk.IntWalk_PWalking.__module__ == "OCP3x.IntWalk"
+    assert IntWalk.IntWalk_PWalking.__module__ == "nanocct.IntWalk"
     lines = REPORT.read_text().splitlines()
     assert any(l.startswith("header\tIntWalk\tIntWalk: headers not self-contained, parsed with <IntSurf_LineOn2S.hxx>") for l in lines)
     # R-UNDEFINED per overload: GeomInt_WLApprox::Perform() has no symbol, the two public overloads with parameters do

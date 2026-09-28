@@ -7,19 +7,19 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import BinDrivers, BinMDF, BinMNaming, PCDM, TDataStd, TDataXtd, TDocStd, TNaming, gp
-from OCP3x.BRepGProp import BRepGProp
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.GProp import GProp_GProps
-from OCP3x.TCollection import TCollection_ExtendedString
-from OCP3x.TopAbs import TopAbs_SOLID
+from nanocct import BinDrivers, BinMDF, BinMNaming, PCDM, TDataStd, TDataXtd, TDocStd, TNaming, gp
+from nanocct.BRepGProp import BRepGProp
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.GProp import GProp_GProps
+from nanocct.TCollection import TCollection_ExtendedString
+from nanocct.TopAbs import TopAbs_SOLID
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKBin" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["BinDrivers", "BinMDataXtd", "BinMNaming"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 @pytest.fixture

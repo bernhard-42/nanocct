@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import BRep, BRepAdaptor, BRepLProp, BRepTools, BinTools, Geom, Geom2d, GeomAbs, NCollection, Standard, TopAbs, TopExp, TopLoc, TopTools, TopoDS, gp
+from nanocct import BRep, BRepAdaptor, BRepLProp, BRepTools, BinTools, Geom, Geom2d, GeomAbs, NCollection, Standard, TopAbs, TopExp, TopLoc, TopTools, TopoDS, gp
 
 PACKAGES = ["TopoDS", "TopExp", "TopTools", "BRep", "BRepLProp", "BRepAdaptor", "BRepTools", "BinTools", "BRepGraph", "BRepGraphInc"]
 
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def _compound() -> tuple[TopoDS.TopoDS_Compound, TopoDS.TopoDS_Vertex, TopoDS.TopoDS_Edge]:
@@ -38,7 +38,7 @@ def test_shapes_copy_equality_and_hash():
     s = TopoDS.TopoDS_Shape(v)                                     # implicit copy constructor; sub-class converts, as in C++
     assert type(s) is TopoDS.TopoDS_Shape and s.IsSame(v) and s == v
     assert hash(s) == hash(v)                                      # __hash__ from OCCT's std::hash<TopoDS_Shape>
-    assert {v: "vertex"}[TopoDS.Vertex(s)] == "vertex"             # TopoDS::Vertex(const TopoDS_Shape&) -> OCP3x.TopoDS.Vertex
+    assert {v: "vertex"}[TopoDS.Vertex(s)] == "vertex"             # TopoDS::Vertex(const TopoDS_Shape&) -> nanocct.TopoDS.Vertex
     assert type(TopoDS.Vertex(s)) is TopoDS.TopoDS_Vertex
     assert s.Reversed().Orientation() == TopAbs.TopAbs_Orientation.TopAbs_REVERSED
     assert s.Reversed() != s
@@ -112,7 +112,7 @@ def test_brep_and_binary_round_trip():
 
 
 def test_unbindable_classes_are_reported_not_bound():
-    from OCP3x import BRepGraph
+    from nanocct import BRepGraph
     from generator.report import read_report
     assert not hasattr(BRepGraph, "BRepGraph_CacheMesh")            # member of a type defined only in the .cxx
     assert hasattr(BRepGraph, "BRepGraph")                          # the graph itself is bound
@@ -162,8 +162,8 @@ def test_handle_out_parameters_are_returned():
     sigs = [l for l in BRep.BRep_Tool.CurveOnSurface_s.__doc__.splitlines() if l.startswith("CurveOnSurface_s(")]
     assert len(sigs) == 4                                                    # all four C++ overloads, no collision
     # the two with `bool* theIsStored = nullptr` are bound without that parameter (R-OPTIONAL-PTR)
-    assert sigs[0] == "CurveOnSurface_s(E: OCP3x.TopoDS.TopoDS_Edge, F: OCP3x.TopoDS.TopoDS_Face) -> tuple[OCP3x.Geom2d.Geom2d_Curve, float, float]"
-    assert sigs[2].endswith("L: OCP3x.TopLoc.TopLoc_Location) -> tuple[OCP3x.Geom2d.Geom2d_Curve, OCP3x.Geom.Geom_Surface, float, float]")
+    assert sigs[0] == "CurveOnSurface_s(E: nanocct.TopoDS.TopoDS_Edge, F: nanocct.TopoDS.TopoDS_Face) -> tuple[nanocct.Geom2d.Geom2d_Curve, float, float]"
+    assert sigs[2].endswith("L: nanocct.TopLoc.TopLoc_Location) -> tuple[nanocct.Geom2d.Geom2d_Curve, nanocct.Geom.Geom_Surface, float, float]")
     c2, f0, l0 = BRep.BRep_Tool.CurveOnSurface_s(e, plane, TopLoc.TopLoc_Location())
     assert isinstance(c2, Geom2d.Geom2d_Line) and (f0, l0) == (0.0, 2.0)
 

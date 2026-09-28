@@ -14,7 +14,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TAG=V8_0_1
 SRC="$HERE/occt-src"
 
-[ -f "$HERE/build-occt-macos.sh" ] || { echo "not the OCP3x deps directory: $HERE" >&2; exit 1; }
+[ -f "$HERE/build-occt-macos.sh" ] || { echo "not the nanocct deps directory: $HERE" >&2; exit 1; }
 
 if [ -d "$SRC/.git" ]; then
     echo "OCCT sources already in $SRC ($(git -C "$SRC" describe --tags --always 2>/dev/null || echo unknown))"

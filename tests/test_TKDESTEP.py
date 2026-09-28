@@ -9,25 +9,25 @@ import pytest
 
 from conftest import report
 
-from OCP3x import Message
-from OCP3x.BRepGProp import BRepGProp
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.GProp import GProp_GProps
-from OCP3x.IFSelect import IFSelect_RetDone
-from OCP3x.Interface import Interface_Static
-from OCP3x.NCollection import NCollection_HArray1, NCollection_Sequence
-from OCP3x.Quantity import Quantity_Color, Quantity_NameOfColor, Quantity_NOC_RED
-from OCP3x.STEPCAFControl import STEPCAFControl_Controller, STEPCAFControl_Reader, STEPCAFControl_Writer
-from OCP3x.STEPConstruct import STEPConstruct
-from OCP3x.STEPControl import STEPControl_AsIs, STEPControl_Reader, STEPControl_StepModelType, STEPControl_Writer
-from OCP3x.StepBasic import StepBasic_Product, StepBasic_SiUnitName
-from OCP3x.StepGeom import StepGeom_CartesianPoint
-from OCP3x.StepShape import StepShape_ManifoldSolidBrep
-from OCP3x.TCollection import TCollection_ExtendedString, TCollection_HAsciiString
-from OCP3x.TDF import TDF_Label
-from OCP3x.TopAbs import TopAbs_SOLID
-from OCP3x.XCAFApp import XCAFApp_Application
-from OCP3x.XCAFDoc import XCAFDoc_ColorCurv, XCAFDoc_ColorGen, XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
+from nanocct import Message
+from nanocct.BRepGProp import BRepGProp
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.GProp import GProp_GProps
+from nanocct.IFSelect import IFSelect_RetDone
+from nanocct.Interface import Interface_Static
+from nanocct.NCollection import NCollection_HArray1, NCollection_Sequence
+from nanocct.Quantity import Quantity_Color, Quantity_NameOfColor, Quantity_NOC_RED
+from nanocct.STEPCAFControl import STEPCAFControl_Controller, STEPCAFControl_Reader, STEPCAFControl_Writer
+from nanocct.STEPConstruct import STEPConstruct
+from nanocct.STEPControl import STEPControl_AsIs, STEPControl_Reader, STEPControl_StepModelType, STEPControl_Writer
+from nanocct.StepBasic import StepBasic_Product, StepBasic_SiUnitName
+from nanocct.StepGeom import StepGeom_CartesianPoint
+from nanocct.StepShape import StepShape_ManifoldSolidBrep
+from nanocct.TCollection import TCollection_ExtendedString, TCollection_HAsciiString
+from nanocct.TDF import TDF_Label
+from nanocct.TopAbs import TopAbs_SOLID
+from nanocct.XCAFApp import XCAFApp_Application
+from nanocct.XCAFDoc import XCAFDoc_ColorCurv, XCAFDoc_ColorGen, XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDESTEP" / "report.txt"
 PACKAGES = ["STEPControl", "STEPCAFControl", "STEPConstruct", "STEPEdit", "STEPSelections", "StepBasic", "StepGeom",
@@ -63,7 +63,7 @@ def _volume(shape) -> float:
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def test_the_step_statics_cadquery_sets():

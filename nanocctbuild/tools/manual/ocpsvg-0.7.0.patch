@@ -5,7 +5,7 @@
  requires-python = ">=3.11"
  dependencies = [
 -    "cadquery_ocp_proxy >= 8.0, < 9.0",
-+    "ocp3x >= 0.1, < 0.2",
++    "nanocct >= 0.1, < 0.2",
      "svgelements >= 1.9.1, <2",
  ]
  

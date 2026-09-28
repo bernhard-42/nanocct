@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from OCP3x import BRep, BRepMesh, BRepMeshData, BRepPrimAPI, HLRAlgo, HLRBRep, IMeshData, IMeshTools, TopAbs, TopExp, TopLoc, TopoDS, gp
+from nanocct import BRep, BRepMesh, BRepMeshData, BRepPrimAPI, HLRAlgo, HLRBRep, IMeshData, IMeshTools, TopAbs, TopExp, TopLoc, TopoDS, gp
 
 PACKAGES = ["IMeshData", "IMeshTools", "BRepMeshData", "BRepMesh"]
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKMesh" / "report.txt"
@@ -16,7 +16,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKMesh" / "report.txt"
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def _triangles(shape: TopoDS.TopoDS_Shape) -> int:
@@ -80,4 +80,4 @@ def test_detected_noncopyable_and_hidden_placement_new():
         assert any("BRepMesh_ConeRangeSplitter::GetSplitSteps" in msg and "no definition in lib" in msg for msg in msgs)
         return
     doc = BRepMesh.BRepMesh_ConeRangeSplitter.GetSplitSteps.__doc__
-    assert "GetSplitSteps(self, theParameters: OCP3x.IMeshTools.IMeshTools_Parameters) -> tuple[tuple[float, float], tuple[int, int]]" in doc
+    assert "GetSplitSteps(self, theParameters: nanocct.IMeshTools.IMeshTools_Parameters) -> tuple[tuple[float, float], tuple[int, int]]" in doc

@@ -9,26 +9,26 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import Message
-from OCP3x.BRepGProp import BRepGProp
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.GProp import GProp_GProps
-from OCP3x.NCollection import NCollection_Sequence
-from OCP3x.PCDM import PCDM_ReadWriter, PCDM_RS_OK, PCDM_SS_OK
-from OCP3x.Quantity import Quantity_Color, Quantity_NOC_RED
-from OCP3x.Standard import Standard_Failure, Standard_GUID, Standard_OutOfRange
-from OCP3x.TCollection import TCollection_ExtendedString
-from OCP3x.TDataStd import TDataStd_Name
-from OCP3x.TDF import TDF_Label
-from OCP3x.TopAbs import TopAbs_COMPOUND, TopAbs_SOLID
-from OCP3x.TopLoc import TopLoc_Location
-from OCP3x.XCAFApp import XCAFApp_Application
-from OCP3x.XCAFDoc import XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
-from OCP3x.XmlMXCAFDoc import (XmlMXCAFDoc_AssemblyItemRefDriver, XmlMXCAFDoc_CentroidDriver, XmlMXCAFDoc_ColorDriver,
+from nanocct import Message
+from nanocct.BRepGProp import BRepGProp
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.GProp import GProp_GProps
+from nanocct.NCollection import NCollection_Sequence
+from nanocct.PCDM import PCDM_ReadWriter, PCDM_RS_OK, PCDM_SS_OK
+from nanocct.Quantity import Quantity_Color, Quantity_NOC_RED
+from nanocct.Standard import Standard_Failure, Standard_GUID, Standard_OutOfRange
+from nanocct.TCollection import TCollection_ExtendedString
+from nanocct.TDataStd import TDataStd_Name
+from nanocct.TDF import TDF_Label
+from nanocct.TopAbs import TopAbs_COMPOUND, TopAbs_SOLID
+from nanocct.TopLoc import TopLoc_Location
+from nanocct.XCAFApp import XCAFApp_Application
+from nanocct.XCAFDoc import XCAFDoc_ColorSurf, XCAFDoc_DocumentTool
+from nanocct.XmlMXCAFDoc import (XmlMXCAFDoc_AssemblyItemRefDriver, XmlMXCAFDoc_CentroidDriver, XmlMXCAFDoc_ColorDriver,
                                  XmlMXCAFDoc_DatumDriver, XmlMXCAFDoc_GraphNodeDriver, XmlMXCAFDoc_LocationDriver)
-from OCP3x.XmlXCAFDrivers import (XmlXCAFDrivers, XmlXCAFDrivers_DocumentRetrievalDriver,
+from nanocct.XmlXCAFDrivers import (XmlXCAFDrivers, XmlXCAFDrivers_DocumentRetrievalDriver,
                                     XmlXCAFDrivers_DocumentStorageDriver)
-from OCP3x.gp import gp_Trsf, gp_Vec
+from nanocct.gp import gp_Trsf, gp_Vec
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKXmlXCAF" / "report.txt"
 OCAF = "{http://www.opencascade.org/OCAF/XML}"
@@ -72,7 +72,7 @@ def _assembly_document(app):
 
 @pytest.mark.parametrize("pkg", ["XmlXCAFDrivers", "XmlMXCAFDoc"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def test_a_product_structure_round_trips_through_xml_bytes(application):
@@ -141,7 +141,7 @@ def test_the_drivers_and_the_factory():
     The table is reached through the storage/retrieval driver instead."""
     assert sorted(n for n in dir(XmlXCAFDrivers) if not n.startswith("_")) == ["DefineFormat_s", "Factory_s"]
     # the XML storage driver writes a copyright line into the document, so its constructor takes one
-    assert XmlXCAFDrivers_DocumentStorageDriver(TCollection_ExtendedString("OCP3x")) is not None
+    assert XmlXCAFDrivers_DocumentStorageDriver(TCollection_ExtendedString("nanocct")) is not None
     assert XmlXCAFDrivers_DocumentRetrievalDriver() is not None
 
     storage = XmlXCAFDrivers.Factory_s(Standard_GUID(STORAGE_GUID))
@@ -167,8 +167,8 @@ def test_each_attribute_driver_names_the_attribute_it_persists(driver, attribute
 def test_the_driver_set_matches_the_binary_one():
     """The two OCAF formats persist the same XCAF attributes, so the driver sets are identical name for name -- which
     is why a document written by either reads back the same product structure."""
-    import OCP3x.BinMXCAFDoc as binary
-    import OCP3x.XmlMXCAFDoc as xml
+    import nanocct.BinMXCAFDoc as binary
+    import nanocct.XmlMXCAFDoc as xml
     assert (sorted(n[len("XmlMXCAFDoc_"):] for n in dir(xml) if n.startswith("XmlMXCAFDoc_"))
             == sorted(n[len("BinMXCAFDoc_"):] for n in dir(binary) if n.startswith("BinMXCAFDoc_")))
 

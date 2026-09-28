@@ -3,7 +3,7 @@ undefined behaviour in OCCT itself (its constructor registers `this` through a t
 temporary deletes the half-built object -- verified in plain C++, refcount garbage, Python segfaults): use the registry."""
 from pathlib import Path
 
-from OCP3x import BRep, BRepMesh, BRepPrimAPI, TopAbs, TopExp, TopLoc, TopoDS, XBRepMesh
+from nanocct import BRep, BRepMesh, BRepPrimAPI, TopAbs, TopExp, TopLoc, TopoDS, XBRepMesh
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKXMesh" / "report.txt"
 

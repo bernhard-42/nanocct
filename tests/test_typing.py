@@ -37,7 +37,7 @@ def test_type_checker_reports_exactly_the_marked_lines(checker, check):
     assert _reported_lines(cmd, check) == _expected(check)
 
 
-STUBS = sorted((Path(__file__).parents[1] / "src" / "OCP3x").rglob("*.pyi"))
+STUBS = sorted((Path(__file__).parents[1] / "src" / "nanocct").rglob("*.pyi"))
 
 
 def test_every_stub_is_valid_python():
@@ -56,7 +56,7 @@ def test_no_stub_binds_a_class_under_another_name_by_import():
     """A C++ typedef alias (using Prs3d_Presentation = Graphic3d_Structure) must be an assignment in the stub:
     `from M import A as B` is not a re-export (typing spec; ty enforces it). generator/stubs.py rewrites stubgen's
     imports, which come in two layouts -- one line up to 70 characters, else a parenthesised block. It knew only the
-    block until 2026-09-27: 9 aliases in 7 stubs had stayed imports, found when the shorter package name OCP3x put
+    block until 2026-09-27: 9 aliases in 7 stubs had stayed imports, found when the shorter package name nanocct put
     Prs3d's and PrsMgr's alias on one line too."""
     import ast
     offenders = []
@@ -67,4 +67,4 @@ def test_no_stub_binds_a_class_under_another_name_by_import():
                               if a.asname is not None and a.asname != a.name]
     assert offenders == []
     prs3d = next(s for s in STUBS if s.name == "Prs3d.pyi").read_text()
-    assert "Prs3d_Presentation = OCP3x.Graphic3d.Graphic3d_Structure" in prs3d
+    assert "Prs3d_Presentation = nanocct.Graphic3d.Graphic3d_Structure" in prs3d

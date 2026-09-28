@@ -10,17 +10,17 @@ What it does, all inside --work (never in the build123d checkout, never in any e
 
 1. `git archive HEAD` of the build123d checkout, extracted twice -- one copy per side, because the suite writes files
    into its working directory and the two sides run at the same time.
-   ocp-tessellate comes from the verified sdist ocp3xbuild fetched (build/ocp3xbuild/sdist), extracted once per
-   side, with the files of ocp3xbuild/tools/files (its test image) and only the tests/test_build123d.py part of its
-   hand-made patch (ocp3xbuild/tools/manual): that part drops the BuildSheet tests, BuildSheet not being in build123d;
-   the rest of the patch is the port to OCP3x, and both sides here run on OCP. Its cadquery tests are left out.
+   ocp-tessellate comes from the verified sdist nanocctbuild fetched (build/nanocctbuild/sdist), extracted once per
+   side, with the files of nanocctbuild/tools/files (its test image) and only the tests/test_build123d.py part of its
+   hand-made patch (nanocctbuild/tools/manual): that part drops the BuildSheet tests, BuildSheet not being in build123d;
+   the rest of the patch is the port to nanocct, and both sides here run on OCP. Its cadquery tests are left out.
 2. Two fresh venvs on --python, each with build123d's and ocp-tessellate's runtime dependencies (their pyprojects'
    [project].dependencies) and the pytest plugins of build123d's `development` extra (pytest-cov left out). Neither
    package is installed; ocp-tessellate is imported from its copy. build123d itself is *not* installed:
    setuptools-scm collects package data from git, so an install from an archive loses the fonts; the suite imports
    it from the copy through PYTHONPATH=<copy>/src instead.
      baseline  the real `cadquery-ocp-novtk` from PyPI, as the dependency list says;
-     shim      OCP3x's wheel and the shim wheel (cadquery-ocp-novtk 8.0.1.0.0+shim), given as files so the
+     shim      nanocct's wheel and the shim wheel (cadquery-ocp-novtk 8.0.1.0.0+shim), given as files so the
                resolver takes them instead of PyPI's.
    Before running, each venv is asked where `OCP` comes from, so a baseline that silently got the shim (or the
    reverse) fails here instead of producing a perfect "parity".
@@ -104,23 +104,23 @@ def clean_env(paths: list[Path]) -> dict[str, str]:
 
 
 def extract_sdist(tarball: Path, dest: Path) -> None:
-    """The sdist in dest (recreated), plus ocp3xbuild's extra files and the test-only part of its hand-made patch."""
+    """The sdist in dest (recreated), plus nanocctbuild's extra files and the test-only part of its hand-made patch."""
     pkg = tarball.name.removesuffix(".tar.gz")
     if dest.exists():
         shutil.rmtree(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     run(["tar", "-xzf", str(tarball), "-C", str(dest.parent)])
     (dest.parent / pkg).rename(dest)
-    files = ROOT / "ocp3xbuild" / "tools" / "files" / pkg
+    files = ROOT / "nanocctbuild" / "tools" / "files" / pkg
     if files.is_dir():
         shutil.copytree(files, dest, dirs_exist_ok=True)
-    manual = (ROOT / "ocp3xbuild" / "tools" / "manual" / f"{pkg}.patch").read_text()
+    manual = (ROOT / "nanocctbuild" / "tools" / "manual" / f"{pkg}.patch").read_text()
     sections = ["--- " + part for part in manual.split("\n--- ")[1:] if part.startswith("a/tests/test_build123d.py")]
     if manual.startswith("--- a/tests/test_build123d.py"):
         sections.insert(0, manual.split("\n--- ")[0])
     test_patch = "\n".join(sections)
-    if "OCP3x" in test_patch:
-        sys.exit(f"{pkg}: the test_build123d.py part of the hand-made patch now ports to OCP3x -- only its BuildSheet "
+    if "nanocct" in test_patch:
+        sys.exit(f"{pkg}: the test_build123d.py part of the hand-made patch now ports to nanocct -- only its BuildSheet "
                  "removal is meant for the parity check; split it before running this")
     if test_patch != "":
         run(["patch", "-p1", "--forward", "--quiet", "-d", str(dest)], input=test_patch.rstrip("\n") + "\n", text=True)
@@ -128,7 +128,7 @@ def extract_sdist(tarball: Path, dest: Path) -> None:
 
 def run_suite(exe: Path, copy: Path, paths: list[Path], extra: list[str], junit: Path, log: Path) -> int:
     # rootdir and config pinned to the copy: its pyproject.toml has no pytest section, so pytest would search upwards
-    # and, with --work inside this repository (`make shim-parity`: build/shim-parity), take OCP3x's own pyproject.toml
+    # and, with --work inside this repository (`make shim-parity`: build/shim-parity), take nanocct's own pyproject.toml
     # -- its settings (pythonpath = ".") and a rootdir that puts the side's path into every test ID, so the two sides
     # had no ID in common (2026-09-26)
     with log.open("w") as out:
@@ -155,19 +155,19 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="shim/parity.py", description=__doc__.split("\n\n")[0])
     ap.add_argument("--build123d", type=Path, default=Path.home() / "Development" / "CAD" / "build123d")
     ap.add_argument("--ocp-tessellate", type=Path, default=None,
-                    help="its sdist (default: the one ocp3xbuild fetched into build/ocp3xbuild/sdist)")
-    ap.add_argument("--dist", type=Path, default=ROOT / "dist", help="where OCP3x's and the shim's wheels are")
+                    help="its sdist (default: the one nanocctbuild fetched into build/nanocctbuild/sdist)")
+    ap.add_argument("--dist", type=Path, default=ROOT / "dist", help="where nanocct's and the shim's wheels are")
     ap.add_argument("--work", type=Path, default=ROOT / "build" / "shim-parity")
     ap.add_argument("--python", default="3.14")
     ap.add_argument("--reuse-venvs", action="store_true", help="keep existing venvs in --work (after a first full run)")
     args = ap.parse_args(argv)
 
-    ocp3x_whl, shim_whl = one_wheel(args.dist, "ocp3x-*.whl"), one_wheel(args.dist, "cadquery_ocp_novtk-*.whl")
+    nanocct_whl, shim_whl = one_wheel(args.dist, "nanocct-*.whl"), one_wheel(args.dist, "cadquery_ocp_novtk-*.whl")
     tess_sdist = args.ocp_tessellate
     if tess_sdist is None:
-        found = sorted((ROOT / "build" / "ocp3xbuild" / "sdist").glob("ocp_tessellate-*.tar.gz"))
+        found = sorted((ROOT / "build" / "nanocctbuild" / "sdist").glob("ocp_tessellate-*.tar.gz"))
         if len(found) != 1:
-            sys.exit("no ocp_tessellate sdist in build/ocp3xbuild/sdist -- run ocp3xbuild/ocp3xbuild.sh first")
+            sys.exit("no ocp_tessellate sdist in build/nanocctbuild/sdist -- run nanocctbuild/nanocctbuild.sh first")
         tess_sdist = found[0]
     work = args.work.resolve()
     work.mkdir(parents=True, exist_ok=True)
@@ -182,7 +182,7 @@ def main(argv: list[str]) -> int:
     deps, plugins = requirements(copies["baseline"])
     tess_deps = list(tomllib.loads((tess["baseline"] / "pyproject.toml").read_text())["project"]["dependencies"])
     common = [*deps, *tess_deps, *plugins]
-    packages = {"baseline": common, "shim": [str(ocp3x_whl), str(shim_whl), *common]}
+    packages = {"baseline": common, "shim": [str(nanocct_whl), str(shim_whl), *common]}
     exes = {side: make_venv(work / side / "venv", args.python, packages[side], args.reuse_venvs) for side in SIDES}
 
     origin = {}
@@ -211,7 +211,7 @@ def main(argv: list[str]) -> int:
         codes = dict(zip(SIDES, pool.map(run_side, SIDES)))
 
     summary = {"build123d_commit": commit, "ocp_tessellate_sdist": tess_sdist.name, "python": args.python,
-               "ocp3x_wheel": ocp3x_whl.name, "shim_wheel": shim_whl.name, "ocp": origin, "suites": {}}
+               "nanocct_wheel": nanocct_whl.name, "shim_wheel": shim_whl.name, "ocp": origin, "suites": {}}
     clean = True
     for name in suites:
         results = {side: outcomes(work / side / f"junit-{name}.xml") for side in SIDES}

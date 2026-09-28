@@ -718,13 +718,13 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert cpp.count('.def("Origin"') == 1 and 'gp_XYZ & (Rules_Value::*)() const' not in cpp
     assert "Rules_Value::Origin() const: const twin of a less const overload -> not bound" in em.report
     # conversion operators: the const/non-const twins to gp_XYZ give one conversion (emission mutates the IR: first emitter only)
-    assert cpp.count("ocp3x_conversion<Rules_Value, gp_XYZ>(") == 1 and cpp.count("ocp3x_conversion<Rules_Value, gp_Pnt>(") == 1
+    assert cpp.count("nanocct_conversion<Rules_Value, gp_XYZ>(") == 1 and cpp.count("nanocct_conversion<Rules_Value, gp_Pnt>(") == 1
     # R-WIDTH: the wider twin is registered first although the header declares it second
     assert cpp.index('(Rules_Value::*)(const double) const') < cpp.index('(Rules_Value::*)(const float) const')
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
     assert "Rules_Value::Scale(const float): same Python signature as Scale(const double) -> registered after it (width preference)" in em.report
-    # R-ITER: More/Next/Value -> __iter__/__next__ through ocp3x_def_iter; Rules_Value (no More) gets none
-    assert cpp.count("ocp3x_def_iter<") == 1 and "ocp3x_def_iter<Rules_Iter>" in cpp
+    # R-ITER: More/Next/Value -> __iter__/__next__ through nanocct_def_iter; Rules_Value (no More) gets none
+    assert cpp.count("nanocct_def_iter<") == 1 and "nanocct_def_iter<Rules_Iter>" in cpp
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
 
 
@@ -805,15 +805,15 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     block = cpp[start:cpp.index('m.attr("Rules_Iter"))', start)]          # the .def chain of Rules_Algo (lambda bodies contain ';')
     # bound through lambdas on the derived class (a member pointer of Rules_Options would need the inaccessible upcast)
     assert '.def("SetFuzzy", [](Rules_Algo &self, const double theV) { self.SetFuzzy(theV); }' in block
-    assert '.def("Fuzzy", [](const Rules_Algo &self) { auto ocp3x_result = self.Fuzzy(); return ocp3x_result; }' in block
+    assert '.def("Fuzzy", [](const Rules_Algo &self) { auto nanocct_result = self.Fuzzy(); return nanocct_result; }' in block
     assert block.count('.def("Flag"') == 2 and "&Rules_Options::" not in block
-    assert '.def("Dump", [](const Rules_Algo &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return ocp3x_stream_text(theS_stream); }' in block
+    assert '.def("Dump", [](const Rules_Algo &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return nanocct_stream_text(theS_stream); }' in block
     # inherited constructors: Rules_Value(const gp_Pnt&) becomes Rules_Inherit's; the default and copy constructors are not inherited
     # in C++ (the derived class gets its own implicit ones, R-IMPLICIT-DEFAULT/-COPY)
     inherit = next(c for c in rules_ir.classes if c.name == "Rules_Inherit")
     assert [[p.type for p in k.params] for k in inherit.ctors] == [["const gp_Pnt &"]] and not inherit.has_declared_ctor
     tail = cpp[cpp.index('m.attr("Rules_Inherit"))'):]
-    assert "ocp3x_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::arg("thePnt")' in tail
+    assert "nanocct_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::arg("thePnt")' in tail
 
 
 class _FakeToolkit:
@@ -856,9 +856,9 @@ def test_base_import_edges_and_the_import_order():
     """A class is registered only after its base, so the toolkit binding the derived class must import the one
     binding the base or nb_type_new aborts with "base type ... not known to nanobind". OCCT's link graph implies
     neither shape: TKMesh binds Shared<DataMap<TopoDS_Shape, int, TopTools_ShapeMapHasher>> while TKBool binds the
-    DataMap (2026-09-23, every `import OCP3x` aborted after TKBinXCAF reshuffled the order), and
+    DataMap (2026-09-23, every `import nanocct` aborted after TKBinXCAF reshuffled the order), and
     XmlObjMgt_RRelocationTable derives from a DataMap that TKBinL binds, which had no edge at all until 2026-09-24
-    and made `import OCP3x._TKXmlL` on its own abort."""
+    and made `import nanocct._TKXmlL` on its own abort."""
     tree = _FakeTree({"TKernel": [], "TKBool": ["TKernel"], "TKMesh": ["TKernel"], "TKXmlL": ["TKernel"],
                       "TKBinL": ["TKernel"], "TKMath": ["TKernel"], "TKX": ["TKMesh", "TKBool"]})
     templates = {
@@ -988,15 +988,15 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
-    assert '.def("Optional", [](const Rules_Value &self, const int theA) { auto ocp3x_result = self.Optional(theA, nullptr); return ocp3x_result; }, nb::arg("theA")' in cpp
-    assert "gp_Pnt theP[8]{}; auto ocp3x_result = self.Corners(theP); std::array<gp_Pnt, 8> theP_out;" in cpp
+    assert '.def("Optional", [](const Rules_Value &self, const int theA) { auto nanocct_result = self.Optional(theA, nullptr); return nanocct_result; }, nb::arg("theA")' in cpp
+    assert "gp_Pnt theP[8]{}; auto nanocct_result = self.Corners(theP); std::array<gp_Pnt, 8> theP_out;" in cpp
     assert "const std::array<int, 3> &theNodes) { int theNodes_arr[3]; std::copy(theNodes.begin(), theNodes.end(), theNodes_arr);" in cpp
     assert '.def_prop_rw("myPeriod", [](const Rules_Value &self) { std::array<double, 3> a;' in cpp
-    assert '.def("PtrRef", [](Rules_Value &self) { auto ocp3x_result = self.PtrRef(); return ocp3x_result; }, nb::rv_policy::reference' in cpp
-    # R-CSTR-NULL: the null-defaulted const char* is kept (unlike R-OPTIONAL-PTR) and takes str or None through OCP3x::OptionalCString
+    assert '.def("PtrRef", [](Rules_Value &self) { auto nanocct_result = self.PtrRef(); return nanocct_result; }, nb::rv_policy::reference' in cpp
+    # R-CSTR-NULL: the null-defaulted const char* is kept (unlike R-OPTIONAL-PTR) and takes str or None through nanocct::OptionalCString
     enc = _method(rules_ir, "Rules_Value", "Encoding")
     assert enc.skip_reason is None and [(p.name, p.cstr_none, p.omitted, p.default) for p in enc.params] == [("theEncoding", True, False, "nullptr")]
-    assert ('.def("Encoding", [](const Rules_Value &self, OCP3x::OptionalCString theEncoding) { auto ocp3x_result = self.Encoding(theEncoding.ptr); return ocp3x_result; }, '
+    assert ('.def("Encoding", [](const Rules_Value &self, nanocct::OptionalCString theEncoding) { auto nanocct_result = self.Encoding(theEncoding.ptr); return nanocct_result; }, '
             'nb::arg("theEncoding").none() = nb::none()') in cpp
 
 
@@ -1033,10 +1033,10 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def_prop_rw("stick", [](const Rules_Vis &self) { return static_cast<unsigned int>(self.stick); }, [](Rules_Vis &self, unsigned int v) { self.stick = v; }, R"nbdoc(' in cpp
-    assert 'ocp3x_def_field(nb::borrow<nb::class_<Rules_Vis>>(m.attr("Rules_Vis")), "myPlain"' in cpp
+    assert 'nanocct_def_field(nb::borrow<nb::class_<Rules_Vis>>(m.attr("Rules_Vis")), "myPlain"' in cpp
     assert '.def("__add__", [](const Rules_Vis & theLeft, const Rules_Vis & theRight) { return theLeft + theRight; }, nb::is_operator()) /* free operator+ */' in cpp
-    assert ('.def("__str__", [](const Rules_Vis & theVis) { std::ostringstream ocp3x_stream; ocp3x_stream << theVis; '
-            'return ocp3x_stream_text(ocp3x_stream); }) /* free operator<< (R-STR) */') in cpp
+    assert ('.def("__str__", [](const Rules_Vis & theVis) { std::ostringstream nanocct_stream; nanocct_stream << theVis; '
+            'return nanocct_stream_text(nanocct_stream); }) /* free operator<< (R-STR) */') in cpp
     assert 'm.attr("Rules_A_Regular") = m.attr("Rules_Aspect").attr("Rules_A_Regular");' in cpp
     assert 'm.attr("Rules_A_Bold") = m.attr("Rules_Aspect").attr("Rules_A_Bold");' in cpp
     assert 'm.attr("Rules_Aspect_Bold") = ' not in cpp                # a first-value enumerator comes through export_values()
@@ -1054,7 +1054,7 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     it = by["Rules_PntSeq::Iterator"]
     assert it.after_templates and it.bases == ["NCollection_Sequence<gp_Pnt>::Iterator"]
     assert "NCollection_Sequence<gp_Pnt>" in rules_ir.instances
-    templates_fn = cpp[cpp.index("void ocp3x_templates_Rules"):cpp.index("void ocp3x_define_Rules")]
+    templates_fn = cpp[cpp.index("void nanocct_templates_Rules"):cpp.index("void nanocct_define_Rules")]
     decl = 'nb::class_<Rules_PntSeq::Iterator, NCollection_Sequence<gp_Pnt>::Iterator> cls(m.attr("Rules_PntSeq"), "Iterator"'
     assert decl in templates_fn and templates_fn.index("bind_NCollection_Sequence<gp_Pnt>") < templates_fn.index(decl)
     # 6a: a class deriving from the binder instantiation itself
@@ -1142,7 +1142,7 @@ def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
     sig_re = re.compile(r"^(\s*)def (\w+)\((.*?)\)(?: -> (.*?))?:(?: \.\.\.)?$")
     cls_re = re.compile(r"^(\s*)class (\w+)")
     dups: list[tuple[str, str, tuple]] = []
-    for pyi in sorted((ROOT / "src" / "OCP3x").rglob("*.pyi")):
+    for pyi in sorted((ROOT / "src" / "nanocct").rglob("*.pyi")):
         scope: list[tuple[int, str]] = []
         seen: dict[tuple, int] = {}
         for line in pyi.read_text().splitlines():
@@ -1201,30 +1201,30 @@ def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
     assert cmp.left_only == [] and cmp.right_only == []
     assert cmp.diff_files == [], cmp.diff_files
     for shim in ("Geom2d.py", "Adaptor2d.py"):
-        assert (tmp_path / "OCP3x" / shim).read_text() == (ROOT / "src" / "OCP3x" / shim).read_text()
+        assert (tmp_path / "nanocct" / shim).read_text() == (ROOT / "src" / "nanocct" / shim).read_text()
 
 
-@pytest.mark.skipif(os.environ.get("OCP3X_AB") != "1",
-                    reason="set OCP3X_AB=1: a serial run costs the whole speedup the parallel one buys")
+@pytest.mark.skipif(os.environ.get("NANOCCT_AB") != "1",
+                    reason="set NANOCCT_AB=1: a serial run costs the whole speedup the parallel one buys")
 def test_a_parallel_run_reproduces_a_serial_one_byte_for_byte(tmp_path):
-    """OCP3X_JOBS>1 parses and emits in a pool, deriving the two inputs a package normally inherits from the packages
+    """NANOCCT_JOBS>1 parses and emits in a pool, deriving the two inputs a package normally inherits from the packages
     before it (Design.md 5.2): who already bound which instantiation, and the parser's cross-package state. This is the
     check that the derivation is right -- six toolkits, because the interesting cases are cross-toolkit (an
     instantiation owned by an earlier toolkit, a class deriving from one).
 
     Off by default and on purpose: it has to run the generator *serially* to have something to compare against, which
     is 43 s against the 15 s the parallel run takes -- spending the speedup to re-prove it. Run it after a change to
-    the parse or the emit phase, with OCP3X_AB=1, and let the per-run known_elsewhere check (__main__) carry the
-    normal case. OCP3X_JOBS=1 is the sequential path and 0 means "as many workers as cores", so the two halves are
+    the parse or the emit phase, with NANOCCT_AB=1, and let the per-run known_elsewhere check (__main__) carry the
+    normal case. NANOCCT_JOBS=1 is the sequential path and 0 means "as many workers as cores", so the two halves are
     pinned here rather than inherited from whatever the environment happens to say."""
     toolkits = ["TKernel", "TKMath", "TKG2d", "TKG3d", "TKGeomBase", "TKBRep"]
     flags = [f for tk in toolkits for f in ("--toolkit", tk)]
     outs = {}
-    for name, env in (("serial", {"OCP3X_JOBS": "1"}), ("parallel", {"OCP3X_JOBS": "0"})):
+    for name, env in (("serial", {"NANOCCT_JOBS": "1"}), ("parallel", {"NANOCCT_JOBS": "0"})):
         outs[name] = tmp_path / name
         subprocess.run([*GEN, *flags, "--out", str(outs[name])],
                        check=True, cwd=ROOT, capture_output=True, text=True, env={**os.environ, **env})
-    for sub in ("cpp", "OCP3x"):
+    for sub in ("cpp", "nanocct"):
         left, right = outs["serial"] / sub, outs["parallel"] / sub
         for a, b, _ in _walk_pairs(left, right):
             assert a.read_bytes() == b.read_bytes(), f"{a.relative_to(left)} differs"
@@ -1289,8 +1289,8 @@ def test_extra_link_libraries_from_the_emitted_includes(rules_ir):
 def test_generated_toolkits_cmake_declares_the_extra_link_libraries():
     """The checked-in toolkits.cmake carries what the generator computed (R-LINK); TKDE is the first toolkit that needs it."""
     cmake = (ROOT / "src" / "cpp" / "toolkits.cmake").read_text()
-    assert "set(OCP3X_TKDE_EXTRA_LIBS TKLCAF TKXSBase)" in cmake
-    assert "${OCP3X_${tk}_EXTRA_LIBS}" in (ROOT / "CMakeLists.txt").read_text()
+    assert "set(NANOCCT_TKDE_EXTRA_LIBS TKLCAF TKXSBase)" in cmake
+    assert "${NANOCCT_${tk}_EXTRA_LIBS}" in (ROOT / "CMakeLists.txt").read_text()
 
 
 def test_unsupported_std_types_are_reported_by_name(rules_ir):
@@ -1334,11 +1334,11 @@ def test_the_lambda_temporary_cannot_collide_with_a_parameter(rules_ir):
     """99 OCCT parameters are called `result` (IGESConvGeom::SplineCurveFromIGES(..., handle<Geom_BSplineCurve>&
     result)); when such a parameter is an out-parameter of a non-void method, a bare `result` for the C++ return value
     is a redefinition in the same lambda (TKDEIGES did not compile, 2026-09-22). Generated temporaries carry the
-    ocp3x_ prefix, which no OCCT name uses."""
+    nanocct_ prefix, which no OCCT name uses."""
     em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
-    assert "auto ocp3x_result = " in cpp
+    assert "auto nanocct_result = " in cpp
     assert re.search(r"\bauto result\b", cpp) is None and re.search(r"> result\(", cpp) is None
 
 
@@ -1353,4 +1353,4 @@ def test_third_party_include_paths_are_passed_to_clang():
     if rapidjson.is_dir():
         assert f"-I{rapidjson}" in args
         assert (rapidjson / "rapidjson" / "document.h").exists()
-    assert "${OCP3X_RAPIDJSON_DIR}" in (ROOT / "CMakeLists.txt").read_text()   # ... and the C++ build too
+    assert "${NANOCCT_RAPIDJSON_DIR}" in (ROOT / "CMakeLists.txt").read_text()   # ... and the C++ build too

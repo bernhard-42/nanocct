@@ -6,16 +6,16 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import AIS, Aspect, BRepBndLib, BRepGProp, BRepPrimAPI, Bnd, Font, GProp, Graphic3d, Prs3d, PrsDim, Quantity, SelectMgr, StdPrs, TopAbs, TopExp, TopoDS, V3d, gp
-from OCP3x.NCollection import NCollection_String
-from OCP3x.TCollection import TCollection_AsciiString
+from nanocct import AIS, Aspect, BRepBndLib, BRepGProp, BRepPrimAPI, Bnd, Font, GProp, Graphic3d, Prs3d, PrsDim, Quantity, SelectMgr, StdPrs, TopAbs, TopExp, TopoDS, V3d, gp
+from nanocct.NCollection import NCollection_String
+from nanocct.TCollection import TCollection_AsciiString
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKV3d" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["V3d", "Select3D", "Prs3d", "StdPrs", "SelectBasics", "SelectMgr", "PrsMgr", "AIS", "StdSelect", "DsgPrs", "PrsDim"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def _bbox(shape):

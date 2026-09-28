@@ -35,7 +35,7 @@ PREFIX_REL="${1:-deps/occt-8.0.1-manylinux}"
 [ -f "$HERE/freeimage-ml/lib/libFreeImage.so" ] || { echo "missing $HERE/freeimage-ml (run 'make freeimage')" >&2; exit 1; }
 
 # Through run-manylinux.sh like the FreeType and FreeImage builds, so the image and its architecture are named in one
-# place (until 2026-09-28 this script ran its own `docker build`/`docker run`, and the rename to OCP3x broke both).
+# place (until 2026-09-28 this script ran its own `docker build`/`docker run`, and the rename to nanocct broke both).
 "$HERE/run-manylinux.sh" '
 set -euo pipefail
 PREFIX="/work/'"$PREFIX_REL"'"

@@ -3,12 +3,12 @@ import math
 
 import pytest
 
-from OCP3x import gp
+from nanocct import gp
 
 
 def test_module_identity():
-    assert gp.__name__ == "OCP3x.gp"
-    assert gp.gp_Pnt.__module__ == "OCP3x.gp"
+    assert gp.__name__ == "nanocct.gp"
+    assert gp.gp_Pnt.__module__ == "nanocct.gp"
 
 
 def test_value_class_ctor_and_accessors():

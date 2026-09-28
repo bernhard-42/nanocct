@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(OCP3x LANGUAGES CXX)
+project(nanocct LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -9,24 +9,24 @@ execute_process(COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
 find_package(nanobind CONFIG REQUIRED)
 
 # OCCT: the local build in deps/ by default (see deps/build-occt-macos.sh)
-set(OCP3X_OCCT_DIR "${CMAKE_SOURCE_DIR}/deps/occt-8.0.1" CACHE PATH "OCCT installation prefix")
-set(OCP3X_RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/deps/rapidjson/include" CACHE PATH "RapidJSON headers (vendored)")
+set(NANOCCT_OCCT_DIR "${CMAKE_SOURCE_DIR}/deps/occt-8.0.1" CACHE PATH "OCCT installation prefix")
+set(NANOCCT_RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/deps/rapidjson/include" CACHE PATH "RapidJSON headers (vendored)")
 # OCCT's install layout differs by platform: lib/cmake/opencascade on Unix, cmake/ on Windows (2026-09-23)
 find_package(OpenCASCADE REQUIRED NO_DEFAULT_PATH PATHS
-             "${OCP3X_OCCT_DIR}/lib/cmake/opencascade"
-             "${OCP3X_OCCT_DIR}/cmake")
-message(STATUS "OCP3x: OCCT ${OpenCASCADE_VERSION} from ${OCP3X_OCCT_DIR}")
+             "${NANOCCT_OCCT_DIR}/lib/cmake/opencascade"
+             "${NANOCCT_OCCT_DIR}/cmake")
+message(STATUS "nanocct: OCCT ${OpenCASCADE_VERSION} from ${NANOCCT_OCCT_DIR}")
 
-include("${CMAKE_SOURCE_DIR}/src/cpp/toolkits.cmake")   # generated: OCP3X_TOOLKITS
-foreach(tk IN LISTS OCP3X_TOOLKITS)
+include("${CMAKE_SOURCE_DIR}/src/cpp/toolkits.cmake")   # generated: NANOCCT_TOOLKITS
+foreach(tk IN LISTS NANOCCT_TOOLKITS)
   file(GLOB tk_sources CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/cpp/${tk}/*.cpp")
-  nanobind_add_module(_${tk} STABLE_ABI NB_DOMAIN ocp3x ${tk_sources})
+  nanobind_add_module(_${tk} STABLE_ABI NB_DOMAIN nanocct ${tk_sources})
   target_include_directories(_${tk} PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
   # OCCT's exported targets define HAVE_RAPIDJSON but do not carry the include path, and an installed header
   # includes it (RWGltf_GltfJsonParser.hxx -> rapidjson/document.h). Same vendored copy the OCCT build used
   # (deps/fetch-rapidjson.sh, State.md 8.13); header-only, so nothing extra is linked or shipped.
-  if(EXISTS "${OCP3X_RAPIDJSON_DIR}")
-    target_include_directories(_${tk} PRIVATE "${OCP3X_RAPIDJSON_DIR}")
+  if(EXISTS "${NANOCCT_RAPIDJSON_DIR}")
+    target_include_directories(_${tk} PRIVATE "${NANOCCT_RAPIDJSON_DIR}")
   endif()
   # deprecated OCCT members are bound on purpose (their deprecation message becomes the docstring, Design.md 6)
   if(MSVC)
@@ -34,19 +34,19 @@ foreach(tk IN LISTS OCP3X_TOOLKITS)
   else()
     target_compile_options(_${tk} PRIVATE -Wno-deprecated-declarations)
   endif()
-  # ${tk} brings OCCT's own EXTERNLIB closure; OCP3X_<tk>_EXTRA_LIBS adds the toolkits whose types the
+  # ${tk} brings OCCT's own EXTERNLIB closure; NANOCCT_<tk>_EXTRA_LIBS adds the toolkits whose types the
   # generated code names but OCCT does not link (typeinfo for the handle caster, Design.md 6 R-LINK).
-  target_link_libraries(_${tk} PRIVATE ${tk} ${OCP3X_${tk}_EXTRA_LIBS})
+  target_link_libraries(_${tk} PRIVATE ${tk} ${NANOCCT_${tk}_EXTRA_LIBS})
   # dev builds: find the OCCT libraries where they are; wheels get relinked by delocate/auditwheel
-  set_target_properties(_${tk} PROPERTIES INSTALL_RPATH "${OCP3X_OCCT_DIR}/lib")
-  install(TARGETS _${tk} LIBRARY DESTINATION OCP3x)
+  set_target_properties(_${tk} PROPERTIES INSTALL_RPATH "${NANOCCT_OCCT_DIR}/lib")
+  install(TARGETS _${tk} LIBRARY DESTINATION nanocct)
 endforeach()
 
-# OCP3x._AddOns: hand-written, not generated and not a binding of an OCCT toolkit, so it is built outside the
+# nanocct._AddOns: hand-written, not generated and not a binding of an OCCT toolkit, so it is built outside the
 # loop above and tracked in git (src/cpp/AddOns, kept by .gitignore and untouched by `make clean_gen`). It holds
 # the helpers that zero-copy views cannot express because they are computations rather than data -- State.md 8.10b --
 # and, rarely, a workaround for an OCCT bug that is not fixed upstream (Design.md R-ADDON).
-nanobind_add_module(_AddOns STABLE_ABI NB_DOMAIN ocp3x "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/_AddOns.cpp"
+nanobind_add_module(_AddOns STABLE_ABI NB_DOMAIN nanocct "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/_AddOns.cpp"
                     "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/Tessellator.cpp"
                     "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/ShapeClean.cpp")
 target_include_directories(_AddOns PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
@@ -57,5 +57,5 @@ else()
 endif()
 # BRepGProp_Face lives in TKTopAlgo; ShapeClean needs ShapeUpgrade (TKShHealing) and Geom2dConvert (TKGeomBase)
 target_link_libraries(_AddOns PRIVATE TKShHealing TKTopAlgo TKGeomBase TKBRep TKG2d TKG3d TKMath TKernel)
-set_target_properties(_AddOns PROPERTIES INSTALL_RPATH "${OCP3X_OCCT_DIR}/lib")
-install(TARGETS _AddOns LIBRARY DESTINATION OCP3x)
+set_target_properties(_AddOns PROPERTIES INSTALL_RPATH "${NANOCCT_OCCT_DIR}/lib")
+install(TARGETS _AddOns LIBRARY DESTINATION nanocct)

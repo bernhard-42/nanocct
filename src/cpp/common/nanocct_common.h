@@ -1,4 +1,4 @@
-// Shared by every generated OCP3x translation unit.
+// Shared by every generated nanocct translation unit.
 #pragma once
 // MSVC only: nanobind defines NB_INLINE as __forceinline, and MSVC's optimizer is superlinear in the size of a
 // function that expands it that often. A binding registration function is exactly that. Measured on gauss
@@ -66,22 +66,22 @@ struct mi_entry {
     void *(*from_transient)(Standard_Transient *);       // Transient subobject of an S -> stored pointer
 };
 
-inline std::unordered_map<std::string, mi_entry> &ocp3x_mi_by_name() {   // key: typeid(S).name()
+inline std::unordered_map<std::string, mi_entry> &nanocct_mi_by_name() {   // key: typeid(S).name()
     static std::unordered_map<std::string, mi_entry> m;
     return m;
 }
-inline std::vector<mi_entry> &ocp3x_mi_list() {
+inline std::vector<mi_entry> &nanocct_mi_list() {
     static std::vector<mi_entry> v;
     return v;
 }
 
-template <typename S> void ocp3x_register_mi(nb::handle py_type) {
+template <typename S> void nanocct_register_mi(nb::handle py_type) {
     using B = typename mi_traits<S>::base;
     mi_entry e{py_type.ptr(),
                [](void *stored) -> Standard_Transient * { return static_cast<S *>(static_cast<B *>(stored)); },
                [](Standard_Transient *t) -> void * { return static_cast<B *>(static_cast<S *>(dynamic_cast<void *>(t))); }};
-    ocp3x_mi_by_name()[typeid(S).name()] = e;
-    ocp3x_mi_list().push_back(e);
+    nanocct_mi_by_name()[typeid(S).name()] = e;
+    nanocct_mi_list().push_back(e);
 }
 
 template <typename S, typename = void> struct has_mi_traits : std::false_type {};
@@ -107,18 +107,18 @@ template <typename T, typename E> struct mi_traits<NCollection_Shared<T, E>> { u
 // not work across the OCCT library / extension module boundary. Each toolkit module therefore
 // registers one translator that catches Standard_Failure and dispatches on the mangled name of
 // the dynamic type; names it does not know are rethrown to the next module's translator, and the
-// TKernel translator finally falls back to OCP3x.Standard.Standard_Failure.
-inline std::unordered_map<std::string, PyObject *> &ocp3x_exception_map() {
+// TKernel translator finally falls back to nanocct.Standard.Standard_Failure.
+inline std::unordered_map<std::string, PyObject *> &nanocct_exception_map() {
     static std::unordered_map<std::string, PyObject *> map;
     return map;
 }
 
-template <typename T> void ocp3x_register_exception(nb::handle py_type) {
-    ocp3x_exception_map()[typeid(T).name()] = py_type.ptr();
+template <typename T> void nanocct_register_exception(nb::handle py_type) {
+    nanocct_exception_map()[typeid(T).name()] = py_type.ptr();
 }
 
 // scope: the package module or a namespace submodule
-inline nb::object ocp3x_new_exception(nb::handle m, const char *name, const char *doc, PyObject *base) {
+inline nb::object nanocct_new_exception(nb::handle m, const char *name, const char *doc, PyObject *base) {
     std::string qualified = nb::borrow<nb::str>(m.attr("__name__")).c_str();
     qualified += ".";
     qualified += name;
@@ -132,7 +132,7 @@ inline nb::object ocp3x_new_exception(nb::handle m, const char *name, const char
 // is copied out before Next() (a const reference from Value() would dangle afterwards).
 // Constructors of a class-template instantiation whose abstractness only the compiler can see (BVH_PrimitiveSet<double, 3>
 // through the pure virtuals of BVH_Set): the generic lambda's body is instantiated only when the class is concrete (R-TEMPLATE-BASE).
-template <typename T, typename F> void ocp3x_if_concrete(nb::class_<T> cls, F f) {
+template <typename T, typename F> void nanocct_if_concrete(nb::class_<T> cls, F f) {
     if constexpr (!std::is_abstract_v<T>)
         f(cls);
 }
@@ -141,19 +141,19 @@ template <typename T, typename F> void ocp3x_if_concrete(nb::class_<T> cls, F f)
 // nb::stop_iteration, a C++ exception that cost ~8 us per loop however short (2026-09-27: a TopExp_Explorer over
 // 6 faces took 8.5 us against 0.47 us for a More()/Next() loop). make_iterator ends without one. The cursor
 // advances the object itself, so it is exhausted afterwards, like a file; the element is copied out before Next().
-template <typename T, typename Get> struct ocp3x_iter_cursor {
+template <typename T, typename Get> struct nanocct_iter_cursor {
     T *obj;                                   // nullptr: the end sentinel
     Get get;
     bool done() const { return obj == nullptr || !obj->More(); }
-    bool operator==(const ocp3x_iter_cursor &o) const { return done() == o.done(); }
-    bool operator!=(const ocp3x_iter_cursor &o) const { return !(*this == o); }
-    ocp3x_iter_cursor &operator++() { obj->Next(); return *this; }
+    bool operator==(const nanocct_iter_cursor &o) const { return done() == o.done(); }
+    bool operator!=(const nanocct_iter_cursor &o) const { return !(*this == o); }
+    nanocct_iter_cursor &operator++() { obj->Next(); return *this; }
     auto operator*() const { return get(*obj); }    // by value: Current() may be a reference that Next() changes
 };
 
-template <typename T, typename Get> void ocp3x_def_iter(nb::class_<T> cls, Get get) {
+template <typename T, typename Get> void nanocct_def_iter(nb::class_<T> cls, Get get) {
     cls.def("__iter__", [get](T &self) {
-        using Cursor = ocp3x_iter_cursor<T, Get>;
+        using Cursor = nanocct_iter_cursor<T, Get>;
         return nb::make_iterator<nb::rv_policy::move>(nb::type<T>(), "iterator", Cursor{&self, get}, Cursor{nullptr, get});
     }, nb::keep_alive<0, 1>(),
     "Python addition: iterate with More()/Next(), yielding Value() (or Current()); the iterator advances the object "
@@ -162,7 +162,7 @@ template <typename T, typename Get> void ocp3x_def_iter(nb::class_<T> cls, Get g
 
 // The implicit default constructor of a class that declares none: bound only when it exists (a reference
 // member or a non-default-constructible member deletes it; the header does not say so).
-template <typename T> void ocp3x_implicit_default_ctor(nb::class_<T> cls) {
+template <typename T> void nanocct_implicit_default_ctor(nb::class_<T> cls) {
     if constexpr (std::is_default_constructible_v<T>) {
         if constexpr (std::is_base_of_v<Standard_Transient, T>)
             cls.def(nb::new_([]() { return opencascade::handle<T>(new T()); }));
@@ -173,7 +173,7 @@ template <typename T> void ocp3x_implicit_default_ctor(nb::class_<T> cls) {
 
 // The implicit copy constructor (none declared by the class): bound when it exists (deleted for classes with a
 // reference or non-copyable member). Sub-class arguments convert implicitly, as in C++ (TopoDS_Shape(aVertex)).
-template <typename T> void ocp3x_implicit_copy_ctor(nb::class_<T> cls) {
+template <typename T> void nanocct_implicit_copy_ctor(nb::class_<T> cls) {
     if constexpr (std::is_copy_constructible_v<T>) {
         if constexpr (std::is_base_of_v<Standard_Transient, T>)
             cls.def(nb::new_([](const T &other) { return opencascade::handle<T>(new T(other)); }), nb::arg("theOther"));
@@ -185,7 +185,7 @@ template <typename T> void ocp3x_implicit_copy_ctor(nb::class_<T> cls) {
 // operator To() const of From: To gets a constructor from From (To(aFrom) in Python) and, unless the operator is
 // explicit, the implicit conversion C++ has (a From passes where a To is expected). From is taken by non-const
 // reference: some operators are not const (Message_Msg).
-template <typename From, typename To> void ocp3x_conversion(nb::handle to_type, bool implicit) {
+template <typename From, typename To> void nanocct_conversion(nb::handle to_type, bool implicit) {
     auto cls = nb::borrow<nb::class_<To>>(to_type);
     if constexpr (std::is_base_of_v<Standard_Transient, To>)
         cls.def(nb::new_([](From &from) { return opencascade::handle<To>(new To(static_cast<To>(from))); }), nb::arg("theFrom"));
@@ -196,7 +196,7 @@ template <typename From, typename To> void ocp3x_conversion(nb::handle to_type, 
 }
 
 // operator opencascade::handle<To>() const of From: the handle's object becomes the result of To(aFrom)
-template <typename From, typename To> void ocp3x_conversion_handle(nb::handle to_type, bool implicit) {
+template <typename From, typename To> void nanocct_conversion_handle(nb::handle to_type, bool implicit) {
     auto cls = nb::borrow<nb::class_<To>>(to_type);
     cls.def(nb::new_([](From &from) { return static_cast<opencascade::handle<To>>(from); }), nb::arg("theFrom"));
     if (implicit)
@@ -206,7 +206,7 @@ template <typename From, typename To> void ocp3x_conversion_handle(nb::handle to
 // Public data member: read/write when its type can be assigned to (a member with a deleted copy assignment, e.g. of
 // type BRepGraphInc_Storage, or a const member is read-only). Decided at compile time, the header does not say.
 template <typename C, typename T, typename D, typename... Extra>
-void ocp3x_def_field(nb::class_<C> cls, const char *name, D T::*p, const Extra &...extra) {
+void nanocct_def_field(nb::class_<C> cls, const char *name, D T::*p, const Extra &...extra) {
     if constexpr (std::is_copy_assignable_v<D> && !std::is_const_v<D>)
         cls.def_rw(name, p, extra...);
     else
@@ -214,13 +214,13 @@ void ocp3x_def_field(nb::class_<C> cls, const char *name, D T::*p, const Extra &
 }
 
 // fallback: the Python type for Standard_Failure, or nullptr to pass unknown exceptions on
-inline void ocp3x_install_exception_translator(PyObject *fallback) {
+inline void nanocct_install_exception_translator(PyObject *fallback) {
     nb::register_exception_translator(
         [](const std::exception_ptr &p, void *payload) {
             try {
                 std::rethrow_exception(p);
             } catch (const Standard_Failure &e) {
-                auto &map = ocp3x_exception_map();
+                auto &map = nanocct_exception_map();
                 auto it = map.find(typeid(e).name());
                 if (it != map.end()) {
                     PyErr_SetString(it->second, e.what());
@@ -238,13 +238,13 @@ inline void ocp3x_install_exception_translator(PyObject *fallback) {
 
 // The text an OCCT method wrote to a std::ostream& parameter, as a str. OCCT streams are text (Dump, DumpJson, Print,
 // BRepTools::Write); decoded with surrogateescape so that a stray non-UTF-8 byte is lossless.
-inline nb::str ocp3x_stream_text(const std::ostringstream &stream) {
+inline nb::str nanocct_stream_text(const std::ostringstream &stream) {
     const std::string text = stream.str();
     return nb::steal<nb::str>(PyUnicode_DecodeUTF8(text.data(), static_cast<Py_ssize_t>(text.size()), "surrogateescape"));
 }
 
 // The same for the binary formats (the BinTools package, overrides.toml [stream] binary_packages): bytes.
-inline nb::bytes ocp3x_stream_bytes(const std::ostringstream &stream) {
+inline nb::bytes nanocct_stream_bytes(const std::ostringstream &stream) {
     const std::string data = stream.str();
     return nb::bytes(data.data(), data.size());
 }
@@ -252,7 +252,7 @@ inline nb::bytes ocp3x_stream_bytes(const std::ostringstream &stream) {
 // A std::istream& / std::stringstream parameter (BRepTools::Read, InitFromJson): the text of a Python file-like object
 // (anything with read(): io.StringIO, an open text file). A str is deliberately not accepted -- it would collide with
 // the file-path overloads -- so a non-file-like argument falls through to the next overload. Typed typing.TextIO.
-namespace OCP3x {
+namespace nanocct {
 struct TextInput {
     std::string text;
 };
@@ -347,8 +347,8 @@ template <size_t N> struct type_caster<std::bitset<N>> {
     }
 };
 
-template <> struct type_caster<OCP3x::TextInput> {
-    NB_TYPE_CASTER(OCP3x::TextInput, const_name("typing.TextIO"))
+template <> struct type_caster<nanocct::TextInput> {
+    NB_TYPE_CASTER(nanocct::TextInput, const_name("typing.TextIO"))
 
     bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
         if (!hasattr(src, "read"))
@@ -357,7 +357,7 @@ template <> struct type_caster<OCP3x::TextInput> {
             object text = src.attr("read")();
             if (!str_check(text.ptr()))
                 return false;
-            bytes data = borrow<bytes>(text.attr("encode")("utf-8", "surrogateescape"));   // the inverse of ocp3x_stream_text
+            bytes data = borrow<bytes>(text.attr("encode")("utf-8", "surrogateescape"));   // the inverse of nanocct_stream_text
             value.text.assign(data.c_str(), data.size());
         } catch (...) {
             return false;
@@ -365,11 +365,11 @@ template <> struct type_caster<OCP3x::TextInput> {
         return true;
     }
 
-    static handle from_cpp(const OCP3x::TextInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
+    static handle from_cpp(const nanocct::TextInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
 };
 
-template <> struct type_caster<OCP3x::OptionalCString> {
-    NB_TYPE_CASTER(OCP3x::OptionalCString, const_name("str"))   // nb::arg(...).none() appends "| None"
+template <> struct type_caster<nanocct::OptionalCString> {
+    NB_TYPE_CASTER(nanocct::OptionalCString, const_name("str"))   // nb::arg(...).none() appends "| None"
 
     bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
         if (src.is_none()) {
@@ -387,15 +387,15 @@ template <> struct type_caster<OCP3x::OptionalCString> {
         return true;
     }
 
-    static handle from_cpp(const OCP3x::OptionalCString &v, rv_policy, cleanup_list *) noexcept {
+    static handle from_cpp(const nanocct::OptionalCString &v, rv_policy, cleanup_list *) noexcept {
         if (v.ptr == nullptr)
             return none_ref();
         return PyUnicode_FromString(v.ptr);
     }
 };
 
-template <> struct type_caster<OCP3x::BinaryInput> {
-    NB_TYPE_CASTER(OCP3x::BinaryInput, const_name("typing.BinaryIO"))
+template <> struct type_caster<nanocct::BinaryInput> {
+    NB_TYPE_CASTER(nanocct::BinaryInput, const_name("typing.BinaryIO"))
 
     bool from_python(handle src, uint32_t, cleanup_list *) noexcept {
         if (!hasattr(src, "read"))
@@ -412,7 +412,7 @@ template <> struct type_caster<OCP3x::BinaryInput> {
         return true;
     }
 
-    static handle from_cpp(const OCP3x::BinaryInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
+    static handle from_cpp(const nanocct::BinaryInput &, rv_policy, cleanup_list *) noexcept { return none_ref(); }
 };
 
 NAMESPACE_END(detail)
@@ -541,7 +541,7 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
                 ptr = static_cast<Td *>(reinterpret_cast<typename mi_traits<Td>::base *>(static_cast<void *>(ptr)));
             // A reference count of 0 means no handle owns the object: nanobind does (a by-value copy, a member reached
             // through a field). A handle made from it would delete that memory when it goes, whatever C++ does with it
-            // (8.18). Every Transient OCP3x creates is handle-held (constructors, R-RESULT), so this is a gap in the
+            // (8.18). Every Transient nanocct creates is handle-held (constructors, R-RESULT), so this is a gap in the
             // bindings; refusing the argument turns a crash into a TypeError.
             if (ptr != nullptr && ptr->GetRefCount() == 0)
                 return false;
@@ -549,7 +549,7 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
             return true;
         }
         // a multiple-inheritance type whose Transient base is not the bound base (HArray1 -> Standard_Transient)
-        for (const mi_entry &e : ocp3x_mi_list()) {
+        for (const mi_entry &e : nanocct_mi_list()) {
             if (PyType_IsSubtype(Py_TYPE(src.ptr()), (PyTypeObject *) e.py_type)) {
                 Standard_Transient *t = e.to_transient(inst_ptr<void>(src));
                 Td *ptr = dynamic_cast<Td *>(t);
@@ -570,7 +570,7 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
         if constexpr (has_mi_traits<Td>::value) {
             stored = static_cast<typename mi_traits<Td>::base *>(ptr);
         } else {
-            auto &mi = ocp3x_mi_by_name();
+            auto &mi = nanocct_mi_by_name();
             auto it = mi.find(type_p->name());          // dynamic type is a registered MI type
             if (it != mi.end()) stored = it->second.from_transient(ptr);
         }

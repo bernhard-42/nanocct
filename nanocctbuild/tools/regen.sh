@@ -1,25 +1,25 @@
 #!/bin/bash
-# Regenerate ocp3xbuild/patches/<pkg>.patch from the verified sdists, the tools and the hand layer:
+# Regenerate nanocctbuild/patches/<pkg>.patch from the verified sdists, the tools and the hand layer:
 #
 #   sdist -> tools/port.py -> tools/fix_outargs.py -> tools/manual/<pkg>.patch -> tools/static_names.py -> tools/mkpatch.py
 #
-#   ocp3xbuild/tools/regen.sh            (after `make ocp3xbuild`, which fetches and verifies the sdists)
+#   nanocctbuild/tools/regen.sh            (after `make nanocctbuild`, which fetches and verifies the sdists)
 #
-# The mechanical part comes from the tools; ocp3xbuild/tools/manual/<pkg>.patch holds only what a human decided (results that
-# OCP3x returns where OCP filled an argument, streams, version branches, the dependency on OCP3x, tests that need
-# a newer upstream). Needs OCP3x importable (the staged tree) and the shim wheel in dist/ (`make shim`): port.py
-# reads the OCP -> OCP3x name map from the shim's generated modules. Rerun the four suites against the real OCP
+# The mechanical part comes from the tools; nanocctbuild/tools/manual/<pkg>.patch holds only what a human decided (results that
+# nanocct returns where OCP filled an argument, streams, version branches, the dependency on nanocct, tests that need
+# a newer upstream). Needs nanocct importable (the staged tree) and the shim wheel in dist/ (`make shim`): port.py
+# reads the OCP -> nanocct name map from the shim's generated modules. Rerun the four suites against the real OCP
 # afterwards (tools/junit_cmp.py) -- a regenerated patch is only as good as that comparison.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NB="$(dirname "$HERE")"
 ROOT="$(dirname "$NB")"
 PY="${PY:-$ROOT/.venv/bin/python}"
-SDIST="$ROOT/build/ocp3xbuild/sdist"
-WORK="$ROOT/build/ocp3xbuild/regen"
+SDIST="$ROOT/build/nanocctbuild/sdist"
+WORK="$ROOT/build/nanocctbuild/regen"
 
-# the rm -rf below is built from $ROOT: refuse to run if that is not an OCP3x checkout
-[ -f "$ROOT/generator/__main__.py" ] && [ -f "$NB/ocp3xbuild.sh" ] || { echo "not an OCP3x checkout: $ROOT" >&2; exit 1; }
+# the rm -rf below is built from $ROOT: refuse to run if that is not an nanocct checkout
+[ -f "$ROOT/generator/__main__.py" ] && [ -f "$NB/nanocctbuild.sh" ] || { echo "not an nanocct checkout: $ROOT" >&2; exit 1; }
 SHIM_WHEEL="$(ls "$ROOT"/dist/cadquery_ocp_novtk-*.whl 2>/dev/null | head -1)"
 [ -n "$SHIM_WHEEL" ] || { echo "no shim wheel in dist/ -- run make shim first" >&2; exit 1; }
 
@@ -40,7 +40,7 @@ mkdir -p "$WORK"
 ( cd "$WORK" && unzip -q "$SHIM_WHEEL" 'OCP/*' )
 for pkg in ocpsvg-0.7.0 ocp_gordon-0.3.1 ocp_tessellate-3.5.3 build123d-0.13.0; do
     tarball="$SDIST/$pkg.tar.gz"
-    [ -f "$tarball" ] || { echo "missing $tarball -- run make ocp3xbuild first" >&2; exit 1; }
+    [ -f "$tarball" ] || { echo "missing $tarball -- run make nanocctbuild first" >&2; exit 1; }
     tar -xzf "$tarball" -C "$WORK"
     ( cd "$WORK/$pkg"
       dirs=()

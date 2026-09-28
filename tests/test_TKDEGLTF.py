@@ -1,5 +1,5 @@
 """Generated bindings for TKDEGLTF (DataExchange: RWGltf, DEGLTF): glTF import and export. RWGltf_CafWriter is the
-last of the calls build123d and CadQuery make that OCP3x was missing. glTF comes in two flavours -- .gltf is JSON
+last of the calls build123d and CadQuery make that nanocct was missing. glTF comes in two flavours -- .gltf is JSON
 with a sidecar .bin, .glb is one binary file -- and the reader takes either as bytes."""
 import importlib
 import io
@@ -8,20 +8,20 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import Message
-from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.DEGLTF import DEGLTF_ConfigurationNode, DEGLTF_Provider
-from OCP3x.Message import Message_ProgressRange
-from OCP3x.NCollection import NCollection_IndexedDataMap, NCollection_Sequence
-from OCP3x.Quantity import Quantity_Color, Quantity_NOC_RED
-from OCP3x.RWGltf import RWGltf_CafReader, RWGltf_CafWriter, RWGltf_TriangulationReader
-from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
-from OCP3x.TDF import TDF_Label
-from OCP3x.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
-from OCP3x.TopExp import TopExp_Explorer
-from OCP3x.XCAFApp import XCAFApp_Application
-from OCP3x.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
+from nanocct import Message
+from nanocct.BRepMesh import BRepMesh_IncrementalMesh
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.DEGLTF import DEGLTF_ConfigurationNode, DEGLTF_Provider
+from nanocct.Message import Message_ProgressRange
+from nanocct.NCollection import NCollection_IndexedDataMap, NCollection_Sequence
+from nanocct.Quantity import Quantity_Color, Quantity_NOC_RED
+from nanocct.RWGltf import RWGltf_CafReader, RWGltf_CafWriter, RWGltf_TriangulationReader
+from nanocct.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+from nanocct.TDF import TDF_Label
+from nanocct.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
+from nanocct.TopExp import TopExp_Explorer
+from nanocct.XCAFApp import XCAFApp_Application
+from nanocct.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEGLTF" / "report.txt"
 
@@ -56,7 +56,7 @@ def _empty_document():
 
 @pytest.mark.parametrize("pkg", ["RWGltf", "DEGLTF"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def test_the_caf_writer_is_build123d_s_last_missing_call(tmp_path, document, quiet_messenger):

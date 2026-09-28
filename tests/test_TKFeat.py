@@ -6,14 +6,14 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from OCP3x import BRepBuilderAPI, BRepFeat, BRepGProp, BRepPrimAPI, GProp, LocOpe, TopAbs, TopExp, TopoDS, gp
+from nanocct import BRepBuilderAPI, BRepFeat, BRepGProp, BRepPrimAPI, GProp, LocOpe, TopAbs, TopExp, TopoDS, gp
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKFeat" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["LocOpe", "BRepFeat"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def _volume(shape: TopoDS.TopoDS_Shape) -> float:

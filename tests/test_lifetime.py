@@ -48,7 +48,7 @@ def collect():
 """
 
 BOX = """
-from OCP3x import BRepPrimAPI, TopAbs, TopExp, TopoDS
+from nanocct import BRepPrimAPI, TopAbs, TopExp, TopoDS
 box = BRepPrimAPI.BRepPrimAPI_MakeBox(1, 2, 3).Shape()
 face = TopoDS.Face(TopExp.TopExp_Explorer(box, TopAbs.TopAbs_FACE).Current())
 """
@@ -76,7 +76,7 @@ def test_transient_pointer_result_forward():
     """PrsMgr_PresentableObject::Parent() returns `PrsMgr_PresentableObject*` (a raw back pointer): the parent's own
     Python object, holding a handle. Dropping it leaves the child and the parent intact."""
     out = _ok(_run("""
-        from OCP3x import AIS
+        from nanocct import AIS
         parent, child = AIS.AIS_Shape(box), AIS.AIS_Shape(box)
         parent.AddChild(child)
         result = child.Parent()
@@ -92,7 +92,7 @@ def test_transient_pointer_result_reverse():
     """The same, dropping the child and the parent's own variable: the result's handle keeps the parent alive, and the
     parent's child list keeps the child."""
     out = _ok(_run("""
-        from OCP3x import AIS
+        from nanocct import AIS
         parent, child = AIS.AIS_Shape(box), AIS.AIS_Shape(box)
         parent.AddChild(child)
         result = child.Parent()
@@ -106,7 +106,7 @@ def test_transient_pointer_result_reverse():
 # ---- R-PTR-REF: T*& to a Transient -> the pointer, as a handle --------------------------------------------------------
 
 MESH_MODEL = BOX + """
-from OCP3x import BRepMesh, IMeshTools
+from nanocct import BRepMesh, IMeshTools
 model = BRepMesh.BRepMesh_ModelBuilder().Perform(box, IMeshTools.IMeshTools_Parameters())
 wire = model.GetFace(0).GetWire(0)
 """
@@ -169,7 +169,7 @@ def test_imeshdata_objects_outliving_their_model():
 # ---- R-RESULT: T& to a Transient, reference count > 0 (handle-owned) --------------------------------------------------
 
 LDOM_DOC = """
-from OCP3x import LDOM
+from nanocct import LDOM
 doc = LDOM.LDOM_Document.createDocument_s("root")
 element = doc.getDocumentElement()
 """
@@ -206,7 +206,7 @@ def test_transient_reference_result_member_forward():
     value -- the shape of the 2026-09-25 crash. It gets exactly one permanent reference, however often it is returned."""
     out = _ok(_run("""
         import math
-        from OCP3x import BRepAdaptor, BRepBuilderAPI, GC, gp
+        from nanocct import BRepAdaptor, BRepBuilderAPI, GC, gp
         edge = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(GC.GC_MakeCircle(gp.gp_Ax2(), 1.0).Value()).Edge()
         owner = BRepAdaptor.BRepAdaptor_Curve(edge)
         for _ in range(100):
@@ -225,7 +225,7 @@ def test_transient_reference_result_member_reverse():
     """keep_alive<0, 1>: the member's wrapper keeps its owner alive, so the member outlives the owner's variable."""
     out = _ok(_run("""
         import math
-        from OCP3x import BRepAdaptor, BRepBuilderAPI, GC, gp
+        from nanocct import BRepAdaptor, BRepBuilderAPI, GC, gp
         edge = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(GC.GC_MakeCircle(gp.gp_Ax2(), 1.0).Value()).Edge()
         owner = BRepAdaptor.BRepAdaptor_Curve(edge)
         result = owner.Curve()
@@ -240,7 +240,7 @@ def test_transient_reference_result_allocator_storage_forward():
     """IntTools_Context::SurfaceAdaptor(face) returns a `BRepAdaptor_Surface&` placement-new'd into the context's own
     allocator (IntTools_Context.cxx:333-334): count 0, and never allocated on its own, like a member."""
     out = _ok(_run("""
-        from OCP3x import IntTools
+        from nanocct import IntTools
         owner = IntTools.IntTools_Context()
         result = owner.SurfaceAdaptor(face)
         print(result.GetRefCount())
@@ -254,7 +254,7 @@ def test_transient_reference_result_allocator_storage_forward():
 
 def test_transient_reference_result_allocator_storage_reverse():
     out = _ok(_run("""
-        from OCP3x import IntTools
+        from nanocct import IntTools
         owner = IntTools.IntTools_Context()
         result = owner.SurfaceAdaptor(face)
         del owner
@@ -268,7 +268,7 @@ def test_transient_reference_result_raw_heap_object_forward():
     """BRepClass3d_SolidExplorer::Intersector(face) returns `IntCurvesFace_Intersector&` to an object the explorer
     allocated with `new` and `delete`s itself in Destroy() (BRepClass3d_SolidExplorer.cxx:884-893): count 0."""
     out = _ok(_run("""
-        from OCP3x import BRepClass3d, gp
+        from nanocct import BRepClass3d, gp
         owner = BRepClass3d.BRepClass3d_SolidExplorer(box)
         result = owner.Intersector(face)
         print(result.GetRefCount())
@@ -283,7 +283,7 @@ def test_transient_reference_result_raw_heap_object_forward():
 
 def test_transient_reference_result_raw_heap_object_reverse():
     out = _ok(_run("""
-        from OCP3x import BRepClass3d, gp
+        from nanocct import BRepClass3d, gp
         owner = BRepClass3d.BRepClass3d_SolidExplorer(box)
         result = owner.Intersector(face)
         del owner
@@ -297,7 +297,7 @@ def test_transient_reference_result_raw_heap_object_reverse():
 # ---- R-RESULT: T* to another class -> rv_policy::reference (no keep_alive) --------------------------------------------
 
 BSPLINE = """
-from OCP3x import Geom, NCollection, gp
+from nanocct import Geom, NCollection, gp
 poles = NCollection.NCollection_Array1[gp.gp_Pnt](1, 3)
 for i, p in enumerate([gp.gp_Pnt(0, 0, 0), gp.gp_Pnt(1, 1, 0), gp.gp_Pnt(2, 0, 0)], 1):
     poles.SetValue(i, p)
@@ -339,7 +339,7 @@ def test_class_pointer_result_reverse():
 # ---- R-PTR-REF: T*& to another class; R-PTR-INCOMPLETE: T* to a forward-declared class --------------------------------
 
 FUSE = BOX + """
-from OCP3x import BRepAlgoAPI, gp
+from nanocct import BRepAlgoAPI, gp
 owner = BRepAlgoAPI.BRepAlgoAPI_Fuse(box, BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(0.5, 0.5, 0.5), 1, 1, 1).Shape())
 """
 
@@ -401,7 +401,7 @@ def test_mutable_reference_method_forward():
     """gp_Pnt::ChangeCoord() returns `gp_XYZ&` into a value class nanobind owns; Poly_Polygon3D::ChangeNodes() returns
     `NCollection_Array1<gp_Pnt>&` into a Transient. Edits through the result reach the owner."""
     out = _ok(_run("""
-        from OCP3x import NCollection, Poly, gp
+        from nanocct import NCollection, Poly, gp
         p = gp.gp_Pnt(1, 2, 3)
         xyz = p.ChangeCoord()
         xyz.SetX(10.0)
@@ -423,7 +423,7 @@ def test_mutable_reference_method_forward():
 def test_mutable_reference_method_reverse():
     """reference_internal is keep_alive<0, 1>: the reference keeps its owner alive."""
     out = _ok(_run("""
-        from OCP3x import NCollection, Poly, gp
+        from nanocct import NCollection, Poly, gp
         p = gp.gp_Pnt(1, 2, 3)
         xyz = p.ChangeCoord()
         del p
@@ -448,7 +448,7 @@ def test_mutable_reference_free_function_is_a_copy():
     (TopOpeBRepTool_SC.cxx:28-35); TopoDS::Vertex(TopoDS_Shape&) a reference into its argument. With no `self` to tie a
     reference to, both are copied: every call is a new object, and a result outlives its source."""
     out = _ok(_run("""
-        from OCP3x import TopOpeBRepTool
+        from nanocct import TopOpeBRepTool
         first, second = TopOpeBRepTool.FSC_GetPSC(), TopOpeBRepTool.FSC_GetPSC(box)
         print(first is second)
         del first, second
@@ -469,9 +469,9 @@ def test_mutable_reference_free_function_is_a_copy():
 def test_a_result_that_is_self_does_not_leak():
     """LDOM_MemManager::Self() and FSD_File::PutInteger() return `*this` (chaining); the result is the same Python object.
     A plain keep_alive<0, 1> made it keep itself alive for ever -- nanobind's keep_alive_py has no nurse == patient
-    check -- so R-RESULT uses OCP3x::KeepOwnerUnlessSelf (found by this test, 8.18)."""
+    check -- so R-RESULT uses nanocct::KeepOwnerUnlessSelf (found by this test, 8.18)."""
     out = _ok(_run("""
-        from OCP3x import LDOM
+        from nanocct import LDOM
         doc = LDOM.LDOM_Document.createDocument_s("root")
         manager = doc.getDocumentElement().getOwnerDocument()
         print(manager.Self() is manager)
@@ -484,7 +484,7 @@ def test_a_transient_returned_by_value_survives_a_handle():
     `const handle<Adaptor2d_Curve2d>&` and keeps it. Dropping the offset curve drops the last handle. A nanobind-owned
     copy (count 0) was deleted by that handle, so R-RESULT moves the value into a handle (found by this test, 8.18)."""
     out = _ok(_run("""
-        from OCP3x import Adaptor2d, GccEnt, Geom2d, Geom2dAdaptor, Geom2dGcc, gp
+        from nanocct import Adaptor2d, GccEnt, Geom2d, Geom2dAdaptor, Geom2dGcc, gp
         line = Geom2d.Geom2d_Line(gp.gp_Pnt2d(0, 0), gp.gp_Dir2d(1, 0))
         qualified = Geom2dGcc.Geom2dGcc_QualifiedCurve(Geom2dAdaptor.Geom2dAdaptor_Curve(line), GccEnt.GccEnt_unqualified)
         curve = qualified.Qualified()

@@ -11,7 +11,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TAG=3.19.15
 SRC="$HERE/freeimage-src"
 
-[ -f "$HERE/build-freeimage-macos.sh" ] || { echo "not the OCP3x deps directory: $HERE" >&2; exit 1; }
+[ -f "$HERE/build-freeimage-macos.sh" ] || { echo "not the nanocct deps directory: $HERE" >&2; exit 1; }
 
 if [ -d "$SRC/.git" ]; then
     echo "FreeImage sources already in $SRC ($(git -C "$SRC" describe --tags --always 2>/dev/null || echo unknown))"

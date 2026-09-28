@@ -1,5 +1,5 @@
 [project]
-name = "ocp3x"
+name = "nanocct"
 version = "0.1.0"
 description = "nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API"
 requires-python = ">=3.12"
@@ -8,7 +8,7 @@ requires-python = ">=3.12"
 # Capped at <3: the 1 -> 2 transition was breaking and the same is expected of 2 -> 3, so the cap is the
 # high-risk case CLAUDE.md asks for rather than a reflex. Matches build123d's own "numpy >= 2, < 3".
 dependencies = ["numpy>=2,<3"]
-# PEP 639: an SPDX expression for OCP3x's own code, plus every licence text the wheel must carry.
+# PEP 639: an SPDX expression for nanocct's own code, plus every licence text the wheel must carry.
 # The wheel bundles OCCT (LGPL-2.1 with the OCCT exception) and, inside it, FreeType, RapidJSON and
 # nanobind -- licenses/README.md says which and why, NOTICE gives the attributions those licences require.
 license = "Apache-2.0"
@@ -22,17 +22,17 @@ build-backend = "scikit_build_core.build"
 minimum-version = "build-system.requires"
 build-dir = "build/{wheel_tag}"
 wheel.py-api = "cp312"
-wheel.packages = ["src/OCP3x"]
+wheel.packages = ["src/nanocct"]
 cmake.build-type = "Release"
 
-# The .py/.pyi shims under src/OCP3x are generated and therefore gitignored (Design.md 5.3), but they are the
+# The .py/.pyi shims under src/nanocct are generated and therefore gitignored (Design.md 5.3), but they are the
 # package's Python surface and must go into the wheel. scikit-build-core's file selection honours .gitignore
 # (sdist.inclusion-mode "default"), and wheel.packages copying uses the same selection -- without this the wheel
-# holds only the 45 .so files and `OCP3x` degrades to a namespace package: no __init__.py, so no lazy package
-# lookup, no NCollection accessor tables and no shims -- `from OCP3x.gp import gp_Pnt` would resolve to nothing
+# holds only the 45 .so files and `nanocct` degrades to a namespace package: no __init__.py, so no lazy package
+# lookup, no NCollection accessor tables and no shims -- `from nanocct.gp import gp_Pnt` would resolve to nothing
 # (found 2026-09-23 as a missing NCollection accessor, then an abort under pytest, while __init__.py was eager).
 [tool.scikit-build.sdist]
-include = ["src/OCP3x/**/*.py", "src/OCP3x/**/*.pyi"]
+include = ["src/nanocct/**/*.py", "src/nanocct/**/*.pyi"]
 
 # macOS wheels are tagged macosx_11_0_arm64 like the OCCT build (deps/build-occt-macos.sh sets 11.1); without this the
 # extension inherits the SDK's own minimum (measured: minos 26.0) and the wheel would not run on older systems.

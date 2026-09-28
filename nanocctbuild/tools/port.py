@@ -1,22 +1,22 @@
-"""Mechanical OCP -> OCP3x rewrite of Python sources, in place: the first pass of a ocp3xbuild patch.
+"""Mechanical OCP -> nanocct rewrite of Python sources, in place: the first pass of a nanocctbuild patch.
 
-    python ocp3xbuild/tools/port.py <OCP dir of the built shim> <file or directory>...
+    python nanocctbuild/tools/port.py <OCP dir of the built shim> <file or directory>...
 
 The OCP dir is the `OCP` package of the shim wheel (`make shim`, then unzip dist/cadquery_ocp_novtk-*.whl): its
-generated OCP/<pkg>/__init__.py files are the name map from OCP to OCP3x, the same map build123d's parity run
-checked. OCP3x must be importable (the staged tree or an installed wheel).
+generated OCP/<pkg>/__init__.py files are the name map from OCP to nanocct, the same map build123d's parity run
+checked. nanocct must be importable (the staged tree or an installed wheel).
 
-1. `from OCP.<pkg> import a, b as c` -> `from OCP3x.<pkg> import a, b as c`, the statement left as written when only
+1. `from OCP.<pkg> import a, b as c` -> `from nanocct.<pkg> import a, b as c`, the statement left as written when only
    the module path changes. A container (OCP.collections `Array1_gp_Pnt`, OCP 8's `IndexedMap_TopoDS_Shape_...`) becomes
    the generic spelling throughout the file -- `NCollection_Array1[gp_Pnt]`, Design.md 2a -- with its element types
    imported; `import ... as Alias` of one becomes `Alias = NCollection_...[...]`. A namespace module (OCP.TopoDS.TopoDS)
-   becomes `import OCP3x.TopoDS as TopoDS`; `import OCP.X as y` becomes `import OCP3x.X as y`.
-2. `Cls.Name_s` stays: OCP3x suffixes every static like OCP (R-STATIC-S). Only where OCP3x has no `Name_s` but a
+   becomes `import nanocct.TopoDS as TopoDS`; `import OCP.X as y` becomes `import nanocct.X as y`.
+2. `Cls.Name_s` stays: nanocct suffixes every static like OCP (R-STATIC-S). Only where nanocct has no `Name_s` but a
    `Name` -- a function of a C++ namespace -- is the suffix dropped.
 
 Everything it cannot decide is printed as `TODO file:line` (line numbers of the file BEFORE the rewrite) for the hand
-pass; out-parameters, streams and results that OCP3x returns are always hand work, found by running the package's
-tests natively and by ocp3xbuild/tools/trace_shim.py.
+pass; out-parameters, streams and results that nanocct returns are always hand work, found by running the package's
+tests natively and by nanocctbuild/tools/trace_shim.py.
 """
 import ast
 import importlib
@@ -25,14 +25,14 @@ import sys
 import tokenize
 from pathlib import Path
 
-import OCP3x.all  # noqa: F401  every toolkit, so every name in the map resolves
-import OCP3x.NCollection as NCOLLECTION
-from OCP3x._templates import Generic
+import nanocct.all  # noqa: F401  every toolkit, so every name in the map resolves
+import nanocct.NCollection as NCOLLECTION
+from nanocct._templates import Generic
 
 LINE_LIMIT = 88
 
 # concrete instantiation name -> (template name, the element types' (module, qualname)), the reverse of the tables
-# behind NCollection_Array1[gp_Pnt] (OCP3x/_templates.py): a key is the element type, or a tuple of them
+# behind NCollection_Array1[gp_Pnt] (nanocct/_templates.py): a key is the element type, or a tuple of them
 GENERIC: dict[str, tuple[str, tuple[tuple[str, str], ...]]] = {}
 for _tmpl in Generic.__subclasses__():
     for _key, _concrete in _tmpl._instances.items():
@@ -45,12 +45,12 @@ def generic_spelling(concrete: str, need: list[tuple[str, str]]) -> str:
     NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]; the (module, name)
     pairs the expression needs imported are appended to `need`."""
     tname, specs = GENERIC[concrete]
-    need.append(("OCP3x.NCollection", tname))
+    need.append(("nanocct.NCollection", tname))
     parts = []
     for mod, qual in specs:
         if mod == "builtins":
             parts.append(qual)
-        elif mod == "OCP3x.NCollection" and qual in GENERIC:
+        elif mod == "nanocct.NCollection" and qual in GENERIC:
             parts.append(generic_spelling(qual, need))
         else:
             need.append((mod, qual.split(".")[0]))
@@ -67,17 +67,17 @@ def import_statement(module: str, names: list[str], indent: str, parenthesized: 
 
 
 def load_maps(ocp_dir: Path) -> dict[str, dict[str, tuple[str, str, bool]]]:
-    """OCP package -> {OCP name: (OCP3x module, OCP3x name, is_module)}."""
+    """OCP package -> {OCP name: (nanocct module, nanocct name, is_module)}."""
     maps: dict[str, dict[str, tuple[str, str, bool]]] = {}
     for init in sorted(ocp_dir.glob("*/__init__.py")):
         m: dict[str, tuple[str, str, bool]] = {}
         for node in ast.parse(init.read_text()).body:
-            if isinstance(node, ast.ImportFrom) and node.module is not None and node.module.startswith("OCP3x"):
+            if isinstance(node, ast.ImportFrom) and node.module is not None and node.module.startswith("nanocct"):
                 for a in node.names:
                     m[a.asname if a.asname is not None else a.name] = (node.module, a.name, False)
             elif isinstance(node, ast.Import):
                 for a in node.names:
-                    if a.name.startswith("OCP3x.") and a.asname is not None:
+                    if a.name.startswith("nanocct.") and a.asname is not None:
                         m[a.asname] = (a.name, a.name, True)
         maps[init.parent.name] = m
     return maps
@@ -99,8 +99,8 @@ def port_file(path: Path, maps, todo: list[str]) -> bool:
         return offs[line - 1] + col
 
     edits: list[tuple[int, int, str]] = []
-    renames: dict[str, str] = {}          # identifier in this file -> OCP3x identifier or generic expression
-    objects: dict[str, object] = {}       # local name -> OCP3x class or module, for the `_s` pass
+    renames: dict[str, str] = {}          # identifier in this file -> nanocct identifier or generic expression
+    objects: dict[str, object] = {}       # local name -> nanocct class or module, for the `_s` pass
     # names bound by an import statement, per scope, with the line binding them first: a generic expression needs its
     # element types imported before it is evaluated, but a second import of a name bound earlier is only noise. A
     # scope is the enclosing function or class (0 = the module); an import inside one function binds nothing in
@@ -134,10 +134,10 @@ def port_file(path: Path, maps, todo: list[str]) -> bool:
                 todo.append(f"{path}:{node.lineno}: unhandled `from {node.module} import`")
                 continue
             m = maps[parts[1]]
-            primary = "OCP3x." + parts[1]
+            primary = "nanocct." + parts[1]
             same: list[str] = []                  # names that keep their module and spelling
-            moved: dict[str, list[str]] = {}      # other OCP3x module -> names
-            mods: list[str] = []                  # a namespace: `import OCP3x.TopoDS as TopoDS`
+            moved: dict[str, list[str]] = {}      # other nanocct module -> names
+            mods: list[str] = []                  # a namespace: `import nanocct.TopoDS as TopoDS`
             need: list[tuple[str, str]] = []      # what the generic expressions need imported
             need_now: set[str] = set()            # ... of which an assignment evaluates right here
             assigns: list[str] = []               # `Alias = NCollection_Array1[gp_Pnt]` for `import ... as Alias`
@@ -145,7 +145,7 @@ def port_file(path: Path, maps, todo: list[str]) -> bool:
                 local = a.asname if a.asname is not None else a.name
                 spelled = a.name if a.asname is None else f"{a.name} as {a.asname}"
                 if a.name not in m:
-                    todo.append(f"{path}:{node.lineno}: OCP.{parts[1]}.{a.name} has no OCP3x counterpart in the shim map")
+                    todo.append(f"{path}:{node.lineno}: OCP.{parts[1]}.{a.name} has no nanocct counterpart in the shim map")
                     same.append(spelled)
                     continue
                 nmod, nname, is_mod = m[a.name]
@@ -153,7 +153,7 @@ def port_file(path: Path, maps, todo: list[str]) -> bool:
                     mods.append(f"import {nmod} as {local}")
                     objects[local] = importlib.import_module(nmod)
                     continue
-                if nmod == "OCP3x.NCollection" and nname in GENERIC:
+                if nmod == "nanocct.NCollection" and nname in GENERIC:
                     if a.asname is None:
                         renames[a.name] = generic_spelling(nname, need)   # Design.md 2a: the generic accessor is primary
                     else:
@@ -211,7 +211,7 @@ def port_file(path: Path, maps, todo: list[str]) -> bool:
         elif isinstance(node, ast.Import):
             for a in node.names:
                 if a.name.startswith("OCP.") and a.asname is not None and len(node.names) == 1:
-                    nmod = "OCP3x." + a.name[len("OCP."):]
+                    nmod = "nanocct." + a.name[len("OCP."):]
                     objects[a.asname] = importlib.import_module(nmod)
                     edits.append((pos(node.lineno, node.col_offset), pos(node.end_lineno, node.end_col_offset),
                                   f"import {nmod} as {a.asname}"))
@@ -236,11 +236,11 @@ def port_file(path: Path, maps, todo: list[str]) -> bool:
             if obj is None:
                 todo.append(f"{path}:{t.start[0]}: `{owner}.{t.string}` owner unknown")
             elif hasattr(obj, t.string):
-                pass                                   # OCP3x keeps `_s` here (a static/instance collision)
+                pass                                   # nanocct keeps `_s` here (a static/instance collision)
             elif hasattr(obj, t.string[:-2]):
                 edits.append((start, end, t.string[:-2]))
             else:
-                todo.append(f"{path}:{t.start[0]}: `{owner}.{t.string}` has neither {t.string} nor {t.string[:-2]} in OCP3x")
+                todo.append(f"{path}:{t.start[0]}: `{owner}.{t.string}` has neither {t.string} nor {t.string[:-2]} in nanocct")
         elif t.string == "OCP" and (prev is None or prev.string not in ("import", "from", ".")):
             todo.append(f"{path}:{t.start[0]}: bare `OCP` reference")
     if len(edits) == 0:

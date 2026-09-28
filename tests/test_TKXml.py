@@ -8,19 +8,19 @@ from pathlib import Path
 
 import pytest
 
-from OCP3x import PCDM, TDataStd, TDataXtd, TDocStd, TNaming, XmlDrivers, XmlMDF, gp
-from OCP3x.BRepGProp import BRepGProp
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.GProp import GProp_GProps
-from OCP3x.TCollection import TCollection_ExtendedString
-from OCP3x.TopAbs import TopAbs_SOLID
+from nanocct import PCDM, TDataStd, TDataXtd, TDocStd, TNaming, XmlDrivers, XmlMDF, gp
+from nanocct.BRepGProp import BRepGProp
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.GProp import GProp_GProps
+from nanocct.TCollection import TCollection_ExtendedString
+from nanocct.TopAbs import TopAbs_SOLID
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKXml" / "report.txt"
 
 
 @pytest.mark.parametrize("pkg", ["XmlDrivers", "XmlMDataXtd", "XmlMNaming"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 @pytest.fixture
@@ -73,9 +73,9 @@ def test_file_form(app, tmp_path):
 
 def test_drivers(app):
     assert type(XmlDrivers.XmlDrivers.AttributeDrivers_s(None)) is XmlMDF.XmlMDF_ADriverTable
-    driver = XmlDrivers.XmlDrivers_DocumentStorageDriver(TCollection_ExtendedString("OCP3x test"))
+    driver = XmlDrivers.XmlDrivers_DocumentStorageDriver(TCollection_ExtendedString("nanocct test"))
     data = driver.Write(_document(app))                      # Write(doc, ostream&, range) -> bytes
-    assert driver.GetStoreStatus() == PCDM.PCDM_SS_OK and b"OCP3x test" in data
+    assert driver.GetStoreStatus() == PCDM.PCDM_SS_OK and b"nanocct test" in data
 
 
 def test_report_has_only_the_const_twin():

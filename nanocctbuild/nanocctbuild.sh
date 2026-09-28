@@ -1,21 +1,21 @@
 #!/bin/bash
 # Fetch build123d and the three packages it builds on as sdists from PyPI, verify each against its sha256, and apply
-# the OCP3x patch from ocp3xbuild/patches: the result is four source trees that import OCP3x instead of OCP.
+# the nanocct patch from nanocctbuild/patches: the result is four source trees that import nanocct instead of OCP.
 #
-#   make ocp3xbuild                       (or: ocp3xbuild/ocp3xbuild.sh)
+#   make nanocctbuild                       (or: nanocctbuild/nanocctbuild.sh)
 #   uv venv -p 3.14 /path/to/venv
-#   VIRTUAL_ENV=/path/to/venv uv pip install dist/ocp3x-*.whl build/ocp3xbuild/src/*
+#   VIRTUAL_ENV=/path/to/venv uv pip install dist/nanocct-*.whl build/nanocctbuild/src/*
 #
-# The patches carry the port (imports, OCP's `_s` statics, out-parameters that OCP3x returns, streams, the
-# dependency on OCP3x instead of cadquery-ocp-novtk / cadquery-ocp-proxy), including each package's own tests,
-# so every tree can run its suite against OCP3x. The trees are rebuilt from the verified sdist on every run.
+# The patches carry the port (imports, OCP's `_s` statics, out-parameters that nanocct returns, streams, the
+# dependency on nanocct instead of cadquery-ocp-novtk / cadquery-ocp-proxy), including each package's own tests,
+# so every tree can run its suite against nanocct. The trees are rebuilt from the verified sdist on every run.
 #
-# ocp3xbuild/patches/<pkg>.patch is the one complete patch per package, and the only thing applied here. It is generated
-# by ocp3xbuild/tools/regen.sh -- edit ocp3xbuild/tools/manual/<pkg>.patch (the hand-made part, an input), never patches/.
-# ocp3xbuild/tools/files/<pkg>/ holds files the sdist lacks and a text patch cannot carry (ocp_tessellate's test image,
+# nanocctbuild/patches/<pkg>.patch is the one complete patch per package, and the only thing applied here. It is generated
+# by nanocctbuild/tools/regen.sh -- edit nanocctbuild/tools/manual/<pkg>.patch (the hand-made part, an input), never patches/.
+# nanocctbuild/tools/files/<pkg>/ holds files the sdist lacks and a text patch cannot carry (ocp_tessellate's test image,
 # from its git repository); they are copied over the patched tree as they are.
 #
-# How a patch is made (ocp3xbuild/tools, each with its usage in the docstring): tools/port.py does the mechanical part
+# How a patch is made (nanocctbuild/tools, each with its usage in the docstring): tools/port.py does the mechanical part
 # from the shim's name map and lists the rest as TODOs, tools/fix_outargs.py the ignored BRep_Tool out-arguments;
 # tools/trace_shim.py records the call sites the shim adapts while the package's suite runs through it; the rest is
 # hand work driven by native test runs. tools/mkpatch.py writes the patch, tools/junit_cmp.py checks parity against
@@ -32,12 +32,12 @@ PACKAGES=(
     "build123d-0.13.0 97c5577a777ff7219714b10f70f253c7109e84bb3ec621eea5d4597b4c7656b4 https://files.pythonhosted.org/packages/4b/6c/47b531b579d5238e4627b5113375d8f7a7145a24b3447413be318422ee71/build123d-0.13.0.tar.gz"
 )
 
-OUT="$ROOT/build/ocp3xbuild"
+OUT="$ROOT/build/nanocctbuild"
 SDIST="$OUT/sdist"
 SRC="$OUT/src"
 
-# the rm -rf below is built from $ROOT: refuse to run if that is not an OCP3x checkout
-[ -f "$ROOT/generator/__main__.py" ] && [ -f "$HERE/ocp3xbuild.sh" ] || { echo "not an OCP3x checkout: $ROOT" >&2; exit 1; }
+# the rm -rf below is built from $ROOT: refuse to run if that is not an nanocct checkout
+[ -f "$ROOT/generator/__main__.py" ] && [ -f "$HERE/nanocctbuild.sh" ] || { echo "not an nanocct checkout: $ROOT" >&2; exit 1; }
 
 mkdir -p "$SDIST" "$SRC"
 for entry in "${PACKAGES[@]}"; do

@@ -9,21 +9,21 @@ import pytest
 
 from conftest import report
 
-from OCP3x import Message
-from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
-from OCP3x.BRepPrimAPI import BRepPrimAPI_MakeBox
-from OCP3x.DEOBJ import DEOBJ_ConfigurationNode, DEOBJ_Provider
-from OCP3x.Message import Message_ProgressRange
-from OCP3x.NCollection import NCollection_IndexedDataMap, NCollection_Sequence
-from OCP3x.Quantity import Quantity_Color, Quantity_NOC_RED
-from OCP3x.RWObj import (RWObj, RWObj_CafReader, RWObj_CafWriter, RWObj_Reader, RWObj_SubMesh,
+from nanocct import Message
+from nanocct.BRepMesh import BRepMesh_IncrementalMesh
+from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+from nanocct.DEOBJ import DEOBJ_ConfigurationNode, DEOBJ_Provider
+from nanocct.Message import Message_ProgressRange
+from nanocct.NCollection import NCollection_IndexedDataMap, NCollection_Sequence
+from nanocct.Quantity import Quantity_Color, Quantity_NOC_RED
+from nanocct.RWObj import (RWObj, RWObj_CafReader, RWObj_CafWriter, RWObj_Reader, RWObj_SubMesh,
                            RWObj_SubMeshReason, RWObj_TriangulationReader)
-from OCP3x.TCollection import TCollection_AsciiString, TCollection_ExtendedString
-from OCP3x.TDF import TDF_Label
-from OCP3x.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
-from OCP3x.TopExp import TopExp_Explorer
-from OCP3x.XCAFApp import XCAFApp_Application
-from OCP3x.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
+from nanocct.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+from nanocct.TDF import TDF_Label
+from nanocct.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
+from nanocct.TopExp import TopExp_Explorer
+from nanocct.XCAFApp import XCAFApp_Application
+from nanocct.XCAFDoc import XCAFDoc_ColorGen, XCAFDoc_DocumentTool
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKDEOBJ" / "report.txt"
 
@@ -64,7 +64,7 @@ def _write(document, path):
 
 @pytest.mark.parametrize("pkg", ["RWObj", "DEOBJ"])
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def test_the_caf_writer_writes_an_obj(tmp_path, document, quiet_messenger):

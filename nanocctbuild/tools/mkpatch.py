@@ -1,7 +1,7 @@
-"""Write the ocp3xbuild patch of a ported tree: a unified diff (`a/`, `b/`, applied with `patch -p1`) of every file of
+"""Write the nanocctbuild patch of a ported tree: a unified diff (`a/`, `b/`, applied with `patch -p1`) of every file of
 the sdist that the tree changed.
 
-    python ocp3xbuild/tools/mkpatch.py <sdist .tar.gz> <ported tree> <output .patch>
+    python nanocctbuild/tools/mkpatch.py <sdist .tar.gz> <ported tree> <output .patch>
 
 Only files the sdist contains are compared, so build and test leftovers in the ported tree (__pycache__, exported
 test files) never reach the patch; the port adds no files of its own.

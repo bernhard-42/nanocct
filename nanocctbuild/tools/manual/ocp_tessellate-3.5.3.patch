@@ -6,32 +6,32 @@
  import numpy as np
 -import OCP
  from cachetools import LRUCache, cached
- from OCP3x.BinTools import BinTools, BinTools_FormatVersion_CURRENT
- from OCP3x.Bnd import Bnd_Box
+ from nanocct.BinTools import BinTools, BinTools_FormatVersion_CURRENT
+ from nanocct.Bnd import Bnd_Box
 @@ -97,20 +96,17 @@
  )
- import OCP3x.TopoDS as TopoDS
+ import nanocct.TopoDS as TopoDS
  
 -if OCP.__version__.startswith("7"):
--    from OCP3x.TopTools import (
+-    from nanocct.TopTools import (
 -        TopTools_IndexedDataMapOfShapeListOfShape,
 -        TopTools_IndexedMapOfShape,
 -    )
 -else:
--    from OCP3x.NCollection import (
+-    from nanocct.NCollection import (
 -        NCollection_IndexedDataMap,
 -        NCollection_IndexedMap,
 -        NCollection_List,
 -    )
--    from OCP3x.TopTools import TopTools_ShapeMapHasher
+-    from nanocct.TopTools import TopTools_ShapeMapHasher
 -    TopTools_IndexedDataMapOfShapeListOfShape = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]
 -    TopTools_IndexedMapOfShape = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]
-+from OCP3x.NCollection import (
++from nanocct.NCollection import (
 +    NCollection_IndexedDataMap,
 +    NCollection_IndexedMap,
 +    NCollection_List,
 +)
-+from OCP3x.TopTools import TopTools_ShapeMapHasher
++from nanocct.TopTools import TopTools_ShapeMapHasher
 +
 +TopTools_IndexedDataMapOfShapeListOfShape = NCollection_IndexedDataMap[
 +    TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher
@@ -66,7 +66,7 @@
  
  def occt_version() -> str:
 -    return OCP.__version__
-+    # OCP3x binds OCCT 8.0.1 and exposes no version attribute
++    # nanocct binds OCCT 8.0.1 and exposes no version attribute
 +    return "8.0.1"
  
  
@@ -160,19 +160,19 @@
      pass
  
 -import OCP
- from OCP3x.IFSelect import IFSelect_RetDone
- from OCP3x.Quantity import Quantity_ColorRGBA
- from OCP3x.STEPCAFControl import STEPCAFControl_Reader
+ from nanocct.IFSelect import IFSelect_RetDone
+ from nanocct.Quantity import Quantity_ColorRGBA
+ from nanocct.STEPCAFControl import STEPCAFControl_Reader
 @@ -50,11 +49,9 @@
      XCAFDoc_ShapeTool,
  )
  
 -if OCP.__version__.startswith("7"):
--    from OCP3x.TDF import TDF_LabelSequence
+-    from nanocct.TDF import TDF_LabelSequence
 -else:
--    from OCP3x.NCollection import NCollection_Sequence
+-    from nanocct.NCollection import NCollection_Sequence
 -    TDF_LabelSequence = NCollection_Sequence[TDF_Label]
-+from OCP3x.NCollection import NCollection_Sequence
++from nanocct.NCollection import NCollection_Sequence
 +
 +TDF_LabelSequence = NCollection_Sequence[TDF_Label]
  
@@ -181,25 +181,25 @@
 --- a/ocp_tessellate/tessellator.py
 +++ b/ocp_tessellate/tessellator.py
 @@ -23,9 +23,9 @@
- from OCP3x.TopoDS import TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex
+ from nanocct.TopoDS import TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex
  import numpy as np
  from cachetools import LRUCache, cached
-+from OCP3x import AddOns
- from OCP3x.BRep import BRep_Tool
- from OCP3x.BRepAdaptor import BRepAdaptor_Curve
--from OCP3x.BRepGProp import BRepGProp_Face
- from OCP3x.BRepTools import BRepTools
- from OCP3x.BRepMesh import BRepMesh_IncrementalMesh
- from OCP3x.GCPnts import (
++from nanocct import AddOns
+ from nanocct.BRep import BRep_Tool
+ from nanocct.BRepAdaptor import BRepAdaptor_Curve
+-from nanocct.BRepGProp import BRepGProp_Face
+ from nanocct.BRepTools import BRepTools
+ from nanocct.BRepMesh import BRepMesh_IncrementalMesh
+ from nanocct.GCPnts import (
 @@ -34,7 +34,7 @@
  )
  
  # pylint: disable=no-name-in-module,import-error
--from OCP3x.gp import gp_Pnt, gp_Vec
-+from OCP3x.gp import gp_Pnt, gp_TrsfForm, gp_Vec
- from OCP3x.TopAbs import TopAbs_Orientation, TopAbs_SOLID
- from OCP3x.TopExp import TopExp_Explorer
- from OCP3x.TopLoc import TopLoc_Location
+-from nanocct.gp import gp_Pnt, gp_Vec
++from nanocct.gp import gp_Pnt, gp_TrsfForm, gp_Vec
+ from nanocct.TopAbs import TopAbs_Orientation, TopAbs_SOLID
+ from nanocct.TopExp import TopExp_Explorer
+ from nanocct.TopLoc import TopLoc_Location
 @@ -51,6 +51,7 @@
      is_line,
      make_compound,
@@ -226,9 +226,9 @@
 +        uvs: list[NDArray[np.float64]] = []
 +        offset = 0
 +
-+        # OCP3x: the per-node and per-triangle loops run on zero-copy views of the triangulation
++        # nanocct: the per-node and per-triangle loops run on zero-copy views of the triangulation
 +        # (NodesArray, TrianglesArray, UVNodesArray) and the per-node BRepGProp_Face.Normal loop in C++
-+        # (OCP3x.AddOns.Tessellator.NormalsFromSurface: the same clamped evaluation, the same
++        # (nanocct.AddOns.Tessellator.NormalsFromSurface: the same clamped evaluation, the same
 +        # normalisation, the same reversal for an INTERNAL face). Same faces, same order, same outputs.
          for ind, face in enumerate(get_faces(self.shape)):
              trace.face(f"{self.shape_id}/faces/faces_{ind}", face)
@@ -429,7 +429,7 @@
 +            for ind, (edge, _face) in enumerate(get_edges(self.shape, True)):
 +                trace.edge(f"{self.shape_id}/edges/edges_{ind}", edge)
 +
-+        # OCP3x: the per-edge polyline walk in C++ (OCP3x.AddOns.Tessellator.EdgeSegments) -- the same edge
++        # nanocct: the per-edge polyline walk in C++ (nanocct.AddOns.Tessellator.EdgeSegments) -- the same edge
 +        # map, the same ancestor face, the same skips (no face, no triangulation, no polygon on it), so the point
 +        # pairs, the segment counts and the GeomAbs_CurveType of each kept edge align as before
 +        segments, per_edge, types = AddOns.Tessellator.EdgeSegments(self.shape)
@@ -455,7 +455,7 @@
  ]
  
  dependencies = [
-+    "ocp3x >= 0.1, < 0.2",
++    "nanocct >= 0.1, < 0.2",
      "webcolors>=24.8.0",
      "numpy>=2.0",
      "cachetools>=5.5.0,<8",

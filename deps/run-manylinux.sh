@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run a command inside the OCP3x manylinux_2_28 container (deps/manylinux.Dockerfile), with the repository mounted
+# Run a command inside the nanocct manylinux_2_28 container (deps/manylinux.Dockerfile), with the repository mounted
 # at /work. Everything the Linux build does -- generate, compile, test, and later `auditwheel repair` -- goes through
 # here, so there is one Linux environment and it is the same one CI uses.
 #
@@ -14,10 +14,10 @@ ROOT="$(cd "$HERE/.." && pwd)"
 # The image follows the host's architecture: manylinux_2_28_x86_64 on x86_64, manylinux_2_28_aarch64 on arm64
 # (deps/manylinux.Dockerfile takes it as ARCH). One image per architecture, so a box that has built both keeps both.
 # Lowercase: docker rejects a repository name with capitals ("invalid reference format: ... must be lowercase",
-# which the rename to OCP3x ran into on 2026-09-28).
+# which the rename to nanocct ran into on 2026-09-28).
 ARCH="$(uname -m)"
 if [ "$ARCH" = "arm64" ]; then ARCH=aarch64; fi          # macOS spells it arm64, the manylinux images aarch64
-IMAGE="ocp3x-manylinux-$ARCH"
+IMAGE="nanocct-manylinux-$ARCH"
 
 docker build -q -t "$IMAGE" --build-arg ARCH="$ARCH" -f "$HERE/manylinux.Dockerfile" "$HERE" > /dev/null
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from OCP3x import (BRepBuilderAPI, BRepCheck, BRepGProp, BRepPrimAPI, GProp, NCollection, ShapeAnalysis, ShapeBuild, ShapeCustom,
+from nanocct import (BRepBuilderAPI, BRepCheck, BRepGProp, BRepPrimAPI, GProp, NCollection, ShapeAnalysis, ShapeBuild, ShapeCustom,
                      ShapeExtend, ShapeFix, ShapeUpgrade, TopAbs, TopExp, TopoDS, gp)
 
 PACKAGES = ["ShapeBuild", "ShapeExtend", "ShapeConstruct", "ShapeCustom", "ShapeAnalysis", "ShapeFix", "ShapeUpgrade", "ShapeAlgo",
@@ -18,7 +18,7 @@ REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKShHealing" / "report.txt
 
 @pytest.mark.parametrize("pkg", PACKAGES)
 def test_every_package_imports(pkg):
-    assert importlib.import_module(f"OCP3x.{pkg}").__name__ == f"OCP3x.{pkg}"
+    assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
 def _edges() -> NCollection.NCollection_HSequence:
@@ -37,7 +37,7 @@ def test_connect_edges_to_wires_build123d_style():
     assert wires.Value(1).ShapeType() == TopAbs.TopAbs_WIRE
     # the deprecated overload with the handle<HSequence>& out-parameter carries the R-COLLISION suffix and returns it too
     dep = ShapeAnalysis.ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s__NCollection_HSequence__TopoDS_Shape
-    assert "the suffix lists its returned out-parameters (OCP3x R-COLLISION)" in dep.__doc__
+    assert "the suffix lists its returned out-parameters (nanocct R-COLLISION)" in dep.__doc__
     assert "Deprecated in OCCT: Use ConnectEdgesToWires() returning handle by value" in dep.__doc__
     assert len(dep(edges, 1e-7, False)) == 1
     # NCollection_Sequence<TopoDS_Shape> (8.7) arrived with ShapeFix
@@ -93,7 +93,7 @@ def test_report():
 def test_shape_process_operations_are_a_set_of_flags():
     """R-BITSET: ShapeProcess::OperationsFlags is a std::bitset indexed by ShapeProcess::Operation, so Python passes
     the set of enumerators. The name-taking Perform overload stays reachable because the caster rejects a str."""
-    from OCP3x.ShapeProcess import ShapeProcess, ShapeProcess_Context
+    from nanocct.ShapeProcess import ShapeProcess, ShapeProcess_Context
     assert ShapeProcess.ToOperationFlag_s("FixShape") == (ShapeProcess.FixShape, True)
     assert ShapeProcess.ToOperationFlag_s("no-such-operation")[1] is False
     overloads = [l for l in ShapeProcess.Perform_s.__doc__.splitlines() if l.startswith("Perform_s(")]

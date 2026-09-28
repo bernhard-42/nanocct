@@ -1,4 +1,4 @@
-# Build, test and repair the OCP3x wheel on five platforms: macOS arm64 and x86_64, Linux x86_64 and aarch64,
+# Build, test and repair the nanocct wheel on five platforms: macOS arm64 and x86_64, Linux x86_64 and aarch64,
 # Windows amd64 (State.md 8.17).
 #
 # Every step is a Makefile target, so CI and a local build are the same commands: `make env`, `make deps`,
@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # `platform` names the caches (deps-<platform>-..., ocp3x-wheel-<platform>-<sha>); release.yml lists the same five.
+        # `platform` names the caches (deps-<platform>-..., nanocct-wheel-<platform>-<sha>); release.yml lists the same five.
         # The architecture is the runner's: nothing cross-compiles. The Linux container image and the auditwheel tag
         # follow `uname -m` (deps/run-manylinux.sh, Makefile ML_PLAT); macOS builds natively for the host arch.
         include:
@@ -155,7 +155,7 @@ jobs:
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: dist/*.whl
-          key: ocp3x-wheel-${{ matrix.platform }}-${{ github.sha }}
+          key: nanocct-wheel-${{ matrix.platform }}-${{ github.sha }}
           enableCrossOsArchive: true
 
       - name: Summary
