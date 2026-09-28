@@ -1,5 +1,9 @@
 ![](./nanocct.png)
 
+---
+EXPERIMENTAL
+---
+
 # nanocct
 
 Open Cascade bindings created with nanobind for the stable ABI of Python 3
