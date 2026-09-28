@@ -64,7 +64,7 @@ brep = BRepTools.Write_s(shape)                 # a BREP in memory, as str
 
 ## How to start with build123d on nanocct
 
-Neither wheel is on PyPI yet: build them first (see [How to build nanocct](#how-to-build-nanocct)), they land in `dist/`.
+Neither wheel is on PyPI yet: downlaod thm from the [relase page](https://github.com/bernhard-42/nanocct/releases), or build them first (see [How to build nanocct](#how-to-build-nanocct)), they land in `dist/`.
 
 ### Use the OCP shim
 
