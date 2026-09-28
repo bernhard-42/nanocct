@@ -11,7 +11,8 @@
 # mean patching FreeImage, which we do not do; the dylib is bundled by delocate/auditwheel instead.
 #
 # Shared does not mean leaky. -fvisibility=hidden still applies to everything that does not carry FreeImage.h's
-# DLL_API, so the exported surface is FreeImage_* alone -- measured: 254 symbols, and zero png_*, jpeg_*, TIFF*,
+# DLL_API, and deps/freeimage-exported-symbols.txt catches what it misses on x86_64 (libc++ typeinfo), so the
+# exported surface is FreeImage_* alone -- measured: 254 symbols, and zero png_*, jpeg_*, TIFF*,
 # opj_*, crc32, deflate or inflate. Those are the ones that would collide with another libpng or zlib in the
 # process (Pillow's, say); FreeImage_* is its own namespace and is what OCCT has to link against.
 #
@@ -48,6 +49,7 @@ cmake -S "$SRC" -B "$BUILD" -G Ninja \
   -D CMAKE_C_VISIBILITY_PRESET=hidden \
   -D CMAKE_CXX_VISIBILITY_PRESET=hidden \
   -D CMAKE_VISIBILITY_INLINES_HIDDEN=ON \
+  -D CMAKE_SHARED_LINKER_FLAGS="-Wl,-exported_symbols_list,$HERE/freeimage-exported-symbols.txt" \
   -D CMAKE_INSTALL_NAME_DIR="$PREFIX/lib"
 ninja -C "$BUILD" install
 

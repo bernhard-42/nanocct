@@ -1,0 +1,10 @@
+# The export list of libFreeImage.dylib, passed to ld64 as -exported_symbols_list (deps/build-freeimage-macos.sh).
+# The macOS counterpart of deps/freeimage-version-script.map. ld64 accepts shell-style wildcards here (man ld,
+# -exported_symbols_list), and every other global symbol becomes private extern.
+#
+# -fvisibility=hidden alone was enough on arm64 but not on x86_64: the first GitHub Actions run (macos-15-intel,
+# Xcode 16.4, 2026-09-28) exported four libc++ typeinfo symbols next to the 254 FreeImage_* ones --
+# __ZTI/__ZTS of std::__1::basic_stringbuf<char> and std::__1::basic_ostringstream<char>. Reproduced on arm64 by
+# building with CMAKE_OSX_ARCHITECTURES=x86_64; with this list both architectures export exactly the same 254
+# FreeImage_* symbols as before and nothing else.
+_FreeImage_*

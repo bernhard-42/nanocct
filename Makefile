@@ -95,6 +95,21 @@ ML_SYSPY   := /opt/python/$(CPTAG)-$(CPTAG)/bin/python
 # the wheel's platform tag follows the host, as the container image does (deps/run-manylinux.sh): x86_64 or aarch64
 ML_PLAT    := manylinux_2_28_$(shell uname -m)
 WIN_PY     := $(ROOT)/.venv/Scripts/python.exe
+# RUN_SH starts a bash script. Empty on macOS and Linux, where the #! line does it. On Windows it is Git Bash by its full
+# path: native GNU make (Chocolatey's, "Built for Windows32") turns `#!/bin/bash` into `bash <script>` and calls
+# CreateProcess without a path (make 4.4.1, src/w32/subproc/sub_proc.c), and CreateProcess searches System32 before
+# PATH (Microsoft's CreateProcess documentation) -- so wherever WSL is installed, C:\Windows\System32\bash.exe wins.
+# The first GitHub Actions run (windows-2025, 2026-09-28) stopped in fetch-rapidjson.sh with "Windows Subsystem for
+# Linux has no installed distributions"; gauss never saw it because it has no System32\bash.exe.
+ifeq ($(PLATFORM),windows)
+  GIT_BASH := $(shell cygpath -m /usr/bin/bash.exe)
+  ifeq ($(strip $(GIT_BASH)),)
+    $(error cannot locate Git Bash (cygpath -m /usr/bin/bash.exe returned nothing) -- run this from Git Bash)
+  endif
+  RUN_SH := "$(GIT_BASH)"
+else
+  RUN_SH :=
+endif
 PY         := $(ROOT)/.venv/bin/python
 ifeq ($(PLATFORM),macos)
   BUILD_DIR := $(ROOT)/build/dev
@@ -186,51 +201,51 @@ clean_deps: clean_occt clean_freetype clean_freeimage clean_rapidjson
 
 
 rapidjson: clean_rapidjson
-	$(DEPS)/fetch-rapidjson.sh
+	$(RUN_SH) $(DEPS)/fetch-rapidjson.sh
 
 # The upstream sources, cloned at a pinned tag if they are not there yet (both scripts are idempotent, so the
 # clean_* targets above may delete the builds without touching the checkouts -- a clone of OCCT is 144 MB).
 sources:
-	$(DEPS)/fetch-occt-src.sh
-	$(DEPS)/fetch-freetype-src.sh
-	$(DEPS)/fetch-freeimage-src.sh
+	$(RUN_SH) $(DEPS)/fetch-occt-src.sh
+	$(RUN_SH) $(DEPS)/fetch-freetype-src.sh
+	$(RUN_SH) $(DEPS)/fetch-freeimage-src.sh
 
 freetype: clean_freetype
-	$(DEPS)/fetch-freetype-src.sh
+	$(RUN_SH) $(DEPS)/fetch-freetype-src.sh
 ifeq ($(PLATFORM),macos)
-	$(DEPS)/build-freetype-macos.sh
+	$(RUN_SH) $(DEPS)/build-freetype-macos.sh
 else ifeq ($(PLATFORM),windows)
-	$(DEPS)/build-freetype-windows.sh
+	$(RUN_SH) $(DEPS)/build-freetype-windows.sh
 else
-	$(DEPS)/build-freetype-manylinux.sh
+	$(RUN_SH) $(DEPS)/build-freetype-manylinux.sh
 endif
 
 freeimage: clean_freeimage
-	$(DEPS)/fetch-freeimage-src.sh
+	$(RUN_SH) $(DEPS)/fetch-freeimage-src.sh
 ifeq ($(PLATFORM),macos)
-	$(DEPS)/build-freeimage-macos.sh
+	$(RUN_SH) $(DEPS)/build-freeimage-macos.sh
 else ifeq ($(PLATFORM),windows)
-	$(DEPS)/build-freeimage-windows.sh
+	$(RUN_SH) $(DEPS)/build-freeimage-windows.sh
 else
-	$(DEPS)/build-freeimage-manylinux.sh
+	$(RUN_SH) $(DEPS)/build-freeimage-manylinux.sh
 endif
 
 occt: clean_occt
 	@test -d $(DEPS)/rapidjson || { echo "run 'make rapidjson' first"; exit 1; }
-	$(DEPS)/fetch-occt-src.sh
+	$(RUN_SH) $(DEPS)/fetch-occt-src.sh
 ifeq ($(PLATFORM),macos)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
 	@test -d $(DEPS)/freeimage || { echo "run 'make freeimage' first"; exit 1; }
-	$(DEPS)/build-occt-macos.sh
+	$(RUN_SH) $(DEPS)/build-occt-macos.sh
 else ifeq ($(PLATFORM),windows)
 	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
 	@test -d $(DEPS)/freeimage || { echo "run 'make freeimage' first"; exit 1; }
-	$(DEPS)/build-occt-windows.sh
+	$(RUN_SH) $(DEPS)/build-occt-windows.sh
 else
 	@# On the host, not through $(CONTAINER): the script starts its own container (as build-freetype-manylinux.sh
 	@# does). Run through run-manylinux.sh it would be docker inside docker -- "docker: command not found",
 	@# which is what `make occt` did on Linux until 2026-09-24, when a build from a bare tree first reached it.
-	$(DEPS)/build-occt-manylinux.sh
+	$(RUN_SH) $(DEPS)/build-occt-manylinux.sh
 endif
 
 deps: clean_deps rapidjson freetype freeimage occt
@@ -278,13 +293,13 @@ ifeq ($(PLATFORM),macos)
 	cd $(ROOT) && cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=Release \
 	    -DPython_EXECUTABLE=$(ROOT)/.venv/bin/python -DNANOCCT_RAPIDJSON_DIR=$(DEPS)/rapidjson/include
 	cd $(ROOT) && cmake --build $(BUILD_DIR)
-	$(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
+	$(RUN_SH) $(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 	@# Exactly one copy of the extension modules may be in a process: nanobind registers its types per domain, and
 	@# a wheel-installed nanocct next to the staged one aborts the import with "Critical nanobind error".
 	cd $(ROOT) && uv pip uninstall -q nanocct 2>/dev/null || true
 else ifeq ($(PLATFORM),windows)
-	cd $(ROOT) && ./deps/build-nanocct-windows.sh
-	$(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
+	cd $(ROOT) && $(RUN_SH) ./deps/build-nanocct-windows.sh
+	$(RUN_SH) $(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 else
 	$(CONTAINER) "cmake -S /work -B /work/build-ml -G Ninja -DCMAKE_BUILD_TYPE=Release \
 	    -DPython_EXECUTABLE=$(ML_PY) -DNANOCCT_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
@@ -301,10 +316,10 @@ endif
 stubs:
 ifeq ($(PLATFORM),macos)
 	cd $(ROOT) && $(PY) -m generator.stubs
-	$(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)          # the stubs are part of the staged tree
+	$(RUN_SH) $(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)          # the stubs are part of the staged tree
 else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && PYTHONPATH="$(STAGE_DIR)" "$(WIN_PY)" -m generator.stubs
-	$(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
+	$(RUN_SH) $(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 else
 	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml $(ML_PY) -m generator.stubs"
 	$(CONTAINER) "/work/deps/stage.sh build-ml stage-ml"
@@ -451,7 +466,7 @@ else
   SCRATCH_ACTIVATE := $(SCRATCH)/.venv/bin/activate
 endif
 nanocctbuild:
-	$(ROOT)/nanocctbuild/nanocctbuild.sh
+	$(RUN_SH) $(ROOT)/nanocctbuild/nanocctbuild.sh
 	@wheels=$$(ls $(DIST_DIR)/nanocct-*.whl 2>/dev/null); \
 	if [ -z "$$wheels" ]; then echo "nanocctbuild: no nanocct wheel in $(DIST_DIR) -- run 'make wheel' first" >&2; exit 1; fi; \
 	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "nanocctbuild: more than one nanocct wheel in $(DIST_DIR): $$wheels" >&2; exit 1; fi

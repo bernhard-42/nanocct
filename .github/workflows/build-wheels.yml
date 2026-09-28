@@ -19,58 +19,64 @@
 # The shim wheel is deliberately not built here (`make wheels` would): it is a local test vehicle, not released.
 name: Build wheels
 
-on: workflow_dispatch
+# The platforms are check boxes in the "Run workflow" dialog, all ticked by default: a subset reruns only what failed
+# while jobs of an earlier run go on (a job-level `if` cannot see the matrix, so the matrix itself is built from them).
+on:
+  workflow_dispatch:
+    inputs:
+      macos_arm64:   { description: "macOS arm64 (macos-15)",           type: boolean, default: true }
+      macos_x86_64:  { description: "macOS x86_64 (macos-15-intel)",    type: boolean, default: true }
+      linux_x86_64:  { description: "Linux x86_64 (ubuntu-24.04)",      type: boolean, default: true }
+      linux_aarch64: { description: "Linux aarch64 (ubuntu-24.04-arm)", type: boolean, default: true }
+      windows_amd64: { description: "Windows amd64 (windows-2025)",     type: boolean, default: true }
 
 env:
   # Bump to throw away every deps cache without touching a build script.
   DEPS_CACHE_VERSION: "1"
 
 jobs:
+  # The platform table, filtered by the dispatch inputs. `platform` names the caches (deps-<platform>-...,
+  # nanocct-wheel-<platform>-<sha>); release.yml lists the same five. The architecture is the runner's: nothing
+  # cross-compiles. The Linux container image and the auditwheel tag follow `uname -m` (deps/run-manylinux.sh,
+  # Makefile ML_PLAT); macOS builds natively for the host arch. `deps` is what the deps cache holds.
+  select:
+    name: select platforms
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - id: matrix
+        env:
+          MACOS_ARM64: ${{ inputs.macos_arm64 }}
+          MACOS_X86_64: ${{ inputs.macos_x86_64 }}
+          LINUX_X86_64: ${{ inputs.linux_x86_64 }}
+          LINUX_AARCH64: ${{ inputs.linux_aarch64 }}
+          WINDOWS_AMD64: ${{ inputs.windows_amd64 }}
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json, os
+          native = "deps/occt-8.0.1\ndeps/freetype\ndeps/freeimage\ndeps/rapidjson\n"
+          ml = "deps/occt-8.0.1-manylinux\ndeps/freetype-ml\ndeps/freeimage-ml\ndeps/rapidjson\n"
+          table = [
+              ("MACOS_ARM64",   "macos-arm64",   "macos-15",         native),
+              ("MACOS_X86_64",  "macos-x86_64",  "macos-15-intel",   native),
+              ("LINUX_X86_64",  "linux-x86_64",  "ubuntu-24.04",     ml),
+              ("LINUX_AARCH64", "linux-aarch64", "ubuntu-24.04-arm", ml),
+              ("WINDOWS_AMD64", "windows-amd64", "windows-2025",     native),
+          ]
+          chosen = [{"platform": p, "runner": r, "deps": d} for var, p, r, d in table if os.environ[var] == "true"]
+          if len(chosen) == 0:
+              raise SystemExit("no platform selected")
+          print("matrix=" + json.dumps({"include": chosen}))
+          EOF
+
   wheel:
     name: ${{ matrix.platform }}
+    needs: select
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
-      matrix:
-        # `platform` names the caches (deps-<platform>-..., nanocct-wheel-<platform>-<sha>); release.yml lists the same five.
-        # The architecture is the runner's: nothing cross-compiles. The Linux container image and the auditwheel tag
-        # follow `uname -m` (deps/run-manylinux.sh, Makefile ML_PLAT); macOS builds natively for the host arch.
-        include:
-          - platform: macos-arm64
-            runner: macos-15
-            deps: |
-              deps/occt-8.0.1
-              deps/freetype
-              deps/freeimage
-              deps/rapidjson
-          - platform: macos-x86_64
-            runner: macos-15-intel
-            deps: |
-              deps/occt-8.0.1
-              deps/freetype
-              deps/freeimage
-              deps/rapidjson
-          - platform: linux-x86_64
-            runner: ubuntu-24.04
-            deps: |
-              deps/occt-8.0.1-manylinux
-              deps/freetype-ml
-              deps/freeimage-ml
-              deps/rapidjson
-          - platform: linux-aarch64
-            runner: ubuntu-24.04-arm
-            deps: |
-              deps/occt-8.0.1-manylinux
-              deps/freetype-ml
-              deps/freeimage-ml
-              deps/rapidjson
-          - platform: windows-amd64
-            runner: windows-2025
-            deps: |
-              deps/occt-8.0.1
-              deps/freetype
-              deps/freeimage
-              deps/rapidjson
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
     defaults:
       run:
         shell: bash
@@ -109,7 +115,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: ${{ matrix.deps }}
-          key: deps-${{ matrix.platform }}-v${{ env.DEPS_CACHE_VERSION }}-${{ hashFiles('deps/fetch-*.sh', 'deps/build-freetype-*.sh', 'deps/build-freeimage-*.sh', 'deps/build-occt-*.sh', 'deps/*.map', 'deps/occt-unexported-symbols.txt', 'deps/manylinux.Dockerfile', 'deps/run-manylinux.sh') }}
+          key: deps-${{ matrix.platform }}-v${{ env.DEPS_CACHE_VERSION }}-${{ hashFiles('deps/fetch-*.sh', 'deps/build-freetype-*.sh', 'deps/build-freeimage-*.sh', 'deps/build-occt-*.sh', 'deps/*.map', 'deps/occt-unexported-symbols.txt', 'deps/freeimage-exported-symbols.txt', 'deps/manylinux.Dockerfile', 'deps/run-manylinux.sh') }}
 
       - name: make deps
         if: steps.deps.outputs.cache-hit != 'true'

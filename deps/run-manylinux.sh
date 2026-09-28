@@ -19,7 +19,14 @@ ARCH="$(uname -m)"
 if [ "$ARCH" = "arm64" ]; then ARCH=aarch64; fi          # macOS spells it arm64, the manylinux images aarch64
 IMAGE="nanocct-manylinux-$ARCH"
 
-docker build -q -t "$IMAGE" --build-arg ARCH="$ARCH" -f "$HERE/manylinux.Dockerfile" "$HERE" > /dev/null
+# Quiet when it works, the whole build log when it does not: with -q and > /dev/null a failing step showed only
+# "did not complete successfully: exit code: 1", never the dnf message behind it (linux-aarch64, the first GitHub
+# Actions run, 2026-09-28).
+if ! build_log=$(docker build -t "$IMAGE" --build-arg ARCH="$ARCH" -f "$HERE/manylinux.Dockerfile" "$HERE" 2>&1); then
+    printf '%s\n' "$build_log" >&2
+    echo "run-manylinux.sh: building the image $IMAGE failed (log above)" >&2
+    exit 1
+fi
 
 tty_flags=()
 if [ -t 0 ] && [ $# -eq 0 ]; then tty_flags=(-it); fi
