@@ -12,6 +12,8 @@
 #
 # ocp3xbuild/patches/<pkg>.patch is the one complete patch per package, and the only thing applied here. It is generated
 # by ocp3xbuild/tools/regen.sh -- edit ocp3xbuild/tools/manual/<pkg>.patch (the hand-made part, an input), never patches/.
+# ocp3xbuild/tools/files/<pkg>/ holds files the sdist lacks and a text patch cannot carry (ocp_tessellate's test image,
+# from its git repository); they are copied over the patched tree as they are.
 #
 # How a patch is made (ocp3xbuild/tools, each with its usage in the docstring): tools/port.py does the mechanical part
 # from the shim's name map and lists the rest as TODOs, tools/fix_outargs.py the ignored BRep_Tool out-arguments;
@@ -54,6 +56,11 @@ for entry in "${PACKAGES[@]}"; do
         echo "$pkg still imports OCP after patching:" >&2
         grep -rnE '^\s*(from OCP[. ]|import OCP([. ,]|$))' --include='*.py' "$SRC/$pkg" >&2
         exit 1
+    fi
+    # files the sdist lacks and a text patch cannot carry (ocp_tessellate's test image), copied over the tree as they are
+    if [ -d "$HERE/tools/files/$pkg" ]; then
+        cp -R "$HERE/tools/files/$pkg/." "$SRC/$pkg/"
+        echo "$pkg: added $(find "$HERE/tools/files/$pkg" -type f | wc -l | tr -d ' ') file(s) from tools/files/$pkg"
     fi
     echo "$pkg: patched ($(grep -c '^+++ ' "$patch_file") files) -> $SRC/$pkg"
 done

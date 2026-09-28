@@ -1,4 +1,4 @@
-"""Build the cadquery-ocp-novtk 8.0.1.0.0 compatibility wheel: `import OCP.*` on top of OCP3x. Stdlib only.
+"""Build the cadquery-ocp-novtk 8.0.1.0.0+shim compatibility wheel: `import OCP.*` on top of OCP3x. Stdlib only.
 
     python shim/build_wheel.py [out_dir]          (default: shim/dist; `make shim` writes to dist/)
 
@@ -13,7 +13,12 @@ import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).parent
-NAME, DIST, VERSION = "cadquery-ocp-novtk", "cadquery_ocp_novtk", "8.0.1.0.0"
+# The local version label "+shim" is what `pip list` shows next to the name, so an installed shim is told apart from
+# the real cadquery-ocp-novtk at a glance. PEP 440 ignores a local label when matching a version without one, so
+# build123d's unpatched "cadquery-ocp-novtk >= 8.0, < 8.1" is still satisfied (uv, 2026-09-28); a distribution of
+# another name is not, and uv then installs the real package next to it, both writing OCP/. A local test vehicle,
+# never uploaded (PyPI refuses local versions anyway).
+NAME, DIST, VERSION = "cadquery-ocp-novtk", "cadquery_ocp_novtk", "8.0.1.0.0+shim"
 REQUIRES = ["ocp3x==0.1.0", "cadquery-ocp-proxy==8.0.1.0.0"]
 OCP_VERSION = "8.0.1.0"      # OCP.__version__ of the real package
 

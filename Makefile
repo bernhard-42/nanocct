@@ -1,7 +1,7 @@
 # OCP3x — one entry point for building it yourself, on macOS, Linux and Windows.
 #
-#   make deps        fetch and build OCCT, FreeType and RapidJSON from scratch (long: OCCT is ~4 min on an M5)
-#   make all         generate -> compile -> stubs -> test -> wheel
+#   make deps        fetch and build RapidJSON, FreeType, FreeImage and OCCT from scratch (long: OCCT is ~4 min on an M5)
+#   make wheels      generate -> compile -> stubs -> test -> wheel -> shim  (OCP3x's wheel and the shim's, into dist/)
 #   make generate compile stubs test        the development loop, step by step
 #
 # Design.md 3.1/3.2 describe what the dependencies are and why; State.md 9 holds the working state.
@@ -16,7 +16,7 @@
 # Every step orchestrates its own parallelism (ninja -j, OCP3X_JOBS = one worker per core), so the targets
 # themselves are serial.
 .NOTPARALLEL:
-.DEFAULT_GOAL := all
+.DEFAULT_GOAL := wheels
 
 ROOT    := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
@@ -88,11 +88,11 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: all env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity ocp3xbuild \
+.PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity ocp3xbuild \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | all | shim-parity | ocp3xbuild"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | wheels | shim-parity | ocp3xbuild"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
@@ -321,7 +321,7 @@ clean_dist:
 	rm -rf $(DIST_DIR)
 
 # ---- OCP compatibility shim ---------------------------------------------------------------------------------------
-# cadquery-ocp-novtk 8.0.1.0.0: `import OCP.*` on top of OCP3x (shim/). A pure-Python py3-none-any wheel built by
+# cadquery-ocp-novtk 8.0.1.0.0+shim: `import OCP.*` on top of OCP3x (shim/). A pure-Python py3-none-any wheel built by
 # shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to OCP3x's.
 # Generation reads OCP3x's own signatures, so the staged tree must be importable -- found the way `make test` finds it.
 shim:
@@ -333,9 +333,10 @@ else
 	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml $(ML_PY) shim/build_wheel.py /work/dist"
 endif
 
-# build123d's own suite through the shim against the real OCP, test by test (shim/parity.py; State.md 8.18). Opt-in and
-# not part of `all`: two venvs and two full build123d runs side by side, 9.3 min on the M5 (2026-09-26). Needs the wheels of `make wheel shim` in
-# DIST_DIR and a build123d checkout (BUILD123D), which it only reads (`git archive HEAD`); everything else goes to
+# build123d's and ocp-tessellate's own suites through the shim against the real OCP, test by test (shim/parity.py;
+# State.md 8.18). Opt-in and not part of `wheels`: two venvs and the suites side by side, ~6 min on the M5. Needs the
+# wheels of `make wheels` in DIST_DIR, a build123d checkout (BUILD123D), which it only reads (`git archive HEAD`), and
+# the ocp_tessellate sdist ocp3xbuild/ocp3xbuild.sh fetches into build/ocp3xbuild/sdist; everything else goes to
 # build/shim-parity. Host-only for now: on Linux the wheels live in the container's world (State.md 8.17).
 BUILD123D ?= $(HOME)/Development/CAD/build123d
 shim-parity:
@@ -371,4 +372,4 @@ ocp3xbuild:
 	. $(SCRATCH_ACTIVATE) && uv pip install $(DIST_DIR)/ocp3x-*.whl $(ROOT)/build/ocp3xbuild/src/*
 	@echo "ocp3xbuild: test environment ready -- source $(SCRATCH_ACTIVATE)"
 
-all: generate compile stubs test wheel shim
+wheels: generate compile stubs test wheel shim

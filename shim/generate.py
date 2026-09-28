@@ -152,6 +152,30 @@ def emit_function(fid: str, orig: str, plans: dict, bound: bool) -> list[str]:
     return lines
 
 
+def collision_siblings(obj, source: str, ocp: list) -> dict[int, str]:
+    """{argument count: OCP3x member} where an OCP call means OCP3x's R-COLLISION sibling rather than the plain name.
+
+    OCP3x binds the out-parameter form of a colliding overload as `<name>__<type>__…` and keeps the plain name for the
+    overload without out-parameters (Design.md 6 R-COLLISION): since 2026-09-27 `gp_Pnt.Coord()` returns the gp_XYZ
+    and `Coord__float__float__float()` the numbers. OCP binds both under one name, and where every OCP overload that
+    fits an argument count takes the same argument types, pybind always calls the first -- so where that first one
+    returns a tuple, the call means the sibling with the same parameters and the same tuple length."""
+    sibs = {a: getattr(obj, a) for a in dir(obj) if a.startswith(source + "__") and callable(getattr(obj, a))}
+    out: dict[int, str] = {}
+    if len(sibs) == 0:
+        return out
+    for n in sorted({n for o in ocp for n in range(o.required, len(o.names) + 1)}):
+        fit = [o for o in ocp if o.fits(n)]
+        if len({tuple(o.types[:n]) for o in fit}) != 1 or not fit[0].ret.startswith("tuple["):
+            continue
+        want = (fit[0].names[:n], tuple_len(fit[0].ret))
+        match = sorted(a for a, f in sibs.items() for ps, r in nano_sigs(f)
+                       if [p for p, _, d in ps if not d] == want[0] and tuple_len(r) == want[1])
+        if len(match) == 1:
+            out[n] = match[0]
+    return out
+
+
 def main() -> dict[str, str]:
     names_spec = json.loads((HERE / "ocp-8.0.1.0.0.json").read_text())["modules"]
     members = json.loads((HERE / "ocp-8.0.1.0.0-members.json").read_text())
@@ -162,6 +186,7 @@ def main() -> dict[str, str]:
     phase2: list[str] = []
     mods: dict[str, str] = {}
     counter = 0
+    phase3: list[str] = []                            # R-COLLISION siblings, wrapping what phase 2 installed
 
     def mod_var(pkg: str) -> str:
         # A package another platform does not build (Cocoa is macOS-only, overrides.toml [platform]) must not break
@@ -208,6 +233,29 @@ def main() -> dict[str, str]:
                 source = plain if is_module else name
                 if is_module and hasattr(obj, name):
                     continue                          # the module has the OCP spelling itself
+                siblings = {} if is_module else collision_siblings(obj, source, rt.ocp_overloads(info["sigs"]))
+                if len(siblings) > 0:
+                    s_ids = {}
+                    for sib in sorted(set(siblings.values())):
+                        s_ids[sib] = f"_o{counter}"
+                        counter += 1
+                        phase1.append(f"{s_ids[sib]} = _rt.get({mv}, {cls_arg}, {sib!r})")
+                    fid = f"_p{counter}"
+                    counter += 1
+                    off = " - 1" if not is_static else ""
+                    defaults = "".join(f"_s{n}={s_ids[s]}, " for n, s in sorted(siblings.items()))
+                    # phase 3 runs after phase 2, so _f is whatever phase 2 installed (or the original, or nothing:
+                    # Quantity_Period has only Values__int__…, no plain Values)
+                    body = [f"def {fid}(*a, {defaults}_f=getattr({owner}, {name!r}, None), **k):",
+                            f"    n = len(a){off}"]
+                    for n, _ in sorted(siblings.items()):
+                        body += [f"    if n == {n} and not k:", f"        return _s{n}(*a)"]
+                    body += ["    if _f is None:",
+                             f"        raise TypeError({(cname + '.' + name + ': no OCP3x overload for these arguments')!r})",
+                             "    return _f(*a, **k)",
+                             f"{owner}.{name} = {'staticmethod(' + fid + ')' if is_static else fid}"]
+                    phase3 += guarded(" and ".join(f"{s_ids[s]} is not None" for s in sorted(s_ids)), body)
+                    stats["collision sibling"] += 1
                 target = getattr(obj, source, None)
                 if target is None or not callable(target) or isinstance(target, type):
                     continue
@@ -255,7 +303,9 @@ def main() -> dict[str, str]:
             "    del globals()[_name]",
             "del _name"]
     files["OCP/_patches.py"] = "\n".join(head + ["", "# phase 1: the original callables"] + phase1
-                                         + ["", "# phase 2: OCP's conventions"] + phase2 + tail) + "\n"
+                                         + ["", "# phase 2: OCP's conventions"] + phase2
+                                         + ["", "# phase 3: calls OCP resolves to an R-COLLISION sibling in OCP3x"] + phase3
+                                         + tail) + "\n"
     files["OCP/__init__.py"] = (
         '"""OCP 8.0.1 API on OCP3x (cadquery-ocp-novtk compatibility wheel). Generated by shim/generate.py."""\n'
         f'__version__ = "{OCP_VERSION}"\n\n'
