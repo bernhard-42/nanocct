@@ -5,7 +5,7 @@
  
  dependencies = [
 -    "cadquery-ocp-novtk >= 8.0, < 8.1",
-+    "nanocct >= 0.1, < 0.2",
++    "nanocct >= 8.0, < 8.1",
      "typing_extensions >= 4.16.0, < 5",
      "numpy >= 2, < 3",
      "svgpathtools >= 1.5.1, < 2",

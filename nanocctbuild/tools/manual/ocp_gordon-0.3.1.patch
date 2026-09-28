@@ -5,7 +5,7 @@
  ]
  dependencies = [
 -    "cadquery_ocp_proxy >= 8.0, < 8.1",
-+    "nanocct >= 0.1, < 0.2",
++    "nanocct >= 8.0, < 8.1",
      "numpy >= 2, < 3",
      "scipy",
  ]

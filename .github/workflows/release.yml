@@ -4,32 +4,69 @@
 # (nanocct-wheel-<platform>-<sha>), so what is released is what was built and tested. Hence the order:
 #
 #   1. run "Build wheels" on main (Actions tab -> Run workflow) and let it pass on all five platforms
-#   2. tag that commit and push the tag:  git tag v0.1.0 <sha> && git push origin v0.1.0
+#   2. either start this workflow by hand (Actions tab -> Release -> Run workflow, on main) with the tag to create and
+#      that commit (short or full SHA), or tag the commit and push the tag:  git tag v8.0.1.0 <sha> && git push origin v8.0.1.0
 #
-# A tag run can restore caches of the default branch only, and GitHub drops a cache not read for 7 days -- so the
+# A run can restore caches of the default branch only, and GitHub drops a cache not read for 7 days -- so the
 # build must have run on main within the last week. A missing wheel fails the run; nothing is released partially.
 name: Release
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to create for the release, e.g. v8.0.1.0 (the OCCT version, then nanocct's own counter)"
+        required: true
+        type: string
+      commit:
+        description: "Commit whose cached wheels to release (short or full SHA; built by \"Build wheels\" on main)"
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
   release:
-    name: Release ${{ github.ref_name }}
+    name: Release
     runs-on: ubuntu-24.04
 
     steps:
+      # The tag and the commit: from the inputs when started by hand, from the pushed tag otherwise. The cache keys need
+      # the full SHA, so a short one is resolved through the GitHub API.
+      - name: Tag and commit
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_COMMIT: ${{ inputs.commit }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            tag="$INPUT_TAG"
+            sha=$(gh api "repos/$GITHUB_REPOSITORY/commits/$INPUT_COMMIT" --jq .sha)
+          else
+            tag="$GITHUB_REF_NAME"
+            sha="$GITHUB_SHA"
+          fi
+          if ! [[ "$tag" =~ ^v[0-9] ]]; then
+            echo "the tag must look like v8.0.1.0, got '$tag'" >&2
+            exit 1
+          fi
+          echo "releasing $tag from $sha"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
       # path and enableCrossOsArchive must match the save step in build-wheels.yml exactly: both go into the cache
       # version, and a different spelling is a different cache.
       - name: Restore macOS arm64 wheel
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: dist/*.whl
-          key: nanocct-wheel-macos-arm64-${{ github.sha }}
+          key: nanocct-wheel-macos-arm64-${{ steps.release.outputs.sha }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
 
@@ -37,7 +74,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: dist/*.whl
-          key: nanocct-wheel-macos-x86_64-${{ github.sha }}
+          key: nanocct-wheel-macos-x86_64-${{ steps.release.outputs.sha }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
 
@@ -45,7 +82,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: dist/*.whl
-          key: nanocct-wheel-linux-x86_64-${{ github.sha }}
+          key: nanocct-wheel-linux-x86_64-${{ steps.release.outputs.sha }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
 
@@ -53,7 +90,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: dist/*.whl
-          key: nanocct-wheel-linux-aarch64-${{ github.sha }}
+          key: nanocct-wheel-linux-aarch64-${{ steps.release.outputs.sha }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
 
@@ -61,16 +98,18 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: dist/*.whl
-          key: nanocct-wheel-windows-amd64-${{ github.sha }}
+          key: nanocct-wheel-windows-amd64-${{ steps.release.outputs.sha }}
           enableCrossOsArchive: true
           fail-on-cache-miss: true
 
-      # Exactly one wheel per platform, and each carries the version the tag names (v0.1.0 -> nanocct-0.1.0-...).
+      # Exactly one wheel per platform, and each carries the version the tag names (v8.0.1.0 -> nanocct-8.0.1.0-...).
       - name: Check wheels against the tag
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
         run: |
           set -euo pipefail
           shopt -s nullglob
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           ls -l dist
           for plat in macosx_11_0_arm64 macosx_11_0_x86_64 manylinux_2_28_x86_64 manylinux_2_28_aarch64 win_amd64; do
             found=(dist/nanocct-"$version"-cp312-abi3-*"$plat"*.whl)
@@ -88,7 +127,9 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 #v3.0.2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: nanocct ${{ github.ref_name }}
+          tag_name: ${{ steps.release.outputs.tag }}
+          # a tag that does not exist yet is created on this commit, not on the branch head
+          target_commitish: ${{ steps.release.outputs.sha }}
+          name: nanocct ${{ steps.release.outputs.tag }}
           files: dist/*.whl
           fail_on_unmatched_files: true

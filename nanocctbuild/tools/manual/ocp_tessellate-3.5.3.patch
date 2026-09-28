@@ -455,7 +455,7 @@
  ]
  
  dependencies = [
-+    "nanocct >= 0.1, < 0.2",
++    "nanocct >= 8.0, < 8.1",
      "webcolors>=24.8.0",
      "numpy>=2.0",
      "cachetools>=5.5.0,<8",

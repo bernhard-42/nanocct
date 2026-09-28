@@ -19,7 +19,7 @@ HERE = Path(__file__).parent
 # another name is not, and uv then installs the real package next to it, both writing OCP/. A local test vehicle,
 # never uploaded (PyPI refuses local versions anyway).
 NAME, DIST, VERSION = "cadquery-ocp-novtk", "cadquery_ocp_novtk", "8.0.1.0.0+shim"
-REQUIRES = ["nanocct==0.1.0", "cadquery-ocp-proxy==8.0.1.0.0"]
+REQUIRES = ["nanocct>=8.0.1,<8.0.2", "cadquery-ocp-proxy==8.0.1.0.0"]   # any nanocct for OCCT 8.0.1 (8.0.1.0, fixes 8.0.1.x)
 OCP_VERSION = "8.0.1.0"      # OCP.__version__ of the real package
 
 METADATA = f"""Metadata-Version: 2.1
