@@ -57,14 +57,26 @@ jobs:
           import json, os
           native = "deps/occt-8.0.1\ndeps/freetype\ndeps/freeimage\ndeps/rapidjson\n"
           ml = "deps/occt-8.0.1-manylinux\ndeps/freetype-ml\ndeps/freeimage-ml\ndeps/rapidjson\n"
+          # what each platform's deps are built from: the deps-cache key hashes these and nothing else, so a change for
+          # one platform no longer rebuilds OCCT on the others
+          fetch = "deps/fetch-*.sh"
+          keys_macos = "\n".join([fetch, "deps/build-freetype-macos.sh", "deps/build-freeimage-macos.sh",
+                                  "deps/build-occt-macos.sh", "deps/occt-unexported-symbols.txt",
+                                  "deps/freeimage-exported-symbols.txt"])
+          keys_linux = "\n".join([fetch, "deps/build-freetype-manylinux.sh", "deps/build-freeimage-manylinux.sh",
+                                  "deps/build-occt-manylinux.sh", "deps/*.map", "deps/manylinux.Dockerfile",
+                                  "deps/run-manylinux.sh"])
+          keys_windows = "\n".join([fetch, "deps/build-freetype-windows.sh", "deps/build-freeimage-windows.sh",
+                                    "deps/build-occt-windows.sh"])
           table = [
-              ("MACOS_ARM64",   "macos-arm64",   "macos-15",         native),
-              ("MACOS_X86_64",  "macos-x86_64",  "macos-15-intel",   native),
-              ("LINUX_X86_64",  "linux-x86_64",  "ubuntu-24.04",     ml),
-              ("LINUX_AARCH64", "linux-aarch64", "ubuntu-24.04-arm", ml),
-              ("WINDOWS_AMD64", "windows-amd64", "windows-2025",     native),
+              ("MACOS_ARM64",   "macos-arm64",   "macos-15",         native, keys_macos),
+              ("MACOS_X86_64",  "macos-x86_64",  "macos-15-intel",   native, keys_macos),
+              ("LINUX_X86_64",  "linux-x86_64",  "ubuntu-24.04",     ml,     keys_linux),
+              ("LINUX_AARCH64", "linux-aarch64", "ubuntu-24.04-arm", ml,     keys_linux),
+              ("WINDOWS_AMD64", "windows-amd64", "windows-2025",     native, keys_windows),
           ]
-          chosen = [{"platform": p, "runner": r, "deps": d} for var, p, r, d in table if os.environ[var] == "true"]
+          chosen = [{"platform": p, "runner": r, "deps": d, "deps_inputs": k}
+                    for var, p, r, d, k in table if os.environ[var] == "true"]
           if len(chosen) == 0:
               raise SystemExit("no platform selected")
           print("matrix=" + json.dumps({"include": chosen}))
@@ -102,20 +114,30 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install make -y --no-progress
 
+      # GitHub starts Git Bash as `bash --noprofile --norc`; an interactive Git Bash, which the Makefile expects, also has
+      # /usr/bin/core_perl on PATH (/etc/profile.d/perlbin.sh), and that is where shasum lives -- the second run
+      # (2026-09-28) stopped in fetch-rapidjson.sh with "shasum: command not found".
+      - name: (Windows) Git Bash's login PATH
+        if: runner.os == 'Windows'
+        run: cygpath -w /usr/bin/core_perl >> "$GITHUB_PATH"
+
       - name: Tool versions
         run: |
           make --version | head -1
           if [ "$RUNNER_OS" = "Linux" ]; then docker --version; else uv --version; fi
           cmake --version | head -1
           if [ "$RUNNER_OS" != "Linux" ]; then ninja --version; fi
+          if [ "$RUNNER_OS" = "Windows" ]; then command -v shasum; fi
 
       # ---- dependencies --------------------------------------------------------------------------------------------
+      # matrix.deps_inputs is a newline-separated pattern list; hashFiles joins its arguments with newlines before
+      # globbing anyway (actions/runner, HashFilesFunction.cs), so one such argument equals several.
       - name: Restore deps cache
         id: deps
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
         with:
           path: ${{ matrix.deps }}
-          key: deps-${{ matrix.platform }}-v${{ env.DEPS_CACHE_VERSION }}-${{ hashFiles('deps/fetch-*.sh', 'deps/build-freetype-*.sh', 'deps/build-freeimage-*.sh', 'deps/build-occt-*.sh', 'deps/*.map', 'deps/occt-unexported-symbols.txt', 'deps/freeimage-exported-symbols.txt', 'deps/manylinux.Dockerfile', 'deps/run-manylinux.sh') }}
+          key: deps-${{ matrix.platform }}-v${{ env.DEPS_CACHE_VERSION }}-${{ hashFiles(matrix.deps_inputs) }}
 
       - name: make deps
         if: steps.deps.outputs.cache-hit != 'true'
