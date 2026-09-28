@@ -8,7 +8,7 @@
 # The mechanical part comes from the tools; nanocctbuild/tools/manual/<pkg>.patch holds only what a human decided (results that
 # nanocct returns where OCP filled an argument, streams, version branches, the dependency on nanocct, tests that need
 # a newer upstream). Needs nanocct importable (the staged tree) and the shim wheel in dist/ (`make shim`): port.py
-# reads the OCP -> nanocct name map from the shim's generated modules. Rerun the four suites against the real OCP
+# reads the OCP -> nanocct name map from the shim's generated modules. Rerun the five suites against the real OCP
 # afterwards (tools/junit_cmp.py) -- a regenerated patch is only as good as that comparison.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -31,6 +31,7 @@ dirs_of() {
         ocpsvg-0.7.0)         echo "ocpsvg tests examples" ;;
         ocp_gordon-0.3.1)     echo "src_py tests examples" ;;
         ocp_tessellate-3.5.3) echo "ocp_tessellate tests examples" ;;
+        ocp_viewer_core-1.0.13) echo "ocp_viewer_core tests" ;;
         *) echo "unknown package $1" >&2; exit 1 ;;
     esac
 }
@@ -38,7 +39,7 @@ dirs_of() {
 rm -rf "${WORK:?}"
 mkdir -p "$WORK"
 ( cd "$WORK" && unzip -q "$SHIM_WHEEL" 'OCP/*' )
-for pkg in ocpsvg-0.7.0 ocp_gordon-0.3.1 ocp_tessellate-3.5.3 build123d-0.13.0; do
+for pkg in ocpsvg-0.7.0 ocp_gordon-0.3.1 ocp_tessellate-3.5.3 build123d-0.13.0 ocp_viewer_core-1.0.13; do
     tarball="$SDIST/$pkg.tar.gz"
     [ -f "$tarball" ] || { echo "missing $tarball -- run make nanocctbuild first" >&2; exit 1; }
     tar -xzf "$tarball" -C "$WORK"

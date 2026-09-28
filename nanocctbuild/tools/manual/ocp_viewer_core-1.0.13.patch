@@ -1,0 +1,36 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -25,9 +25,8 @@
+     "Programming Language :: Python :: 3",
+ ]
+ 
+-# No OCP provider is declared, deliberately: the same OCP namespace is shipped
+-# by cadquery_ocp, cadquery_ocp_novtk and conda's OCP, and naming one would
+-# break the users of the other two. The host or the user chooses.
++# nanocct is declared: this is the nanocct port (nanocctbuild), and nanocct is the
++# only distribution that ships the nanocct namespace.
+ # threejs-materials is a show-path dependency, not an optional one: `_tessellate`
+ # tests `isinstance(node.material, PbrProperties)` to tell a threejs material from
+ # a build123d one, and an isinstance needs the class. The bound is ocp_vscode's,
+@@ -47,6 +46,7 @@
+ # package they cannot execute. The two that can - ocp_viewer and ocp_vscode -
+ # ask for `ocp-viewer-core[cli]`.
+ dependencies = [
++    "nanocct >= 8.0, < 8.1",
+     "ocp-tessellate>=3.5.0,<3.6.0",
+     "orjson",
+     "pillow",
+--- a/ocp_viewer_core/measure.py
++++ b/ocp_viewer_core/measure.py
+@@ -402,9 +402,9 @@
+ 
+     if support_type == BRepExtrema_SupportType.BRepExtrema_IsOnEdge:
+         if shape_index == 1:
+-            param = extrema.ParOnEdgeS1(1)[0]
++            param = extrema.ParOnEdgeS1(1)
+         else:
+-            param = extrema.ParOnEdgeS2(1)[0]
++            param = extrema.ParOnEdgeS2(1)
+     elif support_type == BRepExtrema_SupportType.BRepExtrema_IsVertex:
+         # Determine closest endpoint
+         if shape_index == 1:

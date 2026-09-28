@@ -1,0 +1,97 @@
+--- a/ocp_viewer_core/materials.py
++++ b/ocp_viewer_core/materials.py
+@@ -36,16 +36,16 @@
+ #
+ 
+ try:
+-    from OCP.gp import gp_Vec3f
++    from nanocct.gp import gp_Vec3f
+ except ImportError:
+     # cadquery-ocp 8 binds neither `gp_Vec3f` nor the PBR material's
+     # `EmissiveFactor`, so under it the emissive term cannot cross in either
+     # direction. Everything else does.
+     gp_Vec3f = None
+-from OCP.Graphic3d import Graphic3d_AlphaMode
+-from OCP.Quantity import Quantity_Color, Quantity_ColorRGBA, Quantity_TypeOfColor
+-from OCP.TCollection import TCollection_HAsciiString
+-from OCP.XCAFDoc import XCAFDoc_VisMaterial, XCAFDoc_VisMaterialPBR
++from nanocct.Graphic3d import Graphic3d_AlphaMode
++from nanocct.Quantity import Quantity_Color, Quantity_ColorRGBA, Quantity_TypeOfColor
++from nanocct.TCollection import TCollection_HAsciiString
++from nanocct.XCAFDoc import XCAFDoc_VisMaterial, XCAFDoc_VisMaterialPBR
+ from threejs_materials import PbrProperties, PbrValues
+ 
+ __all__ = ["pbr_to_vis_material", "vis_material_to_pbr"]
+--- a/ocp_viewer_core/measure.py
++++ b/ocp_viewer_core/measure.py
+@@ -23,13 +23,13 @@
+ 
+ from math import pi
+ 
+-from OCP.BRep import BRep_Tool
+-from OCP.BRepAdaptor import BRepAdaptor_Curve
+-from OCP.BRepExtrema import BRepExtrema_DistShapeShape, BRepExtrema_SupportType
+-from OCP.BRepGProp import BRepGProp_Face
+-from OCP.BRepTools import BRepTools
+-from OCP.GeomAPI import GeomAPI_ProjectPointOnSurf
+-from OCP.gp import gp_Dir, gp_Pnt, gp_Vec
++from nanocct.BRep import BRep_Tool
++from nanocct.BRepAdaptor import BRepAdaptor_Curve
++from nanocct.BRepExtrema import BRepExtrema_DistShapeShape, BRepExtrema_SupportType
++from nanocct.BRepGProp import BRepGProp_Face
++from nanocct.BRepTools import BRepTools
++from nanocct.GeomAPI import GeomAPI_ProjectPointOnSurf
++from nanocct.gp import gp_Dir, gp_Pnt, gp_Vec
+ from ocp_tessellate.ocp_utils import (
+     BoundingBox,
+     area,
+@@ -402,9 +402,9 @@
+ 
+     if support_type == BRepExtrema_SupportType.BRepExtrema_IsOnEdge:
+         if shape_index == 1:
+-            param = extrema.ParOnEdgeS1(1)[0]
+-        else:
+-            param = extrema.ParOnEdgeS2(1)[0]
++            param = extrema.ParOnEdgeS1(1)
++        else:
++            param = extrema.ParOnEdgeS2(1)
+     elif support_type == BRepExtrema_SupportType.BRepExtrema_IsVertex:
+         # Determine closest endpoint
+         if shape_index == 1:
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -25,9 +25,8 @@
+     "Programming Language :: Python :: 3",
+ ]
+ 
+-# No OCP provider is declared, deliberately: the same OCP namespace is shipped
+-# by cadquery_ocp, cadquery_ocp_novtk and conda's OCP, and naming one would
+-# break the users of the other two. The host or the user chooses.
++# nanocct is declared: this is the nanocct port (nanocctbuild), and nanocct is the
++# only distribution that ships the nanocct namespace.
+ # threejs-materials is a show-path dependency, not an optional one: `_tessellate`
+ # tests `isinstance(node.material, PbrProperties)` to tell a threejs material from
+ # a build123d one, and an isinstance needs the class. The bound is ocp_vscode's,
+@@ -47,6 +46,7 @@
+ # package they cannot execute. The two that can - ocp_viewer and ocp_vscode -
+ # ask for `ocp-viewer-core[cli]`.
+ dependencies = [
++    "nanocct >= 8.0, < 8.1",
+     "ocp-tessellate>=3.5.0,<3.6.0",
+     "orjson",
+     "pillow",
+--- a/tests/test_materials.py
++++ b/tests/test_materials.py
+@@ -26,9 +26,9 @@
+ #
+ 
+ import pytest
+-from OCP.Graphic3d import Graphic3d_AlphaMode
+-from OCP.Quantity import Quantity_Color, Quantity_TypeOfColor
+-from OCP.XCAFDoc import XCAFDoc_VisMaterial, XCAFDoc_VisMaterialCommon
++from nanocct.Graphic3d import Graphic3d_AlphaMode
++from nanocct.Quantity import Quantity_Color, Quantity_TypeOfColor
++from nanocct.XCAFDoc import XCAFDoc_VisMaterial, XCAFDoc_VisMaterialCommon
+ from threejs_materials import PbrProperties, PbrValues
+ 
+ from ocp_viewer_core.materials import (

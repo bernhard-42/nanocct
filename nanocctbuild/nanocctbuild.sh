@@ -1,6 +1,6 @@
 #!/bin/bash
-# Fetch build123d and the three packages it builds on as sdists from PyPI, verify each against its sha256, and apply
-# the nanocct patch from nanocctbuild/patches: the result is four source trees that import nanocct instead of OCP.
+# Fetch build123d, the three packages it builds on, and ocp_viewer_core (the viewers' core, on ocp_tessellate) as sdists from PyPI, verify each against its sha256, and apply
+# the nanocct patch from nanocctbuild/patches: the result is five source trees that import nanocct instead of OCP.
 #
 #   make nanocctbuild                       (or: nanocctbuild/nanocctbuild.sh)
 #   uv venv -p 3.14 /path/to/venv
@@ -30,6 +30,7 @@ PACKAGES=(
     "ocp_gordon-0.3.1 e55e695fd421e4dc10fe91636e7f2fa376ad81572faaf74e7bbed4b78c7918b7 https://files.pythonhosted.org/packages/35/b2/66ed6601660648ad5bf84a571460cd57e9db4b28c6833c55e229211a418d/ocp_gordon-0.3.1.tar.gz"
     "ocp_tessellate-3.5.3 3f627da7099cd078081432b26db179b7f225241d1ca9474ce959e714f6cac564 https://files.pythonhosted.org/packages/ef/59/f5affe69a54587413b03b22020b0353fba1b4aeb3a281912eb6eaeef9347/ocp_tessellate-3.5.3.tar.gz"
     "build123d-0.13.0 97c5577a777ff7219714b10f70f253c7109e84bb3ec621eea5d4597b4c7656b4 https://files.pythonhosted.org/packages/4b/6c/47b531b579d5238e4627b5113375d8f7a7145a24b3447413be318422ee71/build123d-0.13.0.tar.gz"
+    "ocp_viewer_core-1.0.13 57ccbfff31a03fdd6c78e1dc5f05ff55d49f959df956d450f211ec7b06bf91ca https://files.pythonhosted.org/packages/d2/99/6c36e0fda14e44e66e2fccc04420be7650f813f9e6556cb27e5470171bb8/ocp_viewer_core-1.0.13.tar.gz"
 )
 
 OUT="$ROOT/build/nanocctbuild"

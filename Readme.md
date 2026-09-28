@@ -82,7 +82,7 @@ The shim replaces the installed `cadquery-ocp-novtk` by itself; `uv pip list` sh
 make nanocctbuild
 ```
 
-This downloads ocpsvg, ocp-gordon, ocp-tessellate and build123d from PyPI, patches them to use nanocct directly, and installs them with the nanocct wheel from `dist/` into a new Python 3.14 environment `_scratch/.venv` (an existing one there is replaced). Install ocp-vscode or ocp-viewer into it if you want to view objects built with build123d on top of nanocct.
+This downloads ocpsvg, ocp-gordon, ocp-tessellate, build123d and ocp-viewer-core from PyPI, patches them to use nanocct directly, and installs them with the nanocct wheel from `dist/` into a new Python 3.14 environment `_scratch/.venv` (an existing one there is replaced). Install ocp-vscode or ocp-viewer into it if you want to view objects built with build123d on top of nanocct; both run on the patched ocp-viewer-core.
 
 ## How to build nanocct
 

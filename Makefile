@@ -467,12 +467,12 @@ endif
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 # Create nanocct-enabled packages
 #
-# build123d 0.13.0, ocpsvg 0.7.0, ocp_gordon 0.3.1 and ocp_tessellate 3.5.3 as sdists from PyPI (sha256-verified),
+# build123d 0.13.0, ocpsvg 0.7.0, ocp_gordon 0.3.1, ocp_tessellate 3.5.3 and ocp_viewer_core 1.0.13 as sdists from PyPI (sha256-verified),
 # patched to import nanocct instead of OCP (nanocctbuild/patches, tracked). Output: build/nanocctbuild/src/<pkg>-<version>,
 # ready for `uv pip install dist/nanocct-*.whl build/nanocctbuild/src/*` into a fresh venv. Pure source work, so it runs
 # on the host on every platform.
 # Then a complete test environment in _scratch/.venv (Python 3.14, untracked): recreated on every run, with the nanocct
-# wheel from DIST_DIR (`make wheel delocate` first -- the wheel is what gets tested, not the staged tree) and the four patched
+# wheel from DIST_DIR (`make wheel delocate` first -- the wheel is what gets tested, not the staged tree) and the five patched
 # packages. Activation lasts one shell, so it shares the line with the install.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
