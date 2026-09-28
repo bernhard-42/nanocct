@@ -101,7 +101,7 @@ Prerequisites: `git`, `curl`, [uv](https://docs.astral.sh/uv/), CMake and Ninja;
     make deps
     ```
 
-- Build the bindings: generate, compile, stub, test, and the wheels of nanocct and the shim into `dist/`
+- Build the bindings: generate, compile, stubs, pack and repair the wheel, test the repaired wheel in a fresh environment, and the shim's wheel -- both wheels into `dist/`
 
     ```bash
     make wheels

@@ -1,8 +1,9 @@
 # nanocct — one entry point for building it yourself, on macOS, Linux and Windows.
 #
 #   make deps        fetch and build RapidJSON, FreeType, FreeImage and OCCT from scratch (long: OCCT is ~4 min on an M5)
-#   make wheels      generate -> compile -> stubs -> test -> wheel -> shim  (nanocct's wheel and the shim's, into dist/)
-#   make generate compile stubs test        the development loop, step by step
+#   make wheels      generate -> compile -> stubs -> wheel -> delocate -> test -> shim  (nanocct's wheel and the shim's, into dist/)
+#   make generate compile stubs wheel delocate test     the same, step by step -- every step runs once: the wheel is packed
+#                    from what compile and stubs built, and the tests run against the repaired wheel in a fresh venv
 #
 # Design.md 3.1/3.2 describe what the dependencies are and why; State.md 9 holds the working state.
 #
@@ -95,6 +96,8 @@ ML_SYSPY   := /opt/python/$(CPTAG)-$(CPTAG)/bin/python
 # the wheel's platform tag follows the host, as the container image does (deps/run-manylinux.sh): x86_64 or aarch64
 ML_PLAT    := manylinux_2_28_$(shell uname -m)
 WIN_PY     := $(ROOT)/.venv/Scripts/python.exe
+# `make test` installs the repaired wheel here, a venv of its own (Linux: /work/.venv-test-ml in the container)
+TEST_VENV  := $(ROOT)/.venv-test
 # RUN_SH starts a bash script. Empty on macOS and Linux, where the #! line does it. On Windows it is Git Bash by its full
 # path: native GNU make (Chocolatey's, "Built for Windows32") turns `#!/bin/bash` into `bash <script>` and calls
 # CreateProcess without a path (make 4.4.1, src/w32/subproc/sub_proc.c), and CreateProcess searches System32 before
@@ -122,7 +125,7 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs test raw_wheel delocate wheel shim shim-parity nanocctbuild \
+.PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs wheel delocate test shim shim-parity nanocctbuild \
         clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
 
 
@@ -131,7 +134,7 @@ endif
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs test | wheel | shim | wheels | shim-parity | nanocctbuild"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs wheel delocate test | shim | wheels | shim-parity | nanocctbuild"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
 	@echo "platform: $(PLATFORM)"
 
@@ -149,12 +152,14 @@ ifeq ($(PLATFORM),linux)
 	@# uv here too, against the same pyproject dev group as the other platforms. The hand-written pip list this
 	@# replaces had drifted: it was missing libclang, so `make generate` died with "No module named 'clang'"
 	@# the first time a Linux tree was built by `make env` (2026-09-24). UV_PROJECT_ENVIRONMENT points uv at
-	@# .venv-ml instead of .venv, and `uv venv` replaces an existing environment -- `python -m venv` does not,
-	@# which is why pinning the interpreter looked like a no-op until this was measured.
-	$(CONTAINER) "cd /work && UV_PROJECT_ENVIRONMENT=/work/.venv-ml uv venv -p $(ML_SYSPY) /work/.venv-ml \
+	@# .venv-ml instead of .venv, and `uv venv --clear` replaces an existing environment -- `python -m venv` does not,
+	@# which is why pinning the interpreter looked like a no-op until this was measured. --clear because uv 0.12
+	@# no longer replaces one by itself ("A virtual environment already exists", 2026-09-28, uv 0.12.16 here and
+	@# 0.12.18 in the manylinux image; both have -c/--clear).
+	$(CONTAINER) "cd /work && UV_PROJECT_ENVIRONMENT=/work/.venv-ml uv venv --clear -p $(ML_SYSPY) /work/.venv-ml \
 	    && UV_PROJECT_ENVIRONMENT=/work/.venv-ml uv sync --no-install-project"
 else
-	cd $(ROOT) && uv venv -p $(PY_VERSION)
+	cd $(ROOT) && uv venv --clear -p $(PY_VERSION)
 	@# --no-install-project: `uv sync` would build nanocct itself, which needs generated sources that do not exist
 	@# yet on a fresh clone. The venv here carries the tooling (libclang, nanobind, pytest, mypy, ty); the extension
 	@# modules come from `make compile`, and are imported from the staged tree rather than installed.
@@ -290,7 +295,10 @@ endif
 # the venv belongs to the wheel path, not to the development loop.
 compile:
 ifeq ($(PLATFORM),macos)
-	cd $(ROOT) && cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=Release \
+	@# The deployment target the wheel is tagged with (MACOS_TARGET): the wheel is packed from these very modules. Without
+	@# it they target the SDK's own version (26.0 here), which only the scikit-build-core build had overridden
+	@# (pyproject.toml), and delocate refuses the wheel: "has a minimum target of 26.0" (2026-09-28).
+	cd $(ROOT) && cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) \
 	    -DPython_EXECUTABLE=$(ROOT)/.venv/bin/python -DNANOCCT_RAPIDJSON_DIR=$(DEPS)/rapidjson/include
 	cd $(ROOT) && cmake --build $(BUILD_DIR)
 	$(RUN_SH) $(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
@@ -331,12 +339,23 @@ endif
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 test:
+	@# The suite runs against what ships: the repaired wheel from `make delocate`, installed into a venv of its own with
+	@# the dev tools (pytest, mypy, ty, libclang for the generator tests) -- not against the staged tree, and not in .venv,
+	@# where the staged tree's .pth would put a second copy of the modules into the process (the one-copy rule).
+	@wheels=$$(ls $(DIST_DIR)/nanocct-*.whl 2>/dev/null); \
+	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "test: need exactly one repaired wheel in $(DIST_DIR) -- run make wheel delocate" >&2; exit 1; fi
 ifeq ($(PLATFORM),macos)
-	cd $(ROOT) && $(PY) -m pytest tests -q -p no:cacheprovider
+	cd $(ROOT) && uv venv -q --clear -p $(PY_VERSION) $(TEST_VENV) \
+	    && uv pip install -q --python $(TEST_VENV)/bin/python --group dev $(DIST_DIR)/nanocct-*.whl
+	cd $(ROOT) && $(TEST_VENV)/bin/python -m pytest tests -q -p no:cacheprovider
 else ifeq ($(PLATFORM),windows)
-	cd $(ROOT) && PYTHONPATH="$(STAGE_DIR)" "$(WIN_PY)" -m pytest tests -q -p no:cacheprovider
+	cd $(ROOT) && uv venv -q --clear -p $(PY_VERSION) $(TEST_VENV) \
+	    && uv pip install -q --python "$(TEST_VENV)/Scripts/python.exe" --group dev $(DIST_DIR)/nanocct-*.whl
+	cd $(ROOT) && "$(TEST_VENV)/Scripts/python.exe" -m pytest tests -q -p no:cacheprovider
 else
-	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml xvfb-run -a $(ML_PY) -m pytest tests -q -p no:cacheprovider"
+	$(CONTAINER) "cd /work && uv venv -q --clear -p $(ML_SYSPY) /work/.venv-test-ml \
+	    && uv pip install -q --python /work/.venv-test-ml/bin/python --group dev /work/dist/nanocct-*.whl \
+	    && xvfb-run -a /work/.venv-test-ml/bin/python -m pytest tests -q -p no:cacheprovider"
 endif
 
 
@@ -345,7 +364,7 @@ endif
 #
 # cadquery-ocp-novtk 8.0.1.0.0+shim: `import OCP.*` on top of nanocct (shim/). A pure-Python py3-none-any wheel built by
 # shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to nanocct's.
-# Generation reads nanocct's own signatures, so the staged tree must be importable -- found the way `make test` finds it.
+# Generation reads nanocct's own signatures, so the staged tree must be importable -- found the way `make stubs` finds it.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 shim:
@@ -361,7 +380,12 @@ endif
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 # Packaging - create wheels
 #
-# A built wheel is not portable: the extension modules find the OCCT libraries through an rpath into deps/, so the
+# `make wheel` packs the staged tree -- the modules `make compile` built and the stubs `make stubs` wrote -- with
+# generator/wheel.py (stdlib only). Until 2026-09-28 it ran `uv build`, i.e. scikit-build-core, which cannot pack without
+# compiling, so every binding was compiled twice; on the slower CI runners that second compile was the longest step
+# (Windows: more than 30 min). scikit-build-core stays the build backend for building from source (pip install .).
+#
+# A packed wheel is not portable: the extension modules find the OCCT libraries through an rpath into deps/, so the
 # wheel works only on the machine that built it. The repair step copies those libraries in and rewrites the
 # references to point inside the wheel (State.md 8.4). Each platform has its own tool, and each leaves the
 # system's own libraries alone -- OpenGL and X11 belong to the host, never to the wheel (Design.md 7).
@@ -378,8 +402,23 @@ MACOS_TARGET := 11.1
 OCCT_BIN_WIN := $(DEPS)/occt-8.0.1/win64/vc14/bin
 FREEIMAGE_BIN_WIN := $(DEPS)/freeimage/bin
 
-# The repair. Named `delocate` after the macOS tool because that is what the step is, on every platform.
-delocate: raw_wheel
+# The unrepaired wheel, packed from the staged tree: correct Python surface, but linked against deps/. The platform tag
+# is the one each repair tool expects: macosx_11_0_<arch> (MACOS_TARGET 11.1 normalises to 11_0), linux_<arch> (auditwheel
+# makes it manylinux_2_28_<arch>), win_amd64.
+wheel: clean_dist
+ifeq ($(PLATFORM),macos)
+	cd $(ROOT) && $(PY) -m generator.wheel $(STAGE_DIR) $(RAW_DIR) macosx_11_0_$(shell uname -m)
+else ifeq ($(PLATFORM),windows)
+	cd $(ROOT) && "$(WIN_PY)" -m generator.wheel "$(STAGE_DIR)" "$(RAW_DIR)" win_amd64
+else
+	$(CONTAINER) "cd /work && $(ML_PY) -m generator.wheel /work/stage-ml /work/dist/unrepaired linux_$(shell uname -m)"
+endif
+
+
+# The repair. Named `delocate` after the macOS tool because that is what the step is, on every platform. It takes the
+# raw wheel `make wheel` left in dist/unrepaired and depends on no other target, so each step runs once.
+delocate:
+	@ls $(RAW_DIR)/nanocct-*.whl > /dev/null 2>&1 || { echo "delocate: no raw wheel in $(RAW_DIR) -- run make wheel first" >&2; exit 1; }
 ifeq ($(PLATFORM),macos)
 	MACOSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) $(ROOT)/.venv/bin/delocate-wheel -w $(DIST_DIR) $(RAW_DIR)/*.whl
 else ifeq ($(PLATFORM),windows)
@@ -394,29 +433,7 @@ endif
 	@echo "repaired wheel:" && ls -lh $(DIST_DIR)/*.whl
 
 
-# The unrepaired wheel: correct Python surface, but linked against deps/.
-raw_wheel: clean_dist
-ifeq ($(PLATFORM),macos)
-	cd $(ROOT) && MACOSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) \
-	    uv build --wheel --no-build-isolation --python $(PY) -o $(RAW_DIR)
-else ifeq ($(PLATFORM),windows)
-	@# uv rather than `python -m build`: the venv carries the backend (scikit-build-core), not a build frontend.
-	@# --python is not optional. Without it uv picks its own interpreter for the build environment and the build
-	@# fails with "No module named 'scikit_build_core'" although the venv has it (measured on gauss 2026-09-24,
-	@# where VIRTUAL_ENV is unset; macOS happened to resolve it, which is exactly why both are explicit now).
-	cd $(ROOT) && uv build --wheel --no-build-isolation --python "$(WIN_PY)" -o $(RAW_DIR)
-else
-	$(CONTAINER) "cd /work && uv build --wheel --no-build-isolation --python $(ML_PY) -o /work/dist/unrepaired \
-	    -C cmake.define.NANOCCT_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
-	    -C cmake.define.NANOCCT_RAPIDJSON_DIR=/work/deps/rapidjson/include"
-endif
-	@ls -lh $(RAW_DIR)
-
-
-wheel: delocate
-
-
-wheels: generate compile stubs test wheel shim
+wheels: generate compile stubs wheel delocate test shim
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -455,7 +472,7 @@ endif
 # ready for `uv pip install dist/nanocct-*.whl build/nanocctbuild/src/*` into a fresh venv. Pure source work, so it runs
 # on the host on every platform.
 # Then a complete test environment in _scratch/.venv (Python 3.14, untracked): recreated on every run, with the nanocct
-# wheel from DIST_DIR (`make wheel` first -- the wheel is what gets tested, not the staged tree) and the four patched
+# wheel from DIST_DIR (`make wheel delocate` first -- the wheel is what gets tested, not the staged tree) and the four patched
 # packages. Activation lasts one shell, so it shares the line with the install.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -468,7 +485,7 @@ endif
 nanocctbuild:
 	$(RUN_SH) $(ROOT)/nanocctbuild/nanocctbuild.sh
 	@wheels=$$(ls $(DIST_DIR)/nanocct-*.whl 2>/dev/null); \
-	if [ -z "$$wheels" ]; then echo "nanocctbuild: no nanocct wheel in $(DIST_DIR) -- run 'make wheel' first" >&2; exit 1; fi; \
+	if [ -z "$$wheels" ]; then echo "nanocctbuild: no nanocct wheel in $(DIST_DIR) -- run 'make wheel delocate' first" >&2; exit 1; fi; \
 	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "nanocctbuild: more than one nanocct wheel in $(DIST_DIR): $$wheels" >&2; exit 1; fi
 	mkdir -p $(SCRATCH)
 	rm -rf $(SCRATCH)/.venv

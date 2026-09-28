@@ -1,4 +1,6 @@
 .venv/
+# the other venvs: .venv-ml (Linux, in the container), .venv-test / .venv-test-ml (`make test`, the repaired wheel)
+.venv-*/
 build/
 __pycache__/
 *.pyc

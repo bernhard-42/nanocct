@@ -2,7 +2,9 @@
 # Windows amd64 (State.md 8.17).
 #
 # Every step is a Makefile target, so CI and a local build are the same commands: `make env`, `make deps`,
-# `make sources`, `make generate compile stubs test wheel`. The workflow adds only what the Makefile cannot know --
+# `make sources`, `make generate compile stubs wheel delocate test` -- each step once: the wheel is packed from what
+# `compile` built (until 2026-09-28 `make wheel` compiled everything a second time), and the tests run against the
+# repaired wheel in a fresh venv. The workflow adds only what the Makefile cannot know --
 # the runner's missing tools and the two caches.
 #
 #   deps cache    deps/ install trees after `make deps` (OCCT, FreeType, FreeImage, RapidJSON), keyed on the scripts
@@ -169,11 +171,14 @@ jobs:
       - name: make stubs
         run: make stubs
 
-      - name: make test
-        run: make test
-
       - name: make wheel
         run: make wheel
+
+      - name: make delocate
+        run: make delocate
+
+      - name: make test
+        run: make test
 
       # ---- the wheel -----------------------------------------------------------------------------------------------
       # enableCrossOsArchive: release.yml restores all five on one Ubuntu runner, and without it a cache saved on
