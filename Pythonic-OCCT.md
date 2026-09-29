@@ -1,6 +1,22 @@
 # Pythonic addition to the OCCT bindings
 
-## NCollections
+**Table of contents**
+
+- [NCollections](#ncollections-support)
+- [Iterating over OCCT iterators](#iterating-over-occt-iterators)
+- [numpy zero-copy support in detail](#numpy-zero-copy-support-in-detail)
+- [Handling of primitive types passed by reference](#handling-of-primitive-types-passed-by-reference)
+- [Mutable primitive references](#mutable-primitive-references)
+- [Operators](#operators)
+- [Equality in OCCT and Python](#equality-in-occt-and-python)
+- [Handling of istream and ostream](#handling-of-istream-and-ostream)
+- [Enums](#enums)
+- [Exceptions](#exceptions)
+- [Doc strings](#doc-strings)
+- [AddOns](#addons)
+
+
+## NCollections support
 
 **Design: [2a Naming conventions](Design.md#2a-naming-conventions), [6a NCollection containers](Design.md#6a-ncollection-containers-hand-written-binders)**
 
@@ -672,6 +688,153 @@ So a dict finds `g` if `g == f`, and an OCCT map finds it if `g.IsSame(f)`: a re
 | `gp_Pnt.IsEqual(p, tol)` | distance ≤ `tol`                                                                     |
 | `std::equal_to<gp_Pnt>`  | each coordinate within `Epsilon(x)`, about one unit in the last place (`gp_Pnt.hxx`) |
 | `std::hash<gp_Pnt>`      | the exact bits of the three doubles                                                  |
+
+
+## Handling of istream and ostream
+
+**Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations))**
+
+```python
+In [1]: import json
+   ...: from nanocct.BRepTools import BRepTools
+   ...: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct import TopoDS, TopExp, TopAbs
+   ...: 
+   ...: s = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
+   ...: f = TopoDS.Face(TopExp.TopExp_Explorer(s, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE).Current())
+   ...: 
+   ...: def dump(shape):
+   ...:     return json.loads(f"{{{shape.DumpJson()}}}")
+```
+
+### Dumping shapes to json
+
+```python
+In [2]: dump(s)
+Out[2]: 
+{'className': 'TopoDS_Shape',
+ 'TShape': {'className': 'TopoDS_TShape',
+  'this': '0xxa62fb9c40',
+  'ShapeType': 2,
+  'NbChildren': 1,
+  'State': 50,
+  'Free': 1,
+  'Locked': 0,
+  'Modified': 1,
+  'Checked': 0,
+  'Orientable': 0,
+  'Closed': 0,
+  'Infinite': 0,
+  'Convex': 0},
+ 'Location': {'className': 'TopLoc_Location',
+  'Transformation': {'Location': [0, 0, 0],
+   'Matrix': [1, 0, 0, 0, 1, 0, 0, 0, 1],
+   'shape': 0,
+   'scale': 1},
+  'IsIdentity': 1},
+ 'Orient': 0}
+
+In [3]: dump(f)
+Out[3]: 
+{'className': 'TopoDS_Shape',
+ 'TShape': {'className': 'TopoDS_TShape',
+  'this': '0xxa5d4c2800',
+  'ShapeType': 4,
+  'NbChildren': 1,
+  'State': 228,
+  'Free': 0,
+  'Locked': 0,
+  'Modified': 1,
+  'Checked': 1,
+  'Orientable': 1,
+  'Closed': 0,
+  'Infinite': 0,
+  'Convex': 0,
+  'Surface': {'className': 'Geom_Geometry',
+   'pos': {'Location': [0, 0, 0],
+    'Direction': [1, 0, 0],
+    'XDirection': [0, 0, 1],
+    'YDirection': [0, -1, 0]}},
+  'Location': {'className': 'TopLoc_Location',
+   'Transformation': {'Location': [0, 0, 0],
+    'Matrix': [1, 0, 0, 0, 1, 0, 0, 0, 1],
+    'shape': 0,
+    'scale': 1},
+   'IsIdentity': 1},
+  'Tolerance': 1e-07,
+  'NaturalRestriction': 0},
+ 'Location': {'className': 'TopLoc_Location',
+  'Transformation': {'Location': [0, 0, 0],
+   'Matrix': [1, 0, 0, 0, 1, 0, 0, 0, 1],
+   'shape': 0,
+   'scale': 1},
+  'IsIdentity': 1},
+ 'Orient': 1}
+```
+
+### Writing to memory
+
+Without a file name, the text is returned as a `str`:
+
+```python
+In [4]: BRepTools.Write_s(s)
+Out[4]: '\nCASCADE Topology V3, (c) Open Cascade\nLocations 0\nCurve2ds 24\n1 0 0 1 0 \n1 0 0 1 0 \n1 3 0 0 -1 \n1 0 0 0 1 \n1 0 -2 1 0 \n1 0 0 1 0 \n1 0 0 0 -1 \n1 0 0 0 1 \n1 0 0 1 0 \n1 0 1 1 0 \n1 3 0 0 -1 \n1 1 0 0 1 \n1 0 -2 1 0 \n1 0 1 1 0 \n1 0 0 0 -1 \n1 1 0 0 1 \n1 0 0 0 1 \n1 0 0 1 0 \n1 3 0 0 1 \n1 0 0 1 0 \n1 0 0 0 1 \n1 0 2 1 0 \n1 3 0 0 1 \n1 0 2 1 0 \nCurves 12\n1 0 0 0 0 0 1 \n1 0 0 3 -0 1 0 \n1 0 2 0 0 0 1 \n1 0 0 0 -0 1 0 \n1 1 0 0 0 0 1 \n1 1 0 3 -0 1 0 \n1 1 2 0 0 0 1 \n1 1 0 0 -0 1 0 \n1 0 0 0 1 0 -0 \n1 0 0 3 1 0 -0 \n1 0 2 0 1 0 -0 \n1 0 2 3 1 0 -0 \nPolygon3D 0\nPolygonOnTriangulations 0\nSurfaces 6\n1 0 0 0 1 0 -0 0 0 1 0 -1 0 \n1 0 0 0 -0 1 0 0 0 1 1 0 -0 \n1 0 0 3 0 0 1 1 0 -0 -0 1 0 \n1 0 2 0 -0 1 0 0 0 1 1 0 -0 \n1 0 0 0 0 0 1 1 0 -0 -0 1 0 \n1 1 0 0 1 0 -0 0 0 1 0 -1 0 \nTriangulations 0\n\nTShapes 34\nVe\n1e-07\n0 0 3\n0 0\n\n0101101\n*\nVe\n1e-07\n0 0 0\n0 0\n\n0101101\n*\nEd\n 1e-07 1 1 0\n1  1 0 0 3\n2  1 1 0 0 3\n2  2 2 0 0 3\n0\n\n0101000\n-34 0 +33 0 *\nVe\n1e-07\n0 2 3\n0 0\n\n0101101\n*\nEd\n 1e-07 1 1 0\n1  2 0 0 2\n2  3 1 0 0 2\n2  4 3 0 0 2\n0\n\n0101000\n-31 0 +34 0 *\nVe\n1e-07\n0 2 0\n0 0\n\n0101101\n*\nEd\n 1e-07 1 1 0\n1  3 0 0 3\n2  5 1 0 0 3\n2  6 4 0 0 3\n0\n\n0101000\n-31 0 +29 0 *\nEd\n 1e-07 1 1 0\n1  4 0 0 2\n2  7 1 0 0 2\n2  8 5 0 0 2\n0\n\n0101000\n-29 0 +33 0 *\nWi\n\n0101100\n-32 0 -30 0 +28 0 +27 0 *\nFa\n0  1e-07 1 0\n\n0111000\n+26 0 *\nVe\n1e-07\n1 0 3\n0 0\n\n0101101\n*\nVe\n1e-07\n1 0 0\n0 0\n\n0101101\n*\nEd\n 1e-07 1 1 0\n1  5 0 0 3\n2  9 6 0 0 3\n2  10 2 0 0 3\n0\n\n0101000\n-24 0 +23 0 *\nVe\n1e-07\n1 2 3\n0 0\n\n0101101\n*\nEd\n 1e-07 1 1 0\n1  6 0 0 2\n2  11 6 0 0 2\n2  12 3 0 0 2\n0\n\n0101000\n-21 0 +24 0 *\nVe\n1e-07\n1 2 0\n0 0\n\n0101101\n*\nEd\n 1e-07 1 1 0\n1  7 0 0 3\n2  13 6 0 0 3\n2  14 4 0 0 3\n0\n\n0101000\n-21 0 +19 0 *\nEd\n 1e-07 1 1 0\n1  8 0 0 2\n2  15 6 0 0 2\n2  16 5 0 0 2\n0\n\n0101000\n-19 0 +23 0 *\nWi\n\n0101100\n-22 0 -20 0 +18 0 +17 0 *\nFa\n0  1e-07 6 0\n\n0111000\n+16 0 *\nEd\n 1e-07 1 1 0\n1  9 0 0 1\n2  17 2 0 0 1\n2  18 5 0 0 1\n0\n\n0101000\n-23 0 +33 0 *\nEd\n 1e-07 1 1 0\n1  10 0 0 1\n2  19 2 0 0 1\n2  20 3 0 0 1\n0\n\n0101000\n-24 0 +34 0 *\nWi\n\n0101100\n-14 0 -22 0 +13 0 +32 0 *\nFa\n0  1e-07 2 0\n\n0111000\n+12 0 *\nEd\n 1e-07 1 1 0\n1  11 0 0 1\n2  21 4 0 0 1\n2  22 5 0 0 1\n0\n\n0101000\n-19 0 +29 0 *\nEd\n 1e-07 1 1 0\n1  12 0 0 1\n2  23 4 0 0 1\n2  24 3 0 0 1\n0\n\n0101000\n-21 0 +31 0 *\nWi\n\n0101100\n-10 0 -18 0 +9 0 +28 0 *\nFa\n0  1e-07 4 0\n\n0111000\n+8 0 *\nWi\n\n0101100\n-27 0 -10 0 +17 0 +14 0 *\nFa\n0  1e-07 5 0\n\n0111000\n+6 0 *\nWi\n\n0101100\n-30 0 -9 0 +20 0 +13 0 *\nFa\n0  1e-07 3 0\n\n0111000\n+4 0 *\nSh\n\n0101100\n-25 0 +15 0 -11 0 +7 0 -5 0 +3 0 *\nSo\n\n1100000\n+2 0 *\n\n+1 0 '
+```
+
+With filename parameter written to the file:
+
+```python
+In [5]: BRepTools.Write_s(s, "b.brep")
+Out[5]: True
+
+In [6]: %cat b.brep
+DBRep_DrawableShape
+
+CASCADE Topology V3, (c) Open Cascade
+Locations 0
+Curve2ds 24
+1 0 0 1 0 
+1 0 0 1 0 
+1 3 0 0 -1 
+1 0 0 0 1 
+...
+```
+
+### Reading from memory
+
+A stream parameter takes a text file-like object, so text in memory is wrapped in `io.StringIO`. A plain `str` in its place is taken as a file name: it selects the file-path overload, which finds no such file and returns `False`.
+
+```python
+In [7]: import io
+   ...: from nanocct.BRep import BRep_Builder
+   ...: from nanocct.TopoDS import TopoDS_Shape
+   ...:
+   ...: text = BRepTools.Write_s(s)
+   ...: back = TopoDS_Shape()
+   ...: BRepTools.Read_s(back, io.StringIO(text), BRep_Builder())
+   ...: back.ShapeType()
+Out[7]: TopAbs_ShapeEnum.TopAbs_SOLID
+
+In [8]: BRepTools.Read_s(TopoDS_Shape(), text, BRep_Builder())
+Out[8]: False
+```
+
+### Binary formats
+
+The packages whose streams carry a binary format use `bytes` instead of `str`: `BinTools` (the binary BRep format) and the OCAF document streams (`PCDM`, `CDF`, the `Bin*` and `Xml*` drivers, `DE`), listed in `generator/overrides.toml` `[stream] binary_packages`. The written data is returned as `bytes`, and a binary file-like object such as `io.BytesIO` is read.
+
+```python
+In [9]: from nanocct.BinTools import BinTools
+   ...:
+   ...: data = BinTools.Write_s(s)
+   ...: len(data), data[:24]
+Out[9]: (4494, b'\nOpen CASCADE Topology V')
+
+In [10]: back = TopoDS_Shape()
+    ...: BinTools.Read_s(back, io.BytesIO(data))
+    ...: back.ShapeType()
+Out[10]: TopAbs_ShapeEnum.TopAbs_SOLID
+```
 
 ## Enums
 
