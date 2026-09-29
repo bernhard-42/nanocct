@@ -507,6 +507,21 @@ In [10]: view = np.asarray(tri.InternalTriangles())
 Out[10]: (1, 1, 1)
 ```
 
+## Handling of primitive types passed by reference
+
+**Binding rules: R-OUT, R-COLLISION ([Design 2a](Design.md#2a-naming-conventions)), R-INOUT ([Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations))**
+
+A non-const reference to a number, a `bool`, an enum or a `handle<T>` is an output in OCCT: nanocct drops it from the parameters and returns it, after the C++ return value if there is one. A reference to a class (`gp_Pnt&`) stays a parameter and is filled in place.
+
+| C++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Python | real example |
+| --- | --- | --- |
+| `void f(int a, double& b, double c)`: void, one output | `b = f(a, c)`: the bare value | `extrema.ParOnEdgeS1(1) -> float` |
+| `void f(int a, double& b, double& c, int& d)`: void, several outputs | `b, c, d = f(a)`: a tuple in C++ order | `extrema.ParOnFaceS1(1) -> tuple[float, float]` |
+| `bool f(int a, double& b, double c)`: non-void, one output | `ok, b = f(a, c)`: a tuple, the return value first | `math_Function.Value(x) -> tuple[bool, float]` |
+| `R f(E, double& first, double& last)`: non-void, several outputs | `r, first, last = f(E)` | `BRep_Tool.Curve_s(edge) -> tuple[Geom_Curve, float, float]` |
+| `void f(double& x, double& y, double& z)`: read and written (listed in `overrides.toml [inout]`) | `x, y, z = f(x, y, z)`: kept as parameters and returned | `trsf.Transforms(1.0, 1.0, 1.0) -> tuple[float, float, float]` |
+| two overloads identical once the outputs are removed | `Name__<types of the outputs>`, e.g. `x, y, z = pnt.Coord__float__float__float()` | `gp_Pnt.Coord__float__float__float()` next to `gp_Pnt.Coord() -> gp_XYZ`; `GeomAPI_IntCS.Parameters__float__float__float` |
+
 ## Mutable primitive references
 
 **Binding rule: R-REF-PRIMITIVE ([Design 2c](Design.md#2c-python-additions))**
@@ -782,7 +797,7 @@ In [1]: import numpy as np
    ...: from nanocct import AddOns, BRep, BRepMesh, BRepPrimAPI, BRepTools, TopAbs, TopExp, TopLoc, TopoDS, gp
    ...: from nanocct.BRep import BRep_Builder
    ...: from nanocct.TopoDS import TopoDS_Compound
-   ...: 
+   ...:
    ...: sphere = BRepPrimAPI.BRepPrimAPI_MakeSphere(10.0).Shape()
    ...: BRepMesh.BRepMesh_IncrementalMesh(sphere, 0.01, False, 0.1, True)
    ...: face = TopoDS.Face(TopExp.TopExp_Explorer(sphere, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE).Current())
@@ -879,10 +894,10 @@ In [7]: %timeit edge_segments_py(boxes)
 50.8 ms ± 551 μs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 ```
 
-| Function | AddOn (C++) | Python with OCCT calls | Factor |
-|---|---|---|---|
-| `NormalsFromSurface`, 5153 nodes | 82.9&nbsp;μs&nbsp;±&nbsp;898&nbsp;ns | 2.32&nbsp;ms&nbsp;±&nbsp;36.6&nbsp;μs | 28× |
-| `EdgeSegments`, 12000 edges | 3.32&nbsp;ms&nbsp;±&nbsp;140&nbsp;μs | 50.8&nbsp;ms&nbsp;±&nbsp;551&nbsp;μs | 15× |
+| Function                         | AddOn (C++)                          | Python with OCCT calls                | Factor |
+| -------------------------------- | ------------------------------------ | ------------------------------------- | ------ |
+| `NormalsFromSurface`, 5153 nodes | 82.9&nbsp;μs&nbsp;±&nbsp;898&nbsp;ns | 2.32&nbsp;ms&nbsp;±&nbsp;36.6&nbsp;μs | 28×    |
+| `EdgeSegments`, 12000 edges      | 3.32&nbsp;ms&nbsp;±&nbsp;140&nbsp;μs | 50.8&nbsp;ms&nbsp;±&nbsp;551&nbsp;μs  | 15×    |
 
 ### ShapeClean
 
@@ -891,11 +906,11 @@ In [7]: %timeit edge_segments_py(boxes)
 ```python
 In [8]: from nanocct import BRepAlgoAPI, BRepCheck, ShapeUpgrade
    ...: from nanocct.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
-   ...: 
+   ...:
    ...: box = BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(-0.5, -0.5, -0.5), 1.0, 1.0, 1.0).Shape()
    ...: ball = BRepPrimAPI.BRepPrimAPI_MakeSphere(gp.gp_Pnt(-0.894, -0.056, 0.161), 0.5).Shape()
    ...: cut = BRepAlgoAPI.BRepAlgoAPI_Cut(box, ball).Shape()
-   ...: 
+   ...:
    ...: def unify(cls, shape):
    ...:     u = cls(shape, True, True, True)
    ...:     u.AllowInternalEdges(False)
@@ -908,4 +923,3 @@ Out[9]: False
 In [10]: BRepCheck.BRepCheck_Analyzer(unify(ShapeUpgrade_UnifySameDomain, cut)).IsValid()
 Out[10]: True
 ```
-

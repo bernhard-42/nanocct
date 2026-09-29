@@ -29,7 +29,8 @@ OCCT already has established Python bindings in [OCP](https://github.com/cadquer
 9. **Validated against real code.** The full test suites of [build123d](https://github.com/gumyr/build123d) (2 465 tests), ocpsvg, ocp_gordon and ocp_tessellate run on nanocct with the same outcome, test by test, as with the OCP bindings they were written for.
 10. **AddOns, rarely.** A few C++ helpers where a Python loop over OCCT calls would dominate (tessellation), and workarounds for OCCT bugs that hit often and are not fixed upstream — each with a test that fails once OCCT fixes the bug, so it can be removed again. [Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations) (R-ADDON)
 
-<!-- TODO speed: per-call overhead and tessellation numbers, once the benchmarks are published in the repo -->
+
+Points 2, 3, 4, and 6 are part of **the design principle to make nanocct Pyhton'ish**, see [Pythonic-OCCT.md](./Pythonic-OCCT.md)
 
 ## A first look
 
