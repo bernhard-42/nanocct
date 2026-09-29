@@ -549,3 +549,31 @@ So a dict finds `g` if `g == f`, and an OCCT map finds it if `g.IsSame(f)`: a re
 | `gp_Pnt.IsEqual(p, tol)` | distance ≤ `tol`                                                                     |
 | `std::equal_to<gp_Pnt>`  | each coordinate within `Epsilon(x)`, about one unit in the last place (`gp_Pnt.hxx`) |
 | `std::hash<gp_Pnt>`      | the exact bits of the three doubles                                                  |
+
+## Enums
+
+**Binding rules: R-ENUM, R-ANON-ENUM ([Design 2c](Design.md#2c-python-additions))**
+
+OCCT's enums are Python `enum.IntEnum` classes. As in C++, the enumerators of an unscoped enum are also names in the module (`TopAbs.TopAbs_FACE`), they are integers, and an `int` is accepted where OCCT expects the enum. An `enum class` stays nested in its class (`gp_Dir.D.NZ`).
+
+```python
+In [1]: from nanocct.TopAbs import TopAbs_ShapeEnum, TopAbs_FACE
+   ...: from nanocct.Font import Font_FontAspect, Font_FA_Bold
+
+In [2]: TopAbs_FACE is TopAbs_ShapeEnum.TopAbs_FACE, int(TopAbs_FACE), TopAbs_FACE == 4
+Out[2]: (True, 4, True)
+
+In [3]: TopAbs_FACE.name, TopAbs_ShapeEnum(4), TopAbs_ShapeEnum["TopAbs_EDGE"]
+Out[3]: ('TopAbs_FACE', TopAbs_ShapeEnum.TopAbs_FACE, TopAbs_ShapeEnum.TopAbs_EDGE)
+
+In [4]: [m.name for m in TopAbs_ShapeEnum][:3]
+Out[4]: ['TopAbs_COMPOUND', 'TopAbs_COMPSOLID', 'TopAbs_SOLID']
+```
+
+OCCT's alias enumerators, like `Font_FA_Bold = Font_FontAspect_Bold`, are equal to the enumerator they stand for but a separate object, so compare enums with `==`, not `is`:
+
+```python
+In [5]: Font_FA_Bold == Font_FontAspect.Font_FontAspect_Bold, Font_FA_Bold is Font_FontAspect.Font_FontAspect_Bold
+Out[5]: (True, False)
+```
+
