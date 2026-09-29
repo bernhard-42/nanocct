@@ -766,3 +766,146 @@ sub-shapes with the orientation of S.
 sub-shapes by the location of S, i.e. it applies to
 each sub-shape the transformation that is associated with S.
 ```
+
+## AddOns
+
+**Binding rule: R-ADDON ([Design 2c](Design.md#2c-python-additions))**
+
+`nanocct.AddOns` is the one package that is not OCCT. Everything under an OCCT package name is a 1:1 binding; what nanocct adds of its own lives here, so that the 1:1 rule holds everywhere else. There are two reasons for an AddOn: a computation where a loop over OCCT calls in Python would dominate (`AddOns.Tessellator`), and a workaround for an OCCT bug that is reported upstream and not fixed yet (`AddOns.ShapeClean`).
+
+### Tessellator
+
+`NormalsFromSurface(face, uv)` evaluates the surface normal for every (u, v) row in C++; OCCT itself offers it one point at a time (`BRepGProp_Face.Normal`). `EdgeSegments(shape)` returns the polylines of all edges of a meshed shape as point pairs, with the segment count and the curve type of each edge.
+
+```python
+In [1]: import numpy as np
+   ...: from nanocct import AddOns, BRep, BRepMesh, BRepPrimAPI, BRepTools, TopAbs, TopExp, TopLoc, TopoDS, gp
+   ...: from nanocct.BRep import BRep_Builder
+   ...: from nanocct.TopoDS import TopoDS_Compound
+   ...: 
+   ...: sphere = BRepPrimAPI.BRepPrimAPI_MakeSphere(10.0).Shape()
+   ...: BRepMesh.BRepMesh_IncrementalMesh(sphere, 0.01, False, 0.1, True)
+   ...: face = TopoDS.Face(TopExp.TopExp_Explorer(sphere, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE).Current())
+   ...: tri = BRep.BRep_Tool.Triangulation_s(face, TopLoc.TopLoc_Location())
+   ...: u0, u1, v0, v1 = BRepTools.BRepTools.UVBounds_s(face)
+   ...: uv = np.ascontiguousarray(np.clip(np.asarray(tri.InternalUVNodes()), [u0, v0], [u1, v1]))
+
+In [2]: normals = AddOns.Tessellator.NormalsFromSurface(face, uv)
+   ...: normals.shape, bool(np.allclose(np.linalg.norm(normals, axis=1), 1.0))
+Out[2]: ((5153, 3), True)
+
+In [3]: builder, boxes = BRep_Builder(), TopoDS_Compound()
+   ...: builder.MakeCompound(boxes)
+   ...: for i in range(1000):
+   ...:     builder.Add(boxes, BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(2.0 * i, 0, 0), 1, 1, 1).Shape())
+   ...: BRepMesh.BRepMesh_IncrementalMesh(boxes, 0.1, False, 0.5, True)
+   ...: segments, per_edge, types = AddOns.Tessellator.EdgeSegments(boxes)
+   ...: segments.shape, per_edge.shape, int(per_edge.sum())
+Out[3]: ((24000, 3), (12000,), 12000)
+```
+
+The uv values have to be clamped to the face's bounds first: a mesh node can sit one unit in the last place outside them at a singularity of the surface, where the normal flips.
+
+#### Tessellator timings
+
+For comparison, the same two computations written in Python with OCCT's own calls; they produce identical results.
+
+<details>
+<summary>normals_py and edge_segments_py</summary>
+
+```python
+from nanocct import BRepAdaptor, BRepGProp
+from nanocct.NCollection import NCollection_IndexedDataMap, NCollection_IndexedMap, NCollection_List
+from nanocct.TopTools import TopTools_ShapeMapHasher
+from nanocct.TopoDS import TopoDS_Shape
+
+EDGE, FACE = TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE
+
+
+def normals_py(face, uv):
+    prop = BRepGProp.BRepGProp_Face(face)
+    p, n = gp.gp_Pnt(), gp.gp_Vec()
+    out = np.empty((len(uv), 3))
+    for i, (u, v) in enumerate(uv):
+        prop.Normal(float(u), float(v), p, n)
+        if n.SquareMagnitude() > 0:
+            n.Normalize()
+        out[i] = (n.X(), n.Y(), n.Z())
+    return out
+
+
+def edge_segments_py(shape):
+    edges = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
+    TopExp.TopExp.MapShapes_s(shape, EDGE, edges)
+    ancestors = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+    TopExp.TopExp.MapShapesAndAncestors_s(shape, EDGE, FACE, ancestors)
+    pts, per_edge, types = [], [], []
+    for i in range(1, edges.Extent() + 1):
+        edge = TopoDS.Edge(edges.FindKey(i))
+        if not ancestors.Contains(edge) or ancestors.FindFromKey(edge).IsEmpty():
+            continue
+        loc = TopLoc.TopLoc_Location()
+        tri = BRep.BRep_Tool.Triangulation_s(TopoDS.Face(ancestors.FindFromKey(edge).First()), loc)
+        if tri is None:
+            continue
+        poly = BRep.BRep_Tool.PolygonOnTriangulation_s(edge, tri, loc)
+        if poly is None:
+            continue
+        types.append(int(BRepAdaptor.BRepAdaptor_Curve(edge).GetType()))
+        nodes = np.asarray(tri.InternalNodes())[np.asarray(poly.ChangeNodeArray()) - 1]
+        t = loc.Transformation()
+        if t.Form() != gp.gp_TrsfForm.gp_Identity:
+            m = np.array([[t.Value(r, c) for c in range(1, 5)] for r in range(1, 4)])
+            nodes = nodes @ m[:, :3].T + m[:, 3]
+        if len(nodes) >= 2:
+            pts.append(np.stack([nodes[:-1], nodes[1:]], axis=1).reshape(-1, 3))
+        per_edge.append(max(len(nodes) - 1, 0))
+    return np.concatenate(pts), np.array(per_edge, dtype=np.int32), np.array(types, dtype=np.int32)
+```
+
+</details>
+
+```python
+In [4]: %timeit AddOns.Tessellator.NormalsFromSurface(face, uv)
+82.9 μs ± 898 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+In [5]: %timeit normals_py(face, uv)
+2.32 ms ± 36.6 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+In [6]: %timeit AddOns.Tessellator.EdgeSegments(boxes)
+3.32 ms ± 140 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+In [7]: %timeit edge_segments_py(boxes)
+50.8 ms ± 551 μs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+| Function | AddOn (C++) | Python with OCCT calls | Factor |
+|---|---|---|---|
+| `NormalsFromSurface`, 5153 nodes | 82.9&nbsp;μs&nbsp;±&nbsp;898&nbsp;ns | 2.32&nbsp;ms&nbsp;±&nbsp;36.6&nbsp;μs | 28× |
+| `EdgeSegments`, 12000 edges | 3.32&nbsp;ms&nbsp;±&nbsp;140&nbsp;μs | 50.8&nbsp;ms&nbsp;±&nbsp;551&nbsp;μs | 15× |
+
+### ShapeClean
+
+`AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` works around OCCT issue #1541: when OCCT's `ShapeUpgrade_UnifySameDomain` merges a full circle made of two or more arcs on a curved face, it concatenates the curves in the face's parameter space from the wrong end, and the resulting shape is invalid. The AddOn has OCCT's class name and signatures, so switching between the two is an import change. It is removed once OCCT fixes the bug; a test signals that moment.
+
+```python
+In [8]: from nanocct import BRepAlgoAPI, BRepCheck, ShapeUpgrade
+   ...: from nanocct.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
+   ...: 
+   ...: box = BRepPrimAPI.BRepPrimAPI_MakeBox(gp.gp_Pnt(-0.5, -0.5, -0.5), 1.0, 1.0, 1.0).Shape()
+   ...: ball = BRepPrimAPI.BRepPrimAPI_MakeSphere(gp.gp_Pnt(-0.894, -0.056, 0.161), 0.5).Shape()
+   ...: cut = BRepAlgoAPI.BRepAlgoAPI_Cut(box, ball).Shape()
+   ...: 
+   ...: def unify(cls, shape):
+   ...:     u = cls(shape, True, True, True)
+   ...:     u.AllowInternalEdges(False)
+   ...:     u.Build()
+   ...:     return u.Shape()
+
+In [9]: BRepCheck.BRepCheck_Analyzer(unify(ShapeUpgrade.ShapeUpgrade_UnifySameDomain, cut)).IsValid()
+Out[9]: False
+
+In [10]: BRepCheck.BRepCheck_Analyzer(unify(ShapeUpgrade_UnifySameDomain, cut)).IsValid()
+Out[10]: True
+```
+
