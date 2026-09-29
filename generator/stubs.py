@@ -147,6 +147,10 @@ def _with_numpy_imports(text: str) -> str:
     return "".join(lines)
 
 
+# the hashed containers whose generic stub carries OCCT's hasher as an optional last type parameter (_H)
+_HASHED = ("NCollection_Map", "NCollection_IndexedMap", "NCollection_DataMap", "NCollection_IndexedDataMap")
+
+
 def _view_accessor(text: str, name: str) -> str | None:
     """The `__array__` member stubgen generated for a concrete container class, if it has one, docstring included.
 
@@ -307,6 +311,8 @@ def main() -> int:
             # the generic nested Iterator does not bind the outer arguments (Python nested classes share no type parameters):
             # the concrete class gets a concrete Iterator, so NCollection_List__int.Iterator(...).Value() is int (6b)
             n_it = 2 if kind in ("NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap") else 1
+            if kind in _HASHED and len(spelled) > n_it:
+                n_it += 1                               # the custom hasher, else Iterator(theMap) rejects its own map
             body.append(f"    class Iterator({kind}.Iterator[{', '.join(spelled[:n_it])}]): ...")
         view = _view_accessor(text, inst["name"])
         if view is None and kind.startswith("NCollection_HArray"):
@@ -319,9 +325,16 @@ def main() -> int:
         block = (f"class {inst['name']}({bases}): ..." if len(body) == 0
                  else f"class {inst['name']}({bases}):\n" + "\n".join(body))
         text = _replace_class_block(text, inst["name"], block)
-    header = ("from typing import Generic, Self, TypeVar, overload\nfrom collections.abc import Iterator\n"
+    # _H/_IH: OCCT's last template argument of the hashed containers, the hasher, as an optional type parameter
+    # (PEP 696, hence typing_extensions: typing.TypeVar takes `default` only from Python 3.13). `NCollection_Map[K]`
+    # is the default hasher and `NCollection_Map[K, H]` a custom one -- two different bound classes, and two
+    # different types (a default of `object`, measured in mypy 2.3.1 and ty 0.0.84, Python 3.12 and 3.14 targets).
+    header = ("from typing import Generic, Self, overload\nfrom typing_extensions import TypeVar\n"
+              "from collections.abc import Iterator\n"
               "import nanocct.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n"
-              "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n\n")   # the nested Iterator classes: a nested class cannot reuse the outer class's type variables
+              "_H = TypeVar('_H', default=object)\n"
+              "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n"
+              "_IH = TypeVar('_IH', default=object)\n\n")   # the nested Iterator classes: a nested class cannot reuse the outer class's type variables
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
     nc.write_text(_unhashable_ignore(_with_numpy_imports(header + "".join(generic_parts) + "\n" + text)))

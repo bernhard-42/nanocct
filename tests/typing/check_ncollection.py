@@ -1,6 +1,6 @@
 """Static typing check for the NCollection_Xxx[T] spelling (run by mypy and ty, see tests/test_typing.py).
 Lines with a trailing `# error:` comment must be reported; everything else must pass."""
-from nanocct import NCollection, Standard, TCollection
+from nanocct import NCollection, Standard, TCollection, TopAbs, TopExp, TopoDS, TopTools
 
 a = NCollection.NCollection_Array1[float](1, 4)
 a.SetValue(1, 0.5)
@@ -82,3 +82,20 @@ shared_ok: bool = shared.Add(1)                                            # Map
 shared_rc: int = shared.GetRefCount()
 a2.SetValue(1, 2, "x")        # error: str is not float
 dmap.Bind("a", "b")           # error: str is not int
+
+# ---- a custom hasher: OCCT's last template argument, an optional type parameter (PEP 696 default)
+shapes = NCollection.NCollection_IndexedMap[TopoDS.TopoDS_Shape, TopTools.TopTools_ShapeMapHasher]()
+TopExp.TopExp.MapShapes_s(TopoDS.TopoDS_Shape(), TopAbs.TopAbs_ShapeEnum.TopAbs_FACE, shapes)   # OCCT's own signature
+first_shape: TopoDS.TopoDS_Shape = shapes.FindKey(1)
+seen = NCollection.NCollection_Map[TopoDS.TopoDS_Shape, TopTools.TopTools_ShapeMapHasher]()
+added: bool = seen.Add(first_shape)
+seen_it = NCollection.NCollection_Map__TopoDS_Shape__TopTools_ShapeMapHasher.Iterator(seen)
+seen_key: TopoDS.TopoDS_Shape = seen_it.Key()
+ids = NCollection.NCollection_DataMap[TopoDS.TopoDS_Shape, int, TopTools.TopTools_ShapeMapHasher]()
+ids.Bind(first_shape, 7)
+shape_id: int = ids.Find(first_shape)
+concrete_ids: NCollection.NCollection_DataMap[TopoDS.TopoDS_Shape, int, TopTools.TopTools_ShapeMapHasher] = \
+    NCollection.NCollection_DataMap__TopoDS_Shape__int__TopTools_ShapeMapHasher()
+seen.Add(1)                   # error: int is not TopoDS_Shape
+bad_id: str = ids.Find(first_shape)   # error: int is not str
+default_hasher: NCollection.NCollection_Map[TopoDS.TopoDS_Shape] = seen   # error: the default hasher is another type
