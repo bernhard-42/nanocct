@@ -1140,7 +1140,9 @@ def _members(cursor: cindex.Cursor) -> set[str]:
 
 
 def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
-    params, reason = _params(ch, "", c.name, members, allow_streams=False)
+    # the qualified name lets overrides.toml [bytes] name a constructor (R-BYTES: WNT_HIDSpaceMouse::WNT_HIDSpaceMouse);
+    # streams stay out of constructors whatever the name says (allow_streams=False)
+    params, reason = _params(ch, f"{c.name}::{ch.spelling}", c.name, members, allow_streams=False)
     required = [q for q in params if q.default is None]
     implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
                 and not ch.is_copy_constructor() and not ch.is_move_constructor())

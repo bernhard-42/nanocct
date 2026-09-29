@@ -1,7 +1,7 @@
 """Generated bindings for TKService (Visualization: Aspect, Graphic3d, Image, Font, Media, the window packages): the font
 manager and FreeType fonts (build123d's text path), materials, vectors with their hidden-friend operators, pixmaps, clip-plane
-iteration, the enum aliases OCCT keeps for 7.x code, the in/out FindFont aspect. The OCCT build has no FreeImage/FFmpeg:
-Image_AlienPixMap saves PPM only and the Media package is stubs (Design.md 2d)."""
+iteration, the enum aliases OCCT keeps for 7.x code, the in/out FindFont aspect. Images are read and written through
+FreeImage (State.md 8.9), also from and to memory; the OCCT build has no FFmpeg, so the Media package is stubs (Design.md 2d)."""
 import importlib
 import io
 import platform
@@ -174,3 +174,59 @@ def test_report_lists_the_platform_and_codec_gaps():
     assert any(l.startswith("incomplete\tXw\tXw_Window::ProcessMessage") for l in lines)                                                        # XEvent
     assert any(l.startswith("override\tWNT\tWNT_Dword.hxx: skipped") for l in lines)                                                            # <windows.h>
     assert not any("Graphic3d_SequenceOfHClipPlane" in l for l in lines)
+
+
+def _png_pixmap() -> Image.Image_AlienPixMap:
+    """A 4 x 3 BGR image with one red pixel. BGR, because every backend copies it unchanged (see the test above)."""
+    bgr = Image.Image_PixMap()
+    assert bgr.InitZero(Image.Image_Format_BGR, 4, 3)
+    bgr.SetPixelColor(1, 2, Quantity.Quantity_ColorRGBA(Quantity.Quantity_Color(1.0, 0.0, 0.0, Quantity.Quantity_TOC_RGB), 1.0))
+    alien = Image.Image_AlienPixMap()
+    assert alien.InitCopy(bgr)
+    return alien
+
+
+def test_an_image_round_trips_through_memory():
+    """Image files are binary: Save(ostream&) returns bytes and Load(istream&) reads a binary file-like object
+    (overrides.toml [stream] binary_members), and Load(const uint8_t*, size_t, name) takes bytes (R-BYTES). Before,
+    Save returned the PNG as a str with surrogates ('\\udc89PNG...') and Load rejected io.BytesIO."""
+    ok, data = _png_pixmap().Save__bytes(TCollection.TCollection_AsciiString("png"))
+    assert ok is True and isinstance(data, bytes) and data.startswith(b"\x89PNG")
+    for source in (data, io.BytesIO(data)):                                   # R-BYTES and the binary stream
+        back = Image.Image_AlienPixMap()
+        assert back.Load(source, TCollection.TCollection_AsciiString("mem.png")) is True
+        assert (back.Width(), back.Height()) == (4, 3)
+        assert back.PixelColor(1, 2).GetRGB().Red() == 1.0 and back.PixelColor(0, 0).GetRGB().Red() == 0.0
+
+
+def test_a_texture_writes_its_encoded_image_as_bytes():
+    """Image_Texture::WriteImage(ostream&) writes the texture's source data unchanged -- a binary stream as well."""
+    import numpy as np
+    from nanocct.NCollection import NCollection_BaseAllocator, NCollection_Buffer
+
+    _, data = _png_pixmap().Save__bytes(TCollection.TCollection_AsciiString("png"))
+    buf = NCollection_Buffer(NCollection_BaseAllocator.CommonBaseAllocator_s(), len(data))
+    np.asarray(buf)[:] = np.frombuffer(data, dtype=np.uint8)
+    ok, written = Image.Image_Texture(buf, TCollection.TCollection_AsciiString("tex")).WriteImage__bytes(
+        TCollection.TCollection_AsciiString("tex.png"))
+    assert ok is True and written == data
+
+
+def test_the_space_mouse_keeps_its_raw_report_alive():
+    """WNT_HIDSpaceMouse(id, const uint8_t* theData, size_t theSize) keeps the pointer, not a copy
+    (WNT_HIDSpaceMouse.cxx:151): R-BYTES in a constructor ties the bytes to the object (keep_alive), so the report stays
+    readable after the caller dropped it. WNT is built on every platform."""
+    import gc
+    import struct
+    import sys
+
+    from nanocct import WNT
+
+    report = bytes([3]) + struct.pack("<I", 0x2A)                            # SpaceRawInput_KeyState = 0x03, then the keys
+    before = sys.getrefcount(report)
+    m = WNT.WNT_HIDSpaceMouse(0, report)
+    assert sys.getrefcount(report) == before + 1                               # the object holds the bytes (keep_alive)
+    del report
+    gc.collect()
+    assert m.IsKeyState() is True and m.KeyState() == 0x2A
+

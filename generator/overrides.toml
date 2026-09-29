@@ -299,6 +299,10 @@ binary_packages = [
 binary_members = [
     "TDocStd_Application::Open",     # Open(istream&, doc) reads a binary or XML OCAF document
     "TDocStd_Application::SaveAs",   # SaveAs(doc, ostream&) writes one
+    # Image files are binary; the package also has text streams (DumpJson), hence members and not the package
+    "Image_AlienPixMap::Load",       # Load(istream&, theFileName): an image from a stream
+    "Image_AlienPixMap::Save",       # Save(ostream&, theExtension): an image into a stream
+    "Image_Texture::WriteImage",     # WriteImage(ostream&, theFile): the texture's encoded image data
     # RWStl is genuinely mixed: STL exists as an ASCII and a binary format and the package writes and reads both.
     # WriteAscii/ReadAsciiStream stay text; these five carry binary content (ReadStream and IsAscii sniff the format,
     # so bytes is the superset there, as for PCDM).
@@ -338,6 +342,10 @@ members = [
     "FSD_Base64::Encode",     # Encode(const uint8_t* theData, size_t theDataLen) -> TCollection_AsciiString.
                               # Its Decode counterpart was already bound and returns an NCollection_Buffer,
                               # which R-VIEW made readable (8.10a); without this, base64 only went one way.
+    "Image_AlienPixMap::Load",               # Load(const uint8_t* theData, size_t theLength, theFileName): an image
+                                             # (PNG, JPEG, ... through FreeImage) from memory -> Load(data: bytes, name)
+    "WNT_HIDSpaceMouse::WNT_HIDSpaceMouse",  # WNT_HIDSpaceMouse(theProductId, const uint8_t* theData, size_t theSize):
+                                             # a 3D mouse's raw HID report (WNT is built on every platform)
 ]
 
 [views]

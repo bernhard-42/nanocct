@@ -1354,3 +1354,27 @@ def test_third_party_include_paths_are_passed_to_clang():
         assert f"-I{rapidjson}" in args
         assert (rapidjson / "rapidjson" / "document.h").exists()
     assert "${NANOCCT_RAPIDJSON_DIR}" in (ROOT / "CMakeLists.txt").read_text()   # ... and the C++ build too
+
+
+def test_every_byte_buffer_pair_in_occt_is_listed_for_r_bytes():
+    """R-BYTES is a list (overrides.toml [bytes] members), not an inference, so it can fall behind OCCT: until 2026-09-29 it
+    named only FSD_Base64::Encode, and Image_AlienPixMap::Load (an image from memory) and the WNT_HIDSpaceMouse constructor
+    stayed unbound. This scans the in-scope headers for a `const uint8_t*` (or Standard_Byte / unsigned char) parameter
+    followed by an integral length and requires every such member to be listed, or excluded here with its reason."""
+    not_a_buffer_pair = {
+        "NCollection_UtfString::strCopy": "private helper (NCollection_UtfString.hxx:228, private: low-level methods)",
+    }
+    pair = re.compile(r"const\s+(?:uint8_t|Standard_Byte|unsigned\s+char)\s*\*\s*\w+\s*,\s*(?:const\s+)?"
+                      r"(?:size_t|Standard_Size|int|Standard_Integer|unsigned\s+int|int64_t|uint32_t)\s+\w+")
+    found = set()
+    for module in ("FoundationClasses", "ModelingData", "ModelingAlgorithms", "Visualization", "ApplicationFramework",
+                   "DataExchange"):
+        for header in (OCCT_SRC / "src" / module).rglob("*.hxx"):
+            text = header.read_text(errors="replace")
+            for m in pair.finditer(text):
+                names = re.findall(r"(~?\w+)\s*\(", text[max(0, m.start() - 400):m.start()])   # the member whose parameters these are
+                found.add(f"{header.stem}::{names[-1]}")
+    listed = set(parse._BYTES_MEMBERS)
+    assert len(found) > 0
+    assert sorted(found - listed - set(not_a_buffer_pair)) == []
+    assert sorted(listed - found) == []                                    # and no stale entry

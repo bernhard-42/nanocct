@@ -358,12 +358,24 @@ class Emitter:
         self._note_types(*(p.type for p in params))
         self._note_types(*(p.class_name for p in params))
         T = type_name if type_name is not None else cls.bound_type
-        special = any(p.omitted or p.array_len > 0 or p.cstr_none for p in params)     # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL: nb::init cannot drop or convert
-        ins = [p for p in params if not p.omitted]
+        # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL / R-BYTES: nb::init cannot drop or convert
+        special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in params)
+        ins = [p for p in params if not p.omitted and p.bytes_of == ""]
         lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0
-                               else f"nanocct::OptionalCString {p.name}" if p.cstr_none else f"{p.type} {p.name}" for p in ins)
+                               else f"nanocct::OptionalCString {p.name}" if p.cstr_none
+                               else f"const nb::bytes &{p.name}" if p.is_bytes else f"{p.type} {p.name}" for p in ins)
         pre = " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
-        call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else f"{p.name}.ptr" if p.cstr_none else p.name for p in params)
+        call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else f"{p.name}.ptr" if p.cstr_none
+                         else f"(const uint8_t *) {p.name}.c_str()" if p.is_bytes         # R-BYTES: the buffer ...
+                         else f"{p.bytes_of}.size()" if p.bytes_of != ""                 # ... and its length, from the same object
+                         else p.name for p in params)
+        # R-BYTES in a constructor: the object may keep the pointer (WNT_HIDSpaceMouse stores myData = theData and reads it
+        # later, WNT_HIDSpaceMouse.cxx:151), so the bytes object lives as long as the new object: keep_alive<1, k>, where 1 is
+        # `self` of __init__ and its parameters are numbered from 2. The nb::new_ path of a Transient has no such case and
+        # its numbering is not verified, so it is refused rather than guessed.
+        if cls.is_transient and any(p.is_bytes for p in ins):
+            raise ValueError(f"R-BYTES in the constructor of the Transient {cls.name}: keep_alive for nb::new_ is not verified")
+        keep = "".join(f", nb::keep_alive<1, {2 + i}>()" for i, p in enumerate(ins) if p.is_bytes)
         if cls.is_transient:
             fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {T}({call})); }})"
         elif special or type_name is not None:
@@ -371,7 +383,7 @@ class Emitter:
             fn = f'"__init__", []({self_param}{lam_params}) {{ {pre}new (self) {T}({call}); }}'
         else:
             fn = f"nb::init<{self._sig(params)}>()"
-        return f".def({fn}{self._extras(doc, params, False, False)})"
+        return f".def({fn}{keep}{self._extras(doc, params, False, False)})"
 
     # Design.md 6 R-STR
     def _print_operator(self, fn: Function) -> tuple[str, str] | str:
