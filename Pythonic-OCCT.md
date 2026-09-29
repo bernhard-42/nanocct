@@ -28,33 +28,33 @@ b = NCollection_Array1[gp_Dir](1, 3)
 1. The two constructs are the same type
 
    ```python
-   In[1]: NCollection_Array1__gp_Dir is NCollection_Array1[gp_Dir]
+   In [1]: NCollection_Array1__gp_Dir is NCollection_Array1[gp_Dir]
    Out[1]: True
    ```
 
 2. Different element types are different classes
 
    ```python
-   In[2]: NCollection_Array1[gp_Dir] is NCollection_Array1[int]
+   In [2]: NCollection_Array1[gp_Dir] is NCollection_Array1[int]
    Out[2]: False
    ```
 
 3. `isinstance` can be used with both types
 
    ```python
-   In[3]: isinstance(a, NCollection_Array1)
+   In [3]: isinstance(a, NCollection_Array1)
    Out[3]: True
 
-   In[4]: isinstance(b, NCollection_Array1)
+   In [4]: isinstance(b, NCollection_Array1)
    Out[4]: True
 
-   In[5]: isinstance(a, NCollection_Array1__gp_Dir)
+   In [5]: isinstance(a, NCollection_Array1__gp_Dir)
    Out[5]: True
 
-   In[6]: isinstance(b, NCollection_Array1__gp_Dir)
+   In [6]: isinstance(b, NCollection_Array1__gp_Dir)
    Out[6]: True
 
-   In[7]: type(a) is type(b)
+   In [7]: type(a) is type(b)
    Out[7]: True
    ```
 
