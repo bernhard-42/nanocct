@@ -9,15 +9,25 @@
 // with no padding and no vtable, so a layout change in OCCT is a compile error rather than a wrong array.
 // Measured on OCCT 8.0.1 / clang 22 (arm64): gp_Pnt, gp_XYZ, gp_Vec and gp_Dir are 24 bytes, gp_Pnt2d,
 // gp_XY, gp_Vec2d and gp_Dir2d 16, Poly_Triangle 12, all standard-layout, trivially copyable and
-// non-polymorphic, with the first coordinate at offset 0.
+// non-polymorphic, with the first coordinate at offset 0. NCollection_Vec2/3/4 are a plain `Element_t v[N]`
+// (NCollection_Vec3.hxx:420).
+//
+// The view reaches Python through numpy's array protocol, `__array__` (array_protocol below), not through a
+// method of its own: OCCT has no such method, and `np.asarray(obj)` is one spelling for every class.
 #pragma once
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 
+#include <nanobind/stl/optional.h>
+
 #include <cstdint>
+#include <optional>
 #include <type_traits>
 
+#include <NCollection_Vec2.hxx>
+#include <NCollection_Vec3.hxx>
+#include <NCollection_Vec4.hxx>
 #include <Poly_Triangle.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Dir2d.hxx>
@@ -70,8 +80,20 @@ NANOCCT_VIEW_ELEM(gp_Vec2d, double, 2, true)
 NANOCCT_VIEW_ELEM(gp_Dir, double, 3, false)
 NANOCCT_VIEW_ELEM(gp_Dir2d, double, 2, false)
 
-// Three 1-based node indices, the same layout Poly_Triangulation's TrianglesArray() views.
+// Three 1-based node indices -- Poly_Triangulation::InternalTriangles() is an array of these.
 NANOCCT_VIEW_ELEM(Poly_Triangle, int32_t, 3, true)
+
+// OCCT's small fixed-size vectors. NCollection_Vec3<float> is what Poly_Triangulation::InternalNormals()
+// holds, whatever the node precision.
+NANOCCT_VIEW_ELEM(NCollection_Vec2<float>, float, 2, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec3<float>, float, 3, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec4<float>, float, 4, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec2<double>, double, 2, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec3<double>, double, 3, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec4<double>, double, 4, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec2<int>, int32_t, 2, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec3<int>, int32_t, 3, true)
+NANOCCT_VIEW_ELEM(NCollection_Vec4<int>, int32_t, 4, true)
 
 #undef NANOCCT_VIEW_ELEM
 
@@ -99,6 +121,24 @@ auto elem_view(void *theFirst, const size_t (&theShape)[NDim]) {
         return nb::ndarray<nb::numpy, S>(theFirst, ndim, shape, nb::handle());
     else
         return nb::ndarray<nb::numpy, const S>(theFirst, ndim, shape, nb::handle());
+}
+
+//! The result of numpy's `__array__(dtype=None, copy=None)` for a view over `theOwner`'s memory.
+//!
+//! Measured on numpy 2.5.3, not assumed: numpy casts to a requested dtype itself (and raises itself when
+//! `copy=False` makes that impossible), so `dtype` needs no handling here. But numpy *trusts* `copy=True` --
+//! what `np.array(obj)` passes -- and a view returned for it stays shared with the object, so the copy has to
+//! happen here. `ndarray::cast` keeps the static type, so the stub still names the exact dtype.
+//!
+//! @param theView  a view created with no owner (nb::handle())
+//! @param theOwner the Python object whose memory it is; the view keeps it alive
+//! @param theCopy  `copy` as numpy passed it: true = an independent copy, None or false = the view
+template <class A> auto array_protocol(A theView, nb::handle theOwner, std::optional<bool> theCopy) {
+    // rv_policy's members are distinct tag types (nb_backend.h), so no ternary between two of them
+    nb::rv_policy policy = nb::rv_policy::reference_internal;
+    if (theCopy.has_value() && theCopy.value() == true)
+        policy = nb::rv_policy::copy;
+    return theView.cast(policy, theOwner);
 }
 
 } // namespace nanocct

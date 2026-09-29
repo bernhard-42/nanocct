@@ -1,9 +1,11 @@
-"""R-VIEW: zero-copy numpy views over OCCT's contiguous arrays (State.md 8.10).
+"""R-VIEW: zero-copy numpy views over OCCT's contiguous arrays (State.md 8.10, 8.21).
 
 The rule is that array data which can get large crosses to Python as a view, never as a per-element loop.
-Which classes get views is data (`overrides.toml [views]`); how each one builds its view is a
-`nanocct_def_views<T>` specialisation in `src/cpp/common/nanocct_views.h`, because every case has runtime
-branches a config file cannot carry.
+The view is numpy's array protocol: `np.asarray(obj)` is a view, `np.array(obj)` a copy, and no class gets a
+method OCCT does not have. Which classes need a view of their own is data (`overrides.toml [views]`); how
+each one builds it is a `nanocct_def_views<T>` specialisation in `src/cpp/common/nanocct_views.h`, because
+every case has runtime branches a config file cannot carry. The NCollection arrays get theirs from the
+element table in `src/cpp/common/nanocct_elem_view.h`.
 """
 import gc
 
@@ -24,9 +26,13 @@ def triangulation():
     return tri
 
 
+# ---------------------------------------------------------------------------------------------------------
+# Poly_Triangulation: no method of its own. OCCT's Internal*() accessors return the triangulation's storage
+# by reference, and those arrays carry __array__.
+
 def test_nodes_and_triangles_are_views_that_agree_with_the_per_value_api(triangulation):
     t = triangulation
-    nodes, tris = t.NodesArray(), t.TrianglesArray()
+    nodes, tris = np.asarray(t.InternalNodes()), np.asarray(t.InternalTriangles())
     assert nodes.shape == (t.NbNodes(), 3) and tris.shape == (t.NbTriangles(), 3)
     assert tris.dtype == np.int32
     assert not nodes.flags["OWNDATA"] and not tris.flags["OWNDATA"]      # views, not copies
@@ -36,16 +42,23 @@ def test_nodes_and_triangles_are_views_that_agree_with_the_per_value_api(triangu
 
 
 def test_the_node_dtype_follows_the_object_not_the_binding(triangulation):
-    """Poly_ArrayOfNodes stores gp_Pnt (stride 24) or NCollection_Vec3<float> (stride 12); one accessor serves
+    """Poly_ArrayOfNodes stores gp_Pnt (stride 24) or NCollection_Vec3<float> (stride 12); one __array__ serves
     both, because nb::ndarray takes its dtype at run time. OCCT's default is double."""
-    t = triangulation
-    assert t.IsDoublePrecision() is True
-    assert t.NodesArray().dtype == np.float64
+    assert triangulation.IsDoublePrecision() is True
+    assert np.asarray(triangulation.InternalNodes()).dtype == np.float64
+
+    t = Poly.Poly_Triangulation()
+    t.SetDoublePrecision(False)                          # only before allocation (OCCT raises afterwards)
+    t.ResizeNodes(3, False)
+    t.SetNode(2, gp.gp_Pnt(1, 2, 3))
+    nodes = np.asarray(t.InternalNodes())
+    assert nodes.dtype == np.float32 and nodes.shape == (3, 3)
+    assert nodes[1].tolist() == [1.0, 2.0, 3.0]
 
 
 def test_writes_go_through_the_view(triangulation):
     t = triangulation
-    nodes = t.NodesArray()
+    nodes = np.asarray(t.InternalNodes())
     before = t.Node(1).X()
     nodes[0, 0] = 42.0
     try:
@@ -54,11 +67,40 @@ def test_writes_go_through_the_view(triangulation):
         nodes[0, 0] = before
 
 
-def test_absent_arrays_are_None_not_an_empty_array(triangulation):
-    """UV nodes and normals are optional; a view cannot represent "not there", so the accessor returns None."""
+def test_absent_arrays_are_empty_arrays_and_Has_says_whether_they_are_there(triangulation):
+    """A triangulation without UV nodes or normals holds an empty array (measured: UV size 0 and not
+    allocated, normals Lower/Upper 1/0). `__array__` has to return an array, so that is a zero-length view;
+    "is it there" is OCCT's question, HasUVNodes()/HasNormals()."""
     t = triangulation
-    assert t.HasUVNodes() and t.UVNodesArray().shape == (t.NbNodes(), 2)
-    assert t.HasNormals() is False and t.NormalsArray() is None
+    assert t.HasUVNodes() and np.asarray(t.InternalUVNodes()).shape == (t.NbNodes(), 2)
+    assert t.HasNormals() is False
+    normals = np.asarray(t.InternalNormals())
+    assert normals.shape == (0, 3) and normals.dtype == np.float32
+
+    bare = Poly.Poly_Triangulation(3, 1, False, False)
+    assert bare.HasUVNodes() is False and np.asarray(bare.InternalUVNodes()).shape == (0, 2)
+
+
+def test_normals_are_always_float32():
+    """Unlike the nodes and UV nodes, InternalNormals() is an NCollection_Array1<NCollection_Vec3<float>>,
+    whatever the node precision -- the view comes from the container's element table, not a specialisation."""
+    t = Poly.Poly_Triangulation(3, 1, True, True)
+    assert t.IsDoublePrecision() is True and t.HasNormals() is True
+    n = np.asarray(t.InternalNormals())
+    assert n.shape == (3, 3) and n.dtype == np.float32 and not n.flags["OWNDATA"]
+    n[1] = [0.0, 0.0, 1.0]
+    assert t.Normal(2).Z() == 1.0
+
+
+def test_a_const_accessor_hands_out_a_copy_not_the_storage(triangulation):
+    """Triangles() returns `const NCollection_Array1<Poly_Triangle>&`, and the binding copies a const
+    reference result -- so a view of it is a view of that copy, and writes never reach OCCT. The zero-copy
+    route is InternalTriangles(). Pinned because it is easy to get wrong in the documentation."""
+    t = triangulation
+    copy = np.asarray(t.Triangles())
+    before = t.Triangle(1).Get()
+    copy[0] = [1, 1, 1]
+    assert t.Triangle(1).Get() == before
 
 
 def test_the_view_keeps_the_triangulation_alive():
@@ -69,7 +111,7 @@ def test_the_view_keeps_the_triangulation_alive():
     BRepMesh.BRepMesh_IncrementalMesh(shape, 0.5, False, 0.1, True)
     ex = TopExp.TopExp_Explorer(shape, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE)
     tri = BRep.BRep_Tool.Triangulation_s(TopoDS.Face(ex.Current()), TopLoc.TopLoc_Location())
-    nodes = tri.NodesArray()
+    nodes = np.asarray(tri.InternalNodes())
     expected = np.array(nodes)                      # a real copy, for comparison
     del tri, ex, shape
     gc.collect()
@@ -97,6 +139,37 @@ def test_every_class_listed_in_overrides_has_a_specialisation():
 
 
 # ---------------------------------------------------------------------------------------------------------
+# numpy's protocol itself: __array__(dtype=None, copy=None). Measured on numpy 2.5.3: numpy casts a dtype
+# itself, but trusts copy=True -- so the copy is __array__'s job.
+
+def test_asarray_is_a_view_and_array_is_a_copy():
+    a = NCollection.NCollection_Array1__double(1, 3)
+    a.Init(1.5)
+    view, copy = np.asarray(a), np.array(a)
+    assert np.shares_memory(view, np.asarray(a)) and not np.shares_memory(copy, view)
+    copy[0] = 7.0
+    assert a.Value(1) == 1.5                        # the copy is independent
+    view[0] = 7.0
+    assert a.Value(1) == 7.0                        # the view is not
+
+
+def test_copy_False_is_the_view_and_a_dtype_is_numpys_conversion():
+    a = NCollection.NCollection_Array1__double(1, 3)
+    a.Init(0.1)
+    assert np.shares_memory(np.asarray(a, copy=False), np.asarray(a))
+    f = np.asarray(a, dtype=np.float32)
+    assert f.dtype == np.float32 and not np.shares_memory(f, np.asarray(a))
+    with pytest.raises(ValueError):                 # a conversion cannot be a view; numpy says so itself
+        np.asarray(a, dtype=np.float32, copy=False)
+
+
+def test_a_copy_of_a_read_only_view_is_writable():
+    a = NCollection.NCollection_Array1__gp_Dir(1, 1)
+    c = np.array(a)
+    assert c.flags["WRITEABLE"] and not np.asarray(a).flags["WRITEABLE"]
+
+
+# ---------------------------------------------------------------------------------------------------------
 # The generic containers (8.10a): NCollection_Array1/Array2 and their H- variants, for every element type
 # that is a packed run of numpy scalars. The table lives in src/cpp/common/nanocct_elem_view.h and asserts
 # its own layout assumptions at compile time.
@@ -105,7 +178,7 @@ def test_a_scalar_array_views_as_a_1d_array():
     a = NCollection.NCollection_Array1__double(1, 4)
     for i in range(1, 5):
         a.SetValue(i, i / 2)
-    v = a.ValuesArray()
+    v = np.asarray(a)
     assert v.shape == (4,) and v.dtype == np.float64
     assert not v.flags["OWNDATA"]
     assert v.tolist() == [a.Value(i) for i in range(a.Lower(), a.Upper() + 1)]
@@ -116,11 +189,21 @@ def test_a_multi_component_element_gets_a_trailing_dimension():
     a = NCollection.NCollection_Array1__gp_Pnt(1, 3)
     for i in range(1, 4):
         a.SetValue(i, gp.gp_Pnt(i, i * 2, i * 3))
-    v = a.ValuesArray()
+    v = np.asarray(a)
     assert v.shape == (3, 3) and v.dtype == np.float64
     assert v[1].tolist() == [2.0, 4.0, 6.0]
     v[0, 0] = 99.0
     assert a.Value(1).X() == 99.0                       # a view, not a copy
+
+
+@pytest.mark.parametrize("k", [2, 3, 4])
+@pytest.mark.parametrize("scalar, dtype", [("float", np.float32), ("double", np.float64), ("int", np.int32)])
+def test_the_NCollection_vectors_view_like_any_packed_element(k, scalar, dtype):
+    """NCollection_Vec2/3/4 are a plain `Element_t v[N]` (NCollection_Vec3.hxx:420); all nine bound arrays of
+    them are in the element table."""
+    a = getattr(NCollection, f"NCollection_Array1__NCollection_Vec{k}__{scalar}")(1, 2)
+    v = np.asarray(a)
+    assert v.shape == (2, k) and v.dtype == dtype and not v.flags["OWNDATA"]
 
 
 def test_index_zero_of_the_view_is_Lower_whatever_Lower_is():
@@ -128,7 +211,7 @@ def test_index_zero_of_the_view_is_Lower_whatever_Lower_is():
     a = NCollection.NCollection_Array1__int(5, 7)
     for i in range(5, 8):
         a.SetValue(i, i * 10)
-    assert a.ValuesArray().tolist() == [50, 60, 70]
+    assert np.asarray(a).tolist() == [50, 60, 70]
 
 
 def test_a_direction_array_is_read_only():
@@ -137,7 +220,7 @@ def test_a_direction_array_is_read_only():
     a = NCollection.NCollection_Array1__gp_Dir(1, 2)
     a.SetValue(1, gp.gp_Dir(1, 0, 0))
     a.SetValue(2, gp.gp_Dir(0, 1, 0))
-    v = a.ValuesArray()
+    v = np.asarray(a)
     assert v.shape == (2, 3) and not v.flags["WRITEABLE"]
     assert v.tolist() == [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
     with pytest.raises(ValueError):
@@ -151,30 +234,45 @@ def test_a_2d_array_views_row_major_and_matches_Value():
     for r in range(1, 3):
         for c in range(1, 4):
             a.SetValue(r, c, r * 10 + c)
-    v = a.ValuesArray()
+    v = np.asarray(a)
     assert v.shape == (2, 3)
     assert v.tolist() == [[11.0, 12.0, 13.0], [21.0, 22.0, 23.0]]
     a2 = NCollection.NCollection_Array2__gp_Pnt(1, 2, 1, 3)
-    assert a2.ValuesArray().shape == (2, 3, 3)          # the element's components come last
+    assert np.asarray(a2).shape == (2, 3, 3)            # the element's components come last
 
 
-def test_the_handle_variants_inherit_the_accessor():
-    """HArray1 derives from Array1 and HArray2 from Array2, so neither needs its own accessor."""
+def test_the_handle_variants_inherit_the_view():
+    """HArray1 derives from Array1 and HArray2 from Array2, so neither needs its own __array__."""
     h = NCollection.NCollection_HArray1__double(1, 3, 2.5)
-    assert h.ValuesArray().tolist() == [2.5, 2.5, 2.5]
+    assert np.asarray(h).tolist() == [2.5, 2.5, 2.5]
     h2 = NCollection.NCollection_HArray2__int(1, 2, 1, 2, 7)
-    assert h2.ValuesArray().shape == (2, 2) and h2.ValuesArray().dtype == np.int32
+    assert np.asarray(h2).shape == (2, 2) and np.asarray(h2).dtype == np.int32
 
 
-def test_an_element_that_cannot_be_viewed_has_no_accessor():
-    """A handle, a string or a TopoDS_Shape has nothing packed to view, and the binder must not pretend."""
-    assert not hasattr(NCollection.NCollection_Array1__TopoDS_Shape, "ValuesArray")
-    assert hasattr(NCollection.NCollection_Array1__double, "ValuesArray")
+def test_an_element_that_cannot_be_viewed_has_no_array_protocol():
+    """A handle, a string or a TopoDS_Shape has nothing packed to view, and the binder must not pretend.
+    numpy then falls back to what it does for any iterable -- measured: an object array of copies."""
+    assert not hasattr(NCollection.NCollection_Array1__TopoDS_Shape, "__array__")
+    assert hasattr(NCollection.NCollection_Array1__double, "__array__")
+    a = NCollection.NCollection_Array1__TopoDS_Shape(1, 2)
+    assert np.asarray(a).dtype == object
 
 
 def test_an_empty_array_views_as_an_empty_array_not_None():
     a = NCollection.NCollection_Array1__double()
-    assert a.Size() == 0 and a.ValuesArray().shape == (0,)
+    assert a.Size() == 0 and np.asarray(a).shape == (0,)
+    assert np.array(a).shape == (0,)                    # the copy of nothing is nothing, not an error
+
+
+def test_no_view_accessor_methods_are_left():
+    """8.21: the six R-VIEW accessors of 8.10a read like OCCT methods and were replaced by __array__."""
+    for cls, name in [(NCollection.NCollection_Array1__double, "ValuesArray"),
+                      (NCollection.NCollection_Array2__double, "ValuesArray"),
+                      (Poly.Poly_Triangulation, "NodesArray"), (Poly.Poly_Triangulation, "TrianglesArray"),
+                      (Poly.Poly_Triangulation, "UVNodesArray"), (Poly.Poly_Triangulation, "NormalsArray"),
+                      (Poly.Poly_PolygonOnTriangulation, "NodesArray"),
+                      (Image.Image_PixMap, "DataArray"), (NCollection.NCollection_Buffer, "DataArray")]:
+        assert not hasattr(cls, name), f"{cls.__name__}.{name}"
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -189,7 +287,7 @@ def _pixmap(fmt, w, h, row_bytes=0):
 
 def test_a_pixmap_views_as_height_width_channels():
     p = _pixmap(Image.Image_Format.Image_Format_RGB, 5, 3)
-    v = p.DataArray()
+    v = np.asarray(p)
     assert v.shape == (3, 5, 3) and v.dtype == np.uint8 and not v.flags["OWNDATA"]
 
 
@@ -203,7 +301,7 @@ def test_a_pixmap_views_as_height_width_channels():
 ])
 def test_the_dtype_and_channel_count_follow_the_format(fmt, channels, dtype):
     p = _pixmap(getattr(Image.Image_Format, fmt), 4, 2)
-    v = p.DataArray()
+    v = np.asarray(p)
     assert v.shape == (2, 4, channels) and v.dtype == dtype
 
 
@@ -213,11 +311,19 @@ def test_padded_rows_are_a_stride_not_a_shear():
     SizeRowBytes()."""
     p = _pixmap(Image.Image_Format.Image_Format_RGB, 5, 3, 16)
     assert p.SizeRowBytes() == 16 > 5 * p.SizePixelBytes()
-    v = p.DataArray()
+    v = np.asarray(p)
     assert v.shape == (3, 5, 3)
     assert abs(v.strides[0]) == 16                      # the pad is skipped, not folded into the pixels
     v[1, 0] = [7, 8, 9]
     assert v[0, 0].tolist() == [0, 0, 0] and v[2, 0].tolist() == [0, 0, 0]   # neighbours untouched
+
+
+def test_a_copy_of_a_padded_bottom_up_pixmap_is_the_same_image():
+    p = _pixmap(Image.Image_Format.Image_Format_RGB, 5, 3, 16)
+    v = np.asarray(p)
+    v[:] = np.arange(45, dtype=np.uint8).reshape(3, 5, 3)
+    c = np.array(p)
+    assert c.flags["OWNDATA"] and np.array_equal(c, v)
 
 
 def test_row_order_is_top_down_even_when_the_storage_is_bottom_up():
@@ -226,41 +332,54 @@ def test_row_order_is_top_down_even_when_the_storage_is_bottom_up():
     whatever IsTopDown() says -- a view that disagreed with the class's own accessors would be a trap."""
     p = _pixmap(Image.Image_Format.Image_Format_RGB, 4, 3)
     assert p.IsTopDown() is False                       # OCCT's default for InitZero
-    assert p.DataArray().strides[0] < 0
+    assert np.asarray(p).strides[0] < 0
 
-    p.DataArray()[0, 1] = [10, 20, 30]                  # top row, second pixel
+    np.asarray(p)[0, 1] = [10, 20, 30]                  # top row, second pixel
     # Quantity_TOC_RGB, not sRGB: PixelColor stores the byte as-is unless asked to linearise, so reading it
     # back as sRGB re-encodes it and 10 comes out as 56.
     rgb = p.PixelColor(1, 0).GetRGB().Values(Quantity.Quantity_TypeOfColor.Quantity_TOC_RGB)
     assert [round(c * 255) for c in rgb] == [10, 20, 30]
 
     p.SetTopDown(True)                                  # same buffer, the other direction
-    assert p.IsTopDown() is True and p.DataArray().strides[0] > 0
+    assert p.IsTopDown() is True and np.asarray(p).strides[0] > 0
 
 
-def test_an_empty_pixmap_has_no_view():
-    assert Image.Image_PixMap().DataArray() is None
+def test_an_empty_pixmap_is_a_zero_size_view_of_its_format():
+    """An empty pixmap still has a format -- Gray by default (measured) -- and so a dtype."""
+    p = Image.Image_PixMap()
+    assert p.IsEmpty() is True and p.Format() == Image.Image_Format.Image_Format_Gray
+    v = np.asarray(p)
+    assert v.shape == (0, 0, 1) and v.dtype == np.uint8
+
+
+def test_an_UNKNOWN_pixmap_has_no_dtype_and_raises():
+    """InitTrash accepts Image_Format_UNKNOWN and allocates real bytes (measured: 4x4 gives 16), but there is
+    no dtype to give them; raw bytes would invent a meaning OCCT does not have."""
+    p = Image.Image_PixMap()
+    assert p.InitTrash(Image.Image_Format.Image_Format_UNKNOWN, 4, 4) is True and p.IsEmpty() is False
+    with pytest.raises(ValueError, match="Image_Format_UNKNOWN"):
+        np.asarray(p)
 
 
 # ---------------------------------------------------------------------------------------------------------
 # NCollection_Buffer, and the classes the container views reach without a specialisation of their own.
 
-def test_a_buffer_views_as_bytes_and_None_only_when_unallocated():
-    """Before this the class was unusable: Data()/ChangeData() are raw pointers, so nothing was bound but
+def test_a_buffer_views_as_bytes_and_as_empty_when_unallocated():
+    """Before the view the class was unusable: Data()/ChangeData() are raw pointers, so nothing was bound but
     Size() and IsEmpty() -- which also made FSD_Base64.Decode_s, whose result *is* one of these, unusable."""
     b = NCollection.NCollection_Buffer(NCollection.NCollection_BaseAllocator.CommonBaseAllocator_s())
     assert b.Allocate(8) is True
-    v = b.DataArray()
+    v = np.asarray(b)
     assert v.shape == (8,) and v.dtype == np.uint8 and not v.flags["OWNDATA"]
     v[:] = range(8)
-    assert b.DataArray().tolist() == list(range(8))
+    assert np.asarray(b).tolist() == list(range(8))
 
-    # A buffer of size 0 is still *allocated* -- the allocator hands back a non-null pointer for 0 bytes --
-    # so it is a zero-length array. Only Free() makes it None.
+    # A buffer of size 0 is still *allocated* (the allocator hands back a non-null pointer for 0 bytes); after
+    # Free() it is not. Both are zero-length views.
     assert NCollection.NCollection_Buffer(
-        NCollection.NCollection_BaseAllocator.CommonBaseAllocator_s()).DataArray().shape == (0,)
+        NCollection.NCollection_BaseAllocator.CommonBaseAllocator_s()).IsEmpty() is False
     b.Free()
-    assert b.IsEmpty() is True and b.DataArray() is None
+    assert b.IsEmpty() is True and np.asarray(b).shape == (0,)
 
 
 def test_base64_goes_both_ways_now():
@@ -273,31 +392,43 @@ def test_base64_goes_both_ways_now():
 
     encoded = FSD.FSD_Base64.Encode_s(b"Hello, nanocct!").ToCString()
     assert encoded == base64.b64encode(b"Hello, nanocct!").decode()
-    assert bytes(FSD.FSD_Base64.Decode_s(encoded, len(encoded)).DataArray()) == b"Hello, nanocct!"
+    assert bytes(np.asarray(FSD.FSD_Base64.Decode_s(encoded, len(encoded)))) == b"Hello, nanocct!"
     assert FSD.FSD_Base64.Encode_s(b"").ToCString() == ""
 
     payload = bytes(range(256)) * 100                    # 25 600 bytes, well past one base64 block
     enc = FSD.FSD_Base64.Encode_s(payload).ToCString()
-    assert bytes(FSD.FSD_Base64.Decode_s(enc, len(enc)).DataArray()) == payload
+    assert bytes(np.asarray(FSD.FSD_Base64.Decode_s(enc, len(enc)))) == payload
 
 
-def test_Graphic3d_Buffer_inherits_the_accessor():
+def test_Graphic3d_Buffer_inherits_the_view():
     """Its elements are interleaved vertex attributes, so the buffer itself has no single element type:
     reshaping to (NbElements, Stride) and slicing by AttributeOffset() is the caller's business."""
     from nanocct import Graphic3d
 
-    assert hasattr(Graphic3d.Graphic3d_Buffer, "DataArray")
+    assert hasattr(Graphic3d.Graphic3d_Buffer, "__array__")
 
 
 def test_a_polygon_is_reached_through_its_array_with_no_specialisation_of_its_own():
     """Poly_Polygon3D needs no entry in [views]: ChangeNodes() is bound reference_internal and returns a
-    bound NCollection_Array1<gp_Pnt>, so the container accessor composes into a real zero-copy path and the
+    bound NCollection_Array1<gp_Pnt>, so the container view composes into a real zero-copy path and the
     chain of owners keeps the polygon alive."""
     a = NCollection.NCollection_Array1__gp_Pnt(1, 3)
     for i in range(1, 4):
         a.SetValue(i, gp.gp_Pnt(i, 0, 0))
     poly = Poly.Poly_Polygon3D(a)
-    v = poly.ChangeNodes().ValuesArray()
+    v = np.asarray(poly.ChangeNodes())
     assert v.shape == (3, 3) and not v.flags["OWNDATA"]
     v[0, 1] = 5.0
     assert poly.Nodes().Value(1).Y() == 5.0
+
+
+def test_a_polygon_on_triangulation_is_reached_through_ChangeNodeArray():
+    """Its node indices are an NCollection_Array1<int>; ChangeNodeArray() is the reference, Nodes() a copy."""
+    idx = NCollection.NCollection_Array1__int(1, 3)
+    for i in range(1, 4):
+        idx.SetValue(i, i)
+    p = Poly.Poly_PolygonOnTriangulation(idx)
+    v = np.asarray(p.ChangeNodeArray())
+    assert v.dtype == np.int32 and v.tolist() == [1, 2, 3] and not v.flags["OWNDATA"]
+    v[0] = 9
+    assert p.Node(1) == 9

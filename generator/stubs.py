@@ -148,19 +148,19 @@ def _with_numpy_imports(text: str) -> str:
 
 
 def _view_accessor(text: str, name: str) -> str | None:
-    """The `ValuesArray` line stubgen generated for a concrete container class, if it has one.
+    """The `__array__` member stubgen generated for a concrete container class, if it has one, docstring included.
 
-    The zero-copy accessor (R-VIEW) exists only for element types that are a packed run of numpy scalars,
-    and its dtype is that scalar -- so it cannot live on the generic `NCollection_Array1(Generic[_T])` stub,
-    which would promise it for an array of TopoDS_Shape too. Everything else about a concrete class collapses
-    into the generic base; this one line is lifted out first, which keeps the exact dtype without a second
-    copy of the element table that `src/cpp/common/nanocct_elem_view.h` already holds.
+    The zero-copy view (R-VIEW) exists only for element types that are a packed run of numpy scalars, and its
+    dtype is that scalar -- so it cannot live on the generic `NCollection_Array1(Generic[_T])` stub, which would
+    promise it for an array of TopoDS_Shape too. Everything else about a concrete class collapses into the
+    generic base; this one member is lifted out first, which keeps the exact dtype without a second copy of the
+    element table that `src/cpp/common/nanocct_elem_view.h` already holds.
     """
     m = re.search(rf"^class {re.escape(name)}\b.*?(?=^\S|\Z)", text, re.S | re.M)
     if m is None:
         return None
-    sig = re.search(r"^    def ValuesArray\(self\) -> [^:\n]+", m.group(0), re.M)
-    return None if sig is None else sig.group(0) + ": ..."
+    member = re.search(r"^    def __array__\(.*?(?=^    \S|^\S|\Z)", m.group(0), re.S | re.M)
+    return None if member is None else member.group(0).rstrip()
 
 
 def _replace_class_block(text: str, name: str, replacement: str) -> str:
@@ -310,9 +310,9 @@ def main() -> int:
             body.append(f"    class Iterator({kind}.Iterator[{', '.join(spelled[:n_it])}]): ...")
         view = _view_accessor(text, inst["name"])
         if view is None and kind.startswith("NCollection_HArray"):
-            # stubgen does not repeat an inherited member, and NCollection_HArray1<T> inherits ValuesArray
+            # stubgen does not repeat an inherited member, and NCollection_HArray1<T> inherits __array__
             # from NCollection_Array1<T>. In the stub the H class derives from the *generic* Array1, which
-            # cannot carry it (see _view_accessor), so the sibling's line is copied across.
+            # cannot carry it (see _view_accessor), so the sibling's member is copied across.
             view = _view_accessor(text, inst["name"].replace("_HArray", "_Array", 1))
         if view is not None:
             body.append(view)

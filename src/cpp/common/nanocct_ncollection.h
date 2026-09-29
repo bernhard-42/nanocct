@@ -78,19 +78,22 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
      .def("__len__", [](const Cls &self) { return self.Length(); }, "Python addition: alias to Length.")
      .def("__iter__", [](const Cls &self) { return nb::make_iterator(nb::type<Cls>(), "iterator", self.begin(), self.end()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values from Lower() to Upper().");
-    // R-VIEW (State.md 8.10a): a packed POD element type also gets a zero-copy numpy view of the whole
-    // array, so the per-element __getitem__ loop above never has to be the way large data reaches Python.
-    // Not every instantiation qualifies -- a handle, a string, a TopoDS_Shape has nothing to view.
+    // R-VIEW (State.md 8.10a, 8.21): a packed POD element type also gets numpy's array protocol, a zero-copy
+    // view of the whole array, so the per-element __getitem__ loop above never has to be the way large data
+    // reaches Python. Not every instantiation qualifies -- a handle, a string, a TopoDS_Shape has nothing to view.
     if constexpr (nanocct::view_elem<T>::supported)
-        c.def("ValuesArray", [](Cls &self) {
+        c.def("__array__", [](Cls &self, nb::handle, std::optional<bool> copy) {
             const size_t n = (size_t) self.Size();
             const size_t shape[1] = { n };
-            return nanocct::elem_view<T>(n == 0 ? nullptr : (void *) &self.ChangeFirst(), shape);
-        }, nb::rv_policy::reference_internal,
-        "Python addition: zero-copy numpy view of the whole array (R-VIEW).\n\n"
+            return nanocct::array_protocol(
+                nanocct::elem_view<T>(n == 0 ? nullptr : (void *) &self.ChangeFirst(), shape), nb::find(&self), copy);
+        }, nb::arg("dtype") = nb::none(), nb::arg("copy") = nb::none(),
+        "Python addition: numpy's array protocol -- `numpy.asarray(a)` is a zero-copy view of the whole array "
+        "(R-VIEW), `numpy.array(a)` a copy.\n\n"
         "Shape (Size(),) for a scalar element type and (Size(), k) for a k-component one -- (N, 3) for "
         "gp_Pnt, (N, 2) for gp_Pnt2d, (N, 3) int32 for Poly_Triangle. Index 0 of the view is Lower(), "
-        "whatever Lower() is; the view has no notion of OCCT's index base.\n\n"
+        "whatever Lower() is; the view has no notion of OCCT's index base. An empty array gives a "
+        "zero-length view.\n\n"
         "Writes go straight into the array, except for gp_Dir and gp_Dir2d, whose view is read-only "
         "because a raw write could store a direction that is not of unit length -- use SetValue() there.\n\n"
         "The view keeps this object alive, but an array built over a caller's buffer (IsDeletable() is "
@@ -541,13 +544,15 @@ template <typename T, typename Cls, typename... Extra> void def_array2_members(n
     // assumed: NCollection_Array2 allocates one contiguous buffer and addresses it row-major --
     // `(theRow - myLowerRow) * mySizeCol + (theCol - myLowerCol)` (NCollection_Array2.hxx:306).
     if constexpr (nanocct::view_elem<T>::supported)
-        c.def("ValuesArray", [](Cls &self) {
+        c.def("__array__", [](Cls &self, nb::handle, std::optional<bool> copy) {
             const size_t shape[2] = { (size_t) self.NbRows(), (size_t) self.NbColumns() };
-            return nanocct::elem_view<T>(
-                self.Size() == 0 ? nullptr : (void *) &self.ChangeValue(self.LowerRow(), self.LowerCol()),
-                shape);
-        }, nb::rv_policy::reference_internal,
-        "Python addition: zero-copy numpy view of the whole array (R-VIEW).\n\n"
+            return nanocct::array_protocol(
+                nanocct::elem_view<T>(
+                    self.Size() == 0 ? nullptr : (void *) &self.ChangeValue(self.LowerRow(), self.LowerCol()), shape),
+                nb::find(&self), copy);
+        }, nb::arg("dtype") = nb::none(), nb::arg("copy") = nb::none(),
+        "Python addition: numpy's array protocol -- `numpy.asarray(a)` is a zero-copy view of the whole array "
+        "(R-VIEW), `numpy.array(a)` a copy.\n\n"
         "Shape (NbRows(), NbColumns()) for a scalar element type and (NbRows(), NbColumns(), k) for a "
         "k-component one. Row-major, matching OCCT's own addressing; index (0, 0) is "
         "(LowerRow(), LowerCol()). Writes go straight into the array.");

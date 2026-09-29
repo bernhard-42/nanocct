@@ -57,7 +57,7 @@ INCLUDE_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("include", {}).get("pack
 PLATFORM_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("platform", {})
 # toolkit -> toolkits it must link although nothing in its signatures names them (R-LINK, overrides.toml [link] extra)
 EXTRA_LINKS: dict[str, list[str]] = _OVERRIDES.get("link", {}).get("extra", {})
-# classes with zero-copy numpy accessors; the "how" is a nanocct_def_views<T> specialisation (R-VIEW, 8.10)
+# classes with a zero-copy numpy view (__array__); the "how" is a nanocct_def_views<T> specialisation (R-VIEW, 8.10, 8.21)
 VIEW_CLASSES: set[str] = set(_OVERRIDES.get("views", {}).get("classes", []))
 _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package

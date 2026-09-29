@@ -36,7 +36,7 @@ def test_normals_from_surface_matches_the_per_node_loop(meshed):
     face = _first_face(meshed)
     tri = BRep.BRep_Tool.Triangulation_s(face, TopLoc.TopLoc_Location())
     u_min, u_max, v_min, v_max = BRepTools.BRepTools.UVBounds_s(face)
-    uv = np.ascontiguousarray(np.clip(np.asarray(tri.UVNodesArray()), [u_min, v_min], [u_max, v_max]))
+    uv = np.ascontiguousarray(np.clip(np.asarray(tri.InternalUVNodes()), [u_min, v_min], [u_max, v_max]))
 
     bulk = AddOns.Tessellator.NormalsFromSurface(face, uv)
     assert bulk.shape == (tri.NbNodes(), 3) and bulk.dtype == np.float64
@@ -56,7 +56,7 @@ def test_normals_reverse_flag_negates(meshed):
     face = _first_face(meshed)
     tri = BRep.BRep_Tool.Triangulation_s(face, TopLoc.TopLoc_Location())
     u_min, u_max, v_min, v_max = BRepTools.BRepTools.UVBounds_s(face)
-    uv = np.ascontiguousarray(np.clip(np.asarray(tri.UVNodesArray()), [u_min, v_min], [u_max, v_max]))
+    uv = np.ascontiguousarray(np.clip(np.asarray(tri.InternalUVNodes()), [u_min, v_min], [u_max, v_max]))
     assert np.allclose(AddOns.Tessellator.NormalsFromSurface(face, uv, True),
                        -AddOns.Tessellator.NormalsFromSurface(face, uv, False))
 

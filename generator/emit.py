@@ -810,7 +810,7 @@ class Emitter:
                 body.append(s)
         body += free_ops.get(c.name, [])
         if c.name in VIEW_CLASSES:
-            # R-VIEW (Design.md 2c, State.md 8.10): zero-copy numpy accessors, defined per class in
+            # R-VIEW (Design.md 2c, State.md 8.10, 8.21): a zero-copy numpy view (__array__), defined per class in
             # src/cpp/common/nanocct_views.h. Listed in overrides.toml [views] because which class gets which
             # view is data, not a shape the generator could detect.
             self.report.append(f"{c.name}: zero-copy numpy views added (nanocct_def_views)")

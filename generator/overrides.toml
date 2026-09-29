@@ -322,11 +322,11 @@ binary_members = [
     "RWObj_Reader::Probe",
 ]
 
-# Classes that get zero-copy numpy accessors (State.md 8.10, R-VIEW). The emitter appends
+# Classes that get a zero-copy numpy view through `__array__` (State.md 8.10, 8.21, R-VIEW). The emitter appends
 #     nanocct_def_views<Class>(cls);
-# to the class's define phase and includes src/cpp/common/nanocct_views.h, where the accessors themselves are a
+# to the class's define phase and includes src/cpp/common/nanocct_views.h, where the views themselves are a
 # template specialisation -- one per class, because every case has runtime branches a config file cannot carry
-# (Poly_Triangulation's dtype follows IsDoublePrecision(); Image_PixMap's rows are padded, so its view needs a
+# (Poly_ArrayOfNodes' dtype follows IsDoublePrecision(); Image_PixMap's rows are padded, so its view needs a
 # stride from SizeRowBytes()). A name listed here without a specialisation does not link, and
 # tests/test_generator.py asserts the two lists agree so it fails at generation instead.
 # R-BYTES: methods where a `const uint8_t*` parameter and the length that follows it are one `bytes`
@@ -342,8 +342,8 @@ members = [
 
 [views]
 classes = [
-    "Poly_Triangulation",
-    "Poly_PolygonOnTriangulation",
+    "Poly_ArrayOfNodes",      # what Poly_Triangulation::InternalNodes() returns
+    "Poly_ArrayOfUVNodes",    # what Poly_Triangulation::InternalUVNodes() returns
     "Image_PixMap",
     "NCollection_Buffer",
 ]

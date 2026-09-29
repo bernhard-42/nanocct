@@ -23,7 +23,7 @@ OCCT already has established Python bindings in [OCP](https://github.com/cadquer
 3. **The OCCT 8 collection classes are Python generics.** `NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_AsciiString]()` creates that instantiation, and `isinstance(x, NCollection_Array1)` holds for every array, whatever its element type. [Design 2a](Design.md#2a-naming-conventions), [6a](Design.md#6a-ncollection-containers-hand-written-binders)
 4. **Out-parameters come back as results.** A C++ reference parameter that OCCT writes into is part of the Python return value: `curve, first, last = BRep_Tool.Curve_s(edge)`. [Design 2a](Design.md#2a-naming-conventions), [2b](Design.md#2b-parameter-conventions)
 5. **Data exchange in memory.** An output stream is a returned `str` (`bytes` for binary formats), an input stream any file-like object: `BRepTools.Write_s(shape)` returns the BREP text, STEP and the OCAF documents work the same way. [Design 2b](Design.md#2b-parameter-conventions)
-6. **Zero-copy access to OCCT's arrays.** Triangulation nodes, triangles, UVs and normals, the `NCollection` arrays and `Image_PixMap` are numpy views of OCCT's own memory, not copies. [Design 2c](Design.md#2c-python-additions)
+6. **Zero-copy access to OCCT's arrays.** Triangulation nodes, triangles, UVs and normals, the `NCollection` arrays and `Image_PixMap` are numpy views of OCCT's own memory through `np.asarray(obj)`, not copies. [Design 2c](Design.md#2c-python-additions)
 7. **Type stubs in the package**, checked with mypy and ty as part of the test suite. [Design 6b](Design.md#6b-type-stubs)
 8. **All of OCCT's visualization, without VTK.** The AIS interactive context, the V3d viewer and the OpenGL driver are bound. OCCT's VTK layer (`TKIVtk`) is the one part left out, on purpose: its classes derive from VTK's own C++ classes, so using it from Python needs VTK's Python wrappers, which are built for each Python version separately. That would give up point 1. [Design 2](Design.md#2-scope)
 9. **Validated against real code.** The full test suites of [build123d](https://github.com/gumyr/build123d) (2 465 tests), ocpsvg, ocp_gordon and ocp_tessellate run on nanocct with the same outcome, test by test, as with the OCP bindings they were written for.
@@ -34,6 +34,7 @@ OCCT already has established Python bindings in [OCP](https://github.com/cadquer
 ## A first look
 
 ```python
+import numpy as np
 from nanocct.BRep import BRep_Tool
 from nanocct.BRepMesh import BRepMesh_IncrementalMesh
 from nanocct.BRepPrimAPI import BRepPrimAPI_MakeCylinder
@@ -48,7 +49,7 @@ BRepMesh_IncrementalMesh(shape, 0.1)
 
 for face in TopExp_Explorer(shape, TopAbs_ShapeEnum.TopAbs_FACE):
     mesh = BRep_Tool.Triangulation_s(TopoDS.Face(face), TopLoc_Location())
-    nodes = mesh.NodesArray()                   # (N, 3) numpy view of OCCT's memory, no copy
+    nodes = np.asarray(mesh.InternalNodes())    # (N, 3) numpy view of OCCT's memory, no copy
 
 edge = TopoDS.Edge(next(iter(TopExp_Explorer(shape, TopAbs_ShapeEnum.TopAbs_EDGE))))
 curve, first, last = BRep_Tool.Curve_s(edge)    # out-parameters come back in the result
