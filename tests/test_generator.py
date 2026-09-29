@@ -13,10 +13,10 @@ import pytest
 
 from generator import parse
 from generator.binders import BINDERS
-from generator.emit import Emitter, resolve_ctor_arities, resolve_overload_collisions
+from generator.emit import Emitter, order_by_derivation, resolve_ctor_arities, resolve_overload_collisions
 from generator.model import Class, Constructor, ConversionKind, Method, PackageIR, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
-from generator.__main__ import _topo, _base_import_edges
+from generator.__main__ import HANDWRITTEN_NAMESPACES, _topo, _base_import_edges
 from generator.report import CATEGORIES, categorize
 
 ROOT = Path(__file__).parents[1]
@@ -54,6 +54,7 @@ HEADER = """
 #include <gp_Pnt.hxx>
 #include <gp_XYZ.hxx>
 #include <NCollection_Array1.hxx>
+#include <NCollection_Array2.hxx>
 #include <NCollection_DynamicArray.hxx>
 #include <NCollection_List.hxx>
 #include <NCollection_Sequence.hxx>
@@ -488,6 +489,20 @@ public:
   Rules_ViaTypedef() {}
 };
 
+//! R-OVERLOAD-ORDER: overloads declared base class first (PLib::CoefficientsPoles, GeomToIGES_GeomCurve::TransferCurve);
+//! R-PTR-NULL: a class pointer with a null default (BSplCLib_Cache's theWeights).
+class Rules_Order
+{
+public:
+  Rules_Order() {}
+  int Take(const Rules_Value& theV) const { (void)theV; return 1; }
+  int Take(const Rules_Inherit& theV) const { (void)theV; return 2; }
+  int Take(const Rules_Value& theV, int theN) const { (void)theV; return theN; }
+  static int Grid(const NCollection_Array1<double>& theA) { (void)theA; return 1; }
+  static int Grid(const NCollection_Array2<double>& theA) { (void)theA; return 2; }
+  int Weights(const gp_XYZ* theW = nullptr) const { return theW == nullptr ? 0 : 1; }
+};
+
 //! A namespace named like the package is the package module itself.
 namespace Rules
 {
@@ -563,7 +578,7 @@ def test_ir_classes_and_nesting(rules_ir):
     assert set(names[20:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
-                               "Rules_TOnly<short>"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_TOnly<short>", "Rules_Order"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -1073,6 +1088,50 @@ def test_ir_template_bases_of_instantiations(rules_ir):
     crtp = by["Rules_Crtp<int>"]
     assert crtp.py_name == "Rules_CrtpInt" and crtp.bases == [] and [m.name for m in crtp.methods] == ["X"]
     assert any(r.startswith("Rules_Crtp<int>: template base Rules_CrtpBase<int, Rules_Crtp<int>> cannot be instantiated -> dropped") for r in rules_ir.report)
+
+
+def test_emitter_orders_derived_overloads_first_and_lets_null_pointers_be_none(rules_ir):
+    """R-OVERLOAD-ORDER and R-PTR-NULL on the synthetic header (State.md 8.22): nanobind calls the first overload that
+    accepts the arguments, so Take(const Rules_Inherit&) and Grid(const NCollection_Array2<double>&) -- declared after
+    their base-class twins -- must be registered first; Take(value, n) has another arity and stays where it is. A
+    class pointer with a null default takes None (without .none() nanobind refused the default itself)."""
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    body = cpp[cpp.index('"Rules_Order"'):]
+    assert body.index("(Rules_Order::*)(const Rules_Inherit &) const") < body.index("(Rules_Order::*)(const Rules_Value &) const") \
+        < body.index("(Rules_Order::*)(const Rules_Value &, int) const")
+    assert body.index("(*)(const NCollection_Array2<double> &)") < body.index("(*)(const NCollection_Array1<double> &)")
+    assert 'nb::arg("theW").none() = static_cast<std::decay_t<const gp_XYZ *>>(nullptr)' in body
+    assert "Rules_Order::Take(const Rules_Inherit &): takes a derived class of Take(const Rules_Value &) -> registered before it" in em.report
+    assert "Rules_Order::Grid(const NCollection_Array2<double> &): takes a derived class of Grid(const NCollection_Array1<double> &) -> registered before it" in em.report
+
+
+def test_order_by_derivation_uses_every_bound_class_and_keeps_the_rest():
+    """The package's own parse does not see the bases of a class it only forward-declares (GeomToIGES and Geom_BSplineCurve):
+    Emitter._ancestors closes over the manifest's bases of every bound class. Unrelated overloads keep the header order."""
+    def m(name, *classes):
+        return Method(name=name, params=[Param(name=f"p{i}", type=f"const {c} &", default=None, is_out=False, class_name=c)
+                                         for i, c in enumerate(classes)],
+                      result="void", result_kind=ResultKind.VALUE, result_class="", is_static=False, is_const=True, is_noexcept=False, doc="")
+    ir = PackageIR(name="X", toolkit="TKX", headers=[])
+    em = Emitter(ir, OCCT_INC, {}, {}, {}, [], {},
+                 bases_of={"Geom_BSplineCurve": ["Geom_BoundedCurve"], "Geom_BoundedCurve": ["Geom_Curve"], "Geom_Curve": ["Geom_Geometry"]})
+    curve, bounded, bspline, other = m("T", "Geom_Curve"), m("T", "Geom_BoundedCurve"), m("T", "Geom_BSplineCurve"), m("T", "gp_Pnt")
+    ordered, moved = order_by_derivation([curve, other, bounded, bspline], em._ancestors)
+    assert ordered == [bspline, bounded, curve, other]
+    assert moved == [(bounded, curve), (bspline, bounded)]
+    two = m("T", "Geom_Curve", "gp_Pnt")                                  # another arity: never compared
+    assert order_by_derivation([curve, two, bspline], em._ancestors)[0] == [bspline, curve, two]
+    mixed_a, mixed_b = m("U", "Geom_BSplineCurve", "Geom_Curve"), m("U", "Geom_Curve", "Geom_BSplineCurve")
+    assert order_by_derivation([mixed_a, mixed_b], em._ancestors)[0] == [mixed_a, mixed_b]   # neither narrower everywhere
+
+
+def test_handwritten_namespaces_match_the_addons_submodules():
+    """The AddOns shim is a package with one module per submodule the hand-written C++ registers (State.md 8.22)."""
+    source = (ROOT / "src" / "cpp" / "AddOns" / "_AddOns.cpp").read_text()
+    declared = sorted(re.findall(r'm_AddOns\.def_submodule\("(\w+)"', source))
+    assert declared == sorted(ns[0] for ns in HANDWRITTEN_NAMESPACES) and len(declared) > 0
 
 
 def test_resolve_ctor_arities():

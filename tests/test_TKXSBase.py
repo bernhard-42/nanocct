@@ -151,11 +151,11 @@ def test_the_shape_process_flags_are_a_set_of_operations():
 def test_report_categories():
     _, lines, undefined, _ = report("TKXSBase")
     assert all(any(k in line for k in ("IFSelect_", "MoniTool_Element::", "TransferBRep::")) for line in undefined)
-    assert len(lines) == 40
+    assert len(lines) == 41
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    assert counts == {"raw-pointer": 19, "overload-collision": 9, "iterator": 5,
+    assert counts == {"raw-pointer": 19, "overload-collision": 10, "iterator": 5,   # + Interface_EntityCluster (R-OVERLOAD-ORDER, State.md 8.22)
                       "rvalue": 3, "template": 3, "conversion": 1}
     assert not any("bitset" in line for line in lines)                           # closed by R-BITSET (2026-09-22)
     # the rvalue lines are the && twins of bound const& overloads, so nothing is lost

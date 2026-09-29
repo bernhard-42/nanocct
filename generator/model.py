@@ -47,6 +47,8 @@ class Param:
     out_py: str = ""        # Python type name of a removed out-parameter (float, int, bool, str, an enum or class name): the R-COLLISION suffix
     omitted: bool = False   # R-OPTIONAL-PTR: a pointer parameter with a null default, dropped from the signature; the callee gets nullptr
     cstr_none: bool = False # R-CSTR-NULL: a const char* parameter with a null default: `str | None = None` (nanocct::OptionalCString caster)
+    ptr_none: bool = False  # R-PTR-NULL: a class pointer parameter with a null default: `T | None = None` (nb::arg(...).none())
+    class_ancestors: tuple[str, ...] = ()   # R-OVERLOAD-ORDER: every base of class_name, spelled like class_name (parse._class_ancestors)
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
     is_bytes: bool = False  # R-BYTES: a `const uint8_t*` input buffer, taken as `bytes`; the length parameter that follows it is dropped
     bytes_of: str = ""      # R-BYTES: this parameter is that buffer's length and is dropped; the value is the bytes parameter's name

@@ -83,8 +83,10 @@ def _py_name(m: Method) -> str | None:
 class Emitter:
     def __init__(self, ir: PackageIR, include_dir: Path, known_classes: dict[str, str], toolkit_of: dict[str, str],
                  known_templates: dict[str, dict], toolkit_order: list[str] | None = None, paths: dict[str, str] | None = None,
-                 prelude_check: Callable[[list[str]], list[str]] | None = None):
+                 prelude_check: Callable[[list[str]], list[str]] | None = None, bases_of: dict[str, list[str]] | None = None):
         self.ir = ir
+        self.bases_of = bases_of if bases_of is not None else {}   # R-OVERLOAD-ORDER: every bound class -> its direct bases (manifest "bases")
+        self._ancestor_cache: dict[tuple[str, tuple[str, ...]], set[str]] = {}
         self.prelude_check = prelude_check    # R-PRELUDE for the emitted include list (parse.include_prelude); None in unit tests
         self.paths = paths if paths is not None else {}    # manifest "paths": C++ class -> Python path exceptions
         self.toolkit_order = toolkit_order if toolkit_order is not None else []   # generated toolkits, dependencies first
@@ -165,14 +167,30 @@ class Emitter:
             return p.class_name
         return None
 
+    def _ancestors(self, p: Param) -> set[str]:
+        """R-OVERLOAD-ORDER: every base of the class behind a parameter -- what the package's parse saw
+        (parse._class_ancestors: template bases, NCollection_Array2<T> : NCollection_Array1<T>) closed over the bases of
+        every bound class (a package that only forward-declares Geom_BSplineCurve cannot see its bases itself)."""
+        key = (p.class_name, p.class_ancestors)
+        if key not in self._ancestor_cache:
+            found: set[str] = set()
+            todo = [p.class_name, *p.class_ancestors]
+            while len(todo) > 0:
+                for b in self.bases_of.get(todo.pop(), []):
+                    if b not in found:
+                        found.add(b)
+                        todo.append(b)
+            self._ancestor_cache[key] = found | set(p.class_ancestors)
+        return self._ancestor_cache[key]
+
     def _args(self, params: list[Param], skip_out: bool) -> str:
         parts: list[str] = []
         for p in params:
             if p.omitted or p.bytes_of != "" or skip_out and (p.is_out and not p.is_inout or p.stream == StreamKind.OUT):
                 continue
             # a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
-            # the caster runs (Design.md 4.2)
-            arg = f'nb::arg("{p.name}").none()' if p.is_handle else f'nb::arg("{p.name}")'
+            # the caster runs (Design.md 4.2); so does a class pointer with a null default (R-PTR-NULL), or the default is refused
+            arg = f'nb::arg("{p.name}").none()' if p.is_handle or p.ptr_none else f'nb::arg("{p.name}")'
             if p.cstr_none:                    # R-CSTR-NULL: None reaches the OptionalCString caster only with .none()
                 parts.append(f'nb::arg("{p.name}").none() = nb::none()')
             elif p.default is None:
@@ -666,6 +684,10 @@ class Emitter:
         for narrow, wide in demoted:
             q = wide.qualified if wide.qualified != "" else wide.name
             self.report.append(f"{q}({self._sig(narrow.params)}): same Python signature as {q}({self._sig(wide.params)}) -> registered after it (width preference)")
+        plain, moved = order_by_derivation(plain, self._ancestors)   # R-OVERLOAD-ORDER: (TopoDS_Face) before (TopoDS_Shape)
+        for derived, base in moved:
+            q = derived.qualified if derived.qualified != "" else derived.name
+            self.report.append(f"{q}({self._sig(derived.params)}): takes a derived class of {q}({self._sig(base.params)}) -> registered before it")
         for fn, suffix in resolve_overload_collisions(plain):
             fn.suffix = suffix           # R-COLLISION applies to namespace functions too
         # R-FREE-OP: hidden friends, collected per class; an instantiation may be listed twice in ir.classes (the class
@@ -787,6 +809,9 @@ class Emitter:
                 self.report.append(f"{c.name}::{c.name}({self._sig(narrow.params)}): same Python signature as {c.name}({self._sig(wide.params)}) -> registered after it (width preference)")
             # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count (stable: width order kept)
             declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
+            declared, moved = order_by_derivation(declared, self._ancestors)   # R-OVERLOAD-ORDER: the copy constructor before a base-class one
+            for derived, base in moved:
+                self.report.append(f"{c.name}::{c.name}({self._sig(derived.params)}): takes a derived class of {c.name}({self._sig(base.params)}) -> registered before it")
             implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
             arities = {id(k): n for k, n in resolve_ctor_arities(declared)}
             for k in declared:
@@ -810,6 +835,9 @@ class Emitter:
         methods, demoted = order_by_width(c.methods)   # R-WIDTH: wider scalar overloads registered first
         for narrow, wide in demoted:
             self.report.append(f"{c.name}::{narrow.name}({self._sig(narrow.params)}): same Python signature as {wide.name}({self._sig(wide.params)}) -> registered after it (width preference)")
+        methods, moved = order_by_derivation(methods, self._ancestors)   # R-OVERLOAD-ORDER: (NCollection_Array2<T>) before (NCollection_Array1<T>)
+        for derived, base in moved:
+            self.report.append(f"{c.name}::{derived.name}({self._sig(derived.params)}): takes a derived class of {base.name}({self._sig(base.params)}) -> registered before it")
         resolved = resolve_overload_collisions(methods)
         for m, suffix in resolved:
             m.suffix = suffix
@@ -1137,6 +1165,52 @@ def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:
             seen.add(id(x))
             ordered.append(x)
     return ordered, demoted
+
+
+# Design.md 6 R-OVERLOAD-ORDER
+def _py_params(m) -> list[Param]:
+    """The parameters a Python call passes (out-params, dropped optional pointers and R-BYTES lengths are not)."""
+    return [p for p in m.params if not p.omitted and p.bytes_of == "" and not (p.is_out and not p.is_inout)
+            and p.stream != StreamKind.OUT]
+
+
+def _narrower(a: Param, b: Param, ancestors_of: Callable[[Param], set[str]]) -> bool | None:
+    """True if every argument a accepts is also accepted by b and a is the narrower one (a's class derives from b's),
+    False if the two take the same type, None if they are unrelated."""
+    if a.class_name == "" or b.class_name == "":
+        return False if _width(a.type)[0] == _width(b.type)[0] else None
+    if a.class_name == b.class_name:
+        return False
+    return True if b.class_name in ancestors_of(a) else None
+
+
+def order_by_derivation(overloads: list, ancestors_of: Callable[[Param], set[str]]) -> tuple[list, list[tuple[object, object]]]:
+    """nanobind registers overloads in order and calls the first that accepts the arguments; a derived-class object is
+    accepted by a base-class parameter in its first pass already. So an overload taking the base registered before one
+    taking the derived class shadows it -- PLib::CoefficientsPoles(const NCollection_Array1<gp_Pnt>&, ...) caught
+    NCollection_Array2<gp_Pnt> arguments and ran the curve algorithm, where C++ overload resolution picks the surface
+    overload (State.md 8.22). An overload is therefore moved in front of every overload of the same name and number of
+    Python parameters that takes, position by position, the same types or bases of its types (at least one a base).
+    The order is otherwise kept. Returns the overloads in emission order and every (moved, shadowing) pair."""
+    def key(m) -> tuple:
+        return (getattr(m, "qualified", "") or getattr(m, "name", ""), getattr(m, "is_static", False), len(_py_params(m)))
+
+    def dominates(x, y) -> bool:           # x must be registered before y
+        if key(x) != key(y):
+            return False
+        rel = [_narrower(a, b, ancestors_of) for a, b in zip(_py_params(x), _py_params(y))]
+        return all(r is not None for r in rel) and any(r is True for r in rel)
+
+    ordered: list = []
+    moved: list[tuple[object, object]] = []
+    for m in overloads:
+        at = next((i for i, o in enumerate(ordered) if o.skip_reason is None and dominates(m, o)), None)
+        if m.skip_reason is not None or at is None:
+            ordered.append(m)
+        else:
+            moved.append((m, ordered[at]))
+            ordered.insert(at, m)
+    return ordered, moved
 
 
 # Design.md 6 R-CTOR-AMBIGUOUS

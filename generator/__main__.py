@@ -29,6 +29,11 @@ ROOT = Path(__file__).resolve().parent.parent
 # The one package nanocct writes by hand rather than generating: src/cpp/AddOns, built by CMakeLists outside
 # the toolkit loop and imported as nanocct.AddOns (extension _AddOns). It is a package, never a toolkit.
 HANDWRITTEN_PACKAGE = "AddOns"
+# Its submodules (nb::module_::def_submodule in src/cpp/AddOns/_AddOns.cpp; tests/test_AddOns.py checks the two agree).
+# Declared like a generated package's C++ namespaces, so the shim is the package nanocct/AddOns/ and nanobind's stubgen
+# writes AddOns/ShapeClean.pyi next to AddOns/__init__.pyi -- as a single AddOns.py the submodule stubs landed at
+# nanocct/ShapeClean.pyi, the stub of a module that does not exist, and nanocct.AddOns.ShapeClean was untyped (State.md 8.22).
+HANDWRITTEN_NAMESPACES = [("ShapeClean",), ("Tessellator",)]
 
 
 def _topo(tree, toolkits: list[str], extra: dict[str, list[str]] | None = None) -> list[str]:
@@ -304,6 +309,9 @@ def main(argv: list[str]) -> int:
     toolkits_before = sorted(set(manifest.get("packages", {}).values()))
     generated_pkgs: dict[str, str] = manifest.setdefault("packages", {})     # package -> toolkit, every generated package
     paths: dict[str, str] = manifest.setdefault("paths", {})    # C++ class -> Python path where py_path() cannot derive it
+    # R-OVERLOAD-ORDER: C++ class -> its direct bases, for every bound class of every run, so an emitter can tell that
+    # TopoDS_Face derives from TopoDS_Shape also where its package only forward-declares the class
+    bases: dict[str, list[str]] = manifest.setdefault("bases", {})
     _paths = paths
     cpp_root.mkdir(parents=True, exist_ok=True)
     py_root.mkdir(parents=True, exist_ok=True)
@@ -452,8 +460,11 @@ def main(argv: list[str]) -> int:
                 del templates[key]
             for name in [n for n in paths if n not in known]:      # this package's classes were just forgotten above
                 del paths[name]
+            for name in [n for n in bases if n not in known]:
+                del bases[name]
             for c in ir.classes:
                 known[c.name] = ir.name
+                bases[c.name] = list(c.bases)
                 full = ".".join(c.scope + (c.py_name,))
                 if full != py_path(c.name, ir.name):
                     paths[c.name] = full
@@ -497,14 +508,14 @@ def main(argv: list[str]) -> int:
         for tk_name, irs, _ in emit_order:
             for ir in irs:
                 Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
-                        _topo(tree, generated_toolkits), paths).assign_templates()
+                        _topo(tree, generated_toolkits), paths, bases_of=bases).assign_templates()
         print(f"instantiation ownership derived for {len(templates)} keys in "
               f"{time.perf_counter() - t0:.1f} s", file=sys.stderr)
         todo_e = [(tk, ir.name, ir) for tk, irs, _ in emit_order for ir in irs]
         t0 = time.perf_counter()
         with mp.Pool(jobs, initializer=_parallel.init_emit,
                      initargs=(tree.src, tree.install, known, templates, paths,
-                               _topo(tree, generated_toolkits))) as pool:
+                               _topo(tree, generated_toolkits), bases)) as pool:
             for tk_name, pkg_name, text, rep, inc, skip, dt in pool.imap_unordered(_parallel.emit_one, todo_e, chunksize=1):
                 emitted[(tk_name, pkg_name)] = (text, rep, inc, skip)
                 per_toolkit.setdefault(tk_name, {"parse": 0.0, "emit": 0.0})["emit"] += dt
@@ -525,7 +536,7 @@ def main(argv: list[str]) -> int:
         for ir, pkg in zip(irs, pkgs):
             em = Emitter(ir, tree.include_dir, known, {name: pk.toolkit for name, pk in tree.packages.items()}, templates,
                          _topo(tree, generated_toolkits), paths,
-                         prelude_check=lambda headers: include_prelude(headers, tree.include_dir, cargs))
+                         prelude_check=lambda headers: include_prelude(headers, tree.include_dir, cargs), bases_of=bases)
             if (tk_name, ir.name) in emitted:
                 _emitted, _rep, _inc, _skip = emitted.pop((tk_name, ir.name))
                 em.report[:] = _rep
@@ -617,7 +628,7 @@ def main(argv: list[str]) -> int:
     late_links = {tk: sorted(e for e in extras if position.get(e, -1) > position.get(tk, 0))
                   for tk, extras in manifest.get("links", {}).items()}
     for pk in sorted(generated_packages):
-        namespaces = [tuple(ns) for ns in manifest["namespaces"].get(pk, [])]
+        namespaces = HANDWRITTEN_NAMESPACES if pk == HANDWRITTEN_PACKAGE else [tuple(ns) for ns in manifest["namespaces"].get(pk, [])]
         tk = HANDWRITTEN_PACKAGE if pk == HANDWRITTEN_PACKAGE else generated_pkgs[pk]
         write_package_shims(py_root, pk, tk, namespaces,
                             accessors if pk == "NCollection" else None,
@@ -683,7 +694,8 @@ Generated by the nanocct generator; the order is the dependency order (Design.md
     manifest_path.write_text(json.dumps({"classes": dict(sorted(known.items())), "templates": dict(sorted(templates.items())),
                                          "packages": dict(sorted(generated_pkgs.items())), "order": manifest["order"],
                                          "links": dict(sorted(manifest.get("links", {}).items())),
-                                         "namespaces": dict(sorted(manifest["namespaces"].items())), "paths": dict(sorted(paths.items()))}, indent=0) + "\n")
+                                         "namespaces": dict(sorted(manifest["namespaces"].items())), "paths": dict(sorted(paths.items())),
+                                         "bases": dict(sorted(bases.items()))}, indent=0) + "\n")
     # per-toolkit cost: where the time goes, and what a dependency layering could at best overlap
     if len(per_toolkit) > 1:
         rows = sorted(per_toolkit.items(), key=lambda kv: -(kv[1]["parse"] + kv[1]["emit"]))

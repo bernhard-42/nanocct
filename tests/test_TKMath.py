@@ -3,7 +3,7 @@ import importlib
 
 import pytest
 
-from nanocct import Bnd, ElCLib, MathUtils, NCollection, Poly, TopLoc, gp
+from nanocct import Bnd, BSplCLib, ElCLib, MathUtils, NCollection, PLib, Poly, TopLoc, gp
 from nanocct import math as occ_math
 
 PACKAGES = ["math", "MathUtils", "MathPoly", "MathLin", "MathOpt", "MathRoot", "MathInteg", "MathSys", "ElCLib", "ElSLib",
@@ -141,3 +141,37 @@ def test_primitive_reference_accessors_get_setters():
     t.SetValue(2, 7)
     t[3] = 8
     assert t.Get() == (1, 7, 8)
+
+
+def test_a_null_pointer_default_can_be_omitted_or_passed_as_none():
+    """R-PTR-NULL (State.md 8.22): BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr) and
+    BuildCache(..., theWeights = nullptr). Without .none() nanobind refused None -- the default itself included -- so the
+    non-rational cache could not be built at all. (The 2D BuildCache has no default in OCCT, BSplCLib_Cache.hxx.)"""
+    knots = NCollection.NCollection_Array1[float](1, 4)
+    for i, v in enumerate((0.0, 0.0, 1.0, 1.0), start=1):
+        knots.SetValue(i, v)
+    poles = NCollection.NCollection_Array1[gp.gp_Pnt](1, 2)
+    poles.SetValue(1, gp.gp_Pnt(0.0, 0.0, 0.0))
+    poles.SetValue(2, gp.gp_Pnt(2.0, 0.0, 0.0))
+    for cache in (BSplCLib.BSplCLib_Cache(1, False, knots, poles), BSplCLib.BSplCLib_Cache(1, False, knots, poles, None)):
+        for build in ((0.25, knots, poles), (0.25, knots, poles, None)):
+            cache.BuildCache(*build)
+            p = gp.gp_Pnt()
+            cache.D0(0.25, p)
+            assert p.Coord__float__float__float() == (0.5, 0.0, 0.0)
+
+
+def test_an_overload_taking_a_derived_class_is_not_shadowed_by_the_base_one():
+    """R-OVERLOAD-ORDER (State.md 8.22): NCollection_Array2 derives from NCollection_Array1, and nanobind calls the first
+    registered overload that accepts the arguments. PLib::CoefficientsPoles for surfaces (Array2) is declared after the
+    curve overloads (Array1), so Array2 arguments ran the curve algorithm on the flat data. The bilinear polynomial
+    c11 + c21 u + c12 v + c22 uv with the constant weight 1 has the poles c11, c11 + c21, c11 + c12 and the sum of all
+    four (PLib.cxx, the Array2 overload)."""
+    points, reals = NCollection.NCollection_Array2[gp.gp_Pnt], NCollection.NCollection_Array2[float]
+    coefs, poles, wcoefs, weights = points(1, 2, 1, 2), points(1, 2, 1, 2), reals(1, 2, 1, 2), reals(1, 2, 1, 2)
+    for (i, j), xyz in {(1, 1): (0.0, 0.0, 0.0), (2, 1): (1.0, 0.0, 0.0), (1, 2): (0.0, 1.0, 0.0), (2, 2): (0.0, 0.0, 1.0)}.items():
+        coefs.SetValue(i, j, gp.gp_Pnt(*xyz))
+        wcoefs.SetValue(i, j, 1.0 if (i, j) == (1, 1) else 0.0)
+    PLib.PLib.CoefficientsPoles_s(coefs, wcoefs, poles, weights)
+    got = {(i, j): poles.Value(i, j).Coord__float__float__float() for i in (1, 2) for j in (1, 2)}
+    assert got == {(1, 1): (0.0, 0.0, 0.0), (2, 1): (1.0, 0.0, 0.0), (1, 2): (0.0, 1.0, 0.0), (2, 2): (1.0, 1.0, 1.0)}

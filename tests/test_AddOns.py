@@ -259,3 +259,17 @@ def test_shape_clean_over_random_orientations():
         assert BRepCheck.BRepCheck_Analyzer(ours).IsValid() and _max_edge_tolerance(ours) <= 1e-6
         occt_broken += not BRepCheck.BRepCheck_Analyzer(theirs).IsValid() or _max_edge_tolerance(theirs) > 1e-3
     assert occt_broken > 0                      # the sweep did exercise the bug
+
+
+def test_every_submodule_has_its_stub_in_the_package():
+    """State.md 8.22: nanocct.AddOns was one module file, so nanobind's stubgen wrote the submodules' stubs as
+    nanocct/ShapeClean.pyi and nanocct/Tessellator.pyi -- stubs of modules that do not exist -- and every AddOns name
+    was Any to a type checker. The package now carries them next to its own __init__.pyi."""
+    import types
+    from pathlib import Path
+    subs = sorted(n for n, v in vars(AddOns).items() if isinstance(v, types.ModuleType) and v.__name__ == f"nanocct.AddOns.{n}")
+    assert len(subs) > 0
+    here = Path(AddOns.__file__).parent
+    assert here.name == "AddOns" and (here / "__init__.pyi").is_file()
+    assert [n for n in subs if not (here / f"{n}.pyi").is_file()] == []
+    assert [n for n in subs if (here.parent / f"{n}.pyi").exists()] == []

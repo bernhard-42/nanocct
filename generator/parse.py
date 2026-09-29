@@ -841,9 +841,13 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         # R-CSTR-NULL: nanobind's const char* caster rejects None, so a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
         # STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)) would be unreachable -> nanocct::OptionalCString, `str | None = None`
         cstr_none = _is_cstring(p.type) and default in ("NULL", "nullptr", "0")
+        # R-PTR-NULL: a class pointer with a null default (BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr))
+        # is kept, but nanobind's pointer caster rejects None without .none() -- the default itself (None) was then refused too
+        ptr_none = not cstr_none and p.type.get_canonical().kind == TK.POINTER and default in ("NULL", "nullptr", "0")
         params.append(Param(name=name, type=_type_spelling(p.type), default="nullptr" if cstr_none else default, is_out=is_out, is_inout=is_out and inout,
                             class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
-                            out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, binary=binary and stream != StreamKind.NONE))
+                            out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, ptr_none=ptr_none,
+                            binary=binary and stream != StreamKind.NONE, class_ancestors=_class_ancestors(p.type)))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None
@@ -891,6 +895,82 @@ def _is_plain_template_instance(t: cindex.Type) -> bool:
         return False
     parent = decl.semantic_parent
     return not (parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")))
+
+
+# Design.md 6 R-OVERLOAD-ORDER
+_ancestors_cache: dict[str, tuple[str, ...]] = {}
+
+
+def _class_ancestors(t: cindex.Type) -> tuple[str, ...]:
+    """Every (transitive) base of the class behind a parameter type (through const/&/*/handle), spelled like
+    _class_behind spells a parameter's class, so emit.order_by_derivation can tell that an overload taking the derived
+    class must be registered before one taking the base. A base inside a class template counts only when it repeats the
+    template's own parameters (NCollection_Array2<TheItemType> : NCollection_Array1<TheItemType>, so NCollection_Array2<gp_Pnt>
+    has the ancestor NCollection_Array1<gp_Pnt>); one with other arguments is left out -- never a wrong ancestor, at worst
+    a missing one."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind != TK.RECORD:
+        return ()
+    decl = canon.get_declaration()
+    if decl.kind == K.NO_DECL_FOUND:
+        return ()
+    if decl.spelling == "handle" and canon.get_num_template_arguments() == 1:
+        return _class_ancestors(canon.get_template_argument_type(0))
+    defn = decl.get_definition()     # the declaration may be a forward one (`class TopoDS_Face;`), which has no bases
+    if defn is not None:
+        decl = defn
+    key = _canonical_args(canon)
+    if key not in _ancestors_cache:
+        found: list[str] = []
+        _collect_ancestors(decl, canon, found, set())
+        _ancestors_cache[key] = tuple(found)
+    return _ancestors_cache[key]
+
+
+def _collect_ancestors(cls: cindex.Cursor, canon: cindex.Type, found: list[str], seen: set[str]) -> None:
+    """cls: the class declaration, canon: its canonical type (for an instantiation the one carrying the arguments)."""
+    spelled = _canonical_args(canon).replace("const ", "")
+    if spelled in seen:
+        return
+    seen.add(spelled)
+    bases = [b for b in cls.get_children() if b.kind == K.CXX_BASE_SPECIFIER]
+    if len(bases) == 0 and canon.get_num_template_arguments() > 0:
+        # an implicit instantiation's cursor has no children: its bases are in the template's definition (as in _derives_from)
+        tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(cls)
+        m = re.search(r"<(.*)>$", spelled)
+        if tmpl is not None and tmpl.kind != K.NO_DECL_FOUND and m is not None:
+            defn = tmpl.get_definition()
+            _collect_template_ancestors(defn if defn is not None else tmpl, m.group(1), found, seen)
+        return
+    for b in bases:
+        bt = b.type.get_canonical()
+        d = bt.get_declaration()
+        if bt.kind == TK.RECORD and d.kind != K.NO_DECL_FOUND and "type-parameter-" not in bt.spelling:
+            found.append(_canonical_args(bt).replace("const ", ""))
+            dd = d.get_definition()
+            _collect_ancestors(dd if dd is not None else d, bt, found, seen)
+
+
+def _collect_template_ancestors(tmpl: cindex.Cursor, args: str, found: list[str], seen: set[str]) -> None:
+    """Bases of a class template's definition that repeat its own parameter list, instantiated with `args` (the
+    derived instantiation's argument text), transitively."""
+    own = ",".join(ch.spelling for ch in tmpl.get_children() if ch.kind in (K.TEMPLATE_TYPE_PARAMETER, K.TEMPLATE_NON_TYPE_PARAMETER))
+    for b in tmpl.get_children():
+        if b.kind != K.CXX_BASE_SPECIFIER:
+            continue
+        m = re.search(r"<(.*)>$", b.type.spelling)
+        base = b.type.get_declaration()
+        if m is None or m.group(1).replace(" ", "") != own or base.kind != K.CLASS_TEMPLATE:
+            continue
+        spelled = f"{_qualified_template(base)}<{args}>"
+        if spelled in seen:
+            continue
+        seen.add(spelled)
+        found.append(spelled)
+        defn = base.get_definition()
+        _collect_template_ancestors(defn if defn is not None else base, args, found, seen)
 
 
 def _derives_from(cls: cindex.Cursor, root: str) -> bool:

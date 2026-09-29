@@ -188,8 +188,9 @@ def test_report_categories():
     # raw-pointer fell from 12 to 9 and override rose to 4 on 2026-09-23, when StepFile_ReadData was skipped: its
     # inline destructor calls the unexported ClearRecorder, so the class does not link on Windows (overrides.toml)
     assert counts == {"raw-pointer": 9, "rvalue": 3, "override": 4, "template": 2,
-                      "unbound-type": 2, "header": 1, "stream": 1}
-    assert len(lines) == 22
+                      "unbound-type": 2, "header": 1, "stream": 1,
+                      "overload-collision": 3}    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER, State.md 8.22)
+    assert len(lines) == 25
     # which members R-UNDEFINED reports is the platform's business (macOS names four entities, Windows others), so
     # only the package is asserted here; the portable categories above are what this test is really about
     assert all(line.split("\t")[1].lower().startswith(("step", "rwstep", "apiheadersection")) for line in undefined)                                       # 1 040 classes, 7 688 methods bound

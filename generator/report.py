@@ -25,7 +25,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("raw-pointer", r"raw pointer to primitive|is a raw pointer|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),
     ("operator", r"operator has no Python equivalent|free operator not mapped"),
     ("conversion", r"conversion (operator|skipped)"),
-    ("overload-collision", r"same Python signature as|ambiguous with another constructor|const twin of a less const overload"),
+    ("overload-collision", r"same Python signature as|ambiguous with another constructor|const twin of a less const overload|takes a derived class of"),
     ("namespace", r"anonymous namespace|namespace skipped"),
     ("unbound-type", r"unbound type|is not bound|not known"),
     ("incomplete", r"incomplete type"),

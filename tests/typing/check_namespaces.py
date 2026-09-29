@@ -26,3 +26,12 @@ sphere = Geom.Geom_SphericalSurface(gp.gp_Ax3(), 1.0)
 surf: GeomGridEval.SurfD1 = sphere.EvalD1(0.0, 0.0)                 # typedef alias of a nested class (using SurfD1 = Geom_Surface::ResD1)
 d1u: gp.gp_Vec = surf.D1U
 cd: GeomGridEval.CurveD1 = sphere.EvalD1(0.0, 0.0)                  # error: Geom_Surface.ResD1 is not Geom_Curve.ResD1
+
+# nanocct.AddOns.ShapeClean is a C++ namespace module of the hand-written AddOns (State.md 8.22): its stub used to land
+# at nanocct/ShapeClean.pyi, so everything here was Any and the error below went unreported
+from nanocct.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
+from nanocct.TopoDS import TopoDS_Shape
+
+unify = ShapeUpgrade_UnifySameDomain(TopoDS_Shape(), True, True, True)
+merged: TopoDS_Shape = unify.Shape()
+not_a_point: gp.gp_Pnt = unify.Shape()                              # error: a TopoDS_Shape is not a gp_Pnt
