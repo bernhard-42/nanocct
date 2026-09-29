@@ -5,6 +5,7 @@ extension), plus the generic NCollection container classes so that NCollection_A
 """
 from __future__ import annotations
 
+import ast
 import json
 import re
 import subprocess
@@ -95,6 +96,73 @@ def _unhashable_ignore(text: str) -> str:
     so the line needs the suppression typeshed itself puts on every unhashable class in builtins.pyi. ty accepts all
     the spellings; keeping stubgen's own avoids having to add a typing import to every stub that has one."""
     return re.sub(r"^(\s*__hash__: None = None)$", r"\1  # type: ignore[assignment]", text, flags=re.M)
+
+
+# State.md 8.22: nanobind's StubGen.expr_str renders an enum default by repr() -- it tests `int` before `enum.Enum`
+# (nanobind 3.1.0 stubgen.py:1211 and :1225, unchanged on master) and OCCT's enums are IntEnum -- so a default of an enum
+# from another module is a bare name that does not resolve there: `Continuity: nanocct.GeomAbs.GeomAbs_Shape =
+# GeomAbs_Shape.GeomAbs_C2` (215 mypy errors). The parameter's own annotation names the enum qualified.
+_ENUM_DEFAULT = re.compile(r"(: ([\w.]+) = )(\w+)\.(\w+)(?=[,)])")
+
+
+def _qualified_enum_defaults(text: str) -> str:
+    """`X: nanocct.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2` -> `... = nanocct.GeomAbs.GeomAbs_Shape.GeomAbs_C2`:
+    a default spelled `Enum.Member` goes through its parameter's annotation when that ends in the same enum name."""
+    def spell(m: re.Match) -> str:
+        annotation, enum, member = m.group(2), m.group(3), m.group(4)
+        if annotation != enum and annotation.rsplit(".", 1)[-1] == enum:
+            return f"{m.group(1)}{annotation}.{member}"
+        return m.group(0)
+    return _ENUM_DEFAULT.sub(spell, text)
+
+
+def _unshadowed_class_names(text: str, module: str) -> str:
+    """State.md 8.22: stubgen writes a class of the stub's own module by its bare name, and inside a class body that name
+    resolves to a member of the class if it has one -- `def ChangeEdgeCurve3DRep(self, ...) -> EdgeCurve3DRep` in
+    BRepGraphInc_Storage, which also has a method EdgeCurve3DRep, is the method, not the module's class (mypy: "Function
+    ... is not valid as a type"). Such a name in an annotation of that class body is spelled `<module>.<Name>`. A nested
+    class does not see the enclosing class's members (Python scoping), so each body is checked against its own."""
+    tree = ast.parse(text)
+    top = {n.name for n in tree.body if isinstance(n, ast.ClassDef)}
+    edits: list[tuple[int, int, int]] = []           # (line, start col, end col) of a bare name, UTF-8 offsets as ast gives them
+
+    def visit(cls: ast.ClassDef) -> None:
+        members = {n.name for n in cls.body if isinstance(n, ast.FunctionDef)} \
+            | {n.target.id for n in cls.body if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)} \
+            | {t.id for n in cls.body if isinstance(n, ast.Assign) for t in n.targets if isinstance(t, ast.Name)}
+        shadowed = members & top
+        for n in cls.body:
+            annotations: list[ast.expr | None] = []
+            if isinstance(n, ast.ClassDef):
+                visit(n)
+            elif isinstance(n, ast.FunctionDef):
+                a = n.args
+                annotations = [x.annotation for x in [*a.posonlyargs, *a.args, *a.kwonlyargs, a.vararg, a.kwarg] if x is not None]
+                annotations.append(n.returns)
+            elif isinstance(n, ast.AnnAssign):
+                annotations = [n.annotation]
+            for ann in annotations:
+                if ann is None:
+                    continue
+                for node in ast.walk(ann):
+                    if isinstance(node, ast.Name) and node.id in shadowed:
+                        edits.append((node.lineno, node.col_offset, node.end_col_offset))   # type: ignore[arg-type]
+
+    for n in tree.body:
+        if isinstance(n, ast.ClassDef):
+            visit(n)
+    if len(edits) == 0:
+        return text
+    lines = text.splitlines(keepends=True)
+    for line, start, end in sorted(edits, reverse=True):
+        raw = lines[line - 1].encode()
+        lines[line - 1] = (raw[:start] + f"{module}.".encode() + raw[start:end] + raw[end:]).decode()
+    return "".join(lines)
+
+
+def _module_of(stub: Path) -> str:
+    """src/nanocct/BRepGraphInc/__init__.pyi -> nanocct.BRepGraphInc"""
+    return ".".join(stub.relative_to(SRC.parent).with_suffix("").parts).removesuffix(".__init__")
 
 
 def _with_imports(text: str) -> str:
@@ -344,6 +412,7 @@ def main() -> int:
     header += ("float32 = float\nuchar = int\nuint = int\nulong = int\nulonglong = int\n\n")
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
+    text = _unshadowed_class_names(_qualified_enum_defaults(text), _module_of(nc))
     nc.write_text(_unhashable_ignore(_with_numpy_imports(header + "".join(generic_parts) + "\n" + text)))
     # OCCT signatures: the generic spelling instead of the concrete class (nanocct.NCollection.NCollection_Array1__double
     # -> nanocct.NCollection.NCollection_Array1[float]), so that a value typed NCollection_Array1[float] (what
@@ -352,7 +421,10 @@ def main() -> int:
     # concrete names (they are its class definitions).
     generic_of: dict[str, str] = {}
     for key, inst in templates.items():
-        if inst.get("skipped", False) or re.match(r"([\w:]+)<", key).group(1) not in BINDERS:
+        kind = re.match(r"([\w:]+)<", key).group(1)
+        # NCollection_Shared<T> derives from T and has no generic class (the NCollection_Shared name in the stub is the
+        # lookup object _NCollection_Shared_template): its instantiations keep their concrete names (State.md 8.22)
+        if inst.get("skipped", False) or kind not in BINDERS or BINDERS[kind].get("wraps") is True:
             continue
         generic = _generic_or_none(inst["name"], templates)
         if generic is not None:
@@ -382,6 +454,7 @@ def main() -> int:
             text = new
         else:
             raise RuntimeError(f"{stub}: the generic rewrite did not converge -- nesting deeper than expected")
+        text = _unshadowed_class_names(_qualified_enum_defaults(text), _module_of(stub))
         stub.write_text(_unhashable_ignore(_with_numpy_imports(_with_imports(text))))
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)

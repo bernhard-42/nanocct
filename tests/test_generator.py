@@ -1134,6 +1134,33 @@ def test_handwritten_namespaces_match_the_addons_submodules():
     assert declared == sorted(ns[0] for ns in HANDWRITTEN_NAMESPACES) and len(declared) > 0
 
 
+def test_stub_enum_defaults_are_spelled_through_the_annotation():
+    """State.md 8.22: nanobind's stubgen writes an enum default by repr() (int is tested before enum.Enum), a bare name
+    that does not resolve outside the enum's module; the parameter's annotation names the enum qualified."""
+    from generator.stubs import _qualified_enum_defaults
+    line = "    def f(self, C: nanocct.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2, F: Outer.Filter = Filter.Filter_None, n: int = 3) -> None: ..."
+    assert _qualified_enum_defaults(line) == ("    def f(self, C: nanocct.GeomAbs.GeomAbs_Shape = nanocct.GeomAbs.GeomAbs_Shape.GeomAbs_C2, "
+                                              "F: Outer.Filter = Outer.Filter.Filter_None, n: int = 3) -> None: ...")
+    same_module = "    def g(self, C: GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2, x: float = math.pi) -> None: ..."
+    assert _qualified_enum_defaults(same_module) == same_module          # already resolvable, and not an enum
+
+
+def test_stub_class_names_shadowed_by_a_member_are_qualified():
+    """State.md 8.22: in a class body a bare name resolves to the class's own member first -- BRepGraphInc_Storage has a
+    method EdgeCurve3DRep, so `-> EdgeCurve3DRep` was the method. Only such names, only in that class's body."""
+    from generator.stubs import _unshadowed_class_names
+    text = ("class EdgeCurve3DRep:\n    x: int\n\n"
+            "class Storage:\n    def EdgeCurve3DRep(self, i: int) -> EdgeCurve3DRep: ...\n"
+            "    def Change(self, i: int) -> EdgeCurve3DRep | None: ...\n"
+            "    class Inner:\n        def Get(self) -> EdgeCurve3DRep: ...\n\n"
+            "class Other:\n    def Get(self) -> EdgeCurve3DRep: ...\n")
+    out = _unshadowed_class_names(text, "nanocct.M")
+    assert "def EdgeCurve3DRep(self, i: int) -> nanocct.M.EdgeCurve3DRep: ..." in out
+    assert "def Change(self, i: int) -> nanocct.M.EdgeCurve3DRep | None: ..." in out
+    assert "        def Get(self) -> EdgeCurve3DRep: ..." in out           # a nested class does not see Storage's members
+    assert "class Other:\n    def Get(self) -> EdgeCurve3DRep: ..." in out   # no member of that name: unchanged
+
+
 def test_resolve_ctor_arities():
     def k(*types_defaults):
         return Constructor(params=[Param(name=f"p{i}", type=t, default=d, is_out=False) for i, (t, d) in enumerate(types_defaults)], doc="")
