@@ -484,3 +484,68 @@ def test_generic_subscription_errors():
         NCollection.NCollection_Map()
     three = NCollection.NCollection_IndexedDataMap[TopoDS_Shape, NCollection.NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]
     assert three is NCollection.NCollection_IndexedDataMap__TopoDS_Shape__NCollection_List__TopoDS_Shape__TopTools_ShapeMapHasher
+
+
+# ---------------------------------------------------------------------------------------------------------
+# The C++ scalars without a Python type of their own (State.md 8.20, option B / V3): five marker keys. Four C++ scalars
+# are spelled by their Python type (double -> float, int, bool, std::string -> str); float (32-bit), unsigned char,
+# unsigned int, unsigned long and unsigned long long were reachable only by the concrete name until then.
+
+def test_every_container_instantiation_is_reachable_by_the_generic_spelling():
+    """The invariant the markers establish: no bound container instantiation that NCollection_X[...] cannot name.
+    13 of 812 were unreachable before (all over the five scalars)."""
+    generics = {n: g for n, g in vars(NCollection).items() if isinstance(g, type) and "_instances" in vars(g)}
+    reachable = {c.__name__ for g in generics.values() for c in g._instances.values()}
+    concrete = [n for n in dir(NCollection) if "__" in n and not n.startswith("_") and n.split("__")[0] in generics]
+    assert len(concrete) > 800
+    assert [n for n in concrete if n not in reachable] == []
+
+
+@pytest.mark.parametrize("spelling, concrete", [
+    ("NCollection_Array1[float32]", "NCollection_Array1__float"),
+    ("NCollection_HArray1[float32]", "NCollection_HArray1__float"),
+    ("NCollection_HArray1[uchar]", "NCollection_HArray1__unsigned_char"),
+    ("NCollection_List[uchar]", "NCollection_List__unsigned_char"),
+    ("NCollection_DynamicArray[uint]", "NCollection_DynamicArray__unsigned_int"),
+    ("NCollection_LinearVector[ulonglong]", "NCollection_LinearVector__unsigned_long_long"),
+    ("NCollection_DataMap[TCollection.TCollection_ExtendedString, uchar]", "NCollection_DataMap__TCollection_ExtendedString__unsigned_char"),
+    ("NCollection_DataMap[uint, AIS.AIS_MouseGesture]", "NCollection_DataMap__unsigned_int__AIS_MouseGesture"),
+    ("NCollection_IndexedDataMap[ulong, Aspect.Aspect_Touch]", "NCollection_IndexedDataMap__unsigned_long__Aspect_Touch"),
+])
+def test_a_marker_names_the_cxx_scalar(spelling, concrete):
+    from nanocct import AIS, Aspect, TCollection
+    from nanocct.NCollection import float32, uchar, uint, ulong, ulonglong  # noqa: F401 (used by eval)
+    ns = {**vars(NCollection), "AIS": AIS, "Aspect": Aspect, "TCollection": TCollection}
+    assert eval(spelling, ns) is getattr(NCollection, concrete)
+
+
+def test_the_markers_are_python_types_and_the_plain_spelling_keeps_its_meaning():
+    """Keys only: each subclasses the Python type of its values. [float] stays C++ double, [int] C++ int."""
+    from nanocct.NCollection import float32, uchar, uint, ulong, ulonglong
+    assert issubclass(float32, float) and all(issubclass(m, int) for m in (uchar, uint, ulong, ulonglong))
+    assert NCollection.NCollection_Array1[float] is NCollection.NCollection_Array1__double
+    assert NCollection.NCollection_Array1[float32] is not NCollection.NCollection_Array1[float]
+
+
+def test_a_32bit_array_built_generically_is_what_OCCT_takes():
+    """The generic spelling is only a lookup; the bound class does the C++ work (rounding, the signature match)."""
+    from nanocct.NCollection import float32
+    from nanocct.Poly import Poly_Triangulation
+    normals = NCollection.NCollection_HArray1[float32](1, 9, 0.5)
+    normals.SetValue(1, 0.1)
+    assert normals.Value(1) == 0.10000000149011612                       # C++ float, not double
+    tri = Poly_Triangulation(3, 1, False, False)
+    tri.SetNormals(normals)
+    assert tri.HasNormals() is True
+    with pytest.raises(TypeError):
+        tri.SetNormals(NCollection.NCollection_HArray1[float](1, 9, 0.5))  # a double array is another class
+
+
+def test_a_cxx_name_in_the_brackets_names_the_python_spelling():
+    """NCollection_Array1['double'] used to say "not bound by nanocct", although Array1<double> is bound (as [float])."""
+    with pytest.raises(TypeError, match=r"Python types, not C\+\+ names -- float for C\+\+ double"):
+        NCollection.NCollection_Array1["double"]
+    with pytest.raises(TypeError, match=r"float32 for C\+\+ float"):
+        NCollection.NCollection_Array1["float"]
+    with pytest.raises(TypeError, match=r"Python types, not C\+\+ names$"):
+        NCollection.NCollection_Array1["gp_Pnt"]                          # no hint to give

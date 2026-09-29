@@ -21,7 +21,12 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src" / "nanocct"
 GENERIC = ROOT / "generator" / "stubs"
 
-_SCALARS = {"double": "float", "int": "int", "bool": "bool", "std::string": "str"}
+_SCALARS = {"double": "float", "int": "int", "bool": "bool", "std::string": "str",
+            # the C++ scalars without a Python type: the marker keys of nanocct/_templates.py, aliases of float/int in the
+            # NCollection stub (State.md 8.20, V3) -- NCollection_HArray1[float32] is NCollection_HArray1[float] statically
+            "float": "nanocct.NCollection.float32", "unsigned char": "nanocct.NCollection.uchar",
+            "unsigned int": "nanocct.NCollection.uint", "unsigned long": "nanocct.NCollection.ulong",
+            "unsigned long long": "nanocct.NCollection.ulonglong"}
 _MANIFEST: dict = json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())   # read once (was re-read per call)
 _PATHS: dict[str, str] = _MANIFEST.get("paths", {})
 _CLASSES: dict[str, str] = _MANIFEST["classes"]
@@ -335,6 +340,9 @@ def main() -> int:
               "_H = TypeVar('_H', default=object)\n"
               "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n"
               "_IH = TypeVar('_IH', default=object)\n\n")   # the nested Iterator classes: a nested class cannot reuse the outer class's type variables
+    # the marker keys (8.20): distinct classes at runtime, aliases here -- precision is not a Python type, the values are
+    # plain floats and ints, and every other C++ scalar parameter of the bindings is typed by its Python type the same way
+    header += ("float32 = float\nuchar = int\nuint = int\nulong = int\nulonglong = int\n\n")
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
     nc.write_text(_unhashable_ignore(_with_numpy_imports(header + "".join(generic_parts) + "\n" + text)))

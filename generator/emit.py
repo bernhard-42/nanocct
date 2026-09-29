@@ -1277,15 +1277,19 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
     accessor_block = ""
     if accessors is not None:
         own = f"nanocct.{package}"
-        modules = sorted({mod for table in accessors.values() for specs in table for mod, _ in specs} - {"builtins", own})
+        marker_mod = "nanocct._templates"     # float32, uchar, ...: imported by name, so they are this package's too (8.20)
+        modules = sorted({mod for table in accessors.values() for specs in table for mod, _ in specs} - {"builtins", own, marker_mod})
+        markers = sorted({qual for table in accessors.values() for specs in table for mod, qual in specs if mod == marker_mod})
         alias = {m: "_m_" + m.split(".", 1)[1].replace(".", "_") for m in modules}
 
         def spell(mod: str, qual: str) -> str:
-            return qual if mod in ("builtins", own) else f"{alias[mod]}.{qual}"
+            return qual if mod in ("builtins", own, marker_mod) else f"{alias[mod]}.{qual}"
 
         parts = ["", "# NCollection_Xxx[T] -> the bound class (Design.md 6a): one generic class per template, keyed by the",
                  "# element types as Python passes them to __class_getitem__ (the type, or a tuple for several)",
                  "from nanocct._templates import Generic as _Generic  # noqa: E402"]
+        if len(markers) > 0:
+            parts.append(f"from nanocct._templates import {', '.join(markers)}  # noqa: E402,F401  (C++ scalars without a Python type, State.md 8.20)")
         parts += [f"import {m} as {alias[m]}  # noqa: E402" for m in modules]
         for tmpl in sorted(accessors):
             parts += ["", "", f"class {tmpl}(_Generic):", "    _instances = {"]

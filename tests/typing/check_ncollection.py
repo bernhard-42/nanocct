@@ -99,3 +99,18 @@ concrete_ids: NCollection.NCollection_DataMap[TopoDS.TopoDS_Shape, int, TopTools
 seen.Add(1)                   # error: int is not TopoDS_Shape
 bad_id: str = ids.Find(first_shape)   # error: int is not str
 default_hasher: NCollection.NCollection_Map[TopoDS.TopoDS_Shape] = seen   # error: the default hasher is another type
+
+# ---- the C++ scalars without a Python type (8.20): marker keys, aliases of float/int in the stubs (precision is no type)
+from nanocct.NCollection import float32, uchar, uint                              # noqa: E402
+from nanocct import Poly                                                          # noqa: E402
+normals = NCollection.NCollection_HArray1[float32](1, 3, 0.0)
+normals.SetValue(1, 0.1)                                                          # a plain Python float
+nv: float = normals.Value(1)
+Poly.Poly_Triangulation(3, 1, False, False).SetNormals(normals)                   # OCCT's signature, spelled generically
+concrete_normals: NCollection.NCollection_HArray1[float32] = NCollection.NCollection_HArray1__float(1, 3)
+flags = NCollection.NCollection_HArray1[uchar](1, 2, 0)
+fv: int = flags.Value(1)
+ids32 = NCollection.NCollection_DynamicArray[uint]()
+ids32.Append(7)
+normals.SetValue(1, "x")      # error: str is not float
+flag_str: str = flags.Value(1)   # error: int is not str

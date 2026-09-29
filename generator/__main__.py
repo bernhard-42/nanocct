@@ -137,7 +137,11 @@ def _package_order(irs: list, known: dict[str, str]) -> list[str]:
 
 _paths: dict[str, str] = {}       # manifest "paths", set by main() for _element_spec
 _SCALARS = {"double": ("builtins", "float"), "int": ("builtins", "int"), "bool": ("builtins", "bool"),
-            "std::string": ("builtins", "str")}    # other C++ scalars: mangled name only (float, size_t, char, ...)
+            "std::string": ("builtins", "str"),
+            # the C++ scalars without a Python type of their own: marker keys (State.md 8.20, nanocct/_templates.py)
+            "float": ("nanocct._templates", "float32"), "unsigned char": ("nanocct._templates", "uchar"),
+            "unsigned int": ("nanocct._templates", "uint"), "unsigned long": ("nanocct._templates", "ulong"),
+            "unsigned long long": ("nanocct._templates", "ulonglong")}    # other C++ scalars (char, size_t, ...): no key
 
 
 def _element_spec(arg: str, known: dict[str, str], templates: dict[str, dict]) -> tuple[str, str] | None:
