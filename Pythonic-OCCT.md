@@ -1,6 +1,6 @@
 # Pythonic addition to the OCCT bindings
 
-## NCollections mapped to Python generics
+## NCollections
 
 **Design: [2a Naming conventions](Design.md#2a-naming-conventions), [6a NCollection containers](Design.md#6a-ncollection-containers-hand-written-binders)**
 
@@ -399,3 +399,38 @@ In [10]: view = np.asarray(tri.InternalTriangles())
     ...: tri.Triangle(1).Get()
 Out[10]: (1, 1, 1)
 ```
+
+## Mutable primitive references
+
+**Binding rule: R-REF-PRIMITIVE ([Design 2c](Design.md#2c-python-additions))**
+
+Many OCCT settings are a method that returns a writable reference to a number, e.g. `int& ShapeFix_Face::FixWireMode()`. In C++ the value is set by assigning to the result, `face.FixWireMode() = 0;`. Python has no references to numbers, so nanocct keeps the getter under its OCCT name and adds a setter: `Set<Name>`, with a `Change` prefix dropped (`ChangeValue` → `SetValue`), unless OCCT already has a method of that name. Its docstring starts with "Python addition".
+
+```python
+In [1]: from nanocct.ShapeFix import ShapeFix_Face
+   ...: from nanocct.math import math_Matrix
+   ...: 
+   ...: face = ShapeFix_Face()
+   ...: face.FixWireMode()
+Out[1]: -1
+
+In [2]: face.SetFixWireMode(0)
+   ...: face.FixWireMode()
+Out[2]: 0
+```
+
+Assigning the getter's result to a variable only changes the variable: `x = face.FixWireMode(); x = 1` leaves the face untouched.
+
+The same rule covers references with arguments, like `double& math_Matrix::Value(int, int)`, and the C++ operators `()` and `[]`: their setter is `__setitem__`, with a tuple for several indices.
+
+```python
+In [3]: m = math_Matrix(1, 2, 1, 2, 0.0)
+   ...: m.SetValue(1, 2, 5.0)
+   ...: m.Value(1, 2)
+Out[3]: 5.0
+
+In [4]: m[(2, 1)] = 7.0
+   ...: m(2, 1), m.Value(2, 1)
+Out[4]: (7.0, 7.0)
+```
+
