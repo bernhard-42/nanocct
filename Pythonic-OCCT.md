@@ -434,3 +434,54 @@ In [4]: m[(2, 1)] = 7.0
 Out[4]: (7.0, 7.0)
 ```
 
+## Operators
+
+**Binding rules: R-OPERATOR, R-IOP, R-FREE-OP, R-STR ([Design 2c](Design.md#2c-python-additions))**
+
+C++ operators become the matching Python special methods, and they keep OCCT's meaning:
+
+| Types | C++ | Python | OCCT's meaning |
+|---|---|---|---|
+| `gp_Vec v, v1, v2` | `v1 + v2`, `v * 2.0`, `-v` | `v1 + v2`, `v * 2.0`, `-v` | `Added`, `Multiplied`, `Reversed` (a `gp_Vec`) |
+| `gp_Vec v` | `2.0 * v` (a free `operator*(double, const gp_Vec&)`) | `2.0 * v` | `Multiplied` (a `gp_Vec`) |
+| `gp_Vec v1, v2` | `v1 * v2` | `v1 * v2` | `Dot`: a `double` / `float`, not an element-wise product |
+| `gp_Vec v1, v2` | `v1 ^ v2` | `v1 ^ v2` | `Crossed` (a `gp_Vec`) |
+| `gp_Vec v1, v2` | `v1 += v2` (returns `void`) | `v1 += v2` | `Add`: changes `v1`, which stays the same object |
+| `TopoDS_Shape s1, s2` | `s1 == s2` | `s1 == s2` | `IsEqual`: the same shape, location and orientation, not the same geometry |
+| `math_Matrix m`, `NCollection_Array1<double> a` | `m(1, 1)`, `a[i]` | `m(1, 1)`, `a[i]` | OCCT's `operator()`, `operator[]` |
+| `math_Matrix m` | `std::cout << m` | `str(m)`, `print(m)` | OCCT's own text; `repr(m)` stays Python's default |
+
+```python
+In [1]: from nanocct.gp import gp_Pnt, gp_Vec
+   ...: from nanocct.math import math_Matrix
+   ...: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: 
+   ...: v1, v2 = gp_Vec(1, 2, 3), gp_Vec(4, 5, 6)
+   ...: (v1 + v2).Coord(), (2.0 * v1).Coord()
+Out[1]: ((5.0, 7.0, 9.0), (2.0, 4.0, 6.0))
+
+In [2]: v1 * v2, (v1 ^ v2).Coord()
+Out[2]: (32.0, (-3.0, 6.0, -3.0))
+
+In [3]: v = gp_Vec(1, 1, 1)
+   ...: before = id(v)
+   ...: v += v2
+   ...: v.Coord(), id(v) == before
+Out[3]: ((5.0, 6.0, 7.0), True)
+
+In [4]: box = BRepPrimAPI_MakeBox(1, 1, 1).Shape()
+   ...: box == box, box == BRepPrimAPI_MakeBox(1, 1, 1).Shape()
+Out[4]: (True, False)
+
+In [5]: str(math_Matrix(1, 2, 1, 2, 1.5)).splitlines()[0]
+Out[5]: 'math_Matrix of RowNumber = 2 and ColNumber = 2'
+```
+
+A class without an OCCT `operator==` compares by identity, as any Python object does. `gp_Pnt` is one of them; OCCT compares points with a tolerance:
+
+```python
+In [6]: p1, p2 = gp_Pnt(1, 2, 3), gp_Pnt(1, 2, 3)
+   ...: p1 == p2, p1.IsEqual(p2, 1e-7)
+Out[6]: (False, True)
+```
+
