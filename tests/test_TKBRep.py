@@ -174,3 +174,30 @@ def test_unscoped_enumerators_are_exported_to_the_enclosing_scope():
     assert int(TopAbs.TopAbs_FACE) == 4
     assert TopoDS.TopoDS_TShape.Bits_Reserved is TopoDS.TopoDS_TShape.BitLayout.Bits_Reserved   # nested unscoped enum -> class attribute
     assert gp.gp_Dir.D.NZ is not None and not hasattr(gp.gp_Dir, "NZ")                        # scoped enum class stays nested
+
+
+def test_shape_comparisons_are_OCCTs_and_the_operators_map_to_them():
+    """IsPartner, IsSame, IsEqual, IsNotEqual are OCCT's own methods, and `==`/`!=` are OCCT's operator==/!=, which are
+    IsEqual/IsNotEqual (TopoDS_Shape.hxx:282, :287). A shape is (TShape, Location, Orientation): IsPartner compares the
+    TShape, IsSame adds the Location, IsEqual the Orientation. std::hash<TopoDS_Shape> hashes TShape and Location, so
+    equal shapes hash equal. Python and C++ must answer every one of these alike."""
+    c, _, e = _compound()
+    ex = TopExp.TopExp_Explorer(c, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE)
+    fetched = ex.Current()                                         # a new Python object and C++ copy, the same edge
+    t = gp.gp_Trsf()
+    t.SetTranslation(gp.gp_Vec(5.0, 0.0, 0.0))
+    _, _, other = _compound()                                      # built the same way: its own TShape
+    cases = [
+        # (shape compared with e,        IsPartner, IsSame, IsEqual)
+        (fetched,                         True,      True,   True),
+        (e.Reversed(),                    True,      True,   False),
+        (e.Moved(TopLoc.TopLoc_Location(t)), True,   False,  False),
+        (other,                           False,     False,  False),
+    ]
+    for g, partner, same, equal in cases:
+        assert g is not e
+        assert (g.IsPartner(e), g.IsSame(e), g.IsEqual(e)) == (partner, same, equal)
+        assert g.IsNotEqual(e) is (not equal)
+        assert (g == e) is g.IsEqual(e) and (g != e) is g.IsNotEqual(e)       # the operators are OCCT's methods
+        if same:
+            assert hash(g) == hash(e)                                  # the hash ignores orientation only

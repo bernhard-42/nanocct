@@ -25,61 +25,61 @@ from nanocct.NCollection import NCollection_Array1
 b = NCollection_Array1[gp_Dir](1, 3)
 ```
 
-1) The two constructs are the same type
+1. The two constructs are the same type
 
-    ```python
-    In [1]: NCollection_Array1__gp_Dir is NCollection_Array1[gp_Dir]
-    Out[1]: True
-    ```
+   ```python
+   In[1]: NCollection_Array1__gp_Dir is NCollection_Array1[gp_Dir]
+   Out[1]: True
+   ```
 
-2) Different element types are different classes
+2. Different element types are different classes
 
-    ```python
-    In [2]: NCollection_Array1[gp_Dir] is NCollection_Array1[int]
-    Out[2]: False
-    ```
+   ```python
+   In[2]: NCollection_Array1[gp_Dir] is NCollection_Array1[int]
+   Out[2]: False
+   ```
 
-3) `isinstance` can be used with both types
+3. `isinstance` can be used with both types
 
-    ```python
-    In [3]: isinstance(a, NCollection_Array1)
-    Out[3]: True
+   ```python
+   In[3]: isinstance(a, NCollection_Array1)
+   Out[3]: True
 
-    In [4]: isinstance(b, NCollection_Array1)
-    Out[4]: True
+   In[4]: isinstance(b, NCollection_Array1)
+   Out[4]: True
 
-    In [5]: isinstance(a, NCollection_Array1__gp_Dir)
-    Out[5]: True
+   In[5]: isinstance(a, NCollection_Array1__gp_Dir)
+   Out[5]: True
 
-    In [6]: isinstance(b, NCollection_Array1__gp_Dir)
-    Out[6]: True
+   In[6]: isinstance(b, NCollection_Array1__gp_Dir)
+   Out[6]: True
 
-    In [7]: type(a) is type(b)
-    Out[7]: True
-    ```
+   In[7]: type(a) is type(b)
+   Out[7]: True
+   ```
 
-4) There is a minimal overhead using generic types:
+4. There is a minimal overhead using generic types:
 
-    ```python
-    In [8]: %timeit NCollection_Array1__gp_Dir(1, 3)
-    42.9 ns ± 0.575 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+   ```python
+   In [8]: %timeit NCollection_Array1__gp_Dir(1, 3)
+   42.9 ns ± 0.575 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
 
-    In [9]: %timeit NCollection_Array1[gp_Dir](1, 3)
-    79.2 ns ± 1.84 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
-    ```
+   In [9]: %timeit NCollection_Array1[gp_Dir](1, 3)
+   79.2 ns ± 1.84 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+   ```
 
-    Typically, the NCollections don't appear in large loops where the nanoseconds could pile up, but are created once and then filled in a loop. Since both statements create the same type at runtime, accessing the NCollections takes the same time.
+   Typically, the NCollections don't appear in large loops where the nanoseconds could pile up, but are created once and then filled in a loop. Since both statements create the same type at runtime, accessing the NCollections takes the same time.
 
 ### C++ scalar types
 
 A Python type stands for a C++ template argument: `float` for C++ `double`, `int`, `bool`, and `str` for `std::string`. Python has no own type for five more C++ scalars used in OCCT 8, so `nanocct.NCollection` exports a marker for each:
 
-| Marker | C++ type |
-|---|---|
-| `float32` | `float` (32-bit) |
-| `uchar` | `unsigned char` |
-| `uint` | `unsigned int` |
-| `ulong` | `unsigned long` |
+| Marker      | C++ type             |
+| ----------- | -------------------- |
+| `float32`   | `float` (32-bit)     |
+| `uchar`     | `unsigned char`      |
+| `uint`      | `unsigned int`       |
+| `ulong`     | `unsigned long`      |
 | `ulonglong` | `unsigned long long` |
 
 With them, every NCollection class of nanocct can be spelled generically:
@@ -119,15 +119,15 @@ The nanocct generator gives e.g. `NCollection_Array1` and `NCollection_Array2` n
 In [1]: from nanocct.NCollection import NCollection_Array1
    ...: from nanocct.gp import gp_Vec
    ...: import numpy as np
-   ...: 
+   ...:
    ...: a = NCollection_Array1[gp_Vec](1, 3)
-   ...: 
+   ...:
    ...: a.SetValue(1, gp_Vec(1, 0, 0))
    ...: a.SetValue(2, gp_Vec(0, 1, 0))
    ...: a.SetValue(3, gp_Vec(0, 0, 1))
 
 In [2]: np.asarray(a)
-Out[2]: 
+Out[2]:
 array([[1., 0., 0.],
        [0., 1., 0.],
        [0., 0., 1.]])
@@ -176,43 +176,42 @@ In [7]: %timeit a[3]
 
 **Note:** nanocct keeps OCCT's C++ contract for index access and adds no checks of its own. Where OCCT checks the range, an out-of-range index raises `Standard_OutOfRange` (`a[0]` above). Where OCCT does not, it behaves as in C++: `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]`, or `NCollection_Mat4.GetValue`, read whatever memory lies past the end, and can crash the Python interpreter.
 
-
 ### Iterating over NCollections
 
 - 100 `float` element `NCollection`
 
-   ```python
-   In [1]: import numpy as np
-      ...: from nanocct.NCollection import NCollection_Array1
-      ...: 
-      ...: N = 100
-      ...: a = NCollection_Array1[float](1, N)
-      ...: for i in range(1, N+1):
-      ...:     a.SetValue(i, i * 10.0)
-      ...: 
+  ```python
+  In [1]: import numpy as np
+     ...: from nanocct.NCollection import NCollection_Array1
+     ...:
+     ...: N = 100
+     ...: a = NCollection_Array1[float](1, N)
+     ...: for i in range(1, N+1):
+     ...:     a.SetValue(i, i * 10.0)
+     ...:
 
-   In [2]: %timeit [a.Value(i) for i in range(1, N + 1)]
-   2.06 μs ± 14.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+  In [2]: %timeit [a.Value(i) for i in range(1, N + 1)]
+  2.06 μs ± 14.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
-   In [3]: %timeit list(a)
-   1.17 μs ± 11.2 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
-   ```
+  In [3]: %timeit list(a)
+  1.17 μs ± 11.2 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+  ```
 
 - 10 `float` element `NCollection`
 
-   ```python
-   In [4]: N = 10
-      ...: a = NCollection_Array1[float](1, N)
-      ...: for i in range(1, N+1):
-      ...:     a.SetValue(i, i * 10.0)
-      ...: 
+  ```python
+  In [4]: N = 10
+     ...: a = NCollection_Array1[float](1, N)
+     ...: for i in range(1, N+1):
+     ...:     a.SetValue(i, i * 10.0)
+     ...:
 
-   In [5]: %timeit [a.Value(i) for i in range(1, N + 1)]
-   248 ns ± 2.55 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+  In [5]: %timeit [a.Value(i) for i in range(1, N + 1)]
+  248 ns ± 2.55 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
-   In [6]: %timeit list(a)
-   221 ns ± 2.69 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
-   ```
+  In [6]: %timeit list(a)
+  221 ns ± 2.69 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+  ```
 
 Below 7 or 8 elements, `list(a)` gets slightly slower due to the creating the iterator.
 
@@ -223,7 +222,7 @@ Like in C++, a new array of a scalar type (`float`, `int`, `bool`, `float32`, �
 ```python
 In [1]: from nanocct.NCollection import NCollection_Array1, NCollection_HArray1
    ...: from nanocct.gp import gp_Vec
-   ...: 
+   ...:
    ...: a = NCollection_Array1[float](1, 3)
    ...: a.Init(0.0)
    ...: list(a)
@@ -253,16 +252,16 @@ Collections without a packed element type (an `NCollection_Array1` of `TopoDS_Sh
 In [1]: from nanocct.NCollection import NCollection_Array1
    ...: from nanocct.gp import gp_Vec
    ...: import numpy as np
-   ...: 
+   ...:
    ...: a = NCollection_Array1[gp_Vec](1, 3)
-   ...: 
+   ...:
    ...: a.SetValue(1, gp_Vec(1, 0, 0))
    ...: a.SetValue(2, gp_Vec(0, 1, 0))
    ...: a.SetValue(3, gp_Vec(0, 0, 1))
 
 In [2]: v = np.asarray(a)
    ...: v
-Out[2]: 
+Out[2]:
 array([[1., 0., 0.],
        [0., 1., 0.],
        [0., 0., 1.]])
@@ -283,13 +282,13 @@ Let's make a little benchmark
 In [1]: from nanocct.NCollection import NCollection_Array1
    ...: from nanocct.gp import gp_Vec
    ...: import numpy as np
-   ...: 
+   ...:
    ...: N = 1000000
    ...: a = NCollection_Array1[gp_Vec](1, N)
-   ...: 
+   ...:
    ...: for i in range(1, N + 1):
    ...:     a.SetValue(i, gp_Vec(i, i/10, i/100))
-   ...: 
+   ...:
 ```
 
 To access the vectors as python tuples, one uses:
@@ -316,7 +315,7 @@ Out[5]: [(1.0, 0.1, 0.01), (2.0, 0.2, 0.02), (3.0, 0.3, 0.03)]
 
 In [6]: q = np.asarray(a)
    ...: q[0:3]
-Out[6]: 
+Out[6]:
 array([[1.  , 0.1 , 0.01],
        [2.  , 0.2 , 0.02],
        [3.  , 0.3 , 0.03]])
@@ -335,7 +334,7 @@ In [1]: import numpy as np
    ...: from nanocct.TopExp import TopExp_Explorer
    ...: from nanocct.TopLoc import TopLoc_Location
    ...: import nanocct.TopoDS as TopoDS
-   ...: 
+   ...:
    ...: box = BRepPrimAPI_MakeBox(10.0, 20.0, 30.0).Shape()
    ...: BRepMesh_IncrementalMesh(box, 0.1)
    ...: face = TopoDS.Face(TopExp_Explorer(box, TopAbs_ShapeEnum.TopAbs_FACE).Current())
@@ -346,7 +345,7 @@ Out[2]: (4, 2)
 
 In [3]: nodes = np.asarray(tri.InternalNodes())
    ...: nodes
-Out[3]: 
+Out[3]:
 array([[ 0.,  0.,  0.],
        [ 0.,  0., 30.],
        [ 0., 20.,  0.],
@@ -354,7 +353,7 @@ array([[ 0.,  0.,  0.],
 
 In [4]: tris = np.asarray(tri.InternalTriangles())
    ...: tris
-Out[4]: 
+Out[4]:
 array([[2, 1, 3],
        [2, 3, 4]], dtype=int32)
 ```
@@ -363,7 +362,7 @@ The triangle indices are OCCT's and therefore **1-based**. To correlate them cor
 
 ```python
 In [5]: nodes[tris - 1][0]  # align to the 1-based C++ indices
-Out[5]: 
+Out[5]:
 array([[ 0.,  0., 30.],
        [ 0.,  0.,  0.],
        [ 0., 20.,  0.]])
@@ -376,7 +375,7 @@ In [6]: tri.HasUVNodes(), tri.HasNormals()
 Out[6]: (True, False)
 
 In [7]: np.asarray(tri.InternalUVNodes())
-Out[7]: 
+Out[7]:
 array([[  0.,   0.],
        [ 30.,   0.],
        [  0., -20.],
@@ -409,7 +408,7 @@ Many OCCT settings are a method that returns a writable reference to a number, e
 ```python
 In [1]: from nanocct.ShapeFix import ShapeFix_Face
    ...: from nanocct.math import math_Matrix
-   ...: 
+   ...:
    ...: face = ShapeFix_Face()
    ...: face.FixWireMode()
 Out[1]: -1
@@ -440,22 +439,22 @@ Out[4]: (7.0, 7.0)
 
 C++ operators become the matching Python special methods, and they keep OCCT's meaning:
 
-| Types | C++ | Python | OCCT's meaning |
-|---|---|---|---|
-| `gp_Vec v, v1, v2` | `v1 + v2`, `v * 2.0`, `-v` | `v1 + v2`, `v * 2.0`, `-v` | `Added`, `Multiplied`, `Reversed` (a `gp_Vec`) |
-| `gp_Vec v` | `2.0 * v` (a free `operator*(double, const gp_Vec&)`) | `2.0 * v` | `Multiplied` (a `gp_Vec`) |
-| `gp_Vec v1, v2` | `v1 * v2` | `v1 * v2` | `Dot`: a `double` / `float`, not an element-wise product |
-| `gp_Vec v1, v2` | `v1 ^ v2` | `v1 ^ v2` | `Crossed` (a `gp_Vec`) |
-| `gp_Vec v1, v2` | `v1 += v2` (returns `void`) | `v1 += v2` | `Add`: changes `v1`, which stays the same object |
-| `TopoDS_Shape s1, s2` | `s1 == s2` | `s1 == s2` | `IsEqual`: the same shape, location and orientation, not the same geometry |
-| `math_Matrix m`, `NCollection_Array1<double> a` | `m(1, 1)`, `a[i]` | `m(1, 1)`, `a[i]` | OCCT's `operator()`, `operator[]` |
-| `math_Matrix m` | `std::cout << m` | `str(m)`, `print(m)` | OCCT's own text; `repr(m)` stays Python's default |
+| Types                                           | C++                                                   | Python                     | OCCT's meaning                                                                                                           |
+| ----------------------------------------------- | ----------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `gp_Vec v, v1, v2`                              | `v1 + v2`, `v * 2.0`, `-v`                            | `v1 + v2`, `v * 2.0`, `-v` | `Added`, `Multiplied`, `Reversed` (a `gp_Vec`)                                                                           |
+| `gp_Vec v`                                      | `2.0 * v` (a free `operator*(double, const gp_Vec&)`) | `2.0 * v`                  | `Multiplied` (a `gp_Vec`)                                                                                                |
+| `gp_Vec v1, v2`                                 | `v1 * v2`                                             | `v1 * v2`                  | `Dot`: a `double` / `float`, not an element-wise product                                                                 |
+| `gp_Vec v1, v2`                                 | `v1 ^ v2`                                             | `v1 ^ v2`                  | `Crossed` (a `gp_Vec`)                                                                                                   |
+| `gp_Vec v1, v2`                                 | `v1 += v2` (returns `void`)                           | `v1 += v2`                 | `Add`: changes `v1`, which stays the same object                                                                         |
+| `TopoDS_Shape s1, s2`                           | `s1 == s2`                                            | `s1 == s2`                 | `IsEqual`: the same shape, location and orientation, not the same geometry, see [Equality](#equality-in-occt-and-python) |
+| `math_Matrix m`, `NCollection_Array1<double> a` | `m(1, 1)`, `a[i]`                                     | `m(1, 1)`, `a[i]`          | OCCT's `operator()`, `operator[]`                                                                                        |
+| `math_Matrix m`                                 | `std::cout << m`                                      | `str(m)`, `print(m)`       | OCCT's own text; `repr(m)` stays Python's default                                                                        |
 
 ```python
 In [1]: from nanocct.gp import gp_Pnt, gp_Vec
    ...: from nanocct.math import math_Matrix
    ...: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
-   ...: 
+   ...:
    ...: v1, v2 = gp_Vec(1, 2, 3), gp_Vec(4, 5, 6)
    ...: (v1 + v2).Coord(), (2.0 * v1).Coord()
 Out[1]: ((5.0, 7.0, 9.0), (2.0, 4.0, 6.0))
@@ -485,3 +484,68 @@ In [6]: p1, p2 = gp_Pnt(1, 2, 3), gp_Pnt(1, 2, 3)
 Out[6]: (False, True)
 ```
 
+## Equality in OCCT and Python
+
+### Python level
+
+| Term     | Test      | Meaning                                                                                                                                                |
+| -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| identity | `a is b`  | the same _Python object_. nanocct creates a new Python object for every value it returns, so a face fetched twice is two objects: `f2 is f` → `False`. |
+| equality | `a == b`  | whatever the class's `__eq__` says. A class without `__eq__` falls back to identity.                                                                   |
+| hash     | `hash(a)` | a dict or set first compares hashes, then `==`. Python requires that `a == b` implies `hash(a) == hash(b)`.                                            |
+
+### OCCT, for shapes
+
+A `TopoDS_Shape` is a triple: a pointer to the underlying topology (the `TShape`), a `Location` (a placement) and an `Orientation`.
+
+| Term                                          | Compares                                                                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `IsPartner`                                   | the same `TShape`                                                                          |
+| `IsSame`                                      | the same `TShape` and `Location`; orientation may differ                                   |
+| `IsEqual` = `operator==`                      | the same `TShape`, `Location` **and** `Orientation`                                        |
+| `std::hash<TopoDS_Shape>`                     | `TShape` pointer and `Location`, _not_ orientation, so it fits both `IsSame` and `IsEqual` |
+| `TopTools_ShapeMapHasher` (OCCT's shape maps) | that hash, with **`IsSame`** as equality                                                   |
+
+### C++ and Python side by side
+
+Everything except `is` is OCCT's own API, under the same name in both languages; the operators call OCCT's methods.
+
+| Name           | C++ (OCCT)                                                                                    | Python (nanocct)                                                                                                                                                                                                      |
+| -------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `is`           | — (closest: comparing addresses, `&a == &b`)                                                  | Python's own operator: the same Python object                                                                                                                                                                         |
+| `IsPartner`    | `TopoDS_Shape::IsPartner`                                                                     | `f.IsPartner(g)`                                                                                                                                                                                                      |
+| `IsSame`       | `TopoDS_Shape::IsSame`                                                                        | `f.IsSame(g)`                                                                                                                                                                                                         |
+| `IsEqual`      | `TopoDS_Shape::IsEqual`                                                                       | `f.IsEqual(g)`                                                                                                                                                                                                        |
+| `IsNotEqual`   | `TopoDS_Shape::IsNotEqual`                                                                    | `f.IsNotEqual(g)`                                                                                                                                                                                                     |
+| `==`           | `operator==`, defined as `IsEqual`                                                            | `f == g`, which calls `IsEqual`                                                                                                                                                                                       |
+| `!=`           | `operator!=`, defined as `IsNotEqual`                                                         | `f != g`, which calls `IsNotEqual`                                                                                                                                                                                    |
+| hash           | `std::hash<TopoDS_Shape>`, used by `std::unordered_*` containers, an unsigned 64-bit `size_t` | `hash(f)`: the same 64-bit value, read as a signed integer (a value ≥ 2⁶³ shows as negative; CPython reports the one value −1 as −2). It hashes the `TShape` pointer, so it changes from run to run in both languages |
+| map membership | `Contains` of an OCCT map with `TopTools_ShapeMapHasher`                                      | `m.Contains(g)`                                                                                                                                                                                                       |
+
+Compared with face `f` of a box:
+
+| `g`, compared with `f`              | `g is f` | `IsPartner` | `IsSame` | `IsEqual`/`==` | same hash |
+| ----------------------------------- | -------- | ----------- | -------- | -------------- | --------- |
+| the same face, fetched again        | False    | True        | True     | True           | True      |
+| `f.Reversed()`                      | False    | True        | True     | False          | True      |
+| `f.Moved(loc)`                      | False    | True        | False    | False          | False     |
+| the face of a second, identical box | False    | False       | False    | False          | False     |
+
+### Shapes as dict keys and in OCCT maps
+
+A Python dict and OCCT's shape maps (`NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]` and the other `TopTools_ShapeMapHasher` maps) both look up in two steps, first the hash, then an equality test, but not the same one:
+
+| Step        | Python dict (`g in d`)                                                  | OCCT map (`m.Contains(g)`)                                 |
+| ----------- | ----------------------------------------------------------------------- | ---------------------------------------------------------- |
+| 1. hash     | `std::hash<TopoDS_Shape>`: `TShape` and `Location`, not the orientation | the same hash (`TopTools_ShapeMapHasher` uses `std::hash`) |
+| 2. equality | `==`, i.e. `IsEqual`: the orientation counts                            | `IsSame`: the orientation does not count                   |
+
+So a dict finds `g` if `g == f`, and an OCCT map finds it if `g.IsSame(f)`: a reversed face is a different dict key but the same map entry. A moved face changes the `Location`, which is part of the hash, so neither finds it.
+
+### OCCT, for points
+
+| Term                     | Compares                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| `gp_Pnt.IsEqual(p, tol)` | distance ≤ `tol`                                                                     |
+| `std::equal_to<gp_Pnt>`  | each coordinate within `Epsilon(x)`, about one unit in the last place (`gp_Pnt.hxx`) |
+| `std::hash<gp_Pnt>`      | the exact bits of the three doubles                                                  |
