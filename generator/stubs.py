@@ -5,7 +5,6 @@ extension), plus the generic NCollection container classes so that NCollection_A
 """
 from __future__ import annotations
 
-import ast
 import json
 import re
 import subprocess
@@ -335,7 +334,7 @@ def main() -> int:
     # is the default hasher and `NCollection_Map[K, H]` a custom one -- two different bound classes, and two
     # different types (a default of `object`, measured in mypy 2.3.1 and ty 0.0.84, Python 3.12 and 3.14 targets).
     header = ("from typing import Generic, Self, overload\nfrom typing_extensions import TypeVar\n"
-              "from collections.abc import Iterator\n"
+              "import collections.abc\nfrom collections.abc import Iterator\n"   # __iter__ says collections.abc.Iterator: a nested OCCT Iterator class shadows the bare name
               "import nanocct.Standard\n\n_T = TypeVar('_T')\n_K = TypeVar('_K')\n_V = TypeVar('_V')\n"
               "_H = TypeVar('_H', default=object)\n"
               "_IT = TypeVar('_IT')\n_IK = TypeVar('_IK')\n_IV = TypeVar('_IV')\n"

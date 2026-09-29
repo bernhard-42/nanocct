@@ -114,3 +114,8 @@ ids32 = NCollection.NCollection_DynamicArray[uint]()
 ids32.Append(7)
 normals.SetValue(1, "x")      # error: str is not float
 flag_str: str = flags.Value(1)   # error: int is not str
+
+# ---- __iter__ is Python's iterator, not the nested OCCT Iterator class of the same name (it shadowed the bare name)
+occt_map = NCollection.NCollection_Map[int]()
+first_key: int = next(iter(occt_map))
+iter(occt_map).More()         # error: a Python iterator has no More()
