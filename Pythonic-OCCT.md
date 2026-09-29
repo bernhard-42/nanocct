@@ -235,6 +235,86 @@ In [3]: [v.Coord() for v in NCollection_Array1[gp_Vec](1, 2)]
 Out[3]: [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
 ```
 
+## Iterating over OCCT iterators
+
+**Binding rule: R-ITER ([Design 2c](Design.md#2c-python-additions))**
+
+Every OCCT class with `More()`, `Next()` and a `Current()` or `Value()` is a Python iterable: `TopExp_Explorer`, `TopoDS_Iterator`, `BRepTools_WireExplorer` and the other OCCT iterators, and the `Iterator` classes of the NCollections. A `for` loop runs OCCT's own `More()`/`Next()` loop and yields `Current()` (or `Value()`).
+
+```python
+In [1]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct.TopExp import TopExp, TopExp_Explorer
+   ...: from nanocct.TopAbs import TopAbs_ShapeEnum
+   ...: from nanocct.TopoDS import TopoDS_Iterator, TopoDS_Shape
+   ...: from nanocct.TopTools import TopTools_ShapeMapHasher
+   ...: from nanocct.NCollection import NCollection_IndexedMap
+   ...: 
+   ...: FACE, EDGE = TopAbs_ShapeEnum.TopAbs_FACE, TopAbs_ShapeEnum.TopAbs_EDGE
+   ...: box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
+
+In [2]: [f.ShapeType().name for f in TopExp_Explorer(box, FACE)]
+Out[2]: ['TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE']
+
+In [3]: [c.ShapeType().name for c in TopoDS_Iterator(box)]
+Out[3]: ['TopAbs_SHELL']
+```
+
+The loop advances the iterator object itself, so it is used up afterwards, like a file. OCCT's `ReInit()` starts it again:
+
+```python
+In [4]: ex = TopExp_Explorer(box, FACE)
+   ...: len(list(ex)), len(list(ex))
+Out[4]: (6, 0)
+
+In [5]: ex.ReInit()
+   ...: len(list(ex))
+Out[5]: 6
+```
+
+An explorer visits a shared sub-shape once for every shape it belongs to: each edge of a box is part of two faces. `TopExp.MapShapes` collects each sub-shape once (OCCT's shape maps compare with `IsSame`):
+
+```python
+In [6]: edges = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
+   ...: TopExp.MapShapes_s(box, EDGE, edges)
+   ...: len(list(TopExp_Explorer(box, EDGE))), edges.Size()
+Out[6]: (24, 12)
+```
+
+### Timings
+
+A compound of 100 boxes (600 faces, 2400 edge visits, 1200 distinct edges):
+
+```python
+In [7]: from nanocct.BRep import BRep_Builder
+   ...: from nanocct.TopoDS import TopoDS_Compound
+   ...: 
+   ...: builder, comp = BRep_Builder(), TopoDS_Compound()
+   ...: builder.MakeCompound(comp)
+   ...: for i in range(100):
+   ...:     builder.Add(comp, BRepPrimAPI_MakeBox(1, 1, 1).Shape())
+
+In [8]: %%timeit
+   ...: ex, out = TopExp_Explorer(comp, EDGE), []
+   ...: while ex.More():
+   ...:     out.append(ex.Current())
+   ...:     ex.Next()
+155 μs ± 929 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+In [9]: %timeit [e for e in TopExp_Explorer(comp, EDGE)]
+122 μs ± 781 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+In [10]: %timeit list(TopExp_Explorer(comp, EDGE))
+114 μs ± 616 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+In [11]: %%timeit
+    ...: m = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
+    ...: TopExp.MapShapes_s(comp, EDGE, m)
+    ...: list(m)
+106 μs ± 735 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+```
+
+A `for` loop or `list()` is about 20–25 % faster than a hand-written `More()`/`Next()` loop. `TopExp.MapShapes` is the fastest here, although it also removes the duplicates: the traversal runs in one C++ call, and it returns 1 200 instead of 2 400 shapes.
+
 ## numpy zero-copy support in detail
 
 **Binding rule: R-VIEW ([Design 2c](Design.md#2c-python-additions))**

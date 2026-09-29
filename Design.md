@@ -152,7 +152,7 @@ Members that have no OCCT counterpart. Each one's docstring says "Python additio
 - **Exceptions** (4.2): `Standard_Failure` and its descendants are Python exception classes with the C++ hierarchy, all deriving from `RuntimeError`; they can be raised from Python.
 
 - **Iteration over OCCT iterators** (R-ITER):
-    - every class with `More() -> bool`, `Next()` and a parameterless `Value()` or `Current()` gets `__iter__`/`__next__`, yielding `Value()`/`Current()` while `More()` — `for e in TopExp_Explorer(shape, TopAbs_EDGE):`
+    - every class with `More() -> bool`, `Next()` and a parameterless `Value()` or `Current()` gets `__iter__`, yielding `Value()`/`Current()` while `More()` — `for e in TopExp_Explorer(shape, TopAbs_EDGE):`
     - `iter(x)` is an `nb::make_iterator` that advances `x` itself, so `x` is exhausted afterwards like a file (since 2026-09-27; before, `x` was its own iterator with a `__next__` that ended every loop by throwing a C++ `nb::stop_iteration` -- ~8 µs per loop, which made `for e in TopExp_Explorer(...)` slower than a hand-written `More()`/`Next()` loop; now 0.46 vs 0.49 µs for 6 faces)
     - the C++ range-for support (`begin()`/`end()`, `operator++`, `NCollection_ForwardRangeIterator`) stays out (R-ITERATOR)
 
