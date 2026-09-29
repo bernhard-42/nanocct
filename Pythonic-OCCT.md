@@ -1,0 +1,401 @@
+# Pythonic addition to the OCCT bindings
+
+## NCollections mapped to Python generics
+
+**Design: [2a Naming conventions](Design.md#2a-naming-conventions), [6a NCollection containers](Design.md#6a-ncollection-containers-hand-written-binders)**
+
+### Generics support
+
+Let's look at the C++ example `NCollection_Array1<gp_Dir>`:
+
+The nanocct generator binds this as a class `NCollection_Array1__gp_Dir`
+
+```python
+from nanocct.NCollection import NCollection_Array1__gp_Dir
+
+a = NCollection_Array1__gp_Dir(1, 3)
+```
+
+and adds a Python generics type definition to it
+
+```python
+from nanocct.gp import gp_Dir
+from nanocct.NCollection import NCollection_Array1
+
+b = NCollection_Array1[gp_Dir](1, 3)
+```
+
+1) The two constructs are the same type
+
+    ```python
+    In [1]: NCollection_Array1__gp_Dir is NCollection_Array1[gp_Dir]
+    Out[1]: True
+    ```
+
+2) Different element types are different classes
+
+    ```python
+    In [2]: NCollection_Array1[gp_Dir] is NCollection_Array1[int]
+    Out[2]: False
+    ```
+
+3) `isinstance` can be used with both types
+
+    ```python
+    In [3]: isinstance(a, NCollection_Array1)
+    Out[3]: True
+
+    In [4]: isinstance(b, NCollection_Array1)
+    Out[4]: True
+
+    In [5]: isinstance(a, NCollection_Array1__gp_Dir)
+    Out[5]: True
+
+    In [6]: isinstance(b, NCollection_Array1__gp_Dir)
+    Out[6]: True
+
+    In [7]: type(a) is type(b)
+    Out[7]: True
+    ```
+
+4) There is a minimal overhead using generic types:
+
+    ```python
+    In [8]: %timeit NCollection_Array1__gp_Dir(1, 3)
+    42.9 ns ± 0.575 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+
+    In [9]: %timeit NCollection_Array1[gp_Dir](1, 3)
+    79.2 ns ± 1.84 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+    ```
+
+    Typically, the NCollections don't appear in large loops where the nanoseconds could pile up, but are created once and then filled in a loop. Since both statements create the same type at runtime, accessing the NCollections takes the same time.
+
+### C++ scalar types
+
+A Python type stands for a C++ template argument: `float` for C++ `double`, `int`, `bool`, and `str` for `std::string`. Python has no own type for five more C++ scalars used in OCCT 8, so `nanocct.NCollection` exports a marker for each:
+
+| Marker | C++ type |
+|---|---|
+| `float32` | `float` (32-bit) |
+| `uchar` | `unsigned char` |
+| `uint` | `unsigned int` |
+| `ulong` | `unsigned long` |
+| `ulonglong` | `unsigned long long` |
+
+With them, every NCollection class of nanocct can be spelled generically:
+
+```python
+In [1]: from nanocct.NCollection import NCollection_Array1, NCollection_HArray1, float32, uchar
+   ...: from nanocct.Poly import Poly_Triangulation
+
+In [2]: NCollection_HArray1[float32].__name__, NCollection_HArray1[uchar].__name__
+Out[2]: ('NCollection_HArray1__float', 'NCollection_HArray1__unsigned_char')
+
+In [3]: NCollection_Array1[float].__name__
+Out[3]: 'NCollection_Array1__double'
+```
+
+The markers are only keys. The values are plain Python floats and ints, and the C++ class does the conversion, e.g. the rounding to 32 bits:
+
+```python
+In [4]: normals = NCollection_HArray1[float32](1, 9, 0.0)   # 3 nodes, x y z each
+   ...: normals.SetValue(1, 0.1)
+   ...: normals.Value(1)
+Out[4]: 0.10000000149011612
+
+In [5]: tri = Poly_Triangulation(3, 1, False, False)
+   ...: tri.SetNormals(normals)
+   ...: tri.HasNormals()
+Out[5]: True
+```
+
+For type checkers the markers are aliases of `float` and `int`: precision is not a Python type, the same as for every other C++ `float` or `unsigned int` parameter of the bindings. So a type checker does not tell `NCollection_HArray1[float32]` from `NCollection_HArray1[float]`; handing the wrong one to OCCT fails at runtime with a `TypeError`.
+
+### numpy zero-copy support
+
+The nanocct generator gives e.g. `NCollection_Array1` and `NCollection_Array2` numpy's array protocol, `__array__`, see [details](#numpy-zero-copy-support-in-detail).
+
+```python
+In [1]: from nanocct.NCollection import NCollection_Array1
+   ...: from nanocct.gp import gp_Vec
+   ...: import numpy as np
+   ...: 
+   ...: a = NCollection_Array1[gp_Vec](1, 3)
+   ...: 
+   ...: a.SetValue(1, gp_Vec(1, 0, 0))
+   ...: a.SetValue(2, gp_Vec(0, 1, 0))
+   ...: a.SetValue(3, gp_Vec(0, 0, 1))
+
+In [2]: np.asarray(a)
+Out[2]: 
+array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]])
+```
+
+This accesses the C++ values from Python without copying them (zero-copy access)
+
+### Index access
+
+`a[i]` makes OCCT's item access available with OCCT's index, and nothing more: `NCollection_Array1` counts from `Lower()`, `NCollection_Sequence` and the indexed maps from 1, `NCollection_DynamicArray` and `NCollection_LinearVector` from 0. There are no negative indices and no slices, because a negative index is a real OCCT index for an array like `NCollection_Array1[float](-2, 2)`. For Python-style indexing, use a numpy view or a list:
+
+```python
+In [1]: import numpy as np
+   ...: from nanocct.NCollection import NCollection_Array1
+   ...:
+   ...: a = NCollection_Array1[float](1, 8)
+   ...: for i in range(1, 9):
+   ...:     a.SetValue(i, i * 10.0)
+
+In [2]: a[1], a[3]
+Out[2]: (10.0, 30.0)
+
+In [3]: a.Last(), np.asarray(a)[-1], list(a)[-1]
+Out[3]: (80.0, np.float64(80.0), 80.0)
+```
+
+OCCT's own `At(i)` is 0-based like `np.asarray(a)[i]`, and range-checked: `NCollection_Array1`, `NCollection_Array2` (`At(row, col)`) and `NCollection_Sequence` have it, together with their `HArray`/`HSequence` variants. Unlike a numpy view, it works for every element type, e.g. an array of `TopoDS_Shape`. It takes no negative index.
+
+```python
+In [4]: a.At(0), a.At(2)
+Out[4]: (10.0, 30.0)
+
+In [5]: list(a)[0], np.asarray(a)[2]
+Out[5]: (10.0, np.float64(30.0))
+```
+
+Timing
+
+```python
+In [6]: %timeit a.Value(3)
+17 ns ± 0.0779 ns per loop (mean ± std. dev. of 7 runs, 100,000,000 loops each)
+
+In [7]: %timeit a[3]
+19.7 ns ± 0.257 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+```
+
+**Note:** nanocct keeps OCCT's C++ contract for index access and adds no checks of its own. Where OCCT checks the range, an out-of-range index raises `Standard_OutOfRange` (`a[0]` above). Where OCCT does not, it behaves as in C++: `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]`, or `NCollection_Mat4.GetValue`, read whatever memory lies past the end, and can crash the Python interpreter.
+
+
+### Iterating over NCollections
+
+- 100 `float` element `NCollection`
+
+   ```python
+   In [1]: import numpy as np
+      ...: from nanocct.NCollection import NCollection_Array1
+      ...: 
+      ...: N = 100
+      ...: a = NCollection_Array1[float](1, N)
+      ...: for i in range(1, N+1):
+      ...:     a.SetValue(i, i * 10.0)
+      ...: 
+
+   In [2]: %timeit [a.Value(i) for i in range(1, N + 1)]
+   2.06 μs ± 14.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+
+   In [3]: %timeit list(a)
+   1.17 μs ± 11.2 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+   ```
+
+- 10 `float` element `NCollection`
+
+   ```python
+   In [4]: N = 10
+      ...: a = NCollection_Array1[float](1, N)
+      ...: for i in range(1, N+1):
+      ...:     a.SetValue(i, i * 10.0)
+      ...: 
+
+   In [5]: %timeit [a.Value(i) for i in range(1, N + 1)]
+   248 ns ± 2.55 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+   In [6]: %timeit list(a)
+   221 ns ± 2.69 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+   ```
+
+Below 7 or 8 elements, `list(a)` gets slightly slower due to the creating the iterator.
+
+### Uninitialised values
+
+Like in C++, a new array of a scalar type (`float`, `int`, `bool`, `float32`, …) is not initialised: OCCT allocates the memory and leaves it as it is. It often reads as `0.0`, but that is chance, and a larger array can show values left over from earlier allocations. Class elements such as `gp_Vec` are default-constructed. Use OCCT's `Init(value)`, or the fill value of the `NCollection_HArray1` constructor:
+
+```python
+In [1]: from nanocct.NCollection import NCollection_Array1, NCollection_HArray1
+   ...: from nanocct.gp import gp_Vec
+   ...: 
+   ...: a = NCollection_Array1[float](1, 3)
+   ...: a.Init(0.0)
+   ...: list(a)
+Out[1]: [0.0, 0.0, 0.0]
+
+In [2]: list(NCollection_HArray1[float](1, 3, 0.5))
+Out[2]: [0.5, 0.5, 0.5]
+
+In [3]: [v.Coord() for v in NCollection_Array1[gp_Vec](1, 2)]
+Out[3]: [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
+```
+
+## numpy zero-copy support in detail
+
+**Binding rule: R-VIEW ([Design 2c](Design.md#2c-python-additions))**
+
+### Support for the numpy array protocol
+
+The nanocct generator gives `NCollection_Array1` and `NCollection_Array2` (and their `HArray1`/`HArray2` variants) numpy's array protocol, `__array__`, for every element type that is a packed run of numpy scalars: the C++ scalars `double`, `float`, `int`, `bool`, `unsigned char`, `gp_Pnt`, `gp_Vec`, `gp_Dir`, `gp_XYZ`, their 2d counterparts, `Poly_Triangle` and the `NCollection_Vec2/3/4` types. `Poly_ArrayOfNodes`, `Poly_ArrayOfUVNodes`, `Image_PixMap` and `NCollection_Buffer` have it too. This allows to access large C++ arrays from Python with zero-copy:
+
+- `np.asarray(a)` is a view of OCCT's own memory: no copy, and writes go straight into the OCCT array.
+- `np.array(a)` is an independent copy.
+
+Collections without a packed element type (an `NCollection_Array1` of `TopoDS_Shape`, maps, lists, sequences) have no `__array__`.
+
+```python
+In [1]: from nanocct.NCollection import NCollection_Array1
+   ...: from nanocct.gp import gp_Vec
+   ...: import numpy as np
+   ...: 
+   ...: a = NCollection_Array1[gp_Vec](1, 3)
+   ...: 
+   ...: a.SetValue(1, gp_Vec(1, 0, 0))
+   ...: a.SetValue(2, gp_Vec(0, 1, 0))
+   ...: a.SetValue(3, gp_Vec(0, 0, 1))
+
+In [2]: v = np.asarray(a)
+   ...: v
+Out[2]: 
+array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]])
+
+In [3]: v[0, 0] = 42.0
+   ...: a.Value(1).X()
+Out[3]: 42.0
+
+In [4]: c = np.array(a)
+   ...: c[0, 0] = 7.0
+   ...: a.Value(1).X()
+Out[4]: 42.0
+```
+
+Let's make a little benchmark
+
+```python
+In [1]: from nanocct.NCollection import NCollection_Array1
+   ...: from nanocct.gp import gp_Vec
+   ...: import numpy as np
+   ...: 
+   ...: N = 1000000
+   ...: a = NCollection_Array1[gp_Vec](1, N)
+   ...: 
+   ...: for i in range(1, N + 1):
+   ...:     a.SetValue(i, gp_Vec(i, i/10, i/100))
+   ...: 
+```
+
+To access the vectors as python tuples, one uses:
+
+```python
+In [2]: %timeit [a.Value(i).Coord() for i in range(1, N + 1)]
+99.9 ms ± 2.47 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+In [3]: %timeit np.asarray(a)  # zero copy
+233 ns ± 1.91 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+In [4]: %timeit np.array(a)
+328 μs ± 6.35 μs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+```
+
+`np.asarray(a)` only creates the view, so its time does not depend on the size of the array; `np.array(a)` copies all 24 MB.
+
+Finally, compare some values:
+
+```python
+In [5]: p = [a.Value(i).Coord() for i in range(1, N + 1)]
+   ...: p[0:3]
+Out[5]: [(1.0, 0.1, 0.01), (2.0, 0.2, 0.02), (3.0, 0.3, 0.03)]
+
+In [6]: q = np.asarray(a)
+   ...: q[0:3]
+Out[6]: 
+array([[1.  , 0.1 , 0.01],
+       [2.  , 0.2 , 0.02],
+       [3.  , 0.3 , 0.03]])
+```
+
+### Special case: Triangulations
+
+A `Poly_Triangulation` holds four arrays: nodes, triangles, UV nodes and normals. OCCT's own accessors `InternalNodes()`, `InternalTriangles()`, `InternalUVNodes()` and `InternalNormals()` return references to the triangulation's storage, and `np.asarray` turns each into a zero-copy view.
+
+```python
+In [1]: import numpy as np
+   ...: from nanocct.BRep import BRep_Tool
+   ...: from nanocct.BRepMesh import BRepMesh_IncrementalMesh
+   ...: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct.TopAbs import TopAbs_ShapeEnum
+   ...: from nanocct.TopExp import TopExp_Explorer
+   ...: from nanocct.TopLoc import TopLoc_Location
+   ...: import nanocct.TopoDS as TopoDS
+   ...: 
+   ...: box = BRepPrimAPI_MakeBox(10.0, 20.0, 30.0).Shape()
+   ...: BRepMesh_IncrementalMesh(box, 0.1)
+   ...: face = TopoDS.Face(TopExp_Explorer(box, TopAbs_ShapeEnum.TopAbs_FACE).Current())
+   ...: tri = BRep_Tool.Triangulation_s(face, TopLoc_Location())
+
+In [2]: tri.NbNodes(), tri.NbTriangles()
+Out[2]: (4, 2)
+
+In [3]: nodes = np.asarray(tri.InternalNodes())
+   ...: nodes
+Out[3]: 
+array([[ 0.,  0.,  0.],
+       [ 0.,  0., 30.],
+       [ 0., 20.,  0.],
+       [ 0., 20., 30.]])
+
+In [4]: tris = np.asarray(tri.InternalTriangles())
+   ...: tris
+Out[4]: 
+array([[2, 1, 3],
+       [2, 3, 4]], dtype=int32)
+```
+
+The triangle indices are OCCT's and therefore **1-based**. To correlate them correctly, subtract 1 to index the nodes, e.g. to get the corner coordinates of every triangle:
+
+```python
+In [5]: nodes[tris - 1][0]  # align to the 1-based C++ indices
+Out[5]: 
+array([[ 0.,  0., 30.],
+       [ 0.,  0.,  0.],
+       [ 0., 20.,  0.]])
+```
+
+UV nodes and normals are optional. When a triangulation has none, the array is empty, and OCCT's `HasUVNodes()`/`HasNormals()` tell whether they are there:
+
+```python
+In [6]: tri.HasUVNodes(), tri.HasNormals()
+Out[6]: (True, False)
+
+In [7]: np.asarray(tri.InternalUVNodes())
+Out[7]: 
+array([[  0.,   0.],
+       [ 30.,   0.],
+       [  0., -20.],
+       [ 30., -20.]])
+
+In [8]: np.asarray(tri.InternalNormals())
+Out[8]: array([], shape=(0, 3), dtype=float32)
+```
+
+Only a non-const reference is zero-copy. An OCCT accessor that returns a `const` reference, such as `Triangles()`, is bound as a copy, so `np.asarray` on it views that copy and writes never reach the triangulation:
+
+```python
+In [9]: copy = np.asarray(tri.Triangles())
+   ...: copy[0] = [1, 1, 1]
+   ...: tri.Triangle(1).Get()
+Out[9]: (2, 1, 3)
+
+In [10]: view = np.asarray(tri.InternalTriangles())
+    ...: view[0] = [1, 1, 1]
+    ...: tri.Triangle(1).Get()
+Out[10]: (1, 1, 1)
+```
