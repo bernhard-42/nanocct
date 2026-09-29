@@ -28,33 +28,33 @@ b = NCollection_Array1[gp_Dir](1, 3)
 1. The two constructs are the same type
 
    ```python
-   In [1]: NCollection_Array1__gp_Dir is NCollection_Array1[gp_Dir]
+   In[1]: NCollection_Array1__gp_Dir is NCollection_Array1[gp_Dir]
    Out[1]: True
    ```
 
 2. Different element types are different classes
 
    ```python
-   In [2]: NCollection_Array1[gp_Dir] is NCollection_Array1[int]
+   In[2]: NCollection_Array1[gp_Dir] is NCollection_Array1[int]
    Out[2]: False
    ```
 
 3. `isinstance` can be used with both types
 
    ```python
-   In [3]: isinstance(a, NCollection_Array1)
+   In[3]: isinstance(a, NCollection_Array1)
    Out[3]: True
 
-   In [4]: isinstance(b, NCollection_Array1)
+   In[4]: isinstance(b, NCollection_Array1)
    Out[4]: True
 
-   In [5]: isinstance(a, NCollection_Array1__gp_Dir)
+   In[5]: isinstance(a, NCollection_Array1__gp_Dir)
    Out[5]: True
 
-   In [6]: isinstance(b, NCollection_Array1__gp_Dir)
+   In[6]: isinstance(b, NCollection_Array1__gp_Dir)
    Out[6]: True
 
-   In [7]: type(a) is type(b)
+   In[7]: type(a) is type(b)
    Out[7]: True
    ```
 
@@ -67,6 +67,11 @@ b = NCollection_Array1[gp_Dir](1, 3)
    In [9]: %timeit NCollection_Array1[gp_Dir](1, 3)
    79.2 ns ± 1.84 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
    ```
+
+   | Statement                          | Timing             |
+   | ---------------------------------- | ------------------ |
+   | `NCollection_Array1__gp_Dir(1, 3)` | 42.9 ns ± 0.575 ns |
+   | `NCollection_Array1[gp_Dir](1, 3)` | 79.2 ns ± 1.84 ns  |
 
    Typically, the NCollections don't appear in large loops where the nanoseconds could pile up, but are created once and then filled in a loop. Since both statements create the same type at runtime, accessing the NCollections takes the same time.
 
@@ -174,6 +179,11 @@ In [7]: %timeit a[3]
 19.7 ns ± 0.257 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
 ```
 
+| Statement    | Timing             |
+| ------------ | ------------------ |
+| `a.Value(3)` | 17 ns ± 0.0779 ns  |
+| `a[3]`       | 19.7 ns ± 0.257 ns |
+
 **Note:** nanocct keeps OCCT's C++ contract for index access and adds no checks of its own. Where OCCT checks the range, an out-of-range index raises `Standard_OutOfRange` (`a[0]` above). Where OCCT does not, it behaves as in C++: `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]`, or `NCollection_Mat4.GetValue`, read whatever memory lies past the end, and can crash the Python interpreter.
 
 ### Iterating over NCollections
@@ -213,6 +223,11 @@ In [7]: %timeit a[3]
   221 ns ± 2.69 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
   ```
 
+| Statement                               | 100 elements      | 10 elements      |
+| --------------------------------------- | ----------------- | ---------------- |
+| `[a.Value(i) for i in range(1, N + 1)]` | 2.06 μs ± 14.9 ns | 248 ns ± 2.55 ns |
+| `list(a)`                               | 1.17 μs ± 11.2 ns | 221 ns ± 2.69 ns |
+
 Below 7 or 8 elements, `list(a)` gets slightly slower due to the creating the iterator.
 
 ### Uninitialised values
@@ -248,7 +263,7 @@ In [1]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
    ...: from nanocct.TopoDS import TopoDS_Iterator, TopoDS_Shape
    ...: from nanocct.TopTools import TopTools_ShapeMapHasher
    ...: from nanocct.NCollection import NCollection_IndexedMap
-   ...: 
+   ...:
    ...: FACE, EDGE = TopAbs_ShapeEnum.TopAbs_FACE, TopAbs_ShapeEnum.TopAbs_EDGE
    ...: box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
 
@@ -287,7 +302,7 @@ A compound of 100 boxes (600 faces, 2400 edge visits, 1200 distinct edges):
 ```python
 In [7]: from nanocct.BRep import BRep_Builder
    ...: from nanocct.TopoDS import TopoDS_Compound
-   ...: 
+   ...:
    ...: builder, comp = BRep_Builder(), TopoDS_Compound()
    ...: builder.MakeCompound(comp)
    ...: for i in range(100):
@@ -312,6 +327,13 @@ In [11]: %%timeit
     ...: list(m)
 106 μs ± 735 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 ```
+
+| Statement                                                                                                         | Timing                              |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `ex, out = TopExp_Explorer(comp, EDGE), []; while ex.More(): out.append(ex.Current()); ex.Next()`                 | 155&nbsp;μs&nbsp;±&nbsp;929&nbsp;ns |
+| `[e for e in TopExp_Explorer(comp, EDGE)]`                                                                        | 122&nbsp;μs&nbsp;±&nbsp;781&nbsp;ns |
+| `list(TopExp_Explorer(comp, EDGE))`                                                                               | 114&nbsp;μs&nbsp;±&nbsp;616&nbsp;ns |
+| `m = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher](); TopExp.MapShapes_s(comp, EDGE, m); list(m)` | 106&nbsp;μs&nbsp;±&nbsp;735&nbsp;ns |
 
 A `for` loop or `list()` is about 20–25 % faster than a hand-written `More()`/`Next()` loop. `TopExp.MapShapes` is the fastest here, although it also removes the duplicates: the traversal runs in one C++ call, and it returns 1 200 instead of 2 400 shapes.
 
@@ -383,6 +405,12 @@ In [3]: %timeit np.asarray(a)  # zero copy
 In [4]: %timeit np.array(a)
 328 μs ± 6.35 μs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
 ```
+
+| Statement                                       | Timing            |
+| ----------------------------------------------- | ----------------- |
+| `[a.Value(i).Coord() for i in range(1, N + 1)]` | 99.9 ms ± 2.47 ms |
+| `np.array(a)`                                   | 328 μs ± 6.35 μs  |
+| `np.asarray(a)` (zero copy)                     | 233 ns ± 1.91 ns  |
 
 `np.asarray(a)` only creates the view, so its time does not depend on the size of the array; `np.array(a)` copies all 24 MB.
 
@@ -695,3 +723,46 @@ In [5]: try:
 Out[5]: 'gce_MakeLin::Value() - no result'
 ```
 
+## Doc strings
+
+The nanocct generator copies the C++ `//!` documentation strings as Python docstrings
+
+```python
+In [14]: TopExp.MapShapes_s?
+
+Signature:   TopExp.MapShapes_s(*args, **kwargs)
+Type:        nb_func
+String form: <nanobind.nb_func object at 0x115e4fa40>
+Docstring:
+MapShapes_s(S: nanocct.TopoDS.TopoDS_Shape, T: nanocct.TopAbs.TopAbs_ShapeEnum, M: nanocct.NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher) -> None
+MapShapes_s(S: nanocct.TopoDS.TopoDS_Shape, M: nanocct.NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher, cumOri: bool = True, cumLoc: bool = True) -> None
+MapShapes_s(S: nanocct.TopoDS.TopoDS_Shape, M: nanocct.NCollection.NCollection_Map__TopoDS_Shape__TopTools_ShapeMapHasher, cumOri: bool = True, cumLoc: bool = True) -> None
+
+Overloaded function.
+
+1. ``MapShapes_s(S: nanocct.TopoDS.TopoDS_Shape, T: nanocct.TopAbs.TopAbs_ShapeEnum, M: nanocct.NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher) -> None``
+
+Tool to explore a topological data structure.
+Stores in the map <M> all the sub-shapes of <S>
+of type <T>.
+
+Warning: The map is not cleared at first.
+
+2. ``MapShapes_s(S: nanocct.TopoDS.TopoDS_Shape, M: nanocct.NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher, cumOri: bool = True, cumLoc: bool = True) -> None``
+
+Stores in the map <M> all the sub-shapes of <S>.
+- If cumOri is true, the function composes all
+sub-shapes with the orientation of S.
+- If cumLoc is true, the function multiplies all
+sub-shapes by the location of S, i.e. it applies to
+each sub-shape the transformation that is associated with S.
+
+3. ``MapShapes_s(S: nanocct.TopoDS.TopoDS_Shape, M: nanocct.NCollection.NCollection_Map__TopoDS_Shape__TopTools_ShapeMapHasher, cumOri: bool = True, cumLoc: bool = True) -> None``
+
+Stores in the map <M> all the sub-shapes of <S>.
+- If cumOri is true, the function composes all
+sub-shapes with the orientation of S.
+- If cumLoc is true, the function multiplies all
+sub-shapes by the location of S, i.e. it applies to
+each sub-shape the transformation that is associated with S.
+```
