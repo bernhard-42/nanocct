@@ -230,3 +230,20 @@ def test_the_space_mouse_keeps_its_raw_report_alive():
     gc.collect()
     assert m.IsKeyState() is True and m.KeyState() == 0x2A
 
+
+def test_members_of_an_instantiation_return_bound_instantiations():
+    """6c follows the members of an instantiation (State.md 8.22): NCollection_Vec4<unsigned char>::xyz() returns
+    NCollection_Vec3<unsigned char>, which was not instantiated -- the call raised TypeError (unregistered type)."""
+    rgba = Graphic3d.NCollection_Vec4__unsigned_char(1, 2, 3, 4)
+    rgb, rg = rgba.xyz(), rgba.xy()
+    assert type(rgb).__name__ == "NCollection_Vec3__unsigned_char" and (rgb.x(), rgb.y(), rgb.z()) == (1, 2, 3)
+    assert type(rg).__name__ == "NCollection_Vec2__unsigned_char" and (rg.x(), rg.y()) == (1, 2)
+
+
+def test_utf_string_converts_to_utf16_and_back():
+    """NCollection_UtfString<char16_t> is bound since 6c follows the members of NCollection_String (State.md 8.22)."""
+    wide = NCollection_String("päx€").ToUtf16()
+    assert type(wide).__name__ == "NCollection_UtfString__char16_t"
+    assert (wide.Length(), wide.Size()) == (4, 8)          # four characters, two bytes each in UTF-16
+    assert wide.ToUtf8().ToCString() == "päx€"
+

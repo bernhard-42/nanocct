@@ -178,6 +178,9 @@ methods = [
     # NCollection_Vec3<unsigned long> (Image_PixMapData dimensions): cwiseAbs() calls std::abs(unsigned long), which is
     # ambiguous in C++ (no unsigned overload). Meaningless for an unsigned vector anyway (2026-09-22).
     "NCollection_Vec3<unsigned long>::cwiseAbs",
+    # NCollection_Vec2<unsigned long>: the 2-component results of NCollection_Vec3<unsigned long> (xy(), yx() ...), bound since
+    # 6c follows the members of an instantiation (State.md 8.22)
+    "NCollection_Vec2<unsigned long>::cwiseAbs",
     # The same instantiation on Windows. `size_t` is `unsigned long` on LP64 (macOS, Linux) and `unsigned long long` on
     # LLP64 (Windows), and these keys are canonical C++ spellings, so one type needs two entries -- the first port
     # issue where the *override* had to grow rather than the generator (2026-09-23; MSVC offers six abs overloads,

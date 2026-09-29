@@ -869,6 +869,9 @@ _template_uses: list[cindex.Type] = []                      # template instantia
 _dependent_bases: list[tuple[str, str, str]] = []           # (derived instantiation, substituted base spelling, header): template bases seen
                                                             # inside a 6c walk (BVH_Box<double, 3> : BVH_BaseBox<double, 3, BVH_Box>), resolved
                                                             # through a probe re-parse (R-TEMPLATE-BASE)
+_dependent_uses: list[str] = []                             # substituted spellings of class template instantiations in the member
+                                                            # signatures of a 6c walk (NCollection_Vec4<unsigned char>::xyz() ->
+                                                            # NCollection_Vec3<unsigned char>): instantiated through the same probe (8.22)
 
 
 def _instance_spelling(t: cindex.Type) -> str:
@@ -1427,7 +1430,10 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 continue
             c.ctors.append(_ctor(ch, c, members))
         elif ch.kind == K.CXX_METHOD:
+            mark = len(_dependent_uses)
             m = _method(ch, c.name, members)
+            if m is None or m.skip_reason is not None:
+                del _dependent_uses[mark:]         # a skipped member needs no instantiation (begin()/end() range iterators, 8.22)
             if m is None:
                 continue
             if m.skip_reason is not None:
@@ -1526,10 +1532,33 @@ def _canonical_args(t: cindex.Type) -> str:
 _NESTED_OWNER = {src: kind for kind, info in BINDERS.items() for src in info.get("nested_from", {}).values()}   # TListIterator -> List
 
 
+def _note_dependent_use(t: cindex.Type) -> None:
+    """6c inside a 6c walk (State.md 8.22): a member of an instantiation names another instantiation of a class template
+    through the template's parameters -- NCollection_Vec4<Element_t>::xyz() returns NCollection_Vec3<Element_t> -- which
+    libclang reports as a dependent type with no declaration, so _note_instance cannot queue it and the member was bound
+    with an unregistered type (`Vec4__unsigned_char().xyz()` raised TypeError: 74 stub lines over four Vec instantiations).
+    Its spelling after substitution is recorded instead and instantiated through the R-TEMPLATE-BASE probe typedef."""
+    spelled = re.sub(r"\s*(const\s*)?[&*]+\s*(const)?\s*$", "", _type_spelling(t)).removeprefix("const ").strip()
+    m = re.match(r"^([\w:]+)<(.*)>$", spelled)
+    if m is None or "type-parameter-" in spelled:
+        return
+    name = m.group(1).split("::")[-1]
+    if name in BINDERS or name == "handle" or m.group(1).startswith("std::"):
+        return
+    if _SUBST.self_ is not None and (spelled == _SUBST.self_[1] or m.group(1) in (_SUBST.self_[0], _SUBST.self_[2])
+                                     and m.group(2).replace(" ", "") == ",".join(_SUBST.params.values()).replace(" ", "")):
+        return            # the walked instantiation itself, spelled with its arguments: NCollection_AliasedArray<MyAlignSize> inside
+                          # NCollection_AliasedArray<> (key "<>", substituted "<16>") would be bound a second time
+    if spelled not in _dependent_uses:
+        _dependent_uses.append(spelled)
+
+
 def _note_instance(t: cindex.Type) -> None:
     """If t (or its pointee) is an instantiation of an NCollection template we have a binder for, record it,
     including nested instantiations in its arguments. Any other OCCT class template instantiation in a signature
     (BRepGraph_MutGuard<...>, BVH_Box<double, 3>) is recorded for on-demand instantiation (6c)."""
+    if _SUBST.active:
+        _note_dependent_use(t)
     canon = t.get_canonical()
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
         canon = canon.get_pointee().get_canonical()
@@ -1808,6 +1837,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     _template_bases.clear()
     _template_uses.clear()
     _dependent_bases.clear()
+    _dependent_uses.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
@@ -1974,7 +2004,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
         # BVH_BaseTraverse<double>): a probe typedef per spelling in a second parse gives them a libclang Type to instantiate from;
         # what still cannot be instantiated is dropped from the derived class's bases (reported) instead of skipping the class
         for _ in range(4):
-            todo = [(d, b, h) for d, b, h in _dependent_bases if b not in seen_uses and not any(c.name == b for c in ir.classes)
+            queued = _dependent_bases + [("", u, ir.headers[0]) for u in _dependent_uses]    # "": a use, not a base (8.22)
+            todo = [(d, b, h) for d, b, h in queued if b not in seen_uses and not any(c.name == b for c in ir.classes)
                     and b not in (known_elsewhere or set())]
             if len(todo) == 0:
                 break
@@ -1984,15 +2015,17 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             tu2 = index.parse(str(probe), args=args)
             probes = {cur.spelling: cur for cur in tu2.cursor.get_children() if cur.kind == K.TYPE_ALIAS_DECL and cur.spelling.startswith("nanocct_probe_")}
             _dependent_bases.clear()
+            _dependent_uses.clear()
             for i, b in enumerate(spellings):
                 seen_uses.add(b)
                 cur = probes.get(f"nanocct_probe_{i}")
-                derived_names = [d for d, bb, _ in todo if bb == b]
+                derived_names = [d for d, bb, _ in todo if bb == b and d != ""]
+                what = f"{derived_names[0]}: base class {b}" if len(derived_names) > 0 else f"used in a signature: {b}"
                 inst = None
                 if cur is not None:
-                    inst = _instantiate_template(tu2, cur.underlying_typedef_type, ir.headers[0], pkg.name, ir.report, f"{derived_names[0]}: base class {b}", None)
+                    inst = _instantiate_template(tu2, cur.underlying_typedef_type, ir.headers[0], pkg.name, ir.report, what, None)
                 else:
-                    ir.report.append(f"{derived_names[0]}: base class {b}: the probe typedef did not compile")
+                    ir.report.append(f"{what}: the probe typedef did not compile")
                 if inst is not None:
                     if inst.name != b:            # defaulted arguments spelled out by the instantiation: the derived classes follow
                         for c in ir.classes:

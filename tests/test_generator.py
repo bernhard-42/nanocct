@@ -436,6 +436,24 @@ private:
   T myX;
 };
 typedef Rules_TVec<unsigned long> Rules_TVecUL;
+//! 6c follows the members of an instantiation (State.md 8.22): Rules_TWide<T>::Narrow() returns Rules_TNarrow<T>, which
+//! is named nowhere else; Same() names the instantiation itself, with its defaulted argument spelled out.
+template <class T>
+class Rules_TNarrow
+{
+public:
+  Rules_TNarrow() {}
+  T V() const { return T(0); }
+};
+template <class T, int N = 4>
+class Rules_TWide
+{
+public:
+  Rules_TWide() {}
+  Rules_TNarrow<T> Narrow() const { return Rules_TNarrow<T>(); }
+  Rules_TWide<T, N> Same() const { return *this; }
+};
+typedef Rules_TWide<short> Rules_TWideS;
 
 //! 6a: a nested class deriving from a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator) is
 //! declared after the templates phase, where the base exists.
@@ -578,7 +596,7 @@ def test_ir_classes_and_nesting(rules_ir):
     assert set(names[20:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
-                               "Rules_TOnly<short>", "Rules_Order"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -1159,6 +1177,18 @@ def test_stub_class_names_shadowed_by_a_member_are_qualified():
     assert "def Change(self, i: int) -> nanocct.M.EdgeCurve3DRep | None: ..." in out
     assert "        def Get(self) -> EdgeCurve3DRep: ..." in out           # a nested class does not see Storage's members
     assert "class Other:\n    def Get(self) -> EdgeCurve3DRep: ..." in out   # no member of that name: unchanged
+
+
+def test_members_of_an_instantiation_instantiate_what_they_name(rules_ir):
+    """6c follows the members of an instantiation (State.md 8.22): Rules_TWide<short>::Narrow() returns Rules_TNarrow<short>,
+    named nowhere else, so it is instantiated through the probe; Same() returns the instantiation itself spelled with its
+    defaulted argument (Rules_TWide<short, 4>), which must not become a second class -- measured: without the self check
+    it did, the analogue of NCollection_AliasedArray<> / <16>, after which the extension failed to initialise."""
+    names = [c.name for c in rules_ir.classes]
+    assert "Rules_TNarrow<short>" in names
+    assert [n for n in names if n.startswith("Rules_TWide<")] == ["Rules_TWide<short>"]
+    wide = next(c for c in rules_ir.classes if c.name == "Rules_TWide<short>")
+    assert {m.name: m.skip_reason for m in wide.methods if m.name in ("Narrow", "Same")} == {"Narrow": None, "Same": None}
 
 
 def test_resolve_ctor_arities():
