@@ -577,3 +577,41 @@ In [5]: Font_FA_Bold == Font_FontAspect.Font_FontAspect_Bold, Font_FA_Bold is Fo
 Out[5]: (True, False)
 ```
 
+## Exceptions
+
+**Design: [4.2](Design.md#42-three-kinds-of-c-types)**
+
+OCCT's C++ exceptions arrive in Python as exception classes with the same names and the same hierarchy as in C++, with OCCT's own message. `Standard_Failure` is the root of all of them and derives from Python's `RuntimeError`. They are not mapped to Python's built-in categories: `Standard_OutOfRange` is not an `IndexError`, so catch OCCT's classes (or `Standard_Failure`).
+
+```python
+In [1]: from nanocct.gp import gp_Dir, gp_Pnt
+   ...: from nanocct.gce import gce_MakeLin
+   ...: from nanocct.Standard import Standard_Failure
+   ...: from nanocct.StdFail import StdFail_NotDone
+
+In [2]: try:
+   ...:     gp_Dir(0, 0, 0)
+   ...: except Standard_Failure as e:
+   ...:     err = e
+   ...: type(err).__name__, str(err)
+Out[2]: ('Standard_ConstructionError', 'gp_Dir() - input vector has zero norm')
+
+In [3]: [c.__name__ for c in type(err).__mro__][:4]
+Out[3]: ['Standard_ConstructionError', 'Standard_DomainError', 'Standard_Failure', 'RuntimeError']
+```
+
+Many OCCT algorithms report a failure through a status first, and raise only when the missing result is asked for:
+
+```python
+In [4]: mk = gce_MakeLin(gp_Pnt(1, 1, 1), gp_Pnt(1, 1, 1))
+   ...: mk.IsDone(), mk.Status()
+Out[4]: (False, gce_ErrorType.gce_ConfusedPoints)
+
+In [5]: try:
+   ...:     mk.Value()
+   ...: except StdFail_NotDone as e:
+   ...:     msg = str(e)
+   ...: msg
+Out[5]: 'gce_MakeLin::Value() - no result'
+```
+
