@@ -35,6 +35,7 @@
 #include <nanobind/stl/vector.h>
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <bitset>
 #include <tuple>
 #include <type_traits>
@@ -632,6 +633,31 @@ template <typename T> struct type_caster<NCollection_Handle<T>> {
             keep_alive_cb(result, holder, [](void *p) noexcept { delete (NCollection_Handle<T> *) p; });
         }
         return result;
+    }
+};
+
+NAMESPACE_END(detail)
+NAMESPACE_END(NB_NAMESPACE)
+
+// Type caster for std::reference_wrapper<T> results (State.md 8.22 (iv)): NCollection_FlatMap::Contained() returns
+// std::optional<std::reference_wrapper<const K>>, NCollection_FlatDataMap::Contained() an optional pair of them. nanobind has
+// no caster for it, so those members raised TypeError. A const T is returned as a copy (a read-only key or value); a
+// mutable T as a reference into its owner that keeps the owner alive (reference_internal), so edits reach the map as
+// in C++. Results only: no OCCT parameter takes a reference_wrapper.
+NAMESPACE_BEGIN(NB_NAMESPACE)
+NAMESPACE_BEGIN(detail)
+
+template <typename T> struct type_caster<std::reference_wrapper<T>> {
+    using Td = std::remove_cv_t<T>;
+    using Caster = make_caster<Td>;
+    static constexpr auto Name = Caster::Name;
+
+    static handle from_cpp(std::reference_wrapper<T> value, rv_policy policy, cleanup_list *cleanup) noexcept {
+        if constexpr (std::is_const_v<T>)
+            policy = rv_policy::copy;
+        else if (policy == rv_policy::automatic || policy == rv_policy::automatic_reference)
+            policy = rv_policy::reference_internal;
+        return Caster::from_cpp(value.get(), policy, cleanup);
     }
 };
 

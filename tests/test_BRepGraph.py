@@ -1,8 +1,10 @@
 """BRepGraph (OCCT 8's graph-based BRep): typed ids are aliases of class templates nested in a class
 (BRepGraph_NodeId::Typed<Kind::Edge>), iterators of templates nested in namespaces; all instantiated by rule 6c."""
+import gc
+
 import pytest
 
-from nanocct import BRep, BRepGraph, BRepPrimAPI, Geom, TopAbs, TopoDS, gp
+from nanocct import BRep, BRepGraph, BRepGraphInc, BRepPrimAPI, Geom, TopAbs, TopoDS, gp
 
 
 def _edge_graph() -> tuple[BRepGraph.BRepGraph, TopoDS.TopoDS_Edge]:
@@ -84,3 +86,22 @@ def test_graph_iterators_and_flat_maps_are_python_iterables():
     for i in (3, 1, 7):
         ids.Add(BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, i))
     assert sorted(n.Index for n in flat.Iterator(ids)) == [1, 3, 7]
+
+
+def test_flat_map_contained_returns_the_stored_entries():
+    """std::reference_wrapper results (State.md 8.22 (iv)): Contained() raised TypeError (no caster). A const reference comes
+    back as a copy (the key), a mutable one as a reference into the map that keeps it alive (the data map's value)."""
+    flat = BRepGraph.NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId()
+    key = BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, 3)
+    flat.Add(key)
+    assert flat.Contained(key) == key and flat.Contained(BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, 99)) is None
+    data_map = next(getattr(BRepGraphInc, n) for n in dir(BRepGraphInc) if n.startswith("NCollection_FlatDataMap"))()
+    data_map.Bind(key, BRepGraphInc.BRepGraphInc_Storage.CachedShape())
+    stored_key, value = data_map.Contained(key)
+    assert stored_key == key and value.StoredSubtreeGen == 0
+    value.StoredSubtreeGen = 7                                         # a mutable reference: the edit reaches the map
+    assert data_map.Find(key).StoredSubtreeGen == 7
+    del data_map
+    gc.collect()
+    assert value.StoredSubtreeGen == 7                                 # and the value keeps the map alive
+
