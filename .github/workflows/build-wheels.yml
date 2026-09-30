@@ -181,6 +181,10 @@ jobs:
       - name: make test
         run: make test
 
+      # the same cp312-abi3 wheel again on the oldest Python it supports
+      - name: make test (Python 3.12)
+        run: make test PY_VERSION=3.12
+
       # The shim is pure Python (py3-none-any): generated from the bindings of one platform and installed on all five. A
       # member another platform does not bind is looked up as None there (shim/OCP/_rt.py get()), so it is generated
       # where the bindings are the widest: macOS binds every package the others do plus Cocoa (overrides.toml

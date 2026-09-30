@@ -16,6 +16,7 @@ from generator.binders import BINDERS
 from generator.emit import Emitter, order_by_derivation, resolve_ctor_arities, resolve_overload_collisions
 from generator.model import Class, Constructor, ConversionKind, Method, PackageIR, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
+from generator.stubs import _capsule_for_every_python
 from generator.__main__ import HANDWRITTEN_NAMESPACES, _topo, _base_import_edges
 from generator.report import CATEGORIES, categorize
 
@@ -1340,6 +1341,18 @@ def test_stub_annotations_are_not_shadowed_by_a_member_named_like_a_builtin():
     assert "import builtins\nimport enum" in out
     assert "def xsputn(self, s: builtins.str, n: int) -> int" in out and "def f(self, s: str) -> str" in out
     assert _unshadowed_class_names(text.replace("def str(", "def Str("), "nanocct.X") == text.replace("def str(", "def Str(")
+
+
+def test_stub_capsule_type_exists_on_python_3_12():
+    """stubgen on Python 3.13+ writes `types.CapsuleType`, which 3.12 does not have (mypy on 3.12: name-defined, found by
+    the 3.12 test step 2026-09-30); the stub spells it typing_extensions.CapsuleType, known to type checkers everywhere."""
+    stub = "import enum\nimport types\nfrom typing import Final\n\nclass A:\n    def f(self, c: types.CapsuleType) -> None: ...\n"
+    out = _capsule_for_every_python(stub)
+    assert "c: typing_extensions.CapsuleType" in out and "types.CapsuleType" not in out.replace("typing_extensions.", "")
+    assert "import types\n" not in out and out.count("import typing_extensions\n") == 1   # in place of the unused import
+    other = stub + "def g(x: types.ModuleType) -> None: ...\n"                          # types still used elsewhere
+    assert "import types\nimport typing_extensions\n" in _capsule_for_every_python(other)
+    assert _capsule_for_every_python("import enum\n") == "import enum\n"
 
 
 def test_stub_eq_and_ne_accept_any_object():

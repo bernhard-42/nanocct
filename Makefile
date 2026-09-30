@@ -82,8 +82,8 @@ TK_FLAGS := --toolkit $(TOOLKITS)
 # The development interpreter, pinned so the three machines are the same one. It is NOT the wheel's floor: that
 # is `requires-python = ">=3.12"` and `wheel.py-api = "cp312"`, which say what a *user* can install. Until
 # 2026-09-24 nothing pinned this and the three had drifted apart -- macOS 3.14.7, Linux 3.12.13, Windows 3.12.12 --
-# so the suite ran on a different Python depending on which box you were on. Exercising the 3.12 floor is a job
-# for the CI matrix, not for whichever interpreter a machine happens to pick.
+# so the suite ran on a different Python depending on which box you were on. The 3.12 floor is exercised by a second
+# test step in CI (`make test PY_VERSION=3.12`, the same wheel), not by whichever interpreter a machine happens to pick.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 PY_VERSION := 3.14

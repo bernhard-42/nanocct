@@ -212,6 +212,21 @@ def _eq_accepts_object(text: str) -> str:
     return "".join(lines)
 
 
+def _capsule_for_every_python(text: str) -> str:
+    """nanobind's stubgen, run on Python 3.13+, spells a capsule `types.CapsuleType` (stubgen.py:805), which Python 3.12
+    does not have -- mypy on 3.12 reports it undefined (IntPatch_InterferencePolyhedron::SetBVHSets). The wheel supports
+    3.12, so the stub uses typing_extensions.CapsuleType, which type checkers know on every version."""
+    if "types.CapsuleType" not in text:
+        return text
+    text = re.sub(r"\btypes\.CapsuleType\b", "typing_extensions.CapsuleType", text)
+    if re.search(r"^import typing_extensions$", text, flags=re.M) is not None:
+        return text
+    # in place of `import types` when nothing else uses the module, else next to it
+    keep = re.search(r"(?<![\w.])types\.", text) is not None
+    return re.sub(r"^import types\n", "import types\nimport typing_extensions\n" if keep else "import typing_extensions\n",
+                  text, count=1, flags=re.M)
+
+
 def _module_of(stub: Path) -> str:
     """src/nanocct/BRepGraphInc/__init__.pyi -> nanocct.BRepGraphInc"""
     return ".".join(stub.relative_to(SRC.parent).with_suffix("").parts).removesuffix(".__init__")
@@ -553,7 +568,7 @@ def main() -> int:
         else:
             raise RuntimeError(f"{stub}: the generic rewrite did not converge -- nesting deeper than expected")
         text = _eq_accepts_object(_unshadowed_class_names(_qualified_enum_defaults(text), _module_of(stub)))
-        stub.write_text(_unhashable_ignore(_with_numpy_imports(_with_imports(text))))
+        stub.write_text(_unhashable_ignore(_with_numpy_imports(_with_imports(_capsule_for_every_python(text)))))
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)
     return 0
