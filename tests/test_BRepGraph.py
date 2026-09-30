@@ -105,3 +105,19 @@ def test_flat_map_contained_returns_the_stored_entries():
     gc.collect()
     assert value.StoredSubtreeGen == 7                                 # and the value keeps the map alive
 
+
+
+def test_6c_instantiation_names_spell_every_template_argument():
+    """Design 6c: a 6c instantiation's name spells every template argument, the default hasher included, where the 6a binder
+    kinds drop it (NCollection_Map<int> is NCollection_Map__int). The OCCT 8 flat maps are not binder kinds, so their names
+    carry NCollection_DefaultHasher; kept as released in 8.0.1.0 (the final review's F5, 2026-09-30). Pinned here, so a change
+    of a default argument in OCCT, which would rename them, fails a test instead of passing silently."""
+    import nanocct.Poly as Poly
+    for name in ("NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID",
+                 "NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId",
+                 "NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID",
+                 "NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId"):
+        assert hasattr(BRepGraph, name), name
+    assert hasattr(BRepGraphInc, "NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape"
+                                 "__NCollection_DefaultHasher__BRepGraph_NodeId")
+    assert hasattr(Poly, "NCollection_AliasedArray__")
