@@ -1,7 +1,7 @@
 """Static typing check for names the stubs spelled unresolvably until State.md 8.22 (b) (run by mypy and ty, see tests/test_typing.py).
 Lines with a trailing `# error:` comment must be reported; everything else must pass. Before the fix mypy saw both results as
 unresolved, i.e. Any, and reported neither error line (ty resolved them already)."""
-from nanocct import BRepGraphInc, Graphic3d, NCollection, OpenGl, TCollection
+from nanocct import BRepGraphInc, Graphic3d, NCollection, OpenGl, StepVisual, TCollection
 
 
 def shared(ctx: OpenGl.OpenGl_Context) -> None:
@@ -21,4 +21,11 @@ def vec(rgba: Graphic3d.NCollection_Vec4__unsigned_char) -> None:
     # the quoted C++ spelling "NCollection_Vec3<unsigned char>", i.e. Any
     rgb: Graphic3d.NCollection_Vec3__unsigned_char = rgba.xyz()
     wrong: int = rgba.xyz()                                                # error: a Vec3 is not an int
+
+
+def tessellated(geo: StepVisual.StepVisual_TessellatedGeometricSet) -> None:
+    # NCollection_Handle<X> is X (R-NCHANDLE): it used to be the quoted C++ spelling, i.e. Any
+    items: NCollection.NCollection_Array1[StepVisual.StepVisual_TessellatedItem] = geo.Items()
+    geo.Init(TCollection.TCollection_HAsciiString("set"), None)            # a null handle
+    wrong: int = geo.Items()                                               # error: an array is not an int
 

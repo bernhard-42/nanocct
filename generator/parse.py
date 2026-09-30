@@ -29,6 +29,10 @@ _PRIMITIVE_KINDS = {
     TK.ULONGLONG, TK.CHAR_S, TK.SCHAR, TK.WCHAR, TK.SHORT, TK.INT, TK.LONG, TK.LONGLONG,
     TK.FLOAT, TK.DOUBLE, TK.LONGDOUBLE, TK.ENUM,
 }
+# R-HANDLE, R-NCHANDLE: the smart pointers that are transparent in Python (a caster each in nanocct_common.h): the
+# object behind them is what gets bound, a null one is None -- opencascade::handle<T> for Transients and
+# NCollection_Handle<T>, OCCT's reference-counted owner of a non-Transient object (State.md 8.22)
+_SMART_HANDLES = ("handle", "NCollection_Handle")
 _STL_ITERATORS = {"NCollection_ForwardRangeIterator", "NCollection_IndexedIterator", "NCollection_StlIterator", "NCollection_UtfIterator"}
 _PRIMITIVE_SPELLINGS = {"double", "float", "int", "bool", "char", "long", "short", "size_t", "unsigned", "unsigned int", "unsigned long",
                         "long long", "unsigned long long", "int8_t", "uint8_t", "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t",
@@ -317,7 +321,7 @@ def _class_behind(t: cindex.Type) -> str:
     decl = canon.get_declaration()
     if decl.kind == K.NO_DECL_FOUND:
         return ""
-    if decl.spelling == "handle" and canon.get_num_template_arguments() == 1:
+    if decl.spelling in _SMART_HANDLES and canon.get_num_template_arguments() == 1:
         return _class_behind(canon.get_template_argument_type(0))
     parent = decl.semantic_parent
     if parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")):
@@ -335,7 +339,7 @@ def _is_handle(t: cindex.Type) -> bool:
         # inside a class template (6c walk) handle<BVH_Builder<NumType, Dimension>> is a dependent type without a declaration
         return _SUBST.active and re.match(r"^(const )?(opencascade::|occ::)?handle<", _type_spelling(t)) is not None
     decl = canon.get_declaration()
-    return decl.kind != K.NO_DECL_FOUND and decl.spelling == "handle" and canon.get_num_template_arguments() == 1
+    return decl.kind != K.NO_DECL_FOUND and decl.spelling in _SMART_HANDLES and canon.get_num_template_arguments() == 1
 
 
 # Design.md 6 R-OUT, R-OUT-HANDLE; R-INOUT is decided in _params from overrides.toml
@@ -894,7 +898,7 @@ def _is_plain_template_instance(t: cindex.Type) -> bool:
     if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0:
         return False
     decl = canon.get_declaration()
-    if decl.kind == K.NO_DECL_FOUND or decl.spelling in BINDERS or decl.spelling == "handle":
+    if decl.kind == K.NO_DECL_FOUND or decl.spelling in BINDERS or decl.spelling in _SMART_HANDLES:
         return False
     parent = decl.semantic_parent
     return not (parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")))
@@ -919,7 +923,7 @@ def _class_ancestors(t: cindex.Type) -> tuple[str, ...]:
     decl = canon.get_declaration()
     if decl.kind == K.NO_DECL_FOUND:
         return ()
-    if decl.spelling == "handle" and canon.get_num_template_arguments() == 1:
+    if decl.spelling in _SMART_HANDLES and canon.get_num_template_arguments() == 1:
         return _class_ancestors(canon.get_template_argument_type(0))
     defn = decl.get_definition()     # the declaration may be a forward one (`class TopoDS_Face;`), which has no bases
     if defn is not None:
@@ -1547,7 +1551,7 @@ def _note_dependent_use(t: cindex.Type) -> None:
     Its spelling after substitution is recorded instead and instantiated through the R-TEMPLATE-BASE probe typedef."""
     spelled = re.sub(r"\s*(const\s*)?[&*]+\s*(const)?\s*$", "", _type_spelling(t)).removeprefix("const ").strip()
     m = re.match(r"^([\w:]+)<(.*)>$", spelled)
-    while m is not None and m.group(1).split("::")[-1] == "handle":
+    while m is not None and m.group(1).split("::")[-1] in _SMART_HANDLES:
         # handle<BVH_Tree<T, N>> (BVH_PrimitiveSet<T, N>::BVH()): the instantiation inside the handle is what must be bound --
         # skipping the handle left BVH_Tree<double, 2> and BVH_Builder<double, 2> unbound (State.md 8.22 (c) (v))
         spelled = m.group(2).strip()
@@ -1577,7 +1581,7 @@ def _note_instance(t: cindex.Type) -> None:
     if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0:
         return
     decl = canon.get_declaration()
-    if decl.spelling == "handle":       # opencascade::handle<NCollection_HArray1<T>> -> look inside
+    if decl.spelling in _SMART_HANDLES:  # opencascade::handle<NCollection_HArray1<T>> -> look inside (NCollection_Handle<T> too)
         _note_instance(canon.get_template_argument_type(0))
         return
     owner = _NESTED_OWNER.get(decl.spelling)
@@ -1679,7 +1683,7 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
     if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0 or "<" not in t.spelling:
         return None
     tmpl_name = canon.get_declaration().spelling
-    if tmpl_name in BINDERS or tmpl_name == "handle" or t.spelling.startswith("std::"):
+    if tmpl_name in BINDERS or tmpl_name in _SMART_HANDLES or t.spelling.startswith("std::"):
         return None
     qualified = _qualified_template(canon.get_declaration())        # BRepGraph_NodeId::Typed for nested templates
     # a template of a skipped namespace is third-party plumbing, not API: RWGltf_GltfJsonParser derives from

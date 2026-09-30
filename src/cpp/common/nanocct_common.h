@@ -48,6 +48,7 @@
 #include <Standard_Failure.hxx>
 #include <Standard_Handle.hxx>
 #include <Standard_Transient.hxx>
+#include <NCollection_Handle.hxx>
 
 namespace nb = nanobind;
 
@@ -581,6 +582,54 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
             auto *holder = new opencascade::handle<Standard_Transient>(ptr);
             keep_alive_cb(result, holder,
                           [](void *p) noexcept { delete (opencascade::handle<Standard_Transient> *) p; });
+        }
+        return result;
+    }
+};
+
+NAMESPACE_END(detail)
+NAMESPACE_END(NB_NAMESPACE)
+
+// Type caster for NCollection_Handle<T> (R-NCHANDLE, State.md 8.22): OCCT's reference-counted owner of a *non*-Transient
+// object, transparent like opencascade::handle. A result is the object itself, shared with its owner as in C++, kept
+// alive by a heap copy of the handle attached with keep_alive (the handle's hidden Ptr is a Standard_Transient, so OCCT's
+// reference count governs the lifetime). A null handle is None -- IsNull() is asked first, because
+// NCollection_Handle::get() dereferences the null Ptr (NCollection_Handle.hxx). A parameter takes the object or None, and
+// the object is COPIED into a new handle: the handle deletes what it holds, and the Python object owns its C++ object.
+NAMESPACE_BEGIN(NB_NAMESPACE)
+NAMESPACE_BEGIN(detail)
+
+template <typename T> struct type_caster<NCollection_Handle<T>> {
+    static constexpr bool IsClass = true;
+    using Caster = make_caster<T>;
+    NB_TYPE_CASTER(NCollection_Handle<T>, Caster::Name)
+
+    bool from_python(handle src, uint32_t flags, cleanup_list *cleanup) noexcept {
+        if (src.is_none()) { value = NCollection_Handle<T>(); return true; }
+        flags &= ~cast_flags::convert;
+        Caster caster;
+        if (!caster.from_python(src, flags, cleanup))
+            return false;
+        T *ptr = caster.operator T *();
+        if (ptr == nullptr)
+            return false;
+        try {
+            value = NCollection_Handle<T>(new T(*ptr));
+        } catch (...) {
+            return false;
+        }
+        return true;
+    }
+
+    static handle from_cpp(const Value &value, rv_policy, cleanup_list *cleanup) noexcept {
+        if (value.IsNull()) return none().release();
+        T *ptr = const_cast<T *>(value.get());
+        bool is_new = false;
+        handle result = NB_CALL(nb_type_put)(NB_CTX_C(cleanup), &typeid(T), &typeid(T), ptr,
+                                             rv_policy::reference, cleanup, &is_new);
+        if (is_new && result.is_valid()) {
+            auto *holder = new NCollection_Handle<T>(value);
+            keep_alive_cb(result, holder, [](void *p) noexcept { delete (NCollection_Handle<T> *) p; });
         }
         return result;
     }

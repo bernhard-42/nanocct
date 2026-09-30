@@ -1,6 +1,7 @@
 """Generated bindings for TKDESTEP (DataExchange, 42 packages, the largest toolkit in scope): STEP import and export.
 STEPControl_Reader/Writer for plain shapes -- CadQuery's path -- and STEPCAFControl_Reader/Writer for XCAF documents
 with colours, plus the StepBasic/StepGeom/StepShape/... entity classes the AP214 schema is made of."""
+import gc
 import importlib
 import re
 from pathlib import Path
@@ -15,7 +16,7 @@ from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanocct.GProp import GProp_GProps
 from nanocct.IFSelect import IFSelect_RetDone
 from nanocct.Interface import Interface_Static
-from nanocct.NCollection import NCollection_HArray1, NCollection_Sequence
+from nanocct.NCollection import NCollection_Array1, NCollection_DynamicArray, NCollection_HArray1, NCollection_HSequence, NCollection_Sequence
 from nanocct.Quantity import Quantity_Color, Quantity_NameOfColor, Quantity_NOC_RED
 from nanocct.STEPCAFControl import STEPCAFControl_Controller, STEPCAFControl_Reader, STEPCAFControl_Writer
 from nanocct.STEPConstruct import STEPConstruct
@@ -23,6 +24,7 @@ from nanocct.STEPControl import STEPControl_AsIs, STEPControl_Reader, STEPContro
 from nanocct.StepBasic import StepBasic_Product, StepBasic_SiUnitName
 from nanocct.StepGeom import StepGeom_CartesianPoint
 from nanocct.StepShape import StepShape_ManifoldSolidBrep
+from nanocct.StepVisual import StepVisual_TessellatedCurveSet, StepVisual_TessellatedGeometricSet, StepVisual_TessellatedItem
 from nanocct.TCollection import TCollection_ExtendedString, TCollection_HAsciiString
 from nanocct.TDF import TDF_Label
 from nanocct.TopAbs import TopAbs_SOLID
@@ -187,10 +189,12 @@ def test_report_categories():
     all_lines, lines, undefined, counts = report("TKDESTEP")
     # raw-pointer fell from 12 to 9 and override rose to 4 on 2026-09-23, when StepFile_ReadData was skipped: its
     # inline destructor calls the unexported ClearRecorder, so the class does not link on Windows (overrides.toml)
-    assert counts == {"raw-pointer": 9, "rvalue": 3, "override": 4, "template": 2,
-                      "unbound-type": 2, "header": 1, "stream": 1,
+    # raw-pointer 9 -> 1 and unbound-type 2 -> 0 on 2026-09-30: NCollection_Handle<T> is a caster now (R-NCHANDLE), not a
+    # class template the 6c walk tried and failed to bind (its get()/operator-> and its handle<Standard_Transient> base)
+    assert counts == {"raw-pointer": 1, "rvalue": 3, "override": 4, "template": 2,
+                      "header": 1, "stream": 1,
                       "overload-collision": 3}    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER, State.md 8.22)
-    assert len(lines) == 25
+    assert len(lines) == 15
     # which members R-UNDEFINED reports is the platform's business (macOS names four entities, Windows others), so
     # only the package is asserted here; the portable categories above are what this test is really about
     assert all(line.split("\t")[1].lower().startswith(("step", "rwstep", "apiheadersection")) for line in undefined)                                       # 1 040 classes, 7 688 methods bound
@@ -198,3 +202,40 @@ def test_report_categories():
     assert sum(re.search(r"\bstep\b", line) is not None and "namespace" in line for line in lines) == 2
     # the rvalue lines are the && twins of bound const& overloads: SetShapeFixParameters, as in TKXSBase
     assert all("SetShapeFixParameters" in line for line in lines if line.startswith("rvalue"))
+
+
+def test_ncollection_handle_is_transparent_and_init_takes_a_copy():
+    """R-NCHANDLE (State.md 8.22): NCollection_Handle<X> -- OCCT's reference-counted owner of a non-Transient X -- is the X
+    itself in Python, like opencascade::handle: Items()/Curves() raised TypeError (unregistered type) and Init() rejected
+    both an array and None. A result is shared with the entity and outlives it; a null handle is None; a parameter is
+    copied, because the handle deletes what it holds and the Python array owns its own."""
+    geo = StepVisual_TessellatedGeometricSet()
+    assert geo.Items() is None                                       # null: get() would dereference the null Ptr
+    first, second = StepVisual_TessellatedItem(), StepVisual_TessellatedItem()
+    items = NCollection_Array1[StepVisual_TessellatedItem](1, 1)
+    items.SetValue(1, first)
+    geo.Init(TCollection_HAsciiString("set"), items)
+    got = geo.Items()
+    assert type(got).__name__ == "NCollection_Array1__Handle_StepVisual_TessellatedItem" and got.Length() == 1
+    assert got.Value(1) is first and geo.Items() is got              # the same wrapper for the same array
+    items.SetValue(1, second)
+    assert geo.Items().Value(1) is first                             # Init took a copy
+    got.SetValue(1, second)
+    assert geo.Items().Value(1) is second                            # the result is shared, as in C++
+    del geo
+    gc.collect()
+    assert got.Length() == 1 and got.Value(1) is second              # kept alive by its own copy of the handle
+    empty = StepVisual_TessellatedGeometricSet()
+    empty.Init(TCollection_HAsciiString("empty"), None)
+    assert empty.Items() is None
+    curves = StepVisual_TessellatedCurveSet()
+    assert curves.Curves() is None
+    seq = NCollection_HSequence[int]()
+    seq.Append(3)
+    seq.Append(5)
+    polylines = NCollection_DynamicArray[NCollection_HSequence[int]]()
+    polylines.Append(seq)
+    curves.Init(TCollection_HAsciiString("curves"), None, polylines)
+    back = curves.Curves()
+    assert back.Length() == 1 and back.Value(0) is seq and [back.Value(0).Value(i) for i in (1, 2)] == [3, 5]
+
