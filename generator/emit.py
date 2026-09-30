@@ -1142,6 +1142,10 @@ class Emitter:
 
 
 # Design.md 6 R-COLLISION
+# the C++ scalars without a Python type of their own (nanocct/_templates.py; the stub header in stubs.py declares the same five)
+_SCALAR_MARKERS = ("float32", "uchar", "uint", "ulong", "ulonglong")
+
+
 def out_suffix(params: list[Param]) -> str:
     """'__float__float' for the removed out-parameters of an overload (streams: str, or bytes in a binary package); '' when
     the overload has none. Double underscores separate the parts because OCCT names contain single ones (Design.md 2a)."""
@@ -1524,6 +1528,11 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
         marker_mod = "nanocct._templates"     # float32, uchar, ...: imported by name, so they are this package's too (8.20)
         modules = sorted({mod for table in accessors.values() for specs in table for mod, _ in specs} - {"builtins", own, marker_mod})
         markers = sorted({qual for table in accessors.values() for specs in table for mod, qual in specs if mod == marker_mod})
+        if package == "NCollection":
+            # all five, whatever this platform instantiates: `from nanocct.NCollection import ulonglong` is documented API, and
+            # which marker a platform uses at all is its C library's business -- size_t and uint64_t are `unsigned long` on
+            # glibc, `unsigned long long` on Windows, one of each on macOS (measured on the three trees, 2026-09-30)
+            markers = sorted(set(markers) | set(_SCALAR_MARKERS))
         alias = {m: "_m_" + m.split(".", 1)[1].replace(".", "_") for m in modules}
 
         def spell(mod: str, qual: str) -> str:

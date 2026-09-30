@@ -190,7 +190,9 @@ def test_an_image_round_trips_through_memory():
     """Image files are binary: Save(ostream&) returns bytes and Load(istream&) reads a binary file-like object
     (overrides.toml [stream] binary_members), and Load(const uint8_t*, size_t, name) takes bytes (R-BYTES). Before,
     Save returned the PNG as a str with surrogates ('\\udc89PNG...') and Load rejected io.BytesIO."""
-    ok, data = _png_pixmap().Save__bytes(TCollection.TCollection_AsciiString("png"))
+    # ".png" with its dot: on Windows OCCT looks the format up through FreeImage_GetFIFFromFilenameU, which returns
+    # FIF_UNKNOWN for a name without a dot (FreeImage Plugin.cpp:788-789); the narrow variant elsewhere takes a bare "png"
+    ok, data = _png_pixmap().Save__bytes(TCollection.TCollection_AsciiString(".png"))
     assert ok is True and isinstance(data, bytes) and data.startswith(b"\x89PNG")
     for source in (data, io.BytesIO(data)):                                   # R-BYTES and the binary stream
         back = Image.Image_AlienPixMap()
@@ -204,7 +206,8 @@ def test_a_texture_writes_its_encoded_image_as_bytes():
     import numpy as np
     from nanocct.NCollection import NCollection_BaseAllocator, NCollection_Buffer
 
-    _, data = _png_pixmap().Save__bytes(TCollection.TCollection_AsciiString("png"))
+    ok, data = _png_pixmap().Save__bytes(TCollection.TCollection_AsciiString(".png"))
+    assert ok is True and data.startswith(b"\x89PNG")      # else the comparison below holds for two empty results
     buf = NCollection_Buffer(NCollection_BaseAllocator.CommonBaseAllocator_s(), len(data))
     np.asarray(buf)[:] = np.frombuffer(data, dtype=np.uint8)
     ok, written = Image.Image_Texture(buf, TCollection.TCollection_AsciiString("tex")).WriteImage__bytes(

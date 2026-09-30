@@ -1,4 +1,6 @@
 """Hand-written NCollection binders (Design.md 6a), all 15 kinds, instantiated by the generator."""
+import sys
+
 import pytest
 
 from nanocct import NCollection, Standard, TColStd
@@ -501,16 +503,23 @@ def test_every_container_instantiation_is_reachable_by_the_generic_spelling():
     assert [n for n in concrete if n not in reachable] == []
 
 
+# size_t and uint64_t are the C library's typedefs: `unsigned long` on glibc, `unsigned long long` on Windows, and on
+# macOS size_t is `unsigned long` but uint64_t `unsigned long long` (the generated names on the three platforms, 2026-09-30)
+_SIZE_T = "ulonglong" if sys.platform == "win32" else "ulong"
+_UINT64 = "ulong" if sys.platform.startswith("linux") else "ulonglong"
+_CXX = {"ulong": "unsigned_long", "ulonglong": "unsigned_long_long"}
+
+
 @pytest.mark.parametrize("spelling, concrete", [
     ("NCollection_Array1[float32]", "NCollection_Array1__float"),
     ("NCollection_HArray1[float32]", "NCollection_HArray1__float"),
     ("NCollection_HArray1[uchar]", "NCollection_HArray1__unsigned_char"),
     ("NCollection_List[uchar]", "NCollection_List__unsigned_char"),
     ("NCollection_DynamicArray[uint]", "NCollection_DynamicArray__unsigned_int"),
-    ("NCollection_LinearVector[ulonglong]", "NCollection_LinearVector__unsigned_long_long"),
+    (f"NCollection_LinearVector[{_UINT64}]", f"NCollection_LinearVector__{_CXX[_UINT64]}"),           # uint64_t (BRepGraph)
     ("NCollection_DataMap[TCollection.TCollection_ExtendedString, uchar]", "NCollection_DataMap__TCollection_ExtendedString__unsigned_char"),
     ("NCollection_DataMap[uint, AIS.AIS_MouseGesture]", "NCollection_DataMap__unsigned_int__AIS_MouseGesture"),
-    ("NCollection_IndexedDataMap[ulong, Aspect.Aspect_Touch]", "NCollection_IndexedDataMap__unsigned_long__Aspect_Touch"),
+    (f"NCollection_IndexedDataMap[{_SIZE_T}, Aspect.Aspect_Touch]", f"NCollection_IndexedDataMap__{_CXX[_SIZE_T]}__Aspect_Touch"),   # size_t
 ])
 def test_a_marker_names_the_cxx_scalar(spelling, concrete):
     from nanocct import AIS, Aspect, TCollection

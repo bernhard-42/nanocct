@@ -46,6 +46,7 @@ pytestmark = pytest.mark.skipif(not (OcctTree(src=OCCT_SRC, install=OCCT).includ
 GEN = [sys.executable, "-m", "generator", "--occt", str(OCCT)]
 
 HEADER = """
+#include <limits>
 #include <Standard_Transient.hxx>
 #include <Standard_Handle.hxx>
 #include <Standard_Macro.hxx>
@@ -559,6 +560,8 @@ public:
   static int Grid(const NCollection_Array2<double>& theA) { (void)theA; return 2; }
   int Weights(const gp_XYZ* theW = nullptr) const { return theW == nullptr ? 0 : 1; }
   int Rational(const gp_XYZ* theW, const char* theName) const { (void)theName; return theW == nullptr ? 0 : 1; }
+  //! R-UNBOUND-TYPE for the standard library: an enum of it has no Python type (std::_Ios_Openmode on libstdc++).
+  int Round(std::float_round_style theStyle) const { return static_cast<int>(theStyle); }
 };
 
 //! A namespace named like the package is the package module itself.
@@ -1175,6 +1178,14 @@ def test_emitter_orders_derived_overloads_first_and_lets_null_pointers_be_none(t
     assert "Rules_Order::Grid(const NCollection_Array2<double> &): takes a derived class of Grid(const NCollection_Array1<double> &) -> registered before it" in em.report
 
 
+def test_a_standard_library_enum_makes_a_member_unbindable(rules_ir):
+    """R-UNBOUND-TYPE (2026-09-30): OSD_OpenFileDescriptor(name, std::ios_base::openmode) raised TypeError on Linux, where
+    libstdc++ spells openmode as the enum std::_Ios_Openmode (libc++ and MSVC: an integer typedef). A standard-library enum
+    has no Python type, so the member is skipped and reported instead of bound uncallable."""
+    rnd = _method(rules_ir, "Rules_Order", "Round")
+    assert rnd.skip_reason is not None and "std::float_round_style (a standard-library enum, no Python type)" in rnd.skip_reason
+
+
 def test_order_by_derivation_uses_every_bound_class_and_keeps_the_rest():
     """The package's own parse does not see the bases of a class it only forward-declares (GeomToIGES and Geom_BSplineCurve):
     Emitter._ancestors closes over the manifest's bases of every bound class. Unrelated overloads keep the header order."""
@@ -1200,6 +1211,20 @@ def test_handwritten_namespaces_match_the_addons_submodules():
     source = (ROOT / "src" / "cpp" / "AddOns" / "_AddOns.cpp").read_text()
     declared = sorted(re.findall(r'm_AddOns\.def_submodule\("(\w+)"', source))
     assert declared == sorted(ns[0] for ns in HANDWRITTEN_NAMESPACES) and len(declared) > 0
+
+
+def test_stub_annotations_are_not_shadowed_by_a_member_named_like_a_builtin():
+    """LDOM_SBuffer (bound on Windows only) has a method `str`; inside its class body the annotation `s: str` of xsputn named
+    that method (mypy: 'Function "...LDOM_SBuffer.str" is not valid as a type', 2026-09-30). Only that class is rewritten."""
+    import ast
+    from generator.stubs import _unshadowed_class_names
+    text = ('"""x"""\n\nimport enum\n\nclass B:\n    def str(self) -> str: ...\n\n    def xsputn(self, s: str, n: int) -> int: ...\n\n'
+            'class Other:\n    def f(self, s: str) -> str: ...\n')
+    out = _unshadowed_class_names(text, "nanocct.X")
+    ast.parse(out)
+    assert "import builtins\nimport enum" in out
+    assert "def xsputn(self, s: builtins.str, n: int) -> int" in out and "def f(self, s: str) -> str" in out
+    assert _unshadowed_class_names(text.replace("def str(", "def Str("), "nanocct.X") == text.replace("def str(", "def Str(")
 
 
 def test_stub_enum_defaults_are_spelled_through_the_annotation():

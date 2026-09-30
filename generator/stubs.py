@@ -121,16 +121,18 @@ def _unshadowed_class_names(text: str, module: str) -> str:
     resolves to a member of the class if it has one -- `def ChangeEdgeCurve3DRep(self, ...) -> EdgeCurve3DRep` in
     BRepGraphInc_Storage, which also has a method EdgeCurve3DRep, is the method, not the module's class (mypy: "Function
     ... is not valid as a type"). Such a name in an annotation of that class body is spelled `<module>.<Name>`. A nested
-    class does not see the enclosing class's members (Python scoping), so each body is checked against its own."""
+    class does not see the enclosing class's members (Python scoping), so each body is checked against its own.
+    The same holds for a builtin type: LDOM_SBuffer (bound on Windows only) has a method `str`, so its `xsputn(self, s: str,
+    ...)` named the method (2026-09-30); such an annotation is spelled `builtins.<name>`, and the stub imports builtins."""
     tree = ast.parse(text)
     top = {n.name for n in tree.body if isinstance(n, ast.ClassDef)}
-    edits: list[tuple[int, int, int]] = []           # (line, start col, end col) of a bare name, UTF-8 offsets as ast gives them
+    edits: list[tuple[int, int, int, str]] = []      # (line, start col, end col, prefix) of a bare name, UTF-8 offsets as ast gives them
 
     def visit(cls: ast.ClassDef) -> None:
         members = {n.name for n in cls.body if isinstance(n, ast.FunctionDef)} \
             | {n.target.id for n in cls.body if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)} \
             | {t.id for n in cls.body if isinstance(n, ast.Assign) for t in n.targets if isinstance(t, ast.Name)}
-        shadowed = members & top
+        shadowed = members & (top | _BUILTIN_TYPES)
         for n in cls.body:
             annotations: list[ast.expr | None] = []
             if isinstance(n, ast.ClassDef):
@@ -146,7 +148,8 @@ def _unshadowed_class_names(text: str, module: str) -> str:
                     continue
                 for node in ast.walk(ann):
                     if isinstance(node, ast.Name) and node.id in shadowed:
-                        edits.append((node.lineno, node.col_offset, node.end_col_offset))   # type: ignore[arg-type]
+                        prefix = module if node.id in top else "builtins"
+                        edits.append((node.lineno, node.col_offset, node.end_col_offset, prefix))   # type: ignore[arg-type]
 
     for n in tree.body:
         if isinstance(n, ast.ClassDef):
@@ -154,10 +157,20 @@ def _unshadowed_class_names(text: str, module: str) -> str:
     if len(edits) == 0:
         return text
     lines = text.splitlines(keepends=True)
-    for line, start, end in sorted(edits, reverse=True):
+    for line, start, end, prefix in sorted(edits, reverse=True):
         raw = lines[line - 1].encode()
-        lines[line - 1] = (raw[:start] + f"{module}.".encode() + raw[start:end] + raw[end:]).decode()
-    return "".join(lines)
+        lines[line - 1] = (raw[:start] + f"{prefix}.".encode() + raw[start:end] + raw[end:]).decode()
+    out = "".join(lines)
+    if any(e[3] == "builtins" for e in edits) and re.search(r"^import builtins$", out, re.M) is None:
+        first = next(i for i, n in enumerate(tree.body) if isinstance(n, (ast.Import, ast.ImportFrom)))
+        at = tree.body[first].lineno - 1                   # before the first import: no edit above it moved a line
+        out_lines = out.splitlines(keepends=True)
+        out = "".join(out_lines[:at] + ["import builtins\n"] + out_lines[at:])
+    return out
+
+
+# builtin types a stub annotation names; a class member of the same name shadows them in its class body
+_BUILTIN_TYPES = {"str", "int", "float", "bool", "bytes", "object", "list", "tuple", "dict", "set", "type"}
 
 
 def _module_of(stub: Path) -> str:

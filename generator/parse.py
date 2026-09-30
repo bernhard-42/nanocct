@@ -68,7 +68,10 @@ _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))   
 _BYTES_MEMBERS = set(_OVERRIDES.get("bytes", {}).get("members", []))              # R-BYTES: `const uint8_t*` + length -> one `bytes` parameter
 
 _UNSUPPORTED_RE = re.compile(
-    r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream)|ios_base|ios|streambuf)\b"
+    # basic_streambuf and basic_ios too: OSD_FileSystem::OpenStreamBuffer (shared_ptr<std::streambuf>) was reported as
+    # "iostream type" on macOS and Linux but bound on Windows, where it is spelled basic_streambuf<char,std::char_traits<char>>
+    # (2026-09-30); its result type has no Python type, so it was uncallable there
+    r"std::(__\w+::)?((basic_)?(ostream|istream|iostream|stringstream|ostringstream|istringstream|streambuf|ios)|ios_base)\b"
 )
 # Other std types nanobind has no caster for. Reported by name: "iostream type" was the message for these too until
 # 2026-09-22, which read as a stream in the report (DE_Wrapper::GlobalLoadMutex returns a std::mutex&).
@@ -651,6 +654,15 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
                     if ad.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ad.semantic_parent is not None \
                             and ad.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ad.access_specifier != Access.PUBLIC:
                         return f"std::{decl.spelling} of non-public nested class {ad.spelling}"
+    if base.kind == TK.ENUM:
+        # R-UNBOUND-TYPE for the standard library: an enum of it has no Python type, so a member taking or returning one is
+        # uncallable. libstdc++ spells std::ios_base::openmode as the enum std::_Ios_Openmode, where libc++ and MSVC have an
+        # integer typedef: OSD_OpenFileDescriptor(name, openmode) raised TypeError on Linux only (measured 2026-09-30)
+        ns = base.get_declaration().semantic_parent
+        while ns is not None and ns.kind != K.NAMESPACE and ns.kind != K.TRANSLATION_UNIT:
+            ns = ns.semantic_parent
+        if ns is not None and ns.kind == K.NAMESPACE and ns.spelling in ("std", "__1"):
+            return f"std::{base.get_declaration().spelling} (a standard-library enum, no Python type)"
     if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind == TK.POINTER:
         return "reference to pointer"
     if canon.kind == TK.LVALUEREFERENCE and not allow_out:
@@ -1689,7 +1701,10 @@ def _matching_specialisation(tu: cindex.TranslationUnit, qualified: str, args: l
             if cur.kind == K.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION:
                 own = [p.spelling for p in cur.get_children()
                        if p.kind in (K.TEMPLATE_TYPE_PARAMETER, K.TEMPLATE_NON_TYPE_PARAMETER, K.TEMPLATE_TEMPLATE_PARAMETER)]
-                m = re.search(r"<(.*)>$", cur.type.spelling or cur.displayname)
+                # displayname, not type.spelling: the pip libclang 18 (Linux, Windows) spells the specialisation's type
+                # with canonical parameters (`Tree<type-parameter-0-0, N, Bin>`), Xcode's with their names (`Tree<T, N,
+                # Bin>`); the displayname is `Tree<T, N, Bin>` with both (measured 2026-09-30)
+                m = re.search(r"<(.*)>$", cur.displayname or cur.type.spelling)
                 pattern = _split_top(m.group(1)) if m is not None else []
                 if len(pattern) != len(args):
                     continue
