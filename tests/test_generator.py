@@ -547,6 +547,20 @@ public:
   Rules_ViaTypedef() {}
 };
 
+//! R-OUT: a chaining *this result is dropped -- also when an override returns it through the base type
+//! (Storage_BaseDriver& FSD_File::GetReference(int&) override).
+class Rules_ChainBase
+{
+public:
+  virtual ~Rules_ChainBase() {}
+  virtual Rules_ChainBase& Chain(int& theOut) { theOut = 1; return *this; }
+};
+class Rules_ChainDerived : public Rules_ChainBase
+{
+public:
+  Rules_ChainBase& Chain(int& theOut) override { theOut = 2; return *this; }
+};
+
 //! R-OVERLOAD-ORDER: overloads declared base class first (PLib::CoefficientsPoles, GeomToIGES_GeomCurve::TransferCurve);
 //! R-PTR-NULL: a class pointer with a null default (BSplCLib_Cache's theWeights), or without one (BSplCLib::D0's Weights).
 class Rules_Order
@@ -641,7 +655,7 @@ def test_ir_classes_and_nesting(rules_ir):
                           "Rules_Ambiguous", "Rules_Unbound", "Rules_Orphan", "Rules_Options",
                           "Rules_Algo", "Rules_AllocOptions", "Rules_LazyScope", "Rules_Inherit", "Rules_NoCopy", "Rules_Holder", "Rules_Holder2",
                           "Rules_Alloc", "Rules_Arrays"]
-    assert set(names[20:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
+    assert set(names[20:]) == {"Rules_ChainBase", "Rules_ChainDerived", "Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
                                "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor",
@@ -847,6 +861,7 @@ def test_ir_records_mangled_names(rules_ir):
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
+             "Rules_ChainBase": "Rules", "Rules_ChainDerived": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
              "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules"}
     em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
@@ -1226,6 +1241,16 @@ def test_an_unregistered_binder_instantiation_makes_a_member_unbindable():
     assert em._unbound_instance_reason("NCollection_Map<double>") == "is not bound (instantiation skipped)"
     assert em._unbound_instance_reason("NCollection_DynamicArray<int>::DynamicIterator") == "is not bound (the binders bind no DynamicIterator class)"
     assert em._unbound_instance_reason("NCollection_DynamicArray<int>::Iterator") == "is not bound (the binders bind no Iterator class)"
+
+
+def test_a_chained_self_result_is_dropped_also_through_the_base_type(rules_ir):
+    """R-OUT: `const T& GetInteger(int&)` returns *this for chaining and is bound returning the out-parameter only. The rule
+    compared the result with the class being parsed, so FSD_File's override `Storage_BaseDriver& GetReference(int&)` kept
+    the result (-> tuple[Storage_BaseDriver, int]) where the base's same virtual dropped it (-> int); 14 members of
+    FSD_File/FSD_BinaryFile (final review 2026-09-30). A base class of the parsed class counts as itself now."""
+    for cls in ("Rules_ChainBase", "Rules_ChainDerived"):
+        m = _method(rules_ir, cls, "Chain")
+        assert m.result == "void" and [p.is_out for p in m.params] == [True]
 
 
 def test_order_by_derivation_uses_every_bound_class_and_keeps_the_rest():

@@ -1127,9 +1127,12 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         # itself, for chaining (R-STREAM-OUT/IN)
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     rc0 = cursor.result_type.get_canonical()
+    self_type = _type_spelling(rc0.get_pointee()).replace("const ", "") if rc0.kind == TK.LVALUEREFERENCE else ""
     if m.skip_reason is None and (any(p.is_out for p in params) or m.is_operator and any(p.stream != StreamKind.NONE for p in params)) \
-            and rc0.kind == TK.LVALUEREFERENCE \
-            and _type_spelling(rc0.get_pointee()).replace("const ", "") == cls_name:
+            and self_type != "" and (self_type == cls_name or _derives_from(cursor.semantic_parent, self_type)):
+        # ... also when the reference is to a base class: `Storage_BaseDriver& FSD_File::GetReference(int&) override` returns
+        # *this through the virtual's declared type, and dropping it only in the base made Storage_BaseDriver.GetReference()
+        # -> int but FSD_File.GetReference() -> (Storage_BaseDriver, int) for the same virtual (final review 2026-09-30)
         # `const BinObjMgt_Persistent& GetInteger(int&)`: *this, for chaining. The out-param lambda would copy it (`auto result`),
         # and copying a Persistent shares its raw buffers (abort at destruction). Dropped like the chained stream (R-OUT)
         # -- and so is `VrmlData_Scene& operator<<(Standard_IStream&)`, the scene's reader, whose *this would be copied the same way (R-STR)
