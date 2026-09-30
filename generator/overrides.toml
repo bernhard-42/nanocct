@@ -401,6 +401,19 @@ members = [
                                              # a 3D mouse's raw HID report (WNT is built on every platform)
 ]
 
+# Classes whose copy constructor does not copy the object's state, so a copied const T& result is a different object
+# (R-RESULT): a const& result of one of them -- or an NCollection container of them -- is returned by reference, tied
+# to its owner, instead of copied. Found by reading every OCCT copy constructor that sets a member to a constant
+# (2026-09-30); caches that are recomputed on demand (Geom_BSplineCurve's myMaxDerivInvOk) and containers that
+# null their pointers before a deep copy are fine and not listed.
+[not_value_copy]
+classes = [
+    "IntRes2d_Intersection",   # done = reverse = false (IntRes2d_Intersection.lxx:32-35): every accessor of the copy
+    "Geom2dInt_GInter",        # raises StdFail_NotDone; Geom2dInt_GInter derives from it (Geom2dAPI_InterCurveCurve::Intersector())
+    "Intf_SectionLine",        # closed(false), only the points are copied (Intf_SectionLine.cxx): Intf_Interference::LineValue()
+    "IntTools_CommonPrt",      # myAllNullFlag(false) (IntTools_CommonPrt.cxx): IntTools_EdgeEdge/EdgeFace::CommonParts()
+]
+
 [views]
 classes = [
     "Poly_ArrayOfNodes",      # what Poly_Triangulation::InternalNodes() returns

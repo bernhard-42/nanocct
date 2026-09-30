@@ -919,6 +919,20 @@ def test_cmake_list_ignores_comments(tmp_path):
     assert _cmake_list(f) == ["X.hxx", "X_Line.hxx", "X_Circle.hxx"]
 
 
+def test_emitter_not_value_copy_results_are_references(rules_ir, monkeypatch):
+    """R-RESULT, overrides.toml [not_value_copy] (2026-09-30): a class whose copy constructor drops state
+    (IntRes2d_Intersection: done = reverse = false) is returned by reference from a const& result, never copied."""
+    from generator import emit as emit_module
+    monkeypatch.setattr(emit_module, "NOT_VALUE_COPY", {"Rules_NoCopyInner"})
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "(&Rules_NoCopyHolder::Inner), nb::rv_policy::reference_internal" in cpp
+    assert "(&Rules_NoCopyHolder::Shared), nb::rv_policy::reference" in cpp       # static: no owner
+    assert emit_module._names_not_value_copy("const NCollection_Sequence<Rules_NoCopyInner> &")   # a container of them too
+    assert not emit_module._names_not_value_copy("const Rules_NoCopyInnerX &")                    # whole names only
+
+
 def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):
     """R-UNHASHABLE (8.11, 2026-09-25): a class with a value __eq__ and no hash gets __hash__ = None.
 

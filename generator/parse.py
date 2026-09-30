@@ -63,6 +63,7 @@ PLATFORM_PACKAGES: dict[str, list[str]] = _OVERRIDES.get("platform", {})
 EXTRA_LINKS: dict[str, list[str]] = _OVERRIDES.get("link", {}).get("extra", {})
 # classes with a zero-copy numpy view (__array__); the "how" is a nanocct_def_views<T> specialisation (R-VIEW, 8.10, 8.21)
 VIEW_CLASSES: set[str] = set(_OVERRIDES.get("views", {}).get("classes", []))
+NOT_VALUE_COPY: set[str] = set(_OVERRIDES.get("not_value_copy", {}).get("classes", []))   # R-RESULT: const& results by reference
 _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
 _BYTES_MEMBERS = set(_OVERRIDES.get("bytes", {}).get("members", []))              # R-BYTES: `const uint8_t*` + length -> one `bytes` parameter

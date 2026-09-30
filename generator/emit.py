@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .model import Class, Constructor, ConversionKind, Enum, Function, Method, PackageIR, Param, ResultKind, StreamKind, TemplateInstance
 from .ncollection import BINDERS
-from .parse import VIEW_CLASSES, _py_identifier, py_path, py_safe
+from .parse import NOT_VALUE_COPY, VIEW_CLASSES, _py_identifier, py_path, py_safe
 
 # C++ operator -> (binary python name, unary python name, reflected python name)
 _BINARY_OPS = {
@@ -79,6 +79,12 @@ def _py_name(m: Method) -> str | None:
         return binary
     return None
 
+
+
+def _names_not_value_copy(result: str) -> bool:
+    """R-RESULT: does a result type name a class of overrides.toml [not_value_copy], itself or as a container's element
+    (`const NCollection_Sequence<IntTools_CommonPrt> &`)? Such a copy is a different object, so it is not copied."""
+    return any(re.search(rf"\b{re.escape(c)}\b", result) is not None for c in NOT_VALUE_COPY)
 
 class Emitter:
     def __init__(self, ir: PackageIR, include_dir: Path, known_classes: dict[str, str], toolkit_of: dict[str, str],
@@ -400,8 +406,12 @@ class Emitter:
             # reference_internal made every call fail ("Unable to convert function return value")
             policy = ", nb::rv_policy::reference"
         if m.result_kind == ResultKind.VALUE and m.result.rstrip().endswith("&"):
-            # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_common.h)
-            policy = f", nanocct::cref_policy<{m.result}, {'false' if m.is_static else 'true'}>{{}}"
+            # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_common.h) or
+            # when its copy constructor does not copy the state (overrides.toml [not_value_copy])
+            if _names_not_value_copy(m.result):
+                policy = ", nb::rv_policy::reference" if m.is_static else ", nb::rv_policy::reference_internal"
+            else:
+                policy = f", nanocct::cref_policy<{m.result}, {'false' if m.is_static else 'true'}>{{}}"
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
@@ -817,7 +827,8 @@ class Emitter:
             # those functions are the reachable ones anyway (registered first)
             policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
             if fn.result_kind == ResultKind.VALUE and fn.result.rstrip().endswith("&"):
-                policy = f", nanocct::cref_policy<{fn.result}, false>{{}}"    # R-RESULT: no owner to tie a reference to
+                # R-RESULT: no owner to tie a reference to
+                policy = ", nb::rv_policy::reference" if _names_not_value_copy(fn.result) else f", nanocct::cref_policy<{fn.result}, false>{{}}"
             qualified = fn.qualified if fn.qualified != "" else fn.name
             py, doc = py_safe(fn.name), fn.doc
             if fn.suffix != "":

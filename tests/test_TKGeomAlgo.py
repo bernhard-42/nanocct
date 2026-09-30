@@ -162,3 +162,17 @@ for algo in (GeomAPI_ExtremaCurveSurface(c2, s1), GeomAPI_ProjectPointOnSurf(gp_
     assert proc.returncode == 0, proc.stderr
     assert proc.stdout.split("\n")[:5] == ["Extrema_ExtCC True 1 1.0", "Extrema_ExtCS True", "Extrema_ExtPS True",
                                            "Extrema_ExtSS True", "Extrema_ExtPC True"]
+
+
+def test_const_ref_results_whose_copy_drops_state_are_references():
+    """R-RESULT, overrides.toml [not_value_copy] (2026-09-30): Geom2dAPI_InterCurveCurve::Intersector() returns
+    const Geom2dInt_GInter&, and IntRes2d_Intersection's copy constructor sets done = false -- the copy raised
+    StdFail_NotDone on every accessor. It is the algorithm's own intersector now, tied to the algorithm."""
+    from nanocct.Geom2d import Geom2d_Ellipse
+    c1 = Geom2d_Ellipse(gp.gp_Elips2d(gp.gp_Ax2d(gp.gp_Pnt2d(0, 0), gp.gp_Dir2d(1, 0)), 2, 1))
+    c2 = Geom2d_Ellipse(gp.gp_Elips2d(gp.gp_Ax2d(gp.gp_Pnt2d(0.5, 0.5), gp.gp_Dir2d(1, 1)), 2, 1))
+    inter = Geom2dAPI.Geom2dAPI_InterCurveCurve(c1, c2, 1e-7)
+    intersector = inter.Intersector()
+    assert intersector.IsDone() and intersector.NbPoints() == inter.NbPoints() == 4
+    p = intersector.Point(1).Value()
+    assert p.Distance(inter.Point(1)) < 1e-9
