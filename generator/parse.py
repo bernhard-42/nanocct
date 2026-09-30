@@ -1664,6 +1664,55 @@ def _find_class_template(tu: cindex.TranslationUnit, qualified: str) -> tuple[ci
     return definition, param_lists
 
 
+def _matching_specialisation(tu: cindex.TranslationUnit, qualified: str, args: list[str]) -> tuple[str, cindex.Cursor | None, dict[str, str]] | None:
+    """The partial or explicit specialisation an instantiation with these arguments really comes from, or None for the
+    primary template. libclang reports the primary template even for an implicit instantiation of a partial
+    specialisation (clang_getSpecializedCursorTemplate, measured 2026-09-30), so the specialisations declared in the
+    translation unit are matched against the arguments here. Deliberately conservative: a pattern argument must be a
+    bare parameter of the specialisation (bound to the argument, consistently) or equal the argument literally; a pattern
+    like `T*` or `X<T>` does not match. Returns ("partial", cursor, {parameter: argument}), ("explicit", cursor, {}),
+    ("ambiguous", None, {}) when more than one matches (C++ would pick the most specialised one), or None."""
+    parts = qualified.split("::")
+    scopes = _scope_reopenings(tu, "::".join(parts[:-1])) if len(parts) > 1 else [tu.cursor]
+    norm = [a.replace(" ", "") for a in args]
+    found: list[tuple[str, cindex.Cursor, dict[str, str]]] = []
+    for sc in scopes:
+        for cur in sc.get_children():
+            if cur.spelling != parts[-1] or not cur.is_definition():
+                continue
+            if cur.kind == K.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION:
+                own = [p.spelling for p in cur.get_children()
+                       if p.kind in (K.TEMPLATE_TYPE_PARAMETER, K.TEMPLATE_NON_TYPE_PARAMETER, K.TEMPLATE_TEMPLATE_PARAMETER)]
+                m = re.search(r"<(.*)>$", cur.type.spelling or cur.displayname)
+                pattern = _split_top(m.group(1)) if m is not None else []
+                if len(pattern) != len(args):
+                    continue
+                bound: dict[str, str] = {}
+                ok = True
+                for pat, arg, na in zip(pattern, args, norm):
+                    if pat in own:
+                        if bound.setdefault(pat, arg).replace(" ", "") != na:
+                            ok = False
+                    elif pat.replace(" ", "") != na:
+                        ok = False
+                    if not ok:
+                        break
+                if ok and set(bound) == set(own):
+                    found.append(("partial", cur, bound))
+            elif cur.kind in (K.CLASS_DECL, K.STRUCT_DECL) and "<" in cur.displayname:
+                m = re.search(r"<(.*)>$", cur.displayname)
+                if m is not None and [a.replace(" ", "") for a in _split_top(m.group(1))] == norm:
+                    found.append(("explicit", cur, {}))
+    if len(found) == 0:
+        return None
+    explicit = [f for f in found if f[0] == "explicit"]
+    if len(explicit) > 0:
+        return explicit[0]                        # a full specialisation beats every partial one in C++
+    if len(found) > 1:
+        return ("ambiguous", None, {})
+    return found[0]
+
+
 def _template_default(param: cindex.Cursor) -> str | None:
     """Default of a template parameter as written (`bool IsFull = false` -> 'false')."""
     toks = [t.spelling for t in param.get_tokens()]
@@ -1743,13 +1792,26 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
         # substitution spells; the whole instantiation stays out
         report.append(f"{what}: template argument {pointer_args[0]} is a raw pointer -> not bound")
         return None
+    # 6c, partial specialisations (State.md 8.22): BVH_Tree<T, N, BVH_BinaryTree> is the real class, the primary template
+    # BVH_Tree<T, N, Arity> is empty -- walking the primary bound BVH_Tree<double, 3, BVH_BinaryTree> without a member or a base
+    spec = _matching_specialisation(tu, qualified, args)
+    walked = tmpl
+    if spec is not None and spec[0] != "partial":
+        # an explicit specialisation is a class of its own, bound from its declaration like any class (not from the template)
+        report.append(f"{what}: {full} is an explicit specialisation -> not instantiated from the template" if spec[0] == "explicit"
+                      else f"{what}: {full} matches more than one partial specialisation -> not bound")
+        return None
     assert not _SUBST.active, "nested template walks are not supported"
-    for names in param_lists:                      # every declaration's parameter names, position-wise
-        for name, a in zip(names, args):
-            _SUBST.params.setdefault(name, a)
+    if spec is not None:
+        walked = spec[1]
+        _SUBST.params.update(spec[2])              # the specialisation's own parameters, deduced from its pattern
+    else:
+        for names in param_lists:                  # every declaration's parameter names, position-wise
+            for name, a in zip(names, args):
+                _SUBST.params.setdefault(name, a)
     _SUBST.self_ = (tmpl_name, full, qualified)
     type_kinds = (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL, K.CLASS_DECL, K.STRUCT_DECL, K.ENUM_DECL, K.CLASS_TEMPLATE)
-    for ch in tmpl.get_children():
+    for ch in walked.get_children():
         if ch.kind not in type_kinds or ch.spelling == "" or ch.spelling in _SUBST.params:
             continue
         if ch.access_specifier == Access.PUBLIC or ch.kind not in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
@@ -1761,7 +1823,7 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
             for param, a in _SUBST.params.items():
                 underlying = re.sub(rf"(?<![:\w]){re.escape(param)}\b", a, underlying)
             _SUBST.members[ch.spelling] = underlying
-    ancestor = tmpl.semantic_parent
+    ancestor = walked.semantic_parent
     while ancestor is not None and ancestor.kind in (K.NAMESPACE, K.CLASS_DECL, K.STRUCT_DECL) and ancestor.spelling != "":
         prefix = _qualified_template(ancestor)
         for sc in _scope_reopenings(tu, prefix):
@@ -1771,7 +1833,7 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
                     _SUBST.scope.setdefault(ch.spelling, f"{prefix}::{ch.spelling}")
         ancestor = ancestor.semantic_parent
     try:
-        c = _class(tmpl, header, package)
+        c = _class(walked, header, package)
     finally:
         _SUBST.clear()
     c.name = full

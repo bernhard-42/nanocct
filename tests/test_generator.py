@@ -466,6 +466,33 @@ public:
   Rules_TWide<T, N> Same() const { return *this; }
 };
 typedef Rules_TWide<short> Rules_TWideS;
+//! 6c, partial specialisations (State.md 8.22, BVH_Tree<T, N, BVH_BinaryTree>): the primary template is empty, the real
+//! class is the partial specialisation; an explicit (full) specialisation is reported, not walked; a pattern like
+//! Rules_PTree<T*, ...> is not matched (conservative) -- Rules_PTree<double, 1, Rules_PBin> has no specialisation of its own.
+struct Rules_PBin {};
+struct Rules_PQuad {};
+template <class T, int N, class K> class Rules_PTree { };
+template <class T, int N> class Rules_PBase
+{
+public:
+  Rules_PBase() {}
+  int Depth() const { return N; }
+  T Scale() const { return T(1); }
+};
+template <class T, int N> class Rules_PTree<T, N, Rules_PBin> : public Rules_PBase<T, N>
+{
+public:
+  Rules_PTree() {}
+  int Arity() const { return 2; }
+};
+template <> class Rules_PTree<int, 1, Rules_PQuad>
+{
+public:
+  Rules_PTree() {}
+  int Arity() const { return 4; }
+};
+typedef Rules_PTree<double, 3, Rules_PBin> Rules_PTreeD3;
+typedef Rules_PTree<int, 1, Rules_PQuad> Rules_PTreeI1;
 
 //! 6a: a nested class deriving from a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator) is
 //! declared after the templates phase, where the base exists.
@@ -608,7 +635,9 @@ def test_ir_classes_and_nesting(rules_ir):
     assert set(names[20:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
-                               "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor",
+                               "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
+                               "Rules_PTree<int, 1, Rules_PQuad>"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -808,7 +837,7 @@ def test_ir_records_mangled_names(rules_ir):
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
-             "Rules_TTransient<double>": "Rules"}
+             "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules"}
     em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
                  ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
@@ -1216,6 +1245,28 @@ def test_nested_classes_of_an_instantiation_are_bound_into_it(rules_ir):
     assert 'nb::class_<Rules_TVec<unsigned long>::Cursor> cls(m.attr("Rules_TVecUL"), "Cursor"' in cpp
     assert "Rules_TVec<unsigned long>::Cursor: __iter__ added (More/Next/Value)" in em.report
     assert not any("nested class of a class template" in line for c in rules_ir.classes for line in c.skipped)
+
+
+def test_partial_specialisation_is_walked_instead_of_the_empty_primary(rules_ir):
+    """6c (State.md 8.22): Rules_PTree<double, 3, Rules_PBin> comes from the partial specialisation
+    Rules_PTree<T, N, Rules_PBin> -- walking the empty primary template bound it without members or base (the four
+    BVH_Tree classes). T and N are deduced from the pattern; its base Rules_PBase<T, N> is instantiated through the probe
+    (R-TEMPLATE-BASE). An explicit specialisation is a class of its own: bound once, from its declaration, not from the template."""
+    tree = next(c for c in rules_ir.classes if c.name == "Rules_PTree<double, 3, Rules_PBin>")
+    assert [m.name for m in tree.methods if m.skip_reason is None] == ["Arity"]
+    assert tree.bases == ["Rules_PBase<double, 3>"]
+    base = next(c for c in rules_ir.classes if c.name == "Rules_PBase<double, 3>")
+    assert sorted(m.name for m in base.methods) == ["Depth", "Scale"] and next(m for m in base.methods if m.name == "Scale").result == "double"
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_PBase<double, 3>": "Rules",
+                                      "Rules_PTree<double, 3, Rules_PBin>": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "nb::class_<Rules_PTree<double, 3, Rules_PBin>, Rules_PBase<double, 3>>" in cpp
+    assert cpp.index("nb::class_<Rules_PBase<double, 3>>") < cpp.index("nb::class_<Rules_PTree<double, 3, Rules_PBin>, ")   # base first
+    explicit = [c for c in rules_ir.classes if c.name == "Rules_PTree<int, 1, Rules_PQuad>"]
+    assert len(explicit) == 1 and [m.name for m in explicit[0].methods] == ["Arity"]
+    assert any("Rules_PTree<int, 1, Rules_PQuad> is an explicit specialisation -> not instantiated from the template" in line
+               for line in rules_ir.report)
 
 
 def test_resolve_ctor_arities():

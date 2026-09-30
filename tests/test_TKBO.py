@@ -125,14 +125,25 @@ def test_data_structures_hashes_and_report():
     assert BOPAlgo.BOPAlgo_PaveFiller.SetArguments.__doc__.count("SetArguments(self") >= 1
 
 
-def test_the_2d_box_tree_returns_its_bvh_tree():
+def test_the_box_trees_expose_their_bvh_tree():
     """State.md 8.22 (c) (v): BVH_PrimitiveSet<double, 2>::BVH() returns handle<BVH_Tree<double, 2>>, which 6c skipped as a
-    handle -- the call raised TypeError. The tree class is still empty, like the 3D one: its members live in the partial
-    specialisation BVH_Tree<T, N, BVH_BinaryTree> (BVH_BinaryTree.hxx), and 6c walks the primary template (State.md 8.22)."""
-    boxes = BOPTools.BOPTools_Box2dTree()
+    handle -- the call raised TypeError. The tree classes were then bound empty, 2D and 3D alike: their members live in the
+    partial specialisation BVH_Tree<T, N, BVH_BinaryTree> (BVH_BinaryTree.hxx) and 6c walked the empty primary template;
+    since 2026-09-30 the specialisation is walked and its base BVH_TreeBase<T, N> is bound."""
+    boxes2 = BOPTools.BOPTools_Box2dTree()
     for i, (x, y) in enumerate([(0.0, 0.0), (5.0, 5.0), (10.0, 0.0)]):
-        boxes.Add(i, Bnd.BVH_Box__double__2(BVH.BVH_Vec2d(x, y), BVH.BVH_Vec2d(x + 1.0, y + 1.0)))
-    boxes.Build()
-    assert type(boxes.BVH()).__name__ == "BVH_Tree__double__2__BVH_BinaryTree"
-    assert boxes.Size() == 3
-
+        boxes2.Add(i, Bnd.BVH_Box__double__2(BVH.BVH_Vec2d(x, y), BVH.BVH_Vec2d(x + 1.0, y + 1.0)))
+    boxes2.Build()
+    tree2 = boxes2.BVH()
+    assert type(tree2).__name__ == "BVH_Tree__double__2__BVH_BinaryTree" and boxes2.Size() == 3
+    assert tree2.Length() >= 1 and (tree2.MaxPoint(0).x(), tree2.MaxPoint(0).y()) == (11.0, 6.0)   # the root spans every box
+    boxes3 = BOPTools.BOPTools_BoxTree()
+    for i, (x, y, z) in enumerate([(0.0, 0.0, 0.0), (5.0, 5.0, 5.0), (20.0, 20.0, 20.0)]):
+        boxes3.Add(i, Bnd.BVH_Box__double__3(BVH.BVH_Vec3d(x, y, z), BVH.BVH_Vec3d(x + 1.0, y + 1.0, z + 1.0)))
+    boxes3.Build()
+    tree3 = boxes3.BVH()
+    assert [c.__name__ for c in type(tree3).__mro__[1:4]] == ["BVH_TreeBase__double__3", "BVH_TreeBaseTransient", "Standard_Transient"]
+    assert (tree3.MinPoint(0).x(), tree3.MaxPoint(0).z()) == (0.0, 21.0) and tree3.Depth() >= 0
+    by_hand = BVH.BVH_Tree__double__3__BVH_BinaryTree()                   # a Transient: held by a handle from the start
+    assert by_hand.AddLeafNode(BVH.BVH_Vec3d(0.0, 0.0, 0.0), BVH.BVH_Vec3d(1.0, 2.0, 3.0), 0, 0) == 0
+    assert (by_hand.Length(), by_hand.MaxPoint(0).z(), by_hand.GetRefCount()) == (1, 3.0, 1)
