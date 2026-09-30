@@ -445,6 +445,13 @@ def main(argv: list[str]) -> int:
                         if k.skip_reason is None and not k.is_copy and not k.defined_in_header and k.mangled not in symbols:
                             k.skip_reason = "declared but not defined in the library"
                             ir.report.append(f"{c.name}::{c.name}({', '.join(p.type for p in k.params)}): declared in the header, no definition in lib{tk_name}")
+                    # R-STATIC-DATA: a static data member whose value is not in the header is read through its symbol, which
+                    # the library must export -- IntPatch_WLineTool::myMaxConcatAngle (a `static const double` defined in the
+                    # .cxx, no Standard_EXPORT) linked on macOS/Linux but was LNK2019 on Windows (2026-09-30)
+                    if "<" not in c.name:
+                        for k in [k for k in c.statics if not k.value_in_header and k.mangled not in symbols]:
+                            c.statics.remove(k)
+                            ir.report.append(f"{k.cpp}: static data member declared in the header, no definition in lib{tk_name}")
                 for fn in ir.functions:            # free functions too (TopOpeBRepDS: FUN_scanloi, FDSSDM_s1s2makesordor)
                     if fn.skip_reason is None and not fn.defined_in_header and fn.mangled not in symbols:
                         fn.skip_reason = "declared but not defined in the library"

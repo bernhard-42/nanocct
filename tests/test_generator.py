@@ -581,6 +581,7 @@ public:
   static constexpr double THE_TOL = 1.5;
   static const char* const THE_NAMES[2];
   static int theCounter;
+  static const double theAngle;     //!< defined in the .cxx (IntPatch_WLineTool::myMaxConcatAngle): needs the symbol
 };
 
 //! A namespace named like the package is the package module itself.
@@ -1219,6 +1220,11 @@ def test_static_data_members_become_class_attributes(tmp_path_factory):
         assert (f'.def_prop_ro_static("{name}", [](nb::handle) {{ return static_cast<std::remove_cv_t<decltype(Rules_Order::{name})>>'
                 f'(Rules_Order::{name}); }});' in cpp)
     assert "THE_NAMES" not in cpp and "theCounter" not in cpp
+    # the value is in the header for an in-class initialiser or constexpr; a declaration-only static is read through its
+    # symbol, so R-UNDEFINED checks it against the library (LNK2019 on Windows for a static without Standard_EXPORT)
+    statics = {k.py_name: k for c in rules_ir.classes if c.name == "Rules_Order" for k in c.statics}
+    assert statics["THE_LIMIT"].value_in_header and statics["THE_TOL"].value_in_header
+    assert not statics["theAngle"].value_in_header and statics["theAngle"].mangled != ""
     report = "\n".join(rules_ir.report + em.report)
     assert "Rules_Order::THE_NAMES: static data member: array (not bound)" in report
     assert "Rules_Order::theCounter: static field that is not const -> not bound" in report

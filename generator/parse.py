@@ -1523,8 +1523,11 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 if reason is not None:
                     c.skipped.append(f"{c.name}::{ch.spelling}: static data member: {reason}")
                 else:
+                    # the value is in the header when the declaration carries an initialiser (`static const int X = 5;`,
+                    # constexpr); `static const double X;` is defined in the .cxx and needs the symbol (R-UNDEFINED)
                     c.statics.append(Constant(py_name=py_safe(ch.spelling), cpp=f"{c.name}::{ch.spelling}", doc=_doc(ch),
-                                              type_class=_class_behind(ch.type)))
+                                              type_class=_class_behind(ch.type), mangled=ch.mangled_name,
+                                              value_in_header=any(x.kind.is_expression() for x in ch.get_children())))
         elif ch.kind == K.FIELD_DECL:
             reason = _unsupported(ch.type, allow_out=False)
             if reason is None and ch.type.get_canonical().kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):

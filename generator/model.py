@@ -193,6 +193,8 @@ class Constant:
     doc: str
     scope: tuple[str, ...] = ()
     type_class: str = ""        # the class/enum behind the value's type, for R-UNBOUND-TYPE ("" for a scalar); class statics only
+    mangled: str = ""           # class statics: the linker symbol, for R-UNDEFINED when the value is not in the header
+    value_in_header: bool = True  # class statics: an in-class initialiser or constexpr -- read as a constant, no symbol needed
 
 
 @dataclass

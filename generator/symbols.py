@@ -107,6 +107,8 @@ def defined_symbols(install: Path, toolkit: str) -> set[str] | None:
     symbols: set[str] = set()
     for line in out.splitlines():
         parts = line.split()
-        if len(parts) == 3 and parts[1] in ("T", "W", "t"):
+        # functions (T, W, t) and, for R-STATIC-DATA, data: S (a Mach-O section), D/d, R/r (read-only), B/b, V (weak object),
+        # u (unique global) -- IntPatch_WLineTool::myMaxConcatAngle is `S` on macOS and was missed with functions only
+        if len(parts) == 3 and parts[1] in ("T", "W", "t", "S", "s", "D", "d", "R", "r", "B", "b", "V", "u"):
             symbols.add(parts[2])
     return symbols
