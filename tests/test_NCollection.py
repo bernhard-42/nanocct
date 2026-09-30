@@ -604,3 +604,17 @@ def test_h_collections_pass_as_transient_across_toolkits():
     it.AddItem(NCollection.NCollection_HSequence[int]())         # bound by _TKernel
     it.AddItem(arr)
     assert it.NbEntities() == 2
+
+
+def test_h_collections_survive_occt_down_cast():
+    """OCCT's occ::down_cast (a dynamic_cast) in another library returned null for an H-array created by nanocct: every
+    library has its own RTTI copy of a template instance, and libc++ on macOS arm64 compared nanocct's (compiled with
+    hidden visibility) by address (2026-09-30). IGESBasic_HArray1OfHArray1OfInteger stores Transients and down-casts in
+    Value() -- the same cast after which StepToTopoDS dereferenced the null handle."""
+    from nanocct.IGESBasic import IGESBasic_HArray1OfHArray1OfInteger
+    arr = NCollection.NCollection_HArray1[int](1, 3)
+    arr.SetValue(2, 42)
+    lists = IGESBasic_HArray1OfHArray1OfInteger(1, 1)
+    lists.SetValue(1, arr)
+    back = lists.Value(1)
+    assert back is arr and back.Value(2) == 42

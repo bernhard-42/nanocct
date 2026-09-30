@@ -17,10 +17,21 @@ find_package(OpenCASCADE REQUIRED NO_DEFAULT_PATH PATHS
              "${NANOCCT_OCCT_DIR}/cmake")
 message(STATUS "nanocct: OCCT ${OpenCASCADE_VERSION} from ${NANOCCT_OCCT_DIR}")
 
+# macOS: types keep default visibility, functions and variables stay hidden (-fvisibility-ms-compat = -fvisibility=hidden
+# -ftype-visibility=default; it must come after nanobind's -fvisibility=hidden, the last of the two wins). Every library
+# has its own copy of the RTTI of a template instance (NCollection_HArray1<int>), and libc++ on arm64 compares two copies
+# by name only when both are marked non-unique -- clang marks only those of default visibility, as OCCT's are. Under
+# nanobind's -fvisibility=hidden an H-array created by nanocct failed OCCT's own occ::down_cast, and OCCT dereferenced the
+# null handle (2026-09-30). It exports no symbol: clang keeps such RTTI hidden (measured).
+if(APPLE)
+  set(NANOCCT_VISIBILITY -fvisibility-ms-compat)
+endif()
+
 include("${CMAKE_SOURCE_DIR}/src/cpp/toolkits.cmake")   # generated: NANOCCT_TOOLKITS
 foreach(tk IN LISTS NANOCCT_TOOLKITS)
   file(GLOB tk_sources CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/cpp/${tk}/*.cpp")
   nanobind_add_module(_${tk} STABLE_ABI NB_DOMAIN nanocct ${tk_sources})
+  target_compile_options(_${tk} PRIVATE ${NANOCCT_VISIBILITY})
   target_include_directories(_${tk} PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
   # OCCT's exported targets define HAVE_RAPIDJSON but do not carry the include path, and an installed header
   # includes it (RWGltf_GltfJsonParser.hxx -> rapidjson/document.h). Same vendored copy the OCCT build used
@@ -49,6 +60,7 @@ endforeach()
 nanobind_add_module(_AddOns STABLE_ABI NB_DOMAIN nanocct "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/_AddOns.cpp"
                     "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/Tessellator.cpp"
                     "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/ShapeClean.cpp")
+target_compile_options(_AddOns PRIVATE ${NANOCCT_VISIBILITY})
 target_include_directories(_AddOns PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
 if(MSVC)
   target_compile_options(_AddOns PRIVATE /wd4996)
