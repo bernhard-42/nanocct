@@ -684,7 +684,7 @@ def test_ir_and_emitter_bytes_buffer_from_override(monkeypatch, tmp_path_factory
     unpack = _method(ir, "Rules_Value", "Unpack")
     assert unpack.skip_reason == "param 'theOut': raw pointer to primitive"
 
-    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert "const nb::bytes &theData" in cpp
@@ -774,7 +774,7 @@ def test_ir_container_instantiation_registered(rules_ir):
 
 
 def test_emitter_static_suffix_and_collision(rules_ir):
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def_static("Length_s"' in cpp and '.def("Length"' in cpp
@@ -794,10 +794,12 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert "Rules_Value::Origin() const: const twin of a less const overload -> not bound" in em.report
     # conversion operators: the const/non-const twins to gp_XYZ give one conversion (emission mutates the IR: first emitter only)
     assert cpp.count("nanocct_conversion<Rules_Value, gp_XYZ>(") == 1 and cpp.count("nanocct_conversion<Rules_Value, gp_Pnt>(") == 1
-    # R-WIDTH: the wider twin is registered first although the header declares it second
-    assert cpp.index('(Rules_Value::*)(const double) const') < cpp.index('(Rules_Value::*)(const float) const')
+    # R-WIDTH: the wider twin is registered first although the header declares it second. An int twin stays reachable
+    # (a value beyond int32 fails over to size_t); the float twin never is -- every Python float fits the double one --
+    # so it is not bound at all (R-UNREACHABLE, 2026-09-30)
+    assert '(Rules_Value::*)(const double) const' in cpp and '(Rules_Value::*)(const float) const' not in cpp
+    assert "Rules_Value::Scale(const float): same Python signature as Scale(const double), registered before it -> not bound (unreachable)" in em.report
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
-    assert "Rules_Value::Scale(const float): same Python signature as Scale(const double) -> registered after it (width preference)" in em.report
     # R-ITER: More/Next/Value -> __iter__/__next__ through nanocct_def_iter; Rules_Value (no More) gets none
     assert cpp.count("nanocct_def_iter<") == 2 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
@@ -809,7 +811,7 @@ def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):
     nanobind never touches tp_hash and Python's "__eq__ makes __hash__ None" rule fires only at type creation, so
     without this the class keeps object.__hash__ and an equal value does not find its entry in a dict or set.
     """
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     for name in ("Rules_Eq", "Rules_FriendEq"):                      # member and friend operator== alike
@@ -836,7 +838,7 @@ def test_ir_records_mangled_names(rules_ir):
 
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
-    known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
+    known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
              "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules"}
     em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
@@ -873,7 +875,7 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     assert via == [("Dump", 1, "Rules_Options"), ("Flag", 0, "Rules_Options"), ("Flag", 1, "Rules_Options"),
                    ("Fuzzy", 0, "Rules_Options"), ("SetFuzzy", 1, "Rules_Options")]
     assert all(m.defined_in_header for m in algo.methods)           # the symbol belongs to the base's library: no nm check here
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     start = cpp.index('m.attr("Rules_Algo"))')
@@ -920,7 +922,7 @@ def test_a_non_const_scalar_conversion_takes_a_non_const_self(rules_ir):
     by_kind = {k.kind: k for k in value.conversions}
     assert by_kind[ConversionKind.FLOAT].is_const is False        # operator double&()
     assert by_kind[ConversionKind.BOOL].is_const is True          # operator bool() const
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("__float__", [](Rules_Value &self) { return static_cast<double>(self); }' in cpp
@@ -1000,7 +1002,7 @@ def test_ir_shared_ptr_parameter_with_its_own_empty_default_is_dropped(rules_ir)
     open_ = _method(rules_ir, "Rules_Sink", "Open")
     assert open_.skip_reason is None
     assert [(p.name, p.omitted) for p in open_.params] == [("theName", False), ("theStream", True)]
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert "self.Open(theName, nullptr)" in cpp              # the omitted stream is passed as nullptr
@@ -1019,7 +1021,7 @@ def test_ir_non_public_base_blocks_construction_only_when_it_provides_operator_n
     assert lazy.bases == [] and lazy.constructible is False
     assert "Rules_LazyScope: non-public base Rules_AllocOptions provides operator new -> inaccessible, class not constructible" in lazy.skipped
     assert algo.bases == [] and algo.constructible is True         # same shape, but Rules_Options has no operator new
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert "Rules_LazyScope: operator new is not public -> no constructors" in em.report
@@ -1060,7 +1062,7 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     # R-PTR-INCOMPLETE: Rules_Fwd is only forward-declared, but Rules_Fwd.hxx exists in the include directory
     fwd = _method(rules_ir, "Rules_Value", "Fwd")
     assert fwd.skip_reason is None and fwd.result_class_name == "Rules_Fwd"
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Value": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Value": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("Optional", [](const Rules_Value &self, const int theA) { auto nanocct_result = self.Optional(theA, nullptr); return nanocct_result; }, nb::arg("theA")' in cpp
@@ -1103,7 +1105,7 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     tvec = by["Rules_TVec<unsigned long>"]
     assert tvec.ctors[0].params[0].default == "(unsigned long)(0)"
     em = Emitter(rules_ir, OCCT_INC,
-                 {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Vis": "Rules", "Rules_Vis::Filter": "Rules",
+                 {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Vis": "Rules", "Rules_Vis::Filter": "Rules",
                   "Rules_TTransient<int>": "Rules", "Rules_TTransient<double>": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
@@ -1150,13 +1152,17 @@ def test_ir_template_bases_of_instantiations(rules_ir):
     assert any(r.startswith("Rules_Crtp<int>: template base Rules_CrtpBase<int, Rules_Crtp<int>> cannot be instantiated -> dropped") for r in rules_ir.report)
 
 
-def test_emitter_orders_derived_overloads_first_and_lets_null_pointers_be_none(rules_ir):
+def test_emitter_orders_derived_overloads_first_and_lets_null_pointers_be_none(tmp_path_factory):
     """R-OVERLOAD-ORDER and R-PTR-NULL on the synthetic header (State.md 8.22): nanobind calls the first overload that
     accepts the arguments, so Take(const Rules_Inherit&) and Grid(const NCollection_Array2<double>&) -- declared after
     their base-class twins -- must be registered first; Take(value, n) has another arity and stays where it is. A
     class pointer takes None, with a null default (without .none() nanobind refused the default itself) or without one
     (State.md 8.23); a const char* is a string and does not."""
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    # a fresh parse: emitting marks skipped members in the IR, and the shared fixture has seen emitters without
+    # Rules_Value, which skip Rules_Inherit and so Take(const Rules_Inherit&) (R-UNBOUND-TYPE)
+    rules_ir = rules_ir_of(tmp_path_factory, "order")
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules",
+                                      "Rules_Value": "Rules"},     # Rules_Inherit's base: without it the class is skipped (R-UNBOUND-TYPE)
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     body = cpp[cpp.index('"Rules_Order"'):]
@@ -1242,7 +1248,7 @@ def test_nested_classes_of_an_instantiation_are_bound_into_it(rules_ir):
     so it gets __iter__ (R-ITER)."""
     cursor = next(c for c in rules_ir.classes if c.name == "Rules_TVec<unsigned long>::Cursor")
     assert (cursor.outer, cursor.scope, cursor.py_name) == ("Rules_TVec<unsigned long>", ("Rules_TVecUL",), "Cursor")
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert 'nb::class_<Rules_TVec<unsigned long>::Cursor> cls(m.attr("Rules_TVecUL"), "Cursor"' in cpp
@@ -1260,7 +1266,7 @@ def test_partial_specialisation_is_walked_instead_of_the_empty_primary(rules_ir)
     assert tree.bases == ["Rules_PBase<double, 3>"]
     base = next(c for c in rules_ir.classes if c.name == "Rules_PBase<double, 3>")
     assert sorted(m.name for m in base.methods) == ["Depth", "Scale"] and next(m for m in base.methods if m.name == "Scale").result == "double"
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_PBase<double, 3>": "Rules",
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_PBase<double, 3>": "Rules",
                                       "Rules_PTree<double, 3, Rules_PBin>": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
@@ -1475,7 +1481,7 @@ def test_extra_link_libraries_from_the_emitted_includes(rules_ir):
     closure = tree.link_closure("TKDE")                      # EXTERNLIB: TKernel, TKMath, TKBRep (transitively)
     assert {"TKDE", "TKernel", "TKMath", "TKBRep"} <= closure
     assert closure.isdisjoint({"TKLCAF", "TKXSBase"})        # what OCCT itself does not link
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     em.emit()
     assert "Rules.hxx" in em.includes
@@ -1509,7 +1515,7 @@ def test_a_braced_default_is_list_initialised(rules_ir):
     3 more in TKXSBase) must be emitted as std::decay_t<T>{} -- static_cast from a braced-init-list does not compile
     ("expected expression", 2026-09-22)."""
     assert _method(rules_ir, "Rules_Value", "Braced").params[0].default == "{ }"   # libclang spells the tokens
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert 'nb::arg("theXYZ") = std::decay_t<const gp_XYZ &>{ }' in cpp
@@ -1523,7 +1529,7 @@ def test_a_bitset_is_a_set_of_indices(rules_ir):
     assert all("bitset" not in line for line in rules_ir.report), [l for l in rules_ir.report if "bitset" in l]
     assert _method(rules_ir, "Rules_Value", "Flags").skip_reason is None
     assert _method(rules_ir, "Rules_Value", "GetFlags").skip_reason is None
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert '.def("Flags"' in cpp and '.def("GetFlags"' in cpp
@@ -1535,7 +1541,7 @@ def test_the_lambda_temporary_cannot_collide_with_a_parameter(rules_ir):
     result)); when such a parameter is an out-parameter of a non-void method, a bare `result` for the C++ return value
     is a redefinition in the same lambda (TKDEIGES did not compile, 2026-09-22). Generated temporaries carry the
     nanocct_ prefix, which no OCCT name uses."""
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
     assert "auto nanocct_result = " in cpp

@@ -121,5 +121,8 @@ def test_keyword_parameter_names_are_suffixed():
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     categories = {line.split("\t")[0] for line in lines}
-    assert categories <= {"iterator", "not-constructible", "operator", "overload-collision", "raw-pointer", "stream", "template"}
+    assert categories <= {"iterator", "not-constructible", "operator", "overload-collision", "raw-pointer", "stream", "template", "unbound-type"}
+    # R-UNBOUND-TYPE (2026-09-30): the TDF_LabelNode* constructor -- TDF_LabelNode is internal and not bound; TDF_Label's stays
+    assert [line.split("\t")[2].split("): ")[0] + ")" for line in lines if line.startswith("unbound-type")] == [
+        "TDF_AttributeIterator::TDF_AttributeIterator(const TDF_LabelNodePtr, const bool)"]
     assert any("TDF_Label::FindAttribute: template member" in line for line in lines)    # the non-template overload downcasts (2d)

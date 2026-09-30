@@ -113,6 +113,11 @@ class Emitter:
         self.preassigned = False
         self._emitted_instances: set[str] = set()
         self._idents: set[str] = set()
+        self._wrapped = {c.name for c in ir.classes if c.noncopyable}   # R-UNBOUND-TYPE: registered under the wrapper's typeid
+        self._local_types = self.local | {e.name for e in ir.enums} | {e.name for c in ir.classes for e in c.enums}   # bound here
+        self._template_names = {k.split("<")[0] for k in known_templates} | set(BINDERS) | {  # R-UNBOUND-TYPE: not judged
+            src for info in BINDERS.values() for src in info.get("nested_from", {}).values()} | {
+            c.name.split("<")[0] for c in ir.classes if c.template_key != ""}
 
     def _owns(self, key: str) -> bool:
         """Should this package emit the instantiation `key`? (with a preassigned registry: only if it is the owner)"""
@@ -166,6 +171,53 @@ class Emitter:
                 continue
             return p.class_name
         return None
+
+    # Design.md 6 R-UNBOUND-TYPE
+    def _unbound_reason(self, name: str) -> str | None:
+        """Why the class/enum `name` has no nanobind registration a signature could use, or None when it has one.
+        Besides "bound nowhere": a Standard_Failure descendant is a Python exception type, not a value type, and a
+        class bound through its R-NONCOPYABLE wrapper is registered under the wrapper's typeid only."""
+        if name == "" or "<" in name or name.split("::")[0] in self._template_names:
+            # a template instantiation (or a class nested in one) is spelled here without its default arguments
+            # (math_VectorBase<>, NCollection_FlatDataMap<K, V>) or bound under another name (NCollection_TListIterator<T> is
+            # the List binder's Iterator), so `known`/`templates` cannot answer for it: not judged, the binding stays
+            return None
+        if name in self.skipped:
+            return "is not bound (its class is skipped)"
+        if name in self._wrapped:
+            return "is not bound (only its non-copyable wrapper is)"
+        if name == "Standard_Failure" or "Standard_Failure" in self._ancestors_of(name):
+            return "is not bound as a value (a Python exception type)"
+        if name in self.templates:
+            return None if not self.templates[name].get("skipped", False) else "is not bound (instantiation skipped)"
+        return None if name in self.known or name in self._local_types else "is not bound"
+
+    def _skip_unbound(self, members: list) -> list[tuple[object, str]]:
+        """R-UNBOUND-TYPE: a member whose parameter or result is a class no binding registers cannot be called (no Python
+        object of the type exists) or fails on every non-null result (nanobind: "Unable to convert function return value");
+        OSD_OpenFile even opened the file first. Such a member is not bound. Sets skip_reason; returns (member, message)."""
+        skipped: list[tuple[object, str]] = []
+        for m in members:
+            if m.skip_reason is not None:
+                continue
+            names = [p.class_name for p in m.params if not p.omitted and p.bytes_of == ""] + [getattr(m, "result_class_name", "")]
+            for name in names:
+                why = self._unbound_reason(name)
+                if why is not None:
+                    m.skip_reason = f"type {name} {why}"
+                    skipped.append((m, m.skip_reason))
+                    break
+        return skipped
+
+    def _ancestors_of(self, name: str) -> set[str]:
+        found: set[str] = set()
+        todo = [name]
+        while len(todo) > 0:
+            for b in self.bases_of.get(todo.pop(), []):
+                if b not in found:
+                    found.add(b)
+                    todo.append(b)
+        return found
 
     def _ancestors(self, p: Param) -> set[str]:
         """R-OVERLOAD-ORDER: every base of the class behind a parameter -- what the package's parse saw
@@ -677,17 +729,24 @@ class Emitter:
         free_ops: dict[str, list[str]] = {}
         module_fns: list[str] = []
         plain = [f for f in self.ir.functions if not f.is_operator]
+        for fn, why in self._skip_unbound(plain):                     # R-UNBOUND-TYPE: OSD_OpenFile -> FILE*
+            q = fn.qualified if fn.qualified != "" else fn.name
+            self.report.append(f"{q}({self._sig(fn.params)}): {why} -> not bound")
         for fn in skip_const_twins(plain):                            # R-CONST-TWIN: TopoDS::Vertex(const TopoDS_Shape&) vs (TopoDS_Shape&)
             q = fn.qualified if fn.qualified != "" else fn.name
             self.report.append(f"{q}({self._sig(fn.params)}): const twin of a less const overload -> not bound")
         plain, demoted = order_by_width(plain)                       # R-WIDTH: Abs(double) before Abs(float)
-        for narrow, wide in demoted:
-            q = wide.qualified if wide.qualified != "" else wide.name
-            self.report.append(f"{q}({self._sig(narrow.params)}): same Python signature as {q}({self._sig(wide.params)}) -> registered after it (width preference)")
         plain, moved = order_by_derivation(plain, self._ancestors)   # R-OVERLOAD-ORDER: (TopoDS_Face) before (TopoDS_Shape)
         for derived, base in moved:
             q = derived.qualified if derived.qualified != "" else derived.name
             self.report.append(f"{q}({self._sig(derived.params)}): takes a derived class of {q}({self._sig(base.params)}) -> registered before it")
+        for gone, taker in drop_unreachable(plain):                  # R-UNREACHABLE: Abs(float) after Abs(double)
+            q = gone.qualified if gone.qualified != "" else gone.name
+            self.report.append(f"{q}({self._sig(gone.params)}): same Python signature as {q}({self._sig(taker.params)}), registered before it -> not bound (unreachable)")
+        for narrow, wide in demoted:
+            if narrow.skip_reason is None:
+                q = wide.qualified if wide.qualified != "" else wide.name
+                self.report.append(f"{q}({self._sig(narrow.params)}): same Python signature as {q}({self._sig(wide.params)}) -> registered after it (width preference)")
         for fn, suffix in resolve_overload_collisions(plain):
             fn.suffix = suffix           # R-COLLISION applies to namespace functions too
         # R-FREE-OP: hidden friends, collected per class; an instantiation may be listed twice in ir.classes (the class
@@ -826,14 +885,20 @@ class Emitter:
             why = c.not_constructible_reason if c.not_constructible_reason != "" else "operator new is not public"
             self.report.append(f"{c.name}: {why} -> no constructors")
         if not c.is_abstract and c.constructible:
+            for k, why in self._skip_unbound(c.ctors):                  # R-UNBOUND-TYPE: GCPnts_DistFunctionMV(GCPnts_DistFunction&)
+                self.report.append(f"{c.name}::{c.name}({self._sig(k.params)}): {why} -> constructor not bound")
             declared, demoted = order_by_width([k for k in c.ctors if k.skip_reason is None])   # R-WIDTH
-            for narrow, wide in demoted:
-                self.report.append(f"{c.name}::{c.name}({self._sig(narrow.params)}): same Python signature as {c.name}({self._sig(wide.params)}) -> registered after it (width preference)")
             # nanobind wants the zero-argument nb::new_ overload first; sort by required-parameter count (stable: width order kept)
             declared.sort(key=lambda k: sum(1 for q in k.params if q.default is None))
             declared, moved = order_by_derivation(declared, self._ancestors)   # R-OVERLOAD-ORDER: the copy constructor before a base-class one
             for derived, base in moved:
                 self.report.append(f"{c.name}::{c.name}({self._sig(derived.params)}): takes a derived class of {c.name}({self._sig(base.params)}) -> registered before it")
+            for gone, taker in drop_unreachable(declared):             # R-UNREACHABLE: (const char16_t*) after (const char*, bool = false)
+                self.report.append(f"{c.name}::{c.name}({self._sig(gone.params)}): same Python signature as {c.name}({self._sig(taker.params)}), registered before it -> not bound (unreachable)")
+            declared = [k for k in declared if k.skip_reason is None]
+            for narrow, wide in demoted:
+                if narrow.skip_reason is None:
+                    self.report.append(f"{c.name}::{c.name}({self._sig(narrow.params)}): same Python signature as {c.name}({self._sig(wide.params)}) -> registered after it (width preference)")
             implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
             arities = {id(k): n for k, n in resolve_ctor_arities(declared)}
             for k in declared:
@@ -851,15 +916,20 @@ class Emitter:
                     ctor_body.append(self._ctor(c, k.params[:n], k.doc, type_name="nanocct_T"))
                 else:
                     body.append(self._ctor(c, k.params[:n], k.doc))
+        for m, why in self._skip_unbound(c.methods):   # R-UNBOUND-TYPE: MoniTool_Timer::Dictionary() -> a map over const char*
+            self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}): {why} -> not bound")
         bound = [m for m in c.methods if m.skip_reason is None]
         for m in skip_const_twins(c.methods):       # R-CONST-TWIN
             self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}){' const' if m.is_const else ''}: const twin of a less const overload -> not bound")
         methods, demoted = order_by_width(c.methods)   # R-WIDTH: wider scalar overloads registered first
-        for narrow, wide in demoted:
-            self.report.append(f"{c.name}::{narrow.name}({self._sig(narrow.params)}): same Python signature as {wide.name}({self._sig(wide.params)}) -> registered after it (width preference)")
         methods, moved = order_by_derivation(methods, self._ancestors)   # R-OVERLOAD-ORDER: (NCollection_Array2<T>) before (NCollection_Array1<T>)
         for derived, base in moved:
             self.report.append(f"{c.name}::{derived.name}({self._sig(derived.params)}): takes a derived class of {base.name}({self._sig(base.params)}) -> registered before it")
+        for gone, taker in drop_unreachable([m for m in methods if _py_name(m) is not None]):   # R-UNREACHABLE: AssignCat(char) after AssignCat(const char*)
+            self.report.append(f"{c.name}::{gone.name}({self._sig(gone.params)}): same Python signature as {taker.name}({self._sig(taker.params)}), registered before it -> not bound (unreachable)")
+        for narrow, wide in demoted:
+            if narrow.skip_reason is None:
+                self.report.append(f"{c.name}::{narrow.name}({self._sig(narrow.params)}): same Python signature as {wide.name}({self._sig(wide.params)}) -> registered after it (width preference)")
         resolved = resolve_overload_collisions(methods)
         for m, suffix in resolved:
             m.suffix = suffix
@@ -1149,15 +1219,81 @@ _WIDE_INTS = {"size_t", "Standard_Size", "unsigned", "unsigned int", "long", "un
               "short", "unsigned short", "int8_t", "uint8_t", "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t"}
 
 
+# R-WIDTH for text (T1, 2026-09-30): every C++ text type is a Python str. The rank is C++'s own preference for a narrow
+# string literal: const char* (exact match) before std::string_view/std::string (a conversion), then the UTF-16 string,
+# then the single characters. Not "the widest" -- Resource_Manager::SetResource(name, const char16_t*) stores the value
+# through Resource_Unicode's format, which with the default NoConversion turns "Größe" into Latin-1 bytes for Value()
+# (measured in C++); TCollection_ExtendedString(const char*) reads UTF-8 as one byte per character, as it does in C++
+# (TCollection_ExtendedString(s, True) decodes it).
+_TEXT_RANK = {"char*": 0, "Standard_CString": 0, "std::string_view": 1, "std::basic_string_view<char>": 1, "std::string": 1,
+              "std::basic_string<char>": 1, "char16_t*": 2, "Standard_ExtString": 2, "char": 3, "Standard_Character": 3,
+              "char16_t": 4, "Standard_ExtCharacter": 4, "char32_t": 5, "Standard_Utf32Char": 5}
+_TEXT_STRINGS = 2     # ranks up to here take any str; the single characters above take one character each
+
+
 def _width(t: str) -> tuple[str, int]:
     """(Python type, rank) of a scalar parameter type: double/int rank 0, float and the other integer widths rank 1;
-    anything else is its own spelling with rank 0."""
+    a text type is ("str", its _TEXT_RANK); anything else is its own spelling with rank 0."""
     base = _strip_ref(t)
     if base in _WIDTH_RANK:
         return _WIDTH_RANK[base]
     if base in _WIDE_INTS:
         return ("int", 1)
+    text = _TEXT_RANK.get(re.sub(r"\bconst\b|\s", "", base))
+    if text is not None:
+        return ("str", text)
     return (base, 0)
+
+
+def _covers(x: Param, y: Param) -> bool:
+    """Whether every Python argument parameter y accepts is also accepted by x (R-UNREACHABLE): a double takes every
+    float, a string type every text; an int never covers another int width (nanobind's range check fails over, so
+    Poly_ArrayOfNodes::Value(2**31) reaches the size_t twin), and a class covers only itself."""
+    (kx, rx), (ky, ry) = _width(x.type), _width(y.type)
+    if kx != ky:
+        return False
+    if kx == "float":
+        return rx <= ry
+    if kx == "str":
+        return rx <= _TEXT_STRINGS or rx == ry
+    return rx == ry
+
+
+# Design.md 6 R-UNREACHABLE
+def drop_unreachable(overloads: list) -> list[tuple[object, object]]:
+    """An overload that an earlier-registered one of the same name takes over for every call it accepts is never reached
+    from Python: nanobind calls the first overload that accepts the arguments. Such an overload is not bound
+    (TCollection_ExtendedString(const char16_t*) after TCollection_ExtendedString(const char*, bool = false), Abs(float)
+    after Abs(double)). Compared per number of passed arguments, so a defaulted parameter counts; overloads with out-
+    parameters are left alone (R-COLLISION may give them a name of their own). Sets skip_reason; returns (dropped, taker)."""
+    def key(m) -> tuple:
+        return (getattr(m, "qualified", "") or getattr(m, "name", ""), getattr(m, "is_static", False))
+
+    def has_out(m) -> bool:
+        return any(p.is_out and not p.is_inout or p.stream == StreamKind.OUT for p in m.params)
+
+    def arities(m) -> range:
+        ps = _py_params(m)
+        return range(sum(1 for p in ps if p.default is None and not p.cstr_none), len(ps) + 1)
+
+    dropped: list[tuple[object, object]] = []
+    earlier: list = []
+    for y in overloads:
+        if y.skip_reason is not None:
+            continue
+        if not has_out(y):
+            yp = _py_params(y)
+            takers = []
+            for a in arities(y):
+                taker = next((x for x in earlier if key(x) == key(y) and not has_out(x) and a in arities(x)
+                              and all(_covers(xp, q) for xp, q in zip(_py_params(x)[:a], yp[:a]))), None)
+                takers.append(taker)
+            if len(takers) > 0 and all(t is not None for t in takers):
+                y.skip_reason = "unreachable: an earlier overload takes every call"
+                dropped.append((y, takers[0]))
+                continue
+        earlier.append(y)
+    return dropped
 
 
 def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:

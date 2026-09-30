@@ -9,6 +9,7 @@
 - [Mutable primitive references](#mutable-primitive-references)
 - [Operators](#operators)
 - [Equality in OCCT and Python](#equality-in-occt-and-python)
+- [Strings](#strings)
 - [Handling of istream and ostream](#handling-of-istream-and-ostream)
 - [Enums](#enums)
 - [Exceptions](#exceptions)
@@ -689,6 +690,32 @@ So a dict finds `g` if `g == f`, and an OCCT map finds it if `g.IsSame(f)`: a re
 | `std::equal_to<gp_Pnt>`  | each coordinate within `Epsilon(x)`, about one unit in the last place (`gp_Pnt.hxx`) |
 | `std::hash<gp_Pnt>`      | the exact bits of the three doubles                                                  |
 
+
+## Strings
+
+Every C++ text type of OCCT is a Python `str`: `const char*` (`Standard_CString`), `std::string_view`, the UTF-16 `const char16_t*` (`Standard_ExtString`), and the single characters `char`, `char16_t` and `char32_t`. A `str` goes to C++ as UTF-8 for the 8-bit types and as UTF-16 for `char16_t`.
+
+Where OCCT overloads a method for several of these types, Python cannot tell them apart, and nanobind calls the first overload that accepts a `str`. nanocct registers them in the order C++ itself picks for a narrow string literal `"..."`: `const char*` first, then `std::string_view`, then `const char16_t*`, then the single characters. An overload that can never be reached this way is not bound, and the generator reports it ([Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations), R-WIDTH, R-UNREACHABLE).
+
+For most classes this makes no difference, since all the overloads store the same text. It matters for `TCollection_ExtendedString`: exactly as in C++, its `const char*` constructor reads one byte per character unless `theIsMultiByte` is `True`:
+
+```python
+In [1]: from nanocct.TCollection import TCollection_AsciiString, TCollection_ExtendedString
+
+In [2]: TCollection_AsciiString("Größe").ToCString(), TCollection_AsciiString("Größe").Length()
+Out[2]: ('Größe', 7)
+
+In [3]: TCollection_ExtendedString("Größe").ToExtString()
+Out[3]: 'GrÃ¶Ã\x9fe'
+
+In [4]: TCollection_ExtendedString("Größe", True).ToExtString()
+Out[4]: 'Größe'
+
+In [5]: TCollection_ExtendedString(TCollection_AsciiString("Größe")).ToExtString()
+Out[5]: 'Größe'
+```
+
+`TCollection_AsciiString` holds the UTF-8 bytes (7 for the 5 characters), and `Length()` counts them. So for text that is not ASCII, pass `True` to `TCollection_ExtendedString`, or go through a `TCollection_AsciiString`, whose conversion constructor defaults to multi-byte.
 
 ## Handling of istream and ostream
 

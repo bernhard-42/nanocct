@@ -179,6 +179,7 @@ class Function:
     suffix: str = ""            # R-COLLISION, as for methods
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
     mangled: str = ""                 # linker symbol; R-UNDEFINED compares it with nm's list (FUN_scanloi in TopOpeBRepDS)
+    result_class_name: str = ""       # canonical class/enum behind the result, as for methods (R-UNBOUND-TYPE)
 
 
 @dataclass

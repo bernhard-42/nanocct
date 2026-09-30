@@ -134,13 +134,14 @@ def test_the_de_provider():
     assert DEGLTF_Provider().GetVendor().ToCString() == "OCC"
 
 
-def test_report_is_eight_lines():
+def test_report_is_nine_lines():
     """RapidJSON is third-party plumbing: RWGltf_GltfJsonParser derives from rapidjson::GenericDocument, which pulled
     the library's Writer/MemoryPoolAllocator/UTF8 into the package until the namespace was skipped."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     # 7 until 2026-09-23: rapidjson::GenericValue appears only as a reference parameter, so the skipped namespace was
     # not reported for it -- the method bound with an unregistered type instead (6c, R-UNSUPPORTED)
-    assert len(lines) == 8
+    # 9 since 2026-09-30: FormatParseError(rapidjson::ParseErrorCode) is not bound, no Python value of the type exists (R-UNBOUND-TYPE)
+    assert len(lines) == 9
     assert sum("rapidjson" in line and "namespace skipped" in line for line in lines) == 4
     assert sum("R-TEMPLATE-BASE" in line for line in lines) == 2   # the two rapidjson bases, dropped
     # the two stream lines are objects that *hold* a stream beyond the call, as for BinTools (2d)

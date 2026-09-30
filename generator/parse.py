@@ -1480,7 +1480,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 fn = Function(name=fr.spelling, params=params, result=_type_spelling(fr.result_type), result_kind=rk, result_class=rc,
                               is_noexcept=_is_noexcept(fr), doc=_doc_with_deprecation(fr), header=c.header, is_operator=True,
                               skip_reason=reason, qualified=fr.spelling,
-                              defined_in_header=fr.is_definition() or fr.get_definition() is not None or _SUBST.active, mangled=fr.mangled_name)
+                              defined_in_header=fr.is_definition() or fr.get_definition() is not None or _SUBST.active, mangled=fr.mangled_name,
+                              result_class_name=_class_behind(fr.result_type))
                 if fn.skip_reason is None and _is_print_operator(fn.name, params, fr.result_type):
                     fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
                 elif fn.skip_reason is None:
@@ -2047,7 +2048,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                               is_noexcept=_is_noexcept(cur), doc=_doc_with_deprecation(cur), header=header,
                               is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
                               qualified=f"{ns}{cur.spelling}", scope=scope,
-                              defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name)
+                              defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name,
+                              result_class_name=_class_behind(cur.result_type))
                 if fn.skip_reason is None and _is_print_operator(fn.name, params, cur.result_type):
                     fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
                 elif fn.skip_reason is None:
