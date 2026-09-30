@@ -155,7 +155,7 @@ array([[1., 0., 0.],
        [0., 0., 1.]])
 ```
 
-This accesses the C++ values from Python without copying them (zero-copy access)
+This accesses the C++ values from Python without copying them (zero-copy access). A view, like an element reference from `ChangeValue()`, points into the container's storage, which it keeps alive but cannot keep in place: after `Resize()` (or `Remove()` of that element) it reads freed memory, as a pointer would in C++. Take a new view after changing the container's size.
 
 ### Index access
 
@@ -201,7 +201,12 @@ In [7]: %timeit a[3]
 | `a.Value(3)` | 17 ns ± 0.0779 ns  |
 | `a[3]`       | 19.7 ns ± 0.257 ns |
 
-**Note:** nanocct keeps OCCT's C++ contract for index access and adds no checks of its own. Where OCCT checks the range, an out-of-range index raises `Standard_OutOfRange` (`a[0]` above). Where OCCT does not, it behaves as in C++: `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]`, or `NCollection_Mat4.GetValue`, read whatever memory lies past the end, and can crash the Python interpreter.
+**Note:** nanocct keeps OCCT's C++ contract for index access and adds no checks of its own. Where OCCT checks, a wrong index or an empty container raises an OCCT exception: `Value`/`ChangeValue`/`SetValue`/`At` of `NCollection_Array1`, `Array2`, `Sequence` and `LinearVector` raise `Standard_OutOfRange` (`a[0]` above), and `First()`/`Last()` of an empty `List` or `Sequence` raise `Standard_NoSuchObject` (of an empty `LinearVector` `Standard_OutOfRange`). Where OCCT does not check, it behaves as in C++ and can crash the Python interpreter:
+
+- `First()`/`Last()` of an empty `NCollection_Array1` or `HArray1` (OCCT reads the first element of no storage; `ChangeFirst()` there returns `None` instead);
+- `Value()` of a default-constructed or exhausted OCCT `Iterator` (`NCollection_List[int].Iterator().Value()`);
+- `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]` past the end: within the first block they return whatever the memory holds (`d[3]` of a 3-element array is `0`), beyond it (`d[256]`) the process crashes; likewise `NCollection_Mat4.GetValue`;
+- a constructor whose upper bound lies below the lower one: `NCollection_Array1[float](5, 1)` constructs an array whose `Size()` is 18446744073709551613 (`len()` then raises `ValueError`, and `Init()` crashes), and `NCollection_Array2[float](3, 1, 1, 2).NbRows()` is `-1`.
 
 ### Iterating over NCollections
 
@@ -246,6 +251,8 @@ In [7]: %timeit a[3]
 | `list(a)`                               | 1.17 μs ± 11.2 ns | 221 ns ± 2.69 ns |
 
 Below 7 or 8 elements, `list(a)` gets slightly slower due to the creating the iterator.
+
+`x in container` is OCCT's lookup where there is one: the maps (`IsBound`/`Contains` by key), and `NCollection_List` where the element type has `operator==` (`Contains`). Elsewhere Python falls back to iterating with its own `==`, which works for numbers and strings but is identity for a class without a value `==`: `gp_Pnt(1, 2, 3) in l` is `False` for a list holding an equal point. Compare explicitly there, `any(p.IsEqual(q, tol) for p in l)`.
 
 ### Uninitialised values
 
@@ -927,6 +934,25 @@ In [5]: try:
    ...: msg
 Out[5]: 'gce_MakeLin::Value() - no result'
 ```
+
+### Null handles
+
+A handle that OCCT returns can be null, and nanocct turns a null handle into `None`. The type stubs do not say so: a handle result is typed as its class, not as `X | None`, because OCCT's headers do not say which methods can return a null handle -- most never do (`BRepBuilderAPI_MakeEdge.Edge()`), and `| None` on all of them would make a type checker demand a `None` check after every call. A type checker therefore accepts `curve.Value(0.5)` for a `curve` that is `None` at runtime. Where OCCT documents a null result, check it:
+
+```python
+In [1]: from nanocct.BRep import BRep_Builder, BRep_Tool
+   ...: from nanocct.TopLoc import TopLoc_Location
+   ...: from nanocct.TopoDS import TopoDS_Edge
+   ...:
+   ...: edge = TopoDS_Edge()
+   ...: BRep_Builder().MakeEdge(edge)            # an edge without a 3D curve
+
+In [2]: curve, first, last = BRep_Tool.Curve_s(edge, TopLoc_Location())
+   ...: curve is None
+Out[2]: True
+```
+
+A handle *parameter* is typed `X | None`: passing `None` hands OCCT a null handle, which is how OCCT removes a geometry (`BRep_TFace().Surface(None)`).
 
 ### When OCCT crashes instead
 
