@@ -1,0 +1,74 @@
+# Keep the five deps caches of build-wheels.yml alive between OCCT releases.
+#
+# GitHub removes a cache entry not accessed for 7 days, and a restore counts as an access (measured 2026-09-30: every
+# deps cache's lastAccessedAt is the time the last build restored it). The deps change only with a new OCCT or an edit
+# to a deps script, so without this a quiet week costs up to four hours of rebuilding identical OCCT builds.
+#
+# Twice a week, not weekly: a scheduled run can be delayed or dropped under load (GitHub docs, `schedule` event), and a
+# weekly run would sit exactly at the 7-day limit; Monday and Thursday leave at most 4 days between restores. The odd
+# minute avoids the start of the hour, GitHub's busiest time. Scheduled workflows of a public repository are disabled
+# after 60 days without repository activity -- re-enable this one in the Actions tab when that happens.
+#
+# Which key to restore is asked from the API (the newest deps-<platform>-* cache on main), not recomputed: the key is
+# build-wheels.yml's business. The restore runs on the runner the build uses, with the paths it caches, because a
+# cache's version hashes its paths and compression; if those drift apart from build-wheels.yml, fail-on-cache-miss
+# turns this run red instead of letting the cache expire unnoticed.
+name: Keep deps cache
+
+on:
+  schedule:
+    - cron: "17 4 * * 1,4"
+  workflow_dispatch:
+
+permissions:
+  actions: read     # list the caches
+  contents: read
+
+jobs:
+  find:
+    name: find deps caches
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.find.outputs.matrix }}
+      any: ${{ steps.find.outputs.any }}
+    steps:
+      - id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate "repos/${{ github.repository }}/actions/caches?key=deps-&ref=refs/heads/main&per_page=100" \
+              -q '.actions_caches[] | [.key, .created_at] | @tsv' > caches.tsv
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json
+          native = "deps/occt-8.0.1\ndeps/freetype\ndeps/freeimage\ndeps/rapidjson\n"
+          ml = "deps/occt-8.0.1-manylinux\ndeps/freetype-ml\ndeps/freeimage-ml\ndeps/rapidjson\n"
+          # the same five as build-wheels.yml's select job: platform, runner, what the deps cache holds
+          table = [("macos-arm64", "macos-15", native), ("macos-x86_64", "macos-15-intel", native),
+                   ("linux-x86_64", "ubuntu-24.04", ml), ("linux-aarch64", "ubuntu-24.04-arm", ml),
+                   ("windows-amd64", "windows-2025", native)]
+          rows = [line.rstrip("\n").split("\t") for line in open("caches.tsv") if line.strip() != ""]
+          chosen = []
+          for platform, runner, deps in table:
+              keys = sorted((created, key) for key, created in rows if key.startswith(f"deps-{platform}-v"))
+              if len(keys) > 0:      # none after a cache clear, until the next build saves one
+                  chosen.append({"platform": platform, "runner": runner, "deps": deps, "key": keys[-1][1]})
+          print("any=" + ("true" if len(chosen) > 0 else "false"))
+          print("matrix=" + json.dumps({"include": chosen}))
+          EOF
+          cat caches.tsv
+
+  touch:
+    name: ${{ matrix.platform }}
+    needs: find
+    if: needs.find.outputs.any == 'true'
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.find.outputs.matrix) }}
+    steps:
+      - name: Restore deps cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
+        with:
+          path: ${{ matrix.deps }}
+          key: ${{ matrix.key }}
+          fail-on-cache-miss: true
