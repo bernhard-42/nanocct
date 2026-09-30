@@ -269,7 +269,10 @@ for _tk in sys.argv[3].split(","):
     importlib.import_module("nanocct._" + _tk)
 mod = importlib.import_module(sys.argv[1])
 out = Path(sys.argv[2])
-sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out)   # recursive: C++ namespaces are submodules
+# include_private: stubgen drops a name that starts or ends with a single underscore as private -- but those are C++ names
+# here: the R-KEYWORD enum values (GProp_PEquation.Type.None_), OCCT's own `a_()`/`mainial_`, and the structs
+# AIS_ViewInputBuffer::_orientation & co., which the stubs then referenced without defining (State.md 8.22 (vi))
+sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out, include_private=True)   # recursive: C++ namespaces are submodules
 sg.put(mod)
 text = sg.get()
 # stubgen binds an imported class as "from nanocct.GC import GC_MakeSegment2d as GCE2d_MakeSegment", which a stub
