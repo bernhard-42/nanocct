@@ -845,9 +845,14 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         # R-CSTR-NULL: nanobind's const char* caster rejects None, so a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
         # STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)) would be unreachable -> nanocct::OptionalCString, `str | None = None`
         cstr_none = _is_cstring(p.type) and default in ("NULL", "nullptr", "0")
-        # R-PTR-NULL: a class pointer with a null default (BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr))
-        # is kept, but nanobind's pointer caster rejects None without .none() -- the default itself (None) was then refused too
-        ptr_none = not cstr_none and p.type.get_canonical().kind == TK.POINTER and default in ("NULL", "nullptr", "0")
+        # R-PTR-NULL: a class pointer takes None (nullptr), as a handle does (R-HANDLE): nanobind's pointer caster rejects None
+        # without .none(). With a null default (BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr)) the
+        # default itself was refused; without one, OCCT's documented "NULL = no weights, non-rational" (BSplCLib.hxx: BSplCLib::D0(...,
+        # const NCollection_Array1<double>* Weights, ...), BSplCLib::NoWeights() returns that nullptr) was unreachable. Without a default only a pointer to a class: const char* and
+        # const char16_t* are strings (R-CSTR-NULL, R-CHAR16)
+        canon = p.type.get_canonical()
+        ptr_none = not cstr_none and canon.kind == TK.POINTER and (
+            default in ("NULL", "nullptr", "0") or (default is None and canon.get_pointee().get_canonical().kind == TK.RECORD))
         params.append(Param(name=name, type=_type_spelling(p.type), default="nullptr" if cstr_none else default, is_out=is_out, is_inout=is_out and inout,
                             class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
                             out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, ptr_none=ptr_none,

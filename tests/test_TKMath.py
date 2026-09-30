@@ -146,7 +146,7 @@ def test_primitive_reference_accessors_get_setters():
 def test_a_null_pointer_default_can_be_omitted_or_passed_as_none():
     """R-PTR-NULL (State.md 8.22): BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr) and
     BuildCache(..., theWeights = nullptr). Without .none() nanobind refused None -- the default itself included -- so the
-    non-rational cache could not be built at all. (The 2D BuildCache has no default in OCCT, BSplCLib_Cache.hxx.)"""
+    non-rational cache could not be built at all. (The 2D BuildCache has no default in OCCT: see the next test.)"""
     knots = NCollection.NCollection_Array1[float](1, 4)
     for i, v in enumerate((0.0, 0.0, 1.0, 1.0), start=1):
         knots.SetValue(i, v)
@@ -159,6 +159,38 @@ def test_a_null_pointer_default_can_be_omitted_or_passed_as_none():
             p = gp.gp_Pnt()
             cache.D0(0.25, p)
             assert p.Coord__float__float__float() == (0.5, 0.0, 0.0)
+
+
+def test_a_class_pointer_without_a_default_takes_none():
+    """R-PTR-NULL (State.md 8.23): OCCT documents a NULL weights/mults pointer as "non-rational" / "flat knots"
+    (BSplCLib.hxx, BSplCLib::NoWeights() returns that nullptr), also where the parameter has no default: the 2D
+    BSplCLib_Cache::BuildCache, BSplCLib::D0, PLib::CoefficientsPoles. Without .none() nanobind refused None there,
+    so the non-rational form of these functions was unreachable."""
+    assert BSplCLib.BSplCLib.NoWeights_s() is None and BSplCLib.BSplCLib.NoMults_s() is None
+    knots = NCollection.NCollection_Array1[float](1, 4)
+    for i, v in enumerate((0.0, 0.0, 1.0, 1.0), start=1):
+        knots.SetValue(i, v)
+    poles2d = NCollection.NCollection_Array1[gp.gp_Pnt2d](1, 2)
+    poles2d.SetValue(1, gp.gp_Pnt2d(0.0, 0.0))
+    poles2d.SetValue(2, gp.gp_Pnt2d(2.0, 4.0))
+    cache = BSplCLib.BSplCLib_Cache(1, False, knots, poles2d)
+    cache.BuildCache(0.25, knots, poles2d, None)
+    p2 = gp.gp_Pnt2d()
+    cache.D0(0.25, p2)
+    assert p2.Coord__float__float() == (0.5, 1.0)
+
+    poles = NCollection.NCollection_Array1[gp.gp_Pnt](1, 2)
+    poles.SetValue(1, gp.gp_Pnt(0.0, 0.0, 0.0))
+    poles.SetValue(2, gp.gp_Pnt(2.0, 0.0, 0.0))
+    p = gp.gp_Pnt()
+    BSplCLib.BSplCLib.D0_s(0.25, 2, 1, False, poles, BSplCLib.BSplCLib.NoWeights_s(), knots, None, p)   # flat knots, no mults
+    assert p.Coord__float__float__float() == (0.5, 0.0, 0.0)
+
+    coefs, out = NCollection.NCollection_Array1[gp.gp_Pnt](1, 2), NCollection.NCollection_Array1[gp.gp_Pnt](1, 2)
+    coefs.SetValue(1, gp.gp_Pnt(1.0, 0.0, 0.0))                          # c0 + c1 t
+    coefs.SetValue(2, gp.gp_Pnt(2.0, 0.0, 0.0))
+    PLib.PLib.CoefficientsPoles_s(coefs, None, out, None)
+    assert [out.Value(i).Coord__float__float__float() for i in (1, 2)] == [(1.0, 0.0, 0.0), (3.0, 0.0, 0.0)]
 
 
 def test_an_overload_taking_a_derived_class_is_not_shadowed_by_the_base_one():

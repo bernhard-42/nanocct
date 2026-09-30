@@ -547,7 +547,7 @@ public:
 };
 
 //! R-OVERLOAD-ORDER: overloads declared base class first (PLib::CoefficientsPoles, GeomToIGES_GeomCurve::TransferCurve);
-//! R-PTR-NULL: a class pointer with a null default (BSplCLib_Cache's theWeights).
+//! R-PTR-NULL: a class pointer with a null default (BSplCLib_Cache's theWeights), or without one (BSplCLib::D0's Weights).
 class Rules_Order
 {
 public:
@@ -558,6 +558,7 @@ public:
   static int Grid(const NCollection_Array1<double>& theA) { (void)theA; return 1; }
   static int Grid(const NCollection_Array2<double>& theA) { (void)theA; return 2; }
   int Weights(const gp_XYZ* theW = nullptr) const { return theW == nullptr ? 0 : 1; }
+  int Rational(const gp_XYZ* theW, const char* theName) const { (void)theName; return theW == nullptr ? 0 : 1; }
 };
 
 //! A namespace named like the package is the package module itself.
@@ -1153,7 +1154,8 @@ def test_emitter_orders_derived_overloads_first_and_lets_null_pointers_be_none(r
     """R-OVERLOAD-ORDER and R-PTR-NULL on the synthetic header (State.md 8.22): nanobind calls the first overload that
     accepts the arguments, so Take(const Rules_Inherit&) and Grid(const NCollection_Array2<double>&) -- declared after
     their base-class twins -- must be registered first; Take(value, n) has another arity and stays where it is. A
-    class pointer with a null default takes None (without .none() nanobind refused the default itself)."""
+    class pointer takes None, with a null default (without .none() nanobind refused the default itself) or without one
+    (State.md 8.23); a const char* is a string and does not."""
     em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
@@ -1162,6 +1164,7 @@ def test_emitter_orders_derived_overloads_first_and_lets_null_pointers_be_none(r
         < body.index("(Rules_Order::*)(const Rules_Value &, int) const")
     assert body.index("(*)(const NCollection_Array2<double> &)") < body.index("(*)(const NCollection_Array1<double> &)")
     assert 'nb::arg("theW").none() = static_cast<std::decay_t<const gp_XYZ *>>(nullptr)' in body
+    assert 'nb::arg("theW").none(), nb::arg("theName"))' in body
     assert "Rules_Order::Take(const Rules_Inherit &): takes a derived class of Take(const Rules_Value &) -> registered before it" in em.report
     assert "Rules_Order::Grid(const NCollection_Array2<double> &): takes a derived class of Grid(const NCollection_Array1<double> &) -> registered before it" in em.report
 
@@ -1361,6 +1364,9 @@ def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
     unexpected = [d for d in dups if not (d[2][0] in width_ok and any(t in ("float", "int") for t in d[2][1]))
                   and not (d[0] in ("TCollection", "Standard", "Resource") and "str" in d[2][1])
                   and d[1] != "Standard_Mutex.Sentry"         # Sentry(Standard_Mutex&) / Sentry(Standard_Mutex*): the same call
+                  # SetDocument(handle<TDocStd_Document>) / SetDocument(TDocStd_Document*): the same call (TDocStd_Owner.cxx), both
+                  # `TDocStd_Document | None` since a class pointer takes None too (R-PTR-NULL, State.md 8.23)
+                  and (d[1], d[2][0]) not in (("TDocStd_Owner", "SetDocument"), ("TDocStd_Owner", "SetDocument_s"))
                   and (d[1], d[2][0]) != ("Graphic3d_Vertex", "Coord")   # Coord(double&...) / Coord(float&...): width twins with out-params only
                   # str-kind twins outside TCollection (decision 2026-09-21, unchanged): Add(const char*) / Add(AsciiString) /
                   # Add(char) all append the same text, and XSControl_Utils::ToHString returns the same text as an
