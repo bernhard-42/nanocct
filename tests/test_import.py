@@ -59,6 +59,51 @@ def test_every_toolkit_module_imports_on_its_own():
     assert all(r.returncode == 0 for r in results.values()), "toolkit modules that cannot stand alone:\n" + _first_failure(results)
 
 
+# Walks a toolkit module's packages (and their classes, three levels deep) and returns {member: raw NCollection spellings}
+# found in its signatures. nanobind renders a signature when it is read, naming an unregistered type by its C++ spelling.
+_RAW_NCOLLECTION = r"""
+import importlib, json, re, sys, types
+ext = importlib.import_module("nanocct._" + sys.argv[1])
+def raw(text):
+    return sorted(set(re.findall(r"\bNCollection_\w+<", text)))
+def scan():
+    found = {}
+    def walk(obj, path, depth):
+        for name, attr in list(vars(obj).items()):
+            sig = getattr(attr, "__nb_signature__", None)
+            if sig is not None:
+                hits = [h for s in sig for h in raw(s[0] if isinstance(s, tuple) else str(s))]
+                if hits:
+                    found[path + "." + name] = sorted(set(hits))
+            elif depth < 3 and (isinstance(attr, types.ModuleType) and depth == 0      # the packages (nanocct.TDataStd)
+                                or isinstance(attr, type) and attr.__module__.startswith("nanocct") and not name.startswith("_")):
+                walk(attr, path + "." + name, depth + 1)
+    walk(ext, sys.argv[1], 0)
+    return found
+alone = scan()
+import nanocct.all  # noqa: F401  -- every toolkit: whatever resolves now was only missing its owner
+everything = scan()
+print(json.dumps(sorted(m for m in alone if m not in everything)))
+"""
+
+
+def test_a_toolkit_imported_alone_resolves_the_instantiations_it_uses():
+    """6a ownership: the first package in emit order that needs an instantiation binds it, and every later user only uses
+    it -- so a toolkit must import the owner's toolkit, or its members that take or return the instantiation are
+    uncallable until something else loads it. With only TKLCAF imported `TDataStd_RealList.List()` raised "Unable to
+    convert function return value" (TKGeomBase binds NCollection_List<double>): 63 members in 10 toolkits, found by the
+    final review (2026-09-30), fixed by the instantiation edges of _base_import_edges. A member whose signature names an
+    NCollection type raw when its toolkit is imported alone, but not once every toolkit is, lacks such an edge."""
+    with ThreadPoolExecutor(8) as pool:
+        futures = {tk: pool.submit(subprocess.run, [sys.executable, "-c", _RAW_NCOLLECTION, tk], capture_output=True,
+                                   text=True, cwd=ROOT) for tk in _toolkits()}
+        results = {tk: f.result() for tk, f in futures.items()}
+    assert all(r.returncode == 0 for r in results.values()), _first_failure(results)
+    missing = {tk: json.loads(r.stdout) for tk, r in results.items() if json.loads(r.stdout) != []}
+    assert missing == {}, "members whose instantiation's owner toolkit is not imported:\n" + "\n".join(
+        f"{tk}: {len(m)}, e.g. {m[:3]}" for tk, m in sorted(missing.items()))
+
+
 def test_every_package_shim_imports_on_its_own():
     """The same for what a user actually writes -- `from nanocct.gp import gp_Pnt` -- including the packages whose
     shim carries a late R-LINK import (TKDE, TKDECascade, TKDEGLTF -> TKXSBase, which they link but cannot import

@@ -402,9 +402,11 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
     def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { return *self.Bound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bound);
     def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { return self.TryBound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBound);
     def_elem<V>(c, "ChangeFind", [](M &self, const K &k) -> V & { return self.ChangeFind(k); }, nb::arg("theKey"), D::ChangeFind);
-    // Seek: nullptr when absent -> None
+    // Seek: nullptr when absent -> None. The const Seek is a copy, as Find() is (a const pointer is no view: nanobind has no
+    // const, so reference_internal handed out a writable alias -- on DoubleMap's Seek1/Seek2 a *key*, whose change left it
+    // unfindable by either spelling; final review 2026-09-30); ChangeSeek is the view
     if constexpr (std::is_class_v<V>) {
-        c.def("Seek", [](const M &self, const K &k) -> const V * { return self.Seek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::Seek)
+        c.def("Seek", [](const M &self, const K &k) -> const V * { return self.Seek(k); }, nb::rv_policy::copy, nb::arg("theKey"), D::Seek)
          .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::ChangeSeek)
          .def("Find", [](const M &self, const K &k, V &v) { return self.Find(k, v); }, nb::arg("theKey"), nb::arg("theValue"), D::Find);
     } else {
@@ -493,7 +495,7 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
     def_elem<V>(c, "ChangeFromIndex", [](M &self, const int i) -> V & { return self.ChangeFromIndex(i); }, nb::arg("theIndex"), D::ChangeFromIndex);
     def_elem<V>(c, "ChangeFromKey", [](M &self, const K &k) -> V & { return self.ChangeFromKey(k); }, nb::arg("theKey"), D::ChangeFromKey);
     if constexpr (std::is_class_v<V>) {
-        c.def("Seek", [](const M &self, const K &k) -> const V * { return self.Seek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::Seek)
+        c.def("Seek", [](const M &self, const K &k) -> const V * { return self.Seek(k); }, nb::rv_policy::copy, nb::arg("theKey"), D::Seek)   // a copy, as above
          .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, nb::arg("theKey"), D::ChangeSeek)
          .def("FindFromKey", [](const M &self, const K &k, V &v) { return self.FindFromKey(k, v); }, nb::arg("theKey"), nb::arg("theValue"), D::FindFromKey);
     } else {
@@ -712,13 +714,13 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
               for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(it.Key1(), it.Key2()));
               return out; }, "Python addition: list of (key1, key2) tuples.");
     if constexpr (std::is_class_v<K2>) {
-        c.def("Seek1", [](const M &self, const K1 &a) -> const K2 * { return self.Seek1(a); }, nb::rv_policy::reference_internal, nb::arg("theKey1"), D::Seek1)
+        c.def("Seek1", [](const M &self, const K1 &a) -> const K2 * { return self.Seek1(a); }, nb::rv_policy::copy, nb::arg("theKey1"), D::Seek1)   // a key: a copy, never a view
          .def("Find1", [](const M &self, const K1 &a, K2 &b) { return self.Find1(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::Find1);
     } else {
         c.def("Seek1", [](const M &self, const K1 &a) -> std::optional<K2> { const K2 *p = self.Seek1(a); return p ? std::optional<K2>(*p) : std::nullopt; }, nb::arg("theKey1"), D::Seek1);
     }
     if constexpr (std::is_class_v<K1>) {
-        c.def("Seek2", [](const M &self, const K2 &b) -> const K1 * { return self.Seek2(b); }, nb::rv_policy::reference_internal, nb::arg("theKey2"), D::Seek2)
+        c.def("Seek2", [](const M &self, const K2 &b) -> const K1 * { return self.Seek2(b); }, nb::rv_policy::copy, nb::arg("theKey2"), D::Seek2)   // a key: a copy, never a view
          .def("Find2", [](const M &self, const K2 &b, K1 &a) { return self.Find2(b, a); }, nb::arg("theKey2"), nb::arg("theKey1"), D::Find2);
     } else {
         c.def("Seek2", [](const M &self, const K2 &b) -> std::optional<K1> { const K1 *p = self.Seek2(b); return p ? std::optional<K1>(*p) : std::nullopt; }, nb::arg("theKey2"), D::Seek2);

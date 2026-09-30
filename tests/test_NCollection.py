@@ -358,6 +358,23 @@ def test_dynamic_array():
     assert list(v) == [5, 20]
 
 
+def test_seek_is_a_copy_and_change_seek_a_view():
+    """The const Seek/Seek1/Seek2 are copies, as Find is; only ChangeSeek hands out a view. nanobind has no const, so a
+    const pointer bound as a view was writable: `dm.Seek1(1).AssignCat("!")` changed a DoubleMap *key*, which was then
+    unfindable by either spelling (final review, 2026-09-30)."""
+    m = NCollection.NCollection_DataMap[int, TCollection.TCollection_AsciiString]()
+    m.Bind(1, "a")
+    m.Seek(1).AssignCat("b")
+    assert m.Find(1).ToCString() == "a"                               # the copy did not reach the map
+    m.ChangeSeek(1).AssignCat("c")
+    assert m.Find(1).ToCString() == "ac"                              # the view did
+    assert m.Seek(2) is None and m.ChangeSeek(2) is None
+    dm = NCollection.NCollection_DoubleMap[int, TCollection.TCollection_AsciiString]()
+    dm.Bind(1, "one")
+    dm.Seek1(1).AssignCat("!")
+    assert dm.Find1(1).ToCString() == "one" and dm.IsBound2("one") is True and dm.Seek2("one") == 1
+
+
 def test_double_map():
     DM = NCollection.NCollection_DoubleMap[int, TCollection.TCollection_AsciiString]
     dm = DM()
