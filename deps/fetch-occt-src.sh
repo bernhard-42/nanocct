@@ -4,7 +4,7 @@
 # Every platform needs them: the macOS and Windows builds compile from this tree, the manylinux container mounts
 # the same checkout, and generator/parse.py reads the headers from the *install*, not from here. Until 2026-09-24
 # only deps/build-occt-manylinux.sh cloned them, so `make deps` worked on a machine that happened to have the
-# sources already and failed on a fresh clone -- which is the case that matters (State.md 8.4).
+# sources already and failed on a fresh clone -- which is the case that matters.
 #
 # A tag rather than a tarball with a checksum, as deps/fetch-rapidjson.sh uses: OCCT publishes no release tarball
 # for V8_0_1, and --depth 1 on a tag is what the container has done since it was written. A moved tag would go
