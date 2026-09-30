@@ -3,10 +3,10 @@
 # Mirrors ~/Development/CAD/ocp-build-system/local-build/02-build-occt-sdk.sh, minus conda:
 # FreeType is the static build from deps/build-freetype-macos.sh, FreeImage the one from
 # deps/build-freeimage-macos.sh and RapidJSON the vendored copy from deps/fetch-rapidjson.sh (run all three
-# first), libc++ is the system one. FreeImage on since 2026-09-25: without it Image_AlienPixMap
+# first), libc++ is the system one. FreeImage on since 2026-09-25 (State.md 8.9): without it Image_AlienPixMap
 # reads nothing at all and writes PPM under whatever extension it is given, so an imported textured model
 # cannot be displayed. Its archive exports no symbol of its own, which build-freeimage-macos.sh asserts. OpenGL on since 2026-09-22
-# (macOS OpenGL.framework). X11 is off because macOS has none; Linux builds with USE_XLIB=ON,
+# (macOS OpenGL.framework, State.md 8.6a). X11 is off because macOS has none; Linux builds with USE_XLIB=ON,
 # OCCT's own default there (deps/build-occt-manylinux.sh).
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -52,7 +52,7 @@ cmake -S "$SRC" -B "$BUILD" -G Ninja \
 ninja -C "$BUILD" -j "$CPUS"
 ninja -C "$BUILD" install
 
-# Give every installed dylib an @loader_path rpath so it can find its siblings.
+# Give every installed dylib an @loader_path rpath so it can find its siblings (State.md 8.4).
 #
 # OCCT names each dependency @rpath/libTKX.8.0.dylib but installs no LC_RPATH on the libraries themselves. At
 # runtime that is invisible: the extension module carries the rpath and dyld resolves the whole load chain

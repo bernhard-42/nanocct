@@ -1,7 +1,7 @@
 #!/bin/bash
 # Clone the FreeImage sources into deps/freeimage-src at the pinned tag, if they are not there yet.
 #
-# Why this fork and not upstream: stock FreeImage 3.18.0 has no CMake at all and no per-codec
+# Why this fork and not upstream (State.md 8.9): stock FreeImage 3.18.0 has no CMake at all and no per-codec
 # switches, so excluding a codec or hiding a symbol would both mean patching. danoli3's 3.19.x has BUILD_<CODEC>
 # options and, more importantly, exports nothing but its own FreeImage_* API under -fvisibility=hidden, with no
 # patch: every bundled codec (libpng, zlib, libjpeg, libtiff, OpenJPEG) falls to the flag, and only FreeImage.h's
