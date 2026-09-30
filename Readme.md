@@ -66,11 +66,11 @@ brep = BRepTools.Write_s(shape)                 # a BREP in memory, as str
 
 ## How to start with build123d on nanocct
 
-Neither wheel is on PyPI yet: download them from the [relase page](https://github.com/bernhard-42/nanocct/releases) to `dist`, or build them first (see [How to build nanocct](#how-to-build-nanocct)), they land in `dist/`.
+Neither wheel is on PyPI yet: download them from the [release page](https://github.com/bernhard-42/nanocct/releases) to `dist`, or build them first (see [How to build nanocct](#how-to-build-nanocct)), they land in `dist/`.
 
 ### Use the OCP shim
 
-The shim is a local test vehicle: a thin facade that maps OCP calls to nanocct calls, so build123d runs unchanged on top of nanocct. In an environment with build123d installed, install nanocct and the shim wheel from `dist/`:
+The shim is a compatibility layer: a thin facade that maps OCP calls to nanocct calls, so packages that still import OCP run unchanged on top of nanocct while they are ported. In an environment with build123d installed, install nanocct and the shim wheel from `dist/`:
 
 ```bash
 uv pip install dist/nanocct-*.whl "dist/cadquery_ocp_novtk-8.0.1.0.0+shim-py3-none-any.whl"
