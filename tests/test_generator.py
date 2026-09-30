@@ -1209,6 +1209,25 @@ def test_static_data_members_become_class_attributes(tmp_path_factory):
     assert "Rules_Order::theCounter: static field that is not const -> not bound" in report
 
 
+def test_an_unregistered_binder_instantiation_makes_a_member_unbindable():
+    """R-UNBOUND-TYPE for the NCollection binder kinds (final review, 2026-09-30): parse records the registry key of the
+    instantiation behind a parameter or result (parse._binder_key, the key _note_instance records -- no spelling is
+    compared), and the emitter asks the registry. Unbound: no such instantiation (NCollection_IndexedMap<Graphic3d_CStructure
+    *>, raw-pointer elements), a skipped one, a nested class other than a kind's Iterator (DynamicArray<T>::DynamicIterator)."""
+    ir = PackageIR(name="X", toolkit="TKX", headers=[])
+    em = Emitter(ir, OCCT_INC, {}, {}, {"NCollection_List<int>": {"toolkit": "TKernel", "package": "NCollection", "name": "L"},
+                                        "NCollection_Map<double>": {"skipped": True},
+                                        "NCollection_DynamicArray<int>": {"toolkit": "TKernel", "package": "NCollection", "name": "D"}},
+                 [], {})
+    assert em._unbound_instance_reason("") is None
+    assert em._unbound_instance_reason("NCollection_List<int>") is None
+    assert em._unbound_instance_reason("NCollection_List<int>::Iterator") is None
+    assert em._unbound_instance_reason("NCollection_IndexedMap<Graphic3d_CStructure *>") == "is not bound (no binder instantiation)"
+    assert em._unbound_instance_reason("NCollection_Map<double>") == "is not bound (instantiation skipped)"
+    assert em._unbound_instance_reason("NCollection_DynamicArray<int>::DynamicIterator") == "is not bound (the binders bind no DynamicIterator class)"
+    assert em._unbound_instance_reason("NCollection_DynamicArray<int>::Iterator") == "is not bound (the binders bind no Iterator class)"
+
+
 def test_order_by_derivation_uses_every_bound_class_and_keeps_the_rest():
     """The package's own parse does not see the bases of a class it only forward-declares (GeomToIGES and Geom_BSplineCurve):
     Emitter._ancestors closes over the manifest's bases of every bound class. Unrelated overloads keep the header order."""

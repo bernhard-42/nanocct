@@ -177,7 +177,9 @@ def test_report_is_the_vrmldata_raw_pointers():
     nowhere in OCCT, which the nm check caught before the linker did."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     all_lines, lines, undefined, _ = report("TKDEVRML")
-    assert len(lines) == 23          # 25 until R-STR bound the two scene stream operators (8.14)
+    # 25 until R-STR bound the two scene stream operators (8.14); 25 again since R-UNBOUND-TYPE judges binder instantiations
+    # (2026-09-30): NamedNodesIterator() and InfoIterator() return Iterators of maps/lists no binder instantiates
+    assert len(lines) == 25
     assert all(line.split("\t")[1] == "VrmlData" for line in all_lines)
     assert sum(line.startswith("raw-pointer") for line in lines) == 18
     assert all("VrmlData_IndexedFaceSet::GetNormal" in line or "VrmlData_Node::VrmlData_Node()" in line

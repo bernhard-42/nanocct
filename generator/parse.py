@@ -788,6 +788,46 @@ def _is_empty_shared_ptr_default(param: cindex.Cursor, default: str | None) -> b
     return compact.startswith("std::shared_ptr<") and compact.endswith(">()")
 
 
+def _stl_iterator_in_6c(t: cindex.Type) -> str | None:
+    """R-ITERATOR inside a 6c walk: a dependent type has no declaration, so _unsupported's STL-iterator test does not see
+    NCollection_Iterator<Container>::ValueIter() -> NCollection_IndexedIterator<...> or a binder's nested DynamicIterator;
+    after substitution the spelling names it (25 members bound uncallable until 2026-09-30, final review)."""
+    if not _SUBST.active:
+        return None
+    spelled = re.sub(r"^(const\s+)?(typename\s+)?|\s*[&*]+\s*$", "", _type_spelling(t)).strip()
+    # also the container's STL member typedef: NCollection_Iterator<Container>::ValueIter() returns
+    # `typename Container::iterator` (NCollection_Iterator.hxx:76)
+    if spelled.split("<")[0] in _STL_ITERATORS or re.search(r"::DynamicIterator<|::(const_)?iterator$", spelled) is not None:
+        return "STL-style iterator"
+    return None
+
+
+def _binder_key(t: cindex.Type) -> str:
+    """The registry key of the NCollection binder instantiation behind a parameter or result type (through const, &, *
+    and handle<>), computed exactly as _note_instance records it -- or, for a class nested in one (`X<...>::Iterator`,
+    `X<...>::DynamicIterator`), that key plus `::<Nested>`. "" for anything else. R-UNBOUND-TYPE asks the registry with it:
+    comparing spellings instead had failed on default arguments (math_VectorBase<> vs <double>, dropped hashers)."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind != TK.RECORD:
+        return ""
+    decl = canon.get_declaration()
+    if decl.kind == K.NO_DECL_FOUND:
+        return ""
+    if decl.spelling in _SMART_HANDLES and canon.get_num_template_arguments() == 1:
+        return _binder_key(canon.get_template_argument_type(0))
+    owner = _NESTED_OWNER.get(decl.spelling, decl.spelling if decl.spelling in BINDERS else None)
+    if owner is not None and canon.get_num_template_arguments() > 0:
+        args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+        key = f"{owner}<{', '.join(instance_args(owner, args))}>"
+        return key if owner == decl.spelling else key + "::Iterator"      # NCollection_TListIterator<T> is List<T>::Iterator
+    m = re.match(r"^(NCollection_\w+)<(.*)>::(\w+)$", _canonical_args(canon))
+    if m is not None and m.group(1) in BINDERS:                  # a class nested in a binder instantiation
+        return f"{m.group(1)}<{', '.join(instance_args(m.group(1), _split_top(m.group(2))))}>::{m.group(3)}"
+    return ""
+
+
 def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members: set[str] | None = None,
             allow_streams: bool = True) -> tuple[list[Param], str | None]:
     """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
@@ -824,6 +864,8 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             is_str = spelled.startswith("const ") and base in ("char", "char16_t", "Standard_Character", "Standard_ExtCharacter", "Standard_Utf8Char")
             if base in _PRIMITIVE_SPELLINGS and not is_str:
                 reason = "raw pointer to primitive (template argument)"
+        if reason is None:
+            reason = _stl_iterator_in_6c(p.type)
         name = py_safe(p.spelling)                 # R-KEYWORD: TDF_Attribute::Restore(const handle<TDF_Attribute>& with) -> with_
         if name == "":
             name = f"arg{i}"
@@ -868,6 +910,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         params.append(Param(name=name, type=_type_spelling(p.type), default="nullptr" if cstr_none else default, is_out=is_out, is_inout=is_out and inout,
                             class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
                             out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, ptr_none=ptr_none,
+                            instance_key=_binder_key(p.type),
                             binary=binary and stream != StreamKind.NONE, class_ancestors=_class_ancestors(p.type)))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
@@ -1075,7 +1118,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_static=cursor.is_static_method(),
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
                is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
-               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type))
+               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
+               result_instance_key=_binder_key(cursor.result_type))
     result_stream = _stream_kind(cursor.result_type)
     returns_stream = result_stream != StreamKind.NONE and any(p.stream == result_stream for p in params)
     if m.skip_reason is None and returns_stream:
@@ -1092,6 +1136,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
+        if m.skip_reason is None:
+            m.skip_reason = _stl_iterator_in_6c(cursor.result_type)
         rc0 = cursor.result_type.get_canonical()
         if m.skip_reason == "reference to pointer" and rc0.get_pointee().get_canonical().get_pointee().get_canonical().kind == TK.RECORD:
             # R-PTR-REF: BOPAlgo_Builder*& BRepAlgoAPI_BuilderAlgo::Builder() -> bound as the pointer (a lambda copies it out;
@@ -1509,7 +1555,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                               is_noexcept=_is_noexcept(fr), doc=_doc_with_deprecation(fr), header=c.header, is_operator=True,
                               skip_reason=reason, qualified=fr.spelling,
                               defined_in_header=fr.is_definition() or fr.get_definition() is not None or _SUBST.active, mangled=fr.mangled_name,
-                              result_class_name=_class_behind(fr.result_type))
+                              result_class_name=_class_behind(fr.result_type), result_instance_key=_binder_key(fr.result_type))
                 if fn.skip_reason is None and _is_print_operator(fn.name, params, fr.result_type):
                     fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
                 elif fn.skip_reason is None:
@@ -2080,7 +2126,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                               is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
                               qualified=f"{ns}{cur.spelling}", scope=scope,
                               defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name,
-                              result_class_name=_class_behind(cur.result_type))
+                              result_class_name=_class_behind(cur.result_type), result_instance_key=_binder_key(cur.result_type))
                 if fn.skip_reason is None and _is_print_operator(fn.name, params, cur.result_type):
                     fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
                 elif fn.skip_reason is None:

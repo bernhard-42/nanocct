@@ -116,5 +116,6 @@ def test_appstd_application_is_a_tdocstd_application():
 
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert {line.split("\t")[0] for line in lines} <= {"iterator", "raw-pointer", "template"}
+    # unbound-type (2026-09-30): TNaming_UsedShapes::Map() returns that map over raw pointers, which no binder instantiates
+    assert {line.split("\t")[0] for line in lines} <= {"iterator", "raw-pointer", "template", "unbound-type"}
     assert any("TNaming_RefShape *" in line for line in lines)              # the internal shape->RefShape map (2d)

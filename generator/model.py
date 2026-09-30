@@ -48,6 +48,7 @@ class Param:
     omitted: bool = False   # R-OPTIONAL-PTR: a pointer parameter with a null default, dropped from the signature; the callee gets nullptr
     cstr_none: bool = False # R-CSTR-NULL: a const char* parameter with a null default: `str | None = None` (nanocct::OptionalCString caster)
     ptr_none: bool = False  # R-PTR-NULL: a class pointer parameter with a null default: `T | None = None` (nb::arg(...).none())
+    instance_key: str = ""     # R-UNBOUND-TYPE: the NCollection binder instantiation behind the type (parse._binder_key), "" if none
     class_ancestors: tuple[str, ...] = ()   # R-OVERLOAD-ORDER: every base of class_name, spelled like class_name (parse._class_ancestors)
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
     is_bytes: bool = False  # R-BYTES: a `const uint8_t*` input buffer, taken as `bytes`; the length parameter that follows it is dropped
@@ -70,6 +71,7 @@ class Method:
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
     mangled: str = ""                # linker symbol (libclang mangling); R-UNDEFINED compares it with nm's list
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
+    result_instance_key: str = ""     # R-UNBOUND-TYPE: the NCollection binder instantiation behind the result (parse._binder_key)
     is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring
     suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
     via_using: str = ""               # R-USING: the base class whose member a `using Base::name;` re-exports on this class
@@ -181,6 +183,7 @@ class Function:
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
     mangled: str = ""                 # linker symbol; R-UNDEFINED compares it with nm's list (FUN_scanloi in TopOpeBRepDS)
     result_class_name: str = ""       # canonical class/enum behind the result, as for methods (R-UNBOUND-TYPE)
+    result_instance_key: str = ""     # as for methods
 
 
 @dataclass

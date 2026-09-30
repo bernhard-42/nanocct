@@ -201,13 +201,35 @@ class Emitter:
             if m.skip_reason is not None:
                 continue
             names = [p.class_name for p in m.params if not p.omitted and p.bytes_of == ""] + [getattr(m, "result_class_name", "")]
-            for name in names:
-                why = self._unbound_reason(name)
-                if why is not None:
-                    m.skip_reason = f"type {name} {why}"
-                    skipped.append((m, m.skip_reason))
-                    break
+            keys = [p.instance_key for p in m.params if not p.omitted and p.bytes_of == ""] + [getattr(m, "result_instance_key", "")]
+            found = next(((n, w) for n in names if (w := self._unbound_reason(n)) is not None), None) \
+                or next(((k, w) for k in keys if (w := self._unbound_instance_reason(k)) is not None), None)
+            if found is not None:
+                m.skip_reason = f"type {found[0]} {found[1]}"
+                skipped.append((m, m.skip_reason))
         return skipped
+
+    # the binder kinds with a nested Iterator class (6a); every other class nested in a binder instantiation is never bound
+    _KINDS_WITH_ITERATOR = {"NCollection_List", "NCollection_Sequence", "NCollection_Map", "NCollection_DataMap",
+                            "NCollection_IndexedMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap"}
+
+    def _unbound_instance_reason(self, key: str) -> str | None:
+        """R-UNBOUND-TYPE for an NCollection binder instantiation, by its registry key (parse._binder_key: the key
+        _note_instance records, so no spelling comparison is involved): unbound when the registry has no such
+        instantiation (its element type is unsupported: a raw pointer, NCollection_IndexedMap<Graphic3d_CStructure *>)
+        or skipped it, and for a nested class other than a kind's Iterator (DynamicArray<T>::DynamicIterator)."""
+        if key == "":
+            return None
+        base, _, nested = key.rpartition(">::") if ">::" in key else (key, "", "")
+        base = base + ">" if nested != "" else base
+        entry = self.templates.get(base)
+        if entry is None:
+            return "is not bound (no binder instantiation)"
+        if entry.get("skipped", False):
+            return "is not bound (instantiation skipped)"
+        if nested != "" and (nested != "Iterator" or base.split("<")[0] not in self._KINDS_WITH_ITERATOR):
+            return f"is not bound (the binders bind no {nested} class)"
+        return None
 
     def _ancestors_of(self, name: str) -> set[str]:
         found: set[str] = set()
