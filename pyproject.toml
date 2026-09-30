@@ -1,6 +1,6 @@
 [project]
 name = "nanocct"
-version = "8.0.1.0"
+version = "8.0.1.1"
 description = "nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API"
 requires-python = ">=3.12"
 # numpy: the zero-copy array views return numpy arrays. 
