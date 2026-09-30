@@ -724,6 +724,24 @@ Out[5]: 'Größe'
 
 `TCollection_AsciiString` holds the UTF-8 bytes (7 for the 5 characters), and `Length()` counts them. So for text that is not ASCII, pass `True` to `TCollection_ExtendedString`, or go through a `TCollection_AsciiString`, whose conversion constructor defaults to multi-byte.
 
+A single `char` is a one-character `str` too, converted as UTF-8 -- so it holds ASCII only. `TCollection_AsciiString.Value(i)` returns the byte at position `i`, and inside a character that takes several UTF-8 bytes that byte is not a character of its own: Python raises `UnicodeDecodeError` (C++ would return the raw byte). Likewise, a `char` parameter accepts only ASCII. For text that is not ASCII, use the string APIs (`ToCString()`), or `TCollection_ExtendedString`, whose `Value(i)` is a `char16_t`, one whole character:
+
+```python
+In [6]: s = TCollection_AsciiString("Größe")
+   ...: s.Value(1)
+Out[6]: 'G'
+
+In [7]: try:
+   ...:     s.Value(3)
+   ...: except UnicodeDecodeError as e:
+   ...:     err = e
+   ...: type(err).__name__, err.reason
+Out[7]: ('UnicodeDecodeError', 'unexpected end of data')
+
+In [8]: TCollection_ExtendedString("Größe", True).Value(3)
+Out[8]: 'ö'
+```
+
 ## Handling of istream and ostream
 
 **Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations))**

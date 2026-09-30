@@ -223,3 +223,13 @@ def test_inout_parameters_read_their_incoming_value():
     first = queue.Fetch(False)                                               # (item, wasBusy)
     assert first == (1, True) and queue.HasBusyThreads()
     assert queue.Fetch(first[1]) == (-1, False) and not queue.HasBusyThreads()   # the busy count goes back to 0
+
+
+def test_arrays_passed_by_their_first_element_are_not_bound():
+    """overrides.toml [skip] methods (2026-09-30): PLib/BSplCLib functions whose `double&` is really the first element of
+    an array made OCCT read and write past a single double. They are not bound; the NCollection_Array1 overloads of the
+    same names stay (Design.md 2d)."""
+    assert not hasattr(PLib.PLib, "EvalPolynomial_s") and not hasattr(PLib.PLib, "EvalLagrange_s")
+    assert not hasattr(PLib.PLib_JacobiPolynomial, "MaxError") and hasattr(PLib.PLib_JacobiPolynomial, "ToCoefficients")
+    assert "NCollection_Array1" in BSplCLib.BSplCLib.Eval_s.__doc__             # the array overloads of Eval remain
+    assert "double &" not in "".join(l for l in BSplCLib.BSplCLib.Eval_s.__doc__.splitlines() if l.startswith("Eval_s("))

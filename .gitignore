@@ -56,7 +56,7 @@ stage-win/
 # built and repaired wheels (make wheel); the repaired one carries the bundled OCCT libraries, ~44 MB
 dist/
 
-# the user's local test area; `make nanocctbuild` recreates _scratch/.venv there
+# a local test area; `make nanocctbuild` recreates _scratch/.venv there
 _scratch/
 
 # the working notepad (where the project stands, decisions, how to continue) -- local only, never published

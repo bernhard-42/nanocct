@@ -15,7 +15,7 @@ from shim/extract_spec.py. Output, as {path: text}:
 - OCP/<pkg>/__init__.py  `from nanocct.<pkg> import ...` of the names OCP exposes there (OCP.collections: aliases).
 
 This is monkey-patching of nanocct, the one deliberate exception to the project rule, confined to this throwaway shim
-(the user's decision, 2026-09-25): a subclass would break isinstance() for objects C++ returns, and nanobind's
+(decided 2026-09-25): a subclass would break isinstance() for objects C++ returns, and nanobind's
 metaclass cannot be subclassed to repair that. nanocct is untouched unless `OCP` is imported.
 """
 import importlib

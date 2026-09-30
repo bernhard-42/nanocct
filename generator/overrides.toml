@@ -166,6 +166,50 @@ methods = [
     # per call and stay.
     "BinObjMgt_Persistent::SetOStream",
     "BinObjMgt_Persistent::SetIStream",
+    # OCCT's C idiom "array passed by its first element": a double& (or const double&) that is really a pointer to an
+    # array whose length follows from Degree/Dimension (PLib::EvalPolynomial reads (Degree+1)*Dimension coefficients
+    # through `const double& PolynomialCoeff`; BSplCLib::BuildEval does `double *pole = &LP; pole[i] = ...`,
+    # BSplCLib_2.cxx:59-70). The header cannot tell it from a scalar, so it was bound as one -- and OCCT then reads and
+    # writes past a single double. Omitted (2026-09-30): low-level helpers; CAD code uses Geom_BSplineCurve/
+    # Surface, GeomAPI_Interpolate/PointsToBSpline, and numpy for polynomials (Design.md 2d). Exact signatures (the
+    # same names have safe overloads that stay), from the generator's own parse of PLib and BSplCLib.
+    "PLib::RationalDerivative(const int, const int, const int, double &, double &, const bool)",
+    "PLib::RationalDerivatives(const int, const int, double &, double &, double &)",
+    "PLib::EvalPolynomial(const double, const int, const int, const int, const double &, double &)",
+    "PLib::NoDerivativeEvalPolynomial(const double, const int, const int, const int, const double &, double &)",
+    "PLib::EvalPoly2Var(const double, const double, const int, const int, const int, const int, const int, double &, double &)",
+    "PLib::EvalLagrange(const double, const int, const int, const int, double &, double &, double &)",
+    "PLib::EvalCubicHermite(const double, const int, const int, double &, double &, double &, double &)",
+    "PLib::EvalLength(const int, const int, double &, const double, const double, double &)",
+    "PLib::EvalLength(const int, const int, double &, const double, const double, const double, double &, double &)",
+    "PLib_JacobiPolynomial::MaxError(const int, double &, const int)",
+    "PLib_JacobiPolynomial::ReduceDegree(const int, const int, const double, double &, int &, double &)",
+    "PLib_JacobiPolynomial::AverageError(const int, double &, const int)",
+    "PLib_HermitJacobi::MaxError(const int, double &, const int)",
+    "PLib_HermitJacobi::ReduceDegree(const int, const int, const double, double &, int &, double &)",
+    "PLib_HermitJacobi::AverageError(const int, double &, const int)",
+    "BSplCLib::Eval(const double, const int, double &, const int, double &)",
+    "BSplCLib::BoorScheme(const double, const int, double &, const int, double &, const int, const int)",
+    "BSplCLib::AntiBoorScheme(const double, const int, double &, const int, double &, const int, const int, const double)",
+    "BSplCLib::Derivative(const int, double &, const int, const int, const int, double &)",
+    "BSplCLib::Bohm(const double, const int, const int, double &, const int, double &)",
+    "BSplCLib::BuildKnots(const int, const int, const bool, const NCollection_Array1<double> &, const NCollection_Array1<int> *, double &)",
+    "BSplCLib::BuildEval(const int, const int, const NCollection_Array1<double> &, const NCollection_Array1<double> *, double &)",
+    "BSplCLib::BuildEval(const int, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> *, double &)",
+    "BSplCLib::BuildEval(const int, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> *, double &)",
+    "BSplCLib::BuildBoor(const int, const int, const int, const NCollection_Array1<double> &, double &)",
+    "BSplCLib::GetPole(const int, const int, const int, const int, double &, int &, NCollection_Array1<double> &)",
+    "BSplCLib::SolveBandedSystem(const math_Matrix &, const int, const int, const int, double &)",
+    "BSplCLib::SolveBandedSystem(const math_Matrix &, const int, const int, const bool, const int, double &, double &)",
+    "BSplCLib::FunctionReparameterise(const BSplCLib_EvaluatorFunction &, const int, const NCollection_Array1<double> &, const int, double &, const NCollection_Array1<double> &, const int, double &, int &)",
+    "BSplCLib::FunctionMultiply(const BSplCLib_EvaluatorFunction &, const int, const NCollection_Array1<double> &, const int, double &, const NCollection_Array1<double> &, const int, double &, int &)",
+    "BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &)",
+    "BSplCLib::Eval(const double, const bool, const int, int &, const int, const NCollection_Array1<double> &, const int, double &, double &, double &, double &)",
+    "BSplCLib::TangExtendToConstraint(const NCollection_Array1<double> &, const double, const int, double &, const int, const int, const NCollection_Array1<double> &, const int, const bool, int &, int &, double &, double &)",
+    "BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, int &)",
+    "BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &)",
+    "BSplCLib::MovePointAndTangent(const double, const int, double &, double &, const double, const int, const int, const int, double &, const NCollection_Array1<double> *, const NCollection_Array1<double> &, double &, int &)",
+    "BSplCLib::Resolution(double &, const int, const int, const NCollection_Array1<double> *, const NCollection_Array1<double> &, const int, const double, double &)",
     # std::abs(unsigned int) is ambiguous (float/double/long double candidates all convert), so cwiseAbs does not
     # compile for an unsigned element type. OCCT never instantiates it -- a template member is only instantiated when
     # used -- and binding the class is what forces it. NCollection_Vec2<unsigned int> arrived with the reference

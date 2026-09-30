@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build OCCT 8.0.1 on Windows with MSVC into deps/occt-8.0.1, mirroring deps/build-occt-macos.sh flag for flag.
 #
-# The split follows the user's rule for this project (2026-09-23): **preparation in Git Bash, compilation with MSVC in
+# The split follows the rule for this project (2026-09-23): **preparation in Git Bash, compilation with MSVC in
 # cmd.exe**. Bash locates the toolchain and writes a .bat; cmd.exe runs `vcvars64.bat` and then cmake/ninja. Importing
 # vcvars' environment back into bash is possible but unreadable, and a generated .bat is something a reviewer can read
 # (it is printed before it runs). Git Bash is what GitHub Actions' windows-latest offers, so this is also the CI path.

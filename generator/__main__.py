@@ -693,7 +693,7 @@ def main(argv: list[str]) -> int:
         "__all__ = sorted(_PACKAGES)\n")
     # `import nanocct.all` loads every toolkit, in dependency order: on macOS Gatekeeper verifies each dylib the
     # first time it is loaded, so warming all of them once after installing a wheel is cheaper than paying for it
-    # scattered through a session (the user's practice with the OCP wheel). It is *not* needed for DE_Wrapper:
+    # scattered through a session. It is *not* needed for DE_Wrapper:
     # nanocct does not bind DE_PluginHolder<T> (R-TEMPLATE-SKIP), so a provider is registered by an explicit
     # `wrapper.Bind(DEBREP_ConfigurationNode())` whatever has been imported -- measured 2026-09-24.
     (py_root / "all.py").write_text(
