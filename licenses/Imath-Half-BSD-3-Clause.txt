@@ -1,15 +1,11 @@
-Imath / OpenEXR "Half" (the half-float type)
+Copyright (c) Contributors to the OpenEXR Project. All rights reserved.
 
-    SPDX-License-Identifier: BSD-3-Clause
-    Copyright Contributors to the OpenEXR Project.
-    Primary original authors: Florian Kainz <kainz@ilm.com>, Rod Bogart <rgb@ilm.com>
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-This is the only part of OpenEXR that nanocct ships. FreeImage is built with BUILD_OPENEXR=OFF, but
-Source/OpenEXR/Half is added to its CMake target unconditionally -- FreeImage's own half-float pixel type
-(FIT_RGBAF16) needs it -- so one object, half.cpp.o, is compiled into libFreeImage. The EXR codec itself is not.
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
-NOTE: this file is a pointer, not the licence text. The FreeImage source tree carries only the SPDX identifier
-above in Source/OpenEXR/Half/half.cpp; it ships no LICENSE file for OpenEXR. The full BSD-3-Clause text as the
-OpenEXR project publishes it should be pasted in here before this wheel is distributed publicly:
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-    https://github.com/AcademySoftwareFoundation/openexr/blob/main/LICENSE.md
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

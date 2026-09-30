@@ -59,6 +59,9 @@ CDDL component) and jxrlib are **not** included; JBIG-KIT is not vendored by Fre
     OpenJPEG (BSD-2)        licenses/OpenJPEG-BSD-2-Clause.txt
     Imath "Half" (BSD-3)    licenses/Imath-Half-BSD-3-Clause.txt
 
+Of OpenEXR only its half-float type is compiled in (Source/OpenEXR/Half/half.cpp, which FreeImage builds
+unconditionally for its 16-bit float pixel type); OpenEXR itself is not bundled.
+
 None of those symbols are exported: the library is built with -fvisibility=hidden and exports only its own
 FreeImage_* API, so a libpng or zlib elsewhere in the process cannot be bound to FreeImage's copy, or the
 reverse.

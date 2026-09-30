@@ -65,7 +65,11 @@ def test_notice_carries_the_attributions_the_licences_require():
 def test_licences_cover_what_is_actually_bundled_and_nothing_build_only():
     readme = (LICENSES / "README.md").read_text()
     for shipped in ("Open CASCADE", "FreeType", "FreeImage", "RapidJSON", "nanobind", "robin_map",
-                    "zlib", "libpng", "libjpeg", "libtiff", "OpenJPEG"):
+                    "zlib", "libpng", "libjpeg", "libtiff", "OpenJPEG", "Imath"):
         assert shipped in readme
-    # build-time-only tools ship nothing and must not be listed as if they did
-    assert "scikit-build-core" in readme and "do not" in readme
+    # build-time-only tools ship nothing and are not listed
+    assert not any(tool in readme for tool in ("scikit-build-core", "cmake", "ninja", "libclang"))
+    # OpenEXR's half.cpp is compiled into libFreeImage although the EXR codec is off (FreeImage's CMakeLists adds
+    # Source/OpenEXR/Half unconditionally): its BSD-3 text must be the licence itself, not a pointer to it
+    imath = (LICENSES / "Imath-Half-BSD-3-Clause.txt").read_text()
+    assert "Contributors to the OpenEXR Project" in imath and "Redistributions in binary form must reproduce" in imath
