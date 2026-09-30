@@ -2,35 +2,57 @@
 
 ---
 
-# E X P E R I M E N T A L
+# -&nbsp;-&nbsp; *E X P E R I M E N T A L*  &nbsp;-&nbsp;-
 
 ---
 
 # nanocct
 
-Open Cascade bindings created with nanobind for the stable ABI of Python 3
+**Open Cascade bindings created with nanobind for the stable ABI of Python 3**
 
-## Overview
+---
 
-[Open Cascade Technology](https://github.com/Open-Cascade-SAS/OCCT) (OCCT) is the usual 3D CAD kernel for open source projects. nanocct makes OCCT 8 available to Python, class for class and method for method, so that code reads like the OCCT reference manual.
-
-## A new approach
-
-OCCT already has established Python bindings in [OCP](https://github.com/cadquery/OCP) and [pythonocc](https://github.com/tpaviot/pythonocc-core), and a whole ecosystem builds on them. nanocct takes a different route, started fresh with OCCT 8 and nanobind:
-
-1. **One wheel per platform for every Python from 3.12 on.** The bindings are built with [nanobind](https://github.com/wjakob/nanobind) against the Python 3 stable ABI, so a single `cp312-abi3` wheel runs on 3.12, 3.13, 3.14 and later without a rebuild. [Design 4.1](Design.md#41-stable-abi)
-2. **The OCCT reference manual is the documentation.** Names follow the OCCT headers by written rules, without renaming for Python taste, so the [Open Cascade reference manual](https://occt3d.com/dev/doc/refman/html/index.html) applies as it is, and OCCT's own `//!` comments are the docstrings. [Design 2a](Design.md#2a-naming-conventions)
-3. **The OCCT 8 collection classes are Python generics.** `NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_AsciiString]()` creates that instantiation, and `isinstance(x, NCollection_Array1)` holds for every array, whatever its element type. [Design 2a](Design.md#2a-naming-conventions), [6a](Design.md#6a-ncollection-containers-hand-written-binders)
-4. **Out-parameters come back as results.** A C++ reference parameter that OCCT writes into is part of the Python return value: `curve, first, last = BRep_Tool.Curve_s(edge)`. [Design 2a](Design.md#2a-naming-conventions), [2b](Design.md#2b-parameter-conventions)
-5. **Data exchange in memory.** An output stream is a returned `str` (`bytes` for binary formats), an input stream any file-like object: `BRepTools.Write_s(shape)` returns the BREP text, STEP and the OCAF documents work the same way. [Design 2b](Design.md#2b-parameter-conventions)
-6. **Zero-copy access to OCCT's arrays.** Triangulation nodes, triangles, UVs and normals, the `NCollection` arrays and `Image_PixMap` are numpy views of OCCT's own memory through `np.asarray(obj)`, not copies. [Design 2c](Design.md#2c-python-additions)
-7. **Type stubs in the package**, checked with mypy and ty as part of the test suite. [Design 6b](Design.md#6b-type-stubs)
-8. **All of OCCT's visualization, without VTK.** The AIS interactive context, the V3d viewer and the OpenGL driver are bound. OCCT's VTK layer (`TKIVtk`) is the one part left out, on purpose: its classes derive from VTK's own C++ classes, so using it from Python needs VTK's Python wrappers, which are built for each Python version separately. That would give up point 1. [Design 2](Design.md#2-scope)
-9. **Validated against real code.** The full test suites of [build123d](https://github.com/gumyr/build123d) (2 465 tests), ocpsvg, ocp_gordon and ocp_tessellate run on nanocct with the same outcome, test by test, as with the OCP bindings they were written for.
-10. **AddOns, rarely.** A few C++ helpers where a Python loop over OCCT calls would dominate (tessellation), and workarounds for OCCT bugs that hit often and are not fixed upstream — each with a test that fails once OCCT fixes the bug, so it can be removed again. [Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations) (R-ADDON)
+[Open Cascade](https://github.com/Open-Cascade-SAS/OCCT) (OCCT) is a commonly used 3D CAD kernel for open source projects. It already has established Python bindings in [OCP](https://github.com/cadquery/OCP) and [pythonocc](https://github.com/tpaviot/pythonocc-core), and a whole ecosystem builds on them. _nanocct_ takes a different route, started fresh with OCCT 8 and [nanobind](https://github.com/wjakob/nanobind) and makes OCCT 8 available to Python, class for class and method for method, so that code reads like the OCCT reference manual.
 
 
-Points 2, 3, 4, and 6 are part of **the design principle to make nanocct Pyhton'ish**, see [Pythonic-OCCT.md](./Pythonic-OCCT.md)
+## Design principles
+
+
+_nanocct_ follows **3 design principles**:
+
+1. **One wheel per platform for the stable ABI of Python 3**: The bindings are built with nanobind against the Python 3 stable ABI, so a single `cp312-abi3` wheel runs on 3.12, 3.13, 3.14 and later without a rebuild. ([Design 4.1](Design.md#41-stable-abi))
+
+2. **Coverage of Open Cascade**: Support of the OCCT modules *FoundationClasses*, *ModelingData*, *ModelingAlgorithms*, _Visualization_ (without _VTK_, which would break principle 1), _ApplicationFramework_, and _DataExchange_, and keep the syntax as near to the Open Cascade C++ API as possible ([Design 2](Design.md#2-scope))
+
+3. **Make the bindings Python'ish**: Provide addon features that make _nanocct_ fit well into the Python ecosystem, within the constraints of principle 2 (e.g. names stay OCCT's CamelCase). ([Design 2c](Design.md#2c-python-additions))
+
+
+## Key features
+
+From principle 2:
+
+- **The OCCT reference manual is the documentation.** Names follow the OCCT headers, without renaming for Python taste, so the [Open Cascade reference manual](https://occt3d.com/dev/doc/refman/html/index.html) applies as it is, and OCCT's own `//!` comments are the docstrings. ([Design 2a](Design.md#2a-naming-conventions))
+
+From principle 3 (see [Pythonic-OCCT.md](./Pythonic-OCCT.md)):
+
+- **The OCCT 8 collection classes are Python generics.** `NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_AsciiString]()` creates that instantiation, and `isinstance(x, NCollection_Array1)` holds for every array, whatever its element type. [Design 2a](Design.md#2a-naming-conventions), [6a](Design.md#6a-ncollection-containers-hand-written-binders)
+- **Zero-copy access to OCCT's arrays.** Triangulation nodes, triangles, UVs and normals, the `NCollection` arrays and `Image_PixMap` are numpy views of OCCT's own memory through `np.asarray(obj)`, not copies. ([Design 2c](Design.md#2c-python-additions))
+- **Iterators.** `for e in TopExp_Explorer(shape, TopAbs_EDGE)` and `for x in array`: every OCCT iterator with `More()`/`Next()`/`Value()` and every `NCollection` container is a Python iterable. ([Design 2c](Design.md#2c-python-additions))
+- **Out-parameters come back as results.** A C++ reference parameter that OCCT writes into is part of the Python return value: `curve, first, last = BRep_Tool.Curve_s(edge)`. ([Design 2b](Design.md#2b-parameter-conventions))
+- **Data exchange in memory.** An output stream is a returned `str` (`bytes` for binary formats), an input stream any file-like object: `BRepTools.Write_s(shape)` returns the BREP text, STEP and the OCAF documents work the same way. ([Design 2b](Design.md#2b-parameter-conventions))
+- **Type stubs in the package**, checked with mypy and ty as part of the test suite. ([Design 6b](Design.md#6b-type-stubs))
+
+_nanocct_ ships a few selected **AddOns** ([Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations), R-ADDON): 
+- C++ helpers where a Python loop over OCCT calls would dominate (`nanocct.AddOns.Tessellator`) 
+- Workarounds (not patches and very rarely) for OCCT bugs that hit often and are not fixed upstream — each with a test that fails once OCCT fixes the bug, so it can be removed again (`nanocct.AddOns.ShapeClean.ShapeClean`)
+
+
+## Validation
+
+_nanocct_ **comes with its own test suite** of about 900 tests, run against the repaired wheel in a fresh environment by every build (`make test`), on all five platforms in CI. One test file per toolkit checks that the bindings behave as OCCT does; the generator itself is tested on synthetic headers that exercise its binding rules. Lifetime tests drop the owner or the result of every ownership rule in a fresh interpreter with the allocator's scribbling switched on, leak tests check that repeating each life cycle keeps memory flat, and the type stubs are checked with mypy and ty.
+
+_nanocct_ is also **validated against real code.** The full test suites of nanocct-enabled versions of [build123d](https://github.com/gumyr/build123d) (2 465 tests), ocpsvg, ocp_gordon and ocp_tessellate run on _nanocct_ with the same outcome, test by test, as with the OCP bindings they were written for.
+
 
 ## A first look
 
@@ -60,8 +82,8 @@ brep = BRepTools.Write_s(shape)                 # a BREP in memory, as str
 ## Status
 
 - OCCT 8.0.1, 45 toolkits: FoundationClasses, ModelingData, ModelingAlgorithms, Visualization (without VTK), ApplicationFramework and DataExchange. [Design 2](Design.md#2-scope)
-- Built and tested on macOS arm64, Linux x86_64 (`manylinux_2_28`) and Windows x64. The wheels bundle OCCT, FreeType and FreeImage; the only Python dependency is numpy.
-- Not on PyPI yet (the distribution will be `nanocct`); build from source with the `Makefile`. [Design 7](Design.md#7-build-and-packaging)
+- Built and tested on five platforms: macOS arm64 and x86_64, Linux x86_64 and aarch64 (`manylinux_2_28`) and Windows x64. The wheels bundle OCCT, FreeType and FreeImage; the only Python dependency is numpy.
+- Not on PyPI yet (the distribution will be `nanocct`): download the wheels from the [release page](https://github.com/bernhard-42/nanocct/releases) or build them from source with the `Makefile`. [Design 7](Design.md#7-build-and-packaging)
 - Porting from OCP: [Design 8b](Design.md#8b-porting-from-ocp-cadquery-ocp-to-nanocct)
 
 ## How to start with build123d on nanocct
