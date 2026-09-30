@@ -661,7 +661,9 @@ template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const c
      .def("Erase", [](V &self, const size_t i) { self.Erase(i); }, nb::arg("theIndex"), D::Erase)
      .def("Erase", [](V &self, const size_t from, const size_t to) { self.Erase(from, to); }, nb::arg("theFrom"), nb::arg("theTo"), D::Erase)
      .def("Clear", [](V &self, const bool release) { self.Clear(release); }, nb::arg("theReleaseMemory") = false, D::Clear)
-     .def("ToArray1", [](const V &self) { return self.ToArray1(); }, D::ToArray1)
+     // the Array1 borrows the vector's buffer (NCollection_LinearVector.hxx: Array1(myData, mySize)), so it keeps the
+     // vector alive; without that it read freed memory once the vector was collected (2026-09-30)
+     .def("ToArray1", [](const V &self) { return self.ToArray1(); }, nb::keep_alive<0, 1>(), D::ToArray1)
      // Python additions
      .def("__setitem__", [](V &self, const size_t i, const T &v) { self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (0-based).")
      .def("__len__", [](const V &self) { return self.Size(); }, "Python addition: alias to Size.")

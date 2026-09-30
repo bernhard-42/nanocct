@@ -1,4 +1,5 @@
 """Hand-written NCollection binders (Design.md 6a), all 15 kinds, instantiated by the generator."""
+import gc
 import sys
 
 import pytest
@@ -418,6 +419,22 @@ def test_linear_vector():
     a.ChangeValue(0).SetValues(4.0, 5.0, 6.0)                                 # reference_internal for class elements
     assert a.Value(0).x() == 4.0
     assert type(MathRoot.MultipleResult().Roots) is NCollection.NCollection_DynamicArray[float]   # container-typed field
+
+
+def test_linear_vector_to_array1_keeps_the_vector_alive():
+    """ToArray1() is an Array1 over the vector's own buffer; it read freed (reused) memory once the vector was
+    collected (2026-09-30)."""
+    v = NCollection.NCollection_LinearVector[float]()
+    for x in (24.0, 25.0, 26.0):
+        v.Append(x)
+    a = v.ToArray1()
+    del v
+    gc.collect()
+    others = [NCollection.NCollection_LinearVector[float]() for _ in range(50)]
+    for o in others:
+        for _ in range(3):
+            o.Append(7.0)
+    assert [a.Value(i) for i in range(a.Lower(), a.Upper() + 1)] == [24.0, 25.0, 26.0]
 
 
 def _generics() -> dict[str, type]:
