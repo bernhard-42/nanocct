@@ -592,6 +592,23 @@ namespace Rules
   constexpr double THE_CONST = 1.5;
 }
 
+//! R-NULL-BOOL: IsNull() and no operator bool (TopoDS_Shape, TDF_Label) -> __bool__ raises, so `if shape:` cannot
+//! silently be true for a null shape; with an operator bool the real one is bound instead.
+class Rules_Nullable
+{
+public:
+  Rules_Nullable() {}
+  bool IsNull() const { return true; }
+};
+
+class Rules_NullableBool
+{
+public:
+  Rules_NullableBool() {}
+  bool IsNull() const { return true; }
+  operator bool() const { return false; }
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -661,7 +678,7 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
                                "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor",
                                "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
-                               "Rules_PTree<int, 1, Rules_PQuad>"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableBool"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -826,6 +843,21 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     # R-ITER: More/Next/Value -> __iter__/__next__ through nanocct_def_iter; Rules_Value (no More) gets none
     assert cpp.count("nanocct_def_iter<") == 2 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
+
+
+def test_emitter_null_bool_raises(rules_ir):
+    """R-NULL-BOOL (2026-09-30): IsNull() without operator bool -> a __bool__ that raises TypeError.
+
+    Python's default makes every object true, so `if shape:` held for a null TopoDS_Shape without any error.
+    """
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "Rules_Nullable: __bool__ raising TypeError added (IsNull() without operator bool)" in em.report
+    assert cpp.count('" has no truth value in OCCT: use IsNull()"') == 1
+    # an operator bool wins: the real conversion is bound, no raising one
+    assert '.def("__bool__", [](const Rules_NullableBool &self) { return static_cast<bool>(self); }' in cpp
+    assert not any(r.startswith("Rules_NullableBool: __bool__ raising") for r in em.report)
 
 
 def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):

@@ -176,6 +176,19 @@ def test_unscoped_enumerators_are_exported_to_the_enclosing_scope():
     assert gp.gp_Dir.D.NZ is not None and not hasattr(gp.gp_Dir, "NZ")                        # scoped enum class stays nested
 
 
+def test_shape_truth_value_is_an_error():
+    """R-NULL-BOOL (2026-09-30): OCCT gives TopoDS_Shape IsNull() and no operator bool, so `if shape:` raises instead
+    of being true for a null shape (Python's default). Derived shapes inherit it; the message names the actual type."""
+    c, v, _ = _compound()
+    for shape in (TopoDS.TopoDS_Shape(), c, v):
+        with pytest.raises(TypeError, match=f"{type(shape).__name__} has no truth value in OCCT: use IsNull"):
+            bool(shape)
+        with pytest.raises(TypeError):
+            if shape:
+                pass
+    assert TopoDS.TopoDS_Shape().IsNull() and not c.IsNull()
+
+
 def test_shape_comparisons_are_OCCTs_and_the_operators_map_to_them():
     """IsPartner, IsSame, IsEqual, IsNotEqual are OCCT's own methods, and `==`/`!=` are OCCT's operator==/!=, which are
     IsEqual/IsNotEqual (TopoDS_Shape.hxx:282, :287). A shape is (TShape, Location, Orientation): IsPartner compares the

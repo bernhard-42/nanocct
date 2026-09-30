@@ -954,6 +954,26 @@ Out[2]: True
 
 A handle *parameter* is typed `X | None`: passing `None` hands OCCT a null handle, which is how OCCT removes a geometry (`BRep_TFace().Surface(None)`).
 
+### Null shapes and labels
+
+A shape, a label and a few other OCCT value classes can be null too, and ask `IsNull()`. OCCT gives them no `operator bool`, so they have no truth value in nanocct either: `if shape:` raises `TypeError` instead of being true for a null shape, as every Python object without `__bool__` would be. This applies to `TopoDS_Shape` (and every shape class derived from it), `TDF_Label`, `BRepGraph`, `StepData_SelectType`, `XCAFDoc_AssemblyItemId`, `Poly_MakeLoops.Link` and `PeriodicInterval`.
+
+```python
+In [1]: from nanocct.TopoDS import TopoDS_Shape
+   ...: shape = TopoDS_Shape()
+
+In [2]: try:
+   ...:     if shape:
+   ...:         pass
+   ...: except TypeError as e:
+   ...:     msg = str(e)
+   ...: msg
+Out[2]: 'nanocct.TopoDS.TopoDS_Shape has no truth value in OCCT: use IsNull()'
+
+In [3]: shape.IsNull()
+Out[3]: True
+```
+
 ### When OCCT crashes instead
 
 OCCT raises only where it checks. A handle or a class pointer accepts `None` (a null handle, a null pointer), because some OCCT methods take one on purpose (`BRep_TFace().Surface(None)` removes the surface). Where OCCT does not expect it, it dereferences the null pointer and the process ends with a segmentation fault, exactly as it does in C++. nanocct does not turn these into exceptions: OCCT's own mechanism for that (`OSD::SetSignal` with `OCC_CATCH_SIGNALS` around each call) works, but would add about 200 ns to every call, which costs about 18 ns today.

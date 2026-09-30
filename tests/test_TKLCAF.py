@@ -60,6 +60,8 @@ def test_label_entries_children_equality_and_hash(doc):
     found = TDF.TDF_Label()
     TDF.TDF_Tool.Label_s(doc.GetData(), TCollection_AsciiString("0:1:1"), found, False)
     assert found == child and found != main and not found.IsNull() and TDF.TDF_Label().IsNull()
+    with pytest.raises(TypeError, match="TDF_Label has no truth value in OCCT: use IsNull"):   # R-NULL-BOOL
+        bool(found)
     assert hash(found) == hash(child) and {child: "c"}[found] == "c"     # std::hash<TDF_Label> lives in TDF_Label.lxx
     main.FindChild(2, True)
     main.FindChild(3, True)
@@ -121,7 +123,7 @@ def test_keyword_parameter_names_are_suffixed():
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     categories = {line.split("\t")[0] for line in lines}
-    assert categories <= {"iterator", "not-constructible", "operator", "overload-collision", "raw-pointer", "stream", "template", "unbound-type"}
+    assert categories <= {"iterator", "not-constructible", "null-bool", "operator", "overload-collision", "raw-pointer", "stream", "template", "unbound-type"}
     # R-UNBOUND-TYPE (2026-09-30): the TDF_LabelNode* constructor -- TDF_LabelNode is internal and not bound; TDF_Label's stays
     assert [line.split("\t")[2].split("): ")[0] + ")" for line in lines if line.startswith("unbound-type")] == [
         "TDF_AttributeIterator::TDF_AttributeIterator(const TDF_LabelNodePtr, const bool)"]

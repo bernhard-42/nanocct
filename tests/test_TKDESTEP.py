@@ -193,8 +193,9 @@ def test_report_categories():
     # class template the 6c walk tried and failed to bind (its get()/operator-> and its handle<Standard_Transient> base)
     assert counts == {"raw-pointer": 1, "rvalue": 3, "override": 4, "template": 2,
                       "header": 1, "stream": 1,
-                      "overload-collision": 3}    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER, State.md 8.22)
-    assert len(lines) == 15
+                      "overload-collision": 3,    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER, State.md 8.22)
+                      "null-bool": 1}             # StepData_SelectType (R-NULL-BOOL, 2026-09-30)
+    assert len(lines) == 16
     # which members R-UNDEFINED reports is the platform's business (macOS names four entities, Windows others), so
     # only the package is asserted here; the portable categories above are what this test is really about
     assert all(line.split("\t")[1].lower().startswith(("step", "rwstep", "apiheadersection")) for line in undefined)                                       # 1 040 classes, 7 688 methods bound

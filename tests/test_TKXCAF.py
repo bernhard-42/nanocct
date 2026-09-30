@@ -115,6 +115,6 @@ def test_report_categories():
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    assert counts == {"iterator": 4, "overload-collision": 3, "template": 2, "header": 1, "undefined": 1}
+    assert counts == {"iterator": 4, "overload-collision": 3, "template": 2, "header": 1, "undefined": 1, "null-bool": 1}   # XCAFDoc_AssemblyItemId (R-NULL-BOOL)
     # the two template lines are XCAFDoc_AssemblyTool::Traverse (a visitor template); the iterators are the way in (2d)
     assert sum("XCAFDoc_AssemblyTool::Traverse" in line for line in lines) == 2
