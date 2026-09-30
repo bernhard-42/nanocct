@@ -68,14 +68,31 @@ struct mi_entry {
     void *(*from_transient)(Standard_Transient *);       // Transient subobject of an S -> stored pointer
 };
 
-inline std::unordered_map<std::string, mi_entry> &nanocct_mi_by_name() {   // key: typeid(S).name()
-    static std::unordered_map<std::string, mi_entry> m;
-    return m;
+// ONE registry for all extension modules. Every toolkit is its own shared library, and an inline function's static is
+// one per library there (hidden visibility): a type registered by _TKMath (NCollection_HArray1<int>) was unknown to the
+// caster of every other toolkit, so it was refused where a handle<Standard_Transient> is expected (2026-09-30). The
+// first module to need it creates the registry and leaves it on the `nanocct` package as a capsule; every module finds
+// the same one there. All modules are built by the same compiler with the same flags, so the layout agrees; the
+// registry is never freed (the modules are never unloaded). Called with the GIL held (module init, the casters).
+struct mi_registry {
+    std::unordered_map<std::string, mi_entry> by_name;   // key: typeid(S).name()
+    std::vector<mi_entry> list;
+};
+inline mi_registry &nanocct_mi_registry() {
+    static mi_registry *reg = nullptr;
+    if (reg == nullptr) {
+        nb::object pkg = nb::module_::import_("nanocct");
+        if (nb::hasattr(pkg, "_mi_registry"))
+            reg = static_cast<mi_registry *>(PyCapsule_GetPointer(pkg.attr("_mi_registry").ptr(), "nanocct._mi_registry"));
+        else {
+            reg = new mi_registry();
+            pkg.attr("_mi_registry") = nb::steal(PyCapsule_New(reg, "nanocct._mi_registry", nullptr));
+        }
+    }
+    return *reg;
 }
-inline std::vector<mi_entry> &nanocct_mi_list() {
-    static std::vector<mi_entry> v;
-    return v;
-}
+inline std::unordered_map<std::string, mi_entry> &nanocct_mi_by_name() { return nanocct_mi_registry().by_name; }
+inline std::vector<mi_entry> &nanocct_mi_list() { return nanocct_mi_registry().list; }
 
 template <typename S> void nanocct_register_mi(nb::handle py_type) {
     using B = typename mi_traits<S>::base;

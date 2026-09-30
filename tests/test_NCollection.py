@@ -585,3 +585,22 @@ def test_a_static_const_data_member_is_a_read_only_class_property():
     with pytest.raises(AttributeError):
         alloc.THE_DEFAULT_BLOCK_SIZE = 1
     assert alloc.THE_DEFAULT_BLOCK_SIZE == 1024 * 12
+
+
+def test_h_collections_pass_as_transient_across_toolkits():
+    """The multiple-inheritance registry (NCollection_HArray1<T> : Array1<T>, Standard_Transient) was one per extension
+    module: an H-type bound by _TKMath was refused by every other toolkit where a handle<Standard_Transient> is expected
+    (2026-09-30). One registry now, shared through the nanocct package -- both directions, three toolkits."""
+    import nanocct.all  # noqa: F401  every toolkit, so the H-types come from their own modules
+    from nanocct.Interface import Interface_EntityIterator
+    from nanocct.Standard import Standard_Transient
+    arr = NCollection.NCollection_HArray1[int](1, 3)            # bound by _TKMath
+    arr.SetValue(2, 42)
+    seq = NCollection.NCollection_Sequence[Standard_Transient]()   # bound by _TKernel
+    seq.Append(arr)
+    back = seq.Value(1)                                          # handle<Standard_Transient> back from _TKernel
+    assert back is arr and back.Value(2) == 42
+    it = Interface_EntityIterator()                              # _TKXSBase
+    it.AddItem(NCollection.NCollection_HSequence[int]())         # bound by _TKernel
+    it.AddItem(arr)
+    assert it.NbEntities() == 2
