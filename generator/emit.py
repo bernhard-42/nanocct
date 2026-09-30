@@ -1026,7 +1026,17 @@ class Emitter:
                 define.append(f'    {cls_expr}.def_prop_rw("{py_safe(f.name)}", {getter}, {setter}{", " + dd if dd is not None else ""});')
                 continue
             define.append(f'    nanocct_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
-        if len(body) == 0 and len(c.fields) == 0:
+        for k in c.statics:                # R-STATIC-DATA: a read-only static property returning the value
+            why = self._unbound_reason(k.type_class)
+            if why is not None:            # an enum no binding registers: the cast would abort the module import
+                self.report.append(f"{k.cpp}: type {k.type_class} {why} -> static data member not bound")
+                continue
+            # a prvalue copy of the value, not a reference: an in-class-initialised `static const int X = 5;` has no
+            # definition to take the address of, and binding a reference (nb::cast(C::X)) would odr-use it
+            # (and a read-only static property rather than a plain class attribute, which any assignment would replace)
+            define.append(f'    {cls_expr}.def_prop_ro_static("{k.py_name}", [](nb::handle) {{ return static_cast<std::remove_cv_t<decltype({k.cpp})>>({k.cpp}); }});')
+            self._note_types(k.type_class)
+        if len(body) == 0 and len(c.fields) == 0 and len(c.statics) == 0:
             return
         # R-IMPLICIT-CONV: C++ implicit conversions (non-explicit converting constructors) apply in Python too
         if not c.is_abstract and c.constructible:

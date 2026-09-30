@@ -562,6 +562,11 @@ public:
   int Rational(const gp_XYZ* theW, const char* theName) const { (void)theName; return theW == nullptr ? 0 : 1; }
   //! R-UNBOUND-TYPE for the standard library: an enum of it has no Python type (std::_Ios_Openmode on libstdc++).
   int Round(std::float_round_style theStyle) const { return static_cast<int>(theStyle); }
+  //! R-STATIC-DATA: static data members -- constants become class attributes, the rest is reported.
+  static const int THE_LIMIT = 7;
+  static constexpr double THE_TOL = 1.5;
+  static const char* const THE_NAMES[2];
+  static int theCounter;
 };
 
 //! A namespace named like the package is the package module itself.
@@ -1184,6 +1189,24 @@ def test_a_standard_library_enum_makes_a_member_unbindable(rules_ir):
     has no Python type, so the member is skipped and reported instead of bound uncallable."""
     rnd = _method(rules_ir, "Rules_Order", "Round")
     assert rnd.skip_reason is not None and "std::float_round_style (a standard-library enum, no Python type)" in rnd.skip_reason
+
+
+def test_static_data_members_become_class_attributes(tmp_path_factory):
+    """R-STATIC-DATA (2026-09-30): a public static const data member is a read-only static property returning the value
+    (RWGltf_GltfAccessor.INVALID_ID); the value is copied into a prvalue, since an in-class-initialised `static const int`
+    has no definition whose address a reference could take. Arrays and non-const statics are reported, not bound -- until
+    then all of them were dropped without a report line."""
+    rules_ir = rules_ir_of(tmp_path_factory, "statics")
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    for name in ("THE_LIMIT", "THE_TOL"):
+        assert (f'.def_prop_ro_static("{name}", [](nb::handle) {{ return static_cast<std::remove_cv_t<decltype(Rules_Order::{name})>>'
+                f'(Rules_Order::{name}); }});' in cpp)
+    assert "THE_NAMES" not in cpp and "theCounter" not in cpp
+    report = "\n".join(rules_ir.report + em.report)
+    assert "Rules_Order::THE_NAMES: static data member: array (not bound)" in report
+    assert "Rules_Order::theCounter: static field that is not const -> not bound" in report
 
 
 def test_order_by_derivation_uses_every_bound_class_and_keeps_the_rest():

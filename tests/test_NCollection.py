@@ -575,3 +575,13 @@ def test_a_cxx_name_in_the_brackets_names_the_python_spelling():
         NCollection.NCollection_Array1["float"]
     with pytest.raises(TypeError, match=r"Python types, not C\+\+ names$"):
         NCollection.NCollection_Array1["gp_Pnt"]                          # no hint to give
+
+
+def test_a_static_const_data_member_is_a_read_only_class_property():
+    """R-STATIC-DATA (2026-09-30): `static constexpr size_t THE_DEFAULT_BLOCK_SIZE = 1024 * 12;` is readable on the class
+    and cannot be replaced from Python; until then static data members were dropped without a report line."""
+    alloc = NCollection.NCollection_IncAllocator
+    assert alloc.THE_DEFAULT_BLOCK_SIZE == 1024 * 12
+    with pytest.raises(AttributeError):
+        alloc.THE_DEFAULT_BLOCK_SIZE = 1
+    assert alloc.THE_DEFAULT_BLOCK_SIZE == 1024 * 12

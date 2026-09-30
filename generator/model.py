@@ -155,6 +155,7 @@ class Class:
     ctors: list[Constructor] = field(default_factory=list)
     methods: list[Method] = field(default_factory=list)
     fields: list[Field] = field(default_factory=list)
+    statics: list[Constant] = field(default_factory=list)      # R-STATIC-DATA: public static const data members -> class attributes
     conversions: list[Conversion] = field(default_factory=list)
     enums: list[Enum] = field(default_factory=list)
     nested: list[Class] = field(default_factory=list)  # public nested classes (flattened into PackageIR.classes by the parser)
@@ -188,6 +189,7 @@ class Constant:
     cpp: str                    # fully qualified C++ expression
     doc: str
     scope: tuple[str, ...] = ()
+    type_class: str = ""        # the class/enum behind the value's type, for R-UNBOUND-TYPE ("" for a scalar); class statics only
 
 
 @dataclass

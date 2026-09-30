@@ -1460,6 +1460,22 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             if m.skip_reason is not None:
                 c.skipped.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}): {m.skip_reason}")
             c.methods.append(m)
+        elif ch.kind == K.VAR_DECL:
+            # R-STATIC-DATA: a static data member (a VAR_DECL inside a class; FIELD_DECL is the instance kind). Until
+            # 2026-09-30 they were dropped without a report line -- 46 public ones, all const: sentinels and defaults such
+            # as RWGltf_GltfAccessor::INVALID_ID, NCollection_IncAllocator::THE_DEFAULT_BLOCK_SIZE (final review)
+            canon = ch.type.get_canonical()
+            if canon.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
+                c.skipped.append(f"{c.name}::{ch.spelling}: static data member: array (not bound)")
+            elif not ch.type.is_const_qualified():
+                c.skipped.append(f"{c.name}::{ch.spelling}: static field that is not const -> not bound (a class attribute would be a stale copy)")
+            else:
+                reason = _unsupported(ch.type, allow_out=False)
+                if reason is not None:
+                    c.skipped.append(f"{c.name}::{ch.spelling}: static data member: {reason}")
+                else:
+                    c.statics.append(Constant(py_name=py_safe(ch.spelling), cpp=f"{c.name}::{ch.spelling}", doc=_doc(ch),
+                                              type_class=_class_behind(ch.type)))
         elif ch.kind == K.FIELD_DECL:
             reason = _unsupported(ch.type, allow_out=False)
             if reason is None and ch.type.get_canonical().kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
