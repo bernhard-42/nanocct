@@ -60,8 +60,7 @@ def test_label_entries_children_equality_and_hash(doc):
     found = TDF.TDF_Label()
     TDF.TDF_Tool.Label_s(doc.GetData(), TCollection_AsciiString("0:1:1"), found, False)
     assert found == child and found != main and not found.IsNull() and TDF.TDF_Label().IsNull()
-    with pytest.raises(TypeError, match="TDF_Label has no truth value in OCCT: use IsNull"):   # R-NULL-BOOL
-        bool(found)
+    assert found and not TDF.TDF_Label()                                  # R-NULL-BOOL: __bool__ is not IsNull()
     assert hash(found) == hash(child) and {child: "c"}[found] == "c"     # std::hash<TDF_Label> lives in TDF_Label.lxx
     main.FindChild(2, True)
     main.FindChild(3, True)

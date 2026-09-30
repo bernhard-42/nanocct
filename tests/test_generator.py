@@ -592,13 +592,21 @@ namespace Rules
   constexpr double THE_CONST = 1.5;
 }
 
-//! R-NULL-BOOL: IsNull() and no operator bool (TopoDS_Shape, TDF_Label) -> __bool__ raises, so `if shape:` cannot
-//! silently be true for a null shape; with an operator bool the real one is bound instead.
+//! R-NULL-BOOL: IsNull() and no operator bool (TopoDS_Shape, TDF_Label) -> __bool__ = not IsNull(), so a null object
+//! is falsy like a null handle; a non-const IsNull() (PeriodicInterval) needs a non-const self; with an operator bool
+//! the real one is bound instead.
 class Rules_Nullable
 {
 public:
   Rules_Nullable() {}
   bool IsNull() const { return true; }
+};
+
+class Rules_NullableMut
+{
+public:
+  Rules_NullableMut() {}
+  bool IsNull() { return true; }
 };
 
 class Rules_NullableBool
@@ -678,7 +686,7 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
                                "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor",
                                "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
-                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableBool"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -845,19 +853,21 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
 
 
-def test_emitter_null_bool_raises(rules_ir):
-    """R-NULL-BOOL (2026-09-30): IsNull() without operator bool -> a __bool__ that raises TypeError.
+def test_emitter_null_bool_is_not_is_null(rules_ir):
+    """R-NULL-BOOL (2026-09-30): IsNull() without operator bool -> __bool__ = not IsNull().
 
-    Python's default makes every object true, so `if shape:` held for a null TopoDS_Shape without any error.
+    Python's default makes every object true, so `if shape:` held for a null TopoDS_Shape; a null handle is None
+    (falsy) and an empty container has __len__ 0, so a null value object is falsy too.
     """
     em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
-    assert "Rules_Nullable: __bool__ raising TypeError added (IsNull() without operator bool)" in em.report
-    assert cpp.count('" has no truth value in OCCT: use IsNull()"') == 1
-    # an operator bool wins: the real conversion is bound, no raising one
+    assert "Rules_Nullable: __bool__ = not IsNull() added (IsNull() without operator bool)" in em.report
+    assert '.def("__bool__", [](const Rules_Nullable &self) { return !self.IsNull(); }, "Python addition: not IsNull().")' in cpp
+    assert '.def("__bool__", [](Rules_NullableMut &self) { return !self.IsNull(); }, "Python addition: not IsNull().")' in cpp
+    # an operator bool wins: the real conversion is bound, not IsNull
     assert '.def("__bool__", [](const Rules_NullableBool &self) { return static_cast<bool>(self); }' in cpp
-    assert not any(r.startswith("Rules_NullableBool: __bool__ raising") for r in em.report)
+    assert not any(r.startswith("Rules_NullableBool: __bool__ =") for r in em.report)
 
 
 def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):

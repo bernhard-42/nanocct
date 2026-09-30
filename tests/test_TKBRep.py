@@ -176,17 +176,15 @@ def test_unscoped_enumerators_are_exported_to_the_enclosing_scope():
     assert gp.gp_Dir.D.NZ is not None and not hasattr(gp.gp_Dir, "NZ")                        # scoped enum class stays nested
 
 
-def test_shape_truth_value_is_an_error():
-    """R-NULL-BOOL (2026-09-30): OCCT gives TopoDS_Shape IsNull() and no operator bool, so `if shape:` raises instead
-    of being true for a null shape (Python's default). Derived shapes inherit it; the message names the actual type."""
-    c, v, _ = _compound()
-    for shape in (TopoDS.TopoDS_Shape(), c, v):
-        with pytest.raises(TypeError, match=f"{type(shape).__name__} has no truth value in OCCT: use IsNull"):
-            bool(shape)
-        with pytest.raises(TypeError):
-            if shape:
-                pass
-    assert TopoDS.TopoDS_Shape().IsNull() and not c.IsNull()
+def test_a_null_shape_is_falsy():
+    """R-NULL-BOOL (2026-09-30): TopoDS_Shape has IsNull() and no operator bool -> __bool__ is not IsNull(), so a null
+    shape is falsy like a null handle (None). Derived shapes inherit it; an empty compound is not null, so it is true."""
+    c, v, e = _compound()
+    empty = TopoDS.TopoDS_Compound()
+    BRep.BRep_Builder().MakeCompound(empty)
+    assert not TopoDS.TopoDS_Shape() and not TopoDS.TopoDS_Edge() and not bool(TopoDS.TopoDS_Shape())
+    assert c and v and e and bool(c) is True
+    assert empty and empty.NbChildren() == 0
 
 
 def test_shape_comparisons_are_OCCTs_and_the_operators_map_to_them():

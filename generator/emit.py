@@ -984,14 +984,16 @@ class Emitter:
                 # R-CONV-SCALAR: a non-const conversion operator needs a non-const self (MeshVS_Buffer::operator int&())
                 qual = "const " if conv.is_const else ""
                 body.append(f'.def("{dunder}", [{qual and ""}]({qual}{c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
-        if (any(m.name == "IsNull" and len(m.params) == 0 and not m.is_static and m.result in ("bool", "Standard_Boolean") for m in bound)
-                and not any(conv.kind == ConversionKind.BOOL for conv in c.conversions)):
-            # R-NULL-BOOL: OCCT gives the class IsNull() and no operator bool, so Python's default (every object is
-            # true) would make `if shape:` true for a null shape -- silently, and code written for bindings that add
-            # a __bool__ (`not IsNull()`) takes the wrong branch. Raising turns that into an error at the first call.
-            self.report.append(f"{c.name}: __bool__ raising TypeError added (IsNull() without operator bool)")
-            body.append('.def("__bool__", [](nb::handle self) -> bool { throw nb::type_error((std::string(nb::type_name(self.type()).c_str()) '
-                        '+ " has no truth value in OCCT: use IsNull()").c_str()); }, nb::sig("def __bool__(self) -> typing.NoReturn"))')
+        is_null = next((m for m in bound if m.name == "IsNull" and len(m.params) == 0 and not m.is_static
+                        and m.result in ("bool", "Standard_Boolean")), None)
+        if is_null is not None and not any(conv.kind == ConversionKind.BOOL for conv in c.conversions):
+            # R-NULL-BOOL: OCCT gives the class IsNull() and no operator bool -> a null object is falsy, as a null
+            # handle is (None, R-HANDLE) and an empty container is (__len__). Without it every object would be true
+            # and `if shape:` would silently hold for a null shape. The self follows IsNull's constness
+            # (PeriodicInterval::IsNull() is not const).
+            self.report.append(f"{c.name}: __bool__ = not IsNull() added (IsNull() without operator bool)")
+            qual = "const " if is_null.is_const else ""
+            body.append(f'.def("__bool__", []({qual}{c.bound_type} &self) {{ return !self.IsNull(); }}, "Python addition: not IsNull().")')
         ir = self.ir
         if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
             # R-HASH: std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__.

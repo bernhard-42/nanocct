@@ -956,22 +956,29 @@ A handle *parameter* is typed `X | None`: passing `None` hands OCCT a null handl
 
 ### Null shapes and labels
 
-A shape, a label and a few other OCCT value classes can be null too, and ask `IsNull()`. OCCT gives them no `operator bool`, so they have no truth value in nanocct either: `if shape:` raises `TypeError` instead of being true for a null shape, as every Python object without `__bool__` would be. This applies to `TopoDS_Shape` (and every shape class derived from it), `TDF_Label`, `BRepGraph`, `StepData_SelectType`, `XCAFDoc_AssemblyItemId`, `Poly_MakeLoops.Link` and `PeriodicInterval`.
+A shape, a label and a few other OCCT value classes can be null too, and ask `IsNull()`. nanocct makes a null one falsy, as a null handle (`None`) and an empty container already are: `__bool__` is `not IsNull()`. This applies to `TopoDS_Shape` (and every shape class derived from it), `TDF_Label`, `BRepGraph`, `StepData_SelectType`, `XCAFDoc_AssemblyItemId`, `Poly_MakeLoops.Link` and `PeriodicInterval`.
 
 ```python
-In [1]: from nanocct.TopoDS import TopoDS_Shape
-   ...: shape = TopoDS_Shape()
+In [1]: from nanocct.BRep import BRep_Builder
+   ...: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct.TopoDS import TopoDS_Compound, TopoDS_Shape
 
-In [2]: try:
-   ...:     if shape:
-   ...:         pass
-   ...: except TypeError as e:
-   ...:     msg = str(e)
-   ...: msg
-Out[2]: 'nanocct.TopoDS.TopoDS_Shape has no truth value in OCCT: use IsNull()'
+In [2]: shape = TopoDS_Shape()
+   ...: bool(shape), shape.IsNull()
+Out[2]: (False, True)
 
-In [3]: shape.IsNull()
+In [3]: box = BRepPrimAPI_MakeBox(1, 1, 1).Shape()
+   ...: bool(box)
 Out[3]: True
+```
+
+Truthiness means *not null*, not *has children*: an empty compound is not null, so it is true.
+
+```python
+In [4]: empty = TopoDS_Compound()
+   ...: BRep_Builder().MakeCompound(empty)
+   ...: bool(empty), empty.NbChildren()
+Out[4]: (True, 0)
 ```
 
 ### When OCCT crashes instead
