@@ -928,6 +928,40 @@ In [5]: try:
 Out[5]: 'gce_MakeLin::Value() - no result'
 ```
 
+### When OCCT crashes instead
+
+OCCT raises only where it checks. A handle or a class pointer accepts `None` (a null handle, a null pointer), because some OCCT methods take one on purpose (`BRep_TFace().Surface(None)` removes the surface). Where OCCT does not expect it, it dereferences the null pointer and the process ends with a segmentation fault, exactly as it does in C++. nanocct does not turn these into exceptions: OCCT's own mechanism for that (`OSD::SetSignal` with `OCC_CATCH_SIGNALS` around each call) works, but would add about 200 ns to every call, which costs about 18 ns today.
+
+Python's `faulthandler` shows where it happened, at no cost until then. Take `edge.py`:
+
+```python
+from nanocct.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
+
+
+def make_edge(curve):
+    return BRepBuilderAPI_MakeEdge(curve).Edge()
+
+
+edge = make_edge(None)
+```
+
+`python edge.py` prints no more than the shell's `Segmentation fault`. With `python -X faulthandler edge.py` (or `PYTHONFAULTHANDLER=1`, or `faulthandler.enable()` in the code) the Python traceback is printed at the crash, and since Python 3.14 the C stack too, which names the OCCT function (shortened):
+
+```text
+Fatal Python error: Segmentation fault
+
+Current thread 0x00000001ef4061c0 (most recent call first):
+  File "edge.py", line 5 in make_edge
+  File "edge.py", line 8 in <module>
+
+Current thread's C stack trace (most recent call first):
+  ...
+  Binary file ".../nanocct/.dylibs/libTKTopAlgo.8.0.1.dylib", at _ZN16BRepLib_MakeEdgeC1ERKN11opencascade6handleI10Geom_CurveEE+0x54
+  Binary file ".../nanocct/_TKTopAlgo.abi3.so", at PyInit__TKTopAlgo+0x8db8
+```
+
+`_ZN16BRepLib_MakeEdgeC1ERKN11opencascade6handleI10Geom_CurveEE` is `BRepLib_MakeEdge::BRepLib_MakeEdge(const opencascade::handle<Geom_Curve>&)`, the constructor that got the null curve.
+
 ## Doc strings
 
 The nanocct generator copies the C++ `//!` documentation strings as Python docstrings
