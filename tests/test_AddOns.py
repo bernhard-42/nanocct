@@ -1,4 +1,4 @@
-"""nanocct.AddOns -- the additions that are not a 1:1 binding of OCCT (State.md 8.10b).
+"""nanocct.AddOns -- the additions that are not a 1:1 binding of OCCT.
 
 Everything else in nanocct mirrors an OCCT class. These do not, so they live in their own package: a reader
 of `AddOns.Tessellator.NormalsFromSurface(...)` can see at a glance that it is ours.
@@ -262,7 +262,7 @@ def test_shape_clean_over_random_orientations():
 
 
 def test_every_submodule_has_its_stub_in_the_package():
-    """State.md 8.22: nanocct.AddOns was one module file, so nanobind's stubgen wrote the submodules' stubs as
+    """nanocct.AddOns was one module file, so nanobind's stubgen wrote the submodules' stubs as
     nanocct/ShapeClean.pyi and nanocct/Tessellator.pyi -- stubs of modules that do not exist -- and every AddOns name
     was Any to a type checker. The package now carries them next to its own __init__.pyi."""
     import types

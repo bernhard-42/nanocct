@@ -155,7 +155,7 @@ def test_report_categories():
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    # overload-collision + Interface_EntityCluster (R-OVERLOAD-ORDER, State.md 8.22) + Interface_LineBuffer::Add(char) and the
+    # overload-collision + Interface_EntityCluster (R-OVERLOAD-ORDER) + Interface_LineBuffer::Add(char) and the
     # UTF-16 XSControl_Utils::ToHString (R-UNREACHABLE, 2026-09-30); unbound-type: MoniTool_CaseData::AddRaised takes a
     # Standard_Failure, which is a Python exception type and never a value (R-UNBOUND-TYPE); MoniTool_Timer::Dictionary() returns a map over
     # const char* keys, which no binder instantiates (R-UNBOUND-TYPE for binder instantiations, 2026-09-30)

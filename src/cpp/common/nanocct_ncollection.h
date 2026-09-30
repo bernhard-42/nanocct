@@ -78,7 +78,7 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
      .def("__len__", [](const Cls &self) { return self.Length(); }, "Python addition: alias to Length.")
      .def("__iter__", [](const Cls &self) { return nb::make_iterator(nb::type<Cls>(), "iterator", self.begin(), self.end()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values from Lower() to Upper().");
-    // R-VIEW (State.md 8.10a, 8.21): a packed POD element type also gets numpy's array protocol, a zero-copy
+    // R-VIEW: a packed POD element type also gets numpy's array protocol, a zero-copy
     // view of the whole array, so the per-element __getitem__ loop above never has to be the way large data
     // reaches Python. Not every instantiation qualifies -- a handle, a string, a TopoDS_Shape has nothing to view.
     if constexpr (nanocct::view_elem<T>::supported)

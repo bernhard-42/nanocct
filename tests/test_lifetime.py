@@ -1,4 +1,4 @@
-"""Lifetime tests for the ownership rules: what happens when Python lets go (State.md 8.18, Design.md 6 R-RESULT).
+"""Lifetime tests for the ownership rules: what happens when Python lets go (Design.md 6 R-RESULT).
 
 The rest of the suite tests that an API works while its objects are alive. These tests drop one side and use the other,
 in both directions, for every row of R-RESULT / R-PTR-REF / R-PTR-INCOMPLETE:
@@ -12,14 +12,14 @@ it). A crash is a non-zero return code here, not a dead suite. The subprocess al
 switched on (`MallocScribble` on macOS, `MALLOC_PERTURB_` on glibc; each ignores the other's), so freed memory is
 overwritten and a read after free is far more likely to show; after dropping one side, the prelude's `collect()` also
 allocates enough to reuse what was freed. And it fails on nanobind's "leaked instances" report at exit, which is how a
-reference cycle through `keep_alive` shows. On the AddressSanitizer audit build (State.md 8.18) an ASan report aborts the
+reference cycle through `keep_alive` shows. On an AddressSanitizer audit build an ASan report aborts the
 child, so it fails here like any crash -- provided `ASAN_OPTIONS` has `strip_env=0`, without which ASan removes
 `DYLD_INSERT_LIBRARIES` from the environment and every child aborts at its first import.
 
 The call sites are real generated ones, one per row, named in each test. Where the reverse direction is unsafe **by
 design** — `rv_policy::reference` has no keep_alive, so the result dangles once its owner is collected — the test asserts
 the safe outcome and is marked `xfail(strict=False)`: the finding stays visible in every run (and an AddressSanitizer
-build names the use-after-free, State.md 8.18) without making the suite depend on what freed memory happens to contain.
+build names the use-after-free) without making the suite depend on what freed memory happens to contain.
 Two bugs these tests found (a Transient returned by value, a `*this` result keeping itself alive) are fixed; their
 tests are ordinary ones now.
 """
@@ -145,7 +145,7 @@ def test_transient_pointer_reference_result_reverse():
 @pytest.mark.xfail(strict=False, reason="OCCT, not a binding rule: a BRepMeshData object is placement-new'd into its model's "
                                         "NCollection_IncAllocator and holds a handle to it; the last one to die frees its own "
                                         "storage in its member destructor, and ~IMeshData_Edge then runs on freed memory "
-                                        "(State.md 8.18)")
+                                        "(OCCT's own use-after-free)")
 def test_imeshdata_objects_outliving_their_model():
     """Any handle into the mesh data model -- `GetFace()`/`GetWire()` (R-HANDLE) as much as `GetEdge()` (R-PTR-REF) --
     must be released before the model: BRepMeshData_Model.cxx:73 creates each edge with `new (myAllocator)`, and
@@ -325,7 +325,7 @@ def test_class_pointer_result_forward():
 
 
 @pytest.mark.xfail(strict=False, reason="by design: rv_policy::reference has no keep_alive, so the array dangles once the "
-                                        "curve is collected (a silent read after free, State.md 8.18)")
+                                        "curve is collected (a silent read after free)")
 def test_class_pointer_result_reverse():
     out = _ok(_run("""
         result = owner.Weights()
@@ -358,7 +358,7 @@ def test_class_pointer_reference_result_forward():
 
 
 @pytest.mark.xfail(strict=False, reason="by design: rv_policy::reference has no keep_alive; the builder is deleted with the "
-                                        "fuse and the result dangles (segfault, State.md 8.18)")
+                                        "fuse and the result dangles (segfault)")
 def test_class_pointer_reference_result_reverse():
     out = _ok(_run("""
         result = owner.Builder()
@@ -383,7 +383,7 @@ def test_incomplete_class_pointer_result_forward():
 
 
 @pytest.mark.xfail(strict=False, reason="by design: rv_policy::reference has no keep_alive; the data structure is freed with "
-                                        "the fuse and the result reads freed memory (State.md 8.18)")
+                                        "the fuse and the result reads freed memory")
 def test_incomplete_class_pointer_result_reverse():
     out = _ok(_run("""
         result = owner.Builder().PDS()

@@ -49,7 +49,7 @@ def test_incremental_mesh():
 
 
 def test_multiple_inheritance_first_base_only():
-    # R-MI, predicted in State.md 9: IMeshData_Edge/Face/Wire : IMeshData_TessellatedShape, IMeshData_StatusOwner
+    # R-MI, predicted: IMeshData_Edge/Face/Wire : IMeshData_TessellatedShape, IMeshData_StatusOwner
     assert [c.__name__ for c in IMeshData.IMeshData_Edge.__mro__[:4]] == ["IMeshData_Edge", "IMeshData_TessellatedShape", "IMeshData_Shape", "Standard_Transient"]
     rows = read_report(REPORT)
     assert ("inheritance", "IMeshData", "IMeshData_Edge: additional base IMeshData_StatusOwner not declared (nanobind: single inheritance, offset-0 base only)") in rows

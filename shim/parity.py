@@ -1,5 +1,4 @@
-"""build123d's and ocp-tessellate's own test suites through the OCP shim, compared test by test with the real OCP
-(State.md 8.18, 8.6).
+"""build123d's and ocp-tessellate's own test suites through the OCP shim, compared test by test with the real OCP.
 
     python shim/parity.py [--build123d DIR] [--ocp-tessellate SDIST] [--dist DIR] [--work DIR] [--python 3.14]
                           [--reuse-venvs]
@@ -31,7 +30,7 @@ What it does, all inside --work (never in the build123d checkout, never in any e
    outcome differs.
 
 A green run is necessary, not sufficient: some build123d tests assert nothing (`test_exporters_in_memory` passed with
-an empty buffer, State.md 8.6).
+an empty buffer).
 """
 from __future__ import annotations
 

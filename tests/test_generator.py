@@ -433,7 +433,7 @@ class Rules_TVec
 public:
   Rules_TVec(T theX = T(0)) : myX(theX) {}
   T X() const { return myX; }
-  //! A nested class of an instantiation bound under an alias (State.md 8.22): TColStd_PackedMapOfInteger::Iterator.
+  //! A nested class of an instantiation bound under an alias: TColStd_PackedMapOfInteger::Iterator.
   class Cursor
   {
   public:
@@ -449,7 +449,7 @@ private:
   T myX;
 };
 typedef Rules_TVec<unsigned long> Rules_TVecUL;
-//! 6c follows the members of an instantiation (State.md 8.22): Rules_TWide<T>::Narrow() returns Rules_TNarrow<T>, which
+//! 6c follows the members of an instantiation: Rules_TWide<T>::Narrow() returns Rules_TNarrow<T>, which
 //! is named nowhere else; Same() names the instantiation itself, with its defaulted argument spelled out.
 template <class T>
 class Rules_TNarrow
@@ -467,7 +467,7 @@ public:
   Rules_TWide<T, N> Same() const { return *this; }
 };
 typedef Rules_TWide<short> Rules_TWideS;
-//! 6c, partial specialisations (State.md 8.22, BVH_Tree<T, N, BVH_BinaryTree>): the primary template is empty, the real
+//! 6c, partial specialisations (BVH_Tree<T, N, BVH_BinaryTree>): the primary template is empty, the real
 //! class is the partial specialisation; an explicit (full) specialisation is reported, not walked; a pattern like
 //! Rules_PTree<T*, ...> is not matched (conservative) -- Rules_PTree<double, 1, Rules_PBin> has no specialisation of its own.
 struct Rules_PBin {};
@@ -1219,11 +1219,11 @@ def test_ir_template_bases_of_instantiations(rules_ir):
 
 
 def test_emitter_orders_derived_overloads_first_and_lets_null_pointers_be_none(tmp_path_factory):
-    """R-OVERLOAD-ORDER and R-PTR-NULL on the synthetic header (State.md 8.22): nanobind calls the first overload that
+    """R-OVERLOAD-ORDER and R-PTR-NULL on the synthetic header: nanobind calls the first overload that
     accepts the arguments, so Take(const Rules_Inherit&) and Grid(const NCollection_Array2<double>&) -- declared after
     their base-class twins -- must be registered first; Take(value, n) has another arity and stays where it is. A
-    class pointer takes None, with a null default (without .none() nanobind refused the default itself) or without one
-    (State.md 8.23); a const char* is a string and does not."""
+    class pointer takes None, with a null default (without .none() nanobind refused the default itself) or without one;
+    a const char* is a string and does not."""
     # a fresh parse: emitting marks skipped members in the IR, and the shared fixture has seen emitters without
     # Rules_Value, which skip Rules_Inherit and so Take(const Rules_Inherit&) (R-UNBOUND-TYPE)
     rules_ir = rules_ir_of(tmp_path_factory, "order")
@@ -1322,7 +1322,7 @@ def test_order_by_derivation_uses_every_bound_class_and_keeps_the_rest():
 
 
 def test_handwritten_namespaces_match_the_addons_submodules():
-    """The AddOns shim is a package with one module per submodule the hand-written C++ registers (State.md 8.22)."""
+    """The AddOns shim is a package with one module per submodule the hand-written C++ registers."""
     source = (ROOT / "src" / "cpp" / "AddOns" / "_AddOns.cpp").read_text()
     declared = sorted(re.findall(r'm_AddOns\.def_submodule\("(\w+)"', source))
     assert declared == sorted(ns[0] for ns in HANDWRITTEN_NAMESPACES) and len(declared) > 0
@@ -1359,7 +1359,7 @@ def test_stub_eq_and_ne_accept_any_object():
 
 
 def test_stub_enum_defaults_are_spelled_through_the_annotation():
-    """State.md 8.22: nanobind's stubgen writes an enum default by repr() (int is tested before enum.Enum), a bare name
+    """nanobind's stubgen writes an enum default by repr() (int is tested before enum.Enum), a bare name
     that does not resolve outside the enum's module; the parameter's annotation names the enum qualified."""
     from generator.stubs import _qualified_enum_defaults
     line = "    def f(self, C: nanocct.GeomAbs.GeomAbs_Shape = GeomAbs_Shape.GeomAbs_C2, F: Outer.Filter = Filter.Filter_None, n: int = 3) -> None: ..."
@@ -1370,7 +1370,7 @@ def test_stub_enum_defaults_are_spelled_through_the_annotation():
 
 
 def test_stub_class_names_shadowed_by_a_member_are_qualified():
-    """State.md 8.22: in a class body a bare name resolves to the class's own member first -- BRepGraphInc_Storage has a
+    """in a class body a bare name resolves to the class's own member first -- BRepGraphInc_Storage has a
     method EdgeCurve3DRep, so `-> EdgeCurve3DRep` was the method. Only such names, only in that class's body."""
     from generator.stubs import _unshadowed_class_names
     text = ("class EdgeCurve3DRep:\n    x: int\n\n"
@@ -1386,7 +1386,7 @@ def test_stub_class_names_shadowed_by_a_member_are_qualified():
 
 
 def test_members_of_an_instantiation_instantiate_what_they_name(rules_ir):
-    """6c follows the members of an instantiation (State.md 8.22): Rules_TWide<short>::Narrow() returns Rules_TNarrow<short>,
+    """6c follows the members of an instantiation: Rules_TWide<short>::Narrow() returns Rules_TNarrow<short>,
     named nowhere else, so it is instantiated through the probe; Same() returns the instantiation itself spelled with its
     defaulted argument (Rules_TWide<short, 4>), which must not become a second class -- measured: without the self check
     it did, the analogue of NCollection_AliasedArray<> / <16>, after which the extension failed to initialise."""
@@ -1398,7 +1398,7 @@ def test_members_of_an_instantiation_instantiate_what_they_name(rules_ir):
 
 
 def test_nested_classes_of_an_instantiation_are_bound_into_it(rules_ir):
-    """State.md 8.22: a nested class of a 6c instantiation was skipped ("nested class of a class template"), and one of an
+    """a nested class of a 6c instantiation was skipped ("nested class of a class template"), and one of an
     instantiation bound under an alias was not even added to the IR. Rules_TVec<unsigned long>::Cursor must sit in the
     alias's class (Rules_TVecUL.Cursor), and its `const T& Value()` -- dependent, so parse says OTHER -- is copyable,
     so it gets __iter__ (R-ITER)."""
@@ -1413,7 +1413,7 @@ def test_nested_classes_of_an_instantiation_are_bound_into_it(rules_ir):
 
 
 def test_partial_specialisation_is_walked_instead_of_the_empty_primary(rules_ir):
-    """6c (State.md 8.22): Rules_PTree<double, 3, Rules_PBin> comes from the partial specialisation
+    """6c: Rules_PTree<double, 3, Rules_PBin> comes from the partial specialisation
     Rules_PTree<T, N, Rules_PBin> -- walking the empty primary template bound it without members or base (the four
     BVH_Tree classes). T and N are deduced from the pattern; its base Rules_PBase<T, N> is instantiated through the probe
     (R-TEMPLATE-BASE). An explicit specialisation is a class of its own: bound once, from its declaration, not from the template."""
@@ -1527,7 +1527,7 @@ def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
                   and not (d[0] in ("TCollection", "Standard", "Resource") and "str" in d[2][1])
                   and d[1] != "Standard_Mutex.Sentry"         # Sentry(Standard_Mutex&) / Sentry(Standard_Mutex*): the same call
                   # SetDocument(handle<TDocStd_Document>) / SetDocument(TDocStd_Document*): the same call (TDocStd_Owner.cxx), both
-                  # `TDocStd_Document | None` since a class pointer takes None too (R-PTR-NULL, State.md 8.23)
+                  # `TDocStd_Document | None` since a class pointer takes None too (R-PTR-NULL)
                   and (d[1], d[2][0]) not in (("TDocStd_Owner", "SetDocument"), ("TDocStd_Owner", "SetDocument_s"))
                   and (d[1], d[2][0]) != ("Graphic3d_Vertex", "Coord")   # Coord(double&...) / Coord(float&...): width twins with out-params only
                   # str-kind twins outside TCollection (decision 2026-09-21, unchanged): Add(const char*) / Add(AsciiString) /
@@ -1603,7 +1603,7 @@ def _walk_pairs(left: Path, right: Path):
 
 def test_incremental_run_refuses_to_rehome_an_instantiation(tmp_path):
     """An incremental run that would bind an instantiation an earlier, not regenerated toolkit could own in a clean run
-    fails loudly (State.md 9); --allow-rehoming overrides. Simulated by dropping NCollection_Array1<gp_Pnt2d> (owned by
+    fails loudly; --allow-rehoming overrides. Simulated by dropping NCollection_Array1<gp_Pnt2d> (owned by
     TKMath/BSplCLib) from a copy of the manifest and regenerating TKG2d, which uses it."""
     import json
     (tmp_path / "cpp").mkdir()

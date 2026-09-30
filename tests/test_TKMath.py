@@ -144,7 +144,7 @@ def test_primitive_reference_accessors_get_setters():
 
 
 def test_a_null_pointer_default_can_be_omitted_or_passed_as_none():
-    """R-PTR-NULL (State.md 8.22): BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr) and
+    """R-PTR-NULL: BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr) and
     BuildCache(..., theWeights = nullptr). Without .none() nanobind refused None -- the default itself included -- so the
     non-rational cache could not be built at all. (The 2D BuildCache has no default in OCCT: see the next test.)"""
     knots = NCollection.NCollection_Array1[float](1, 4)
@@ -162,7 +162,7 @@ def test_a_null_pointer_default_can_be_omitted_or_passed_as_none():
 
 
 def test_a_class_pointer_without_a_default_takes_none():
-    """R-PTR-NULL (State.md 8.23): OCCT documents a NULL weights/mults pointer as "non-rational" / "flat knots"
+    """R-PTR-NULL: OCCT documents a NULL weights/mults pointer as "non-rational" / "flat knots"
     (BSplCLib.hxx, BSplCLib::NoWeights() returns that nullptr), also where the parameter has no default: the 2D
     BSplCLib_Cache::BuildCache, BSplCLib::D0, PLib::CoefficientsPoles. Without .none() nanobind refused None there,
     so the non-rational form of these functions was unreachable."""
@@ -194,7 +194,7 @@ def test_a_class_pointer_without_a_default_takes_none():
 
 
 def test_an_overload_taking_a_derived_class_is_not_shadowed_by_the_base_one():
-    """R-OVERLOAD-ORDER (State.md 8.22): NCollection_Array2 derives from NCollection_Array1, and nanobind calls the first
+    """R-OVERLOAD-ORDER: NCollection_Array2 derives from NCollection_Array1, and nanobind calls the first
     registered overload that accepts the arguments. PLib::CoefficientsPoles for surfaces (Array2) is declared after the
     curve overloads (Array1), so Array2 arguments ran the curve algorithm on the flat data. The bilinear polynomial
     c11 + c21 u + c12 v + c22 uv with the constant weight 1 has the poles c11, c11 + c21, c11 + c12 and the sum of all

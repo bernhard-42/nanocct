@@ -1,10 +1,10 @@
-// Zero-copy numpy views over OCCT's contiguous arrays (State.md 8.10, R-VIEW).
+// Zero-copy numpy views over OCCT's contiguous arrays (R-VIEW).
 //
 // The rule: array data that can get large crosses to Python as a view, never as a per-element loop. The
 // generator decides *which* classes get views -- overrides.toml [views] classes -- and emits
 // `nanocct_def_views<T>(cls);`; this header decides *how*, one specialisation per class.
 //
-// The view is numpy's array protocol, `__array__` (State.md 8.21): `numpy.asarray(obj)` is the view,
+// The view is numpy's array protocol, `__array__`: `numpy.asarray(obj)` is the view,
 // `numpy.array(obj)` a copy. No class gets a method OCCT does not have. A class whose data sits in several
 // arrays (Poly_Triangulation: nodes, triangles, UV nodes, normals) gets nothing itself -- OCCT's own
 // accessors hand out the arrays (InternalNodes() ...), and those carry `__array__`. An empty array is a

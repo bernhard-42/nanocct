@@ -1,4 +1,4 @@
-"""Static typing check for names the stubs spelled unresolvably until State.md 8.22 (b) (run by mypy and ty, see tests/test_typing.py).
+"""Static typing check for names the stubs once spelled unresolvably (run by mypy and ty, see tests/test_typing.py).
 Lines with a trailing `# error:` comment must be reported; everything else must pass. Before the fix mypy saw both results as
 unresolved, i.e. Any, and reported neither error line (ty resolved them already)."""
 from nanocct import AIS, BRepGraphInc, GProp, Graphic3d, Image, NCollection, OpenGl, StepVisual, TCollection
@@ -31,7 +31,7 @@ def tessellated(geo: StepVisual.StepVisual_TessellatedGeometricSet) -> None:
 
 
 def underscore_names(buffer: AIS.AIS_ViewInputBuffer, rgba: Image.Image_ColorRGB32) -> None:
-    # names that start or end with one underscore are C++ names, not private ones (stubgen include_private, State.md 8.22 (vi)):
+    # names that start or end with one underscore are C++ names, not private ones (stubgen include_private):
     # the R-KEYWORD enum value None_, OCCT's own a_(), the nested struct AIS_ViewInputBuffer::_orientation
     kind: GProp.GProp_PEquation.Type = GProp.GProp_PEquation.Type.None_
     alpha: int = rgba.a_()

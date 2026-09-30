@@ -1,5 +1,5 @@
 # Attach the five nanocct wheels of a tagged commit, and the OCP compatibility shim built with them on macOS arm64,
-# to a GitHub release (State.md 8.17).
+# to a GitHub release.
 #
 # Nothing is built here. The wheels come from the cache build-wheels.yml saved for this exact commit
 # (nanocct-wheel-<platform>-<sha>), so what is released is what was built and tested. Hence the order:

@@ -32,7 +32,7 @@ HANDWRITTEN_PACKAGE = "AddOns"
 # Its submodules (nb::module_::def_submodule in src/cpp/AddOns/_AddOns.cpp; tests/test_AddOns.py checks the two agree).
 # Declared like a generated package's C++ namespaces, so the shim is the package nanocct/AddOns/ and nanobind's stubgen
 # writes AddOns/ShapeClean.pyi next to AddOns/__init__.pyi -- as a single AddOns.py the submodule stubs landed at
-# nanocct/ShapeClean.pyi, the stub of a module that does not exist, and nanocct.AddOns.ShapeClean was untyped (State.md 8.22).
+# nanocct/ShapeClean.pyi, the stub of a module that does not exist, and nanocct.AddOns.ShapeClean was untyped.
 HANDWRITTEN_NAMESPACES = [("ShapeClean",), ("Tessellator",)]
 
 
@@ -157,7 +157,7 @@ def _package_order(irs: list, known: dict[str, str]) -> list[str]:
 _paths: dict[str, str] = {}       # manifest "paths", set by main() for _element_spec
 _SCALARS = {"double": ("builtins", "float"), "int": ("builtins", "int"), "bool": ("builtins", "bool"),
             "std::string": ("builtins", "str"),
-            # the C++ scalars without a Python type of their own: marker keys (State.md 8.20, nanocct/_templates.py)
+            # the C++ scalars without a Python type of their own: marker keys (nanocct/_templates.py)
             "float": ("nanocct._templates", "float32"), "unsigned char": ("nanocct._templates", "uchar"),
             "unsigned int": ("nanocct._templates", "uint"), "unsigned long": ("nanocct._templates", "ulong"),
             "unsigned long long": ("nanocct._templates", "ulonglong")}    # other C++ scalars (char, size_t, ...): no key
@@ -501,7 +501,7 @@ def main(argv: list[str]) -> int:
         for line in rehomed:
             print(f"rehoming: {line}", file=sys.stderr)
         if not args.allow_rehoming:
-            print("Instantiations are owned by the first package that needs them in a clean run (State.md 9); an incremental "
+            print("Instantiations are owned by the first package that needs them in a clean run; an incremental "
                   "run cannot know whether a toolkit that was not regenerated would own these. Run a clean regeneration "
                   "(rm src/cpp/manifest.json, all toolkits) or pass --allow-rehoming.", file=sys.stderr)
             return 1
@@ -630,7 +630,7 @@ def main(argv: list[str]) -> int:
     generated_packages = set(generated_pkgs)          # every generated package, with or without classes
     # nanocct.AddOns is hand-written (src/cpp/AddOns, built by CMakeLists outside the toolkit loop). Its shim and
     # its entry in _PACKAGES are generated like any other package's, so `make clean_gen` stays correct and
-    # `import nanocct; nanocct.AddOns` resolves through the same lazy __getattr__ (State.md 8.10b). It must NOT
+    # `import nanocct; nanocct.AddOns` resolves through the same lazy __getattr__. It must NOT
     # reach generated_pkgs: that goes into the manifest, an incremental run reads it back into
     # generated_toolkits, and _topo then looks for a toolkit OCCT has never heard of (KeyError: 'AddOns').
     generated_packages.add(HANDWRITTEN_PACKAGE)

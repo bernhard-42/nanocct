@@ -24,7 +24,7 @@ foreach(tk IN LISTS NANOCCT_TOOLKITS)
   target_include_directories(_${tk} PRIVATE "${CMAKE_SOURCE_DIR}/src/cpp/common")
   # OCCT's exported targets define HAVE_RAPIDJSON but do not carry the include path, and an installed header
   # includes it (RWGltf_GltfJsonParser.hxx -> rapidjson/document.h). Same vendored copy the OCCT build used
-  # (deps/fetch-rapidjson.sh, State.md 8.13); header-only, so nothing extra is linked or shipped.
+  # (deps/fetch-rapidjson.sh); header-only, so nothing extra is linked or shipped.
   if(EXISTS "${NANOCCT_RAPIDJSON_DIR}")
     target_include_directories(_${tk} PRIVATE "${NANOCCT_RAPIDJSON_DIR}")
   endif()
@@ -44,7 +44,7 @@ endforeach()
 
 # nanocct._AddOns: hand-written, not generated and not a binding of an OCCT toolkit, so it is built outside the
 # loop above and tracked in git (src/cpp/AddOns, kept by .gitignore and untouched by `make clean_gen`). It holds
-# the helpers that zero-copy views cannot express because they are computations rather than data -- State.md 8.10b --
+# the helpers that zero-copy views cannot express because they are computations rather than data,
 # and, rarely, a workaround for an OCCT bug that is not fixed upstream (Design.md R-ADDON).
 nanobind_add_module(_AddOns STABLE_ABI NB_DOMAIN nanocct "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/_AddOns.cpp"
                     "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/Tessellator.cpp"

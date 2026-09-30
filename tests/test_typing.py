@@ -118,7 +118,7 @@ def test_every_stub_member_exists_at_runtime():
     assert lies == [], f"{len(lies)} stub members the runtime does not have:\n" + "\n".join(lies[:60])
 
 
-# mypy's errors in the shipped stubs, per error code (State.md 8.22-8.24). Every one left is the C++ shape of OCCT that
+# mypy's errors in the shipped stubs, per error code. Every one left is the C++ shape of OCCT that
 # Python typing cannot express -- [override] is C++ name hiding, [misc] operator pairs such as `*=`/`*` with different
 # operand sets, [overload-cannot-match]/[overload-overlap] overloads Python cannot tell apart (reachable int widths, a
 # handle and a pointer to the same class), [valid-type]/[name-defined] the quoted C++ names of template instantiations

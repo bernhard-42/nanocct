@@ -964,7 +964,7 @@ class Emitter:
                 body.append(s)
         body += free_ops.get(c.name, [])
         if c.name in VIEW_CLASSES:
-            # R-VIEW (Design.md 2c, State.md 8.10, 8.21): a zero-copy numpy view (__array__), defined per class in
+            # R-VIEW (Design.md 2c): a zero-copy numpy view (__array__), defined per class in
             # src/cpp/common/nanocct_views.h. Listed in overrides.toml [views] because which class gets which
             # view is data, not a shape the generator could detect.
             self.report.append(f"{c.name}: zero-copy numpy views added (nanocct_def_views)")
@@ -1393,7 +1393,7 @@ def order_by_derivation(overloads: list, ancestors_of: Callable[[Param], set[str
     accepted by a base-class parameter in its first pass already. So an overload taking the base registered before one
     taking the derived class shadows it -- PLib::CoefficientsPoles(const NCollection_Array1<gp_Pnt>&, ...) caught
     NCollection_Array2<gp_Pnt> arguments and ran the curve algorithm, where C++ overload resolution picks the surface
-    overload (State.md 8.22). An overload is therefore moved in front of every overload of the same name and number of
+    overload. An overload is therefore moved in front of every overload of the same name and number of
     Python parameters that takes, position by position, the same types or bases of its types (at least one a base).
     The order is otherwise kept. Returns the overloads in emission order and every (moved, shadowing) pair."""
     def key(m) -> tuple:
@@ -1584,7 +1584,7 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
                  "# element types as Python passes them to __class_getitem__ (the type, or a tuple for several)",
                  "from nanocct._templates import Generic as _Generic  # noqa: E402"]
         if len(markers) > 0:
-            parts.append(f"from nanocct._templates import {', '.join(markers)}  # noqa: E402,F401  (C++ scalars without a Python type, State.md 8.20)")
+            parts.append(f"from nanocct._templates import {', '.join(markers)}  # noqa: E402,F401  (C++ scalars without a Python type, Design.md 6a)")
         parts += [f"import {m} as {alias[m]}  # noqa: E402" for m in modules]
         for tmpl in sorted(accessors):
             parts += ["", "", f"class {tmpl}(_Generic):", "    _instances = {"]

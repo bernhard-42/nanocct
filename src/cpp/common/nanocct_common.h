@@ -273,7 +273,7 @@ struct OptionalCString {
 // R-RESULT: nb::keep_alive<0, 1> for a `T&` Transient member result, except when the result is self. A method returning
 // *this (LDOM_MemManager::Self(), FSD_File::PutInteger()) hands back the same Python object, and nanobind's keep_alive_py
 // has no nurse == patient check (nb_type.cpp, nanobind 3.1.0): the object would hold a reference to itself that the
-// garbage collector cannot see, and would never be freed ("nanobind: leaked instances", State.md 8.18).
+// garbage collector cannot see, and would never be freed ("nanobind: leaked instances").
 struct KeepOwnerUnlessSelf {
     static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
     static void postcall(PyObject **args, size_t, PyObject *&ret) {
@@ -591,7 +591,7 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
-// Type caster for NCollection_Handle<T> (R-NCHANDLE, State.md 8.22): OCCT's reference-counted owner of a *non*-Transient
+// Type caster for NCollection_Handle<T> (R-NCHANDLE): OCCT's reference-counted owner of a *non*-Transient
 // object, transparent like opencascade::handle. A result is the object itself, shared with its owner as in C++, kept
 // alive by a heap copy of the handle attached with keep_alive (the handle's hidden Ptr is a Standard_Transient, so OCCT's
 // reference count governs the lifetime). A null handle is None -- IsNull() is asked first, because
@@ -639,7 +639,7 @@ template <typename T> struct type_caster<NCollection_Handle<T>> {
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
-// Type caster for std::reference_wrapper<T> results (State.md 8.22 (iv)): NCollection_FlatMap::Contained() returns
+// Type caster for std::reference_wrapper<T> results: NCollection_FlatMap::Contained() returns
 // std::optional<std::reference_wrapper<const K>>, NCollection_FlatDataMap::Contained() an optional pair of them. nanobind has
 // no caster for it, so those members raised TypeError. A const T is returned as a copy (a read-only key or value); a
 // mutable T as a reference into its owner that keeps the owner alive (reference_internal), so edits reach the map as

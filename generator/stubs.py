@@ -23,7 +23,7 @@ GENERIC = ROOT / "generator" / "stubs"
 
 _SCALARS = {"double": "float", "int": "int", "bool": "bool", "std::string": "str",
             # the C++ scalars without a Python type: the marker keys of nanocct/_templates.py, aliases of float/int in the
-            # NCollection stub (State.md 8.20, V3) -- NCollection_HArray1[float32] is NCollection_HArray1[float] statically
+            # NCollection stub -- NCollection_HArray1[float32] is NCollection_HArray1[float] statically
             "float": "nanocct.NCollection.float32", "unsigned char": "nanocct.NCollection.uchar",
             "unsigned int": "nanocct.NCollection.uint", "unsigned long": "nanocct.NCollection.ulong",
             "unsigned long long": "nanocct.NCollection.ulonglong"}
@@ -98,7 +98,7 @@ def _unhashable_ignore(text: str) -> str:
     return re.sub(r"^(\s*__hash__: None = None)$", r"\1  # type: ignore[assignment]", text, flags=re.M)
 
 
-# State.md 8.22: nanobind's StubGen.expr_str renders an enum default by repr() -- it tests `int` before `enum.Enum`
+# nanobind's StubGen.expr_str renders an enum default by repr() -- it tests `int` before `enum.Enum`
 # (nanobind 3.1.0 stubgen.py:1211 and :1225, unchanged on master) and OCCT's enums are IntEnum -- so a default of an enum
 # from another module is a bare name that does not resolve there: `Continuity: nanocct.GeomAbs.GeomAbs_Shape =
 # GeomAbs_Shape.GeomAbs_C2` (215 mypy errors). The parameter's own annotation names the enum qualified.
@@ -117,7 +117,7 @@ def _qualified_enum_defaults(text: str) -> str:
 
 
 def _unshadowed_class_names(text: str, module: str) -> str:
-    """State.md 8.22: stubgen writes a class of the stub's own module by its bare name, and inside a class body that name
+    """stubgen writes a class of the stub's own module by its bare name, and inside a class body that name
     resolves to a member of the class if it has one -- `def ChangeEdgeCurve3DRep(self, ...) -> EdgeCurve3DRep` in
     BRepGraphInc_Storage, which also has a method EdgeCurve3DRep, is the method, not the module's class (mypy: "Function
     ... is not valid as a type"). Such a name in an annotation of that class body is spelled `<module>.<Name>`. A nested
@@ -362,7 +362,7 @@ mod = importlib.import_module(sys.argv[1])
 out = Path(sys.argv[2])
 # include_private: stubgen drops a name that starts or ends with a single underscore as private -- but those are C++ names
 # here: the R-KEYWORD enum values (GProp_PEquation.Type.None_), OCCT's own `a_()`/`mainial_`, and the structs
-# AIS_ViewInputBuffer::_orientation & co., which the stubs then referenced without defining (State.md 8.22 (vi))
+# AIS_ViewInputBuffer::_orientation & co., which the stubs then referenced without defining
 sg = StubGen(module=mod, recursive=True, quiet=True, output_file=out, include_private=True)   # recursive: C++ namespaces are submodules
 sg.put(mod)
 text = sg.get()
@@ -521,7 +521,7 @@ def main() -> int:
     for key, inst in templates.items():
         kind = re.match(r"([\w:]+)<", key).group(1)
         # NCollection_Shared<T> derives from T and has no generic class (the NCollection_Shared name in the stub is the
-        # lookup object _NCollection_Shared_template): its instantiations keep their concrete names (State.md 8.22)
+        # lookup object _NCollection_Shared_template): its instantiations keep their concrete names
         if inst.get("skipped", False) or kind not in BINDERS or BINDERS[kind].get("wraps") is True:
             continue
         generic = _generic_or_none(inst["name"], templates)

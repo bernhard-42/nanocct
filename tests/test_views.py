@@ -1,4 +1,4 @@
-"""R-VIEW: zero-copy numpy views over OCCT's contiguous arrays (State.md 8.10, 8.21).
+"""R-VIEW: zero-copy numpy views over OCCT's contiguous arrays.
 
 The rule is that array data which can get large crosses to Python as a view, never as a per-element loop.
 The view is numpy's array protocol: `np.asarray(obj)` is a view, `np.array(obj)` a copy, and no class gets a

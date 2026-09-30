@@ -156,7 +156,7 @@ def test_report_categories():
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
-    # overload-collision: GeomToIGES/Geom2dToIGES/BRepToIGES Transfer* registered derived class first (R-OVERLOAD-ORDER, State.md 8.22)
+    # overload-collision: GeomToIGES/Geom2dToIGES/BRepToIGES Transfer* registered derived class first (R-OVERLOAD-ORDER)
     assert counts == {"raw-pointer": 6, "template": 3, "rvalue": 2, "undefined": 2, "hash": 1, "overload-collision": 35}   # R-UNHASHABLE: IGESData_IGESType
     assert len(lines) == 49                                      # 455 classes, 4 127 methods bound
     # DEIGES_Provider::Read/Write keep their work session (overrides.toml [inout] "DE*_Provider::Read"), so none of

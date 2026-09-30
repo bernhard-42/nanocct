@@ -31,7 +31,7 @@ _PRIMITIVE_KINDS = {
 }
 # R-HANDLE, R-NCHANDLE: the smart pointers that are transparent in Python (a caster each in nanocct_common.h): the
 # object behind them is what gets bound, a null one is None -- opencascade::handle<T> for Transients and
-# NCollection_Handle<T>, OCCT's reference-counted owner of a non-Transient object (State.md 8.22)
+# NCollection_Handle<T>, OCCT's reference-counted owner of a non-Transient object
 _SMART_HANDLES = ("handle", "NCollection_Handle")
 _STL_ITERATORS = {"NCollection_ForwardRangeIterator", "NCollection_IndexedIterator", "NCollection_StlIterator", "NCollection_UtfIterator"}
 _PRIMITIVE_SPELLINGS = {"double", "float", "int", "bool", "char", "long", "short", "size_t", "unsigned", "unsigned int", "unsigned long",
@@ -136,7 +136,7 @@ def configure_libclang() -> str:
 
 # Third-party headers that an *installed* OCCT header includes, so the parse needs them on the include path just as
 # the build did: RWGltf_GltfJsonParser.hxx has `#include <rapidjson/document.h>` under HAVE_RAPIDJSON. deps/build-occt-macos.sh
-# puts them next to the OCCT install (deps/rapidjson from deps/fetch-rapidjson.sh, State.md 8.13); the list grows if
+# puts them next to the OCCT install (deps/rapidjson from deps/fetch-rapidjson.sh); the list grows if
 # another one turns up. FreeType is not here: OCCT's headers only forward-declare its types.
 _THIRD_PARTY_INCLUDES = (("rapidjson", "include"),)
 
@@ -1589,7 +1589,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.skipped.append(f"{cursor.spelling}::{ch.spelling}: nested class of a class template (alias instantiation)")
             else:
                 # a nested class of a 6c instantiation is walked with the instantiation's substitution still active
-                # (NCollection_FlatMap<K, H>::Iterator: without it the BRepGraph flat maps could not be iterated, State.md 8.22)
+                # (NCollection_FlatMap<K, H>::Iterator: without it the BRepGraph flat maps could not be iterated)
                 n = _class(ch, header, package, outer=c.name)
                 if _SUBST.active:
                     # _class spells an instantiation's path flat (py_path of a name with '<'); a nested class belongs to its
@@ -1630,7 +1630,7 @@ _NESTED_OWNER = {src: kind for kind, info in BINDERS.items() for src in info.get
 
 
 def _note_dependent_use(t: cindex.Type) -> None:
-    """6c inside a 6c walk (State.md 8.22): a member of an instantiation names another instantiation of a class template
+    """6c inside a 6c walk: a member of an instantiation names another instantiation of a class template
     through the template's parameters -- NCollection_Vec4<Element_t>::xyz() returns NCollection_Vec3<Element_t> -- which
     libclang reports as a dependent type with no declaration, so _note_instance cannot queue it and the member was bound
     with an unregistered type (`Vec4__unsigned_char().xyz()` raised TypeError: 74 stub lines over four Vec instantiations).
@@ -1639,7 +1639,7 @@ def _note_dependent_use(t: cindex.Type) -> None:
     m = re.match(r"^([\w:]+)<(.*)>$", spelled)
     while m is not None and m.group(1).split("::")[-1] in _SMART_HANDLES:
         # handle<BVH_Tree<T, N>> (BVH_PrimitiveSet<T, N>::BVH()): the instantiation inside the handle is what must be bound --
-        # skipping the handle left BVH_Tree<double, 2> and BVH_Builder<double, 2> unbound (State.md 8.22 (c) (v))
+        # skipping the handle left BVH_Tree<double, 2> and BVH_Builder<double, 2> unbound
         spelled = m.group(2).strip()
         m = re.match(r"^([\w:]+)<(.*)>$", spelled)
     if m is None or "type-parameter-" in spelled:
@@ -1881,7 +1881,7 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
         # substitution spells; the whole instantiation stays out
         report.append(f"{what}: template argument {pointer_args[0]} is a raw pointer -> not bound")
         return None
-    # 6c, partial specialisations (State.md 8.22): BVH_Tree<T, N, BVH_BinaryTree> is the real class, the primary template
+    # 6c, partial specialisations: BVH_Tree<T, N, BVH_BinaryTree> is the real class, the primary template
     # BVH_Tree<T, N, Arity> is empty -- walking the primary bound BVH_Tree<double, 3, BVH_BinaryTree> without a member or a base
     spec = _matching_specialisation(tu, qualified, args)
     walked = tmpl
@@ -2149,7 +2149,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 if not any(c.py_name == cur.spelling for c in ir.classes):     # the same alias appears in several headers
                     inst = _alias_instance(tu, cur, header, pkg.name, ir.report)
                     if inst is not None:
-                        add_class(inst)            # with its nested classes (TColStd_PackedMapOfInteger.Iterator, State.md 8.22)
+                        add_class(inst)            # with its nested classes (TColStd_PackedMapOfInteger.Iterator)
             elif cur.kind in (K.CLASS_TEMPLATE, K.FUNCTION_TEMPLATE):
                 if cur.semantic_parent is not None and cur.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
                     continue                       # an out-of-line member template definition (TCollection_AsciiString::Cat<T> in the .lxx): reported with its class

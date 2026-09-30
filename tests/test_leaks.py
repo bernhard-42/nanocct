@@ -1,4 +1,4 @@
-"""Memory-growth tests: the ownership rules must not leak C++ objects (State.md 8.19, Design.md 6 R-RESULT).
+"""Memory-growth tests: the ownership rules must not leak C++ objects (Design.md 6 R-RESULT).
 
 test_lifetime.py checks that a result or its owner survives when the other side is dropped, and nanobind's report at exit
 catches Python objects that are never freed. Neither sees a C++ object that is never freed: a handle whose count never

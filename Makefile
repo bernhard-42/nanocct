@@ -5,7 +5,7 @@
 #   make generate compile stubs wheel delocate test     the same, step by step -- every step runs once: the wheel is packed
 #                    from what compile and stubs built, and the tests run against the repaired wheel in a fresh venv
 #
-# Design.md 3.1/3.2 describe what the dependencies are and why; State.md 9 holds the working state.
+# Design.md 3.1/3.2 describe what the dependencies are and why.
 #
 # PLATFORMS
 #   macOS    builds natively with Apple clang, driven through `uv`.
@@ -53,7 +53,7 @@ else ifneq (,$(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)))
 else ifeq ($(UNAME_S),)
   # `uname` produced nothing: almost certainly cmd.exe or PowerShell. Everything here is POSIX -- uname, cygpath,
   # shell recipes -- and the Windows build reaches MSVC by importing vcvars64 from a generated .bat, which is a
-  # Git Bash idiom. Run it from Git Bash (State.md 9, and the user does not read PowerShell).
+  # Git Bash idiom. Run it from Git Bash.
   $(error run this from Git Bash -- `uname` is not available, so this looks like cmd.exe or PowerShell)
 else
   $(error unsupported platform '$(UNAME_S)')
@@ -66,7 +66,7 @@ endif
 # The 45 toolkits in scope, hand-sorted in dependency order (Design.md 2). The order is not cosmetic: instantiation
 # ownership follows it, and a toolkit that aliases another's instantiation must be imported after it. Update the
 # list when OCCT adds a toolkit -- an audit of TOOLKITS.cmake against the manifest is what once found TKDECascade
-# missing (State.md 8.15).
+# missing.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 TOOLKITS := TKernel TKMath TKG2d TKG3d TKGeomBase TKBRep TKGeomAlgo TKTopAlgo TKPrim TKShHealing TKBO TKBool \
@@ -83,7 +83,7 @@ TK_FLAGS := --toolkit $(TOOLKITS)
 # is `requires-python = ">=3.12"` and `wheel.py-api = "cp312"`, which say what a *user* can install. Until
 # 2026-09-24 nothing pinned this and the three had drifted apart -- macOS 3.14.7, Linux 3.12.13, Windows 3.12.12 --
 # so the suite ran on a different Python depending on which box you were on. Exercising the 3.12 floor is a job
-# for the CI matrix (State.md 8.17), not for whichever interpreter a machine happens to pick.
+# for the CI matrix, not for whichever interpreter a machine happens to pick.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 PY_VERSION := 3.14
@@ -387,11 +387,11 @@ endif
 #
 # A packed wheel is not portable: the extension modules find the OCCT libraries through an rpath into deps/, so the
 # wheel works only on the machine that built it. The repair step copies those libraries in and rewrites the
-# references to point inside the wheel (State.md 8.4). Each platform has its own tool, and each leaves the
+# references to point inside the wheel. Each platform has its own tool, and each leaves the
 # system's own libraries alone -- OpenGL and X11 belong to the host, never to the wheel (Design.md 7).
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-# CI runs exactly these targets: .github/workflows/build-wheels.yml (State.md 8.17).
+# CI runs exactly these targets: .github/workflows/build-wheels.yml.
 
 DIST_DIR := $(ROOT)/dist
 RAW_DIR  := $(DIST_DIR)/unrepaired
@@ -447,11 +447,11 @@ clean_dist:
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 # Parity tests
 #
-# build123d's and ocp-tessellate's own suites through the shim against the real OCP, test by test (shim/parity.py;
-# State.md 8.18). Opt-in and not part of `wheels`: two venvs and the suites side by side, ~6 min on the M5. Needs the
+# build123d's and ocp-tessellate's own suites through the shim against the real OCP, test by test (shim/parity.py).
+# Opt-in and not part of `wheels`: two venvs and the suites side by side, ~6 min on the M5. Needs the
 # wheels of `make wheels` in DIST_DIR, a build123d checkout (BUILD123D), which it only reads (`git archive HEAD`), and
 # the ocp_tessellate sdist nanocctbuild/nanocctbuild.sh fetches into build/nanocctbuild/sdist; everything else goes to
-# build/shim-parity. Host-only for now: on Linux the wheels live in the container's world (State.md 8.17).
+# build/shim-parity. Host-only for now: on Linux the wheels live in the container's world.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 

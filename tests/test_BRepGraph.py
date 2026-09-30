@@ -73,7 +73,7 @@ def test_tool_and_ref_iterators():
 
 
 def test_graph_iterators_and_flat_maps_are_python_iterables():
-    """State.md 8.22: the Current() of BRepGraph_Iterator<...Def> and the Value() of NCollection_FlatMap<K, H>::Iterator are
+    """the Current() of BRepGraph_Iterator<...Def> and the Value() of NCollection_FlatMap<K, H>::Iterator are
     a dependent `const T&` inside the 6c walk, which R-ITER did not accept, and the flat maps' nested Iterator was not bound
     at all -- neither could be used in a `for` loop."""
     g = BRepGraph.BRepGraph()
@@ -89,7 +89,7 @@ def test_graph_iterators_and_flat_maps_are_python_iterables():
 
 
 def test_flat_map_contained_returns_the_stored_entries():
-    """std::reference_wrapper results (State.md 8.22 (iv)): Contained() raised TypeError (no caster). A const reference comes
+    """std::reference_wrapper results: Contained() raised TypeError (no caster). A const reference comes
     back as a copy (the key), a mutable one as a reference into the map that keeps it alive (the data map's value)."""
     flat = BRepGraph.NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId()
     key = BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, 3)

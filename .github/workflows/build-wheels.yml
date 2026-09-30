@@ -1,5 +1,5 @@
 # Build, test and repair the nanocct wheel on five platforms: macOS arm64 and x86_64, Linux x86_64 and aarch64,
-# Windows amd64 (State.md 8.17).
+# Windows amd64.
 #
 # Every step is a Makefile target, so CI and a local build are the same commands: `make env`, `make deps`,
 # `make sources`, `make generate compile stubs wheel delocate test` -- each step once: the wheel is packed from what

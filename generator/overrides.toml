@@ -179,7 +179,7 @@ methods = [
     # ambiguous in C++ (no unsigned overload). Meaningless for an unsigned vector anyway (2026-09-22).
     "NCollection_Vec3<unsigned long>::cwiseAbs",
     # NCollection_Vec2<unsigned long>: the 2-component results of NCollection_Vec3<unsigned long> (xy(), yx() ...), bound since
-    # 6c follows the members of an instantiation (State.md 8.22)
+    # 6c follows the members of an instantiation
     "NCollection_Vec2<unsigned long>::cwiseAbs",
     # The same instantiation on Windows. `size_t` is `unsigned long` on LP64 (macOS, Linux) and `unsigned long long` on
     # LLP64 (Windows), and these keys are canonical C++ spellings, so one type needs two entries -- the first port
@@ -329,7 +329,7 @@ binary_members = [
     "RWObj_Reader::Probe",
 ]
 
-# Classes that get a zero-copy numpy view through `__array__` (State.md 8.10, 8.21, R-VIEW). The emitter appends
+# Classes that get a zero-copy numpy view through `__array__` (R-VIEW). The emitter appends
 #     nanocct_def_views<Class>(cls);
 # to the class's define phase and includes src/cpp/common/nanocct_views.h, where the views themselves are a
 # template specialisation -- one per class, because every case has runtime branches a config file cannot carry

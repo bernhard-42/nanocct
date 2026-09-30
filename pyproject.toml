@@ -3,14 +3,9 @@ name = "nanocct"
 version = "8.0.1.0"
 description = "nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API"
 requires-python = ">=3.12"
-# numpy is the return type of the zero-copy array views (State.md 8.10): the consumer applies numpy
-# operations to the OCCT arrays, so handing back a buffer object would only be np.asarray'd on arrival.
-# Capped at <3: the 1 -> 2 transition was breaking and the same is expected of 2 -> 3, so the cap is the
-# high-risk case CLAUDE.md asks for rather than a reflex. Matches build123d's own "numpy >= 2, < 3".
+# numpy: the zero-copy array views return numpy arrays. 
 dependencies = ["numpy>=2,<3"]
-# PEP 639: an SPDX expression for nanocct's own code, plus every licence text the wheel must carry.
-# The wheel bundles OCCT (LGPL-2.1 with the OCCT exception) and, inside it, FreeType, RapidJSON and
-# nanobind -- licenses/README.md says which and why, NOTICE gives the attributions those licences require.
+# the wheel bundles OCCT, FreeType, RapidJSON and nanobind: licenses/README.md and NOTICE
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE", "licenses/*.txt", "licenses/README.md"]
 
@@ -25,23 +20,19 @@ wheel.py-api = "cp312"
 wheel.packages = ["src/nanocct"]
 cmake.build-type = "Release"
 
-# The .py/.pyi shims under src/nanocct are generated and therefore gitignored (Design.md 5.3), but they are the
-# package's Python surface and must go into the wheel. scikit-build-core's file selection honours .gitignore
-# (sdist.inclusion-mode "default"), and wheel.packages copying uses the same selection -- without this the wheel
-# holds only the 45 .so files and `nanocct` degrades to a namespace package: no __init__.py, so no lazy package
-# lookup, no NCollection accessor tables and no shims -- `from nanocct.gp import gp_Pnt` would resolve to nothing
-# (found 2026-09-23 as a missing NCollection accessor, then an abort under pytest, while __init__.py was eager).
+# the generated .py/.pyi under src/nanocct are gitignored (Design.md 5.3); scikit-build-core's file selection
+# honours .gitignore, so without this the wheel would hold only the .so files
 [tool.scikit-build.sdist]
 include = ["src/nanocct/**/*.py", "src/nanocct/**/*.pyi"]
 
-# macOS wheels are tagged macosx_11_0_arm64 like the OCCT build (deps/build-occt-macos.sh sets 11.1); without this the
-# extension inherits the SDK's own minimum (measured: minos 26.0) and the wheel would not run on older systems.
+# the same minimum macOS as the OCCT build (deps/build-occt-macos.sh); otherwise the SDK's own (26.0)
 [[tool.scikit-build.overrides]]
 if.platform-system = "darwin"
 cmake.define.CMAKE_OSX_DEPLOYMENT_TARGET = "11.1"
 
 [tool.pytest.ini_options]
-pythonpath = ["."]          # tests import the generator package (report.txt reader, generator unit tests)
+pythonpath = ["."]          # the tests import the generator package
+addopts = "-rfExX"          # name failures, errors, xfails and xpasses (-r replaces the default fE)
 
 [dependency-groups]
 dev = [

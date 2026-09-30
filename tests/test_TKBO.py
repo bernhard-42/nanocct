@@ -126,7 +126,7 @@ def test_data_structures_hashes_and_report():
 
 
 def test_the_box_trees_expose_their_bvh_tree():
-    """State.md 8.22 (c) (v): BVH_PrimitiveSet<double, 2>::BVH() returns handle<BVH_Tree<double, 2>>, which 6c skipped as a
+    """BVH_PrimitiveSet<double, 2>::BVH() returns handle<BVH_Tree<double, 2>>, which 6c skipped as a
     handle -- the call raised TypeError. The tree classes were then bound empty, 2D and 3D alike: their members live in the
     partial specialisation BVH_Tree<T, N, BVH_BinaryTree> (BVH_BinaryTree.hxx) and 6c walked the empty primary template;
     since 2026-09-30 the specialisation is walked and its base BVH_TreeBase<T, N> is bound."""

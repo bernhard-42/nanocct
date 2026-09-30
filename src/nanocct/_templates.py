@@ -15,7 +15,7 @@ class's MRO. nanobind's single inheritance cannot express it -- HArray1<T> alrea
 -- so the relation is virtual (abc), not a base class: `__mro__` does not list the generic class.
 
 Four C++ scalars are spelled by their Python type (C++ `double` is `float`, `int`, `bool`, `std::string` is `str`). The
-five without a Python type of their own are spelled by the markers below (State.md 8.20): NCollection_HArray1[float32] is
+five without a Python type of their own are spelled by the markers below (Design.md 6a): NCollection_HArray1[float32] is
 NCollection_HArray1__float, a C++ 32-bit float array. They are keys only -- the values are plain Python floats and ints,
 converted and range-checked by the bound class -- so each marker subclasses the Python type, and the stubs make them
 aliases of it: precision is not a Python type."""

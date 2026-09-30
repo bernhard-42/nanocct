@@ -1,4 +1,4 @@
-"""build123d's own suite through the OCP shim, against the real OCP (State.md 8.18): the standing integration test.
+"""build123d's own suite through the OCP shim, against the real OCP: the standing integration test.
 
 2 501 test IDs of real use (2026-09-26) -- the suite that found the R-RESULT crash this one had missed. Off by default:
 it builds two venvs and runs build123d's suite twice (9.3 min on the M5, 2026-09-26), and it needs the wheels of

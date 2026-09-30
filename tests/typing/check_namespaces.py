@@ -27,7 +27,7 @@ surf: GeomGridEval.SurfD1 = sphere.EvalD1(0.0, 0.0)                 # typedef al
 d1u: gp.gp_Vec = surf.D1U
 cd: GeomGridEval.CurveD1 = sphere.EvalD1(0.0, 0.0)                  # error: Geom_Surface.ResD1 is not Geom_Curve.ResD1
 
-# nanocct.AddOns.ShapeClean is a C++ namespace module of the hand-written AddOns (State.md 8.22): its stub used to land
+# nanocct.AddOns.ShapeClean is a C++ namespace module of the hand-written AddOns: its stub used to land
 # at nanocct/ShapeClean.pyi, so everything here was Any and the error below went unreported
 from nanocct.AddOns.ShapeClean import ShapeUpgrade_UnifySameDomain
 from nanocct.TopoDS import TopoDS_Shape

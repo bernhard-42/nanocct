@@ -1,4 +1,4 @@
-// Which array element types can be viewed as numpy scalars, and how (R-VIEW, State.md 8.10a).
+// Which array element types can be viewed as numpy scalars, and how (R-VIEW).
 //
 // Separate from nanocct_views.h because this half is about the *element*, not the container: the same table
 // serves NCollection_Array1/Array2/HArray1/HArray2 (nanocct_ncollection.h) and anything else holding a

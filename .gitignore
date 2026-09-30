@@ -35,7 +35,7 @@ reviews/
 # generation platform cannot serve the others, and the .so/.pyd files are the product, not the C++ or the reports.
 # A few files under src/ are hand-written and stay tracked: src/cpp/common/*.h (nanocct_common.h,
 # nanocct_ncollection.h, nanocct_views.h), the whole of src/cpp/AddOns/ (nanocct's own additions, not a
-# binding of anything -- State.md 8.10b), src/nanocct/_templates.py and src/nanocct/py.typed.
+# binding of anything, Design.md R-ADDON), src/nanocct/_templates.py and src/nanocct/py.typed.
 # `make clean_gen` removes only src/cpp/TK*, so src/cpp/AddOns survives a regeneration.
 # Everything below is rebuilt in minutes by `python -m generator`.
 /src/cpp/**/*.cpp

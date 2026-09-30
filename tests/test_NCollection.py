@@ -506,7 +506,7 @@ def test_generic_subscription_errors():
 
 
 # ---------------------------------------------------------------------------------------------------------
-# The C++ scalars without a Python type of their own (State.md 8.20, option B / V3): five marker keys. Four C++ scalars
+# The C++ scalars without a Python type of their own: five marker keys. Four C++ scalars
 # are spelled by their Python type (double -> float, int, bool, std::string -> str); float (32-bit), unsigned char,
 # unsigned int, unsigned long and unsigned long long were reachable only by the concrete name until then.
 

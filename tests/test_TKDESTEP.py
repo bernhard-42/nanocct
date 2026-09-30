@@ -193,7 +193,7 @@ def test_report_categories():
     # class template the 6c walk tried and failed to bind (its get()/operator-> and its handle<Standard_Transient> base)
     assert counts == {"raw-pointer": 1, "rvalue": 3, "override": 4, "template": 2,
                       "header": 1, "stream": 1,
-                      "overload-collision": 3,    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER, State.md 8.22)
+                      "overload-collision": 3,    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER)
                       "null-bool": 1}             # StepData_SelectType (R-NULL-BOOL, 2026-09-30)
     assert len(lines) == 16
     # which members R-UNDEFINED reports is the platform's business (macOS names four entities, Windows others), so
@@ -206,7 +206,7 @@ def test_report_categories():
 
 
 def test_ncollection_handle_is_transparent_and_init_takes_a_copy():
-    """R-NCHANDLE (State.md 8.22): NCollection_Handle<X> -- OCCT's reference-counted owner of a non-Transient X -- is the X
+    """R-NCHANDLE: NCollection_Handle<X> -- OCCT's reference-counted owner of a non-Transient X -- is the X
     itself in Python, like opencascade::handle: Items()/Curves() raised TypeError (unregistered type) and Init() rejected
     both an array and None. A result is shared with the entity and outlives it; a null handle is None; a parameter is
     copied, because the handle deletes what it holds and the Python array owns its own."""

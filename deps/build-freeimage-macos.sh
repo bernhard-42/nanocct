@@ -2,7 +2,7 @@
 # Build FreeImage (sources in deps/freeimage-src) as a shared library into deps/freeimage, with every symbol
 # hidden except its own API, and the codecs we do not ship switched off.
 #
-# Why shared and not static, unlike FreeType (State.md 8.9). FreeImage registers its format plugins in
+# Why shared and not static, unlike FreeType. FreeImage registers its format plugins in
 # FreeImage_Initialise(), which a shared build calls by itself -- DllMain on Windows, __attribute__((constructor))
 # elsewhere (Source/FreeImage/FreeImage.cpp) -- and OCCT never calls it, because it assumes the shared library.
 # Both auto-initialisers sit inside `#ifndef FREEIMAGE_LIB`, and FREEIMAGE_LIB is exactly what a static build
@@ -17,7 +17,7 @@
 # process (Pillow's, say); FreeImage_* is its own namespace and is what OCCT has to link against.
 #
 # The codec switches are the four FreeImage honours out of the box; the other BUILD_* options exist but their
-# plugins are not guarded, so turning them off is a compile error, not an exclusion (State.md 8.9):
+# plugins are not guarded, so turning them off is a compile error, not an exclusion:
 #   BUILD_WEBP=OFF      libwebp's WEBP_EXTERN forces visibility("default"), the one macro -fvisibility=hidden
 #                       cannot beat. Switching the codec off removes the symbols instead of patching the source.
 #   BUILD_OPENEXR=OFF   7.3 MB of codec we do not need (its Imath/Half part is compiled unconditionally anyway).

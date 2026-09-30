@@ -72,7 +72,7 @@ def test_extended_string_round_trip():
 
 
 def test_value_eq_without_a_hash_is_unhashable():
-    """R-UNHASHABLE (State.md 8.11, closed 2026-09-25): a class with a value __eq__ and no hash must be unhashable.
+    """R-UNHASHABLE (2026-09-25): a class with a value __eq__ and no hash must be unhashable.
 
     nanobind never touches tp_hash, and Python's "define __eq__ and __hash__ becomes None" rule fires only at type
     creation -- a .def() after it does not trigger it. So without the explicit nb::none() these classes kept
@@ -147,7 +147,7 @@ def test_messages_are_collected_not_subclassed():
 
 
 def test_packed_map_iterator_is_bound_under_the_alias():
-    """State.md 8.22: nested classes of an instantiation bound under an alias were not added to the IR at all
+    """nested classes of an instantiation bound under an alias were not added to the IR at all
     (TColStd_PackedMapOfInteger = NCollection_PackedMap<int>). Its Iterator has Key(), not Value(), so R-ITER gives it no
     __iter__: More/Next/Key as in C++."""
     packed = TColStd.TColStd_PackedMapOfInteger()
