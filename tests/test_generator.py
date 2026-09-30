@@ -618,6 +618,29 @@ public:
   operator bool() const { return false; }
 };
 
+//! R-RESULT: a const T& of a class that cannot be copied (Extrema_ExtCC: `T(T&) = delete`) must not be copied --
+//! nanobind's copy aborts the process; the policy is chosen by the compiler (nanocct::cref_policy).
+class Rules_NoCopyInner
+{
+public:
+  Rules_NoCopyInner() {}
+  int Value() const { return 7; }
+
+private:
+  Rules_NoCopyInner(Rules_NoCopyInner&) = delete;
+};
+
+class Rules_NoCopyHolder
+{
+public:
+  Rules_NoCopyHolder() {}
+  const Rules_NoCopyInner& Inner() const { return myInner; }
+  static const Rules_NoCopyInner& Shared() { static Rules_NoCopyInner anInner; return anInner; }
+
+private:
+  Rules_NoCopyInner myInner;
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -687,7 +710,7 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
                                "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor",
                                "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
-                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -869,6 +892,16 @@ def test_emitter_null_bool_is_not_is_null(rules_ir):
     # an operator bool wins: the real conversion is bound, not IsNull
     assert '.def("__bool__", [](const Rules_NullableBool &self) { return static_cast<bool>(self); }' in cpp
     assert not any(r.startswith("Rules_NullableBool: __bool__ =") for r in em.report)
+
+
+def test_emitter_const_ref_result_policy_is_decided_by_the_compiler(rules_ir):
+    """R-RESULT (2026-09-30): a const T& result is copied only when T can be copied; nanobind's copy of a class without
+    a usable copy constructor aborts the process (GeomAPI_ExtremaCurveCurve::Extrema() -> Extrema_ExtCC)."""
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "(&Rules_NoCopyHolder::Inner), nanocct::cref_policy<const Rules_NoCopyInner &, true>{})" in cpp
+    assert "(&Rules_NoCopyHolder::Shared), nanocct::cref_policy<const Rules_NoCopyInner &, false>{})" in cpp   # static: no owner
 
 
 def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):

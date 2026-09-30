@@ -395,6 +395,9 @@ class Emitter:
         has_out = any(p.is_out or p.stream != StreamKind.NONE for p in m.params)
         wrap = m.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT, ResultKind.VALUE_TRANSIENT)   # never let nanobind own a Transient
         policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
+        if m.result_kind == ResultKind.VALUE and m.result.rstrip().endswith("&"):
+            # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_common.h)
+            policy = f", nanocct::cref_policy<{m.result}, {'false' if m.is_static else 'true'}>{{}}"
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
@@ -809,6 +812,8 @@ class Emitter:
             # it to (no self), so it is copied rather than returned as a dangling reference; the const& overloads of
             # those functions are the reachable ones anyway (registered first)
             policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
+            if fn.result_kind == ResultKind.VALUE and fn.result.rstrip().endswith("&"):
+                policy = f", nanocct::cref_policy<{fn.result}, false>{{}}"    # R-RESULT: no owner to tie a reference to
             qualified = fn.qualified if fn.qualified != "" else fn.name
             py, doc = py_safe(fn.name), fn.doc
             if fn.suffix != "":

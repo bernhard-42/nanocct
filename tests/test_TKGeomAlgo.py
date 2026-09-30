@@ -131,3 +131,34 @@ def test_curve_surface_intersection():
     assert not hasattr(GeomAPI.GeomAPI_IntCS, "Parameters")
     assert any("GeomAPI_IntCS::Parameters(const int, double &, double &, double &): same Python signature as another overload "
                "after out-param removal -> bound as Parameters__float__float__float" in l for l in REPORT.read_text().splitlines())
+
+
+def test_const_ref_results_of_uncopyable_classes_are_references():
+    """R-RESULT (2026-09-30): Extrema() returns `const Extrema_ExtCC&` (and ExtCS, ExtPS); those classes cannot be copied
+    (a deleted `T(T&)` copy constructor, a non-copyable member), and nanobind's default copy aborted the whole process.
+    They come back by reference now, tied to their owner; the copyable ExtSS/ExtPC are still copies. Run in a subprocess:
+    a regression is an abort, which would take the test session with it."""
+    import subprocess
+    import sys
+    code = """
+import gc
+from nanocct.Geom import Geom_Line, Geom_Plane, Geom_TrimmedCurve
+from nanocct.GeomAPI import (GeomAPI_ExtremaCurveCurve, GeomAPI_ExtremaCurveSurface, GeomAPI_ExtremaSurfaceSurface,
+                             GeomAPI_ProjectPointOnCurve, GeomAPI_ProjectPointOnSurf)
+from nanocct.gp import gp_Dir, gp_Pln, gp_Pnt
+c1 = Geom_TrimmedCurve(Geom_Line(gp_Pnt(0, 0, 0), gp_Dir(1, 0, 0)), -1, 1)
+c2 = Geom_TrimmedCurve(Geom_Line(gp_Pnt(0, 0, 1), gp_Dir(0, 1, 0)), -1, 1)
+s1 = Geom_Plane(gp_Pln(gp_Pnt(0, 0, 2), gp_Dir(0, 0, 1)))
+s2 = Geom_Plane(gp_Pln(gp_Pnt(0, 0, 5), gp_Dir(0, 0, 1)))
+cc = GeomAPI_ExtremaCurveCurve(c1, c2).Extrema()          # the owner is a temporary: the result keeps it alive
+gc.collect()
+print(type(cc).__name__, cc.IsDone(), cc.NbExt(), round(cc.SquareDistance(1), 9))
+for algo in (GeomAPI_ExtremaCurveSurface(c2, s1), GeomAPI_ProjectPointOnSurf(gp_Pnt(1, 1, 0), s1),
+             GeomAPI_ExtremaSurfaceSurface(s1, s2), GeomAPI_ProjectPointOnCurve(gp_Pnt(0, 1, 0), c1)):
+    e = algo.Extrema()
+    print(type(e).__name__, e.IsDone())
+"""
+    proc = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr
+    assert proc.stdout.split("\n")[:5] == ["Extrema_ExtCC True 1 1.0", "Extrema_ExtCS True", "Extrema_ExtPS True",
+                                           "Extrema_ExtSS True", "Extrema_ExtPC True"]

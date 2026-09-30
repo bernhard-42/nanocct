@@ -281,6 +281,16 @@ struct KeepOwnerUnlessSelf {
             nb::keep_alive_obj(ret, args[0]);   // the result (nurse) keeps self (patient) alive
     }
 };
+// R-RESULT: a `const T&` result is copied (nanobind's default) -- unless T cannot be copied (a deleted copy constructor
+// in either form, `T(const T&)` or `T(T&)`, or a member that cannot be copied: Extrema_ExtCC, Extrema_ExtPS), where
+// nanobind's copy aborts the process ("Critical nanobind error"). Such a result is handed out by reference instead:
+// tied to its owner for a method (reference_internal), plain for a static method or free function (no owner).
+// Decided by the compiler, so a class's copyability never has to be guessed from its header. nanobind 3.1 takes the
+// policy as a compile-time tag type (nb_attr.h: a runtime rv_policy value is rejected), hence a type: cref_policy<R, O>{}.
+template <typename R, bool HasOwner>
+using cref_policy = nb::rv_policy::policy_tag<
+    std::is_copy_constructible_v<std::remove_cv_t<std::remove_reference_t<R>>> ? nb::rv_policy::copy_v
+    : HasOwner ? nb::rv_policy::reference_internal_v : nb::rv_policy::reference_v>;
 }
 
 NAMESPACE_BEGIN(NB_NAMESPACE)
