@@ -3,7 +3,7 @@ import importlib
 
 import pytest
 
-from nanocct import Message, NCollection, OSD, Precision, Quantity, TCollection
+from nanocct import Message, NCollection, OSD, Precision, Quantity, TCollection, TColStd
 
 PACKAGES = ["FSD", "OSD", "Plugin", "Quantity", "Resource", "Standard", "StdFail", "Storage", "TColStd", "TCollection",
             "TShort", "Units", "UnitsAPI", "UnitsMethods", "NCollection", "Message", "FlexLexer", "Precision"]
@@ -144,3 +144,17 @@ def test_messages_are_collected_not_subclassed():
         messenger.RemovePrinters(Message_PrinterOStream.get_type_descriptor_s())
         for saved_printer in saved:
             messenger.AddPrinter(saved_printer)
+
+
+def test_packed_map_iterator_is_bound_under_the_alias():
+    """State.md 8.22: nested classes of an instantiation bound under an alias were not added to the IR at all
+    (TColStd_PackedMapOfInteger = NCollection_PackedMap<int>). Its Iterator has Key(), not Value(), so R-ITER gives it no
+    __iter__: More/Next/Key as in C++."""
+    packed = TColStd.TColStd_PackedMapOfInteger()
+    for k in (9, 4, 16):
+        packed.Add(k)
+    it, keys = TColStd.TColStd_PackedMapOfInteger.Iterator(packed), []
+    while it.More():
+        keys.append(it.Key())
+        it.Next()
+    assert sorted(keys) == [4, 9, 16]

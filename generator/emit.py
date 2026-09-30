@@ -789,7 +789,29 @@ class Emitter:
             get = live.get((name, 0))
             if get is not None and get.result_kind in (ResultKind.VALUE, ResultKind.VALUE_TRANSIENT) and get.result != "void":
                 return name
+            if get is not None and get.result_kind == ResultKind.OTHER and self._copyable_const_ref(get.result):
+                return name          # a dependent `const TheKeyType&` of a 6c instantiation (NCollection_FlatMap<K, H>::Iterator)
         return None
+
+    def _copyable_const_ref(self, result: str) -> bool:
+        """`const X &` inside a 6c instantiation: libclang gives the dependent pointee no declaration, so parse._result_kind
+        says OTHER although nanobind copies it like any const-reference result. Safe to copy unless X is a Transient
+        (R-RESULT: a nanobind-owned Transient copy is deleted by the first handle it meets) -- decided from the manifest's
+        bases of every bound class."""
+        m = re.fullmatch(r"const (.+?)\s*&", result.strip())
+        if m is None:
+            return False
+        seen: set[str] = set()
+        todo = [m.group(1).strip()]
+        while len(todo) > 0:
+            name = todo.pop()
+            if name == "Standard_Transient":
+                return False
+            for b in self.bases_of.get(name, []):
+                if b not in seen:
+                    seen.add(b)
+                    todo.append(b)
+        return True
 
     def _define_class(self, c: Class, free_ops: dict[str, list[str]], define: list[str]) -> None:
         """Define phase of one class: constructors, methods (collisions resolved), free operators, scalar conversion

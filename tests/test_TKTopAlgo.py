@@ -203,3 +203,12 @@ def test_a_reference_to_a_member_transient_is_never_deleted_by_python():
     member = BRepAdaptor_Curve(edge).Curve()          # the owner is a temporary: keep_alive<0, 1> holds it
     gc.collect()
     assert member.FirstParameter() == 0.0 and math.isclose(member.LastParameter(), 2 * math.pi)
+
+
+def test_bnd_box_tree_selectors_have_their_template_base():
+    """State.md 8.22: NCollection_UBTree<int, Bnd_Box>::Selector, a nested class of a 6c instantiation, was not bound, so
+    it was dropped as the base of the three selectors (R-TEMPLATE-BASE) and their Reject/Accept/Stop were not inherited."""
+    for cls in (BRepClass3d.BRepClass3d_BndBoxTreeSelectorPoint, BRepClass3d.BRepClass3d_BndBoxTreeSelectorLine,
+                BRepBuilderAPI.BRepBuilderAPI_BndBoxTreeSelector):
+        assert cls.__mro__[1].__qualname__ == "NCollection_UBTree__int__Bnd_Box.Selector"
+        assert all(hasattr(cls, name) for name in ("Reject", "Accept", "Stop"))

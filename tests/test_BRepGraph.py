@@ -2,7 +2,7 @@
 (BRepGraph_NodeId::Typed<Kind::Edge>), iterators of templates nested in namespaces; all instantiated by rule 6c."""
 import pytest
 
-from nanocct import BRep, BRepGraph, Geom, TopAbs, TopoDS, gp
+from nanocct import BRep, BRepGraph, BRepPrimAPI, Geom, TopAbs, TopoDS, gp
 
 
 def _edge_graph() -> tuple[BRepGraph.BRepGraph, TopoDS.TopoDS_Edge]:
@@ -68,3 +68,19 @@ def test_tool_and_ref_iterators():
     assert faces.More() is False and list(faces) == []
     sigs = [l for l in BRepGraph.BRepGraph_FacesOfEdge.__init__.__doc__.splitlines() if l.startswith("__init__")]
     assert len(sigs) == 3 and "theStartIndex: int" in sigs[1]
+
+
+def test_graph_iterators_and_flat_maps_are_python_iterables():
+    """State.md 8.22: the Current() of BRepGraph_Iterator<...Def> and the Value() of NCollection_FlatMap<K, H>::Iterator are
+    a dependent `const T&` inside the 6c walk, which R-ITER did not accept, and the flat maps' nested Iterator was not bound
+    at all -- neither could be used in a `for` loop."""
+    g = BRepGraph.BRepGraph()
+    g.Clear()
+    assert g.Shapes().Add(BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()).IsOk()
+    edges, faces = list(BRepGraph.BRepGraph_EdgeIterator(g)), list(BRepGraph.BRepGraph_FaceIterator(g))
+    assert (len(edges), len(faces)) == (12, 6) and type(edges[0]).__name__ == "EdgeDef"
+    flat = BRepGraph.NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId
+    ids = flat()
+    for i in (3, 1, 7):
+        ids.Add(BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, i))
+    assert sorted(n.Index for n in flat.Iterator(ids)) == [1, 3, 7]

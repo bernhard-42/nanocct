@@ -432,6 +432,18 @@ class Rules_TVec
 public:
   Rules_TVec(T theX = T(0)) : myX(theX) {}
   T X() const { return myX; }
+  //! A nested class of an instantiation bound under an alias (State.md 8.22): TColStd_PackedMapOfInteger::Iterator.
+  class Cursor
+  {
+  public:
+    Cursor(const Rules_TVec& theVec) : myVec(&theVec), myDone(false) {}
+    bool More() const { return !myDone; }
+    void Next() { myDone = true; }
+    const T& Value() const { return myVec->myX; }
+  private:
+    const Rules_TVec* myVec;
+    bool myDone;
+  };
 private:
   T myX;
 };
@@ -596,7 +608,7 @@ def test_ir_classes_and_nesting(rules_ir):
     assert set(names[20:]) == {"Rules_TDerived<double>", "Rules_Crtp<int>", "Rules_TBase<double>", "Rules_Iter", "Rules_Vis", "Rules_Vis::Iterator",
                                "Rules_TVec<unsigned long>", "Rules_PntSeq", "Rules_PntSeq::Iterator", "Rules_Table", "Rules_ViaTemplate",
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
-                               "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -757,7 +769,7 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
     assert "Rules_Value::Scale(const float): same Python signature as Scale(const double) -> registered after it (width preference)" in em.report
     # R-ITER: More/Next/Value -> __iter__/__next__ through nanocct_def_iter; Rules_Value (no More) gets none
-    assert cpp.count("nanocct_def_iter<") == 1 and "nanocct_def_iter<Rules_Iter>" in cpp
+    assert cpp.count("nanocct_def_iter<") == 2 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
 
 
@@ -1189,6 +1201,21 @@ def test_members_of_an_instantiation_instantiate_what_they_name(rules_ir):
     assert [n for n in names if n.startswith("Rules_TWide<")] == ["Rules_TWide<short>"]
     wide = next(c for c in rules_ir.classes if c.name == "Rules_TWide<short>")
     assert {m.name: m.skip_reason for m in wide.methods if m.name in ("Narrow", "Same")} == {"Narrow": None, "Same": None}
+
+
+def test_nested_classes_of_an_instantiation_are_bound_into_it(rules_ir):
+    """State.md 8.22: a nested class of a 6c instantiation was skipped ("nested class of a class template"), and one of an
+    instantiation bound under an alias was not even added to the IR. Rules_TVec<unsigned long>::Cursor must sit in the
+    alias's class (Rules_TVecUL.Cursor), and its `const T& Value()` -- dependent, so parse says OTHER -- is copyable,
+    so it gets __iter__ (R-ITER)."""
+    cursor = next(c for c in rules_ir.classes if c.name == "Rules_TVec<unsigned long>::Cursor")
+    assert (cursor.outer, cursor.scope, cursor.py_name) == ("Rules_TVec<unsigned long>", ("Rules_TVecUL",), "Cursor")
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert 'nb::class_<Rules_TVec<unsigned long>::Cursor> cls(m.attr("Rules_TVecUL"), "Cursor"' in cpp
+    assert "Rules_TVec<unsigned long>::Cursor: __iter__ added (More/Next/Value)" in em.report
+    assert not any("nested class of a class template" in line for c in rules_ir.classes for line in c.skipped)
 
 
 def test_resolve_ctor_arities():

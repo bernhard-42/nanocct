@@ -1494,10 +1494,17 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
         elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition():
             if ch.spelling == "":
                 c.skipped.append(f"{c.name}: anonymous nested struct")
-            elif _SUBST.active:
+            elif _SUBST.active and cursor.spelling in _STL_ITERATORS:
+                # NCollection_ForwardRangeIterator::PostfixProxy: plumbing of an STL-style iterator, which Python does not use (R-ITER)
                 c.skipped.append(f"{cursor.spelling}::{ch.spelling}: nested class of a class template (alias instantiation)")
             else:
+                # a nested class of a 6c instantiation is walked with the instantiation's substitution still active
+                # (NCollection_FlatMap<K, H>::Iterator: without it the BRepGraph flat maps could not be iterated, State.md 8.22)
                 n = _class(ch, header, package, outer=c.name)
+                if _SUBST.active:
+                    # _class spells an instantiation's path flat (py_path of a name with '<'); a nested class belongs to its
+                    # outer class like any other nested class: NCollection_FlatMap__BRepGraph_UID__...Iterator -> <outer>.Iterator
+                    n.scope, n.py_name = c.scope + (c.py_name,), ch.spelling
                 if n.unbindable:
                     c.skipped.extend(n.skipped)
                 else:
@@ -1768,7 +1775,18 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
     c.template_key = f"{qualified}<{', '.join(k for k in keys if k != '')}>"
     for m in c.methods:
         m.defined_in_header = True            # instantiated from the header, no library symbol involved
+    _reparent_nested(c)
     return c
+
+
+def _reparent_nested(c: Class) -> None:
+    """The nested classes of an instantiation were walked while it still had its provisional name; point them at its
+    final C++ name and Python path (the alias for TColStd_PackedMapOfInteger = NCollection_PackedMap<int>), recursively."""
+    for n in c.nested:
+        n.outer, n.scope = c.name, c.scope + (c.py_name,)
+        for m in n.methods:
+            m.defined_in_header = True
+        _reparent_nested(n)
 
 
 def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str, package: str, report: list[str]) -> Class | None:
@@ -1975,7 +1993,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 if not any(c.py_name == cur.spelling for c in ir.classes):     # the same alias appears in several headers
                     inst = _alias_instance(tu, cur, header, pkg.name, ir.report)
                     if inst is not None:
-                        ir.classes.append(inst)
+                        add_class(inst)            # with its nested classes (TColStd_PackedMapOfInteger.Iterator, State.md 8.22)
             elif cur.kind in (K.CLASS_TEMPLATE, K.FUNCTION_TEMPLATE):
                 if cur.semantic_parent is not None and cur.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
                     continue                       # an out-of-line member template definition (TCollection_AsciiString::Cat<T> in the .lxx): reported with its class
