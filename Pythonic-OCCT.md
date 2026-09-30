@@ -892,7 +892,7 @@ Out[10]: TopAbs_ShapeEnum.TopAbs_SOLID
 
 **Binding rules: R-ENUM, R-ANON-ENUM ([Design 2c](Design.md#2c-python-additions))**
 
-OCCT's enums are Python `enum.IntEnum` classes. As in C++, the enumerators of an unscoped enum are also names in the module (`TopAbs.TopAbs_FACE`), they are integers, and an `int` is accepted where OCCT expects the enum. An `enum class` stays nested in its class (`gp_Dir.D.NZ`).
+OCCT's enums are Python `enum.IntEnum` classes. As in C++, the enumerators of an unscoped enum are also names in the module (`TopAbs.TopAbs_FACE`), and they are integers. As in C++, the conversion goes one way only: an OCCT parameter of an enum type takes its enumerators, not an `int` or a `bool` (`TypeError`); `TopAbs_ShapeEnum(4)` turns an `int` into the enumerator. An `enum class` stays nested in its class (`gp_Dir.D.NZ`).
 
 ```python
 In [1]: from nanocct.TopAbs import TopAbs_ShapeEnum, TopAbs_FACE

@@ -121,3 +121,27 @@ def test_6c_instantiation_names_spell_every_template_argument():
     assert hasattr(BRepGraphInc, "NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape"
                                  "__NCollection_DefaultHasher__BRepGraph_NodeId")
     assert hasattr(Poly, "NCollection_AliasedArray__")
+
+
+def test_an_enum_parameter_takes_no_bool_or_int():
+    """nanobind's enum caster took any int that is an enumerator's value in its convert pass, True and False included:
+    with a typed root (converted to BRepGraph_NodeId) (Kind, True, False) reached the (AvoidKind, EmitAvoidKind,
+    TraversalMode) overload, registered first, instead of C++'s (TargetKind, CumLoc, CumOri). An enum parameter takes
+    only its enumerators now, as in C++ (2026-09-30)."""
+    g = BRepGraph.BRepGraph()
+    g.Clear()
+    g.Shapes().Add(BRepPrimAPI.BRepPrimAPI_MakeBox(10.0, 20.0, 30.0).Shape())
+    kind = BRepGraph.BRepGraph_NodeId.Kind
+    explorer = BRepGraph.BRepGraph_ChildExplorer(g, BRepGraph.BRepGraph_SolidId.Start_s(), kind.Edge, True, False)
+    orientations = []
+    while explorer.More():
+        orientations.append(explorer.Current().Orientation)
+        explorer.Next()
+    assert len(orientations) == 24 and set(orientations) == {TopAbs.TopAbs_Orientation.TopAbs_FORWARD}   # CumOri=False
+    root = BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_SolidId.Start_s())
+    assert BRepGraph.BRepGraph_ChildExplorer(g, root, None, False).More()   # std::optional<Kind> AvoidKind: None stays nullopt
+    v = TopoDS.TopoDS_Vertex()
+    with pytest.raises(TypeError):
+        v.Orientation(1)                                           # C++ has no int -> TopAbs_Orientation conversion either
+    v.Orientation(TopAbs.TopAbs_Orientation.TopAbs_REVERSED)
+    assert v.Orientation() == TopAbs.TopAbs_REVERSED

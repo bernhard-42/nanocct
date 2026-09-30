@@ -50,6 +50,7 @@ class Param:
     ptr_none: bool = False  # R-PTR-NULL: a class pointer parameter with a null default: `T | None = None` (nb::arg(...).none())
     instance_key: str = ""     # R-UNBOUND-TYPE: the NCollection binder instantiation behind the type (parse._binder_key), "" if none
     class_ancestors: tuple[str, ...] = ()   # R-OVERLOAD-ORDER: every base of class_name, spelled like class_name (parse._class_ancestors)
+    is_enum: bool = False   # R-ENUM-ARG: an enum or std::optional<enum> by value or reference: nb::arg(...).noconvert(), no int in its place
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
     is_bytes: bool = False  # R-BYTES: a `const uint8_t*` input buffer, taken as `bytes`; the length parameter that follows it is dropped
     bytes_of: str = ""      # R-BYTES: this parameter is that buffer's length and is dropped; the value is the bytes parameter's name

@@ -333,6 +333,24 @@ def _class_behind(t: cindex.Type) -> str:
     return _canonical_args(canon).replace("const ", "")
 
 
+# Design.md 6 R-ENUM-ARG (nb::arg(...).noconvert() emitted in emit._args)
+def _is_enum(t: cindex.Type) -> bool:
+    """An enum or a std::optional of one, possibly behind const/& (not behind a pointer). The optional too: nanobind's
+    optional caster hands the convert flag to the enum caster, and BRepGraph_ChildExplorer(g, typed root, Kind.Edge,
+    True, False) then reached (TargetKind, std::optional<Kind> AvoidKind, EmitAvoidKind) with AvoidKind = Kind(1)."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind == TK.RECORD and canon.get_num_template_arguments() == 1:
+        decl = canon.get_declaration()
+        parent = decl.semantic_parent
+        while parent is not None and parent.kind == K.NAMESPACE and parent.spelling.startswith("__"):   # libc++'s std::__1
+            parent = parent.semantic_parent
+        if decl.spelling == "optional" and parent is not None and parent.kind == K.NAMESPACE and parent.spelling == "std":
+            return _is_enum(canon.get_template_argument_type(0))
+    return canon.kind == TK.ENUM
+
+
 # Design.md 6 R-HANDLE (nb::arg(...).none() emitted in emit._args)
 def _is_handle(t: cindex.Type) -> bool:
     """opencascade::handle<T>, possibly behind const/&."""
@@ -912,7 +930,8 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
                             class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
                             out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, ptr_none=ptr_none,
                             instance_key=_binder_key(p.type),
-                            binary=binary and stream != StreamKind.NONE, class_ancestors=_class_ancestors(p.type)))
+                            binary=binary and stream != StreamKind.NONE, class_ancestors=_class_ancestors(p.type),
+                            is_enum=_is_enum(p.type)))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None

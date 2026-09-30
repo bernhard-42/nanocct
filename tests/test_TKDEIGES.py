@@ -11,7 +11,7 @@ from nanocct import Message
 from nanocct.BRepGProp import BRepGProp
 from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanocct.GProp import GProp_GProps
-from nanocct.IFSelect import IFSelect_RetDone, IFSelect_RetFail
+from nanocct.IFSelect import IFSelect_ItemsByEntity, IFSelect_RetDone, IFSelect_RetFail
 from nanocct.IGESCAFControl import IGESCAFControl_Reader, IGESCAFControl_Writer
 from nanocct.IGESControl import IGESControl_Controller, IGESControl_Reader, IGESControl_Writer
 from nanocct.IGESGeom import IGESGeom_CircularArc, IGESGeom_Point
@@ -123,7 +123,7 @@ def test_the_reader_exposes_its_model(tmp_path, quiet_messenger):
     session = reader.WS()
     assert type(session.NormAdaptor()).__name__ == "IGESControl_Controller"
     assert session.Model().NbEntities() > 10
-    assert isinstance(reader.PrintCheckLoad__str(False, 0), str)
+    assert isinstance(reader.PrintCheckLoad__str(False, IFSelect_ItemsByEntity), str)
 
 
 def test_an_xcaf_document_round_trips(tmp_path, quiet_messenger):

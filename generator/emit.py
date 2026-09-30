@@ -271,6 +271,12 @@ class Emitter:
             # a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
             # the caster runs (Design.md 4.2); so does a class pointer with a null default (R-PTR-NULL), or the default is refused
             arg = f'nb::arg("{p.name}").none()' if p.is_handle or p.ptr_none else f'nb::arg("{p.name}")'
+            # R-ENUM-ARG: an enum parameter takes its enumerators only, as in C++. nanobind's enum caster takes any int
+            # that is an enumerator's value in its convert pass, True and False included (nb_enum.cpp), so
+            # BRepGraph_ChildExplorer(g, root, Kind.Edge, True, False) reached (AvoidKind, EmitAvoidKind, TraversalMode)
+            # registered before C++'s choice (TargetKind, CumLoc, CumOri)
+            if p.is_enum:
+                arg += ".noconvert()"
             if p.cstr_none:                    # R-CSTR-NULL: None reaches the OptionalCString caster only with .none()
                 parts.append(f'nb::arg("{p.name}").none() = nb::none()')
             elif p.default is None:

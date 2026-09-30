@@ -14,7 +14,7 @@ from nanocct import Message
 from nanocct.BRepGProp import BRepGProp
 from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanocct.GProp import GProp_GProps
-from nanocct.IFSelect import IFSelect_RetDone
+from nanocct.IFSelect import IFSelect_ItemsByEntity, IFSelect_RetDone
 from nanocct.Interface import Interface_Static
 from nanocct.NCollection import NCollection_Array1, NCollection_DynamicArray, NCollection_HArray1, NCollection_HSequence, NCollection_Sequence
 from nanocct.Quantity import Quantity_Color, Quantity_NameOfColor, Quantity_NOC_RED
@@ -129,7 +129,7 @@ def test_the_reader_exposes_its_work_session_and_model(tmp_path, quiet_messenger
     assert type(session.NormAdaptor()).__name__ == "STEPCAFControl_Controller"
     model = session.Model()
     assert model.NbEntities() > 100
-    assert isinstance(reader.PrintCheckLoad__str(False, 0), str)  # ostream& -> returned str (R-STREAM-OUT, R-COLLISION)
+    assert isinstance(reader.PrintCheckLoad__str(False, IFSelect_ItemsByEntity), str)  # ostream& -> returned str (R-STREAM-OUT, R-COLLISION)
     assert STEPControl_StepModelType.STEPControl_AsIs is STEPControl_AsIs
 
 

@@ -11,7 +11,7 @@ import pytest
 
 from generator.report import read_report
 from nanocct import (BRepBuilderAPI, BRepCheck, BRepClass, BRepClass3d, BRepExtrema, BRepGProp, BRepLib, BRepMAT2d, BRepPrimAPI, BRepTopAdaptor,
-                     GProp, MAT, MAT2d, NCollection, Bnd, BRepBndLib, Standard, StdFail, TopAbs, TopExp, TopoDS, gp)
+                     GeomAbs, GProp, MAT, MAT2d, NCollection, Bnd, BRepBndLib, Standard, StdFail, TopAbs, TopExp, TopoDS, gp)
 
 PACKAGES = ["IntCurvesFace", "MAT", "MAT2d", "Bisector", "BRepMAT2d", "BRepCheck", "BRepBndLib", "BRepExtrema", "BRepClass",
             "BRepClass3d", "BRepLib", "BRepGProp", "BRepIntCurveSurface", "BRepTopAdaptor", "BRepBuilderAPI", "BRepApprox"]
@@ -181,7 +181,7 @@ def test_medial_axis_of_a_rectangle():
     explorer = BRepMAT2d.BRepMAT2d_Explorer(face)
     assert explorer.NumberOfContours() == 1
     locus = BRepMAT2d.BRepMAT2d_BisectingLocus()
-    locus.Compute(explorer, 1, MAT.MAT_Side.MAT_Left, True, False)
+    locus.Compute(explorer, 1, MAT.MAT_Side.MAT_Left, GeomAbs.GeomAbs_JoinType.GeomAbs_Tangent, False)
     assert locus.IsDone() and locus.NumberOfContours() == 1 and locus.NumberOfElts(1) == 4
     graph = locus.Graph()
     assert graph.NumberOfArcs() == 5 and graph.NumberOfBasicElts() == 4
