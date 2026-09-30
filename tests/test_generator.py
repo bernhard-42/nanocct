@@ -1294,6 +1294,22 @@ def test_stub_annotations_are_not_shadowed_by_a_member_named_like_a_builtin():
     assert _unshadowed_class_names(text.replace("def str(", "def Str("), "nanocct.X") == text.replace("def str(", "def Str(")
 
 
+def test_stub_eq_and_ne_accept_any_object():
+    """nanobind returns NotImplemented for an operand no overload takes, so `TopoDS_Shape() == 1` is False: __eq__/__ne__
+    accept any object. A single definition gets `object`; an overload set keeps its overloads and gains a last one taking
+    `object` (final review 2026-09-30: 177 [override] errors against object.__eq__)."""
+    import ast
+    from generator.stubs import _eq_accepts_object
+    single = "class A:\n    def __eq__(self, arg: A, /) -> bool: ...\n"
+    assert "def __eq__(self, arg: object, /) -> bool" in _eq_accepts_object(single)
+    overloaded = ("class B:\n    @overload\n    def __ne__(self, o: B) -> bool: ...\n\n    @overload\n    def __ne__(self, o: str) -> bool: ...\n\n"
+                  "    def Other(self) -> None: ...\n")
+    out = _eq_accepts_object(overloaded)
+    ast.parse(out)
+    assert out.index("def __ne__(self, o: str)") < out.index("def __ne__(self, other: object) -> bool") < out.index("def Other")
+    assert _eq_accepts_object(out) == out                                  # idempotent
+
+
 def test_stub_enum_defaults_are_spelled_through_the_annotation():
     """State.md 8.22: nanobind's stubgen writes an enum default by repr() (int is tested before enum.Enum), a bare name
     that does not resolve outside the enum's module; the parameter's annotation names the enum qualified."""

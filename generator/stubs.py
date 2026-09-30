@@ -173,6 +173,45 @@ def _unshadowed_class_names(text: str, module: str) -> str:
 _BUILTIN_TYPES = {"str", "int", "float", "bool", "bytes", "object", "list", "tuple", "dict", "set", "type"}
 
 
+def _eq_accepts_object(text: str) -> str:
+    """`__eq__`/`__ne__` accept any object at runtime: nanobind returns NotImplemented for an argument no overload takes,
+    so `TopoDS_Shape() == 1` is False, not a TypeError. stubgen types them with the C++ operand, which mypy and ty flag as an
+    incompatible override of object.__eq__ (177 [override] errors, final review 2026-09-30). A single definition gets
+    `object` for its operand; an overload set keeps its overloads -- they say which types compare by value, e.g.
+    TCollection_AsciiString == str -- and gains a last one taking `object`."""
+    tree = ast.parse(text)
+    retype: list[tuple[int, int, int]] = []           # (line, start col, end col) of an operand annotation -> object
+    append: list[tuple[int, str, str]] = []           # (after line, indent, name): a catch-all overload
+    for cls in ast.walk(tree):
+        if not isinstance(cls, ast.ClassDef):
+            continue
+        for name in ("__eq__", "__ne__"):
+            defs = [n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == name]
+            if len(defs) == 0:
+                continue
+            def operands(d: ast.FunctionDef) -> list[ast.arg]:
+                return d.args.posonlyargs + d.args.args            # stubgen writes `(self, arg: T, /)`: positional-only
+
+            overloaded = any(isinstance(d, ast.Name) and d.id == "overload" for d in defs[0].decorator_list)
+            if not overloaded:
+                args = operands(defs[0])
+                if len(args) == 2 and args[1].annotation is not None and ast.unparse(args[1].annotation) != "object":
+                    a = args[1].annotation
+                    retype.append((a.lineno, a.col_offset, a.end_col_offset))   # type: ignore[arg-type]
+            elif not any(len(operands(d)) == 2 and operands(d)[1].annotation is not None
+                         and ast.unparse(operands(d)[1].annotation) == "object" for d in defs):
+                append.append((max(d.end_lineno for d in defs), " " * defs[0].col_offset, name))   # type: ignore[arg-type]
+    if len(retype) == 0 and len(append) == 0:
+        return text
+    lines = text.splitlines(keepends=True)
+    for line, start, end in sorted(retype, reverse=True):
+        raw = lines[line - 1].encode()
+        lines[line - 1] = (raw[:start] + b"object" + raw[end:]).decode()
+    for after, indent, name in sorted(append, reverse=True):
+        lines[after:after] = [f"\n{indent}@overload\n{indent}def {name}(self, other: object) -> bool: ...\n"]
+    return "".join(lines)
+
+
 def _module_of(stub: Path) -> str:
     """src/nanocct/BRepGraphInc/__init__.pyi -> nanocct.BRepGraphInc"""
     return ".".join(stub.relative_to(SRC.parent).with_suffix("").parts).removesuffix(".__init__")
@@ -471,7 +510,7 @@ def main() -> int:
     header += ("float32 = float\nuchar = int\nuint = int\nulong = int\nulonglong = int\n\n")
     header += (GENERIC / "NCollection_Shared.pyi").read_text().replace("class NCollection_Shared(Generic[_T]):", "class _NCollection_Shared_members:").replace(
         "    def __init__(self, theOther: _T) -> None: ...", "    def __init__(self, theOther: object) -> None: ...") + "\n"
-    text = _unshadowed_class_names(_qualified_enum_defaults(text), _module_of(nc))
+    text = _eq_accepts_object(_unshadowed_class_names(_qualified_enum_defaults(text), _module_of(nc)))
     nc.write_text(_unhashable_ignore(_with_numpy_imports(header + "".join(generic_parts) + "\n" + text)))
     # OCCT signatures: the generic spelling instead of the concrete class (nanocct.NCollection.NCollection_Array1__double
     # -> nanocct.NCollection.NCollection_Array1[float]), so that a value typed NCollection_Array1[float] (what
@@ -513,7 +552,7 @@ def main() -> int:
             text = new
         else:
             raise RuntimeError(f"{stub}: the generic rewrite did not converge -- nesting deeper than expected")
-        text = _unshadowed_class_names(_qualified_enum_defaults(text), _module_of(stub))
+        text = _eq_accepts_object(_unshadowed_class_names(_qualified_enum_defaults(text), _module_of(stub)))
         stub.write_text(_unhashable_ignore(_with_numpy_imports(_with_imports(text))))
     (SRC / "py.typed").write_text("")
     print("NCollection.pyi: generic classes for", ", ".join(kinds), file=sys.stderr)

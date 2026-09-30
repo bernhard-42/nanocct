@@ -126,7 +126,7 @@ def test_every_stub_member_exists_at_runtime():
 # unqualified enum defaults) or as a growing count ([overload-cannot-match]: base-before-derived, R-OVERLOAD-ORDER), so
 # every other code must stay at zero and these must not grow. Measured on macOS with mypy 2.3.1 (uv.lock); a mypy
 # upgrade may move them.
-STUB_ERROR_PINS = {"override": 873, "valid-type": 14, "misc": 33, "name-defined": 20, "overload-cannot-match": 15,
+STUB_ERROR_PINS = {"override": 673, "valid-type": 14, "misc": 33, "name-defined": 20, "overload-cannot-match": 15,
                    "overload-overlap": 6}
 
 
