@@ -1,4 +1,5 @@
-# Attach the five nanocct wheels of a tagged commit to a GitHub release (State.md 8.17).
+# Attach the five nanocct wheels of a tagged commit, and the OCP compatibility shim built with them on macOS arm64,
+# to a GitHub release (State.md 8.17).
 #
 # Nothing is built here. The wheels come from the cache build-wheels.yml saved for this exact commit
 # (nanocct-wheel-<platform>-<sha>), so what is released is what was built and tested. Hence the order:
@@ -102,7 +103,9 @@ jobs:
           enableCrossOsArchive: true
           fail-on-cache-miss: true
 
-      # Exactly one wheel per platform, and each carries the version the tag names (v8.0.1.0 -> nanocct-8.0.1.0-...).
+      # Exactly one wheel per platform, and each carries the version the tag names (v8.0.1.0 -> nanocct-8.0.1.0-...);
+      # plus exactly one shim wheel, which came in with the macOS arm64 cache. Its version is OCP's (8.0.1.0.0+shim), not
+      # the tag's; GitHub keeps the '+' in an asset name (it replaces only characters other than letters, digits, . _ + -).
       - name: Check wheels against the tag
         env:
           TAG: ${{ steps.release.outputs.tag }}
@@ -118,9 +121,14 @@ jobs:
               exit 1
             fi
           done
+          shim=(dist/cadquery_ocp_novtk-*+shim-py3-none-any.whl)
+          if [ "${#shim[@]}" -ne 1 ]; then
+            echo "expected exactly one shim wheel (cadquery_ocp_novtk-*+shim), found ${#shim[@]}" >&2
+            exit 1
+          fi
           all=(dist/*.whl)
-          if [ "${#all[@]}" -ne 5 ]; then
-            echo "expected 5 wheels in dist/, found ${#all[@]}" >&2
+          if [ "${#all[@]}" -ne 6 ]; then
+            echo "expected 6 wheels in dist/ (5 nanocct, 1 shim), found ${#all[@]}" >&2
             exit 1
           fi
 

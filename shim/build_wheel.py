@@ -16,8 +16,8 @@ HERE = Path(__file__).parent
 # The local version label "+shim" is what `pip list` shows next to the name, so an installed shim is told apart from
 # the real cadquery-ocp-novtk at a glance. PEP 440 ignores a local label when matching a version without one, so
 # build123d's unpatched "cadquery-ocp-novtk >= 8.0, < 8.1" is still satisfied (uv, 2026-09-28); a distribution of
-# another name is not, and uv then installs the real package next to it, both writing OCP/. A local test vehicle,
-# never uploaded (PyPI refuses local versions anyway).
+# another name is not, and uv then installs the real package next to it, both writing OCP/. Released on GitHub next to
+# the nanocct wheels (the macOS arm64 CI job builds it), never on PyPI, which refuses local versions.
 NAME, DIST, VERSION = "cadquery-ocp-novtk", "cadquery_ocp_novtk", "8.0.1.0.0+shim"
 REQUIRES = ["nanocct>=8.0.1,<8.0.2", "cadquery-ocp-proxy==8.0.1.0.0"]   # any nanocct for OCCT 8.0.1 (8.0.1.0, fixes 8.0.1.x)
 OCP_VERSION = "8.0.1.0"      # OCP.__version__ of the real package
