@@ -119,3 +119,12 @@ flag_str: str = flags.Value(1)   # error: int is not str
 occt_map = NCollection.NCollection_Map[int]()
 first_key: int = next(iter(occt_map))
 iter(occt_map).More()         # error: a Python iterator has no More()
+
+# ---- the hand-written generic stubs spell the binder's members (final review 2026-09-30): statics carry _s (R-STATIC-S),
+# a binder Iterator is iterable but not itself an iterator, Change* exists only where the binder binds it
+harray = NCollection.NCollection_HArray1[float](1, 2)
+type_name: str = harray.get_type_name_s()
+harray.get_type_name()        # error: statics carry _s
+lst_it = NCollection.NCollection_List[int].Iterator(NCollection.NCollection_List[int]())
+elements: list[int] = list(iter(lst_it))
+next(lst_it)                  # error: the Iterator object is no Python iterator

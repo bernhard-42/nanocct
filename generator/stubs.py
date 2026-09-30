@@ -252,6 +252,45 @@ def _view_accessor(text: str, name: str) -> str | None:
     return None if member is None else member.group(0).rstrip()
 
 
+# Members the binder binds for some element types only (nanocct_ncollection.h: `if constexpr (std::is_class_v<T>)` for the
+# element references, `has_equal<T>` for List::Contains), so the generic stub cannot promise them: they are lifted per
+# instantiation from stubgen's concrete class, which has exactly what the binder bound (final review 2026-09-30: the
+# generic stubs promised ChangeValue for NCollection_Array1[float], 7 of 220 Array1 instantiations lacked it).
+_GATED = {"NCollection_Array1": ("ChangeFirst", "ChangeLast", "ChangeValue", "ChangeAt"),
+          "NCollection_Array2": ("ChangeValue", "ChangeAt"),
+          "NCollection_DynamicArray": ("ChangeFirst", "ChangeLast", "ChangeValue"),
+          "NCollection_LinearVector": ("ChangeValue", "ChangeFirst", "ChangeLast"),
+          "NCollection_Sequence": ("ChangeFirst", "ChangeLast", "ChangeValue", "ChangeAt"),
+          "NCollection_List": ("Contains", "__contains__")}
+# an H class inherits them at runtime, and stubgen does not repeat inherited members: they come from the sibling
+_GATED_FROM = {"NCollection_HArray1": "NCollection_Array1", "NCollection_HArray2": "NCollection_Array2",
+               "NCollection_HSequence": "NCollection_Sequence"}
+
+
+def _lifted_members(text: str, name: str, members: tuple[str, ...]) -> list[str]:
+    """The given members of stubgen's top-level `class name`, each with its decorators and docstring, in class order."""
+    m = re.search(rf"^class {re.escape(name)}\b.*?(?=^\S|\Z)", text, re.S | re.M)
+    if m is None:
+        return []
+    chunks: list[list[str]] = []
+    pending: list[str] = []                           # decorator lines waiting for their def
+    for line in m.group(0).splitlines()[1:]:
+        if line.startswith("    @"):
+            pending.append(line)
+        elif line.startswith("    def ") or line.startswith("    class ") or (line.startswith("    ") and not line.startswith("     ")
+                                                                                 and line.strip() != ""):
+            chunks.append(pending + [line])
+            pending = []
+        elif len(chunks) > 0:
+            chunks[-1].append(line)                   # docstring, blank lines, a nested body
+    out = []
+    for chunk in chunks:
+        d = next((l for l in chunk if l.startswith("    def ")), None)
+        if d is not None and re.match(r"    def (\w+)\(", d).group(1) in members:
+            out.append("\n".join(chunk).rstrip())
+    return out
+
+
 def _replace_class_block(text: str, name: str, replacement: str) -> str:
     """Replace the top-level `class name...` block (up to the next top-level statement) in a stub."""
     m = re.search(rf"^class {re.escape(name)}\b.*?(?=^\S|\Z)", text, re.S | re.M)
@@ -410,6 +449,10 @@ def main() -> int:
             view = _view_accessor(text, inst["name"].replace("_HArray", "_Array", 1))
         if view is not None:
             body.append(view)
+        gated_kind = _GATED_FROM.get(kind, kind)
+        if gated_kind in _GATED:
+            source = inst["name"] if kind == gated_kind else inst["name"].replace(kind, gated_kind, 1)
+            body += _lifted_members(text, source, _GATED[gated_kind])
         block = (f"class {inst['name']}({bases}): ..." if len(body) == 0
                  else f"class {inst['name']}({bases}):\n" + "\n".join(body))
         text = _replace_class_block(text, inst["name"], block)

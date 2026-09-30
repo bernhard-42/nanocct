@@ -72,6 +72,52 @@ def test_no_stub_binds_a_class_under_another_name_by_import():
     assert "Prs3d_Presentation = nanocct.Graphic3d.Graphic3d_Structure" in prs3d
 
 
+def test_every_stub_member_exists_at_runtime():
+    """A stub may only promise what the runtime has: for every class of the shipped stubs, each member it declares must
+    exist on the runtime class -- for a generic NCollection class on every instantiation, since the runtime generic is only
+    the NCollection_X[T] lookup. The hand-written generic stubs had drifted from the binder by 34 members (statics without
+    their _s, Iterator.__next__, Change*/Contains for element types the binder leaves them out for; final review
+    2026-09-30), which mypy and ty accepted -- a lie that type-checks is invisible to the ratchet below."""
+    import ast
+    import importlib
+
+    import nanocct
+    from nanocct._templates import Generic
+    pkg = Path(nanocct.__file__).parent
+
+    def check(node: ast.ClassDef, targets: list, path: str, lies: list[str]) -> None:
+        for m in node.body:
+            if isinstance(m, (ast.FunctionDef, ast.ClassDef)):
+                absent = [t for t in targets if not hasattr(t, m.name)]
+                if len(absent) > 0:
+                    lies.append(f"{path}.{m.name} (absent on {len(absent)} of {len(targets)}, e.g. {absent[0].__name__})")
+                elif isinstance(m, ast.ClassDef):
+                    check(m, [getattr(t, m.name) for t in targets], f"{path}.{m.name}", lies)
+
+    lies: list[str] = []
+    for stub in sorted(pkg.rglob("*.pyi")):
+        module = ".".join(stub.relative_to(pkg.parent).with_suffix("").parts).removesuffix(".__init__")
+        if module == "nanocct":
+            continue                               # the package stub only re-exports the packages
+        mod = importlib.import_module(module)
+        for node in ast.parse(stub.read_text(encoding="utf-8")).body:
+            if isinstance(node, ast.FunctionDef) and not hasattr(mod, node.name):
+                lies.append(f"{module}.{node.name}")
+            elif isinstance(node, ast.ClassDef) and node.name == "_NCollection_Shared_members":
+                # the members every NCollection_Shared<T> adds to its T (a stub-only base, NCollection_Shared being a
+                # lookup object in the stub): checked on every instantiation
+                check(node, list(mod.NCollection_Shared._instances.values()), f"{module}.NCollection_Shared", lies)
+            elif isinstance(node, ast.ClassDef) and not node.name.startswith("_"):   # _X: stub-only typing helpers
+                runtime = getattr(mod, node.name, None)
+                if runtime is None:
+                    lies.append(f"{module}.{node.name}")
+                    continue
+                targets = list(runtime._instances.values()) if isinstance(runtime, type) and issubclass(runtime, Generic) \
+                    and "_instances" in vars(runtime) else [runtime]
+                check(node, targets, f"{module}.{node.name}", lies)
+    assert lies == [], f"{len(lies)} stub members the runtime does not have:\n" + "\n".join(lies[:60])
+
+
 # mypy's errors in the shipped stubs, per error code (State.md 8.22-8.24). Every one left is the C++ shape of OCCT that
 # Python typing cannot express -- [override] is C++ name hiding, [misc] operator pairs such as `*=`/`*` with different
 # operand sets, [overload-cannot-match]/[overload-overlap] overloads Python cannot tell apart (reachable int widths, a
