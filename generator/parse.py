@@ -1540,10 +1540,15 @@ def _note_dependent_use(t: cindex.Type) -> None:
     Its spelling after substitution is recorded instead and instantiated through the R-TEMPLATE-BASE probe typedef."""
     spelled = re.sub(r"\s*(const\s*)?[&*]+\s*(const)?\s*$", "", _type_spelling(t)).removeprefix("const ").strip()
     m = re.match(r"^([\w:]+)<(.*)>$", spelled)
+    while m is not None and m.group(1).split("::")[-1] == "handle":
+        # handle<BVH_Tree<T, N>> (BVH_PrimitiveSet<T, N>::BVH()): the instantiation inside the handle is what must be bound --
+        # skipping the handle left BVH_Tree<double, 2> and BVH_Builder<double, 2> unbound (State.md 8.22 (c) (v))
+        spelled = m.group(2).strip()
+        m = re.match(r"^([\w:]+)<(.*)>$", spelled)
     if m is None or "type-parameter-" in spelled:
         return
     name = m.group(1).split("::")[-1]
-    if name in BINDERS or name == "handle" or m.group(1).startswith("std::"):
+    if name in BINDERS or m.group(1).startswith("std::"):
         return
     if _SUBST.self_ is not None and (spelled == _SUBST.self_[1] or m.group(1) in (_SUBST.self_[0], _SUBST.self_[2])
                                      and m.group(2).replace(" ", "") == ",".join(_SUBST.params.values()).replace(" ", "")):

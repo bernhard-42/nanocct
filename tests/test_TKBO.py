@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanocct import BOPAlgo, BOPDS, BOPTools, BRepAlgoAPI, BRepCheck, BRepGProp, BRepPrimAPI, GProp, IntTools, Message, NCollection, TopAbs, TopExp, TopoDS, gp
+from nanocct import BOPAlgo, BOPDS, BOPTools, BVH, Bnd, BRepAlgoAPI, BRepCheck, BRepGProp, BRepPrimAPI, GProp, IntTools, Message, NCollection, TopAbs, TopExp, TopoDS, gp
 
 PACKAGES = ["IntTools", "BOPAlgo", "BRepAlgoAPI", "BOPDS", "BOPTools"]
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKBO" / "report.txt"
@@ -123,3 +123,16 @@ def test_data_structures_hashes_and_report():
     # an rvalue-reference parameter is skipped (BOPAlgo_PaveFiller::SetArguments(List&&)); the const& overload remains
     assert any(m.startswith("BOPAlgo_PaveFiller::SetArguments(): param 'theLS': rvalue reference") for m in msgs)
     assert BOPAlgo.BOPAlgo_PaveFiller.SetArguments.__doc__.count("SetArguments(self") >= 1
+
+
+def test_the_2d_box_tree_returns_its_bvh_tree():
+    """State.md 8.22 (c) (v): BVH_PrimitiveSet<double, 2>::BVH() returns handle<BVH_Tree<double, 2>>, which 6c skipped as a
+    handle -- the call raised TypeError. The tree class is still empty, like the 3D one: its members live in the partial
+    specialisation BVH_Tree<T, N, BVH_BinaryTree> (BVH_BinaryTree.hxx), and 6c walks the primary template (State.md 8.22)."""
+    boxes = BOPTools.BOPTools_Box2dTree()
+    for i, (x, y) in enumerate([(0.0, 0.0), (5.0, 5.0), (10.0, 0.0)]):
+        boxes.Add(i, Bnd.BVH_Box__double__2(BVH.BVH_Vec2d(x, y), BVH.BVH_Vec2d(x + 1.0, y + 1.0)))
+    boxes.Build()
+    assert type(boxes.BVH()).__name__ == "BVH_Tree__double__2__BVH_BinaryTree"
+    assert boxes.Size() == 3
+
