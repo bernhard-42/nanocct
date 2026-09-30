@@ -113,3 +113,12 @@ def test_handle_out_parameter_with_stream():
     from generator.report import read_report
     rows = read_report(Path(__file__).parents[1] / "src" / "cpp" / "TKGeomBase" / "report.txt")
     assert sum(1 for cat, pkg, msg in rows if cat == "overload-collision" and msg.startswith("GeomTools::Read(")) == 3
+
+
+def test_extremapc_classes_are_bound():
+    """ExtremaPC/FILES.cmake has a comment holding ')' that ended the file list early: no ExtremaPC_* class was bound
+    (2026-09-30). The point-to-line distance of (3, 4, 0) from the X axis is 4."""
+    line = ExtremaPC.ExtremaPC_Line(gp.gp_Lin(gp.gp_Pnt(0, 0, 0), gp.gp_Dir(1, 0, 0)))
+    result = line.Perform(gp.gp_Pnt(3, 4, 0), 1e-9)
+    assert result.IsDone() and result.NbExt() == 1 and result.MinSquareDistance() == pytest.approx(16.0)
+    assert all(hasattr(ExtremaPC, n) for n in ("ExtremaPC_Circle", "ExtremaPC_BSplineCurve", "ExtremaPC_OffsetCurve"))

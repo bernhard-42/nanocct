@@ -129,3 +129,10 @@ def test_call_operator_defined_in_the_library():
     assert h(c) == h(c)
     assert h(c, c) is True
     assert h(c, _circle(3.0)) is False
+
+
+def test_transformation_transforms_its_input():
+    """[inout] (2026-09-30): Geom2d_Transformation::Transforms(X, Y) forwards to gp_Trsf2d::Transforms, which reads X, Y."""
+    t = Geom2d.Geom2d_Transformation()
+    t.SetTranslation(gp.gp_Vec2d(5.0, 10.0))
+    assert t.Transforms(1.0, 2.0) == (6.0, 12.0)

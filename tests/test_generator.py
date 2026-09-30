@@ -16,6 +16,7 @@ from generator.binders import BINDERS
 from generator.emit import Emitter, order_by_derivation, resolve_ctor_arities, resolve_overload_collisions
 from generator.model import Class, Constructor, ConversionKind, Method, PackageIR, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
+from generator.occt import _cmake_list
 from generator.stubs import _capsule_for_every_python
 from generator.__main__ import HANDWRITTEN_NAMESPACES, _topo, _base_import_edges
 from generator.report import CATEGORIES, categorize
@@ -636,6 +637,8 @@ public:
   Rules_NoCopyHolder() {}
   const Rules_NoCopyInner& Inner() const { return myInner; }
   static const Rules_NoCopyInner& Shared() { static Rules_NoCopyInner anInner; return anInner; }
+  //! A static method returning a mutable reference (BRepMesh_DiscretFactory::Get(), a singleton): no self to tie it to.
+  static Rules_NoCopyHolder& Instance() { static Rules_NoCopyHolder aHolder; return aHolder; }
 
 private:
   Rules_NoCopyInner myInner;
@@ -902,6 +905,18 @@ def test_emitter_const_ref_result_policy_is_decided_by_the_compiler(rules_ir):
     cpp = em.emit()
     assert "(&Rules_NoCopyHolder::Inner), nanocct::cref_policy<const Rules_NoCopyInner &, true>{})" in cpp
     assert "(&Rules_NoCopyHolder::Shared), nanocct::cref_policy<const Rules_NoCopyInner &, false>{})" in cpp   # static: no owner
+    # a static T& result: plain reference -- reference_internal needs a self (every call failed, 2026-09-30)
+    assert "(&Rules_NoCopyHolder::Instance), nb::rv_policy::reference, " in cpp
+
+
+def test_cmake_list_ignores_comments(tmp_path):
+    """A FILES.cmake comment holding ')' ended the set() there and lost every file after it (ExtremaPC/FILES.cmake,
+    "# Elementary curves (header-only, analytical solutions)": no ExtremaPC_* class was bound, 2026-09-30); and the words
+    of a multi-word comment after its first were taken as file names."""
+    f = tmp_path / "FILES.cmake"
+    f.write_text('set(OCCT_X_FILES_LOCATION "${CMAKE_CURRENT_LIST_DIR}")\n\nset(OCCT_X_FILES\n  X.hxx\n'
+                 '  # Elementary curves (header-only, analytical solutions)\n  X_Line.hxx\n  X_Circle.hxx\n)\n')
+    assert _cmake_list(f) == ["X.hxx", "X_Line.hxx", "X_Circle.hxx"]
 
 
 def test_emitter_unhashable_when_eq_is_value_equality(rules_ir):

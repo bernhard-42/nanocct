@@ -12,6 +12,12 @@ inout = [
     "gp_Trsf2d::Transforms",
     "gp_GTrsf::Transforms",
     "gp_GTrsf2d::Transforms",
+    "Geom_Transformation::Transforms",     # forwards its double& to gp_Trsf::Transforms (Geom_Transformation.hxx:193-195)
+    "Geom2d_Transformation::Transforms",   # forwards to gp_Trsf2d::Transforms (Geom2d_Transformation.cxx:155-158)
+    "Bnd_Sphere::IsOut",                   # double& theMaxDist: compared, then lowered (Bnd_Sphere.cxx:113, 119)
+    "ElCLib::AdjustPeriodic",              # double& U1, U2: moved into the period from their incoming values (ElCLib.cxx:139)
+    "BVH_BuildQueue::Fetch",               # bool& wasBusy: the caller's state from the last call (BVH_BuildQueue.hxx:76, 86)
+    "Hermit::Solutionbis",                 # double& Knotmin, Knotmax: some branches set only one (Hermit.cxx:1190-1204)
     "*::InitFromJson",      # int& theStreamPos: the position to start reading at (1), advanced by the call (every class with DumpJson)
     "Font_FontMgr::FindFont",   # Font_FontAspect& theFontAspect: the aspect to look for, replaced when an alias maps to another style (Font_FontMgr.cxx:1060, doc [in][out])
     # handle<T>& parameters that are read and replaced (GeomLib.cxx, GeomConvert.cxx, Geom2dConvert.cxx, 2026-09-21)

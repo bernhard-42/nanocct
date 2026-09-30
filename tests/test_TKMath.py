@@ -1,9 +1,10 @@
 """Generated bindings for the remaining TKMath packages."""
 import importlib
+import math
 
 import pytest
 
-from nanocct import Bnd, BSplCLib, ElCLib, MathUtils, NCollection, PLib, Poly, TopLoc, gp
+from nanocct import BVH, Bnd, BSplCLib, ElCLib, MathUtils, NCollection, PLib, Poly, TopLoc, gp
 from nanocct import math as occ_math
 
 PACKAGES = ["math", "MathUtils", "MathPoly", "MathLin", "MathOpt", "MathRoot", "MathInteg", "MathSys", "ElCLib", "ElSLib",
@@ -207,3 +208,18 @@ def test_an_overload_taking_a_derived_class_is_not_shadowed_by_the_base_one():
     PLib.PLib.CoefficientsPoles_s(coefs, wcoefs, poles, weights)
     got = {(i, j): poles.Value(i, j).Coord__float__float__float() for i in (1, 2) for j in (1, 2)}
     assert got == {(1, 1): (0.0, 0.0, 0.0), (2, 1): (1.0, 0.0, 0.0), (1, 2): (0.0, 1.0, 0.0), (2, 2): (1.0, 1.0, 1.0)}
+
+
+def test_inout_parameters_read_their_incoming_value():
+    """[inout] (2026-09-30): these read the caller's value of a double&/bool& before writing it; bound as pure outputs,
+    Python could not pass it and OCCT computed from an uninitialised value."""
+    two_pi = 2 * math.pi
+    u1, u2 = ElCLib.ElCLib.AdjustPeriodic_s(0.0, two_pi, 1e-9, 7.0, 8.0)     # moved into [0, 2pi) from 7 and 8
+    assert (u1, u2) == (pytest.approx(7.0 - two_pi), pytest.approx(8.0 - two_pi))
+    sphere = Bnd.Bnd_Sphere(gp.gp_XYZ(0, 0, 0), 1.0, 0, 0)
+    assert sphere.IsOut(gp.gp_XYZ(5, 0, 0), 2.0) == (True, 2.0)              # min distance 4 > the given 2
+    queue = BVH.BVH_BuildQueue()
+    queue.Enqueue(1)
+    first = queue.Fetch(False)                                               # (item, wasBusy)
+    assert first == (1, True) and queue.HasBusyThreads()
+    assert queue.Fetch(first[1]) == (-1, False) and not queue.HasBusyThreads()   # the busy count goes back to 0

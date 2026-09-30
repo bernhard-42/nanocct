@@ -81,3 +81,11 @@ def test_detected_noncopyable_and_hidden_placement_new():
         return
     doc = BRepMesh.BRepMesh_ConeRangeSplitter.GetSplitSteps.__doc__
     assert "GetSplitSteps(self, theParameters: nanocct.IMeshTools.IMeshTools_Parameters) -> tuple[tuple[float, float], tuple[int, int]]" in doc
+
+
+def test_a_static_reference_result_is_the_singleton():
+    """R-RESULT (2026-09-30): BRepMesh_DiscretFactory::Get() returns the singleton by T&; a static method has no self,
+    and reference_internal made every call fail. Now it is a plain reference: the same object each time."""
+    factory = BRepMesh.BRepMesh_DiscretFactory.Get_s()
+    assert BRepMesh.BRepMesh_DiscretFactory.Get_s() is factory
+    assert factory.DefaultName().ToCString() == "FastDiscret"

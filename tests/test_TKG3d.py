@@ -108,3 +108,18 @@ def test_surface_descriptor_namespace():
     assert desc.GetKind() == SurfaceBase.Kind.Full
     assert _bspline().EvalRepresentation() is None
     assert GeomHash.GeomHash_CurveHasher()(_circle()) == GeomHash.GeomHash_CurveHasher()(_circle())
+
+
+def test_transformation_transforms_its_input():
+    """[inout] (2026-09-30): Geom_Transformation::Transforms(X, Y, Z) forwards to gp_Trsf::Transforms, which reads them."""
+    t = Geom.Geom_Transformation()
+    t.SetTranslation(gp.gp_Vec(5.0, 10.0, 20.0))
+    assert t.Transforms(1.0, 2.0, 3.0) == (6.0, 12.0, 23.0)
+
+
+def test_a_handle_field_takes_none():
+    """R-FIELD/R-HANDLE (2026-09-30): a null handle field reads as None, so None can be assigned, as to a handle parameter."""
+    key = GeomHash.PolygonOnTriHashKey()
+    assert key.Poly is None
+    key.Poly = None
+    assert key.Poly is None

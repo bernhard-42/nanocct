@@ -205,11 +205,18 @@ template <typename From, typename To> void nanocct_conversion_handle(nb::handle 
         nb::implicitly_convertible<From, To>();
 }
 
+// opencascade::handle<T> or not (a field of handle type takes None through its setter, R-HANDLE).
+template <typename> struct nanocct_is_handle : std::false_type {};
+template <typename T> struct nanocct_is_handle<opencascade::handle<T>> : std::true_type {};
+
 // Public data member: read/write when its type can be assigned to (a member with a deleted copy assignment, e.g. of
 // type BRepGraphInc_Storage, or a const member is read-only). Decided at compile time, the header does not say.
 template <typename C, typename T, typename D, typename... Extra>
 void nanocct_def_field(nb::class_<C> cls, const char *name, D T::*p, const Extra &...extra) {
-    if constexpr (std::is_copy_assignable_v<D> && !std::is_const_v<D>)
+    if constexpr (nanocct_is_handle<D>::value && !std::is_const_v<D>)
+        // R-HANDLE: a null handle reads as None, so None must be assignable too (a plain def_rw setter refused it)
+        cls.def_rw(name, p, nb::for_setter(nb::arg("value").none()), extra...);
+    else if constexpr (std::is_copy_assignable_v<D> && !std::is_const_v<D>)
         cls.def_rw(name, p, extra...);
     else
         cls.def_ro(name, p, extra...);

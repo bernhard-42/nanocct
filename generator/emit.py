@@ -395,6 +395,10 @@ class Emitter:
         has_out = any(p.is_out or p.stream != StreamKind.NONE for p in m.params)
         wrap = m.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT, ResultKind.VALUE_TRANSIENT)   # never let nanobind own a Transient
         policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
+        if m.result_kind == ResultKind.REF_MUTABLE and m.is_static:
+            # R-RESULT: a static method has no self to tie the reference to (BRepMesh_DiscretFactory::Get(), the singleton):
+            # reference_internal made every call fail ("Unable to convert function return value")
+            policy = ", nb::rv_policy::reference"
         if m.result_kind == ResultKind.VALUE and m.result.rstrip().endswith("&"):
             # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_common.h)
             policy = f", nanocct::cref_policy<{m.result}, {'false' if m.is_static else 'true'}>{{}}"

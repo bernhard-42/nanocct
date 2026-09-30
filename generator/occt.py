@@ -67,15 +67,18 @@ _SET_RE = re.compile(r"set\s*\(\s*(\w+)\s*(.*?)\)", re.S)
 
 
 def _cmake_list(path: Path) -> list[str]:
-    """Items of the first set(<NAME> ...) whose NAME does not end in _LOCATION (FILES.cmake has two sets)."""
-    text = path.read_text()
+    """Items of the first set(<NAME> ...) whose NAME does not end in _LOCATION (FILES.cmake has two sets). Comments are
+    removed first: `_SET_RE` ends the set at the first ')', and a comment can hold one -- ExtremaPC/FILES.cmake's
+    "# Elementary curves (header-only, analytical solutions)" cut the list there and lost every ExtremaPC_* class, and
+    the words of a multi-word comment after the first one were taken as items (2026-09-30)."""
+    text = re.sub(r"#[^\n]*", "", path.read_text())
     for m in _SET_RE.finditer(text):
         name, body = m.group(1), m.group(2)
         if name.endswith("_LOCATION"):
             continue
         items: list[str] = []
         for tok in body.split():
-            if tok.startswith("#") or tok.startswith("${"):
+            if tok.startswith("${"):
                 continue
             items.append(tok)
         return items
