@@ -491,6 +491,12 @@ class Emitter:
         if cls.is_transient and any(p.is_bytes for p in ins):
             raise ValueError(f"R-BYTES in the constructor of the Transient {cls.name}: keep_alive for nb::new_ is not verified")
         keep = "".join(f", nb::keep_alive<1, {2 + i}>()" for i, p in enumerate(ins) if p.is_bytes)
+        # R-CTOR-KEEP: an argument the object keeps a pointer or reference to lives as long as the object. nb::new_ hands
+        # its extras to __new__(cls, args...), which returns the object, and to a no-op __init__(self, args...)
+        # (nb_class.h, new_::execute): the nurse is the result, 0 -- in __init__ that is None, which keep_alive ignores
+        # (nb_type.cpp, keep_alive_py) -- and the arguments count from 2 in both
+        nurse = 0 if cls.is_transient else 1
+        keep += "".join(f", nb::keep_alive<{nurse}, {2 + i}>()" for i, p in enumerate(ins) if p.kept)
         if cls.is_transient:
             fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {T}({call})); }})"
         elif special or type_name is not None:

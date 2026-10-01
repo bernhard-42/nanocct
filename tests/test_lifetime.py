@@ -494,3 +494,60 @@ def test_a_transient_returned_by_value_survives_a_handle():
         print(curve.FirstParameter() < 0)
     """))
     assert out == ["True"]
+
+
+# ---- R-CTOR-KEEP: a constructor argument the object keeps a pointer or reference to -----------------------------------
+
+def test_a_kept_constructor_argument_outlives_its_variable():
+    """GeomBndLib_Surface(const Adaptor3d_Surface&) keeps `myAdaptorRef = &theSurf` (GeomBndLib_Surface.cxx). A temporary
+    adaptor was collected before Add() read it, and Add() crashed; the argument now lives as long as the object."""
+    out = _ok(_run("""
+        from nanocct import Bnd, Geom, GeomAdaptor, GeomBndLib, gp
+        sphere = Geom.Geom_SphericalSurface(gp.gp_Ax3(), 2.0)
+        bounds = GeomBndLib.GeomBndLib_Surface(GeomAdaptor.GeomAdaptor_Surface(sphere))
+        collect()
+        box = Bnd.Bnd_Box()
+        bounds.Add(1e-7, box)
+        print(round(box.Get().Xmax, 3) >= 2.0, round(box.Get().Xmax, 3) < 2.5)
+    """))
+    assert out == ["True True"]
+
+
+def test_a_kept_container_and_graph_outlive_their_variables():
+    """BRepGraph's reverse iterators keep `const ContainerType* myRefs` and `const BRepGraph* myGraph` (a template, bound
+    through an __init__ lambda). Topo().Vertices().Edges() is a copy, a temporary in this call: the iterator read freed
+    memory (a size of 53778742144, or a crash in Next()). Both arguments now live as long as the iterator."""
+    out = _ok(_run("""
+        from nanocct import BRepGraph, BRepPrimAPI
+        g = BRepGraph.BRepGraph()
+        g.Clear()
+        g.Shapes().Add(BRepPrimAPI.BRepPrimAPI_MakeBox(10.0, 20.0, 30.0).Shape())
+        it = BRepGraph.BRepGraph_EdgesOfVertex(g, g.Topo().Vertices().Edges(BRepGraph.BRepGraph_VertexId(0)))
+        del g
+        collect()
+        n = 0
+        while it.More():
+            n += 1
+            it.Next()
+        print(n)
+    """))
+    assert out == ["3"]
+
+
+def test_a_transient_keeps_its_constructor_argument_while_it_lives():
+    """A Transient is built by nb::new_, whose extras reach __new__(cls, args...) and a no-op __init__(self, args...):
+    keep_alive<0, k> ties the argument to the returned object (in __init__ the nurse is None and ignored). The argument
+    gains one reference while the object lives and loses it with the object -- with the type as nurse it never would.
+    CDF_FWOSDriver(NCollection_DataMap<...>& theLookUpTable) keeps a reference to the table."""
+    out = _ok(_run("""
+        import sys
+        from nanocct import CDF, CDM, NCollection, TCollection
+        table = NCollection.NCollection_DataMap[TCollection.TCollection_ExtendedString, CDM.CDM_MetaData]()
+        before = sys.getrefcount(table)
+        driver = CDF.CDF_FWOSDriver(table)
+        during = sys.getrefcount(table)
+        del driver
+        collect()
+        print(during - before, sys.getrefcount(table) - before)
+    """))
+    assert out == ["1 0"]

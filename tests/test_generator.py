@@ -644,6 +644,21 @@ private:
   Rules_NoCopyInner myInner;
 };
 
+//! R-CTOR-KEEP: keeps the address of its first argument (GeomBndLib_Surface's myAdaptorRef), copies the second; the
+//! copy constructor copies the pointer and must not keep its source alive.
+class Rules_Keeper
+{
+public:
+  Rules_Keeper(const gp_XYZ& theKept, const gp_Pnt& theCopied) : myKept(&theKept), myCopy(theCopied) {}
+  Rules_Keeper(const Rules_Keeper& theOther) : myKept(theOther.myKept), myCopy(theOther.myCopy), myPrev(&theOther) {}
+  Rules_Keeper(const Rules_Keeper& theOther, const gp_Pnt& theCopied) : myKept(theOther.myKept), myCopy(theCopied), myPrev(&theOther) {}
+
+private:
+  const gp_XYZ* myKept;
+  gp_Pnt myCopy;
+  const Rules_Keeper* myPrev = nullptr;
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -713,7 +728,7 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
                                "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor",
                                "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
-                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder", "Rules_Keeper"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -767,6 +782,22 @@ def test_ir_and_emitter_bytes_buffer_from_override(monkeypatch, tmp_path_factory
     assert 'nb::arg("theData")' in cpp and 'nb::arg("theLen")' not in cpp      # the length is gone from the signature
     assert '.def_static("Unpack"' not in cpp
 
+
+def test_ir_and_emitter_keep_alive_for_a_kept_constructor_argument(tmp_path_factory):
+    """R-CTOR-KEEP: a constructor parameter by reference or pointer whose type the class holds in a pointer or reference
+    member gets keep_alive; one that is copied does not, and a copy constructor is never one. A fresh parse: emit()
+    changes the IR it is given, and the module-scoped one is shared."""
+    ir = rules_ir_of(tmp_path_factory, "occt_keep")
+    keeper = next(c for c in ir.classes if c.name == "Rules_Keeper")
+    kept = {tuple(p.type for p in k.params): [p.kept for p in k.params] for k in keeper.ctors}
+    assert kept == {("const gp_XYZ &", "const gp_Pnt &"): [True, False],
+                    ("const Rules_Keeper &",): [False],                          # the copy constructor
+                    ("const Rules_Keeper &", "const gp_Pnt &"): [True, False]}   # not a copy constructor: myPrev keeps it
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "nb::init<const gp_XYZ &, const gp_Pnt &>(), nb::keep_alive<1, 2>(), nb::arg(\"theKept\")" in cpp
+    assert "keep_alive<1, 3>" not in cpp
 
 def test_header_allowlist_override(monkeypatch, tmp_path_factory):
     # overrides.toml [include] headers: a partial package (the font slice) binds only the listed headers
@@ -1019,7 +1050,9 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     inherit = next(c for c in rules_ir.classes if c.name == "Rules_Inherit")
     assert [[p.type for p in k.params] for k in inherit.ctors] == [["const gp_Pnt &"]] and not inherit.has_declared_ctor
     tail = cpp[cpp.index('m.attr("Rules_Inherit"))'):]
-    assert "nanocct_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::arg("thePnt")' in tail
+    # keep_alive: Rules_Value holds a gp_Pnt* member (myPtr), so R-CTOR-KEEP keeps a gp_Pnt argument -- from the header alone
+    # it cannot tell that this constructor does not store its address (the rule's documented over-approximation)
+    assert "nanocct_implicit_default_ctor<Rules_Inherit>" in cpp and '.def(nb::init<const gp_Pnt &>(), nb::keep_alive<1, 2>(), nb::arg("thePnt")' in tail
 
 
 class _FakeToolkit:

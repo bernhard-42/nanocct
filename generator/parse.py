@@ -1312,6 +1312,27 @@ def _members(cursor: cindex.Cursor) -> set[str]:
     return members
 
 
+# Design.md 6 R-CTOR-KEEP
+def _core_type(spelling: str) -> str:
+    """'const NCollection_LinearVector<int> &' -> 'NCollection_LinearVector<int>': the type behind the outer const and
+    pointer/reference declarators, spelled as _type_spelling spells it."""
+    s = re.sub(r"(\s*(\*|&&|&)(\s*const)?)+\s*$", "", spelling.strip())
+    return re.sub(r"^const\s+", "", s).strip()
+
+
+def _held_types(cls: cindex.Cursor) -> set[str]:
+    """The types a class keeps a pointer or reference to in a data member (any access), spelled as _core_type spells a
+    parameter: BRepGraph's reverse iterators keep `const ContainerType* myRefs` and `const BRepGraph* myGraph`,
+    GeomBndLib_Surface `const Adaptor3d_Surface* myAdaptorRef` -- all set from constructor arguments."""
+    held: set[str] = set()
+    for f in cls.get_children():
+        if f.kind == K.FIELD_DECL:
+            spelled = _type_spelling(f.type)
+            if spelled.rstrip().endswith(("&", "*")):
+                held.add(_core_type(spelled))
+    return held
+
+
 def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     # the qualified name lets overrides.toml [bytes] name a constructor (R-BYTES: WNT_HIDSpaceMouse::WNT_HIDSpaceMouse);
     # streams stay out of constructors whatever the name says (allow_streams=False)
@@ -1322,6 +1343,13 @@ def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
                        defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
                        mangled=ch.mangled_name)
+    if not ch.is_copy_constructor() and not ch.is_move_constructor():
+        held = _held_types(ch.semantic_parent)
+        for p in params:
+            if not p.omitted and not p.is_handle and p.type.rstrip().endswith(("&", "*")):
+                core = _core_type(p.type)
+                if core not in _PRIMITIVE_SPELLINGS and (core in held or any(a in held for a in p.class_ancestors)):
+                    p.kept = True
     if ctor.skip_reason is None and 0 < _MAX_PARAMS < len(params):
         ctor.skip_reason = f"{len(params)} parameters, more than overrides.toml [skip] max_params ({_MAX_PARAMS})"
     if ctor.skip_reason is not None:
