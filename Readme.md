@@ -20,29 +20,29 @@
 
 _nanocct_ follows **3 design principles**:
 
-1. **One wheel per platform for the stable ABI of Python 3**: The bindings are built with nanobind against the Python 3 stable ABI, so a single `cp312-abi3` wheel runs on 3.12, 3.13, 3.14 and later without a rebuild. ([Design 4.1](Design.md#41-stable-abi))
+1. **One wheel per platform for the stable ABI of Python 3**: The bindings are built with nanobind against the Python 3 stable ABI, so a single `cp312-abi3` wheel runs on 3.12, 3.13, 3.14 and later without a rebuild. ([Design 5.1](docs/Runtime.md#51-stable-abi))
 
-2. **Coverage of Open Cascade**: Support of the OCCT modules *FoundationClasses*, *ModelingData*, *ModelingAlgorithms*, _Visualization_ (without _VTK_, which would break principle 1), _ApplicationFramework_, and _DataExchange_, and keep the syntax as near to the Open Cascade C++ API as possible ([Design 2](Design.md#2-scope))
+2. **Coverage of Open Cascade**: Support of the OCCT modules *FoundationClasses*, *ModelingData*, *ModelingAlgorithms*, _Visualization_ (without _VTK_, which would break principle 1), _ApplicationFramework_, and _DataExchange_, and keep the syntax as near to the Open Cascade C++ API as possible ([Design 2](docs/Design.md#2-scope))
 
-3. **Make the bindings Python'ish**: Provide addon features that make _nanocct_ fit well into the Python ecosystem, within the constraints of principle 2 (e.g. names stay OCCT's CamelCase). ([Design 2c](Design.md#2c-python-additions))
+3. **Make the bindings Python'ish**: Provide addon features that make _nanocct_ fit well into the Python ecosystem, within the constraints of principle 2 (e.g. names stay OCCT's CamelCase). ([Design 2, Python additions](docs/Design.md#python-additions))
 
 
 ## Key features
 
 From principle 2:
 
-- **The OCCT reference manual is the documentation.** Names follow the OCCT headers, without renaming for Python taste, so the [Open Cascade reference manual](https://occt3d.com/dev/doc/refman/html/index.html) applies as it is, and OCCT's own `//!` comments are the docstrings. ([Design 2a](Design.md#2a-naming-conventions))
+- **The OCCT reference manual is the documentation.** Names follow the OCCT headers, without renaming for Python taste, so the [Open Cascade reference manual](https://occt3d.com/dev/doc/refman/html/index.html) applies as it is. ([Design 3.1](docs/Conventions.md#31-naming-conventions))
 
 From principle 3 (see [Pythonic-OCCT.md](./Pythonic-OCCT.md)):
 
-- **The OCCT 8 collection classes are Python generics.** `NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_AsciiString]()` creates that instantiation, and `isinstance(x, NCollection_Array1)` holds for every array, whatever its element type. [Design 2a](Design.md#2a-naming-conventions), [6a](Design.md#6a-ncollection-containers-hand-written-binders)
-- **Zero-copy access to OCCT's arrays.** Triangulation nodes, triangles, UVs and normals, the `NCollection` arrays and `Image_PixMap` are numpy views of OCCT's own memory through `np.asarray(obj)`, not copies. ([Design 2c](Design.md#2c-python-additions))
-- **Iterators.** `for e in TopExp_Explorer(shape, TopAbs_EDGE)` and `for x in array`: every OCCT iterator with `More()`/`Next()`/`Value()` and every `NCollection` container is a Python iterable. ([Design 2c](Design.md#2c-python-additions))
-- **Out-parameters come back as results.** A C++ reference parameter that OCCT writes into is part of the Python return value: `curve, first, last = BRep_Tool.Curve_s(edge)`. ([Design 2b](Design.md#2b-parameter-conventions))
-- **Data exchange in memory.** An output stream is a returned `str` (`bytes` for binary formats), an input stream any file-like object: `BRepTools.Write_s(shape)` returns the BREP text, STEP and the OCAF documents work the same way. ([Design 2b](Design.md#2b-parameter-conventions))
-- **Type stubs in the package**, checked with mypy and ty as part of the test suite. ([Design 6b](Design.md#6b-type-stubs))
+- **The OCCT 8 collection classes are Python generics.** `NCollection_IndexedDataMap[TCollection_AsciiString, TCollection_AsciiString]()` creates that instantiation, and `isinstance(x, NCollection_Array1)` holds for every array, whatever its element type. [Design 3.1](docs/Conventions.md#31-naming-conventions), [7a](docs/Binding-Rules.md#7a-ncollection-containers-hand-written-binders)
+- **Zero-copy access to OCCT's arrays.** Triangulation nodes, triangles, UVs and normals, the `NCollection` arrays and `Image_PixMap` are numpy views of OCCT's own memory through `np.asarray(obj)`, not copies. ([Design 2, Python additions](docs/Design.md#python-additions))
+- **Iterators.** `for e in TopExp_Explorer(shape, TopAbs_EDGE)` and `for x in array`: every OCCT iterator with `More()`/`Next()`/`Value()` and every `NCollection` container is a Python iterable. ([Design 2, Python additions](docs/Design.md#python-additions))
+- **Out-parameters come back as results.** A C++ reference parameter that OCCT writes into is part of the Python return value: `curve, first, last = BRep_Tool.Curve_s(edge)`. ([Design 3.2](docs/Conventions.md#32-parameter-conventions))
+- **Data exchange in memory.** An output stream is a returned `str` (`bytes` for binary formats), an input stream any file-like object: `BRepTools.Write_s(shape)` returns the BREP text, STEP and the OCAF documents work the same way. ([Design 3.2](docs/Conventions.md#32-parameter-conventions))
+- **Type stubs in the package**, checked with mypy and ty as part of the test suite. ([Design 7b](docs/Binding-Rules.md#7b-type-stubs))
 
-_nanocct_ ships a few selected **AddOns** ([Design 6](Design.md#6-binding-rules-11-and-the-documented-deviations), R-ADDON): 
+_nanocct_ ships a few selected **AddOns** ([Design 7](docs/Binding-Rules.md), R-ADDON): 
 - C++ helpers where a Python loop over OCCT calls would dominate (`nanocct.AddOns.Tessellator`) 
 - Workarounds (not patches and very rarely) for OCCT bugs that hit often and are not fixed upstream — each with a test that fails once OCCT fixes the bug, so it can be removed again (`nanocct.AddOns.ShapeClean.ShapeClean`)
 
@@ -81,10 +81,10 @@ brep = BRepTools.Write_s(shape)                 # a BREP in memory, as str
 
 ## Status
 
-- OCCT 8.0.1, 45 toolkits: FoundationClasses, ModelingData, ModelingAlgorithms, Visualization (without VTK), ApplicationFramework and DataExchange. [Design 2](Design.md#2-scope)
+- OCCT 8.0.1, 45 toolkits: FoundationClasses, ModelingData, ModelingAlgorithms, Visualization (without VTK), ApplicationFramework and DataExchange. [Design 2](docs/Design.md#2-scope)
 - Built and tested on five platforms: macOS arm64 and x86_64, Linux x86_64 and aarch64 (`manylinux_2_28`) and Windows x64. The wheels bundle OCCT, FreeType and FreeImage; the only Python dependency is numpy.
-- Not on PyPI yet (the distribution will be `nanocct`): download the wheels from the [release page](https://github.com/bernhard-42/nanocct/releases) or build them from source with the `Makefile`. [Design 7](Design.md#7-build-and-packaging)
-- Porting from OCP: [Design 8b](Design.md#8b-porting-from-ocp-cadquery-ocp-to-nanocct)
+- Not on PyPI yet (the distribution will be `nanocct`): download the wheels from the [release page](https://github.com/bernhard-42/nanocct/releases) or build them from source with the `Makefile`. [Design 8](docs/Build.md)
+- Porting from OCP: [Design 10](docs/Porting.md)
 
 ## How to start with build123d on nanocct
 
@@ -110,7 +110,7 @@ This downloads ocpsvg, ocp-gordon, ocp-tessellate, build123d and ocp-viewer-core
 
 ## How to build nanocct
 
-Prerequisites: `git`, `curl`, [uv](https://docs.astral.sh/uv/), CMake and Ninja; on macOS the Xcode command line tools, on Linux Docker (the build runs in a `manylinux_2_28` container), on Windows Git Bash and the Visual Studio Build Tools (MSVC). [Design 3](Design.md#3-toolchain-and-third-party-dependencies), [Design 7](Design.md#7-build-and-packaging)
+Prerequisites: `git`, `curl`, [uv](https://docs.astral.sh/uv/), CMake and Ninja; on macOS the Xcode command line tools, on Linux Docker (the build runs in a `manylinux_2_28` container), on Windows Git Bash and the Visual Studio Build Tools (MSVC). [Design 4](docs/Toolchain.md), [Design 8](docs/Build.md)
 
 - Clone the repo
 
